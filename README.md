@@ -2,6 +2,8 @@
 
 Uma pequena clareira, uma casa que resistiu e a chance de recomeçar. **Depois da Chuva** é um jogo original para navegador, single-player, com exploração, cultivo e construção em pixel art 2D top-down. Esta primeira entrega é uma fatia jogável tranquila, feita com TypeScript, Phaser 3 e Vite.
 
+As três propostas para a próxima direção de arte estão na [galeria de estudos visuais](docs/direcao-visual/README.md). São conceitos para aprovação; ainda não foram aplicados ao jogo.
+
 ## Instalar e abrir
 
 Use Node.js **22.12 ou superior** e npm. Não há backend, serviços pagos, contas ou chaves de API.
