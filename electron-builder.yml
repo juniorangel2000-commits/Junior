@@ -1,0 +1,27 @@
+appId: br.depoisdachuva.jogo
+productName: Depois da Chuva
+asar: true
+npmRebuild: false
+directories:
+  output: release
+  buildResources: desktop/resources
+files:
+  - dist/**/*
+  - desktop/main.cjs
+  - desktop/resources/icon.png
+  - package.json
+  - '!node_modules/**/*'
+win:
+  target:
+    - target: portable
+      arch:
+        - x64
+  icon: desktop/resources/icon.ico
+  signAndEditExecutable: false
+  artifactName: Depois-da-Chuva-${version}-Windows-x64.exe
+portable:
+  requestExecutionLevel: user
+linux:
+  target: dir
+  icon: desktop/resources/icon.png
+  category: Game

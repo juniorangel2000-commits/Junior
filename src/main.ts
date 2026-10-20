@@ -1,0 +1,28 @@
+import Phaser from 'phaser';
+import { ValleyScene } from './scenes/ValleyScene';
+import { GameUI } from './ui';
+import './style.css';
+
+const scene = new ValleyScene();
+const ui = new GameUI({
+  onNewGame: profile => scene.startNew(profile),
+  onContinue: () => scene.continueGame(),
+  onTool: tool => scene.selectTool(tool),
+  onPause: paused => scene.setPaused(paused),
+  onSave: () => scene.persist(),
+  onMainMenu: () => scene.mainMenu(),
+});
+scene.ui = ui;
+
+new Phaser.Game({
+  type: Phaser.AUTO,
+  parent: 'game',
+  backgroundColor: '#6b8053',
+  pixelArt: true,
+  roundPixels: true,
+  render: { antialias: false, powerPreference: 'low-power' },
+  scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight },
+  scene: [scene],
+  audio: { noAudio: true },
+  banner: false,
+});

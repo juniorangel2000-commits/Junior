@@ -1,0 +1,80 @@
+name: Executável para Windows
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Gerar pacote Windows x64
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Obter o código
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Instalar dependências do lockfile
+        run: npm ci --no-audit --no-fund
+
+      - name: Verificar TypeScript e sistemas
+        run: |
+          npm run check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Gerar o executável portátil
+        run: npm run desktop:win -- --publish never
+
+      - name: Calcular a verificação de integridade
+        shell: pwsh
+        run: |
+          $checksums = Get-ChildItem release/*.exe | ForEach-Object {
+            $digest = (Get-FileHash -Algorithm SHA256 $_.FullName).Hash.ToLowerInvariant()
+            "$digest  $($_.Name)"
+          }
+          $checksums | Set-Content -Encoding utf8NoBOM release/SHA256SUMS.txt
+
+      - name: Disponibilizar para download na execução
+        uses: actions/upload-artifact@v4
+        with:
+          name: Depois-da-Chuva-Windows-x64
+          path: |
+            release/*.exe
+            release/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publicar uma versão quando uma tag for enviada
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_REPOSITORY: ${{ github.repository }}
+        shell: pwsh
+        run: |
+          $notes = @'
+          Depois da Chuva — primeira fatia jogável.
+
+          Aplicativo portátil para Windows 10/11 de 64 bits, gerado em Windows.
+          Baixe o arquivo .exe desta versão e abra com dois cliques. Não exige Node.js ou servidor.
+          O pacote não possui assinatura digital. O save do aplicativo fica em %APPDATA%\Depois da Chuva.
+
+          SHA256SUMS.txt permite conferir a integridade do download.
+          '@
+          $notes | Set-Content -Encoding utf8NoBOM release/NOTAS.txt
+          $assets = @((Get-ChildItem release/*.exe).FullName) + @('release/SHA256SUMS.txt')
+          gh release create $env:RELEASE_TAG @assets --verify-tag --repo $env:RELEASE_REPOSITORY --title "Depois da Chuva $env:RELEASE_TAG — Windows x64" --notes-file release/NOTAS.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
