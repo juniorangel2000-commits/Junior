@@ -215,6 +215,6 @@ Verificações executadas nesta atualização:
 
 A versão compilada foi testada em Chromium: 19 itens, 11 receitas, 10 opções de construção, migração de um save v1 com backup exato, colheita, plantio, rega, cerca, banco, reembolsos, pausa e conversa com Lia. Não foram registrados erros de JavaScript ou carregamento de assets nesse fluxo.
 
-Criação, personalização, mapa pausado e menus foram conferidos em 960×640 e 1280×800. O percurso completo entre as novas regiões e a validação do download estão sendo finalizados; os resultados serão registrados em [expansao-visual-v0.2.md](docs/expansao-visual-v0.2.md).
+Criação, personalização, mapa pausado e menus foram conferidos em 960×640 e 1280×800. O percurso completo entre propriedade, Bosque do Pinheiro e Campos Abertos passou em Chromium: caminhada pelos caminhos reais, coleta, fabricação das três ferramentas, corte/mineração, salvamento de golpes parciais, processamento, colocação de bancada em cada área, recarregamento das construções e retorno à propriedade. Não houve erros de JavaScript ou assets. Os detalhes estão em [expansao-visual-v0.2.md](docs/expansao-visual-v0.2.md).
 
 O portátil local teve seu payload Windows AMD64 e o conteúdo de `app.asar` conferidos contra os arquivos compilados. A abertura interativa em Windows nativo permanece pendente. A automação Chromium utiliza ferramentas do ambiente e não faz parte das dependências do jogo; os testes de sistemas e mapa são reproduzíveis com `npm test`.

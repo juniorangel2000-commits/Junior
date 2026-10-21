@@ -41,7 +41,11 @@ As fontes preservadas não significam que todos os frames ou módulos foram apro
 
 ## Validação desta atualização
 
-TypeScript, **104 testes em seis arquivos**, build de produção e geração do portátil Windows x64 foram aprovados. O conteúdo de `app.asar` foi comparado ao build local, e o payload Electron foi confirmado como Windows AMD64. A versão compilada passou pela migração v1 com backup, cultivo, cerca/banco, pausa e diálogo em Chromium, sem erros de JavaScript ou assets. O percurso completo das regiões e a disponibilização pública do executável estão em validação final.
+TypeScript, **104 testes em seis arquivos**, build de produção e geração do portátil Windows x64 foram aprovados. O conteúdo de `app.asar` foi comparado ao build local, e o payload Electron foi confirmado como Windows AMD64. A versão compilada passou pela migração v1 com backup, cultivo, cerca/banco, pausa e diálogo em Chromium, sem erros de JavaScript ou assets. O percurso completo passou em Chromium: criação e customização, mapa M pausado, coleta e fabricação das três ferramentas, caminhada até Bosque e Campos, corte/mineração, golpes parciais salvos, processamento e bancada em cada área, recarga das construções sem duplicação e retorno à propriedade. Menus foram exercitados em 960×640 e 1280×800, sem erros de JavaScript ou assets.
+
+Uma amostra de cinco segundos em Chromium com renderização por software mediu 33,6 FPS, mediana de 33,3 ms por quadro e percentil 95 de 50 ms. Esse resultado descreve o ambiente de teste e não garante uma taxa de quadros no computador do jogador.
+
+O portátil local tem 103.783.761 bytes; seu SHA-256 é `f3398c78c6841dbeda281aaf5d9fa073fccda263838cc7b2a0a7c6ec96a94997`. A Release é gerada novamente pelo workflow em Windows e terá seu próprio manifesto de integridade. A disponibilização pública será conferida após enviar a tag `v0.2.0`.
 
 Para repetir as verificações de código e gerar o executável:
 
