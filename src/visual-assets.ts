@@ -88,6 +88,15 @@ function createHouse(scene: Phaser.Scene): void {
     const pixel = (color: string, x: number, y: number, w: number, h: number) => {
       c.fillStyle = color; c.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
     };
+    const timber = (x: number, y: number, width: number, height: number) => {
+      pixel('#513d2c', x, y, width, height);
+      pixel('#91663e', x + 1, y + 1, width - 2, height - 2);
+      pixel('#bd9057', x + 1, y + 1, Math.max(1, width - 3), 1);
+      if (height > width) {
+        pixel('#b0824c', x + 1, y + 2, 1, height - 4);
+        pixel('#704b31', x + width - 2, y + 4, 1, height - 6);
+      } else pixel('#704b31', x + 3, y + height - 2, width - 5, 1);
+    };
     const flowers = (x: number, y: number, width: number, pink = false) => {
       const source = sourceImage(scene, pink ? 'asset-flowers-pink' : 'asset-flowers-white');
       if (source) {
@@ -140,9 +149,49 @@ function createHouse(scene: Phaser.Scene): void {
     c.restore();
     c.fillStyle = '#613f2d'; c.fillRect(4, 137, 248, 5);
     c.fillStyle = '#e2a15c'; c.fillRect(34, 49, 188, 3);
+    // A repaired attic makes this refuge distinct without changing its footprint.
+    pixel('#705038', 108, 96, 41, 32);
+    pixel('#c8b58c', 110, 97, 37, 27);
+    if (wall) c.drawImage(wall, 110, 97, 37, 27);
+    timber(108, 97, 4, 29); timber(145, 97, 4, 29);
+    if (window) c.drawImage(window, 116, 100, 25, 22);
+    timber(109, 123, 39, 4);
+    c.save();
+    c.beginPath(); c.moveTo(128, 80); c.lineTo(155, 98); c.lineTo(101, 98); c.closePath(); c.clip();
+    pixel('#aa693d', 101, 80, 54, 19);
+    if (roof) c.drawImage(roof, 3, 4, 56, 64, 100, 79, 56, 64);
+    c.restore();
+    timber(103, 97, 51, 3);
+    // Small moss seams and replacement tiles suggest years of rain and repair.
+    for (const [x, y] of [[51, 117], [59, 119], [185, 129], [193, 128], [226, 124]]) {
+      pixel('#62713e', x, y, 5, 2); pixel('#879051', x + 1, y, 2, 1);
+    }
+    pixel('#dd9b57', 166, 104, 7, 4); pixel('#9c5e38', 166, 108, 7, 1);
+    pixel('#cf8a4e', 173, 87, 6, 3); pixel('#9c5e38', 173, 90, 6, 1);
     if (chimney) c.drawImage(chimney, 197, 21, 26, 45);
+    // Timber portal and shallow porch retain the exact door and doorstep anchors.
+    timber(103, 150, 5, 60); timber(149, 150, 5, 60);
+    timber(103, 149, 51, 6);
+    pixel('#3f4031', 101, 145, 55, 5);
+    pixel('#9b5b35', 102, 142, 53, 5);
+    if (roof) c.drawImage(roof, 3, 44, 56, 8, 101, 141, 56, 8);
+    pixel('#d89551', 105, 141, 47, 1);
+    for (const x of [105, 151]) {
+      pixel('#473c2e', x, 158, 1, 2); pixel('#d7c290', x, 157, 1, 1);
+      pixel('#473c2e', x, 204, 1, 2); pixel('#d7c290', x, 203, 1, 1);
+    }
     if (window) { c.drawImage(window, 37, 155, 50, 41); c.drawImage(window, 169, 155, 50, 41); }
     if (door) c.drawImage(door, 109, 153, 39, 57);
+    // The entrance lantern is warm and readable, with no extra obstacle on the path.
+    pixel('#514232', 96, 159, 7, 2); pixel('#514232', 96, 160, 2, 5);
+    pixel('#303e37', 92, 165, 10, 13); pixel('#d5ae61', 94, 167, 6, 8);
+    pixel('#f1d999', 95, 168, 3, 6); pixel('#fff0ba', 96, 168, 1, 5);
+    pixel('#5e5239', 92, 177, 10, 2); pixel('#34463c', 93, 163, 8, 2);
+    pixel('#88724b', 95, 179, 4, 1);
+    // One carefully mended shutter and plaster chips keep the house lived-in.
+    timber(203, 180, 12, 3);
+    pixel('#524936', 204, 181, 1, 1); pixel('#524936', 213, 181, 1, 1);
+    pixel('#a28e68', 92, 194, 6, 2); pixel('#bba87f', 90, 196, 9, 2);
     flowerBox(37, 194, 50); flowerBox(169, 194, 50, true);
     // The original file called "planta" contains a rug corner; draw actual pots here.
     flowerBox(154, 207, 37);

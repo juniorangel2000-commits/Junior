@@ -1,3 +1,5 @@
+import type { HomeData } from './systems/home';
+
 export type HairStyle = 'curto' | 'longo' | 'preso';
 export type CharacterAccessory = 'bolsa' | 'nenhum';
 export interface CharacterProfile {
@@ -44,8 +46,13 @@ export interface SaveData {
   day: number;
   time: number;
   metLia: boolean;
+  /** Extensão opcional: partidas anteriores recebem a casa padrão ao entrar. */
+  home?: HomeData;
+  /** A posição externa permanece em player, para preservar o mundo e saves antigos. */
+  homePosition?: TilePoint & { direction?: 'down' | 'left' | 'right' | 'up' };
 }
 export interface HudData {
+  inHome: boolean;
   playerTile?: TilePoint;
   name: string;
   day: number;

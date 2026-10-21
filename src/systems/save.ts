@@ -4,6 +4,7 @@ import { EMPTY_INVENTORY, INITIAL_INVENTORY, ITEM_IDS, MAX_ITEM_COUNT } from './
 import { RESOURCE_DEFINITIONS } from './resources';
 import { buildingFootprint, buildingLayer } from './building';
 import { TILE, WORLD_HEIGHT, WORLD_WIDTH } from '../data/regions';
+import { Home, HOME_WIDTH, HOME_HEIGHT, validateHome } from './home';
 
 // A chave e a origem do aplicativo permanecem iguais para localizar partidas antigas.
 export const SAVE_KEY = 'depois-da-chuva-v1';
@@ -34,6 +35,16 @@ export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value.player) || !finite(value.player.x, TILE / 2, WORLD_WIDTH * TILE - TILE / 2)
     || !finite(value.player.y, TILE / 2, WORLD_HEIGHT * TILE - TILE / 2)) return false;
   if (value.player.direction !== undefined && !['down', 'left', 'right', 'up'].includes(value.player.direction as string)) return false;
+  if (value.home !== undefined && !validateHome(value.home)) return false;
+  if (value.homePosition !== undefined) {
+    if (!isRecord(value.homePosition) || !finite(value.homePosition.x, TILE, (HOME_WIDTH - 1) * TILE - 1)
+      || !finite(value.homePosition.y, TILE * 2, HOME_HEIGHT * TILE)) return false;
+    if (value.homePosition.direction !== undefined && !['down', 'left', 'right', 'up'].includes(value.homePosition.direction as string)) return false;
+    const home = new Home(value.home as SaveData['home']);
+    if ([[-7, -5], [7, -5], [-7, 3], [7, 3]].some(([ox, oy]) => home.isBlocked(
+      Math.floor(((value.homePosition as Record<string, number>).x + ox) / TILE),
+      Math.floor(((value.homePosition as Record<string, number>).y + oy) / TILE)))) return false;
+  }
   if (!isRecord(value.inventory) || !ITEM_IDS.every(id => integer((value.inventory as Record<string, unknown>)[id], 0, MAX_ITEM_COUNT))) return false;
   if (Object.keys(value.inventory).some(id => !ITEM_IDS.includes(id as typeof ITEM_IDS[number]))) return false;
   if (!TOOLS.includes(value.equippedTool as Tool)) return false;

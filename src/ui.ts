@@ -8,6 +8,9 @@ import { BUILD_COSTS, BUILD_NAMES, BUILD_REQUIREMENTS } from './systems/building
 import { ITEMS, ITEM_IDS, ITEM_NAMES } from './data/items';
 import { BLUEPRINT_COST, BLUEPRINT_LABEL } from './data/blueprints';
 import { RECIPES } from './data/recipes';
+import { createHomeEditor } from './home-ui';
+import type { HomeEditor, HomeEditResponse } from './home-ui';
+import type { HomeData, HomeEditAction } from './systems/home';
 import type { BuildingData, CharacterProfile, HudData, InventoryData, ItemId, Tool } from './types';
 
 interface UICallbacks {
@@ -21,6 +24,8 @@ interface UICallbacks {
   onSave(): boolean;
   onMainMenu(): void;
   onTitleBackground(mode: TitleBackgroundMode): void;
+  onHomeMenu(): void;
+  onAdminMenu(): void;
 }
 
 const paths: Record<string, string> = {
@@ -100,7 +105,7 @@ export class GameUI {
   private overlay = document.createElement('div');
   private notifications = document.createElement('div');
   private mode: 'title' | 'creation' | 'hud' = 'title';
-  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | null = null;
+  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | null = null;
   private focusBeforeModal?: HTMLElement;
   private onModalClose?: () => void;
   private existingSave = false;
@@ -111,8 +116,11 @@ export class GameUI {
   private craftingBusy = false;
   private craftingInventory?: InventoryData;
   private craftingNearWorkbench = false;
+  private homeEditor?: HomeEditor;
+  private journalCollapsed = false;
 
   constructor(private callbacks: UICallbacks) {
+    try { this.journalCollapsed = localStorage.getItem('after-rain-missions-collapsed') === 'true'; } catch { /* A interface também funciona sem armazenamento. */ }
     this.base.className = 'ui-base';
     this.overlay.className = 'modal-root';
     this.notifications.className = 'toast-stack';
@@ -131,6 +139,8 @@ export class GameUI {
   }
 
   showTitle(hasSave: boolean): void {
+    this.homeEditor?.destroy();
+    this.homeEditor = undefined;
     this.cleanupTitle?.();
     this.cleanupTitle = undefined;
     this.cleanupCreation?.();
@@ -169,6 +179,8 @@ export class GameUI {
   }
 
   showHUD(): void {
+    this.homeEditor?.destroy();
+    this.homeEditor = undefined;
     this.cleanupTitle?.();
     this.cleanupTitle = undefined;
     this.cleanupCreation?.();
@@ -181,8 +193,9 @@ export class GameUI {
     this.lastHudKey = '';
     this.base.innerHTML = `<div class="hud">
       <header class="hud-header"><div class="hud-brand">${icon('leaf')}<div>After Rain<small>PROPRIEDADE · BOSQUE · CAMPOS</small></div></div><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><div><strong id="hud-day">Dia 1</strong><span>Hora do vale <i>·</i> <b id="hud-time">08:00</b></span></div></div><div class="header-right"><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}</div><button class="icon-button map-button" title="Mapa das regiões (M)" aria-label="Abrir mapa das regiões">${icon('map')}</button><button class="building-button" title="Construção (B)" aria-label="Abrir construção">${icon('shelter')}<span>Construir <kbd>B</kbd></span></button><button class="crafting-button" title="Fabricação (C)" aria-label="Abrir fabricação">${icon('workbench')}<span>Fabricar <kbd>C</kbd></span></button><button class="icon-button inventory-button" title="Inventário (I)" aria-label="Abrir inventário">${icon('bag')}</button><button class="icon-button pause-button" title="Pausar (Esc)" aria-label="Pausar jogo">${icon('pause')}</button></div></header>
-      <aside class="journal"><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Erguer um lar</h3></div><button class="fold-button" data-collapse="journal" aria-controls="journal-content" aria-expanded="true" aria-label="Recolher objetivos" title="Recolher objetivos">${icon('chevron')}</button></header><div id="journal-content" class="journal-content"><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera nas ruínas a oeste.</p><div class="journal-rule"></div><div class="quest" id="harvest-quest"><span class="quest-circle"></span>Colha seu primeiro nabo</div><div class="quest" id="lia-quest"><span class="quest-circle"></span>Converse com Lia <kbd>E</kbd></div><small>Seu tempo. Seu caminho.</small></div></aside>
+      <aside class="journal${this.journalCollapsed ? ' is-collapsed' : ''}"><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="fold-button" data-collapse="journal" aria-controls="journal-content" aria-expanded="${!this.journalCollapsed}" aria-label="${this.journalCollapsed ? 'Expandir' : 'Minimizar'} missões" title="${this.journalCollapsed ? 'Expandir' : 'Minimizar'} missões"><span class="journal-fold-label">${this.journalCollapsed ? 'Expandir' : 'Minimizar'}</span>${icon('chevron')}</button></header><div id="journal-content" class="journal-content"><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera nas ruínas a oeste.</p><div class="journal-rule"></div><div class="quest" id="harvest-quest"><span class="quest-circle"></span>Colha seu primeiro nabo</div><div class="quest" id="lia-quest"><span class="quest-circle"></span>Converse com Lia <kbd>E</kbd></div><small>Seu tempo. Seu caminho.</small></div></aside>
       <div class="location-pill">${icon('pin')}<span id="hud-location">Minha propriedade</span></div><div class="shelter-pill" id="shelter-status" title="Construa paredes e uma porta para formar seu abrigo.">${icon('shelter')}<span id="hud-shelter">Ao ar livre</span><small id="hud-station">Bancada distante</small></div>
+      <button class="home-customize-button" hidden aria-label="Personalizar interior da casa (H)" title="Personalizar casa (H)">${icon('shelter')} Personalizar casa <kbd>H</kbd></button>
       <aside class="controls-card is-collapsed"><button class="controls-toggle" data-collapse="controls-card" aria-controls="controls-content" aria-expanded="false" aria-label="Mostrar controles" title="Mostrar controles">${icon('keys')}<span>Controles</span>${icon('chevron')}</button><div id="controls-content" class="controls-content"><div><kbd>W</kbd><span class="arrow-keys">A S D</span><span>mover</span></div><div><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd><span>mover</span></div><div><kbd>E</kbd><span>interagir</span></div><div><kbd>M</kbd><span>mapa das regiões</span></div><div><kbd>I</kbd><span>inventário</span></div><div><kbd>C</kbd><span>fabricar</span></div><div><kbd>B</kbd><span>construir e molde 3×3</span></div><div><kbd>P</kbd><span>construir porta</span></div><div><kbd>Esc</kbd><span>pausar</span></div><small>1–8: ações e ferramentas · 9: bancada · 0: parede</small></div></aside>
       <div class="bottom-center"><div class="interaction-prompt"><kbd>E</kbd><span id="hud-prompt">Explore o vale ao seu redor</span></div><div id="hud-resource-progress" class="resource-progress" hidden></div><div class="toolbelt">${tools.slice(0, 11).map((tool, index) => `<button class="tool${index === 0 ? ' selected' : ''}" data-tool="${tool.id}" title="${index < 9 ? index + 1 : index === 9 ? '0' : 'P'} · ${tool.detail}" aria-label="${tool.label}"><span class="tool-key">${index < 9 ? index + 1 : index === 9 ? '0' : 'P'}</span>${icon(tool.icon)}<span>${tool.label}</span></button>`).join('')}</div><div class="tool-status"><strong id="active-tool">Explorar</strong><span id="tool-cost">Coletar · conversar · colher</span></div></div>
     </div>`;
@@ -201,15 +214,23 @@ export class GameUI {
     });
     this.base.querySelector('.pause-button')!.addEventListener('click', () => this.togglePause());
     this.base.querySelector('.map-button')!.addEventListener('click', () => this.toggleMap());
+    this.base.querySelector('.home-customize-button')!.addEventListener('click', () => {
+      if (!this.modal && this.latest?.inHome) this.callbacks.onHomeMenu();
+    });
     this.base.querySelectorAll<HTMLButtonElement>('[data-collapse]').forEach(button => button.addEventListener('click', () => {
       const panel = this.base.querySelector(`.${button.dataset.collapse}`)!;
       const collapsed = panel.classList.toggle('is-collapsed');
       button.setAttribute('aria-expanded', String(!collapsed));
       const label = button.dataset.collapse === 'journal'
-        ? `${collapsed ? 'Expandir' : 'Recolher'} objetivos`
+        ? `${collapsed ? 'Expandir' : 'Minimizar'} missões`
         : `${collapsed ? 'Mostrar' : 'Recolher'} controles`;
       button.setAttribute('aria-label', label);
       button.title = label;
+      if (button.dataset.collapse === 'journal') {
+        this.journalCollapsed = collapsed;
+        button.querySelector('.journal-fold-label')!.textContent = collapsed ? 'Expandir' : 'Minimizar';
+        try { localStorage.setItem('after-rain-missions-collapsed', String(collapsed)); } catch { /* A preferência vale para esta sessão. */ }
+      }
     }));
     this.callbacks.onPause(false);
   }
@@ -229,6 +250,8 @@ export class GameUI {
     set('#hud-time', `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`);
     for (const item of items) set(`#count-${item.id}`, String(data.inventory[item.id]));
     set('#hud-location', data.location);
+    this.base.querySelector('.hud')!.classList.toggle('in-home', data.inHome === true);
+    this.base.querySelector<HTMLButtonElement>('.home-customize-button')!.hidden = !data.inHome;
     set('#hud-prompt', data.prompt || 'Aproxime-se de algo para interagir');
     set('#hud-shelter', data.sheltered ? 'Abrigo coberto' : 'Ao ar livre');
     set('#hud-station', data.nearWorkbench ? 'Bancada ao alcance' : 'Bancada distante');
@@ -502,13 +525,52 @@ export class GameUI {
     panel.className = 'pause-card panel';
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-label', 'Jogo pausado');
-    panel.innerHTML = `<div class="pause-leaf">${icon('leaf')}</div><span class="eyebrow">O VALE PODE ESPERAR</span><h2>Uma pequena pausa.</h2><p>Respire. A sua história continua aqui.</p><div class="pause-actions"><button class="button button-primary" data-action="resume">Voltar ao vale ${icon('arrow')}</button><button class="button button-light" data-action="save">${icon('save')} Salvar meu progresso</button><button class="text-button" data-action="title">Voltar ao início</button></div><small>SIMULAÇÃO PAUSADA <i>·</i> ESC PARA VOLTAR</small>`;
+    panel.innerHTML = `<div class="pause-leaf">${icon('leaf')}</div><span class="eyebrow">O VALE PODE ESPERAR</span><h2>Uma pequena pausa.</h2><p>Respire. A sua história continua aqui.</p><div class="pause-actions"><button class="button button-primary" data-action="resume">Voltar ao vale ${icon('arrow')}</button><button class="button button-light" data-action="save">${icon('save')} Salvar meu progresso</button>${this.latest?.inHome ? '<button class="button button-light" data-action="home">Personalizar casa <kbd>H</kbd></button>' : ''}<button class="text-button pause-admin-link" data-action="admin">Administração · acesso com senha</button><button class="text-button" data-action="title">Voltar ao início</button></div><small>SIMULAÇÃO PAUSADA <i>·</i> ESC PARA VOLTAR</small>`;
     panel.querySelector('[data-action="resume"]')!.addEventListener('click', () => this.closeModal());
     panel.querySelector('[data-action="save"]')!.addEventListener('click', () => {
       this.toast(this.callbacks.onSave() ? 'Sua história foi salva neste navegador.' : 'Não foi possível salvar. Confira o armazenamento do navegador.');
     });
     panel.querySelector('[data-action="title"]')!.addEventListener('click', () => this.callbacks.onMainMenu());
+    panel.querySelector('[data-action="home"]')?.addEventListener('click', () => { this.closeModal(); this.callbacks.onHomeMenu(); });
+    panel.querySelector('[data-action="admin"]')!.addEventListener('click', () => { this.closeModal(); this.callbacks.onAdminMenu(); });
     this.overlay.append(panel);
+  }
+
+  showHomeCustomization(home: HomeData, onAction: (action: HomeEditAction) => HomeEditResponse): void {
+    if (this.mode !== 'hud' || this.modal) return;
+    this.openModal('home');
+    const panel = document.createElement('section');
+    panel.className = 'home-customization-card panel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    panel.setAttribute('aria-label', 'Personalizar minha casa');
+    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM REFÚGIO COM A SUA CARA</span><h2>Minha casa</h2></div><button class="icon-button" aria-label="Fechar personalização da casa">${icon('close')}</button></div><div class="home-editor-holder"></div><div class="inventory-footer">${icon('shelter')} Móveis e acabamentos ficam salvos na sua partida.<span>SIMULAÇÃO PAUSADA · ESC PARA VOLTAR</span></div>`;
+    panel.querySelector('button')!.addEventListener('click', () => this.closeModal());
+    this.overlay.append(panel);
+    this.homeEditor = createHomeEditor(panel.querySelector<HTMLElement>('.home-editor-holder')!, home, onAction);
+    panel.querySelector<HTMLButtonElement>('button')!.focus();
+  }
+
+  refreshHomeCustomization(home: HomeData, message?: string): void {
+    if (this.modal === 'home') this.homeEditor?.refresh(home, message);
+  }
+
+  showSleep(onSleep: () => void): void {
+    if (this.mode !== 'hud' || this.modal) return;
+    this.openModal('sleep');
+    const panel = document.createElement('section');
+    panel.className = 'sleep-card panel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    panel.setAttribute('aria-label', 'Dormir até a manhã');
+    panel.innerHTML = `${icon('moon')}<span class="eyebrow">UM DESCANSO SEGURO</span><h2>Deixar a noite passar?</h2><p>Você acordará às <strong>08:00</strong>. Os cultivos regados continuarão crescendo enquanto você descansa.</p><div class="pause-actions"><button class="button button-primary" data-sleep-confirm>Dormir até as 08:00 ${icon('moon')}</button><button class="button button-light" data-sleep-cancel>Agora não</button></div><small>SIMULAÇÃO PAUSADA · ESC PARA VOLTAR</small>`;
+    panel.querySelector('[data-sleep-confirm]')!.addEventListener('click', () => {
+      this.closeModal();
+      onSleep();
+    });
+    panel.querySelector('[data-sleep-cancel]')!.addEventListener('click', () => this.closeModal());
+    this.overlay.append(panel);
+    panel.querySelector<HTMLButtonElement>('[data-sleep-cancel]')!.focus();
   }
 
   isCraftingOpen(): boolean { return this.modal === 'crafting'; }
@@ -517,6 +579,8 @@ export class GameUI {
 
   closeModal(): void {
     if (this.mode !== 'hud') return;
+    this.homeEditor?.destroy();
+    this.homeEditor = undefined;
     if (this.modal === 'crafting') {
       this.callbacks.onCancelCraft();
       this.craftingBusy = false;
@@ -532,7 +596,7 @@ export class GameUI {
     callback?.();
   }
 
-  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map'): void {
+  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep'): void {
     this.focusBeforeModal = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
     this.modal = type;
     this.overlay.replaceChildren();

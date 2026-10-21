@@ -4,6 +4,8 @@ Uma pequena clareira, uma casa que resistiu e a chance de recomeçar. **After Ra
 
 A versão do código é **0.5.0, em desenvolvimento**. A [nova tela inicial After Rain](docs/tela-inicial-after-rain.md) apresenta a propriedade com garoa, neblina, tons frios e câmera suave, com suporte preparado para vídeo local em loop. O clipe do Flow ainda não foi fornecido; a configuração padrão usa o cenário do jogo. A última versão Windows publicada continua sendo a [0.4.0](docs/versao-windows-v0.4.md), com o nome anterior.
 
+A [casa inicial agora tem interior personalizável, cama e descanso até a manhã](docs/casa-sono-admin.md). O painel de missões pode ser minimizado; o menu de itens para testes exige senha de administrador e também pode ser recolhido.
+
 ![Abertura chuvosa de After Rain, em desenvolvimento.](docs/capturas/after-rain-inicio.png)
 
 [Sprites de terreno reformulados](docs/terrenos-novos.md): onze materiais originais de grama, bosque, campos, estradas, cultivo, margens, água, madeira e pedra de passagem, acompanhando a arte das árvores.
@@ -89,11 +91,13 @@ Crie seu personagem escolhendo nome, tom de pele, penteado, cor do cabelo, macac
 | 0 | Colocar uma parede |
 | P | Colocar uma porta |
 | B | Abrir o menu de construção e selecionar peças/projeto |
+| H, ou B dentro de casa | Personalizar móveis, piso e paredes da casa |
 | R | Girar a cobertura selecionada |
 | C | Abrir ou fechar a fabricação |
 | I | Abrir ou fechar a mochila |
 | M | Abrir ou fechar o mapa das áreas exploráveis |
 | Esc | Fechar/cancelar o menu ou pausar |
+| Ctrl + Shift + F10 | Solicitar acesso de administrador por senha |
 
 As ações também podem ser selecionadas pela interface. Interagir e construir exigem proximidade e alvo válido. Use o menu **B** para piso, janela e cobertura, além das demais peças. Menus, fabricação e diálogos pausam movimento, relógio e crescimento. O teclado do jogo não movimenta o personagem durante a digitação do nome.
 
@@ -154,9 +158,25 @@ Lia fica perto da horta; converse usando as mãos. Recolha sementes, caminhe at�
 
 O regador não precisa ser reabastecido nesta versão. Plantas não crescem sem a primeira rega e não murcham. O dia/noite dura aproximadamente **12 minutos de simulação**, com mudança de iluminação. Não há crescimento enquanto o jogo estiver fechado.
 
+## Casa e descanso
+
+Aproxime-se da porta da casa inicial e aperte **E** para entrar. A fachada tem janela de sótão, pórtico, lanterna e detalhes de reparo. A casa possui um interior de **12×10 tiles**, com cama, mesa, cadeira, estante, tapete e planta. A saída fica ao sul: aproxime-se e aperte **E**.
+
+Dentro da casa, **H**, **B** ou **Personalizar casa** abre a planta de edição. Selecione uma peça para mover/recolher ou escolha um móvel do acervo para adicionar. Há três acabamentos de piso e três de parede. O acervo é gratuito nesta etapa e tem limites por peça; os móveis não são itens da mochila nem receitas de fabricação. A validação impede sobreposição de móveis sólidos, ocupação do personagem, bloqueio da circulação e retirada da última cama. Tapetes podem ficar sob outros móveis.
+
+Para dormir, aproxime-se de um lado livre da cama e aperte **E** entre **19:00 e 07:59**. Confirme para acordar às **08:00**. Dormir antes da meia-noite muda o dia; de madrugada mantém o dia atual. Os cultivos já regados crescem pelo tempo transcorrido; os secos continuam sem crescer. Cancelar não avança o relógio. A cama não possui sistema de energia ou saúde.
+
+O botão **Minimizar/Expandir** do painel **Missões** recolhe os objetivos sem pausar o jogo. Essa preferência é lembrada localmente. Os objetivos existentes continuam sendo o guia da fatia jogável.
+
+## Administração para testes
+
+Durante uma partida, use **Esc → Administração** ou **Ctrl + Shift + F10**. O acesso exige a senha entregue ao responsável pelo projeto; ela não está documentada no repositório. O painel permite buscar os **19 itens implementados**, escolher uma quantidade inteira e adicioná-la à mochila. A autorização e os limites são conferidos no comando de concessão, além da interface.
+
+**Minimizar** mantém a sessão e permite voltar a jogar; expandir pausa novamente. **Encerrar sessão**, voltar ao início, criar outra partida ou recarregar revoga o acesso. Itens concedidos são salvos normalmente. A senha usa derivação PBKDF2; somente sal e hash são distribuídos e a sessão fica em memória. É um bloqueio local de interface em um jogo offline, sem contas ou autenticação de servidor.
+
 ## Salvamento e compatibilidade
 
-Há **um slot local** no `localStorage`, mantendo a chave histórica `depois-da-chuva-v1`. O formato dos dados passa à **versão 2**. O save registra personagem, posição, horário, mochila, ferramentas, plantações, construções e suas camadas/orientação, portas, recursos removidos e golpes parciais, progresso e contato com Lia.
+Há **um slot local** no `localStorage`, mantendo a chave histórica `depois-da-chuva-v1` e o formato **versão 2**. O save registra personagem, posição, horário, mochila, ferramentas, plantações, construções e suas camadas/orientação, portas, recursos removidos e golpes parciais, progresso e contato com Lia. Móveis, acabamentos e posição no interior são extensões opcionais; saves anteriores recebem a casa padrão sem perder seu estoque ou posição externa. O acesso administrativo não faz parte do save.
 
 Partidas v1 preservam seus quatro estoques originais, personagem, horta, cerca, banco e recursos já recolhidos. Os novos materiais e ferramentas começam zerados. A madeira genérica antiga permanece madeira; não vira automaticamente tronco, tábua bruta ou tábua regular. O conteúdo original recebe uma cópia em `depois-da-chuva-v1-backup` antes de ser substituído pela primeira gravação da migração. Se a cópia falhar, o slot antigo não é sobrescrito.
 
@@ -170,9 +190,9 @@ Um save de versão futura é preservado: esta versão do aplicativo recusa sobre
 
 A fatia amplia a base existente com coleta de materiais, componentes e ferramentas, corte/mineração por golpes, processamento de madeira, bancada/serrote, peças modulares, abrigo e persistência compatível. Também preserva criação de personagem, cultivo de nabo, Lia, cerca, banco e ciclo de dia/noite.
 
-O mapa é fixo e contínuo, com três áreas, uma cultura e uma NPC. As casas e ruínas preexistentes são exteriores. Os recursos esgotados não reaparecem. Inventário e fabricação usam contadores; não há arrastar/soltar pilhas, baús ou fila de produção. Ao atingir o limite de estoque, a coleta é recusada sem entregar recompensa parcial; o sistema de drops físicos no chão é uma etapa futura.
+O mapa é fixo e contínuo, com três áreas, uma cultura e uma NPC. A casa da propriedade tem um cômodo acessível e editável; as ruínas continuam exteriores. Os recursos esgotados não reaparecem. Inventário e fabricação usam contadores; não há arrastar/soltar pilhas, baús ou fila de produção. Ao atingir o limite de estoque, a coleta é recusada sem entregar recompensa parcial; o sistema de drops físicos no chão é uma etapa futura.
 
-**Ainda não implementados:** durabilidade/reparo, energia, fome, saúde, combate, zumbis/hordas, inimigos, economia, amizade progressiva, missões, clima/estações funcionais, metalurgia, ferramentas reforçadas, interiores ricos, áudio, multiplayer, controle/toque e sincronização de saves. O rendimento de quatro tábuas do serrote reforçado pertence à especificação futura; o serrote improvisado produz três.
+**Ainda não implementados:** durabilidade/reparo, energia, fome, saúde, combate, zumbis/hordas, inimigos, economia, amizade progressiva, missões narrativas além dos objetivos do guia, clima/estações funcionais, metalurgia, ferramentas reforçadas, expansão de cômodos, fabricação de mobília, áudio, multiplayer, controle/toque e sincronização de saves. O rendimento de quatro tábuas do serrote reforçado pertence à especificação futura; o serrote improvisado produz três.
 
 A arte combina sprites dos pacotes recebidos, um atlas original com seis árvores baseado na direção aprovada e texturas produzidas em Canvas. A grade física permanece em 32 pixels. O atlas é adaptado com transparência e pivô dos pés conferidos; pedras de coleta são menores que rochas mineráveis. O terreno é pintado uma vez e sua textura é reutilizada entre carregamentos de save. Os detalhes baixos da propriedade usam uma única camada sob atores e construções.
 
@@ -187,6 +207,9 @@ src/
   main.ts                 Inicialização do Phaser e ligação com a interface
   types.ts                Tipos compartilhados e schema do save
   ui.ts / style.css       Telas, HUD, mochila, fabricação e construção
+  home-ui.ts / .css       Planta de edição da casa e acabamentos
+  home-art.ts             Texturas e composição do interior
+  admin-menu.ts / .css    Acesso por senha e painel de itens para testes
   art.ts                  Sprites locais e personagem
   visual-assets.ts        Carregamento e adaptação dos assets recebidos
   nature-sprites.ts       Variações de árvores, pivôs e plantas decorativas
@@ -214,6 +237,9 @@ src/
     shelter.ts            Reconhecimento do abrigo
     npc.ts                Diálogo da Lia
     save.ts               Validação, migração e persistência
+    home.ts               Mobília, limites e circulação do interior
+    clock.ts              Relógio e descanso até a manhã
+    admin.ts              Autorização local e concessão de itens
 tests/                    Testes dos sistemas e da vertical slice
 documentacao/             Dossiê original recebido, preservado
 referencias/              Referências WebP e seus índices originais

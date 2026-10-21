@@ -20,6 +20,12 @@ import type { BuildingData, CharacterProfile, SaveData, Tool, TilePoint } from '
 import type { GameUI } from '../ui';
 import type { TitleBackgroundMode } from '../title-screen';
 import { titleCameraPose } from '../title-camera';
+import { Home, HOME_SPAWN, HOME_EXIT, HOME_ENTRANCE_WORLD, HOME_WIDTH, HOME_HEIGHT } from '../systems/home';
+import { createHomeArt, drawHome } from '../home-art';
+import { GAME_MINUTES_PER_SECOND, advanceClock, sleepUntilMorning } from '../systems/clock';
+import { AdminAccess, grantAdminItem } from '../systems/admin';
+import { AdminMenu } from '../admin-menu';
+import type { HomeEditAction } from '../home-ui';
 
 const TOOLS: Tool[] = ['hand', 'plant', 'water', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'workbench', 'wall'];
 const DEFAULT_PROFILE: CharacterProfile = { name: 'Viajante', skin: '#d9a276', hairStyle: 'preso', hairColor: '#754323', outfit: '#638a9d' };
@@ -59,6 +65,13 @@ export class ValleyScene extends Phaser.Scene {
   private titleElapsed = 0;
   private titleLights?: Phaser.GameObjects.Graphics;
   private npcLabel?: Phaser.GameObjects.Text;
+  private home = new Home();
+  private inHome = false;
+  private outdoorPosition: SaveData['player'] = { ...HOME_ENTRANCE_WORLD };
+  private outdoorVisibility = new Map<Phaser.GameObjects.GameObject, boolean>();
+  private homeView?: ReturnType<typeof drawHome>;
+  private adminAccess = new AdminAccess();
+  private adminMenu?: AdminMenu;
 
   constructor() { super('Vale'); }
 
@@ -66,6 +79,19 @@ export class ValleyScene extends Phaser.Scene {
 
   create(): void {
     createArt(this);
+    createHomeArt(this);
+    this.adminMenu = new AdminMenu(document.querySelector<HTMLElement>('#ui')!, this.adminAccess, {
+      onPause: paused => {
+        if (paused && this.running && this.ui.isModalOpen()) this.ui.closeModal();
+        this.setPaused(paused || this.ui.isModalOpen());
+      },
+      onGrant: (item, amount) => {
+        if (!this.running) return { ok: false, message: 'Abra uma partida antes de usar o menu.' };
+        const result = grantAdminItem(this.adminAccess, this.inventory, item, amount);
+        if (result.ok) { this.updateHUD(); this.persist(); }
+        return result;
+      },
+    });
     this.loadState(createNewSave(DEFAULT_PROFILE));
     this.ui.showTitle(hasSave());
     window.addEventListener('keydown', this.handleKey);
@@ -88,10 +114,12 @@ export class ValleyScene extends Phaser.Scene {
       document.removeEventListener('visibilitychange', this.handleVisibility);
       window.removeEventListener('blur', this.handleBlur);
       this.scale.off('resize', this.updateZoom, this);
+      this.adminMenu?.destroy();
     });
   }
 
   startNew(profile: CharacterProfile): void {
+    this.adminMenu?.close();
     this.loadState(createNewSave(profile));
     this.running = true;
     this.paused = false;
@@ -104,6 +132,7 @@ export class ValleyScene extends Phaser.Scene {
   continueGame(): void {
     const saved = loadSave();
     if (!saved) { this.ui.toast('Não foi possível ler o save. Você pode começar um novo jogo.'); return; }
+    this.adminMenu?.close();
     this.loadState(saved);
     this.running = true;
     this.paused = false;
@@ -118,6 +147,134 @@ export class ValleyScene extends Phaser.Scene {
     if (value && this.running) this.persist();
   }
 
+  openAdminMenu(): void {
+    if (!this.running) return;
+    if (this.ui.isModalOpen()) this.ui.closeModal();
+    this.adminMenu?.toggle();
+  }
+
+  openHomeMenu(): void {
+    if (!this.running || this.adminMenu?.isOpen) return;
+    if (!this.inHome) { this.ui.toast('Entre na casa da propriedade para personalizar o interior.'); return; }
+    if (this.ui.isModalOpen()) this.ui.closeModal();
+    this.ui.showHomeCustomization(structuredClone(this.home.data), (action: HomeEditAction) => {
+      if (!this.inHome || !this.running) return { ok: false, message: 'Entre em casa primeiro.', home: structuredClone(this.home.data) };
+      const before = structuredClone(this.home.data);
+      let result = this.home.apply(action, { x: Math.floor(this.player.x / TILE), y: Math.floor(this.player.y / TILE) });
+      if (result.ok && this.feetTiles().some(tile => this.home.isBlocked(tile.x, tile.y))) {
+        this.home = new Home(before);
+        result = { ok: false, message: 'Deixe livre o espaço onde você está. Mova o personagem primeiro.' };
+      }
+      if (result.ok) {
+        this.refreshHomeView();
+        this.updateHUD();
+        this.persist();
+      }
+      return { ...result, home: structuredClone(this.home.data) };
+    });
+  }
+
+  private playerPosition(): SaveData['player'] {
+    return { x: this.player.x, y: this.player.y, direction: this.player.facing.y < 0 ? 'up' : this.player.facing.y > 0 ? 'down' : this.player.facing.x < 0 ? 'left' : 'right' };
+  }
+
+  private nearHouseEntrance(): boolean {
+    return !this.inHome && this.player.y >= 16 * TILE + 5
+      && Phaser.Math.Distance.Between(this.player.x, this.player.y, HOME_ENTRANCE_WORLD.x, HOME_ENTRANCE_WORLD.y) <= 58;
+  }
+
+  private nearHomeExit(): boolean {
+    return this.inHome && this.player.y >= 8 * TILE && this.player.x >= 4.5 * TILE && this.player.x <= 7.5 * TILE
+      && this.tileDistance(HOME_EXIT) <= 60;
+  }
+
+  private enterHome(position?: SaveData['player'], notify = true): void {
+    if (this.inHome) return;
+    this.outdoorPosition = this.playerPosition();
+    // Preserve each object's visibility: title lighting and hidden roofs must not reappear on leaving.
+    this.outdoorVisibility.clear();
+    for (const object of this.children.list) {
+      if (object === this.player.sprite || object === this.night) continue;
+      if ('visible' in object && 'setVisible' in object) {
+        this.outdoorVisibility.set(object, Boolean(object.visible));
+        (object as Phaser.GameObjects.Image).setVisible(false);
+      }
+    }
+    this.inHome = true;
+    this.refreshHomeView();
+    this.player.x = position?.x ?? HOME_SPAWN.x;
+    this.player.y = position?.y ?? HOME_SPAWN.y;
+    this.player.facing = position?.direction === 'left' ? { x: -1, y: 0 } : position?.direction === 'right' ? { x: 1, y: 0 }
+      : position?.direction === 'down' ? { x: 0, y: 1 } : { x: 0, y: -1 };
+    this.input.keyboard?.resetKeys();
+    this.player.update(0, this.blocked, this.blockedPoint);
+    this.updateZoom();
+    this.lastAim = null;
+    this.selection.clear();
+    this.nextInteractionAt = this.time.now + 350;
+    this.updateShelter(); this.updateNight();
+    if (notify) {
+      this.ui.toast('Seu refúgio. H personaliza os móveis; E usa a cama ou sai pela porta.');
+      this.updateHUD(); this.persist();
+    }
+  }
+
+  private refreshHomeView(): void {
+    this.homeView?.destroy();
+    this.homeView = drawHome(this, this.home.data);
+  }
+
+  private leaveHome(notify = true): void {
+    if (!this.inHome) return;
+    this.homeView?.destroy(); this.homeView = undefined;
+    for (const [object, visible] of this.outdoorVisibility) {
+      if (object.scene) (object as Phaser.GameObjects.Image).setVisible(visible);
+    }
+    this.outdoorVisibility.clear();
+    this.inHome = false;
+    this.player.x = this.outdoorPosition.x;
+    this.player.y = this.outdoorPosition.y;
+    this.player.facing = { x: 0, y: 1 };
+    this.player.update(0, this.blocked, this.blockedPoint);
+    this.recoverPlayerPosition();
+    this.input.keyboard?.resetKeys();
+    this.cameras.main.setBounds(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE);
+    this.cameras.main.setBackgroundColor('#6b8053');
+    this.updateZoom();
+    this.cameras.main.startFollow(this.player.sprite, false, .12, .12).centerOn(this.player.x, this.player.y);
+    this.lastAim = null;
+    this.nextInteractionAt = this.time.now + 350;
+    this.syncSprites(); this.updateShelter(); this.updateNight();
+    if (notify) { this.updateHUD(); this.persist(); }
+  }
+
+  private interactHome(tile?: TilePoint): void {
+    if (tile && this.tileDistance(tile) > 78) { this.ui.toast('Chegue um pouco mais perto.'); return; }
+    if (this.nearHomeExit() && (!tile || ((tile.x === 5 || tile.x === 6) && tile.y >= 8))) {
+      this.leaveHome(); return;
+    }
+    const playerTile = { x: Math.floor(this.player.x / TILE), y: Math.floor(this.player.y / TILE) };
+    const bed = this.home.bedNear(playerTile, 1.1);
+    if (bed && (!tile || this.home.at(tile.x, tile.y)?.id === bed.id)) {
+      const preview = sleepUntilMorning(this.state);
+      if (!preview.ok) { this.ui.toast(preview.message); return; }
+      this.ui.showSleep(() => {
+        // Recheck access and time after the confirmation; sleeping never runs from a stale menu.
+        if (!this.running || !this.inHome || !this.home.bedNear({ x: Math.floor(this.player.x / TILE), y: Math.floor(this.player.y / TILE) }, 1.1)) return;
+        const result = sleepUntilMorning(this.state);
+        if (!result.ok) { this.ui.toast(result.message); return; }
+        this.state.day = result.day;
+        this.state.time = result.time;
+        this.farming.update(result.elapsedMinutes / GAME_MINUTES_PER_SECOND);
+        this.nextInteractionAt = this.time.now + 400;
+        this.updateNight(); this.updateHUD(); this.persist();
+        this.ui.toast(result.message);
+      });
+      return;
+    }
+    this.openHomeMenu();
+  }
+
   setTitleBackground(mode: TitleBackgroundMode): void {
     const wasOff = this.titleBackgroundMode === 'off';
     this.titleBackgroundMode = mode;
@@ -127,7 +284,7 @@ export class ValleyScene extends Phaser.Scene {
     this.npcLabel?.setVisible(mode === 'off');
     if (mode === 'off') {
       this.updateZoom();
-      if (this.player) {
+      if (this.player && !this.inHome) {
         this.cameras.main.startFollow(this.player.sprite, false, .12, .12);
         this.cameras.main.centerOn(this.player.x, this.player.y);
       }
@@ -189,8 +346,10 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   mainMenu(): void {
+    this.adminMenu?.close();
     this.cancelCrafting();
     if (this.running) this.persist();
+    if (this.inHome) this.leaveHome(false);
     this.running = false;
     this.paused = true;
     this.ui.showTitle(hasSave());
@@ -200,7 +359,9 @@ export class ValleyScene extends Phaser.Scene {
     if (!this.running || !this.state) return false;
     const data: SaveData = {
       ...this.state,
-      player: { x: this.player.x, y: this.player.y, direction: this.player.facing.y < 0 ? 'up' : this.player.facing.y > 0 ? 'down' : this.player.facing.x < 0 ? 'left' : 'right' },
+      player: this.inHome ? { ...this.outdoorPosition } : this.playerPosition(),
+      home: structuredClone(this.home.data),
+      homePosition: this.inHome ? this.playerPosition() : undefined,
       inventory: { ...this.inventory.data },
       crops: this.farming.crops.map(crop => ({ ...crop })),
       buildings: this.building.buildings.map(building => ({ ...building })),
@@ -217,12 +378,16 @@ export class ValleyScene extends Phaser.Scene {
 
   private loadState(data: SaveData): void {
     this.craftJob = null;
+    this.inHome = false;
+    this.homeView = undefined;
+    this.outdoorVisibility.clear();
     this.children.removeAll(true);
     this.state = structuredClone(data);
     this.inventory = new Inventory(data.inventory);
     this.farming = new Farming(data.crops);
     this.building = new Building(data.buildings);
     this.resources = new Resources(data.resourceProgress);
+    this.home = new Home(data.home);
     this.cropSprites = [];
     this.buildingSprites = [];
     this.roofSprites = [];
@@ -278,10 +443,17 @@ export class ValleyScene extends Phaser.Scene {
     this.syncSprites();
     this.updateNight();
     this.updateShelter();
+    if (data.homePosition) this.enterHome(data.homePosition, false);
   }
 
   private updateZoom(): void {
     if (this.titleBackgroundMode !== 'off') { this.updateTitleBackground(0); return; }
+    if (this.inHome) {
+      this.cameras.main.stopFollow().removeBounds().setBackgroundColor('#1b2b26');
+      this.cameras.main.setZoom(Math.max(1, Math.min(2, Math.floor(Math.min(this.scale.width / 500, (this.scale.height - 140) / (HOME_HEIGHT * TILE))))))
+        .centerOn(HOME_WIDTH * TILE / 2, HOME_HEIGHT * TILE / 2);
+      return;
+    }
     this.cameras.main.setZoom(this.scale.width < 1000 || this.scale.height < 700 ? 1 : 2);
   }
 
@@ -308,12 +480,14 @@ export class ValleyScene extends Phaser.Scene {
     }
   }
 
-  private canPlay(): boolean { return this.running && !this.paused && !this.ui.isModalOpen() && !document.hidden; }
-  private blocked = (x: number, y: number): boolean => this.world.isBlocked(x, y) || this.building.isBlocked(x, y)
-    || (x === Math.floor(NPC_POSITION.x / TILE) && y === Math.floor(NPC_POSITION.y / TILE));
+  private canPlay(): boolean { return this.running && !this.paused && !this.ui.isModalOpen() && !this.adminMenu?.isOpen && !document.hidden; }
+  private blocked = (x: number, y: number): boolean => this.inHome ? this.home.isBlocked(x, y)
+    : this.world.isBlocked(x, y) || this.building.isBlocked(x, y)
+      || (x === Math.floor(NPC_POSITION.x / TILE) && y === Math.floor(NPC_POSITION.y / TILE));
 
   private blockedPoint = (x: number, y: number): boolean => {
     const tx = Math.floor(x / TILE), ty = Math.floor(y / TILE);
+    if (this.inHome) return this.home.isBlocked(tx, ty);
     // A floor already saved on dry land covers a newly rounded shoreline sliver.
     // It never overrides solid obstacles or an original water cell.
     const savedFloor = this.building.at(tx, ty, 'floor')?.kind === 'floor' && !this.world.isBlocked(tx, ty);
@@ -322,6 +496,13 @@ export class ValleyScene extends Phaser.Scene {
   };
 
   private handleKey = (event: KeyboardEvent): void => {
+    if (event.ctrlKey && event.shiftKey && event.key === 'F10' && this.running) {
+      event.preventDefault(); if (!event.repeat) this.openAdminMenu(); return;
+    }
+    if (this.adminMenu?.isOpen) {
+      if (event.key === 'Escape') { event.preventDefault(); this.adminMenu.minimize(); }
+      return;
+    }
     const target = event.target;
     if (target instanceof HTMLElement && target.matches('input, textarea, select, [contenteditable="true"]')) return;
     if (this.canPlay() && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(event.key)) event.preventDefault();
@@ -329,8 +510,13 @@ export class ValleyScene extends Phaser.Scene {
     if (event.key === 'Escape' && this.running) { event.preventDefault(); this.ui.togglePause(); return; }
     if (event.key.toLowerCase() === 'i' && this.running) { this.ui.toggleInventory(this.inventory.data); return; }
     if (event.key.toLowerCase() === 'c' && this.running) { event.preventDefault(); this.ui.toggleCrafting(this.inventory.data, this.nearWorkbench()); return; }
-    if (event.key.toLowerCase() === 'b' && this.running) { event.preventDefault(); this.ui.toggleBuilding(this.inventory.data, this.nearWorkbench()); return; }
+    if (event.key.toLowerCase() === 'b' && this.running) {
+      event.preventDefault();
+      if (this.inHome) this.openHomeMenu(); else this.ui.toggleBuilding(this.inventory.data, this.nearWorkbench());
+      return;
+    }
     if (event.key.toLowerCase() === 'm' && this.running) { event.preventDefault(); this.ui.toggleMap(); return; }
+    if (event.key.toLowerCase() === 'h' && this.running) { event.preventDefault(); this.openHomeMenu(); return; }
     if (!this.canPlay()) return;
     const number = Number(event.key);
     if (event.key >= '1' && event.key <= '9') this.selectTool(TOOLS[number - 1]);
@@ -342,7 +528,7 @@ export class ValleyScene extends Phaser.Scene {
 
   private handlePageHide = (): void => { if (this.running) this.persist(); };
   private handleVisibility = (): void => { if (document.hidden && this.running) { this.persist(); this.input.keyboard?.resetKeys(); } };
-  private handleBlur = (): void => { if (this.running && !this.ui.isModalOpen()) this.ui.togglePause(); };
+  private handleBlur = (): void => { if (this.running && !this.ui.isModalOpen() && !this.adminMenu?.isOpen) this.ui.togglePause(); };
 
   private tileDistance(tile: TilePoint): number {
     return Phaser.Math.Distance.Between(this.player.x, this.player.y, tile.x * TILE + TILE / 2, tile.y * TILE + TILE / 2);
@@ -360,6 +546,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private nearWorkbench(): boolean {
+    if (this.inHome) return false;
     return this.building.buildings.some(b => b.kind === 'workbench' && this.tileDistance(b) <= 112 && this.clearReach(b));
   }
 
@@ -417,6 +604,10 @@ export class ValleyScene extends Phaser.Scene {
 
   private interact(explicitTile?: TilePoint): void {
     if (!this.canPlay() || this.time.now < this.nextInteractionAt) return;
+    if (this.inHome) { this.interactHome(explicitTile); return; }
+    if (this.nearHouseEntrance() && (!explicitTile || (explicitTile.x >= 23 && explicitTile.x <= 25 && explicitTile.y >= 15 && explicitTile.y <= 16))) {
+      this.enterHome(); return;
+    }
     let tile = explicitTile ?? this.targetTile();
     if (this.tileDistance(tile) > 78) { this.ui.toast('Chegue um pouco mais perto.'); return; }
     if (!this.clearReach(tile)) { this.ui.toast('Há um obstáculo entre você e o alvo.'); return; }
@@ -555,6 +746,10 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private updateShelter(): void {
+    if (this.inHome) {
+      this.shelter = { sheltered: true, tiles: [], reason: 'Você está dentro da casa da propriedade.' };
+      return;
+    }
     this.shelter = detectShelter({ x: Math.floor(this.player.x / TILE), y: Math.floor(this.player.y / TILE) }, this.building.buildings);
     if (this.shelter.sheltered && !this.state.progress.builtShelter) {
       this.state.progress.builtShelter = true;
@@ -580,10 +775,22 @@ export class ValleyScene extends Phaser.Scene {
   private updateNight(): void {
     const hour = this.state.time / 60;
     const darkness = hour >= 19 ? Math.min(0.49, (hour - 19) * 0.12) : hour < 6 ? 0.49 : hour < 8 ? (8 - hour) * 0.245 : 0;
-    this.night.setAlpha(darkness);
+    this.night.setAlpha(this.inHome ? Math.min(.12, darkness) : darkness);
   }
 
   private updateHUD(): void {
+    if (this.inHome) {
+      const playerTile = { x: Math.floor(this.player.x / TILE), y: Math.floor(this.player.y / TILE) };
+      const bed = this.home.bedNear(playerTile, 1.1);
+      const nearExit = this.nearHomeExit();
+      this.ui.updateHUD({ inHome: true, name: this.state.profile.name, day: this.state.day, time: this.state.time,
+        inventory: this.inventory.data, tool: this.tool,
+        playerTile: { x: Math.floor(this.outdoorPosition.x / TILE), y: Math.floor(this.outdoorPosition.y / TILE) },
+        prompt: nearExit ? 'Sair de casa' : bed ? 'Dormir até as 08:00 · disponível à noite' : 'Personalizar sua casa · H',
+        location: 'Minha casa', harvests: this.inventory.data.turnip, metLia: this.state.metLia,
+        nearWorkbench: false, sheltered: true, shelterReason: 'Interior da casa da propriedade.', resourceProgress: '', progress: this.state.progress });
+      return;
+    }
     const tile = this.targetTile();
     let prompt = 'Explorar e coletar';
     const resource = this.world.resourceAt(tile.x, tile.y) ?? this.nearestResource();
@@ -606,7 +813,8 @@ export class ValleyScene extends Phaser.Scene {
       prompt = `${definition.label} · use ${toolName}`;
       if (definition.hits > 1) resourceProgress = `${definition.label}: ${hits}/${definition.hits} golpes · ${toolName}`;
     }
-    this.ui.updateHUD({ name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
+    if (this.nearHouseEntrance()) prompt = 'Entrar em casa';
+    this.ui.updateHUD({ inHome: false, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
       tool: this.tool, prompt, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
       playerTile: { x: Math.floor(this.player.x / TILE), y: Math.floor(this.player.y / TILE) },
       harvests: this.inventory.data.turnip, metLia: this.state.metLia,
@@ -631,14 +839,15 @@ export class ValleyScene extends Phaser.Scene {
     if (!this.canPlay()) return;
     this.cameras.main.setLerp(1 - Math.exp(-9 * delta));
     this.player.update(delta, this.blocked, this.blockedPoint);
-    this.world.updateOcclusion(this.player.x, this.player.y);
+    if (!this.inHome) this.world.updateOcclusion(this.player.x, this.player.y);
     this.farming.update(delta);
-    this.state.time += delta * 2;
-    if (this.state.time >= 1440) { this.state.time -= 1440; this.state.day += 1; this.ui.toast(`Dia ${this.state.day}. A terra espera por você.`); }
+    const previousDay = this.state.day;
+    Object.assign(this.state, advanceClock(this.state, delta * GAME_MINUTES_PER_SECOND));
+    if (this.state.day !== previousDay) this.ui.toast(`Dia ${this.state.day}. A terra espera por você.`);
     this.updateNight();
     const tile = this.targetTile();
     this.selection.clear();
-    if (this.tool !== 'hand' && this.tileDistance(tile) < 80) {
+    if (!this.inHome && this.tool !== 'hand' && this.tileDistance(tile) < 80) {
       const kind = this.tool in BUILD_COSTS ? this.tool as BuildingData['kind'] : null;
       const crop = this.farming.cropAt(tile.x, tile.y);
       const valid = this.clearReach(tile) && (kind ? !this.placementReason(tile, kind) : this.tool === 'blueprint' ? !this.blueprintReason(tile)
@@ -657,12 +866,12 @@ export class ValleyScene extends Phaser.Scene {
     if (this.hudTimer > 0.25) {
       this.hudTimer = 0;
       const region = getRegionAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE));
-      if (region.id !== this.currentRegion) {
+      if (!this.inHome && region.id !== this.currentRegion) {
         this.currentRegion = region.id;
         this.ui.toast(`${region.name} · ${region.description}`);
         this.persist();
       }
-      this.updateShelter(); this.updateHUD(); this.syncSprites();
+      this.updateShelter(); this.updateHUD(); if (!this.inHome) this.syncSprites();
     }
     if (this.saveTimer > 12) { this.saveTimer = 0; this.persist(); }
   }

@@ -15,6 +15,8 @@ const ui = new GameUI({
   onTitleBackground: mode => scene.setTitleBackground(mode),
   onSave: () => scene.persist(),
   onMainMenu: () => scene.mainMenu(),
+  onHomeMenu: () => scene.openHomeMenu(),
+  onAdminMenu: () => scene.openAdminMenu(),
 });
 scene.ui = ui;
 
