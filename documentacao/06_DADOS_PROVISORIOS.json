@@ -1,0 +1,518 @@
+{
+  "project": "Jardim Depois da Chuva",
+  "version": "1.0-provisional-design-not-runtime",
+  "warning": "Valores fictícios para gameplay e discussão. O Codex deve adaptar à engine/repo real; não executar como schema definitivo sem auditoria.",
+  "world": {
+    "logical_grid_px": 32,
+    "logical_player_directions": [
+      "down",
+      "up",
+      "left",
+      "right"
+    ],
+    "visual_zoom": "integer_nearest_neighbor_if_supported",
+    "world_map": "expandable_regions",
+    "starting_stamina": 100
+  },
+  "items": [
+    {
+      "id": "galho",
+      "display_name_pt": "Galho",
+      "kind": "resource",
+      "max_stack": 99
+    },
+    {
+      "id": "pedra",
+      "display_name_pt": "Pedra",
+      "kind": "resource",
+      "max_stack": 99
+    },
+    {
+      "id": "fibra_vegetal",
+      "display_name_pt": "Fibra vegetal",
+      "kind": "resource",
+      "max_stack": 99
+    },
+    {
+      "id": "tronco",
+      "display_name_pt": "Tronco",
+      "kind": "resource",
+      "max_stack": 30
+    },
+    {
+      "id": "sucata_metalica",
+      "display_name_pt": "Sucata Metalica",
+      "kind": "resource",
+      "max_stack": 99
+    },
+    {
+      "id": "madeira_bruta",
+      "display_name_pt": "Madeira Bruta",
+      "kind": "resource",
+      "max_stack": 99
+    },
+    {
+      "id": "minerio_ferro",
+      "display_name_pt": "Minerio Ferro",
+      "kind": "resource",
+      "max_stack": 99
+    },
+    {
+      "id": "corda_vegetal",
+      "display_name_pt": "Corda Vegetal",
+      "kind": "material",
+      "max_stack": 99
+    },
+    {
+      "id": "pedra_lascada",
+      "display_name_pt": "Pedra Lascada",
+      "kind": "material",
+      "max_stack": 99
+    },
+    {
+      "id": "cabo_madeira",
+      "display_name_pt": "Cabo Madeira",
+      "kind": "material",
+      "max_stack": 99
+    },
+    {
+      "id": "cavilha_madeira",
+      "display_name_pt": "Cavilha Madeira",
+      "kind": "material",
+      "max_stack": 99
+    },
+    {
+      "id": "tabua_bruta",
+      "display_name_pt": "Tábua bruta",
+      "kind": "material",
+      "max_stack": 99
+    },
+    {
+      "id": "tabua_regular",
+      "display_name_pt": "Tábua regular",
+      "kind": "material",
+      "max_stack": 99
+    },
+    {
+      "id": "lamina_sucata",
+      "display_name_pt": "Lamina Sucata",
+      "kind": "material",
+      "max_stack": 99
+    },
+    {
+      "id": "barra_ferro",
+      "display_name_pt": "Barra Ferro",
+      "kind": "material",
+      "max_stack": 99
+    },
+    {
+      "id": "machadinha_pedra",
+      "display_name_pt": "Machadinha de pedra",
+      "kind": "tool",
+      "max_stack": 1
+    },
+    {
+      "id": "picareta_rudimentar",
+      "display_name_pt": "Picareta rudimentar",
+      "kind": "tool",
+      "max_stack": 1
+    },
+    {
+      "id": "martelo_rudimentar",
+      "display_name_pt": "Martelo Rudimentar",
+      "kind": "tool",
+      "max_stack": 1
+    },
+    {
+      "id": "serrote_improvisado",
+      "display_name_pt": "Serrote Improvisado",
+      "kind": "tool",
+      "max_stack": 1
+    },
+    {
+      "id": "serrote_reforcado",
+      "display_name_pt": "Serrote Reforcado",
+      "kind": "tool",
+      "max_stack": 1
+    },
+    {
+      "id": "bancada_simples",
+      "display_name_pt": "Bancada Simples",
+      "kind": "station",
+      "max_stack": 1
+    },
+    {
+      "id": "piso_rustico",
+      "display_name_pt": "Piso Rustico",
+      "kind": "build_piece",
+      "max_stack": 99
+    },
+    {
+      "id": "parede_madeira",
+      "display_name_pt": "Parede Madeira",
+      "kind": "build_piece",
+      "max_stack": 99
+    },
+    {
+      "id": "porta_simples",
+      "display_name_pt": "Porta Simples",
+      "kind": "build_piece",
+      "max_stack": 99
+    },
+    {
+      "id": "janela_veneziana",
+      "display_name_pt": "Janela Veneziana",
+      "kind": "build_piece",
+      "max_stack": 99
+    },
+    {
+      "id": "telhado_simples",
+      "display_name_pt": "Telhado Simples",
+      "kind": "build_piece",
+      "max_stack": 99
+    }
+  ],
+  "recipes": [
+    {
+      "id": "corda_vegetal",
+      "inputs": {
+        "fibra_vegetal": 3
+      },
+      "outputs": {
+        "corda_vegetal": 1
+      },
+      "station": "hands",
+      "tool_required": null,
+      "duration_seconds": null
+    },
+    {
+      "id": "pedra_lascada",
+      "inputs": {
+        "pedra": 2
+      },
+      "outputs": {
+        "pedra_lascada": 1
+      },
+      "station": "hands",
+      "tool_required": null,
+      "duration_seconds": null
+    },
+    {
+      "id": "cabo_madeira",
+      "inputs": {
+        "galho": 1
+      },
+      "outputs": {
+        "cabo_madeira": 1
+      },
+      "station": "hands",
+      "tool_required": null,
+      "duration_seconds": null
+    },
+    {
+      "id": "cavilha_madeira",
+      "inputs": {
+        "galho": 1
+      },
+      "outputs": {
+        "cavilha_madeira": 4
+      },
+      "station": "hands",
+      "tool_required": null,
+      "duration_seconds": null
+    },
+    {
+      "id": "machadinha_pedra",
+      "inputs": {
+        "cabo_madeira": 1,
+        "pedra_lascada": 1,
+        "corda_vegetal": 1
+      },
+      "outputs": {
+        "machadinha_pedra": 1
+      },
+      "station": "hands",
+      "tool_required": null,
+      "duration_seconds": null
+    },
+    {
+      "id": "picareta_rudimentar",
+      "inputs": {
+        "cabo_madeira": 1,
+        "pedra_lascada": 2,
+        "corda_vegetal": 1
+      },
+      "outputs": {
+        "picareta_rudimentar": 1
+      },
+      "station": "hands",
+      "tool_required": null,
+      "duration_seconds": null
+    },
+    {
+      "id": "martelo_rudimentar",
+      "inputs": {
+        "cabo_madeira": 1,
+        "pedra": 1,
+        "corda_vegetal": 1
+      },
+      "outputs": {
+        "martelo_rudimentar": 1
+      },
+      "station": "hands",
+      "tool_required": null,
+      "duration_seconds": null
+    },
+    {
+      "id": "tabua_bruta",
+      "inputs": {
+        "tronco": 1
+      },
+      "outputs": {
+        "tabua_bruta": 2
+      },
+      "station": "hands",
+      "tool_required": "machadinha_pedra",
+      "duration_seconds": 4
+    },
+    {
+      "id": "bancada_simples",
+      "inputs": {
+        "tabua_bruta": 4,
+        "cavilha_madeira": 4
+      },
+      "outputs": {
+        "bancada_simples": 1
+      },
+      "station": "hands",
+      "tool_required": "martelo_rudimentar",
+      "duration_seconds": null
+    },
+    {
+      "id": "lamina_sucata",
+      "inputs": {
+        "sucata_metalica": 1
+      },
+      "outputs": {
+        "lamina_sucata": 1
+      },
+      "station": "bancada_simples",
+      "tool_required": null,
+      "duration_seconds": null
+    },
+    {
+      "id": "serrote_improvisado",
+      "inputs": {
+        "lamina_sucata": 1,
+        "cabo_madeira": 1,
+        "corda_vegetal": 1
+      },
+      "outputs": {
+        "serrote_improvisado": 1
+      },
+      "station": "bancada_simples",
+      "tool_required": null,
+      "duration_seconds": null
+    },
+    {
+      "id": "tabua_regular_improvisado",
+      "inputs": {
+        "tronco": 1
+      },
+      "outputs": {
+        "tabua_regular": 3
+      },
+      "station": "bancada_simples",
+      "tool_required": "serrote_improvisado",
+      "duration_seconds": 3
+    },
+    {
+      "id": "tabua_regular_reforcado",
+      "inputs": {
+        "tronco": 1
+      },
+      "outputs": {
+        "tabua_regular": 4
+      },
+      "station": "bancada_simples",
+      "tool_required": "serrote_reforcado",
+      "duration_seconds": 2
+    }
+  ],
+  "world_targets": {
+    "arvore_pequena": {
+      "hp": 4,
+      "tool": "machadinha_pedra",
+      "stamina_per_hit": 2,
+      "drops": {
+        "tronco": [
+          1,
+          2
+        ],
+        "galho": [
+          2,
+          3
+        ]
+      },
+      "noise_radius_tiles": 6
+    },
+    "arvore_media": {
+      "hp": 7,
+      "tool": "machadinha_pedra",
+      "stamina_per_hit": 2,
+      "drops": {
+        "tronco": [
+          2,
+          3
+        ],
+        "galho": [
+          3,
+          5
+        ]
+      },
+      "noise_radius_tiles": 6
+    },
+    "rocha_comum": {
+      "hp": 5,
+      "tool": "picareta_rudimentar",
+      "stamina_per_hit": 3,
+      "drops": {
+        "pedra": [
+          3,
+          5
+        ]
+      },
+      "noise_radius_tiles": 9
+    },
+    "ferro_superficial": {
+      "hp": 7,
+      "tool": "picareta_rudimentar",
+      "stamina_per_hit": 3,
+      "drops": {
+        "minerio_ferro": [
+          1,
+          2
+        ]
+      },
+      "noise_radius_tiles": 9
+    }
+  },
+  "tools": {
+    "machadinha_pedra": {
+      "max_durability": 45,
+      "actions": [
+        "cut",
+        "rough_saw"
+      ]
+    },
+    "picareta_rudimentar": {
+      "max_durability": 45,
+      "actions": [
+        "mine"
+      ]
+    },
+    "martelo_rudimentar": {
+      "max_durability": 60,
+      "actions": [
+        "build"
+      ]
+    },
+    "serrote_improvisado": {
+      "max_durability": 25,
+      "durability_unit": "logs_processed",
+      "actions": [
+        "saw"
+      ]
+    }
+  },
+  "building": {
+    "pieces": {
+      "piso_rustico": {
+        "tabua_bruta": 1
+      },
+      "parede_madeira": {
+        "tabua_bruta": 2,
+        "cavilha_madeira": 1
+      },
+      "porta_simples": {
+        "tabua_bruta": 3,
+        "cavilha_madeira": 2
+      },
+      "janela_veneziana": {
+        "tabua_bruta": 2,
+        "cavilha_madeira": 1
+      },
+      "telhado_simples": {
+        "tabua_bruta": 2,
+        "fibra_vegetal": 3
+      }
+    },
+    "demolition_refund_ratio": 0.6,
+    "blueprints": {
+      "abrigo_inicial_3x3": {
+        "counts": {
+          "piso_rustico": 9,
+          "parede_madeira": 6,
+          "porta_simples": 1,
+          "janela_veneziana": 1,
+          "telhado_simples": 3
+        },
+        "expected_cost": {
+          "tabua_bruta": 32,
+          "cavilha_madeira": 9,
+          "fibra_vegetal": 9
+        }
+      },
+      "casa_8x6_conceitual": {
+        "rooms": [
+          "quarto",
+          "sala_cozinha",
+          "oficina"
+        ],
+        "source": "casa_inicial_blueprint.json in Casa_Modular_v1",
+        "cost": "not yet defined"
+      }
+    }
+  },
+  "action_animation": {
+    "directions": [
+      "down",
+      "up",
+      "left",
+      "right"
+    ],
+    "frames_per_action_direction": 8,
+    "estimated_fps": 10,
+    "impact_frame_index_0based": 4,
+    "note": "frames generated in Acoes_v0.1 are experimental; align pivots before game import"
+  },
+  "input_bindings_proposal": {
+    "move": [
+      "WASD",
+      "Arrows"
+    ],
+    "interact": "E",
+    "action": "Space",
+    "build": "B",
+    "hotbar": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "cancel": "Escape"
+  },
+  "save_fields_recommended": [
+    "save_schema_version",
+    "player",
+    "inventory",
+    "equipment",
+    "world_targets",
+    "world_drops",
+    "built_pieces",
+    "stations",
+    "time",
+    "crops_future",
+    "npc_future"
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "id": "casa_inicial_modular",
+  "nome": "Casa inicial do Jardim",
+  "versao": "1.0_estudo",
+  "tile_size": 32,
+  "largura_tiles": 8,
+  "altura_tiles": 6,
+  "comodos": [
+    {
+      "id": "quarto",
+      "nome": "Quarto",
+      "retangulo_tiles": [
+        0,
+        0,
+        5,
+        3
+      ]
+    },
+    {
+      "id": "sala",
+      "nome": "Sala e cozinha",
+      "retangulo_tiles": [
+        0,
+        3,
+        5,
+        3
+      ]
+    },
+    {
+      "id": "oficina",
+      "nome": "Oficina",
+      "retangulo_tiles": [
+        5,
+        0,
+        3,
+        6
+      ]
+    }
+  ],
+  "paredes_internas": [
+    {
+      "orientacao": "vertical",
+      "coluna": 5,
+      "linha_inicial": 0,
+      "linha_final": 6,
+      "vao_porta": [
+        2
+      ]
+    },
+    {
+      "orientacao": "horizontal",
+      "linha": 3,
+      "coluna_inicial": 0,
+      "coluna_final": 5,
+      "vao_porta": [
+        1
+      ]
+    }
+  ],
+  "telhado": {
+    "tipo": "ceramica_terracota",
+    "camada_independente": true,
+    "ocultar_quando_interior": true
+  },
+  "itens_iniciais": [
+    "cama",
+    "mesa",
+    "cadeira",
+    "bau",
+    "planta",
+    "estante",
+    "bancada"
+  ],
+  "regras": {
+    "sem_sobreposicao": true,
+    "piso_antes_da_parede": true,
+    "portas_exigem_abertura": true,
+    "estado_salvo_individualmente": true,
+    "mesmas_receitas_para_livre_e_pronto": true
+  },
+  "manifesto_sprites": "manifest.json"
+}

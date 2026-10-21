@@ -1,0 +1,509 @@
+{
+  "status": "piloto_visual_com_camadas",
+  "fonte_artes": "a_high_resolution_clean_sprite_sheet_style_illust.png",
+  "sprite_count": 38,
+  "assets": {
+    "parede_creme": {
+      "file": "assets/parede_creme.png",
+      "size_px": [
+        76,
+        117
+      ],
+      "kind": "estrutura",
+      "extracted_box": [
+        574,
+        42,
+        650,
+        159
+      ]
+    },
+    "parede_pedra": {
+      "file": "assets/parede_pedra.png",
+      "size_px": [
+        75,
+        117
+      ],
+      "kind": "estrutura",
+      "extracted_box": [
+        830,
+        42,
+        905,
+        159
+      ]
+    },
+    "parede_trepadeira": {
+      "file": "assets/parede_trepadeira.png",
+      "size_px": [
+        73,
+        117
+      ],
+      "kind": "estrutura",
+      "extracted_box": [
+        746,
+        42,
+        819,
+        159
+      ]
+    },
+    "parede_viga": {
+      "file": "assets/parede_viga.png",
+      "size_px": [
+        75,
+        117
+      ],
+      "kind": "estrutura",
+      "extracted_box": [
+        944,
+        42,
+        1019,
+        159
+      ]
+    },
+    "parede_janela": {
+      "file": "assets/parede_janela.png",
+      "size_px": [
+        74,
+        134
+      ],
+      "kind": "estrutura",
+      "extracted_box": [
+        664,
+        168,
+        738,
+        302
+      ]
+    },
+    "parede_porta": {
+      "file": "assets/parede_porta.png",
+      "size_px": [
+        73,
+        134
+      ],
+      "kind": "estrutura",
+      "extracted_box": [
+        746,
+        168,
+        819,
+        302
+      ]
+    },
+    "parede_janela_floreira": {
+      "file": "assets/parede_janela_floreira.png",
+      "size_px": [
+        74,
+        134
+      ],
+      "kind": "estrutura",
+      "extracted_box": [
+        829,
+        168,
+        903,
+        302
+      ]
+    },
+    "porta_madeira": {
+      "file": "assets/porta_madeira.png",
+      "size_px": [
+        66,
+        97
+      ],
+      "kind": "estrutura",
+      "extracted_box": [
+        1043,
+        42,
+        1109,
+        139
+      ]
+    },
+    "janela_turquesa": {
+      "file": "assets/janela_turquesa.png",
+      "size_px": [
+        101,
+        83
+      ],
+      "kind": "estrutura",
+      "extracted_box": [
+        1219,
+        44,
+        1320,
+        127
+      ]
+    },
+    "telha_lisa": {
+      "file": "assets/telha_lisa.png",
+      "size_px": [
+        71,
+        85
+      ],
+      "kind": "estrutura",
+      "extracted_box": [
+        579,
+        355,
+        650,
+        440
+      ]
+    },
+    "telha_variante": {
+      "file": "assets/telha_variante.png",
+      "size_px": [
+        69,
+        85
+      ],
+      "kind": "estrutura",
+      "extracted_box": [
+        655,
+        355,
+        724,
+        440
+      ]
+    },
+    "telha_beiral": {
+      "file": "assets/telha_beiral.png",
+      "size_px": [
+        88,
+        85
+      ],
+      "kind": "estrutura",
+      "extracted_box": [
+        730,
+        353,
+        818,
+        438
+      ]
+    },
+    "chamine": {
+      "file": "assets/chamine.png",
+      "size_px": [
+        45,
+        78
+      ],
+      "kind": "estrutura",
+      "extracted_box": [
+        726,
+        451,
+        771,
+        529
+      ]
+    },
+    "floreira": {
+      "file": "assets/floreira.png",
+      "size_px": [
+        64,
+        86
+      ],
+      "kind": "decor",
+      "extracted_box": [
+        1028,
+        566,
+        1092,
+        652
+      ]
+    },
+    "cerca_natural": {
+      "file": "assets/cerca_natural.png",
+      "size_px": [
+        110,
+        75
+      ],
+      "kind": "estrutura",
+      "extracted_box": [
+        512,
+        564,
+        622,
+        639
+      ]
+    },
+    "banco_jardim": {
+      "file": "assets/banco_jardim.png",
+      "size_px": [
+        101,
+        74
+      ],
+      "kind": "decor",
+      "extracted_box": [
+        1300,
+        562,
+        1401,
+        636
+      ]
+    },
+    "barril": {
+      "file": "assets/barril.png",
+      "size_px": [
+        73,
+        83
+      ],
+      "kind": "decor",
+      "extracted_box": [
+        1446,
+        566,
+        1519,
+        649
+      ]
+    },
+    "vaso_flor": {
+      "file": "assets/vaso_flor.png",
+      "size_px": [
+        67,
+        75
+      ],
+      "kind": "decor",
+      "extracted_box": [
+        1019,
+        568,
+        1086,
+        643
+      ]
+    },
+    "cama": {
+      "file": "assets/cama.png",
+      "size_px": [
+        75,
+        100
+      ],
+      "kind": "decor",
+      "extracted_box": [
+        16,
+        781,
+        91,
+        881
+      ]
+    },
+    "mesa": {
+      "file": "assets/mesa.png",
+      "size_px": [
+        81,
+        85
+      ],
+      "kind": "decor",
+      "extracted_box": [
+        236,
+        785,
+        317,
+        870
+      ]
+    },
+    "cadeira": {
+      "file": "assets/cadeira.png",
+      "size_px": [
+        53,
+        93
+      ],
+      "kind": "decor",
+      "extracted_box": [
+        159,
+        783,
+        212,
+        876
+      ]
+    },
+    "estante": {
+      "file": "assets/estante.png",
+      "size_px": [
+        61,
+        96
+      ],
+      "kind": "decor",
+      "extracted_box": [
+        463,
+        785,
+        524,
+        881
+      ]
+    },
+    "armario": {
+      "file": "assets/armario.png",
+      "size_px": [
+        57,
+        95
+      ],
+      "kind": "decor",
+      "extracted_box": [
+        519,
+        785,
+        576,
+        880
+      ]
+    },
+    "bau": {
+      "file": "assets/bau.png",
+      "size_px": [
+        73,
+        58
+      ],
+      "kind": "decor",
+      "extracted_box": [
+        214,
+        950,
+        287,
+        1008
+      ]
+    },
+    "tapete": {
+      "file": "assets/tapete.png",
+      "size_px": [
+        97,
+        73
+      ],
+      "kind": "decor",
+      "extracted_box": [
+        16,
+        884,
+        113,
+        957
+      ]
+    },
+    "forja": {
+      "file": "assets/forja.png",
+      "size_px": [
+        132,
+        94
+      ],
+      "kind": "decor",
+      "extracted_box": [
+        272,
+        874,
+        404,
+        968
+      ]
+    },
+    "bancada": {
+      "file": "assets/bancada.png",
+      "size_px": [
+        148,
+        98
+      ],
+      "kind": "decor",
+      "extracted_box": [
+        606,
+        785,
+        754,
+        883
+      ]
+    },
+    "planta": {
+      "file": "assets/planta.png",
+      "size_px": [
+        45,
+        55
+      ],
+      "kind": "decor",
+      "extracted_box": [
+        106,
+        876,
+        151,
+        931
+      ]
+    },
+    "piso_tabuas": {
+      "file": "assets/piso_tabuas.png",
+      "size_px": [
+        64,
+        64
+      ],
+      "kind": "piso",
+      "extracted_box": [
+        929,
+        353,
+        994,
+        424
+      ]
+    },
+    "piso_pedra": {
+      "file": "assets/piso_pedra.png",
+      "size_px": [
+        64,
+        64
+      ],
+      "kind": "piso",
+      "extracted_box": [
+        997,
+        353,
+        1063,
+        424
+      ]
+    },
+    "piso_espinha": {
+      "file": "assets/piso_espinha.png",
+      "size_px": [
+        64,
+        64
+      ],
+      "kind": "piso",
+      "extracted_box": [
+        1067,
+        353,
+        1153,
+        425
+      ]
+    },
+    "terra": {
+      "file": "assets/terra.png",
+      "size_px": [
+        64,
+        64
+      ],
+      "kind": "piso",
+      "extracted_box": [
+        1162,
+        355,
+        1230,
+        423
+      ]
+    },
+    "caminho": {
+      "file": "assets/caminho.png",
+      "size_px": [
+        64,
+        64
+      ],
+      "kind": "piso",
+      "extracted_box": [
+        1248,
+        437,
+        1315,
+        514
+      ]
+    },
+    "terreno_base": {
+      "file": "assets/terreno_base.png",
+      "size_px": [
+        32,
+        32
+      ],
+      "kind": "tile_tecnico"
+    },
+    "tabuas_modular": {
+      "file": "assets/tabuas_modular.png",
+      "size_px": [
+        32,
+        32
+      ],
+      "kind": "tile_tecnico"
+    },
+    "pedra_modular": {
+      "file": "assets/pedra_modular.png",
+      "size_px": [
+        32,
+        32
+      ],
+      "kind": "tile_tecnico"
+    },
+    "terra_modular": {
+      "file": "assets/terra_modular.png",
+      "size_px": [
+        32,
+        32
+      ],
+      "kind": "tile_tecnico"
+    },
+    "telhas_modular": {
+      "file": "assets/telhas_modular.png",
+      "size_px": [
+        32,
+        32
+      ],
+      "kind": "tile_tecnico"
+    }
+  }
+}

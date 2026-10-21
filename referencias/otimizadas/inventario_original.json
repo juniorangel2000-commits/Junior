@@ -1,0 +1,2564 @@
+[
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/PREVIA_estacoes.png",
+    "largura": 1180,
+    "altura": 580,
+    "modo": "RGB",
+    "bytes": 341404
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/PREVIA_materiais_processados.png",
+    "largura": 1180,
+    "altura": 820,
+    "modo": "RGB",
+    "bytes": 413221
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/PREVIA_recursos_brutos.png",
+    "largura": 1180,
+    "altura": 1060,
+    "modo": "RGB",
+    "bytes": 570136
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/PREVIA_ferramentas.png",
+    "largura": 1180,
+    "altura": 1060,
+    "modo": "RGB",
+    "bytes": 411780
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/arco_simples.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 7245
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/picareta_rudimentar.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 8722
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/vara_de_pesca.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 7071
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/lanterna_rustica.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 7709
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/serrote_improvisado.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 9020
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/picareta_reforcada.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 8604
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/machado_reforcado.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 8282
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/pa_reforcada.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 7638
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/martelo_rudimentar.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 8828
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/pa_simples.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 7256
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/enxada_simples.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 5734
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/picareta_de_ferro.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 7953
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/serrote_reforcado.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 7783
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/martelo_de_carpinteiro.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 7166
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/faca_improvisada.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 6158
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/lanca_simples.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 5407
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/tocha_simples.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 5802
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/martelo_de_ferro.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 7752
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/machado_de_ferro.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 8828
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/machadinha_de_pedra.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 8372
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/estacoes/mesa_de_construcao.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 10330
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/estacoes/moinho_de_graos.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 10682
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/estacoes/bancada_de_carpintaria.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 11352
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/estacoes/caixa_de_compostagem.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 13436
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/estacoes/forja_rustica.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 11472
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/estacoes/horta_elevada.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 10937
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/estacoes/estacao_de_costura.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 11918
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/estacoes/forno_de_materiais.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 9703
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/estacoes/bancada_simples.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 9754
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/estacoes/tanque_de_agua.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 11795
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/tabuas_brutas.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 9907
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/caixa_de_composto.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 11935
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/bloco_de_pedra.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 11492
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/tijolo_cru.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 9406
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/corda_vegetal.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 12236
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/tabua_regular.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 9166
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/lamina_de_sucata.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 9313
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/bloco_de_vidro.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 11445
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/cabo_de_madeira.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 7830
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/pregos.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 9370
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/pedra_lascada.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 10260
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/couro_tratado.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 11743
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/tijolo_cozido.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 9080
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/viga_de_madeira.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 9434
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/barra_de_ferro.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 9345
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/pedra_pequena.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 10610
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/feixe_de_galhos.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 10434
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/tronco.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 10776
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/planta_medicinal.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 11628
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/cogumelo.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 10983
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/osso.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 6878
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/pele_de_animal.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 12263
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/pena.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 9133
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/areia.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 8774
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/folhas.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 10978
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/balde_com_agua.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 12778
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/carvao_vegetal.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 10883
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/galhos.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 11143
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/minerio_de_ferro.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 11196
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/pedra_grande.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 11276
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/fibra_vegetal.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 12973
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/argila.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 9127
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/couro.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 10005
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/sucata_metalica.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 12657
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/frutas_silvestres.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 11880
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/arco_simples.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 51811
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/picareta_rudimentar.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 52509
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/vara_de_pesca.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 51823
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/lanterna_rustica.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 58182
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/serrote_improvisado.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 58149
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/picareta_reforcada.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 52467
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/machado_reforcado.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 52629
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/pa_reforcada.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 51648
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/martelo_rudimentar.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 54465
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/pa_simples.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 48913
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/enxada_simples.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 38411
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/picareta_de_ferro.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 51192
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/serrote_reforcado.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 48077
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/martelo_de_carpinteiro.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 45185
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/faca_improvisada.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 38839
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/lanca_simples.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 39710
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/tocha_simples.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 43388
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/martelo_de_ferro.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 54076
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/machado_de_ferro.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 54483
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/ferramentas/machadinha_de_pedra.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 52414
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/estacoes/mesa_de_construcao.png",
+    "largura": 512,
+    "altura": 512,
+    "modo": "RGBA",
+    "bytes": 156344
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/estacoes/moinho_de_graos.png",
+    "largura": 512,
+    "altura": 512,
+    "modo": "RGBA",
+    "bytes": 165326
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/estacoes/bancada_de_carpintaria.png",
+    "largura": 512,
+    "altura": 512,
+    "modo": "RGBA",
+    "bytes": 167465
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/estacoes/caixa_de_compostagem.png",
+    "largura": 512,
+    "altura": 512,
+    "modo": "RGBA",
+    "bytes": 173441
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/estacoes/forja_rustica.png",
+    "largura": 512,
+    "altura": 512,
+    "modo": "RGBA",
+    "bytes": 175897
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/estacoes/horta_elevada.png",
+    "largura": 512,
+    "altura": 512,
+    "modo": "RGBA",
+    "bytes": 186771
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/estacoes/estacao_de_costura.png",
+    "largura": 512,
+    "altura": 512,
+    "modo": "RGBA",
+    "bytes": 168209
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/estacoes/forno_de_materiais.png",
+    "largura": 512,
+    "altura": 512,
+    "modo": "RGBA",
+    "bytes": 162588
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/estacoes/bancada_simples.png",
+    "largura": 512,
+    "altura": 512,
+    "modo": "RGBA",
+    "bytes": 147452
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/estacoes/tanque_de_agua.png",
+    "largura": 512,
+    "altura": 512,
+    "modo": "RGBA",
+    "bytes": 184332
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/materiais_processados/tabuas_brutas.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 66156
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/materiais_processados/caixa_de_composto.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 87300
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/materiais_processados/bloco_de_pedra.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 69096
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/materiais_processados/tijolo_cru.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 60634
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/materiais_processados/corda_vegetal.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 84606
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/materiais_processados/tabua_regular.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 62079
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/materiais_processados/lamina_de_sucata.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 62812
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/materiais_processados/bloco_de_vidro.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 78949
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/materiais_processados/cabo_de_madeira.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 41797
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/materiais_processados/pregos.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 55802
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/materiais_processados/pedra_lascada.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 66585
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/materiais_processados/couro_tratado.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 75995
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/materiais_processados/tijolo_cozido.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 56336
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/materiais_processados/viga_de_madeira.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 65570
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/materiais_processados/barra_de_ferro.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 57945
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/pedra_pequena.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 45101
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/feixe_de_galhos.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 72384
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/tronco.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 64455
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/planta_medicinal.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 82649
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/cogumelo.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 64504
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/osso.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 38597
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/pele_de_animal.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 81232
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/pena.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 55856
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/areia.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 57680
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/folhas.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 74679
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/balde_com_agua.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 82179
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/carvao_vegetal.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 67839
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/galhos.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 70148
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/minerio_de_ferro.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 70630
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/pedra_grande.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 72585
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/fibra_vegetal.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 84941
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/argila.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 59008
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/couro.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 61664
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/sucata_metalica.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 80746
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2.zip!/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/frutas_silvestres.png",
+    "largura": 320,
+    "altura": 320,
+    "modo": "RGBA",
+    "bytes": 74943
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/TESTE_MONTAGEM_CASA.png",
+    "largura": 1728,
+    "altura": 1250,
+    "modo": "RGBA",
+    "bytes": 58660
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/CATALOGO_MODULOS.png",
+    "largura": 1164,
+    "altura": 655,
+    "modo": "RGB",
+    "bytes": 23842
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/tiles/bau_simples.png",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "bytes": 224
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/tiles/piso_de_pedra.png",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "bytes": 254
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/tiles/telhado_telhas.png",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "bytes": 298
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/tiles/caminho_de_pedras.png",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "bytes": 417
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/tiles/canteiro_elevado.png",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "bytes": 414
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/tiles/parede_final.png",
+    "largura": 32,
+    "altura": 64,
+    "modo": "RGBA",
+    "bytes": 246
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/tiles/parede_com_porta.png",
+    "largura": 32,
+    "altura": 64,
+    "modo": "RGBA",
+    "bytes": 371
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/tiles/parede_com_janela.png",
+    "largura": 32,
+    "altura": 64,
+    "modo": "RGBA",
+    "bytes": 391
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/tiles/parede_frontal.png",
+    "largura": 32,
+    "altura": 64,
+    "modo": "RGBA",
+    "bytes": 257
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/tiles/terreno_grama.png",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "bytes": 554
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/tiles/cerca_reta.png",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "bytes": 204
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/tiles/solo_arado.png",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "bytes": 531
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/tiles/piso_de_madeira.png",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "bytes": 402
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_Piloto_v0.1.zip!/Jardim_Depois_da_Chuva_Modulos_Casa_Piloto_v0.1/tiles/parede_de_canto.png",
+    "largura": 32,
+    "altura": 64,
+    "modo": "RGBA",
+    "bytes": 287
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/REFERENCIA_ARTISTICA_MODULOS.png",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB",
+    "bytes": 3995653
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/PREVIA_CASA_MODULAR.png",
+    "largura": 1660,
+    "altura": 1040,
+    "modo": "RGB",
+    "bytes": 404587
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/CASA_TELHADO_VISIVEL.png",
+    "largura": 810,
+    "altura": 740,
+    "modo": "RGBA",
+    "bytes": 132216
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/CASA_INTERIOR_VISIVEL.png",
+    "largura": 810,
+    "altura": 740,
+    "modo": "RGBA",
+    "bytes": 339656
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/parede_trepadeira.png",
+    "largura": 73,
+    "altura": 117,
+    "modo": "RGBA",
+    "bytes": 23890
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/vaso_flor.png",
+    "largura": 67,
+    "altura": 75,
+    "modo": "RGBA",
+    "bytes": 14484
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/tapete.png",
+    "largura": 97,
+    "altura": 73,
+    "modo": "RGBA",
+    "bytes": 19774
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/parede_janela.png",
+    "largura": 74,
+    "altura": 134,
+    "modo": "RGBA",
+    "bytes": 26552
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/chamine.png",
+    "largura": 45,
+    "altura": 78,
+    "modo": "RGBA",
+    "bytes": 10143
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/tabuas_modular.png",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "bytes": 471
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/cadeira.png",
+    "largura": 53,
+    "altura": 93,
+    "modo": "RGBA",
+    "bytes": 13232
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/armario.png",
+    "largura": 57,
+    "altura": 95,
+    "modo": "RGBA",
+    "bytes": 12599
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/janela_turquesa.png",
+    "largura": 101,
+    "altura": 83,
+    "modo": "RGBA",
+    "bytes": 21700
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/porta_madeira.png",
+    "largura": 66,
+    "altura": 97,
+    "modo": "RGBA",
+    "bytes": 16382
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/piso_tabuas.png",
+    "largura": 64,
+    "altura": 64,
+    "modo": "RGB",
+    "bytes": 8714
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/telha_lisa.png",
+    "largura": 71,
+    "altura": 85,
+    "modo": "RGBA",
+    "bytes": 15538
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/barril.png",
+    "largura": 73,
+    "altura": 83,
+    "modo": "RGBA",
+    "bytes": 16304
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/parede_porta.png",
+    "largura": 73,
+    "altura": 134,
+    "modo": "RGBA",
+    "bytes": 25197
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/estante.png",
+    "largura": 61,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 15100
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/telha_variante.png",
+    "largura": 69,
+    "altura": 85,
+    "modo": "RGBA",
+    "bytes": 15481
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/forja.png",
+    "largura": 132,
+    "altura": 94,
+    "modo": "RGBA",
+    "bytes": 33558
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/pedra_modular.png",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "bytes": 267
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/piso_pedra.png",
+    "largura": 64,
+    "altura": 64,
+    "modo": "RGB",
+    "bytes": 10078
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/parede_creme.png",
+    "largura": 76,
+    "altura": 117,
+    "modo": "RGBA",
+    "bytes": 22547
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/mesa.png",
+    "largura": 81,
+    "altura": 85,
+    "modo": "RGBA",
+    "bytes": 19220
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/floreira.png",
+    "largura": 64,
+    "altura": 86,
+    "modo": "RGBA",
+    "bytes": 16167
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/terra.png",
+    "largura": 64,
+    "altura": 64,
+    "modo": "RGB",
+    "bytes": 9146
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/parede_janela_floreira.png",
+    "largura": 74,
+    "altura": 134,
+    "modo": "RGBA",
+    "bytes": 27399
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/terra_modular.png",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "bytes": 464
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/bau.png",
+    "largura": 73,
+    "altura": 58,
+    "modo": "RGBA",
+    "bytes": 11578
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/banco_jardim.png",
+    "largura": 101,
+    "altura": 74,
+    "modo": "RGBA",
+    "bytes": 19929
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/piso_espinha.png",
+    "largura": 64,
+    "altura": 64,
+    "modo": "RGB",
+    "bytes": 10882
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/caminho.png",
+    "largura": 64,
+    "altura": 64,
+    "modo": "RGB",
+    "bytes": 10457
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/parede_pedra.png",
+    "largura": 75,
+    "altura": 117,
+    "modo": "RGBA",
+    "bytes": 22426
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/planta.png",
+    "largura": 45,
+    "altura": 55,
+    "modo": "RGBA",
+    "bytes": 6552
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/parede_viga.png",
+    "largura": 75,
+    "altura": 117,
+    "modo": "RGBA",
+    "bytes": 21923
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/bancada.png",
+    "largura": 148,
+    "altura": 98,
+    "modo": "RGBA",
+    "bytes": 40290
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/cerca_natural.png",
+    "largura": 110,
+    "altura": 75,
+    "modo": "RGBA",
+    "bytes": 22586
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/terreno_base.png",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "bytes": 1040
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/telhas_modular.png",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "bytes": 301
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/telha_beiral.png",
+    "largura": 88,
+    "altura": 85,
+    "modo": "RGBA",
+    "bytes": 21335
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1.zip!/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/cama.png",
+    "largura": 75,
+    "altura": 100,
+    "modo": "RGBA",
+    "bytes": 19361
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/PREVIA_PERSONAGEM_EXTRAIDO.png",
+    "largura": 768,
+    "altura": 680,
+    "modo": "RGB",
+    "bytes": 246116
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/PREVIA_ACOES.png",
+    "largura": 736,
+    "altura": 744,
+    "modo": "RGB",
+    "bytes": 107406
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/ferramentas/minerar.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 8722
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/ferramentas/construir.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 8828
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/ferramentas/cortar.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 8372
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/ferramentas/serrar.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 9020
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/esquerda_4.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11527
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/baixo_5.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11043
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/baixo_0.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12044
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/cima_2.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11425
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/direita_4.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 10988
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/esquerda_5.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11324
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/baixo_2.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 10748
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/direita_1.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11324
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/cima_0.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11671
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/direita_0.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11514
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/esquerda_0.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 10764
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/esquerda_2.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11637
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/esquerda_1.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 10889
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/direita_3.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11917
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/direita_5.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11675
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/baixo_3.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11161
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/baixo_4.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11397
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/cima_3.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11089
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/baixo_1.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12020
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/cima_4.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11232
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/cima_1.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11766
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/direita_2.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11809
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/cima_5.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11416
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/esquerda_3.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12020
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/tronco.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 10776
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/sucata.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 12657
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/tabuas.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 9166
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/grama.png",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "bytes": 1040
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/caminho.png",
+    "largura": 64,
+    "altura": 64,
+    "modo": "RGB",
+    "bytes": 10457
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/pedra.png",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "bytes": 11276
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/cerca_natural.png",
+    "largura": 110,
+    "altura": 75,
+    "modo": "RGBA",
+    "bytes": 22586
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/baixo/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13422
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/baixo/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13712
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/baixo/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13644
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/baixo/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13296
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/baixo/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13378
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/baixo/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13216
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/baixo/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12571
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/baixo/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13469
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/esquerda/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12529
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/esquerda/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12778
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/esquerda/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12639
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/esquerda/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12766
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/esquerda/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12872
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/esquerda/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12754
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/esquerda/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13299
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/esquerda/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12814
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/cima/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12021
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/cima/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12309
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/cima/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12112
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/cima/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12809
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/cima/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12439
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/cima/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12842
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/cima/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12812
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/cima/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12174
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/direita/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13794
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/direita/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13877
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/direita/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13851
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/direita/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13536
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/direita/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13568
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/direita/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13527
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/direita/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13877
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/construir/direita/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13740
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/baixo/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13539
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/baixo/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13741
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/baixo/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13810
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/baixo/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13318
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/baixo/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13402
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/baixo/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13362
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/baixo/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12500
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/baixo/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13805
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/esquerda/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12606
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/esquerda/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12925
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/esquerda/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12983
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/esquerda/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12834
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/esquerda/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12675
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/esquerda/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12770
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/esquerda/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13338
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/esquerda/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13102
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/cima/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11955
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/cima/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12258
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/cima/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12192
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/cima/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12536
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/cima/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12265
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/cima/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12997
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/cima/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12887
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/cima/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12211
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/direita/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13752
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/direita/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13866
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/direita/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13858
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/direita/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13423
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/direita/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13595
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/direita/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13586
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/direita/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13960
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/cortar/direita/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13929
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/baixo/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13721
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/baixo/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13851
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/baixo/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13791
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/baixo/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13265
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/baixo/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13271
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/baixo/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12984
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/baixo/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12117
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/baixo/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13515
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/esquerda/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12999
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/esquerda/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12924
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/esquerda/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12983
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/esquerda/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12762
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/esquerda/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12622
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/esquerda/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12581
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/esquerda/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12927
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/esquerda/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12984
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/cima/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12068
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/cima/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12172
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/cima/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12099
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/cima/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12683
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/cima/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12290
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/cima/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12933
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/cima/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12885
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/cima/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12241
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/direita/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13684
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/direita/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13737
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/direita/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13734
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/direita/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13155
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/direita/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13099
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/direita/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13164
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/direita/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13556
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/minerar/direita/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13589
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/baixo/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13385
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/baixo/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13161
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/baixo/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13105
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/baixo/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13827
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/baixo/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13537
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/baixo/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12929
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/baixo/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12317
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/baixo/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12868
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/esquerda/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12469
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/esquerda/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12052
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/esquerda/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12021
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/esquerda/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13047
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/esquerda/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12858
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/esquerda/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12205
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/esquerda/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13320
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/esquerda/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11918
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/cima/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12358
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/cima/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11941
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/cima/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11915
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/cima/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13057
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/cima/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12925
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/cima/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12379
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/cima/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12374
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/cima/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 11893
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/direita/01.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13398
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/direita/00.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13115
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/direita/07.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13048
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/direita/03.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13876
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/direita/02.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13458
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/direita/05.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12950
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/direita/04.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 13787
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/pacotes_existentes/Jardim_Depois_da_Chuva_Sistema_Acoes_v0.1.zip!/Jardim_Depois_da_Chuva_Acoes_v0.1/acoes/serrar/direita/06.png",
+    "largura": 96,
+    "altura": 128,
+    "modo": "RGBA",
+    "bytes": 12907
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/referencias/ACOES_PERSONAGEM_CONCEITO.png",
+    "largura": 1448,
+    "altura": 1086,
+    "modo": "RGB",
+    "bytes": 2308854
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/referencias/CENARIO_ORIGINAL.png",
+    "largura": 1586,
+    "altura": 992,
+    "modo": "RGBA",
+    "bytes": 4281035
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/referencias/CENARIO_PIXELADO.png",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB",
+    "bytes": 3109042
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/referencias/CONSTRUCOES_MODULARES.png",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB",
+    "bytes": 3835862
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/referencias/CONSTRUCOES_MODULARES_DETALHADAS.png",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB",
+    "bytes": 3995653
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/referencias/ESTADOS_OBJETOS_CONCEITO.png",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGBA",
+    "bytes": 2898728
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/referencias/INTERFACE_UI_CONCEITO.png",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB",
+    "bytes": 2881076
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/referencias/MAPA_EXPANDIDO.png",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB",
+    "bytes": 3837450
+  },
+  {
+    "origem": "Jardim_Depois_da_Chuva_Handoff_Codex_v1/referencias/PERSONAGEM_ORIGINAL.png",
+    "largura": 1448,
+    "altura": 1086,
+    "modo": "RGB",
+    "bytes": 2377643
+  }
+]

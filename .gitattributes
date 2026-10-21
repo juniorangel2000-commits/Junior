@@ -1,0 +1,6 @@
+# Preservar os bytes dos documentos e pacotes originais recebidos, inclusive CRLF
+# e quebras Markdown com dois espaços. O código do jogo mantém a checagem normal.
+/LEIA_PRIMEIRO.md -text -whitespace
+/documentacao/** -text -whitespace
+/pacotes_existentes/Jardim*/** -text -whitespace
+/referencias/otimizadas/** -text -whitespace

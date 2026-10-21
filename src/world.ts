@@ -1,12 +1,18 @@
 import Phaser from 'phaser';
+import type { ResourceKind, ResourceNode } from './types';
+import { createLegacyTrees, getRegionAt, isBridgeTile, isFarmTile, isPathTile, isWaterTile, TILE, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 
-export const TILE = 32;
-export const WORLD_WIDTH = 54;
-export const WORLD_HEIGHT = 42;
+export type { ResourceNode } from './types';
+
+export { TILE, WORLD_WIDTH, WORLD_HEIGHT, isWaterTile, getRegionAt, locationAt, REGIONS } from './data/regions';
 export const SPAWN = { x: 25 * TILE + 16, y: 18 * TILE + 16 };
 export const NPC_POSITION = { x: 29 * TILE + 16, y: 17 * TILE + 16 };
+export const WORLD_LANDMARKS = {
+  chimney: { x: 853, y: 294 },
+  porch: { x: 784, y: 506 },
+  pond: { x: 1168, y: 976 },
+} as const;
 
-export interface ResourceNode { id: string; x: number; y: number; kind: 'tree' | 'stone' | 'seeds' }
 export interface WorldView {
   resources: ResourceNode[];
   isBlocked(x: number, y: number): boolean;
@@ -21,19 +27,21 @@ function randomSource(seed: number): () => number {
 }
 
 export function createWorld(scene: Phaser.Scene, depletedResources: string[]): WorldView {
+  // O terreno usa seu próprio RNG; o layout legado é reconstituído separadamente.
   const random = randomSource(85021);
+  const visualRandom = randomSource(902103);
   const blocked = new Set<string>();
+  // Resource collision is separate: felling a tree must never erase a ruin wall.
+  const resourceBlocked = new Set<string>();
+  const forestTiles = new Set<string>();
+  const depleted = new Set(depletedResources);
+  const resources: ResourceNode[] = [];
+  const resourceImages = new Map<string, Phaser.GameObjects.Image>();
   const key = (x: number, y: number) => `${x},${y}`;
-  const isFarm = (x: number, y: number) => x >= 21 && x <= 29 && y >= 20 && y <= 24;
-  const waterAt = (x: number, y: number) => {
-    const river = 44 + Math.floor(Math.sin(y * 0.24) * 2);
-    const pond = ((x - 36) ** 2) / 33 + ((y - 30) ** 2) / 15 < 1;
-    return x >= river || pond;
-  };
-  const bridgeAt = (x: number, y: number) => x >= 42 && x <= 48 && y >= 18 && y <= 19;
-  const pathAt = (x: number, y: number) => (x >= 24 && x <= 26 && y >= 15 && y <= 19)
-    || (x >= 15 && x <= 42 && y >= 17 && y <= 18)
-    || (x >= 30 && x <= 32 && y >= 18 && y <= 30);
+  const isFarm = isFarmTile;
+  const waterAt = isWaterTile;
+  const bridgeAt = isBridgeTile;
+  const pathAt = isPathTile;
 
   const terrain = document.createElement('canvas');
   terrain.width = WORLD_WIDTH * TILE;
@@ -42,39 +50,56 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[]): W
   const rect = (color: string, x: number, y: number, width: number, height: number) => {
     c.fillStyle = color; c.fillRect(Math.floor(x), Math.floor(y), width, height);
   };
+  const grassPalette = ['#647c40', '#718946', '#7e954c', '#8da251', '#9caf58', '#aaba62', '#b3c16b'];
+  const forestPalette = ['#405f3c', '#4a6c40', '#547845', '#64894a', '#739950', '#83a656', '#95b65e'];
+  const meadowPalette = ['#738647', '#85984d', '#93a454', '#a2b05d', '#acb969', '#b7c472', '#c2cc7a'];
+  const grassAt = (x: number, y: number) => {
+    const waves = Math.sin(x * 0.014 + Math.cos(y * 0.008) * 1.4)
+      + Math.sin(y * 0.019 + Math.sin(x * 0.009)) * 0.8 + Math.sin((x + y) * 0.006) * 0.55;
+    const index = Math.max(0, Math.min(grassPalette.length - 1, Math.floor(3.3 + waves * 1.2)));
+    const region = getRegionAt(x / TILE, y / TILE);
+    return (region.id === 'pine-forest' ? forestPalette : region.id === 'open-fields' ? meadowPalette : grassPalette)[index];
+  };
   for (let y = 0; y < WORLD_HEIGHT; y++) {
     for (let x = 0; x < WORLD_WIDTH; x++) {
       const px = x * TILE, py = y * TILE;
       if (waterAt(x, y)) {
-        rect(['#628d89', '#618a85', '#668e89'][Math.floor(random() * 3)], px, py, TILE, TILE);
-        for (let n = 0; n < 3; n++) rect(n === 0 ? '#80a7a0' : '#6f9992', px + random() * 24, py + random() * 29, 4 + Math.floor(random() * 8), 2);
+        rect(['#4f8280', '#508381', '#518482'][Math.floor(random() * 3)], px, py, TILE, TILE);
+        for (let n = 0; n < 3; n++) rect(n === 0 ? '#8ab4a5' : '#62968e', px + random() * 24, py + random() * 29, 4 + Math.floor(random() * 8), 2);
         if (!bridgeAt(x, y)) blocked.add(key(x, y));
         continue;
       }
       const farm = isFarm(x, y);
       const path = pathAt(x, y);
-      rect(farm ? '#83694a' : path ? '#bdad82' : ['#849a62', '#879b63', '#899e66', '#82975f'][Math.floor(random() * 4)], px, py, TILE, TILE);
+      rect(farm ? '#856044' : path ? '#c7ad78' : ['#8b9b51', '#8c9c52', '#8b9b52', '#8c9c51'][Math.floor(random() * 4)], px, py, TILE, TILE);
       if (farm) {
-        rect('#735c43', px + 2, py + 2, 28, 28);
+        for (let sy = 0; sy < TILE; sy += 4) for (let sx = 0; sx < TILE; sx += 4) {
+          if (visualRandom() > 0.7) rect(visualRandom() > 0.5 ? '#8d6748' : '#7c593f', px + sx, py + sy, 3, 2);
+        }
         for (const row of [6, 13, 20, 27]) {
-          rect('#91704d', px + 4, py + row, 24, 2);
-          rect('#624f3b', px + 5, py + row + 2, 23, 2);
+          rect('#98704b', px + 2, py + row, 28, 1);
+          rect('#715038', px + 3, py + row + 1, 26, 2);
         }
         continue;
       }
+      if (!path) {
+        for (let sy = 0; sy < TILE; sy += 4) for (let sx = 0; sx < TILE; sx += 4) {
+          rect(grassAt(px + sx, py + sy), px + sx, py + sy, 4, 4);
+        }
+      }
       for (let n = 0; n < 9; n++) {
         const lx = px + Math.floor(random() * 30), ly = py + Math.floor(random() * 30);
-        rect(path ? ['#b1a07a', '#cbbb94'][n % 2] : ['#99aa6d', '#738d56', '#8fa368'][n % 3], lx, ly, 2 + Math.floor(random() * 3), 1 + Math.floor(random() * 2));
+        rect(path ? ['#bda170', '#d2ba88'][n % 2] : ['#a0ad61', '#788d48', '#98a659'][n % 3], lx, ly, 2 + Math.floor(random() * 3), 1 + Math.floor(random() * 2));
       }
       if (!path && random() > 0.56) {
         const lx = px + 5 + random() * 20, ly = py + 6 + random() * 18;
-        rect('#667e4b', lx, ly, 2, 5); rect('#738c4f', lx - 3, ly - 1, 2, 4); rect('#99af6e', lx + 3, ly - 2, 2, 6);
+        rect('#627d40', lx, ly, 1, 5); rect('#758f45', lx - 3, ly - 1, 1, 4); rect('#b0bc6d', lx + 3, ly - 2, 1, 6);
       }
       if (!path && random() > 0.93) {
         const lx = px + 6 + random() * 20, ly = py + 6 + random() * 20;
-        rect('#61814c', lx, ly, 2, 6);
-        rect(random() > 0.5 ? '#e3ce8c' : '#e3daca', lx - 2, ly - 1, 5, 3);
-        rect('#b49a5b', lx, ly, 1, 1);
+        rect('#5e7b3e', lx, ly, 1, 6);
+        rect(random() > 0.5 ? '#e9ce78' : '#e8dfbd', lx - 2, ly - 1, 4, 2);
+        rect('#bd9a49', lx, ly, 1, 1);
       }
       if ((waterAt(x + 1, y) || waterAt(x, y + 1) || waterAt(x - 1, y) || waterAt(x, y - 1)) && !bridgeAt(x, y)) {
         rect('#9aab76', px + 4, py + 4, 5, 2);
@@ -86,14 +111,62 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[]): W
       }
     }
   }
-  // A hand-built footbridge: wooden planks across the shallow river.
-  for (let x = 42 * TILE; x < 49 * TILE; x += 8) {
-    rect('#705c45', x, 18 * TILE, 7, 64); rect('#bca077', x, 18 * TILE, 6, 58); rect('#d3b98b', x, 18 * TILE, 2, 58);
-    rect('#584d3c', x + 2, 18 * TILE + 8, 1, 1); rect('#584d3c', x + 2, 18 * TILE + 49, 1, 1);
+  // Soft, chipped path edges are decorative; the walkable tile map is unchanged.
+  for (let y = 1; y < WORLD_HEIGHT - 1; y++) for (let x = 1; x < WORLD_WIDTH - 1; x++) {
+    if (!pathAt(x, y) || waterAt(x, y) || bridgeAt(x, y)) continue;
+    for (const [dx, dy] of [[0, -1], [0, 1], [-1, 0], [1, 0]]) {
+      if (pathAt(x + dx, y + dy) || isFarm(x + dx, y + dy) || waterAt(x + dx, y + dy)) continue;
+      for (let edge = 0; edge < TILE; edge += 4) {
+        const bite = 2 + Math.floor(visualRandom() * 6);
+        const px = x * TILE, py = y * TILE;
+        if (dy === -1) {
+          rect('#a6a368', px + edge, py - 3, 4, bite + 2);
+          rect('#c7ad78', px + edge, py + bite - 1, 4, 3);
+          if (visualRandom() > 0.45) rect(grassAt(px + edge, py), px + edge, py - 3, 4, Math.max(1, bite - 3));
+        } else if (dy === 1) {
+          rect('#b3a46c', px + edge, py + TILE - bite, 4, bite + 3);
+          rect('#c7ad78', px + edge, py + TILE - bite, 4, 2);
+          if (visualRandom() > 0.45) rect(grassAt(px + edge, py + TILE), px + edge, py + TILE + 1, 4, 2);
+        } else {
+          const bx = dx === -1 ? px - 3 : px + TILE - bite;
+          rect('#b0a46a', bx, py + edge, bite + 3, 4);
+          rect('#c7ad78', dx === -1 ? px + bite - 1 : px + TILE - bite, py + edge, 2, 4);
+        }
+      }
+    }
   }
-  rect('#6c5943', 42 * TILE, 18 * TILE + 2, 7 * TILE, 3);
-  rect('#dbc191', 42 * TILE, 18 * TILE, 7 * TILE, 2);
-  rect('#6c5943', 42 * TILE, 20 * TILE - 7, 7 * TILE, 4);
+  // The kitchen garden has one continuous earth bed, with all 45 cells intact.
+  for (let x = 21 * TILE - 4; x < 30 * TILE + 4; x += 4) {
+    const inset = Math.floor(visualRandom() * 4);
+    rect('#a28d58', x, 20 * TILE - 5 + inset, 4, 4);
+    rect('#ae945c', x, 25 * TILE - 1, 4, 3 + inset);
+  }
+  for (let y = 20 * TILE; y < 25 * TILE; y += 4) {
+    rect('#ac925b', 21 * TILE - 3, y, 3, 4);
+    rect('#9b7c4d', 30 * TILE, y, 2 + Math.floor(visualRandom() * 3), 4);
+  }
+  // Low flowers and rain-darkened pebbles form pockets instead of a uniform grid.
+  const flowerPockets = [[20, 20], [20, 24], [30, 25], [28, 16], [21, 16], [18, 21], [34, 28], [39, 20], [12, 20], [54, 16], [56, 20], [65, 16], [69, 21], [76, 25], [78, 13], [84, 12], [24, 46], [28, 55], [34, 58], [61, 53], [72, 57], [75, 61]];
+  for (const [tx, ty] of flowerPockets) {
+    for (let n = 0; n < 18; n++) {
+      const px = tx * TILE + 5 + visualRandom() * 24, py = ty * TILE + 5 + visualRandom() * 23;
+      rect('#627a3c', px, py, 1, 4 + Math.floor(visualRandom() * 4));
+      const color = n % 3 === 0 ? '#aa96b2' : n % 3 === 1 ? '#e4c46a' : '#eee0b4';
+      rect(n % 3 === 0 ? '#766284' : '#a58b42', px - 1, py - 2, 3, 4);
+      rect(color, px - 1, py - 3, 3, 2);
+      if (n % 3 !== 0) rect('#fff0c0', px, py - 2, 1, 1);
+    }
+  }
+  // As duas passagens do rio têm a mesma geometria visual e de colisão.
+  for (const [left, top, width] of [[42, 18, 7], [41, 52, 9]]) {
+    for (let x = left * TILE; x < (left + width) * TILE; x += 8) {
+      rect('#70543c', x, top * TILE, 7, 64); rect('#b58b58', x, top * TILE, 6, 58); rect('#d9b478', x, top * TILE, 2, 58);
+      rect('#584633', x + 2, top * TILE + 8, 1, 1); rect('#584633', x + 2, top * TILE + 49, 1, 1);
+    }
+    rect('#5b4632', left * TILE, top * TILE + 2, width * TILE, 3);
+    rect('#e0c390', left * TILE, top * TILE, width * TILE, 2);
+    rect('#6c5037', left * TILE, (top + 2) * TILE - 7, width * TILE, 4);
+  }
   // Flat stepping stones and a few fallen leaves in the path.
   for (const [x, y] of [[25, 16], [24, 17], [25, 18], [27, 18], [29, 18], [32, 18]]) {
     rect('#b0a48c', x * TILE + 4, y * TILE + 7, 23, 14); rect('#d1c8ac', x * TILE + 5, y * TILE + 6, 21, 12);
@@ -154,6 +227,48 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[]): W
     r('#8aa559', 10, 14, 16, 17); r('#a2b367', 12, 14, 6, 10); r('#63864a', 23, 23, 10, 8);
     r('#d6c18b', 11, 18, 3, 4); r('#ead69a', 24, 20, 3, 4); r('#e1cc91', 18, 27, 3, 3);
   });
+  texture('resource-scrap', 32, 32, (ctx) => {
+    const r = (color: string, x: number, y: number, w: number, h: number) => {ctx.fillStyle = color; ctx.fillRect(x, y, w, h);};
+    r('#344c3b44', 2, 25, 28, 5);
+    // A weathered blade and a bent metal strip salvaged from the old workshop.
+    r('#5a665e', 7, 16, 20, 11); r('#87958b', 8, 14, 18, 10);
+    r('#bfcbc0', 9, 14, 16, 2); r('#a3774e', 18, 19, 7, 4);
+    r('#435951', 11, 20, 4, 3); r('#5d756e', 3, 11, 5, 15);
+    r('#c5d1c4', 4, 10, 3, 12); r('#a3b7a9', 7, 9, 3, 11);
+    r('#70543b', 4, 23, 4, 6); r('#c4aa70', 4, 23, 4, 2);
+    r('#e5d4a6', 21, 11, 2, 2);
+  });
+  texture('resource-fiber', 32, 32, (ctx) => {
+    const r = (color: string, x: number, y: number, w: number, h: number) => {ctx.fillStyle = color; ctx.fillRect(x, y, w, h);};
+    r('#344c3b33', 3, 26, 26, 5); r('#647641', 7, 24, 19, 5);
+    // Pale, flexible stalks stand apart from the dark seed-bearing shrubs.
+    for (const [x, y] of [[7, 11], [12, 6], [17, 9], [22, 7], [25, 15]]) {
+      r('#7b8950', x - 1, y + 2, 3, 26 - y); r('#c1bb78', x, y, 1, 25 - y);
+      r('#e0cc90', x - 1, y - 2, 3, 5); r('#f0dba0', x, y - 2, 1, 3);
+      r('#a0ac62', x - 3, y + 8, 3, 2); r('#859d53', x + 1, y + 11, 3, 2);
+    }
+    r('#a8af69', 5, 26, 8, 2); r('#d0c28a', 14, 26, 9, 2);
+  });
+  texture('resource-vein', 40, 40, (ctx) => {
+    const r = (color: string, x: number, y: number, w: number, h: number) => {ctx.fillStyle = color; ctx.fillRect(x, y, w, h);};
+    r('#344c3b44', 1, 32, 38, 6);
+    r('#4c5b55', 4, 21, 33, 13); r('#65776c', 7, 10, 26, 22);
+    r('#829285', 12, 5, 17, 23); r('#a3afa0', 13, 5, 13, 4);
+    r('#566b62', 26, 15, 9, 14); r('#697c70', 2, 27, 10, 7);
+    // Warm iron inclusions keep the mineable outcrop distinct from loose stones.
+    for (const [x, y] of [[12, 15], [22, 22], [27, 12], [8, 27]]) {
+      r('#775338', x, y, 6, 5); r('#b58852', x, y, 4, 3); r('#d6b577', x, y, 2, 1);
+    }
+    r('#405b42', 29, 29, 5, 4); r('#91a15f', 30, 28, 3, 2);
+  });
+  texture('tree-stump', 32, 24, (ctx) => {
+    const r = (color: string, x: number, y: number, w: number, h: number) => {ctx.fillStyle = color; ctx.fillRect(x, y, w, h);};
+    r('#36503933', 2, 19, 28, 4); r('#705137', 6, 9, 20, 12);
+    r('#997245', 7, 9, 17, 9); r('#c4a16c', 6, 7, 19, 6);
+    r('#dfbe83', 8, 7, 15, 3); r('#9d794d', 12, 9, 8, 2);
+    r('#795b3e', 8, 15, 2, 5); r('#795b3e', 19, 14, 2, 6);
+    r('#789451', 24, 17, 3, 4);
+  });
   texture('cabin', 256, 224, (ctx) => {
     const r = (color: string, x: number, y: number, w: number, h: number) => {ctx.fillStyle = color; ctx.fillRect(x, y, w, h);};
     r('#324a3b44', 15, 194, 235, 18); r('#6c6950', 24, 117, 208, 81);
@@ -192,23 +307,47 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[]): W
     r('#a77c51', 34, 175, 13, 12); r('#7b9651', 32, 169, 17, 8); r('#9caf69', 36, 165, 8, 8);
     r('#566b48', 151, 169, 8, 15); r('#d9bd77', 152, 161, 6, 7);
   });
-  scene.add.image(24.5 * TILE, 16 * TILE + 4, 'cabin').setOrigin(0.5, 1).setDepth(16 * TILE + 4);
+  const houseTexture = scene.textures.exists('asset-house') ? 'asset-house' : 'cabin';
+  scene.add.image(24.5 * TILE, 16 * TILE + 4, houseTexture).setOrigin(0.5, 1).setDepth(16 * TILE + 4);
   for (let y = 11; y <= 15; y++) for (let x = 21; x <= 27; x++) blocked.add(key(x, y));
 
   // Wild woodland frames the clearing without filling it with combat or obstacles.
-  const trees: Array<{ x: number; y: number; pine: boolean }> = [];
-  for (let y = 1; y < WORLD_HEIGHT - 1; y++) {
-    for (let x = 1; x < WORLD_WIDTH - 1; x++) {
-      const wild = x < 12 || x > 39 || y < 8 || y > 35;
-      const side = x < 16 && y > 20 && y < 33;
-      if ((wild && random() < 0.3 || side && random() < 0.18) && !waterAt(x, y) && !pathAt(x, y) && !bridgeAt(x, y)) trees.push({x, y, pine: random() > 0.65});
-    }
+  const expandedSupplies: Array<[number, number, ResourceKind]> = [
+    [55, 19, 'tree'], [57, 17, 'stone'], [61, 20, 'fiber'], [64, 16, 'seeds'], [65, 20, 'vein'], [69, 23, 'vein'],
+    [73, 19, 'tree'], [75, 23, 'stone'], [80, 27, 'fiber'], [83, 29, 'scrap'], [77, 29, 'seeds'],
+    [24, 49, 'tree'], [26, 51, 'stone'], [28, 50, 'fiber'], [30, 55, 'seeds'], [32, 51, 'vein'], [35, 56, 'vein'],
+    [62, 55, 'tree'], [65, 56, 'stone'], [70, 59, 'fiber'], [72, 55, 'seeds'], [66, 58, 'scrap'],
+  ];
+  const reservedSupplies = new Set(expandedSupplies.map(([x, y]) => key(x, y)));
+  const trees = createLegacyTrees();
+  // A reserva de árvores das novas regiões usa uma semente independente.
+  const forestRandom = randomSource(476120);
+  for (let y = 2; y < WORLD_HEIGHT - 2; y++) for (let x = 2; x < WORLD_WIDTH - 2; x++) {
+    if (x < 54 && y < 42) continue;
+    const region = getRegionAt(x, y);
+    const clearing = region.id === 'pine-forest'
+      ? ((x - 67) ** 2 + (y - 18) ** 2 < 42) || ((x - 81) ** 2 + (y - 28) ** 2 < 30)
+      : ((x - 27) ** 2 / 120 + (y - 54) ** 2 / 55 < 1) || ((x - 68) ** 2 / 160 + (y - 57) ** 2 / 40 < 1);
+    const chance = region.id === 'pine-forest' ? 0.2 : 0.075;
+    if (forestRandom() < chance && !clearing && !reservedSupplies.has(key(x, y)) && !waterAt(x, y) && !pathAt(x, y) && !bridgeAt(x, y)) trees.push({ x, y, pine: region.id === 'pine-forest' ? forestRandom() > 0.2 : forestRandom() > 0.8 });
   }
-  for (const [x, y] of [[17, 11], [18, 10], [31, 11], [33, 14], [17, 24], [18, 29], [32, 26], [20, 32], [28, 31], [39, 22]]) trees.push({x, y, pine: false});
+  for (const [x, y] of [[58, 21], [63, 22], [74, 22], [29, 48], [34, 48], [60, 57]]) trees.push({ x, y, pine: x >= 50 && y < 42 });
   for (const tree of trees) {
     if (tree.x === 9 && tree.y >= 16 && tree.y <= 20) continue;
-    scene.add.image(tree.x * TILE + 16, tree.y * TILE + 25, tree.pine ? 'pine' : 'oak').setOrigin(0.5, 0.93).setDepth(tree.y * TILE + 25);
-    blocked.add(key(tree.x, tree.y));
+    const id = `standingTree-${tree.x}-${tree.y}`;
+    const tile = key(tree.x, tree.y);
+    if (forestTiles.has(tile)) continue;
+    forestTiles.add(tile);
+    if (depleted.has(id)) {
+      scene.add.image(tree.x * TILE + 16, tree.y * TILE + 29, 'tree-stump').setOrigin(0.5, 1).setDepth(tree.y * TILE + 24);
+      continue;
+    }
+    resources.push({ id, x: tree.x, y: tree.y, kind: 'standingTree' });
+    const artwork = tree.pine ? 'asset-pine' : 'asset-tree';
+    const treeTexture = scene.textures.exists(artwork) ? artwork : tree.pine ? 'pine' : 'oak';
+    const treeImage = scene.add.image(tree.x * TILE + 16, tree.y * TILE + 25, treeTexture).setOrigin(0.5, scene.textures.exists(artwork) ? 1 : 0.93).setDepth(tree.y * TILE + 25);
+    resourceImages.set(id, treeImage);
+    resourceBlocked.add(tile);
   }
   // A small roofless ruin in the western exploration area.
   const ruin = scene.add.graphics().setDepth(20 * TILE);
@@ -219,6 +358,38 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[]): W
   ruin.fillStyle(0xc2bba0).fillRect(8 * TILE, 15 * TILE, 4 * TILE, 3).fillRect(8 * TILE, 15 * TILE, 3, 4 * TILE);
   for (let x = 8; x <= 11; x++) blocked.add(key(x, 15));
   for (let y = 15; y <= 18; y++) blocked.add(key(8, y));
+  // Vestígios de uma antiga guarita no bosque; abertura ao sul e a leste.
+  const forestRuin = scene.add.graphics().setDepth(29 * TILE);
+  forestRuin.fillStyle(0x777967).fillRect(78 * TILE, 25 * TILE, 6 * TILE, 10).fillRect(78 * TILE, 25 * TILE, 10, 4 * TILE);
+  forestRuin.fillStyle(0xb9b69b).fillRect(78 * TILE, 25 * TILE, 6 * TILE, 3).fillRect(78 * TILE, 25 * TILE, 3, 4 * TILE);
+  forestRuin.fillStyle(0x8b9463).fillRect(78 * TILE + 5, 25 * TILE + 8, 4, 57).fillRect(81 * TILE, 25 * TILE, 25, 5);
+  for (let x = 78; x <= 83; x++) blocked.add(key(x, 25));
+  for (let y = 25; y <= 28; y++) blocked.add(key(78, y));
+
+  // Um poço seco marca a clareira dos campos; sua base tem colisão explícita.
+  const well = scene.add.graphics().setDepth(60 * TILE);
+  well.fillStyle(0x585e4a).fillRect(31 * TILE, 59 * TILE, 2 * TILE, TILE);
+  well.fillStyle(0xb5aa88).fillRect(31 * TILE - 2, 59 * TILE - 3, 2 * TILE + 4, 10);
+  well.fillStyle(0x494e43).fillRect(31 * TILE + 8, 59 * TILE + 2, 48, 13);
+  well.fillStyle(0x7c8265).fillRect(31 * TILE + 3, 59 * TILE + 22, 57, 8);
+  well.fillStyle(0x687746).fillRect(31 * TILE - 4, 59 * TILE + 21, 7, 10);
+  blocked.add(key(31, 59)); blocked.add(key(32, 59));
+
+  const signpost = (x: number, y: number, label: string) => {
+    const width = Math.max(80, label.length * 6 + 16), px = x * TILE + 16, py = y * TILE + 18;
+    const plate = scene.add.graphics().setDepth(py + 2);
+    plate.fillStyle(0x604730).fillRect(px - 3, py - 12, 6, 29);
+    plate.fillStyle(0x4d3c2c).fillRect(px - width / 2 - 2, py - 30, width + 4, 24);
+    plate.fillStyle(0xb28b55).fillRect(px - width / 2, py - 28, width, 20);
+    plate.fillStyle(0xd8b67b).fillRect(px - width / 2, py - 28, width, 3);
+    scene.add.text(px, py - 17, label, { fontFamily: 'Georgia, serif', fontSize: '10px', fontStyle: 'bold', color: '#312b21' }).setOrigin(0.5).setDepth(py + 3);
+  };
+  signpost(40, 17, 'BOSQUE →');
+  signpost(18, 26, 'CAMPOS ↓');
+  signpost(55, 16, 'BOSQUE DO PINHEIRO');
+  signpost(24, 47, 'CAMPOS ABERTOS');
+  signpost(51, 51, '← PROPRIEDADE');
+
   // Weathered property sign and mailbox.
   const sign = scene.add.graphics().setDepth(18 * TILE + 24);
   sign.fillStyle(0x6a573e).fillRect(19 * TILE + 13, 18 * TILE + 2, 5, 28);
@@ -228,24 +399,34 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[]): W
   sign.lineBetween(19 * TILE + 15, 18 * TILE + 12, 19 * TILE + 24, 18 * TILE + 7);
   sign.lineBetween(19 * TILE + 15, 18 * TILE + 3, 19 * TILE + 24, 18 * TILE + 7);
 
-  const resources: ResourceNode[] = [];
-  const resourceImages = new Map<string, Phaser.GameObjects.Image>();
-  const positions: Array<[number, number, ResourceNode['kind']]> = [
+  const positions: Array<[number, number, ResourceKind]> = [
     [20, 18, 'tree'], [28, 19, 'stone'], [30, 20, 'seeds'], [19, 22, 'seeds'], [23, 26, 'tree'], [27, 26, 'stone'],
     [18, 16, 'tree'], [17, 19, 'stone'], [16, 22, 'seeds'], [20, 28, 'tree'], [25, 29, 'seeds'], [34, 25, 'stone'],
     [35, 19, 'tree'], [36, 17, 'seeds'], [38, 24, 'stone'], [13, 18, 'tree'], [11, 21, 'seeds'], [15, 28, 'stone'],
     [30, 31, 'tree'], [35, 35, 'seeds'], [40, 14, 'stone'], [32, 9, 'tree'], [18, 13, 'seeds'], [12, 25, 'tree'],
     [26, 9, 'stone'], [29, 28, 'tree'], [19, 25, 'stone'], [33, 21, 'seeds'], [16, 15, 'tree'], [37, 12, 'stone'],
+    // Fresh component supplies also keep fully harvested version-1 saves playable.
+    [22, 18, 'tree'], [27, 18, 'tree'], [23, 18, 'stone'], [26, 18, 'stone'], [30, 18, 'stone'],
+    [12, 19, 'scrap'], [13, 20, 'scrap'], [14, 19, 'scrap'],
+    [17, 26, 'vein'], [18, 27, 'vein'], [33, 26, 'vein'], [35, 25, 'vein'],
+    [23, 19, 'fiber'], [26, 19, 'fiber'], [31, 19, 'fiber'], [20, 21, 'fiber'], [31, 23, 'fiber'],
+    // Pontos fixos garantem coleta e mineração em cada região explorável.
+    ...expandedSupplies,
   ];
   for (const [x, y, kind] of positions) {
     const id = `${kind}-${x}-${y}`;
-    if (depletedResources.includes(id) || blocked.has(key(x, y))) continue;
+    // Keep legacy loose-resource availability stable even after trees are cut.
+    if (depleted.has(id) || blocked.has(key(x, y)) || forestTiles.has(key(x, y))) continue;
     const node: ResourceNode = {id, x, y, kind};
     resources.push(node);
-    resourceImages.set(id, scene.add.image(x * TILE + 16, y * TILE + 29, `resource-${kind}`).setOrigin(0.5, 1).setDepth(y * TILE + 29));
+    const asset = ({ tree: 'asset-branch', stone: 'asset-stone', seeds: 'asset-seeds', scrap: 'asset-scrap', fiber: 'asset-fiber', vein: 'asset-vein', standingTree: 'asset-tree' } as const)[kind];
+    const useAsset = scene.textures.exists(asset);
+    const resourceImage = scene.add.image(x * TILE + 16, y * TILE + 29, useAsset ? asset : `resource-${kind}`).setOrigin(0.5, 1).setDepth(y * TILE + 29);
+    resourceImages.set(id, resourceImage);
+    if (kind === 'vein') resourceBlocked.add(key(x, y));
   }
   const resourceAt = (x: number, y: number) => resources.find((node) => node.x === x && node.y === y);
-  const isBlocked = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y));
+  const isBlocked = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y));
   return {
     resources,
     isBlocked,
@@ -254,9 +435,12 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[]): W
     resourceAt,
     removeResource: (id) => {
       const index = resources.findIndex((node) => node.id === id);
-      if (index >= 0) resources.splice(index, 1);
+      if (index < 0) return;
+      const [node] = resources.splice(index, 1);
       resourceImages.get(id)?.destroy();
       resourceImages.delete(id);
+      if (node.kind === 'standingTree' || node.kind === 'vein') resourceBlocked.delete(key(node.x, node.y));
+      if (node.kind === 'standingTree') scene.add.image(node.x * TILE + 16, node.y * TILE + 29, 'tree-stump').setOrigin(0.5, 1).setDepth(node.y * TILE + 24);
     },
   };
 }

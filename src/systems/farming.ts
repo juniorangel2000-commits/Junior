@@ -40,8 +40,7 @@ export class Farming {
       ok: false,
       message: crop.watered ? `Crescendo com calma… ${Math.floor(crop.growth * 100)}%.` : 'A plantinha está com sede. Use o regador.',
     };
-    inventory.add('turnip', 1);
-    inventory.add('seeds', 1);
+    if (!inventory.transact({}, { turnip: 1, seeds: 1 })) return { ok: false, message: 'A mochila não comporta a colheita. Abra espaço antes de colher.' };
     this.crops.splice(this.crops.indexOf(crop), 1);
     return { ok: true, message: 'Colheita! +1 nabo e +1 semente para recomeçar.' };
   }

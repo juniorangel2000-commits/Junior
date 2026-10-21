@@ -6,25 +6,43 @@ export interface CharacterProfile {
   hairColor: string;
   outfit: string;
 }
-export type ItemId = 'wood' | 'stone' | 'seeds' | 'turnip';
+export type ItemId = 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 'plank' | 'scrap' | 'hatchet' | 'pickaxe' | 'handsaw'
+  | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer';
 export type InventoryData = Record<ItemId, number>;
-export type Tool = 'hand' | 'plant' | 'water' | 'fence' | 'bench' | 'remove';
+export type OwnedTool = 'hatchet' | 'pickaxe' | 'handsaw' | 'hammer';
+export type Tool = 'hand' | 'plant' | 'water' | 'fence' | 'bench' | 'remove' | 'hatchet' | 'pickaxe' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof' | 'blueprint';
 export interface TilePoint { x: number; y: number }
 export interface CropData extends TilePoint { growth: number; watered: boolean }
-export interface BuildingData extends TilePoint { kind: 'fence' | 'bench' }
+export interface BuildingData extends TilePoint { kind: 'fence' | 'bench' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof'; open?: boolean; rotation?: 0 | 1 }
+export type ResourceKind = 'tree' | 'stone' | 'seeds' | 'scrap' | 'standingTree' | 'vein' | 'fiber';
+export interface ResourceNode extends TilePoint { id: string; kind: ResourceKind }
+export interface ResourceProgressData { id: string; hits: number }
+export interface ProgressData {
+  collected: boolean;
+  craftedTools: boolean;
+  harvested: boolean;
+  processed: boolean;
+  builtWorkbench: boolean;
+  sawn: boolean;
+  builtShelter: boolean;
+}
 export interface SaveData {
-  version: 1;
+  version: 2;
   profile: CharacterProfile;
-  player: TilePoint;
+  player: TilePoint & { direction?: 'down' | 'left' | 'right' | 'up' };
   inventory: InventoryData;
   crops: CropData[];
   buildings: BuildingData[];
   depletedResources: string[];
+  resourceProgress: ResourceProgressData[];
+  equippedTool: Tool;
+  progress: ProgressData;
   day: number;
   time: number;
   metLia: boolean;
 }
 export interface HudData {
+  playerTile?: TilePoint;
   name: string;
   day: number;
   time: number;
@@ -34,4 +52,9 @@ export interface HudData {
   location: string;
   harvests: number;
   metLia: boolean;
+  nearWorkbench: boolean;
+  sheltered: boolean;
+  shelterReason: string;
+  resourceProgress: string;
+  progress: ProgressData;
 }

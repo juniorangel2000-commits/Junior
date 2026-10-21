@@ -2,11 +2,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { CharacterProfile } from '../src/types';
 import { Building, BUILD_COSTS } from '../src/systems/building';
 import { Farming, GROWTH_SECONDS } from '../src/systems/farming';
-import { Inventory } from '../src/systems/inventory';
+import { EMPTY_INVENTORY, Inventory } from '../src/systems/inventory';
 import { getLiaDialogue } from '../src/systems/npc';
 import { createNewSave, hasSave, loadSave, SAVE_KEY, saveGame, validateSave } from '../src/systems/save';
 
 const profile: CharacterProfile = { name: 'Ana', skin: '#bc795e', hairStyle: 'preso', hairColor: '#3d302d', outfit: '#69856b' };
+const legacyStock = { wood: 12, stone: 6, seeds: 8, turnip: 0 };
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -15,8 +16,8 @@ describe('mochila', () => {
     const first = new Inventory();
     const second = new Inventory();
     first.add('wood', 7);
-    expect(first.data.wood).toBe(19);
-    expect(second.data.wood).toBe(12);
+    expect(first.data.wood).toBe(7);
+    expect(second.data).toEqual(EMPTY_INVENTORY);
   });
 
   it('consome custos de forma atômica', () => {
@@ -24,7 +25,7 @@ describe('mochila', () => {
     expect(inventory.spend({ wood: 2, stone: 1 })).toBe(false);
     expect(inventory.data.wood).toBe(5);
     expect(inventory.spend({ wood: 2, seeds: 1 })).toBe(true);
-    expect(inventory.data).toEqual({ wood: 3, stone: 0, seeds: 0, turnip: 0 });
+    expect(inventory.data).toEqual({ ...EMPTY_INVENTORY, wood: 3 });
   });
 
   it('recusa quantidades negativas ou fracionárias', () => {
@@ -32,13 +33,13 @@ describe('mochila', () => {
     expect(inventory.spend({ wood: -2 })).toBe(false);
     expect(inventory.spend({ wood: 0.5 })).toBe(false);
     expect(() => inventory.add('wood', Number.NaN)).toThrow(RangeError);
-    expect(inventory.data.wood).toBe(12);
+    expect(inventory.data.wood).toBe(0);
   });
 });
 
 describe('horta', () => {
   it('executa plantar, regar, crescer e colher com devolução de semente', () => {
-    const inventory = new Inventory();
+    const inventory = new Inventory(legacyStock);
     const farming = new Farming();
     expect(farming.plant(21, 20, inventory).ok).toBe(true);
     expect(inventory.data.seeds).toBe(7);
@@ -64,7 +65,7 @@ describe('horta', () => {
   });
 
   it('recusa sobreposição e plantio fora do canteiro sem consumir sementes', () => {
-    const inventory = new Inventory();
+    const inventory = new Inventory(legacyStock);
     const farming = new Farming();
     expect(farming.plant(1, 1, inventory).ok).toBe(false);
     expect(inventory.data.seeds).toBe(8);
@@ -87,7 +88,7 @@ describe('horta', () => {
 
 describe('construção', () => {
   it.each(['fence', 'bench'] as const)('coloca e recolhe %s com reembolso integral', (kind) => {
-    const inventory = new Inventory();
+    const inventory = new Inventory(legacyStock);
     const before = { ...inventory.data };
     const building = new Building();
     expect(building.place(kind, 19, 20, inventory, true).ok).toBe(true);
@@ -98,7 +99,7 @@ describe('construção', () => {
   });
 
   it('não cobra nem substitui construção ao tentar sobrepor', () => {
-    const inventory = new Inventory();
+    const inventory = new Inventory(legacyStock);
     const building = new Building();
     building.place('fence', 19, 20, inventory, true);
     const before = { ...inventory.data };
@@ -143,7 +144,7 @@ describe('salvamento', () => {
   it('recusa versão desconhecida, coordenadas inválidas e estoque negativo', () => {
     const base = createNewSave(profile);
     expect(validateSave(base)).toBe(true);
-    expect(validateSave({ ...base, version: 2 })).toBe(false);
+    expect(validateSave({ ...base, version: 99 })).toBe(false);
     expect(validateSave({ ...base, player: { x: Number.NaN, y: 1 } })).toBe(false);
     expect(validateSave({ ...base, inventory: { ...base.inventory, seeds: -1 } })).toBe(false);
     expect(validateSave({ ...base, profile: { ...profile, name: '  ' } })).toBe(false);

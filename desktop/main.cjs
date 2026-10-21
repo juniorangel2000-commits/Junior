@@ -16,7 +16,7 @@ let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    title: 'Depois da Chuva',
+    title: 'Jardim Depois da Chuva',
     width: 1280,
     height: 800,
     minWidth: 960,
@@ -56,14 +56,15 @@ if (!app.requestSingleInstanceLock()) {
   });
   app.whenReady().then(() => {
     const root = path.resolve(__dirname, '..', 'dist');
-    protocol.handle('chuva', request => {
+    protocol.handle('chuva', async request => {
       try {
         const url = new URL(request.url);
         if (url.hostname !== 'jogo' || request.method !== 'GET') return new Response('Não encontrado.', { status: 404 });
         const pathname = decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname);
         const file = path.resolve(root, `.${pathname}`);
         if (!file.startsWith(root + path.sep)) return new Response('Acesso não permitido.', { status: 403 });
-        return net.fetch(pathToFileURL(file).toString());
+        // O await mantém falhas de leitura dentro do handler (inclusive assets ausentes).
+        return await net.fetch(pathToFileURL(file).toString());
       } catch {
         return new Response('Não foi possível carregar este arquivo.', { status: 400 });
       }

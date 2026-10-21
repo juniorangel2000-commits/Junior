@@ -1,0 +1,516 @@
+{
+  "descricao": "Seleção de PNGs dos pacotes recebidos, copiados sem alteração. Adaptações de escala, pivô e cor acontecem em Canvas no jogo.",
+  "arquivos": [
+    {
+      "arquivo": "public/assets/visual/characters/baixo_0.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/baixo_0.png"
+      ],
+      "sha256": "916aa7cc45b24101936c2368d8b21373d5aac5ac8077bbc2e5a7b29f1ce234e5"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/baixo_1.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/baixo_1.png"
+      ],
+      "sha256": "ae9a88875c7f020e1d0b0065f9ea442be4e7d6b541b20bbeaf4a90cf98aef3ed"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/baixo_2.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/baixo_2.png"
+      ],
+      "sha256": "13262c176a7e28964bd4e72650757a5f578791b45f06536b5242f4abc865efb1"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/baixo_3.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/baixo_3.png"
+      ],
+      "sha256": "79670e6b976e8d6e781298ae2b56ac2a771a8ebbc9e86f4d3859637738f61205"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/baixo_4.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/baixo_4.png"
+      ],
+      "sha256": "0ad7a53e8bc91a8f94f743a02085e66c8f68033513dc26900c3a7aa90d0bc090"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/baixo_5.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/baixo_5.png"
+      ],
+      "sha256": "1e74dd06dc36e9ed2b8a1997c0e71994ccc317b5708205326a076a4666ebae38"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/cima_0.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/cima_0.png"
+      ],
+      "sha256": "87b5f81fe2e6238ed22612f9d2e87a5536444b78ecd3f7d668d8a09dd651a059"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/cima_1.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/cima_1.png"
+      ],
+      "sha256": "7a58e363cde168f25cebb938f1432576089c7bd0cea7dc58acf8653f47713c9a"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/cima_2.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/cima_2.png"
+      ],
+      "sha256": "9a1a5ddc95070513ea8fefce49ac4d672e9566c9d0545ba054ca7eee396c7a23"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/cima_3.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/cima_3.png"
+      ],
+      "sha256": "3af89c98ca3f23f597df6e42a2573699f3b49bb9a49bc12e40f17bd71ffb843a"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/cima_4.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/cima_4.png"
+      ],
+      "sha256": "b3c8a586352ba997aa1baef259148514e297c4001de3d255acbea342c91307a2"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/cima_5.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/cima_5.png"
+      ],
+      "sha256": "c19cd2c8de126936eb1618d560ef5788521e78f08f974e6c146b63e6f9982586"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/direita_0.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/direita_0.png"
+      ],
+      "sha256": "2bc09fc6a9485a880ae6bd00b66d251ee963c744ce2b8ca7639bfa0ce673f213"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/direita_1.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/direita_1.png"
+      ],
+      "sha256": "e96d601e417c976193b9981aebfbb6d45b94611c9b995de67580e7f8283eb3d7"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/direita_2.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/direita_2.png"
+      ],
+      "sha256": "6c04b07344f2b9723f6671d099e2c711d01c4550956f9975079b243de10f6e9d"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/direita_3.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/direita_3.png"
+      ],
+      "sha256": "627c7038a872953c77351fb9c0398ba6426a24c90fe5d0f0a3ab1ef779e2ae91"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/direita_4.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/direita_4.png"
+      ],
+      "sha256": "97ab4c9169454a8db4e9ff3e7f700eedc301b429aa7cb3e3770533b1012bd612"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/direita_5.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/direita_5.png"
+      ],
+      "sha256": "47288061dd24ea759f7d42f2679ce8ba6e29c6030177c62b1f9cf70373fa5539"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/esquerda_0.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/esquerda_0.png"
+      ],
+      "sha256": "22633444c11522ab643e6dd0cb46d4689a561caec7f03b2258bd519330c51135"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/esquerda_1.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/esquerda_1.png"
+      ],
+      "sha256": "1f322db8bb081a7a60817440190f6b68164021a85331004a72642822fdc035d2"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/esquerda_2.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/esquerda_2.png"
+      ],
+      "sha256": "f0548fc9f40002d5895bf7b9923370419334cffb59592dca9c7b0c09d6275208"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/esquerda_3.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/esquerda_3.png"
+      ],
+      "sha256": "b58dd54e98bca9e0b81362b1aa1a532fd0b5af4c8d0c84e5ffc1dfba0068a116"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/esquerda_4.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/esquerda_4.png"
+      ],
+      "sha256": "b2e3eba9b78431d51a22b4c9b6cf0da8e7658f5a90e2449006aae563d88e6ee6"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/esquerda_5.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/personagem/esquerda_5.png"
+      ],
+      "sha256": "f0d6589ef52dd71c24cdffe12fbe19bef4bf2fc627e8f899020be3a027594ffb"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/blade.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/lamina_de_sucata.png"
+      ],
+      "sha256": "31057fe8078d80736d57179fe0e35b57c4da863e34159f4ef1663aa1383099db"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/board.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/tabuas.png",
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/tabua_regular.png"
+      ],
+      "sha256": "38485257492a8f648ac2ad692574aef50d2f6f0de68e7c734b4b9b604e242192"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/branch.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/galhos.png"
+      ],
+      "sha256": "c21b8314bc0392f15aeeebb49b8b475f0f4b690a5b20c6aba0dc7bccae1f17c6"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/cord.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/corda_vegetal.png"
+      ],
+      "sha256": "78cd4236127ae18fd3446042e81fe4ab2271262a388d2f804de5e601e534a33a"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/fiber.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/folhas.png"
+      ],
+      "sha256": "b6a672fcb6d3a03946cdb2d95288abd047ce82b3234cd0943135cbbbac6a2be3"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/flakedStone.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/pedra_lascada.png"
+      ],
+      "sha256": "f612605bad79132172f5f0f9ed8a2b2a5332543eac12856e5193b26125b2c7e1"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/hammer.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/ferramentas/construir.png",
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/martelo_rudimentar.png"
+      ],
+      "sha256": "956261c30a2357d94306d8e525f4dbf0a4393b7f004228938143bdacc2229180"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/handle.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/cabo_de_madeira.png"
+      ],
+      "sha256": "60dbe0580fa88a678e2612e9704ccd70ece6e1eccd5106e948b2977ba45d3567"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/handsaw.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/ferramentas/serrar.png",
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/serrote_improvisado.png"
+      ],
+      "sha256": "bd84dbac5d83f0ad2a96c9fa5744c18bf65a0072acd8f864fbda5c340e11e369"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/hatchet.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/ferramentas/cortar.png",
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/machadinha_de_pedra.png"
+      ],
+      "sha256": "62a4138d0c23382e8e7456f5b1d40afdea6a5d1d5aa7ac90c0ee13bfacd25c82"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/log.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/tronco.png",
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/tronco.png"
+      ],
+      "sha256": "4818da970613ccbc7985a0c698a2aab153bc997989ae22ad995482f6941a7444"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/pickaxe.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/ferramentas/minerar.png",
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/ferramentas/picareta_rudimentar.png"
+      ],
+      "sha256": "24c36c794505ed285f7b6a83f354ed06e87ef4da2b082a4f3799fbdded73569f"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/plank.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/tabuas_brutas.png"
+      ],
+      "sha256": "47a0ed535014438ab1c936f1555f47db0ed20277611f752e073493c77012b262"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/scrap.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/sucata.png",
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/sucata_metalica.png"
+      ],
+      "sha256": "e78f44723447b9a41ac2db4db8228dfd483588d7250aa0720d22a3356c3217e3"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/seeds.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/planta_medicinal.png"
+      ],
+      "sha256": "663e16548f414e35aab5ed41b09ad9b6d3a237a31f1e11649f3e49b41633d76c"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/stone.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/pedra_pequena.png"
+      ],
+      "sha256": "890b891d42eb28fdcae2f5136ed698c8008106a43c98cb80c4e4aeb3d1f292df"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/water.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/balde_com_agua.png"
+      ],
+      "sha256": "aaad5c63ad95c6bec0df2c7a709c3bdf3b45b972d7efb1c72e866400b03297d1"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/wood.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/tronco.png",
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/tronco.png"
+      ],
+      "sha256": "4818da970613ccbc7985a0c698a2aab153bc997989ae22ad995482f6941a7444"
+    },
+    {
+      "arquivo": "public/assets/visual/icons/workbench.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/estacoes/bancada_simples.png"
+      ],
+      "sha256": "953f1ee016e445ab8e24d804e1b0f93aad0b6651dd0205d3cad1dcb5ce68be2e"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/banco_jardim.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/banco_jardim.png"
+      ],
+      "sha256": "a981249395bc23d8a9e5ea89dcfb32bcc9b3bc8765a93b1b446b4b808d086049"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/barril.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/barril.png"
+      ],
+      "sha256": "8209b46ba26f52f45eb890edf15361c551a6e0d5f37ef3251dbc5dfe61982f10"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/caminho.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/caminho.png",
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/caminho.png"
+      ],
+      "sha256": "d14ec6cd006d0ce0acf82824baa56f740204b734dc7a2f7a7d0bfca02607ab0c"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/cerca_natural.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/cerca_natural.png",
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/cerca_natural.png"
+      ],
+      "sha256": "0d8ef8c6221f72eacd0abb2721034301421004409a32484cd9ecaf4f4bb9b856"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/chamine.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/chamine.png"
+      ],
+      "sha256": "d6ead98d3b9451d3866fb60d0ee491caacf82164a88e9288da31421246284d9b"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/floreira.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/floreira.png"
+      ],
+      "sha256": "7bc66e9945d7acbf67bdbca318b8cf1c96930a497cf6e32c02aebb557a338467"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/janela_turquesa.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/janela_turquesa.png"
+      ],
+      "sha256": "03015e3b6b5adbc41fc9adcb0de983413a18db10dee720a61c2f5d520bac5fd1"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/parede_creme.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/parede_creme.png"
+      ],
+      "sha256": "8783026f37914b2d9e0b5729f3074fbe91bff74ef1fa5b5daebcfa175eabda4a"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/parede_janela_floreira.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/parede_janela_floreira.png"
+      ],
+      "sha256": "e1a4fc573b42cfe8451397fc0fb256665a9391724d4e5a81f55f260a837ce797"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/parede_porta.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/parede_porta.png"
+      ],
+      "sha256": "069627945ed9e0432c4ea8aac877f9f317452bc8ca9fb14b5782d772f969c6fb"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/parede_trepadeira.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/parede_trepadeira.png"
+      ],
+      "sha256": "c10648f5d30f87f5618e12e654b7cef370a4b95fb77ea2299e6383e024242b24"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/piso_pedra.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/piso_pedra.png"
+      ],
+      "sha256": "a4a0804726789524724294cf1b9d90f7976ff0c230a4f08db67c337ff5cd56ef"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/piso_tabuas.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/piso_tabuas.png"
+      ],
+      "sha256": "1ca9662b7e32d645111053001ca0820ea5fc52212337bdec15bc9a6c5e78c2f0"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/planta.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/planta.png"
+      ],
+      "sha256": "fbd80fb6a8c875056d8a00f1308f5f81fbe073259710b76ea22ddc6d5df01f60"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/porta_madeira.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/porta_madeira.png"
+      ],
+      "sha256": "23a1a1560eca772644917c0c9c757136c94f891d7b3e0a16189c1024669dc7bc"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/telha_lisa.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/telha_lisa.png"
+      ],
+      "sha256": "42913fadc28d52be85ddfe811d09774d349dc62387d0bcdfeac8d109fa004b7b"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/telha_variante.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/telha_variante.png"
+      ],
+      "sha256": "83dfa278ab8a8295fc84111b878910ba9566ebb10394571d5ae426e6e2a3fd82"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/terra.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/terra.png"
+      ],
+      "sha256": "7a3ea2870bf0f854cfdf7e17b3cbaca7dc9037765d101f9824e348f2c28cdc2d"
+    },
+    {
+      "arquivo": "public/assets/visual/modules/vaso_flor.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Casa_Modular_v1/assets/vaso_flor.png"
+      ],
+      "sha256": "51a6edebcdc03993cfc28bba3507027b19a1b5a39511ede307396020f723f787"
+    },
+    {
+      "arquivo": "public/assets/visual/world/branch.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/galhos.png"
+      ],
+      "sha256": "5767a3c8689f0898a81d1be9db149b2b4b52ddd5d0ca914146dbd02bc9080d48"
+    },
+    {
+      "arquivo": "public/assets/visual/world/fiber.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/folhas.png"
+      ],
+      "sha256": "08b6fcecd008605b9b58df2a054c79c57fb63f94e1b9b2af35b8ac3051e72aa0"
+    },
+    {
+      "arquivo": "public/assets/visual/world/pedra.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/pedra.png",
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/pedra_grande.png"
+      ],
+      "sha256": "8c3f758287309c4f0fa7e007df1a064e702bb2c880c8ed43aca2d3c075f3d5ec"
+    },
+    {
+      "arquivo": "public/assets/visual/world/seed-shrub.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/planta_medicinal.png"
+      ],
+      "sha256": "094ace6bc7df681308cb68c92a412c68175e65add266ec2023b6f07547ad3eea"
+    },
+    {
+      "arquivo": "public/assets/visual/world/sucata.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/sucata.png",
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/sucata_metalica.png"
+      ],
+      "sha256": "e78f44723447b9a41ac2db4db8228dfd483588d7250aa0720d22a3356c3217e3"
+    },
+    {
+      "arquivo": "public/assets/visual/world/tabuas.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/tabuas.png",
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/materiais_processados/tabua_regular.png"
+      ],
+      "sha256": "38485257492a8f648ac2ad692574aef50d2f6f0de68e7c734b4b9b604e242192"
+    },
+    {
+      "arquivo": "public/assets/visual/world/tronco.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Acoes_v0.1/cenario/tronco.png",
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/icones_96px/recursos_brutos/tronco.png"
+      ],
+      "sha256": "4818da970613ccbc7985a0c698a2aab153bc997989ae22ad995482f6941a7444"
+    },
+    {
+      "arquivo": "public/assets/visual/world/vein.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/recursos_brutos/pedra_grande.png"
+      ],
+      "sha256": "a6d9e846e744e8ee4e1f6d43d7bce106fd16b2271dac27b904c02e5fd0879470"
+    },
+    {
+      "arquivo": "public/assets/visual/world/workbench.png",
+      "origens_identicas": [
+        "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/estacoes/bancada_simples.png"
+      ],
+      "sha256": "28c6e5179672534942899177469695dd14c1b734d69543e498868df40aa7807c"
+    }
+  ]
+}

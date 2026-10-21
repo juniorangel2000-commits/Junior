@@ -1,0 +1,1112 @@
+{
+  "projeto": "Jardim Depois da Chuva",
+  "versao": "0.2",
+  "conteudo": "sprites PNG RGBA originais, recortados das 4 folhas aprovadas",
+  "sprites": [
+    {
+      "id": "tocha_simples",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/tocha_simples.png",
+      "icone_96px": "icones_96px/ferramentas/tocha_simples.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        0,
+        0
+      ],
+      "margem_minima_na_folha": 16,
+      "pixels_alpha": 17781
+    },
+    {
+      "id": "faca_improvisada",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/faca_improvisada.png",
+      "icone_96px": "icones_96px/ferramentas/faca_improvisada.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        0,
+        1
+      ],
+      "margem_minima_na_folha": 20,
+      "pixels_alpha": 13197
+    },
+    {
+      "id": "machadinha_de_pedra",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/machadinha_de_pedra.png",
+      "icone_96px": "icones_96px/ferramentas/machadinha_de_pedra.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        0,
+        2
+      ],
+      "margem_minima_na_folha": 20,
+      "pixels_alpha": 18478
+    },
+    {
+      "id": "picareta_rudimentar",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/picareta_rudimentar.png",
+      "icone_96px": "icones_96px/ferramentas/picareta_rudimentar.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        0,
+        3
+      ],
+      "margem_minima_na_folha": 24,
+      "pixels_alpha": 18119
+    },
+    {
+      "id": "martelo_rudimentar",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/martelo_rudimentar.png",
+      "icone_96px": "icones_96px/ferramentas/martelo_rudimentar.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        0,
+        4
+      ],
+      "margem_minima_na_folha": 20,
+      "pixels_alpha": 20043
+    },
+    {
+      "id": "pa_simples",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/pa_simples.png",
+      "icone_96px": "icones_96px/ferramentas/pa_simples.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        1,
+        0
+      ],
+      "margem_minima_na_folha": 17,
+      "pixels_alpha": 18098
+    },
+    {
+      "id": "serrote_improvisado",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/serrote_improvisado.png",
+      "icone_96px": "icones_96px/ferramentas/serrote_improvisado.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        1,
+        1
+      ],
+      "margem_minima_na_folha": 11,
+      "pixels_alpha": 21580
+    },
+    {
+      "id": "enxada_simples",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/enxada_simples.png",
+      "icone_96px": "icones_96px/ferramentas/enxada_simples.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        1,
+        2
+      ],
+      "margem_minima_na_folha": 18,
+      "pixels_alpha": 13479
+    },
+    {
+      "id": "martelo_de_carpinteiro",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/martelo_de_carpinteiro.png",
+      "icone_96px": "icones_96px/ferramentas/martelo_de_carpinteiro.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        1,
+        3
+      ],
+      "margem_minima_na_folha": 23,
+      "pixels_alpha": 15824
+    },
+    {
+      "id": "picareta_reforcada",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/picareta_reforcada.png",
+      "icone_96px": "icones_96px/ferramentas/picareta_reforcada.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        1,
+        4
+      ],
+      "margem_minima_na_folha": 23,
+      "pixels_alpha": 17695
+    },
+    {
+      "id": "machado_reforcado",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/machado_reforcado.png",
+      "icone_96px": "icones_96px/ferramentas/machado_reforcado.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        2,
+        0
+      ],
+      "margem_minima_na_folha": 10,
+      "pixels_alpha": 19449
+    },
+    {
+      "id": "pa_reforcada",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/pa_reforcada.png",
+      "icone_96px": "icones_96px/ferramentas/pa_reforcada.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        2,
+        1
+      ],
+      "margem_minima_na_folha": 7,
+      "pixels_alpha": 19306
+    },
+    {
+      "id": "serrote_reforcado",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/serrote_reforcado.png",
+      "icone_96px": "icones_96px/ferramentas/serrote_reforcado.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        2,
+        2
+      ],
+      "margem_minima_na_folha": 10,
+      "pixels_alpha": 17166
+    },
+    {
+      "id": "picareta_de_ferro",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/picareta_de_ferro.png",
+      "icone_96px": "icones_96px/ferramentas/picareta_de_ferro.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        2,
+        3
+      ],
+      "margem_minima_na_folha": 10,
+      "pixels_alpha": 17344
+    },
+    {
+      "id": "machado_de_ferro",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/machado_de_ferro.png",
+      "icone_96px": "icones_96px/ferramentas/machado_de_ferro.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        2,
+        4
+      ],
+      "margem_minima_na_folha": 11,
+      "pixels_alpha": 19403
+    },
+    {
+      "id": "martelo_de_ferro",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/martelo_de_ferro.png",
+      "icone_96px": "icones_96px/ferramentas/martelo_de_ferro.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        3,
+        0
+      ],
+      "margem_minima_na_folha": 23,
+      "pixels_alpha": 20978
+    },
+    {
+      "id": "vara_de_pesca",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/vara_de_pesca.png",
+      "icone_96px": "icones_96px/ferramentas/vara_de_pesca.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        3,
+        1
+      ],
+      "margem_minima_na_folha": 9,
+      "pixels_alpha": 18401
+    },
+    {
+      "id": "arco_simples",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/arco_simples.png",
+      "icone_96px": "icones_96px/ferramentas/arco_simples.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        3,
+        2
+      ],
+      "margem_minima_na_folha": 16,
+      "pixels_alpha": 17405
+    },
+    {
+      "id": "lanterna_rustica",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/lanterna_rustica.png",
+      "icone_96px": "icones_96px/ferramentas/lanterna_rustica.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        3,
+        3
+      ],
+      "margem_minima_na_folha": 13,
+      "pixels_alpha": 25157
+    },
+    {
+      "id": "lanca_simples",
+      "categoria": "ferramentas",
+      "arquivo": "sprites/ferramentas/lanca_simples.png",
+      "icone_96px": "icones_96px/ferramentas/lanca_simples.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ferramentas_em_pixel_art.png",
+      "grade": [
+        3,
+        4
+      ],
+      "margem_minima_na_folha": 13,
+      "pixels_alpha": 13949
+    },
+    {
+      "id": "galhos",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/galhos.png",
+      "icone_96px": "icones_96px/recursos_brutos/galhos.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        0,
+        0
+      ],
+      "margem_minima_na_folha": 23,
+      "pixels_alpha": 27352
+    },
+    {
+      "id": "feixe_de_galhos",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/feixe_de_galhos.png",
+      "icone_96px": "icones_96px/recursos_brutos/feixe_de_galhos.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        0,
+        1
+      ],
+      "margem_minima_na_folha": 21,
+      "pixels_alpha": 29619
+    },
+    {
+      "id": "tronco",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/tronco.png",
+      "icone_96px": "icones_96px/recursos_brutos/tronco.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        0,
+        2
+      ],
+      "margem_minima_na_folha": 29,
+      "pixels_alpha": 27095
+    },
+    {
+      "id": "folhas",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/folhas.png",
+      "icone_96px": "icones_96px/recursos_brutos/folhas.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        0,
+        3
+      ],
+      "margem_minima_na_folha": 21,
+      "pixels_alpha": 33726
+    },
+    {
+      "id": "fibra_vegetal",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/fibra_vegetal.png",
+      "icone_96px": "icones_96px/recursos_brutos/fibra_vegetal.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        0,
+        4
+      ],
+      "margem_minima_na_folha": 17,
+      "pixels_alpha": 33469
+    },
+    {
+      "id": "pedra_pequena",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/pedra_pequena.png",
+      "icone_96px": "icones_96px/recursos_brutos/pedra_pequena.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        1,
+        0
+      ],
+      "margem_minima_na_folha": 37,
+      "pixels_alpha": 17104
+    },
+    {
+      "id": "pedra_grande",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/pedra_grande.png",
+      "icone_96px": "icones_96px/recursos_brutos/pedra_grande.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        1,
+        1
+      ],
+      "margem_minima_na_folha": 16,
+      "pixels_alpha": 32239
+    },
+    {
+      "id": "minerio_de_ferro",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/minerio_de_ferro.png",
+      "icone_96px": "icones_96px/recursos_brutos/minerio_de_ferro.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        1,
+        2
+      ],
+      "margem_minima_na_folha": 20,
+      "pixels_alpha": 29927
+    },
+    {
+      "id": "argila",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/argila.png",
+      "icone_96px": "icones_96px/recursos_brutos/argila.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        1,
+        3
+      ],
+      "margem_minima_na_folha": 25,
+      "pixels_alpha": 27239
+    },
+    {
+      "id": "areia",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/areia.png",
+      "icone_96px": "icones_96px/recursos_brutos/areia.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        1,
+        4
+      ],
+      "margem_minima_na_folha": 26,
+      "pixels_alpha": 24176
+    },
+    {
+      "id": "sucata_metalica",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/sucata_metalica.png",
+      "icone_96px": "icones_96px/recursos_brutos/sucata_metalica.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        2,
+        0
+      ],
+      "margem_minima_na_folha": 23,
+      "pixels_alpha": 31326
+    },
+    {
+      "id": "carvao_vegetal",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/carvao_vegetal.png",
+      "icone_96px": "icones_96px/recursos_brutos/carvao_vegetal.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        2,
+        1
+      ],
+      "margem_minima_na_folha": 25,
+      "pixels_alpha": 29864
+    },
+    {
+      "id": "planta_medicinal",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/planta_medicinal.png",
+      "icone_96px": "icones_96px/recursos_brutos/planta_medicinal.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        2,
+        2
+      ],
+      "margem_minima_na_folha": 12,
+      "pixels_alpha": 34534
+    },
+    {
+      "id": "cogumelo",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/cogumelo.png",
+      "icone_96px": "icones_96px/recursos_brutos/cogumelo.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        2,
+        3
+      ],
+      "margem_minima_na_folha": 33,
+      "pixels_alpha": 26928
+    },
+    {
+      "id": "frutas_silvestres",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/frutas_silvestres.png",
+      "icone_96px": "icones_96px/recursos_brutos/frutas_silvestres.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        2,
+        4
+      ],
+      "margem_minima_na_folha": 24,
+      "pixels_alpha": 31212
+    },
+    {
+      "id": "balde_com_agua",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/balde_com_agua.png",
+      "icone_96px": "icones_96px/recursos_brutos/balde_com_agua.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        3,
+        0
+      ],
+      "margem_minima_na_folha": 13,
+      "pixels_alpha": 33744
+    },
+    {
+      "id": "pena",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/pena.png",
+      "icone_96px": "icones_96px/recursos_brutos/pena.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        3,
+        1
+      ],
+      "margem_minima_na_folha": 18,
+      "pixels_alpha": 21281
+    },
+    {
+      "id": "osso",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/osso.png",
+      "icone_96px": "icones_96px/recursos_brutos/osso.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        3,
+        2
+      ],
+      "margem_minima_na_folha": 33,
+      "pixels_alpha": 14256
+    },
+    {
+      "id": "couro",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/couro.png",
+      "icone_96px": "icones_96px/recursos_brutos/couro.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        3,
+        3
+      ],
+      "margem_minima_na_folha": 24,
+      "pixels_alpha": 28199
+    },
+    {
+      "id": "pele_de_animal",
+      "categoria": "recursos_brutos",
+      "arquivo": "sprites/recursos_brutos/pele_de_animal.png",
+      "icone_96px": "icones_96px/recursos_brutos/pele_de_animal.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_recursos_em_pixel_art.png",
+      "grade": [
+        3,
+        4
+      ],
+      "margem_minima_na_folha": 14,
+      "pixels_alpha": 35964
+    },
+    {
+      "id": "corda_vegetal",
+      "categoria": "materiais_processados",
+      "arquivo": "sprites/materiais_processados/corda_vegetal.png",
+      "icone_96px": "icones_96px/materiais_processados/corda_vegetal.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ícones_pixel_art_artesanais.png",
+      "grade": [
+        0,
+        0
+      ],
+      "margem_minima_na_folha": 29,
+      "pixels_alpha": 34246
+    },
+    {
+      "id": "pedra_lascada",
+      "categoria": "materiais_processados",
+      "arquivo": "sprites/materiais_processados/pedra_lascada.png",
+      "icone_96px": "icones_96px/materiais_processados/pedra_lascada.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ícones_pixel_art_artesanais.png",
+      "grade": [
+        0,
+        1
+      ],
+      "margem_minima_na_folha": 24,
+      "pixels_alpha": 26844
+    },
+    {
+      "id": "cabo_de_madeira",
+      "categoria": "materiais_processados",
+      "arquivo": "sprites/materiais_processados/cabo_de_madeira.png",
+      "icone_96px": "icones_96px/materiais_processados/cabo_de_madeira.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ícones_pixel_art_artesanais.png",
+      "grade": [
+        0,
+        2
+      ],
+      "margem_minima_na_folha": 45,
+      "pixels_alpha": 14395
+    },
+    {
+      "id": "tabuas_brutas",
+      "categoria": "materiais_processados",
+      "arquivo": "sprites/materiais_processados/tabuas_brutas.png",
+      "icone_96px": "icones_96px/materiais_processados/tabuas_brutas.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ícones_pixel_art_artesanais.png",
+      "grade": [
+        0,
+        3
+      ],
+      "margem_minima_na_folha": 27,
+      "pixels_alpha": 27356
+    },
+    {
+      "id": "tabua_regular",
+      "categoria": "materiais_processados",
+      "arquivo": "sprites/materiais_processados/tabua_regular.png",
+      "icone_96px": "icones_96px/materiais_processados/tabua_regular.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ícones_pixel_art_artesanais.png",
+      "grade": [
+        0,
+        4
+      ],
+      "margem_minima_na_folha": 34,
+      "pixels_alpha": 25834
+    },
+    {
+      "id": "viga_de_madeira",
+      "categoria": "materiais_processados",
+      "arquivo": "sprites/materiais_processados/viga_de_madeira.png",
+      "icone_96px": "icones_96px/materiais_processados/viga_de_madeira.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ícones_pixel_art_artesanais.png",
+      "grade": [
+        1,
+        0
+      ],
+      "margem_minima_na_folha": 31,
+      "pixels_alpha": 30488
+    },
+    {
+      "id": "lamina_de_sucata",
+      "categoria": "materiais_processados",
+      "arquivo": "sprites/materiais_processados/lamina_de_sucata.png",
+      "icone_96px": "icones_96px/materiais_processados/lamina_de_sucata.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ícones_pixel_art_artesanais.png",
+      "grade": [
+        1,
+        1
+      ],
+      "margem_minima_na_folha": 36,
+      "pixels_alpha": 25370
+    },
+    {
+      "id": "barra_de_ferro",
+      "categoria": "materiais_processados",
+      "arquivo": "sprites/materiais_processados/barra_de_ferro.png",
+      "icone_96px": "icones_96px/materiais_processados/barra_de_ferro.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ícones_pixel_art_artesanais.png",
+      "grade": [
+        1,
+        2
+      ],
+      "margem_minima_na_folha": 31,
+      "pixels_alpha": 23687
+    },
+    {
+      "id": "pregos",
+      "categoria": "materiais_processados",
+      "arquivo": "sprites/materiais_processados/pregos.png",
+      "icone_96px": "icones_96px/materiais_processados/pregos.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ícones_pixel_art_artesanais.png",
+      "grade": [
+        1,
+        3
+      ],
+      "margem_minima_na_folha": 37,
+      "pixels_alpha": 19146
+    },
+    {
+      "id": "tijolo_cru",
+      "categoria": "materiais_processados",
+      "arquivo": "sprites/materiais_processados/tijolo_cru.png",
+      "icone_96px": "icones_96px/materiais_processados/tijolo_cru.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ícones_pixel_art_artesanais.png",
+      "grade": [
+        1,
+        4
+      ],
+      "margem_minima_na_folha": 42,
+      "pixels_alpha": 26877
+    },
+    {
+      "id": "tijolo_cozido",
+      "categoria": "materiais_processados",
+      "arquivo": "sprites/materiais_processados/tijolo_cozido.png",
+      "icone_96px": "icones_96px/materiais_processados/tijolo_cozido.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ícones_pixel_art_artesanais.png",
+      "grade": [
+        2,
+        0
+      ],
+      "margem_minima_na_folha": 35,
+      "pixels_alpha": 25417
+    },
+    {
+      "id": "bloco_de_pedra",
+      "categoria": "materiais_processados",
+      "arquivo": "sprites/materiais_processados/bloco_de_pedra.png",
+      "icone_96px": "icones_96px/materiais_processados/bloco_de_pedra.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ícones_pixel_art_artesanais.png",
+      "grade": [
+        2,
+        1
+      ],
+      "margem_minima_na_folha": 32,
+      "pixels_alpha": 30271
+    },
+    {
+      "id": "bloco_de_vidro",
+      "categoria": "materiais_processados",
+      "arquivo": "sprites/materiais_processados/bloco_de_vidro.png",
+      "icone_96px": "icones_96px/materiais_processados/bloco_de_vidro.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ícones_pixel_art_artesanais.png",
+      "grade": [
+        2,
+        2
+      ],
+      "margem_minima_na_folha": 26,
+      "pixels_alpha": 37109
+    },
+    {
+      "id": "couro_tratado",
+      "categoria": "materiais_processados",
+      "arquivo": "sprites/materiais_processados/couro_tratado.png",
+      "icone_96px": "icones_96px/materiais_processados/couro_tratado.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ícones_pixel_art_artesanais.png",
+      "grade": [
+        2,
+        3
+      ],
+      "margem_minima_na_folha": 27,
+      "pixels_alpha": 36330
+    },
+    {
+      "id": "caixa_de_composto",
+      "categoria": "materiais_processados",
+      "arquivo": "sprites/materiais_processados/caixa_de_composto.png",
+      "icone_96px": "icones_96px/materiais_processados/caixa_de_composto.png",
+      "tamanho": [
+        320,
+        320
+      ],
+      "source": "grade_de_ícones_pixel_art_artesanais.png",
+      "grade": [
+        2,
+        4
+      ],
+      "margem_minima_na_folha": 28,
+      "pixels_alpha": 40678
+    },
+    {
+      "id": "bancada_simples",
+      "categoria": "estacoes",
+      "arquivo": "sprites/estacoes/bancada_simples.png",
+      "icone_96px": "icones_96px/estacoes/bancada_simples.png",
+      "tamanho": [
+        512,
+        512
+      ],
+      "source": "grade_de_sprites_pixel_art_de_oficinas_rústicas.png",
+      "grade": [
+        0,
+        0
+      ],
+      "margem_minima_na_folha": 27,
+      "pixels_alpha": 61804
+    },
+    {
+      "id": "bancada_de_carpintaria",
+      "categoria": "estacoes",
+      "arquivo": "sprites/estacoes/bancada_de_carpintaria.png",
+      "icone_96px": "icones_96px/estacoes/bancada_de_carpintaria.png",
+      "tamanho": [
+        512,
+        512
+      ],
+      "source": "grade_de_sprites_pixel_art_de_oficinas_rústicas.png",
+      "grade": [
+        0,
+        1
+      ],
+      "margem_minima_na_folha": 22,
+      "pixels_alpha": 68628
+    },
+    {
+      "id": "forja_rustica",
+      "categoria": "estacoes",
+      "arquivo": "sprites/estacoes/forja_rustica.png",
+      "icone_96px": "icones_96px/estacoes/forja_rustica.png",
+      "tamanho": [
+        512,
+        512
+      ],
+      "source": "grade_de_sprites_pixel_art_de_oficinas_rústicas.png",
+      "grade": [
+        0,
+        2
+      ],
+      "margem_minima_na_folha": 18,
+      "pixels_alpha": 66866
+    },
+    {
+      "id": "forno_de_materiais",
+      "categoria": "estacoes",
+      "arquivo": "sprites/estacoes/forno_de_materiais.png",
+      "icone_96px": "icones_96px/estacoes/forno_de_materiais.png",
+      "tamanho": [
+        512,
+        512
+      ],
+      "source": "grade_de_sprites_pixel_art_de_oficinas_rústicas.png",
+      "grade": [
+        0,
+        3
+      ],
+      "margem_minima_na_folha": 13,
+      "pixels_alpha": 64792
+    },
+    {
+      "id": "mesa_de_construcao",
+      "categoria": "estacoes",
+      "arquivo": "sprites/estacoes/mesa_de_construcao.png",
+      "icone_96px": "icones_96px/estacoes/mesa_de_construcao.png",
+      "tamanho": [
+        512,
+        512
+      ],
+      "source": "grade_de_sprites_pixel_art_de_oficinas_rústicas.png",
+      "grade": [
+        0,
+        4
+      ],
+      "margem_minima_na_folha": 28,
+      "pixels_alpha": 65709
+    },
+    {
+      "id": "estacao_de_costura",
+      "categoria": "estacoes",
+      "arquivo": "sprites/estacoes/estacao_de_costura.png",
+      "icone_96px": "icones_96px/estacoes/estacao_de_costura.png",
+      "tamanho": [
+        512,
+        512
+      ],
+      "source": "grade_de_sprites_pixel_art_de_oficinas_rústicas.png",
+      "grade": [
+        1,
+        0
+      ],
+      "margem_minima_na_folha": 37,
+      "pixels_alpha": 66703
+    },
+    {
+      "id": "tanque_de_agua",
+      "categoria": "estacoes",
+      "arquivo": "sprites/estacoes/tanque_de_agua.png",
+      "icone_96px": "icones_96px/estacoes/tanque_de_agua.png",
+      "tamanho": [
+        512,
+        512
+      ],
+      "source": "grade_de_sprites_pixel_art_de_oficinas_rústicas.png",
+      "grade": [
+        1,
+        1
+      ],
+      "margem_minima_na_folha": 20,
+      "pixels_alpha": 75115
+    },
+    {
+      "id": "horta_elevada",
+      "categoria": "estacoes",
+      "arquivo": "sprites/estacoes/horta_elevada.png",
+      "icone_96px": "icones_96px/estacoes/horta_elevada.png",
+      "tamanho": [
+        512,
+        512
+      ],
+      "source": "grade_de_sprites_pixel_art_de_oficinas_rústicas.png",
+      "grade": [
+        1,
+        2
+      ],
+      "margem_minima_na_folha": 12,
+      "pixels_alpha": 81050
+    },
+    {
+      "id": "caixa_de_compostagem",
+      "categoria": "estacoes",
+      "arquivo": "sprites/estacoes/caixa_de_compostagem.png",
+      "icone_96px": "icones_96px/estacoes/caixa_de_compostagem.png",
+      "tamanho": [
+        512,
+        512
+      ],
+      "source": "grade_de_sprites_pixel_art_de_oficinas_rústicas.png",
+      "grade": [
+        1,
+        3
+      ],
+      "margem_minima_na_folha": 38,
+      "pixels_alpha": 72407
+    },
+    {
+      "id": "moinho_de_graos",
+      "categoria": "estacoes",
+      "arquivo": "sprites/estacoes/moinho_de_graos.png",
+      "icone_96px": "icones_96px/estacoes/moinho_de_graos.png",
+      "tamanho": [
+        512,
+        512
+      ],
+      "source": "grade_de_sprites_pixel_art_de_oficinas_rústicas.png",
+      "grade": [
+        1,
+        4
+      ],
+      "margem_minima_na_folha": 25,
+      "pixels_alpha": 63359
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "projeto": "Jardim Depois da Chuva",
+  "versao": "0.1",
+  "fonte_personagem": "ficha_de_personagem_em_pixel_art.png",
+  "status": "Protótipo: frames de ação compostos de sprites originais e ferramentas, NÃO são animações manuais definitivas",
+  "canvas_personagem_px": [
+    96,
+    128
+  ],
+  "direcoes": [
+    "baixo",
+    "cima",
+    "esquerda",
+    "direita"
+  ],
+  "acoes": {
+    "cortar": {
+      "frames_por_direcao": 8,
+      "total_frames": 32,
+      "duracao_ms": 900,
+      "evento_no_frame": 4,
+      "ferramenta": "machadinha_de_pedra",
+      "modelo_caminho": "acoes/cortar/{direcao}/{frame:02}.png"
+    },
+    "minerar": {
+      "frames_por_direcao": 8,
+      "total_frames": 32,
+      "duracao_ms": 1000,
+      "evento_no_frame": 4,
+      "ferramenta": "picareta_rudimentar",
+      "modelo_caminho": "acoes/minerar/{direcao}/{frame:02}.png"
+    },
+    "serrar": {
+      "frames_por_direcao": 8,
+      "total_frames": 32,
+      "duracao_ms": 950,
+      "evento_no_frame": 4,
+      "ferramenta": "serrote_improvisado",
+      "modelo_caminho": "acoes/serrar/{direcao}/{frame:02}.png"
+    },
+    "construir": {
+      "frames_por_direcao": 8,
+      "total_frames": 32,
+      "duracao_ms": 800,
+      "evento_no_frame": 4,
+      "ferramenta": "martelo_rudimentar",
+      "modelo_caminho": "acoes/construir/{direcao}/{frame:02}.png"
+    }
+  },
+  "locomocao": {
+    "baixo": [
+      "personagem/baixo_0.png",
+      "personagem/baixo_1.png",
+      "personagem/baixo_2.png",
+      "personagem/baixo_3.png",
+      "personagem/baixo_4.png",
+      "personagem/baixo_5.png"
+    ],
+    "cima": [
+      "personagem/cima_0.png",
+      "personagem/cima_1.png",
+      "personagem/cima_2.png",
+      "personagem/cima_3.png",
+      "personagem/cima_4.png",
+      "personagem/cima_5.png"
+    ],
+    "esquerda": [
+      "personagem/esquerda_0.png",
+      "personagem/esquerda_1.png",
+      "personagem/esquerda_2.png",
+      "personagem/esquerda_3.png",
+      "personagem/esquerda_4.png",
+      "personagem/esquerda_5.png"
+    ],
+    "direita": [
+      "personagem/direita_0.png",
+      "personagem/direita_1.png",
+      "personagem/direita_2.png",
+      "personagem/direita_3.png",
+      "personagem/direita_4.png",
+      "personagem/direita_5.png"
+    ]
+  },
+  "colisao_recomendada": {
+    "alcance_px": 90,
+    "evento_no_quadro": 4
+  },
+  "nota": "Bases de movimento extraídas da ficha original; preservam a estética do personagem. Futuramente desenhar poses reais de tronco, braços, ferramentas e sombras."
+}

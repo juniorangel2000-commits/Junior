@@ -1,0 +1,132 @@
+{
+  "versao": "0.1_prototipo",
+  "grade_px": 32,
+  "pecas": [
+    {
+      "id": "bau_simples",
+      "arquivo": "tiles/bau_simples.png",
+      "tamanho_px": [
+        32,
+        32
+      ],
+      "tipo": "tile"
+    },
+    {
+      "id": "piso_de_pedra",
+      "arquivo": "tiles/piso_de_pedra.png",
+      "tamanho_px": [
+        32,
+        32
+      ],
+      "tipo": "tile"
+    },
+    {
+      "id": "telhado_telhas",
+      "arquivo": "tiles/telhado_telhas.png",
+      "tamanho_px": [
+        32,
+        32
+      ],
+      "tipo": "tile"
+    },
+    {
+      "id": "caminho_de_pedras",
+      "arquivo": "tiles/caminho_de_pedras.png",
+      "tamanho_px": [
+        32,
+        32
+      ],
+      "tipo": "tile"
+    },
+    {
+      "id": "canteiro_elevado",
+      "arquivo": "tiles/canteiro_elevado.png",
+      "tamanho_px": [
+        32,
+        32
+      ],
+      "tipo": "tile"
+    },
+    {
+      "id": "parede_final",
+      "arquivo": "tiles/parede_final.png",
+      "tamanho_px": [
+        32,
+        64
+      ],
+      "tipo": "parede_vertical"
+    },
+    {
+      "id": "parede_com_porta",
+      "arquivo": "tiles/parede_com_porta.png",
+      "tamanho_px": [
+        32,
+        64
+      ],
+      "tipo": "parede_vertical"
+    },
+    {
+      "id": "parede_com_janela",
+      "arquivo": "tiles/parede_com_janela.png",
+      "tamanho_px": [
+        32,
+        64
+      ],
+      "tipo": "parede_vertical"
+    },
+    {
+      "id": "parede_frontal",
+      "arquivo": "tiles/parede_frontal.png",
+      "tamanho_px": [
+        32,
+        64
+      ],
+      "tipo": "parede_vertical"
+    },
+    {
+      "id": "terreno_grama",
+      "arquivo": "tiles/terreno_grama.png",
+      "tamanho_px": [
+        32,
+        32
+      ],
+      "tipo": "tile"
+    },
+    {
+      "id": "cerca_reta",
+      "arquivo": "tiles/cerca_reta.png",
+      "tamanho_px": [
+        32,
+        32
+      ],
+      "tipo": "tile"
+    },
+    {
+      "id": "solo_arado",
+      "arquivo": "tiles/solo_arado.png",
+      "tamanho_px": [
+        32,
+        32
+      ],
+      "tipo": "tile"
+    },
+    {
+      "id": "piso_de_madeira",
+      "arquivo": "tiles/piso_de_madeira.png",
+      "tamanho_px": [
+        32,
+        32
+      ],
+      "tipo": "tile"
+    },
+    {
+      "id": "parede_de_canto",
+      "arquivo": "tiles/parede_de_canto.png",
+      "tamanho_px": [
+        32,
+        64
+      ],
+      "tipo": "parede_vertical"
+    }
+  ]
+}

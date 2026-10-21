@@ -1,0 +1,587 @@
+[
+  {
+    "id": "tocha_simples",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "faca_improvisada",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "machadinha_de_pedra",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "picareta_rudimentar",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "martelo_rudimentar",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "pa_simples",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "serrote_improvisado",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "enxada_simples",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "martelo_de_carpinteiro",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "picareta_reforcada",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "machado_reforcado",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "pa_reforcada",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "serrote_reforcado",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "picareta_de_ferro",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "machado_de_ferro",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "martelo_de_ferro",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "vara_de_pesca",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "arco_simples",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "lanterna_rustica",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "lanca_simples",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "galhos",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "feixe_de_galhos",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "tronco",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "folhas",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "fibra_vegetal",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "pedra_pequena",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "pedra_grande",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "minerio_de_ferro",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "argila",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "areia",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "sucata_metalica",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "carvao_vegetal",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "planta_medicinal",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "cogumelo",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "frutas_silvestres",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "balde_com_agua",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "pena",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "osso",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "couro",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "pele_de_animal",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "corda_vegetal",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "pedra_lascada",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "cabo_de_madeira",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "tabuas_brutas",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "tabua_regular",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "viga_de_madeira",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "lamina_de_sucata",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "barra_de_ferro",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "pregos",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "tijolo_cru",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "tijolo_cozido",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "bloco_de_pedra",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "bloco_de_vidro",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "couro_tratado",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "caixa_de_composto",
+    "ok": true,
+    "margem_px": 32,
+    "dim": [
+      320,
+      320
+    ]
+  },
+  {
+    "id": "bancada_simples",
+    "ok": true,
+    "margem_px": 58,
+    "dim": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "bancada_de_carpintaria",
+    "ok": true,
+    "margem_px": 58,
+    "dim": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "forja_rustica",
+    "ok": true,
+    "margem_px": 58,
+    "dim": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "forno_de_materiais",
+    "ok": true,
+    "margem_px": 58,
+    "dim": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "mesa_de_construcao",
+    "ok": true,
+    "margem_px": 58,
+    "dim": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "estacao_de_costura",
+    "ok": true,
+    "margem_px": 58,
+    "dim": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "tanque_de_agua",
+    "ok": true,
+    "margem_px": 58,
+    "dim": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "horta_elevada",
+    "ok": true,
+    "margem_px": 58,
+    "dim": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "caixa_de_compostagem",
+    "ok": true,
+    "margem_px": 58,
+    "dim": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "moinho_de_graos",
+    "ok": true,
+    "margem_px": 58,
+    "dim": [
+      512,
+      512
+    ]
+  }
+]
