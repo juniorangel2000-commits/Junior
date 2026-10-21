@@ -196,7 +196,7 @@ export class ValleyScene extends Phaser.Scene {
     this.roofSprites = [];
     this.cropSignature = '';
     this.buildingSignature = '';
-    this.world = createWorld(this, data.depletedResources);
+    this.world = createWorld(this, data.depletedResources, data.buildings);
     // Uma estação já salva tem prioridade sobre novos pontos de coleta.
     for (const b of data.buildings) {
       for (const point of buildingFootprint(b)) {
@@ -217,6 +217,7 @@ export class ValleyScene extends Phaser.Scene {
     this.input.keyboard?.resetKeys();
     this.player.update(0, this.blocked);
     this.recoverPlayerPosition();
+    this.world.updateOcclusion(this.player.x, this.player.y);
     this.add.sprite(NPC_POSITION.x, NPC_POSITION.y, 'lia').setOrigin(0.5, 1).setDepth(NPC_POSITION.y);
     this.add.text(NPC_POSITION.x, NPC_POSITION.y - 40, 'Lia', {
       fontFamily: 'monospace', fontSize: '10px', color: '#fff1d2', backgroundColor: '#344d3d', padding: { x: 5, y: 3 },
@@ -575,6 +576,7 @@ export class ValleyScene extends Phaser.Scene {
     if (!this.canPlay()) return;
     this.cameras.main.setLerp(1 - Math.exp(-9 * delta));
     this.player.update(delta, this.blocked);
+    this.world.updateOcclusion(this.player.x, this.player.y);
     this.farming.update(delta);
     this.state.time += delta * 2;
     if (this.state.time >= 1440) { this.state.time -= 1440; this.state.day += 1; this.ui.toast(`Dia ${this.state.day}. A terra espera por você.`); }

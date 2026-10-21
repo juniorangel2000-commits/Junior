@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
-import type { ResourceKind, ResourceNode } from './types';
+import type { BuildingData, ResourceKind, ResourceNode } from './types';
+import { paintTerrain } from './terrain-art';
+import { decorateProperty } from './property-art';
 import { createLegacyTrees, getRegionAt, isBridgeTile, isFarmTile, isPathTile, isWaterTile, TILE, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 
 export type { ResourceNode } from './types';
@@ -20,16 +22,14 @@ export interface WorldView {
   isBuildable(x: number, y: number): boolean;
   resourceAt(x: number, y: number): ResourceNode | undefined;
   removeResource(id: string): void;
+  updateOcclusion(playerX: number, playerY: number): void;
 }
 
 function randomSource(seed: number): () => number {
   return () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
 }
 
-export function createWorld(scene: Phaser.Scene, depletedResources: string[]): WorldView {
-  // O terreno usa seu próprio RNG; o layout legado é reconstituído separadamente.
-  const random = randomSource(85021);
-  const visualRandom = randomSource(902103);
+export function createWorld(scene: Phaser.Scene, depletedResources: string[], buildings: readonly BuildingData[] = []): WorldView {
   const blocked = new Set<string>();
   // Resource collision is separate: felling a tree must never erase a ruin wall.
   const resourceBlocked = new Set<string>();
@@ -37,143 +37,26 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[]): W
   const depleted = new Set(depletedResources);
   const resources: ResourceNode[] = [];
   const resourceImages = new Map<string, Phaser.GameObjects.Image>();
+  const canopies = new Map<string, { image: Phaser.GameObjects.Image; x: number; y: number; width: number; height: number }>();
+  let fadedTrees = new Set<string>();
   const key = (x: number, y: number) => `${x},${y}`;
   const isFarm = isFarmTile;
   const waterAt = isWaterTile;
   const bridgeAt = isBridgeTile;
   const pathAt = isPathTile;
 
-  const terrain = document.createElement('canvas');
-  terrain.width = WORLD_WIDTH * TILE;
-  terrain.height = WORLD_HEIGHT * TILE;
-  const c = terrain.getContext('2d')!;
-  const rect = (color: string, x: number, y: number, width: number, height: number) => {
-    c.fillStyle = color; c.fillRect(Math.floor(x), Math.floor(y), width, height);
-  };
-  const grassPalette = ['#647c40', '#718946', '#7e954c', '#8da251', '#9caf58', '#aaba62', '#b3c16b'];
-  const forestPalette = ['#405f3c', '#4a6c40', '#547845', '#64894a', '#739950', '#83a656', '#95b65e'];
-  const meadowPalette = ['#738647', '#85984d', '#93a454', '#a2b05d', '#acb969', '#b7c472', '#c2cc7a'];
-  const grassAt = (x: number, y: number) => {
-    const waves = Math.sin(x * 0.014 + Math.cos(y * 0.008) * 1.4)
-      + Math.sin(y * 0.019 + Math.sin(x * 0.009)) * 0.8 + Math.sin((x + y) * 0.006) * 0.55;
-    const index = Math.max(0, Math.min(grassPalette.length - 1, Math.floor(3.3 + waves * 1.2)));
-    const region = getRegionAt(x / TILE, y / TILE);
-    return (region.id === 'pine-forest' ? forestPalette : region.id === 'open-fields' ? meadowPalette : grassPalette)[index];
-  };
-  for (let y = 0; y < WORLD_HEIGHT; y++) {
-    for (let x = 0; x < WORLD_WIDTH; x++) {
-      const px = x * TILE, py = y * TILE;
-      if (waterAt(x, y)) {
-        rect(['#4f8280', '#508381', '#518482'][Math.floor(random() * 3)], px, py, TILE, TILE);
-        for (let n = 0; n < 3; n++) rect(n === 0 ? '#8ab4a5' : '#62968e', px + random() * 24, py + random() * 29, 4 + Math.floor(random() * 8), 2);
-        if (!bridgeAt(x, y)) blocked.add(key(x, y));
-        continue;
-      }
-      const farm = isFarm(x, y);
-      const path = pathAt(x, y);
-      rect(farm ? '#856044' : path ? '#c7ad78' : ['#8b9b51', '#8c9c52', '#8b9b52', '#8c9c51'][Math.floor(random() * 4)], px, py, TILE, TILE);
-      if (farm) {
-        for (let sy = 0; sy < TILE; sy += 4) for (let sx = 0; sx < TILE; sx += 4) {
-          if (visualRandom() > 0.7) rect(visualRandom() > 0.5 ? '#8d6748' : '#7c593f', px + sx, py + sy, 3, 2);
-        }
-        for (const row of [6, 13, 20, 27]) {
-          rect('#98704b', px + 2, py + row, 28, 1);
-          rect('#715038', px + 3, py + row + 1, 26, 2);
-        }
-        continue;
-      }
-      if (!path) {
-        for (let sy = 0; sy < TILE; sy += 4) for (let sx = 0; sx < TILE; sx += 4) {
-          rect(grassAt(px + sx, py + sy), px + sx, py + sy, 4, 4);
-        }
-      }
-      for (let n = 0; n < 9; n++) {
-        const lx = px + Math.floor(random() * 30), ly = py + Math.floor(random() * 30);
-        rect(path ? ['#bda170', '#d2ba88'][n % 2] : ['#a0ad61', '#788d48', '#98a659'][n % 3], lx, ly, 2 + Math.floor(random() * 3), 1 + Math.floor(random() * 2));
-      }
-      if (!path && random() > 0.56) {
-        const lx = px + 5 + random() * 20, ly = py + 6 + random() * 18;
-        rect('#627d40', lx, ly, 1, 5); rect('#758f45', lx - 3, ly - 1, 1, 4); rect('#b0bc6d', lx + 3, ly - 2, 1, 6);
-      }
-      if (!path && random() > 0.93) {
-        const lx = px + 6 + random() * 20, ly = py + 6 + random() * 20;
-        rect('#5e7b3e', lx, ly, 1, 6);
-        rect(random() > 0.5 ? '#e9ce78' : '#e8dfbd', lx - 2, ly - 1, 4, 2);
-        rect('#bd9a49', lx, ly, 1, 1);
-      }
-      if ((waterAt(x + 1, y) || waterAt(x, y + 1) || waterAt(x - 1, y) || waterAt(x, y - 1)) && !bridgeAt(x, y)) {
-        rect('#9aab76', px + 4, py + 4, 5, 2);
-        rect('#b6b78a', px + 10, py + 20, 8, 2);
-        for (let n = 0; n < 2; n++) {
-          const lx = px + random() * 28, ly = py + random() * 26;
-          rect('#6c7d48', lx, ly, 2, 8); rect('#52683f', lx + 3, ly + 2, 2, 6);
-        }
-      }
-    }
+  // Collision uses the unchanged logical footprint; ground art is a separate layer.
+  for (let y = 0; y < WORLD_HEIGHT; y++) for (let x = 0; x < WORLD_WIDTH; x++) {
+    if (waterAt(x, y) && !bridgeAt(x, y)) blocked.add(key(x, y));
   }
-  // Soft, chipped path edges are decorative; the walkable tile map is unchanged.
-  for (let y = 1; y < WORLD_HEIGHT - 1; y++) for (let x = 1; x < WORLD_WIDTH - 1; x++) {
-    if (!pathAt(x, y) || waterAt(x, y) || bridgeAt(x, y)) continue;
-    for (const [dx, dy] of [[0, -1], [0, 1], [-1, 0], [1, 0]]) {
-      if (pathAt(x + dx, y + dy) || isFarm(x + dx, y + dy) || waterAt(x + dx, y + dy)) continue;
-      for (let edge = 0; edge < TILE; edge += 4) {
-        const bite = 2 + Math.floor(visualRandom() * 6);
-        const px = x * TILE, py = y * TILE;
-        if (dy === -1) {
-          rect('#a6a368', px + edge, py - 3, 4, bite + 2);
-          rect('#c7ad78', px + edge, py + bite - 1, 4, 3);
-          if (visualRandom() > 0.45) rect(grassAt(px + edge, py), px + edge, py - 3, 4, Math.max(1, bite - 3));
-        } else if (dy === 1) {
-          rect('#b3a46c', px + edge, py + TILE - bite, 4, bite + 3);
-          rect('#c7ad78', px + edge, py + TILE - bite, 4, 2);
-          if (visualRandom() > 0.45) rect(grassAt(px + edge, py + TILE), px + edge, py + TILE + 1, 4, 2);
-        } else {
-          const bx = dx === -1 ? px - 3 : px + TILE - bite;
-          rect('#b0a46a', bx, py + edge, bite + 3, 4);
-          rect('#c7ad78', dx === -1 ? px + bite - 1 : px + TILE - bite, py + edge, 2, 4);
-        }
-      }
-    }
+  // The ground is independent of saves. Reuse its GPU texture on new/continue.
+  if (!scene.textures.exists('world-ground')) {
+    const terrain = document.createElement('canvas');
+    terrain.width = WORLD_WIDTH * TILE;
+    terrain.height = WORLD_HEIGHT * TILE;
+    paintTerrain(terrain.getContext('2d')!);
+    scene.textures.addCanvas('world-ground', terrain)?.setFilter(Phaser.Textures.FilterMode.NEAREST);
   }
-  // The kitchen garden has one continuous earth bed, with all 45 cells intact.
-  for (let x = 21 * TILE - 4; x < 30 * TILE + 4; x += 4) {
-    const inset = Math.floor(visualRandom() * 4);
-    rect('#a28d58', x, 20 * TILE - 5 + inset, 4, 4);
-    rect('#ae945c', x, 25 * TILE - 1, 4, 3 + inset);
-  }
-  for (let y = 20 * TILE; y < 25 * TILE; y += 4) {
-    rect('#ac925b', 21 * TILE - 3, y, 3, 4);
-    rect('#9b7c4d', 30 * TILE, y, 2 + Math.floor(visualRandom() * 3), 4);
-  }
-  // Low flowers and rain-darkened pebbles form pockets instead of a uniform grid.
-  const flowerPockets = [[20, 20], [20, 24], [30, 25], [28, 16], [21, 16], [18, 21], [34, 28], [39, 20], [12, 20], [54, 16], [56, 20], [65, 16], [69, 21], [76, 25], [78, 13], [84, 12], [24, 46], [28, 55], [34, 58], [61, 53], [72, 57], [75, 61]];
-  for (const [tx, ty] of flowerPockets) {
-    for (let n = 0; n < 18; n++) {
-      const px = tx * TILE + 5 + visualRandom() * 24, py = ty * TILE + 5 + visualRandom() * 23;
-      rect('#627a3c', px, py, 1, 4 + Math.floor(visualRandom() * 4));
-      const color = n % 3 === 0 ? '#aa96b2' : n % 3 === 1 ? '#e4c46a' : '#eee0b4';
-      rect(n % 3 === 0 ? '#766284' : '#a58b42', px - 1, py - 2, 3, 4);
-      rect(color, px - 1, py - 3, 3, 2);
-      if (n % 3 !== 0) rect('#fff0c0', px, py - 2, 1, 1);
-    }
-  }
-  // As duas passagens do rio têm a mesma geometria visual e de colisão.
-  for (const [left, top, width] of [[42, 18, 7], [41, 52, 9]]) {
-    for (let x = left * TILE; x < (left + width) * TILE; x += 8) {
-      rect('#70543c', x, top * TILE, 7, 64); rect('#b58b58', x, top * TILE, 6, 58); rect('#d9b478', x, top * TILE, 2, 58);
-      rect('#584633', x + 2, top * TILE + 8, 1, 1); rect('#584633', x + 2, top * TILE + 49, 1, 1);
-    }
-    rect('#5b4632', left * TILE, top * TILE + 2, width * TILE, 3);
-    rect('#e0c390', left * TILE, top * TILE, width * TILE, 2);
-    rect('#6c5037', left * TILE, (top + 2) * TILE - 7, width * TILE, 4);
-  }
-  // Flat stepping stones and a few fallen leaves in the path.
-  for (const [x, y] of [[25, 16], [24, 17], [25, 18], [27, 18], [29, 18], [32, 18]]) {
-    rect('#b0a48c', x * TILE + 4, y * TILE + 7, 23, 14); rect('#d1c8ac', x * TILE + 5, y * TILE + 6, 21, 12);
-    rect('#bcb396', x * TILE + 19, y * TILE + 8, 6, 8);
-  }
-  if (scene.textures.exists('world-ground')) scene.textures.remove('world-ground');
-  scene.textures.addCanvas('world-ground', terrain)?.setFilter(Phaser.Textures.FilterMode.NEAREST);
   scene.add.image(0, 0, 'world-ground').setOrigin(0).setDepth(-100);
 
   const texture = (name: string, width: number, height: number, paint: (ctx: CanvasRenderingContext2D) => void) => {
@@ -343,10 +226,16 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[]): W
       continue;
     }
     resources.push({ id, x: tree.x, y: tree.y, kind: 'standingTree' });
-    const artwork = tree.pine ? 'asset-pine' : 'asset-tree';
-    const treeTexture = scene.textures.exists(artwork) ? artwork : tree.pine ? 'pine' : 'oak';
-    const treeImage = scene.add.image(tree.x * TILE + 16, tree.y * TILE + 25, treeTexture).setOrigin(0.5, scene.textures.exists(artwork) ? 1 : 0.93).setDepth(tree.y * TILE + 25);
+    const base = tree.pine ? 'asset-pine' : 'asset-tree';
+    const variant = Math.abs(Math.imul(tree.x, 73856093) ^ Math.imul(tree.y, 19349663)) % 3;
+    const artwork = scene.textures.exists(`${base}-${variant}`) ? `${base}-${variant}` : base;
+    const useArtwork = scene.textures.exists(artwork);
+    const treeTexture = useArtwork ? artwork : tree.pine ? 'pine' : 'oak';
+    const footX = tree.x * TILE + 16, footY = tree.y * TILE + 25;
+    const pivot = artwork.endsWith(`-${variant}`) ? 128 / 132 : useArtwork ? 1 : 0.93;
+    const treeImage = scene.add.image(footX, footY, treeTexture).setOrigin(0.5, pivot).setDepth(footY);
     resourceImages.set(id, treeImage);
+    canopies.set(tile, { image: treeImage, x: footX, y: footY, width: treeImage.width || 88, height: treeImage.height || 116 });
     resourceBlocked.add(tile);
   }
   // A small roofless ruin in the western exploration area.
@@ -427,18 +316,38 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[]): W
   }
   const resourceAt = (x: number, y: number) => resources.find((node) => node.x === x && node.y === y);
   const isBlocked = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y));
+  decorateProperty(scene, { isBlocked, resourceAt, buildings });
+
   return {
     resources,
     isBlocked,
     isFarm,
     isBuildable: (x, y) => !isBlocked(x, y) && !isFarm(x, y) && !resourceAt(x, y) && !bridgeAt(x, y) && !(x === 29 && y === 17),
     resourceAt,
+    updateOcclusion: (playerX, playerY) => {
+      const next = new Set<string>();
+      const tx = Math.floor(playerX / TILE), ty = Math.floor(playerY / TILE);
+      // Query nearby trunk cells rather than all trees on every animation frame.
+      for (let y = ty; y <= ty + 5; y++) for (let x = tx - 3; x <= tx + 3; x++) {
+        const tile = key(x, y), canopy = canopies.get(tile);
+        if (!canopy || !canopy.image.active) continue;
+        if (playerY < canopy.y + 2 && playerY > canopy.y - canopy.height + 10
+          && Math.abs(playerX - canopy.x) < canopy.width / 2 - 4) {
+          next.add(tile);
+          if (!fadedTrees.has(tile)) canopy.image.setAlpha(0.38);
+        }
+      }
+      for (const tile of fadedTrees) if (!next.has(tile)) canopies.get(tile)?.image.setAlpha(1);
+      fadedTrees = next;
+    },
     removeResource: (id) => {
       const index = resources.findIndex((node) => node.id === id);
       if (index < 0) return;
       const [node] = resources.splice(index, 1);
       resourceImages.get(id)?.destroy();
       resourceImages.delete(id);
+      canopies.delete(key(node.x, node.y));
+      fadedTrees.delete(key(node.x, node.y));
       if (node.kind === 'standingTree' || node.kind === 'vein') resourceBlocked.delete(key(node.x, node.y));
       if (node.kind === 'standingTree') scene.add.image(node.x * TILE + 16, node.y * TILE + 29, 'tree-stump').setOrigin(0.5, 1).setDepth(node.y * TILE + 24);
     },

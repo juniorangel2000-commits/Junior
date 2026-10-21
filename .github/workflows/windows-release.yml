@@ -77,9 +77,9 @@ jobs:
         shell: pwsh
         run: |
           $notes = @'
-          Jardim Depois da Chuva — propriedade, Bosque do Pinheiro e Campos Abertos em um mapa contínuo ampliado.
+          Jardim Depois da Chuva — polimento visual da propriedade e das paisagens do vale.
 
-          Arte atualizada para personagem, casa, recursos, construções e interface. M abre o mapa das áreas jogáveis. Inclui coleta, fabricação de ferramentas, corte, mineração, cultivo, construção de abrigo e salvamento local compatível com partidas anteriores.
+          Seis variações de árvores, nova pintura de terreno, caminhos e margens, flores e samambaias, fachada revisada e transparência de copas que encobrem o personagem. Mantém a propriedade, o Bosque do Pinheiro, os Campos Abertos e os saves anteriores. M abre o mapa das áreas jogáveis.
 
           Aplicativo portátil para Windows 10/11 de 64 bits, gerado em Windows.
           Baixe o arquivo .exe desta versão e abra com dois cliques. Não exige Node.js ou servidor.

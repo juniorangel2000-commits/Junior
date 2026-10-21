@@ -2,7 +2,11 @@
 
 Uma pequena clareira, uma casa que resistiu e a chance de recomeçar. **Jardim Depois da Chuva** é um jogo original para navegador, single-player, com exploração, cultivo e construção em pixel art 2D top-down. O projeto existente usa TypeScript, Phaser 3 e Vite, com aplicativo desktop em Electron.
 
-A versão **0.2.0** amplia a propriedade com duas áreas exploráveis no mesmo mundo: **Bosque do Pinheiro**, a leste, e **Campos Abertos**, ao sul. A [documentação da expansão](docs/expansao-visual-v0.2.md) descreve a adaptação visual e a compatibilidade com partidas anteriores.
+A versão do código é **0.3.0**. Esta etapa aplica o primeiro polimento da [direção artística aprovada](docs/direcao-visual/proposta-arte-mapa.md): seis variações de árvores, terreno com caminhos e margens mais naturais, composição de flores e samambaias na propriedade e uma fachada com vasos e floreiras. As copas que encobrem o personagem ficam transparentes. Veja [o escopo e a validação do polimento](docs/polimento-visual-v0.3.md).
+
+![Captura real da propriedade na versão 0.3.0.](docs/capturas/propriedade-v0.3.png)
+
+O mundo continua com a propriedade, o **Bosque do Pinheiro**, a leste, e os **Campos Abertos**, ao sul. A [documentação da expansão 0.2.0](docs/expansao-visual-v0.2.md) registra a criação dessas áreas e a compatibilidade com partidas anteriores.
 
 A documentação recebida está em [LEIA_PRIMEIRO.md](LEIA_PRIMEIRO.md) e [documentacao/](documentacao/). A [Bíblia do jogo](documentacao/01_BIBLIA_DO_JOGO.md) define a direção completa; este README descreve a fatia implementada. As [decisões da vertical slice](docs/decisoes-vertical-slice.md) registram a adaptação das receitas, dos materiais e da construção à base existente.
 
@@ -32,7 +36,7 @@ O build fica em `dist/`. Sirva essa pasta por HTTP; abrir `index.html` diretamen
 
 ## Aplicativo para Windows
 
-**Download atualizado:** [Jardim Depois da Chuva v0.2.0 — Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.2.0/Depois-da-Chuva-0.2.0-Windows-x64.exe). A [página da Release](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.2.0) também disponibiliza o executável e seu manifesto de integridade. Essa versão inclui a propriedade, o Bosque do Pinheiro, os Campos Abertos e a atualização visual descrita neste README.
+**Última versão publicada e verificada:** [Jardim Depois da Chuva v0.2.0 — Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.2.0/Depois-da-Chuva-0.2.0-Windows-x64.exe). A [página da Release](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.2.0) também disponibiliza o executável e seu manifesto de integridade. O polimento **0.3.0** está no código atual e passa pela validação final antes de receber um novo download público.
 
 O pacote portátil é gerado em `release/`, com nome `Depois-da-Chuva-<versão>-Windows-x64.exe`. Ele é destinado a **Windows 10/11 de 64 bits**. Para jogar o pacote pronto, abra o `.exe` com dois cliques. Não precisa instalar Node.js, abrir um terminal, manter o Vite ativo, conectar à internet ou executar como administrador. A primeira abertura pode demorar um pouco enquanto o pacote prepara seus arquivos temporários.
 
@@ -160,7 +164,9 @@ O mapa é fixo e contínuo, com três áreas, uma cultura e uma NPC. As casas e 
 
 **Ainda não implementados:** durabilidade/reparo, energia, fome, saúde, combate, zumbis/hordas, inimigos, economia, amizade progressiva, missões, clima/estações funcionais, metalurgia, ferramentas reforçadas, interiores ricos, áudio, multiplayer, controle/toque e sincronização de saves. O rendimento de quatro tábuas do serrote reforçado pertence à especificação futura; o serrote improvisado produz três.
 
-A arte combina sprites dos pacotes recebidos com texturas e vegetação produzidas em Canvas. A grade física permanece em 32 pixels. A seleção de assets mantém arquivos locais e usa renderização nearest-neighbor, sem suavização. As [referências aprovadas](referencias/README.md) orientam a composição; animações de ação redesenhadas e uma biblioteca completa de encaixes continuam pendentes. Veja [as adaptações e limitações visuais](docs/expansao-visual-v0.2.md).
+A arte combina sprites dos pacotes recebidos, um atlas original com seis árvores baseado na direção aprovada e texturas produzidas em Canvas. A grade física permanece em 32 pixels. O atlas é adaptado com transparência e pivô dos pés conferidos; pedras de coleta são menores que rochas mineráveis. O terreno é pintado uma vez e sua textura é reutilizada entre carregamentos de save. Os detalhes baixos da propriedade usam uma única camada sob atores e construções.
+
+Os assets são locais e usam renderização nearest-neighbor, sem suavização. A [direção aprovada](docs/direcao-visual/proposta-arte-mapa.md) orienta o trabalho, mas a prancha não é o mapa jogável nem um pacote final completo. Animações de ação redesenhadas, retratos e aparência próprios de Lia e uma biblioteca completa de encaixes continuam pendentes. Veja [as adaptações e limitações do polimento](docs/polimento-visual-v0.3.md).
 
 Os deslocamentos usam tempo por quadro com limite de recuperação: quedas abaixo de aproximadamente 4 FPS desaceleram a simulação. Os critérios do [documento de QA](documentacao/04_TESTES_E_CRITERIOS_DE_ACEITE.md) representam metas; as caixas do documento original permanecem intactas, sem presumir aprovação das funções futuras.
 
@@ -173,6 +179,9 @@ src/
   ui.ts / style.css       Telas, HUD, mochila, fabricação e construção
   art.ts                  Sprites locais e personagem
   visual-assets.ts        Carregamento e adaptação dos assets recebidos
+  nature-sprites.ts       Variações de árvores, pivôs e plantas decorativas
+  terrain-art.ts          Pintura estática do terreno, caminhos, água e pontes
+  property-art.ts         Composição dos detalhes baixos da propriedade
   world.ts                Mapa, colisões e recursos
   player.ts               Movimento e direção
   data/
@@ -197,6 +206,7 @@ pacotes_existentes/       Quatro pacotes extraídos e indexados
 public/assets/            Assets locais usados no jogo
 docs/decisoes-vertical-slice.md Adaptação da primeira fatia
 docs/expansao-visual-v0.2.md Mapa e integração visual da versão 0.2.0
+docs/polimento-visual-v0.3.md Primeiro polimento da direção artística aprovada
 LEIA_PRIMEIRO.md           Entrada do dossiê recebido
 desktop/                  Janela Electron e ícones
 electron-builder.yml      Empacotamento Windows x64
@@ -205,7 +215,11 @@ vite.config.ts            Caminhos relativos para assets locais
 
 ## Validação
 
-Verificações executadas nesta atualização:
+Na versão **0.3.0**, TypeScript, **104 testes em seis arquivos** e build de produção foram aprovados. Uma comparação externa do mapa real com a tag `v0.2.0` confirmou os mesmos **801 recursos** e os mesmos estados de colisão, horta e construção em todas as **6.912 células**. Essa comparação é adicional aos testes de sistemas, sem alterar sua contagem.
+
+A validação no Chromium passou: seis árvores com transparência limpa, decoração fora da horta, save v2 anterior, colheita/coleta/fabricação, copas com transparência e colisão preservada, duas pontes, exploração do bosque/campos, save/reload sem duplicação e menus em 960×640 e 1280×800. Nenhum erro de JavaScript ou asset foi registrado. A publicação do novo pacote será registrada em [polimento-visual-v0.3.md](docs/polimento-visual-v0.3.md).
+
+O histórico abaixo corresponde à entrega **0.2.0**:
 
 - `npm run check`: aprovado.
 - `npm test`: **104 testes aprovados em seis arquivos**, incluindo acesso entre regiões, preservação dos IDs antigos, receitas, ferramentas, construção, abrigo e salvamento nas novas áreas.
