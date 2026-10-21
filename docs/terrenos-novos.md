@@ -1,6 +1,6 @@
 # Reformulação dos sprites de terreno
 
-**Estado:** aplicada ao projeto em desenvolvimento, após a versão 0.3.0. O executável público 0.3.0 mantém a arte da entrega anterior. A mudança continua no mesmo projeto, com Phaser 3, mapa e sistemas existentes.
+**Estado:** aplicada ao mesmo projeto e incluída no [executável Windows 0.4.0](versao-windows-v0.4.md). Os checks abaixo registram esta etapa de desenvolvimento após a versão 0.3.0, mantendo Phaser 3, mapa e sistemas existentes.
 
 Este documento registra o primeiro lote dos pisos. A [etapa seguinte de recursos e margens](recursos-e-margens.md) acrescenta recursos redesenhados, realocação para fora das trilhas e contornos contínuos de água e caminhos, com novas verificações.
 

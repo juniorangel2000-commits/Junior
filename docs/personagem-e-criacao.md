@@ -65,4 +65,4 @@ As capturas da propriedade usam o personagem padrão e caminhada pelo teclado at
 
 A personalização acontece antes de começar uma partida. Ainda não há guarda-roupa durante a história, seleção de corpos, barbas, chapéus ou editor de roupas por peças. As ações de ferramenta continuam usando os efeitos existentes; as novas folhas cobrem ficar parado e caminhar. A recoloração mantém os detalhes e sombras das fontes, sem prometer uma paleta indexada desenhada manualmente por material.
 
-Esta integração está no checkout de desenvolvimento. O executável público 0.3.0 permanece na entrega anterior; esta etapa não publica um novo pacote Windows.
+Esta integração está incluída no [executável Windows 0.4.0](versao-windows-v0.4.md), que reúne as etapas visuais e de personalização.

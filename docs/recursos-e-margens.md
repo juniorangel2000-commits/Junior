@@ -1,6 +1,6 @@
 # Recursos e margens renovados
 
-**Estado:** implementação no projeto em desenvolvimento, após os [onze materiais de terreno](terrenos-novos.md). O executável público 0.3.0 continua sendo a entrega anterior; esta etapa não publica outro pacote Windows.
+**Estado:** implementação incluída no [executável Windows 0.4.0](versao-windows-v0.4.md), após os [onze materiais de terreno](terrenos-novos.md). As verificações abaixo registram o desenvolvimento desta etapa.
 
 ## Imagens para revisão
 

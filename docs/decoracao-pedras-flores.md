@@ -1,6 +1,6 @@
 # Pedras decorativas e flores
 
-**Estado:** aplicado ao projeto em desenvolvimento. O executável público 0.3.0 continua correspondendo à entrega anterior.
+**Estado:** aplicado ao mesmo projeto e incluído no [executável Windows 0.4.0](versao-windows-v0.4.md).
 
 **Ajuste posterior:** a pedido do jogador, as três pedras de passagem em frente à casa foram retiradas. O acesso agora mantém o chão natural do caminho. As capturas abaixo registram a etapa anterior; a [entrada sem as pedras](capturas/entrada-sem-pedras.png) mostra o estado atualizado. A alteração afeta somente o desenho do terreno, sem modificar recursos, colisões ou partidas salvas.
 
@@ -29,6 +29,6 @@ O [atlas original e sua documentação](../public/assets/visual/nature/README.md
 - Mochila pausou posição e relógio; cache do terreno foi reutilizado; Continuar e recarregar a página preservaram o mapa. Nenhum erro de JavaScript ou asset foi registrado.
 - A imagem da propriedade e o detalhe das pedras foram capturados após caminhar pelo teclado desde o ponto inicial. As imagens de flores e margem usam posições carregadas de partida para enquadramento.
 
-Esta é uma mudança de arte ornamental. As flores não introduzem uma nova coleta, e as pedras de passagem não são recursos mineráveis. Sistemas, distribuição dos recursos, colisões e formato do save continuam iguais aos da etapa anterior. Não foi gerado outro executável nem realizado teste interativo no Windows nesta etapa.
+Esta é uma mudança de arte ornamental. As flores não introduzem uma nova coleta, e as pedras de passagem não são recursos mineráveis. Sistemas, distribuição dos recursos, colisões e formato do save continuam iguais aos da etapa anterior. A distribuição posterior está registrada na [versão Windows 0.4.0](versao-windows-v0.4.md); não foi realizado teste interativo em Windows nativo.
 
 Para conferir no projeto, execute `npm run dev`.

@@ -44,7 +44,7 @@ O build fica em `dist/`. Sirva essa pasta por HTTP; abrir `index.html` diretamen
 
 ## Aplicativo para Windows
 
-**Última versão publicada e verificada:** [Jardim Depois da Chuva v0.3.0 — Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.3.0/Depois-da-Chuva-0.3.0-Windows-x64.exe). A [página da Release](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.3.0) também disponibiliza o executável e seu manifesto de integridade. Esta versão inclui o primeiro polimento da direção artística aprovada.
+**Última versão publicada e verificada:** [Jardim Depois da Chuva v0.4.0 — Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.4.0/Depois-da-Chuva-0.4.0-Windows-x64.exe). A [página da Release](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.4.0) também disponibiliza o executável e seu manifesto de integridade. Inclui todas as melhorias de terreno, recursos, margens, flores, personagem e personalização, além da entrada da casa sem as três pedras de passagem.
 
 O pacote portátil é gerado em `release/`, com nome `Depois-da-Chuva-<versão>-Windows-x64.exe`. Ele é destinado a **Windows 10/11 de 64 bits**. Para jogar o pacote pronto, abra o `.exe` com dois cliques. Não precisa instalar Node.js, abrir um terminal, manter o Vite ativo, conectar à internet ou executar como administrador. A primeira abertura pode demorar um pouco enquanto o pacote prepara seus arquivos temporários.
 
@@ -65,7 +65,7 @@ O pacote não possui assinatura digital de editor. A abertura interativa da nova
 
 O workflow `.github/workflows/windows-release.yml` gera o pacote em um runner Windows. Sua execução manual produz o artefato `Depois-da-Chuva-Windows-x64`, contendo `.exe` e `SHA256SUMS.txt`. Quando uma tag `v*` é enviada, o workflow publica esses arquivos em uma GitHub Release usando a autorização temporária do GitHub.
 
-A [execução da versão v0.3.0](https://github.com/juniorangel2000-commits/Junior/actions/runs/39605676969) concluiu com sucesso em um runner Windows, incluindo TypeScript, testes e empacotamento. O executável publicado foi baixado e conferido: **106.614.017 bytes**, cabeçalhos PE válidos e SHA-256 correspondente ao manifesto público. O hash e os detalhes estão em [polimento-visual-v0.3.md](docs/polimento-visual-v0.3.md). Caminhos internos como `/workspace/Junior/release/...` não equivalem a links públicos; use a Release para distribuir o pacote.
+A [execução da versão v0.4.0](https://github.com/juniorangel2000-commits/Junior/actions/runs/39621761382) concluiu com sucesso em um runner Windows, incluindo TypeScript, 135 testes e empacotamento. O executável publicado foi baixado e conferido: **119.488.181 bytes**, cabeçalhos PE válidos e SHA-256 correspondente ao manifesto público. O hash e os detalhes estão em [versao-windows-v0.4.md](docs/versao-windows-v0.4.md). Caminhos internos como `/workspace/Junior/release/...` não equivalem a links públicos; use a Release para distribuir o pacote.
 
 ## Controles
 
@@ -227,6 +227,10 @@ vite.config.ts            Caminhos relativos para assets locais
 ```
 
 ## Validação
+
+Na versão **0.4.0**, TypeScript, **135 testes em nove arquivos**, build e geração do portátil no Windows foram aprovados. O build estático foi conferido no Chromium: criação personalizada, artes locais, movimento, pausa, salvar, recarregar e continuar, com zero erros JavaScript/HTTP e zero requisições externas. O download público teve sua integridade verificada. Veja [o registro da distribuição 0.4.0](docs/versao-windows-v0.4.md).
+
+O histórico abaixo corresponde às entregas anteriores:
 
 Na versão **0.3.0**, TypeScript, **104 testes em seis arquivos** e build de produção foram aprovados. Uma comparação externa do mapa real com a tag `v0.2.0` confirmou os mesmos **801 recursos** e os mesmos estados de colisão, horta e construção em todas as **6.912 células**. Essa comparação é adicional aos testes de sistemas, sem alterar sua contagem.
 
