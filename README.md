@@ -1,3 +1,5 @@
+> **Atualização 0.6.1:** [Download Windows 11 x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.6.1) · [Mochila de 30 espaços e arrastar itens](docs/inventario-v0.6.1.md).
+
 > **Atualização 0.6.0:** [Download Windows 11 x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.6.0) · [Mudanças, controles e validação](docs/versao-windows-v0.6.md). As seções históricas abaixo descrevem entregas anteriores; os nove slots configuráveis substituem a barra fixa.
 
 # After Rain

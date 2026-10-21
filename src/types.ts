@@ -17,6 +17,7 @@ export type ItemId = 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 
 export type InventoryData = Record<ItemId, number>;
 export type OwnedTool = 'hatchet' | 'pickaxe' | 'handsaw' | 'hammer';
 export type Tool = 'hand' | 'plant' | 'water' | 'fence' | 'bench' | 'remove' | 'hatchet' | 'pickaxe' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof' | 'blueprint';
+export type QuickSlot = Tool | `item:${ItemId}` | 'item:wateringCan' | null;
 export interface TilePoint { x: number; y: number }
 export interface CropData extends TilePoint { growth: number; watered: boolean }
 export interface BuildingData extends TilePoint { kind: 'fence' | 'bench' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof'; open?: boolean; rotation?: 0 | 1 }
@@ -34,7 +35,7 @@ export interface ProgressData {
 }
 export interface SaveData {
   version: 2;
-  quickbar?: (Tool | null)[];
+  quickbar?: QuickSlot[];
   homeSupplies?: { wateringCan: boolean; seedPacket: boolean };
   profile: CharacterProfile;
   player: TilePoint & { direction?: 'down' | 'left' | 'right' | 'up' };
@@ -54,6 +55,7 @@ export interface SaveData {
   homePosition?: TilePoint & { direction?: 'down' | 'left' | 'right' | 'up' };
 }
 export interface HudData {
+  wateringCan?: boolean;
   inHome: boolean;
   playerTile?: TilePoint;
   name: string;

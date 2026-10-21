@@ -78,21 +78,20 @@ jobs:
         shell: pwsh
         run: |
           $notes = @'
-          After Rain 0.6.0 — HUD Jardim leve e melhorias de exploração.
+          After Rain 0.6.1 — mochila de 30 espaços e itens arrastáveis.
 
-          - HUD em creme, madeira clara e verde sálvia.
-          - Nove slots menores, inicialmente vazios; clique para escolher, botão direito para trocar ou esvaziar. Configuração salva na partida.
-          - Missões arrastáveis com posição lembrada, botão X e reabertura.
-          - M exibe o cenário real completo das áreas jogáveis e a posição exata do personagem; dentro da casa, mostra o interior identificado.
-          - Nome do local por 10 segundos ao mudar de área; controles na barra superior; cartão Ao ar livre removido.
-          - Regador e pacote de 7 sementes recolhíveis uma única vez na casa. As duas ordens de coleta foram testadas com salvamento e recarga após cada objeto.
-          - Personalização da casa somente por H; E preserva coleta, entrada, saída e cama.
+          - Inventário em grade, com pilhas, quantidades, espaços vazios e descrição do item, mantendo o visual Jardim leve.
+          - Arraste itens da mochila para os nove slots da barra rápida. Também é possível clicar no item e depois no destino, ou usar Tab e Enter.
+          - Regador recolhido na casa aparece na mochila; sementes e ferramentas equipadas usam suas ações normais.
+          - Atalhos acompanham as quantidades reais, sem duplicar ou consumir o estoque. Configuração preservada ao salvar/recarregar.
+          - Botão direito ou Delete remove um atalho; soltar outro item substitui o anterior.
+          - Mochila inicial com 30 espaços para pilhas, não 30 unidades totais. Itens iguais compartilham um espaço.
 
-          Mantém os sistemas, artes e partidas anteriores da 0.5.1. O save continua em %APPDATA%\Depois da Chuva.
+          Preserva os saves e as melhorias da 0.6.0: missões arrastáveis, mapa real, localização temporária e coletas únicas. O save continua em %APPDATA%\Depois da Chuva.
 
-          Aplicativo portátil para Windows 11 x64, gerado em Windows. Baixe o .exe e abra com dois cliques; não exige Node.js ou servidor. Pacote sem assinatura digital.
+          Validação: TypeScript, 172 testes de sistemas, build e Chromium. Testes de arrastar, atribuir por teclado, substituir, remover, esgotar estoque, salvar/recarregar e regressão das coletas nas duas ordens.
 
-          Validação: TypeScript, 167 testes de sistemas, build e aceitação em Chromium. A execução interativa no Windows 11 não foi testada neste ambiente Linux. SHA256SUMS.txt permite verificar o download.
+          Portátil para Windows 11 x64, gerado em Windows. Baixe o .exe e abra com dois cliques. Não exige Node.js ou servidor. Pacote sem assinatura digital. Execução interativa no Windows 11 não testada neste ambiente Linux. SHA256SUMS.txt permite conferir a integridade.
           '@
           $notes | Set-Content -Encoding utf8NoBOM release/NOTAS.txt
           $assets = @((Get-ChildItem release/*.exe).FullName) + @('release/SHA256SUMS.txt')

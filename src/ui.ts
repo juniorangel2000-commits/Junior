@@ -6,7 +6,9 @@ import type { ToolbarAction } from './top-toolbar';
 import type { TitleBackgroundMode } from './title-screen';
 import { itemIconUrl } from './visual-assets';
 import { HOME_WIDTH, HOME_HEIGHT } from './systems/home';
-import { emptyQuickbar } from './systems/quickbar';
+import { emptyQuickbar, assignQuickSlot, quickItem, quickAction, quickQuantity, isQuickSlot, inventoryEntries, INVENTORY_CAPACITY } from './systems/quickbar';
+import type { QuickSlot } from './types';
+import './inventory-ui.css';
 import { WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 import { BUILD_COSTS, BUILD_NAMES, BUILD_REQUIREMENTS } from './systems/building';
 import { ITEMS, ITEM_IDS, ITEM_NAMES } from './data/items';
@@ -127,24 +129,81 @@ export class GameUI {
   private locationName = '';
   private locationTimer?: ReturnType<typeof setTimeout>;
 
-  setQuickbar(slots: (Tool | null)[]): void { this.quickbar = [...slots]; }
-  getQuickbar(): (Tool | null)[] { return [...this.quickbar]; }
+  setQuickbar(slots: QuickSlot[]): void { this.quickbar = [...slots]; this.activeSlot = -1; }
+  getQuickbar(): QuickSlot[] { return [...this.quickbar]; }
+  private activeSlot = -1;
+  private draggedItem: Exclude<QuickSlot, null> | null = null;
+  private selectedInventoryItem: Exclude<QuickSlot, null> | null = null;
+
+  private slotInfo(slot: QuickSlot): { label: string; icon: string; detail: string } {
+    const item = quickItem(slot);
+    if (item === 'wateringCan') return { label: 'Regador', icon: 'water', detail: 'Recolhido na casa. Use para regar suas plantações.' };
+    if (item) return { label: ITEMS[item].name, icon: item, detail: ITEMS[item].description };
+    return tools.find(tool => tool.id === slot) ?? { label: 'Vazio', icon: 'bag', detail: 'Arraste um item da mochila para este slot.' };
+  }
   activateSlot(index: number): void {
     if (this.modal) return;
-    const tool = this.quickbar[index];
-    if (tool) this.callbacks.onTool(tool);
-    else this.editSlot(index);
+    const slot = this.quickbar[index];
+    if (!slot) { if (this.latest) this.toggleInventory(this.latest.inventory); return; }
+    const quantity = this.latest ? quickQuantity(slot, this.latest.inventory, !!this.latest.wateringCan) : null;
+    if (quantity === 0) { this.toast('Este item acabou. Recolha mais para usar este atalho.'); return; }
+    this.activeSlot = index;
+    this.callbacks.onTool(quickAction(slot));
+    if (quickItem(slot) && quickAction(slot) === 'hand') this.toast(`${this.slotInfo(slot).label}: material disponível na mochila para fabricar e construir.`);
+    this.updateQuickbar();
+  }
+  private slotMarkup(slot: QuickSlot, index: number, inventory = false): string {
+    const info = this.slotInfo(slot);
+    const quantity = this.latest ? quickQuantity(slot, this.latest.inventory, !!this.latest.wateringCan) : null;
+    return `<button type="button" class="${inventory ? 'bag-slot quick-target' : 'tool'}" data-slot="${index}" ${slot ? `data-tool="${quickAction(slot)}"` : ''} aria-label="Slot ${index + 1}: ${slot ? info.label : 'vazio'}" title="${slot ? info.label : 'Slot vazio'} · ${inventory ? 'solte um item aqui; Delete remove' : 'I abre a mochila; botão direito configura'}"><span class="tool-key">${index + 1}</span>${slot ? icon(info.icon) : '<span class="empty-slot">+</span>'}<strong class="slot-quantity">${quantity ?? ''}</strong></button>`;
   }
   private renderQuickbar(): void {
     const belt = this.base.querySelector('.toolbelt');
     if (!belt) return;
-    belt.innerHTML = this.quickbar.map((id, index) => {
-      const tool = tools.find(t => t.id === id);
-      return `<button class="tool" data-slot="${index}" ${tool ? `data-tool="${tool.id}"` : ''} aria-label="Slot ${index + 1}: ${tool?.label ?? 'vazio'}" title="${tool?.detail ?? 'Escolher ação'} · botão direito para configurar"><span class="tool-key">${index + 1}</span>${tool ? icon(tool.icon) : '<span class="empty-slot">+</span>'}</button>`;
-    }).join('');
+    belt.innerHTML = this.quickbar.map((slot, index) => this.slotMarkup(slot, index)).join('');
     belt.querySelectorAll<HTMLButtonElement>('[data-slot]').forEach(button => {
       button.onclick = () => this.activateSlot(Number(button.dataset.slot));
       button.oncontextmenu = event => { event.preventDefault(); event.stopPropagation(); this.editSlot(Number(button.dataset.slot)); };
+    });
+    this.updateQuickbar();
+  }
+  private updateQuickbar(): void {
+    if (!this.latest) return;
+    this.base.querySelectorAll<HTMLButtonElement>('[data-slot]').forEach(button => {
+      const index = Number(button.dataset.slot), slot = this.quickbar[index];
+      const quantity = quickQuantity(slot, this.latest!.inventory, !!this.latest!.wateringCan);
+      button.querySelector('.slot-quantity')!.textContent = quantity === null ? '' : String(quantity);
+      const selected = slot !== null && quickAction(slot) === this.latest!.tool && (quickItem(slot) ? this.activeSlot === index : true);
+      button.classList.toggle('selected', selected);
+      button.classList.toggle('depleted', quantity === 0);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+  }
+  private assignInventorySlot(index: number, item: Exclude<QuickSlot, null> | null): void {
+    if (item && (!this.latest || (quickQuantity(item, this.latest.inventory, !!this.latest.wateringCan) ?? 0) <= 0)) return;
+    const previous = this.quickbar[index];
+    this.quickbar = assignQuickSlot(this.quickbar, index, item);
+    if (previous !== item && this.activeSlot === index) { this.activeSlot = -1; this.callbacks.onTool('hand'); }
+    this.renderQuickbar(); this.lastHudKey = ''; this.callbacks.onSave();
+    if (this.modal === 'inventory') this.renderInventoryBar();
+  }
+  private renderInventoryBar(): void {
+    const belt = this.overlay.querySelector('.inventory-quickbar');
+    if (!belt) return;
+    belt.innerHTML = this.quickbar.map((slot, index) => this.slotMarkup(slot, index, true)).join('');
+    belt.querySelectorAll<HTMLButtonElement>('[data-slot]').forEach(button => {
+      const index = Number(button.dataset.slot);
+      button.ondragover = event => { if (this.draggedItem) { event.preventDefault(); button.classList.add('drop-ready'); if (event.dataTransfer) event.dataTransfer.dropEffect = 'link'; } };
+      button.ondragleave = () => button.classList.remove('drop-ready');
+      button.ondrop = event => {
+        event.preventDefault(); button.classList.remove('drop-ready');
+        const value = event.dataTransfer?.getData('application/x-after-rain-item');
+        if (value && value === this.draggedItem && isQuickSlot(value)) this.assignInventorySlot(index, value);
+        this.draggedItem = null;
+      };
+      button.onclick = () => { if (this.selectedInventoryItem) this.assignInventorySlot(index, this.selectedInventoryItem); };
+      button.oncontextmenu = event => { event.preventDefault(); this.assignInventorySlot(index, null); };
+      button.onkeydown = event => { if (event.key === 'Delete' || event.key === 'Backspace') { event.preventDefault(); this.assignInventorySlot(index, null); } };
     });
   }
   private editSlot(index: number): void {
@@ -158,7 +217,7 @@ export class GameUI {
     panel.querySelectorAll<HTMLButtonElement>('[data-assign]').forEach(button => button.onclick = () => {
       const previous = this.quickbar[index];
       this.quickbar[index] = (button.dataset.assign || null) as Tool | null;
-      if (previous === this.latest?.tool && previous !== this.quickbar[index]) this.callbacks.onTool('hand');
+      if (quickAction(previous) === this.latest?.tool && previous !== this.quickbar[index]) this.callbacks.onTool('hand');
       this.renderQuickbar(); this.lastHudKey = ''; this.callbacks.onSave(); this.closeModal();
     });
     this.overlay.append(panel); panel.querySelector<HTMLButtonElement>('button')!.focus();
@@ -365,17 +424,7 @@ export class GameUI {
       weather.innerHTML = icon(night ? 'moon' : 'sun');
       weather.setAttribute('data-night', String(night));
     }
-    this.base.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach(button => {
-      const selected = button.dataset.tool === data.tool;
-      const requiresOwnership = button.dataset.tool === 'hatchet' || button.dataset.tool === 'pickaxe';
-      const owned = !requiresOwnership || data.inventory[button.dataset.tool as 'hatchet' | 'pickaxe'] > 0;
-      button.classList.toggle('selected', selected);
-      button.setAttribute('aria-pressed', String(selected));
-      button.setAttribute('aria-disabled', String(!owned));
-      if (requiresOwnership) button.title = owned
-        ? tools.find(tool => tool.id === button.dataset.tool)!.detail
-        : 'Fabrique esta ferramenta primeiro. Abra a fabricação com C.';
-    });
+    this.updateQuickbar();
     const selectedTool = tools.find(tool => tool.id === data.tool) ?? tools[0];
     const buildingKind = data.tool in BUILD_COSTS ? data.tool as BuildingData['kind'] : null;
     const cost = data.tool === 'blueprint' ? BLUEPRINT_COST : buildingKind ? BUILD_COSTS[buildingKind] : data.tool === 'plant' ? { seeds: 1 } : {};
@@ -390,6 +439,11 @@ export class GameUI {
     if (missingStation) detail += ' · Aproxime-se da bancada';
     set('#active-tool', buildingKind ? BUILD_NAMES[buildingKind] : selectedTool.label);
     set('#tool-cost', detail);
+    const activeItem = this.quickbar[this.activeSlot] ?? null;
+    if (quickItem(activeItem) && quickAction(activeItem) === data.tool) {
+      set('#active-tool', this.slotInfo(activeItem).label);
+      set('#tool-cost', `${quickQuantity(activeItem, data.inventory, !!data.wateringCan)} na mochila · ${quickAction(activeItem) === 'hand' ? 'Material para fabricação e construção' : detail}`);
+    }
     const costLabel = this.base.querySelector<HTMLElement>('#tool-cost')!;
     costLabel.classList.toggle('insufficient', missingMaterials || missingTools.length > 0 || missingStation);
     costLabel.title = missingMaterials ? 'Faltam materiais na mochila' : detail;
@@ -466,12 +520,44 @@ export class GameUI {
     if (this.modal) return;
     this.openModal('inventory');
     const panel = document.createElement('section');
-    panel.className = 'inventory-card panel';
-    panel.setAttribute('role', 'dialog');
+    panel.className = 'inventory-card backpack-panel panel';
+    panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Inventário');
-    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">O QUE A GENTE LEVA</span><h2>Minha mochila</h2></div><button class="icon-button" aria-label="Fechar inventário">${icon('close')}</button></div><div class="inventory-grid">${items.map(item => `<article class="inventory-item"><div class="item-icon">${icon(item.id)}<strong>${inventory[item.id]}</strong></div><h3>${ITEM_NAMES[item.id]}</h3><p>${item.description}</p></article>`).join('')}</div><div class="inventory-footer">${icon('leaf')} O essencial cabe em pouca coisa.<span>SIMULAÇÃO PAUSADA</span></div>`;
-    panel.querySelector('button')!.addEventListener('click', () => this.closeModal());
-    this.overlay.append(panel);
+    this.selectedInventoryItem = null;
+    const entries = inventoryEntries(inventory, !!this.latest?.wateringCan);
+    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">TUDO PARA UM NOVO COMEÇO</span><h2>Minha mochila</h2></div><button class="icon-button" aria-label="Fechar inventário">${icon('close')}</button></div>
+      <div class="backpack-meta"><span>${icon('bag')} Mochila inicial</span><strong>${entries.length} / ${INVENTORY_CAPACITY} espaços</strong></div>
+      <div class="backpack-grid" aria-label="Mochila com 30 espaços">${Array.from({ length: INVENTORY_CAPACITY }, (_, index) => {
+        const slot = entries[index] ?? null, info = this.slotInfo(slot);
+        const quantity = quickQuantity(slot, inventory, !!this.latest?.wateringCan);
+        return `<button type="button" class="bag-slot${slot ? ' occupied' : ''}" ${slot ? `data-bag-item="${slot}" draggable="true"` : 'disabled'} aria-label="${slot ? `${info.label}, quantidade ${quantity}` : `Espaço ${index + 1} vazio`}" title="${slot ? info.label : 'Vazio'}">${slot ? `${icon(info.icon)}<strong class="slot-quantity">${quantity}</strong>` : ''}</button>`;
+      }).join('')}</div>
+      <div class="backpack-detail" aria-live="polite"><span class="detail-icon">${icon('leaf')}</span><div><strong class="detail-name">Cada coisa no seu lugar</strong><p class="detail-text">Arraste um item para a barra abaixo. Ou clique no item e depois no slot.</p></div></div>
+      <div class="backpack-bar-heading"><strong>Barra rápida</strong><span>Teclas 1–9</span></div><div class="inventory-quickbar" aria-label="Nove slots da barra rápida"></div>
+      <p class="backpack-help">Itens iguais ficam empilhados. A barra é um atalho para a mochila: não duplica nem consome itens. Botão direito ou Delete no slot remove o atalho.</p>
+      <div class="inventory-footer">${icon('leaf')} Um espaço para cada descoberta.<span>SIMULAÇÃO PAUSADA · I PARA VOLTAR</span></div>`;
+    panel.querySelector('.icon-button')!.addEventListener('click', () => this.closeModal());
+    panel.querySelectorAll<HTMLButtonElement>('[data-bag-item]').forEach(button => {
+      const item = button.dataset.bagItem as Exclude<QuickSlot, null>;
+      const select = (): void => {
+        this.selectedInventoryItem = item;
+        const info = this.slotInfo(item);
+        panel.querySelector('.detail-icon')!.innerHTML = icon(info.icon);
+        panel.querySelector('.detail-name')!.textContent = info.label;
+        panel.querySelector('.detail-text')!.textContent = info.detail;
+        panel.querySelectorAll('[data-bag-item]').forEach(cell => cell.classList.toggle('chosen', cell === button));
+      };
+      button.onclick = select;
+      button.ondragstart = event => {
+        select(); this.draggedItem = item;
+        event.dataTransfer!.setData('application/x-after-rain-item', item);
+        event.dataTransfer!.effectAllowed = 'link';
+        button.classList.add('dragging');
+      };
+      button.ondragend = () => { this.draggedItem = null; button.classList.remove('dragging'); panel.querySelectorAll('.drop-ready').forEach(cell => cell.classList.remove('drop-ready')); };
+    });
+    this.overlay.append(panel); this.renderInventoryBar();
+    panel.querySelector<HTMLButtonElement>('.icon-button')!.focus();
   }
 
   toggleCrafting(inventory: InventoryData, nearWorkbench: boolean): void {
@@ -684,6 +770,7 @@ export class GameUI {
     const callback = this.onModalClose;
     this.onModalClose = undefined;
     this.modal = null;
+    this.draggedItem = null; this.selectedInventoryItem = null;
     this.overlay.replaceChildren();
     this.overlay.classList.remove('active');
     this.callbacks.onPause(false);
