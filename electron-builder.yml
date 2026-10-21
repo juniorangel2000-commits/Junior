@@ -1,5 +1,5 @@
 appId: br.depoisdachuva.jogo
-productName: Depois da Chuva
+productName: After Rain
 asar: true
 npmRebuild: false
 directories:
@@ -18,7 +18,7 @@ win:
         - x64
   icon: desktop/resources/icon.ico
   signAndEditExecutable: false
-  artifactName: Depois-da-Chuva-${version}-Windows-x64.exe
+  artifactName: After-Rain-${version}-Windows-x64.exe
 portable:
   requestExecutionLevel: user
 linux:

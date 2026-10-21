@@ -408,3 +408,54 @@
 @media(prefers-reduced-motion:reduce){.character-studio button{transition:none}}
 
 .dialogue-portrait canvas{max-width:100%;height:auto}
+
+/* After Rain: chuva fria e sinais de abrigo no vale que restou. */
+.after-rain-title{isolation:isolate;padding:32px 5.6% 24px;background:linear-gradient(90deg,#09171de8 0%,#102027bf 28%,#16313a5c 55%,#0d26342e 100%);overflow:auto;scrollbar-width:thin;scrollbar-color:#668184 #142b31}
+.after-rain-title .title-atmosphere{position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(90deg,#0c1a20ee 0%,#102027de 24%,#163038bb 35%,#17313888 47%,#1029323b 66%,#0b212b21 100%),linear-gradient(180deg,#1c3c4b40 0%,#19353b22 50%,#06131b99 100%)}
+.after-rain-title .title-weather{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.after-rain-title .title-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:-3;pointer-events:none}
+.after-rain-title .title-video[hidden]{display:none}
+.after-rain-title.has-video{background:transparent}
+.after-rain-title .title-header{position:relative;z-index:1;flex-shrink:0}
+.after-rain-title .brand{color:#c5ccbf;gap:12px;font-size:11px;letter-spacing:3px;text-decoration:none}
+.after-rain-title .brand>.icon{color:#849e91;width:27px;height:34px}
+.after-rain-title .brand small{color:#718c88;font-size:6px;letter-spacing:1.3px;margin-top:6px;opacity:1}
+.after-rain-title .title-world-tag{display:flex;align-items:center;gap:9px;font-size:8px;letter-spacing:1.8px;color:#a7bbb5;white-space:nowrap;background:#10282e88;border:1px solid #9eb9b02c;border-radius:3px;padding:10px 15px}
+.after-rain-title .title-world-tag i{height:5px;width:5px;border-radius:50%;background:#b89761;box-shadow:0 0 0 3px #c7a57218}
+.after-rain-title .title-world-tag b{font-weight:400;font-size:7px;letter-spacing:1px;color:#7e9d98}
+.after-rain-title .title-copy{position:relative;z-index:1;margin:auto 0;width:500px;max-width:53%;padding:40px 0 35px;transform:none}
+.after-rain-title .title-copy>.eyebrow{font-size:8px;letter-spacing:1.7px;font-weight:600;color:#8baba5;gap:10px;margin-bottom:22px}
+.after-rain-title .title-copy>.eyebrow>span{width:28px;background:#7d9992}
+.after-rain-title h1{font-family:Georgia,'Times New Roman',serif;font-size:clamp(108px,12.3vw,179px);line-height:.83;letter-spacing:-7.7px;font-weight:400;color:#dfdfd1;text-shadow:0 3px 12px #02121760;margin:0 0 0 -6px}
+.after-rain-title h1>span{display:block;color:#dfdfd1}
+.after-rain-title h1 em{display:block;margin-top:4px;font-style:normal;color:#8fa99c;font-weight:400}
+.after-rain-title .title-period{color:#b39864;letter-spacing:-8px}
+.after-rain-title .title-copy>p{font:16px/1.8 Georgia,serif;color:#a2b6af;margin:27px 0 25px;text-shadow:0 1px 2px #102029}
+.after-rain-title .title-actions{display:flex;align-items:stretch;gap:11px;flex-wrap:wrap}
+.after-rain-title .button{border-radius:3px;min-height:47px;font-size:11px;letter-spacing:.2px;padding:13px 23px}
+.after-rain-title .button-primary{border:1px solid #bb965d;background:linear-gradient(#a18756,#80683f);box-shadow:inset 0 1px #e5cf9e3b,0 3px 0 #07151d40;color:#fff1ce}
+.after-rain-title .button-primary:hover{background:linear-gradient(#b29865,#8e774a);border-color:#d3b278}
+.after-rain-title .button-glass{border:1px solid #6d8b833e;background:#183039a8;color:#b9c9b9;box-shadow:inset 0 1px #b8cebd10}
+.after-rain-title .button-glass:hover{background:#29464a;border-color:#8ba79b75}
+.after-rain-title .title-note{font-size:9px;color:#78948b;gap:7px;margin-top:24px;letter-spacing:.2px}
+.after-rain-title .title-note>.icon{width:14px;height:14px;color:#7a9584}
+.after-rain-title .title-location{position:absolute;z-index:1;right:5.6%;bottom:112px;border-color:#afbc9470;padding:7px 0 7px 18px;font-size:8px;letter-spacing:1.8px;color:#c4cbbb;text-shadow:0 2px 6px #081a23}
+.after-rain-title .title-location small{font-size:15px;color:#b6c0ad;margin-top:8px;letter-spacing:0}
+.after-rain-title .location-dot{background:#c5a569;box-shadow:0 0 0 4px #c5a5691f}
+.after-rain-title .title-footer{position:relative;z-index:1;flex-shrink:0;align-items:center;border-color:#79979235;padding-top:17px;color:#6e8b84;font-size:7px;letter-spacing:1.8px;gap:18px}
+.after-rain-title .title-footer i{font-style:normal;color:#789184;margin:0 7px}
+.after-rain-title .title-footer-right{display:flex;align-items:center;gap:23px}
+.after-rain-title .title-save-note{color:#8eaaa2;text-shadow:0 1px 3px #0c2430}
+.after-rain-title .title-motion{min-height:32px;border:1px solid #a7beb13b;border-radius:3px;background:#112b35bd;display:flex;gap:8px;align-items:center;justify-content:center;padding:6px 11px;color:#a9beb3;font-size:9px;letter-spacing:.2px;white-space:nowrap}
+.after-rain-title .title-motion:hover{background:#24434d;border-color:#b0c4b96b}
+.after-rain-title .motion-symbol{display:flex;align-items:center;justify-content:center;width:12px;text-align:center}
+.after-rain-title .motion-symbol::before{content:"";display:block;width:8px;height:10px;background:linear-gradient(90deg,#9cb4a8 0% 30%,transparent 30% 70%,#9cb4a8 70% 100%)}
+.after-rain-title .title-motion[aria-pressed=false] .motion-symbol::before{width:0;height:0;background:none;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid #9cb4a8}
+@media(min-width:1600px){.after-rain-title{padding-left:7%;padding-right:7%}.after-rain-title .title-copy{padding-left:0;max-width:48%}.after-rain-title .title-location{right:7%}}
+@media(max-width:1050px){.after-rain-title .title-copy{max-width:56%;padding-top:35px;padding-bottom:30px}.after-rain-title h1{font-size:clamp(110px,14vw,150px)}.after-rain-title .title-copy>.eyebrow{font-size:7px;letter-spacing:1.3px}.after-rain-title .title-copy>p{font-size:15px}.after-rain-title .title-actions{gap:9px}.after-rain-title .button{padding-inline:18px;font-size:10px}.after-rain-title .title-footer{letter-spacing:1px}.after-rain-title .title-footer-right{gap:15px}.after-rain-title .title-location{font-size:7px}}
+@media(max-width:760px){.after-rain-title{padding:25px 6% 20px}.after-rain-title .title-atmosphere{background:linear-gradient(90deg,#0c1a20ed 0%,#102027d6 35%,#163038a8 55%,#1731383b 85%),linear-gradient(180deg,#1c3c4b40,#19353b22 50%,#06131b99)}.after-rain-title .title-copy{max-width:75%;width:470px;padding:35px 0 45px}.after-rain-title h1{font-size:135px;letter-spacing:-6px}.after-rain-title .title-copy>p{font-size:15px}.after-rain-title .title-world-tag{font-size:7px;letter-spacing:1px;padding:9px 11px}.after-rain-title .title-world-tag b{display:none}.after-rain-title .title-location{right:6%;bottom:103px;max-width:220px}.after-rain-title .title-location small{font-size:12px}.after-rain-title .title-footer{justify-content:space-between;flex-wrap:wrap;gap:12px}.after-rain-title .title-footer>span:first-child{display:block}.after-rain-title .title-save-note{display:none}.after-rain-title .title-footer-right{margin-left:auto}}
+@media(max-height:700px){.after-rain-title{padding-top:23px;padding-bottom:19px}.after-rain-title .title-copy{padding:24px 0 25px}.after-rain-title h1{font-size:116px;letter-spacing:-6px}.after-rain-title .title-copy>.eyebrow{margin-bottom:18px}.after-rain-title .title-copy>p{font-size:14px;margin:20px 0 20px}.after-rain-title .title-note{margin-top:20px}.after-rain-title .title-location{bottom:100px}.after-rain-title .title-footer{padding-top:13px}.after-rain-title .title-header .brand>.icon{height:29px}}
+@media(max-width:480px){.after-rain-title .title-copy{max-width:100%;padding:34px 0 36px}.after-rain-title h1{font-size:117px;letter-spacing:-6px}.after-rain-title .title-copy>.eyebrow{font-size:6px;letter-spacing:1px}.after-rain-title .title-copy>p{font-size:14px}.after-rain-title .title-actions{width:225px}.after-rain-title .title-note{font-size:8px}.after-rain-title .title-location{display:none}.after-rain-title .title-world-tag{display:none}.after-rain-title .title-footer>span:first-child{font-size:6px;letter-spacing:1px}.after-rain-title .title-motion{font-size:8px}.after-rain-title .title-footer{gap:8px}.after-rain-title .brand{font-size:10px;letter-spacing:2px}}
+@media(prefers-reduced-motion:reduce){.after-rain-title button{transition:none}.after-rain-title .button:hover{transform:none}}
+.rainy-title-active #game canvas{filter:saturate(.56) brightness(.9)}
+.after-rain-title .title-weather{image-rendering:pixelated}

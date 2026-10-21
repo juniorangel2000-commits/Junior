@@ -1,8 +1,10 @@
-# Jardim Depois da Chuva
+# After Rain
 
-Uma pequena clareira, uma casa que resistiu e a chance de recomeçar. **Jardim Depois da Chuva** é um jogo original para navegador, single-player, com exploração, cultivo e construção em pixel art 2D top-down. O projeto existente usa TypeScript, Phaser 3 e Vite, com aplicativo desktop em Electron.
+Uma pequena clareira, uma casa que resistiu e a chance de recomeçar. **After Rain**, anteriormente chamado Jardim Depois da Chuva, é um jogo original para navegador, single-player, com exploração, cultivo e construção em pixel art 2D top-down. Sua história se passa após uma chuva que transformou pessoas em zumbis. Continua no mesmo projeto, com TypeScript, Phaser 3 e Vite e aplicativo desktop em Electron.
 
-A versão do código é **0.4.0**. Reúne a nova arte do vale e a criação de personagem, preservando o jogo existente, as três regiões e os saves anteriores. Veja [o escopo da versão Windows 0.4.0](docs/versao-windows-v0.4.md).
+A versão do código é **0.5.0, em desenvolvimento**. A [nova tela inicial After Rain](docs/tela-inicial-after-rain.md) apresenta a propriedade com garoa, neblina, tons frios e câmera suave, com suporte preparado para vídeo local em loop. O clipe do Flow ainda não foi fornecido; a configuração padrão usa o cenário do jogo. A última versão Windows publicada continua sendo a [0.4.0](docs/versao-windows-v0.4.md), com o nome anterior.
+
+![Abertura chuvosa de After Rain, em desenvolvimento.](docs/capturas/after-rain-inicio.png)
 
 [Sprites de terreno reformulados](docs/terrenos-novos.md): onze materiais originais de grama, bosque, campos, estradas, cultivo, margens, água, madeira e pedra de passagem, acompanhando a arte das árvores.
 
@@ -46,7 +48,7 @@ O build fica em `dist/`. Sirva essa pasta por HTTP; abrir `index.html` diretamen
 
 **Última versão publicada e verificada:** [Jardim Depois da Chuva v0.4.0 — Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.4.0/Depois-da-Chuva-0.4.0-Windows-x64.exe). A [página da Release](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.4.0) também disponibiliza o executável e seu manifesto de integridade. Inclui todas as melhorias de terreno, recursos, margens, flores, personagem e personalização, além da entrada da casa sem as três pedras de passagem.
 
-O pacote portátil é gerado em `release/`, com nome `Depois-da-Chuva-<versão>-Windows-x64.exe`. Ele é destinado a **Windows 10/11 de 64 bits**. Para jogar o pacote pronto, abra o `.exe` com dois cliques. Não precisa instalar Node.js, abrir um terminal, manter o Vite ativo, conectar à internet ou executar como administrador. A primeira abertura pode demorar um pouco enquanto o pacote prepara seus arquivos temporários.
+O pacote portátil é gerado em `release/`, com nome `After-Rain-<versão>-Windows-x64.exe` a partir da versão 0.5.0. Os pacotes anteriores mantêm o nome de arquivo original. Ele é destinado a **Windows 10/11 de 64 bits**. Para jogar o pacote pronto, abra o `.exe` com dois cliques. Não precisa instalar Node.js, abrir um terminal, manter o Vite ativo, conectar à internet ou executar como administrador. A primeira abertura pode demorar um pouco enquanto o pacote prepara seus arquivos temporários.
 
 O aplicativo usa Electron e inclui o jogo e seu próprio motor de execução. O save fica nos dados locais do usuário, em `%APPDATA%\Depois da Chuva`. Ele é separado do save do navegador e permanece ao fechar o jogo ou mover o executável. A origem interna do jogo permanece fixa entre versões; a pasta temporária do portátil não determina o local do save.
 
@@ -63,7 +65,7 @@ O pacote não possui assinatura digital de editor. A abertura interativa da nova
 
 ### Distribuição pelo GitHub
 
-O workflow `.github/workflows/windows-release.yml` gera o pacote em um runner Windows. Sua execução manual produz o artefato `Depois-da-Chuva-Windows-x64`, contendo `.exe` e `SHA256SUMS.txt`. Quando uma tag `v*` é enviada, o workflow publica esses arquivos em uma GitHub Release usando a autorização temporária do GitHub.
+O workflow `.github/workflows/windows-release.yml` gera o pacote em um runner Windows. Sua execução manual produz o artefato `After-Rain-Windows-x64`, contendo `.exe` e `SHA256SUMS.txt`. Quando uma tag `v*` é enviada, o workflow publica esses arquivos em uma GitHub Release usando a autorização temporária do GitHub. A versão 0.5.0 ainda não foi publicada.
 
 A [execução da versão v0.4.0](https://github.com/juniorangel2000-commits/Junior/actions/runs/39621761382) concluiu com sucesso em um runner Windows, incluindo TypeScript, 135 testes e empacotamento. O executável publicado foi baixado e conferido: **119.488.181 bytes**, cabeçalhos PE válidos e SHA-256 correspondente ao manifesto público. O hash e os detalhes estão em [versao-windows-v0.4.md](docs/versao-windows-v0.4.md). Caminhos internos como `/workspace/Junior/release/...` não equivalem a links públicos; use a Release para distribuir o pacote.
 
@@ -227,6 +229,8 @@ vite.config.ts            Caminhos relativos para assets locais
 ```
 
 ## Validação
+
+Na versão **0.5.0 em desenvolvimento**, a abertura foi conferida no Chromium: câmera e chuva pausam sem avançar a partida; criar, jogar, voltar e continuar restauram o estado; um save real do build 0.4.0 carrega corretamente. Vídeo local opcional foi testado com uma fixture externa, incluindo loop, pausa, acessibilidade, limpeza e fallback. O clipe final do Flow e a publicação Windows 0.5.0 ainda estão pendentes. Veja [a documentação da abertura](docs/tela-inicial-after-rain.md).
 
 Na versão **0.4.0**, TypeScript, **135 testes em nove arquivos**, build e geração do portátil no Windows foram aprovados. O build estático foi conferido no Chromium: criação personalizada, artes locais, movimento, pausa, salvar, recarregar e continuar, com zero erros JavaScript/HTTP e zero requisições externas. O download público teve sua integridade verificada. Veja [o registro da distribuição 0.4.0](docs/versao-windows-v0.4.md).
 

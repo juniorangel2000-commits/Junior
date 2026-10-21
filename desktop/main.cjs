@@ -7,7 +7,7 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'chuva', privileges: { standard: true, secure: true, supportFetchAPI: true } },
 ]);
 
-app.setName('Depois da Chuva');
+app.setName('After Rain');
 app.setAppUserModelId('br.depoisdachuva.jogo');
 // O caminho não depende da pasta do executável nem da versão do jogo.
 app.setPath('userData', path.join(app.getPath('appData'), 'Depois da Chuva'));
@@ -16,7 +16,7 @@ let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    title: 'Jardim Depois da Chuva',
+    title: 'After Rain',
     width: 1280,
     height: 800,
     minWidth: 960,

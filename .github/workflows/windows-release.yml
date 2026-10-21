@@ -1,4 +1,4 @@
-name: Executável para Windows
+name: After Rain — executável para Windows
 
 on:
   workflow_dispatch:
@@ -61,7 +61,7 @@ jobs:
       - name: Disponibilizar para download na execução
         uses: actions/upload-artifact@v4
         with:
-          name: Depois-da-Chuva-Windows-x64
+          name: After-Rain-Windows-x64
           path: |
             release/*.exe
             release/SHA256SUMS.txt
@@ -77,13 +77,13 @@ jobs:
         shell: pwsh
         run: |
           $notes = @'
-          Jardim Depois da Chuva — nova arte do vale e criação de personagem.
+          After Rain — nova identidade e abertura chuvosa.
 
-          Reúne todas as melhorias após a versão 0.3.0: onze materiais de terreno, caminhos e água com bordas arredondadas, recursos redesenhados e fora das trilhas, pedras soltas distintas das rochas mineráveis, flores e folhagem detalhadas.
+          O jogo passa a se chamar After Rain. A nova tela inicial apresenta a propriedade em uma atmosfera pós-apocalíptica, com garoa, neblina, câmera suave, controle para pausar o fundo e suporte a vídeo local em loop.
 
-          Personagem maior com três penteados, quatro direções e nova criação de aparência: cores de pele, cabelo, camisa e macacão, bolsa opcional, aparências prontas e prévia giratória com caminhada. As escolhas são salvas, com compatibilidade para partidas anteriores.
+          Mantém as artes de terreno, recursos e personagem da versão 0.4.0, as três regiões, a personalização, o cultivo, a fabricação e a construção.
 
-          As três pedras de passagem em frente à casa foram retiradas. Inclui a propriedade, o Bosque do Pinheiro e os Campos Abertos, com cultivo, fabricação, construção e salvamento local. M abre o mapa das áreas jogáveis.
+          O local e o formato dos saves continuam os mesmos, apesar da mudança de nome.
 
           Aplicativo portátil para Windows 10/11 de 64 bits, gerado em Windows.
           Baixe o arquivo .exe desta versão e abra com dois cliques. Não exige Node.js ou servidor.
@@ -93,5 +93,5 @@ jobs:
           '@
           $notes | Set-Content -Encoding utf8NoBOM release/NOTAS.txt
           $assets = @((Get-ChildItem release/*.exe).FullName) + @('release/SHA256SUMS.txt')
-          gh release create $env:RELEASE_TAG @assets --verify-tag --repo $env:RELEASE_REPOSITORY --title "Jardim Depois da Chuva $env:RELEASE_TAG — Windows x64" --notes-file release/NOTAS.txt
+          gh release create $env:RELEASE_TAG @assets --verify-tag --repo $env:RELEASE_REPOSITORY --title "After Rain $env:RELEASE_TAG — Windows x64" --notes-file release/NOTAS.txt
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

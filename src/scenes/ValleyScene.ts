@@ -18,6 +18,8 @@ import { getLiaDialogue } from '../systems/npc';
 import { createNewSave, hasSave, loadSave, saveGame } from '../systems/save';
 import type { BuildingData, CharacterProfile, SaveData, Tool, TilePoint } from '../types';
 import type { GameUI } from '../ui';
+import type { TitleBackgroundMode } from '../title-screen';
+import { titleCameraPose } from '../title-camera';
 
 const TOOLS: Tool[] = ['hand', 'plant', 'water', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'workbench', 'wall'];
 const DEFAULT_PROFILE: CharacterProfile = { name: 'Viajante', skin: '#d9a276', hairStyle: 'preso', hairColor: '#754323', outfit: '#638a9d' };
@@ -53,6 +55,10 @@ export class ValleyScene extends Phaser.Scene {
   private craftJob: { id: string; name: string; elapsed: number; duration: number } | null = null;
   private nextInteractionAt = 0;
   private currentRegion = '';
+  private titleBackgroundMode: TitleBackgroundMode = 'off';
+  private titleElapsed = 0;
+  private titleLights?: Phaser.GameObjects.Graphics;
+  private npcLabel?: Phaser.GameObjects.Text;
 
   constructor() { super('Vale'); }
 
@@ -110,6 +116,32 @@ export class ValleyScene extends Phaser.Scene {
     this.paused = value;
     this.input.keyboard?.resetKeys();
     if (value && this.running) this.persist();
+  }
+
+  setTitleBackground(mode: TitleBackgroundMode): void {
+    const wasOff = this.titleBackgroundMode === 'off';
+    this.titleBackgroundMode = mode;
+    document.body.classList.toggle('rainy-title-active', mode !== 'off');
+    this.night?.setVisible(mode === 'off');
+    this.titleLights?.setVisible(mode !== 'off');
+    this.npcLabel?.setVisible(mode === 'off');
+    if (mode === 'off') {
+      this.updateZoom();
+      if (this.player) {
+        this.cameras.main.startFollow(this.player.sprite, false, .12, .12);
+        this.cameras.main.centerOn(this.player.x, this.player.y);
+      }
+      return;
+    }
+    if (wasOff) this.titleElapsed = 0;
+    this.cameras.main.stopFollow();
+    this.updateTitleBackground(0);
+  }
+
+  private updateTitleBackground(delta: number): void {
+    if (this.titleBackgroundMode === 'animated' && !document.hidden) this.titleElapsed = (this.titleElapsed + delta) % 36;
+    const pose = titleCameraPose(this.scale.width, this.scale.height, this.titleElapsed);
+    this.cameras.main.setZoom(pose.zoom).centerOn(pose.x, pose.y);
   }
 
   selectTool(tool: Tool): void {
@@ -197,6 +229,14 @@ export class ValleyScene extends Phaser.Scene {
     this.cropSignature = '';
     this.buildingSignature = '';
     this.world = createWorld(this, data.depletedResources, data.buildings);
+    // A warm refuge in the opening only; the facade and gameplay lighting stay intact.
+    this.titleLights = this.add.graphics().setDepth(16 * TILE + 5).setVisible(false);
+    if (this.textures.exists('asset-house')) for (const windowX of [37, 169]) {
+      const x = 24.5 * TILE - 128 + windowX + 15, y = 16 * TILE + 4 - 224 + 163;
+      this.titleLights.fillStyle(0xe2ac55, .06).fillCircle(x + 6, y + 10, 23);
+      this.titleLights.fillStyle(0xffbd6e, .78);
+      for (let row = 0; row < 3; row++) for (let col = 0; col < 2; col++) this.titleLights.fillRect(x + col * 7, y + row * 7, 6, 6);
+    }
     // Uma estação já salva tem prioridade sobre novos pontos de coleta.
     for (const b of data.buildings) {
       for (const point of buildingFootprint(b)) {
@@ -219,7 +259,7 @@ export class ValleyScene extends Phaser.Scene {
     this.recoverPlayerPosition();
     this.world.updateOcclusion(this.player.x, this.player.y);
     this.add.sprite(NPC_POSITION.x, NPC_POSITION.y, 'lia').setOrigin(0.5, 1).setDepth(NPC_POSITION.y);
-    this.add.text(NPC_POSITION.x, NPC_POSITION.y - CHARACTER_HEIGHT - 6, 'Lia', {
+    this.npcLabel = this.add.text(NPC_POSITION.x, NPC_POSITION.y - CHARACTER_HEIGHT - 6, 'Lia', {
       fontFamily: 'monospace', fontSize: '10px', color: '#fff1d2', backgroundColor: '#344d3d', padding: { x: 5, y: 3 },
     }).setOrigin(0.5, 1).setDepth(NPC_POSITION.y + 1);
     this.selection = this.add.graphics().setDepth(4000);
@@ -240,7 +280,10 @@ export class ValleyScene extends Phaser.Scene {
     this.updateShelter();
   }
 
-  private updateZoom(): void { this.cameras.main.setZoom(this.scale.width < 1000 || this.scale.height < 700 ? 1 : 2); }
+  private updateZoom(): void {
+    if (this.titleBackgroundMode !== 'off') { this.updateTitleBackground(0); return; }
+    this.cameras.main.setZoom(this.scale.width < 1000 || this.scale.height < 700 ? 1 : 2);
+  }
 
   private feetTiles(x = this.player.x, y = this.player.y): TilePoint[] {
     return [[-7, -5], [7, -5], [-7, 3], [7, 3]].map(([ox, oy]) => ({ x: Math.floor((x + ox) / TILE), y: Math.floor((y + oy) / TILE) }));
@@ -574,6 +617,7 @@ export class ValleyScene extends Phaser.Scene {
   update(_time: number, deltaMs: number): void {
     if (!this.state) return;
     const delta = Math.min(deltaMs / 1000, 0.25);
+    if (this.titleBackgroundMode !== 'off') { this.updateTitleBackground(delta); return; }
     if (this.craftJob) {
       if (!this.ui.isCraftingOpen() || document.hidden) this.cancelCrafting();
       else {

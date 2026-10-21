@@ -12,6 +12,7 @@ const ui = new GameUI({
   onCancelCraft: () => scene.cancelCrafting(),
   onBlueprint: () => scene.selectTool('blueprint'),
   onPause: paused => scene.setPaused(paused),
+  onTitleBackground: mode => scene.setTitleBackground(mode),
   onSave: () => scene.persist(),
   onMainMenu: () => scene.mainMenu(),
 });

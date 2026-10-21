@@ -1,5 +1,7 @@
 import { CHARACTER_WIDTH, drawCharacter } from './art';
 import { createCharacterEditor } from './character-creator';
+import { createTitleScreen } from './title-screen';
+import type { TitleBackgroundMode } from './title-screen';
 import { itemIconUrl } from './visual-assets';
 import { REGIONS, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 import { BUILD_COSTS, BUILD_NAMES, BUILD_REQUIREMENTS } from './systems/building';
@@ -18,6 +20,7 @@ interface UICallbacks {
   onPause(paused: boolean): void;
   onSave(): boolean;
   onMainMenu(): void;
+  onTitleBackground(mode: TitleBackgroundMode): void;
 }
 
 const paths: Record<string, string> = {
@@ -102,6 +105,7 @@ export class GameUI {
   private onModalClose?: () => void;
   private existingSave = false;
   private cleanupCreation?: () => void;
+  private cleanupTitle?: () => void;
   private latest?: HudData;
   private lastHudKey = '';
   private craftingBusy = false;
@@ -127,6 +131,8 @@ export class GameUI {
   }
 
   showTitle(hasSave: boolean): void {
+    this.cleanupTitle?.();
+    this.cleanupTitle = undefined;
     this.cleanupCreation?.();
     this.cleanupCreation = undefined;
     if (this.modal === 'crafting') this.callbacks.onCancelCraft();
@@ -137,24 +143,18 @@ export class GameUI {
     this.overlay.replaceChildren();
     this.overlay.classList.remove('active');
     this.callbacks.onPause(true);
-    this.base.innerHTML = `
-      <section class="title-screen" aria-label="Menu principal">
-        <header class="title-header"><a class="brand" href="#" aria-label="Jardim Depois da Chuva">${icon('leaf')}<span>ESTÚDIO DO RECOMEÇO<small>UMA HISTÓRIA FEITA DE PEQUENAS COISAS</small></span></a><span class="version-tag">VALE DOURADO <b>· TRÊS REGIÕES</b></span></header>
-        <div class="title-copy"><div class="eyebrow"><span></span> UM RECOMEÇO À SUA ESPERA</div>
-          <h1><span class="title-garden">Jardim</span>Depois<br><em>da Chuva<span class="title-period">.</span></em></h1>
-          <p>O mundo ficou em silêncio.<br>A vida encontrou um jeito de voltar.</p>
-          <div class="title-actions"><button class="button button-primary" id="new-game">Novo jogo ${icon('arrow')}</button>${hasSave ? '<button class="button button-glass" id="continue-game">Continuar minha história</button>' : ''}</div>
-          <div class="title-note">${icon('leaf')} Cultive a terra. Reconstrua os laços.</div>
-        </div>
-        <aside class="title-location"><span class="location-dot"></span><div>VALE DAS ÁGUAS<small>Um lugar para chamar de seu.</small></div></aside>
-        <footer class="title-footer"><span>UM JOGO SOBRE O QUE AINDA PODE FLORESCER</span><span>TECLADO E MOUSE <i>·</i> SALVAMENTO LOCAL</span></footer>
-      </section>`;
-    this.base.querySelector('.brand')!.addEventListener('click', event => event.preventDefault());
-    this.base.querySelector('#new-game')!.addEventListener('click', () => this.showCreation());
-    this.base.querySelector('#continue-game')?.addEventListener('click', () => this.callbacks.onContinue());
+    this.cleanupTitle = createTitleScreen(this.base, {
+      hasSave,
+      icon,
+      onNewGame: () => this.showCreation(),
+      onContinue: () => this.callbacks.onContinue(),
+      onBackgroundMode: mode => this.callbacks.onTitleBackground(mode),
+    });
   }
 
   private showCreation(): void {
+    this.cleanupTitle?.();
+    this.cleanupTitle = undefined;
     this.cleanupCreation?.();
     this.mode = 'creation';
     this.overlay.classList.remove('active');
@@ -169,6 +169,8 @@ export class GameUI {
   }
 
   showHUD(): void {
+    this.cleanupTitle?.();
+    this.cleanupTitle = undefined;
     this.cleanupCreation?.();
     this.cleanupCreation = undefined;
     this.mode = 'hud';
@@ -178,7 +180,7 @@ export class GameUI {
     this.overlay.classList.remove('active');
     this.lastHudKey = '';
     this.base.innerHTML = `<div class="hud">
-      <header class="hud-header"><div class="hud-brand">${icon('leaf')}<div>Jardim Depois da Chuva<small>PROPRIEDADE · BOSQUE · CAMPOS</small></div></div><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><div><strong id="hud-day">Dia 1</strong><span>Hora do vale <i>·</i> <b id="hud-time">08:00</b></span></div></div><div class="header-right"><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}</div><button class="icon-button map-button" title="Mapa das regiões (M)" aria-label="Abrir mapa das regiões">${icon('map')}</button><button class="building-button" title="Construção (B)" aria-label="Abrir construção">${icon('shelter')}<span>Construir <kbd>B</kbd></span></button><button class="crafting-button" title="Fabricação (C)" aria-label="Abrir fabricação">${icon('workbench')}<span>Fabricar <kbd>C</kbd></span></button><button class="icon-button inventory-button" title="Inventário (I)" aria-label="Abrir inventário">${icon('bag')}</button><button class="icon-button pause-button" title="Pausar (Esc)" aria-label="Pausar jogo">${icon('pause')}</button></div></header>
+      <header class="hud-header"><div class="hud-brand">${icon('leaf')}<div>After Rain<small>PROPRIEDADE · BOSQUE · CAMPOS</small></div></div><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><div><strong id="hud-day">Dia 1</strong><span>Hora do vale <i>·</i> <b id="hud-time">08:00</b></span></div></div><div class="header-right"><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}</div><button class="icon-button map-button" title="Mapa das regiões (M)" aria-label="Abrir mapa das regiões">${icon('map')}</button><button class="building-button" title="Construção (B)" aria-label="Abrir construção">${icon('shelter')}<span>Construir <kbd>B</kbd></span></button><button class="crafting-button" title="Fabricação (C)" aria-label="Abrir fabricação">${icon('workbench')}<span>Fabricar <kbd>C</kbd></span></button><button class="icon-button inventory-button" title="Inventário (I)" aria-label="Abrir inventário">${icon('bag')}</button><button class="icon-button pause-button" title="Pausar (Esc)" aria-label="Pausar jogo">${icon('pause')}</button></div></header>
       <aside class="journal"><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Erguer um lar</h3></div><button class="fold-button" data-collapse="journal" aria-controls="journal-content" aria-expanded="true" aria-label="Recolher objetivos" title="Recolher objetivos">${icon('chevron')}</button></header><div id="journal-content" class="journal-content"><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera nas ruínas a oeste.</p><div class="journal-rule"></div><div class="quest" id="harvest-quest"><span class="quest-circle"></span>Colha seu primeiro nabo</div><div class="quest" id="lia-quest"><span class="quest-circle"></span>Converse com Lia <kbd>E</kbd></div><small>Seu tempo. Seu caminho.</small></div></aside>
       <div class="location-pill">${icon('pin')}<span id="hud-location">Minha propriedade</span></div><div class="shelter-pill" id="shelter-status" title="Construa paredes e uma porta para formar seu abrigo.">${icon('shelter')}<span id="hud-shelter">Ao ar livre</span><small id="hud-station">Bancada distante</small></div>
       <aside class="controls-card is-collapsed"><button class="controls-toggle" data-collapse="controls-card" aria-controls="controls-content" aria-expanded="false" aria-label="Mostrar controles" title="Mostrar controles">${icon('keys')}<span>Controles</span>${icon('chevron')}</button><div id="controls-content" class="controls-content"><div><kbd>W</kbd><span class="arrow-keys">A S D</span><span>mover</span></div><div><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd><span>mover</span></div><div><kbd>E</kbd><span>interagir</span></div><div><kbd>M</kbd><span>mapa das regiões</span></div><div><kbd>I</kbd><span>inventário</span></div><div><kbd>C</kbd><span>fabricar</span></div><div><kbd>B</kbd><span>construir e molde 3×3</span></div><div><kbd>P</kbd><span>construir porta</span></div><div><kbd>Esc</kbd><span>pausar</span></div><small>1–8: ações e ferramentas · 9: bancada · 0: parede</small></div></aside>
@@ -477,7 +479,7 @@ export class GameUI {
       </div>
       <p class="map-caption">Esquema do terreno jogável. Caminhe pelas trilhas para mudar de região.</p>
       <div class="map-route-grid"><article><h3>Propriedade</h3><p>Seu ponto de partida. Cultive, converse com Lia e prepare suas ferramentas.</p></article><article><h3>Bosque do Pinheiro</h3><p>Siga para leste e atravesse a ponte de madeira. Leve a machadinha e a picareta.</p></article><article><h3>Campos Abertos</h3><p>Siga a trilha para o sul da propriedade. Explore os recursos e escolha um espaço livre para construir.</p></article></div>
-      <details class="map-reference"><summary>Ver referência artística do mundo</summary><p>Esta ilustração orienta futuras expansões. Vila, costa, montanha e demais regiões desenhadas ainda não são exploráveis nesta versão.</p><img src="assets/references/mapa_expandido.webp" loading="lazy" alt="Mapa conceitual expandido de Jardim Depois da Chuva, com regiões previstas para futuras etapas." /></details>
+      <details class="map-reference"><summary>Ver referência artística do mundo</summary><p>Esta ilustração orienta futuras expansões. Vila, costa, montanha e demais regiões desenhadas ainda não são exploráveis nesta versão.</p><img src="assets/references/mapa_expandido.webp" loading="lazy" alt="Mapa conceitual expandido de After Rain, com regiões previstas para futuras etapas." /></details>
       <div class="inventory-footer">${icon('leaf')} Sempre há um caminho de volta.<span>SIMULAÇÃO PAUSADA · M OU ESC PARA VOLTAR</span></div>`;
     panel.querySelector('.map-current strong')!.textContent = this.latest?.location || 'Propriedade';
     const position = this.latest?.playerTile;
