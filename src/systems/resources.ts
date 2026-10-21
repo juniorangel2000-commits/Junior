@@ -16,7 +16,7 @@ export const RESOURCE_DEFINITIONS: Record<ResourceKind, ResourceDefinition> = {
   fiber: { label: 'Fibras vegetais', tool: 'hand', hits: 1, drops: { fiber: 6 } },
   scrap: { label: 'Sucata', tool: 'hand', hits: 1, drops: { scrap: 2 } },
   standingTree: { label: 'Árvore', tool: 'hatchet', hits: 4, drops: { log: 2, branch: 3 } },
-  vein: { label: 'Rocha comum', tool: 'pickaxe', hits: 5, drops: { stone: 4 } },
+  vein: { label: 'Rocha minerável', tool: 'pickaxe', hits: 5, drops: { stone: 4 } },
 };
 
 export type ResourceActionResult = ActionResult & { depleted?: boolean };

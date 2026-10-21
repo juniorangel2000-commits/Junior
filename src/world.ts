@@ -1,7 +1,11 @@
 import Phaser from 'phaser';
 import type { BuildingData, ResourceKind, ResourceNode } from './types';
 import { paintTerrain } from './terrain-art';
+import { readTerrainSprites } from './terrain-sprites';
+import { readTerrainDecoration } from './decor-sprites';
 import { decorateProperty } from './property-art';
+import { placeLooseResources } from './data/resource-layout';
+import { isWaterPoint } from './data/terrain-shape';
 import { createLegacyTrees, getRegionAt, isBridgeTile, isFarmTile, isPathTile, isWaterTile, TILE, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 
 export type { ResourceNode } from './types';
@@ -18,6 +22,7 @@ export const WORLD_LANDMARKS = {
 export interface WorldView {
   resources: ResourceNode[];
   isBlocked(x: number, y: number): boolean;
+  isBlockedPoint(x: number, y: number): boolean;
   isFarm(x: number, y: number): boolean;
   isBuildable(x: number, y: number): boolean;
   resourceAt(x: number, y: number): ResourceNode | undefined;
@@ -45,16 +50,14 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   const bridgeAt = isBridgeTile;
   const pathAt = isPathTile;
 
-  // Collision uses the unchanged logical footprint; ground art is a separate layer.
-  for (let y = 0; y < WORLD_HEIGHT; y++) for (let x = 0; x < WORLD_WIDTH; x++) {
-    if (waterAt(x, y) && !bridgeAt(x, y)) blocked.add(key(x, y));
-  }
+  // Static obstacles are separate from water: precise movement can follow the
+  // rounded water edge while tile navigation/building remains conservative.
   // The ground is independent of saves. Reuse its GPU texture on new/continue.
   if (!scene.textures.exists('world-ground')) {
     const terrain = document.createElement('canvas');
     terrain.width = WORLD_WIDTH * TILE;
     terrain.height = WORLD_HEIGHT * TILE;
-    paintTerrain(terrain.getContext('2d')!);
+    paintTerrain(terrain.getContext('2d')!, readTerrainSprites(scene), readTerrainDecoration(scene));
     scene.textures.addCanvas('world-ground', terrain)?.setFilter(Phaser.Textures.FilterMode.NEAREST);
   }
   scene.add.image(0, 0, 'world-ground').setOrigin(0).setDepth(-100);
@@ -302,11 +305,20 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     // Pontos fixos garantem coleta e mineração em cada região explorável.
     ...expandedSupplies,
   ];
+  const candidates: ResourceNode[] = [];
   for (const [x, y, kind] of positions) {
     const id = `${kind}-${x}-${y}`;
     // Keep legacy loose-resource availability stable even after trees are cut.
-    if (depleted.has(id) || blocked.has(key(x, y)) || forestTiles.has(key(x, y))) continue;
-    const node: ResourceNode = {id, x, y, kind};
+    if ((waterAt(x, y) && !bridgeAt(x, y)) || blocked.has(key(x, y)) || forestTiles.has(key(x, y))) continue;
+    candidates.push({ id, x, y, kind });
+  }
+  const looseLayout = placeLooseResources(candidates, {
+    isStaticBlocked: (x, y) => blocked.has(key(x, y)),
+    isTreeTile: (x, y) => forestTiles.has(key(x, y)), buildings,
+  });
+  for (const node of looseLayout) {
+    if (depleted.has(node.id)) continue;
+    const { id, x, y, kind } = node;
     resources.push(node);
     const asset = ({ tree: 'asset-branch', stone: 'asset-stone', seeds: 'asset-seeds', scrap: 'asset-scrap', fiber: 'asset-fiber', vein: 'asset-vein', standingTree: 'asset-tree' } as const)[kind];
     const useAsset = scene.textures.exists(asset);
@@ -315,14 +327,22 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     if (kind === 'vein') resourceBlocked.add(key(x, y));
   }
   const resourceAt = (x: number, y: number) => resources.find((node) => node.x === x && node.y === y);
-  const isBlocked = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y));
+  const solidTile = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y));
+  const isBlocked = (x: number, y: number) => solidTile(x, y) || waterAt(x, y) && !bridgeAt(x, y);
+  const isBlockedPoint = (x: number, y: number) => {
+    const tx = Math.floor(x / TILE), ty = Math.floor(y / TILE);
+    return solidTile(tx, ty) || !bridgeAt(tx, ty) && isWaterPoint(x, y);
+  };
+  const waterTouchesTile = (x: number, y: number) => [0.01, TILE / 2, TILE - 0.01].some(dx =>
+    [0.01, TILE / 2, TILE - 0.01].some(dy => isWaterPoint(x * TILE + dx, y * TILE + dy)));
   decorateProperty(scene, { isBlocked, resourceAt, buildings });
 
   return {
     resources,
     isBlocked,
+    isBlockedPoint,
     isFarm,
-    isBuildable: (x, y) => !isBlocked(x, y) && !isFarm(x, y) && !resourceAt(x, y) && !bridgeAt(x, y) && !(x === 29 && y === 17),
+    isBuildable: (x, y) => !isBlocked(x, y) && !waterTouchesTile(x, y) && !isFarm(x, y) && !resourceAt(x, y) && !bridgeAt(x, y) && !(x === 29 && y === 17),
     resourceAt,
     updateOcclusion: (playerX, playerY) => {
       const next = new Set<string>();

@@ -1,7 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import type Phaser from 'phaser';
 import { createWorld, type WorldView } from '../src/world';
-import { getRegionAt, isBridgeTile, isWaterTile, locationAt, REGIONS, WORLD_HEIGHT, WORLD_WIDTH } from '../src/data/regions';
+import { getRegionAt, isBridgeTile, isFarmTile, isPathTile, isWaterTile, locationAt, REGIONS, WORLD_HEIGHT, WORLD_WIDTH } from '../src/data/regions';
+import { isWaterPoint, roadDistanceAt } from '../src/data/terrain-shape';
+import { Resources } from '../src/systems/resources';
+import { Inventory } from '../src/systems/inventory';
 
 vi.mock('phaser', () => ({ default: { Textures: { FilterMode: { NEAREST: 0 } } } }));
 
@@ -98,5 +101,83 @@ describe('expansão da região inicial', () => {
     expect(locationAt(10, 18)).toBe('Ruínas do antigo moinho');
     expect(locationAt(70, 18)).toBe('Bosque do Pinheiro');
     expect(locationAt(25, 53)).toBe('Campos Abertos');
+  });
+
+  it('limpa caminhos e pontes sem perder recursos nem misturar regiões', () => {
+    expect(world.resources).toHaveLength(801);
+    expect(new Set(world.resources.map(node => node.id)).size).toBe(801);
+    for (const node of world.resources) {
+      const [, oldX, oldY] = node.id.match(/-(\d+)-(\d+)$/)!;
+      expect(getRegionAt(node.x, node.y).id, node.id).toBe(getRegionAt(Number(oldX), Number(oldY)).id);
+      // Legacy trunks remain at their original forest-edge coordinates; this
+      // distribution pass moves the loose resources and bushes requested here.
+      if (node.kind === 'standingTree') continue;
+      expect(isPathTile(node.x, node.y), node.id).toBe(false);
+      expect(isBridgeTile(node.x, node.y), node.id).toBe(false);
+      expect(isFarmTile(node.x, node.y), node.id).toBe(false);
+      expect(isWaterTile(node.x, node.y), node.id).toBe(false);
+    }
+    const displaced = world.resources.find(node => node.id === 'stone-23-18')!;
+    expect(displaced).toBeDefined();
+    expect([displaced.x, displaced.y]).not.toEqual([23, 18]);
+  });
+
+  it('mantém os sprites inteiros das rochas e arbustos longe das bordas das trilhas', () => {
+    const sizes = { stone: [30, 20], vein: [48, 54], seeds: [36, 36], fiber: [32, 38], tree: [36, 24], scrap: [30, 28] } as const;
+    for (const node of world.resources) {
+      if (node.kind === 'standingTree') continue;
+      const [width, height] = sizes[node.kind];
+      for (const x of [node.x * 32 + 16 - width / 2, node.x * 32 + 16, node.x * 32 + 16 + width / 2]) {
+        for (const y of [node.y * 32 + 29 - height, node.y * 32 + 29]) {
+          expect(roadDistanceAt(x, y), node.id).toBeGreaterThanOrEqual(6);
+          expect(isWaterPoint(x, y), node.id).toBe(false);
+        }
+      }
+    }
+  });
+
+  it('não muda vagas nem recria recompensas ao carregar IDs antigos esgotados', () => {
+    const depleted = ['stone-23-18', 'fiber-31-19', 'vein-18-27'];
+    expect(depleted.every(id => world.resources.some(node => node.id === id))).toBe(true);
+    const loaded = createWorld(scene, depleted);
+    expect(loaded.resources).toEqual(world.resources.filter(node => !depleted.includes(node.id)));
+    for (const id of depleted) expect(loaded.resources.some(node => node.id === id)).toBe(false);
+  });
+
+  it('dá prioridade à construção salva na vaga nova, preservando IDs e disponibilidade', () => {
+    const node = world.resources.find(resource => resource.id === 'stone-23-18')!;
+    const building = { x: node.x, y: node.y, kind: 'floor' as const };
+    const loaded = createWorld(scene, [], [building]);
+    const relocated = loaded.resources.find(resource => resource.id === node.id)!;
+    expect(loaded.resources).toHaveLength(world.resources.length);
+    expect(new Set(loaded.resources.map(resource => resource.id))).toEqual(new Set(world.resources.map(resource => resource.id)));
+    expect(relocated).toBeDefined();
+    expect([relocated.x, relocated.y]).not.toEqual([building.x, building.y]);
+    expect(loaded.resourceAt(building.x, building.y)).toBeUndefined();
+    const depleted = createWorld(scene, [node.id], [building]);
+    expect(depleted.resources).toEqual(loaded.resources.filter(resource => resource.id !== node.id));
+    expect(building).toEqual({ x: node.x, y: node.y, kind: 'floor' });
+  });
+
+  it('continua a mineração parcial com o ID antigo depois de mover a rocha da trilha', () => {
+    const node = world.resources.find(resource => resource.id === 'vein-18-27')!;
+    expect(node).toBeDefined();
+    expect([node.x, node.y]).not.toEqual([18, 27]);
+    const inventory = new Inventory({ pickaxe: 1 });
+    const resources = new Resources([{ id: node.id, hits: 3 }]);
+    expect(resources.hit(node, 'hand', inventory).ok).toBe(false);
+    expect(resources.hit(node, 'pickaxe', inventory).depleted).toBeUndefined();
+    expect(inventory.data.stone).toBe(0);
+    expect(resources.hit(node, 'pickaxe', inventory).depleted).toBe(true);
+    expect(inventory.data.stone).toBe(4);
+    expect(resources.hit(node, 'pickaxe', inventory).ok).toBe(false);
+  });
+
+  it('usa a margem contínua nos pés e mantém os mesmos centros de colisão', () => {
+    for (let y = 1; y < WORLD_HEIGHT - 1; y++) for (let x = 1; x < WORLD_WIDTH - 1; x++) {
+      expect(world.isBlockedPoint(x * 32 + 16, y * 32 + 16), `${x},${y}`).toBe(world.isBlocked(x, y));
+    }
+    expect(world.isBlockedPoint(44 * 32 + 16, 18 * 32 + 16)).toBe(false);
+    expect(world.isBlockedPoint(80 * 32 + 16, 10 * 32 + 16)).toBe(true);
   });
 });

@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { Player } from '../player';
-import { createArt } from '../art';
+import { CHARACTER_HEIGHT, createArt } from '../art';
 import { preloadVisualAssets } from '../visual-assets';
 import { locationAt, getRegionAt } from '../data/regions';
 import { createWorld, NPC_POSITION, TILE, WORLD_WIDTH, WORLD_HEIGHT } from '../world';
@@ -215,13 +215,13 @@ export class ValleyScene extends Phaser.Scene {
     const direction = data.player.direction;
     this.player.facing = direction === 'up' ? { x: 0, y: -1 } : direction === 'left' ? { x: -1, y: 0 } : direction === 'right' ? { x: 1, y: 0 } : { x: 0, y: 1 };
     this.input.keyboard?.resetKeys();
-    this.player.update(0, this.blocked);
+    this.player.update(0, this.blocked, this.blockedPoint);
     this.recoverPlayerPosition();
     this.world.updateOcclusion(this.player.x, this.player.y);
     this.add.sprite(NPC_POSITION.x, NPC_POSITION.y, 'lia').setOrigin(0.5, 1).setDepth(NPC_POSITION.y);
-    this.add.text(NPC_POSITION.x, NPC_POSITION.y - 40, 'Lia', {
+    this.add.text(NPC_POSITION.x, NPC_POSITION.y - CHARACTER_HEIGHT - 6, 'Lia', {
       fontFamily: 'monospace', fontSize: '10px', color: '#fff1d2', backgroundColor: '#344d3d', padding: { x: 5, y: 3 },
-    }).setOrigin(0.5).setDepth(NPC_POSITION.y + 1);
+    }).setOrigin(0.5, 1).setDepth(NPC_POSITION.y + 1);
     this.selection = this.add.graphics().setDepth(4000);
     this.night = this.add.rectangle(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE, 0x14203c, 1).setOrigin(0).setDepth(5000).setAlpha(0);
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE);
@@ -247,14 +247,16 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private recoverPlayerPosition(): void {
-    if (this.feetTiles().every(point => !this.blocked(point.x, point.y))) return;
+    const clearFeet = (x: number, y: number): boolean => [[-7, -5], [7, -5], [-7, 3], [7, 3]]
+      .every(([ox, oy]) => !this.blockedPoint(x + ox, y + oy));
+    if (clearFeet(this.player.x, this.player.y)) return;
     const startX = Math.floor(this.player.x / TILE);
     const startY = Math.floor(this.player.y / TILE);
     for (let radius = 0; radius < Math.max(WORLD_WIDTH, WORLD_HEIGHT); radius++) {
       for (let y = startY - radius; y <= startY + radius; y++) for (let x = startX - radius; x <= startX + radius; x++) {
         if (Math.max(Math.abs(x - startX), Math.abs(y - startY)) !== radius) continue;
         const px = x * TILE + 16; const py = y * TILE + 16;
-        if (this.feetTiles(px, py).every(point => !this.blocked(point.x, point.y))) {
+        if (clearFeet(px, py)) {
           this.player.x = px; this.player.y = py;
           this.player.sprite.setPosition(px, py);
           return;
@@ -266,6 +268,15 @@ export class ValleyScene extends Phaser.Scene {
   private canPlay(): boolean { return this.running && !this.paused && !this.ui.isModalOpen() && !document.hidden; }
   private blocked = (x: number, y: number): boolean => this.world.isBlocked(x, y) || this.building.isBlocked(x, y)
     || (x === Math.floor(NPC_POSITION.x / TILE) && y === Math.floor(NPC_POSITION.y / TILE));
+
+  private blockedPoint = (x: number, y: number): boolean => {
+    const tx = Math.floor(x / TILE), ty = Math.floor(y / TILE);
+    // A floor already saved on dry land covers a newly rounded shoreline sliver.
+    // It never overrides solid obstacles or an original water cell.
+    const savedFloor = this.building.at(tx, ty, 'floor')?.kind === 'floor' && !this.world.isBlocked(tx, ty);
+    return (this.world.isBlockedPoint(x, y) && !savedFloor) || this.building.isBlocked(tx, ty)
+      || (tx === Math.floor(NPC_POSITION.x / TILE) && ty === Math.floor(NPC_POSITION.y / TILE));
+  };
 
   private handleKey = (event: KeyboardEvent): void => {
     const target = event.target;
@@ -575,7 +586,7 @@ export class ValleyScene extends Phaser.Scene {
     }
     if (!this.canPlay()) return;
     this.cameras.main.setLerp(1 - Math.exp(-9 * delta));
-    this.player.update(delta, this.blocked);
+    this.player.update(delta, this.blocked, this.blockedPoint);
     this.world.updateOcclusion(this.player.x, this.player.y);
     this.farming.update(delta);
     this.state.time += delta * 2;

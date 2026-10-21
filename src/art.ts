@@ -1,11 +1,11 @@
 import Phaser from 'phaser';
 import type { CharacterProfile } from './types';
 import { importedCharacterSource, setupVisualAssets } from './visual-assets';
+import { CHARACTER_WIDTH, CHARACTER_HEIGHT, CHARACTER_DIRECTIONS, drawStyledCharacter } from './character-sprites';
+import type { CharacterDirection } from './character-sprites';
 
-export const CHARACTER_WIDTH = 32;
-export const CHARACTER_HEIGHT = 48;
-export const CHARACTER_DIRECTIONS = ['down', 'left', 'right', 'up'] as const;
-export type CharacterDirection = typeof CHARACTER_DIRECTIONS[number];
+export { CHARACTER_WIDTH, CHARACTER_HEIGHT, CHARACTER_DIRECTIONS } from './character-sprites';
+export type { CharacterDirection } from './character-sprites';
 
 /** Four columns per direction: rest, left step, rest, right step. */
 export function characterFrame(direction: CharacterDirection, phase = 0): number {
@@ -26,7 +26,7 @@ function drawImportedCharacter(ctx: CanvasRenderingContext2D, profile: Character
   if (!source) return false;
   const cacheKey = [profile.skin, profile.hairStyle, profile.hairColor, profile.outfit, direction, Math.floor(phase) % 4].join(':');
   const cached = characterCanvases.get(cacheKey);
-  if (cached) { ctx.drawImage(cached, 0, 0); return true; }
+  if (cached) { ctx.drawImage(cached, 4, 4, 40, 60); return true; }
   const original = document.createElement('canvas'); original.width = 96; original.height = 128;
   const paint = original.getContext('2d', { willReadFrequently: true })!;
   paint.imageSmoothingEnabled = false;
@@ -51,7 +51,7 @@ function drawImportedCharacter(ctx: CanvasRenderingContext2D, profile: Character
     if (profile.hairStyle !== 'preso' && y < 24) pixels.data[i + 3] = 0;
   }
   paint.putImageData(pixels, 0, 0);
-  const result = document.createElement('canvas'); result.width = CHARACTER_WIDTH; result.height = CHARACTER_HEIGHT;
+  const result = document.createElement('canvas'); result.width = 32; result.height = 48;
   const resultContext = result.getContext('2d')!; resultContext.imageSmoothingEnabled = false;
   // Additional silhouettes keep all three editor choices distinct on the imported preset.
   if (profile.hairStyle === 'longo') {
@@ -67,7 +67,7 @@ function drawImportedCharacter(ctx: CanvasRenderingContext2D, profile: Character
     resultContext.fillStyle = shade(profile.hairColor, 18); resultContext.fillRect(13, 9, 5, 1);
   }
   if (characterCanvases.size > 192) characterCanvases.clear();
-  characterCanvases.set(cacheKey, result); ctx.drawImage(result, 0, 0);
+  characterCanvases.set(cacheKey, result); ctx.drawImage(result, 4, 4, 40, 60);
   return true;
 }
 
@@ -77,9 +77,10 @@ export function drawCharacter(canvas: HTMLCanvasElement, profile: CharacterProfi
   canvas.height = CHARACTER_HEIGHT;
   const ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
+  if (drawStyledCharacter(ctx, profile, direction, phase)) return;
   if (drawImportedCharacter(ctx, profile, direction, phase)) return;
   // Local fallback stays available if an image is unavailable while loading.
-  ctx.translate(4, 16);
+  ctx.translate(12, 32);
   const rect = (color: string, x: number, y: number, w: number, h: number) => {
     ctx.fillStyle = color;
     ctx.fillRect(x, y, w, h);
@@ -222,8 +223,9 @@ export function createArt(scene: Phaser.Scene): void {
   adopt('bench', 'asset-bench');
   adopt('fence', 'asset-fence');
   adopt('workbench', 'asset-workbench');
-  if (scene.textures.exists('module-piso_tabuas')) {
-    const floor = scene.textures.get('module-piso_tabuas').getSourceImage() as HTMLImageElement;
+  const floorSource = scene.textures.exists('asset-ground-wood') ? 'asset-ground-wood' : 'module-piso_tabuas';
+  if (scene.textures.exists(floorSource)) {
+    const floor = scene.textures.get(floorSource).getSourceImage() as HTMLImageElement | HTMLCanvasElement;
     add('floor', 32, 32, c => c.drawImage(floor, 0, 0, 32, 32));
   }
   if (scene.textures.exists('module-telha_lisa')) {

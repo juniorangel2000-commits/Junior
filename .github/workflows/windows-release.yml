@@ -77,9 +77,13 @@ jobs:
         shell: pwsh
         run: |
           $notes = @'
-          Jardim Depois da Chuva — polimento visual da propriedade e das paisagens do vale.
+          Jardim Depois da Chuva — nova arte do vale e criação de personagem.
 
-          Seis variações de árvores, nova pintura de terreno, caminhos e margens, flores e samambaias, fachada revisada e transparência de copas que encobrem o personagem. Mantém a propriedade, o Bosque do Pinheiro, os Campos Abertos e os saves anteriores. M abre o mapa das áreas jogáveis.
+          Reúne todas as melhorias após a versão 0.3.0: onze materiais de terreno, caminhos e água com bordas arredondadas, recursos redesenhados e fora das trilhas, pedras soltas distintas das rochas mineráveis, flores e folhagem detalhadas.
+
+          Personagem maior com três penteados, quatro direções e nova criação de aparência: cores de pele, cabelo, camisa e macacão, bolsa opcional, aparências prontas e prévia giratória com caminhada. As escolhas são salvas, com compatibilidade para partidas anteriores.
+
+          As três pedras de passagem em frente à casa foram retiradas. Inclui a propriedade, o Bosque do Pinheiro e os Campos Abertos, com cultivo, fabricação, construção e salvamento local. M abre o mapa das áreas jogáveis.
 
           Aplicativo portátil para Windows 10/11 de 64 bits, gerado em Windows.
           Baixe o arquivo .exe desta versão e abra com dois cliques. Não exige Node.js ou servidor.

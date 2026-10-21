@@ -24,7 +24,9 @@ const MAX_RESOURCES = WORLD_WIDTH * WORLD_HEIGHT;
 export function validateProfile(value: unknown): value is CharacterProfile {
   return isRecord(value) && typeof value.name === 'string' && value.name.trim().length > 0 && value.name.length <= 24
     && color(value.skin) && color(value.hairColor) && color(value.outfit)
-    && ['curto', 'longo', 'preso'].includes(value.hairStyle as string);
+    && ['curto', 'longo', 'preso'].includes(value.hairStyle as string)
+    && (value.shirtColor === undefined || color(value.shirtColor))
+    && (value.accessory === undefined || value.accessory === 'bolsa' || value.accessory === 'nenhum');
 }
 
 export function validateSave(value: unknown): value is SaveData {

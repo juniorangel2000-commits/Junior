@@ -1,11 +1,12 @@
-import { drawCharacter } from './art';
+import { CHARACTER_WIDTH, drawCharacter } from './art';
+import { createCharacterEditor } from './character-creator';
 import { itemIconUrl } from './visual-assets';
 import { REGIONS, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 import { BUILD_COSTS, BUILD_NAMES, BUILD_REQUIREMENTS } from './systems/building';
 import { ITEMS, ITEM_IDS, ITEM_NAMES } from './data/items';
 import { BLUEPRINT_COST, BLUEPRINT_LABEL } from './data/blueprints';
 import { RECIPES } from './data/recipes';
-import type { BuildingData, CharacterProfile, HairStyle, HudData, InventoryData, ItemId, Tool } from './types';
+import type { BuildingData, CharacterProfile, HudData, InventoryData, ItemId, Tool } from './types';
 
 interface UICallbacks {
   onNewGame(profile: CharacterProfile): void;
@@ -100,6 +101,7 @@ export class GameUI {
   private focusBeforeModal?: HTMLElement;
   private onModalClose?: () => void;
   private existingSave = false;
+  private cleanupCreation?: () => void;
   private latest?: HudData;
   private lastHudKey = '';
   private craftingBusy = false;
@@ -125,6 +127,8 @@ export class GameUI {
   }
 
   showTitle(hasSave: boolean): void {
+    this.cleanupCreation?.();
+    this.cleanupCreation = undefined;
     if (this.modal === 'crafting') this.callbacks.onCancelCraft();
     this.craftingBusy = false;
     this.mode = 'title';
@@ -151,77 +155,22 @@ export class GameUI {
   }
 
   private showCreation(): void {
+    this.cleanupCreation?.();
     this.mode = 'creation';
     this.overlay.classList.remove('active');
     this.callbacks.onPause(true);
     this.base.innerHTML = '<div class="creation-backdrop"></div>';
-    const profile: CharacterProfile = { name: '', skin: '#d9a474', hairStyle: 'preso', hairColor: '#4b3029', outfit: '#638a9d' };
-    const card = document.createElement('section');
-    card.className = 'creation-card panel';
-    card.setAttribute('aria-label', 'Criação de personagem');
-    card.innerHTML = `<div class="creation-heading"><div><span class="eyebrow">TODA HISTÓRIA COMEÇA COM ALGUÉM</span><h2>Quem chega ao vale?</h2></div><button class="icon-button back-button" aria-label="Voltar ao início">${icon('close')}</button></div>
-      <form id="character-form" class="creation-content">
-        <aside class="character-preview"><div class="preview-sun"></div><div class="preview-label">SEU NOVO COMEÇO</div><div class="preview-character"><canvas width="24" height="32" aria-label="Prévia do personagem"></canvas></div><div class="preview-ground"></div><strong class="preview-name">Viajante</strong><span>Uma vida inteira pela frente.</span><div class="preview-leaves">${icon('leaf')}${icon('leaf')}${icon('leaf')}</div></aside>
-        <div class="character-options"><label class="field-label" for="character-name">Como podemos te chamar?</label><input id="character-name" name="name" type="text" maxlength="24" placeholder="Seu nome" autocomplete="off" required />
-          <div class="option-group"><span class="field-label">Tom de pele</span><div class="swatches" data-option="skin"></div></div>
-          <div class="option-group"><span class="field-label">Cabelo</span><div class="hair-styles"><button type="button" data-hair="curto" class="choice">Curto</button><button type="button" data-hair="longo" class="choice">Longo</button><button type="button" data-hair="preso" class="choice selected">Preso</button></div></div>
-          <div class="option-group"><span class="field-label">Cor do cabelo</span><div class="swatches" data-option="hairColor"></div></div>
-          <div class="option-group"><span class="field-label">Roupa</span><div class="swatches" data-option="outfit"></div></div>
-          ${this.existingSave ? '<p class="save-warning">Ao começar, sua história salva neste navegador será substituída.</p>' : '<p class="creation-tip">Não é preciso ter todas as respostas. Só dar o primeiro passo.</p>'}
-          <button class="button button-primary start-button" type="submit">Começar minha história ${icon('arrow')}</button>
-        </div>
-      </form>`;
-    this.overlay.replaceChildren(card);
-    const canvas = card.querySelector('canvas')!;
-    const draw = (): void => drawCharacter(canvas, profile);
-    draw();
-    const colors = {
-      skin: [['#f3d0a7', 'Claro'], ['#d9a474', 'Médio claro'], ['#aa714b', 'Médio escuro'], ['#69432f', 'Escuro']],
-      hairColor: [['#302923', 'Preto'], ['#4b3029', 'Castanho'], ['#a85b33', 'Ruivo'], ['#d4ac68', 'Loiro'], ['#a8a596', 'Grisalho']],
-      outfit: [['#c67851', 'Terracota'], ['#6d8655', 'Verde musgo'], ['#638a9d', 'Azul do céu'], ['#d5b968', 'Mostarda'], ['#967789', 'Ameixa']],
-    };
-    for (const [key, options] of Object.entries(colors)) {
-      const field = key as 'skin' | 'hairColor' | 'outfit';
-      const holder = card.querySelector(`[data-option="${key}"]`)!;
-      for (const [color, label] of options) {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = `swatch${profile[field] === color ? ' selected' : ''}`;
-        button.style.setProperty('--swatch', color);
-        button.setAttribute('aria-label', label);
-        button.setAttribute('aria-pressed', String(profile[field] === color));
-        button.title = label;
-        button.addEventListener('click', () => {
-          profile[field] = color;
-          holder.querySelectorAll('button').forEach(b => { b.classList.remove('selected'); b.setAttribute('aria-pressed', 'false'); });
-          button.classList.add('selected');
-          button.setAttribute('aria-pressed', 'true');
-          draw();
-        });
-        holder.append(button);
-      }
-    }
-    card.querySelectorAll<HTMLButtonElement>('[data-hair]').forEach(button => button.addEventListener('click', () => {
-      profile.hairStyle = button.dataset.hair as HairStyle;
-      card.querySelectorAll('[data-hair]').forEach(b => b.classList.remove('selected'));
-      button.classList.add('selected');
-      draw();
-    }));
-    const input = card.querySelector<HTMLInputElement>('#character-name')!;
-    input.addEventListener('input', () => {
-      profile.name = input.value.trim();
-      card.querySelector('.preview-name')!.textContent = profile.name || 'Viajante';
+    this.cleanupCreation = createCharacterEditor(this.overlay, {
+      hasSave: this.existingSave,
+      icon,
+      onBack: () => this.showTitle(this.existingSave),
+      onStart: profile => this.callbacks.onNewGame(profile),
     });
-    card.querySelector('.back-button')!.addEventListener('click', () => this.showTitle(this.existingSave));
-    card.querySelector('form')!.addEventListener('submit', event => {
-      event.preventDefault();
-      if (!profile.name) { input.focus(); return; }
-      this.callbacks.onNewGame({ ...profile });
-    });
-    setTimeout(() => input.focus(), 0);
   }
 
   showHUD(): void {
+    this.cleanupCreation?.();
+    this.cleanupCreation = undefined;
     this.mode = 'hud';
     this.modal = null;
     this.onModalClose = undefined;
@@ -371,7 +320,10 @@ export class GameUI {
     panel.setAttribute('aria-label', `Conversa com ${name}`);
     panel.innerHTML = `<div class="dialogue-portrait"><canvas width="24" height="32" aria-label="Lia"></canvas></div><div class="dialogue-copy"><div class="eyebrow">GENTE DO VALE</div><h2></h2><p></p><div class="dialogue-footer"><small></small><button class="text-button"></button></div></div>`;
     panel.querySelector('h2')!.textContent = name;
-    drawCharacter(panel.querySelector('canvas')!, { name, skin: '#b87952', hairStyle: 'preso', hairColor: '#3b3029', outfit: '#b46e4e' });
+    const portrait = panel.querySelector('canvas')!;
+    drawCharacter(portrait, { name, skin: '#b87952', hairStyle: 'preso', hairColor: '#3b3029', outfit: '#b46e4e' });
+    portrait.style.width = `${CHARACTER_WIDTH * 2}px`;
+    portrait.style.height = 'auto';
     let index = 0;
     const next = panel.querySelector<HTMLButtonElement>('button')!;
     const update = (): void => {

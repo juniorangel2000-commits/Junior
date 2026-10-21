@@ -1,10 +1,14 @@
 export type HairStyle = 'curto' | 'longo' | 'preso';
+export type CharacterAccessory = 'bolsa' | 'nenhum';
 export interface CharacterProfile {
   name: string;
   skin: string;
   hairStyle: HairStyle;
   hairColor: string;
   outfit: string;
+  /** Opcionais para manter partidas anteriores compatíveis. */
+  shirtColor?: string;
+  accessory?: CharacterAccessory;
 }
 export type ItemId = 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 'plank' | 'scrap' | 'hatchet' | 'pickaxe' | 'handsaw'
   | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer';

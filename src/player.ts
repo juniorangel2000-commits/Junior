@@ -22,7 +22,8 @@ export class Player {
     this.keys = scene.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT', false) as MovementKeys;
   }
 
-  update(delta: number, isBlocked: (x: number, y: number) => boolean): void {
+  update(delta: number, isBlocked: (x: number, y: number) => boolean,
+    isBlockedPoint?: (x: number, y: number) => boolean): void {
     let dx = Number(this.keys.D.isDown || this.keys.RIGHT.isDown) - Number(this.keys.A.isDown || this.keys.LEFT.isDown);
     let dy = Number(this.keys.S.isDown || this.keys.DOWN.isDown) - Number(this.keys.W.isDown || this.keys.UP.isDown);
     const moving = dx !== 0 || dy !== 0;
@@ -36,7 +37,8 @@ export class Player {
       const speed = 112;
       const canStand = (x: number, y: number) =>
         [[-7, -5], [7, -5], [-7, 3], [7, 3]].every(([ox, oy]) =>
-          !isBlocked(Math.floor((x + ox) / TILE), Math.floor((y + oy) / TILE)));
+          isBlockedPoint ? !isBlockedPoint(x + ox, y + oy)
+            : !isBlocked(Math.floor((x + ox) / TILE), Math.floor((y + oy) / TILE)));
       // Pequenos passos evitam atravessar colisões mesmo após uma queda de FPS.
       const steps = Math.max(1, Math.ceil(speed * delta / 6));
       for (let i = 0; i < steps; i++) {

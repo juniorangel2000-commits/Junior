@@ -1,7 +1,11 @@
 import Phaser from 'phaser';
 import { setupNatureSprites } from './nature-sprites';
+import { setupTerrainSprites } from './terrain-sprites';
+import { setupResourceSprites } from './resource-sprites';
+import { setupDecorSprites } from './decor-sprites';
+import { setupCharacterSprites } from './character-sprites';
 
-/** Local PNGs copied without modification from the user-supplied art packages. */
+/** Local assets from the received packages and original tree/ground atlases. */
 const BASE = 'assets/visual/';
 const ICON_IDS = new Set(['wood', 'stone', 'branch', 'log', 'plank', 'scrap', 'hatchet', 'pickaxe', 'handsaw', 'fiber', 'cord', 'flakedStone', 'handle', 'blade', 'board', 'hammer', 'water', 'workbench', 'seeds']);
 export function itemIconUrl(id: string): string | undefined {
@@ -22,6 +26,14 @@ const characterSources = new Map<string, HTMLImageElement | HTMLCanvasElement>()
 
 export function preloadVisualAssets(scene: Phaser.Scene): void {
   scene.load.image('nature-trees-source', `${BASE}nature/trees-approved.png`);
+  scene.load.image('terrain-materials-source', `${BASE}terrain/ground-materials.png`);
+  scene.load.image('terrain-finishes-source', `${BASE}terrain/floor-finishes.png`);
+  scene.load.image('resource-atlas-source', `${BASE}resources/resource-atlas.png`);
+  scene.load.image('nature-decor-source', `${BASE}nature/decorations.png`);
+  scene.load.image('farmer-bun-source', `${BASE}characters/farmer-bun.png`);
+  scene.load.image('farmer-short-source', `${BASE}characters/farmer-short.png`);
+  scene.load.image('farmer-long-source', `${BASE}characters/farmer-long.png`);
+  scene.load.image('farmer-bags-source', `${BASE}characters/farmer-bags.png`);
   for (const [id, path] of Object.entries(WORLD_SOURCES)) scene.load.image(`source-${id}`, `${BASE}${path}`);
   for (const id of MODULES) scene.load.image(`module-${id}`, `${BASE}modules/${id}.png`);
   for (const [direction, source] of Object.entries(DIRECTIONS)) for (let frame = 0; frame < 6; frame++) {
@@ -77,6 +89,16 @@ function createHouse(scene: Phaser.Scene): void {
       c.fillStyle = color; c.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
     };
     const flowers = (x: number, y: number, width: number, pink = false) => {
+      const source = sourceImage(scene, pink ? 'asset-flowers-pink' : 'asset-flowers-white');
+      if (source) {
+        const count = Math.max(1, Math.ceil(width / 18)), step = width / count;
+        for (let n = 0; n < count; n++) {
+          const w = Math.round(step + (n < count - 1 ? 2 : 0));
+          const h = Math.round(w * source.height / source.width);
+          c.drawImage(source, Math.round(x + n * step), y - h + 2 - n % 2, w, h);
+        }
+        return;
+      }
       for (let n = 0; n < Math.floor(width / 5); n++) {
         const fx = x + 3 + n * 5, fy = y - 4 - (n * 7 % 6);
         pixel('#395c32', fx, fy + 3, 1, y - fy);
@@ -139,12 +161,14 @@ function createHouse(scene: Phaser.Scene): void {
 }
 
 export function setupVisualAssets(scene: Phaser.Scene): void {
+  setupCharacterSprites(scene);
   for (const direction of Object.keys(DIRECTIONS) as Direction[]) for (let frame = 0; frame < 6; frame++) {
     const image = sourceImage(scene, `character-${direction}-${frame}`);
     if (image) characterSources.set(`${direction}-${frame}`, image);
   }
+  setupResourceSprites(scene);
   for (const [id, width, height] of [['stone', 26, 22], ['scrap', 32, 32], ['log', 40, 34], ['branch', 36, 32], ['fiber', 32, 34], ['seeds', 34, 38], ['vein', 44, 48], ['workbench', 40, 40]] as const) {
-    fitSource(scene, `source-${id}`, `asset-${id}`, width, height, 1);
+    if (!scene.textures.exists(`asset-${id}`)) fitSource(scene, `source-${id}`, `asset-${id}`, width, height, 1);
   }
   for (const [source, key, width, height] of [
     ['cerca_natural', 'asset-fence', 36, 28],
@@ -152,5 +176,5 @@ export function setupVisualAssets(scene: Phaser.Scene): void {
     ['parede_creme', 'imported-wall', 32, 48], ['parede_janela_floreira', 'imported-window', 32, 52],
     ['porta_madeira', 'imported-door', 30, 44],
   ] as const) fitSource(scene, `module-${source}`, key, width, height);
-  setupNatureSprites(scene); createHouse(scene);
+  setupDecorSprites(scene); setupNatureSprites(scene); setupTerrainSprites(scene); createHouse(scene);
 }

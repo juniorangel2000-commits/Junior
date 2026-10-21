@@ -2,9 +2,17 @@
 
 Uma pequena clareira, uma casa que resistiu e a chance de recomeçar. **Jardim Depois da Chuva** é um jogo original para navegador, single-player, com exploração, cultivo e construção em pixel art 2D top-down. O projeto existente usa TypeScript, Phaser 3 e Vite, com aplicativo desktop em Electron.
 
-A versão do código é **0.3.0**. Esta etapa aplica o primeiro polimento da [direção artística aprovada](docs/direcao-visual/proposta-arte-mapa.md): seis variações de árvores, terreno com caminhos e margens mais naturais, composição de flores e samambaias na propriedade e uma fachada com vasos e floreiras. As copas que encobrem o personagem ficam transparentes. Veja [o escopo e a validação do polimento](docs/polimento-visual-v0.3.md).
+A versão do código é **0.4.0**. Reúne a nova arte do vale e a criação de personagem, preservando o jogo existente, as três regiões e os saves anteriores. Veja [o escopo da versão Windows 0.4.0](docs/versao-windows-v0.4.md).
 
-![Captura real da propriedade na versão 0.3.0.](docs/capturas/propriedade-v0.3.png)
+[Sprites de terreno reformulados](docs/terrenos-novos.md): onze materiais originais de grama, bosque, campos, estradas, cultivo, margens, água, madeira e pedra de passagem, acompanhando a arte das árvores.
+
+[Recursos e margens renovados](docs/recursos-e-margens.md): pedras soltas e rochas mineráveis têm silhuetas diferentes, os recursos baixos foram retirados das trilhas e as bordas dos caminhos e da água usam contornos arredondados. O movimento consulta a mesma margem contínua usada no desenho.
+
+O [polimento das pedras decorativas e flores](docs/decoracao-pedras-flores.md) substitui as antigas lajes retangulares por pedras irregulares e traz flores com folhagem detalhada para canteiros, vasos e floreiras, seguindo a mesma arte das árvores e recursos.
+
+O [novo personagem e editor de aparência](docs/personagem-e-criacao.md) usa sprites de 48×64 com três penteados e quatro direções, prévia giratória com caminhada, cores independentes de camisa e macacão, bolsa opcional e aparências prontas. As escolhas persistem no salvamento, com compatibilidade para perfis antigos. As três pedras de passagem em frente à casa foram retiradas.
+
+![Captura real da propriedade com a entrada sem pedras.](docs/capturas/entrada-sem-pedras.png)
 
 O mundo continua com a propriedade, o **Bosque do Pinheiro**, a leste, e os **Campos Abertos**, ao sul. A [documentação da expansão 0.2.0](docs/expansao-visual-v0.2.md) registra a criação dessas áreas e a compatibilidade com partidas anteriores.
 
@@ -61,7 +69,7 @@ A [execução da versão v0.3.0](https://github.com/juniorangel2000-commits/Juni
 
 ## Controles
 
-Crie seu personagem escolhendo nome, tom de pele, penteado, cor do cabelo e roupa. A prévia mostra as escolhas. **Novas partidas começam com a mochila vazia**; recursos básicos ficam perto da casa. Partidas antigas mantêm seu estoque ao migrar.
+Crie seu personagem escolhendo nome, tom de pele, penteado, cor do cabelo, macacão, camisa e bolsa. Confira as quatro direções e a caminhada na prévia; os presets e o botão de redefinir ajudam a escolher. **Novas partidas começam com a mochila vazia**; recursos básicos ficam perto da casa. Partidas antigas mantêm seu estoque ao migrar.
 
 | Controle | Ação |
 | --- | --- |
@@ -181,6 +189,9 @@ src/
   visual-assets.ts        Carregamento e adaptação dos assets recebidos
   nature-sprites.ts       Variações de árvores, pivôs e plantas decorativas
   terrain-art.ts          Pintura estática do terreno, caminhos, água e pontes
+  terrain-sprites.ts      Recorte e acabamento dos onze materiais de terreno
+  resource-sprites.ts     Pedras, rochas, arbustos, fibras, galhos e sucata
+  decor-sprites.ts        Pedras de passagem/margem, flores e folhagem ornamental
   property-art.ts         Composição dos detalhes baixos da propriedade
   world.ts                Mapa, colisões e recursos
   player.ts               Movimento e direção
@@ -189,6 +200,8 @@ src/
     recipes.ts            Custos, rendimentos, requisitos e tempos
     blueprints.ts         Custos das peças e projeto de abrigo 3×3
     regions.ts            Áreas, dimensões, trilhas e geometria compartilhada
+    terrain-shape.ts      Contornos contínuos de margens e caminhos
+    resource-layout.ts    Recursos fora das trilhas, mantendo IDs de saves
   scenes/ValleyScene.ts    Integração da simulação
   systems/
     inventory.ts          Estoque e transações atômicas

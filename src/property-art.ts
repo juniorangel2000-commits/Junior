@@ -1,6 +1,7 @@
 import type Phaser from 'phaser';
 import type { BuildingData, ResourceNode } from './types';
 import { isBridgeTile, isFarmTile, isPathTile, isWaterTile, TILE } from './data/regions';
+import { isWaterPoint, roadDistanceAt } from './data/terrain-shape';
 
 export interface PropertyArtContext {
   isBlocked(x: number, y: number): boolean;
@@ -8,7 +9,7 @@ export interface PropertyArtContext {
   buildings?: readonly BuildingData[];
 }
 
-type Detail = 'fern' | 'flowers-white' | 'flowers-pink' | 'grass-tuft' | 'shore-stones';
+type Detail = 'fern' | 'flowers-white' | 'flowers-pink' | 'flowers-yellow' | 'grass-tuft' | 'shore-stones';
 
 const LEFT = 5 * TILE;
 const TOP = 7 * TILE;
@@ -40,8 +41,8 @@ export function decorateProperty(scene: Phaser.Scene, context: PropertyArtContex
     for (let i = 0; i < length; i++) occupied.add(`${building.x + (building.kind === 'roof' && !building.rotation ? i : 0)},${building.y + (building.kind === 'roof' && building.rotation ? i : 0)}`);
   }
 
-  const sources = new Map<Detail, CanvasImageSource>();
-  for (const detail of ['fern', 'flowers-white', 'flowers-pink', 'grass-tuft', 'shore-stones'] as const) {
+  const sources = new Map<Detail, HTMLCanvasElement | HTMLImageElement>();
+  for (const detail of ['fern', 'flowers-white', 'flowers-pink', 'flowers-yellow', 'grass-tuft', 'shore-stones'] as const) {
     const key = `asset-${detail}`;
     if (scene.textures.exists(key)) sources.set(detail, scene.textures.get(key).getSourceImage() as HTMLCanvasElement | HTMLImageElement);
   }
@@ -60,6 +61,13 @@ export function decorateProperty(scene: Phaser.Scene, context: PropertyArtContex
           || tx === 29 && ty === 17) return false;
       }
     }
+    // Painted curves can extend past the old logical path/water tile edge.
+    // Keep complete decorative silhouettes off those surfaces as well.
+    for (const px of [x - width / 2, x, x + width / 2]) {
+      for (const py of [y - height, y - height / 2, y]) {
+        if (isWaterPoint(px, py) || roadDistanceAt(px, py) < 5) return false;
+      }
+    }
     return true;
   };
 
@@ -74,7 +82,7 @@ export function decorateProperty(scene: Phaser.Scene, context: PropertyArtContex
     }
     const flowers = detail.startsWith('flowers');
     const fern = detail === 'fern';
-    const color = detail === 'flowers-pink' ? '#d9a0ac' : '#efdfad';
+    const color = detail === 'flowers-pink' ? '#d9a0ac' : detail === 'flowers-yellow' ? '#e3bd5c' : '#efdfad';
     const stems = fern ? 7 : flowers ? 8 : 5;
     for (let i = 0; i < stems; i++) {
       const dx = Math.round((noise(i, variant, 3) - 0.5) * (fern ? 24 : 22));
@@ -98,14 +106,16 @@ export function decorateProperty(scene: Phaser.Scene, context: PropertyArtContex
   const stamp = (detail: Detail, tx: number, ty: number, variant = 0, scale = 1): void => {
     const dimensions: Record<Detail, [number, number]> = {
       fern: [30, 28], 'flowers-white': [28, 23], 'flowers-pink': [28, 23],
+      'flowers-yellow': [28, 23],
       'grass-tuft': [24, 20], 'shore-stones': [30, 18],
     };
     const [naturalWidth, naturalHeight] = dimensions[detail];
-    const width = Math.round(naturalWidth * scale), height = Math.round(naturalHeight * scale);
+    const image = sources.get(detail);
+    const width = Math.round(naturalWidth * scale);
+    const height = image?.width ? Math.round(width * image.height / image.width) : Math.round(naturalHeight * scale);
     const x = Math.round(tx * TILE + 16 + (noise(tx, ty, variant + 13) - 0.5) * 3);
     const y = Math.round(ty * TILE + 29);
     if (!safe(x, y, width, height)) return;
-    const image = sources.get(detail);
     if (image) c.drawImage(image, x - width / 2 - LEFT, y - height - TOP, width, height);
     else fallback(detail, x, y, variant);
   };
@@ -114,7 +124,8 @@ export function decorateProperty(scene: Phaser.Scene, context: PropertyArtContex
     for (let y = ty - radiusY; y <= ty + radiusY; y++) for (let x = tx - radiusX; x <= tx + radiusX; x++) {
       const distance = ((x - tx) / (radiusX + 0.5)) ** 2 + ((y - ty) / (radiusY + 0.5)) ** 2;
       if (distance > 1 || noise(x, y, 29) < 0.13) continue;
-      const detail: Detail = (x + y) % 4 === 0 ? 'fern' : pink && (x + y) % 3 !== 0 ? 'flowers-pink' : 'flowers-white';
+      const detail: Detail = (x + y) % 4 === 0 ? 'fern' : pink && (x + y) % 3 !== 0 ? 'flowers-pink'
+        : noise(x, y, 101) > 0.8 ? 'flowers-yellow' : 'flowers-white';
       stamp(detail, x, y, x + y);
       // Tiny low leaves connect individual plants without filling the usable floor.
       const px = x * TILE + 16, py = y * TILE + 28;
