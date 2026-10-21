@@ -10,7 +10,7 @@ Esta entrega amplia o mesmo jogo Phaser. A versão Windows pública continua sen
 - Editor por **H**, **B dentro de casa**, botão do HUD ou pausa. A planta permite adicionar, selecionar, mover e recolher móveis. Três pisos e três paredes. O acervo não consome materiais nesta etapa.
 - Limites: 2 camas, 2 mesas, 6 cadeiras, 3 estantes, 2 tapetes e 6 plantas. Os móveis sólidos não se sobrepõem; tapetes usam outra camada. A circulação deve permanecer conectada à saída e a última cama permanece disponível.
 - Cama com confirmação de sono das 19:00 às 07:59. Acordar às 08:00 avança corretamente o calendário e o crescimento dos cultivos regados. Não implementa energia, fome ou saúde.
-- Botão explícito **Minimizar/Expandir** em **Missões**, com preferência local independente da partida.
+- Botão **X** para fechar todo o painel **Missões** e chip **Missões** para reabrir, com preferência local independente da partida.
 - Painel administrativo por senha, lista dos 19 itens reais, busca e quantidade. Minimizar retoma o jogo; expandir pausa. Nenhum item é concedido sem sessão autorizada e quantidade válida.
 
 ![Interior jogável da casa](capturas/after-rain-casa-interior.png)
@@ -33,7 +33,7 @@ Esse controle é local: o cliente offline pode ser modificado por quem tem acess
 4. Feche o editor. Durante a edição, relógio, cultivo e movimento devem permanecer pausados.
 5. À noite, aproxime-se da cama, use **E**, cancele e confirme novamente. Cancelar não muda o horário; confirmar termina às 08:00. Cultivos regados crescem; secos continuam sem crescer.
 6. Salve dentro da casa, recarregue e continue. Confirme móveis, acabamento, posição e inventário. Saia pela passagem ao sul usando **E** e confirme o retorno à propriedade.
-7. Minimize as missões e recarregue; a preferência deve permanecer.
+7. Feche as missões pelo X e recarregue; o painel deve continuar fechado. Use o botão **Missões** para reabrir.
 8. Abra **Esc → Administração** ou **Ctrl+Shift+F10**. Uma senha errada mantém os itens indisponíveis. A senha de administrador libera busca e concessão. Minimize, caminhe e expanda: a simulação retoma/repausa. Encerre a sessão e confirme que a senha é novamente exigida.
 
 ## Validação executada

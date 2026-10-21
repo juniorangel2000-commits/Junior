@@ -4,9 +4,11 @@ Uma pequena clareira, uma casa que resistiu e a chance de recomeçar. **After Ra
 
 A versão do código é **0.5.0, em desenvolvimento**. A [nova tela inicial After Rain](docs/tela-inicial-after-rain.md) apresenta a propriedade com garoa, neblina, tons frios e câmera suave, com suporte preparado para vídeo local em loop. O clipe do Flow ainda não foi fornecido; a configuração padrão usa o cenário do jogo. A última versão Windows publicada continua sendo a [0.4.0](docs/versao-windows-v0.4.md), com o nome anterior.
 
-A [casa inicial agora tem interior personalizável, cama e descanso até a manhã](docs/casa-sono-admin.md). O painel de missões pode ser minimizado; o menu de itens para testes exige senha de administrador e também pode ser recolhido.
+A [casa inicial agora tem interior personalizável, cama e descanso até a manhã](docs/casa-sono-admin.md). O painel de missões pode ser fechado pelo X e reaberto pelo botão **Missões**; o menu de itens para testes exige senha de administrador e pode ser recolhido.
 
 A [fachada redesenhada e a barra superior retrátil](docs/fachada-e-barra-retratil.md) acompanham a arte das árvores e do terreno. Passe o mouse no centro superior para revelar a seta e clique para abrir as opções, ou use o botão direito no cenário. As seis placas externas foram retiradas e o nome da Lia aparece sem fundo.
+
+O acesso de terra foi centralizado na porta da casa. O cartão de dia, hora e recursos foi reduzido para **210×62 pixels**.
 
 ![Abertura chuvosa de After Rain, em desenvolvimento.](docs/capturas/after-rain-inicio.png)
 
@@ -172,7 +174,7 @@ Dentro da casa, **H**, **B** ou **Personalizar casa** abre a planta de edição.
 
 Para dormir, aproxime-se de um lado livre da cama e aperte **E** entre **19:00 e 07:59**. Confirme para acordar às **08:00**. Dormir antes da meia-noite muda o dia; de madrugada mantém o dia atual. Os cultivos já regados crescem pelo tempo transcorrido; os secos continuam sem crescer. Cancelar não avança o relógio. A cama não possui sistema de energia ou saúde.
 
-O botão **Minimizar/Expandir** do painel **Missões** recolhe os objetivos sem pausar o jogo. Essa preferência é lembrada localmente. Os objetivos existentes continuam sendo o guia da fatia jogável.
+O botão **X** fecha todo o painel de **Missões** sem pausar o jogo. Um botão discreto **Missões** permite reabrir; essa preferência é lembrada localmente. Os objetivos existentes continuam sendo o guia da fatia jogável.
 
 ## Administração para testes
 

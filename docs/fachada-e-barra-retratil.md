@@ -8,9 +8,11 @@ A fachada foi redesenhada como uma sprite original transparente: telhas terracot
 
 A casa mantém o ponto de entrada e sua colisão. A nova arte não acrescenta terreno ou pedras diante da porta. As janelas têm âncoras atualizadas para a luz da abertura chuvosa. A composição anterior permanece como fallback se a textura não estiver disponível.
 
+O trecho de acesso de terra agora fica centralizado na soleira, em 24,5 tiles, eliminando o desvio de um tile à direita da porta. A casa, o interior e as construções salvas mantêm suas posições.
+
 As cinco placas de direção/nome das regiões e a pequena seta da propriedade foram retiradas. Eram desenhos sem colisão; os caminhos e os 801 recursos do mundo não mudaram. O nome **Lia** continua visível sobre a NPC, com contorno discreto e fundo transparente. A conversa por E permanece disponível.
 
-![Casa com a nova fachada e Lia sem fundo no nome](capturas/after-rain-fachada-renovada.png)
+![Acesso alinhado, missões com X e informações compactas](capturas/after-rain-entrada-hud.png)
 
 ## Barra de opções
 
@@ -20,7 +22,7 @@ As cinco placas de direção/nome das regiões e a pequena seta da propriedade f
 - **Opções** abre a pausa existente, incluindo salvar, administração e retorno ao início.
 - Apenas revelar a seta mantém o jogo ativo. Abrir a barra pausa movimento, relógio e cultivo. Trocar da barra para outro menu mantém a pausa. **Esc** recolhe a barra; depois, o atalho volta a abrir a pausa normalmente.
 - Um modal aberto oculta a barra e sua área de revelação. Os atalhos I/M/C/B/H/Esc continuam funcionando. Voltar ao início destrói o dock; continuar cria uma única barra recolhida.
-- Relógio e quatro contadores de recursos permanecem em um cartão compacto à esquerda. O painel de missões continua minimizável. Mensagens aparecem abaixo da barra aberta para não cobrir as opções.
+- Relógio e quatro contadores de recursos ficam em um cartão de **210×62 px** à esquerda, com dia/hora em uma linha e recursos na outra. A marca do jogo permanece na barra retrátil. O **X** das missões fecha o painel inteiro e deixa um pequeno botão para reabri-lo; o estado persiste. Mensagens aparecem abaixo da barra aberta para não cobrir as opções.
 
 ![Barra superior aberta sobre o cenário](capturas/after-rain-barra-superior.png)
 

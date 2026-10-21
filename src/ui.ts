@@ -201,8 +201,8 @@ export class GameUI {
     this.overlay.classList.remove('active');
     this.lastHudKey = '';
     this.base.innerHTML = `<div class="hud">
-      <header class="hud-header hud-status"><div class="compact-status-row"><div class="hud-brand">${icon('leaf')}<div>After Rain</div></div><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><div><strong id="hud-day">Dia 1</strong><span><b id="hud-time">08:00</b></span></div></div></div><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}</div></header>
-      <aside class="journal${this.journalCollapsed ? ' is-collapsed' : ''}"><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="fold-button" data-collapse="journal" aria-controls="journal-content" aria-expanded="${!this.journalCollapsed}" aria-label="${this.journalCollapsed ? 'Expandir' : 'Minimizar'} missões" title="${this.journalCollapsed ? 'Expandir' : 'Minimizar'} missões"><span class="journal-fold-label">${this.journalCollapsed ? 'Expandir' : 'Minimizar'}</span>${icon('chevron')}</button></header><div id="journal-content" class="journal-content"><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera nas ruínas a oeste.</p><div class="journal-rule"></div><div class="quest" id="harvest-quest"><span class="quest-circle"></span>Colha seu primeiro nabo</div><div class="quest" id="lia-quest"><span class="quest-circle"></span>Converse com Lia <kbd>E</kbd></div><small>Seu tempo. Seu caminho.</small></div></aside>
+      <header class="hud-header hud-status" aria-label="Dia, hora e recursos"><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><strong id="hud-day">Dia 1</strong><span class="status-time"><b id="hud-time">08:00</b></span></div><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}</div></header>
+      <button class="journal-reopen" ${this.journalCollapsed ? '' : 'hidden'} aria-controls="journal-panel" aria-expanded="false" aria-label="Abrir missões" title="Abrir missões">${icon('leaf')}<span>Missões</span></button><aside id="journal-panel" class="journal" ${this.journalCollapsed ? 'hidden' : ''}><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="journal-close" aria-controls="journal-panel" aria-label="Fechar missões" title="Fechar missões">${icon('close')}</button></header><div id="journal-content" class="journal-content"><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera nas ruínas a oeste.</p><div class="journal-rule"></div><div class="quest" id="harvest-quest"><span class="quest-circle"></span>Colha seu primeiro nabo</div><div class="quest" id="lia-quest"><span class="quest-circle"></span>Converse com Lia <kbd>E</kbd></div><small>Seu tempo. Seu caminho.</small></div></aside>
       <div class="location-pill">${icon('pin')}<span id="hud-location">Minha propriedade</span></div><div class="shelter-pill" id="shelter-status" title="Construa paredes e uma porta para formar seu abrigo.">${icon('shelter')}<span id="hud-shelter">Ao ar livre</span><small id="hud-station">Bancada distante</small></div>
       <aside class="controls-card is-collapsed"><button class="controls-toggle" data-collapse="controls-card" aria-controls="controls-content" aria-expanded="false" aria-label="Mostrar controles" title="Mostrar controles">${icon('keys')}<span>Controles</span>${icon('chevron')}</button><div id="controls-content" class="controls-content"><div><kbd>W</kbd><span class="arrow-keys">A S D</span><span>mover</span></div><div><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd><span>mover</span></div><div><kbd>E</kbd><span>interagir</span></div><div><kbd>M</kbd><span>mapa das regiões</span></div><div><kbd>I</kbd><span>inventário</span></div><div><kbd>C</kbd><span>fabricar</span></div><div><kbd>B</kbd><span>construir e molde 3×3</span></div><div><kbd>P</kbd><span>construir porta</span></div><div><kbd>Esc</kbd><span>pausar</span></div><small>1–8: ações e ferramentas · 9: bancada · 0: parede</small></div></aside>
       <div class="bottom-center"><div class="interaction-prompt"><kbd>E</kbd><span id="hud-prompt">Explore o vale ao seu redor</span></div><div id="hud-resource-progress" class="resource-progress" hidden></div><div class="toolbelt">${tools.slice(0, 11).map((tool, index) => `<button class="tool${index === 0 ? ' selected' : ''}" data-tool="${tool.id}" title="${index < 9 ? index + 1 : index === 9 ? '0' : 'P'} · ${tool.detail}" aria-label="${tool.label}"><span class="tool-key">${index < 9 ? index + 1 : index === 9 ? '0' : 'P'}</span>${icon(tool.icon)}<span>${tool.label}</span></button>`).join('')}</div><div class="tool-status"><strong id="active-tool">Explorar</strong><span id="tool-cost">Coletar · conversar · colher</span></div></div>
@@ -216,20 +216,24 @@ export class GameUI {
       onOpenChange: open => this.callbacks.onPause(open || this.modal !== null),
       onAction: action => this.handleToolbarAction(action),
     });
+    const setJournalClosed = (closed: boolean): void => {
+      this.journalCollapsed = closed;
+      this.base.querySelector<HTMLElement>('.journal')!.hidden = closed;
+      const reopen = this.base.querySelector<HTMLButtonElement>('.journal-reopen')!;
+      reopen.hidden = !closed;
+      if (closed) reopen.focus();
+      else this.base.querySelector<HTMLButtonElement>('.journal-close')!.focus();
+      try { localStorage.setItem('after-rain-missions-collapsed', String(closed)); } catch { /* A preferência vale para esta sessão. */ }
+    };
+    this.base.querySelector('.journal-close')!.addEventListener('click', () => setJournalClosed(true));
+    this.base.querySelector('.journal-reopen')!.addEventListener('click', () => setJournalClosed(false));
     this.base.querySelectorAll<HTMLButtonElement>('[data-collapse]').forEach(button => button.addEventListener('click', () => {
       const panel = this.base.querySelector(`.${button.dataset.collapse}`)!;
       const collapsed = panel.classList.toggle('is-collapsed');
       button.setAttribute('aria-expanded', String(!collapsed));
-      const label = button.dataset.collapse === 'journal'
-        ? `${collapsed ? 'Expandir' : 'Minimizar'} missões`
-        : `${collapsed ? 'Mostrar' : 'Recolher'} controles`;
+      const label = `${collapsed ? 'Mostrar' : 'Recolher'} controles`;
       button.setAttribute('aria-label', label);
       button.title = label;
-      if (button.dataset.collapse === 'journal') {
-        this.journalCollapsed = collapsed;
-        button.querySelector('.journal-fold-label')!.textContent = collapsed ? 'Expandir' : 'Minimizar';
-        try { localStorage.setItem('after-rain-missions-collapsed', String(collapsed)); } catch { /* A preferência vale para esta sessão. */ }
-      }
     }));
     this.callbacks.onPause(false);
   }

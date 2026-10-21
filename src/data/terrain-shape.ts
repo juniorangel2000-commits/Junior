@@ -48,7 +48,8 @@ export function isWaterPoint(x: number, y: number): boolean { return waterDistan
 
 type Trail = readonly [horizontal: boolean, from: number, to: number, centre: number, halfWidth: number, seed: number];
 const TRAILS: readonly Trail[] = [
-  [false, 15, 20, 25.5, 24, 1],
+  // O acesso termina na soleira da casa, centrada em 24,5 tiles.
+  [false, 15, 20, 24.5, 24, 1],
   [true, 15, 76.5, 18.5, 23, 2],
   [false, 19, 30.5, 31.5, 22, 3],
   [false, 24, 53.5, 19.5, 23, 4],

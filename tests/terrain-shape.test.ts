@@ -65,7 +65,7 @@ describe('contornos contínuos do terreno', () => {
   });
 
   it('mantém as rotas da propriedade, bosque e campos ligadas', () => {
-    for (const [x, y] of [[25.5, 17], [40, 18.5], [55, 18.5], [31.5, 25], [19.5, 40], [40, 53.5], [68.5, 55]]) {
+    for (const [x, y] of [[24.5, 17], [40, 18.5], [55, 18.5], [31.5, 25], [19.5, 40], [40, 53.5], [68.5, 55]]) {
       expect(roadDistanceAt(x * TILE, y * TILE), `${x},${y}`).toBeLessThan(0);
     }
   });
