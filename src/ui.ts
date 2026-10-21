@@ -1,6 +1,8 @@
 import { CHARACTER_WIDTH, drawCharacter } from './art';
 import { createCharacterEditor } from './character-creator';
 import { createTitleScreen } from './title-screen';
+import { TopToolbar } from './top-toolbar';
+import type { ToolbarAction } from './top-toolbar';
 import type { TitleBackgroundMode } from './title-screen';
 import { itemIconUrl } from './visual-assets';
 import { REGIONS, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
@@ -118,6 +120,7 @@ export class GameUI {
   private craftingNearWorkbench = false;
   private homeEditor?: HomeEditor;
   private journalCollapsed = false;
+  private topToolbar?: TopToolbar;
 
   constructor(private callbacks: UICallbacks) {
     try { this.journalCollapsed = localStorage.getItem('after-rain-missions-collapsed') === 'true'; } catch { /* A interface também funciona sem armazenamento. */ }
@@ -139,6 +142,8 @@ export class GameUI {
   }
 
   showTitle(hasSave: boolean): void {
+    this.topToolbar?.destroy();
+    this.topToolbar = undefined;
     this.homeEditor?.destroy();
     this.homeEditor = undefined;
     this.cleanupTitle?.();
@@ -163,6 +168,8 @@ export class GameUI {
   }
 
   private showCreation(): void {
+    this.topToolbar?.destroy();
+    this.topToolbar = undefined;
     this.cleanupTitle?.();
     this.cleanupTitle = undefined;
     this.cleanupCreation?.();
@@ -179,6 +186,8 @@ export class GameUI {
   }
 
   showHUD(): void {
+    this.topToolbar?.destroy();
+    this.topToolbar = undefined;
     this.homeEditor?.destroy();
     this.homeEditor = undefined;
     this.cleanupTitle?.();
@@ -192,10 +201,9 @@ export class GameUI {
     this.overlay.classList.remove('active');
     this.lastHudKey = '';
     this.base.innerHTML = `<div class="hud">
-      <header class="hud-header"><div class="hud-brand">${icon('leaf')}<div>After Rain<small>PROPRIEDADE · BOSQUE · CAMPOS</small></div></div><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><div><strong id="hud-day">Dia 1</strong><span>Hora do vale <i>·</i> <b id="hud-time">08:00</b></span></div></div><div class="header-right"><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}</div><button class="icon-button map-button" title="Mapa das regiões (M)" aria-label="Abrir mapa das regiões">${icon('map')}</button><button class="building-button" title="Construção (B)" aria-label="Abrir construção">${icon('shelter')}<span>Construir <kbd>B</kbd></span></button><button class="crafting-button" title="Fabricação (C)" aria-label="Abrir fabricação">${icon('workbench')}<span>Fabricar <kbd>C</kbd></span></button><button class="icon-button inventory-button" title="Inventário (I)" aria-label="Abrir inventário">${icon('bag')}</button><button class="icon-button pause-button" title="Pausar (Esc)" aria-label="Pausar jogo">${icon('pause')}</button></div></header>
+      <header class="hud-header hud-status"><div class="compact-status-row"><div class="hud-brand">${icon('leaf')}<div>After Rain</div></div><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><div><strong id="hud-day">Dia 1</strong><span><b id="hud-time">08:00</b></span></div></div></div><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}</div></header>
       <aside class="journal${this.journalCollapsed ? ' is-collapsed' : ''}"><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="fold-button" data-collapse="journal" aria-controls="journal-content" aria-expanded="${!this.journalCollapsed}" aria-label="${this.journalCollapsed ? 'Expandir' : 'Minimizar'} missões" title="${this.journalCollapsed ? 'Expandir' : 'Minimizar'} missões"><span class="journal-fold-label">${this.journalCollapsed ? 'Expandir' : 'Minimizar'}</span>${icon('chevron')}</button></header><div id="journal-content" class="journal-content"><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera nas ruínas a oeste.</p><div class="journal-rule"></div><div class="quest" id="harvest-quest"><span class="quest-circle"></span>Colha seu primeiro nabo</div><div class="quest" id="lia-quest"><span class="quest-circle"></span>Converse com Lia <kbd>E</kbd></div><small>Seu tempo. Seu caminho.</small></div></aside>
       <div class="location-pill">${icon('pin')}<span id="hud-location">Minha propriedade</span></div><div class="shelter-pill" id="shelter-status" title="Construa paredes e uma porta para formar seu abrigo.">${icon('shelter')}<span id="hud-shelter">Ao ar livre</span><small id="hud-station">Bancada distante</small></div>
-      <button class="home-customize-button" hidden aria-label="Personalizar interior da casa (H)" title="Personalizar casa (H)">${icon('shelter')} Personalizar casa <kbd>H</kbd></button>
       <aside class="controls-card is-collapsed"><button class="controls-toggle" data-collapse="controls-card" aria-controls="controls-content" aria-expanded="false" aria-label="Mostrar controles" title="Mostrar controles">${icon('keys')}<span>Controles</span>${icon('chevron')}</button><div id="controls-content" class="controls-content"><div><kbd>W</kbd><span class="arrow-keys">A S D</span><span>mover</span></div><div><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd><span>mover</span></div><div><kbd>E</kbd><span>interagir</span></div><div><kbd>M</kbd><span>mapa das regiões</span></div><div><kbd>I</kbd><span>inventário</span></div><div><kbd>C</kbd><span>fabricar</span></div><div><kbd>B</kbd><span>construir e molde 3×3</span></div><div><kbd>P</kbd><span>construir porta</span></div><div><kbd>Esc</kbd><span>pausar</span></div><small>1–8: ações e ferramentas · 9: bancada · 0: parede</small></div></aside>
       <div class="bottom-center"><div class="interaction-prompt"><kbd>E</kbd><span id="hud-prompt">Explore o vale ao seu redor</span></div><div id="hud-resource-progress" class="resource-progress" hidden></div><div class="toolbelt">${tools.slice(0, 11).map((tool, index) => `<button class="tool${index === 0 ? ' selected' : ''}" data-tool="${tool.id}" title="${index < 9 ? index + 1 : index === 9 ? '0' : 'P'} · ${tool.detail}" aria-label="${tool.label}"><span class="tool-key">${index < 9 ? index + 1 : index === 9 ? '0' : 'P'}</span>${icon(tool.icon)}<span>${tool.label}</span></button>`).join('')}</div><div class="tool-status"><strong id="active-tool">Explorar</strong><span id="tool-cost">Coletar · conversar · colher</span></div></div>
     </div>`;
@@ -203,19 +211,10 @@ export class GameUI {
       if (this.modal) return;
       this.callbacks.onTool(button.dataset.tool as Tool);
     }));
-    this.base.querySelector('.inventory-button')!.addEventListener('click', () => {
-      if (this.latest) this.toggleInventory(this.latest.inventory);
-    });
-    this.base.querySelector('.building-button')!.addEventListener('click', () => {
-      if (this.latest) this.toggleBuilding(this.latest.inventory, this.latest.nearWorkbench);
-    });
-    this.base.querySelector('.crafting-button')!.addEventListener('click', () => {
-      if (this.latest) this.toggleCrafting(this.latest.inventory, this.latest.nearWorkbench);
-    });
-    this.base.querySelector('.pause-button')!.addEventListener('click', () => this.togglePause());
-    this.base.querySelector('.map-button')!.addEventListener('click', () => this.toggleMap());
-    this.base.querySelector('.home-customize-button')!.addEventListener('click', () => {
-      if (!this.modal && this.latest?.inHome) this.callbacks.onHomeMenu();
+    this.topToolbar = new TopToolbar(this.base.querySelector<HTMLElement>('.hud')!, {
+      icon,
+      onOpenChange: open => this.callbacks.onPause(open || this.modal !== null),
+      onAction: action => this.handleToolbarAction(action),
     });
     this.base.querySelectorAll<HTMLButtonElement>('[data-collapse]').forEach(button => button.addEventListener('click', () => {
       const panel = this.base.querySelector(`.${button.dataset.collapse}`)!;
@@ -233,6 +232,28 @@ export class GameUI {
       }
     }));
     this.callbacks.onPause(false);
+  }
+
+  toggleTopToolbar(): void {
+    if (this.mode !== 'hud' || this.modal) return;
+    this.topToolbar?.toggle();
+  }
+
+  dismissTopToolbar(): boolean { return this.topToolbar?.dismiss() ?? false; }
+
+  private handleToolbarAction(action: ToolbarAction): void {
+    if (this.mode !== 'hud' || this.modal) return;
+    if (action === 'save') {
+      this.toast(this.callbacks.onSave() ? 'Sua história foi salva neste navegador.' : 'Não foi possível salvar. Confira o armazenamento do navegador.');
+      return;
+    }
+    this.topToolbar?.setOpen(false, false);
+    if (action === 'options') this.togglePause();
+    else if (action === 'map') this.toggleMap();
+    else if (action === 'inventory' && this.latest) this.toggleInventory(this.latest.inventory);
+    else if (action === 'crafting' && this.latest) this.toggleCrafting(this.latest.inventory, this.latest.nearWorkbench);
+    else if (action === 'building' && this.latest) this.toggleBuilding(this.latest.inventory, this.latest.nearWorkbench);
+    else if (action === 'home' && this.latest?.inHome) this.callbacks.onHomeMenu();
   }
 
   updateHUD(data: HudData): void {
@@ -575,10 +596,12 @@ export class GameUI {
 
   isCraftingOpen(): boolean { return this.modal === 'crafting'; }
 
-  isModalOpen(): boolean { return this.mode !== 'hud' || this.modal !== null; }
+  isModalOpen(): boolean { return this.mode !== 'hud' || this.modal !== null || this.topToolbar?.isOpen === true; }
 
   closeModal(): void {
     if (this.mode !== 'hud') return;
+    this.topToolbar?.setOpen(false, false);
+    this.topToolbar?.setEnabled(true);
     this.homeEditor?.destroy();
     this.homeEditor = undefined;
     if (this.modal === 'crafting') {
@@ -591,12 +614,15 @@ export class GameUI {
     this.overlay.replaceChildren();
     this.overlay.classList.remove('active');
     this.callbacks.onPause(false);
-    if (this.focusBeforeModal?.isConnected) this.focusBeforeModal.focus();
+    if (this.focusBeforeModal?.closest('.toolbar-panel')) this.topToolbar?.focusHandle();
+    else if (this.focusBeforeModal?.isConnected) this.focusBeforeModal.focus();
     this.focusBeforeModal = undefined;
     callback?.();
   }
 
   private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep'): void {
+    this.topToolbar?.setOpen(false, false);
+    this.topToolbar?.setEnabled(false);
     this.focusBeforeModal = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
     this.modal = type;
     this.overlay.replaceChildren();

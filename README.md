@@ -6,6 +6,8 @@ A versão do código é **0.5.0, em desenvolvimento**. A [nova tela inicial Afte
 
 A [casa inicial agora tem interior personalizável, cama e descanso até a manhã](docs/casa-sono-admin.md). O painel de missões pode ser minimizado; o menu de itens para testes exige senha de administrador e também pode ser recolhido.
 
+A [fachada redesenhada e a barra superior retrátil](docs/fachada-e-barra-retratil.md) acompanham a arte das árvores e do terreno. Passe o mouse no centro superior para revelar a seta e clique para abrir as opções, ou use o botão direito no cenário. As seis placas externas foram retiradas e o nome da Lia aparece sem fundo.
+
 ![Abertura chuvosa de After Rain, em desenvolvimento.](docs/capturas/after-rain-inicio.png)
 
 [Sprites de terreno reformulados](docs/terrenos-novos.md): onze materiais originais de grama, bosque, campos, estradas, cultivo, margens, água, madeira e pedra de passagem, acompanhando a arte das árvores.
@@ -79,6 +81,8 @@ Crie seu personagem escolhendo nome, tom de pele, penteado, cor do cabelo, macac
 | --- | --- |
 | WASD ou setas | Caminhar |
 | E ou clique esquerdo próximo | Interagir com a ação selecionada |
+| Botão direito no cenário | Abrir/recolher a barra de opções do jogo |
+| Mouse no centro superior + clique na seta | Revelar e abrir/recolher a barra de opções |
 | 1 | Mãos: coletar, colher, conversar e abrir/fechar porta |
 | 2 | Plantar uma semente de nabo |
 | 3 | Regar uma planta |
@@ -99,7 +103,9 @@ Crie seu personagem escolhendo nome, tom de pele, penteado, cor do cabelo, macac
 | Esc | Fechar/cancelar o menu ou pausar |
 | Ctrl + Shift + F10 | Solicitar acesso de administrador por senha |
 
-As ações também podem ser selecionadas pela interface. Interagir e construir exigem proximidade e alvo válido. Use o menu **B** para piso, janela e cobertura, além das demais peças. Menus, fabricação e diálogos pausam movimento, relógio e crescimento. O teclado do jogo não movimenta o personagem durante a digitação do nome.
+As ações também podem ser selecionadas pela interface. A barra superior começa recolhida e reúne **Inventário, Mapa, Fabricação, Construção, Salvar e Opções**; dentro de casa, oferece **Minha casa**. **Opções** abre a pausa com salvar, administração e retorno ao início. Apenas passar o mouse para revelar a seta mantém a simulação ativa; abrir a barra pausa. **Esc** recolhe a barra antes de abrir a pausa. Os atalhos continuam funcionando com a barra fechada.
+
+Interagir e construir exigem proximidade e alvo válido. Use o menu **B** para piso, janela e cobertura, além das demais peças. Menus, fabricação e diálogos pausam movimento, relógio e crescimento. O teclado do jogo não movimenta o personagem durante a digitação do nome.
 
 ## Propriedade e exploração
 
@@ -160,7 +166,7 @@ O regador não precisa ser reabastecido nesta versão. Plantas não crescem sem 
 
 ## Casa e descanso
 
-Aproxime-se da porta da casa inicial e aperte **E** para entrar. A fachada tem janela de sótão, pórtico, lanterna e detalhes de reparo. A casa possui um interior de **12×10 tiles**, com cama, mesa, cadeira, estante, tapete e planta. A saída fica ao sul: aproxime-se e aperte **E**.
+Aproxime-se da porta da casa inicial e aperte **E** para entrar. A fachada agora usa uma sprite original com telhas terracota, reboco creme, madeira, venezianas turquesa, lanterna e vegetação, no estilo atual do mapa. A casa possui um interior de **12×10 tiles**, com cama, mesa, cadeira, estante, tapete e planta. A saída fica ao sul: aproxime-se e aperte **E**.
 
 Dentro da casa, **H**, **B** ou **Personalizar casa** abre a planta de edição. Selecione uma peça para mover/recolher ou escolha um móvel do acervo para adicionar. Há três acabamentos de piso e três de parede. O acervo é gratuito nesta etapa e tem limites por peça; os móveis não são itens da mochila nem receitas de fabricação. A validação impede sobreposição de móveis sólidos, ocupação do personagem, bloqueio da circulação e retirada da última cama. Tapetes podem ficar sob outros móveis.
 
@@ -209,6 +215,8 @@ src/
   ui.ts / style.css       Telas, HUD, mochila, fabricação e construção
   home-ui.ts / .css       Planta de edição da casa e acabamentos
   home-art.ts             Texturas e composição do interior
+  house-sprites.ts        Preparação da fachada original com escala proporcional
+  top-toolbar.ts / .css   Barra de opções retrátil e área para revelar a seta
   admin-menu.ts / .css    Acesso por senha e painel de itens para testes
   art.ts                  Sprites locais e personagem
   visual-assets.ts        Carregamento e adaptação dos assets recebidos

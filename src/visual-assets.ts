@@ -4,6 +4,7 @@ import { setupTerrainSprites } from './terrain-sprites';
 import { setupResourceSprites } from './resource-sprites';
 import { setupDecorSprites } from './decor-sprites';
 import { setupCharacterSprites } from './character-sprites';
+import { preloadHouseSprite, setupHouseSprite } from './house-sprites';
 
 /** Local assets from the received packages and original tree/ground atlases. */
 const BASE = 'assets/visual/';
@@ -25,6 +26,7 @@ type Direction = keyof typeof DIRECTIONS;
 const characterSources = new Map<string, HTMLImageElement | HTMLCanvasElement>();
 
 export function preloadVisualAssets(scene: Phaser.Scene): void {
+  preloadHouseSprite(scene);
   scene.load.image('nature-trees-source', `${BASE}nature/trees-approved.png`);
   scene.load.image('terrain-materials-source', `${BASE}terrain/ground-materials.png`);
   scene.load.image('terrain-finishes-source', `${BASE}terrain/floor-finishes.png`);
@@ -225,5 +227,6 @@ export function setupVisualAssets(scene: Phaser.Scene): void {
     ['parede_creme', 'imported-wall', 32, 48], ['parede_janela_floreira', 'imported-window', 32, 52],
     ['porta_madeira', 'imported-door', 30, 44],
   ] as const) fitSource(scene, `module-${source}`, key, width, height);
-  setupDecorSprites(scene); setupNatureSprites(scene); setupTerrainSprites(scene); createHouse(scene);
+  setupDecorSprites(scene); setupNatureSprites(scene); setupTerrainSprites(scene);
+  if (!setupHouseSprite(scene)) createHouse(scene);
 }

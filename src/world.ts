@@ -267,30 +267,6 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   well.fillStyle(0x687746).fillRect(31 * TILE - 4, 59 * TILE + 21, 7, 10);
   blocked.add(key(31, 59)); blocked.add(key(32, 59));
 
-  const signpost = (x: number, y: number, label: string) => {
-    const width = Math.max(80, label.length * 6 + 16), px = x * TILE + 16, py = y * TILE + 18;
-    const plate = scene.add.graphics().setDepth(py + 2);
-    plate.fillStyle(0x604730).fillRect(px - 3, py - 12, 6, 29);
-    plate.fillStyle(0x4d3c2c).fillRect(px - width / 2 - 2, py - 30, width + 4, 24);
-    plate.fillStyle(0xb28b55).fillRect(px - width / 2, py - 28, width, 20);
-    plate.fillStyle(0xd8b67b).fillRect(px - width / 2, py - 28, width, 3);
-    scene.add.text(px, py - 17, label, { fontFamily: 'Georgia, serif', fontSize: '10px', fontStyle: 'bold', color: '#312b21' }).setOrigin(0.5).setDepth(py + 3);
-  };
-  signpost(40, 17, 'BOSQUE →');
-  signpost(18, 26, 'CAMPOS ↓');
-  signpost(55, 16, 'BOSQUE DO PINHEIRO');
-  signpost(24, 47, 'CAMPOS ABERTOS');
-  signpost(51, 51, '← PROPRIEDADE');
-
-  // Weathered property sign and mailbox.
-  const sign = scene.add.graphics().setDepth(18 * TILE + 24);
-  sign.fillStyle(0x6a573e).fillRect(19 * TILE + 13, 18 * TILE + 2, 5, 28);
-  sign.fillStyle(0xae9468).fillRect(19 * TILE + 1, 18 * TILE, 29, 16);
-  sign.fillStyle(0xd0b788).fillRect(19 * TILE + 1, 18 * TILE, 29, 2);
-  sign.lineStyle(2, 0x635d41).lineBetween(19 * TILE + 7, 18 * TILE + 7, 19 * TILE + 24, 18 * TILE + 7);
-  sign.lineBetween(19 * TILE + 15, 18 * TILE + 12, 19 * TILE + 24, 18 * TILE + 7);
-  sign.lineBetween(19 * TILE + 15, 18 * TILE + 3, 19 * TILE + 24, 18 * TILE + 7);
-
   const positions: Array<[number, number, ResourceKind]> = [
     [20, 18, 'tree'], [28, 19, 'stone'], [30, 20, 'seeds'], [19, 22, 'seeds'], [23, 26, 'tree'], [27, 26, 'stone'],
     [18, 16, 'tree'], [17, 19, 'stone'], [16, 22, 'seeds'], [20, 28, 'tree'], [25, 29, 'seeds'], [34, 25, 'stone'],

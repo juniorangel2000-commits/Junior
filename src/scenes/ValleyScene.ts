@@ -26,6 +26,7 @@ import { GAME_MINUTES_PER_SECOND, advanceClock, sleepUntilMorning } from '../sys
 import { AdminAccess, grantAdminItem } from '../systems/admin';
 import { AdminMenu } from '../admin-menu';
 import type { HomeEditAction } from '../home-ui';
+import { HOUSE_WINDOW_LIGHTS } from '../house-sprites';
 
 const TOOLS: Tool[] = ['hand', 'plant', 'water', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'workbench', 'wall'];
 const DEFAULT_PROFILE: CharacterProfile = { name: 'Viajante', skin: '#d9a276', hairStyle: 'preso', hairColor: '#754323', outfit: '#638a9d' };
@@ -99,6 +100,7 @@ export class ValleyScene extends Phaser.Scene {
     window.addEventListener('beforeunload', this.handlePageHide);
     document.addEventListener('visibilitychange', this.handleVisibility);
     window.addEventListener('blur', this.handleBlur);
+    this.game.canvas.addEventListener('contextmenu', this.handleContextMenu);
     this.scale.on('resize', this.updateZoom, this);
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       if (!this.canPlay() || pointer.button !== 0) return;
@@ -113,6 +115,7 @@ export class ValleyScene extends Phaser.Scene {
       window.removeEventListener('beforeunload', this.handlePageHide);
       document.removeEventListener('visibilitychange', this.handleVisibility);
       window.removeEventListener('blur', this.handleBlur);
+      this.game.canvas.removeEventListener('contextmenu', this.handleContextMenu);
       this.scale.off('resize', this.updateZoom, this);
       this.adminMenu?.destroy();
     });
@@ -396,11 +399,18 @@ export class ValleyScene extends Phaser.Scene {
     this.world = createWorld(this, data.depletedResources, data.buildings);
     // A warm refuge in the opening only; the facade and gameplay lighting stay intact.
     this.titleLights = this.add.graphics().setDepth(16 * TILE + 5).setVisible(false);
-    if (this.textures.exists('asset-house')) for (const windowX of [37, 169]) {
-      const x = 24.5 * TILE - 128 + windowX + 15, y = 16 * TILE + 4 - 224 + 163;
-      this.titleLights.fillStyle(0xe2ac55, .06).fillCircle(x + 6, y + 10, 23);
+    const newHouseArt = this.textures.exists('house-cottage-source');
+    const windowLights = newHouseArt ? HOUSE_WINDOW_LIGHTS
+      : [{ x: 52, y: 163, width: 13, height: 20 }, { x: 184, y: 163, width: 13, height: 20 }];
+    if (this.textures.exists('asset-house')) for (const light of windowLights) {
+      const x = 24.5 * TILE - 128 + light.x, y = 16 * TILE + 4 - 224 + light.y;
+      this.titleLights.fillStyle(0xe2ac55, .06).fillCircle(x + light.width / 2, y + light.height / 2, 23);
       this.titleLights.fillStyle(0xffbd6e, .78);
-      for (let row = 0; row < 3; row++) for (let col = 0; col < 2; col++) this.titleLights.fillRect(x + col * 7, y + row * 7, 6, 6);
+      const rows = newHouseArt ? 2 : 3;
+      const paneWidth = (light.width - 2) / 2, paneHeight = (light.height - (rows - 1) * 2) / rows;
+      for (let row = 0; row < rows; row++) for (let col = 0; col < 2; col++) {
+        this.titleLights.fillRect(Math.round(x + col * (paneWidth + 2)), Math.round(y + row * (paneHeight + 2)), Math.floor(paneWidth), Math.floor(paneHeight));
+      }
     }
     // Uma estação já salva tem prioridade sobre novos pontos de coleta.
     for (const b of data.buildings) {
@@ -425,7 +435,8 @@ export class ValleyScene extends Phaser.Scene {
     this.world.updateOcclusion(this.player.x, this.player.y);
     this.add.sprite(NPC_POSITION.x, NPC_POSITION.y, 'lia').setOrigin(0.5, 1).setDepth(NPC_POSITION.y);
     this.npcLabel = this.add.text(NPC_POSITION.x, NPC_POSITION.y - CHARACTER_HEIGHT - 6, 'Lia', {
-      fontFamily: 'monospace', fontSize: '10px', color: '#fff1d2', backgroundColor: '#344d3d', padding: { x: 5, y: 3 },
+      fontFamily: 'monospace', fontSize: '10px', color: '#fff1d2',
+      stroke: '#263b31', strokeThickness: 2,
     }).setOrigin(0.5, 1).setDepth(NPC_POSITION.y + 1);
     this.selection = this.add.graphics().setDepth(4000);
     this.night = this.add.rectangle(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE, 0x14203c, 1).setOrigin(0).setDepth(5000).setAlpha(0);
@@ -507,7 +518,11 @@ export class ValleyScene extends Phaser.Scene {
     if (target instanceof HTMLElement && target.matches('input, textarea, select, [contenteditable="true"]')) return;
     if (this.canPlay() && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(event.key)) event.preventDefault();
     if (event.repeat) return;
-    if (event.key === 'Escape' && this.running) { event.preventDefault(); this.ui.togglePause(); return; }
+    if (event.key === 'Escape' && this.running) {
+      event.preventDefault();
+      if (!this.ui.dismissTopToolbar()) this.ui.togglePause();
+      return;
+    }
     if (event.key.toLowerCase() === 'i' && this.running) { this.ui.toggleInventory(this.inventory.data); return; }
     if (event.key.toLowerCase() === 'c' && this.running) { event.preventDefault(); this.ui.toggleCrafting(this.inventory.data, this.nearWorkbench()); return; }
     if (event.key.toLowerCase() === 'b' && this.running) {
@@ -527,6 +542,12 @@ export class ValleyScene extends Phaser.Scene {
   };
 
   private handlePageHide = (): void => { if (this.running) this.persist(); };
+  private handleContextMenu = (event: MouseEvent): void => {
+    event.preventDefault();
+    if (!this.running || this.adminMenu?.isOpen) return;
+    if (this.ui.dismissTopToolbar()) return;
+    if (!this.ui.isModalOpen()) this.ui.toggleTopToolbar();
+  };
   private handleVisibility = (): void => { if (document.hidden && this.running) { this.persist(); this.input.keyboard?.resetKeys(); } };
   private handleBlur = (): void => { if (this.running && !this.ui.isModalOpen() && !this.adminMenu?.isOpen) this.ui.togglePause(); };
 

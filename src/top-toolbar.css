@@ -1,0 +1,27 @@
+.hud .hud-header.hud-status{right:auto;left:20px;top:18px;width:270px;height:auto;min-height:78px;padding:11px 14px;display:flex;flex-direction:column;align-items:stretch;gap:10px;border-width:2px;pointer-events:none}
+.hud-status .compact-status-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hud-status .hud-brand{display:flex;font-size:15px;gap:7px}.hud-status .hud-brand div{display:block;max-width:none}.hud-status .hud-brand .icon{width:20px;height:23px}.hud-status .hud-brand small{display:none}
+.hud-status .day-clock{padding-left:12px;gap:7px}.hud-status .day-clock .weather-icon .icon{width:23px;height:23px}.hud-status .day-clock strong{font-size:14px;margin-bottom:3px}.hud-status .day-clock div>span{font-size:9px}.hud-status .day-clock i{display:none}
+.hud-status .resources{margin:0;justify-content:space-between;gap:8px}.hud-status .resources .resource{display:flex;gap:6px}.hud-status .resources .resource .icon{width:20px;height:20px}.hud-status .resources .resource strong{font-size:11px}
+.hud .journal{top:126px}
+.top-toolbar{position:absolute;inset:0;pointer-events:none;z-index:4;color:#f2e5bf}
+.toolbar-reveal-zone{position:absolute;top:0;left:50%;transform:translateX(-50%);width:240px;height:32px;display:flex;justify-content:center;pointer-events:auto;z-index:2}
+.top-toolbar .toolbar-handle{pointer-events:auto;display:flex;align-items:center;justify-content:center;gap:7px;min-width:132px;height:29px;padding:3px 12px;border:1px solid #bd995d;border-top:0;background:#283f30f2;color:#f0e3bf;border-radius:0 0 5px 5px;box-shadow:0 3px 10px #11241a70;opacity:0;transform:translateY(-12px);transition:opacity .16s ease,transform .16s ease;font-size:10px}
+.top-toolbar .toolbar-handle .icon{width:17px;height:17px}.top-toolbar .toolbar-handle span{white-space:nowrap}
+.toolbar-reveal-zone:hover .toolbar-handle,.top-toolbar:focus-within .toolbar-handle,.top-toolbar.is-open .toolbar-handle{opacity:1;transform:translateY(0)}
+.top-toolbar.is-open .toolbar-handle .icon{transform:rotate(180deg)}
+.top-toolbar .toolbar-panel{position:absolute;pointer-events:auto;top:39px;left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 32px);padding:14px 16px 11px;border:3px solid #765536;border-radius:5px;background:linear-gradient(#f2e8c9,#dfcea3);box-shadow:inset 0 0 0 1px #c7a86a,0 9px 24px #10251d80;color:#3d513a}
+.top-toolbar .toolbar-panel[hidden]{display:none}
+.toolbar-heading{display:flex;align-items:center;justify-content:space-between;gap:28px;margin-bottom:11px}.toolbar-heading>span{font:17px Georgia,serif;color:#405639}.toolbar-heading small{font-size:8px;letter-spacing:1px;color:#7c825f}
+.toolbar-actions{display:flex;align-items:stretch;gap:7px}
+.top-toolbar .toolbar-action{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-width:82px;min-height:79px;margin:0;padding:10px 9px 8px;border:1px solid #b89c65;border-radius:3px;background:#f8efcf;color:#40573e;box-shadow:inset 0 -3px #b79a5b25;font:11px Arial,sans-serif;white-space:nowrap}
+.top-toolbar .toolbar-action[hidden]{display:none}.top-toolbar .toolbar-action .icon{width:26px;height:26px;color:#5a724b}.top-toolbar .toolbar-action span{font-size:11px}.top-toolbar .toolbar-action kbd{position:absolute;top:4px;right:5px;min-width:0;padding:0;border:0;background:transparent;font-size:8px;color:#8d9271;box-shadow:none}
+.top-toolbar .toolbar-action:hover{background:#e2e8c6;border-color:#7b8e5c}.top-toolbar .toolbar-action:focus-visible,.top-toolbar .toolbar-handle:focus-visible{outline:3px solid #c38843;outline-offset:3px}
+.toolbar-hint{font-size:9px;text-align:center;color:#7b8064;margin:10px 0 0;line-height:1.4}
+.hud.in-home .top-toolbar .home-customize-button{position:relative;right:auto;top:auto;display:flex;pointer-events:auto;background:#f8efcf;color:#40573e}.hud.in-home .top-toolbar .building-button,.hud.in-home .top-toolbar .crafting-button{display:none}
+@media(max-width:760px){.hud .hud-header.hud-status{left:14px;top:12px;width:235px;padding:9px 11px;gap:7px;min-height:70px}.hud-status .hud-brand{font-size:13px}.hud-status .day-clock{padding-left:9px}.hud-status .day-clock strong{font-size:12px}.hud .journal{top:108px}.top-toolbar .toolbar-panel{padding:12px;max-width:calc(100vw - 24px)}.toolbar-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.top-toolbar .toolbar-action{min-width:93px;min-height:72px;font-size:10px}.toolbar-heading small{font-size:7px}.toolbar-hint{max-width:330px}.toolbar-reveal-zone{width:170px;height:30px}.top-toolbar .toolbar-handle{min-width:115px;height:27px;font-size:9px}}
+@media(max-width:440px){.hud .hud-header.hud-status{width:210px;padding:8px 10px}.hud-status .hud-brand .icon{width:16px;height:20px}.hud-status .hud-brand{font-size:12px}.hud-status .day-clock{gap:5px;padding-left:8px}.hud-status .day-clock .weather-icon .icon{width:18px;height:18px}.hud-status .resources .resource{gap:4px}.hud-status .resources .resource .icon{width:18px;height:18px}.hud-status .resources .resource strong{font-size:10px}.toolbar-heading{gap:15px}.toolbar-reveal-zone{width:128px}.top-toolbar .toolbar-panel{left:12px;right:12px;transform:none;width:auto}.top-toolbar .toolbar-action{min-width:0}}
+@media(prefers-reduced-motion:reduce){.top-toolbar .toolbar-handle{transition:none}}
+#ui:has(.top-toolbar.is-open) .toast-stack{top:230px}
+@media(max-width:760px){#ui:has(.top-toolbar.is-open) .toast-stack{top:320px}}
+.top-toolbar[hidden]{display:none}
