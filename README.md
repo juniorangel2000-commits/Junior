@@ -36,7 +36,7 @@ O build fica em `dist/`. Sirva essa pasta por HTTP; abrir `index.html` diretamen
 
 ## Aplicativo para Windows
 
-**Última versão publicada e verificada:** [Jardim Depois da Chuva v0.2.0 — Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.2.0/Depois-da-Chuva-0.2.0-Windows-x64.exe). A [página da Release](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.2.0) também disponibiliza o executável e seu manifesto de integridade. O polimento **0.3.0** está no código atual e passa pela validação final antes de receber um novo download público.
+**Última versão publicada e verificada:** [Jardim Depois da Chuva v0.3.0 — Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.3.0/Depois-da-Chuva-0.3.0-Windows-x64.exe). A [página da Release](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.3.0) também disponibiliza o executável e seu manifesto de integridade. Esta versão inclui o primeiro polimento da direção artística aprovada.
 
 O pacote portátil é gerado em `release/`, com nome `Depois-da-Chuva-<versão>-Windows-x64.exe`. Ele é destinado a **Windows 10/11 de 64 bits**. Para jogar o pacote pronto, abra o `.exe` com dois cliques. Não precisa instalar Node.js, abrir um terminal, manter o Vite ativo, conectar à internet ou executar como administrador. A primeira abertura pode demorar um pouco enquanto o pacote prepara seus arquivos temporários.
 
@@ -57,7 +57,7 @@ O pacote não possui assinatura digital de editor. A abertura interativa da nova
 
 O workflow `.github/workflows/windows-release.yml` gera o pacote em um runner Windows. Sua execução manual produz o artefato `Depois-da-Chuva-Windows-x64`, contendo `.exe` e `SHA256SUMS.txt`. Quando uma tag `v*` é enviada, o workflow publica esses arquivos em uma GitHub Release usando a autorização temporária do GitHub.
 
-A [execução da versão v0.2.0](https://github.com/juniorangel2000-commits/Junior/actions/runs/39593292856) concluiu com sucesso em um runner Windows. O executável publicado foi baixado e conferido: 104.510.634 bytes, cabeçalhos PE válidos e SHA-256 correspondente ao manifesto público. Caminhos internos como `/workspace/Junior/release/...` não equivalem a links públicos; use a Release para distribuir o pacote.
+A [execução da versão v0.3.0](https://github.com/juniorangel2000-commits/Junior/actions/runs/39605676969) concluiu com sucesso em um runner Windows, incluindo TypeScript, testes e empacotamento. O executável publicado foi baixado e conferido: **106.614.017 bytes**, cabeçalhos PE válidos e SHA-256 correspondente ao manifesto público. O hash e os detalhes estão em [polimento-visual-v0.3.md](docs/polimento-visual-v0.3.md). Caminhos internos como `/workspace/Junior/release/...` não equivalem a links públicos; use a Release para distribuir o pacote.
 
 ## Controles
 
@@ -217,7 +217,7 @@ vite.config.ts            Caminhos relativos para assets locais
 
 Na versão **0.3.0**, TypeScript, **104 testes em seis arquivos** e build de produção foram aprovados. Uma comparação externa do mapa real com a tag `v0.2.0` confirmou os mesmos **801 recursos** e os mesmos estados de colisão, horta e construção em todas as **6.912 células**. Essa comparação é adicional aos testes de sistemas, sem alterar sua contagem.
 
-A validação no Chromium passou: seis árvores com transparência limpa, decoração fora da horta, save v2 anterior, colheita/coleta/fabricação, copas com transparência e colisão preservada, duas pontes, exploração do bosque/campos, save/reload sem duplicação e menus em 960×640 e 1280×800. Nenhum erro de JavaScript ou asset foi registrado. A publicação do novo pacote será registrada em [polimento-visual-v0.3.md](docs/polimento-visual-v0.3.md).
+A validação no Chromium passou: seis árvores com transparência limpa, decoração fora da horta, save v2 anterior, colheita/coleta/fabricação, copas com transparência e colisão preservada, duas pontes, exploração do bosque/campos, save/reload sem duplicação e menus em 960×640 e 1280×800. Nenhum erro de JavaScript ou asset foi registrado. O portátil foi gerado em um runner Windows e seu download público foi conferido; os detalhes estão em [polimento-visual-v0.3.md](docs/polimento-visual-v0.3.md).
 
 O histórico abaixo corresponde à entrega **0.2.0**:
 

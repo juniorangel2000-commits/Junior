@@ -42,7 +42,17 @@ Verificações concluídas na versão 0.3.0:
 - `npm run build`: aprovado.
 - Comparação externa entre o mapa real atual e a tag `v0.2.0`: os **801 IDs, tipos e coordenadas de recursos** e os estados de colisão, horta e construção de todas as **6.912 células** permaneceram idênticos. Essa conferência usou um harness separado e não é um novo teste unitário incluído na contagem acima.
 
-A validação no Chromium passou: seis variantes com alpha limpo, decoração fora dos 45 tiles da horta, carregamento de um save v2 anterior, colheita/coleta/fabricação, transparência das copas com colisão preservada, duas pontes, caminhada até bosque/campos, recarga de construções e recursos sem duplicação e menus em 960×640 e 1280×800. Nenhum erro de JavaScript ou asset foi registrado. A geração e verificação pública do executável estão em andamento.
+A validação no Chromium passou: seis variantes com alpha limpo, decoração fora dos 45 tiles da horta, carregamento de um save v2 anterior, colheita/coleta/fabricação, transparência das copas com colisão preservada, duas pontes, caminhada até bosque/campos, recarga de construções e recursos sem duplicação e menus em 960×640 e 1280×800. Nenhum erro de JavaScript ou asset foi registrado.
+
+A [execução de distribuição v0.3.0](https://github.com/juniorangel2000-commits/Junior/actions/runs/39605676969) concluiu com sucesso em um runner Windows, incluindo instalação pelo lockfile, TypeScript, testes, empacotamento e publicação. O [executável portátil público](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.3.0/Depois-da-Chuva-0.3.0-Windows-x64.exe) foi baixado integralmente e verificado:
+
+- Arquivo: `Depois-da-Chuva-0.3.0-Windows-x64.exe`.
+- Tamanho: **106.614.017 bytes**.
+- Cabeçalhos `MZ` e `PE` válidos.
+- SHA-256: `439ad8c20c852bf0a158d2f81b71b0eafd45f45a79699a2cc15443ef5380ef5f`.
+- Hash idêntico ao [manifesto público SHA256SUMS.txt](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.3.0/SHA256SUMS.txt).
+
+A [página da Release](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.3.0) reúne o download e as notas. Essas conferências validam a geração e a integridade do arquivo; a abertura interativa no Windows nativo continua pendente.
 
 Comandos para conferir o projeto e gerar o portátil:
 
