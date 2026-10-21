@@ -1,6 +1,6 @@
-# Fachada e barra superior retrátil — desenvolvimento 0.5.0
+# Fachada e barra superior retrátil — versão 0.5.0
 
-A entrega atualiza a casa por fora e reduz a interface fixa sobre o mapa. O interior, a cama, o editor de móveis, o inventário, as receitas e os saves continuam no mesmo projeto. O executável público anterior não recebe essas mudanças automaticamente.
+A entrega atualiza a casa por fora e reduz a interface fixa sobre o mapa. O interior, a cama, o editor de móveis, o inventário, as receitas e os saves continuam no mesmo projeto. Estas mudanças estão no [executável Windows 0.5.0](versao-windows-v0.5.md); feche a versão anterior para abrir o novo pacote.
 
 ## Casa e cenário
 

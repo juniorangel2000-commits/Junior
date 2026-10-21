@@ -1,6 +1,6 @@
 # After Rain — abertura chuvosa
 
-**Estado:** implementada na versão 0.5.0 em desenvolvimento. O executável público 0.4.0 continua com a tela anterior. O vídeo do Flow ainda não foi recebido nem incluído.
+**Estado:** implementada e incluída no [executável Windows 0.5.0](versao-windows-v0.5.md). O vídeo do Flow ainda não foi recebido nem incluído.
 
 O jogo passa a se chamar **After Rain**. A abertura acompanha a premissa definida pelo autor: uma chuva transformou pessoas em zumbis, e a vida precisa ser reconstruída depois da catástrofe. Essa narrativa orienta o visual; os sistemas de inimigos e combate continuam fora desta entrega.
 
@@ -63,4 +63,4 @@ O projeto não exige esse arquivo enquanto `video` for `null`. WebM local també
 - Vídeo opcional testado separadamente com MP4 de QA fora do repositório: autoplay mudo, loop, inline, pausa, retomada, visibilitychange simulado, limpeza, codec sem suporte, arquivo inválido, reprodução rejeitada e cancelamento de carregamento. Nenhum clipe do Flow foi usado nesses testes.
 - Configuração padrão não cria elemento ou requisição de vídeo ausente; zero erros JavaScript/HTTP na navegação normal.
 
-O teste de vídeo usa uma mídia de teste, e o clipe final ainda precisa de revisão de enquadramento, codec e emenda quando for enviado. A versão 0.5.0 não foi publicada nem testada interativamente em Windows nativo nesta etapa.
+O teste de vídeo usa uma mídia de teste, e o clipe final ainda precisa de revisão de enquadramento, codec e emenda quando for enviado. A versão 0.5.0 foi gerada em Windows e publicada; a sessão interativa em Windows nativo não foi executada neste ambiente.

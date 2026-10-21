@@ -1,6 +1,6 @@
-# Casa, descanso e administração — desenvolvimento 0.5.0
+# Casa, descanso e administração — versão 0.5.0
 
-Esta entrega amplia o mesmo jogo Phaser. A versão Windows pública continua sendo 0.4.0; estas mudanças estão no código da próxima versão.
+Esta entrega amplia o mesmo jogo Phaser e está incluída no [executável Windows 0.5.0](versao-windows-v0.5.md).
 
 ## O que foi implementado
 
