@@ -1,4 +1,5 @@
 name: After Rain — executável para Windows
+run-name: After Rain ${{ github.ref_name }} — Windows x64
 
 on:
   workflow_dispatch:
@@ -77,17 +78,30 @@ jobs:
         shell: pwsh
         run: |
           $notes = @'
-          After Rain — nova identidade e abertura chuvosa.
+          After Rain 0.5.0 — casa, descanso e interface atualizada.
 
-          O jogo passa a se chamar After Rain. A nova tela inicial apresenta a propriedade em uma atmosfera pós-apocalíptica, com garoa, neblina, câmera suave, controle para pausar o fundo e suporte a vídeo local em loop.
+          Inclui todas as alterações feitas desde a versão 0.4.0:
 
-          Mantém as artes de terreno, recursos e personagem da versão 0.4.0, as três regiões, a personalização, o cultivo, a fabricação e a construção.
+          - Novo nome After Rain e abertura chuvosa com garoa, neblina, câmera suave e controle para pausar o fundo.
+          - Nova sprite da casa no estilo atual do mapa, com o caminho de acesso alinhado à porta.
+          - Interior personalizável: cama, mesa, cadeira, estante, tapete, planta e acabamentos de piso/parede.
+          - Cama para dormir à noite e avançar até as 08:00, incluindo o crescimento dos cultivos regados.
+          - Barra superior retrátil: passe o mouse no centro superior para revelar a seta, ou use o botão direito no cenário.
+          - Inventário, mapa, fabricação, construção, salvar e opções na barra; os menus pausam a simulação.
+          - Missões com X para fechar e botão para reabrir, com preferência lembrada localmente.
+          - Painel de dia, hora e recursos reduzido para 210×62 pixels.
+          - Placas externas removidas e nome da Lia sem fundo.
+          - Menu administrativo por senha com busca e concessão dos 19 itens reais, minimizável para testes.
 
-          O local e o formato dos saves continuam os mesmos, apesar da mudança de nome.
+          Mantém as três regiões, as artes de terreno, recursos e personagem, a criação de personagem, o cultivo, a fabricação e a construção. Móveis, acabamentos e posição dentro da casa ficam salvos; partidas anteriores continuam compatíveis. A senha do administrador foi entregue separadamente ao responsável pelo projeto.
+
+          O local e o formato dos saves continuam os mesmos, apesar da mudança de nome: %APPDATA%\Depois da Chuva. O save do aplicativo continua separado do save do navegador.
+
+          O vídeo do Flow ainda não foi fornecido; a abertura usa o próprio cenário animado do jogo. O próximo polimento visual da HUD será uma etapa posterior a este pacote.
 
           Aplicativo portátil para Windows 10/11 de 64 bits, gerado em Windows.
           Baixe o arquivo .exe desta versão e abra com dois cliques. Não exige Node.js ou servidor.
-          O pacote não possui assinatura digital. O save do aplicativo fica em %APPDATA%\Depois da Chuva.
+          O pacote não possui assinatura digital. A geração em Windows e os checks automatizados não substituem um teste manual de jogo no Windows 11.
 
           SHA256SUMS.txt permite conferir a integridade do download.
           '@
