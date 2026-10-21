@@ -59,6 +59,7 @@ export interface HudData {
   time: number;
   inventory: InventoryData;
   tool: Tool;
+  interactionKey?: 'E' | 'H';
   prompt: string;
   location: string;
   harvests: number;

@@ -78,9 +78,17 @@ jobs:
         shell: pwsh
         run: |
           $notes = @'
-          After Rain 0.5.0 — casa, descanso e interface atualizada.
+          After Rain 0.5.1 — atalho de personalização da casa corrigido.
 
-          Inclui todas as alterações feitas desde a versão 0.4.0:
+          Correções desta atualização:
+
+          - H é o único atalho de teclado para personalizar a casa.
+          - E continua entrando e saindo da casa e usando a cama; não abre o editor em pisos ou móveis.
+          - B abre a construção no exterior; dentro da casa orienta a usar H.
+          - O indicador de interação mostra E ou H conforme a ação disponível.
+          - Os botões Minha casa e Personalizar casa continuam disponíveis pelo mouse.
+
+          Mantém todas as alterações da versão 0.5.0:
 
           - Novo nome After Rain e abertura chuvosa com garoa, neblina, câmera suave e controle para pausar o fundo.
           - Nova sprite da casa no estilo atual do mapa, com o caminho de acesso alinhado à porta.
@@ -97,7 +105,7 @@ jobs:
 
           O local e o formato dos saves continuam os mesmos, apesar da mudança de nome: %APPDATA%\Depois da Chuva. O save do aplicativo continua separado do save do navegador.
 
-          O vídeo do Flow ainda não foi fornecido; a abertura usa o próprio cenário animado do jogo. O próximo polimento visual da HUD será uma etapa posterior a este pacote.
+          O vídeo do Flow ainda não foi fornecido; a abertura usa o próprio cenário animado do jogo. As três novas imagens de HUD em docs/direcao-visual/hud são propostas para escolha e não foram aplicadas ao jogo deste pacote.
 
           Aplicativo portátil para Windows 10/11 de 64 bits, gerado em Windows.
           Baixe o arquivo .exe desta versão e abra com dois cliques. Não exige Node.js ou servidor.

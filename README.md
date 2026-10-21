@@ -2,7 +2,9 @@
 
 Uma pequena clareira, uma casa que resistiu e a chance de recomeçar. **After Rain**, anteriormente chamado Jardim Depois da Chuva, é um jogo original para navegador, single-player, com exploração, cultivo e construção em pixel art 2D top-down. Sua história se passa após uma chuva que transformou pessoas em zumbis. Continua no mesmo projeto, com TypeScript, Phaser 3 e Vite e aplicativo desktop em Electron.
 
-A versão atual é **0.5.0, publicada para Windows x64**. A [nova tela inicial After Rain](docs/tela-inicial-after-rain.md) apresenta a propriedade com garoa, neblina, tons frios e câmera suave, com suporte preparado para vídeo local em loop. O clipe do Flow ainda não foi fornecido; a configuração padrão usa o cenário do jogo. O [executável 0.5.0](docs/versao-windows-v0.5.md) reúne todas as alterações implementadas até esta entrega.
+A versão do código é **0.5.1**, com [correção do atalho da casa](docs/versao-windows-v0.5.1.md); o último executável já publicado e conferido ainda é o 0.5.0 até concluir o empacotamento desta revisão. A [nova tela inicial After Rain](docs/tela-inicial-after-rain.md) apresenta a propriedade com garoa, neblina, tons frios e câmera suave, com suporte preparado para vídeo local em loop. O clipe do Flow ainda não foi fornecido; a configuração padrão usa o cenário do jogo.
+
+As [três propostas de HUD](docs/direcao-visual/hud/README.md) são estudos visuais para escolha e ainda não foram aplicadas ao jogo.
 
 A [casa inicial agora tem interior personalizável, cama e descanso até a manhã](docs/casa-sono-admin.md). O painel de missões pode ser fechado pelo X e reaberto pelo botão **Missões**; o menu de itens para testes exige senha de administrador e pode ser recolhido.
 
@@ -96,8 +98,8 @@ Crie seu personagem escolhendo nome, tom de pele, penteado, cor do cabelo, macac
 | 9 | Colocar uma bancada |
 | 0 | Colocar uma parede |
 | P | Colocar uma porta |
-| B | Abrir o menu de construção e selecionar peças/projeto |
-| H, ou B dentro de casa | Personalizar móveis, piso e paredes da casa |
+| B | Abrir o menu de construção e selecionar peças/projeto fora de casa |
+| H | Personalizar móveis, piso e paredes da casa |
 | R | Girar a cobertura selecionada |
 | C | Abrir ou fechar a fabricação |
 | I | Abrir ou fechar a mochila |
@@ -170,7 +172,9 @@ O regador não precisa ser reabastecido nesta versão. Plantas não crescem sem 
 
 Aproxime-se da porta da casa inicial e aperte **E** para entrar. A fachada agora usa uma sprite original com telhas terracota, reboco creme, madeira, venezianas turquesa, lanterna e vegetação, no estilo atual do mapa. A casa possui um interior de **12×10 tiles**, com cama, mesa, cadeira, estante, tapete e planta. A saída fica ao sul: aproxime-se e aperte **E**.
 
-Dentro da casa, **H**, **B** ou **Personalizar casa** abre a planta de edição. Selecione uma peça para mover/recolher ou escolha um móvel do acervo para adicionar. Há três acabamentos de piso e três de parede. O acervo é gratuito nesta etapa e tem limites por peça; os móveis não são itens da mochila nem receitas de fabricação. A validação impede sobreposição de móveis sólidos, ocupação do personagem, bloqueio da circulação e retirada da última cama. Tapetes podem ficar sob outros móveis.
+Dentro da casa, a tecla **H** abre a planta de edição. Os botões **Minha casa** na barra superior e **Personalizar casa** na pausa também abrem o editor. **E** usa a cama ou a saída; **B** fica reservado à construção externa. Selecione uma peça para mover/recolher ou escolha um móvel do acervo para adicionar. Há três acabamentos de piso e três de parede. O acervo é gratuito nesta etapa e tem limites por peça; os móveis não são itens da mochila nem receitas de fabricação. A validação impede sobreposição de móveis sólidos, ocupação do personagem, bloqueio da circulação e retirada da última cama. Tapetes podem ficar sob outros móveis.
+
+A personalização exclusiva pela tecla **H** e o indicador contextual **E/H** são correções da **0.5.1**. O executável **0.5.0** já publicado mantém os controles anteriores; a preparação do novo pacote está em [versao-windows-v0.5.1.md](docs/versao-windows-v0.5.1.md).
 
 Para dormir, aproxime-se de um lado livre da cama e aperte **E** entre **19:00 e 07:59**. Confirme para acordar às **08:00**. Dormir antes da meia-noite muda o dia; de madrugada mantém o dia atual. Os cultivos já regados crescem pelo tempo transcorrido; os secos continuam sem crescer. Cancelar não avança o relógio. A cama não possui sistema de energia ou saúde.
 

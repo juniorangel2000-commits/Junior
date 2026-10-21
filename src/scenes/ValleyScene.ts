@@ -275,7 +275,7 @@ export class ValleyScene extends Phaser.Scene {
       });
       return;
     }
-    this.openHomeMenu();
+    this.ui.toast('Use H para personalizar os móveis da casa.');
   }
 
   setTitleBackground(mode: TitleBackgroundMode): void {
@@ -527,7 +527,8 @@ export class ValleyScene extends Phaser.Scene {
     if (event.key.toLowerCase() === 'c' && this.running) { event.preventDefault(); this.ui.toggleCrafting(this.inventory.data, this.nearWorkbench()); return; }
     if (event.key.toLowerCase() === 'b' && this.running) {
       event.preventDefault();
-      if (this.inHome) this.openHomeMenu(); else this.ui.toggleBuilding(this.inventory.data, this.nearWorkbench());
+      if (this.inHome) this.ui.toast('Use H para personalizar os móveis da casa.');
+      else this.ui.toggleBuilding(this.inventory.data, this.nearWorkbench());
       return;
     }
     if (event.key.toLowerCase() === 'm' && this.running) { event.preventDefault(); this.ui.toggleMap(); return; }
@@ -807,7 +808,8 @@ export class ValleyScene extends Phaser.Scene {
       this.ui.updateHUD({ inHome: true, name: this.state.profile.name, day: this.state.day, time: this.state.time,
         inventory: this.inventory.data, tool: this.tool,
         playerTile: { x: Math.floor(this.outdoorPosition.x / TILE), y: Math.floor(this.outdoorPosition.y / TILE) },
-        prompt: nearExit ? 'Sair de casa' : bed ? 'Dormir até as 08:00 · disponível à noite' : 'Personalizar sua casa · H',
+        interactionKey: nearExit || bed ? 'E' : 'H',
+        prompt: nearExit ? 'Sair de casa' : bed ? 'Dormir até as 08:00 · disponível à noite' : 'Personalizar sua casa',
         location: 'Minha casa', harvests: this.inventory.data.turnip, metLia: this.state.metLia,
         nearWorkbench: false, sheltered: true, shelterReason: 'Interior da casa da propriedade.', resourceProgress: '', progress: this.state.progress });
       return;

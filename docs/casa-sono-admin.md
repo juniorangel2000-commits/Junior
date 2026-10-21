@@ -2,12 +2,14 @@
 
 Esta entrega amplia o mesmo jogo Phaser e está incluída no [executável Windows 0.5.0](versao-windows-v0.5.md).
 
+**Revisão de controles 0.5.1:** somente **H** abre a personalização pelo teclado. **E** entra/sai da casa ou usa a cama; **B** abre construção apenas no exterior. Os botões explícitos de personalização continuam disponíveis e o indicador de interação acompanha **E/H**. A distribuição da correção está em [versao-windows-v0.5.1.md](versao-windows-v0.5.1.md); o arquivo **0.5.0** já publicado mantém o comportamento anterior.
+
 ## O que foi implementado
 
 - Fachada com sótão, pórtico de madeira, lanterna e reparos, preservando os pontos da porta e das janelas e a área de colisão externa. As pedras retiradas da entrada continuam ausentes.
 - Entrada e saída por **E**, interior separado de 12×10 tiles, colisão nos pés e câmera fixa centralizada no cômodo. O mapa externo e sua câmera são restaurados ao sair.
 - Seis tipos de móvel: cama, mesa, cadeira, estante, tapete e vaso de planta. Os sprites são originais em Canvas; o piso também reutiliza o atlas de madeira aprovado.
-- Editor por **H**, **B dentro de casa**, botão do HUD ou pausa. A planta permite adicionar, selecionar, mover e recolher móveis. Três pisos e três paredes. O acervo não consome materiais nesta etapa.
+- Editor por **H** no teclado, botão do HUD ou pausa na revisão atual. A planta permite adicionar, selecionar, mover e recolher móveis. Três pisos e três paredes. O acervo não consome materiais nesta etapa.
 - Limites: 2 camas, 2 mesas, 6 cadeiras, 3 estantes, 2 tapetes e 6 plantas. Os móveis sólidos não se sobrepõem; tapetes usam outra camada. A circulação deve permanecer conectada à saída e a última cama permanece disponível.
 - Cama com confirmação de sono das 19:00 às 07:59. Acordar às 08:00 avança corretamente o calendário e o crescimento dos cultivos regados. Não implementa energia, fome ou saúde.
 - Botão **X** para fechar todo o painel **Missões** e chip **Missões** para reabrir, com preferência local independente da partida.
