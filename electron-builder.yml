@@ -7,7 +7,7 @@ directories:
   buildResources: desktop/resources
 files:
   - dist/**/*
-  - desktop/main.cjs
+  - desktop/*.cjs
   - desktop/resources/icon.png
   - package.json
   - '!node_modules/**/*'

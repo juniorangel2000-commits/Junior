@@ -1,9 +1,13 @@
 import Phaser from 'phaser';
+import { gameAudio } from './audio';
+import { installFullscreenShortcut } from './fullscreen';
 import { ValleyScene } from './scenes/ValleyScene';
 import { GameUI } from './ui';
 import './style.css';
 import './garden-hud.css';
+import './cozy-hud.css';
 
+gameAudio.init();
 const scene = new ValleyScene();
 const ui = new GameUI({
   onNewGame: profile => scene.startNew(profile),
@@ -20,6 +24,7 @@ const ui = new GameUI({
   onAdminMenu: () => scene.openAdminMenu(),
 });
 scene.ui = ui;
+installFullscreenShortcut(() => ui.toast('Não foi possível ativar tela cheia neste navegador.'));
 
 export const game = new Phaser.Game({
   type: Phaser.AUTO,
@@ -33,3 +38,5 @@ export const game = new Phaser.Game({
   audio: { noAudio: true },
   banner: false,
 });
+
+export { gameAudio };

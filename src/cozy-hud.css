@@ -1,0 +1,113 @@
+/* Opção 02 — Fazenda aconchegante. Componentes reais, molduras originais em nove partes. */
+#ui,.admin-layer {
+  --cozy-frame: url('/assets/ui/cozy-frame.svg');
+  --cozy-paper: #f5e6c5;
+  --cozy-ink: #513c26;
+  --cozy-wood: repeating-linear-gradient(0deg,#85522d 0 3px,#8d5931 3px 6px,#7b4928 6px 7px,#925e34 7px 11px);
+}
+#ui .hud .hud-status,#ui .hud .journal,#ui .hud .journal-reopen,
+#ui .hud .interaction-prompt,#ui .hud .location-pill,
+#ui .hud .toolbelt,#ui .top-toolbar .toolbar-panel,#ui .top-toolbar .toolbar-handle,
+#ui .modal-root .panel,.admin-layer .admin-card {
+  border:10px solid #87552f;border-image:var(--cozy-frame) 14 / 10px / 0 stretch;
+  border-radius:5px;background:linear-gradient(115deg,#fff2d5,var(--cozy-paper));
+  color:var(--cozy-ink);box-shadow:0 4px 0 #372a1b66,0 8px 22px #14271940;
+}
+#ui .hud .hud-header.hud-status{left:auto;right:20px;top:18px;width:216px;padding:6px 8px;gap:7px;min-height:72px}
+#ui .hud .hud-status :is(.day-clock,.resources,strong,b,.status-time){color:#523b23}
+#ui .hud-status .day-clock strong,#ui .hud-status #hud-time{font:15px Georgia,serif}
+#ui .hud-status .day-clock .weather-icon .icon{width:22px;height:22px;color:#c17c23}
+#ui .hud-status .resources .resource .icon{width:17px;height:17px}
+#ui .hud-status .resources .resource strong{font-size:10px}
+#ui .hud .journal{top:22px;left:20px;width:236px;padding:0;max-height:calc(100dvh - 200px);overflow:auto}
+#ui .hud .journal-heading{position:sticky;top:0;z-index:1;min-height:40px;padding:5px 9px;background:var(--cozy-wood);border-bottom:2px solid #55351f;box-shadow:inset 0 1px #dbac66;gap:12px}
+#ui .hud .journal-heading h3{font:21px Georgia,serif;color:#fff1d0;margin:0;text-shadow:0 2px #4c311d}
+#ui .hud .journal-content{padding:3px 11px 12px;max-height:224px;overflow:auto;scrollbar-width:thin;scrollbar-color:#a47c4e #e8d4af}
+#ui .hud .journal-content .quest{font-size:11px;color:#5d492f;line-height:1.5;gap:8px}
+#ui .hud .quest-circle{border-color:#b0874f;background:#fff3d5}
+#ui .hud .quest.complete{color:#6e7d48}
+#ui .hud .quest.complete .quest-circle{background:#718447;border-color:#536633}
+#ui .hud .journal-close{width:25px;height:25px;border:1px solid #56381f;background:linear-gradient(#eed09b,#c69b5d);color:#51371d;box-shadow:inset 0 0 0 1px #f7dca9;border-radius:3px}
+#ui .hud .journal-reopen{top:22px;left:20px;padding:5px 8px;font-size:12px}
+#ui .hud .interaction-prompt{padding:5px 10px;font-size:12px;min-height:40px}
+#ui .hud .interaction-prompt kbd{background:#52683c;border:1px solid #3d512b;color:#fff3d3;border-radius:3px;box-shadow:inset 0 1px #8e9e68}
+#ui .hud .location-pill{top:66px;padding:4px 10px;font:13px Georgia,serif}
+#ui .hud .toolbelt{background:var(--cozy-wood);padding:4px;gap:4px;border-width:10px}
+#ui .hud .tool{height:51px;width:44px;padding:12px 3px 3px;border:2px solid #b08652;border-radius:4px;background:linear-gradient(120deg,#fff3d7,#ebd4ac);box-shadow:inset 0 0 0 1px #fff7e1,0 1px #553b23;color:#5d4327}
+#ui .hud .tool .icon{width:30px;height:30px;image-rendering:pixelated}
+#ui .hud .tool.selected{border-color:#dfaa3e;background:linear-gradient(#ffe4a1,#e9c576);box-shadow:inset 0 0 0 1px #fff0bb,0 0 0 1px #70441e}
+#ui .hud .tool-key{top:1px;left:3px;color:#78512c;font-size:10px}
+#ui .hud .tool-status{color:#f8ebca;background:#54371fe8;border:1px solid #b2874b;border-radius:3px;padding:5px 10px;max-width:470px}
+#ui .hud .tool-status strong{color:#ffdc90}
+#ui .hud .bottom-center{bottom:12px;gap:7px}
+#ui .top-toolbar .toolbar-handle{background:var(--cozy-wood);color:#fff0ce;min-height:35px;border-width:6px;border-image-width:6px;padding:2px 10px}
+#ui .top-toolbar .toolbar-panel{padding:12px;top:42px}
+#ui .toolbar-heading>span{color:#69451f;font:19px Georgia,serif}
+#ui .toolbar-heading small,#ui .toolbar-hint{color:#81683f}
+#ui .toolbar-action{border:2px solid #b38c57;background:linear-gradient(#fff3d6,#e9d1a7);color:#5b4228;box-shadow:inset 0 0 0 1px #fff7df}
+#ui .toolbar-action:hover{border-color:#91622e;background:#f5dca7}
+#ui .modal-root .panel{padding:24px;color:var(--cozy-ink)}
+#ui .modal-root .panel .modal-heading{background:var(--cozy-wood);color:#ffefca;margin:-14px -14px 20px;padding:12px 14px;border:1px solid #5b361e;box-shadow:inset 0 1px #cd9b58,0 2px #d3b381;border-radius:3px;top:-14px}
+#ui .modal-root .panel .modal-heading :is(h2,h3){color:#fff0d0;text-shadow:0 2px #4c301b}
+#ui .modal-root .panel .modal-heading .eyebrow{color:#e2c594;font-size:8px;letter-spacing:1.8px}
+#ui .modal-root .panel .modal-heading .icon-button{border:1px solid #51331c;color:#52351e;background:linear-gradient(#e6c28b,#bd8b4e);box-shadow:inset 0 0 0 1px #f6d6a0;border-radius:3px}
+#ui .modal-root .panel :is(.button-light,.slot-options .button,.home-catalog-button,.home-piece-button,.home-style-button){border:1px solid #b58d56;background:linear-gradient(#fff1d2,#e8d1a7);color:#5b432a;box-shadow:inset 0 1px #fff7e6}
+#ui .modal-root .panel .button-primary{background:linear-gradient(#8a693d,#684727);border-color:#58381e;box-shadow:inset 0 1px #cba46a,0 2px #49301d;color:#fff2d3}
+#ui .modal-root .panel .button:hover:not(:disabled){filter:brightness(1.06)}
+#ui .modal-root .panel :is(.recipe-card,.build-option,.build-blueprint){background:#f9ebcb;border:1px solid #ba935e;box-shadow:inset 0 0 0 1px #fff3d9}
+#ui .modal-root .panel .recipe-card.ready{background:#efedcc;border-color:#899554}
+#ui .modal-root .panel .recipe-title h3{color:#604825}
+#ui .modal-root .panel :is(.recipe-materials,.recipe-output){color:#775b34}
+#ui .modal-root .panel .inventory-footer{color:#846d47;border-color:#c6a473}
+#ui .modal-root .backpack-panel{width:min(760px,calc(100vw - 32px));padding:24px}
+#ui .backpack-grid,#ui .inventory-quickbar{background:var(--cozy-wood);border:9px solid #87552f;border-image:var(--cozy-frame) 14 / 9px / 0 stretch;padding:5px;gap:5px;box-shadow:0 2px #7a4b2940}
+#ui .backpack-meta strong{background:#e8cf9f;color:#765025;border-radius:4px;border:1px solid #c6a16a}
+#ui .bag-slot{background:linear-gradient(120deg,#fff4db,#ecd4ac);border-color:#b18750;box-shadow:inset 0 0 0 1px #fff6df,0 1px #50361f}
+#ui .bag-slot:disabled{background:#d5b586;box-shadow:inset 0 2px 4px #6d452c40;border-color:#a47c4b}
+#ui .bag-slot.chosen{background:#f6dfad;border-color:#ad782c;box-shadow:inset 0 0 0 2px #ffefc7}
+#ui .bag-slot.drop-ready{background:#e1e9b8;border-color:#5c753c;box-shadow:0 0 0 2px #acc478}
+#ui .backpack-detail{background:#fff4dc;border-color:#c5a36c;box-shadow:inset 0 0 0 2px #f2e2bf;color:#604422}
+#ui .backpack-detail p,#ui .backpack-help{color:#786241}
+#ui .backpack-bar-heading{color:#694b2c}
+#ui .slot-quantity{color:#553a21;text-shadow:1px 1px #fff5d6,-1px -1px #fff5d6}
+#ui .real-map{border:8px solid #87552f;border-image:var(--cozy-frame) 14 / 8px / 0 stretch}
+#ui .map-current,#ui .map-caption{color:#725734}
+#ui .map-player b{background:#654624;color:#fff2cf;border:1px solid #e0b46a}
+#ui .toast{background:#fff0d0;border:6px solid #87552f;border-image:var(--cozy-frame) 14 / 6px / 0 stretch;color:#624725;box-shadow:0 4px 14px #26351a50}
+#ui .modal-root .home-customization-card .home-catalog-button.is-selected,#ui .modal-root .home-customization-card .home-piece-button.is-selected{background:#826037;color:#fff0cd}
+#ui :is(button,a,input,select):focus-visible{outline:3px solid #c58c2f;outline-offset:3px}
+.admin-layer .admin-card{padding:24px}.admin-layer .admin-heading h2{color:#6b4625}
+@media(max-width:760px){
+ #ui .hud .hud-header.hud-status{right:12px;left:auto;top:12px;width:192px}
+ #ui .hud .journal{left:12px;top:12px;width:205px}
+ #ui .hud .journal-reopen{left:12px;top:12px}
+ #ui .modal-root .panel{padding:20px}
+ #ui .modal-root .panel .modal-heading{margin:-10px -10px 16px;top:-10px;padding:10px}
+}
+@media(max-width:600px){
+ #ui .toolbar-reveal-zone{left:50%;right:auto;transform:translateX(-50%);width:140px}
+ #ui .hud .hud-header.hud-status{top:46px;right:10px;width:172px;padding:4px;min-height:65px}
+ #ui .hud .journal{top:46px;left:10px;width:172px;max-height:calc(100dvh - 260px)}
+ #ui .hud .journal-reopen{top:46px;left:10px}
+ #ui .hud .journal-content{max-height:154px;padding:2px 7px 9px}
+ #ui .hud .journal-content .quest{font-size:10px}
+ #ui .hud .journal-heading{padding:5px}.hud .journal-heading h3{font-size:18px}
+ #ui .hud .location-pill{top:122px;left:auto;right:10px;max-width:172px;transform:none;font-size:11px}
+ #ui .hud .toolbelt{grid-template-columns:repeat(9,30px);gap:3px;padding:3px;border-width:8px;border-image-width:8px}
+ #ui .hud .tool{width:30px;height:43px;border-width:1px;padding:12px 2px 3px}
+ #ui .hud .tool .icon{width:25px;height:25px}
+ #ui .hud .tool-status{max-width:320px;font-size:9px}
+ #ui .modal-root .panel{padding:16px}
+ #ui .modal-root .panel .modal-heading{margin:-6px -6px 14px;top:-6px;padding:8px}
+ #ui .backpack-grid,#ui .inventory-quickbar{border-width:6px;border-image-width:6px;padding:3px;gap:3px}
+ #ui .inventory-quickbar{gap:2px}.backpack-panel .bag-slot .icon{max-width:38px;max-height:38px}
+}
+@media(max-height:700px) and (min-width:761px){#ui .hud .journal-content{max-height:165px}}
+#ui .pause-card{max-height:calc(100dvh - 32px);overflow-y:auto}
+#ui .audio-settings{margin:16px 0;padding:10px 14px;border:1px solid #b58d56;border-radius:4px;text-align:left;background:#fff1d4;color:#5b432a}
+#ui .audio-settings legend{padding:0 6px;font:17px Georgia,serif}
+#ui .audio-settings label{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:12px}
+#ui .audio-settings input[type=range]{flex:1;min-width:50px;accent-color:#856034}
+#ui .audio-settings output{min-width:34px;text-align:right;font-variant-numeric:tabular-nums}
+#ui .audio-settings .audio-mute{margin-top:13px}#ui .audio-mute input{accent-color:#856034}
+#ui .hud .journal{pointer-events:auto}

@@ -1,3 +1,5 @@
+> **Atualização 0.7.0:** [Download Windows 11 x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.7.0) · [HUD Fazenda aconchegante, áudio, tela cheia e chuva](docs/hud-audio-v0.7.md).
+
 > **Atualização 0.6.1:** [Download Windows 11 x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.6.1) · [Mochila de 30 espaços e arrastar itens](docs/inventario-v0.6.1.md).
 
 > **Atualização 0.6.0:** [Download Windows 11 x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.6.0) · [Mudanças, controles e validação](docs/versao-windows-v0.6.md). As seções históricas abaixo descrevem entregas anteriores; os nove slots configuráveis substituem a barra fixa.
@@ -6,9 +8,9 @@
 
 Uma pequena clareira, uma casa que resistiu e a chance de recomeçar. **After Rain**, anteriormente chamado Jardim Depois da Chuva, é um jogo original para navegador, single-player, com exploração, cultivo e construção em pixel art 2D top-down. Sua história se passa após uma chuva que transformou pessoas em zumbis. Continua no mesmo projeto, com TypeScript, Phaser 3 e Vite e aplicativo desktop em Electron.
 
-A versão do código é **0.5.1**, com [correção do atalho da casa](docs/versao-windows-v0.5.1.md); o último executável já publicado e conferido ainda é o 0.5.0 até concluir o empacotamento desta revisão. A [nova tela inicial After Rain](docs/tela-inicial-after-rain.md) apresenta a propriedade com garoa, neblina, tons frios e câmera suave, com suporte preparado para vídeo local em loop. O clipe do Flow ainda não foi fornecido; a configuração padrão usa o cenário do jogo.
+A versão atual é **0.7.0**. A HUD usa a opção aprovada **02 — Fazenda aconchegante**, com molduras de madeira, painéis claros e mochila de 30 espaços. A tela inicial abre sempre com chuva animada; o botão “Pausar fundo” vale apenas para a visita atual. **Ctrl + Alt** alterna a tela cheia. Música e efeitos originais funcionam offline, com ajustes no menu de pausa.
 
-As [três propostas de HUD](docs/direcao-visual/hud/README.md) são estudos visuais para escolha e ainda não foram aplicadas ao jogo.
+A [tela inicial After Rain](docs/tela-inicial-after-rain.md) usa o cenário do jogo com chuva, neblina e câmera suave. O clipe do Flow ainda não foi fornecido; os estudos em [direção visual](docs/direcao-visual/hud/README.md) registram propostas históricas.
 
 A [casa inicial agora tem interior personalizável, cama e descanso até a manhã](docs/casa-sono-admin.md). O painel de missões pode ser fechado pelo X e reaberto pelo botão **Missões**; o menu de itens para testes exige senha de administrador e pode ser recolhido.
 

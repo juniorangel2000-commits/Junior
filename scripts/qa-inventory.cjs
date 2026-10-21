@@ -7,7 +7,7 @@ const output=process.env.QA_OUTPUT || path.join(require('node:os').tmpdir(),'aft
  try{
  const page=await browser.newPage({viewport:{width:1280,height:800}});const errors=[];
  page.on('pageerror',e=>{errors.push(e.message);void 0});page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
- const attach=async()=>{await page.waitForFunction(async()=>{const {game}=await import(document.querySelector('script[src*="main.ts"]').src);window.scene=game.scene.scenes[0];return !!scene?.player})};
+ const attach=async()=>{await page.waitForTimeout(2500);await page.waitForFunction(async()=>{const {game}=await import(document.querySelector('script[src*="main.ts"]').src);window.scene=game.scene.scenes[0];return !!scene?.player})};
  await page.goto(process.env.QA_URL || 'http://127.0.0.1:5173');await attach();
  await page.evaluate(()=>{scene.startNew({name:'Jardim',skin:'#e9bc98',hairColor:'#563b2c',outfit:'#457398',hairStyle:'preso'});Object.assign(scene.inventory.data,{wood:35,stone:12,seeds:7,branch:8,log:3,plank:5,fiber:16,cord:2,hatchet:1,pickaxe:1,hammer:1,scrap:4});scene.state.homeSupplies={wateringCan:true,seedPacket:true};scene.updateHUD();scene.persist()});
  await page.waitForTimeout(700);

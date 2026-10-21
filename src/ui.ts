@@ -1,3 +1,4 @@
+import { gameAudio } from './audio';
 import { CHARACTER_WIDTH, drawCharacter } from './art';
 import { createCharacterEditor } from './character-creator';
 import { createTitleScreen } from './title-screen';
@@ -380,7 +381,7 @@ export class GameUI {
     this.topToolbar?.setOpen(false, false);
     if (action === 'controls') {
       this.openModal('controls');
-      this.overlay.innerHTML = `<section class="panel inventory-card" role="dialog" aria-label="Controles"><div class="modal-heading"><h2>Controles</h2><button class="icon-button" aria-label="Fechar controles">${icon('close')}</button></div><p>WASD / setas — mover<br>E — interagir / usar ferramenta<br>1–9 — slots; clique no vazio para preencher<br>Botão direito no slot — trocar ou esvaziar<br>I — inventário · C — fabricar · B — construir<br>M — mapa · H — personalizar casa<br>0 — parede · P — porta · R — girar cobertura<br>Esc — fechar / pausar</p></section>`;
+      this.overlay.innerHTML = `<section class="panel inventory-card" role="dialog" aria-label="Controles"><div class="modal-heading"><h2>Controles</h2><button class="icon-button" aria-label="Fechar controles">${icon('close')}</button></div><p>WASD / setas — mover<br>E — interagir / usar ferramenta<br>1–9 — slots; clique no vazio para preencher<br>Botão direito no slot — trocar ou esvaziar<br>I — inventário · C — fabricar · B — construir<br>M — mapa · H — personalizar casa<br>0 — parede · P — porta · R — girar cobertura<br>Esc — fechar / pausar<br>Ctrl + Alt — entrar / sair da tela cheia</p></section>`;
       this.overlay.querySelector('button')!.onclick = () => this.closeModal();
       this.overlay.querySelector('button')!.focus();
     }
@@ -707,6 +708,20 @@ export class GameUI {
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-label', 'Jogo pausado');
     panel.innerHTML = `<div class="pause-leaf">${icon('leaf')}</div><span class="eyebrow">O VALE PODE ESPERAR</span><h2>Uma pequena pausa.</h2><p>Respire. A sua história continua aqui.</p><div class="pause-actions"><button class="button button-primary" data-action="resume">Voltar ao vale ${icon('arrow')}</button><button class="button button-light" data-action="save">${icon('save')} Salvar meu progresso</button><button class="text-button pause-admin-link" data-action="admin">Administração · acesso com senha</button><button class="text-button" data-action="title">Voltar ao início</button></div><small>SIMULAÇÃO PAUSADA <i>·</i> ESC PARA VOLTAR</small>`;
+    const audio = document.createElement('fieldset');
+    audio.className = 'audio-settings';
+    audio.innerHTML = `<legend>Som do vale</legend><label>Música <input aria-label="Volume da música" type="range" min="0" max="100" value="${Math.round(gameAudio.settings.music * 100)}"><output>${Math.round(gameAudio.settings.music * 100)}%</output></label><label>Efeitos <input aria-label="Volume dos efeitos" type="range" min="0" max="100" value="${Math.round(gameAudio.settings.effects * 100)}"><output>${Math.round(gameAudio.settings.effects * 100)}%</output></label><label class="audio-mute"><input type="checkbox" ${gameAudio.settings.muted ? 'checked' : ''}> Silenciar todos os sons</label>`;
+    audio.querySelectorAll<HTMLInputElement>('input[type="range"]').forEach((slider, index) => {
+      slider.addEventListener('input', () => {
+        gameAudio.setSettings({ [index === 0 ? 'music' : 'effects']: Number(slider.value) / 100 });
+        slider.nextElementSibling!.textContent = `${slider.value}%`;
+      });
+      slider.addEventListener('change', () => { if (index === 1) gameAudio.play('pickup'); });
+    });
+    audio.querySelector<HTMLInputElement>('input[type="checkbox"]')!.addEventListener('change', event => {
+      gameAudio.setSettings({ muted: (event.target as HTMLInputElement).checked });
+    });
+    panel.querySelector('.pause-actions')!.before(audio);
     panel.querySelector('[data-action="resume"]')!.addEventListener('click', () => this.closeModal());
     panel.querySelector('[data-action="save"]')!.addEventListener('click', () => {
       this.toast(this.callbacks.onSave() ? 'Sua história foi salva neste navegador.' : 'Não foi possível salvar. Confira o armazenamento do navegador.');

@@ -78,18 +78,18 @@ jobs:
         shell: pwsh
         run: |
           $notes = @'
-          After Rain 0.6.1 — mochila de 30 espaços e itens arrastáveis.
+          After Rain 0.7.0 — Fazenda aconchegante, música e sons.
 
-          - Inventário em grade, com pilhas, quantidades, espaços vazios e descrição do item, mantendo o visual Jardim leve.
-          - Arraste itens da mochila para os nove slots da barra rápida. Também é possível clicar no item e depois no destino, ou usar Tab e Enter.
-          - Regador recolhido na casa aparece na mochila; sementes e ferramentas equipadas usam suas ações normais.
-          - Atalhos acompanham as quantidades reais, sem duplicar ou consumir o estoque. Configuração preservada ao salvar/recarregar.
-          - Botão direito ou Delete remove um atalho; soltar outro item substitui o anterior.
-          - Mochila inicial com 30 espaços para pilhas, não 30 unidades totais. Itens iguais compartilham um espaço.
+          - HUD completa na opção 02: molduras de madeira, painéis claros, relógio à direita e menus combinando com a mochila.
+          - Mochila de 30 espaços para pilhas e nove slots configuráveis por arraste; missões com arraste, posição salva e X.
+          - Trilha instrumental original em loop e efeitos de passos, coleta, ferramentas, plantio, rega, fabricação, construção, portas e botões. Funcionam offline.
+          - Volumes independentes para música e efeitos e opção de silenciar no menu de pausa. Preferências salvas; áudio suspenso quando a janela perde o foco.
+          - Ctrl + Alt entra e sai da tela cheia, inclusive nos menus.
+          - Tela inicial sempre começa com chuva animada, inclusive ao voltar da partida ou da criação. É possível pausar o fundo nesta visita.
 
-          Preserva os saves e as melhorias da 0.6.0: missões arrastáveis, mapa real, localização temporária e coletas únicas. O save continua em %APPDATA%\Depois da Chuva.
+          Preserva os saves, o mapa real completo e as coletas únicas de regador e sete sementes. O save continua em %APPDATA%\Depois da Chuva. O áudio começa após a primeira interação, respeitando o navegador.
 
-          Validação: TypeScript, 172 testes de sistemas, build e Chromium. Testes de arrastar, atribuir por teclado, substituir, remover, esgotar estoque, salvar/recarregar e regressão das coletas nas duas ordens.
+          Validação: TypeScript, 178 testes, build e Chromium. Inclui as duas ordens de coleta com save/reload após cada objeto; mapa interior/exterior, inventário, arraste de missões, áudio, volumes, Ctrl + Alt e chuva automática.
 
           Portátil para Windows 11 x64, gerado em Windows. Baixe o .exe e abra com dois cliques. Não exige Node.js ou servidor. Pacote sem assinatura digital. Execução interativa no Windows 11 não testada neste ambiente Linux. SHA256SUMS.txt permite conferir a integridade.
           '@

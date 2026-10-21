@@ -28,8 +28,8 @@ export function createTitleScreen(holder: HTMLElement, options: TitleScreenOptio
     <aside class="title-location"><span class="location-dot"></span><div>UM REFÚGIO ENTRE AS RUÍNAS<small>Enquanto a chuva cai, a vida resiste.</small></div></aside>
     <footer class="title-footer"><span>EXPLORAR <i>·</i> CULTIVAR <i>·</i> RECONSTRUIR</span><div class="title-footer-right"><span class="title-save-note">TECLADO E MOUSE <i>·</i> SALVAMENTO LOCAL</span><button type="button" class="title-motion" data-title-motion aria-pressed="true"><span class="motion-symbol" aria-hidden="true"></span><span class="motion-label">Pausar fundo</span></button></div></footer>`;
   holder.replaceChildren(screen);
-  const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
-  let animate = !motionPreference.matches;
+  // Every visit starts with rain; the pause button only affects this visit.
+  let animate = true;
   const weather = createTitleWeather(screen);
   let active = true;
   let video: HTMLVideoElement | undefined;
@@ -74,10 +74,8 @@ export function createTitleScreen(holder: HTMLElement, options: TitleScreenOptio
     screen.classList.add('has-video');
     updateBackground();
   };
-  const onPreferenceChange = (): void => { animate = !motionPreference.matches; updateBackground(); };
   const onVisibilityChange = (): void => updateBackground();
   motionButton.addEventListener('click', () => { animate = !animate; updateBackground(); });
-  motionPreference.addEventListener('change', onPreferenceChange);
   document.addEventListener('visibilitychange', onVisibilityChange);
   screen.querySelector('#new-game')!.addEventListener('click', options.onNewGame);
   screen.querySelector('#continue-game')?.addEventListener('click', options.onContinue);
@@ -108,7 +106,6 @@ export function createTitleScreen(holder: HTMLElement, options: TitleScreenOptio
     if (!active) return;
     active = false;
     weather.destroy();
-    motionPreference.removeEventListener('change', onPreferenceChange);
     document.removeEventListener('visibilitychange', onVisibilityChange);
     if (video) {
       video.removeEventListener('loadeddata', onVideoReady);

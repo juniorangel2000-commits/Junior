@@ -1,3 +1,4 @@
+import { gameAudio } from '../audio';
 import Phaser from 'phaser';
 import { Player } from '../player';
 import { CHARACTER_HEIGHT, createArt } from '../art';
@@ -219,6 +220,7 @@ export class ValleyScene extends Phaser.Scene {
     this.nextInteractionAt = this.time.now + 350;
     this.updateShelter(); this.updateNight();
     if (notify) {
+      gameAudio.play('door');
       this.ui.toast('Seu refúgio. H personaliza os móveis; E usa a cama ou sai pela porta.');
       this.updateHUD(); this.persist();
     }
@@ -254,7 +256,7 @@ export class ValleyScene extends Phaser.Scene {
     this.lastAim = null;
     this.nextInteractionAt = this.time.now + 350;
     this.syncSprites(); this.updateShelter(); this.updateNight();
-    if (notify) { this.updateHUD(); this.persist(); }
+    if (notify) { gameAudio.play('door'); this.updateHUD(); this.persist(); }
   }
 
   private interactHome(tile?: TilePoint): void {
@@ -265,6 +267,7 @@ export class ValleyScene extends Phaser.Scene {
     const supply = HOME_SUPPLIES.find(s => !this.state.homeSupplies?.[s.id] && this.tileDistance(s) <= 48 && (!tile || (tile.x === s.x && tile.y === s.y)));
     if (supply) {
       if (collectHomeSupply(this.state, this.inventory, supply.id)) {
+        gameAudio.play('pickup');
         this.refreshHomeView(); this.updateHUD(); this.persist();
         this.ui.toast(supply.id === 'wateringCan' ? 'Regador recolhido. Escolha um slot para equipá-lo.' : 'Você recolheu 7 sementes de nabo.');
       } else this.ui.toast('Não há espaço para as sementes.');
@@ -353,6 +356,7 @@ export class ValleyScene extends Phaser.Scene {
   private finishCrafting(id: string): void {
     const result = craft(id, this.inventory, this.nearWorkbench());
     if (result.ok) {
+      gameAudio.play('craft');
       this.state.progress.craftedTools = this.inventory.has('hatchet') && this.inventory.has('pickaxe') && this.inventory.has('hammer');
       if (id === 'rough-planks') this.state.progress.processed = true;
       if (id === 'sawn-planks') this.state.progress.sawn = true;
@@ -548,7 +552,7 @@ export class ValleyScene extends Phaser.Scene {
       return;
     }
     const target = event.target;
-    if (target instanceof HTMLElement && target.matches('input, textarea, select, [contenteditable="true"]')) return;
+    if (event.key !== 'Escape' && target instanceof HTMLElement && target.matches('input, textarea, select, [contenteditable="true"]')) return;
     if (this.canPlay() && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(event.key)) event.preventDefault();
     if (event.repeat) return;
     if (event.key === 'Escape' && this.running) {
@@ -673,6 +677,7 @@ export class ValleyScene extends Phaser.Scene {
           this.ui.toast('Saia da passagem antes de fechar a porta.'); return;
         }
         this.ui.toast(this.building.toggleDoor(tile.x, tile.y).message);
+        gameAudio.play('door');
         this.nextInteractionAt = this.time.now + 220;
         this.afterAction(); return;
       }
@@ -695,6 +700,7 @@ export class ValleyScene extends Phaser.Scene {
         if (result.ok) {
           this.nextInteractionAt = this.time.now + 260;
           this.resourceFeedback(resource);
+          gameAudio.play(this.tool === 'pickaxe' ? 'stone' : this.tool === 'hatchet' ? 'wood' : 'pickup');
           if (result.depleted) {
             this.world.removeResource(resource.id);
             this.state.depletedResources.push(resource.id);
@@ -707,7 +713,9 @@ export class ValleyScene extends Phaser.Scene {
         this.ui.toast(result.message); this.afterAction(); return;
       }
       if (this.tool === 'hand' && this.farming.cropAt(tile.x, tile.y)) {
-        this.ui.toast(this.farming.harvest(tile.x, tile.y, this.inventory).message); this.afterAction(); return;
+        const result = this.farming.harvest(tile.x, tile.y, this.inventory);
+        if (result.ok) gameAudio.play('pickup');
+        this.ui.toast(result.message); this.afterAction(); return;
       }
       this.ui.toast('Recolha galhos, pedras e fibras. C abre fabricação; B abre construção.'); return;
     }
@@ -724,19 +732,25 @@ export class ValleyScene extends Phaser.Scene {
     if (this.tool === 'water' && !this.state.homeSupplies?.wateringCan) { this.ui.toast('Recolha o regador dentro da casa.'); return; }
     if (this.tool === 'plant' || this.tool === 'water') {
       const result = this.tool === 'plant' ? this.farming.plant(tile.x, tile.y, this.inventory) : this.farming.water(tile.x, tile.y);
+      if (result.ok) gameAudio.play(this.tool);
       this.ui.toast(result.message);
     } else if (this.tool === 'remove') {
-      this.ui.toast(this.building.remove(tile.x, tile.y, this.inventory).message);
+      const result = this.building.remove(tile.x, tile.y, this.inventory);
+      if (result.ok) gameAudio.play('build');
+      this.ui.toast(result.message);
     } else if (this.tool === 'blueprint') {
       const reason = this.blueprintReason(tile);
       if (reason) { this.ui.toast(reason); return; }
-      this.ui.toast(this.building.placeBlueprint(tile, this.inventory, (x, y, kind) => this.freeForBuilding(x, y, kind),
-        { nearWorkbench: this.nearWorkbench() }).message);
+      const result = this.building.placeBlueprint(tile, this.inventory, (x, y, kind) => this.freeForBuilding(x, y, kind),
+        { nearWorkbench: this.nearWorkbench() });
+      if (result.ok) gameAudio.play('build');
+      this.ui.toast(result.message);
     } else {
       const reason = this.placementReason(tile, this.tool);
       if (reason) { this.ui.toast(reason); return; }
       const result = this.building.place(this.tool, tile.x, tile.y, this.inventory, true,
         { nearWorkbench: this.nearWorkbench(), rotation: this.rotation });
+      if (result.ok) gameAudio.play('build');
       if (result.ok && this.tool === 'workbench') this.state.progress.builtWorkbench = true;
       this.ui.toast(result.message);
     }
@@ -896,7 +910,9 @@ export class ValleyScene extends Phaser.Scene {
     }
     if (!this.canPlay()) return;
     this.cameras.main.setLerp(1 - Math.exp(-9 * delta));
+    const previousX = this.player.x, previousY = this.player.y;
     this.player.update(delta, this.blocked, this.blockedPoint);
+    if (Math.hypot(this.player.x - previousX, this.player.y - previousY) > .1) gameAudio.play('step');
     if (!this.inHome) this.world.updateOcclusion(this.player.x, this.player.y);
     this.farming.update(delta);
     const previousDay = this.state.day;

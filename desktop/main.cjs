@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Menu, dialog, protocol, net } = require('electron');
 const path = require('node:path');
+const { installFullscreenShortcut } = require('./fullscreen.cjs');
 const { pathToFileURL } = require('node:url');
 
 // Origem fixa: o save não muda com a pasta temporária usada pelo .exe portátil.
@@ -33,6 +34,7 @@ function createWindow() {
       spellcheck: false,
     },
   });
+  installFullscreenShortcut(mainWindow);
   mainWindow.removeMenu();
   mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   mainWindow.webContents.on('will-navigate', event => event.preventDefault());
