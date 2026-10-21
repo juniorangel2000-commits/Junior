@@ -45,7 +45,7 @@ TypeScript, **104 testes em seis arquivos**, build de produção e geração do 
 
 Uma amostra de cinco segundos em Chromium com renderização por software mediu 33,6 FPS, mediana de 33,3 ms por quadro e percentil 95 de 50 ms. Esse resultado descreve o ambiente de teste e não garante uma taxa de quadros no computador do jogador.
 
-O portátil local tem 103.783.761 bytes; seu SHA-256 é `f3398c78c6841dbeda281aaf5d9fa073fccda263838cc7b2a0a7c6ec96a94997`. A Release é gerada novamente pelo workflow em Windows e terá seu próprio manifesto de integridade. A disponibilização pública será conferida após enviar a tag `v0.2.0`.
+O portátil local tem 103.783.761 bytes; seu SHA-256 é `f3398c78c6841dbeda281aaf5d9fa073fccda263838cc7b2a0a7c6ec96a94997`. A Release é gerada novamente pelo workflow em Windows e terá seu próprio manifesto de integridade. A [Release v0.2.0](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.2.0) foi publicada pelo [workflow Windows concluído](https://github.com/juniorangel2000-commits/Junior/actions/runs/39593292856). O executável público foi baixado e verificado: **104.510.634 bytes**, cabeçalhos MZ/PE válidos, SHA-256 `3401005c5db82f3e83ccdc5aa384dc5cf5b238477dc4cb382e377f223ca8d3cc`, idêntico ao manifesto público. O hash público identifica o arquivo da Release; o hash local acima identifica apenas a geração em Linux.
 
 Para repetir as verificações de código e gerar o executável:
 

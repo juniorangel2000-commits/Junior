@@ -32,7 +32,7 @@ O build fica em `dist/`. Sirva essa pasta por HTTP; abrir `index.html` diretamen
 
 ## Aplicativo para Windows
 
-Os executáveis publicados ficam nas [Releases do projeto](https://github.com/juniorangel2000-commits/Junior/releases). A distribuição anterior, [v0.1.0](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.1.0), contém a primeira entrega com cultivo, cerca e banco. A versão do código atual é **0.2.0** e seu arquivo portátil se chama `Depois-da-Chuva-0.2.0-Windows-x64.exe` quando gerado pelo comando abaixo.
+**Download atualizado:** [Jardim Depois da Chuva v0.2.0 — Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.2.0/Depois-da-Chuva-0.2.0-Windows-x64.exe). A [página da Release](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.2.0) também disponibiliza o executável e seu manifesto de integridade. Essa versão inclui a propriedade, o Bosque do Pinheiro, os Campos Abertos e a atualização visual descrita neste README.
 
 O pacote portátil é gerado em `release/`, com nome `Depois-da-Chuva-<versão>-Windows-x64.exe`. Ele é destinado a **Windows 10/11 de 64 bits**. Para jogar o pacote pronto, abra o `.exe` com dois cliques. Não precisa instalar Node.js, abrir um terminal, manter o Vite ativo, conectar à internet ou executar como administrador. A primeira abertura pode demorar um pouco enquanto o pacote prepara seus arquivos temporários.
 
@@ -53,7 +53,7 @@ O pacote não possui assinatura digital de editor. A abertura interativa da nova
 
 O workflow `.github/workflows/windows-release.yml` gera o pacote em um runner Windows. Sua execução manual produz o artefato `Depois-da-Chuva-Windows-x64`, contendo `.exe` e `SHA256SUMS.txt`. Quando uma tag `v*` é enviada, o workflow publica esses arquivos em uma GitHub Release usando a autorização temporária do GitHub.
 
-A [execução da versão v0.1.0](https://github.com/juniorangel2000-commits/Junior/actions/runs/39476344094) concluiu com sucesso. O executável e o manifesto dessa versão foram verificados por download público e SHA-256 correspondente. Esse registro é histórico da v0.1.0. Caminhos internos como `/workspace/Junior/release/...` não equivalem a links públicos; use o artefato ou uma Release para distribuir o pacote fora do ambiente.
+A [execução da versão v0.2.0](https://github.com/juniorangel2000-commits/Junior/actions/runs/39593292856) concluiu com sucesso em um runner Windows. O executável publicado foi baixado e conferido: 104.510.634 bytes, cabeçalhos PE válidos e SHA-256 correspondente ao manifesto público. Caminhos internos como `/workspace/Junior/release/...` não equivalem a links públicos; use a Release para distribuir o pacote.
 
 ## Controles
 
