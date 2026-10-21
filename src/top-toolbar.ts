@@ -1,6 +1,6 @@
 import './top-toolbar.css';
 
-export type ToolbarAction = 'inventory' | 'map' | 'crafting' | 'building' | 'home' | 'save' | 'options';
+export type ToolbarAction = 'inventory' | 'map' | 'crafting' | 'building' | 'save' | 'options' | 'controls';
 interface ToolbarCallbacks {
   icon(name: string): string;
   onOpenChange(open: boolean): void;
@@ -24,8 +24,8 @@ export class TopToolbar {
       { id: 'map', label: 'Mapa', icon: 'map', shortcut: 'M', cls: 'map-button' },
       { id: 'crafting', label: 'Fabricação', icon: 'workbench', shortcut: 'C', cls: 'crafting-button' },
       { id: 'building', label: 'Construção', icon: 'shelter', shortcut: 'B', cls: 'building-button' },
-      { id: 'home', label: 'Minha casa', icon: 'shelter', shortcut: 'H', cls: 'home-customize-button' },
       { id: 'save', label: 'Salvar', icon: 'save', cls: 'toolbar-save-button' },
+      { id: 'controls', label: 'Controles', icon: 'keys', cls: 'toolbar-controls-button' },
       { id: 'options', label: 'Opções', icon: 'pause', shortcut: 'Esc', cls: 'pause-button' },
     ];
     const list = this.root.querySelector<HTMLElement>('.toolbar-actions')!;
@@ -34,8 +34,7 @@ export class TopToolbar {
       button.type = 'button';
       button.className = `toolbar-action ${action.cls}`;
       button.dataset.toolbarAction = action.id;
-      button.hidden = action.id === 'home';
-      button.setAttribute('aria-label', action.id === 'options' ? 'Abrir opções e pausa' : action.id === 'home' ? 'Personalizar interior da casa (H)' : action.label);
+      button.setAttribute('aria-label', action.id === 'options' ? 'Abrir opções e pausa' : action.label);
       button.innerHTML = `${callbacks.icon(action.icon)}<span>${action.label}</span>${action.shortcut ? `<kbd>${action.shortcut}</kbd>` : ''}`;
       button.addEventListener('click', () => callbacks.onAction(action.id));
       list.append(button);

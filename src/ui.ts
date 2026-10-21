@@ -5,7 +5,9 @@ import { TopToolbar } from './top-toolbar';
 import type { ToolbarAction } from './top-toolbar';
 import type { TitleBackgroundMode } from './title-screen';
 import { itemIconUrl } from './visual-assets';
-import { REGIONS, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
+import { HOME_WIDTH, HOME_HEIGHT } from './systems/home';
+import { emptyQuickbar } from './systems/quickbar';
+import { WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 import { BUILD_COSTS, BUILD_NAMES, BUILD_REQUIREMENTS } from './systems/building';
 import { ITEMS, ITEM_IDS, ITEM_NAMES } from './data/items';
 import { BLUEPRINT_COST, BLUEPRINT_LABEL } from './data/blueprints';
@@ -24,9 +26,9 @@ interface UICallbacks {
   onBlueprint(): void;
   onPause(paused: boolean): void;
   onSave(): boolean;
+  onMap(): Promise<string>;
   onMainMenu(): void;
   onTitleBackground(mode: TitleBackgroundMode): void;
-  onHomeMenu(): void;
   onAdminMenu(): void;
 }
 
@@ -107,7 +109,7 @@ export class GameUI {
   private overlay = document.createElement('div');
   private notifications = document.createElement('div');
   private mode: 'title' | 'creation' | 'hud' = 'title';
-  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | null = null;
+  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | null = null;
   private focusBeforeModal?: HTMLElement;
   private onModalClose?: () => void;
   private existingSave = false;
@@ -121,6 +123,72 @@ export class GameUI {
   private homeEditor?: HomeEditor;
   private journalCollapsed = false;
   private topToolbar?: TopToolbar;
+  private quickbar = emptyQuickbar();
+  private locationName = '';
+  private locationTimer?: ReturnType<typeof setTimeout>;
+
+  setQuickbar(slots: (Tool | null)[]): void { this.quickbar = [...slots]; }
+  getQuickbar(): (Tool | null)[] { return [...this.quickbar]; }
+  activateSlot(index: number): void {
+    if (this.modal) return;
+    const tool = this.quickbar[index];
+    if (tool) this.callbacks.onTool(tool);
+    else this.editSlot(index);
+  }
+  private renderQuickbar(): void {
+    const belt = this.base.querySelector('.toolbelt');
+    if (!belt) return;
+    belt.innerHTML = this.quickbar.map((id, index) => {
+      const tool = tools.find(t => t.id === id);
+      return `<button class="tool" data-slot="${index}" ${tool ? `data-tool="${tool.id}"` : ''} aria-label="Slot ${index + 1}: ${tool?.label ?? 'vazio'}" title="${tool?.detail ?? 'Escolher ação'} · botão direito para configurar"><span class="tool-key">${index + 1}</span>${tool ? icon(tool.icon) : '<span class="empty-slot">+</span>'}</button>`;
+    }).join('');
+    belt.querySelectorAll<HTMLButtonElement>('[data-slot]').forEach(button => {
+      button.onclick = () => this.activateSlot(Number(button.dataset.slot));
+      button.oncontextmenu = event => { event.preventDefault(); event.stopPropagation(); this.editSlot(Number(button.dataset.slot)); };
+    });
+  }
+  private editSlot(index: number): void {
+    if (this.modal || this.mode !== 'hud') return;
+    this.openModal('slots');
+    const panel = document.createElement('section');
+    panel.className = 'panel inventory-card';
+    panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-label', `Configurar slot ${index + 1}`);
+    panel.innerHTML = `<div class="modal-heading"><h2>Slot ${index + 1}</h2><button class="icon-button" aria-label="Fechar">${icon('close')}</button></div><p>Escolha uma ação para a barra. Ferramentas e materiais precisam estar na mochila para usar.</p><div class="slot-options">${tools.map(t => `<button class="button button-light" data-assign="${t.id}">${icon(t.icon)}${t.label}</button>`).join('')}<button class="button button-light" data-assign="">Esvaziar slot</button></div>`;
+    panel.querySelector('.icon-button')!.addEventListener('click', () => this.closeModal());
+    panel.querySelectorAll<HTMLButtonElement>('[data-assign]').forEach(button => button.onclick = () => {
+      const previous = this.quickbar[index];
+      this.quickbar[index] = (button.dataset.assign || null) as Tool | null;
+      if (previous === this.latest?.tool && previous !== this.quickbar[index]) this.callbacks.onTool('hand');
+      this.renderQuickbar(); this.lastHudKey = ''; this.callbacks.onSave(); this.closeModal();
+    });
+    this.overlay.append(panel); panel.querySelector<HTMLButtonElement>('button')!.focus();
+  }
+
+  private setupJournalDrag(): void {
+    const panel = this.base.querySelector<HTMLElement>('.journal')!;
+    const handle = panel.querySelector<HTMLElement>('.journal-heading')!;
+    const place = (x: number, y: number): void => {
+      panel.style.left = `${Math.max(0, Math.min(window.innerWidth - panel.offsetWidth, x))}px`;
+      panel.style.top = `${Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, y))}px`;
+    };
+    try { const p = JSON.parse(localStorage.getItem('after-rain-missions-position') || 'null'); if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) place(p.x, p.y); } catch { /* Default position. */ }
+    let drag: { x: number; y: number } | null = null;
+    handle.onpointerdown = event => {
+      if ((event.target as HTMLElement).closest('button') || event.button !== 0) return;
+      const bounds = panel.getBoundingClientRect(); drag = { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+      handle.setPointerCapture(event.pointerId); event.preventDefault();
+    };
+    handle.onpointermove = event => { if (drag) place(event.clientX - drag.x, event.clientY - drag.y); };
+    handle.onpointerup = handle.onpointercancel = () => {
+      if (!drag) return; drag = null;
+      try { localStorage.setItem('after-rain-missions-position', JSON.stringify({ x: panel.offsetLeft, y: panel.offsetTop })); } catch { /* Session preference. */ }
+    };
+    const observer = new ResizeObserver(() => { if (!panel.hidden && panel.style.left) place(parseFloat(panel.style.left), parseFloat(panel.style.top)); });
+    observer.observe(this.root); observer.observe(panel);
+    this.journalCleanup?.(); this.journalCleanup = () => observer.disconnect();
+  }
+  private journalCleanup?: () => void;
+
 
   constructor(private callbacks: UICallbacks) {
     try { this.journalCollapsed = localStorage.getItem('after-rain-missions-collapsed') === 'true'; } catch { /* A interface também funciona sem armazenamento. */ }
@@ -142,6 +210,7 @@ export class GameUI {
   }
 
   showTitle(hasSave: boolean): void {
+    this.journalCleanup?.();
     this.topToolbar?.destroy();
     this.topToolbar = undefined;
     this.homeEditor?.destroy();
@@ -186,6 +255,7 @@ export class GameUI {
   }
 
   showHUD(): void {
+    this.journalCleanup?.();
     this.topToolbar?.destroy();
     this.topToolbar = undefined;
     this.homeEditor?.destroy();
@@ -203,14 +273,11 @@ export class GameUI {
     this.base.innerHTML = `<div class="hud">
       <header class="hud-header hud-status" aria-label="Dia, hora e recursos"><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><strong id="hud-day">Dia 1</strong><span class="status-time"><b id="hud-time">08:00</b></span></div><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}</div></header>
       <button class="journal-reopen" ${this.journalCollapsed ? '' : 'hidden'} aria-controls="journal-panel" aria-expanded="false" aria-label="Abrir missões" title="Abrir missões">${icon('leaf')}<span>Missões</span></button><aside id="journal-panel" class="journal" ${this.journalCollapsed ? 'hidden' : ''}><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="journal-close" aria-controls="journal-panel" aria-label="Fechar missões" title="Fechar missões">${icon('close')}</button></header><div id="journal-content" class="journal-content"><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera nas ruínas a oeste.</p><div class="journal-rule"></div><div class="quest" id="harvest-quest"><span class="quest-circle"></span>Colha seu primeiro nabo</div><div class="quest" id="lia-quest"><span class="quest-circle"></span>Converse com Lia <kbd>E</kbd></div><small>Seu tempo. Seu caminho.</small></div></aside>
-      <div class="location-pill">${icon('pin')}<span id="hud-location">Minha propriedade</span></div><div class="shelter-pill" id="shelter-status" title="Construa paredes e uma porta para formar seu abrigo.">${icon('shelter')}<span id="hud-shelter">Ao ar livre</span><small id="hud-station">Bancada distante</small></div>
-      <aside class="controls-card is-collapsed"><button class="controls-toggle" data-collapse="controls-card" aria-controls="controls-content" aria-expanded="false" aria-label="Mostrar controles" title="Mostrar controles">${icon('keys')}<span>Controles</span>${icon('chevron')}</button><div id="controls-content" class="controls-content"><div><kbd>W</kbd><span class="arrow-keys">A S D</span><span>mover</span></div><div><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd><span>mover</span></div><div><kbd>E</kbd><span>interagir</span></div><div><kbd>M</kbd><span>mapa das regiões</span></div><div><kbd>I</kbd><span>inventário</span></div><div><kbd>C</kbd><span>fabricar</span></div><div><kbd>B</kbd><span>construir fora de casa</span></div><div><kbd>H</kbd><span>personalizar casa</span></div><div><kbd>P</kbd><span>construir porta</span></div><div><kbd>Esc</kbd><span>pausar</span></div><small>1–8: ações e ferramentas · 9: bancada · 0: parede</small></div></aside>
-      <div class="bottom-center"><div class="interaction-prompt"><kbd id="hud-interaction-key">E</kbd><span id="hud-prompt">Explore o vale ao seu redor</span></div><div id="hud-resource-progress" class="resource-progress" hidden></div><div class="toolbelt">${tools.slice(0, 11).map((tool, index) => `<button class="tool${index === 0 ? ' selected' : ''}" data-tool="${tool.id}" title="${index < 9 ? index + 1 : index === 9 ? '0' : 'P'} · ${tool.detail}" aria-label="${tool.label}"><span class="tool-key">${index < 9 ? index + 1 : index === 9 ? '0' : 'P'}</span>${icon(tool.icon)}<span>${tool.label}</span></button>`).join('')}</div><div class="tool-status"><strong id="active-tool">Explorar</strong><span id="tool-cost">Coletar · conversar · colher</span></div></div>
+      <div class="location-pill">${icon('pin')}<span id="hud-location">Minha propriedade</span></div>
+      <div class="bottom-center"><div class="interaction-prompt"><kbd id="hud-interaction-key">E</kbd><span id="hud-prompt">Explore o vale ao seu redor</span></div><div id="hud-resource-progress" class="resource-progress" hidden></div><div class="toolbelt"></div><div class="tool-status"><strong id="active-tool">Explorar</strong><span id="tool-cost">Coletar · conversar · colher</span></div></div>
     </div>`;
-    this.base.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach(button => button.addEventListener('click', () => {
-      if (this.modal) return;
-      this.callbacks.onTool(button.dataset.tool as Tool);
-    }));
+    this.renderQuickbar(); this.setupJournalDrag();
+    this.locationName = '';
     this.topToolbar = new TopToolbar(this.base.querySelector<HTMLElement>('.hud')!, {
       icon,
       onOpenChange: open => this.callbacks.onPause(open || this.modal !== null),
@@ -252,12 +319,17 @@ export class GameUI {
       return;
     }
     this.topToolbar?.setOpen(false, false);
-    if (action === 'options') this.togglePause();
+    if (action === 'controls') {
+      this.openModal('controls');
+      this.overlay.innerHTML = `<section class="panel inventory-card" role="dialog" aria-label="Controles"><div class="modal-heading"><h2>Controles</h2><button class="icon-button" aria-label="Fechar controles">${icon('close')}</button></div><p>WASD / setas — mover<br>E — interagir / usar ferramenta<br>1–9 — slots; clique no vazio para preencher<br>Botão direito no slot — trocar ou esvaziar<br>I — inventário · C — fabricar · B — construir<br>M — mapa · H — personalizar casa<br>0 — parede · P — porta · R — girar cobertura<br>Esc — fechar / pausar</p></section>`;
+      this.overlay.querySelector('button')!.onclick = () => this.closeModal();
+      this.overlay.querySelector('button')!.focus();
+    }
+    else if (action === 'options') this.togglePause();
     else if (action === 'map') this.toggleMap();
     else if (action === 'inventory' && this.latest) this.toggleInventory(this.latest.inventory);
     else if (action === 'crafting' && this.latest) this.toggleCrafting(this.latest.inventory, this.latest.nearWorkbench);
     else if (action === 'building' && this.latest) this.toggleBuilding(this.latest.inventory, this.latest.nearWorkbench);
-    else if (action === 'home' && this.latest?.inHome) this.callbacks.onHomeMenu();
   }
 
   updateHUD(data: HudData): void {
@@ -275,15 +347,15 @@ export class GameUI {
     set('#hud-time', `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`);
     for (const item of items) set(`#count-${item.id}`, String(data.inventory[item.id]));
     set('#hud-location', data.location);
+    if (this.locationName !== data.location) {
+      this.locationName = data.location;
+      const pill = this.base.querySelector<HTMLElement>('.location-pill')!;
+      pill.hidden = false; clearTimeout(this.locationTimer);
+      this.locationTimer = setTimeout(() => { pill.hidden = true; }, 10000);
+    }
     this.base.querySelector('.hud')!.classList.toggle('in-home', data.inHome === true);
-    this.base.querySelector<HTMLButtonElement>('.home-customize-button')!.hidden = !data.inHome;
     set('#hud-interaction-key', data.interactionKey ?? 'E');
     set('#hud-prompt', data.prompt || 'Aproxime-se de algo para interagir');
-    set('#hud-shelter', data.sheltered ? 'Abrigo coberto' : 'Ao ar livre');
-    set('#hud-station', data.nearWorkbench ? 'Bancada ao alcance' : 'Bancada distante');
-    const shelter = this.base.querySelector<HTMLElement>('#shelter-status')!;
-    shelter.classList.toggle('sheltered', data.sheltered);
-    shelter.title = data.shelterReason;
     const progressLabel = this.base.querySelector<HTMLElement>('#hud-resource-progress')!;
     progressLabel.hidden = !data.resourceProgress;
     progressLabel.textContent = data.resourceProgress;
@@ -299,7 +371,7 @@ export class GameUI {
       const owned = !requiresOwnership || data.inventory[button.dataset.tool as 'hatchet' | 'pickaxe'] > 0;
       button.classList.toggle('selected', selected);
       button.setAttribute('aria-pressed', String(selected));
-      button.disabled = !owned;
+      button.setAttribute('aria-disabled', String(!owned));
       if (requiresOwnership) button.title = owned
         ? tools.find(tool => tool.id === button.dataset.tool)!.detail
         : 'Fabrique esta ferramenta primeiro. Abra a fabricação com C.';
@@ -332,11 +404,11 @@ export class GameUI {
     ];
     const nextTip = !data.progress.collected ? 'Recolha galhos, pedras pequenas e fibras vegetais para começar suas ferramentas.'
       : !data.progress.craftedTools ? 'Abra C: prepare cordas, cabos e pedras lascadas. Fabrique machadinha, picareta e martelo.'
-      : !data.progress.harvested ? 'Use 7 para cortar árvores e 8 para minerar. Aproxime-se da base e pressione E.'
+      : !data.progress.harvested ? 'Equipe a machadinha para cortar árvores ou a picareta para minerar. Aproxime-se da base e pressione E.'
       : !data.progress.processed ? 'Abra C e prepare as primeiras tábuas com a machadinha.'
-      : !data.progress.builtWorkbench ? 'Fabrique um martelo e use 9 para colocar sua bancada em um espaço livre.'
+      : !data.progress.builtWorkbench ? 'Fabrique um martelo e selecione a bancada na barra ou em B para colocá-la em um espaço livre.'
       : !data.progress.sawn ? 'Recolha sucata nas ruínas a oeste. Na bancada, prepare a lâmina e o serrote para serrar tábuas regulares com C.'
-      : !data.progress.builtShelter ? 'Abra B para piso, paredes, porta, janela e cobertura, ou selecione o molde 3×3. Use 1 + E para abrir e fechar a porta.'
+      : !data.progress.builtShelter ? 'Abra B para piso, paredes, porta, janela e cobertura, ou selecione o molde 3×3. Selecione Explorar e pressione E para abrir e fechar a porta.'
       : 'Seu primeiro lar está de pé. Atravesse a ponte para o Bosque do Pinheiro ou siga ao sul para os Campos Abertos. M abre o mapa.';
     set('.journal-tip', nextTip);
     const progress = this.base.querySelector('#slice-progress')!;
@@ -519,24 +591,21 @@ export class GameUI {
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Mapa das regiões exploráveis');
-    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM VALE PARA CONHECER</span><h2>Mapa das regiões</h2></div><button class="icon-button" aria-label="Fechar mapa">${icon('close')}</button></div>
+    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM VALE PARA CONHECER</span><h2>${this.latest?.inHome ? "Interior da casa" : "Mapa completo do vale"}</h2></div><button class="icon-button" aria-label="Fechar mapa">${icon('close')}</button></div>
       <p class="map-current">Você está em <strong></strong>.</p>
-      <div class="exploration-map" role="img" aria-label="Esquema das regiões: propriedade a noroeste, Bosque do Pinheiro a leste e Campos Abertos ao sul.">
-        ${REGIONS.map((region, index) => `<div class="map-region map-${region.id}" style="left:${region.bounds.x / WORLD_WIDTH * 100}%;top:${region.bounds.y / WORLD_HEIGHT * 100}%;width:${region.bounds.width / WORLD_WIDTH * 100}%;height:${region.bounds.height / WORLD_HEIGHT * 100}%"><span>${icon(['shelter', 'leaf', 'sun'][index])}<strong>${region.name}</strong><small>${['Casa · horta · Lia', 'Árvores · pedras · exploração', 'Recursos · clareiras para construir'][index]}</small></span></div>`).join('')}
-        <div class="map-connection map-bridge" style="left:${REGIONS[1].bounds.x / WORLD_WIDTH * 100}%;top:${18.5 / WORLD_HEIGHT * 100}%">Ponte →</div><div class="map-connection map-south" style="left:${19.5 / WORLD_WIDTH * 100}%;top:${REGIONS[2].bounds.y / WORLD_HEIGHT * 100}%">Trilha ↓</div>
-        <span class="map-player" hidden><i></i><b>Você</b></span><span class="map-north">N ↑</span>
-      </div>
-      <p class="map-caption">Esquema do terreno jogável. Caminhe pelas trilhas para mudar de região.</p>
-      <div class="map-route-grid"><article><h3>Propriedade</h3><p>Seu ponto de partida. Cultive, converse com Lia e prepare suas ferramentas.</p></article><article><h3>Bosque do Pinheiro</h3><p>Siga para leste e atravesse a ponte de madeira. Leve a machadinha e a picareta.</p></article><article><h3>Campos Abertos</h3><p>Siga a trilha para o sul da propriedade. Explore os recursos e escolha um espaço livre para construir.</p></article></div>
-      <details class="map-reference"><summary>Ver referência artística do mundo</summary><p>Esta ilustração orienta futuras expansões. Vila, costa, montanha e demais regiões desenhadas ainda não são exploráveis nesta versão.</p><img src="assets/references/mapa_expandido.webp" loading="lazy" alt="Mapa conceitual expandido de After Rain, com regiões previstas para futuras etapas." /></details>
+      <div class="exploration-map real-map" role="img" aria-label="Cenário real e posição do personagem"><img class="map-snapshot" alt="Vista do cenário atual" /><span class="map-player" hidden><i></i><b>Você</b></span><span class="map-north">N ↑</span></div>
+      <p class="map-caption">Vista atual do cenário. Seu marcador indica a posição exata.</p>
       <div class="inventory-footer">${icon('leaf')} Sempre há um caminho de volta.<span>SIMULAÇÃO PAUSADA · M OU ESC PARA VOLTAR</span></div>`;
+    const map = panel.querySelector<HTMLElement>('.exploration-map')!;
+    map.style.aspectRatio = this.latest?.inHome ? `${HOME_WIDTH}/${HOME_HEIGHT}` : `${WORLD_WIDTH}/${WORLD_HEIGHT}`;
+    void this.callbacks.onMap().then(url => { if (panel.isConnected) panel.querySelector<HTMLImageElement>('.map-snapshot')!.src = url; });
     panel.querySelector('.map-current strong')!.textContent = this.latest?.location || 'Propriedade';
     const position = this.latest?.playerTile;
     if (position) {
       const marker = panel.querySelector<HTMLElement>('.map-player')!;
       marker.hidden = false;
-      marker.style.left = `${Math.max(2, Math.min(98, position.x / WORLD_WIDTH * 100))}%`;
-      marker.style.top = `${Math.max(3, Math.min(97, position.y / WORLD_HEIGHT * 100))}%`;
+      marker.style.left = `${position.x / (this.latest?.inHome ? HOME_WIDTH : WORLD_WIDTH) * 100}%`;
+      marker.style.top = `${position.y / (this.latest?.inHome ? HOME_HEIGHT : WORLD_HEIGHT) * 100}%`;
     }
     panel.querySelector('button')!.addEventListener('click', () => this.closeModal());
     this.overlay.append(panel);
@@ -551,13 +620,12 @@ export class GameUI {
     panel.className = 'pause-card panel';
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-label', 'Jogo pausado');
-    panel.innerHTML = `<div class="pause-leaf">${icon('leaf')}</div><span class="eyebrow">O VALE PODE ESPERAR</span><h2>Uma pequena pausa.</h2><p>Respire. A sua história continua aqui.</p><div class="pause-actions"><button class="button button-primary" data-action="resume">Voltar ao vale ${icon('arrow')}</button><button class="button button-light" data-action="save">${icon('save')} Salvar meu progresso</button>${this.latest?.inHome ? '<button class="button button-light" data-action="home">Personalizar casa <kbd>H</kbd></button>' : ''}<button class="text-button pause-admin-link" data-action="admin">Administração · acesso com senha</button><button class="text-button" data-action="title">Voltar ao início</button></div><small>SIMULAÇÃO PAUSADA <i>·</i> ESC PARA VOLTAR</small>`;
+    panel.innerHTML = `<div class="pause-leaf">${icon('leaf')}</div><span class="eyebrow">O VALE PODE ESPERAR</span><h2>Uma pequena pausa.</h2><p>Respire. A sua história continua aqui.</p><div class="pause-actions"><button class="button button-primary" data-action="resume">Voltar ao vale ${icon('arrow')}</button><button class="button button-light" data-action="save">${icon('save')} Salvar meu progresso</button><button class="text-button pause-admin-link" data-action="admin">Administração · acesso com senha</button><button class="text-button" data-action="title">Voltar ao início</button></div><small>SIMULAÇÃO PAUSADA <i>·</i> ESC PARA VOLTAR</small>`;
     panel.querySelector('[data-action="resume"]')!.addEventListener('click', () => this.closeModal());
     panel.querySelector('[data-action="save"]')!.addEventListener('click', () => {
       this.toast(this.callbacks.onSave() ? 'Sua história foi salva neste navegador.' : 'Não foi possível salvar. Confira o armazenamento do navegador.');
     });
     panel.querySelector('[data-action="title"]')!.addEventListener('click', () => this.callbacks.onMainMenu());
-    panel.querySelector('[data-action="home"]')?.addEventListener('click', () => { this.closeModal(); this.callbacks.onHomeMenu(); });
     panel.querySelector('[data-action="admin"]')!.addEventListener('click', () => { this.closeModal(); this.callbacks.onAdminMenu(); });
     this.overlay.append(panel);
   }
@@ -625,7 +693,7 @@ export class GameUI {
     callback?.();
   }
 
-  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep'): void {
+  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls'): void {
     this.topToolbar?.setOpen(false, false);
     this.topToolbar?.setEnabled(false);
     this.focusBeforeModal = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;

@@ -78,40 +78,21 @@ jobs:
         shell: pwsh
         run: |
           $notes = @'
-          After Rain 0.5.1 — atalho de personalização da casa corrigido.
+          After Rain 0.6.0 — HUD Jardim leve e melhorias de exploração.
 
-          Correções desta atualização:
+          - HUD em creme, madeira clara e verde sálvia.
+          - Nove slots menores, inicialmente vazios; clique para escolher, botão direito para trocar ou esvaziar. Configuração salva na partida.
+          - Missões arrastáveis com posição lembrada, botão X e reabertura.
+          - M exibe o cenário real completo das áreas jogáveis e a posição exata do personagem; dentro da casa, mostra o interior identificado.
+          - Nome do local por 10 segundos ao mudar de área; controles na barra superior; cartão Ao ar livre removido.
+          - Regador e pacote de 7 sementes recolhíveis uma única vez na casa. As duas ordens de coleta foram testadas com salvamento e recarga após cada objeto.
+          - Personalização da casa somente por H; E preserva coleta, entrada, saída e cama.
 
-          - H é o único atalho de teclado para personalizar a casa.
-          - E continua entrando e saindo da casa e usando a cama; não abre o editor em pisos ou móveis.
-          - B abre a construção no exterior; dentro da casa orienta a usar H.
-          - O indicador de interação mostra E ou H conforme a ação disponível.
-          - Os botões Minha casa e Personalizar casa continuam disponíveis pelo mouse.
+          Mantém os sistemas, artes e partidas anteriores da 0.5.1. O save continua em %APPDATA%\Depois da Chuva.
 
-          Mantém todas as alterações da versão 0.5.0:
+          Aplicativo portátil para Windows 11 x64, gerado em Windows. Baixe o .exe e abra com dois cliques; não exige Node.js ou servidor. Pacote sem assinatura digital.
 
-          - Novo nome After Rain e abertura chuvosa com garoa, neblina, câmera suave e controle para pausar o fundo.
-          - Nova sprite da casa no estilo atual do mapa, com o caminho de acesso alinhado à porta.
-          - Interior personalizável: cama, mesa, cadeira, estante, tapete, planta e acabamentos de piso/parede.
-          - Cama para dormir à noite e avançar até as 08:00, incluindo o crescimento dos cultivos regados.
-          - Barra superior retrátil: passe o mouse no centro superior para revelar a seta, ou use o botão direito no cenário.
-          - Inventário, mapa, fabricação, construção, salvar e opções na barra; os menus pausam a simulação.
-          - Missões com X para fechar e botão para reabrir, com preferência lembrada localmente.
-          - Painel de dia, hora e recursos reduzido para 210×62 pixels.
-          - Placas externas removidas e nome da Lia sem fundo.
-          - Menu administrativo por senha com busca e concessão dos 19 itens reais, minimizável para testes.
-
-          Mantém as três regiões, as artes de terreno, recursos e personagem, a criação de personagem, o cultivo, a fabricação e a construção. Móveis, acabamentos e posição dentro da casa ficam salvos; partidas anteriores continuam compatíveis. A senha do administrador foi entregue separadamente ao responsável pelo projeto.
-
-          O local e o formato dos saves continuam os mesmos, apesar da mudança de nome: %APPDATA%\Depois da Chuva. O save do aplicativo continua separado do save do navegador.
-
-          O vídeo do Flow ainda não foi fornecido; a abertura usa o próprio cenário animado do jogo. As três novas imagens de HUD em docs/direcao-visual/hud são propostas para escolha e não foram aplicadas ao jogo deste pacote.
-
-          Aplicativo portátil para Windows 10/11 de 64 bits, gerado em Windows.
-          Baixe o arquivo .exe desta versão e abra com dois cliques. Não exige Node.js ou servidor.
-          O pacote não possui assinatura digital. A geração em Windows e os checks automatizados não substituem um teste manual de jogo no Windows 11.
-
-          SHA256SUMS.txt permite conferir a integridade do download.
+          Validação: TypeScript, 167 testes de sistemas, build e aceitação em Chromium. A execução interativa no Windows 11 não foi testada neste ambiente Linux. SHA256SUMS.txt permite verificar o download.
           '@
           $notes | Set-Content -Encoding utf8NoBOM release/NOTAS.txt
           $assets = @((Get-ChildItem release/*.exe).FullName) + @('release/SHA256SUMS.txt')

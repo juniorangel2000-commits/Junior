@@ -1,0 +1,37 @@
+/* Jardim leve: linho creme, madeira clara e verde sálvia. */
+.hud .hud-status,.hud .journal,.hud .interaction-prompt,.hud .journal-reopen,.hud .location-pill,.toolbar-panel,.toolbar-handle {
+  background: linear-gradient(120deg,#fff8e8f5,#eee3ccf5);
+  color:#3e5038;border:2px solid #a18055;border-radius:8px;
+  box-shadow:inset 0 0 0 2px #fff7e2,0 2px 0 #6e543c,0 4px 12px #24382230;
+}
+.hud .journal{width:235px;padding:13px;max-height:calc(100vh - 230px)}
+.hud .journal-heading{cursor:grab;touch-action:none;user-select:none}
+.hud .journal-heading:active{cursor:grabbing}
+.hud .journal-heading .eyebrow,.hud .journal-tip,.hud .journal-content>small{display:none}
+.hud .journal-heading h3{font:600 22px Georgia,serif;color:#455b38}
+.hud .journal-close{background:#eadbbd;border:1px solid #b79972;border-radius:4px;color:#574c35}
+.hud .journal-content .quest{font-size:11px;line-height:1.4;margin-top:9px}
+.hud .toolbelt{display:grid;grid-template-columns:repeat(9,44px);gap:4px;padding:6px;background:linear-gradient(#c3a379,#a48359);border:2px solid #8f6c47;border-radius:10px;box-shadow:inset 0 0 0 1px #ecdbb5,0 3px 9px #20352155}
+.hud .tool{position:relative;width:44px;height:48px;min-width:0;padding:12px 4px 3px;border:1px solid #ac8a60;border-radius:5px;background:linear-gradient(#fff8e8,#e9ddc3);color:#485c3d;box-shadow:inset 0 0 0 1px #fff8e8}
+.hud .tool.selected{background:#dce5c9;border:2px solid #647d4c}
+.hud .tool .icon{width:28px;height:28px;margin:0;object-fit:contain}
+.hud .tool-key{position:absolute;top:1px;left:4px;font-size:10px;color:#756348}
+.hud .empty-slot{font-size:18px;opacity:.3}
+.hud .tool-status{font-size:10px;max-width:440px}
+.hud .bottom-center{bottom:12px}
+.hud .location-pill{top:70px;left:50%;right:auto;transform:translateX(-50%);pointer-events:none}
+.hud [hidden]{display:none!important}
+.slot-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:18px}
+.slot-options .icon{width:28px;height:28px}
+.real-map{max-width:720px;background:#6b8053}
+.map-snapshot{display:block;width:100%;height:100%;object-fit:fill;image-rendering:pixelated}
+.real-map .map-player{display:block;transform:translate(-50%,-50%);width:14px;height:14px}
+.real-map .map-player[hidden]{display:none}
+.real-map .map-player i{display:block;width:14px;height:14px}
+.real-map .map-player b{position:absolute;top:18px;left:50%;transform:translateX(-50%)}
+@media(max-width:600px){.hud .toolbelt{grid-template-columns:repeat(9,32px);gap:2px;padding:4px}.hud .tool{width:32px;height:42px}.hud .tool .icon{width:24px;height:24px}.hud .journal{width:190px}.hud .location-pill{top:92px}.hud .tool-status{max-width:320px}}
+.hud .location-pill{bottom:auto;height:auto;min-height:0;padding:9px 14px}
+.hud .hud-status .day-clock,.hud .hud-status .resources,.hud .hud-status strong,.hud .hud-status b,.hud .hud-status .status-time{color:#3e5038}
+.hud .tool[aria-disabled="true"]{opacity:.65}
+.top-toolbar .toolbar-handle,.top-toolbar .toolbar-panel{background:linear-gradient(120deg,#fff8e8f5,#eee3ccf5);color:#3e5038;border-color:#a18055}
+@media(max-width:600px){.toolbar-reveal-zone{left:auto;right:8px;transform:none;width:140px}.hud .hud-status{top:38px}.hud .journal,.hud .journal-reopen{top:110px}}

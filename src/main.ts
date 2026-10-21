@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { ValleyScene } from './scenes/ValleyScene';
 import { GameUI } from './ui';
 import './style.css';
+import './garden-hud.css';
 
 const scene = new ValleyScene();
 const ui = new GameUI({
@@ -14,8 +15,8 @@ const ui = new GameUI({
   onPause: paused => scene.setPaused(paused),
   onTitleBackground: mode => scene.setTitleBackground(mode),
   onSave: () => scene.persist(),
+  onMap: () => scene.captureMap(),
   onMainMenu: () => scene.mainMenu(),
-  onHomeMenu: () => scene.openHomeMenu(),
   onAdminMenu: () => scene.openAdminMenu(),
 });
 scene.ui = ui;

@@ -34,6 +34,8 @@ export interface ProgressData {
 }
 export interface SaveData {
   version: 2;
+  quickbar?: (Tool | null)[];
+  homeSupplies?: { wateringCan: boolean; seedPacket: boolean };
   profile: CharacterProfile;
   player: TilePoint & { direction?: 'down' | 'left' | 'right' | 'up' };
   inventory: InventoryData;

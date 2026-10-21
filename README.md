@@ -1,3 +1,5 @@
+> **Atualização 0.6.0:** [Download Windows 11 x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.6.0) · [Mudanças, controles e validação](docs/versao-windows-v0.6.md). As seções históricas abaixo descrevem entregas anteriores; os nove slots configuráveis substituem a barra fixa.
+
 # After Rain
 
 Uma pequena clareira, uma casa que resistiu e a chance de recomeçar. **After Rain**, anteriormente chamado Jardim Depois da Chuva, é um jogo original para navegador, single-player, com exploração, cultivo e construção em pixel art 2D top-down. Sua história se passa após uma chuva que transformou pessoas em zumbis. Continua no mesmo projeto, com TypeScript, Phaser 3 e Vite e aplicativo desktop em Electron.

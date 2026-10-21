@@ -27,6 +27,7 @@ const characterSources = new Map<string, HTMLImageElement | HTMLCanvasElement>()
 
 export function preloadVisualAssets(scene: Phaser.Scene): void {
   preloadHouseSprite(scene);
+  for (const id of ['water', 'seeds']) scene.load.image(`icon-${id}`, `${BASE}icons/${id}.png`);
   scene.load.image('nature-trees-source', `${BASE}nature/trees-approved.png`);
   scene.load.image('terrain-materials-source', `${BASE}terrain/ground-materials.png`);
   scene.load.image('terrain-finishes-source', `${BASE}terrain/floor-finishes.png`);

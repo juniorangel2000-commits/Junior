@@ -1,3 +1,4 @@
+import { validQuickbar, emptyQuickbar } from './quickbar';
 import type { CharacterProfile, ProgressData, SaveData, Tool } from '../types';
 import { isFarmTile } from './farming';
 import { EMPTY_INVENTORY, INITIAL_INVENTORY, ITEM_IDS, MAX_ITEM_COUNT } from './inventory';
@@ -32,6 +33,8 @@ export function validateProfile(value: unknown): value is CharacterProfile {
 
 export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
+  if (value.quickbar !== undefined && !validQuickbar(value.quickbar)) return false;
+  if (value.homeSupplies !== undefined && (!isRecord(value.homeSupplies) || typeof value.homeSupplies.wateringCan !== 'boolean' || typeof value.homeSupplies.seedPacket !== 'boolean')) return false;
   if (!isRecord(value.player) || !finite(value.player.x, TILE / 2, WORLD_WIDTH * TILE - TILE / 2)
     || !finite(value.player.y, TILE / 2, WORLD_HEIGHT * TILE - TILE / 2)) return false;
   if (value.player.direction !== undefined && !['down', 'left', 'right', 'up'].includes(value.player.direction as string)) return false;
@@ -110,6 +113,7 @@ export function migrateSave(value: unknown): SaveData | null {
 export function createNewSave(profile: CharacterProfile): SaveData {
   return {
     version: SAVE_VERSION,
+    quickbar: emptyQuickbar(), homeSupplies: { wateringCan: false, seedPacket: false },
     profile: { ...profile, name: profile.name.trim() },
     player: { x: 25 * TILE + TILE / 2, y: 18 * TILE + TILE / 2 },
     inventory: { ...INITIAL_INVENTORY },
