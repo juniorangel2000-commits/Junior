@@ -1,5 +1,5 @@
 {
-  "descricao": "Seleção de PNGs dos pacotes recebidos, copiados sem alteração. Adaptações de escala, pivô e cor acontecem em Canvas no jogo.",
+  "descricao": "Seleção de PNGs dos pacotes recebidos, copiados sem alteração, e registro das artes originais da versão 0.8.0. Adaptações de recorte, escala, pivô, orientação e cor acontecem em Canvas no jogo.",
   "arquivos": [
     {
       "arquivo": "public/assets/visual/characters/baixo_0.png",
@@ -511,6 +511,38 @@
         "pacotes_existentes/Jardim_Depois_da_Chuva_Assets_v0.2/sprites/estacoes/bancada_simples.png"
       ],
       "sha256": "28c6e5179672534942899177469695dd14c1b734d69543e498868df40aa7807c"
+    }
+  ],
+  "artes_originais_v0_8": [
+    {
+      "arquivo": "public/assets/visual/characters/farmer-bun-idle-eight.png",
+      "origem": "Arte original gerada com image_gen em 2026-10-23 para After Rain, seguindo as folhas do personagem existentes no projeto.",
+      "uso": "Poses paradas do cabelo preso em oito direções.",
+      "sha256": "c1a501ed4ea7aa92fc169906107a10b74145b5664d80926fbcd652f5fb585718"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/farmer-short-idle-eight.png",
+      "origem": "Arte original gerada com image_gen em 2026-10-23 para After Rain, seguindo as folhas do personagem existentes no projeto.",
+      "uso": "Poses paradas do cabelo curto em oito direções.",
+      "sha256": "23dd28bb7636a6d747b72b91bf17c31325a74ed7b6889bcba285a5d41401c31f"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/farmer-bun-walk-eight.png",
+      "origem": "Arte original gerada com image_gen em 2026-10-23 para After Rain, seguindo as folhas do personagem existentes no projeto.",
+      "uso": "Oito quadros de caminhada por direção, cabelo preso.",
+      "sha256": "db0beebd5884902eedebb3997a5a64c8e95e20f9f18a5ac08407e6ba90ecf18d"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/farmer-short-walk-eight.png",
+      "origem": "Arte original gerada com image_gen em 2026-10-23 para After Rain, seguindo as folhas do personagem existentes no projeto.",
+      "uso": "Oito quadros de caminhada por direção, cabelo curto.",
+      "sha256": "d6da0d002c6f021c71073c5e45ea2a1e60f10cba088c48daa705e402f0d45003"
+    },
+    {
+      "arquivo": "public/assets/visual/characters/farmer-long-walk-eight.png",
+      "origem": "Arte original gerada com image_gen em 2026-10-23 para After Rain, seguindo as folhas do personagem existentes no projeto.",
+      "uso": "Oito quadros de caminhada por direção, cabelo longo para compatibilidade com saves anteriores.",
+      "sha256": "5a39b62dedfc797399c5c2c0468bc190a1eacbb7e1344a47d7a34accba8e516a"
     }
   ]
 }

@@ -1,4 +1,5 @@
 import type { HomeData } from './systems/home';
+import type { CharacterDirection } from './character-directions';
 
 export type HairStyle = 'curto' | 'longo' | 'preso';
 export type CharacterAccessory = 'bolsa' | 'nenhum';
@@ -38,7 +39,7 @@ export interface SaveData {
   quickbar?: QuickSlot[];
   homeSupplies?: { wateringCan: boolean; seedPacket: boolean };
   profile: CharacterProfile;
-  player: TilePoint & { direction?: 'down' | 'left' | 'right' | 'up' };
+  player: TilePoint & { direction?: CharacterDirection };
   inventory: InventoryData;
   crops: CropData[];
   buildings: BuildingData[];
@@ -52,7 +53,7 @@ export interface SaveData {
   /** Extensão opcional: partidas anteriores recebem a casa padrão ao entrar. */
   home?: HomeData;
   /** A posição externa permanece em player, para preservar o mundo e saves antigos. */
-  homePosition?: TilePoint & { direction?: 'down' | 'left' | 'right' | 'up' };
+  homePosition?: TilePoint & { direction?: CharacterDirection };
 }
 export interface HudData {
   wateringCan?: boolean;

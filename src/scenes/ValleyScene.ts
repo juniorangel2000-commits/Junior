@@ -2,6 +2,7 @@ import { gameAudio } from '../audio';
 import Phaser from 'phaser';
 import { Player } from '../player';
 import { CHARACTER_HEIGHT, createArt } from '../art';
+import { directionFromVector, directionVector } from '../character-directions';
 import { preloadVisualAssets } from '../visual-assets';
 import { locationAt, getRegionAt } from '../data/regions';
 import { createWorld, NPC_POSITION, TILE, WORLD_WIDTH, WORLD_HEIGHT } from '../world';
@@ -183,7 +184,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private playerPosition(): SaveData['player'] {
-    return { x: this.player.x, y: this.player.y, direction: this.player.facing.y < 0 ? 'up' : this.player.facing.y > 0 ? 'down' : this.player.facing.x < 0 ? 'left' : 'right' };
+    return { x: this.player.x, y: this.player.y, direction: directionFromVector(this.player.facing.x, this.player.facing.y) };
   }
 
   private nearHouseEntrance(): boolean {
@@ -212,8 +213,7 @@ export class ValleyScene extends Phaser.Scene {
     this.refreshHomeView();
     this.player.x = position?.x ?? HOME_SPAWN.x;
     this.player.y = position?.y ?? HOME_SPAWN.y;
-    this.player.facing = position?.direction === 'left' ? { x: -1, y: 0 } : position?.direction === 'right' ? { x: 1, y: 0 }
-      : position?.direction === 'down' ? { x: 0, y: 1 } : { x: 0, y: -1 };
+    this.player.facing = directionVector(position?.direction ?? 'up');
     this.input.keyboard?.resetKeys();
     this.player.update(0, this.blocked, this.blockedPoint);
     this.updateZoom();
@@ -468,7 +468,7 @@ export class ValleyScene extends Phaser.Scene {
     this.damageMarks = this.add.graphics().setDepth(3500);
     this.player = new Player(this, data.profile, data.player.x, data.player.y);
     const direction = data.player.direction;
-    this.player.facing = direction === 'up' ? { x: 0, y: -1 } : direction === 'left' ? { x: -1, y: 0 } : direction === 'right' ? { x: 1, y: 0 } : { x: 0, y: 1 };
+    this.player.facing = directionVector(direction ?? 'down');
     this.input.keyboard?.resetKeys();
     this.player.update(0, this.blocked, this.blockedPoint);
     this.recoverPlayerPosition();

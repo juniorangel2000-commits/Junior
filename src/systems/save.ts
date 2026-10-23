@@ -1,4 +1,5 @@
 import { validQuickbar, emptyQuickbar } from './quickbar';
+import { CHARACTER_DIRECTIONS, type CharacterDirection } from '../character-directions';
 import type { CharacterProfile, ProgressData, SaveData, Tool } from '../types';
 import { isFarmTile } from './farming';
 import { EMPTY_INVENTORY, INITIAL_INVENTORY, ITEM_IDS, MAX_ITEM_COUNT } from './inventory';
@@ -37,12 +38,12 @@ export function validateSave(value: unknown): value is SaveData {
   if (value.homeSupplies !== undefined && (!isRecord(value.homeSupplies) || typeof value.homeSupplies.wateringCan !== 'boolean' || typeof value.homeSupplies.seedPacket !== 'boolean')) return false;
   if (!isRecord(value.player) || !finite(value.player.x, TILE / 2, WORLD_WIDTH * TILE - TILE / 2)
     || !finite(value.player.y, TILE / 2, WORLD_HEIGHT * TILE - TILE / 2)) return false;
-  if (value.player.direction !== undefined && !['down', 'left', 'right', 'up'].includes(value.player.direction as string)) return false;
+  if (value.player.direction !== undefined && !CHARACTER_DIRECTIONS.includes(value.player.direction as CharacterDirection)) return false;
   if (value.home !== undefined && !validateHome(value.home)) return false;
   if (value.homePosition !== undefined) {
     if (!isRecord(value.homePosition) || !finite(value.homePosition.x, TILE, (HOME_WIDTH - 1) * TILE - 1)
       || !finite(value.homePosition.y, TILE * 2, HOME_HEIGHT * TILE)) return false;
-    if (value.homePosition.direction !== undefined && !['down', 'left', 'right', 'up'].includes(value.homePosition.direction as string)) return false;
+    if (value.homePosition.direction !== undefined && !CHARACTER_DIRECTIONS.includes(value.homePosition.direction as CharacterDirection)) return false;
     const home = new Home(value.home as SaveData['home']);
     if ([[-7, -5], [7, -5], [-7, 3], [7, 3]].some(([ox, oy]) => home.isBlocked(
       Math.floor(((value.homePosition as Record<string, number>).x + ox) / TILE),

@@ -12,6 +12,8 @@ export type { ResourceNode } from './types';
 
 export { TILE, WORLD_WIDTH, WORLD_HEIGHT, isWaterTile, getRegionAt, locationAt, REGIONS } from './data/regions';
 export const SPAWN = { x: 25 * TILE + 16, y: 18 * TILE + 16 };
+/** Adult trees are about three character heights; only artwork grows, not trunk collisions. */
+export const TREE_VISUAL_SCALE = 1.6;
 export const NPC_POSITION = { x: 29 * TILE + 16, y: 17 * TILE + 16 };
 export const WORLD_LANDMARKS = {
   chimney: { x: 853, y: 294 },
@@ -43,6 +45,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   const resources: ResourceNode[] = [];
   const resourceImages = new Map<string, Phaser.GameObjects.Image>();
   const canopies = new Map<string, { image: Phaser.GameObjects.Image; x: number; y: number; width: number; height: number }>();
+  let canopyRadiusX = 0, canopyRadiusY = 0;
   let fadedTrees = new Set<string>();
   const key = (x: number, y: number) => `${x},${y}`;
   const isFarm = isFarmTile;
@@ -236,9 +239,13 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     const treeTexture = useArtwork ? artwork : tree.pine ? 'pine' : 'oak';
     const footX = tree.x * TILE + 16, footY = tree.y * TILE + 25;
     const pivot = artwork.endsWith(`-${variant}`) ? 128 / 132 : useArtwork ? 1 : 0.93;
-    const treeImage = scene.add.image(footX, footY, treeTexture).setOrigin(0.5, pivot).setDepth(footY);
+    const treeImage = scene.add.image(footX, footY, treeTexture).setOrigin(0.5, pivot).setScale(TREE_VISUAL_SCALE).setDepth(footY);
     resourceImages.set(id, treeImage);
-    canopies.set(tile, { image: treeImage, x: footX, y: footY, width: treeImage.width || 88, height: treeImage.height || 116 });
+    const width = (treeImage.width || 88) * TREE_VISUAL_SCALE;
+    const height = (treeImage.height || 116) * TREE_VISUAL_SCALE * pivot;
+    canopies.set(tile, { image: treeImage, x: footX, y: footY, width, height });
+    canopyRadiusX = Math.max(canopyRadiusX, Math.ceil(width / 2 / TILE) + 1);
+    canopyRadiusY = Math.max(canopyRadiusY, Math.ceil(height / TILE) + 1);
     resourceBlocked.add(tile);
   }
   // A small roofless ruin in the western exploration area.
@@ -324,7 +331,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
       const next = new Set<string>();
       const tx = Math.floor(playerX / TILE), ty = Math.floor(playerY / TILE);
       // Query nearby trunk cells rather than all trees on every animation frame.
-      for (let y = ty; y <= ty + 5; y++) for (let x = tx - 3; x <= tx + 3; x++) {
+      for (let y = ty; y <= ty + canopyRadiusY; y++) for (let x = tx - canopyRadiusX; x <= tx + canopyRadiusX; x++) {
         const tile = key(x, y), canopy = canopies.get(tile);
         if (!canopy || !canopy.image.active) continue;
         if (playerY < canopy.y + 2 && playerY > canopy.y - canopy.height + 10

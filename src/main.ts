@@ -6,6 +6,7 @@ import { GameUI } from './ui';
 import './style.css';
 import './garden-hud.css';
 import './cozy-hud.css';
+import './character-studio.css';
 
 gameAudio.init();
 const scene = new ValleyScene();

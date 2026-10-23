@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
+import { preloadCharacterSprites, setupCharacterSprites } from './character-sprites';
 import { setupNatureSprites } from './nature-sprites';
 import { setupTerrainSprites } from './terrain-sprites';
 import { setupResourceSprites } from './resource-sprites';
 import { setupDecorSprites } from './decor-sprites';
-import { setupCharacterSprites } from './character-sprites';
 import { preloadHouseSprite, setupHouseSprite } from './house-sprites';
 
 /** Local assets from the received packages and original tree/ground atlases. */
@@ -21,32 +21,17 @@ const WORLD_SOURCES: Record<string, string> = {
   vein: 'world/vein.png', workbench: 'world/workbench.png',
 };
 const MODULES = ['parede_creme', 'parede_janela_floreira', 'parede_trepadeira', 'parede_porta', 'porta_madeira', 'janela_turquesa', 'telha_lisa', 'telha_variante', 'chamine', 'floreira', 'cerca_natural', 'banco_jardim', 'barril', 'vaso_flor', 'piso_tabuas', 'piso_pedra', 'terra', 'caminho', 'planta'];
-const DIRECTIONS = { down: 'baixo', up: 'cima', left: 'esquerda', right: 'direita' } as const;
-type Direction = keyof typeof DIRECTIONS;
-const characterSources = new Map<string, HTMLImageElement | HTMLCanvasElement>();
-
 export function preloadVisualAssets(scene: Phaser.Scene): void {
   preloadHouseSprite(scene);
+  preloadCharacterSprites(scene);
   for (const id of ['water', 'seeds']) scene.load.image(`icon-${id}`, `${BASE}icons/${id}.png`);
   scene.load.image('nature-trees-source', `${BASE}nature/trees-approved.png`);
   scene.load.image('terrain-materials-source', `${BASE}terrain/ground-materials.png`);
   scene.load.image('terrain-finishes-source', `${BASE}terrain/floor-finishes.png`);
   scene.load.image('resource-atlas-source', `${BASE}resources/resource-atlas.png`);
   scene.load.image('nature-decor-source', `${BASE}nature/decorations.png`);
-  scene.load.image('farmer-bun-source', `${BASE}characters/farmer-bun.png`);
-  scene.load.image('farmer-short-source', `${BASE}characters/farmer-short.png`);
-  scene.load.image('farmer-long-source', `${BASE}characters/farmer-long.png`);
-  scene.load.image('farmer-bags-source', `${BASE}characters/farmer-bags.png`);
   for (const [id, path] of Object.entries(WORLD_SOURCES)) scene.load.image(`source-${id}`, `${BASE}${path}`);
   for (const id of MODULES) scene.load.image(`module-${id}`, `${BASE}modules/${id}.png`);
-  for (const [direction, source] of Object.entries(DIRECTIONS)) for (let frame = 0; frame < 6; frame++) {
-    scene.load.image(`character-${direction}-${frame}`, `${BASE}characters/${source}_${frame}.png`);
-  }
-}
-
-export function importedCharacterSource(direction: Direction, phase: number): HTMLImageElement | HTMLCanvasElement | undefined {
-  // Two idle poses and four movement poses are supplied. Keep the feet fixed.
-  return characterSources.get(`${direction}-${[0, 2, 3, 4][((Math.floor(phase) % 4) + 4) % 4]}`);
 }
 
 function sourceImage(scene: Phaser.Scene, key: string): HTMLImageElement | HTMLCanvasElement | undefined {
@@ -214,10 +199,6 @@ function createHouse(scene: Phaser.Scene): void {
 
 export function setupVisualAssets(scene: Phaser.Scene): void {
   setupCharacterSprites(scene);
-  for (const direction of Object.keys(DIRECTIONS) as Direction[]) for (let frame = 0; frame < 6; frame++) {
-    const image = sourceImage(scene, `character-${direction}-${frame}`);
-    if (image) characterSources.set(`${direction}-${frame}`, image);
-  }
   setupResourceSprites(scene);
   for (const [id, width, height] of [['stone', 26, 22], ['scrap', 32, 32], ['log', 40, 34], ['branch', 36, 32], ['fiber', 32, 34], ['seeds', 34, 38], ['vein', 44, 48], ['workbench', 40, 40]] as const) {
     if (!scene.textures.exists(`asset-${id}`)) fitSource(scene, `source-${id}`, `asset-${id}`, width, height, 1);

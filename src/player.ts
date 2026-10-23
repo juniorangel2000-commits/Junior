@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import type { CharacterProfile } from './types';
-import { createCharacterFrames, characterFrame } from './art';
-import type { CharacterDirection } from './art';
+import { createCharacterFrames } from './art';
+import { CHARACTER_WALK_FPS, CHARACTER_WALK_FRAMES, characterFrame, directionFromVector } from './character-directions';
 import { TILE } from './world';
 
 type MovementKeys = Record<string, Phaser.Input.Keyboard.Key>;
@@ -33,7 +33,7 @@ export class Player {
       const length = Math.hypot(dx, dy);
       dx /= length;
       dy /= length;
-      this.facing = Math.abs(dx) > Math.abs(dy) ? { x: Math.sign(dx), y: 0 } : { x: 0, y: Math.sign(dy) };
+      this.facing = { x: dx, y: dy };
       const speed = 112;
       const canStand = (x: number, y: number) =>
         [[-7, -5], [7, -5], [-7, 3], [7, 3]].every(([ox, oy]) =>
@@ -47,11 +47,11 @@ export class Player {
         const ny = this.y + dy * speed * delta / steps;
         if (canStand(this.x, ny)) this.y = ny;
       }
-      if (this.x !== previousX || this.y !== previousY) this.step += delta * 8;
     }
-    const direction: CharacterDirection = this.facing.y < 0 ? 'up' : this.facing.y > 0 ? 'down' : this.facing.x < 0 ? 'left' : 'right';
+    const direction = directionFromVector(this.facing.x, this.facing.y);
     const walked = this.x !== previousX || this.y !== previousY;
-    this.sprite.setFrame(characterFrame(direction, walked ? Math.floor(this.step) : 0));
+    this.step = walked ? (this.step + delta * CHARACTER_WALK_FPS) % CHARACTER_WALK_FRAMES : 0;
+    this.sprite.setFrame(characterFrame(direction, walked ? 1 + Math.floor(this.step) : 0));
     this.sprite.setPosition(this.x, this.y).setDepth(this.y);
   }
 }

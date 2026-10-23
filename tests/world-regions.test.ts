@@ -10,7 +10,7 @@ vi.mock('phaser', () => ({ default: { Textures: { FilterMode: { NEAREST: 0 } } }
 
 // O teste exercita o mapa real e suas colisões sem precisar de WebGL/DOM.
 const object = {
-  setOrigin() { return this; }, setDepth() { return this; }, destroy() { return this; },
+  setOrigin() { return this; }, setScale() { return this; }, setDepth() { return this; }, destroy() { return this; },
   fillStyle() { return this; }, fillRect() { return this; }, lineStyle() { return this; }, lineBetween() { return this; },
 };
 const scene = {

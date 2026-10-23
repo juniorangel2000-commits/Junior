@@ -78,18 +78,17 @@ jobs:
         shell: pwsh
         run: |
           $notes = @'
-          After Rain 0.7.1 — ícones em pixel art, som na barra e missões livres.
+          After Rain 0.8.0 — personagem detalhado, oito direções e árvores maiores.
 
-          - Novo botão Música na barra superior. O painel Som do vale reúne volumes de música e efeitos, silêncio geral, prévia de efeito e restauração dos volumes.
-          - Nove ilustrações originais em pixel art para a barra, seguindo a paleta e a arte da fazenda.
-          - Aba Missões minimizada arrastável, com posição própria salva, independente da janela aberta.
-          - Arrastar a aba não a abre por engano. Clique, Enter e Espaço abrem normalmente; posições permanecem dentro da tela ao redimensionar.
-          - Selecionar um slot vazio deixa o personagem de mãos vazias para coletar e interagir. A mochila continua em I e na barra.
-          - Tela inicial no estilo da HUD: madeira, painel creme e ícones em pixel art, com o cenário real ao fundo.
-          - Abertura com raios ocasionais, trilha chuvosa original e botão para ouvir a chuva sem sair do início.
-          - Saves, mochila de 30 espaços, nove slots e recompensas preservados.
+          - Personagem com arte detalhada e animação em oito direções, incluindo as quatro diagonais.
+          - Oito quadros de caminhada por direção a 10 fps, além da pose parada. A prévia usa a mesma arte e animação da partida.
+          - Criação simples: nome, quatro tons de pele, dois penteados e quatro cores de roupa.
+          - Movimento diagonal com velocidade e alcance de interação preservados. Direção salva dentro e fora da casa.
+          - Árvores adultas 60% maiores, mantendo posição dos troncos, colisões e IDs. A transparência acompanha a copa ampliada.
+          - Personagens antigos mantêm cabelo longo, cores e bolsa. Folhas anteriores preservadas no projeto.
+          - HUD, som, abertura chuvosa, missões livres, mochila de 30 espaços, nove slots e recompensas preservados.
 
-          Validação: TypeScript, 181 testes, build e Chromium. Testes de arraste nas duas formas das missões, posição após reload, teclado, limites da tela, botões da barra, áudio e tela cheia.
+          Validação: TypeScript, 203 testes, build e Chromium. O QA conferiu os oito quadros por direção nos dois penteados da criação, três tamanhos de tela, teclado, interação diagonal por E, save/reload no exterior e no interior, copas translúcidas e ausência de erros de JavaScript ou assets.
 
           Versão para navegador de computador: https://after-rain-junior-desktop.astralpeach256.chatgpt.site (acesso pela conta do ChatGPT). Save do navegador é separado do executável.
 

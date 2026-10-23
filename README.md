@@ -1,4 +1,6 @@
-> **Atualização 0.7.1:** [Jogar no navegador (computador)](https://after-rain-junior-desktop.astralpeach256.chatgpt.site) · [Download Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.7.1) · [Ícones, painel de som e missões livres](docs/barra-som-missoes-v0.7.1.md). O site usa acesso pela conta do ChatGPT.
+> **Atualização 0.8.0:** [Jogar no navegador (computador)](https://after-rain-junior-desktop.astralpeach256.chatgpt.site) · [Download Windows 11 x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.8.0) · [Personagem detalhado, oito direções e árvores maiores](docs/personagem-oito-direcoes-v0.8.md). O site usa acesso pela conta do ChatGPT.
+
+> **Atualização 0.7.1:** [Download Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.7.1) · [Ícones, painel de som e missões livres](docs/barra-som-missoes-v0.7.1.md).
 
 > **Atualização 0.7.0:** [Download Windows 11 x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.7.0) · [HUD Fazenda aconchegante, áudio, tela cheia e chuva](docs/hud-audio-v0.7.md).
 
@@ -10,7 +12,9 @@
 
 Uma pequena clareira, uma casa que resistiu e a chance de recomeçar. **After Rain**, anteriormente chamado Jardim Depois da Chuva, é um jogo original para navegador, single-player, com exploração, cultivo e construção em pixel art 2D top-down. Sua história se passa após uma chuva que transformou pessoas em zumbis. Continua no mesmo projeto, com TypeScript, Phaser 3 e Vite e aplicativo desktop em Electron.
 
-A versão atual é **0.7.1**. A HUD usa a opção aprovada **02 — Fazenda aconchegante**, com molduras de madeira, painéis claros e mochila de 30 espaços. A tela inicial acompanha as molduras de madeira, o painel creme e os ícones da HUD, e abre sempre com chuva animada, raios ocasionais e uma trilha chuvosa própria; o botão “Pausar fundo” vale apenas para a visita atual. **Ctrl + Alt** alterna a tela cheia. Música e efeitos originais funcionam offline, com ajustes no botão Música da barra superior. O botão “Ouvir a chuva” permite iniciar o som ainda na abertura. Selecionar um dos nove slots vazios deixa o personagem de mãos vazias; a mochila abre por I ou pela barra superior.
+A versão atual é **0.8.0**. O personagem tem arte detalhada, oito direções e oito quadros de caminhada por direção a 10 fps, além da pose parada. A criação de personagem reúne nome, quatro tons de pele, dois penteados e quatro cores de roupa. As árvores adultas ficaram 60% maiores, mantendo seus troncos e colisões nos mesmos lugares.
+
+A HUD usa a opção aprovada **02 — Fazenda aconchegante**, com molduras de madeira, painéis claros e mochila de 30 espaços. A tela inicial acompanha as molduras de madeira, o painel creme e os ícones da HUD, e abre sempre com chuva animada, raios ocasionais e uma trilha chuvosa própria; o botão “Pausar fundo” vale apenas para a visita atual. **Ctrl + Alt** alterna a tela cheia. Música e efeitos originais funcionam offline, com ajustes no botão Música da barra superior. O botão “Ouvir a chuva” permite iniciar o som ainda na abertura. Selecionar um dos nove slots vazios deixa o personagem de mãos vazias; a mochila abre por I ou pela barra superior.
 
 A [tela inicial After Rain](docs/tela-inicial-after-rain.md) usa o cenário do jogo com chuva, neblina e câmera suave. O clipe do Flow ainda não foi fornecido; os estudos em [direção visual](docs/direcao-visual/hud/README.md) registram propostas históricas.
 
@@ -28,7 +32,7 @@ O acesso de terra foi centralizado na porta da casa. O cartão de dia, hora e re
 
 O [polimento das pedras decorativas e flores](docs/decoracao-pedras-flores.md) substitui as antigas lajes retangulares por pedras irregulares e traz flores com folhagem detalhada para canteiros, vasos e floreiras, seguindo a mesma arte das árvores e recursos.
 
-O [novo personagem e editor de aparência](docs/personagem-e-criacao.md) usa sprites de 48×64 com três penteados e quatro direções, prévia giratória com caminhada, cores independentes de camisa e macacão, bolsa opcional e aparências prontas. As escolhas persistem no salvamento, com compatibilidade para perfis antigos. As três pedras de passagem em frente à casa foram retiradas.
+O [personagem e o editor da versão 0.8.0](docs/personagem-oito-direcoes-v0.8.md) usam sprites detalhados de 48×64, com prévia nas oito direções e caminhada. As poucas escolhas da criação simplificam a personalização. Saves anteriores conservam cabelo longo, cores e bolsa quando já escolhidos; as folhas anteriores continuam no repositório. A [documentação do editor anterior](docs/personagem-e-criacao.md) registra aquela entrega. As três pedras de passagem em frente à casa foram retiradas.
 
 ![Captura real da propriedade com a entrada sem pedras.](docs/capturas/entrada-sem-pedras.png)
 
@@ -62,7 +66,7 @@ O build fica em `dist/`. Sirva essa pasta por HTTP; abrir `index.html` diretamen
 
 ## Aplicativo para Windows
 
-**Versão atual:** [After Rain v0.7.1 — Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.7.1/After-Rain-0.7.1-Windows-x64.exe). A [página da Release](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.7.1) reúne o executável e seu manifesto de integridade. Inclui a abertura com o visual da HUD, chuva com raios, trilha chuvosa, painel de som na barra, ícones em pixel art, missões livres e slots vazios para mãos vazias. Feche a versão antiga antes de abrir o novo arquivo.
+**Versão atual:** [After Rain v0.8.0 — Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.8.0/After-Rain-0.8.0-Windows-x64.exe). A [página da Release](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.8.0) reúne o executável e seu manifesto de integridade. Inclui o personagem detalhado com oito direções e oito quadros de caminhada, criação simples e árvores maiores, além da HUD, chuva com raios, trilha chuvosa, painel de som e missões livres. Feche a versão antiga antes de abrir o novo arquivo.
 
 O pacote portátil é gerado em `release/`, com nome `After-Rain-<versão>-Windows-x64.exe` a partir da versão 0.5.0. Os pacotes anteriores mantêm o nome de arquivo original. Ele é destinado a **Windows 10/11 de 64 bits**. Para jogar o pacote pronto, abra o `.exe` com dois cliques. Não precisa instalar Node.js, abrir um terminal, manter o Vite ativo, conectar à internet ou executar como administrador. A primeira abertura pode demorar um pouco enquanto o pacote prepara seus arquivos temporários.
 
@@ -87,11 +91,11 @@ A [execução da versão v0.5.0](https://github.com/juniorangel2000-commits/Juni
 
 ## Controles
 
-Crie seu personagem escolhendo nome, tom de pele, penteado, cor do cabelo, macacão, camisa e bolsa. Confira as quatro direções e a caminhada na prévia; os presets e o botão de redefinir ajudam a escolher. **Novas partidas começam com a mochila vazia**; recursos básicos ficam perto da casa. Partidas antigas mantêm seu estoque ao migrar.
+Crie seu personagem escolhendo nome, um dos quatro tons de pele, cabelo **Curto** ou **Preso** e uma das quatro cores de roupa. Confira as oito direções e use **Ver caminhada** na prévia. **Novas partidas começam com a mochila vazia**; recursos básicos ficam perto da casa. Partidas antigas mantêm seu estoque e as escolhas anteriores de aparência.
 
 | Controle | Ação |
 | --- | --- |
-| WASD ou setas | Caminhar |
+| WASD ou setas | Caminhar em oito direções; combine duas teclas para uma diagonal |
 | E ou clique esquerdo próximo | Interagir com a ação selecionada |
 | Botão direito no cenário | Abrir/recolher a barra de opções do jogo |
 | Mouse no centro superior + clique na seta | Revelar e abrir/recolher a barra de opções |
@@ -105,6 +109,7 @@ Crie seu personagem escolhendo nome, tom de pele, penteado, cor do cabelo, macac
 | I | Abrir ou fechar a mochila |
 | M | Abrir ou fechar o mapa das áreas exploráveis |
 | Esc | Fechar/cancelar o menu ou pausar |
+| Ctrl + Alt | Alternar tela cheia |
 | Ctrl + Shift + F10 | Solicitar acesso de administrador por senha |
 
 As ações também podem ser selecionadas pela interface. A barra superior começa recolhida e reúne **Inventário, Mapa, Fabricação, Construção, Música, Salvar, Controles e Opções**; dentro de casa, oferece **Minha casa**. **Opções** abre a pausa com salvar, administração e retorno ao início. Apenas passar o mouse para revelar a seta mantém a simulação ativa; abrir a barra pausa. **Esc** recolhe a barra antes de abrir a pausa. Os atalhos continuam funcionando com a barra fechada.
@@ -269,6 +274,8 @@ vite.config.ts            Caminhos relativos para assets locais
 ```
 
 ## Validação
+
+Na versão **0.8.0**, **203 testes** passaram. O QA no Chromium conferiu oito desenhos de caminhada por direção nos dois penteados da criação, poses paradas, criação em três tamanhos de tela, movimento real pelo teclado, save/reload dentro e fora da casa, interação diagonal por E e transparência das copas ampliadas, sem erros de JavaScript ou assets. Veja [o registro da versão 0.8.0](docs/personagem-oito-direcoes-v0.8.md). A abertura interativa do executável em Windows 11 não foi testada neste ambiente Linux.
 
 Na versão **0.5.0**, a abertura foi conferida no Chromium: câmera e chuva pausam sem avançar a partida; criar, jogar, voltar e continuar restauram o estado; um save real do build 0.4.0 carrega corretamente. Vídeo local opcional foi testado com uma fixture externa, incluindo loop, pausa, acessibilidade, limpeza e fallback. O clipe final do Flow continua pendente; o pacote Windows 0.5.0 já foi publicado e verificado. Veja [a documentação da abertura](docs/tela-inicial-after-rain.md).
 
