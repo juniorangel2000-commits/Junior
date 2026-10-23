@@ -28,7 +28,7 @@ jobs:
           npm test
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Gerar prévia Windows x64
-        run: npm run desktop:win -- --publish never -c.win.artifactName=After-Rain-Editor-Preview-Windows-x64.exe
+        run: npm run desktop:win -- --publish never
       - name: Preparar arquivos para download
         shell: pwsh
         run: |

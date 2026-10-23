@@ -18,7 +18,7 @@ win:
         - x64
   icon: desktop/resources/icon.ico
   signAndEditExecutable: false
-  artifactName: After-Rain-${version}-Windows-x64.exe
+  artifactName: After-Rain-Editor-Preview-Windows-x64.exe
 portable:
   requestExecutionLevel: user
 linux:
