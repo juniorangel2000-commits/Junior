@@ -48,12 +48,12 @@ const assert = require('node:assert/strict');
       }));
       return { directions: CHARACTER_DIRECTIONS, columns: CHARACTER_FRAMES_PER_DIRECTION, walkFrames: CHARACTER_WALK_FRAMES, fps: CHARACTER_WALK_FPS, styles };
     });
-    assert.equal(animation.columns, 9);
-    assert.equal(animation.walkFrames, 8);
-    assert.equal(animation.fps, 10);
+    assert.equal(animation.columns, 5);
+    assert.equal(animation.walkFrames, 4);
+    assert.equal(animation.fps, 7);
     for (const style of animation.styles) {
       assert.equal(new Set(style.directions.map(view => view.idle)).size, 8, `${style.hairStyle}: eight distinct idle directions`);
-      for (const view of style.directions) assert.equal(view.distinctWalkFrames, 8, `${style.hairStyle}/${view.direction}: eight distinct rendered walking frames`);
+      for (const view of style.directions) assert.equal(view.distinctWalkFrames, 4, `${style.hairStyle}/${view.direction}: four distinct rendered walking frames`);
     }
     for (let row = 0; row < animation.directions.length; row++) {
       assert.notEqual(animation.styles[0].directions[row].idle, animation.styles[1].directions[row].idle, `${animation.directions[row]}: both hairstyles render independently`);
@@ -151,6 +151,6 @@ const assert = require('node:assert/strict');
     assert.equal(await page.evaluate(() => scene.inventory.data.seeds), 0);
     assert.ok(await page.evaluate(() => scene.farming.cropAt(26, 22)), 'E plants on the diagonal tile');
     assert.deepEqual(errors, []);
-    console.log('PASS simple editor, 8 distinct walking frames and idle in all 8 directions for both hairstyles, three viewport sizes, real keyboard in 8 directions, exterior/interior save/reload, diagonal E, taller trees with extended canopy occlusion, no JS/assets errors');
+    console.log('PASS simple editor, 4 distinct walking frames and idle in all 8 directions for both hairstyles, three viewport sizes, real keyboard in 8 directions, exterior/interior save/reload, diagonal E, taller trees with extended canopy occlusion, no JS/assets errors');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exit(1); });

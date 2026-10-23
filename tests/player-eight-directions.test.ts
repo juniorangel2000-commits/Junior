@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type Phaser from 'phaser';
-import { Player } from '../src/player';
+import { Player, PLAYER_SPEED, PLAYER_WALK_CYCLE_DISTANCE } from '../src/player';
 import { CHARACTER_DIRECTIONS, CHARACTER_FRAMES_PER_DIRECTION, CHARACTER_WALK_FRAMES, characterFrame } from '../src/character-directions';
 
 vi.mock('phaser', () => ({ default: {} }));
@@ -27,9 +27,9 @@ describe('movimento e orientação em oito direções', () => {
     const { player, keys, sprite } = fixture();
     held.forEach(key => { keys[key].isDown = true; });
     player.update(.125, () => false);
-    expect(sprite.setFrame).toHaveBeenLastCalledWith(row * CHARACTER_FRAMES_PER_DIRECTION + 2);
+    expect(sprite.setFrame).toHaveBeenLastCalledWith(row * CHARACTER_FRAMES_PER_DIRECTION + 1 + Math.floor(PLAYER_SPEED * .125 / PLAYER_WALK_CYCLE_DISTANCE * CHARACTER_WALK_FRAMES));
     for (let frame = 0; frame < 7; frame++) player.update(.125, () => false);
-    expect(Math.hypot(player.x - 300, player.y - 300)).toBeCloseTo(112, 8);
+    expect(Math.hypot(player.x - 300, player.y - 300)).toBeCloseTo(84, 8);
     expect(player.facing.x).toBeCloseTo(x / Math.hypot(x, y), 8);
     expect(player.facing.y).toBeCloseTo(y / Math.hypot(x, y), 8);
     const position = { x: player.x, y: player.y };
@@ -49,42 +49,122 @@ describe('movimento e orientação em oito direções', () => {
     expect(player.y + 3).toBeLessThan(128);
   });
 
-  it('desliza junto à parede sem perder a orientação e para a animação quando bloqueada', () => {
+  it('desliza junto à parede na direção real e para a animação quando bloqueada', () => {
     const sliding = fixture(100, 100);
     sliding.keys.S.isDown = sliding.keys.D.isDown = true;
     sliding.player.update(1, () => false, x => x >= 128);
     expect(sliding.player.x + 7).toBeLessThan(128);
-    expect(sliding.player.y).toBeCloseTo(100 + 112 / Math.sqrt(2), 8);
-    const blocked = fixture(120, 124);
+    expect(sliding.player.x + 7).toBeGreaterThan(127.99);
+    expect(sliding.player.y).toBeCloseTo(100 + PLAYER_SPEED / Math.sqrt(2), 8);
+    sliding.player.update(.1, () => false, x => x >= 128);
+    expect(sliding.player.facing).toEqual({ x: 0, y: 1 });
+    const blocked = fixture(120.999, 124.999);
     blocked.keys.S.isDown = blocked.keys.D.isDown = true;
     blocked.player.update(.125, () => false, (x, y) => x >= 128 || y >= 128);
-    expect(blocked.player.x).toBe(120);
-    expect(blocked.player.y).toBe(124);
+    expect(blocked.player.x).toBe(120.999);
+    expect(blocked.player.y).toBe(124.999);
     expect(blocked.sprite.setFrame).toHaveBeenLastCalledWith(5 * CHARACTER_FRAMES_PER_DIRECTION);
   });
 
-  it('percorre oito quadros a 10 fps, repete o ciclo sem a pose parada e reinicia após parar', () => {
+  it('liga o ciclo completo à distância percorrida, com pose parada independente', () => {
     const { player, keys, sprite } = fixture();
+    const frameDuration = PLAYER_WALK_CYCLE_DISTANCE / PLAYER_SPEED / CHARACTER_WALK_FRAMES;
     keys.S.isDown = true;
-    player.update(.05, () => false);
-    for (let frame = 0; frame < CHARACTER_WALK_FRAMES; frame++) player.update(.1, () => false);
-    expect(sprite.setFrame.mock.calls.map(([frame]) => frame)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 1]);
+    player.update(frameDuration / 2, () => false);
+    for (let frame = 0; frame < CHARACTER_WALK_FRAMES; frame++) player.update(frameDuration, () => false);
+    expect(sprite.setFrame.mock.calls.map(([frame]) => frame)).toEqual([
+      ...Array.from({ length: CHARACTER_WALK_FRAMES }, (_, frame) => frame + 1), 1,
+    ]);
     keys.S.isDown = false;
     player.update(.5, () => false);
     expect(sprite.setFrame).toHaveBeenLastCalledWith(0);
     keys.S.isDown = true;
-    player.update(.05, () => false);
+    player.update(frameDuration / 2, () => false);
     expect(sprite.setFrame).toHaveBeenLastCalledWith(1);
   });
 
-  it('reserva uma pose parada independente e oito quadros consecutivos para cada direção', () => {
+  it('reserva uma pose parada e os quadros consecutivos de cada direção', () => {
     const atlasFrames = CHARACTER_DIRECTIONS.flatMap(direction =>
       Array.from({ length: CHARACTER_FRAMES_PER_DIRECTION }, (_, phase) => characterFrame(direction, phase)));
-    expect(atlasFrames).toEqual(Array.from({ length: 72 }, (_, frame) => frame));
+    expect(atlasFrames).toEqual(Array.from({ length: CHARACTER_DIRECTIONS.length * CHARACTER_FRAMES_PER_DIRECTION }, (_, frame) => frame));
     for (const direction of CHARACTER_DIRECTIONS) {
-      expect(characterFrame(direction, 9)).toBe(characterFrame(direction, 1));
-      expect(characterFrame(direction, 16)).toBe(characterFrame(direction, 8));
-      expect(characterFrame(direction, 0)).not.toBe(characterFrame(direction, 8));
+      expect(characterFrame(direction, CHARACTER_WALK_FRAMES + 1)).toBe(characterFrame(direction, 1));
+      expect(characterFrame(direction, CHARACTER_WALK_FRAMES * 2)).toBe(characterFrame(direction, CHARACTER_WALK_FRAMES));
+      expect(characterFrame(direction, 0)).not.toBe(characterFrame(direction, CHARACTER_WALK_FRAMES));
     }
+  });
+
+  it.each([30, 60, 144])('mantém posição e fase da passada a %i fps', fps => {
+    const { player, keys, sprite } = fixture();
+    keys.D.isDown = true;
+    for (let frame = 0; frame < fps; frame++) player.update(1 / fps, () => false);
+    expect(player.x).toBeCloseTo(300 + PLAYER_SPEED, 7);
+    expect(sprite.setFrame).toHaveBeenLastCalledWith(characterFrame('right', 1 + Math.floor((PLAYER_SPEED % PLAYER_WALK_CYCLE_DISTANCE) / PLAYER_WALK_CYCLE_DISTANCE * CHARACTER_WALK_FRAMES)));
+  });
+
+  it('a parede reduz a cadência conforme a distância real, sem caminhar no lugar', () => {
+    const slide = fixture(100, 100), straight = fixture(100, 100);
+    slide.keys.S.isDown = slide.keys.D.isDown = true;
+    straight.keys.S.isDown = true;
+    for (let frame = 0; frame < 60; frame++) {
+      slide.player.update(1 / 60, () => false, x => x > 107.001);
+      straight.player.update(1 / 60 / Math.sqrt(2), () => false);
+    }
+    expect(slide.player.y).toBeCloseTo(straight.player.y, 7);
+    expect(slide.player.x).toBeCloseTo(100, 7);
+    expect(slide.sprite.setFrame.mock.lastCall).toEqual(straight.sprite.setFrame.mock.lastCall);
+  });
+
+  it('aproxima os pés da mesma borda em quadros rápidos ou lentos', () => {
+    const positions = [30, 60, 144].map(fps => {
+      const { player, keys } = fixture(100, 100);
+      keys.D.isDown = true;
+      for (let frame = 0; frame < fps; frame++) player.update(1 / fps, () => false, x => x >= 128);
+      expect(player.x + 7).toBeLessThan(128);
+      expect(player.x + 7).toBeGreaterThan(127.99);
+      return player.x;
+    });
+    expect(Math.max(...positions) - Math.min(...positions)).toBeLessThan(.01);
+  });
+
+  it('pausa a fase no bloqueio e a retoma quando o caminho abre', () => {
+    const { player, keys, sprite } = fixture(100, 100);
+    keys.D.isDown = true;
+    player.update(1, () => false, x => x >= 130);
+    for (let frame = 0; frame < 30; frame++) player.update(1 / 60, () => false, x => x >= 130);
+    expect(player.x).toBeGreaterThan(122.99);
+    expect(player.x).toBeLessThan(123);
+    expect(sprite.setFrame).toHaveBeenLastCalledWith(characterFrame('right'));
+    player.update(2 / PLAYER_SPEED, () => false);
+    expect(sprite.setFrame).toHaveBeenLastCalledWith(characterFrame('right', 1 + Math.floor(25 / 48 * CHARACTER_WALK_FRAMES)));
+  });
+
+  it('soltar as teclas diagonais em eventos próximos mantém a direção final e para sem inércia', () => {
+    const { player, keys, sprite } = fixture();
+    keys.W.isDown = keys.A.isDown = true;
+    player.update(.1, () => false);
+    keys.W.isDown = false;
+    player.update(.01, () => false);
+    keys.A.isDown = false;
+    const position = { x: player.x, y: player.y };
+    player.update(.01, () => false);
+    expect({ x: player.x, y: player.y }).toEqual(position);
+    expect(sprite.setFrame).toHaveBeenLastCalledWith(characterFrame('up-left'));
+  });
+
+  it('a tolerância ao soltar não atrasa o movimento nem bloqueia uma virada intencional', () => {
+    const { player, keys } = fixture();
+    keys.W.isDown = keys.A.isDown = true;
+    player.update(.1, () => false);
+    keys.W.isDown = false;
+    const x = player.x, y = player.y;
+    player.update(.02, () => false);
+    expect(player.x).toBeCloseTo(x - PLAYER_SPEED * .02, 7);
+    expect(player.y).toBe(y);
+    player.update(.02, () => false);
+    expect(player.facing).toEqual({ x: -1, y: 0 });
+    keys.A.isDown = false; keys.D.isDown = true;
+    player.update(.005, () => false);
+    expect(player.facing).toEqual({ x: 1, y: 0 });
   });
 });

@@ -1,4 +1,6 @@
 import { makeDraggablePanel } from './draggable-panel';
+import { CAMERA_ZOOM_MIN, CAMERA_ZOOM_MAX } from './camera-zoom';
+import './camera-zoom.css';
 import { gameAudio } from './audio';
 import { toolbarIcon } from './toolbar-icons';
 import { CHARACTER_WIDTH, drawCharacter } from './art';
@@ -35,6 +37,8 @@ interface UICallbacks {
   onMainMenu(): void;
   onTitleBackground(mode: TitleBackgroundMode): void;
   onAdminMenu(): void;
+  onMapEditor(): void;
+  onZoom(direction: -1 | 0 | 1): void;
 }
 
 const paths: Record<string, string> = {
@@ -134,6 +138,8 @@ export class GameUI {
 
   setQuickbar(slots: QuickSlot[]): void { this.quickbar = [...slots]; this.activeSlot = -1; }
   getQuickbar(): QuickSlot[] { return [...this.quickbar]; }
+  private cameraZoomFactor = 1;
+  private cameraZoomEnabled = false;
   private activeSlot = -1;
   private draggedItem: Exclude<QuickSlot, null> | null = null;
   private selectedInventoryItem: Exclude<QuickSlot, null> | null = null;
@@ -257,6 +263,7 @@ export class GameUI {
   }
 
   showTitle(hasSave: boolean): void {
+    this.base.style.display = '';
     this.journalCleanup?.();
     this.topToolbar?.destroy();
     this.topToolbar = undefined;
@@ -279,6 +286,7 @@ export class GameUI {
       icon,
       onNewGame: () => this.showCreation(),
       onContinue: () => this.callbacks.onContinue(),
+      onMapEditor: () => this.callbacks.onMapEditor(),
       onBackgroundMode: mode => this.callbacks.onTitleBackground(mode),
     });
   }
@@ -302,6 +310,7 @@ export class GameUI {
   }
 
   showHUD(): void {
+    this.base.style.display = '';
     this.journalCleanup?.();
     this.topToolbar?.destroy();
     this.topToolbar = undefined;
@@ -319,11 +328,20 @@ export class GameUI {
     this.lastHudKey = '';
     this.base.innerHTML = `<div class="hud">
       <header class="hud-header hud-status" aria-label="Dia, hora e recursos"><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><strong id="hud-day">Dia 1</strong><span class="status-time"><b id="hud-time">08:00</b></span></div><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}</div></header>
+      <div class="camera-zoom" role="group" aria-label="Zoom da câmera">
+        <button type="button" data-zoom="-1" aria-label="Diminuir zoom" title="Afastar a câmera · − ou roda do mouse">−</button>
+        <button type="button" data-zoom="0" aria-label="Restaurar zoom padrão" title="Restaurar para 100% · Home"><span class="camera-zoom-value" aria-live="polite">100%</span></button>
+        <button type="button" data-zoom="1" aria-label="Aumentar zoom" title="Aproximar a câmera · + ou roda do mouse">+</button>
+      </div>
       <button class="journal-reopen" ${this.journalCollapsed ? '' : 'hidden'} aria-controls="journal-panel" aria-expanded="false" aria-label="Abrir missões" title="Abrir missões">${icon('leaf')}<span>Missões</span></button><aside id="journal-panel" class="journal" ${this.journalCollapsed ? 'hidden' : ''}><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="journal-close" aria-controls="journal-panel" aria-label="Fechar missões" title="Fechar missões">${icon('close')}</button></header><div id="journal-content" class="journal-content"><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera nas ruínas a oeste.</p><div class="journal-rule"></div><div class="quest" id="harvest-quest"><span class="quest-circle"></span>Colha seu primeiro nabo</div><div class="quest" id="lia-quest"><span class="quest-circle"></span>Converse com Lia <kbd>E</kbd></div><small>Seu tempo. Seu caminho.</small></div></aside>
       <div class="location-pill">${icon('pin')}<span id="hud-location">Minha propriedade</span></div>
       <div class="bottom-center"><div class="interaction-prompt"><kbd id="hud-interaction-key">E</kbd><span id="hud-prompt">Explore o vale ao seu redor</span></div><div id="hud-resource-progress" class="resource-progress" hidden></div><div class="toolbelt"></div><div class="tool-status"><strong id="active-tool">Explorar</strong><span id="tool-cost">Coletar · conversar · colher</span></div></div>
     </div>`;
     this.renderQuickbar(); this.setupJournalDrag();
+    this.base.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach(button => {
+      button.addEventListener('click', () => this.callbacks.onZoom(Number(button.dataset.zoom) as -1 | 0 | 1));
+    });
+    this.updateCameraZoom(this.cameraZoomFactor, this.cameraZoomEnabled);
     this.locationName = '';
     this.topToolbar = new TopToolbar(this.base.querySelector<HTMLElement>('.hud')!, {
       onOpenChange: open => this.callbacks.onPause(open || this.modal !== null),
@@ -351,6 +369,17 @@ export class GameUI {
     this.callbacks.onPause(false);
   }
 
+  updateCameraZoom(factor: number, enabled: boolean): void {
+    this.cameraZoomFactor = factor;
+    this.cameraZoomEnabled = enabled;
+    const value = this.base.querySelector('.camera-zoom-value');
+    if (value) value.textContent = `${Math.round(factor * 100)}%`;
+    this.base.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach(button => {
+      const direction = Number(button.dataset.zoom);
+      button.disabled = !enabled || direction < 0 && factor <= CAMERA_ZOOM_MIN || direction > 0 && factor >= CAMERA_ZOOM_MAX;
+    });
+  }
+
   toggleTopToolbar(): void {
     if (this.mode !== 'hud' || this.modal) return;
     this.topToolbar?.toggle();
@@ -367,7 +396,7 @@ export class GameUI {
     this.topToolbar?.setOpen(false, false);
     if (action === 'controls') {
       this.openModal('controls');
-      this.overlay.innerHTML = `<section class="panel inventory-card" role="dialog" aria-label="Controles"><div class="modal-heading"><h2>Controles</h2><button class="icon-button" aria-label="Fechar controles">${icon('close')}</button></div><p>WASD / setas — mover<br>E — interagir / usar ferramenta<br>1–9 — selecionar slot; vazio deixa as mãos livres<br>Botão direito no slot — trocar ou esvaziar<br>I — inventário · C — fabricar · B — construir<br>M — mapa · H — personalizar casa<br>0 — parede · P — porta · R — girar cobertura<br>Esc — fechar / pausar<br>Ctrl + Alt — entrar / sair da tela cheia</p></section>`;
+      this.overlay.innerHTML = `<section class="panel inventory-card" role="dialog" aria-label="Controles"><div class="modal-heading"><h2>Controles</h2><button class="icon-button" aria-label="Fechar controles">${icon('close')}</button></div><p>WASD / setas — mover<br>Roda do mouse ou + / − — aproximar / afastar<br>Home ou porcentagem do zoom — voltar a 100%<br>E — interagir / usar ferramenta<br>1–9 — selecionar slot; vazio deixa as mãos livres<br>Botão direito no slot — trocar ou esvaziar<br>I — inventário · C — fabricar · B — construir<br>M — mapa · H — personalizar casa<br>0 — parede · P — porta · R — girar cobertura<br>Esc — fechar / pausar<br>Ctrl + Alt — entrar / sair da tela cheia</p></section>`;
       this.overlay.querySelector('button')!.onclick = () => this.closeModal();
       this.overlay.querySelector('button')!.focus();
     }
@@ -739,7 +768,26 @@ export class GameUI {
     });
     panel.querySelector('[data-action="title"]')!.addEventListener('click', () => this.callbacks.onMainMenu());
     panel.querySelector('[data-action="admin"]')!.addEventListener('click', () => { this.closeModal(); this.callbacks.onAdminMenu(); });
+    const editor = document.createElement('button');
+    editor.className = 'button button-light';
+    editor.dataset.action = 'map-editor';
+    editor.textContent = 'Editar mapa · F2';
+    editor.addEventListener('click', () => this.callbacks.onMapEditor());
+    panel.querySelector('.pause-actions')!.insertBefore(editor, panel.querySelector('[data-action="admin"]'));
     this.overlay.append(panel);
+  }
+
+  showMapEditorMode(): void {
+    this.journalCleanup?.();
+    this.journalCleanup = undefined;
+    this.topToolbar?.destroy(); this.topToolbar = undefined;
+    this.homeEditor?.destroy(); this.homeEditor = undefined;
+    this.cleanupTitle?.(); this.cleanupTitle = undefined;
+    this.cleanupCreation?.(); this.cleanupCreation = undefined;
+    if (this.modal === 'crafting') this.callbacks.onCancelCraft();
+    this.modal = null;
+    this.overlay.replaceChildren(); this.overlay.classList.remove('active');
+    this.base.style.display = 'none';
   }
 
   showHomeCustomization(home: HomeData, onAction: (action: HomeEditAction) => HomeEditResponse): void {

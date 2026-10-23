@@ -1,17 +1,25 @@
 import Phaser from 'phaser';
 import type { CharacterProfile } from './types';
 import { createCharacterFrames } from './art';
-import { CHARACTER_WALK_FPS, CHARACTER_WALK_FRAMES, characterFrame, directionFromVector } from './character-directions';
+import { CHARACTER_WALK_FRAMES, characterFrame, directionFromVector } from './character-directions';
 import { TILE } from './world';
 
 type MovementKeys = Record<string, Phaser.Input.Keyboard.Key>;
+
+export const PLAYER_SPEED = 84;
+/** Two alternating footfalls over one complete walk cycle, in world pixels. */
+export const PLAYER_WALK_CYCLE_DISTANCE = 48;
+const RELEASE_TURN_GRACE = .03;
+const COLLISION_PRECISION = .01;
 
 export class Player {
   readonly sprite: Phaser.GameObjects.Sprite;
   x: number;
   y: number;
   facing = { x: 0, y: 1 };
-  private step = 0;
+  private walkDistance = 0;
+  private previousInput = { x: 0, y: 0 };
+  private releaseTurn?: { x: number; y: number; elapsed: number };
   private readonly keys: MovementKeys;
 
   constructor(scene: Phaser.Scene, profile: CharacterProfile, x: number, y: number) {
@@ -24,34 +32,74 @@ export class Player {
 
   update(delta: number, isBlocked: (x: number, y: number) => boolean,
     isBlockedPoint?: (x: number, y: number) => boolean): void {
-    let dx = Number(this.keys.D.isDown || this.keys.RIGHT.isDown) - Number(this.keys.A.isDown || this.keys.LEFT.isDown);
-    let dy = Number(this.keys.S.isDown || this.keys.DOWN.isDown) - Number(this.keys.W.isDown || this.keys.UP.isDown);
-    const moving = dx !== 0 || dy !== 0;
-    const previousX = this.x;
-    const previousY = this.y;
+    const inputX = Number(this.keys.D.isDown || this.keys.RIGHT.isDown) - Number(this.keys.A.isDown || this.keys.LEFT.isDown);
+    const inputY = Number(this.keys.S.isDown || this.keys.DOWN.isDown) - Number(this.keys.W.isDown || this.keys.UP.isDown);
+    const moving = inputX !== 0 || inputY !== 0;
+    const previousX = this.x, previousY = this.y;
+    let distance = 0;
     if (moving) {
-      const length = Math.hypot(dx, dy);
-      dx /= length;
-      dy /= length;
-      this.facing = { x: dx, y: dy };
-      const speed = 112;
+      const length = Math.hypot(inputX, inputY);
+      const dx = inputX / length, dy = inputY / length;
       const canStand = (x: number, y: number) =>
         [[-7, -5], [7, -5], [-7, 3], [7, 3]].every(([ox, oy]) =>
           isBlockedPoint ? !isBlockedPoint(x + ox, y + oy)
             : !isBlocked(Math.floor((x + ox) / TILE), Math.floor((y + oy) / TILE)));
-      // Pequenos passos evitam atravessar colisões mesmo após uma queda de FPS.
-      const steps = Math.max(1, Math.ceil(speed * delta / 6));
+      const moveAxis = (amount: number, horizontal: boolean): void => {
+        if (!amount) return;
+        const fits = (offset: number) => canStand(this.x + (horizontal ? offset : 0), this.y + (horizontal ? 0 : offset));
+        let allowed = amount;
+        if (!fits(amount)) {
+          // Clip the last substep to the wall instead of stopping a whole step early.
+          // This keeps wall sliding consistent at different rendering frame rates.
+          if (!fits(0)) return;
+          let low = 0, high = 1;
+          for (let i = 0; i < 10; i++) {
+            const fraction = (low + high) / 2;
+            if (fits(amount * fraction)) low = fraction; else high = fraction;
+          }
+          allowed = amount * low;
+          if (Math.abs(allowed) < COLLISION_PRECISION) return;
+        }
+        if (horizontal) this.x += allowed; else this.y += allowed;
+      };
+      // Small substeps preserve the existing foot collision box even after a slow frame.
+      const steps = Math.max(1, Math.ceil(PLAYER_SPEED * delta / 6));
       for (let i = 0; i < steps; i++) {
-        const nx = this.x + dx * speed * delta / steps;
-        if (canStand(nx, this.y)) this.x = nx;
-        const ny = this.y + dy * speed * delta / steps;
-        if (canStand(this.x, ny)) this.y = ny;
+        const startX = this.x, startY = this.y;
+        moveAxis(dx * PLAYER_SPEED * delta / steps, true);
+        moveAxis(dy * PLAYER_SPEED * delta / steps, false);
+        distance += Math.hypot(this.x - startX, this.y - startY);
       }
+
+      const actualX = this.x - previousX, actualY = this.y - previousY;
+      // Follow the actual sliding axis; when fully blocked, still face the interaction target.
+      const slideX = Math.abs(actualX) > COLLISION_PRECISION ? Math.sign(actualX) : 0;
+      const slideY = Math.abs(actualY) > COLLISION_PRECISION ? Math.sign(actualY) : 0;
+      const facingX = distance > COLLISION_PRECISION ? slideX : inputX;
+      const facingY = distance > COLLISION_PRECISION ? slideY : inputY;
+      const releasedDiagonal = this.previousInput.x !== 0 && this.previousInput.y !== 0
+        && ((inputX === this.previousInput.x && inputY === 0) || (inputY === this.previousInput.y && inputX === 0));
+      if (releasedDiagonal) this.releaseTurn = { x: inputX, y: inputY, elapsed: 0 };
+      if (this.releaseTurn && (this.releaseTurn.x !== inputX || this.releaseTurn.y !== inputY)) this.releaseTurn = undefined;
+      if (this.releaseTurn) {
+        this.releaseTurn.elapsed += delta;
+        if (this.releaseTurn.elapsed >= RELEASE_TURN_GRACE) this.releaseTurn = undefined;
+      }
+      if (!this.releaseTurn && (facingX || facingY)) {
+        const facingLength = Math.hypot(facingX, facingY);
+        this.facing = { x: facingX / facingLength, y: facingY / facingLength };
+      }
+    } else {
+      // Stop immediately, without inertia; a fresh walk starts at the contact pose.
+      this.walkDistance = 0;
+      this.releaseTurn = undefined;
     }
+    this.previousInput = { x: inputX, y: inputY };
+    const walked = distance > 1e-7;
+    if (walked) this.walkDistance = (this.walkDistance + distance) % PLAYER_WALK_CYCLE_DISTANCE;
+    const phase = Math.floor((this.walkDistance + 1e-7) / PLAYER_WALK_CYCLE_DISTANCE * CHARACTER_WALK_FRAMES) % CHARACTER_WALK_FRAMES + 1;
     const direction = directionFromVector(this.facing.x, this.facing.y);
-    const walked = this.x !== previousX || this.y !== previousY;
-    this.step = walked ? (this.step + delta * CHARACTER_WALK_FPS) % CHARACTER_WALK_FRAMES : 0;
-    this.sprite.setFrame(characterFrame(direction, walked ? 1 + Math.floor(this.step) : 0));
+    this.sprite.setFrame(characterFrame(direction, walked ? phase : 0));
     this.sprite.setPosition(this.x, this.y).setDepth(this.y);
   }
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type Phaser from 'phaser';
-import { Player } from '../src/player';
+import { Player, PLAYER_SPEED } from '../src/player';
 import { isBridgeTile, isWaterTile, TILE } from '../src/data/regions';
 import { isWaterPoint } from '../src/data/terrain-shape';
 
@@ -23,7 +23,7 @@ describe('movimento nas margens arredondadas', () => {
     const fast = playerAt(800, 560), slow = playerAt(800, 560);
     for (let i = 0; i < 60; i++) fast.update(1 / 60, () => false);
     for (let i = 0; i < 20; i++) slow.update(1 / 20, () => false);
-    expect(fast.x).toBeCloseTo(912, 6);
+    expect(fast.x).toBeCloseTo(800 + PLAYER_SPEED, 6);
     expect(slow.x).toBeCloseTo(fast.x, 6);
   });
 
@@ -40,7 +40,7 @@ describe('movimento nas margens arredondadas', () => {
     expect(isWaterPoint(44 * TILE + 16, 18 * TILE + 16)).toBe(true);
     expect(waterBlocks(44 * TILE + 16, 18 * TILE + 16)).toBe(false);
     expect(waterBlocks(44 * TILE + 16, 20 * TILE + 16)).toBe(true);
-    for (let i = 0; i < 180; i++) player.update(1 / 60, isWaterTile, waterBlocks);
+    for (let i = 0; i < Math.ceil(9 * TILE / PLAYER_SPEED * 60); i++) player.update(1 / 60, isWaterTile, waterBlocks);
     expect(player.x).toBeGreaterThan(49 * TILE + 16);
   });
 
@@ -54,7 +54,7 @@ describe('movimento nas margens arredondadas', () => {
     }
     expect(dryCorner).toBeDefined();
     const player = playerAt(dryCorner!.x, dryCorner!.y);
-    player.update(1 / 112, isWaterTile, waterBlocks);
+    player.update(1 / PLAYER_SPEED, isWaterTile, waterBlocks);
     expect(player.x).toBeCloseTo(dryCorner!.x + 1, 6);
     expect(offsets.every(([ox, oy]) => !waterBlocks(player.x + ox, player.y + oy))).toBe(true);
   });

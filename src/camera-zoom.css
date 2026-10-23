@@ -1,0 +1,20 @@
+/* Small wooden camera controls below the clock, outside the walking area. */
+#ui .hud .camera-zoom {
+  position: absolute; top: 103px; right: 20px; z-index: 2;
+  display: flex; align-items: center; gap: 3px; padding: 3px;
+  pointer-events: auto; user-select: none;
+  border: 6px solid #87552f; border-image: var(--cozy-frame) 14 / 6px / 0 stretch;
+  border-radius: 3px; background: var(--cozy-wood);
+  box-shadow: 0 3px #372a1b55;
+}
+#ui .hud .camera-zoom button {
+  display: grid; place-items: center; height: 29px; min-width: 29px;
+  padding: 0 6px; border: 1px solid #8c6337; border-radius: 2px;
+  background: linear-gradient(#fff1d2, #e8cfa4); color: #5b4026;
+  box-shadow: inset 0 0 0 1px #fff4d8; font: 20px Georgia, serif;
+}
+#ui .hud .camera-zoom button[data-zoom="0"] { min-width: 48px; font: 11px Arial, sans-serif; font-variant-numeric: tabular-nums; }
+#ui .hud .camera-zoom button:hover:not(:disabled) { background: #ffe3a8; }
+#ui .hud .camera-zoom button:active:not(:disabled) { transform: translateY(1px); }
+#ui .hud .camera-zoom button:disabled { opacity: .45; cursor: default; }
+@media(max-width:760px) { #ui .hud .camera-zoom { top: 97px; right: 12px; } }

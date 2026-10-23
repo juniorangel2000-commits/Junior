@@ -64,8 +64,8 @@ export function createCharacterEditor(
     </form>`;
   holder.replaceChildren(card);
   const canvas = card.querySelector<HTMLCanvasElement>('.preview-character canvas')!;
-  canvas.style.width = `${CHARACTER_WIDTH * 3}px`;
-  canvas.style.height = `${CHARACTER_HEIGHT * 3}px`;
+  canvas.style.width = `${CHARACTER_WIDTH * 2.5}px`;
+  canvas.style.height = `${CHARACTER_HEIGHT * 2.5}px`;
   const input = card.querySelector<HTMLInputElement>('#character-name')!;
   const draw = (): void => {
     drawCharacter(canvas, profile, direction, walking ? phase : 0);

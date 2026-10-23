@@ -9,6 +9,7 @@ interface TitleScreenOptions {
   icon(name: string): string;
   onNewGame(): void;
   onContinue(): void;
+  onMapEditor?(): void;
   onBackgroundMode(mode: TitleBackgroundMode): void;
 }
 
@@ -30,6 +31,14 @@ export function createTitleScreen(holder: HTMLElement, options: TitleScreenOptio
     <aside class="title-location"><span class="location-dot"></span><div>UM REFÚGIO ENTRE AS RUÍNAS<small>Enquanto a chuva cai, a vida resiste.</small></div></aside>
     <footer class="title-footer"><span>EXPLORAR <i>·</i> CULTIVAR <i>·</i> RECONSTRUIR</span><div class="title-footer-right"><span class="title-save-note">TECLADO E MOUSE <i>·</i> SALVAMENTO LOCAL</span><button type="button" class="title-sound" data-title-sound aria-pressed="false">${toolbarIcon('audio')}<span class="sound-label">Ouvir a chuva</span></button><button type="button" class="title-motion" data-title-motion aria-pressed="true"><span class="motion-symbol" aria-hidden="true"></span><span class="motion-label">Pausar fundo</span></button></div></footer>`;
   holder.replaceChildren(screen);
+  if (options.onMapEditor) {
+    const edit = document.createElement('button');
+    edit.className = 'button button-glass';
+    edit.id = 'edit-map';
+    edit.innerHTML = `${toolbarIcon('map')} Editar mapa`;
+    edit.addEventListener('click', options.onMapEditor);
+    screen.querySelector('.title-actions')!.append(edit);
+  }
   // Every visit starts with rain; the pause button only affects this visit.
   let animate = true;
   const weather = createTitleWeather(screen);

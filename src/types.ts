@@ -1,5 +1,6 @@
 import type { HomeData } from './systems/home';
 import type { CharacterDirection } from './character-directions';
+import type { MapEditData } from './systems/map-editor';
 
 export type HairStyle = 'curto' | 'longo' | 'preso';
 export type CharacterAccessory = 'bolsa' | 'nenhum';
@@ -54,6 +55,8 @@ export interface SaveData {
   home?: HomeData;
   /** A posição externa permanece em player, para preservar o mundo e saves antigos. */
   homePosition?: TilePoint & { direction?: CharacterDirection };
+  /** Edições esparsas preservam o mapa e os IDs das partidas anteriores. */
+  mapEdits?: MapEditData;
 }
 export interface HudData {
   wateringCan?: boolean;

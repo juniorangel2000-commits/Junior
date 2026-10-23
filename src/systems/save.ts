@@ -7,6 +7,7 @@ import { RESOURCE_DEFINITIONS } from './resources';
 import { buildingFootprint, buildingLayer } from './building';
 import { TILE, WORLD_HEIGHT, WORLD_WIDTH } from '../data/regions';
 import { Home, HOME_WIDTH, HOME_HEIGHT, validateHome } from './home';
+import { validateMapEdits } from './map-editor';
 
 // A chave e a origem do aplicativo permanecem iguais para localizar partidas antigas.
 export const SAVE_KEY = 'depois-da-chuva-v1';
@@ -34,6 +35,7 @@ export function validateProfile(value: unknown): value is CharacterProfile {
 
 export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
+  if (value.mapEdits !== undefined && !validateMapEdits(value.mapEdits)) return false;
   if (value.quickbar !== undefined && !validQuickbar(value.quickbar)) return false;
   if (value.homeSupplies !== undefined && (!isRecord(value.homeSupplies) || typeof value.homeSupplies.wateringCan !== 'boolean' || typeof value.homeSupplies.seedPacket !== 'boolean')) return false;
   if (!isRecord(value.player) || !finite(value.player.x, TILE / 2, WORLD_WIDTH * TILE - TILE / 2)
@@ -86,8 +88,19 @@ export function validateSave(value: unknown): value is SaveData {
     if (!isRecord(resource) || typeof resource.id !== 'string' || resource.id.length > 80 || progressing.has(resource.id)
       || value.depletedResources.includes(resource.id)) return false;
     const match = /^(standingTree|vein)-(\d+)-(\d+)$/.exec(resource.id);
-    if (!match || !integer(Number(match[2]), 1, WORLD_WIDTH - 2) || !integer(Number(match[3]), 1, WORLD_HEIGHT - 2)) return false;
-    const definition = RESOURCE_DEFINITIONS[match[1] as 'standingTree' | 'vein'];
+    let kind: 'standingTree' | 'vein';
+    if (match) {
+      if (!integer(Number(match[2]), 1, WORLD_WIDTH - 2) || !integer(Number(match[3]), 1, WORLD_HEIGHT - 2)) return false;
+      kind = match[1] as 'standingTree' | 'vein';
+    } else {
+      // Custom progress belongs to an actual object in the validated document.
+      // Removed objects retain progress so moving/restoring them cannot reset hits.
+      const object = (value.mapEdits as SaveData['mapEdits'])?.objects[resource.id];
+      if (!resource.id.startsWith('editor-') || !object
+        || !['standingTree', 'pine', 'vein'].includes(object.kind ?? '')) return false;
+      kind = object.kind === 'vein' ? 'vein' : 'standingTree';
+    }
+    const definition = RESOURCE_DEFINITIONS[kind];
     if (!integer(resource.hits, 1, definition.hits - 1)) return false;
     progressing.add(resource.id);
   }

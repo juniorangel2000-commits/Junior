@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import { prepareCharacterRig, drawRigPose } from './character-rig';
 import type { CharacterProfile, HairStyle } from './types';
 import { resolveCharacterAppearance } from './data/character-options';
 
@@ -67,73 +68,51 @@ function cell(image: HTMLImageElement | HTMLCanvasElement, column: number, row: 
   return trimmed;
 }
 
-/** Local detailed art: an independent idle plus eight actual walk drawings per view. */
+/** Neutral art is rigged locally; walking never swaps the face or costume drawing. */
 export function preloadCharacterSprites(scene: Phaser.Scene): void {
-  const base = 'assets/visual/characters/';
-  for (const style of ['bun', 'short', 'long']) {
-    scene.load.image(`farmer-${style}-walk-source`, `${base}farmer-${style}-walk-eight.png`);
-    if (style !== 'long') scene.load.image(`farmer-${style}-idle-source`, `${base}farmer-${style}-idle-eight.png`);
-  }
-  // Older saves retain their optional bag and long hair, without adding editor controls.
-  scene.load.image('farmer-bags-source', `${base}farmer-bags.png`);
+  scene.load.image('cozy-farmer-tied-source', 'assets/visual/characters/cozy-farmer-tied-turnaround.png');
+  scene.load.image('cozy-farmer-short-source', 'assets/visual/characters/cozy-farmer-short-turnaround.png');
+  scene.load.image('farmer-bags-source', 'assets/visual/characters/farmer-bags.png');
 }
 
 export function setupCharacterSprites(scene: Phaser.Scene): void {
   frames.clear(); bags.clear(); customized.clear();
-  // Use the clean three-quarter source and reflect it for its opposite view.
-  // This keeps the head, clothes and stride consistent when turning diagonally.
-  const views = [
-    { row: 0, flip: false }, { row: 1, flip: false }, { row: 2, flip: false }, { row: 3, flip: false },
-    { row: 5, flip: true }, { row: 5, flip: false }, { row: 7, flip: true }, { row: 7, flip: false },
-  ];
-  for (const [style, name] of [['preso', 'bun'], ['curto', 'short'], ['longo', 'long']] as const) {
-    const key = `farmer-${name}-walk-source`;
+  const views = [0, 1, 2, 3, 4, 5, 6, 7];
+  for (const [style, key] of [['preso', 'cozy-farmer-tied-source'], ['curto', 'cozy-farmer-short-source'], ['longo', 'cozy-farmer-tied-source']] as const) {
     if (!scene.textures.exists(key)) continue;
     const image = scene.textures.get(key).getSourceImage() as HTMLImageElement;
-    const walk = views.map(view => Array.from({ length: CHARACTER_WALK_FRAMES }, (_, phase) => cell(image, phase, view.row, 8, 8)));
-    const idleKey = `farmer-${name}-idle-source`;
-    const idleImage = scene.textures.exists(idleKey) ? scene.textures.get(idleKey).getSourceImage() as HTMLImageElement : undefined;
-    // The original idle sheet has uneven row gutters; explicit boundaries preserve buns and boots.
-    const idleRows = [0, 234, 447, 661, 873, 1093, 1310, 1522, 1774];
-    const idle = views.map((view, row) => idleImage ? cell(idleImage, 0, view.row, 4, 8, idleRows) : walk[row][1]);
-    const scaleFor = (sources: (HTMLCanvasElement | null)[]) => Math.min(
-      42 / Math.max(...sources.map(source => source?.width ?? 1)),
-      60 / Math.max(...sources.map(source => source?.height ?? 1)),
-    );
-    // Each source sheet has one scale, not one scale per pose: no breathing size or stretched profiles.
-    const walkScale = scaleFor(walk.flat()), idleScale = idleImage ? scaleFor(idle) : walkScale;
+    const sources = views.map(index => cell(image, index % 4, Math.floor(index / 4), 4, 2));
+    const scale = Math.min(36 / Math.max(...sources.map(s => s?.width ?? 1)), 56 / Math.max(...sources.map(s => s?.height ?? 1)));
     for (const [row, direction] of CHARACTER_DIRECTIONS.entries()) {
-      [idle[row], ...walk[row]].forEach((source, phase) => {
-        if (!source) return;
-        const scale = phase === 0 ? idleScale : walkScale;
+      const source = sources[row]; if (!source) continue;
+      const neutral = makeCanvas(CHARACTER_WIDTH, CHARACTER_HEIGHT), paint = neutral.getContext('2d')!;
+      paint.imageSmoothingEnabled = false;
+      const w = Math.round(source.width * scale), h = Math.round(source.height * scale);
+      const ox = Math.floor((CHARACTER_WIDTH - w) / 2), oy = CHARACTER_HEIGHT - 3 - h;
+      paint.drawImage(source, ox, oy, w, h);
+      const rig = prepareCharacterRig(neutral, direction);
+      for (let phase = 0; phase < CHARACTER_FRAMES_PER_DIRECTION; phase++) {
         const canvas = makeCanvas(CHARACTER_WIDTH, CHARACTER_HEIGHT), ctx = canvas.getContext('2d', { willReadFrequently: true })!;
         ctx.imageSmoothingEnabled = false;
-        const w = Math.round(source.width * scale), h = Math.round(source.height * scale);
-        const ox = Math.floor((CHARACTER_WIDTH - w) / 2), oy = CHARACTER_HEIGHT - h;
-        ctx.save();
-        if (views[row].flip) { ctx.translate(CHARACTER_WIDTH, 0); ctx.scale(-1, 1); }
-        ctx.drawImage(source, ox, oy, w, h); ctx.restore();
+        drawRigPose(ctx, rig, phase ? (phase - 1) / CHARACTER_WALK_FRAMES : null);
         const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
         const materials = new Uint8Array(canvas.width * canvas.height);
         for (let y = 0; y < canvas.height; y++) for (let x = 0; x < canvas.width; x++) {
           const i = (y * canvas.width + x) * 4;
           if (!data[i + 3]) continue;
           const [r, g, b] = [data[i], data[i + 1], data[i + 2]];
-          const px = (x - ox) / w, py = (y - oy) / h;
+          const px = (x - ox) / w, py = (y - oy - (phase ? 1 : 0)) / h;
           const light = r * .299 + g * .587 + b * .114;
-          const warm = r > g * 1.12 && g > b * 1.09;
-          const front = direction.startsWith('down');
-          const face = front ? py > .26 && py < .51 && px > .13 && px < .87
-            : direction === 'left' ? py > .25 && py < .49 && px < .62
-              : direction === 'right' ? py > .25 && py < .49 && px > .38 : false;
-          const hands = py > .52 && py < .79 && (px < .3 || px > .7 || direction === 'left' || direction === 'right');
+          const warm = r > g * 1.14 && g > b * 1.12;
+          const face = py > .18 && py < .44 && px > .25 && px < .75;
+          const hands = py > .55 && py < .8;
           if (warm && light > 125 && (face || hands)) materials[y * canvas.width + x] = 1;
-          else if (warm && py < (style === 'longo' ? .59 : .49) && light > 29) materials[y * canvas.width + x] = 2;
-          else if (py > .40 && py < .88 && b > r * 1.02 && b > g * .97 && light > 24) materials[y * canvas.width + x] = 3;
-          else if (py > .42 && py < .76 && r > 92 && g > 82 && b > 57 && r / g < 1.28 && g / b < 1.65) materials[y * canvas.width + x] = 4;
+          else if (warm && py < .44 && light > 26) materials[y * canvas.width + x] = 2;
+          else if (py > .42 && py < .92 && b > r * 1.02 && b > g * .97 && light > 25) materials[y * canvas.width + x] = 3;
+          else if (py > .42 && py < .69 && r > 110 && g > 95 && b > 70 && r / g < 1.23 && g / b < 1.5) materials[y * canvas.width + x] = 4;
         }
         frames.set(`${style}:${direction}:${phase}`, { canvas, materials });
-      });
+      }
     }
   }
   if (scene.textures.exists('farmer-bags-source')) {

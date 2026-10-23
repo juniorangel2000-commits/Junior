@@ -31,6 +31,10 @@ import { AdminAccess, grantAdminItem } from '../systems/admin';
 import { AdminMenu } from '../admin-menu';
 import type { HomeEditAction } from '../home-ui';
 import { HOUSE_WINDOW_LIGHTS } from '../house-sprites';
+import { baseCameraZoom, homeFitsCamera, loadCameraZoom, saveCameraZoom, stepCameraZoom } from '../camera-zoom';
+import { MapEditor } from '../map-editor';
+import { emptyMapEdits, isProtectedMapTile } from '../systems/map-editor';
+import type { MapEditData } from '../systems/map-editor';
 
 const DEFAULT_PROFILE: CharacterProfile = { name: 'Viajante', skin: '#d9a276', hairStyle: 'preso', hairColor: '#754323', outfit: '#638a9d' };
 
@@ -77,6 +81,11 @@ export class ValleyScene extends Phaser.Scene {
   private homeView?: ReturnType<typeof drawHome>;
   private adminAccess = new AdminAccess();
   private adminMenu?: AdminMenu;
+  private cameraZoomFactor = loadCameraZoom();
+  private wheelZoomDistance = 0;
+  private lastWheelZoomAt = 0;
+  private mapEditor?: MapEditor;
+  private editingMap = false;
 
   constructor() { super('Vale'); }
 
@@ -105,7 +114,8 @@ export class ValleyScene extends Phaser.Scene {
     document.addEventListener('visibilitychange', this.handleVisibility);
     window.addEventListener('blur', this.handleBlur);
     this.game.canvas.addEventListener('contextmenu', this.handleContextMenu);
-    this.scale.on('resize', this.updateZoom, this);
+    this.game.canvas.addEventListener('wheel', this.handleCameraWheel, { passive: false });
+    this.scale.on('resize', this.handleCameraResize, this);
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       if (!this.canPlay() || pointer.button !== 0) return;
       const tile = { x: Math.floor(pointer.worldX / TILE), y: Math.floor(pointer.worldY / TILE) };
@@ -120,8 +130,10 @@ export class ValleyScene extends Phaser.Scene {
       document.removeEventListener('visibilitychange', this.handleVisibility);
       window.removeEventListener('blur', this.handleBlur);
       this.game.canvas.removeEventListener('contextmenu', this.handleContextMenu);
-      this.scale.off('resize', this.updateZoom, this);
+      this.game.canvas.removeEventListener('wheel', this.handleCameraWheel);
+      this.scale.off('resize', this.handleCameraResize, this);
       this.adminMenu?.destroy();
+      this.mapEditor?.destroy();
     });
   }
 
@@ -152,6 +164,7 @@ export class ValleyScene extends Phaser.Scene {
 
   setPaused(value: boolean): void {
     this.paused = value;
+    this.ui.updateCameraZoom(this.cameraZoomFactor, !value && this.running);
     this.input.keyboard?.resetKeys();
     if (value && this.running) this.persist();
   }
@@ -160,6 +173,70 @@ export class ValleyScene extends Phaser.Scene {
     if (!this.running) return;
     if (this.ui.isModalOpen()) this.ui.closeModal();
     this.adminMenu?.toggle();
+  }
+
+  openMapEditor(): void {
+    if (this.editingMap) return;
+    const wasRunning = this.running;
+    const original = this.snapshotState();
+    const base = wasRunning ? original : loadSave() ?? createNewSave(DEFAULT_PROFILE);
+    this.editingMap = true;
+    this.adminMenu?.close(); this.cancelCrafting();
+    this.ui.showMapEditorMode();
+    this.paused = true;
+    this.input.keyboard?.resetKeys();
+    // The complete baseline also validates imports referencing already harvested nodes.
+    this.loadState({ ...base, homePosition: undefined, mapEdits: undefined, depletedResources: [], resourceProgress: [] });
+    const originalObjects = this.world.editorObjects.map(object => ({ ...object, depleted: base.depletedResources.includes(object.id) }));
+    const protectedTiles = new Set(base.buildings.flatMap(buildingFootprint).map(p => `${p.x},${p.y}`));
+    const preserveProgress = (edits: MapEditData): MapEditData => {
+      const data = structuredClone(edits);
+      for (const entry of base.resourceProgress) {
+        const old = base.mapEdits?.objects[entry.id];
+        if (entry.id.startsWith('editor-') && old && !data.objects[entry.id]) data.objects[entry.id] = { ...old, removed: true };
+      }
+      return data;
+    };
+    const rebuild = (edits: MapEditData): void => {
+      this.loadState({ ...base, homePosition: undefined, mapEdits: preserveProgress(edits) });
+      this.cameras.main.stopFollow().removeBounds();
+      this.player.sprite.setVisible(false);
+      this.night.setVisible(false); this.selection.clear();
+      this.world.updateOcclusion(-1000, -1000);
+      this.paused = true;
+    };
+    const close = (): void => {
+      this.mapEditor?.destroy(); this.mapEditor = undefined;
+      this.editingMap = false;
+      this.input.keyboard?.resetKeys();
+    };
+    const initial = base.mapEdits ?? emptyMapEdits();
+    rebuild(initial);
+    this.mapEditor = new MapEditor(this, initial, {
+      rebuild,
+      originalObjects,
+      objects: () => this.world.editorObjects,
+      protectedTile: (x, y) => isProtectedMapTile(x, y) || protectedTiles.has(`${x},${y}`),
+      canPlace: (x, y, ignoreId) => {
+        const current = this.world.editorObjects.find(o => o.id === ignoreId && o.x === x && o.y === y);
+        return !!current || !this.world.isBlocked(x, y);
+      },
+      apply: edits => {
+        this.loadState({ ...base, homePosition: undefined, mapEdits: preserveProgress(edits) });
+        const data = this.snapshotState();
+        if (!saveGame(data)) { rebuild(edits); return false; }
+        close();
+        this.running = true; this.paused = false;
+        gameAudio.setScene('game'); this.ui.showHUD(); this.updateHUD();
+        this.ui.toast('Mapa aplicado e partida salva. Use Exportar no editor para me enviar o mapa.');
+        return true;
+      },
+      cancel: () => {
+        close(); this.loadState(original); this.running = wasRunning;
+        if (wasRunning) { this.paused = false; this.ui.showHUD(); this.updateHUD(); }
+        else { this.paused = true; this.ui.showTitle(hasSave()); }
+      },
+    });
   }
 
   openHomeMenu(): void {
@@ -301,6 +378,7 @@ export class ValleyScene extends Phaser.Scene {
     if (mode !== 'off') gameAudio.setScene('title');
     const wasOff = this.titleBackgroundMode === 'off';
     this.titleBackgroundMode = mode;
+    this.cameras.main.zoomEffect.reset();
     document.body.classList.toggle('rainy-title-active', mode !== 'off');
     this.night?.setVisible(mode === 'off');
     this.titleLights?.setVisible(mode !== 'off');
@@ -396,8 +474,17 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   persist(): boolean {
-    if (!this.running || !this.state) return false;
-    const data: SaveData = {
+    if (!this.running || !this.state || this.editingMap) return false;
+    const ok = saveGame(this.snapshotState());
+    if (!ok && !this.saveWarningShown) {
+      this.saveWarningShown = true;
+      this.ui.toast('Não foi possível salvar localmente. Seu progresso atual dura apenas nesta sessão.');
+    }
+    return ok;
+  }
+
+  private snapshotState(): SaveData {
+    return structuredClone({
       ...this.state,
       quickbar: this.ui.getQuickbar(),
       player: this.inHome ? { ...this.outdoorPosition } : this.playerPosition(),
@@ -408,13 +495,7 @@ export class ValleyScene extends Phaser.Scene {
       buildings: this.building.buildings.map(building => ({ ...building })),
       resourceProgress: this.resources.progress.map(entry => ({ ...entry })),
       equippedTool: this.tool,
-    };
-    const ok = saveGame(data);
-    if (!ok && !this.saveWarningShown) {
-      this.saveWarningShown = true;
-      this.ui.toast('Não foi possível salvar localmente. Seu progresso atual dura apenas nesta sessão.');
-    }
-    return ok;
+    });
   }
 
   private loadState(data: SaveData): void {
@@ -436,7 +517,7 @@ export class ValleyScene extends Phaser.Scene {
     this.roofSprites = [];
     this.cropSignature = '';
     this.buildingSignature = '';
-    this.world = createWorld(this, data.depletedResources, data.buildings);
+    this.world = createWorld(this, data.depletedResources, data.buildings, data.mapEdits);
     // A warm refuge in the opening only; the facade and gameplay lighting stay intact.
     this.titleLights = this.add.graphics().setDepth(16 * TILE + 5).setVisible(false);
     const newHouseArt = this.textures.exists('house-cottage-source');
@@ -497,15 +578,54 @@ export class ValleyScene extends Phaser.Scene {
     if (data.homePosition) this.enterHome(data.homePosition, false);
   }
 
-  private updateZoom(): void {
+  changeCameraZoom(direction: -1 | 0 | 1): void {
+    if (!this.canPlay()) return;
+    const next = stepCameraZoom(this.cameraZoomFactor, direction);
+    if (next === this.cameraZoomFactor) return;
+    this.cameraZoomFactor = next;
+    saveCameraZoom(next);
+    this.updateZoom(true);
+  }
+
+  private handleCameraWheel = (event: WheelEvent): void => {
+    // Only the scene canvas consumes wheel input. Panels keep their own scrolling,
+    // and browser zoom / trackpad pinch shortcuts are left to the browser.
+    if (!this.canPlay() || event.ctrlKey || event.metaKey || event.altKey || !event.deltaY) return;
+    event.preventDefault();
+    if (event.timeStamp - this.lastWheelZoomAt > 250) this.wheelZoomDistance = 0;
+    this.lastWheelZoomAt = event.timeStamp;
+    const pixels = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? this.scale.height : 1);
+    if (Math.sign(pixels) !== Math.sign(this.wheelZoomDistance)) this.wheelZoomDistance = 0;
+    this.wheelZoomDistance += pixels;
+    if (Math.abs(this.wheelZoomDistance) < 40) return;
+    this.changeCameraZoom(this.wheelZoomDistance < 0 ? 1 : -1);
+    this.wheelZoomDistance = 0;
+  };
+
+  private handleCameraResize = (): void => { if (this.mapEditor) this.mapEditor.resize(); else this.updateZoom(); };
+
+  private updateZoom(animate = false): void {
     if (this.titleBackgroundMode !== 'off') { this.updateTitleBackground(0); return; }
+    const camera = this.cameras.main;
+    const homeWidth = HOME_WIDTH * TILE, homeHeight = HOME_HEIGHT * TILE;
+    const zoom = baseCameraZoom(this.scale.width, this.scale.height, this.inHome ? homeHeight : undefined) * this.cameraZoomFactor;
+    camera.zoomEffect.reset();
+    if (animate) camera.zoomTo(zoom, 180, 'Sine.easeOut', true);
+    else camera.setZoom(zoom);
     if (this.inHome) {
-      this.cameras.main.stopFollow().removeBounds().setBackgroundColor('#1b2b26');
-      this.cameras.main.setZoom(Math.max(1, Math.min(2, Math.floor(Math.min(this.scale.width / 500, (this.scale.height - 140) / (HOME_HEIGHT * TILE))))))
-        .centerOn(HOME_WIDTH * TILE / 2, HOME_HEIGHT * TILE / 2);
-      return;
+      camera.setBackgroundColor('#1b2b26');
+      if (homeFitsCamera(this.scale.width, this.scale.height, zoom, homeWidth, homeHeight)) {
+        camera.stopFollow().removeBounds().centerOn(homeWidth / 2, homeHeight / 2);
+      } else {
+        // Close views follow the player; the whole room stays centered when it fits.
+        camera.setBounds(-TILE, -TILE, homeWidth + 2 * TILE, homeHeight + 2 * TILE)
+          .startFollow(this.player.sprite, false, .12, .12).centerOn(this.player.x, this.player.y);
+      }
+    } else {
+      camera.setBounds(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE).setBackgroundColor('#6b8053')
+        .startFollow(this.player.sprite, false, .12, .12);
     }
-    this.cameras.main.setZoom(this.scale.width < 1000 || this.scale.height < 700 ? 1 : 2);
+    this.ui.updateCameraZoom(this.cameraZoomFactor, this.canPlay());
   }
 
   private feetTiles(x = this.player.x, y = this.player.y): TilePoint[] {
@@ -531,7 +651,7 @@ export class ValleyScene extends Phaser.Scene {
     }
   }
 
-  private canPlay(): boolean { return this.running && !this.paused && !this.ui.isModalOpen() && !this.adminMenu?.isOpen && !document.hidden; }
+  private canPlay(): boolean { return !this.editingMap && this.running && !this.paused && !this.ui.isModalOpen() && !this.adminMenu?.isOpen && !document.hidden; }
   private blocked = (x: number, y: number): boolean => this.inHome ? this.home.isBlocked(x, y)
     : this.world.isBlocked(x, y) || this.building.isBlocked(x, y)
       || (x === Math.floor(NPC_POSITION.x / TILE) && y === Math.floor(NPC_POSITION.y / TILE));
@@ -547,6 +667,7 @@ export class ValleyScene extends Phaser.Scene {
   };
 
   private handleKey = (event: KeyboardEvent): void => {
+    if (this.editingMap) return;
     if (event.ctrlKey && event.shiftKey && event.key === 'F10' && this.running) {
       event.preventDefault(); if (!event.repeat) this.openAdminMenu(); return;
     }
@@ -556,6 +677,7 @@ export class ValleyScene extends Phaser.Scene {
     }
     const target = event.target;
     if (event.key !== 'Escape' && target instanceof HTMLElement && target.matches('input, textarea, select, [contenteditable="true"]')) return;
+    if (event.key === 'F2' && !event.repeat) { event.preventDefault(); this.openMapEditor(); return; }
     if (event.key === ' ' && target instanceof HTMLElement && target.closest('button')) return;
     if (this.canPlay() && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(event.key)) event.preventDefault();
     if (event.repeat) return;
@@ -575,6 +697,13 @@ export class ValleyScene extends Phaser.Scene {
     if (event.key.toLowerCase() === 'm' && this.running) { event.preventDefault(); this.ui.toggleMap(); return; }
     if (event.key.toLowerCase() === 'h' && this.running) { event.preventDefault(); this.openHomeMenu(); return; }
     if (!this.canPlay()) return;
+    if (!event.ctrlKey && !event.metaKey && !event.altKey) {
+      if (event.key === '+' || event.key === '=' || event.key === '-' || event.key === '_' || event.key === 'Home') {
+        event.preventDefault();
+        this.changeCameraZoom(event.key === 'Home' ? 0 : event.key === '-' || event.key === '_' ? -1 : 1);
+        return;
+      }
+    }
     const number = Number(event.key);
     if (event.key >= '1' && event.key <= '9') this.ui.activateSlot(number - 1);
     if (event.key === '0') this.selectTool('wall');
@@ -586,12 +715,13 @@ export class ValleyScene extends Phaser.Scene {
   private handlePageHide = (): void => { if (this.running) this.persist(); };
   private handleContextMenu = (event: MouseEvent): void => {
     event.preventDefault();
+    if (this.editingMap) return;
     if (!this.running || this.adminMenu?.isOpen) return;
     if (this.ui.dismissTopToolbar()) return;
     if (!this.ui.isModalOpen()) this.ui.toggleTopToolbar();
   };
   private handleVisibility = (): void => { if (document.hidden && this.running) { this.persist(); this.input.keyboard?.resetKeys(); } };
-  private handleBlur = (): void => { if (this.running && !this.ui.isModalOpen() && !this.adminMenu?.isOpen) this.ui.togglePause(); };
+  private handleBlur = (): void => { if (!this.editingMap && this.running && !this.ui.isModalOpen() && !this.adminMenu?.isOpen) this.ui.togglePause(); };
 
   private tileDistance(tile: TilePoint): number {
     return Phaser.Math.Distance.Between(this.player.x, this.player.y, tile.x * TILE + TILE / 2, tile.y * TILE + TILE / 2);

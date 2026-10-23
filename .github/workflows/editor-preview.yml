@@ -1,0 +1,62 @@
+name: After Rain — prévia do editor para Windows
+on:
+  push:
+    branches: ['preview/editor-0.8.1']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: after-rain-editor-preview
+  cancel-in-progress: false
+jobs:
+  preview:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Instalar dependências
+        run: npm ci --no-audit --no-fund
+      - name: Conferir tipos e testes
+        run: |
+          npm run check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Gerar prévia Windows x64
+        run: npm run desktop:win -- --publish never -c.win.artifactName=After-Rain-Editor-Preview-Windows-x64.exe
+      - name: Preparar arquivos para download
+        shell: pwsh
+        run: |
+          $file = 'release/After-Rain-Editor-Preview-Windows-x64.exe'
+          $hash = (Get-FileHash -Algorithm SHA256 $file).Hash.ToLowerInvariant()
+          "$hash  After-Rain-Editor-Preview-Windows-x64.exe" | Set-Content -Encoding utf8NoBOM release/SHA256SUMS.txt
+          Copy-Item docs/editor-do-mapa/LEIA.md release/LEIA.md
+      - name: Guardar pacote na execução
+        uses: actions/upload-artifact@v4
+        with:
+          name: After-Rain-Editor-Preview-Windows-x64
+          path: |
+            release/*.exe
+            release/SHA256SUMS.txt
+            release/LEIA.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Disponibilizar como prévia nas Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          PREVIEW_COMMIT: ${{ github.sha }}
+        shell: pwsh
+        run: |
+          $tag = 'editor-preview-0.8.1-1'
+          gh release create $tag --draft --prerelease --latest=false --target $env:PREVIEW_COMMIT --title 'After Rain — prévia do editor de mapa (Windows x64)' --notes-file docs/editor-do-mapa/NOTAS-PREVIA.md
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh release upload $tag release/After-Rain-Editor-Preview-Windows-x64.exe release/SHA256SUMS.txt release/LEIA.md
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh release edit $tag --draft=false --prerelease --latest=false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

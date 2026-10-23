@@ -23,6 +23,8 @@ const ui = new GameUI({
   onMap: () => scene.captureMap(),
   onMainMenu: () => scene.mainMenu(),
   onAdminMenu: () => scene.openAdminMenu(),
+  onMapEditor: () => scene.openMapEditor(),
+  onZoom: direction => scene.changeCameraZoom(direction),
 });
 scene.ui = ui;
 installFullscreenShortcut(() => ui.toast('Não foi possível ativar tela cheia neste navegador.'));
