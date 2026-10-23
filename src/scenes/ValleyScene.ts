@@ -125,6 +125,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   startNew(profile: CharacterProfile): void {
+    gameAudio.setScene('game');
     this.adminMenu?.close();
     this.loadState(createNewSave(profile));
     this.running = true;
@@ -138,6 +139,7 @@ export class ValleyScene extends Phaser.Scene {
   continueGame(): void {
     const saved = loadSave();
     if (!saved) { this.ui.toast('Não foi possível ler o save. Você pode começar um novo jogo.'); return; }
+    gameAudio.setScene('game');
     this.adminMenu?.close();
     this.loadState(saved);
     this.running = true;
@@ -296,6 +298,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   setTitleBackground(mode: TitleBackgroundMode): void {
+    if (mode !== 'off') gameAudio.setScene('title');
     const wasOff = this.titleBackgroundMode === 'off';
     this.titleBackgroundMode = mode;
     document.body.classList.toggle('rainy-title-active', mode !== 'off');
@@ -553,6 +556,7 @@ export class ValleyScene extends Phaser.Scene {
     }
     const target = event.target;
     if (event.key !== 'Escape' && target instanceof HTMLElement && target.matches('input, textarea, select, [contenteditable="true"]')) return;
+    if (event.key === ' ' && target instanceof HTMLElement && target.closest('button')) return;
     if (this.canPlay() && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(event.key)) event.preventDefault();
     if (event.repeat) return;
     if (event.key === 'Escape' && this.running) {

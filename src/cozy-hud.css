@@ -111,3 +111,86 @@
 #ui .audio-settings output{min-width:34px;text-align:right;font-variant-numeric:tabular-nums}
 #ui .audio-settings .audio-mute{margin-top:13px}#ui .audio-mute input{accent-color:#856034}
 #ui .hud .journal{pointer-events:auto}
+/* The toolbar uses a common original pixel-art atlas rather than line symbols. */
+#ui .toolbar-art-icon{display:inline-block;flex-shrink:0;background-image:url('/assets/ui/toolbar-icons.png');background-size:300% 300%;background-repeat:no-repeat;image-rendering:pixelated;width:54px;height:54px}
+#ui .top-toolbar .toolbar-action{min-width:84px;padding:4px 6px 8px;gap:2px}
+#ui .top-toolbar .toolbar-action .toolbar-art-icon{width:54px;height:54px}
+#ui .top-toolbar .toolbar-handle .toolbar-art-icon{width:28px;height:28px}
+#ui .audio-panel{width:min(490px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow-y:auto}
+#ui .audio-title{display:flex;align-items:center;gap:8px}
+#ui .audio-title .toolbar-art-icon{width:64px;height:64px}
+#ui .audio-intro,#ui .audio-note{color:#786241;font-size:12px;line-height:1.6}
+#ui .audio-note{margin-top:18px;font-size:11px}
+#ui .audio-actions{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#ui .audio-panel .audio-settings{margin:16px 0 20px}
+#ui .audio-panel .audio-settings label{margin:16px 0;font-size:13px}
+#ui .hud .journal-reopen{touch-action:none;user-select:none;cursor:grab}
+#ui .hud .journal-reopen:active{cursor:grabbing}
+#ui .hud .journal-reopen::before{content:'⠿';color:#a1804e;font-size:16px;line-height:1}
+@media(max-width:760px){#ui .top-toolbar .toolbar-action{min-width:80px;min-height:74px}#ui .top-toolbar .toolbar-action .toolbar-art-icon{width:48px;height:48px}}
+@media(max-width:440px){#ui .top-toolbar .toolbar-action{min-width:0}}
+#ui .hud .journal,#ui .hud .journal-reopen{z-index:3}
+
+/* A abertura compartilha a madeira, o papel e as artes da HUD da fazenda. */
+#ui .after-rain-title{padding:28px 5.6% 22px;background:linear-gradient(90deg,#182b28a6,#16312b38 52%,#10283118);scrollbar-color:#b28b53 #293b30}
+#ui .after-rain-title .title-atmosphere{background:linear-gradient(180deg,#102b2b33,transparent 38%,#10282166)}
+#ui .after-rain-title .brand{color:#f6e4be;letter-spacing:2px;gap:9px;text-shadow:0 2px 2px #14251d}
+#ui .after-rain-title .brand>.toolbar-art-icon{width:46px;height:46px}
+#ui .after-rain-title .brand small{color:#d5d4b1;letter-spacing:1px;font-size:7px}
+#ui .after-rain-title .title-world-tag{background:#eee1bb;color:#5e4a2f;border:6px solid #87552f;border-image:var(--cozy-frame) 14 / 6px / 0 stretch;padding:6px 10px;letter-spacing:1px;box-shadow:0 3px #18281d55}
+#ui .after-rain-title .title-world-tag b{color:#786745}
+#ui .after-rain-title .title-world-tag i{background:#72864a;box-shadow:0 0 0 3px #a2aa6b30}
+#ui .after-rain-title .title-copy{width:430px;max-width:46%;padding:22px 24px 21px;margin:auto 0;border:10px solid #87552f;border-image:var(--cozy-frame) 14 / 10px / 0 stretch;border-radius:5px;background:linear-gradient(115deg,#fff2d5,var(--cozy-paper));color:var(--cozy-ink);box-shadow:0 5px #34291c66,0 12px 35px #10281e55;text-align:center}
+#ui .after-rain-title .title-copy>.eyebrow{justify-content:center;color:#817044;font-size:7px;letter-spacing:1.1px;margin-bottom:15px;gap:7px}
+#ui .after-rain-title .title-copy>.eyebrow>span{background:#829054;width:18px}
+#ui .after-rain-title h1{background:var(--cozy-wood);border:2px solid #54351e;box-shadow:inset 0 0 0 2px #be8c4d,0 3px #c4a574;margin:0 -10px;padding:19px 10px 23px;font-size:clamp(78px,7.5vw,102px);line-height:.88;letter-spacing:-4px;font-weight:700;text-shadow:2px 3px #51331d}
+#ui .after-rain-title h1>span{color:#fff0cf}
+#ui .after-rain-title h1 em{color:#c8d397;font-weight:700;margin-top:3px}
+#ui .after-rain-title .title-period{color:#e7b85e;letter-spacing:0}
+#ui .after-rain-title .title-copy>p{font:14px/1.65 Georgia,serif;color:#705a39;text-shadow:none;margin:20px 0}
+#ui .after-rain-title .title-actions{gap:9px;justify-content:center}
+#ui .after-rain-title .title-actions .button{display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 12px;min-height:47px;border:2px solid #80552d;border-radius:3px;font-size:11px;letter-spacing:0}
+#ui .after-rain-title .title-actions .toolbar-art-icon{width:32px;height:32px}
+#ui .after-rain-title .button-primary{flex:1;background:linear-gradient(#8a693d,#684727);color:#fff2d3;box-shadow:inset 0 0 0 1px #cba46a,0 3px #49301d}
+#ui .after-rain-title .button-glass{background:linear-gradient(#fff1d2,#e8d1a7);color:#5b432a;box-shadow:inset 0 0 0 1px #fff7e6,0 3px #b28c59}
+#ui .after-rain-title .button:hover{filter:brightness(1.1)}
+#ui .after-rain-title .title-note{justify-content:center;font-size:9px;color:#7b744a;letter-spacing:0;margin-top:20px}
+#ui .after-rain-title .title-note>.icon{color:#7e8b4e}
+#ui .after-rain-title .title-location{border-color:#c9bd8d;color:#f5e6c5;text-shadow:0 2px 3px #15241c;bottom:112px;letter-spacing:1px}
+#ui .after-rain-title .title-location small{color:#e2ddbf}
+#ui .after-rain-title .title-footer{color:#dfd5b2;border-color:#cfb67b50;letter-spacing:1px;padding-top:13px}
+#ui .after-rain-title .title-footer i{color:#c7ad71}
+#ui .after-rain-title .title-save-note{color:#d9d4b7}
+#ui .after-rain-title .title-footer-right{gap:12px}
+#ui .after-rain-title :is(.title-motion,.title-sound){min-height:38px;border:5px solid #87552f;border-image:var(--cozy-frame) 14 / 5px / 0 stretch;border-radius:3px;background:linear-gradient(#fff1d2,#e8d1a7);color:#5b432a;padding:3px 9px;gap:5px;font-size:10px;box-shadow:0 3px #15251b66}
+#ui .after-rain-title :is(.title-motion,.title-sound):hover{background:#f8dfac}
+#ui .after-rain-title .title-sound .toolbar-art-icon{width:28px;height:28px}
+#ui .after-rain-title .motion-symbol::before{background:linear-gradient(90deg,#715432 0% 30%,transparent 30% 70%,#715432 70% 100%)}
+#ui .after-rain-title .title-motion[aria-pressed=false] .motion-symbol::before{background:none;border-left-color:#715432}
+@media(max-height:700px) and (min-width:651px){
+ #ui .after-rain-title{padding-top:16px;padding-bottom:16px}
+ #ui .after-rain-title .title-copy{padding:14px 20px;width:400px;margin:16px 0}
+ #ui .after-rain-title h1{font-size:76px;padding:13px 8px 17px}
+ #ui .after-rain-title .title-copy>.eyebrow{margin-bottom:10px}
+ #ui .after-rain-title .title-copy>p{font-size:13px;margin:14px 0}
+ #ui .after-rain-title .title-note{margin-top:13px}
+ #ui .after-rain-title .title-location{bottom:100px}
+}
+@media(max-width:1050px){
+ #ui .after-rain-title .title-copy{max-width:49%}
+ #ui .after-rain-title .title-save-note{display:none}
+ #ui .after-rain-title .title-actions{flex-direction:column}
+ #ui .after-rain-title .title-actions .button{min-height:40px}
+ #ui .after-rain-title .title-actions .toolbar-art-icon{width:28px;height:28px}
+}
+@media(max-width:650px){
+ #ui .after-rain-title{padding:18px 5%}
+ #ui .after-rain-title .title-copy{max-width:100%;width:400px;margin:28px auto;padding:18px 20px}
+ #ui .after-rain-title h1{font-size:86px}
+ #ui .after-rain-title .title-header{justify-content:center}
+ #ui .after-rain-title .title-world-tag,#ui .after-rain-title .title-location{display:none}
+ #ui .after-rain-title .title-footer{justify-content:center;gap:12px}
+ #ui .after-rain-title .title-footer-right{margin:0 auto}
+ #ui .after-rain-title .title-actions{width:auto}
+}
+.rainy-title-active #game canvas{filter:saturate(.8) brightness(.95)}

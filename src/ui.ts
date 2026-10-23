@@ -1,4 +1,6 @@
+import { makeDraggablePanel } from './draggable-panel';
 import { gameAudio } from './audio';
+import { toolbarIcon } from './toolbar-icons';
 import { CHARACTER_WIDTH, drawCharacter } from './art';
 import { createCharacterEditor } from './character-creator';
 import { createTitleScreen } from './title-screen';
@@ -112,7 +114,7 @@ export class GameUI {
   private overlay = document.createElement('div');
   private notifications = document.createElement('div');
   private mode: 'title' | 'creation' | 'hud' = 'title';
-  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | null = null;
+  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | null = null;
   private focusBeforeModal?: HTMLElement;
   private onModalClose?: () => void;
   private existingSave = false;
@@ -143,9 +145,8 @@ export class GameUI {
     return tools.find(tool => tool.id === slot) ?? { label: 'Vazio', icon: 'bag', detail: 'Arraste um item da mochila para este slot.' };
   }
   activateSlot(index: number): void {
-    if (this.modal) return;
+    if (this.modal || !Number.isInteger(index) || index < 0 || index >= this.quickbar.length) return;
     const slot = this.quickbar[index];
-    if (!slot) { if (this.latest) this.toggleInventory(this.latest.inventory); return; }
     const quantity = this.latest ? quickQuantity(slot, this.latest.inventory, !!this.latest.wateringCan) : null;
     if (quantity === 0) { this.toast('Este item acabou. Recolha mais para usar este atalho.'); return; }
     this.activeSlot = index;
@@ -156,7 +157,7 @@ export class GameUI {
   private slotMarkup(slot: QuickSlot, index: number, inventory = false): string {
     const info = this.slotInfo(slot);
     const quantity = this.latest ? quickQuantity(slot, this.latest.inventory, !!this.latest.wateringCan) : null;
-    return `<button type="button" class="${inventory ? 'bag-slot quick-target' : 'tool'}" data-slot="${index}" ${slot ? `data-tool="${quickAction(slot)}"` : ''} aria-label="Slot ${index + 1}: ${slot ? info.label : 'vazio'}" title="${slot ? info.label : 'Slot vazio'} · ${inventory ? 'solte um item aqui; Delete remove' : 'I abre a mochila; botão direito configura'}"><span class="tool-key">${index + 1}</span>${slot ? icon(info.icon) : '<span class="empty-slot">+</span>'}<strong class="slot-quantity">${quantity ?? ''}</strong></button>`;
+    return `<button type="button" class="${inventory ? 'bag-slot quick-target' : 'tool'}" data-slot="${index}" ${slot ? `data-tool="${quickAction(slot)}"` : ''} aria-label="Slot ${index + 1}: ${slot ? info.label : 'vazio — mãos vazias'}" title="${slot ? info.label : 'Mãos vazias'} · ${inventory ? 'solte um item aqui; Delete remove' : 'I abre a mochila; botão direito configura'}"><span class="tool-key">${index + 1}</span>${slot ? icon(info.icon) : '<span class="empty-slot">+</span>'}<strong class="slot-quantity">${quantity ?? ''}</strong></button>`;
   }
   private renderQuickbar(): void {
     const belt = this.base.querySelector('.toolbelt');
@@ -174,7 +175,7 @@ export class GameUI {
       const index = Number(button.dataset.slot), slot = this.quickbar[index];
       const quantity = quickQuantity(slot, this.latest!.inventory, !!this.latest!.wateringCan);
       button.querySelector('.slot-quantity')!.textContent = quantity === null ? '' : String(quantity);
-      const selected = slot !== null && quickAction(slot) === this.latest!.tool && (quickItem(slot) ? this.activeSlot === index : true);
+      const selected = quickAction(slot) === this.latest!.tool && (slot === null || quickItem(slot) ? this.activeSlot === index : true);
       button.classList.toggle('selected', selected);
       button.classList.toggle('depleted', quantity === 0);
       button.setAttribute('aria-pressed', String(selected));
@@ -225,27 +226,13 @@ export class GameUI {
   }
 
   private setupJournalDrag(): void {
+    this.journalCleanup?.();
     const panel = this.base.querySelector<HTMLElement>('.journal')!;
     const handle = panel.querySelector<HTMLElement>('.journal-heading')!;
-    const place = (x: number, y: number): void => {
-      panel.style.left = `${Math.max(0, Math.min(window.innerWidth - panel.offsetWidth, x))}px`;
-      panel.style.top = `${Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, y))}px`;
-    };
-    try { const p = JSON.parse(localStorage.getItem('after-rain-missions-position') || 'null'); if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) place(p.x, p.y); } catch { /* Default position. */ }
-    let drag: { x: number; y: number } | null = null;
-    handle.onpointerdown = event => {
-      if ((event.target as HTMLElement).closest('button') || event.button !== 0) return;
-      const bounds = panel.getBoundingClientRect(); drag = { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
-      handle.setPointerCapture(event.pointerId); event.preventDefault();
-    };
-    handle.onpointermove = event => { if (drag) place(event.clientX - drag.x, event.clientY - drag.y); };
-    handle.onpointerup = handle.onpointercancel = () => {
-      if (!drag) return; drag = null;
-      try { localStorage.setItem('after-rain-missions-position', JSON.stringify({ x: panel.offsetLeft, y: panel.offsetTop })); } catch { /* Session preference. */ }
-    };
-    const observer = new ResizeObserver(() => { if (!panel.hidden && panel.style.left) place(parseFloat(panel.style.left), parseFloat(panel.style.top)); });
-    observer.observe(this.root); observer.observe(panel);
-    this.journalCleanup?.(); this.journalCleanup = () => observer.disconnect();
+    const tab = this.base.querySelector<HTMLElement>('.journal-reopen')!;
+    const cleanPanel = makeDraggablePanel(panel, handle, this.root, 'after-rain-missions-position');
+    const cleanTab = makeDraggablePanel(tab, tab, this.root, 'after-rain-missions-tab-position');
+    this.journalCleanup = () => { cleanPanel(); cleanTab(); };
   }
   private journalCleanup?: () => void;
 
@@ -339,7 +326,6 @@ export class GameUI {
     this.renderQuickbar(); this.setupJournalDrag();
     this.locationName = '';
     this.topToolbar = new TopToolbar(this.base.querySelector<HTMLElement>('.hud')!, {
-      icon,
       onOpenChange: open => this.callbacks.onPause(open || this.modal !== null),
       onAction: action => this.handleToolbarAction(action),
     });
@@ -381,10 +367,11 @@ export class GameUI {
     this.topToolbar?.setOpen(false, false);
     if (action === 'controls') {
       this.openModal('controls');
-      this.overlay.innerHTML = `<section class="panel inventory-card" role="dialog" aria-label="Controles"><div class="modal-heading"><h2>Controles</h2><button class="icon-button" aria-label="Fechar controles">${icon('close')}</button></div><p>WASD / setas — mover<br>E — interagir / usar ferramenta<br>1–9 — slots; clique no vazio para preencher<br>Botão direito no slot — trocar ou esvaziar<br>I — inventário · C — fabricar · B — construir<br>M — mapa · H — personalizar casa<br>0 — parede · P — porta · R — girar cobertura<br>Esc — fechar / pausar<br>Ctrl + Alt — entrar / sair da tela cheia</p></section>`;
+      this.overlay.innerHTML = `<section class="panel inventory-card" role="dialog" aria-label="Controles"><div class="modal-heading"><h2>Controles</h2><button class="icon-button" aria-label="Fechar controles">${icon('close')}</button></div><p>WASD / setas — mover<br>E — interagir / usar ferramenta<br>1–9 — selecionar slot; vazio deixa as mãos livres<br>Botão direito no slot — trocar ou esvaziar<br>I — inventário · C — fabricar · B — construir<br>M — mapa · H — personalizar casa<br>0 — parede · P — porta · R — girar cobertura<br>Esc — fechar / pausar<br>Ctrl + Alt — entrar / sair da tela cheia</p></section>`;
       this.overlay.querySelector('button')!.onclick = () => this.closeModal();
       this.overlay.querySelector('button')!.focus();
     }
+    else if (action === 'audio') this.toggleAudio();
     else if (action === 'options') this.togglePause();
     else if (action === 'map') this.toggleMap();
     else if (action === 'inventory' && this.latest) this.toggleInventory(this.latest.inventory);
@@ -699,15 +686,15 @@ export class GameUI {
     panel.querySelector<HTMLButtonElement>('button')!.focus();
   }
 
-  togglePause(): void {
-    if (this.mode !== 'hud') return;
-    if (this.modal) { this.closeModal(); return; }
-    this.openModal('pause');
+  toggleAudio(): void {
+    if (this.mode !== 'hud' || this.modal) return;
+    this.openModal('audio');
     const panel = document.createElement('section');
-    panel.className = 'pause-card panel';
+    panel.className = 'panel audio-panel';
     panel.setAttribute('role', 'dialog');
-    panel.setAttribute('aria-label', 'Jogo pausado');
-    panel.innerHTML = `<div class="pause-leaf">${icon('leaf')}</div><span class="eyebrow">O VALE PODE ESPERAR</span><h2>Uma pequena pausa.</h2><p>Respire. A sua história continua aqui.</p><div class="pause-actions"><button class="button button-primary" data-action="resume">Voltar ao vale ${icon('arrow')}</button><button class="button button-light" data-action="save">${icon('save')} Salvar meu progresso</button><button class="text-button pause-admin-link" data-action="admin">Administração · acesso com senha</button><button class="text-button" data-action="title">Voltar ao início</button></div><small>SIMULAÇÃO PAUSADA <i>·</i> ESC PARA VOLTAR</small>`;
+    panel.setAttribute('aria-modal', 'true');
+    panel.setAttribute('aria-label', 'Som do vale');
+    panel.innerHTML = `<div class="modal-heading"><div class="audio-title">${toolbarIcon('audio')}<div><span class="eyebrow">A TRILHA DO SEU RECOMEÇO</span><h2>Som do vale</h2></div></div><button class="icon-button" aria-label="Fechar configurações de som">${icon('close')}</button></div><p class="audio-intro">Escolha como ouvir o vale.</p><div class="audio-controls"></div><div class="audio-actions"><button class="button button-light" data-sound-preview>Ouvir efeito</button><button class="text-button" data-sound-defaults>Restaurar volumes</button></div><p class="audio-note">Suas preferências são salvas automaticamente.</p>`;
     const audio = document.createElement('fieldset');
     audio.className = 'audio-settings';
     audio.innerHTML = `<legend>Som do vale</legend><label>Música <input aria-label="Volume da música" type="range" min="0" max="100" value="${Math.round(gameAudio.settings.music * 100)}"><output>${Math.round(gameAudio.settings.music * 100)}%</output></label><label>Efeitos <input aria-label="Volume dos efeitos" type="range" min="0" max="100" value="${Math.round(gameAudio.settings.effects * 100)}"><output>${Math.round(gameAudio.settings.effects * 100)}%</output></label><label class="audio-mute"><input type="checkbox" ${gameAudio.settings.muted ? 'checked' : ''}> Silenciar todos os sons</label>`;
@@ -721,7 +708,31 @@ export class GameUI {
     audio.querySelector<HTMLInputElement>('input[type="checkbox"]')!.addEventListener('change', event => {
       gameAudio.setSettings({ muted: (event.target as HTMLInputElement).checked });
     });
-    panel.querySelector('.pause-actions')!.before(audio);
+    panel.querySelector('.audio-controls')!.append(audio);
+    panel.querySelector('.icon-button')!.addEventListener('click', () => this.closeModal());
+    panel.querySelector('[data-sound-preview]')!.addEventListener('click', () => gameAudio.play('pickup'));
+    panel.querySelector('[data-sound-defaults]')!.addEventListener('click', () => {
+      gameAudio.setSettings({ music: .45, effects: .65, muted: false });
+      audio.querySelectorAll<HTMLInputElement>('input[type="range"]').forEach((slider, index) => {
+        slider.value = String(Math.round((index === 0 ? gameAudio.settings.music : gameAudio.settings.effects) * 100));
+        slider.nextElementSibling!.textContent = `${slider.value}%`;
+      });
+      audio.querySelector<HTMLInputElement>('input[type="checkbox"]')!.checked = false;
+      gameAudio.play('pickup');
+    });
+    this.overlay.append(panel);
+    panel.querySelector<HTMLButtonElement>('.icon-button')!.focus();
+  }
+
+  togglePause(): void {
+    if (this.mode !== 'hud') return;
+    if (this.modal) { this.closeModal(); return; }
+    this.openModal('pause');
+    const panel = document.createElement('section');
+    panel.className = 'pause-card panel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-label', 'Jogo pausado');
+    panel.innerHTML = `<div class="pause-leaf">${icon('leaf')}</div><span class="eyebrow">O VALE PODE ESPERAR</span><h2>Uma pequena pausa.</h2><p>Respire. A sua história continua aqui.</p><div class="pause-actions"><button class="button button-primary" data-action="resume">Voltar ao vale ${icon('arrow')}</button><button class="button button-light" data-action="save">${icon('save')} Salvar meu progresso</button><button class="text-button pause-admin-link" data-action="admin">Administração · acesso com senha</button><button class="text-button" data-action="title">Voltar ao início</button></div><small>SIMULAÇÃO PAUSADA <i>·</i> ESC PARA VOLTAR</small>`;
     panel.querySelector('[data-action="resume"]')!.addEventListener('click', () => this.closeModal());
     panel.querySelector('[data-action="save"]')!.addEventListener('click', () => {
       this.toast(this.callbacks.onSave() ? 'Sua história foi salva neste navegador.' : 'Não foi possível salvar. Confira o armazenamento do navegador.');
@@ -795,7 +806,7 @@ export class GameUI {
     callback?.();
   }
 
-  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls'): void {
+  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio'): void {
     this.topToolbar?.setOpen(false, false);
     this.topToolbar?.setEnabled(false);
     this.focusBeforeModal = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;

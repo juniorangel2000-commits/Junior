@@ -78,18 +78,20 @@ jobs:
         shell: pwsh
         run: |
           $notes = @'
-          After Rain 0.7.0 — Fazenda aconchegante, música e sons.
+          After Rain 0.7.1 — ícones em pixel art, som na barra e missões livres.
 
-          - HUD completa na opção 02: molduras de madeira, painéis claros, relógio à direita e menus combinando com a mochila.
-          - Mochila de 30 espaços para pilhas e nove slots configuráveis por arraste; missões com arraste, posição salva e X.
-          - Trilha instrumental original em loop e efeitos de passos, coleta, ferramentas, plantio, rega, fabricação, construção, portas e botões. Funcionam offline.
-          - Volumes independentes para música e efeitos e opção de silenciar no menu de pausa. Preferências salvas; áudio suspenso quando a janela perde o foco.
-          - Ctrl + Alt entra e sai da tela cheia, inclusive nos menus.
-          - Tela inicial sempre começa com chuva animada, inclusive ao voltar da partida ou da criação. É possível pausar o fundo nesta visita.
+          - Novo botão Música na barra superior. O painel Som do vale reúne volumes de música e efeitos, silêncio geral, prévia de efeito e restauração dos volumes.
+          - Nove ilustrações originais em pixel art para a barra, seguindo a paleta e a arte da fazenda.
+          - Aba Missões minimizada arrastável, com posição própria salva, independente da janela aberta.
+          - Arrastar a aba não a abre por engano. Clique, Enter e Espaço abrem normalmente; posições permanecem dentro da tela ao redimensionar.
+          - Selecionar um slot vazio deixa o personagem de mãos vazias para coletar e interagir. A mochila continua em I e na barra.
+          - Tela inicial no estilo da HUD: madeira, painel creme e ícones em pixel art, com o cenário real ao fundo.
+          - Abertura com raios ocasionais, trilha chuvosa original e botão para ouvir a chuva sem sair do início.
+          - Saves, mochila de 30 espaços, nove slots e recompensas preservados.
 
-          Preserva os saves, o mapa real completo e as coletas únicas de regador e sete sementes. O save continua em %APPDATA%\Depois da Chuva. O áudio começa após a primeira interação, respeitando o navegador.
+          Validação: TypeScript, 181 testes, build e Chromium. Testes de arraste nas duas formas das missões, posição após reload, teclado, limites da tela, botões da barra, áudio e tela cheia.
 
-          Validação: TypeScript, 178 testes, build e Chromium. Inclui as duas ordens de coleta com save/reload após cada objeto; mapa interior/exterior, inventário, arraste de missões, áudio, volumes, Ctrl + Alt e chuva automática.
+          Versão para navegador de computador: https://after-rain-junior-desktop.astralpeach256.chatgpt.site (acesso pela conta do ChatGPT). Save do navegador é separado do executável.
 
           Portátil para Windows 11 x64, gerado em Windows. Baixe o .exe e abra com dois cliques. Não exige Node.js ou servidor. Pacote sem assinatura digital. Execução interativa no Windows 11 não testada neste ambiente Linux. SHA256SUMS.txt permite conferir a integridade.
           '@

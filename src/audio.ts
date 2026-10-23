@@ -6,7 +6,8 @@ export function audioSettings(value: unknown): AudioSettings {
   const volume = (n: unknown, fallback: number): number => typeof n === 'number' && Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : fallback;
   return { music: volume(v.music, .45), effects: volume(v.effects, .65), muted: v.muted === true };
 }
-export type Sound = 'step' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'craft' | 'door' | 'build';
+export type Sound = 'step' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'craft' | 'door' | 'build' | 'thunder';
+type AudioScene = 'title' | 'game';
 const BEAT = 60 / 76;
 export const MUSIC_DURATION = 64 * BEAT;
 const hz = (midi: number): number => 440 * 2 ** ((midi - 69) / 12);
@@ -63,6 +64,49 @@ export async function renderMusic(): Promise<AudioBuffer> {
   return loop;
 }
 
+/** Slow, original felt-piano chords and sparse droplets for the rainy opening. */
+export async function renderTitleMusic(): Promise<AudioBuffer> {
+  const rate = 22050, length = rate * 64;
+  const ctx = new OfflineAudioContext(1, length + rate * 6, rate);
+  const dry = ctx.createGain(); dry.gain.value = .75; dry.connect(ctx.destination);
+  const echo = ctx.createDelay(2), wet = ctx.createGain();
+  echo.delayTime.value = .75; wet.gain.value = .24;
+  dry.connect(echo).connect(wet).connect(ctx.destination);
+  const chords = [[50,57,60,64],[46,53,57,60],[53,57,60,64],[48,55,60,62]];
+  const melody = [[77,76,72],[74,72,69],[72,76,77],[74,72,67]];
+  for (let bar = 0; bar < 8; bar++) {
+    const start = bar * 8, chord = chords[bar % 4];
+    chord.forEach(note => tone(ctx, dry, hz(note), start, 9.5, .035, true));
+    tone(ctx, dry, hz(chord[0] - 12), start, 5.5, .055, true);
+    for (let beat = 0; beat < 4; beat++) {
+      tone(ctx, dry, hz(chord[[0,2,1,3][beat]] + 12), start + beat * 2 + .3, 3.5, .042);
+    }
+    melody[bar % 4].forEach((note, beat) => tone(ctx, dry, hz(note), start + beat * 2.5 + .8, 3.5, .055));
+  }
+  const rendered = await ctx.startRendering();
+  const loop = new AudioBuffer({ numberOfChannels: 1, length, sampleRate: rate });
+  const target = loop.getChannelData(0), source = rendered.getChannelData(0);
+  target.set(source.subarray(0, length));
+  for (let i = length; i < source.length; i++) target[i - length] += source[i];
+  return loop;
+}
+
+/** A soft stereo rain bed, separate from music so the effects slider controls it. */
+export function renderRain(ctx: BaseAudioContext): AudioBuffer {
+  const length = Math.round(ctx.sampleRate * 12), buffer = ctx.createBuffer(2, length, ctx.sampleRate);
+  for (let channel = 0; channel < 2; channel++) {
+    const samples = buffer.getChannelData(channel);
+    let smoothed = 0;
+    for (let i = 0; i < length; i++) {
+      smoothed += .25 * (Math.random() * 2 - 1 - smoothed);
+      const drift = .8 + .2 * Math.sin(2 * Math.PI * i / length + channel);
+      const edge = Math.min(1, i / (ctx.sampleRate * .04), (length - 1 - i) / (ctx.sampleRate * .04));
+      samples[i] = smoothed * .16 * drift * edge;
+    }
+  }
+  return buffer;
+}
+
 class GameAudio {
   settings = audioSettings(null);
   private context?: AudioContext;
@@ -70,16 +114,32 @@ class GameAudio {
   private musicGain?: GainNode;
   private effectsGain?: GainNode;
   private music?: AudioBufferSourceNode;
+  private musicEnvelope?: GainNode;
+  private fadingMusic?: AudioBufferSourceNode;
+  private musicMode?: AudioScene;
+  private scene: AudioScene = 'title';
+  private rain?: AudioBufferSourceNode;
+  private rainEnvelope?: GainNode;
+  private fadingRain?: AudioBufferSourceNode;
+  private rainBuffer?: AudioBuffer;
+  private buffers = new Map<AudioScene, AudioBuffer>();
   private rendering?: Promise<void>;
   private installed = false;
   private focused = true;
   private lastSound = new Map<Sound, number>();
 
+  get isUnlocked(): boolean { return !!this.context; }
+
   init(): void {
     if (this.installed) return;
     this.installed = true;
     try { this.settings = audioSettings(JSON.parse(localStorage.getItem(AUDIO_KEY) || 'null')); } catch { /* Defaults if storage is unavailable. */ }
-    const unlock = (): void => { void this.unlock(); };
+    const unlock = (event: Event): void => {
+      // Explicit sound toggles unlock in their click handler, preserving the
+      // user's initial action before pointerdown/keydown changes the state.
+      if (event.target instanceof Element && event.target.closest('[data-audio-toggle]')) return;
+      void this.unlock();
+    };
     window.addEventListener('pointerdown', unlock, { capture: true });
     window.addEventListener('keydown', unlock, { capture: true });
     document.addEventListener('visibilitychange', () => this.syncVisibility());
@@ -101,13 +161,63 @@ class GameAudio {
         this.applySettings();
       }
       if (this.context.state === 'suspended') await this.context.resume();
-      if (!this.music && !this.rendering) {
-        this.rendering = renderMusic().then(buffer => {
-          const source = this.context!.createBufferSource(); source.buffer = buffer; source.loop = true;
-          source.connect(this.musicGain!); source.start(); this.music = source;
-        }).catch(() => { /* Sound effects remain available if rendering fails. */ }).finally(() => { this.rendering = undefined; });
-      }
+      this.syncMusic(); this.syncRain();
+      window.dispatchEvent(new Event('after-rain-audio-change'));
     } catch { /* Audio support must never prevent play or saving. */ }
+  }
+
+  setScene(scene: AudioScene): void {
+    if (this.scene === scene) return;
+    this.scene = scene;
+    this.syncMusic(); this.syncRain();
+  }
+
+  private syncMusic(): void {
+    if (!this.context || this.musicMode === this.scene || this.rendering) return;
+    const mode = this.scene, cached = this.buffers.get(mode);
+    this.rendering = (cached ? Promise.resolve(cached) : mode === 'title' ? renderTitleMusic() : renderMusic()).then(buffer => {
+      this.buffers.set(mode, buffer);
+      if (this.scene !== mode) return;
+      const ctx = this.context!, now = ctx.currentTime;
+      // At most one outgoing loop; rapid menu transitions cannot accumulate sources.
+      this.fadingMusic?.stop();
+      if (this.music) {
+        this.musicEnvelope!.gain.cancelAndHoldAtTime(now);
+        this.musicEnvelope!.gain.linearRampToValueAtTime(0, now + .65);
+        this.music.stop(now + .7); this.fadingMusic = this.music;
+      }
+      const source = ctx.createBufferSource(), envelope = ctx.createGain();
+      source.buffer = buffer; source.loop = true;
+      envelope.gain.setValueAtTime(0, now); envelope.gain.linearRampToValueAtTime(1, now + .65);
+      source.connect(envelope).connect(this.musicGain!);
+      source.onended = () => { source.disconnect(); envelope.disconnect(); if (this.fadingMusic === source) this.fadingMusic = undefined; };
+      source.start(); this.music = source; this.musicEnvelope = envelope; this.musicMode = mode;
+    }).catch(() => { /* Effects and rain remain available if music rendering fails. */ }).finally(() => {
+      this.rendering = undefined;
+      // A different scene may have been requested while offline rendering was running.
+      if (this.scene !== mode) this.syncMusic();
+    });
+  }
+
+  private syncRain(): void {
+    const ctx = this.context;
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    if (this.scene === 'title' && !this.rain) {
+      this.fadingRain?.stop();
+      this.rainBuffer ??= renderRain(ctx);
+      const source = ctx.createBufferSource(), envelope = ctx.createGain();
+      source.buffer = this.rainBuffer; source.loop = true;
+      envelope.gain.setValueAtTime(0, now); envelope.gain.linearRampToValueAtTime(1, now + .65);
+      source.connect(envelope).connect(this.effectsGain!);
+      source.onended = () => { source.disconnect(); envelope.disconnect(); if (this.fadingRain === source) this.fadingRain = undefined; };
+      source.start(); this.rain = source; this.rainEnvelope = envelope;
+    } else if (this.scene !== 'title' && this.rain) {
+      this.rainEnvelope!.gain.cancelAndHoldAtTime(now);
+      this.rainEnvelope!.gain.linearRampToValueAtTime(0, now + .65);
+      this.rain.stop(now + .7); this.fadingRain = this.rain;
+      this.rain = undefined; this.rainEnvelope = undefined;
+    }
   }
 
   private syncVisibility(): void {
@@ -120,6 +230,7 @@ class GameAudio {
     this.settings = audioSettings({ ...this.settings, ...update });
     try { localStorage.setItem(AUDIO_KEY, JSON.stringify(this.settings)); } catch { /* Keep session settings. */ }
     this.applySettings();
+    window.dispatchEvent(new Event('after-rain-audio-change'));
   }
 
   private applySettings(): void {
@@ -165,5 +276,6 @@ export function synthesizeEffect(ctx: BaseAudioContext, out: AudioNode, sound: S
     case 'wood': noise(ctx, out, .12, 900, .32); note(43, 0, .1, .2); break;
     case 'door': noise(ctx, out, .18, 600, .22); note(40, 0, .13, .12); break;
     case 'build': noise(ctx, out, .18, 1000, .25); note(48, 0, .13); note(60, .1, .2, .07); break;
+    case 'thunder': noise(ctx, out, 2.4, 240, .36); note(29, 0, 1.8, .055); break;
   }
 }

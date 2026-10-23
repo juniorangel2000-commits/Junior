@@ -459,3 +459,7 @@
 @media(prefers-reduced-motion:reduce){.after-rain-title button{transition:none}.after-rain-title .button:hover{transform:none}}
 .rainy-title-active #game canvas{filter:saturate(.56) brightness(.9)}
 .after-rain-title .title-weather{image-rendering:pixelated}
+.after-rain-title .title-sound{min-height:32px;border:1px solid #a7beb13b;border-radius:3px;background:#112b35bd;display:flex;gap:8px;align-items:center;justify-content:center;padding:6px 11px;color:#a9beb3;font-size:9px;letter-spacing:.2px;white-space:nowrap}
+.after-rain-title .title-sound:hover{background:#24434d;border-color:#b0c4b96b}
+.after-rain-title .sound-symbol{color:#c5a569;font:16px/1 Georgia,serif;width:12px;text-align:center}
+@media(max-width:760px){.after-rain-title .title-footer-right{gap:8px;flex-wrap:wrap}.after-rain-title .title-sound{font-size:8px}}

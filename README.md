@@ -1,3 +1,5 @@
+> **Atualização 0.7.1:** [Jogar no navegador (computador)](https://after-rain-junior-desktop.astralpeach256.chatgpt.site) · [Download Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.7.1) · [Ícones, painel de som e missões livres](docs/barra-som-missoes-v0.7.1.md). O site usa acesso pela conta do ChatGPT.
+
 > **Atualização 0.7.0:** [Download Windows 11 x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.7.0) · [HUD Fazenda aconchegante, áudio, tela cheia e chuva](docs/hud-audio-v0.7.md).
 
 > **Atualização 0.6.1:** [Download Windows 11 x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.6.1) · [Mochila de 30 espaços e arrastar itens](docs/inventario-v0.6.1.md).
@@ -8,7 +10,7 @@
 
 Uma pequena clareira, uma casa que resistiu e a chance de recomeçar. **After Rain**, anteriormente chamado Jardim Depois da Chuva, é um jogo original para navegador, single-player, com exploração, cultivo e construção em pixel art 2D top-down. Sua história se passa após uma chuva que transformou pessoas em zumbis. Continua no mesmo projeto, com TypeScript, Phaser 3 e Vite e aplicativo desktop em Electron.
 
-A versão atual é **0.7.0**. A HUD usa a opção aprovada **02 — Fazenda aconchegante**, com molduras de madeira, painéis claros e mochila de 30 espaços. A tela inicial abre sempre com chuva animada; o botão “Pausar fundo” vale apenas para a visita atual. **Ctrl + Alt** alterna a tela cheia. Música e efeitos originais funcionam offline, com ajustes no menu de pausa.
+A versão atual é **0.7.1**. A HUD usa a opção aprovada **02 — Fazenda aconchegante**, com molduras de madeira, painéis claros e mochila de 30 espaços. A tela inicial acompanha as molduras de madeira, o painel creme e os ícones da HUD, e abre sempre com chuva animada, raios ocasionais e uma trilha chuvosa própria; o botão “Pausar fundo” vale apenas para a visita atual. **Ctrl + Alt** alterna a tela cheia. Música e efeitos originais funcionam offline, com ajustes no botão Música da barra superior. O botão “Ouvir a chuva” permite iniciar o som ainda na abertura. Selecionar um dos nove slots vazios deixa o personagem de mãos vazias; a mochila abre por I ou pela barra superior.
 
 A [tela inicial After Rain](docs/tela-inicial-after-rain.md) usa o cenário do jogo com chuva, neblina e câmera suave. O clipe do Flow ainda não foi fornecido; os estudos em [direção visual](docs/direcao-visual/hud/README.md) registram propostas históricas.
 
@@ -60,7 +62,7 @@ O build fica em `dist/`. Sirva essa pasta por HTTP; abrir `index.html` diretamen
 
 ## Aplicativo para Windows
 
-**Última versão publicada e verificada:** [After Rain v0.5.0 — Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.5.0/After-Rain-0.5.0-Windows-x64.exe). A [página da Release](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.5.0) disponibiliza o executável e seu manifesto de integridade. Inclui a abertura chuvosa, a nova casa e seu interior, a cama, a barra retrátil, as missões com X e o painel compacto, além de toda a arte e os sistemas preservados da 0.4.0. Feche a versão antiga antes de abrir o novo arquivo.
+**Versão atual:** [After Rain v0.7.1 — Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.7.1/After-Rain-0.7.1-Windows-x64.exe). A [página da Release](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.7.1) reúne o executável e seu manifesto de integridade. Inclui a abertura com o visual da HUD, chuva com raios, trilha chuvosa, painel de som na barra, ícones em pixel art, missões livres e slots vazios para mãos vazias. Feche a versão antiga antes de abrir o novo arquivo.
 
 O pacote portátil é gerado em `release/`, com nome `After-Rain-<versão>-Windows-x64.exe` a partir da versão 0.5.0. Os pacotes anteriores mantêm o nome de arquivo original. Ele é destinado a **Windows 10/11 de 64 bits**. Para jogar o pacote pronto, abra o `.exe` com dois cliques. Não precisa instalar Node.js, abrir um terminal, manter o Vite ativo, conectar à internet ou executar como administrador. A primeira abertura pode demorar um pouco enquanto o pacote prepara seus arquivos temporários.
 
@@ -93,15 +95,7 @@ Crie seu personagem escolhendo nome, tom de pele, penteado, cor do cabelo, macac
 | E ou clique esquerdo próximo | Interagir com a ação selecionada |
 | Botão direito no cenário | Abrir/recolher a barra de opções do jogo |
 | Mouse no centro superior + clique na seta | Revelar e abrir/recolher a barra de opções |
-| 1 | Mãos: coletar, colher, conversar e abrir/fechar porta |
-| 2 | Plantar uma semente de nabo |
-| 3 | Regar uma planta |
-| 4 | Construir uma cerca |
-| 5 | Colocar um banco decorativo |
-| 6 | Remover uma construção |
-| 7 | Usar a machadinha fabricada |
-| 8 | Usar a picareta fabricada |
-| 9 | Colocar uma bancada |
+| 1–9 ou clique no slot | Selecionar o item atribuído; slot vazio equipa mãos vazias |
 | 0 | Colocar uma parede |
 | P | Colocar uma porta |
 | B | Abrir o menu de construção e selecionar peças/projeto fora de casa |
@@ -113,7 +107,7 @@ Crie seu personagem escolhendo nome, tom de pele, penteado, cor do cabelo, macac
 | Esc | Fechar/cancelar o menu ou pausar |
 | Ctrl + Shift + F10 | Solicitar acesso de administrador por senha |
 
-As ações também podem ser selecionadas pela interface. A barra superior começa recolhida e reúne **Inventário, Mapa, Fabricação, Construção, Salvar e Opções**; dentro de casa, oferece **Minha casa**. **Opções** abre a pausa com salvar, administração e retorno ao início. Apenas passar o mouse para revelar a seta mantém a simulação ativa; abrir a barra pausa. **Esc** recolhe a barra antes de abrir a pausa. Os atalhos continuam funcionando com a barra fechada.
+As ações também podem ser selecionadas pela interface. A barra superior começa recolhida e reúne **Inventário, Mapa, Fabricação, Construção, Música, Salvar, Controles e Opções**; dentro de casa, oferece **Minha casa**. **Opções** abre a pausa com salvar, administração e retorno ao início. Apenas passar o mouse para revelar a seta mantém a simulação ativa; abrir a barra pausa. **Esc** recolhe a barra antes de abrir a pausa. Os atalhos continuam funcionando com a barra fechada.
 
 Interagir e construir exigem proximidade e alvo válido. Use o menu **B** para piso, janela e cobertura, além das demais peças. Menus, fabricação e diálogos pausam movimento, relógio e crescimento. O teclado do jogo não movimenta o personagem durante a digitação do nome.
 
@@ -134,9 +128,9 @@ O mundo contínuo tem **96×72 tiles de 32 pixels**: 3.072×2.304 pixels lógico
 1. Com as mãos, recolha **galhos, pedras e fibras** perto da casa. Há novos pontos fixos desses recursos, inclusive para partidas migradas que já tenham esgotado os pontos antigos.
 2. Em **C**, prepare componentes: 3 fibras viram 1 corda, 2 pedras viram 1 pedra lascada, 1 galho vira 1 cabo e 1 galho vira 4 cavilhas.
 3. Fabrique **machadinha**, **picareta** e **martelo**. A machadinha usa cabo + pedra lascada + corda; a picareta usa cabo + 2 pedras lascadas + corda; o martelo usa cabo + pedra + corda.
-4. Selecione **7** e dê quatro golpes em uma árvore acessível para receber 2 troncos e 3 galhos. Use **8** em um veio de pedra: cinco golpes entregam 4 pedras.
+4. Atribua a machadinha a um slot pela mochila, selecione-a e dê quatro golpes em uma árvore acessível para receber 2 troncos e 3 galhos. Selecione a picareta em um veio de pedra: cinco golpes entregam 4 pedras.
 5. Na fabricação, use a machadinha para transformar **1 tronco em 2 tábuas brutas**, em 4 segundos. Você pode fazer isso antes de possuir bancada ou serrote.
-6. Prepare 4 tábuas brutas e 4 cavilhas. Com o martelo na mochila, selecione **9** e coloque uma **bancada** em um espaço livre.
+6. Prepare 4 tábuas brutas e 4 cavilhas. Com o martelo na mochila, abra **B** e coloque uma **bancada** em um espaço livre.
 7. Recolha sucata nas ruínas a oeste. Perto da bancada, transforme 1 sucata em 1 lâmina; depois, monte o **serrote improvisado** com lâmina + cabo + corda.
 8. Com serrote e bancada próxima, **1 tronco vira 3 tábuas regulares**, em 3 segundos. Tábuas brutas e regulares são materiais diferentes. A construção inicial usa tábuas brutas.
 9. Abra **B** e construa piso, paredes, janela, porta e cobertura. O abrigo de teste ocupa 3×3 tiles externos: 9 pisos, 6 paredes, 1 porta, 1 janela e 3 coberturas de 1×3. Custa **32 tábuas brutas, 9 cavilhas e 9 fibras**, somando as mesmas peças do modo livre. O martelo e uma bancada próxima são exigidos ao colocar as peças novas.
@@ -145,7 +139,7 @@ O mundo contínuo tem **96×72 tiles de 32 pixels**: 3.072×2.304 pixels lógico
 
 O processamento mostra progresso. Cancelar ou fechar antes da conclusão não consome os materiais. Não há fila de produção offline.
 
-A **bancada** é uma estação. O **banco** da tecla 5 continua sendo o móvel decorativo da entrega anterior.
+A **bancada** é uma estação. O **banco** disponível em B é um móvel decorativo.
 
 ## Construção e abrigo
 

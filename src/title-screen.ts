@@ -1,5 +1,7 @@
 import { TITLE_BACKGROUND } from './data/title-background';
 import { createTitleWeather } from './title-weather';
+import { gameAudio } from './audio';
+import { toolbarIcon } from './toolbar-icons';
 
 export type TitleBackgroundMode = 'animated' | 'static' | 'video' | 'off';
 interface TitleScreenOptions {
@@ -18,15 +20,15 @@ export function createTitleScreen(holder: HTMLElement, options: TitleScreenOptio
   screen.setAttribute('aria-label', 'Menu principal de After Rain');
   screen.innerHTML = `
     <div class="title-atmosphere" aria-hidden="true"></div>
-    <header class="title-header"><div class="brand" aria-label="After Rain">${icon('leaf')}<span>AFTER RAIN<small>UM REFÚGIO DEPOIS DA TEMPESTADE</small></span></div><span class="title-world-tag"><i></i> O VALE AINDA RESISTE <b>· TRÊS REGIÕES</b></span></header>
+    <header class="title-header"><div class="brand" aria-label="After Rain">${toolbarIcon('building')}<span>AFTER RAIN<small>UM REFÚGIO DEPOIS DA TEMPESTADE</small></span></div><span class="title-world-tag"><i></i> O VALE AINDA RESISTE <b>· TRÊS REGIÕES</b></span></header>
     <div class="title-copy"><div class="eyebrow"><span></span> DEPOIS DA CHUVA, NADA FICOU IGUAL.</div>
       <h1 aria-label="After Rain"><span>After</span><em>Rain<span class="title-period">.</span></em></h1>
       <p>A chuva transformou pessoas em zumbis.<br>Entre as ruínas, ainda há um recomeço.</p>
-      <div class="title-actions">${options.hasSave ? `<button class="button button-primary" id="continue-game">Continuar minha história ${icon('arrow')}</button><button class="button button-glass" id="new-game">Novo jogo</button>` : `<button class="button button-primary" id="new-game">Novo jogo ${icon('arrow')}</button>`}</div>
+      <div class="title-actions">${options.hasSave ? `<button class="button button-primary" id="continue-game">${toolbarIcon('save')} Continuar minha história</button><button class="button button-glass" id="new-game">${toolbarIcon('inventory')} Novo jogo</button>` : `<button class="button button-primary" id="new-game">${toolbarIcon('inventory')} Novo jogo</button>`}</div>
       <div class="title-note">${icon('leaf')} Encontre abrigo. Cultive o que restou.</div>
     </div>
     <aside class="title-location"><span class="location-dot"></span><div>UM REFÚGIO ENTRE AS RUÍNAS<small>Enquanto a chuva cai, a vida resiste.</small></div></aside>
-    <footer class="title-footer"><span>EXPLORAR <i>·</i> CULTIVAR <i>·</i> RECONSTRUIR</span><div class="title-footer-right"><span class="title-save-note">TECLADO E MOUSE <i>·</i> SALVAMENTO LOCAL</span><button type="button" class="title-motion" data-title-motion aria-pressed="true"><span class="motion-symbol" aria-hidden="true"></span><span class="motion-label">Pausar fundo</span></button></div></footer>`;
+    <footer class="title-footer"><span>EXPLORAR <i>·</i> CULTIVAR <i>·</i> RECONSTRUIR</span><div class="title-footer-right"><span class="title-save-note">TECLADO E MOUSE <i>·</i> SALVAMENTO LOCAL</span><button type="button" class="title-sound" data-title-sound aria-pressed="false">${toolbarIcon('audio')}<span class="sound-label">Ouvir a chuva</span></button><button type="button" class="title-motion" data-title-motion aria-pressed="true"><span class="motion-symbol" aria-hidden="true"></span><span class="motion-label">Pausar fundo</span></button></div></footer>`;
   holder.replaceChildren(screen);
   // Every visit starts with rain; the pause button only affects this visit.
   let animate = true;
@@ -36,6 +38,21 @@ export function createTitleScreen(holder: HTMLElement, options: TitleScreenOptio
   let videoReady = false;
   let videoFailed = false;
   const motionButton = screen.querySelector<HTMLButtonElement>('[data-title-motion]')!;
+  const soundButton = screen.querySelector<HTMLButtonElement>('[data-title-sound]')!;
+  soundButton.setAttribute('data-audio-toggle', '');
+  const updateSoundButton = (): void => {
+    const soundRequested = gameAudio.isUnlocked && !gameAudio.settings.muted;
+    soundButton.setAttribute('aria-pressed', String(soundRequested));
+    soundButton.querySelector('.sound-label')!.textContent = soundRequested ? 'Silenciar' : 'Ouvir a chuva';
+  };
+  updateSoundButton();
+  window.addEventListener('after-rain-audio-change', updateSoundButton);
+  soundButton.addEventListener('click', () => {
+    const soundRequested = !gameAudio.isUnlocked || gameAudio.settings.muted;
+    gameAudio.setSettings({ muted: !soundRequested });
+    if (soundRequested) void gameAudio.unlock();
+    updateSoundButton();
+  });
   const updateButton = (): void => {
     motionButton.setAttribute('aria-pressed', String(animate));
     motionButton.querySelector('.motion-label')!.textContent = animate ? 'Pausar fundo' : 'Animar fundo';
@@ -106,6 +123,7 @@ export function createTitleScreen(holder: HTMLElement, options: TitleScreenOptio
     if (!active) return;
     active = false;
     weather.destroy();
+    window.removeEventListener('after-rain-audio-change', updateSoundButton);
     document.removeEventListener('visibilitychange', onVisibilityChange);
     if (video) {
       video.removeEventListener('loadeddata', onVideoReady);

@@ -1,8 +1,8 @@
 import './top-toolbar.css';
+import { toolbarIcon } from './toolbar-icons';
 
-export type ToolbarAction = 'inventory' | 'map' | 'crafting' | 'building' | 'save' | 'options' | 'controls';
+export type ToolbarAction = 'inventory' | 'map' | 'crafting' | 'building' | 'save' | 'options' | 'controls' | 'audio';
 interface ToolbarCallbacks {
-  icon(name: string): string;
   onOpenChange(open: boolean): void;
   onAction(action: ToolbarAction): void;
 }
@@ -16,17 +16,18 @@ export class TopToolbar {
 
   constructor(host: HTMLElement, private readonly callbacks: ToolbarCallbacks) {
     this.root.className = 'top-toolbar';
-    this.root.innerHTML = `<div class="toolbar-reveal-zone"><button type="button" class="toolbar-handle" aria-label="Abrir opções do jogo" aria-controls="game-top-toolbar" aria-expanded="false" title="Abrir opções do jogo · botão direito no cenário">${callbacks.icon('chevron')}<span>Menu do jogo</span></button></div><nav id="game-top-toolbar" class="toolbar-panel" aria-label="Opções do jogo" hidden><div class="toolbar-heading"><span>After Rain</span><small>SIMULAÇÃO PAUSADA</small></div><div class="toolbar-actions"></div><p class="toolbar-hint">Esc ou seta para recolher · botão direito no cenário para abrir</p></nav>`;
+    this.root.innerHTML = `<div class="toolbar-reveal-zone"><button type="button" class="toolbar-handle" aria-label="Abrir opções do jogo" aria-controls="game-top-toolbar" aria-expanded="false" title="Abrir opções do jogo · botão direito no cenário">${toolbarIcon('chevron')}<span>Menu do jogo</span></button></div><nav id="game-top-toolbar" class="toolbar-panel" aria-label="Opções do jogo" hidden><div class="toolbar-heading"><span>After Rain</span><small>SIMULAÇÃO PAUSADA</small></div><div class="toolbar-actions"></div><p class="toolbar-hint">Esc ou seta para recolher · botão direito no cenário para abrir</p></nav>`;
     this.panel = this.root.querySelector<HTMLElement>('.toolbar-panel')!;
     this.handle = this.root.querySelector<HTMLButtonElement>('.toolbar-handle')!;
-    const actions: Array<{ id: ToolbarAction; label: string; icon: string; shortcut?: string; cls: string }> = [
-      { id: 'inventory', label: 'Inventário', icon: 'bag', shortcut: 'I', cls: 'inventory-button' },
-      { id: 'map', label: 'Mapa', icon: 'map', shortcut: 'M', cls: 'map-button' },
-      { id: 'crafting', label: 'Fabricação', icon: 'workbench', shortcut: 'C', cls: 'crafting-button' },
-      { id: 'building', label: 'Construção', icon: 'shelter', shortcut: 'B', cls: 'building-button' },
-      { id: 'save', label: 'Salvar', icon: 'save', cls: 'toolbar-save-button' },
-      { id: 'controls', label: 'Controles', icon: 'keys', cls: 'toolbar-controls-button' },
-      { id: 'options', label: 'Opções', icon: 'pause', shortcut: 'Esc', cls: 'pause-button' },
+    const actions: Array<{ id: ToolbarAction; label: string; shortcut?: string; cls: string }> = [
+      { id: 'inventory', label: 'Inventário', shortcut: 'I', cls: 'inventory-button' },
+      { id: 'map', label: 'Mapa', shortcut: 'M', cls: 'map-button' },
+      { id: 'crafting', label: 'Fabricação', shortcut: 'C', cls: 'crafting-button' },
+      { id: 'building', label: 'Construção', shortcut: 'B', cls: 'building-button' },
+      { id: 'audio', label: 'Música', cls: 'toolbar-audio-button' },
+      { id: 'save', label: 'Salvar', cls: 'toolbar-save-button' },
+      { id: 'controls', label: 'Controles', cls: 'toolbar-controls-button' },
+      { id: 'options', label: 'Opções', shortcut: 'Esc', cls: 'pause-button' },
     ];
     const list = this.root.querySelector<HTMLElement>('.toolbar-actions')!;
     for (const action of actions) {
@@ -35,7 +36,7 @@ export class TopToolbar {
       button.className = `toolbar-action ${action.cls}`;
       button.dataset.toolbarAction = action.id;
       button.setAttribute('aria-label', action.id === 'options' ? 'Abrir opções e pausa' : action.label);
-      button.innerHTML = `${callbacks.icon(action.icon)}<span>${action.label}</span>${action.shortcut ? `<kbd>${action.shortcut}</kbd>` : ''}`;
+      button.innerHTML = `${toolbarIcon(action.id)}<span>${action.label}</span>${action.shortcut ? `<kbd>${action.shortcut}</kbd>` : ''}`;
       button.addEventListener('click', () => callbacks.onAction(action.id));
       list.append(button);
     }

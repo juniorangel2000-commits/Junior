@@ -1,0 +1,24 @@
+const {chromium}=require('playwright');const assert=require('node:assert/strict');
+(async()=>{const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox','--disable-dev-shm-usage']});try{
+ const page=await browser.newPage({viewport:{width:1280,height:800}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const attach=async()=>{await page.waitForTimeout(2500);await page.evaluate(async()=>{const {game}=await import(document.querySelector('script[src*="main.ts"]').src);window.scene=game.scene.scenes[0]})};
+ await page.goto(process.env.QA_URL||'http://127.0.0.1:5173');await attach();
+ await page.evaluate(()=>{scene.startNew({name:'Missões',skin:'#e9bc98',hairColor:'#563b2c',outfit:'#457398',hairStyle:'preso'});window.worldClicks=0;const original=scene.interact.bind(scene);scene.interact=(...args)=>{worldClicks++;return original(...args)}});
+ const move=async(selector,x,y)=>{const b=await page.locator(selector).boundingBox();await page.mouse.move(b.x+30,b.y+15);await page.mouse.down();await page.mouse.move(x+30,y+15,{steps:8});await page.mouse.up();await page.waitForTimeout(100)};
+ const same=(a,b)=>{assert.ok(Math.abs(a.x-b.x)<2);assert.ok(Math.abs(a.y-b.y)<2)};
+ await move('.journal-heading',300,170);const expanded=await page.locator('.journal').boundingBox();assert.ok(expanded.x>250);
+ await page.locator('.journal-close').click();await move('.journal-reopen',750,540);
+ assert.equal(await page.locator('.journal').isVisible(),false,'dragging the tab must not open it');const compact=await page.locator('.journal-reopen').boundingBox();assert.ok(compact.x>700&&compact.y>500);
+ assert.equal(await page.evaluate(()=>worldClicks),0,'HUD drag must not interact with the world');
+ const positions=await page.evaluate(()=>[JSON.parse(localStorage.getItem('after-rain-missions-position')),JSON.parse(localStorage.getItem('after-rain-missions-tab-position'))]);same(positions[0],expanded);same(positions[1],compact);
+ await page.locator('.journal-reopen').click();same(await page.locator('.journal').boundingBox(),expanded);
+ await page.locator('.journal-close').click();same(await page.locator('.journal-reopen').boundingBox(),compact);
+ await page.reload();await attach();await page.evaluate(()=>scene.continueGame());await page.waitForTimeout(100);assert.equal(await page.locator('.journal').isVisible(),false);same(await page.locator('.journal-reopen').boundingBox(),compact);
+ await page.locator('.journal-reopen').focus();await page.keyboard.press('Enter');same(await page.locator('.journal').boundingBox(),expanded);
+ await page.locator('.journal-close').click();await page.locator('.journal-reopen').focus();await page.keyboard.press('Space');assert.equal(await page.locator('.journal').isVisible(),true);
+ await page.locator('.journal-close').click();await move('.journal-reopen',2000,1800);let box=await page.locator('.journal-reopen').boundingBox();assert.ok(box.x+box.width<=1280&&box.y+box.height<=800);
+ await page.setViewportSize({width:390,height:844});await page.waitForTimeout(150);box=await page.locator('.journal-reopen').boundingBox();assert.ok(box.x>=0&&box.x+box.width<=390&&box.y+box.height<=844);
+ await page.locator('.journal-reopen').click();box=await page.locator('.journal').boundingBox();assert.ok(box.x>=0&&box.x+box.width<=390&&box.y+box.height<=844);
+ await page.setViewportSize({width:1280,height:800});await page.locator('.journal-close').click();await move('.journal-reopen',820,380);await page.screenshot({path:'/tmp/after-rain-missions-tab-0.7.1.png'});
+ assert.deepEqual(errors,[]);console.log('PASS independent expanded/minimized positions, no click on drag, no world interaction, click/Enter/Space, save/reload, viewport clamping, no JS errors');
+}finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});

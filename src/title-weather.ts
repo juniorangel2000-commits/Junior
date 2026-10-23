@@ -1,3 +1,5 @@
+import { gameAudio } from './audio';
+
 interface TitleWeather {
   setAnimated(enabled: boolean): void;
   destroy(): void;
@@ -8,14 +10,24 @@ const noise = (n: number): number => {
   return value - Math.floor(value);
 };
 
-/** Rain and fog belong to the opening screen, never to the world or its save. */
+/** One soft flash per storm cycle; reduced motion keeps the rain without flashes. */
+export function titleLightningAt(elapsed: number, reducedMotion: boolean): { strike: number; strength: number } {
+  if (reducedMotion || elapsed < 3.5) return { strike: 0, strength: 0 };
+  const strike = Math.floor((elapsed - 3.5) / 14);
+  const age = (elapsed - 3.5) % 14;
+  const strength = age < .18 ? age / .18 : age < 1.5 ? ((1.5 - age) / 1.32) ** 2 : 0;
+  return { strike, strength };
+}
+
+/** Rain, distant lightning and fog belong to the opening screen, never to a save. */
 export function createTitleWeather(holder: HTMLElement): TitleWeather {
   const canvas = document.createElement('canvas');
   canvas.className = 'title-weather';
   canvas.setAttribute('aria-hidden', 'true');
   holder.prepend(canvas);
   const ctx = canvas.getContext('2d')!;
-  let active = true, animated = false, frame = 0, previous = 0, elapsed = 0;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let active = true, animated = false, frame = 0, previous = 0, elapsed = 0, lastThunder = -1;
   const draw = (): void => {
     const w = canvas.width, h = canvas.height;
     ctx.clearRect(0, 0, w, h);
@@ -26,7 +38,38 @@ export function createTitleWeather(holder: HTMLElement): TitleWeather {
     sky.addColorStop(.6, 'rgba(45,64,66,.02)');
     sky.addColorStop(1, 'rgba(34,52,56,.24)');
     ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h);
-    // Broad banks of mist drift slowly; no flashes or lightning.
+    const { strike, strength } = titleLightningAt(elapsed, reducedMotion.matches);
+    if (strength > 0) {
+      if (animated && strike !== lastThunder && elapsed - 3.5 - strike * 14 >= .3) {
+        lastThunder = strike;
+        gameAudio.play('thunder');
+      }
+      // Keep the bolt over the distant valley, behind the menu copy and buttons.
+      const x = w * (.66 + noise(strike + 280) * .21);
+      const glow = ctx.createRadialGradient(x, h * .12, 0, x, h * .12, w * .62);
+      glow.addColorStop(0, `rgba(180,211,224,${strength * .17})`);
+      glow.addColorStop(1, 'rgba(151,185,207,0)');
+      ctx.fillStyle = glow; ctx.fillRect(0, 0, w, h);
+      const points = Array.from({ length: 9 }, (_, i) => ({
+        x: Math.round(x + (noise(strike * 19 + i + 360) - .5) * w * .07 + i * w * .003),
+        y: Math.round(h * (-.02 + i * .049)),
+      }));
+      for (const layer of [0, 1]) {
+        ctx.lineWidth = layer ? 1 : 4;
+        ctx.strokeStyle = layer ? `rgba(219,235,232,${strength * .84})` : `rgba(138,183,212,${strength * .17})`;
+        ctx.beginPath(); ctx.moveTo(points[0].x, points[0].y);
+        for (const point of points.slice(1)) ctx.lineTo(point.x, point.y);
+        for (const branch of [3, 5]) {
+          const point = points[branch], direction = branch === 3 ? -1 : 1;
+          ctx.moveTo(point.x, point.y);
+          ctx.lineTo(Math.round(point.x + direction * w * .025), Math.round(point.y + h * .025));
+          ctx.lineTo(Math.round(point.x + direction * w * .018), Math.round(point.y + h * .05));
+          ctx.lineTo(Math.round(point.x + direction * w * .045), Math.round(point.y + h * .095));
+        }
+        ctx.stroke();
+      }
+    }
+    // Broad banks of mist drift slowly beneath the distant storm.
     for (let i = 0; i < 3; i++) {
       const x = w * (.30 + i * .30) + Math.sin(elapsed * .09 + i * 2) * w * .06;
       const y = h * (.67 + i * .06), radius = w * .48;
@@ -63,6 +106,8 @@ export function createTitleWeather(holder: HTMLElement): TitleWeather {
     frame = requestAnimationFrame(tick);
   };
   const observer = new ResizeObserver(resize);
+  const onMotionPreference = (): void => { if (active) draw(); };
+  reducedMotion.addEventListener('change', onMotionPreference);
   observer.observe(holder); resize();
   return {
     setAnimated(enabled: boolean): void {
@@ -72,6 +117,7 @@ export function createTitleWeather(holder: HTMLElement): TitleWeather {
     },
     destroy(): void {
       active = false; animated = false; cancelAnimationFrame(frame);
+      reducedMotion.removeEventListener('change', onMotionPreference);
       observer.disconnect(); canvas.remove();
     },
   };
