@@ -31,6 +31,7 @@ export function preloadVisualAssets(scene: Phaser.Scene): void {
   preloadHouseSprite(scene);
   preloadCharacterSprites(scene);
   preloadToolArt(scene);
+  scene.load.image('forest-animals-source', 'assets/visual/forest/animals.png');
   scene.load.image('icon-water-empty', WATER_EMPTY_ICON);
   for (const id of ['water', 'seeds']) scene.load.image(`icon-${id}`, `${BASE}icons/${id}.png`);
   scene.load.image('nature-trees-source', `${BASE}nature/trees-approved.png`);

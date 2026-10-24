@@ -40,6 +40,9 @@ export interface ProgressData {
   builtShelter: boolean;
 }
 export interface SaveData {
+  activeArea?: 'property' | 'forest';
+  forestPosition?: TilePoint & { direction?: CharacterDirection };
+  recruitedAnimals?: string[];
   version: 2;
   quickbar?: QuickSlot[];
   wateringCanWater?: number;

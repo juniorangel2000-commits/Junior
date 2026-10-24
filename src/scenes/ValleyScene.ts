@@ -1,3 +1,5 @@
+import { FOREST_ANIMALS, PROPERTY_FOREST_GATE } from '../data/ancient-forest';
+import { animalSprite, setupAnimalArt } from '../forest-art';
 import { WATER_CAPACITY } from '../data/watering-can';
 import { gameAudio } from '../audio';
 import Phaser from 'phaser';
@@ -92,6 +94,7 @@ export class ValleyScene extends Phaser.Scene {
   private lastWheelZoomAt = 0;
   private mapEditor?: MapEditor;
   private editingMap = false;
+  private forestActive = false;
 
   constructor() { super('Vale'); }
 
@@ -164,6 +167,7 @@ export class ValleyScene extends Phaser.Scene {
     this.running = true;
     this.paused = false;
     this.ui.showHUD();
+    if (saved.activeArea === 'forest') { this.enterForest(saved); return; }
     this.ui.toast(`Que bom ter você de volta, ${saved.profile.name}.`);
     this.updateHUD();
   }
@@ -269,6 +273,24 @@ export class ValleyScene extends Phaser.Scene {
 
   private playerPosition(): SaveData['player'] {
     return { x: this.player.x, y: this.player.y, direction: directionFromVector(this.player.facing.x, this.player.facing.y) };
+  }
+
+  private enterForest(saved?: SaveData): void {
+    if(this.forestActive)return;
+    this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
+    const data=saved??this.snapshotState();data.activeArea='forest';delete data.homePosition;
+    this.forestActive=true;this.paused=true;this.input.keyboard?.resetKeys();
+    const root=document.querySelector<HTMLElement>('#ui')!;root.style.display='none';
+    this.cameras.main.fadeOut(250);
+    this.time.delayedCall(250,()=>{
+      this.scene.sleep();
+      this.scene.launch('Floresta',{save:data,onReturn:(updated:SaveData,title=false)=>{
+        this.scene.wake();this.forestActive=false;this.loadState(updated);this.running=true;this.paused=false;
+        root.style.display='';this.ui.showHUD();this.updateHUD();this.cameras.main.fadeIn(250);
+        if(title){this.running=false;this.paused=true;this.ui.showTitle(hasSave());}
+        else {this.ui.toast('Propriedade Abandonada');this.persist();}
+      }});
+    });
   }
 
   private nearHouseEntrance(): boolean {
@@ -485,6 +507,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   persist(): boolean {
+    if (this.forestActive) return true;
     if (!this.running || !this.state || this.editingMap) return false;
     const ok = saveGame(this.snapshotState());
     if (!ok && !this.saveWarningShown) {
@@ -530,6 +553,17 @@ export class ValleyScene extends Phaser.Scene {
     this.cropSignature = '';
     this.buildingSignature = '';
     this.world = createWorld(this, data.depletedResources, data.buildings, data.mapEdits);
+    setupAnimalArt(this);
+    this.add.text((PROPERTY_FOREST_GATE.x+.5)*TILE,(PROPERTY_FOREST_GATE.y-1)*TILE,'Floresta Antiga →\nE para seguir a trilha', {fontFamily:'Georgia',fontSize:'12px',color:'#fff0cd',backgroundColor:'#59452e',padding:{x:6,y:5}}).setOrigin(.5,1).setDepth(PROPERTY_FOREST_GATE.y*TILE);
+    let animalIndex=0;
+    for(const id of data.recruitedAnimals??[]) {
+      const animal=FOREST_ANIMALS.find(a=>a.id===id);if(!animal)continue;
+      for(let n=animalIndex;n<80;n++) {
+        const x=20+(n%8)*3,y=44+Math.floor(n/8)*3;animalIndex=n+1;
+        if(this.world.isBlocked(x,y)||this.world.resourceAt(x,y)||this.world.isFarm(x,y)||data.buildings.some(b=>buildingFootprint(b).some(p=>p.x===x&&p.y===y)))continue;
+        animalSprite(this,animal.kind,x*TILE+16,y*TILE+16);break;
+      }
+    }
     // A warm refuge in the opening only; the facade and gameplay lighting stay intact.
     this.titleLights = this.add.graphics().setDepth(16 * TILE + 5).setVisible(false);
     const newHouseArt = this.textures.exists('house-cottage-source');
@@ -664,7 +698,7 @@ export class ValleyScene extends Phaser.Scene {
     }
   }
 
-  private canPlay(): boolean { return !this.editingMap && this.running && !this.paused && !this.ui.isModalOpen() && !this.adminMenu?.isOpen && !document.hidden; }
+  private canPlay(): boolean { return !this.forestActive && !this.editingMap && this.running && !this.paused && !this.ui.isModalOpen() && !this.adminMenu?.isOpen && !document.hidden; }
   private blocked = (x: number, y: number): boolean => this.inHome ? this.home.isBlocked(x, y)
     : this.world.isBlocked(x, y) || this.building.isBlocked(x, y)
       || (x === Math.floor(NPC_POSITION.x / TILE) && y === Math.floor(NPC_POSITION.y / TILE));
@@ -680,6 +714,7 @@ export class ValleyScene extends Phaser.Scene {
   };
 
   private handleKey = (event: KeyboardEvent): void => {
+    if (this.forestActive) return;
     if (this.editingMap) return;
     if (event.ctrlKey && event.shiftKey && event.key === 'F10' && this.running) {
       event.preventDefault(); if (!event.repeat) this.openAdminMenu(); return;
@@ -816,6 +851,7 @@ export class ValleyScene extends Phaser.Scene {
   private interact(explicitTile?: TilePoint): void {
     if (!this.canPlay() || this.toolUse.active || this.time.now < this.nextInteractionAt) return;
     if (this.inHome) { this.interactHome(explicitTile); return; }
+    if (this.tool === 'hand' && this.tileDistance(PROPERTY_FOREST_GATE) < 58 && (!explicitTile || Math.hypot(explicitTile.x-PROPERTY_FOREST_GATE.x,explicitTile.y-PROPERTY_FOREST_GATE.y)<2)) { this.enterForest(); return; }
     if (this.tool === 'water' && this.state.homeSupplies?.wateringCan) {
       const px = Math.floor(this.player.x / TILE), py = Math.floor(this.player.y / TILE);
       for (let y = py - 1; y <= py + 1; y++) for (let x = px - 1; x <= px + 1; x++) {
@@ -1121,6 +1157,7 @@ export class ValleyScene extends Phaser.Scene {
       if (definition.hits > 1) resourceProgress = `${definition.label}: ${hits}/${definition.hits} golpes · ${toolName}`;
     }
     if (this.nearHouseEntrance()) prompt = 'Entrar em casa';
+    if (this.tool === 'hand' && this.tileDistance(PROPERTY_FOREST_GATE) < 58) prompt = 'E · Seguir para a Floresta Antiga';
     this.ui.updateHUD({ wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
       tool: this.tool, prompt, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
       playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
@@ -1180,7 +1217,7 @@ export class ValleyScene extends Phaser.Scene {
       const region = getRegionAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE));
       if (!this.inHome && region.id !== this.currentRegion) {
         this.currentRegion = region.id;
-        this.ui.toast(`${region.name} · ${region.description}`);
+        // Internal biomes belong to the same Propriedade Abandonada area.
         this.persist();
       }
       this.updateShelter(); this.updateHUD(); if (!this.inHome) this.syncSprites();

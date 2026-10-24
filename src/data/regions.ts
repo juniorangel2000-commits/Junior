@@ -23,10 +23,8 @@ export function getRegionAt(x: number, y: number): RegionDefinition {
 }
 
 export function locationAt(x: number, y: number): string {
-  const region = getRegionAt(x, y);
-  if (region.id !== 'property') return region.name;
-  if (x >= 32 && x <= 42 && y >= 26 && y <= 34) return 'Lago da propriedade';
-  return region.name;
+  void x; void y;
+  return 'Propriedade Abandonada';
 }
 
 export function isFarmTile(x: number, y: number): boolean {

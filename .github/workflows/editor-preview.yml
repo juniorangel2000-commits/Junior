@@ -1,12 +1,12 @@
-name: After Rain — regador e ferramentas para Windows
+name: After Rain — Floresta Antiga para Windows
 on:
   push:
-    branches: ['preview/watering-0.8.2']
+    branches: ['preview/forest-0.9.0']
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: after-rain-watering-preview
+  group: after-rain-forest-preview
   cancel-in-progress: false
 jobs:
   preview:
@@ -32,14 +32,14 @@ jobs:
       - name: Preparar arquivos para download
         shell: pwsh
         run: |
-          $file = 'release/After-Rain-0.8.2-Windows-x64.exe'
+          $file = 'release/After-Rain-0.9.0-Windows-x64.exe'
           $hash = (Get-FileHash -Algorithm SHA256 $file).Hash.ToLowerInvariant()
-          "$hash  After-Rain-0.8.2-Windows-x64.exe" | Set-Content -Encoding utf8NoBOM release/SHA256SUMS.txt
-          Copy-Item docs/editor-do-mapa/LEIA.md release/LEIA.md
+          "$hash  After-Rain-0.9.0-Windows-x64.exe" | Set-Content -Encoding utf8NoBOM release/SHA256SUMS.txt
+          Copy-Item docs/cenarios/FLORESTA-ANTIGA.md release/LEIA.md
       - name: Guardar pacote na execução
         uses: actions/upload-artifact@v4
         with:
-          name: After-Rain-0.8.2-Windows-x64
+          name: After-Rain-0.9.0-Windows-x64
           path: |
             release/*.exe
             release/SHA256SUMS.txt
@@ -53,10 +53,10 @@ jobs:
           PREVIEW_COMMIT: ${{ github.sha }}
         shell: pwsh
         run: |
-          $tag = 'watering-preview-0.8.2-1'
-          gh release create $tag --draft --prerelease --latest=false --target $env:PREVIEW_COMMIT --title 'After Rain — regador e ferramentas (Windows x64)' --notes-file docs/ferramentas/NOTAS-VERSAO.md
+          $tag = 'forest-preview-0.9.0-1'
+          gh release create $tag --draft --prerelease --latest=false --target $env:PREVIEW_COMMIT --title 'After Rain — Floresta Antiga (Windows x64)' --notes-file docs/cenarios/NOTAS-PREVIA.md
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          gh release upload $tag release/After-Rain-0.8.2-Windows-x64.exe release/SHA256SUMS.txt release/LEIA.md
+          gh release upload $tag release/After-Rain-0.9.0-Windows-x64.exe release/SHA256SUMS.txt release/LEIA.md
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           gh release edit $tag --draft=false --prerelease --latest=false
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { gameAudio } from './audio';
 import { installFullscreenShortcut } from './fullscreen';
+import { ForestScene } from './scenes/ForestScene';
 import { ValleyScene } from './scenes/ValleyScene';
 import { GameUI } from './ui';
 import './style.css';
@@ -37,7 +38,7 @@ export const game = new Phaser.Game({
   roundPixels: true,
   render: { antialias: false, powerPreference: 'high-performance' },
   scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight },
-  scene: [scene],
+  scene: [scene, new ForestScene()],
   audio: { noAudio: true },
   banner: false,
 });

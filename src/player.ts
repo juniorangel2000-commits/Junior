@@ -25,11 +25,11 @@ export class Player {
   private readonly keys: MovementKeys;
   private readonly walkFrames: number;
 
-  constructor(scene: Phaser.Scene, profile: CharacterProfile, x: number, y: number) {
+  constructor(scene: Phaser.Scene, profile: CharacterProfile, x: number, y: number, textureKey = 'player') {
     this.x = x;
     this.y = y;
     this.walkFrames = resolveCharacter(profile).walkFrames;
-    const texture = createCharacterFrames(scene, profile, 'player');
+    const texture = createCharacterFrames(scene, profile, textureKey);
     this.sprite = scene.add.sprite(x, y, texture, characterFrame('down'))
       .setOrigin(0.5, 1).setDisplaySize(CHARACTER_WIDTH, CHARACTER_HEIGHT);
     this.keys = scene.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT', false) as MovementKeys;

@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "checks": [
+    "entry",
+    "map",
+    "keyboard",
+    "pause",
+    "10 unique recruits",
+    "return",
+    "property herd",
+    "no respawn",
+    "reload in forest"
+  ],
+  "at": "2026-10-24T14:38:34.488Z"
+}

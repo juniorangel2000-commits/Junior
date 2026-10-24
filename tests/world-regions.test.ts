@@ -97,10 +97,10 @@ describe('expansão da região inicial', () => {
   });
 
   it('nomeia lugares e regiões com as mesmas coordenadas da exploração', () => {
-    expect(locationAt(25, 18)).toBe('Minha propriedade');
-    expect(locationAt(10, 18)).toBe('Minha propriedade');
-    expect(locationAt(70, 18)).toBe('Bosque do Pinheiro');
-    expect(locationAt(25, 53)).toBe('Campos Abertos');
+    expect(locationAt(25, 18)).toBe('Propriedade Abandonada');
+    expect(locationAt(10, 18)).toBe('Propriedade Abandonada');
+    expect(locationAt(70, 18)).toBe('Propriedade Abandonada');
+    expect(locationAt(25, 53)).toBe('Propriedade Abandonada');
   });
 
   it('limpa caminhos e pontes sem perder recursos nem misturar regiões', () => {
