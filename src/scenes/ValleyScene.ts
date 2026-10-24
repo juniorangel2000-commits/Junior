@@ -1,4 +1,7 @@
-import { natureArt } from '../data/nature-catalog';
+import {sampleWaterDepth} from '../swimming/config';
+import {ResourceLifecycle} from '../resource-lifecycle';
+import type {MapEditorScene} from './MapEditorScene';
+import {atMapExit} from '../data/default-maps';
 import { FOREST_ANIMALS, PROPERTY_FOREST_GATE } from '../data/ancient-forest';
 import { animalSprite, setupAnimalArt } from '../forest-art';
 import { WATER_CAPACITY } from '../data/watering-can';
@@ -37,8 +40,6 @@ import type { HomeEditAction } from '../home-ui';
 import { HOUSE_WINDOW_LIGHTS } from '../house-sprites';
 import { baseCameraZoom, homeFitsCamera, loadCameraZoom, saveCameraZoom, stepCameraZoom } from '../camera-zoom';
 import { MapEditor } from '../map-editor';
-import { emptyMapEdits, isProtectedMapTile } from '../systems/map-editor';
-import type { MapEditData } from '../systems/map-editor';
 import { ToolUse, TOOL_USE_DURATION, type ToolStrike } from '../systems/tool-use';
 import { ToolVisual } from '../tool-visual';
 import { isAnimatedTool } from '../data/tool-art';
@@ -93,9 +94,10 @@ export class ValleyScene extends Phaser.Scene {
   private cameraZoomFactor = loadCameraZoom();
   private wheelZoomDistance = 0;
   private lastWheelZoomAt = 0;
-  private mapEditor?: MapEditor;
+  get mapEditor():MapEditor|undefined{return this.scene.isActive('Editor')?(this.scene.get('Editor') as MapEditorScene).editor:undefined;}
   private editingMap = false;
   private forestActive = false;
+  private resourceLifecycle?:ResourceLifecycle;
 
   constructor() { super('Vale'); }
 
@@ -188,68 +190,14 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   openMapEditor(): void {
-    if (this.editingMap) return;
-    const wasRunning = this.running;
-    const original = this.snapshotState();
-    const base = wasRunning ? original : loadSave() ?? createNewSave(DEFAULT_PROFILE);
-    this.editingMap = true;
-    this.adminMenu?.close(); this.cancelCrafting();
-    this.ui.showMapEditorMode();
-    this.paused = true;
-    this.input.keyboard?.resetKeys();
-    // The complete baseline also validates imports referencing already harvested nodes.
-    this.loadState({ ...base, homePosition: undefined, mapEdits: undefined, depletedResources: [], resourceProgress: [] });
-    const originalObjects = this.world.editorObjects.map(object => ({ ...object, depleted: base.depletedResources.includes(object.id) }));
-    const protectedTiles = new Set(base.buildings.flatMap(buildingFootprint).map(p => `${p.x},${p.y}`));
-    const preserveProgress = (edits: MapEditData): MapEditData => {
-      const data = structuredClone(edits);
-      for (const entry of base.resourceProgress) {
-        const old = base.mapEdits?.objects[entry.id];
-        if (entry.id.startsWith('editor-') && old && !data.objects[entry.id]) data.objects[entry.id] = { ...old, removed: true };
-      }
-      return data;
-    };
-    const rebuild = (edits: MapEditData): void => {
-      this.loadState({ ...base, homePosition: undefined, mapEdits: preserveProgress(edits) });
-      this.cameras.main.stopFollow().removeBounds();
-      this.player.sprite.setVisible(false);
-      this.night.setVisible(false); this.selection.clear();
-      this.world.updateOcclusion(-1000, -1000);
-      this.paused = true;
-    };
-    const close = (): void => {
-      this.mapEditor?.destroy(); this.mapEditor = undefined;
-      this.editingMap = false;
-      this.input.keyboard?.resetKeys();
-    };
-    const initial = base.mapEdits ?? emptyMapEdits();
-    rebuild(initial);
-    this.mapEditor = new MapEditor(this, initial, {
-      rebuild,
-      originalObjects,
-      defaultPoints:{entry:PROPERTY_FOREST_GATE,exit:PROPERTY_FOREST_GATE},
-      objects: () => this.world.editorObjects,
-      protectedTile: (x, y) => isProtectedMapTile(x, y) || protectedTiles.has(`${x},${y}`),
-      canPlace: (x, y, ignoreId,kind) => {
-        const current = this.world.editorObjects.find(o => o.id === ignoreId && o.x === x && o.y === y);
-        return !!current || !this.world.isBlocked(x, y) || (!!natureArt(kind)?.water&&this.world.isWater(x*TILE+16,y*TILE+16));
-      },
-      apply: edits => {
-        this.loadState({ ...base, homePosition: undefined, mapEdits: preserveProgress(edits) });
-        const data = this.snapshotState();
-        if (!saveGame(data)) { rebuild(edits); return false; }
-        close();
-        this.running = true; this.paused = false;
-        gameAudio.setScene('game'); this.ui.showHUD(); this.updateHUD();
-        this.ui.toast('Mapa aplicado e partida salva. Use Exportar no editor para me enviar o mapa.');
-        return true;
-      },
-      cancel: () => {
-        close(); this.loadState(original); this.running = wasRunning;
-        if (wasRunning) { this.paused = false; this.ui.showHUD(); this.updateHUD(); }
-        else { this.paused = true; this.ui.showTitle(hasSave()); }
-      },
-    });
+    if(this.editingMap)return;
+    const wasRunning=this.running,original=this.snapshotState(),base=wasRunning?original:loadSave()??createNewSave(DEFAULT_PROFILE);
+    this.editingMap=true;this.paused=true;this.adminMenu?.close();this.cancelCrafting();this.toolUse.cancel();this.ui.showMapEditorMode();this.input.keyboard?.resetKeys();
+    this.scene.setVisible(false);this.scene.pause();this.scene.launch('Editor',{save:base,area:'property',onClose:(updated:SaveData|undefined,area:'property'|'forest')=>{
+      this.scene.resume();this.scene.setVisible(true);this.editingMap=false;this.loadState(updated??original);this.running=updated?true:wasRunning;this.paused=!this.running;
+      if(this.running){this.ui.showHUD();this.updateHUD();if(updated){this.persist();if(area==='forest')this.enterForest(updated);}}
+      else this.ui.showTitle(hasSave());
+    }});
   }
 
   openHomeMenu(): void {
@@ -277,6 +225,7 @@ export class ValleyScene extends Phaser.Scene {
     return { x: this.player.x, y: this.player.y, direction: directionFromVector(this.player.facing.x, this.player.facing.y) };
   }
 
+  private atForestExit(){return atMapExit(this.player.x,this.player.y,this.forestGate());}
   private forestGate(){return this.state.mapEdits?.points?.exit??PROPERTY_FOREST_GATE;}
   private enterForest(saved?: SaveData): void {
     if(this.forestActive)return;
@@ -438,6 +387,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   selectTool(tool: Tool): void {
+    if(this.player?.isSwimming)return;
     if (tool === 'water' && !this.state.homeSupplies?.wateringCan) { this.ui.toast('Recolha o regador dentro da casa.'); return; }
     if ((tool === 'hatchet' || tool === 'pickaxe') && !this.inventory.has(tool)) {
       this.ui.toast('Fabrique essa ferramenta primeiro. Abra a fabricação com C.');
@@ -558,7 +508,7 @@ export class ValleyScene extends Phaser.Scene {
     this.buildingSignature = '';
     this.world = createWorld(this, data.depletedResources, data.buildings, data.mapEdits);
     setupAnimalArt(this);
-    this.add.text((this.forestGate().x+.5)*TILE,(this.forestGate().y-1)*TILE,'Floresta Antiga\nE para seguir a trilha', {fontFamily:'Georgia',fontSize:'12px',color:'#fff0cd',backgroundColor:'#59452e',padding:{x:6,y:5}}).setOrigin(.5,1).setDepth(this.forestGate().y*TILE);
+    this.add.text((this.forestGate().x+.5)*TILE,(this.forestGate().y-1)*TILE,'Floresta Antiga\nE para seguir a trilha', {fontFamily:'Georgia',fontSize:'12px',color:'#fff0cd',backgroundColor:'#59452e',padding:{x:6,y:5}}).setOrigin(this.forestGate().x<4?0:this.forestGate().x>90?1:.5,1).setDepth(this.forestGate().y*TILE);
     let animalIndex=0;
     for(const id of data.recruitedAnimals??[]) {
       const animal=FOREST_ANIMALS.find(a=>a.id===id);if(!animal)continue;
@@ -589,7 +539,7 @@ export class ValleyScene extends Phaser.Scene {
         const resource = this.world.resourceAt(point.x, point.y);
         if (resource && !this.state.depletedResources.includes(resource.id)) {
           this.world.removeResource(resource.id);
-          this.state.depletedResources.push(resource.id);
+          if(!this.resourceLifecycle?.collected(resource))this.state.depletedResources.push(resource.id);
           const partial = this.resources.progress.findIndex(entry => entry.id === resource.id);
           if (partial >= 0) this.resources.progress.splice(partial, 1);
         }
@@ -604,6 +554,8 @@ export class ValleyScene extends Phaser.Scene {
     this.input.keyboard?.resetKeys();
     this.player.update(0, this.movementBlocked, this.movementBlockedPoint,true,this.swimmingPoint);
     this.recoverPlayerPosition();
+    this.resourceLifecycle=new ResourceLifecycle(this.state,'property',this.world,(x,y)=>!this.world.isBlocked(x,y)&&!this.world.resourceAt(x,y)&&!this.world.isFarm(x,y)&&!this.building.buildings.some(b=>buildingFootprint(b).some(p=>p.x===x&&p.y===y))&&!(x===Math.floor(NPC_POSITION.x/TILE)&&y===Math.floor(NPC_POSITION.y/TILE))&&Math.hypot(x-this.player.x/TILE,y-this.player.y/TILE)>3&&[this.state.mapEdits?.points?.entry,this.state.mapEdits?.points?.exit,{x:25,y:18}].every(p=>!p||Math.hypot(x-p.x,y-p.y)>3));
+    this.resources=new Resources(this.state.resourceProgress);
     this.world.updateOcclusion(this.player.x, this.player.y);
     this.add.sprite(NPC_POSITION.x, NPC_POSITION.y, 'lia').setOrigin(0.5, 1).setDepth(NPC_POSITION.y);
     this.npcLabel = this.add.text(NPC_POSITION.x, NPC_POSITION.y - CHARACTER_HEIGHT - 6, 'Lia', {
@@ -709,7 +661,7 @@ export class ValleyScene extends Phaser.Scene {
 
   private movementBlocked=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(x,y):this.world.isSolid(x,y)||this.building.isBlocked(x,y)||(x===Math.floor(NPC_POSITION.x/TILE)&&y===Math.floor(NPC_POSITION.y/TILE));
   private movementBlockedPoint=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):this.movementBlocked(Math.floor(x/TILE),Math.floor(y/TILE));
-  private swimmingPoint=(x:number,y:number):boolean=>!this.inHome&&!this.building.at(Math.floor(x/TILE),Math.floor(y/TILE),'floor')&&this.world.isSwimmingPoint(x,y);
+  private swimmingPoint=(x:number,y:number):number=>this.inHome?0:sampleWaterDepth((px,py)=>!this.building.at(Math.floor(px/TILE),Math.floor(py/TILE),'floor')&&this.world.isSwimmingPoint(px,py),x,y);
 
   private blockedPoint = (x: number, y: number): boolean => {
     const tx = Math.floor(x / TILE), ty = Math.floor(y / TILE);
@@ -860,7 +812,7 @@ export class ValleyScene extends Phaser.Scene {
     if (!this.canPlay() || this.toolUse.active || this.time.now < this.nextInteractionAt) return;
     if (this.inHome) { this.interactHome(explicitTile); return; }
     if(this.player.isSwimming)return;
-    if (this.tool === 'hand' && this.tileDistance(this.forestGate()) < 58 && (!explicitTile || Math.hypot(explicitTile.x-this.forestGate().x,explicitTile.y-this.forestGate().y)<2)) { this.enterForest(); return; }
+    if (this.tool === 'hand' && this.atForestExit() && (!explicitTile || explicitTile.x===this.forestGate().x&&explicitTile.y===this.forestGate().y)) { this.enterForest(); return; }
     if (this.tool === 'water' && this.state.homeSupplies?.wateringCan) {
       const px = Math.floor(this.player.x / TILE), py = Math.floor(this.player.y / TILE);
       for (let y = py - 1; y <= py + 1; y++) for (let x = px - 1; x <= px + 1; x++) {
@@ -984,10 +936,9 @@ export class ValleyScene extends Phaser.Scene {
       gameAudio.play(tool === 'pickaxe' ? 'stone' : tool === 'hatchet' ? 'wood' : 'pickup');
       if (result.depleted) {
         this.world.removeResource(resource.id);
-        this.state.depletedResources.push(resource.id);
-        this.state.progress.collected = this.state.progress.collected
-          || ['tree-', 'stone-', 'fiber-'].every(prefix => this.state.depletedResources.some(id => id.startsWith(prefix)));
-        this.state.progress.harvested = this.state.depletedResources.some(id => id.startsWith('standingTree-'))
+        if(!this.resourceLifecycle?.collected(resource))this.state.depletedResources.push(resource.id);
+        this.state.progress.collected ||=this.inventory.data.wood>0&&this.inventory.data.stone>0&&this.inventory.data.fiber>0;
+        this.state.progress.harvested ||= this.state.depletedResources.some(id => id.startsWith('standingTree-'))
           && this.state.depletedResources.some(id => id.startsWith('vein-'));
       }
     }
@@ -1167,8 +1118,8 @@ export class ValleyScene extends Phaser.Scene {
     }
     if (this.nearHouseEntrance()) prompt = 'Entrar em casa';
     if(this.player.isSwimming)prompt='Nadar · siga até a margem para sair';
-    if (this.tool === 'hand' && this.tileDistance(this.forestGate()) < 58) prompt = 'E · Seguir para a Floresta Antiga';
-    this.ui.updateHUD({ wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
+    if (this.tool === 'hand' && this.atForestExit()) prompt = 'E · Seguir para a Floresta Antiga';
+    this.ui.updateHUD({ wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, swimming:this.player.isSwimming, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
       tool: this.tool, prompt, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
       playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
       harvests: this.inventory.data.turnip, metLia: this.state.metLia,
@@ -1194,6 +1145,7 @@ export class ValleyScene extends Phaser.Scene {
     this.cameras.main.setLerp(1 - Math.exp(-9 * delta));
     const previousX = this.player.x, previousY = this.player.y;
     this.player.update(delta, this.movementBlocked, this.movementBlockedPoint, !this.toolUse.active,this.swimmingPoint);
+    if(this.player.isSwimming){this.tool='hand';this.state.equippedTool='hand';this.toolUse.cancel();this.toolVisual?.hide();}
     const impact = this.toolUse.advance(delta);
     if (impact) this.applyToolImpact(impact);
     this.updateToolVisual();
@@ -1203,6 +1155,7 @@ export class ValleyScene extends Phaser.Scene {
     const previousDay = this.state.day;
     Object.assign(this.state, advanceClock(this.state, delta * GAME_MINUTES_PER_SECOND));
     if (this.state.day !== previousDay) this.ui.toast(`Dia ${this.state.day}. A terra espera por você.`);
+    if(!this.inHome)this.resourceLifecycle?.tick();
     this.updateNight();
     const tile = this.targetTile();
     this.selection.clear();

@@ -1,3 +1,7 @@
+import {validateResourceField} from './resource-spawns';
+import {collectibleKind} from '../data/nature-catalog';
+import {editorObjectKind} from './map-editor';
+import {MAP_BASE_REVISION,defaultMap,mergeDefaultMap} from '../data/default-maps';
 import { FOREST_ANIMALS } from '../data/ancient-forest';
 import { validQuickbar, emptyQuickbar } from './quickbar';
 import { CHARACTER_DIRECTIONS, type CharacterDirection } from '../character-directions';
@@ -40,6 +44,8 @@ export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
   if (value.forestMapEdits !== undefined && (!validateMapEdits(value.forestMapEdits)||value.forestMapEdits.area!=='forest')) return false;
   if (value.mapEdits !== undefined && (!validateMapEdits(value.mapEdits)||value.mapEdits.area!==undefined)) return false;
+  if(value.resourceFields!==undefined&&(!isRecord(value.resourceFields)||!validateResourceField(value.resourceFields.property,'property')||!validateResourceField(value.resourceFields.forest,'forest')))return false;
+  if(value.resourceMilestones!==undefined&&(!isRecord(value.resourceMilestones)||typeof value.resourceMilestones.felled!=='boolean'||typeof value.resourceMilestones.mined!=='boolean'))return false;
   if (value.quickbar !== undefined && !validQuickbar(value.quickbar)) return false;
   if (value.activeArea !== undefined && value.activeArea !== 'property' && value.activeArea !== 'forest') return false;
   if (value.recruitedAnimals !== undefined && (!Array.isArray(value.recruitedAnimals) || new Set(value.recruitedAnimals).size !== value.recruitedAnimals.length || !value.recruitedAnimals.every(id => FOREST_ANIMALS.some(a => a.id === id)))) return false;
@@ -95,19 +101,14 @@ export function validateSave(value: unknown): value is SaveData {
   for (const resource of value.resourceProgress) {
     if (!isRecord(resource) || typeof resource.id !== 'string' || resource.id.length > 80 || progressing.has(resource.id)
       || value.depletedResources.includes(resource.id)) return false;
-    const match = /^(standingTree|vein)-(\d+)-(\d+)$/.exec(resource.id);
-    let kind: 'standingTree' | 'vein';
-    if (match) {
-      if (!integer(Number(match[2]), 1, WORLD_WIDTH - 2) || !integer(Number(match[3]), 1, WORLD_HEIGHT - 2)) return false;
-      kind = match[1] as 'standingTree' | 'vein';
-    } else {
-      // Custom progress belongs to an actual object in the validated document.
-      // Removed objects retain progress so moving/restoring them cannot reset hits.
-      const object = (value.mapEdits as SaveData['mapEdits'])?.objects[resource.id];
-      if (!resource.id.startsWith('editor-') || !object
-        || !['standingTree', 'pine', 'vein'].includes(object.kind ?? '')) return false;
-      kind = object.kind === 'vein' ? 'vein' : 'standingTree';
+    const forest:boolean=resource.id.startsWith('f-');const id:string=forest?resource.id.slice(2):resource.id;
+    let kind=collectibleKind(editorObjectKind(id)??undefined);
+    if(resource.id.startsWith('spawn-'))kind=(value.resourceFields as SaveData['resourceFields'])?.[resource.id.startsWith('spawn-f-')?'forest':'property'].nodes.find(n=>n.id===resource.id)?.kind;
+    else if(id.startsWith('editor-')){
+      const object=(forest?value.forestMapEdits:value.mapEdits as SaveData['mapEdits']) as SaveData['mapEdits'];
+      kind=collectibleKind(object?.objects[id]?.kind);
     }
+    if(kind!=='standingTree'&&kind!=='vein')return false;
     const definition = RESOURCE_DEFINITIONS[kind];
     if (!integer(resource.hits, 1, definition.hits - 1)) return false;
     progressing.add(resource.id);
@@ -117,7 +118,11 @@ export function validateSave(value: unknown): value is SaveData {
 
 /** Converte em memória; a leitura nunca modifica nem substitui o slot original. */
 export function migrateSave(value: unknown): SaveData | null {
-  if (validateSave(value)) return structuredClone(value);
+  if(validateSave(value)){
+    const data=structuredClone(value);
+    if(data.mapBaseRevision!==MAP_BASE_REVISION){data.mapEdits=mergeDefaultMap('property',data.mapEdits,false);data.forestMapEdits=mergeDefaultMap('forest',data.forestMapEdits,false);data.mapBaseRevision=MAP_BASE_REVISION;}
+    return data;
+  }
   if (!isRecord(value) || value.version !== 1 || !isRecord(value.inventory)) return null;
   const legacyItems = ['wood', 'stone', 'seeds', 'turnip'] as const;
   if (!legacyItems.every(id => integer((value.inventory as Record<string, unknown>)[id], 0, MAX_ITEM_COUNT))) return null;
@@ -134,7 +139,7 @@ export function migrateSave(value: unknown): SaveData | null {
 
 export function createNewSave(profile: CharacterProfile): SaveData {
   return {
-    version: SAVE_VERSION,
+    version:SAVE_VERSION,mapBaseRevision:MAP_BASE_REVISION,mapEdits:defaultMap('property'),forestMapEdits:defaultMap('forest'),
     quickbar: emptyQuickbar(), homeSupplies: { wateringCan: false, seedPacket: false },
     profile: { ...profile, name: profile.name.trim() },
     player: { x: 25 * TILE + TILE / 2, y: 18 * TILE + TILE / 2 },

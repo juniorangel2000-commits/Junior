@@ -1,3 +1,4 @@
+import type {MapArea} from './data/default-maps';
 import { NATURE_KINDS, NATURE_ART, natureArt } from './data/nature-catalog';
 import Phaser from 'phaser';
 import { MapEditorUI } from './map-editor-ui';
@@ -17,6 +18,7 @@ export interface MapEditorAdapter {
   defaultPoints?: {entry:{x:number;y:number};exit:{x:number;y:number}};
   apply(edits: MapEditData): boolean;
   cancel(): void;
+  switchArea?(area:MapArea,current:MapEditData):void;
 }
 type Point = { x: number; y: number };
 const labels = {
@@ -24,7 +26,7 @@ const labels = {
   standingTree: 'Árvore', pine: 'Pinheiro', stone: 'Pedras', vein: 'Rocha',
   tree: 'Galhos', fiber: 'Fibras', seeds: 'Sementes', scrap: 'Sucata',
 } as Record<EditorObjectKind,string>;
-const colors = { grass: 0x76965d, path: 0xc4a278, water: 0x619aaf, sand: 0xd8c499, soil: 0x997455 };
+const colors = { grass: 0x76965d, path: 0xc4a278, water: 0x619aaf, sand: 0xd8c499, soil: 0x997455,meadow:0x8a9d55,forest:0x345738,moss:0x3e6835,forestPath:0x4f6c3a,wetPath:0x7c6445,wood:0x996f41,paving:0x9d9a81 };
 const key = (p: Point): string => `${p.x},${p.y}`;
 
 /** Edit the real world while the scene's simulation and save writes are paused. */
@@ -52,10 +54,10 @@ export class MapEditor {
   private status = 'Edite o cenário. Casa, pontes e canteiro inicial ficam protegidos.';
   private storedDraft:MapEditData|null=null;
 
-  constructor(private readonly scene: Phaser.Scene, initial: MapEditData, private readonly adapter: MapEditorAdapter) {
-    this.history = new MapEditHistory(initial);
+  constructor(private readonly scene: Phaser.Scene, initial: MapEditData, private readonly adapter: MapEditorAdapter, history?:MapEditHistory, initialJSON?:string) {
+    this.history = history??new MapEditHistory(initial);
     this.storedDraft=loadMapDraft(undefined,initial.area);
-    this.initial = JSON.stringify(cloneMapEdits(initial));
+    this.initial = initialJSON??JSON.stringify(cloneMapEdits(initial));
     this.canvas = scene.game.canvas;
     this.ui = new MapEditorUI({
       action: action => this.action(action),
@@ -64,7 +66,8 @@ export class MapEditor {
       import: text => this.importMap(text),
     });
     this.ui.element.querySelector('h1')!.textContent=initial.area==='forest'?'Editor · Floresta Antiga':'Editor · Propriedade';
-    if(initial.area==='forest')this.status='Edite a floresta. A chegada original e as clareiras dos animais ficam protegidas.';
+    if(initial.area==='forest')this.status='Edite a floresta. As clareiras dos animais ficam protegidas.';
+    for(const button of this.ui.element.querySelectorAll<HTMLButtonElement>('[data-map-area]')){button.disabled=!adapter.switchArea||button.dataset.mapArea===(initial.area??'property');button.setAttribute('aria-pressed',String(button.dataset.mapArea===(initial.area??'property')));}
     this.createGuides();
     this.fit();
     const images: Partial<Record<EditorObjectKind, string>> = {};
@@ -73,6 +76,12 @@ export class MapEditor {
     }
     for(const kind of NATURE_KINDS)if(scene.textures.exists(NATURE_ART[kind].texture))images[kind]=scene.textures.getBase64(NATURE_ART[kind].texture);
     this.ui.setThumbnails(images);
+    const materials:Record<string,string>={grass:'grass',meadow:'meadow',forest:'forest',moss:'moss',forestPath:'forest',path:'path-dry',wetPath:'path-wet',water:'water',sand:'sand',soil:'soil',wood:'wood',paving:'paving'};
+    for(const [kind,material] of Object.entries(materials)){
+      const swatch=this.ui.element.querySelector<HTMLElement>(`.me-swatch-${kind}`),texture=`asset-ground-${material}`;
+      if(swatch&&scene.textures.exists(texture)){swatch.style.backgroundImage=`url("${scene.textures.getBase64(texture)}")`;swatch.style.backgroundSize='cover';}
+    }
+    this.ui.element.dataset.mapArea=initial.area??'property';
     this.canvas.addEventListener('pointerdown', this.pointerDown);
     this.canvas.addEventListener('pointermove', this.pointerMove);
     this.canvas.addEventListener('pointerup', this.pointerUp);
@@ -335,6 +344,10 @@ export class MapEditor {
 
   private action(action: EditorAction): void {
     this.finishStroke();
+    if(action==='map-property'||action==='map-forest'){
+      const error=this.layoutError(this.history.current);if(error){this.status=error;this.refresh(true);return;}
+      this.adapter.switchArea?.(action==='map-forest'?'forest':'property',this.history.current);return;
+    }
     if (action === 'cancel') { this.adapter.cancel(); return; }
     if (action === 'apply') {
       const error = this.layoutError(this.history.current);

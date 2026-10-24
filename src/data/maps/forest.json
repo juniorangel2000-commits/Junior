@@ -1,0 +1,224 @@
+{
+  "version": 1,
+  "width": 96,
+  "height": 72,
+  "terrain": {
+    "44,60": "forest",
+    "45,60": "forest",
+    "46,60": "forest",
+    "47,60": "forest",
+    "48,60": "forest",
+    "49,60": "forest",
+    "50,60": "forest",
+    "51,60": "forest",
+    "52,60": "forest",
+    "44,61": "forest",
+    "45,61": "forest",
+    "46,61": "forest",
+    "47,61": "forest",
+    "48,61": "forest",
+    "49,61": "forest",
+    "50,61": "forest",
+    "51,61": "forest",
+    "52,61": "forest",
+    "44,62": "forest",
+    "45,62": "forest",
+    "46,62": "forest",
+    "47,62": "forest",
+    "48,62": "forest",
+    "49,62": "forest",
+    "50,62": "forest",
+    "51,62": "forest",
+    "52,62": "forest",
+    "44,63": "forest",
+    "45,63": "forest",
+    "46,63": "forest",
+    "47,63": "forest",
+    "48,63": "forest",
+    "49,63": "forest",
+    "50,63": "forest",
+    "51,63": "forest",
+    "52,63": "forest",
+    "44,64": "forest",
+    "45,64": "forest",
+    "46,64": "forest",
+    "47,64": "forest",
+    "48,64": "forest",
+    "49,64": "forest",
+    "50,64": "forest",
+    "51,64": "forest",
+    "52,64": "forest",
+    "44,65": "forest",
+    "45,65": "forest",
+    "46,65": "forest",
+    "47,65": "forest",
+    "48,65": "forest",
+    "49,65": "forest",
+    "50,65": "forest",
+    "51,65": "forest",
+    "52,65": "forest",
+    "44,66": "forest",
+    "45,66": "forest",
+    "46,66": "forest",
+    "47,66": "forest",
+    "48,66": "forest",
+    "49,66": "forest",
+    "50,66": "forest",
+    "51,66": "forest",
+    "52,66": "forest",
+    "44,67": "forest",
+    "45,67": "forest",
+    "46,67": "forest",
+    "47,67": "forest",
+    "48,67": "forest",
+    "49,67": "forest",
+    "50,67": "forest",
+    "51,67": "forest",
+    "52,67": "forest",
+    "44,68": "forest",
+    "45,68": "forest",
+    "46,68": "forest",
+    "47,68": "forest",
+    "48,68": "forest",
+    "49,68": "forest",
+    "50,68": "forest",
+    "51,68": "forest",
+    "52,68": "forest",
+    "44,69": "forest",
+    "45,69": "forest",
+    "46,69": "forest",
+    "47,69": "forest",
+    "48,69": "forest",
+    "49,69": "forest",
+    "50,69": "forest",
+    "51,69": "forest",
+    "52,69": "forest",
+    "44,70": "forest",
+    "45,70": "forest",
+    "46,70": "forest",
+    "47,70": "forest",
+    "48,70": "forest",
+    "49,70": "forest",
+    "50,70": "forest",
+    "51,70": "forest",
+    "52,70": "forest"
+  },
+  "objects": {
+    "fern-89-45": {
+      "x": 89,
+      "y": 45,
+      "removed": true
+    },
+    "standingTree-84-45": {
+      "x": 84,
+      "y": 45,
+      "removed": true
+    },
+    "standingTree-87-45": {
+      "x": 87,
+      "y": 45,
+      "removed": true
+    },
+    "standingTree-87-48": {
+      "x": 87,
+      "y": 48,
+      "removed": true
+    },
+    "standingTree-87-51": {
+      "x": 87,
+      "y": 51,
+      "removed": true
+    },
+    "standingTree-90-45": {
+      "x": 90,
+      "y": 45,
+      "removed": true
+    },
+    "standingTree-90-48": {
+      "x": 90,
+      "y": 48,
+      "removed": true
+    },
+    "standingTree-90-51": {
+      "x": 90,
+      "y": 51,
+      "removed": true
+    },
+    "standingTree-93-45": {
+      "x": 93,
+      "y": 45,
+      "removed": true
+    },
+    "standingTree-93-48": {
+      "x": 93,
+      "y": 48,
+      "removed": true
+    },
+    "standingTree-93-51": {
+      "x": 93,
+      "y": 51,
+      "removed": true
+    },
+    "whiteFlowers-87-47": {
+      "x": 87,
+      "y": 47,
+      "removed": true
+    },
+    "editor-pineB-old-south-45-63": {
+      "x": 45,
+      "y": 63,
+      "kind": "pineB"
+    },
+    "editor-oakB-old-south-48-63": {
+      "x": 48,
+      "y": 63,
+      "kind": "oakB"
+    },
+    "editor-pineC-old-south-51-63": {
+      "x": 51,
+      "y": 63,
+      "kind": "pineC"
+    },
+    "editor-oakA-old-south-45-66": {
+      "x": 45,
+      "y": 66,
+      "kind": "oakA"
+    },
+    "editor-oakC-old-south-48-66": {
+      "x": 48,
+      "y": 66,
+      "kind": "oakC"
+    },
+    "editor-pineC-old-south-51-66": {
+      "x": 51,
+      "y": 66,
+      "kind": "pineC"
+    },
+    "editor-oakA-old-south-45-69": {
+      "x": 45,
+      "y": 69,
+      "kind": "oakA"
+    },
+    "editor-oakB-old-south-48-69": {
+      "x": 48,
+      "y": 69,
+      "kind": "oakB"
+    },
+    "editor-pineB-old-south-51-69": {
+      "x": 51,
+      "y": 69,
+      "kind": "pineB"
+    }
+  },
+  "area": "forest",
+  "points": {
+    "entry": {
+      "x": 93,
+      "y": 46
+    },
+    "exit": {
+      "x": 94,
+      "y": 46
+    }
+  }
+}

@@ -6,11 +6,11 @@ import type { TerrainKind } from './systems/map-editor';
 
 
 const MATERIALS: Record<TerrainKind, keyof TerrainSprites> = {
-  grass: 'grass', path: 'path-dry', water: 'water', sand: 'sand', soil: 'soil',
+  grass:'grass',meadow:'meadow',forest:'forest',moss:'moss',forestPath:'forest',path:'path-dry',wetPath:'path-wet',water:'water',sand:'sand',soil:'soil',wood:'wood',paving:'paving',
 };
 const FALLBACK: Record<TerrainKind, readonly [number, number, number]> = {
   grass: [92, 133, 51], path: [187, 148, 94], water: [48, 130, 138],
-  sand: [179, 154, 108], soil: [105, 72, 45],
+  sand:[179,154,108],soil:[105,72,45],meadow:[125,150,62],forest:[52,87,56],moss:[62,104,53],forestPath:[79,108,58],wetPath:[124,100,69],wood:[153,111,65],paving:[157,154,129],
 };
 const smooth = (value: number): number => {
   const t = Math.max(0, Math.min(1, value));
@@ -84,6 +84,7 @@ export function drawMapTerrainEdits(
       const shallow = material === 'water' ? Math.max(0, 1 - edgeDistance / 5) * .22 : 0;
       for (let channel = 0; channel < 3; channel++) {
         let value = sprite?.pixels[sample + channel] ?? FALLBACK[material][channel];
+        if(material==='forestPath'&&sprites){value=value*.6+sprites.meadow.pixels[sample+channel]*.3+sprites['path-dry'].pixels[sample+channel]*.1;}
         if (material === 'grass' && sprites && sprite) {
           value = value * (1 - forest - field) + sprites.forest.pixels[sample + channel] * forest
             + sprites.meadow.pixels[sample + channel] * field;

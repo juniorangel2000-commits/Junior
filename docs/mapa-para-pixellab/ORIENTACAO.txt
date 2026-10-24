@@ -1,0 +1,26 @@
+AFTER RAIN — REFERENCIA PARA PRODUCAO DE MAPA
+
+referencia-mapa-expandido.png e uma conversao para PNG da referencia aprovada. As cores e dimensoes foram preservadas.
+
+OBJETIVO
+Usar a distribuicao das regioes como guia para ampliar o mundo de After Rain. O mapa atual possui Minha propriedade, Bosque do Pinheiro e Campos Abertos. Vila, montanha/mina, costa e outras regioes da referencia precisam ser construidas no jogo.
+
+BASE ATUAL
+Mapa externo: 96 x 72 celulas de 32 x 32 pixels (3072 x 2304).
+Personagem atual: canvas de 48 x 64 pixels. Arvores e casas ocupam varias celulas.
+Perspectiva 2D top-down, sem perspectiva de camera inclinada nem convergencia. Fachadas visiveis combinando com a arte atual.
+
+PRODUCAO RECOMENDADA
+1. Comecar por uma pequena area da propriedade para validar a escala junto da personagem.
+2. Produzir terrenos e transicoes conectaveis de 32 x 32: grama/terra, caminhos, agua/margem, areia, rocha e solo umido.
+3. Produzir arvores, rochas, casas e mobiliario como objetos separados com fundo transparente. Preservar espaco de circulacao e construcao.
+4. Trabalhar cada regiao separadamente, mantendo paleta, iluminacao e escala comuns.
+5. Integrar as pecas ao jogo com colisoes, recursos, entradas, pontes, areas construiveis e posicoes de mapa verificadas. Alteracoes de geografia exigem migracao dos saves.
+
+DIRECAO VISUAL PARA USAR NAS DESCRICOES
+Pixel art 2D top-down de RPG rural acolhedor depois da chuva. Verdes naturais, terra ocre, agua azul-esverdeada, sombras suaves. Arquitetura de reboco creme, telhas terracota e venezianas azul-esverdeadas. Vegetacao detalhada nas bordas; clareiras e caminhos legiveis. Escala consistente com a personagem fornecida. Evitar textos, legendas, interface e personagens nas pecas de cenario. Usar a imagem do mapa expandido como referencia de distribuicao e a captura do jogo como referencia da escala proxima.
+
+PIXELLAB
+Create Tileset: https://www.pixellab.ai/docs/tools/create-tileset
+Guia de criacao por partes: https://www.pixellab.ai/docs/guides/map-tiles
+A referencia conceitual nao define sozinha colisoes, objetos interativos ou compatibilidade com salvamentos.

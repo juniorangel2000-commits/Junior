@@ -4,7 +4,7 @@ import { isBridgeTile, isFarmTile, WORLD_HEIGHT, WORLD_WIDTH } from '../data/reg
 
 export const MAP_EDIT_VERSION = 1;
 export const MAP_DRAFT_KEY = 'after-rain-map-editor-draft-v1';
-export const MAP_TERRAIN_KINDS = ['grass', 'path', 'water', 'sand', 'soil'] as const;
+export const MAP_TERRAIN_KINDS = ['grass','meadow','forest','moss','forestPath','path','wetPath','water','sand','soil','wood','paving'] as const;
 export const MAP_OBJECT_KINDS = ['standingTree', 'pine', 'stone', 'vein', 'tree', 'fiber', 'seeds', 'scrap', ...NATURE_KINDS] as const;
 export type TerrainKind = typeof MAP_TERRAIN_KINDS[number];
 export type EditorObjectKind = typeof MAP_OBJECT_KINDS[number];
@@ -44,7 +44,7 @@ const validCell = (x: unknown, y: unknown): boolean => typeof x === 'number' && 
 /** Keep fixed gameplay entrances and landmarks intact while editing their surroundings. */
 export function isProtectedMapTile(x: number, y: number, area?: 'forest'): boolean {
   if (!validCell(x, y)) return true;
-  if(area==='forest')return (x>=46&&x<=50&&y>=64)||FOREST_ANIMALS.some(a=>Math.abs(a.x-x)<=1&&Math.abs(a.y-y)<=1);
+  if(area==='forest')return FOREST_ANIMALS.some(a=>Math.abs(a.x-x)<=1&&Math.abs(a.y-y)<=1);
   const houseAndPorch = x >= 20 && x <= 28 && y >= 9 && y <= 17;
   const arrival = x >= 24 && x <= 26 && y >= 18 && y <= 19;
   return houseAndPorch || arrival || isFarmTile(x, y) || isBridgeTile(x, y)

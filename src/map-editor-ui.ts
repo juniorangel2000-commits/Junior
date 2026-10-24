@@ -8,7 +8,7 @@ export interface EditorTool {
   object?: EditorObjectKind;
 }
 export type EditorAction = 'undo' | 'redo' | 'zoom-out' | 'zoom-fit' | 'zoom-in'
-  | 'grid' | 'export' | 'load-draft' | 'apply' | 'cancel';
+  | 'grid' | 'export' | 'load-draft' | 'apply' | 'cancel' | 'map-property' | 'map-forest';
 export interface MapEditorCallbacks {
   action(action: EditorAction): void | Promise<void>;
   tool(tool: EditorTool): void;
@@ -28,7 +28,7 @@ export interface MapEditorUIState {
   error?: boolean;
 }
 const terrains: ReadonlyArray<{ kind: TerrainKind; label: string }> = [
-  { kind: 'grass', label: 'Grama' }, { kind: 'path', label: 'Caminho' },
+  {kind:'grass',label:'Grama'},{kind:'meadow',label:'Grama clara'},{kind:'forest',label:'Piso da mata'},{kind:'moss',label:'Musgo'},{kind:'forestPath',label:'Trilha com folhas'},{kind:'path',label:'Caminho seco'},{kind:'wetPath',label:'Terra úmida'},{kind:'wood',label:'Madeira'},{kind:'paving',label:'Calçamento'},
   { kind: 'water', label: 'Água' }, { kind: 'sand', label: 'Areia' }, { kind: 'soil', label: 'Terra' },
 ];
 const objects: ReadonlyArray<{ kind: EditorObjectKind; label: string; hint: string }> = [
@@ -100,7 +100,7 @@ export class MapEditorUI {
           </div>
           <div class="me-session-actions">
             <button type="button" data-action="cancel" class="me-secondary">Voltar sem aplicar</button>
-            <button type="button" data-action="apply" class="me-primary">${icon('play')}<span>Aplicar e jogar</span></button>
+            <button type="button" data-action="apply" class="me-primary">${icon('play')}<span>Aplicar mapas e jogar</span></button>
           </div>
         </div>
         <div class="me-command-row">
@@ -118,7 +118,7 @@ export class MapEditorUI {
             <button type="button" data-action="grid" aria-pressed="true">${icon('grid')}<span>Grade</span></button>
             <button type="button" data-reference aria-expanded="false" aria-controls="map-editor-reference">${icon('map')}<span>Referência</span></button>
           </div>
-          <span class="me-map-caption">Mapa atual · 96 × 72</span>
+          <div class="me-command-group" role="group" aria-label="Trocar cenário em edição"><button type="button" data-action="map-property" data-map-area="property">Propriedade</button><button type="button" data-action="map-forest" data-map-area="forest">Floresta Antiga</button></div><span class="me-map-caption">96 × 72</span>
         </div>
       </header>
       <aside class="me-palette me-panel" aria-label="Ferramentas e elementos do mapa">

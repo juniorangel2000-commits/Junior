@@ -1,3 +1,5 @@
+import {SwimmingController} from './swimming/controller';
+import {SWIMMING_CONFIG} from './swimming/config';
 import { SwimmingVisual, SWIM_SPEED_FACTOR } from './swimming';
 import Phaser from 'phaser';
 import type { CharacterProfile } from './types';
@@ -21,6 +23,9 @@ export class Player {
   y: number;
   facing = { x: 0, y: 1 };
   isSwimming=false;
+  readonly swimming=new SwimmingController();
+  get swimState(){return this.swimming.state;}
+  get waterDepth(){return this.swimming.depth;}
   private swimmingVisual?:SwimmingVisual;
   private walkDistance = 0;
   private previousInput = { x: 0, y: 0 };
@@ -41,8 +46,11 @@ export class Player {
   setVisible(visible:boolean):void {this.sprite.setVisible(visible);this.swimmingVisual?.setVisible(visible&&this.isSwimming);}
 
   update(delta: number, isBlocked: (x: number, y: number) => boolean,
-    isBlockedPoint?: (x: number, y: number) => boolean, movementEnabled = true, isWaterPoint?: (x:number,y:number)=>boolean): void {
-    const speed=PLAYER_SPEED*(isWaterPoint?.(this.x,this.y)?SWIM_SPEED_FACTOR:1);
+    isBlockedPoint?: (x: number, y: number) => boolean, movementEnabled = true, isWaterPoint?: (x:number,y:number)=>boolean|number): void {
+    const depthAt=(x:number,y:number):number=>{const value=isWaterPoint?.(x,y);return typeof value==='number'?Math.max(0,Math.min(1,value)):value?1:0;};
+    const initialDepth=depthAt(this.x,this.y);
+    const swimAmount=Math.max(0,(initialDepth-SWIMMING_CONFIG.deepThreshold)/(1-SWIMMING_CONFIG.deepThreshold));
+    const speed=PLAYER_SPEED*(1-(1-SWIM_SPEED_FACTOR)*swimAmount);
     const inputX = movementEnabled ? Number(this.keys.D.isDown || this.keys.RIGHT.isDown) - Number(this.keys.A.isDown || this.keys.LEFT.isDown) : 0;
     const inputY = movementEnabled ? Number(this.keys.S.isDown || this.keys.DOWN.isDown) - Number(this.keys.W.isDown || this.keys.UP.isDown) : 0;
     const moving = inputX !== 0 || inputY !== 0;
@@ -110,13 +118,12 @@ export class Player {
     if (walked) this.walkDistance = (this.walkDistance + distance) % PLAYER_WALK_CYCLE_DISTANCE;
     const phase = Math.floor((this.walkDistance + 1e-7) / PLAYER_WALK_CYCLE_DISTANCE * this.walkFrames) % this.walkFrames + 1;
     const direction = directionFromVector(this.facing.x, this.facing.y);
-    const swimming=!!isWaterPoint?.(this.x,this.y);
-    if(swimming){
-      this.isSwimming=true;this.swimmingVisual??=new SwimmingVisual(this.scene,this.profile);
-      this.swimmingVisual.update(this.sprite,this.x,this.y,direction,walked,delta);return;
+    const wasWet=this.swimming.depth>0;this.swimming.update(depthAt(this.x,this.y),walked,direction,delta);this.isSwimming=this.swimming.isSwimming;
+    if(this.swimming.depth>.005){
+      this.swimmingVisual??=new SwimmingVisual(this.scene,this.profile);
+      this.swimmingVisual.update(this.sprite,this.x,this.y,direction,walked,delta,this.swimming.depth,characterFrame(direction,walked?phase:0,this.walkFrames),speed/PLAYER_SPEED);return;
     }
-    if(this.isSwimming){this.sprite.setTexture(this.textureKey).setOrigin(.5,1);this.swimmingVisual?.setVisible(false);}
-    this.isSwimming=false;
+    if(wasWet){this.sprite.setTexture(this.textureKey).setCrop().setOrigin(.5,1);this.swimmingVisual?.setVisible(false);}
     this.sprite.setFrame(characterFrame(direction, walked ? phase : 0, this.walkFrames));
     this.sprite.setPosition(this.x, this.y).setDepth(this.y);
   }

@@ -9,4 +9,6 @@ Regas válidas consomem uma carga no contato da animação. Alvos já regados n�
 
 Todas as ferramentas usam deslocamento de sete pixels à frente da mão (antes quatro).
 
-Validação: 318 testes, TypeScript, build e `scripts/qa-watering.cjs` no Chromium com abastecimento, bloqueio vazio, cancelamento, oito regas nos dois lados, ícones e recarga após cada rega. Alterações ainda não publicadas no executável.
+Validação: 318 testes, TypeScript, build e `scripts/qa-watering.cjs` no Chromium com abastecimento, bloqueio vazio, cancelamento, oito regas nos dois lados, ícones e recarga após cada rega. Publicado na prévia 0.8.2: https://github.com/juniorangel2000-commits/Junior/releases/tag/watering-preview-0.8.2-1
+
+Commit: a99002d. CI Windows: https://github.com/juniorangel2000-commits/Junior/actions/runs/40093805453

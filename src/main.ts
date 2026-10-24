@@ -1,3 +1,4 @@
+import {MapEditorScene} from './scenes/MapEditorScene';
 import Phaser from 'phaser';
 import { gameAudio } from './audio';
 import { installFullscreenShortcut } from './fullscreen';
@@ -39,7 +40,7 @@ export const game = new Phaser.Game({
   roundPixels: true,
   render: { antialias: false, powerPreference: 'high-performance' },
   scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight },
-  scene: [scene, new ForestScene()],
+  scene: [scene, new ForestScene(),new MapEditorScene()],
   audio: { noAudio: true },
   banner: false,
 });

@@ -151,6 +151,7 @@ export class GameUI {
     return tools.find(tool => tool.id === slot) ?? { label: 'Vazio', icon: 'bag', detail: 'Arraste um item da mochila para este slot.' };
   }
   activateSlot(index: number): void {
+    if(this.latest?.swimming)return;
     if (this.modal || !Number.isInteger(index) || index < 0 || index >= this.quickbar.length) return;
     const slot = this.quickbar[index];
     const quantity = this.latest ? quickQuantity(slot, this.latest.inventory, !!this.latest.wateringCan) : null;
@@ -185,6 +186,8 @@ export class GameUI {
       button.classList.toggle('selected', selected);
       button.classList.toggle('depleted', quantity === 0);
       button.setAttribute('aria-pressed', String(selected));
+      button.disabled=!!this.latest?.swimming;
+      button.title=this.latest?.swimming?'Ferramentas indisponíveis durante o nado':`${slot?this.slotInfo(slot).label:'Mãos vazias'} · I abre a mochila`;
     });
   }
   private assignInventorySlot(index: number, item: Exclude<QuickSlot, null> | null): void {

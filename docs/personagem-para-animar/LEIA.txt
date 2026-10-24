@@ -1,0 +1,29 @@
+AFTER RAIN — PERSONAGEM PARA ANIMAR
+
+As oito poses paradas foram extraídas da personagem atual, com cabelo preso. Os pixels e a transparência foram preservados.
+
+ARQUIVOS
+personagem-8-direcoes.png: 192 x 128 px, grade de 4 colunas e 2 linhas, cada célula 48 x 64 px.
+personagem-8-direcoes-ampliada.png: a mesma folha ampliada 4x (768 x 512), sem suavização; cada célula 192 x 256.
+individual-48x64/: oito PNGs transparentes no tamanho do jogo.
+individual-ampliado-4x/: oito PNGs transparentes ampliados para referência.
+guia-das-direcoes.png: folha com nomes das direções.
+
+ORDEM DA FOLHA, DA ESQUERDA PARA A DIREITA
+Linha 1: frente, esquerda, direita, costas.
+Linha 2: frente-esquerda, frente-direita, costas-esquerda, costas-direita.
+
+PARA ANIMAR
+Manter canvas, posição, proporções, paleta, roupa e penteado iguais. Evitar recorte automático.
+No tamanho original, a origem do jogo fica no centro inferior (24, 64). A pose parada deixa três linhas transparentes abaixo das botas.
+Criar quatro quadros de caminhada por direção: contato, passagem, contato oposto, passagem oposta. Usar passos curtos, joelho flexionando e braços alternados.
+A pose parada é independente. Resultado completo: oito paradas e 32 quadros de caminhada.
+O atlas final usado pelo jogo tem cinco colunas e oito linhas, 240 x 512 px: parada na primeira coluna e os quatro quadros de caminhada nas demais. Ritmo inicial de teste: 7 fps.
+
+As versões ampliadas são cópias exatas dos pixels, não contêm detalhe adicional. Para entregar ao jogo, retornar ao tamanho original sem interpolação.
+
+REFERENCIAS PARA PIXELLAB
+individual-pixellab-64x64/: cada pose em canvas quadrado 64 x 64, compatível com Animate with skeleton. São os mesmos pixels originais, com oito colunas transparentes adicionadas de cada lado. A personagem não foi esticada. Origem no centro inferior (32, 64).
+Usar uma direção por vez como referência e manter quatro poses de caminhada com passos curtos. Conferir e ajustar os joelhos no esqueleto. Para voltar ao canvas original 48 x 64, retirar as oito colunas extras de cada lado, conferindo antes se nenhuma nova parte da animação entrou nessa margem.
+Documentação consultada: https://www.pixellab.ai/docs/tools/animate-with-skeleton
+Finalização manual: https://www.aseprite.org/docs/animation/

@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "width": 96,
+  "height": 72,
+  "terrain": {},
+  "objects": {
+    "fern-89-45": {
+      "x": 89,
+      "y": 45,
+      "removed": true
+    },
+    "standingTree-84-45": {
+      "x": 84,
+      "y": 45,
+      "removed": true
+    },
+    "standingTree-87-45": {
+      "x": 87,
+      "y": 45,
+      "removed": true
+    },
+    "standingTree-87-48": {
+      "x": 87,
+      "y": 48,
+      "removed": true
+    },
+    "standingTree-87-51": {
+      "x": 87,
+      "y": 51,
+      "removed": true
+    },
+    "standingTree-90-45": {
+      "x": 90,
+      "y": 45,
+      "removed": true
+    },
+    "standingTree-90-48": {
+      "x": 90,
+      "y": 48,
+      "removed": true
+    },
+    "standingTree-90-51": {
+      "x": 90,
+      "y": 51,
+      "removed": true
+    },
+    "standingTree-93-45": {
+      "x": 93,
+      "y": 45,
+      "removed": true
+    },
+    "standingTree-93-48": {
+      "x": 93,
+      "y": 48,
+      "removed": true
+    },
+    "standingTree-93-51": {
+      "x": 93,
+      "y": 51,
+      "removed": true
+    },
+    "whiteFlowers-87-47": {
+      "x": 87,
+      "y": 47,
+      "removed": true
+    }
+  },
+  "area": "forest",
+  "points": {
+    "entry": {
+      "x": 93,
+      "y": 46
+    },
+    "exit": {
+      "x": 94,
+      "y": 46
+    }
+  }
+}

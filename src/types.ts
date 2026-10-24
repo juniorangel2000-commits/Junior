@@ -1,3 +1,4 @@
+import type {ResourceField} from './systems/resource-spawns';
 import type { HomeData } from './systems/home';
 import type { CharacterDirection } from './character-directions';
 import type { MapEditData } from './systems/map-editor';
@@ -40,6 +41,9 @@ export interface ProgressData {
   builtShelter: boolean;
 }
 export interface SaveData {
+  resourceFields?:{property:ResourceField;forest:ResourceField};
+  resourceMilestones?:{felled:boolean;mined:boolean};
+  mapBaseRevision?:number;
   activeArea?: 'property' | 'forest';
   forestPosition?: TilePoint & { direction?: CharacterDirection };
   recruitedAnimals?: string[];
@@ -68,6 +72,7 @@ export interface SaveData {
   forestMapEdits?: MapEditData;
 }
 export interface HudData {
+  swimming?:boolean;
   area?: 'property'|'forest';
   wateringCan?: boolean;
   wateringCanWater?: number;

@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { forestGroundPixels } from '../src/forest-ground';
 
 describe('forest terrain composition',()=>{
+  it('restores the forest floor through the old southern path including the map edge',()=>{
+    expect(forestGroundPixels(undefined,48*32+16,71*32+16,1)).toEqual(forestGroundPixels(undefined,55*32+16,71*32+16,1));
+  });
   it('adds a sandy bank around the lake while keeping the middle as water',()=>{
     const sample=(x:number,y:number)=>forestGroundPixels(undefined,Math.floor((x+.5)*32),Math.floor((y+.5)*32),1);
     const shore=sample(54,24),inland=sample(54,28),water=sample(54,16);

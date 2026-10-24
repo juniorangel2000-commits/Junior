@@ -7,6 +7,8 @@ export interface PropertyArtContext {
   isBlocked(x: number, y: number): boolean;
   resourceAt(x: number, y: number): ResourceNode | undefined;
   buildings?: readonly BuildingData[];
+  textureKey?:string;
+  placeStone?(x:number,y:number):void;
 }
 
 type Detail = 'fern' | 'flowers-white' | 'flowers-pink' | 'flowers-yellow' | 'grass-tuft' | 'shore-stones';
@@ -15,7 +17,7 @@ const LEFT = 5 * TILE;
 const TOP = 7 * TILE;
 const WIDTH = 51 * TILE;
 const HEIGHT = 39 * TILE;
-const TEXTURE = 'property-ground-details';
+
 
 // Decoration has its own stable noise, independent of resource generation.
 function noise(x: number, y: number, salt = 0): number {
@@ -29,6 +31,7 @@ function noise(x: number, y: number, salt = 0): number {
  * No collision, resource, crop or save state is created or changed here.
  */
 export function decorateProperty(scene: Phaser.Scene, context: PropertyArtContext): void {
+  const TEXTURE=context.textureKey??'property-ground-details';
   const canvas = document.createElement('canvas');
   canvas.width = WIDTH;
   canvas.height = HEIGHT;
@@ -116,6 +119,7 @@ export function decorateProperty(scene: Phaser.Scene, context: PropertyArtContex
     const x = Math.round(tx * TILE + 16 + (noise(tx, ty, variant + 13) - 0.5) * 3);
     const y = Math.round(ty * TILE + 29);
     if (!safe(x, y, width, height)) return;
+    if(detail==='shore-stones'&&context.placeStone){context.placeStone(tx,ty);return;}
     if (image) c.drawImage(image, x - width / 2 - LEFT, y - height - TOP, width, height);
     else fallback(detail, x, y, variant);
   };

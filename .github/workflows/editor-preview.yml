@@ -1,4 +1,4 @@
-name: After Rain — HUD padrão e nado para Windows
+name: After Rain — mapas, recursos e nado para Windows
 on:
   push:
     branches: ['preview/swimming-0.9.3']
@@ -10,8 +10,6 @@ concurrency:
   cancel-in-progress: true
 jobs:
   preview:
-    # Paused by user until the updated map is incorporated.
-    if: ${{ false }}
     runs-on: windows-latest
     permissions:
       contents: write
@@ -56,7 +54,7 @@ jobs:
         shell: pwsh
         run: |
           $tag = 'swimming-preview-0.9.3-1'
-          gh release create $tag --draft --prerelease --latest=false --target $env:PREVIEW_COMMIT --title 'After Rain 0.9.3 — HUD padrão e nado (Windows x64)' --notes-file docs/cenarios/NOTAS-PREVIA.md
+          gh release create $tag --draft --prerelease --latest=false --target $env:PREVIEW_COMMIT --title 'After Rain 0.9.3 — mapas, recursos e nado (Windows x64)' --notes-file docs/cenarios/NOTAS-PREVIA.md
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           gh release upload $tag release/After-Rain-0.9.3-Windows-x64.exe release/SHA256SUMS.txt release/LEIA.md
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": [
+    "author maps applied",
+    "new terrain palette",
+    "switch map without losing changes",
+    "separate undo and redo",
+    "only marked exit tiles",
+    "correct arrivals",
+    "reachable routes and animal clearings",
+    "former south exit closed",
+    "new rocks mineable with saved partial hits",
+    "tools locked while swimming",
+    "random resources capped",
+    "respawn cooldown persists",
+    "unique renewed IDs"
+  ],
+  "at": "2026-10-24T19:17:11.807Z"
+}

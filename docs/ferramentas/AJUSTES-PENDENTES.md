@@ -1,6 +1,6 @@
 # Ajustes após a prévia 0.8.1
 
-Ainda não publicados no executável da Release.
+Publicados na prévia 0.8.2, tag watering-preview-0.8.2-1.
 
 - Picareta e machado aparecem somente durante o golpe válido. Seleção na barra, repouso e caminhada não mostram a ferramenta.
 - Golpes usam exclusivamente esquerda/direita. Alvos verticais usam o lado horizontal atual (direita quando não houver componente horizontal); diagonais usam o lado do alvo.

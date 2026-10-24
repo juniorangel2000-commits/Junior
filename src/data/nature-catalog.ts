@@ -1,3 +1,4 @@
+import type {ResourceKind} from '../types';
 export const NATURE_KINDS = ['oakA','oakB','oakC','pineA','pineB','pineC','mossBoulder','fallenLog','stump','fern','whiteFlowers','bush','shoreStones','reeds','mushrooms','lakeRockA','lakeRockB','lakeRockC','lakeRockD','lakeRockE','lakeRockF'] as const;
 export type NatureKind=typeof NATURE_KINDS[number];
 export interface NatureArt {label:string;texture:string;width:number;height:number;pivot:number;solid:boolean;water:boolean}
@@ -9,3 +10,11 @@ export const NATURE_ART:Record<NatureKind,NatureArt>={
  lakeRockA:art('Rocha musgosa','lake-rock-0',75,75,true,true),lakeRockB:art('Rocha alta','lake-rock-1',80,80,true,true),lakeRockC:art('Seixos agrupados','lake-rock-2',60,60,true,true),lakeRockD:art('Rocha submersa','lake-rock-3',80,80,true,true),lakeRockE:art('Dupla do lago','lake-rock-4',72,72,true,true),lakeRockF:art('Pedras baixas','lake-rock-5',56,56,true,true),
 };
 export function natureArt(kind:string|undefined):NatureArt|undefined{return kind&&Object.hasOwn(NATURE_ART,kind)?NATURE_ART[kind as NatureKind]:undefined;}
+
+export function collectibleKind(kind:string|undefined):ResourceKind|undefined {
+ if(!kind)return undefined;
+ if(kind==='standingTree'||kind==='pine'||kind.startsWith('oak')||/^pine[A-C]$/.test(kind))return 'standingTree';
+ if(kind==='vein'||kind==='mossBoulder'||kind==='shoreStones'||kind.startsWith('lakeRock'))return 'vein';
+ if(['tree','stone','fiber','seeds','scrap'].includes(kind))return kind as ResourceKind;
+ return undefined;
+}

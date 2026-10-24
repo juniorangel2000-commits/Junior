@@ -48,7 +48,7 @@ describe('expansão da região inicial', () => {
   });
 
   it('preserva exatamente os IDs dos 376 recursos da versão anterior', () => {
-    const legacy = world.resources.filter(node => node.x < 54 && node.y < 42);
+    const legacy = world.resources.filter(node => !node.id.startsWith('shoreStones-') && node.x < 54 && node.y < 42);
     expect(legacy).toHaveLength(376);
     // Impressão do layout capturada da implementação anterior à expansão.
     let hash = 2166136261;
@@ -105,8 +105,8 @@ describe('expansão da região inicial', () => {
   });
 
   it('limpa caminhos e pontes sem perder recursos nem misturar regiões', () => {
-    expect(world.resources).toHaveLength(801);
-    expect(new Set(world.resources.map(node => node.id)).size).toBe(801);
+    expect(world.resources.filter(n=>!n.id.startsWith('shoreStones-'))).toHaveLength(801);
+    expect(new Set(world.resources.map(node => node.id)).size).toBe(world.resources.length);
     for (const node of world.resources) {
       const [, oldX, oldY] = node.id.match(/-(\d+)-(\d+)$/)!;
       expect(getRegionAt(node.x, node.y).id, node.id).toBe(getRegionAt(Number(oldX), Number(oldY)).id);
@@ -127,7 +127,7 @@ describe('expansão da região inicial', () => {
     const sizes = { stone: [30, 20], vein: [48, 54], seeds: [36, 36], fiber: [32, 38], tree: [36, 24], scrap: [30, 28] } as const;
     for (const node of world.resources) {
       if (node.kind === 'standingTree') continue;
-      const [width, height] = sizes[node.kind];
+      const [width,height]=node.id.startsWith('shoreStones-')?[30,18]:sizes[node.kind];
       for (const x of [node.x * 32 + 16 - width / 2, node.x * 32 + 16, node.x * 32 + 16 + width / 2]) {
         for (const y of [node.y * 32 + 29 - height, node.y * 32 + 29]) {
           expect(roadDistanceAt(x, y), node.id).toBeGreaterThanOrEqual(6);

@@ -1,16 +1,64 @@
 {
   "passed": true,
-  "checks": [
-    "water entry",
-    "swim poses animate",
-    "movement in water",
-    "shared inventory pauses swimming",
-    "save reload in water",
-    "return to walking on shore",
-    "both supplied characters",
-    "eight directions",
-    "continuous terrain at zoom out",
-    "swimming and reload in property"
+  "renderer": "WebGL",
+  "actors": [
+    {
+      "id": "farmer-female",
+      "states": [
+        "swim_down",
+        "swim_down-left",
+        "swim_left",
+        "swim_up-left",
+        "swim_up",
+        "swim_up-right",
+        "swim_right",
+        "swim_down-right"
+      ],
+      "bodyAlpha": 0.45,
+      "headCut": 129,
+      "renderer": 2
+    },
+    {
+      "id": "farmer-male",
+      "states": [
+        "swim_down",
+        "swim_down-left",
+        "swim_left",
+        "swim_up-left",
+        "swim_up",
+        "swim_up-right",
+        "swim_right",
+        "swim_down-right"
+      ],
+      "bodyAlpha": 0.45,
+      "headCut": 110,
+      "renderer": 2
+    }
   ],
-  "at": "2026-10-24T17:54:56.884Z"
+  "shoreline": [
+    "down",
+    "down-left",
+    "left",
+    "up-left",
+    "up",
+    "up-right",
+    "right",
+    "down-right"
+  ],
+  "checks": [
+    "original head textures and per-view crops",
+    "body silhouette color, coverage and alignment",
+    "layer order",
+    "eight shore entry and exit directions",
+    "shallow walking",
+    "obstacle collision",
+    "idle and eight animated states",
+    "no frame allocations",
+    "inventory pause",
+    "save reload in forest and property",
+    "editor hides and restores swim layers",
+    "scene transition",
+    "land restoration"
+  ],
+  "at": "2026-10-24T19:15:52.001Z"
 }
