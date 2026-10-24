@@ -5,7 +5,7 @@ page.setDefaultTimeout(20000);console.log('opening');
 await page.goto(process.env.QA_URL||'http://127.0.0.1:5174');await page.locator('#new-game').click();await page.locator('#character-name').fill('Floresta');await page.getByRole('button',{name:'Começar minha história'}).click();
 await page.evaluate(async()=>{const {game}=await import(document.querySelector('script[src*="main.ts"]').src);window.game=game;window.valley=game.scene.getScene('Vale');valley.player.x=75.5*32;valley.player.y=18.5*32;valley.selectTool('hand');valley.nextInteractionAt=0;window.original=valley.snapshotState();});
 console.log('entering');await page.keyboard.press('e');await page.waitForSelector('.forest-hud');console.log('entered');await page.waitForFunction(()=>game.scene.isActive('Floresta'));
-await page.evaluate(()=>window.forest=game.scene.getScene('Floresta'));
+await page.evaluate(()=>{window.forest=game.scene.getScene('Floresta');});
 assert.equal(await page.evaluate(()=>forest.state.activeArea),'forest');
 await page.keyboard.press('m');await page.screenshot({path:'docs/cenarios/floresta-mapa.png'});await page.keyboard.press('m');
 await page.evaluate(()=>{forest.player.x=24*32;forest.player.y=55.5*32;forest.applyCamera()});

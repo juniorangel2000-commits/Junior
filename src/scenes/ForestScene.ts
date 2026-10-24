@@ -6,7 +6,7 @@ import { advanceClock, GAME_MINUTES_PER_SECOND } from '../systems/clock';
 import { Farming } from '../systems/farming';
 import { directionFromVector, directionVector } from '../character-directions';
 import { animalSprite, setupAnimalArt } from '../forest-art';
-import { FOREST_ANIMALS, FOREST_ENTRY, FOREST_TREES, ANIMAL_NAMES, forestBlocked, forestWater, forestBridge, forestPathDistance, recruitAnimal } from '../data/ancient-forest';
+import { FOREST_ANIMALS, FOREST_ENTRY, FOREST_TREES, ANIMAL_NAMES, forestBlocked, forestWater, forestBridge, forestClearing, forestPathDistance, recruitAnimal } from '../data/ancient-forest';
 import { gameAudio } from '../audio';
 import { loadCameraZoom, saveCameraZoom, stepCameraZoom } from '../camera-zoom';
 import '../forest.css';
@@ -34,9 +34,10 @@ export class ForestScene extends Phaser.Scene {
     this.paused=false;this.mapOpen=false;this.leaving=false;this.elapsed=0;this.locationUntil=this.time.now+10000;this.animals=[];this.trees=[];
     this.zoom=loadCameraZoom();this.farming=new Farming(this.state.crops);setupAnimalArt(this);
     this.drawGround();
+    this.drawWoodlandDetails();
     for(const t of FOREST_TREES){
       const key=`asset-${t.pine?'pine':'tree'}-${(t.x+t.y)%3}`;
-      const sprite=this.add.image(t.x*32+16,t.y*32+25,key).setOrigin(.5,128/132).setScale(t.ancient?3.6:2.0).setDepth(t.y*32+25);
+      const sprite=this.add.image(t.x*32+16,t.y*32+25,key).setOrigin(.5,128/132).setScale((t.ancient?3.6:2.0)/(this.textures.exists('reference-trees-source')?2:1)).setDepth(t.y*32+25);
       this.trees.push(sprite);
     }
     for(const a of FOREST_ANIMALS)if(!this.state.recruitedAnimals?.includes(a.id))this.animals.push({id:a.id,x:a.x*32+16,y:a.y*32+16,sprite:animalSprite(this,a.kind,a.x*32+16,a.y*32+16)});
@@ -59,21 +60,61 @@ export class ForestScene extends Phaser.Scene {
     this.save();this.refreshPrompt();
   }
   private drawGround():void {
-    if(!this.textures.exists('ancient-forest-ground')){
-      const c=document.createElement('canvas');c.width=3072;c.height=2304;const g=c.getContext('2d')!;
-      let seed=4729;const rnd=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
-      for(let y=0;y<72;y++)for(let x=0;x<96;x++){
-        const water=forestWater(x,y),path=forestPathDistance(x,y)<1.5,bridge=forestBridge(x,y);
-        g.fillStyle=water?'#518d94':path?'#baa16d':'#718c4d';g.fillRect(x*32,y*32,32,32);
-        for(let j=0;j<12;j++){g.fillStyle=water?'#91bbc066':path?'#e4c68a66':'#a8b96b66';g.fillRect(x*32+rnd()*30,y*32+rnd()*30,water?7:2,2);}
-        if(bridge){g.fillStyle='#806344';g.fillRect(x*32,y*32,32,32);g.fillStyle='#c09d6d';for(let j=0;j<4;j++)g.fillRect(x*32+2,y*32+j*8+1,28,5);}
-        if(!water&&!path&&rnd()<.16){g.fillStyle=rnd()<.5?'#e9d99a':'#bd94ae';g.fillRect(x*32+10,y*32+12,3,3);g.fillRect(x*32+22,y*32+24,3,3);}
-      }
-      this.textures.addCanvas('ancient-forest-ground',c)?.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    // Small cached terrain chunks avoid a single oversized canvas/GPU upload.
+    const samples=new Map<string,CanvasImageSource>();
+    for(const material of ['water','path-dry','meadow','forest']){
+      const key=`asset-ground-${material}`;
+      if(this.textures.exists(key))samples.set(material,this.textures.get(key).getSourceImage() as HTMLCanvasElement);
     }
-    this.add.image(0,0,'ancient-forest-ground').setOrigin(0).setDepth(-100);
-    // Small banks and rocks support the animal clearings without blocking paths.
-    for(const [x,y] of [[16,13],[27,12],[19,19],[62,18],[62,12],[38,15],[80,49]])this.add.image(x*32,y*32,'asset-stone').setScale(1.3).setDepth(y*32);
+    for(let cy=0;cy<9;cy++)for(let cx=0;cx<12;cx++){
+      const key=`forest-ground-${cx}-${cy}`;
+      if(!this.textures.exists(key)){
+        const canvas=document.createElement('canvas');canvas.width=256;canvas.height=256;
+        const g=canvas.getContext('2d',{willReadFrequently:true})!;g.imageSmoothingEnabled=false;
+        for(let ty=0;ty<8;ty++)for(let tx=0;tx<8;tx++){
+          const x=cx*8+tx,y=cy*8+ty,water=forestWater(x,y),path=forestPathDistance(x,y)<1.5;
+          const material=water?'water':path?'path-dry':forestClearing(x,y)?'meadow':'forest';
+          g.fillStyle=water?'#3c878f':path?'#b18955':'#416531';g.fillRect(tx*32,ty*32,32,32);
+          const source=samples.get(material);
+          if(source)g.drawImage(source,(x%3)*32,(y%3)*32,32,32,tx*32,ty*32,32,32);
+          let seed=(Math.imul(x+19,73856093)^Math.imul(y+7,19349663))>>>0;
+          const rnd=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+          if(path&&!water)for(let j=0;j<9;j++){
+            const px=tx*32+Math.floor(rnd()*28),py=ty*32+Math.floor(rnd()*28),w=3+Math.floor(rnd()*4);
+            g.fillStyle='#735936';g.fillRect(px,py+1,w,3);g.fillStyle=j%2?'#c4a364':'#ac8c53';g.fillRect(px,py,w-1,2);
+          }
+          if(forestBridge(x,y)){
+            g.fillStyle='#806344';g.fillRect(tx*32,ty*32,32,32);g.fillStyle='#c09d6d';
+            for(let j=0;j<4;j++)g.fillRect(tx*32+2,ty*32+j*8+1,28,5);
+          }
+        }
+        this.textures.addCanvas(key,canvas)?.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      }
+      this.add.image(cx*256,cy*256,key).setOrigin(0).setDepth(-100);
+    }
+  }
+  private drawWoodlandDetails():void {
+    const detail=(kind:string,x:number,y:number,size:number)=>{
+      const key=`forest-detail-${kind}`;if(!this.textures.exists(key))return;
+      this.add.image(x*32+16,y*32+25,key).setOrigin(.5,124/128).setDisplaySize(size,size).setDepth(y*32+25);
+    };
+    // Soft vegetation is walk-through; large wood rests against existing blocked trunks.
+    for(let y=3;y<69;y+=2)for(let x=3;x<94;x+=2){
+      const seed=(Math.imul(x,73856093)^Math.imul(y,19349663))>>>0;
+      if(forestWater(x,y)||forestPathDistance(x,y)<1.8)continue;
+      const shore=[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>forestWater(x+dx,y+dy));
+      if(shore){detail(seed%3?'shore':'reeds',x,y,seed%3?38:46);continue;}
+      if(seed%7===0)detail('fern',x,y,36);
+      else if(seed%11===0)detail('flowers',x,y,30);
+      else if(seed%23===0)detail('mushrooms',x,y,26);
+    }
+    FOREST_TREES.forEach((t,i)=>{
+      if(t.ancient)return;
+      if(i%17===0)detail('log',t.x,t.y,58);
+      else if(i%13===0)detail('stump',t.x,t.y,36);
+      else if(i%7===0)detail('bush',t.x+.5,t.y,45);
+    });
+    for(const [x,y] of [[16,13],[27,12],[19,19],[62,18],[62,12],[38,15],[80,49]])detail('boulder',x,y,46);
   }
   private applyCamera():void {
     if(!this.player)return;

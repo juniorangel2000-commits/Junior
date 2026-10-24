@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { setupReferenceNature } from './reference-nature';
 import { preloadCharacterSprites, setupCharacterSprites } from './character-sprites';
 import { setupNatureSprites } from './nature-sprites';
 import { setupTerrainSprites } from './terrain-sprites';
@@ -31,6 +32,8 @@ export function preloadVisualAssets(scene: Phaser.Scene): void {
   preloadHouseSprite(scene);
   preloadCharacterSprites(scene);
   preloadToolArt(scene);
+  scene.load.image('reference-trees-source', 'assets/visual/nature/reference-trees.png');
+  scene.load.image('reference-details-source', 'assets/visual/nature/reference-details.png');
   scene.load.image('forest-animals-source', 'assets/visual/forest/animals.png');
   scene.load.image('icon-water-empty', WATER_EMPTY_ICON);
   for (const id of ['water', 'seeds']) scene.load.image(`icon-${id}`, `${BASE}icons/${id}.png`);
@@ -208,6 +211,7 @@ function createHouse(scene: Phaser.Scene): void {
 
 export function setupVisualAssets(scene: Phaser.Scene): void {
   setupCharacterSprites(scene);
+  setupReferenceNature(scene);
   setupResourceSprites(scene);
   for (const [id, width, height] of [['stone', 26, 22], ['scrap', 32, 32], ['log', 40, 34], ['branch', 36, 32], ['fiber', 32, 34], ['seeds', 34, 38], ['vein', 44, 48], ['workbench', 40, 40]] as const) {
     if (!scene.textures.exists(`asset-${id}`)) fitSource(scene, `source-${id}`, `asset-${id}`, width, height, 1);

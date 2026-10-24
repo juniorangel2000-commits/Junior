@@ -266,11 +266,12 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     const treeTexture = useArtwork ? artwork : pine ? 'pine' : 'oak';
     const footX = x * TILE + 16, footY = y * TILE + 25;
     const pivot = artwork.endsWith(`-${variant}`) ? 128 / 132 : useArtwork ? 1 : 0.93;
-    const treeImage = scene.add.image(footX, footY, treeTexture).setOrigin(0.5, pivot).setScale(TREE_VISUAL_SCALE).setDepth(footY);
+    const artScale = TREE_VISUAL_SCALE / (useArtwork && scene.textures.exists('reference-trees-source') ? 2 : 1);
+    const treeImage = scene.add.image(footX, footY, treeTexture).setOrigin(0.5, pivot).setScale(artScale).setDepth(footY);
     resourceImages.set(id, treeImage);
     editorObjects.push({ id, x, y, kind, texture: treeTexture });
-    const width = (treeImage.width || 88) * TREE_VISUAL_SCALE;
-    const height = (treeImage.height || 116) * TREE_VISUAL_SCALE * pivot;
+    const width = (treeImage.width || 88) * artScale;
+    const height = (treeImage.height || 116) * artScale * pivot;
     canopies.set(tile, { image: treeImage, x: footX, y: footY, width, height });
     canopyRadiusX = Math.max(canopyRadiusX, Math.ceil(width / 2 / TILE) + 1);
     canopyRadiusY = Math.max(canopyRadiusY, Math.ceil(height / TILE) + 1);
