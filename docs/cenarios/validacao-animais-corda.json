@@ -1,0 +1,88 @@
+{
+  "passed": true,
+  "movement": [
+    {
+      "id": "forest-chicken-1",
+      "distance": 75.9780000000073,
+      "displacement": 73.89935475707385,
+      "valid": true
+    },
+    {
+      "id": "forest-chicken-2",
+      "distance": 38.177999999994604,
+      "displacement": 38.17799999999456,
+      "valid": true
+    },
+    {
+      "id": "forest-sheep-1",
+      "distance": 81.64800000000147,
+      "displacement": 81.64800000000146,
+      "valid": true
+    },
+    {
+      "id": "forest-sheep-2",
+      "distance": 49.89599999999258,
+      "displacement": 49.895999999992505,
+      "valid": true
+    },
+    {
+      "id": "forest-goat-1",
+      "distance": 61.236000000001994,
+      "displacement": 60.091156543613344,
+      "valid": true
+    },
+    {
+      "id": "forest-goat-2",
+      "distance": 66.90600000000501,
+      "displacement": 66.90600000000508,
+      "valid": true
+    },
+    {
+      "id": "forest-cow-1",
+      "distance": 75.59999999998772,
+      "displacement": 67.32755435954962,
+      "valid": true
+    },
+    {
+      "id": "forest-cow-2",
+      "distance": 89.5859999999709,
+      "displacement": 89.58599999997091,
+      "valid": true
+    },
+    {
+      "id": "forest-rabbit-1",
+      "distance": 61.99200000000577,
+      "displacement": 61.992000000005824,
+      "valid": true
+    },
+    {
+      "id": "forest-deer-1",
+      "distance": 43.84799999999519,
+      "displacement": 43.64194749052696,
+      "valid": true
+    }
+  ],
+  "route": {
+    "tiles": 80,
+    "frames": 1841,
+    "maxRope": 86.65597380717236,
+    "nearExit": true,
+    "canLeave": true,
+    "animalId": "forest-chicken-1"
+  },
+  "checks": [
+    "3 fibers -> reusable cord through crafting UI in property and forest",
+    "all ten animals move",
+    "no cord means no capture",
+    "E attach and G release once",
+    "save/reload with allocated rope",
+    "maximum leash distance and ground-only escort",
+    "full ground route to authored portal",
+    "delivery only after map crossing",
+    "property movement and save reload",
+    "no inventory animals or duplicate reward",
+    "return to forest removes only delivered animal",
+    "no browser errors"
+  ],
+  "at": "2026-10-24T21:41:24.608Z"
+}

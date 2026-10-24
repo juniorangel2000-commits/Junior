@@ -58,14 +58,17 @@ jobs:
             "$digest  $($_.Name)"
           }
           $checksums | Set-Content -Encoding utf8NoBOM release/SHA256SUMS.txt
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          Copy-Item "docs/cenarios/LEIA-$version.md" release/LEIA.md
 
       - name: Disponibilizar para download na execução
         uses: actions/upload-artifact@v4
         with:
-          name: After-Rain-Windows-x64
+          name: After-Rain-${{ github.ref_name }}-Windows-x64
           path: |
             release/*.exe
             release/SHA256SUMS.txt
+            release/LEIA.md
           if-no-files-found: error
           retention-days: 30
 
@@ -77,24 +80,11 @@ jobs:
           RELEASE_REPOSITORY: ${{ github.repository }}
         shell: pwsh
         run: |
-          $notes = @'
-          After Rain 0.8.0 — personagem detalhado, oito direções e árvores maiores.
-
-          - Personagem com arte detalhada e animação em oito direções, incluindo as quatro diagonais.
-          - Oito quadros de caminhada por direção a 10 fps, além da pose parada. A prévia usa a mesma arte e animação da partida.
-          - Criação simples: nome, quatro tons de pele, dois penteados e quatro cores de roupa.
-          - Movimento diagonal com velocidade e alcance de interação preservados. Direção salva dentro e fora da casa.
-          - Árvores adultas 60% maiores, mantendo posição dos troncos, colisões e IDs. A transparência acompanha a copa ampliada.
-          - Personagens antigos mantêm cabelo longo, cores e bolsa. Folhas anteriores preservadas no projeto.
-          - HUD, som, abertura chuvosa, missões livres, mochila de 30 espaços, nove slots e recompensas preservados.
-
-          Validação: TypeScript, 203 testes, build e Chromium. O QA conferiu os oito quadros por direção nos dois penteados da criação, três tamanhos de tela, teclado, interação diagonal por E, save/reload no exterior e no interior, copas translúcidas e ausência de erros de JavaScript ou assets.
-
-          Versão para navegador de computador: https://after-rain-junior-desktop.astralpeach256.chatgpt.site (acesso pela conta do ChatGPT). Save do navegador é separado do executável.
-
-          Portátil para Windows 11 x64, gerado em Windows. Baixe o .exe e abra com dois cliques. Não exige Node.js ou servidor. Pacote sem assinatura digital. Execução interativa no Windows 11 não testada neste ambiente Linux. SHA256SUMS.txt permite conferir a integridade.
-          '@
-          $notes | Set-Content -Encoding utf8NoBOM release/NOTAS.txt
-          $assets = @((Get-ChildItem release/*.exe).FullName) + @('release/SHA256SUMS.txt')
-          gh release create $env:RELEASE_TAG @assets --verify-tag --repo $env:RELEASE_REPOSITORY --title "After Rain $env:RELEASE_TAG — Windows x64" --notes-file release/NOTAS.txt
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          gh release create $env:RELEASE_TAG --draft --verify-tag --repo $env:RELEASE_REPOSITORY --title "After Rain $env:RELEASE_TAG — animais e corda (Windows x64)" --notes-file "docs/cenarios/NOTAS-$version.md"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $assets = @((Get-ChildItem release/*.exe).FullName) + @('release/SHA256SUMS.txt', 'release/LEIA.md')
+          gh release upload $env:RELEASE_TAG @assets --repo $env:RELEASE_REPOSITORY
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh release edit $env:RELEASE_TAG --draft=false --latest --repo $env:RELEASE_REPOSITORY
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

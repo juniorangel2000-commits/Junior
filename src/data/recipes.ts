@@ -16,7 +16,7 @@ export interface CraftingRecipe {
 export const RECIPES: CraftingRecipe[] = [
   {
     id: 'cord', name: 'Corda vegetal',
-    description: 'Trance fibras vegetais para prender as peças das primeiras ferramentas.',
+    description: 'Trance 3 fibras vegetais para fazer uma corda reutilizável, conduzir animais e montar ferramentas.',
     cost: { fiber: 3 }, output: { cord: 1 },
   },
   {

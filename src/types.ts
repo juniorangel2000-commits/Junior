@@ -1,3 +1,4 @@
+import type {AnimalPosition,AnimalEscort} from './systems/animals';
 import type {ResourceField} from './systems/resource-spawns';
 import type { HomeData } from './systems/home';
 import type { CharacterDirection } from './character-directions';
@@ -47,6 +48,8 @@ export interface SaveData {
   activeArea?: 'property' | 'forest';
   forestPosition?: TilePoint & { direction?: CharacterDirection };
   recruitedAnimals?: string[];
+  animalPositions?: {forest:AnimalPosition[];property:AnimalPosition[]};
+  animalEscort?: AnimalEscort;
   version: 2;
   quickbar?: QuickSlot[];
   wateringCanWater?: number;
@@ -83,7 +86,7 @@ export interface HudData {
   time: number;
   inventory: InventoryData;
   tool: Tool;
-  interactionKey?: 'E' | 'H';
+  interactionKey?: 'E' | 'H' | 'G';
   prompt: string;
   location: string;
   harvests: number;

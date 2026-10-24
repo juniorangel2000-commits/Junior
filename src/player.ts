@@ -7,6 +7,7 @@ import { createCharacterFrames } from './art';
 import { CHARACTER_WIDTH, CHARACTER_HEIGHT } from './character-sprites';
 import { characterFrame, directionFromVector } from './character-directions';
 import { resolveCharacter } from './data/characters';
+import {characterLeftHand} from './character-attachments';
 import { TILE } from './world';
 
 type MovementKeys = Record<string, Phaser.Input.Keyboard.Key>;
@@ -26,6 +27,7 @@ export class Player {
   readonly swimming=new SwimmingController();
   get swimState(){return this.swimming.state;}
   get waterDepth(){return this.swimming.depth;}
+  get leftHandPosition(){return characterLeftHand(this.profile,Number(this.sprite.frame.name),this.sprite);}
   private swimmingVisual?:SwimmingVisual;
   private walkDistance = 0;
   private previousInput = { x: 0, y: 0 };
@@ -46,7 +48,7 @@ export class Player {
   setVisible(visible:boolean):void {this.sprite.setVisible(visible);this.swimmingVisual?.setVisible(visible&&this.isSwimming);}
 
   update(delta: number, isBlocked: (x: number, y: number) => boolean,
-    isBlockedPoint?: (x: number, y: number) => boolean, movementEnabled = true, isWaterPoint?: (x:number,y:number)=>boolean|number): void {
+    isBlockedPoint?: (x: number, y: number) => boolean, movementEnabled = true, isWaterPoint?: (x:number,y:number)=>boolean|number, canMoveCenter?: (x:number,y:number)=>boolean): void {
     const depthAt=(x:number,y:number):number=>{const value=isWaterPoint?.(x,y);return typeof value==='number'?Math.max(0,Math.min(1,value)):value?1:0;};
     const initialDepth=depthAt(this.x,this.y);
     const swimAmount=Math.max(0,(initialDepth-SWIMMING_CONFIG.deepThreshold)/(1-SWIMMING_CONFIG.deepThreshold));
@@ -60,7 +62,7 @@ export class Player {
       const length = Math.hypot(inputX, inputY);
       const dx = inputX / length, dy = inputY / length;
       const canStand = (x: number, y: number) =>
-        [[-7, -5], [7, -5], [-7, 3], [7, 3]].every(([ox, oy]) =>
+        (!canMoveCenter || canMoveCenter(x,y)) && [[-7, -5], [7, -5], [-7, 3], [7, 3]].every(([ox, oy]) =>
           isBlockedPoint ? !isBlockedPoint(x + ox, y + oy)
             : !isBlocked(Math.floor((x + ox) / TILE), Math.floor((y + oy) / TILE)));
       const moveAxis = (amount: number, horizontal: boolean): void => {

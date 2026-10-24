@@ -19,6 +19,16 @@ function playerAt(x: number, y: number): Player {
 }
 
 describe('movimento nas margens arredondadas', () => {
+  it('respeita o alcance da corda e permite retornar sem prender os cantos dos pés', () => {
+    const player=playerAt(880,560),anchor={x:800,y:560};
+    const leash=(x:number,y:number)=>Math.hypot(x-anchor.x,y-anchor.y)<=88
+      ||Math.hypot(x-anchor.x,y-anchor.y)<Math.hypot(player.x-anchor.x,player.y-anchor.y)-.001;
+    for(let i=0;i<120;i++)player.update(1/60,()=>false,undefined,true,undefined,leash);
+    expect(player.x).toBeCloseTo(888,2);
+    player.x=690;
+    for(let i=0;i<60;i++)player.update(1/60,()=>false,undefined,true,undefined,leash);
+    expect(player.x).toBeCloseTo(690+PLAYER_SPEED,5);
+  });
   it('mantém velocidade por segundo ao variar a taxa de quadros', () => {
     const fast = playerAt(800, 560), slow = playerAt(800, 560);
     for (let i = 0; i < 60; i++) fast.update(1 / 60, () => false);

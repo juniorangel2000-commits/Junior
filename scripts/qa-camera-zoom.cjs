@@ -23,7 +23,7 @@ const assert = require('node:assert/strict');
       zoom: scene.cameras.main.zoom,
       width: scene.cameras.main.worldView.width,
       height: scene.cameras.main.worldView.height,
-      follows: scene.cameras.main._follow === scene.player.sprite,
+      follows: scene.cameras.main._follow === scene.player,
       x: scene.player.x, y: scene.player.y,
     }));
     const settle = async (factor, zoom) => {

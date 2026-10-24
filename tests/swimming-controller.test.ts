@@ -8,6 +8,11 @@ describe('depth-aware swimming',()=>{
   expect(sampleWaterDepth(water,-1,80)).toBe(0);expect(sampleWaterDepth(water,4,80)).toBe(0);expect(sampleWaterDepth(water,80,80)).toBe(1);
   expect(sampleWaterDepth(water,16,80)).toBeGreaterThan(0);expect(sampleWaterDepth(water,16,80)).toBeLessThan(SWIMMING_CONFIG.deepThreshold);
  });
+ it('keeps wading until the water reaches the neck, then changes to swimming',()=>{
+  const state=new SwimmingController();
+  for(const depth of [.25,.5,.75,.875]){state.update(depth,true,'down',0);expect(state.state).toBe('wading');expect(state.isSwimming).toBe(false);}
+  state.update(1,true,'down',0);expect(state.state).toBe('swim_down');expect(state.isSwimming).toBe(true);
+ });
  it('exposes idle and all eight directional swim states',()=>{
   const state=new SwimmingController();state.update(1,false,'down',0);expect(state.state).toBe('swim_idle');
   for(const direction of CHARACTER_DIRECTIONS){state.update(1,true,direction,.1);expect(state.state).toBe(`swim_${direction}`);}

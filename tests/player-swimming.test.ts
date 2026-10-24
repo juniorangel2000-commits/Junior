@@ -13,9 +13,9 @@ function fixture(){
 }
 describe('swimming movement',()=>{
  it('walks normally in shallow water and slows continuously beyond the deep-water threshold',()=>{
-   const speeds=[0,.2,.35,.5,1].map(depth=>{
+   const speeds=[0,.5,.9,.95,1].map(depth=>{
      const {player,keys}=fixture();keys.D.isDown=true;player.update(.1,()=>false,undefined,true,()=>depth);
-     if(depth<.35)expect(player.isSwimming).toBe(false);
+     if(depth<.9)expect(player.isSwimming).toBe(false);
      return (player.x-100)/.1;
    });
    speeds.slice(0,3).forEach(speed=>expect(speed).toBeCloseTo(PLAYER_SPEED));

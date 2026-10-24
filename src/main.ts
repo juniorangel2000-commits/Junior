@@ -17,7 +17,7 @@ const ui = new GameUI({
   onNewGame: profile => scene.startNew(profile),
   onContinue: () => scene.continueGame(),
   onTool: tool => {const forest=activeForest();if(forest)forest.selectTool(tool);else scene.selectTool(tool);},
-  onCraft: recipeId => {if(activeForest())ui.toast('Volte à propriedade para fabricar.');else scene.craftRecipe(recipeId);},
+  onCraft: recipeId => {const forest=activeForest();if(forest)forest.craftRecipe(recipeId);else scene.craftRecipe(recipeId);},
   onCancelCraft: () => scene.cancelCrafting(),
   onBlueprint: () => {const forest=activeForest();if(forest)forest.selectTool('blueprint');else scene.selectTool('blueprint');},
   onPause: paused => {const forest=activeForest();if(forest)forest.setPaused(paused);else scene.setPaused(paused);},

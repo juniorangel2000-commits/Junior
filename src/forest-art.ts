@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { ANIMAL_KINDS, type AnimalKind } from './data/ancient-forest';
+import {createAnimalSprite} from './animal-sprites';
 /** Frames are cut from the new transparent atlas without rewriting its source PNG. */
 export function setupAnimalArt(scene: Phaser.Scene): void {
   const texture=scene.textures.get('forest-animals-source');
@@ -15,6 +16,7 @@ export function setupAnimalArt(scene: Phaser.Scene): void {
   texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
 }
 export function animalSprite(scene:Phaser.Scene,kind:AnimalKind,x:number,y:number):Phaser.GameObjects.Sprite {
+  const animated=createAnimalSprite(scene,kind,x,y);if(animated)return animated;
   const size=kind==='cow'?50:kind==='chicken'||kind==='rabbit'?22:40;
   const sprite=scene.add.sprite(x,y,'forest-animals-source',kind);
   return sprite.setScale(size/sprite.height).setOrigin(.5,1).setDepth(y);

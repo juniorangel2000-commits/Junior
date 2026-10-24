@@ -1,0 +1,793 @@
+{
+  "passed": true,
+  "checks": [
+    "actual Phaser rope origin equals anatomical left hand",
+    "both characters",
+    "128 original idle and walk poses",
+    "eight directions",
+    "rope behind both actors",
+    "animal head attachment retained",
+    "no browser errors"
+  ],
+  "characters": [
+    {
+      "id": "farmer-female",
+      "cases": [
+        {
+          "direction": "down",
+          "phase": 0,
+          "x": 695.25,
+          "y": 1597.75
+        },
+        {
+          "direction": "down",
+          "phase": 1,
+          "x": 696.25,
+          "y": 1596.75
+        },
+        {
+          "direction": "down",
+          "phase": 2,
+          "x": 695.5,
+          "y": 1594.25
+        },
+        {
+          "direction": "down",
+          "phase": 3,
+          "x": 695.5,
+          "y": 1595.5
+        },
+        {
+          "direction": "down",
+          "phase": 4,
+          "x": 696.25,
+          "y": 1597.75
+        },
+        {
+          "direction": "down",
+          "phase": 5,
+          "x": 695.5,
+          "y": 1596.75
+        },
+        {
+          "direction": "down",
+          "phase": 6,
+          "x": 695.5,
+          "y": 1596.75
+        },
+        {
+          "direction": "left",
+          "phase": 0,
+          "x": 688.5,
+          "y": 1599.25
+        },
+        {
+          "direction": "left",
+          "phase": 1,
+          "x": 686,
+          "y": 1599.25
+        },
+        {
+          "direction": "left",
+          "phase": 2,
+          "x": 680.75,
+          "y": 1597.75
+        },
+        {
+          "direction": "left",
+          "phase": 3,
+          "x": 682.5,
+          "y": 1598.25
+        },
+        {
+          "direction": "left",
+          "phase": 4,
+          "x": 688.75,
+          "y": 1599
+        },
+        {
+          "direction": "left",
+          "phase": 5,
+          "x": 693.25,
+          "y": 1598.25
+        },
+        {
+          "direction": "left",
+          "phase": 6,
+          "x": 693,
+          "y": 1598.25
+        },
+        {
+          "direction": "right",
+          "phase": 0,
+          "x": 689.5,
+          "y": 1596.5
+        },
+        {
+          "direction": "right",
+          "phase": 1,
+          "x": 686.25,
+          "y": 1596.75
+        },
+        {
+          "direction": "right",
+          "phase": 2,
+          "x": 681,
+          "y": 1595.25
+        },
+        {
+          "direction": "right",
+          "phase": 3,
+          "x": 682.75,
+          "y": 1595.75
+        },
+        {
+          "direction": "right",
+          "phase": 4,
+          "x": 689,
+          "y": 1596.5
+        },
+        {
+          "direction": "right",
+          "phase": 5,
+          "x": 693.5,
+          "y": 1595.75
+        },
+        {
+          "direction": "right",
+          "phase": 6,
+          "x": 693.25,
+          "y": 1595.75
+        },
+        {
+          "direction": "up",
+          "phase": 0,
+          "x": 678.75,
+          "y": 1597.5
+        },
+        {
+          "direction": "up",
+          "phase": 1,
+          "x": 677.75,
+          "y": 1596
+        },
+        {
+          "direction": "up",
+          "phase": 2,
+          "x": 678.75,
+          "y": 1597.5
+        },
+        {
+          "direction": "up",
+          "phase": 3,
+          "x": 679.25,
+          "y": 1598
+        },
+        {
+          "direction": "up",
+          "phase": 4,
+          "x": 678.25,
+          "y": 1595.75
+        },
+        {
+          "direction": "up",
+          "phase": 5,
+          "x": 696.5,
+          "y": 1597.75
+        },
+        {
+          "direction": "up",
+          "phase": 6,
+          "x": 696.25,
+          "y": 1598
+        },
+        {
+          "direction": "down-left",
+          "phase": 0,
+          "x": 693.25,
+          "y": 1597.75
+        },
+        {
+          "direction": "down-left",
+          "phase": 1,
+          "x": 693.25,
+          "y": 1597.75
+        },
+        {
+          "direction": "down-left",
+          "phase": 2,
+          "x": 689,
+          "y": 1598.25
+        },
+        {
+          "direction": "down-left",
+          "phase": 3,
+          "x": 691.25,
+          "y": 1598
+        },
+        {
+          "direction": "down-left",
+          "phase": 4,
+          "x": 694,
+          "y": 1598.25
+        },
+        {
+          "direction": "down-left",
+          "phase": 5,
+          "x": 697,
+          "y": 1596.25
+        },
+        {
+          "direction": "down-left",
+          "phase": 6,
+          "x": 696.25,
+          "y": 1596.75
+        },
+        {
+          "direction": "down-right",
+          "phase": 0,
+          "x": 695,
+          "y": 1595.25
+        },
+        {
+          "direction": "down-right",
+          "phase": 1,
+          "x": 696.25,
+          "y": 1595.25
+        },
+        {
+          "direction": "down-right",
+          "phase": 2,
+          "x": 689.25,
+          "y": 1595.75
+        },
+        {
+          "direction": "down-right",
+          "phase": 3,
+          "x": 691.5,
+          "y": 1595.5
+        },
+        {
+          "direction": "down-right",
+          "phase": 4,
+          "x": 698,
+          "y": 1594.75
+        },
+        {
+          "direction": "down-right",
+          "phase": 5,
+          "x": 701,
+          "y": 1593.25
+        },
+        {
+          "direction": "down-right",
+          "phase": 6,
+          "x": 698.75,
+          "y": 1593.75
+        },
+        {
+          "direction": "up-left",
+          "phase": 0,
+          "x": 680.25,
+          "y": 1597.25
+        },
+        {
+          "direction": "up-left",
+          "phase": 1,
+          "x": 679,
+          "y": 1596.5
+        },
+        {
+          "direction": "up-left",
+          "phase": 2,
+          "x": 677,
+          "y": 1594.75
+        },
+        {
+          "direction": "up-left",
+          "phase": 3,
+          "x": 678.5,
+          "y": 1596.25
+        },
+        {
+          "direction": "up-left",
+          "phase": 4,
+          "x": 680.5,
+          "y": 1597.25
+        },
+        {
+          "direction": "up-left",
+          "phase": 5,
+          "x": 685.5,
+          "y": 1598
+        },
+        {
+          "direction": "up-left",
+          "phase": 6,
+          "x": 683,
+          "y": 1598
+        },
+        {
+          "direction": "up-right",
+          "phase": 0,
+          "x": 681.25,
+          "y": 1594.75
+        },
+        {
+          "direction": "up-right",
+          "phase": 1,
+          "x": 681,
+          "y": 1593.75
+        },
+        {
+          "direction": "up-right",
+          "phase": 2,
+          "x": 679.5,
+          "y": 1593.75
+        },
+        {
+          "direction": "up-right",
+          "phase": 3,
+          "x": 680.75,
+          "y": 1594
+        },
+        {
+          "direction": "up-right",
+          "phase": 4,
+          "x": 681.25,
+          "y": 1594.25
+        },
+        {
+          "direction": "up-right",
+          "phase": 5,
+          "x": 685.75,
+          "y": 1595.5
+        },
+        {
+          "direction": "up-right",
+          "phase": 6,
+          "x": 683.25,
+          "y": 1595.5
+        }
+      ]
+    },
+    {
+      "id": "farmer-male",
+      "cases": [
+        {
+          "direction": "down",
+          "phase": 0,
+          "x": 697.25,
+          "y": 1594.25
+        },
+        {
+          "direction": "down",
+          "phase": 1,
+          "x": 696.75,
+          "y": 1596.5
+        },
+        {
+          "direction": "down",
+          "phase": 2,
+          "x": 696.75,
+          "y": 1596
+        },
+        {
+          "direction": "down",
+          "phase": 3,
+          "x": 697,
+          "y": 1595.25
+        },
+        {
+          "direction": "down",
+          "phase": 4,
+          "x": 697,
+          "y": 1595
+        },
+        {
+          "direction": "down",
+          "phase": 5,
+          "x": 695.75,
+          "y": 1596.25
+        },
+        {
+          "direction": "down",
+          "phase": 6,
+          "x": 696.25,
+          "y": 1596
+        },
+        {
+          "direction": "down",
+          "phase": 7,
+          "x": 697.25,
+          "y": 1595.5
+        },
+        {
+          "direction": "down",
+          "phase": 8,
+          "x": 697,
+          "y": 1595.75
+        },
+        {
+          "direction": "left",
+          "phase": 0,
+          "x": 690.75,
+          "y": 1596.25
+        },
+        {
+          "direction": "left",
+          "phase": 1,
+          "x": 694.75,
+          "y": 1596.25
+        },
+        {
+          "direction": "left",
+          "phase": 2,
+          "x": 692.25,
+          "y": 1596.75
+        },
+        {
+          "direction": "left",
+          "phase": 3,
+          "x": 688,
+          "y": 1596.25
+        },
+        {
+          "direction": "left",
+          "phase": 4,
+          "x": 683.5,
+          "y": 1595.75
+        },
+        {
+          "direction": "left",
+          "phase": 5,
+          "x": 680.25,
+          "y": 1595
+        },
+        {
+          "direction": "left",
+          "phase": 6,
+          "x": 682.75,
+          "y": 1595.75
+        },
+        {
+          "direction": "left",
+          "phase": 7,
+          "x": 686.5,
+          "y": 1596
+        },
+        {
+          "direction": "left",
+          "phase": 8,
+          "x": 690.75,
+          "y": 1596.5
+        },
+        {
+          "direction": "right",
+          "phase": 0,
+          "x": 692,
+          "y": 1593.75
+        },
+        {
+          "direction": "right",
+          "phase": 1,
+          "x": 698.5,
+          "y": 1593.75
+        },
+        {
+          "direction": "right",
+          "phase": 2,
+          "x": 695.5,
+          "y": 1595.75
+        },
+        {
+          "direction": "right",
+          "phase": 3,
+          "x": 690.5,
+          "y": 1594.75
+        },
+        {
+          "direction": "right",
+          "phase": 4,
+          "x": 685,
+          "y": 1593.75
+        },
+        {
+          "direction": "right",
+          "phase": 5,
+          "x": 681.25,
+          "y": 1592
+        },
+        {
+          "direction": "right",
+          "phase": 6,
+          "x": 684,
+          "y": 1594.5
+        },
+        {
+          "direction": "right",
+          "phase": 7,
+          "x": 689.25,
+          "y": 1594.75
+        },
+        {
+          "direction": "right",
+          "phase": 8,
+          "x": 693.5,
+          "y": 1595
+        },
+        {
+          "direction": "up",
+          "phase": 0,
+          "x": 678,
+          "y": 1593.75
+        },
+        {
+          "direction": "up",
+          "phase": 1,
+          "x": 679,
+          "y": 1595.75
+        },
+        {
+          "direction": "up",
+          "phase": 2,
+          "x": 679.5,
+          "y": 1596
+        },
+        {
+          "direction": "up",
+          "phase": 3,
+          "x": 679.5,
+          "y": 1596.75
+        },
+        {
+          "direction": "up",
+          "phase": 4,
+          "x": 678.25,
+          "y": 1593.75
+        },
+        {
+          "direction": "up",
+          "phase": 5,
+          "x": 697.5,
+          "y": 1595.75
+        },
+        {
+          "direction": "up",
+          "phase": 6,
+          "x": 696.25,
+          "y": 1595.75
+        },
+        {
+          "direction": "up",
+          "phase": 7,
+          "x": 696.75,
+          "y": 1596.5
+        },
+        {
+          "direction": "up",
+          "phase": 8,
+          "x": 678.75,
+          "y": 1594.25
+        },
+        {
+          "direction": "down-left",
+          "phase": 0,
+          "x": 695.5,
+          "y": 1595
+        },
+        {
+          "direction": "down-left",
+          "phase": 1,
+          "x": 686.25,
+          "y": 1595
+        },
+        {
+          "direction": "down-left",
+          "phase": 2,
+          "x": 688.75,
+          "y": 1595.25
+        },
+        {
+          "direction": "down-left",
+          "phase": 3,
+          "x": 692,
+          "y": 1594.5
+        },
+        {
+          "direction": "down-left",
+          "phase": 4,
+          "x": 695.5,
+          "y": 1594
+        },
+        {
+          "direction": "down-left",
+          "phase": 5,
+          "x": 697.5,
+          "y": 1594.5
+        },
+        {
+          "direction": "down-left",
+          "phase": 6,
+          "x": 695.25,
+          "y": 1594.5
+        },
+        {
+          "direction": "down-left",
+          "phase": 7,
+          "x": 692,
+          "y": 1594.25
+        },
+        {
+          "direction": "down-left",
+          "phase": 8,
+          "x": 689.75,
+          "y": 1594.5
+        },
+        {
+          "direction": "down-right",
+          "phase": 0,
+          "x": 696.25,
+          "y": 1592.75
+        },
+        {
+          "direction": "down-right",
+          "phase": 1,
+          "x": 686.5,
+          "y": 1592.5
+        },
+        {
+          "direction": "down-right",
+          "phase": 2,
+          "x": 689,
+          "y": 1592.75
+        },
+        {
+          "direction": "down-right",
+          "phase": 3,
+          "x": 696.5,
+          "y": 1591.75
+        },
+        {
+          "direction": "down-right",
+          "phase": 4,
+          "x": 697.25,
+          "y": 1591
+        },
+        {
+          "direction": "down-right",
+          "phase": 5,
+          "x": 698.5,
+          "y": 1591.25
+        },
+        {
+          "direction": "down-right",
+          "phase": 6,
+          "x": 697,
+          "y": 1591.75
+        },
+        {
+          "direction": "down-right",
+          "phase": 7,
+          "x": 695.75,
+          "y": 1592.5
+        },
+        {
+          "direction": "down-right",
+          "phase": 8,
+          "x": 690,
+          "y": 1592
+        },
+        {
+          "direction": "up-left",
+          "phase": 0,
+          "x": 681,
+          "y": 1595.75
+        },
+        {
+          "direction": "up-left",
+          "phase": 1,
+          "x": 676.75,
+          "y": 1593.75
+        },
+        {
+          "direction": "up-left",
+          "phase": 2,
+          "x": 678.25,
+          "y": 1595
+        },
+        {
+          "direction": "up-left",
+          "phase": 3,
+          "x": 680.75,
+          "y": 1596
+        },
+        {
+          "direction": "up-left",
+          "phase": 4,
+          "x": 683.5,
+          "y": 1596.25
+        },
+        {
+          "direction": "up-left",
+          "phase": 5,
+          "x": 686,
+          "y": 1597.25
+        },
+        {
+          "direction": "up-left",
+          "phase": 6,
+          "x": 684.75,
+          "y": 1597.25
+        },
+        {
+          "direction": "up-left",
+          "phase": 7,
+          "x": 680.75,
+          "y": 1596.5
+        },
+        {
+          "direction": "up-left",
+          "phase": 8,
+          "x": 679,
+          "y": 1595
+        },
+        {
+          "direction": "up-right",
+          "phase": 0,
+          "x": 681.25,
+          "y": 1593
+        },
+        {
+          "direction": "up-right",
+          "phase": 1,
+          "x": 677,
+          "y": 1592.75
+        },
+        {
+          "direction": "up-right",
+          "phase": 2,
+          "x": 679,
+          "y": 1593.25
+        },
+        {
+          "direction": "up-right",
+          "phase": 3,
+          "x": 681.25,
+          "y": 1592
+        },
+        {
+          "direction": "up-right",
+          "phase": 4,
+          "x": 683.75,
+          "y": 1593.75
+        },
+        {
+          "direction": "up-right",
+          "phase": 5,
+          "x": 686.25,
+          "y": 1594.75
+        },
+        {
+          "direction": "up-right",
+          "phase": 6,
+          "x": 685,
+          "y": 1594.75
+        },
+        {
+          "direction": "up-right",
+          "phase": 7,
+          "x": 681,
+          "y": 1594
+        },
+        {
+          "direction": "up-right",
+          "phase": 8,
+          "x": 680.5,
+          "y": 1593.25
+        }
+      ]
+    }
+  ],
+  "at": "2026-10-24T21:54:18.121Z"
+}

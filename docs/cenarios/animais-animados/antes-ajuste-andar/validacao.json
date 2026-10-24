@@ -1,0 +1,64 @@
+{
+  "passed": true,
+  "renderer": 2,
+  "anchor": {
+    "x": 688,
+    "y": 1616
+  },
+  "checks": [
+    "original PNGs packed losslessly",
+    "eight original walk frames per direction",
+    "distance-based walk cycle",
+    "real authored forest",
+    "real player keys and animal following",
+    "attach and release",
+    "rope depth behind player and animal"
+  ],
+  "clips": [
+    {
+      "kind": "chicken",
+      "fps": 12,
+      "frames": 73,
+      "duration": 6.083333333333333,
+      "directions": [
+        "down",
+        "right",
+        "down-right",
+        "down-left"
+      ],
+      "walkFrames": [
+        2,
+        4,
+        6,
+        7,
+        1,
+        3,
+        5,
+        8
+      ]
+    },
+    {
+      "kind": "cow",
+      "fps": 12,
+      "frames": 73,
+      "duration": 6.083333333333333,
+      "directions": [
+        "down",
+        "right",
+        "down-right",
+        "down-left"
+      ],
+      "walkFrames": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    }
+  ],
+  "at": "2026-10-24T21:33:31.919Z"
+}

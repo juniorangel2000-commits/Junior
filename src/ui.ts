@@ -401,7 +401,7 @@ export class GameUI {
     this.topToolbar?.setOpen(false, false);
     if (action === 'controls') {
       this.openModal('controls');
-      this.overlay.innerHTML = `<section class="panel inventory-card" role="dialog" aria-label="Controles"><div class="modal-heading"><h2>Controles</h2><button class="icon-button" aria-label="Fechar controles">${icon('close')}</button></div><p>WASD / setas — mover<br>Roda do mouse ou + / − — aproximar / afastar<br>Home ou porcentagem do zoom — voltar a 100%<br>E — interagir / usar ferramenta<br>1–9 — selecionar slot; vazio deixa as mãos livres<br>Botão direito no slot — trocar ou esvaziar<br>I — inventário · C — fabricar · B — construir<br>M — mapa · H — personalizar casa<br>0 — parede · P — porta · R — girar cobertura<br>Esc — fechar / pausar<br>Ctrl + Alt — entrar / sair da tela cheia</p></section>`;
+      this.overlay.innerHTML = `<section class="panel inventory-card" role="dialog" aria-label="Controles"><div class="modal-heading"><h2>Controles</h2><button class="icon-button" aria-label="Fechar controles">${icon('close')}</button></div><p>WASD / setas — mover<br>Roda do mouse ou + / − — aproximar / afastar<br>Home ou porcentagem do zoom — voltar a 100%<br>E — interagir / prender animal com corda<br>G — soltar a corda<br>1–9 — selecionar slot; vazio deixa as mãos livres<br>Botão direito no slot — trocar ou esvaziar<br>I — inventário · C — fabricar · B — construir<br>M — mapa · H — personalizar casa<br>0 — parede · P — porta · R — girar cobertura<br>Esc — fechar / pausar<br>Ctrl + Alt — entrar / sair da tela cheia</p></section>`;
       this.overlay.querySelector('button')!.onclick = () => this.closeModal();
       this.overlay.querySelector('button')!.focus();
     }

@@ -1,6 +1,6 @@
 import type {CharacterDirection} from '../character-directions';
 import type {CharacterId} from '../data/characters';
-export const SWIMMING_CONFIG={speedFactor:.55,bodyOpacity:.45,bodyTint:0x164f5a,surfaceOpacity:.22,shallowDistance:8,deepDistance:40,deepThreshold:.35,transitionRate:12,bobAmplitude:.65,idleRippleHz:.38,movingRippleHz:.95} as const;
+export const SWIMMING_CONFIG={speedFactor:.55,bodyOpacity:.45,bodyTint:0x164f5a,footVisibility:.025,hairShadowOpacity:.42,hairShadowDrop:12,hairShadowReach:28,surfaceOpacity:.22,shallowDistance:8,deepDistance:40,deepThreshold:.9,transitionRate:12,bobAmplitude:1,idleRippleHz:.38,movingRippleHz:.95} as const;
 /** Native 192×256 frame coordinates, measured from each official character's head. */
 export const HEAD_BOTTOM:Record<CharacterId,Record<CharacterDirection,number>>={
  'farmer-female':{down:129,up:122,left:125,right:125,'down-left':126,'down-right':128,'up-left':119,'up-right':119},

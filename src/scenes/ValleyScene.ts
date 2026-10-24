@@ -1,13 +1,15 @@
+import {AnimalPopulation} from '../animals';
+import {deliverAnimalEscort,releaseAnimalEscort} from '../systems/animals';
 import {sampleWaterDepth} from '../swimming/config';
 import {ResourceLifecycle} from '../resource-lifecycle';
 import type {MapEditorScene} from './MapEditorScene';
 import {atMapExit} from '../data/default-maps';
-import { FOREST_ANIMALS, PROPERTY_FOREST_GATE } from '../data/ancient-forest';
-import { animalSprite, setupAnimalArt } from '../forest-art';
+import { PROPERTY_FOREST_GATE } from '../data/ancient-forest';
+import { setupAnimalArt } from '../forest-art';
 import { WATER_CAPACITY } from '../data/watering-can';
 import { gameAudio } from '../audio';
 import Phaser from 'phaser';
-import { Player } from '../player';
+import { Player,PLAYER_SPEED } from '../player';
 import { CHARACTER_HEIGHT, createArt } from '../art';
 import { directionFromVector, directionVector } from '../character-directions';
 import { preloadVisualAssets } from '../visual-assets';
@@ -98,6 +100,7 @@ export class ValleyScene extends Phaser.Scene {
   private editingMap = false;
   private forestActive = false;
   private resourceLifecycle?:ResourceLifecycle;
+  private animals?:AnimalPopulation;
 
   constructor() { super('Vale'); }
 
@@ -190,6 +193,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   openMapEditor(): void {
+    if(this.state?.animalEscort){this.ui.toast('Leve o animal à propriedade ou solte a corda com G antes de editar.');return;}
     if(this.editingMap)return;
     const wasRunning=this.running,original=this.snapshotState(),base=wasRunning?original:loadSave()??createNewSave(DEFAULT_PROFILE);
     this.editingMap=true;this.paused=true;this.adminMenu?.close();this.cancelCrafting();this.toolUse.cancel();this.ui.showMapEditorMode();this.input.keyboard?.resetKeys();
@@ -228,6 +232,7 @@ export class ValleyScene extends Phaser.Scene {
   private atForestExit(){return atMapExit(this.player.x,this.player.y,this.forestGate());}
   private forestGate(){return this.state.mapEdits?.points?.exit??PROPERTY_FOREST_GATE;}
   private enterForest(saved?: SaveData): void {
+    if(!saved&&this.state.animalEscort){this.ui.toast('Conclua a condução ou solte a corda com G antes de sair.');return;}
     if(this.forestActive)return;
     this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
     const data=saved??this.snapshotState();data.activeArea='forest';delete data.homePosition;
@@ -257,6 +262,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private enterHome(position?: SaveData['player'], notify = true): void {
+    if(this.state.animalEscort){this.ui.toast('Conclua a condução do animal antes de entrar em casa.');return;}
     if (this.inHome) return;
     this.toolUse.cancel(); this.toolVisual?.hide();
     this.outdoorPosition = this.playerPosition();
@@ -314,7 +320,7 @@ export class ValleyScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE);
     this.cameras.main.setBackgroundColor('#6b8053');
     this.updateZoom();
-    this.cameras.main.startFollow(this.player.sprite, false, .12, .12).centerOn(this.player.x, this.player.y);
+    this.cameras.main.startFollow(this.player, false, .12, .12).centerOn(this.player.x, this.player.y);
     this.lastAim = null;
     this.nextInteractionAt = this.time.now + 350;
     this.syncSprites(); this.updateShelter(); this.updateNight();
@@ -370,7 +376,7 @@ export class ValleyScene extends Phaser.Scene {
     if (mode === 'off') {
       this.updateZoom();
       if (this.player && !this.inHome) {
-        this.cameras.main.startFollow(this.player.sprite, false, .12, .12);
+        this.cameras.main.startFollow(this.player, false, .12, .12);
         this.cameras.main.centerOn(this.player.x, this.player.y);
       }
       return;
@@ -472,6 +478,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private snapshotState(): SaveData {
+    this.animals?.store();
     return structuredClone({
       ...this.state,
       quickbar: this.ui.getQuickbar(),
@@ -492,11 +499,13 @@ export class ValleyScene extends Phaser.Scene {
     this.inHome = false;
     this.homeView = undefined;
     this.outdoorVisibility.clear();
+    this.animals?.destroy();this.animals=undefined;
     this.children.removeAll(true);
     this.state = structuredClone(data);
+    const animalDelivered=deliverAnimalEscort(this.state);
     this.supplySprites = [];
     this.ui.setQuickbar(data.quickbar ?? emptyQuickbar());
-    this.inventory = new Inventory(data.inventory);
+    this.inventory = new Inventory(this.state.inventory);
     this.farming = new Farming(data.crops);
     this.building = new Building(data.buildings);
     this.resources = new Resources(data.resourceProgress);
@@ -509,15 +518,6 @@ export class ValleyScene extends Phaser.Scene {
     this.world = createWorld(this, data.depletedResources, data.buildings, data.mapEdits);
     setupAnimalArt(this);
     this.add.text((this.forestGate().x+.5)*TILE,(this.forestGate().y-1)*TILE,'Floresta Antiga\nE para seguir a trilha', {fontFamily:'Georgia',fontSize:'12px',color:'#fff0cd',backgroundColor:'#59452e',padding:{x:6,y:5}}).setOrigin(this.forestGate().x<4?0:this.forestGate().x>90?1:.5,1).setDepth(this.forestGate().y*TILE);
-    let animalIndex=0;
-    for(const id of data.recruitedAnimals??[]) {
-      const animal=FOREST_ANIMALS.find(a=>a.id===id);if(!animal)continue;
-      for(let n=animalIndex;n<80;n++) {
-        const x=20+(n%8)*3,y=44+Math.floor(n/8)*3;animalIndex=n+1;
-        if(this.world.isBlocked(x,y)||this.world.resourceAt(x,y)||this.world.isFarm(x,y)||data.buildings.some(b=>buildingFootprint(b).some(p=>p.x===x&&p.y===y)))continue;
-        animalSprite(this,animal.kind,x*TILE+16,y*TILE+16);break;
-      }
-    }
     // A warm refuge in the opening only; the facade and gameplay lighting stay intact.
     this.titleLights = this.add.graphics().setDepth(16 * TILE + 5).setVisible(false);
     const newHouseArt = this.textures.exists('house-cottage-source');
@@ -554,8 +554,9 @@ export class ValleyScene extends Phaser.Scene {
     this.input.keyboard?.resetKeys();
     this.player.update(0, this.movementBlocked, this.movementBlockedPoint,true,this.swimmingPoint);
     this.recoverPlayerPosition();
-    this.resourceLifecycle=new ResourceLifecycle(this.state,'property',this.world,(x,y)=>!this.world.isBlocked(x,y)&&!this.world.resourceAt(x,y)&&!this.world.isFarm(x,y)&&!this.building.buildings.some(b=>buildingFootprint(b).some(p=>p.x===x&&p.y===y))&&!(x===Math.floor(NPC_POSITION.x/TILE)&&y===Math.floor(NPC_POSITION.y/TILE))&&Math.hypot(x-this.player.x/TILE,y-this.player.y/TILE)>3&&[this.state.mapEdits?.points?.entry,this.state.mapEdits?.points?.exit,{x:25,y:18}].every(p=>!p||Math.hypot(x-p.x,y-p.y)>3));
+    this.resourceLifecycle=new ResourceLifecycle(this.state,'property',this.world,(x,y)=>!this.world.isBlocked(x,y)&&!this.world.resourceAt(x,y)&&!this.world.isFarm(x,y)&&!this.building.buildings.some(b=>buildingFootprint(b).some(p=>p.x===x&&p.y===y))&&!(x===Math.floor(NPC_POSITION.x/TILE)&&y===Math.floor(NPC_POSITION.y/TILE))&&Math.hypot(x-this.player.x/TILE,y-this.player.y/TILE)>3&&[this.state.mapEdits?.points?.entry,this.state.mapEdits?.points?.exit,{x:25,y:18}].every(p=>!p||Math.hypot(x-p.x,y-p.y)>3)&&(this.animals?.animals.every(a=>Math.hypot(x-a.x/TILE,y-a.y/TILE)>2)??true));
     this.resources=new Resources(this.state.resourceProgress);
+    this.animals=new AnimalPopulation(this,this.state,'property',this.animalBlocked,PLAYER_SPEED);
     this.world.updateOcclusion(this.player.x, this.player.y);
     this.add.sprite(NPC_POSITION.x, NPC_POSITION.y, 'lia').setOrigin(0.5, 1).setDepth(NPC_POSITION.y);
     this.npcLabel = this.add.text(NPC_POSITION.x, NPC_POSITION.y - CHARACTER_HEIGHT - 6, 'Lia', {
@@ -566,7 +567,7 @@ export class ValleyScene extends Phaser.Scene {
     this.night = this.add.rectangle(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE, 0x14203c, 1).setOrigin(0).setDepth(5000).setAlpha(0);
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE);
     this.updateZoom();
-    this.cameras.main.startFollow(this.player.sprite, false, 0.12, 0.12);
+    this.cameras.main.startFollow(this.player, false, 0.12, 0.12);
     this.cameras.main.centerOn(this.player.x, this.player.y);
     this.tool = data.equippedTool;
     this.lastAim = null;
@@ -579,6 +580,7 @@ export class ValleyScene extends Phaser.Scene {
     this.updateNight();
     this.updateShelter();
     if (data.homePosition) this.enterHome(data.homePosition, false);
+    if(animalDelivered)this.ui.toast('Animal chegou à propriedade! A corda voltou para você.');
   }
 
   changeCameraZoom(direction: -1 | 0 | 1): void {
@@ -622,11 +624,11 @@ export class ValleyScene extends Phaser.Scene {
       } else {
         // Close views follow the player; the whole room stays centered when it fits.
         camera.setBounds(-TILE, -TILE, homeWidth + 2 * TILE, homeHeight + 2 * TILE)
-          .startFollow(this.player.sprite, false, .12, .12).centerOn(this.player.x, this.player.y);
+          .startFollow(this.player, false, .12, .12).centerOn(this.player.x, this.player.y);
       }
     } else {
       camera.setBounds(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE).setBackgroundColor('#6b8053')
-        .startFollow(this.player.sprite, false, .12, .12);
+        .startFollow(this.player, false, .12, .12);
     }
     this.ui.updateCameraZoom(this.cameraZoomFactor, this.canPlay());
   }
@@ -659,6 +661,12 @@ export class ValleyScene extends Phaser.Scene {
     : this.world.isBlocked(x, y) || this.building.isBlocked(x, y)
       || (x === Math.floor(NPC_POSITION.x / TILE) && y === Math.floor(NPC_POSITION.y / TILE));
 
+  private animalBlocked=(x:number,y:number):boolean=>this.world.isBlocked(x,y)||this.world.isFarm(x,y)||this.building.isBlocked(x,y)||(x===Math.floor(NPC_POSITION.x/TILE)&&y===Math.floor(NPC_POSITION.y/TILE));
+  private allowLeashMovement=(x:number,y:number):boolean=>this.animals?.allowsPlayerCenter(x,y,this.player)??true;
+  private releaseRope():void {
+    if(!this.state.animalEscort)return;Object.assign(this.state.inventory,this.inventory.data);
+    if(releaseAnimalEscort(this.state)){Object.assign(this.inventory.data,this.state.inventory);this.animals?.store();this.animals?.destroy();this.animals=new AnimalPopulation(this,this.state,'property',this.animalBlocked,PLAYER_SPEED);this.updateHUD();this.persist();this.ui.toast('Corda solta e guardada.');}
+  }
   private movementBlocked=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(x,y):this.world.isSolid(x,y)||this.building.isBlocked(x,y)||(x===Math.floor(NPC_POSITION.x/TILE)&&y===Math.floor(NPC_POSITION.y/TILE));
   private movementBlockedPoint=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):this.movementBlocked(Math.floor(x/TILE),Math.floor(y/TILE));
   private swimmingPoint=(x:number,y:number):number=>this.inHome?0:sampleWaterDepth((px,py)=>!this.building.at(Math.floor(px/TILE),Math.floor(py/TILE),'floor')&&this.world.isSwimmingPoint(px,py),x,y);
@@ -717,6 +725,7 @@ export class ValleyScene extends Phaser.Scene {
     if (event.key === '0') this.selectTool('wall');
     if (event.key.toLowerCase() === 'p') this.selectTool('door');
     if (event.key.toLowerCase() === 'r' && this.tool === 'roof') { this.rotation = this.rotation ? 0 : 1; this.ui.toast(this.rotation ? 'Cobertura na vertical.' : 'Cobertura na horizontal.'); }
+    if (event.key.toLowerCase() === 'g') {event.preventDefault();this.releaseRope();return;}
     if (event.key.toLowerCase() === 'e') { event.preventDefault(); this.interact(); }
   };
 
@@ -1144,7 +1153,8 @@ export class ValleyScene extends Phaser.Scene {
     if (!this.canPlay()) { this.toolUse.cancel(); this.toolVisual?.hide(); return; }
     this.cameras.main.setLerp(1 - Math.exp(-9 * delta));
     const previousX = this.player.x, previousY = this.player.y;
-    this.player.update(delta, this.movementBlocked, this.movementBlockedPoint, !this.toolUse.active,this.swimmingPoint);
+    this.player.update(delta, this.movementBlocked, this.movementBlockedPoint, !this.toolUse.active,this.swimmingPoint,this.allowLeashMovement);
+    if(!this.inHome)this.animals?.update(delta,this.player);
     if(this.player.isSwimming){this.tool='hand';this.state.equippedTool='hand';this.toolUse.cancel();this.toolVisual?.hide();}
     const impact = this.toolUse.advance(delta);
     if (impact) this.applyToolImpact(impact);

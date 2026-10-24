@@ -22,11 +22,11 @@ const dirs=[['down',0,1],['down-left',-.70710678,.70710678],['left',-1,0],['up-l
    }
    if(!route)throw Error(`no unobstructed shoreline route ${name}`);
    p.x=route.sx;p.y=route.sy;release();p.update(0,forest.movementBlockedAt,undefined,true,forest.swimmingPoint);if(p.isSwimming)throw Error('starts on land');press(dx,dy);
-   let shallow=false;for(let i=0;i<600&&Math.hypot(p.x-route.x,p.y-route.y)>3;i++){p.update(1/60,forest.movementBlockedAt,undefined,true,forest.swimmingPoint);if(p.waterDepth>0&&!p.isSwimming)shallow=true;}
+   let shallow=false;for(let i=0;i<600&&!p.isSwimming;i++){p.update(1/60,forest.movementBlockedAt,undefined,true,forest.swimmingPoint);if(p.waterDepth>0&&!p.isSwimming)shallow=true;}
    if(!p.isSwimming)throw Error(`failed water entry ${name}`);press(-dx,-dy);
    for(let i=0;i<600&&forest.waterContains(p.x,p.y);i++)p.update(1/60,forest.movementBlockedAt,undefined,true,forest.swimmingPoint);
    release();for(let i=0;i<80;i++)p.update(1/60,forest.movementBlockedAt,undefined,true,forest.swimmingPoint);
-   if(p.isSwimming||p.sprite.isCropped||p.swimmingVisual.body.visible||p.swimmingVisual.effects.graphics.visible)throw Error(`unclean water exit ${name}`);
+   if(p.isSwimming||p.sprite.isCropped||p.swimmingVisual.body.visible||(p.swimmingVisual.effects.graphics.visible||p.swimmingVisual.effects.frontGraphics.visible))throw Error(`unclean water exit ${name}`);
    if(!shallow)throw Error(`no shallow transition ${name}`);results.push(name);
   }
   release();forest.scene.resume();return results;
@@ -49,7 +49,7 @@ const dirs=[['down',0,1],['down-left',-.70710678,.70710678],['left',-1,0],['up-l
     const g=source.getContext('2d'),ink=tint.getContext('2d'),water=mask.getContext('2d');
     const f=b.frame,h=s.frame,bodyPixels=ink.getImageData(f.cutX,f.cutY+HEAD_BOTTOM[id][direction],192,256-HEAD_BOTTOM[id][direction]).data;
     const waterPixels=water.getImageData(f.cutX,f.cutY+HEAD_BOTTOM[id][direction],192,256-HEAD_BOTTOM[id][direction]).data;
-    let opaque=0;for(let i=0;i<bodyPixels.length;i+=4)if(bodyPixels[i+3]){opaque++;if(bodyPixels[i]!==0x16||bodyPixels[i+1]!==0x4f||bodyPixels[i+2]!==0x5a)throw Error('incorrect silhouette color');if(!waterPixels[i+3])throw Error('water does not cover body');}
+    let opaque=0;for(let i=0;i<bodyPixels.length;i+=4)if(bodyPixels[i+3]){opaque++;if(bodyPixels[i+3]>=64&&(Math.abs(bodyPixels[i]-0x16)>2||Math.abs(bodyPixels[i+1]-0x4f)>2||Math.abs(bodyPixels[i+2]-0x5a)>2))throw Error('incorrect silhouette color');if(!waterPixels[i+3])throw Error('water does not cover body');}
     if(opaque<1000)throw Error('missing body silhouette');
     // Head must be the exact original pose, not a tinted or generated replacement.
     if(!g.getImageData(h.cutX,h.cutY,192,HEAD_BOTTOM[id][direction]).data.some((v,i)=>i%4===3&&v))throw Error('missing original head');

@@ -7,6 +7,7 @@ import { setupResourceSprites } from './resource-sprites';
 import { setupDecorSprites } from './decor-sprites';
 import { preloadHouseSprite, setupHouseSprite } from './house-sprites';
 import { preloadToolArt } from './tool-visual';
+import {preloadAnimalSprites} from './animal-sprites';
 import { WATER_EMPTY_ICON, WATER_FULL_ICON } from './data/watering-can';
 import { TOOL_ICON_URLS } from './data/tool-art';
 
@@ -32,6 +33,7 @@ export function preloadVisualAssets(scene: Phaser.Scene): void {
   preloadHouseSprite(scene);
   preloadCharacterSprites(scene);
   preloadToolArt(scene);
+  preloadAnimalSprites(scene);
   scene.load.image('lake-rocks-source', 'assets/visual/nature/lake-rocks.png');
   scene.load.image('reference-trees-source', 'assets/visual/nature/reference-trees.png');
   scene.load.image('reference-details-source', 'assets/visual/nature/reference-details.png');

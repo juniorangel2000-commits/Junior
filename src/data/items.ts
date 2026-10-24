@@ -14,7 +14,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string }> = {
   pickaxe: { name: 'Picareta', description: 'Quebra veios de pedra e recupera materiais.' },
   handsaw: { name: 'Serrote', description: 'Usado junto à bancada para serrar e construir paredes e portas.' },
   fiber: { name: 'Fibras vegetais', description: 'Recolha moitas de fibras perto da casa para fazer cordas e cobertura.' },
-  cord: { name: 'Cordas vegetais', description: 'Prendem as partes das primeiras ferramentas.' },
+  cord: { name: 'Cordas vegetais', description: 'Prendem as partes das ferramentas e permitem conduzir animais até a propriedade.' },
   flakedStone: { name: 'Pedras lascadas', description: 'Pedras preparadas para as cabeças da machadinha e da picareta.' },
   handle: { name: 'Cabos', description: 'Um galho preparado para receber a cabeça de uma ferramenta.' },
   peg: { name: 'Cavilhas', description: 'Encaixes de madeira para a bancada, paredes e portas.' },

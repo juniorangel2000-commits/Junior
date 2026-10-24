@@ -49,6 +49,24 @@ export function validateSave(value: unknown): value is SaveData {
   if (value.quickbar !== undefined && !validQuickbar(value.quickbar)) return false;
   if (value.activeArea !== undefined && value.activeArea !== 'property' && value.activeArea !== 'forest') return false;
   if (value.recruitedAnimals !== undefined && (!Array.isArray(value.recruitedAnimals) || new Set(value.recruitedAnimals).size !== value.recruitedAnimals.length || !value.recruitedAnimals.every(id => FOREST_ANIMALS.some(a => a.id === id)))) return false;
+  if(value.animalEscort!==undefined){
+    const escort=value.animalEscort;
+    if(!isRecord(escort)||!FOREST_ANIMALS.some(a=>a.id===escort.id)||!['forest','property'].includes(escort.area as string)||escort.area!==(value.activeArea??'property')||(value.recruitedAnimals as string[]|undefined)?.includes(escort.id as string))return false;
+  }
+  if(value.animalPositions!==undefined){
+    if(!isRecord(value.animalPositions))return false;
+    const ids=new Set<string>();
+    for(const area of ['forest','property']){
+      const list=value.animalPositions[area];if(!Array.isArray(list)||list.length>FOREST_ANIMALS.length)return false;
+      for(const p of list){
+        if(!isRecord(p)||typeof p.id!=='string'||ids.has(p.id)||!FOREST_ANIMALS.some(a=>a.id===p.id)||!finite(p.x,16,WORLD_WIDTH*TILE-16)||!finite(p.y,16,WORLD_HEIGHT*TILE-16)||!CHARACTER_DIRECTIONS.includes(p.direction as CharacterDirection))return false;
+        const owned=(value.recruitedAnimals as string[]|undefined)?.includes(p.id)??false;
+        if(area==='forest'&&owned||area==='property'&&!owned&&(!isRecord(value.animalEscort)||value.animalEscort.id!==p.id||value.animalEscort.area!=='property'))return false;
+        ids.add(p.id);
+      }
+    }
+    if(isRecord(value.animalEscort)&&!(value.animalPositions[value.animalEscort.area as string] as Array<{id:string}>).some(p=>p.id===(value.animalEscort as Record<string,unknown>).id))return false;
+  }else if(value.animalEscort!==undefined)return false;
   if (value.forestPosition !== undefined && (!isRecord(value.forestPosition) || !finite(value.forestPosition.x, 32, 3040) || !finite(value.forestPosition.y, 32, 2272) || (value.forestPosition.direction !== undefined && !CHARACTER_DIRECTIONS.includes(value.forestPosition.direction as CharacterDirection)))) return false;
   if (value.wateringCanWater !== undefined && (!Number.isInteger(value.wateringCanWater) || !finite(value.wateringCanWater, 0, 8))) return false;
   if (value.homeSupplies !== undefined && (!isRecord(value.homeSupplies) || typeof value.homeSupplies.wateringCan !== 'boolean' || typeof value.homeSupplies.seedPacket !== 'boolean')) return false;
