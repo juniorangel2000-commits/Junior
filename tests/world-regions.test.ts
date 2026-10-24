@@ -6,11 +6,12 @@ import { isWaterPoint, roadDistanceAt } from '../src/data/terrain-shape';
 import { Resources } from '../src/systems/resources';
 import { Inventory } from '../src/systems/inventory';
 
+vi.mock('../src/water-motion',()=>({addWaterMotion:vi.fn()}));
 vi.mock('phaser', () => ({ default: { Textures: { FilterMode: { NEAREST: 0 } } } }));
 
 // O teste exercita o mapa real e suas colisões sem precisar de WebGL/DOM.
 const object = {
-  setOrigin() { return this; }, setScale() { return this; }, setDepth() { return this; }, destroy() { return this; },
+  setDisplaySize() { return this; }, setOrigin() { return this; }, setScale() { return this; }, setDepth() { return this; }, destroy() { return this; },
   fillStyle() { return this; }, fillRect() { return this; }, lineStyle() { return this; }, lineBetween() { return this; },
 };
 const scene = {

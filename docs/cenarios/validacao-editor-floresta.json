@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checks": [
+    "animated water",
+    "lake rocks",
+    "forest editor",
+    "new palette",
+    "water object placement",
+    "separate maps",
+    "exported JSON round-trip",
+    "cross-area import rejected",
+    "custom exits and arrivals both ways",
+    "reload"
+  ],
+  "at": "2026-10-24T17:22:25.684Z"
+}

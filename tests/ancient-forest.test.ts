@@ -33,3 +33,14 @@ describe('Floresta Antiga',()=>{
     for(const extra of [{activeArea:'unknown'},{forestPosition:{x:-1,y:10}},{recruitedAnimals:['bad']},{recruitedAnimals:[FOREST_ANIMALS[0].id,FOREST_ANIMALS[0].id]}])expect(validateSave({...state,...extra})).toBe(false);
   });
 });
+
+
+describe('forest tree art variety',()=>{
+  it('uses all six tree sprites on the actual placement grid',async()=>{
+    const {FOREST_TREES,forestTreeAppearance}=await import('../src/data/ancient-forest');
+    const keys=new Set(FOREST_TREES.filter(t=>!t.ancient).map(t=>`${t.pine?'pine':'tree'}-${forestTreeAppearance(t).variant}`));
+    expect(keys.size).toBe(6);
+    const scales=new Set(FOREST_TREES.map(t=>forestTreeAppearance(t).scale));
+    expect(scales.size).toBeGreaterThan(10);
+  });
+});

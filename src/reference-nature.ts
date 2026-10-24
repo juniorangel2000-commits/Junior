@@ -5,8 +5,8 @@ function cropCell(scene: Phaser.Scene, sourceKey: string, column: number, row: n
   if (!scene.textures.exists(sourceKey)) return;
   const source=scene.textures.get(sourceKey).getSourceImage() as HTMLImageElement;
   // Atlas rows are separated by authored transparent gutters, not exact grid fractions.
-  const xs=sourceKey==='reference-trees-source'?[0,430,827,1254]:[0,438,868,1254];
-  const ys=sourceKey==='reference-trees-source'?[0,577,1254]:[0,500,875,1254];
+  const xs=sourceKey==='lake-rocks-source'?[0,457,833,1254]:sourceKey==='reference-trees-source'?[0,430,827,1254]:[0,438,868,1254];
+  const ys=sourceKey==='lake-rocks-source'?[0,700,1254]:sourceKey==='reference-trees-source'?[0,577,1254]:[0,500,875,1254];
   const x=Math.floor((xs[column]??column*1254/columns)*source.width/1254);
   const y=Math.floor((ys[row]??row*1254/rows)*source.height/1254);
   const width=Math.floor(xs[column+1]*source.width/1254)-x,height=Math.floor(ys[row+1]*source.height/1254)-y;
@@ -38,6 +38,10 @@ export function setupReferenceNature(scene:Phaser.Scene):void {
   for(let row=0;row<2;row++)for(let col=0;col<3;col++){
     const source=cropCell(scene,'reference-trees-source',col,row,3,2);if(!source)continue;
     fit(scene,`asset-${row?'pine':'tree'}-${col}`,source,208,264,256);
+  }
+  for(let i=0;i<6;i++){
+    const source=cropCell(scene,'lake-rocks-source',i%3,Math.floor(i/3),3,2);
+    if(source)fit(scene,`lake-rock-${i}`,source,128,128,124);
   }
   REFERENCE_DETAILS.forEach((id,i)=>{
     const source=cropCell(scene,'reference-details-source',i%3,Math.floor(i/3),3,3);if(!source)return;

@@ -38,7 +38,8 @@ export function validateProfile(value: unknown): value is CharacterProfile {
 
 export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
-  if (value.mapEdits !== undefined && !validateMapEdits(value.mapEdits)) return false;
+  if (value.forestMapEdits !== undefined && (!validateMapEdits(value.forestMapEdits)||value.forestMapEdits.area!=='forest')) return false;
+  if (value.mapEdits !== undefined && (!validateMapEdits(value.mapEdits)||value.mapEdits.area!==undefined)) return false;
   if (value.quickbar !== undefined && !validQuickbar(value.quickbar)) return false;
   if (value.activeArea !== undefined && value.activeArea !== 'property' && value.activeArea !== 'forest') return false;
   if (value.recruitedAnimals !== undefined && (!Array.isArray(value.recruitedAnimals) || new Set(value.recruitedAnimals).size !== value.recruitedAnimals.length || !value.recruitedAnimals.every(id => FOREST_ANIMALS.some(a => a.id === id)))) return false;

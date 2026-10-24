@@ -24,7 +24,7 @@ export function forestPathDistance(x: number, y: number): number {
 export function forestWater(x: number, y: number): boolean {
   return ((x-54)/13)**2+((y-16)/8)**2 < 1 || (y < 17 && x > 65 && Math.abs(x-(84-y)) < 1.4);
 }
-export function forestBridge(x: number, y: number): boolean { return x >= 66 && x <= 73 && y >= 14 && y <= 16; }
+
 export function forestClearing(x: number,y: number): boolean {
   return FOREST_ANIMALS.some(a=>Math.hypot(x-a.x,y-a.y)<8) || Math.hypot(x-48,y-42)<8;
 }
@@ -37,8 +37,23 @@ for(let y=3;y<70;y+=3) for(let x=3;x<94;x+=3) {
 FOREST_TREES.push({x:48,y:42,pine:false,ancient:true});
 const trunks=new Set(FOREST_TREES.map(t=>`${t.x},${t.y}`));
 export function forestBlocked(x:number,y:number):boolean {
-  return x<1||y<1||x>=95||y>=71||(forestWater(x,y)&&!forestBridge(x,y))||trunks.has(`${x},${y}`);
+  return x<1||y<1||x>=95||y>=71||forestWater(x,y)||trunks.has(`${x},${y}`);
 }
 export function recruitAnimal(ids: readonly string[], id: string): string[] {
   return !FOREST_ANIMALS.some(a=>a.id===id)||ids.includes(id)?[...ids]:[...ids,id];
 }
+
+/** Stable art variation independent of the three-tile placement grid. */
+export function forestTreeAppearance(tree:{x:number;y:number;pine:boolean;ancient:boolean}):{variant:number;scale:number;flip:boolean} {
+  if(tree.ancient)return {variant:2,scale:3.6,flip:false};
+  const seed=(Math.imul(tree.x+17,2654435761)^Math.imul(tree.y+31,1597334677))>>>0;
+  return {variant:seed%3,scale:1.68+((seed>>>8)%45)/100,flip:((seed>>>16)&1)===1};
+}
+
+export const FOREST_ROCKS=[
+ {x:44,y:12,variant:0},{x:47,y:10,variant:1},{x:51,y:9,variant:2},
+ {x:58,y:10,variant:0},{x:64,y:13,variant:3},{x:65,y:18,variant:4},
+ {x:61,y:22,variant:5},{x:52,y:23,variant:2},{x:43,y:19,variant:0},
+ {x:49,y:16,variant:3},{x:58,y:18,variant:4},{x:37,y:17,variant:1},
+ {x:30,y:39,variant:0},{x:70,y:48,variant:5},{x:63,y:32,variant:2}
+] as const;

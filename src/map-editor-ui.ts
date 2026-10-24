@@ -1,8 +1,9 @@
+import { NATURE_KINDS, NATURE_ART } from './data/nature-catalog';
 import './map-editor.css';
 import type { EditorObjectKind, TerrainKind } from './systems/map-editor';
 
 export interface EditorTool {
-  mode: 'select' | 'terrain' | 'restore' | 'object' | 'remove';
+  mode: 'select' | 'terrain' | 'restore' | 'object' | 'remove' | 'entry' | 'exit';
   terrain?: TerrainKind;
   object?: EditorObjectKind;
 }
@@ -39,6 +40,7 @@ const objects: ReadonlyArray<{ kind: EditorObjectKind; label: string; hint: stri
   { kind: 'fiber', label: 'Fibras', hint: 'Posicionar fibras' },
   { kind: 'seeds', label: 'Sementes', hint: 'Posicionar sementes' },
   { kind: 'scrap', label: 'Sucata', hint: 'Posicionar sucata' },
+  ...NATURE_KINDS.map(kind=>({kind,label:NATURE_ART[kind].label,hint:`Posicionar ${NATURE_ART[kind].label.toLowerCase()}`})),
 ];
 const icons: Record<string, string> = {
   map: '<path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Zm6-2v16m6-14v16"/>',
@@ -122,6 +124,7 @@ export class MapEditorUI {
       <aside class="me-palette me-panel" aria-label="Ferramentas e elementos do mapa">
         <div class="me-palette-top"><span class="me-eyebrow">CRIAR E ORGANIZAR</span><h2>Seu mundo</h2></div>
         <button type="button" class="me-select-tool" data-mode="select" aria-pressed="true">${icon('select')}<span>Selecionar e mover</span></button>
+        <section class="me-palette-section"><h3>Passagens entre cenários</h3><button type="button" data-mode="entry">Ponto de chegada</button><button type="button" data-mode="exit">Saída para o outro mapa</button></section>
         <section class="me-palette-section" aria-labelledby="me-terrain-title">
           <h3 id="me-terrain-title">Pintar o chão</h3>
           <div class="me-terrain-grid">${terrains.map(({ kind, label }) => `<button type="button" data-mode="terrain" data-terrain="${kind}" aria-label="Pintar ${label.toLowerCase()}" aria-pressed="false"><span class="me-swatch me-swatch-${kind}" aria-hidden="true"></span><span>${label}</span></button>`).join('')}

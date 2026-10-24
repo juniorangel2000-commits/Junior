@@ -65,6 +65,7 @@ export interface SaveData {
   homePosition?: TilePoint & { direction?: CharacterDirection };
   /** Edições esparsas preservam o mapa e os IDs das partidas anteriores. */
   mapEdits?: MapEditData;
+  forestMapEdits?: MapEditData;
 }
 export interface HudData {
   wateringCan?: boolean;

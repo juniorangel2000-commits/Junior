@@ -1,3 +1,4 @@
+import { NATURE_KINDS, NATURE_ART, natureArt } from './data/nature-catalog';
 import Phaser from 'phaser';
 import { MapEditorUI } from './map-editor-ui';
 import type { EditorAction, EditorTool } from './map-editor-ui';
@@ -11,15 +12,18 @@ export interface MapEditorAdapter {
   objects(): WorldEditorObject[];
   originalObjects: WorldEditorObject[];
   protectedTile(x: number, y: number): boolean;
-  canPlace(x: number, y: number, ignoreId?: string): boolean;
+  canPlace(x: number, y: number, ignoreId?: string, kind?: EditorObjectKind): boolean;
+  baseWater?(x:number,y:number):boolean;
+  defaultPoints?: {entry:{x:number;y:number};exit:{x:number;y:number}};
   apply(edits: MapEditData): boolean;
   cancel(): void;
 }
 type Point = { x: number; y: number };
-const labels: Record<EditorObjectKind, string> = {
+const labels = {
+  ...Object.fromEntries(NATURE_KINDS.map(kind=>[kind,NATURE_ART[kind].label])),
   standingTree: 'Árvore', pine: 'Pinheiro', stone: 'Pedras', vein: 'Rocha',
   tree: 'Galhos', fiber: 'Fibras', seeds: 'Sementes', scrap: 'Sucata',
-};
+} as Record<EditorObjectKind,string>;
 const colors = { grass: 0x76965d, path: 0xc4a278, water: 0x619aaf, sand: 0xd8c499, soil: 0x997455 };
 const key = (p: Point): string => `${p.x},${p.y}`;
 
@@ -46,10 +50,11 @@ export class MapEditor {
   private moving?: WorldEditorObject;
   private strokeBlocked = false;
   private status = 'Edite o cenário. Casa, pontes e canteiro inicial ficam protegidos.';
-  private storedDraft = loadMapDraft();
+  private storedDraft:MapEditData|null=null;
 
   constructor(private readonly scene: Phaser.Scene, initial: MapEditData, private readonly adapter: MapEditorAdapter) {
     this.history = new MapEditHistory(initial);
+    this.storedDraft=loadMapDraft(undefined,initial.area);
     this.initial = JSON.stringify(cloneMapEdits(initial));
     this.canvas = scene.game.canvas;
     this.ui = new MapEditorUI({
@@ -58,12 +63,15 @@ export class MapEditor {
       brush: size => { this.brush = size; this.drawCursor(); },
       import: text => this.importMap(text),
     });
+    this.ui.element.querySelector('h1')!.textContent=initial.area==='forest'?'Editor · Floresta Antiga':'Editor · Propriedade';
+    if(initial.area==='forest')this.status='Edite a floresta. A chegada original e as clareiras dos animais ficam protegidas.';
     this.createGuides();
     this.fit();
     const images: Partial<Record<EditorObjectKind, string>> = {};
     for (const object of adapter.objects()) if (!images[object.kind] && !object.depleted) {
       images[object.kind] = scene.textures.getBase64(object.texture);
     }
+    for(const kind of NATURE_KINDS)if(scene.textures.exists(NATURE_ART[kind].texture))images[kind]=scene.textures.getBase64(NATURE_ART[kind].texture);
     this.ui.setThumbnails(images);
     this.canvas.addEventListener('pointerdown', this.pointerDown);
     this.canvas.addEventListener('pointermove', this.pointerMove);
@@ -80,6 +88,7 @@ export class MapEditor {
   private createGuides(): void {
     const camera = this.scene.cameras.main;
     camera.stopFollow().removeBounds().setRotation(0);
+    this.guides?.destroy();this.cursor?.destroy();this.strokePreview?.destroy();
     this.guides = this.scene.add.graphics().setDepth(9000);
     this.strokePreview = this.scene.add.graphics().setDepth(9001);
     this.cursor = this.scene.add.graphics().setDepth(9002);
@@ -93,6 +102,8 @@ export class MapEditor {
     this.guides.lineStyle(1 / zoom, 0x233b32, .17);
     for (let x = 0; x <= WORLD_WIDTH; x++) this.guides.lineBetween(x * TILE, 0, x * TILE, WORLD_HEIGHT * TILE);
     for (let y = 0; y <= WORLD_HEIGHT; y++) this.guides.lineBetween(0, y * TILE, WORLD_WIDTH * TILE, y * TILE);
+    const points={...this.adapter.defaultPoints,...this.history.current.points};
+    for(const [type,p] of Object.entries(points))if(p){this.guides.lineStyle(3/zoom,type==='entry'?0x80e8cd:0xf7c97c,1).strokeCircle(p.x*TILE+16,p.y*TILE+16,18);this.guides.lineBetween(p.x*TILE+8,p.y*TILE+16,p.x*TILE+24,p.y*TILE+16);if(type==='entry')this.guides.lineBetween(p.x*TILE+16,p.y*TILE+8,p.x*TILE+16,p.y*TILE+24);}
     this.guides.lineStyle(2 / zoom, 0xe8d9ae, .8).strokeRect(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE);
     this.guides.fillStyle(0xd5ac5d, .14);
     for (let y = 1; y < WORLD_HEIGHT - 1; y++) for (let x = 1; x < WORLD_WIDTH - 1; x++) {
@@ -142,11 +153,11 @@ export class MapEditor {
     return { screen, tile: { x: Math.floor(p.x / TILE), y: Math.floor(p.y / TILE) } };
   }
 
-  private protected(p: Point): boolean { return isProtectedMapTile(p.x, p.y) || this.adapter.protectedTile(p.x, p.y); }
+  private protected(p: Point): boolean { return isProtectedMapTile(p.x, p.y,this.history.current.area) || this.adapter.protectedTile(p.x, p.y); }
   private objectAt(p: Point): WorldEditorObject | undefined { return this.adapter.objects().find(o => o.x === p.x && o.y === p.y); }
   private free(p: Point, ignoreId?: string): boolean {
     return !this.protected(p) && !this.adapter.objects().some(o => o.id !== ignoreId && o.x === p.x && o.y === p.y)
-      && this.adapter.canPlace(p.x, p.y, ignoreId);
+      && this.adapter.canPlace(p.x, p.y, ignoreId,ignoreId?this.adapter.objects().find(o=>o.id===ignoreId)?.kind:this.tool.object);
   }
 
   private pointerDown = (event: PointerEvent): void => {
@@ -224,12 +235,15 @@ export class MapEditor {
       const p = { x, y };
       if (this.protected(p)) { this.strokeBlocked = true; continue; }
       const cell = key(p), object = this.objectAt(p);
-      if (this.tool.mode === 'terrain' && this.tool.terrain) {
-        if (this.tool.terrain === 'water' && object) { this.strokeBlocked = true; continue; }
+      if(this.tool.mode==='entry'||this.tool.mode==='exit'){
+        if(!this.free(p)){this.strokeBlocked=true;continue;}
+        this.stroke.points={...this.stroke.points,[this.tool.mode]:{x,y}};
+      } else if (this.tool.mode === 'terrain' && this.tool.terrain) {
+        if (this.tool.terrain === 'water' && object && !natureArt(object.kind)?.water) { this.strokeBlocked = true; continue; }
         this.stroke.terrain[cell] = this.tool.terrain;
         this.strokePreview.fillStyle(colors[this.tool.terrain], .7).fillRect(x * TILE, y * TILE, TILE, TILE);
       } else if (this.tool.mode === 'restore') {
-        if (object && isWaterTile(x, y)) { this.strokeBlocked = true; continue; }
+        if (object && (this.adapter.baseWater??isWaterTile)(x,y) && !natureArt(object.kind)?.water) { this.strokeBlocked = true; continue; }
         delete this.stroke.terrain[cell];
         this.strokePreview.fillStyle(0xf0dfb6, .4).fillRect(x * TILE, y * TILE, TILE, TILE);
       } else if (this.tool.mode === 'remove' && object) {
@@ -275,13 +289,14 @@ export class MapEditor {
     if (this.history.commit(data)) {
       this.rebuild(data);
       this.status = saveMapDraft(data) ? status : 'Rascunho em memória. O armazenamento está indisponível; use Exportar para guardar.';
-      this.storedDraft = loadMapDraft();
+      this.storedDraft = loadMapDraft(undefined,this.history.current.area);
     } else if (this.strokeBlocked) this.status = 'Ponto protegido, ocupado ou com água. Escolha outro local.';
     this.refresh();
   }
 
   /** Resolve imports against the actual original map, not just their JSON shape. */
   private layoutError(data: MapEditData): string | null {
+    if(data.area!==this.history.current.area)return 'Este arquivo pertence a outro cenário. Abra o editor no cenário correspondente.';
     const original = new Map(this.adapter.originalObjects.map(o => [o.id, o]));
     const resolved = new Map([...original].filter(([, o]) => !o.depleted || o.kind === 'standingTree' || o.kind === 'pine'));
     for (const [id, edit] of Object.entries(data.objects)) {
@@ -295,13 +310,17 @@ export class MapEditor {
       const [x, y] = cell.split(',').map(Number);
       if (this.adapter.protectedTile(x, y) && data.terrain[cell] !== current.terrain[cell]) return 'O terreno sob uma construção da partida precisa ser preservado.';
     }
+    for(const point of Object.values({...this.adapter.defaultPoints,...data.points})){
+      if(!point)continue;const ground=data.terrain[key(point)];
+      if(ground==='water'||(ground===undefined&&(this.adapter.baseWater??isWaterTile)(point.x,point.y))||[...resolved.values()].some(o=>o.x===point.x&&o.y===point.y))return 'O ponto de chegada ou saída precisa ficar em chão livre.';
+    }
     const occupied = new Set<string>();
     for (const object of resolved.values()) {
       const cell = key(object);
       if (occupied.has(cell)) return 'Dois objetos ficariam no mesmo ponto. Mova ou remova um deles antes.';
       occupied.add(cell);
       const ground = data.terrain[cell];
-      if (ground === 'water' || (data.objects[object.id] && ground === undefined && isWaterTile(object.x, object.y))) return 'Há objetos sobre água nesse arquivo. Ajuste o terreno ou mova os objetos.';
+      if (!natureArt(object.kind)?.water && (ground === 'water' || (data.objects[object.id] && ground === undefined && (this.adapter.baseWater??isWaterTile)(object.x, object.y)))) return 'Há objetos sobre água nesse arquivo. Ajuste o terreno ou mova os objetos.';
     }
     return null;
   }
@@ -333,19 +352,19 @@ export class MapEditor {
       if (data) {
         this.rebuild(data); this.selected = null;
         this.status = saveMapDraft(data) ? (action === 'undo' ? 'Alteração desfeita.' : 'Alteração refeita.') : 'Alteração em memória. Exporte para guardar.';
-        this.storedDraft = loadMapDraft();
+        this.storedDraft = loadMapDraft(undefined,this.history.current.area);
       }
     } else if (action === 'grid') { this.grid = !this.grid; this.drawGrid(); }
     else if (action === 'zoom-in') this.zoom(1.25);
     else if (action === 'zoom-out') this.zoom(1 / 1.25);
     else if (action === 'zoom-fit') this.fit();
     else if (action === 'load-draft') {
-      const data = loadMapDraft();
+      const data = loadMapDraft(undefined,this.history.current.area);
       if (data) this.importMap(JSON.stringify(data));
       else this.status = 'Nenhum rascunho válido foi encontrado neste navegador.';
     } else if (action === 'export') {
       const url = URL.createObjectURL(new Blob([JSON.stringify(this.history.current, null, 2)], { type: 'application/json' }));
-      const a = document.createElement('a'); a.href = url; a.download = 'After-Rain-meu-mapa.json'; a.click();
+      const a = document.createElement('a'); a.href = url; a.download = `After-Rain-${this.history.current.area??'propriedade'}-mapa.json`; a.click();
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
       this.status = 'Mapa exportado. Guarde o JSON para continuar ou enviar suas alterações.';
     }

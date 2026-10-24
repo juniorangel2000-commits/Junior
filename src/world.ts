@@ -1,3 +1,5 @@
+import { natureArt } from './data/nature-catalog';
+import { addWaterMotion } from './water-motion';
 import Phaser from 'phaser';
 import type { BuildingData, ResourceKind, ResourceNode } from './types';
 import { paintTerrain } from './terrain-art';
@@ -91,6 +93,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   }
   scene.add.image(0, 0, 'world-ground').setOrigin(0).setDepth(-100);
   if (mapEdits) drawMapTerrainEdits(scene, mapEdits.terrain);
+  addWaterMotion(scene,waterAt);
 
   const texture = (name: string, width: number, height: number, paint: (ctx: CanvasRenderingContext2D) => void) => {
     if (scene.textures.exists(name)) return;
@@ -346,7 +349,20 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   for (const [id, edit] of Object.entries(mapEdits?.objects ?? {})) {
     if (!id.startsWith('editor-') || edit.removed || !edit.kind || edit.kind === 'standingTree' || edit.kind === 'pine') continue;
     if (waterAt(edit.x, edit.y) || blocked.has(key(edit.x, edit.y)) || buildingTiles.has(key(edit.x, edit.y))) continue;
-    addLooseResource({ id, x: edit.x, y: edit.y, kind: edit.kind });
+    const art=natureArt(edit.kind);
+    if(art)continue;
+    addLooseResource({ id, x: edit.x, y: edit.y, kind: edit.kind as ResourceKind });
+  }
+  for(const [id,edit] of Object.entries(mapEdits?.objects??{})){
+    const art=natureArt(edit.kind);if(edit.removed||!art||!edit.kind)continue;
+    if((waterAt(edit.x,edit.y)&&!art.water)||blocked.has(key(edit.x,edit.y))||buildingTiles.has(key(edit.x,edit.y))||occupiedResources.has(key(edit.x,edit.y)))continue;
+    const image=scene.add.image(edit.x*TILE+16,edit.y*TILE+25,art.texture).setOrigin(.5,art.pivot).setDisplaySize(art.width,art.height).setDepth(edit.y*TILE+25);
+    editorObjects.push({id,x:edit.x,y:edit.y,kind:edit.kind,texture:art.texture});
+    if(art.solid)blocked.add(key(edit.x,edit.y));
+    if(edit.kind.startsWith('oak')||edit.kind.startsWith('pine')){
+      canopies.set(key(edit.x,edit.y),{image,x:edit.x*TILE+16,y:edit.y*TILE+25,width:art.width,height:art.height*art.pivot});
+      canopyRadiusX=Math.max(canopyRadiusX,Math.ceil(art.width/2/TILE)+1);canopyRadiusY=Math.max(canopyRadiusY,Math.ceil(art.height/TILE)+1);
+    }
   }
   const resourceAt = (x: number, y: number) => resources.find((node) => node.x === x && node.y === y);
   const solidTile = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y));

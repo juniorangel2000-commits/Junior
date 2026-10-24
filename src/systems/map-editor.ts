@@ -1,9 +1,11 @@
+import { NATURE_KINDS, natureArt } from '../data/nature-catalog';
+import { FOREST_ANIMALS } from '../data/ancient-forest';
 import { isBridgeTile, isFarmTile, WORLD_HEIGHT, WORLD_WIDTH } from '../data/regions';
 
 export const MAP_EDIT_VERSION = 1;
 export const MAP_DRAFT_KEY = 'after-rain-map-editor-draft-v1';
 export const MAP_TERRAIN_KINDS = ['grass', 'path', 'water', 'sand', 'soil'] as const;
-export const MAP_OBJECT_KINDS = ['standingTree', 'pine', 'stone', 'vein', 'tree', 'fiber', 'seeds', 'scrap'] as const;
+export const MAP_OBJECT_KINDS = ['standingTree', 'pine', 'stone', 'vein', 'tree', 'fiber', 'seeds', 'scrap', ...NATURE_KINDS] as const;
 export type TerrainKind = typeof MAP_TERRAIN_KINDS[number];
 export type EditorObjectKind = typeof MAP_OBJECT_KINDS[number];
 
@@ -19,6 +21,8 @@ export interface MapObjectEdit {
 /** Missing terrain/object entries retain the original map and its resource IDs. */
 export interface MapEditData {
   version: 1;
+  area?: 'forest';
+  points?: {entry?: {x:number;y:number};exit?: {x:number;y:number}};
   width: typeof WORLD_WIDTH;
   height: typeof WORLD_HEIGHT;
   terrain: Record<string, TerrainKind>;
@@ -28,9 +32,9 @@ export interface MapEditData {
 const MAX_CELLS = WORLD_WIDTH * WORLD_HEIGHT;
 const MAX_JSON_LENGTH = 2_000_000;
 const HISTORY_LIMIT = 80;
-const KIND_PATTERN = '(standingTree|pine|stone|vein|tree|fiber|seeds|scrap)';
+const KIND_PATTERN = `(${MAP_OBJECT_KINDS.join('|')})`;
 const EDITOR_ID = new RegExp(`^editor-${KIND_PATTERN}-[a-zA-Z0-9][a-zA-Z0-9_-]{0,47}$`);
-const ORIGINAL_ID = /^(standingTree|stone|vein|tree|fiber|seeds|scrap)-([1-9]\d*)-([1-9]\d*)$/;
+const ORIGINAL_ID = new RegExp(`^${KIND_PATTERN}-([1-9]\\d*)-([1-9]\\d*)$`);
 const TILE_KEY = /^([1-9]\d*),([1-9]\d*)$/;
 const own = (value: object, key: string): boolean => Object.prototype.hasOwnProperty.call(value, key);
 const validCell = (x: unknown, y: unknown): boolean => typeof x === 'number' && Number.isSafeInteger(x)
@@ -38,8 +42,9 @@ const validCell = (x: unknown, y: unknown): boolean => typeof x === 'number' && 
   && x >= 1 && x < WORLD_WIDTH - 1 && y >= 1 && y < WORLD_HEIGHT - 1;
 
 /** Keep fixed gameplay entrances and landmarks intact while editing their surroundings. */
-export function isProtectedMapTile(x: number, y: number): boolean {
+export function isProtectedMapTile(x: number, y: number, area?: 'forest'): boolean {
   if (!validCell(x, y)) return true;
+  if(area==='forest')return (x>=46&&x<=50&&y>=64)||FOREST_ANIMALS.some(a=>Math.abs(a.x-x)<=1&&Math.abs(a.y-y)<=1);
   const houseAndPorch = x >= 20 && x <= 28 && y >= 9 && y <= 17;
   const arrival = x >= 24 && x <= 26 && y >= 18 && y <= 19;
   return houseAndPorch || arrival || isFarmTile(x, y) || isBridgeTile(x, y)
@@ -72,32 +77,37 @@ export function editorObjectKind(id: string): EditorObjectKind | null {
   return original && validCell(Number(original[2]), Number(original[3])) ? original[1] as EditorObjectKind : null;
 }
 
-export function emptyMapEdits(): MapEditData {
-  return { version: MAP_EDIT_VERSION, width: WORLD_WIDTH, height: WORLD_HEIGHT, terrain: {}, objects: {} };
+export function emptyMapEdits(area?: 'forest'): MapEditData {
+  return { version: MAP_EDIT_VERSION, width: WORLD_WIDTH, height: WORLD_HEIGHT, terrain: {}, objects: {}, ...(area?{area}:{}) };
 }
 
 /** Imported files are never allowed to mutate game data before all entries are checked. */
 export function validateMapEdits(value: unknown): value is MapEditData {
   try {
-    if (!plainRecord(value) || !keysAre(value, ['version', 'width', 'height', 'terrain', 'objects'])
+    if (!plainRecord(value) || !keysAre(value, ['version', 'width', 'height', 'terrain', 'objects','area','points'])
+      || (value.area!==undefined&&value.area!=='forest')
       || value.version !== MAP_EDIT_VERSION || value.width !== WORLD_WIDTH || value.height !== WORLD_HEIGHT
       || !plainRecord(value.terrain) || !plainRecord(value.objects)) return false;
     if (Object.keys(value.terrain).length > MAX_CELLS || Object.keys(value.objects).length > MAX_CELLS) return false;
     for (const [key, terrain] of Object.entries(value.terrain)) {
       const match = TILE_KEY.exec(key);
-      if (!match || isProtectedMapTile(Number(match[1]), Number(match[2]))
+      if (!match || isProtectedMapTile(Number(match[1]), Number(match[2]),value.area as 'forest'|undefined)
         || !MAP_TERRAIN_KINDS.includes(terrain as TerrainKind)) return false;
+    }
+    if(value.points!==undefined){
+      if(!plainRecord(value.points)||!keysAre(value.points,['entry','exit']))return false;
+      for(const point of Object.values(value.points))if(!plainRecord(point)||!keysAre(point,['x','y'])||!validCell(point.x,point.y)||value.terrain[`${point.x},${point.y}`]==='water')return false;
     }
     const occupied = new Set<string>();
     for (const [id, object] of Object.entries(value.objects)) {
       const kind = editorObjectKind(id);
       if (!kind || !plainRecord(object) || !keysAre(object, ['x', 'y', 'kind', 'removed'])
-        || !validCell(object.x, object.y) || isProtectedMapTile(object.x as number, object.y as number)
+        || !validCell(object.x, object.y) || isProtectedMapTile(object.x as number, object.y as number,value.area as 'forest'|undefined)
         || (own(object, 'removed') && typeof object.removed !== 'boolean')) return false;
       if (id.startsWith('editor-') ? object.kind !== kind : own(object, 'kind')) return false;
       if (!object.removed) {
         const tile = `${object.x},${object.y}`;
-        if (occupied.has(tile) || value.terrain[tile] === 'water') return false;
+        if (occupied.has(tile) || (value.terrain[tile] === 'water'&&!natureArt(kind)?.water)) return false;
         occupied.add(tile);
       }
     }
@@ -108,7 +118,8 @@ export function validateMapEdits(value: unknown): value is MapEditData {
 /** Canonical order makes equivalent imports equal and avoids redundant undo entries. */
 export function cloneMapEdits(data: MapEditData): MapEditData {
   if (!validateMapEdits(data)) throw new TypeError('Mapa do editor inválido.');
-  const clone = emptyMapEdits();
+  const clone = emptyMapEdits(data.area);
+  if(data.points)clone.points=structuredClone(data.points);
   for (const key of Object.keys(data.terrain).sort()) clone.terrain[key] = data.terrain[key];
   for (const id of Object.keys(data.objects).sort()) {
     const source = data.objects[id], object: MapObjectEdit = { x: source.x, y: source.y };
@@ -172,9 +183,9 @@ export class MapEditHistory {
 }
 
 /** A draft is independent from the live save and can be exported if storage is full. */
-export function loadMapDraft(storage?: Pick<Storage, 'getItem'>): MapEditData | null {
+export function loadMapDraft(storage?: Pick<Storage, 'getItem'>,area?:'forest'): MapEditData | null {
   try {
-    const text = (storage ?? localStorage).getItem(MAP_DRAFT_KEY);
+    const text = (storage ?? localStorage).getItem(MAP_DRAFT_KEY+(area?'-forest':''));
     return text === null ? null : parseMapEdits(text);
   } catch { return null; }
 }
@@ -182,7 +193,7 @@ export function loadMapDraft(storage?: Pick<Storage, 'getItem'>): MapEditData | 
 export function saveMapDraft(data: MapEditData, storage?: Pick<Storage, 'setItem'>): boolean {
   try {
     if (!validateMapEdits(data)) return false;
-    (storage ?? localStorage).setItem(MAP_DRAFT_KEY, JSON.stringify(cloneMapEdits(data)));
+    (storage ?? localStorage).setItem(MAP_DRAFT_KEY+(data.area?'-forest':''), JSON.stringify(cloneMapEdits(data)));
     return true;
   } catch { return false; }
 }

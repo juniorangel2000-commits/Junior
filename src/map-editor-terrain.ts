@@ -4,7 +4,7 @@ import { isWaterPoint } from './data/terrain-shape';
 import { readTerrainSprites, type TerrainSprites } from './terrain-sprites';
 import type { TerrainKind } from './systems/map-editor';
 
-const TEXTURE_KEY = 'world-map-edits';
+
 const MATERIALS: Record<TerrainKind, keyof TerrainSprites> = {
   grass: 'grass', path: 'path-dry', water: 'water', sand: 'sand', soil: 'soil',
 };
@@ -31,8 +31,10 @@ const mirror = (position: number, size: number): number => {
 export function drawMapTerrainEdits(
   scene: Phaser.Scene,
   terrain: Readonly<Record<string, TerrainKind>>,
+  textureKey='world-map-edits',
+  baseWater?: (x:number,y:number)=>boolean,
 ): Phaser.GameObjects.Image | undefined {
-  if (scene.textures.exists(TEXTURE_KEY)) scene.textures.remove(TEXTURE_KEY);
+  if (scene.textures.exists(textureKey)) scene.textures.remove(textureKey);
   const cells = Object.entries(terrain).flatMap(([key, material]) => {
     if (!/^[0-9]+,[0-9]+$/.test(key) || !Object.hasOwn(MATERIALS, material)) return [];
     const [x, y] = key.split(',').map(Number);
@@ -50,7 +52,7 @@ export function drawMapTerrainEdits(
   const pixels = context.createImageData(TILE, TILE);
   const neighbourIsWater = (x: number, y: number): boolean => {
     const edit = terrain[`${x},${y}`];
-    return edit ? edit === 'water' : isWaterPoint((x + .5) * TILE, (y + .5) * TILE);
+    return edit ? edit === 'water' : baseWater?baseWater(x,y):isWaterPoint((x + .5) * TILE, (y + .5) * TILE);
   };
 
   for (const { x, y, material } of cells) {
@@ -93,6 +95,6 @@ export function drawMapTerrainEdits(
     }
     context.putImageData(pixels, left, top);
   }
-  scene.textures.addCanvas(TEXTURE_KEY, canvas)?.setFilter(0);
-  return scene.add.image(0, 0, TEXTURE_KEY).setOrigin(0).setDepth(-90);
+  scene.textures.addCanvas(textureKey, canvas)?.setFilter(0);
+  return scene.add.image(0, 0, textureKey).setOrigin(0).setDepth(-90);
 }

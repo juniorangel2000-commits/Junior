@@ -32,6 +32,7 @@ export function preloadVisualAssets(scene: Phaser.Scene): void {
   preloadHouseSprite(scene);
   preloadCharacterSprites(scene);
   preloadToolArt(scene);
+  scene.load.image('lake-rocks-source', 'assets/visual/nature/lake-rocks.png');
   scene.load.image('reference-trees-source', 'assets/visual/nature/reference-trees.png');
   scene.load.image('reference-details-source', 'assets/visual/nature/reference-details.png');
   scene.load.image('forest-animals-source', 'assets/visual/forest/animals.png');

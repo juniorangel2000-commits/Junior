@@ -1,3 +1,4 @@
+import { natureArt } from '../data/nature-catalog';
 import { FOREST_ANIMALS, PROPERTY_FOREST_GATE } from '../data/ancient-forest';
 import { animalSprite, setupAnimalArt } from '../forest-art';
 import { WATER_CAPACITY } from '../data/watering-can';
@@ -226,11 +227,12 @@ export class ValleyScene extends Phaser.Scene {
     this.mapEditor = new MapEditor(this, initial, {
       rebuild,
       originalObjects,
+      defaultPoints:{entry:PROPERTY_FOREST_GATE,exit:PROPERTY_FOREST_GATE},
       objects: () => this.world.editorObjects,
       protectedTile: (x, y) => isProtectedMapTile(x, y) || protectedTiles.has(`${x},${y}`),
-      canPlace: (x, y, ignoreId) => {
+      canPlace: (x, y, ignoreId,kind) => {
         const current = this.world.editorObjects.find(o => o.id === ignoreId && o.x === x && o.y === y);
-        return !!current || !this.world.isBlocked(x, y);
+        return !!current || !this.world.isBlocked(x, y) || (!!natureArt(kind)?.water&&this.world.isWater(x*TILE+16,y*TILE+16));
       },
       apply: edits => {
         this.loadState({ ...base, homePosition: undefined, mapEdits: preserveProgress(edits) });
@@ -275,6 +277,7 @@ export class ValleyScene extends Phaser.Scene {
     return { x: this.player.x, y: this.player.y, direction: directionFromVector(this.player.facing.x, this.player.facing.y) };
   }
 
+  private forestGate(){return this.state.mapEdits?.points?.exit??PROPERTY_FOREST_GATE;}
   private enterForest(saved?: SaveData): void {
     if(this.forestActive)return;
     this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
@@ -285,6 +288,7 @@ export class ValleyScene extends Phaser.Scene {
     this.time.delayedCall(250,()=>{
       this.scene.sleep();
       this.scene.launch('Floresta',{save:data,onReturn:(updated:SaveData,title=false)=>{
+        if(!title){const p=updated.mapEdits?.points?.entry??PROPERTY_FOREST_GATE;updated.player={...updated.player,x:(p.x+.5)*TILE,y:(p.y+.5)*TILE};}
         this.scene.wake();this.forestActive=false;this.loadState(updated);this.running=true;this.paused=false;
         root.style.display='';this.ui.showHUD();this.updateHUD();this.cameras.main.fadeIn(250);
         if(title){this.running=false;this.paused=true;this.ui.showTitle(hasSave());}
@@ -554,7 +558,7 @@ export class ValleyScene extends Phaser.Scene {
     this.buildingSignature = '';
     this.world = createWorld(this, data.depletedResources, data.buildings, data.mapEdits);
     setupAnimalArt(this);
-    this.add.text((PROPERTY_FOREST_GATE.x+.5)*TILE,(PROPERTY_FOREST_GATE.y-1)*TILE,'Floresta Antiga →\nE para seguir a trilha', {fontFamily:'Georgia',fontSize:'12px',color:'#fff0cd',backgroundColor:'#59452e',padding:{x:6,y:5}}).setOrigin(.5,1).setDepth(PROPERTY_FOREST_GATE.y*TILE);
+    this.add.text((this.forestGate().x+.5)*TILE,(this.forestGate().y-1)*TILE,'Floresta Antiga\nE para seguir a trilha', {fontFamily:'Georgia',fontSize:'12px',color:'#fff0cd',backgroundColor:'#59452e',padding:{x:6,y:5}}).setOrigin(.5,1).setDepth(this.forestGate().y*TILE);
     let animalIndex=0;
     for(const id of data.recruitedAnimals??[]) {
       const animal=FOREST_ANIMALS.find(a=>a.id===id);if(!animal)continue;
@@ -851,7 +855,7 @@ export class ValleyScene extends Phaser.Scene {
   private interact(explicitTile?: TilePoint): void {
     if (!this.canPlay() || this.toolUse.active || this.time.now < this.nextInteractionAt) return;
     if (this.inHome) { this.interactHome(explicitTile); return; }
-    if (this.tool === 'hand' && this.tileDistance(PROPERTY_FOREST_GATE) < 58 && (!explicitTile || Math.hypot(explicitTile.x-PROPERTY_FOREST_GATE.x,explicitTile.y-PROPERTY_FOREST_GATE.y)<2)) { this.enterForest(); return; }
+    if (this.tool === 'hand' && this.tileDistance(this.forestGate()) < 58 && (!explicitTile || Math.hypot(explicitTile.x-this.forestGate().x,explicitTile.y-this.forestGate().y)<2)) { this.enterForest(); return; }
     if (this.tool === 'water' && this.state.homeSupplies?.wateringCan) {
       const px = Math.floor(this.player.x / TILE), py = Math.floor(this.player.y / TILE);
       for (let y = py - 1; y <= py + 1; y++) for (let x = px - 1; x <= px + 1; x++) {
@@ -1157,7 +1161,7 @@ export class ValleyScene extends Phaser.Scene {
       if (definition.hits > 1) resourceProgress = `${definition.label}: ${hits}/${definition.hits} golpes · ${toolName}`;
     }
     if (this.nearHouseEntrance()) prompt = 'Entrar em casa';
-    if (this.tool === 'hand' && this.tileDistance(PROPERTY_FOREST_GATE) < 58) prompt = 'E · Seguir para a Floresta Antiga';
+    if (this.tool === 'hand' && this.tileDistance(this.forestGate()) < 58) prompt = 'E · Seguir para a Floresta Antiga';
     this.ui.updateHUD({ wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
       tool: this.tool, prompt, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
       playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
