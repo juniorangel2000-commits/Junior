@@ -40,6 +40,7 @@ export interface WorldView {
   isBlocked(x: number, y: number): boolean;
   isBlockedPoint(x: number, y: number): boolean;
   isFarm(x: number, y: number): boolean;
+  isWater(x: number, y: number): boolean;
   isBuildable(x: number, y: number): boolean;
   resourceAt(x: number, y: number): ResourceNode | undefined;
   removeResource(id: string): void;
@@ -294,32 +295,6 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     if (waterAt(edit.x, edit.y) || blocked.has(key(edit.x, edit.y)) || buildingTiles.has(key(edit.x, edit.y))) continue;
     addTree(id, edit.x, edit.y, edit.kind === 'pine');
   }
-  // A small roofless ruin in the western exploration area.
-  const ruin = scene.add.graphics().setDepth(20 * TILE);
-  ruin.fillStyle(0x756f57).fillRect(8 * TILE, 15 * TILE, 4 * TILE, 4 * TILE);
-  ruin.fillStyle(0x9d9d81).fillRect(8 * TILE + 4, 15 * TILE + 4, 4 * TILE - 8, 4 * TILE - 8);
-  ruin.fillStyle(0x7b8563).fillRect(8 * TILE + 8, 15 * TILE + 10, 4 * TILE - 18, 4 * TILE - 18);
-  ruin.fillStyle(0xaaa58c).fillRect(8 * TILE, 15 * TILE, 4 * TILE, 12).fillRect(8 * TILE, 15 * TILE, 12, 4 * TILE);
-  ruin.fillStyle(0xc2bba0).fillRect(8 * TILE, 15 * TILE, 4 * TILE, 3).fillRect(8 * TILE, 15 * TILE, 3, 4 * TILE);
-  for (let x = 8; x <= 11; x++) blocked.add(key(x, 15));
-  for (let y = 15; y <= 18; y++) blocked.add(key(8, y));
-  // Vestígios de uma antiga guarita no bosque; abertura ao sul e a leste.
-  const forestRuin = scene.add.graphics().setDepth(29 * TILE);
-  forestRuin.fillStyle(0x777967).fillRect(78 * TILE, 25 * TILE, 6 * TILE, 10).fillRect(78 * TILE, 25 * TILE, 10, 4 * TILE);
-  forestRuin.fillStyle(0xb9b69b).fillRect(78 * TILE, 25 * TILE, 6 * TILE, 3).fillRect(78 * TILE, 25 * TILE, 3, 4 * TILE);
-  forestRuin.fillStyle(0x8b9463).fillRect(78 * TILE + 5, 25 * TILE + 8, 4, 57).fillRect(81 * TILE, 25 * TILE, 25, 5);
-  for (let x = 78; x <= 83; x++) blocked.add(key(x, 25));
-  for (let y = 25; y <= 28; y++) blocked.add(key(78, y));
-
-  // Um poço seco marca a clareira dos campos; sua base tem colisão explícita.
-  const well = scene.add.graphics().setDepth(60 * TILE);
-  well.fillStyle(0x585e4a).fillRect(31 * TILE, 59 * TILE, 2 * TILE, TILE);
-  well.fillStyle(0xb5aa88).fillRect(31 * TILE - 2, 59 * TILE - 3, 2 * TILE + 4, 10);
-  well.fillStyle(0x494e43).fillRect(31 * TILE + 8, 59 * TILE + 2, 48, 13);
-  well.fillStyle(0x7c8265).fillRect(31 * TILE + 3, 59 * TILE + 22, 57, 8);
-  well.fillStyle(0x687746).fillRect(31 * TILE - 4, 59 * TILE + 21, 7, 10);
-  blocked.add(key(31, 59)); blocked.add(key(32, 59));
-
   const positions: Array<[number, number, ResourceKind]> = [
     [20, 18, 'tree'], [28, 19, 'stone'], [30, 20, 'seeds'], [19, 22, 'seeds'], [23, 26, 'tree'], [27, 26, 'stone'],
     [18, 16, 'tree'], [17, 19, 'stone'], [16, 22, 'seeds'], [20, 28, 'tree'], [25, 29, 'seeds'], [34, 25, 'stone'],
@@ -390,6 +365,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     isBlocked,
     isBlockedPoint,
     isFarm,
+    isWater: waterAt,
     isBuildable: (x, y) => !isBlocked(x, y) && !waterTouchesTile(x, y) && !isFarm(x, y) && !resourceAt(x, y) && !bridgeAt(x, y) && !(x === 29 && y === 17),
     resourceAt,
     updateOcclusion: (playerX, playerY) => {

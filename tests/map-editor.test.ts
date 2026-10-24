@@ -102,10 +102,14 @@ describe('map editor document', () => {
 });
 
 describe('protected gameplay landmarks', () => {
+  it.each([[8, 15], [83, 28], [31, 59]])('libera terreno da estrutura removida em %i,%i', (x, y) => {
+    expect(isProtectedMapTile(x, y)).toBe(false);
+    expect(validateMapEdits({ ...emptyMapEdits(), terrain: { [`${x},${y}`]: 'grass' } })).toBe(true);
+  });
   it.each([
     ['house', 20, 9], ['porch', 28, 17], ['arrival', 25, 18], ['farm', 21, 20],
-    ['Lia', 29, 17], ['western ruin', 8, 15], ['forest ruin', 83, 28],
-    ['well', 31, 59], ['north bridge', 42, 18], ['south bridge', 49, 53],
+    ['Lia', 29, 17],
+    ['north bridge', 42, 18], ['south bridge', 49, 53],
     ['world boundary', 0, 20],
   ] as const)('protects %s from terrain and object edits', (_name, x, y) => {
     expect(isProtectedMapTile(x, y)).toBe(true);

@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "checked": [
+    "empty blocked",
+    "refill",
+    "both sides",
+    "cancel",
+    "8 pours",
+    "saved quantity",
+    "dynamic icons"
+  ],
+  "at": "2026-10-24T12:21:07.207Z"
+}

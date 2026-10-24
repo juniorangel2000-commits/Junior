@@ -1,0 +1,41 @@
+{
+  "group_id": "59153335-d3a1-49da-b4e2-10a0eecc4aec",
+  "objects": [
+    {
+      "id": "5bcc8d78-6351-4c2f-a4e6-1d7a22d97651",
+      "name": "base",
+      "prompt": "",
+      "size": {
+        "width": 256,
+        "height": 256
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/regador_cheio_256x256_transparente_corrigido.png"
+      },
+      "animations": {
+        "Create_an_8-frame_pixel_art_animation_of_this_exac": {
+          "directions": {
+            "unknown": {
+              "frames": [
+                "animations/Create_an_8-frame_pixel_art_animation_of_this_exac/unknown/frame_000.png",
+                "animations/Create_an_8-frame_pixel_art_animation_of_this_exac/unknown/frame_001.png",
+                "animations/Create_an_8-frame_pixel_art_animation_of_this_exac/unknown/frame_002.png",
+                "animations/Create_an_8-frame_pixel_art_animation_of_this_exac/unknown/frame_003.png",
+                "animations/Create_an_8-frame_pixel_art_animation_of_this_exac/unknown/frame_004.png",
+                "animations/Create_an_8-frame_pixel_art_animation_of_this_exac/unknown/frame_005.png",
+                "animations/Create_an_8-frame_pixel_art_animation_of_this_exac/unknown/frame_006.png",
+                "animations/Create_an_8-frame_pixel_art_animation_of_this_exac/unknown/frame_007.png",
+                "animations/Create_an_8-frame_pixel_art_animation_of_this_exac/unknown/frame_008.png"
+              ],
+              "frame_count": 9
+            }
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "1.1",
+  "export_date": "2026-10-24T04:42:34.066830"
+}

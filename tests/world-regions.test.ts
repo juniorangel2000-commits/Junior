@@ -62,16 +62,16 @@ describe('expansão da região inicial', () => {
     }
   });
 
-  it('mantém água bloqueada, pontes transitáveis e casas/ruínas com colisão', () => {
+  it('mantém água bloqueada, pontes transitáveis e casa com colisão e antigas estruturas livres', () => {
     expect(isWaterTile(44, 18)).toBe(true);
     expect(isBridgeTile(44, 18)).toBe(true);
     expect(world.isBlocked(44, 18)).toBe(false);
     expect(world.isBlocked(44, 20)).toBe(true);
     expect(world.isBlocked(80, 10)).toBe(true);
     expect(world.isBlocked(24, 13)).toBe(true);
-    expect(world.isBlocked(8, 16)).toBe(true);
-    expect(world.isBlocked(78, 26)).toBe(true);
-    expect(world.isBlocked(31, 59)).toBe(true);
+    expect(world.isBlocked(8, 16)).toBe(false);
+    expect(world.isBlocked(78, 26)).toBe(false);
+    expect(world.isBlocked(31, 59)).toBe(false);
     expect(world.isBlocked(WORLD_WIDTH - 1, 18)).toBe(true);
     expect(world.isBuildable(44, 18)).toBe(false);
   });
@@ -98,7 +98,7 @@ describe('expansão da região inicial', () => {
 
   it('nomeia lugares e regiões com as mesmas coordenadas da exploração', () => {
     expect(locationAt(25, 18)).toBe('Minha propriedade');
-    expect(locationAt(10, 18)).toBe('Ruínas do antigo moinho');
+    expect(locationAt(10, 18)).toBe('Minha propriedade');
     expect(locationAt(70, 18)).toBe('Bosque do Pinheiro');
     expect(locationAt(25, 53)).toBe('Campos Abertos');
   });

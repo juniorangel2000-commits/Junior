@@ -42,6 +42,7 @@ export interface ProgressData {
 export interface SaveData {
   version: 2;
   quickbar?: QuickSlot[];
+  wateringCanWater?: number;
   homeSupplies?: { wateringCan: boolean; seedPacket: boolean };
   profile: CharacterProfile;
   player: TilePoint & { direction?: CharacterDirection };
@@ -64,6 +65,7 @@ export interface SaveData {
 }
 export interface HudData {
   wateringCan?: boolean;
+  wateringCanWater?: number;
   inHome: boolean;
   playerTile?: TilePoint;
   name: string;

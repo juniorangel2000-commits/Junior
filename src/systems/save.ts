@@ -39,6 +39,7 @@ export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
   if (value.mapEdits !== undefined && !validateMapEdits(value.mapEdits)) return false;
   if (value.quickbar !== undefined && !validQuickbar(value.quickbar)) return false;
+  if (value.wateringCanWater !== undefined && (!Number.isInteger(value.wateringCanWater) || !finite(value.wateringCanWater, 0, 8))) return false;
   if (value.homeSupplies !== undefined && (!isRecord(value.homeSupplies) || typeof value.homeSupplies.wateringCan !== 'boolean' || typeof value.homeSupplies.seedPacket !== 'boolean')) return false;
   if (!isRecord(value.player) || !finite(value.player.x, TILE / 2, WORLD_WIDTH * TILE - TILE / 2)
     || !finite(value.player.y, TILE / 2, WORLD_HEIGHT * TILE - TILE / 2)) return false;

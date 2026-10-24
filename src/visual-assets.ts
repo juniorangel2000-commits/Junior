@@ -6,6 +6,7 @@ import { setupResourceSprites } from './resource-sprites';
 import { setupDecorSprites } from './decor-sprites';
 import { preloadHouseSprite, setupHouseSprite } from './house-sprites';
 import { preloadToolArt } from './tool-visual';
+import { WATER_EMPTY_ICON, WATER_FULL_ICON } from './data/watering-can';
 import { TOOL_ICON_URLS } from './data/tool-art';
 
 /** Local assets from the received packages and original tree/ground atlases. */
@@ -13,6 +14,8 @@ const BASE = 'assets/visual/';
 const ICON_IDS = new Set(['wood', 'stone', 'branch', 'log', 'plank', 'scrap', 'hatchet', 'pickaxe', 'handsaw', 'fiber', 'cord', 'flakedStone', 'handle', 'blade', 'board', 'hammer', 'water', 'workbench', 'seeds']);
 export function itemIconUrl(id: string): string | undefined {
   if (id === 'hatchet' || id === 'pickaxe') return TOOL_ICON_URLS[id];
+  if (id === 'water-empty') return WATER_EMPTY_ICON;
+  if (id === 'water' || id === 'water-full') return WATER_FULL_ICON;
   if (ICON_IDS.has(id)) return `${BASE}icons/${id}.png`;
   if (id === 'fence') return `${BASE}modules/cerca_natural.png`;
   return undefined;
@@ -28,6 +31,7 @@ export function preloadVisualAssets(scene: Phaser.Scene): void {
   preloadHouseSprite(scene);
   preloadCharacterSprites(scene);
   preloadToolArt(scene);
+  scene.load.image('icon-water-empty', WATER_EMPTY_ICON);
   for (const id of ['water', 'seeds']) scene.load.image(`icon-${id}`, `${BASE}icons/${id}.png`);
   scene.load.image('nature-trees-source', `${BASE}nature/trees-approved.png`);
   scene.load.image('terrain-materials-source', `${BASE}terrain/ground-materials.png`);

@@ -42,11 +42,8 @@ export function isProtectedMapTile(x: number, y: number): boolean {
   if (!validCell(x, y)) return true;
   const houseAndPorch = x >= 20 && x <= 28 && y >= 9 && y <= 17;
   const arrival = x >= 24 && x <= 26 && y >= 18 && y <= 19;
-  const westernRuin = x >= 8 && x <= 11 && y >= 15 && y <= 18;
-  const forestRuin = x >= 78 && x <= 83 && y >= 25 && y <= 28;
   return houseAndPorch || arrival || isFarmTile(x, y) || isBridgeTile(x, y)
-    || (x === 29 && y === 17) || westernRuin || forestRuin
-    || ((x === 31 || x === 32) && y === 59);
+    || (x === 29 && y === 17);
 }
 
 /** Data objects only: reject custom prototypes, accessors, symbols and hidden properties. */

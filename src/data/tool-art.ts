@@ -1,8 +1,9 @@
 import type { CharacterDirection } from '../character-directions';
 import type { Tool } from '../types';
 
-export type AnimatedTool = 'hatchet' | 'pickaxe';
-export const isAnimatedTool = (tool: Tool): tool is AnimatedTool => tool === 'hatchet' || tool === 'pickaxe';
+import { WATER_ROOT, WATER_FULL_ICON } from './watering-can';
+export type AnimatedTool = 'hatchet' | 'pickaxe' | 'water';
+export const isAnimatedTool = (tool: Tool): tool is AnimatedTool => tool === 'hatchet' || tool === 'pickaxe' || tool === 'water';
 export const TOOL_FRAME_SIZE = 97;
 export const TOOL_USE_FRAMES = 9;
 export const TOOL_USE_FPS = 18;
@@ -13,6 +14,7 @@ const HATCHET_ROOT = 'assets/visual/tools/hatchet/troque_a_imagem_do_cabo_para_m
 const PICKAXE_CLIP = `${PICKAXE_ROOT}/animations/Create_a_pixel_art_animation_sprite_sheet_of_a_pri/unknown`;
 const HATCHET_CLIP = `${HATCHET_ROOT}/animations/Prompt_machado_animado_batendo_na_arvore_Creat`;
 export const TOOL_ICON_URLS: Record<AnimatedTool, string> = {
+  water: WATER_FULL_ICON,
   pickaxe: `${PICKAXE_ROOT}/rotations/quero_que_voce_faca_uma_picare.png`,
   hatchet: `${HATCHET_ROOT}/rotations/south.png`,
 };
@@ -33,6 +35,7 @@ const AXE_GRIPS = {
 } as const;
 
 export function toolIdleArt(tool: AnimatedTool, direction: CharacterDirection) {
+  if (tool === 'water') return { key: 'tool:water:idle', path: WATER_FULL_ICON, grip: [210, 130] as const, flipX: direction === 'right' };
   // The export's "west" view has its cutting edge on the right, and vice versa.
   const view = direction === 'right' ? 'left' : direction === 'left' ? 'right' : direction;
   return { key: `tool:${tool}:idle:${tool === 'pickaxe' ? 'base' : direction}`,
@@ -43,6 +46,10 @@ export function toolIdleArt(tool: AnimatedTool, direction: CharacterDirection) {
 
 /** Only authored animation directions exist: other axe views keep their original pose. */
 export function toolUseArt(tool: AnimatedTool, direction: CharacterDirection, frame: number) {
+  if (tool === 'water') {
+    const index = Math.max(0, Math.min(8, Math.floor(frame)));
+    return { key: `tool:water:use:${index}`, path: `${WATER_ROOT}/animations/Create_an_8-frame_pixel_art_animation_of_this_exac/unknown/frame_${String(index).padStart(3, '0')}.png`, grip: [205, 115] as const, flipX: direction === 'right' };
+  }
   if (tool === 'hatchet' && direction !== 'left' && direction !== 'right') return toolIdleArt(tool, direction);
   const index = Math.max(0, Math.min(TOOL_USE_FRAMES - 1, Math.floor(frame)));
   const view = direction === 'left' ? 'east' : 'west';

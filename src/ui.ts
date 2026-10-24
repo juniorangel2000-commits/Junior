@@ -146,7 +146,7 @@ export class GameUI {
 
   private slotInfo(slot: QuickSlot): { label: string; icon: string; detail: string } {
     const item = quickItem(slot);
-    if (item === 'wateringCan') return { label: 'Regador', icon: 'water', detail: 'Recolhido na casa. Use para regar suas plantações.' };
+    if (item === 'wateringCan' || slot === 'water') return { label: (this.latest?.wateringCanWater ?? 0) > 0 ? 'Regador com água' : 'Regador vazio', icon: (this.latest?.wateringCanWater ?? 0) > 0 ? 'water-full' : 'water-empty', detail: `${this.latest?.wateringCanWater ?? 0}/8 regas · Equipe e pressione E junto ao rio ou lago para encher.` };
     if (item) return { label: ITEMS[item].name, icon: item, detail: ITEMS[item].description };
     return tools.find(tool => tool.id === slot) ?? { label: 'Vazio', icon: 'bag', detail: 'Arraste um item da mochila para este slot.' };
   }
@@ -333,7 +333,7 @@ export class GameUI {
         <button type="button" data-zoom="0" aria-label="Restaurar zoom padrão" title="Restaurar para 100% · Home"><span class="camera-zoom-value" aria-live="polite">100%</span></button>
         <button type="button" data-zoom="1" aria-label="Aumentar zoom" title="Aproximar a câmera · + ou roda do mouse">+</button>
       </div>
-      <button class="journal-reopen" ${this.journalCollapsed ? '' : 'hidden'} aria-controls="journal-panel" aria-expanded="false" aria-label="Abrir missões" title="Abrir missões">${icon('leaf')}<span>Missões</span></button><aside id="journal-panel" class="journal" ${this.journalCollapsed ? 'hidden' : ''}><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="journal-close" aria-controls="journal-panel" aria-label="Fechar missões" title="Fechar missões">${icon('close')}</button></header><div id="journal-content" class="journal-content"><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera nas ruínas a oeste.</p><div class="journal-rule"></div><div class="quest" id="harvest-quest"><span class="quest-circle"></span>Colha seu primeiro nabo</div><div class="quest" id="lia-quest"><span class="quest-circle"></span>Converse com Lia <kbd>E</kbd></div><small>Seu tempo. Seu caminho.</small></div></aside>
+      <button class="journal-reopen" ${this.journalCollapsed ? '' : 'hidden'} aria-controls="journal-panel" aria-expanded="false" aria-label="Abrir missões" title="Abrir missões">${icon('leaf')}<span>Missões</span></button><aside id="journal-panel" class="journal" ${this.journalCollapsed ? 'hidden' : ''}><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="journal-close" aria-controls="journal-panel" aria-label="Fechar missões" title="Fechar missões">${icon('close')}</button></header><div id="journal-content" class="journal-content"><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera na parte oeste da propriedade.</p><div class="journal-rule"></div><div class="quest" id="harvest-quest"><span class="quest-circle"></span>Colha seu primeiro nabo</div><div class="quest" id="lia-quest"><span class="quest-circle"></span>Converse com Lia <kbd>E</kbd></div><small>Seu tempo. Seu caminho.</small></div></aside>
       <div class="location-pill">${icon('pin')}<span id="hud-location">Minha propriedade</span></div>
       <div class="bottom-center"><div class="interaction-prompt"><kbd id="hud-interaction-key">E</kbd><span id="hud-prompt">Explore o vale ao seu redor</span></div><div id="hud-resource-progress" class="resource-progress" hidden></div><div class="toolbelt"></div><div class="tool-status"><strong id="active-tool">Explorar</strong><span id="tool-cost">Coletar · conversar · colher</span></div></div>
     </div>`;
@@ -409,7 +409,9 @@ export class GameUI {
   }
 
   updateHUD(data: HudData): void {
+    const waterChanged = this.latest?.wateringCanWater !== data.wateringCanWater;
     this.latest = data;
+    if (waterChanged && this.mode === 'hud') this.renderQuickbar();
     if (this.mode !== 'hud') return;
     const key = JSON.stringify(data);
     if (key === this.lastHudKey) return;
@@ -478,7 +480,7 @@ export class GameUI {
       : !data.progress.harvested ? 'Equipe a machadinha para cortar árvores ou a picareta para minerar. Aproxime-se da base e pressione E.'
       : !data.progress.processed ? 'Abra C e prepare as primeiras tábuas com a machadinha.'
       : !data.progress.builtWorkbench ? 'Fabrique um martelo e selecione a bancada na barra ou em B para colocá-la em um espaço livre.'
-      : !data.progress.sawn ? 'Recolha sucata nas ruínas a oeste. Na bancada, prepare a lâmina e o serrote para serrar tábuas regulares com C.'
+      : !data.progress.sawn ? 'Recolha sucata na parte oeste da propriedade. Na bancada, prepare a lâmina e o serrote para serrar tábuas regulares com C.'
       : !data.progress.builtShelter ? 'Abra B para piso, paredes, porta, janela e cobertura, ou selecione o molde 3×3. Selecione Explorar e pressione E para abrir e fechar a porta.'
       : 'Seu primeiro lar está de pé. Atravesse a ponte para o Bosque do Pinheiro ou siga ao sul para os Campos Abertos. M abre o mapa.';
     set('.journal-tip', nextTip);
@@ -587,7 +589,7 @@ export class GameUI {
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Fabricação');
-    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">DAS MÃOS NASCE UM LAR</span><h2>Fabricação</h2></div><button class="icon-button" aria-label="Fechar fabricação">${icon('close')}</button></div><p class="crafting-intro">Prepare cordas, cabos e pedras lascadas. A machadinha faz tábuas brutas; o serrote prepara tábuas regulares na bancada.</p><div class="crafting-station"></div><div class="crafting-progress" hidden><div class="crafting-progress-heading"><strong></strong><span class="crafting-percent">0%</span></div><progress max="1" value="0" aria-label="Progresso da fabricação"></progress><button class="text-button cancel-crafting">Cancelar fabricação</button></div><div class="recipe-grid"></div><div class="inventory-footer">${icon('leaf')} Recolha sucata nas ruínas a oeste para preparar a lâmina.<span>SIMULAÇÃO PAUSADA</span></div>`;
+    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">DAS MÃOS NASCE UM LAR</span><h2>Fabricação</h2></div><button class="icon-button" aria-label="Fechar fabricação">${icon('close')}</button></div><p class="crafting-intro">Prepare cordas, cabos e pedras lascadas. A machadinha faz tábuas brutas; o serrote prepara tábuas regulares na bancada.</p><div class="crafting-station"></div><div class="crafting-progress" hidden><div class="crafting-progress-heading"><strong></strong><span class="crafting-percent">0%</span></div><progress max="1" value="0" aria-label="Progresso da fabricação"></progress><button class="text-button cancel-crafting">Cancelar fabricação</button></div><div class="recipe-grid"></div><div class="inventory-footer">${icon('leaf')} Recolha sucata na parte oeste da propriedade para preparar a lâmina.<span>SIMULAÇÃO PAUSADA</span></div>`;
     panel.querySelector('button')!.addEventListener('click', () => this.closeModal());
     panel.querySelector('.cancel-crafting')!.addEventListener('click', () => {
       this.callbacks.onCancelCraft();

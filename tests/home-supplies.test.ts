@@ -17,6 +17,7 @@ describe('Coletas da casa e barra rápida', () => {
         inventory = new Inventory(state.inventory);
         expect(collectHomeSupply(state, inventory, id)).toBe(false);
       }
+      expect(state.wateringCanWater).toBe(0);
       expect(inventory.data.seeds).toBe(7);
       expect(state.homeSupplies).toEqual({ wateringCan: true, seedPacket: true });
     });
@@ -36,4 +37,13 @@ describe('Coletas da casa e barra rápida', () => {
     expect(validateSave({ ...state, quickbar: ['water'] })).toBe(false);
     expect(validateSave({ ...state, homeSupplies: { wateringCan: 'yes', seedPacket: false } })).toBe(false);
   });
+});
+
+it('preserva água ao salvar e rejeita quantidades inválidas', () => {
+  const state = createNewSave(profile);
+  for (const water of [0, 1, 8]) {
+    state.wateringCanWater = water;
+    expect(migrateSave(JSON.parse(JSON.stringify(state)))?.wateringCanWater).toBe(water);
+  }
+  for (const water of [-1, 9, .5, '8', null]) expect(validateSave({ ...state, wateringCanWater: water })).toBe(false);
 });

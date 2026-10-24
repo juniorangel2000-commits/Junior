@@ -17,8 +17,9 @@ metadados e os 36 PNGs originais de 97×97. Nenhum PNG foi reduzido ou redesenha
 A primeira composição aplicava uma rotação extra sobre os quadros enviados.
 Essa rotação foi retirada após a revisão do jogador: a cabeça da ferramenta
 permanece acima do cabo, usando apenas o movimento original da sequência.
-O ponto de pega acompanha o cabo e coincide com a palma da personagem. O
-espelhamento ajusta também a origem, mantendo o cabo na mão ao inverter o lado.
+O ponto de pega acompanha o cabo. A ferramenta fica quatro pixels à frente da
+palma na direção do personagem, conforme solicitado. O espelhamento também
+ajusta a origem; repouso e golpe usam o mesmo deslocamento para evitar saltos.
 
 Os arquivos recebidos mostram ferramentas isoladas. Esta é uma prévia do seu
 encaixe sobre as poses atuais dos personagens; ainda não inclui novas poses
@@ -50,4 +51,9 @@ registra a captura corrigida, incluindo espelhamento e ausência de rotação ex
 
 Reprodução: `scripts/qa-tools.cjs` usa Playwright; `scripts/build-tool-previews.py`
 monta os PNGs animados com Pillow. `QA_PREVIEW_ONLY=1` captura somente a prévia.
-Ainda não publicado em Release.
+Pacote 0.8.1 publicado como prévia na branch `preview/tools-0.8.1`, commit
+`0c13f1d02c9b000173022d5962fb51b4ef68de09`.
+
+Download: https://github.com/juniorangel2000-commits/Junior/releases/download/tools-preview-0.8.1-1/After-Rain-0.8.1-Windows-x64.exe
+
+CI Windows concluído com sucesso: https://github.com/juniorangel2000-commits/Junior/actions/runs/40061840852

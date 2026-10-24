@@ -1,3 +1,4 @@
+import { WATER_CAPACITY } from '../data/watering-can';
 import { gameAudio } from '../audio';
 import Phaser from 'phaser';
 import { Player } from '../player';
@@ -355,7 +356,7 @@ export class ValleyScene extends Phaser.Scene {
       if (collectHomeSupply(this.state, this.inventory, supply.id)) {
         gameAudio.play('pickup');
         this.refreshHomeView(); this.updateHUD(); this.persist();
-        this.ui.toast(supply.id === 'wateringCan' ? 'Regador recolhido. Escolha um slot para equipá-lo.' : 'Você recolheu 7 sementes de nabo.');
+        this.ui.toast(supply.id === 'wateringCan' ? 'Regador vazio recolhido. Equipe-o e pressione E junto ao rio ou lago para encher.' : 'Você recolheu 7 sementes de nabo.');
       } else this.ui.toast('Não há espaço para as sementes.');
       return;
     }
@@ -815,6 +816,18 @@ export class ValleyScene extends Phaser.Scene {
   private interact(explicitTile?: TilePoint): void {
     if (!this.canPlay() || this.toolUse.active || this.time.now < this.nextInteractionAt) return;
     if (this.inHome) { this.interactHome(explicitTile); return; }
+    if (this.tool === 'water' && this.state.homeSupplies?.wateringCan) {
+      const px = Math.floor(this.player.x / TILE), py = Math.floor(this.player.y / TILE);
+      for (let y = py - 1; y <= py + 1; y++) for (let x = px - 1; x <= px + 1; x++) {
+        if (explicitTile && (x !== explicitTile.x || y !== explicitTile.y)) continue;
+        if (this.world.isWater(x, y) && this.tileDistance({ x, y }) <= 48) {
+          this.state.wateringCanWater = WATER_CAPACITY;
+          this.waterFeedback({ x, y }, true);
+          this.ui.toast('Regador cheio · 8 regas disponíveis.'); gameAudio.play('water');
+          this.nextInteractionAt = this.time.now + 300; this.afterAction(); return;
+        }
+      }
+    }
     if (this.nearHouseEntrance() && (!explicitTile || (explicitTile.x >= 23 && explicitTile.x <= 25 && explicitTile.y >= 15 && explicitTile.y <= 16))) {
       this.enterHome(); return;
     }
@@ -849,8 +862,8 @@ export class ValleyScene extends Phaser.Scene {
       if (resource && this.clearReach(resource) && this.tileDistance(resource) <= 78) {
         const required = RESOURCE_DEFINITIONS[resource.kind].tool;
         if (isAnimatedTool(this.tool) && this.inventory.has(this.tool) && (required === 'hand' || required === this.tool)) {
-          const dx = (resource.x + .5) * TILE - this.player.x, dy = (resource.y + .5) * TILE - this.player.y;
-          const direction = directionFromVector(Math.abs(dx) < 4 ? 0 : dx, Math.abs(dy) < 4 ? 0 : dy);
+          const dx = (resource.x + .5) * TILE - this.player.x;
+          const direction = dx < -4 ? 'left' : dx > 4 ? 'right' : this.player.facing.x < 0 ? 'left' : 'right';
           this.player.facing = directionVector(direction);
           this.player.update(0, this.blocked, this.blockedPoint, false);
           this.toolUse.start({ tool: this.tool, direction, target: resource });
@@ -878,8 +891,20 @@ export class ValleyScene extends Phaser.Scene {
       if (candidates[0]) tile = candidates[0];
     }
     if (this.tool === 'water' && !this.state.homeSupplies?.wateringCan) { this.ui.toast('Recolha o regador dentro da casa.'); return; }
-    if (this.tool === 'plant' || this.tool === 'water') {
-      const result = this.tool === 'plant' ? this.farming.plant(tile.x, tile.y, this.inventory) : this.farming.water(tile.x, tile.y);
+    if (this.tool === 'water') {
+      if (!(this.state.wateringCanWater! > 0)) { this.ui.toast('Regador vazio. Equipe-o e pressione E junto ao rio ou lago para encher.'); return; }
+      const crop = this.farming.cropAt(tile.x, tile.y);
+      if (!crop || crop.watered) { this.ui.toast(crop ? 'A terra já está úmida.' : 'Plante uma semente antes de regar.'); return; }
+      const dx = (tile.x + .5) * TILE - this.player.x;
+      const direction = dx < -4 ? 'left' : dx > 4 ? 'right' : this.player.facing.x < 0 ? 'left' : 'right';
+      this.player.facing = directionVector(direction);
+      this.player.update(0, this.blocked, this.blockedPoint, false);
+      this.toolUse.start({ tool: 'water', direction, target: { ...tile, id: 'watering', kind: 'seeds' } });
+      this.nextInteractionAt = this.time.now + TOOL_USE_DURATION * 1000;
+      this.updateToolVisual(); return;
+    }
+    if (this.tool === 'plant') {
+      const result = this.farming.plant(tile.x, tile.y, this.inventory);
       if (result.ok) gameAudio.play(this.tool);
       this.ui.toast(result.message);
     } else if (this.tool === 'remove') {
@@ -926,7 +951,14 @@ export class ValleyScene extends Phaser.Scene {
 
   private applyToolImpact(strike: ToolStrike): void {
     // Recheck the target at contact: no delayed reward for a removed, moved or unreachable node.
-    if (!this.canPlay() || this.inHome || this.tool !== strike.tool || !this.inventory.has(strike.tool)) return;
+    if (!this.canPlay() || this.inHome || this.tool !== strike.tool) return;
+    if (strike.tool === 'water') {
+      if (!this.state.homeSupplies?.wateringCan || !(this.state.wateringCanWater! > 0) || this.tileDistance(strike.target) > 78) return;
+      const result = this.farming.water(strike.target.x, strike.target.y);
+      if (result.ok) { this.state.wateringCanWater = (this.state.wateringCanWater ?? 0) - 1; this.waterFeedback(strike.target); gameAudio.play('water'); }
+      this.ui.toast(result.message); this.afterAction(); return;
+    }
+    if (!this.inventory.has(strike.tool)) return;
     const resource = this.world.resourceAt(strike.target.x, strike.target.y);
     if (resource?.id !== strike.target.id || resource.kind !== strike.target.kind
       || this.tileDistance(resource) > 78 || !this.clearReach(resource)) return;
@@ -935,9 +967,30 @@ export class ValleyScene extends Phaser.Scene {
 
   private updateToolVisual(): void {
     if (!this.toolVisual) return;
-    if (!this.canPlay() || !isAnimatedTool(this.tool) || !this.inventory.has(this.tool)) { this.toolVisual.hide(); return; }
+    if (!this.toolUse.active || !this.canPlay() || !isAnimatedTool(this.tool) || !(this.tool === 'water' ? this.state.homeSupplies?.wateringCan : this.inventory.has(this.tool))) { this.toolVisual.hide(); return; }
     const direction = this.toolUse.current?.direction ?? directionFromVector(this.player.facing.x, this.player.facing.y);
     this.toolVisual.show(this.tool, direction, this.player.x, this.player.y, this.toolUse);
+  }
+
+  /** Short pixel droplets: draw water toward the can on refill and onto soil on use. */
+  private waterFeedback(tile: TilePoint, filling = false): void {
+    const tx = (tile.x + .5) * TILE, ty = (tile.y + .5) * TILE;
+    for (let i = 0; i < 10; i++) {
+      const spread = (i % 5 - 2) * 3;
+      const x = filling ? tx + spread : tx + spread - this.player.facing.x * 9;
+      const y = filling ? ty - 3 : ty - 22 - (i % 3) * 3;
+      const drop = this.add.rectangle(x, y, 2, 4, i % 2 ? 0xaee6ed : 0x58b7da)
+        .setDepth(Math.max(ty, this.player.y) + 5);
+      this.tweens.add({ targets: drop,
+        x: filling ? this.player.x + this.player.facing.x * 12 + spread / 3 : tx + spread,
+        y: filling ? this.player.y - 18 : ty + (i % 2) * 3,
+        alpha: 0, duration: filling ? 450 : 300, delay: i * 25,
+        ease: 'Sine.easeIn', onComplete: () => drop.destroy() });
+    }
+    const ripple = this.add.ellipse(tx, ty, 8, 3).setStrokeStyle(1, 0x9edbe8, .8)
+      .setDepth(ty + 1);
+    this.tweens.add({ targets: ripple, scaleX: 3, scaleY: 2, alpha: 0, duration: 450,
+      onComplete: () => ripple.destroy() });
   }
 
   private resourceFeedback(resource: ResourceNode): void {
@@ -1036,7 +1089,7 @@ export class ValleyScene extends Phaser.Scene {
       const bed = this.home.bedNear(playerTile, 1.1);
       const nearExit = this.nearHomeExit();
       const supply = HOME_SUPPLIES.find(s => !this.state.homeSupplies?.[s.id] && this.tileDistance(s) <= 48);
-      this.ui.updateHUD({ wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: true, name: this.state.profile.name, day: this.state.day, time: this.state.time,
+      this.ui.updateHUD({ wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: true, name: this.state.profile.name, day: this.state.day, time: this.state.time,
         inventory: this.inventory.data, tool: this.tool,
         playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
         interactionKey: nearExit || bed || supply ? 'E' : 'H',
@@ -1050,7 +1103,7 @@ export class ValleyScene extends Phaser.Scene {
     const resource = this.world.resourceAt(tile.x, tile.y) ?? this.nearestResource();
     let resourceProgress = '';
     if (this.tool === 'plant') prompt = 'Plantar nabo · 1 semente';
-    else if (this.tool === 'water') prompt = 'Regar o canteiro';
+    else if (this.tool === 'water') prompt = `Regador: ${this.state.wateringCanWater ?? 0}/8 · E junto à água para encher`;
     else if (this.tool === 'blueprint') prompt = this.blueprintReason(tile) || `Montar ${BLUEPRINT_LABEL} · clique ou E`;
     else if (this.tool in BUILD_COSTS) prompt = this.placementReason(tile, this.tool as BuildingData['kind']) || `Colocar ${BUILD_NAMES[this.tool as BuildingData['kind']]} · clique ou E`;
     else if (this.tool === 'remove') prompt = 'Desmontar peça · novas peças devolvem 60%';
@@ -1068,7 +1121,7 @@ export class ValleyScene extends Phaser.Scene {
       if (definition.hits > 1) resourceProgress = `${definition.label}: ${hits}/${definition.hits} golpes · ${toolName}`;
     }
     if (this.nearHouseEntrance()) prompt = 'Entrar em casa';
-    this.ui.updateHUD({ wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
+    this.ui.updateHUD({ wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
       tool: this.tool, prompt, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
       playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
       harvests: this.inventory.data.turnip, metLia: this.state.metLia,

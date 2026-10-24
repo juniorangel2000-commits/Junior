@@ -31,7 +31,7 @@ fs.mkdirSync(out, { recursive: true });
         scene.ui.renderQuickbar();
         scene.updateHUD();
       });
-      const textures = await page.evaluate(() => scene.textures.getTextureKeys().filter(k => k.startsWith('tool:')).map(k => {
+      const textures = await page.evaluate(() => scene.textures.getTextureKeys().filter(k => k.startsWith('tool:') && !k.startsWith('tool:water:')).map(k => {
         const img = scene.textures.get(k).getSourceImage(); return { key: k, width: img.width, height: img.height };
       }));
       assert.equal(textures.length, 36);
@@ -55,9 +55,12 @@ fs.mkdirSync(out, { recursive: true });
           throw Error(`No accessible ${kind}`);
         }, { tool, kind });
         const baseline = await page.evaluate(drop => scene.inventory.data[drop], drop);
+        assert.equal(await page.evaluate(() => scene.toolVisual.sprite.visible), false, 'selected tool hidden at rest');
         // A real keyboard action starts a strike; no resource change before contact.
         await page.keyboard.press('e');
         assert.equal(await page.evaluate(() => scene.toolUse.active), true);
+        assert.equal(await page.evaluate(() => scene.toolVisual.sprite.visible), true);
+        assert.ok(['left', 'right'].includes(await page.evaluate(() => scene.toolUse.current.direction)));
         assert.equal(await page.evaluate(() => scene.resources.progress.length), 0);
         await page.keyboard.down('d');
         const feet = await page.evaluate(() => ({x:scene.player.x,y:scene.player.y}));
@@ -86,6 +89,7 @@ fs.mkdirSync(out, { recursive: true });
         }
         nodes.push(target.id);
         assert.equal(await page.evaluate(()=>scene.toolUse.active),false);
+        assert.equal(await page.evaluate(()=>scene.toolVisual.sprite.visible),false);
         assert.equal(await page.evaluate(()=>scene.persist()),true);
       }
       // Empty slots immediately clear the visible tool, including a canceled swing.
@@ -122,9 +126,10 @@ fs.mkdirSync(out, { recursive: true });
             scene.updateToolVisual();
             const sprite=scene.toolVisual.sprite;
             const png=await new Promise(resolve=>{game.renderer.snapshotArea(480,232,320,320,img=>resolve(img.src));step(0);});
-            return {png,key:sprite.texture.key,flipX:sprite.flipX,angle:sprite.angle};
+            return {png,key:sprite.texture.key,flipX:sprite.flipX,angle:sprite.angle,visible:sprite.visible};
           },{tool,direction,phase});
-          assert.equal(captured.flipX,tool==='pickaxe'&&direction==='right');
+          assert.equal(captured.visible,phase>=0,'tool visible only during action');
+          if(phase>=0) assert.equal(captured.flipX,tool==='pickaxe'&&direction==='right');
           assert.equal(captured.angle,0,'authored tool orientation is preserved without extra rotation');
           frames.push(captured.png);
         }

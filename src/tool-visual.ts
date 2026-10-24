@@ -19,7 +19,7 @@ const HANDS: Record<'farmer-female' | 'farmer-male', Record<CharacterDirection, 
 
 export function preloadToolArt(scene: Phaser.Scene): void {
   const sources = new Map<string, string>();
-  for (const tool of ['hatchet', 'pickaxe'] as const) for (const direction of CHARACTER_DIRECTIONS) {
+  for (const tool of ['hatchet', 'pickaxe', 'water'] as const) for (const direction of CHARACTER_DIRECTIONS) {
     const idle = toolIdleArt(tool, direction); sources.set(idle.key, idle.path);
     for (let frame = 0; frame < TOOL_USE_FRAMES; frame++) {
       const art = toolUseArt(tool, direction, frame); sources.set(art.key, art.path);
@@ -39,21 +39,24 @@ export class ToolVisual {
   hide(): void { this.sprite.setVisible(false); }
 
   show(tool: AnimatedTool, direction: CharacterDirection, x: number, y: number, use: ToolUse): void {
+    if (!use.active) { this.hide(); return; }
+    direction = direction.includes('left') ? 'left' : 'right';
     const art = use.active ? toolUseArt(tool, direction, use.frame) : toolIdleArt(tool, direction);
     this.sprite.setTexture(art.key);
     this.sprite.setFlipX(art.flipX);
     this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-    const gripX = art.flipX ? TOOL_FRAME_SIZE - art.grip[0] : art.grip[0];
-    this.sprite.setOrigin(gripX / TOOL_FRAME_SIZE, art.grip[1] / TOOL_FRAME_SIZE).setScale(.30);
+    const size = tool === 'water' ? 256 : TOOL_FRAME_SIZE;
+    const gripX = art.flipX ? size - art.grip[0] : art.grip[0];
+    this.sprite.setOrigin(gripX / size, art.grip[1] / size).setScale(tool === 'water' ? .14 : .30);
     const behind = direction.startsWith('up');
     const character = resolveCharacter(this.profile);
     const hand = HANDS[character.id][direction];
     const handX = (hand[0] - character.originX) / 4;
     const handY = (hand[1] - character.originY) / 4 - 3;
     // Keep the authored swing upright, slightly ahead in the facing direction.
-    // Use the same offset at rest and during use to avoid a jump at strike start.
+    // The tool stays hidden outside the action.
     const forward = directionVector(direction);
-    this.sprite.setAngle(0).setPosition(x + handX + forward.x * 4, y + handY + forward.y * 4)
+    this.sprite.setAngle(0).setPosition(x + handX + forward.x * 7, y + handY + forward.y * 7)
       .setDepth(y + (behind ? -1 : 1)).setVisible(true);
   }
 }

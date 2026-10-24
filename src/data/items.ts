@@ -9,7 +9,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string }> = {
   branch: { name: 'Galhos', description: 'Recolha os feixes de madeira no chão para fabricar cabos.' },
   log: { name: 'Troncos', description: 'Derrube uma árvore com a machadinha e transforme os troncos em tábuas.' },
   plank: { name: 'Tábuas brutas', description: 'Feitas com machadinha; usadas na bancada e nas peças do abrigo.' },
-  scrap: { name: 'Sucata metálica', description: 'Encontrada nas ruínas a oeste. Na bancada, transforme em lâmina.' },
+  scrap: { name: 'Sucata metálica', description: 'Encontrada na parte oeste da propriedade. Na bancada, transforme em lâmina.' },
   hatchet: { name: 'Machadinha', description: 'Corta árvores e permite fazer as primeiras tábuas.' },
   pickaxe: { name: 'Picareta', description: 'Quebra veios de pedra e recupera materiais.' },
   handsaw: { name: 'Serrote', description: 'Usado junto à bancada para serrar e construir paredes e portas.' },
