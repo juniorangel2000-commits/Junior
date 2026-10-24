@@ -10,9 +10,11 @@ export interface ResourceDefinition {
 }
 
 export const RESOURCE_DEFINITIONS: Record<ResourceKind, ResourceDefinition> = {
-  tree: { label: 'Madeira caída', tool: 'hand', hits: 1, drops: { wood: 4, branch: 3 } },
-  stone: { label: 'Pedras soltas', tool: 'hand', hits: 1, drops: { stone: 3 } },
-  seeds: { label: 'Sementes silvestres', tool: 'hand', hits: 1, drops: { seeds: 3 } },
+  fallenLog: {label:'Tronco caído',tool:'hatchet',hits:3,drops:{wood:6,log:2,branch:2}},
+  stump: {label:'Toco',tool:'hatchet',hits:3,drops:{wood:4,log:1,branch:1}},
+  tree: { label: 'Galhos caídos', tool: 'hand', hits: 1, drops: { wood: 4, branch: 3 } },
+  stone: { label: 'Pedras pequenas', tool: 'hand', hits: 1, drops: { stone: 3 } },
+  seeds: { label: 'Arbusto de berries', tool: 'hand', hits: 1, drops: { seeds: 3, fiber: 2 } },
   fiber: { label: 'Fibras vegetais', tool: 'hand', hits: 1, drops: { fiber: 6 } },
   scrap: { label: 'Sucata', tool: 'hand', hits: 1, drops: { scrap: 2 } },
   standingTree: { label: 'Árvore', tool: 'hatchet', hits: 4, drops: { log: 2, branch: 3 } },

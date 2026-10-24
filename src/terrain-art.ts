@@ -1,3 +1,4 @@
+import {shoreSandAt} from './data/property-water';
 import { getRegionAt, isBridgeTile, isFarmTile, TILE, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 import { isWaterPoint, roadDistanceAt, waterDistanceAt } from './data/terrain-shape';
 import type { TerrainSprites } from './terrain-sprites';
@@ -59,13 +60,15 @@ function paintSpriteGround(ctx: CanvasRenderingContext2D, tiles: readonly Ground
       const sx = x % period, sampleX = sx < size ? sx : period - sx - 1;
       const shoreField = waterDistanceAt(x + 1, y + 1), waterHere = shoreField < 0;
       const shore = Math.abs(shoreField);
-      const forestWeight = smooth((x - 45 * TILE) / (12 * TILE)) * (1 - fieldWeight);
+      const grove = Math.max(smooth((16*TILE-x)/(11*TILE)),smooth((9*TILE-y)/(7*TILE)))*.45;
+      const forestWeight = Math.max(grove,smooth((x - 45 * TILE) / (12 * TILE))) * (1 - fieldWeight);
       const road = !waterHere && !tile.farm ? roadDistanceAt(x + 1, y + 1) : Infinity;
       const edge = road < 12 ? noise(x, y, 22, 92) * 10 - 5 : 0;
       // A short broken edge makes grass invade dirt without hiding the route.
       const roadWeight = smooth((edge + 5 - road) / 10);
       const damp = roadWeight ? smooth((noise(x, y, 86, 333) - 0.38) / 0.45) * 0.85 : 0;
-      const bankWeight = !waterHere && !tile.farm && shore < 18 ? smooth((14 + noise(x, y, 26, 40) * 5 - shore) / 13) : 0;
+      const bank = shoreSandAt(x+1,y+1,shoreField);
+      const bankWeight = !tile.farm ? bank.weight : 0;
       const mossWeight = !waterHere && !tile.farm ? smooth((noise(x, y, 112, 52) - 0.45) / 0.42) * 0.3 : 0;
       const light = (noise(x, y, 146, 71) - 0.5) * 13 + (noise(x, y, 38, 14) - 0.5) * 5;
       const shallow = waterHere ? smooth((22 - shore) / 22) : 0;
@@ -87,7 +90,7 @@ function paintSpriteGround(ctx: CanvasRenderingContext2D, tiles: readonly Ground
             value = grass[index] * (1 - forestWeight - fieldWeight) + forest[index] * forestWeight + meadow[index] * fieldWeight;
             value = lerp(value, moss[index], mossWeight);
             if (roadWeight) value = lerp(value, lerp(dry[index], wet[index], damp), roadWeight);
-            if (bankWeight) value = lerp(value, lerp(sand[index], wet[index], 0.4), bankWeight);
+            if (bankWeight) value = lerp(value, sand[index]*bank.moisture, bankWeight);
             value += light;
           }
           target[dest + channel] = clamp(Math.round(value), 0, 255);
@@ -103,7 +106,7 @@ function paintSpriteGround(ctx: CanvasRenderingContext2D, tiles: readonly Ground
  * A static, pixel-aligned ground layer. Detail is concentrated at paths and banks;
  * clear grass remains readable for resources and player-built structures.
  */
-export function paintTerrain(ctx: CanvasRenderingContext2D, sprites?: TerrainSprites, decoration?: TerrainDecoration): void {
+export function paintTerrain(ctx: CanvasRenderingContext2D, sprites?: TerrainSprites, decoration?: TerrainDecoration, farmAt = isFarmTile): void {
   ctx.imageSmoothingEnabled = false;
   const rect = (fill: string, x: number, y: number, w: number, h: number): void => {
     ctx.fillStyle = fill;
@@ -118,7 +121,7 @@ export function paintTerrain(ctx: CanvasRenderingContext2D, sprites?: TerrainSpr
   const shallowColors = Array.from({ length: 8 }, (_, i) => color([101, 164, 164], (i - 3) * 3));
   const tiles: GroundTile[] = [];
   for (let ty = 0; ty < WORLD_HEIGHT; ty++) for (let tx = 0; tx < WORLD_WIDTH; tx++) {
-    tiles.push({ farm: isFarmTile(tx, ty) });
+    tiles.push({ farm: farmAt(tx, ty) });
   }
 
   if (sprites) paintSpriteGround(ctx, tiles, sprites);
@@ -158,6 +161,8 @@ export function paintTerrain(ctx: CanvasRenderingContext2D, sprites?: TerrainSpr
     } else if (road < edge + 6 && fine > 0.47) {
       fill = '#9a9e5c';
     }
+    const bank=shoreSandAt(x+2,y+2,shoreField);
+    if(bank.weight>.25)fill=color([179*bank.moisture,154*bank.moisture,108*bank.moisture],fine*9-4);
     rect(fill, x, y, 4, 4);
   }
 
@@ -240,6 +245,7 @@ export function paintTerrain(ctx: CanvasRenderingContext2D, sprites?: TerrainSpr
     }
     const road = roadDistanceAt(x, y);
     if (road < -6) {
+      if (tx>=23 && tx<=47 && ty>=16 && ty<=20) continue;
       if (chance > 0.83) puddle(x - 9, y, seed);
       else if (chance < 0.2) pebble(x - 4, y, 6 + Math.floor(chance * 24), 4);
       else if (chance > 0.48 && chance < 0.63) {
@@ -263,6 +269,7 @@ export function paintTerrain(ctx: CanvasRenderingContext2D, sprites?: TerrainSpr
     }
   }
 
+  if (farmAt(21,20)) {
   // Rain-darkened border around the continuous garden, without changing any plot.
   for (let x = 21 * TILE - 3; x < 30 * TILE + 3; x += 3) {
     const bite = 2 + Math.floor(hash(x, 92, 35) * 4);
@@ -274,35 +281,6 @@ export function paintTerrain(ctx: CanvasRenderingContext2D, sprites?: TerrainSpr
     rect('#8c774a', 30 * TILE, y, 3, 3);
   }
 
-  for (const [left, top, width] of [[42, 18, 7], [41, 52, 9]]) {
-    const bx = left * TILE, by = top * TILE, bw = width * TILE;
-    rect('#435e5040', bx - 3, by + 7, bw + 6, 60);
-    rect('#624c34', bx, by + 2, bw, 60);
-    if (sprites) {
-      const timber = sprites.wood, deck = ctx.createImageData(bw, 52);
-      for (let y = 0; y < 52; y++) for (let x = 0; x < bw; x++) {
-        // Rotate the drawn boards to run across the walking direction.
-        const source = ((x % timber.size) * timber.size + y % timber.size) * 4;
-        const target = (y * bw + x) * 4;
-        for (let channel = 0; channel < 3; channel++) deck.data[target + channel] = timber.pixels[source + channel];
-        deck.data[target + 3] = 255;
-      }
-      ctx.putImageData(deck, bx, by + 4);
-    }
-    for (let x = 0; x < bw; x += 9) {
-      if (!sprites) {
-        rect(x % 3 ? '#ad8654' : '#bb935d', bx + x + 1, by + 4, 8, 52);
-        rect('#d8b57b', bx + x + 1, by + 4, 2, 51);
-        rect('#886443', bx + x + 4, by + 13 + Math.floor(hash(x, top, 13) * 20), 1, 13);
-      } else rect('#72523766', bx + x, by + 4, 1, 52);
-      rect('#5a4633', bx + x + 4, by + 9, 1, 1);
-      rect('#5a4633', bx + x + 4, by + 49, 1, 1);
-    }
-    rect('#62482f', bx, by, bw, 5); rect('#d5b17a', bx, by, bw, 2);
-    rect('#715139', bx, by + 56, bw, 5); rect('#bb925e', bx, by + 56, bw, 2);
-    for (const x of [bx + 2, bx + bw - 8]) {
-      rect('#6c4d32', x, by - 2, 7, 11); rect('#d6ad70', x, by - 2, 5, 3);
-      rect('#6c4d32', x, by + 52, 7, 13); rect('#d6ad70', x, by + 52, 5, 3);
-    }
   }
+
 }

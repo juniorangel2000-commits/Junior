@@ -6,7 +6,7 @@ import { FOREST_ANIMALS } from '../data/ancient-forest';
 import { validQuickbar, emptyQuickbar } from './quickbar';
 import { CHARACTER_DIRECTIONS, type CharacterDirection } from '../character-directions';
 import type { CharacterProfile, ProgressData, SaveData, Tool } from '../types';
-import { isFarmTile } from './farming';
+import { isFarmTile, validSoilTile } from './farming';
 import { EMPTY_INVENTORY, INITIAL_INVENTORY, ITEM_IDS, MAX_ITEM_COUNT } from './inventory';
 import { RESOURCE_DEFINITIONS } from './resources';
 import { buildingFootprint, buildingLayer } from './building';
@@ -19,7 +19,7 @@ import { isCharacterId } from '../data/characters';
 export const SAVE_KEY = 'depois-da-chuva-v1';
 export const SAVE_BACKUP_KEY = 'depois-da-chuva-v1-backup';
 export const SAVE_VERSION = 2;
-const TOOLS: Tool[] = ['hand', 'plant', 'water', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
+const TOOLS: Tool[] = ['hand', 'plant', 'water', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'hoe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
 const PROGRESS_KEYS: Array<keyof ProgressData> = ['collected', 'craftedTools', 'harvested', 'processed', 'builtWorkbench', 'sawn', 'builtShelter'];
 const emptyProgress = (): ProgressData => ({ collected: false, craftedTools: false, harvested: false, processed: false, builtWorkbench: false, sawn: false, builtShelter: false });
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -86,13 +86,35 @@ export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value.inventory) || !ITEM_IDS.every(id => integer((value.inventory as Record<string, unknown>)[id], 0, MAX_ITEM_COUNT))) return false;
   if (Object.keys(value.inventory).some(id => !ITEM_IDS.includes(id as typeof ITEM_IDS[number]))) return false;
   if (!TOOLS.includes(value.equippedTool as Tool)) return false;
-  if ((value.equippedTool === 'hatchet' || value.equippedTool === 'pickaxe') && (value.inventory[value.equippedTool] as number) < 1) return false;
+  if ((value.equippedTool === 'hatchet' || value.equippedTool === 'pickaxe' || value.equippedTool === 'hoe') && (value.inventory[value.equippedTool] as number) < 1) return false;
   if (!isRecord(value.progress) || !PROGRESS_KEYS.every(key => typeof (value.progress as Record<string, unknown>)[key] === 'boolean')) return false;
   if (!integer(value.day, 1, 999_999) || !finite(value.time, 0, 1439.999999) || typeof value.metLia !== 'boolean') return false;
-  if (!Array.isArray(value.crops) || value.crops.length > 45 || !Array.isArray(value.buildings) || value.buildings.length > MAX_BUILDINGS) return false;
+  const soil = new Set<string>();
+  const restored = new Set<string>();
+  if (value.restoredFarmSoil !== undefined) {
+    if (!Array.isArray(value.restoredFarmSoil) || value.restoredFarmSoil.length > 45) return false;
+    for (const point of value.restoredFarmSoil) {
+      if (!isRecord(point) || !integer(point.x,21,29) || !integer(point.y,20,24)) return false;
+      const key=`${point.x},${point.y}`; if (restored.has(key)) return false;
+      restored.add(key);
+    }
+  }
+  if (value.preparedSoil !== undefined) {
+    if (!Array.isArray(value.preparedSoil) || value.preparedSoil.length > (WORLD_WIDTH - 2) * (WORLD_HEIGHT - 2)) return false;
+    for (const point of value.preparedSoil) {
+      if (!isRecord(point) || !integer(point.x, 1, WORLD_WIDTH - 2) || !integer(point.y, 1, WORLD_HEIGHT - 2)) return false;
+      const key = `${point.x},${point.y}`;
+      if (soil.has(key) || isFarmTile(point.x,point.y)) return false;
+      soil.add(key);
+    }
+  }
+  if (value.farmingProgress !== undefined && (!isRecord(value.farmingProgress)
+    || !['prepared', 'planted', 'watered', 'harvested'].every(key => typeof (value.farmingProgress as Record<string, unknown>)[key] === 'boolean'))) return false;
+  if (!Array.isArray(value.crops) || value.crops.length > (WORLD_WIDTH - 2) * (WORLD_HEIGHT - 2) || !Array.isArray(value.buildings) || value.buildings.length > MAX_BUILDINGS) return false;
   const occupied = new Set<string>();
   for (const crop of value.crops) {
-    if (!isRecord(crop) || !integer(crop.x, 21, 29) || !integer(crop.y, 20, 24) || !isFarmTile(crop.x, crop.y)
+    if (!isRecord(crop) || !integer(crop.x, 1, WORLD_WIDTH - 2) || !integer(crop.y, 1, WORLD_HEIGHT - 2) || !validSoilTile(crop.x, crop.y)
+      || !(isFarmTile(crop.x, crop.y) && !restored.has(`${crop.x},${crop.y}`) || soil.has(`${crop.x},${crop.y}`))
       || !finite(crop.growth, 0, 1) || typeof crop.watered !== 'boolean' || (!crop.watered && crop.growth > 0)) return false;
     const key = String(crop.x) + ',' + String(crop.y);
     if (occupied.has(key)) return false;
@@ -100,12 +122,14 @@ export function validateSave(value: unknown): value is SaveData {
   }
   for (const building of value.buildings) {
     if (!isRecord(building) || !integer(building.x, 1, WORLD_WIDTH - 2) || !integer(building.y, 1, WORLD_HEIGHT - 2)
-      || !['fence', 'bench', 'workbench', 'wall', 'door', 'floor', 'window', 'roof'].includes(building.kind as string) || isFarmTile(building.x, building.y)) return false;
+      || !['fence', 'bench', 'workbench', 'wall', 'door', 'floor', 'window', 'roof'].includes(building.kind as string)
+      || isFarmTile(building.x, building.y) && !restored.has(`${building.x},${building.y}`)) return false;
     if (building.open !== undefined && (building.kind !== 'door' || typeof building.open !== 'boolean')) return false;
     if (building.rotation !== undefined && (building.kind !== 'roof' || ![0, 1].includes(building.rotation as number))) return false;
     const piece = building as unknown as SaveData['buildings'][number];
     for (const tile of buildingFootprint(piece)) {
-      if (!integer(tile.x, 1, WORLD_WIDTH - 2) || !integer(tile.y, 1, WORLD_HEIGHT - 2) || isFarmTile(tile.x, tile.y)) return false;
+      if (!integer(tile.x, 1, WORLD_WIDTH - 2) || !integer(tile.y, 1, WORLD_HEIGHT - 2)
+        || isFarmTile(tile.x,tile.y) && !restored.has(`${tile.x},${tile.y}`) || soil.has(`${tile.x},${tile.y}`)) return false;
       const key = buildingLayer(piece.kind) + ':' + String(tile.x) + ',' + String(tile.y);
       if (occupied.has(key)) return false;
       occupied.add(key);
@@ -126,7 +150,7 @@ export function validateSave(value: unknown): value is SaveData {
       const object=(forest?value.forestMapEdits:value.mapEdits as SaveData['mapEdits']) as SaveData['mapEdits'];
       kind=collectibleKind(object?.objects[id]?.kind);
     }
-    if(kind!=='standingTree'&&kind!=='vein')return false;
+    if(kind!=='standingTree'&&kind!=='vein'&&kind!=='fallenLog'&&kind!=='stump')return false;
     const definition = RESOURCE_DEFINITIONS[kind];
     if (!integer(resource.hits, 1, definition.hits - 1)) return false;
     progressing.add(resource.id);
@@ -136,6 +160,10 @@ export function validateSave(value: unknown): value is SaveData {
 
 /** Converte em memória; a leitura nunca modifica nem substitui o slot original. */
 export function migrateSave(value: unknown): SaveData | null {
+  // Only the new item is filled in. Missing older stock fields still reject a corrupt save.
+  if (isRecord(value) && value.version === SAVE_VERSION && isRecord(value.inventory) && value.inventory.hoe === undefined) {
+    value = { ...value, inventory: { ...value.inventory, hoe: 0 } };
+  }
   if(validateSave(value)){
     const data=structuredClone(value);
     if(data.mapBaseRevision!==MAP_BASE_REVISION){data.mapEdits=mergeDefaultMap('property',data.mapEdits,false);data.forestMapEdits=mergeDefaultMap('forest',data.forestMapEdits,false);data.mapBaseRevision=MAP_BASE_REVISION;}

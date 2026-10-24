@@ -3,7 +3,7 @@ import type { ItemId } from '../types';
 import type { ActionResult } from './farming';
 import { Inventory, ITEM_NAMES, MAX_ITEM_COUNT } from './inventory';
 
-const UNIQUE_TOOLS: ItemId[] = ['hatchet', 'pickaxe', 'hammer', 'handsaw'];
+const UNIQUE_TOOLS: ItemId[] = ['hatchet', 'pickaxe', 'hoe', 'hammer', 'handsaw'];
 
 function missingRequirement(recipe: CraftingRecipe, inventory: Inventory, nearWorkbench: boolean): string | undefined {
   if (UNIQUE_TOOLS.some((item) => (recipe.output[item] ?? 0) > 0 && inventory.has(item))) {

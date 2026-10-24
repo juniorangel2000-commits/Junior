@@ -15,7 +15,9 @@ import { TOOL_ICON_URLS } from './data/tool-art';
 const BASE = 'assets/visual/';
 const ICON_IDS = new Set(['wood', 'stone', 'branch', 'log', 'plank', 'scrap', 'hatchet', 'pickaxe', 'handsaw', 'fiber', 'cord', 'flakedStone', 'handle', 'blade', 'board', 'hammer', 'water', 'workbench', 'seeds']);
 export function itemIconUrl(id: string): string | undefined {
-  if (id === 'hatchet' || id === 'pickaxe') return TOOL_ICON_URLS[id];
+  if (id === 'stone') return 'assets/visual/nature/small-stones.png';
+  if (id === 'branch') return 'assets/visual/nature/fallen-branches.png';
+  if (id === 'hatchet' || id === 'pickaxe' || id === 'hoe') return TOOL_ICON_URLS[id];
   if (id === 'water-empty') return WATER_EMPTY_ICON;
   if (id === 'water' || id === 'water-full') return WATER_FULL_ICON;
   if (ICON_IDS.has(id)) return `${BASE}icons/${id}.png`;
@@ -24,12 +26,13 @@ export function itemIconUrl(id: string): string | undefined {
 }
 
 const WORLD_SOURCES: Record<string, string> = {
-  stone: 'world/pedra.png', scrap: 'world/sucata.png', log: 'world/tronco.png',
-  branch: 'world/branch.png', fiber: 'world/fiber.png', seeds: 'world/seed-shrub.png',
-  vein: 'world/vein.png', workbench: 'world/workbench.png',
+  scrap: 'world/sucata.png', log: 'world/tronco.png', workbench: 'world/workbench.png',
 };
 const MODULES = ['parede_creme', 'parede_janela_floreira', 'parede_trepadeira', 'parede_porta', 'porta_madeira', 'janela_turquesa', 'telha_lisa', 'telha_variante', 'chamine', 'floreira', 'cerca_natural', 'banco_jardim', 'barril', 'vaso_flor', 'piso_tabuas', 'piso_pedra', 'terra', 'caminho', 'planta'];
 export function preloadVisualAssets(scene: Phaser.Scene): void {
+  scene.load.image('source-small-stones','assets/visual/nature/small-stones.png');
+  scene.load.image('source-new-branches','assets/visual/nature/fallen-branches.png');
+  scene.load.image('source-berry-bush','assets/visual/nature/berry-bush.png');
   preloadHouseSprite(scene);
   preloadCharacterSprites(scene);
   preloadToolArt(scene);
@@ -70,14 +73,18 @@ function fitSource(scene: Phaser.Scene, source: string, key: string, width: numb
   const data = context.getImageData(0, 0, scan.width, scan.height).data;
   let minX = scan.width, minY = scan.height, maxX = -1, maxY = -1;
   for (let y = 0; y < scan.height; y++) for (let x = 0; x < scan.width; x++) {
-    if (data[(y * scan.width + x) * 4 + 3] < 32) continue;
+    const alpha=(y*scan.width+x)*4+3;
+    const threshold=source==='source-new-branches'||source==='source-small-stones'||source==='source-berry-bush'?160:32;
+    if(data[alpha]<threshold){data[alpha]=0;continue;}
+    if(threshold===160)data[alpha]=255;
     minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
   }
   if (maxX < minX) return;
+  context.putImageData(new ImageData(data,scan.width,scan.height),0,0);
   const sw = maxX - minX + 1, sh = maxY - minY + 1;
   const scale = Math.min((width - 2) / sw, (height - bottom - 2) / sh);
   const dw = Math.max(1, Math.round(sw * scale)), dh = Math.max(1, Math.round(sh * scale));
-  canvasTexture(scene, key, width, height, c => c.drawImage(image, minX, minY, sw, sh, Math.floor((width - dw) / 2), height - bottom - dh, dw, dh));
+  canvasTexture(scene, key, width, height, c => c.drawImage(scan, minX, minY, sw, sh, Math.floor((width - dw) / 2), height - bottom - dh, dw, dh));
 }
 
 /** Assemble a facade from the approved cream/terracotta modules at the existing house footprint. */
@@ -215,8 +222,11 @@ function createHouse(scene: Phaser.Scene): void {
 export function setupVisualAssets(scene: Phaser.Scene): void {
   setupCharacterSprites(scene);
   setupReferenceNature(scene);
+  fitSource(scene,'source-small-stones','asset-small-stones',128,96,4);
+  fitSource(scene,'source-new-branches','asset-new-branches',128,96,4);
+  fitSource(scene,'source-berry-bush','asset-berry-bush',128,128,4);
   setupResourceSprites(scene);
-  for (const [id, width, height] of [['stone', 26, 22], ['scrap', 32, 32], ['log', 40, 34], ['branch', 36, 32], ['fiber', 32, 34], ['seeds', 34, 38], ['vein', 44, 48], ['workbench', 40, 40]] as const) {
+  for (const [id, width, height] of [['scrap', 32, 32], ['log', 40, 34], ['workbench', 40, 40]] as const) {
     if (!scene.textures.exists(`asset-${id}`)) fitSource(scene, `source-${id}`, `asset-${id}`, width, height, 1);
   }
   for (const [source, key, width, height] of [

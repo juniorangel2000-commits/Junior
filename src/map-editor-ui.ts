@@ -34,13 +34,13 @@ const terrains: ReadonlyArray<{ kind: TerrainKind; label: string }> = [
 const objects: ReadonlyArray<{ kind: EditorObjectKind; label: string; hint: string }> = [
   { kind: 'standingTree', label: 'Árvore', hint: 'Posicionar árvore' },
   { kind: 'pine', label: 'Pinheiro', hint: 'Posicionar pinheiro' },
-  { kind: 'stone', label: 'Pedras', hint: 'Posicionar pedras soltas' },
+  { kind: 'stone', label: 'Pedras pequenas', hint: 'Posicionar pedras soltas' },
   { kind: 'vein', label: 'Rocha', hint: 'Posicionar rocha minerável' },
   { kind: 'tree', label: 'Galhos', hint: 'Posicionar galhos' },
   { kind: 'fiber', label: 'Fibras', hint: 'Posicionar fibras' },
   { kind: 'seeds', label: 'Sementes', hint: 'Posicionar sementes' },
   { kind: 'scrap', label: 'Sucata', hint: 'Posicionar sucata' },
-  ...NATURE_KINDS.map(kind=>({kind,label:NATURE_ART[kind].label,hint:`Posicionar ${NATURE_ART[kind].label.toLowerCase()}`})),
+  ...NATURE_KINDS.filter(kind=>kind!=='mossBoulder'&&kind!=='shoreStones').map(kind=>({kind,label:NATURE_ART[kind].label,hint:`Posicionar ${NATURE_ART[kind].label.toLowerCase()}`})),
 ];
 const icons: Record<string, string> = {
   map: '<path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Zm6-2v16m6-14v16"/>',

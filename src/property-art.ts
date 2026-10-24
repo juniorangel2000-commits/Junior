@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import type { BuildingData, ResourceNode } from './types';
-import { isBridgeTile, isFarmTile, isPathTile, isWaterTile, TILE } from './data/regions';
+import { isBridgeTile, isFarmTile, isPathTile, isWaterTile, TILE, WORLD_WIDTH, WORLD_HEIGHT } from './data/regions';
 import { isWaterPoint, roadDistanceAt } from './data/terrain-shape';
 
 export interface PropertyArtContext {
@@ -13,10 +13,10 @@ export interface PropertyArtContext {
 
 type Detail = 'fern' | 'flowers-white' | 'flowers-pink' | 'flowers-yellow' | 'grass-tuft' | 'shore-stones';
 
-const LEFT = 5 * TILE;
-const TOP = 7 * TILE;
-const WIDTH = 51 * TILE;
-const HEIGHT = 39 * TILE;
+const LEFT = 0;
+const TOP = 0;
+const WIDTH = WORLD_WIDTH * TILE;
+const HEIGHT = WORLD_HEIGHT * TILE;
 
 
 // Decoration has its own stable noise, independent of resource generation.
@@ -60,6 +60,7 @@ export function decorateProperty(scene: Phaser.Scene, context: PropertyArtContex
     for (let ty = Math.floor((y - height) / TILE); ty <= Math.floor((y - 1) / TILE); ty++) {
       for (let tx = Math.floor((x - width / 2) / TILE); tx <= Math.floor((x + width / 2 - 1) / TILE); tx++) {
         if (isFarmTile(tx, ty) || isPathTile(tx, ty) || isWaterTile(tx, ty) || isBridgeTile(tx, ty)
+          || tx >= 18 && tx <= 31 && ty >= 9 && ty <= 17
           || context.isBlocked(tx, ty) || context.resourceAt(tx, ty) || occupied.has(`${tx},${ty}`)
           || tx === 29 && ty === 17) return false;
       }
@@ -107,6 +108,8 @@ export function decorateProperty(scene: Phaser.Scene, context: PropertyArtContex
   };
 
   const stamp = (detail: Detail, tx: number, ty: number, variant = 0, scale = 1): void => {
+    // These complete plant sprites belong to the bounded collectible population.
+    if(detail==='fern'||detail==='flowers-white')return;
     const dimensions: Record<Detail, [number, number]> = {
       fern: [30, 28], 'flowers-white': [28, 23], 'flowers-pink': [28, 23],
       'flowers-yellow': [28, 23],
@@ -142,13 +145,7 @@ export function decorateProperty(scene: Phaser.Scene, context: PropertyArtContex
     }
   };
 
-  // Beds beside the facade, the kitchen garden and the western ruins. Paths,
-  // all 45 farm cells and collectible resources are explicitly protected.
-  planting(19, 15, 1, 2);
-  planting(29, 14, 1, 2, true);
-  planting(20, 22, 0, 3, true);
-  planting(26, 25, 4, 0);
-  planting(32, 23, 0, 2, true);
+  // Loose woodland pockets replace the dense beds glued to the house.
   planting(12, 15, 2, 1);
   planting(7, 20, 1, 2, true);
   planting(16, 29, 1, 2);
@@ -157,10 +154,10 @@ export function decorateProperty(scene: Phaser.Scene, context: PropertyArtContex
 
   // Small pockets along the existing paths preserve their open centre. The
   // southern and eastern connections receive fewer details than the property.
-  for (let y = 9; y <= 44; y++) for (let x = 7; x <= 54; x++) {
+  for (let y = 2; y < WORLD_HEIGHT - 2; y++) for (let x = 2; x < WORLD_WIDTH - 2; x++) {
     if (isPathTile(x, y) || isFarmTile(x, y) || isWaterTile(x, y)) continue;
     const besidePath = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => isPathTile(x + dx, y + dy));
-    if (!besidePath || noise(x, y, 43) < (x >= 50 || y >= 41 ? 0.72 : 0.61)) continue;
+    if (besidePath ? noise(x,y,43)<.76 : noise(x,y,43)<.965) continue;
     const detail: Detail = noise(x, y, 37) > 0.65 ? 'flowers-white' : noise(x, y, 41) > 0.5 ? 'flowers-pink' : 'grass-tuft';
     stamp(detail, x, y, x * 3 + y, detail === 'grass-tuft' ? 0.9 : 1);
   }
@@ -179,5 +176,5 @@ export function decorateProperty(scene: Phaser.Scene, context: PropertyArtContex
 
   if (scene.textures.exists(TEXTURE)) scene.textures.remove(TEXTURE);
   scene.textures.addCanvas(TEXTURE, canvas)?.setFilter(0);
-  scene.add.image(LEFT, TOP, TEXTURE).setOrigin(0, 0).setDepth(-40);
+  scene.add.image(LEFT, TOP, TEXTURE).setOrigin(0, 0).setDepth(-70);
 }

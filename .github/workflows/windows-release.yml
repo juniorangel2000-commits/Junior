@@ -4,6 +4,8 @@ run-name: After Rain ${{ github.ref_name }} — Windows x64
 on:
   workflow_dispatch:
   push:
+    branches: ['title-screen-0.5']
+    paths: ['package.json']
     tags:
       - 'v*'
 
@@ -72,19 +74,20 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publicar uma versão quando uma tag for enviada
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Publicar a versão validada
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/title-screen-0.5'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_COMMIT: ${{ github.sha }}
           RELEASE_REPOSITORY: ${{ github.repository }}
         shell: pwsh
         run: |
           $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
-          gh release create $env:RELEASE_TAG --draft --verify-tag --repo $env:RELEASE_REPOSITORY --title "After Rain $env:RELEASE_TAG — animais e corda (Windows x64)" --notes-file "docs/cenarios/NOTAS-$version.md"
+          $tag = "v$version"
+          gh release create $tag --draft --target $env:RELEASE_COMMIT --repo $env:RELEASE_REPOSITORY --title "After Rain $tag — propriedade, recursos e luz (Windows x64)" --notes-file "docs/cenarios/NOTAS-$version.md"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $assets = @((Get-ChildItem release/*.exe).FullName) + @('release/SHA256SUMS.txt', 'release/LEIA.md')
-          gh release upload $env:RELEASE_TAG @assets --repo $env:RELEASE_REPOSITORY
+          gh release upload $tag @assets --repo $env:RELEASE_REPOSITORY
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          gh release edit $env:RELEASE_TAG --draft=false --latest --repo $env:RELEASE_REPOSITORY
+          gh release edit $tag --draft=false --latest --repo $env:RELEASE_REPOSITORY
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

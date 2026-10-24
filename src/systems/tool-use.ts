@@ -7,6 +7,7 @@ export interface ToolStrike {
   tool: AnimatedTool;
   direction: CharacterDirection;
   target: ResourceNode;
+  soilAction?: 'prepare' | 'restore';
 }
 
 /** One strike, one impact. No timers survive cancellation, menus or a loaded game. */

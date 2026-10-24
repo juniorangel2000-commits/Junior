@@ -1,0 +1,161 @@
+{
+  "passed": true,
+  "initial": {
+    "trees": 759,
+    "variants": 6,
+    "scales": 46,
+    "rocks": 15,
+    "layers": [
+      {
+        "key": "bridge-v2:6:deck",
+        "depth": -60
+      },
+      {
+        "key": "bridge-v2:7:deck",
+        "depth": -60
+      },
+      {
+        "key": "bridge-v2:6:back",
+        "depth": 582
+      },
+      {
+        "key": "bridge-v2:6:front",
+        "depth": 639
+      },
+      {
+        "key": "bridge-v2:7:back",
+        "depth": 1670
+      },
+      {
+        "key": "bridge-v2:7:front",
+        "depth": 1727
+      }
+    ]
+  },
+  "coast": {
+    "width": 160,
+    "treeCount": 759,
+    "wetTrees": [],
+    "partial": {
+      "x": 43,
+      "y": 2
+    },
+    "sand": [
+      {
+        "name": "river",
+        "x": 1593.7685267557988,
+        "y": 960,
+        "pixel": [
+          156,
+          130,
+          86,
+          255
+        ],
+        "weight": 1,
+        "wet": false
+      },
+      {
+        "name": "home-lake",
+        "x": 1168,
+        "y": 1111.9354670786374,
+        "pixel": [
+          169,
+          146,
+          101,
+          255
+        ],
+        "weight": 1,
+        "wet": false
+      },
+      {
+        "name": "east-lake",
+        "x": 2576,
+        "y": 449.19288512538816,
+        "pixel": [
+          174,
+          148,
+          99,
+          255
+        ],
+        "weight": 1,
+        "wet": false
+      }
+    ]
+  },
+  "treePlacement": [
+    false,
+    false,
+    false,
+    false
+  ],
+  "bridges": [
+    {
+      "id": "north",
+      "east": true,
+      "west": true,
+      "north": {
+        "blocked": true,
+        "position": {
+          "x": 1408,
+          "y": 572.9994140624998
+        },
+        "depth": 0
+      },
+      "south": {
+        "blocked": true,
+        "position": {
+          "x": 1408,
+          "y": 645.0007812500002
+        },
+        "depth": 0
+      },
+      "railFromDeck": true
+    },
+    {
+      "id": "south",
+      "east": true,
+      "west": true,
+      "north": {
+        "blocked": true,
+        "position": {
+          "x": 1456,
+          "y": 1660.9994140625008
+        },
+        "depth": 0
+      },
+      "south": {
+        "blocked": true,
+        "position": {
+          "x": 1456,
+          "y": 1733.0007812499991
+        },
+        "depth": 0
+      },
+      "railFromDeck": true
+    }
+  ],
+  "water": {
+    "sprites": 567,
+    "textures": 226,
+    "wetPixels": 211488,
+    "dryLeaks": 0,
+    "bridgeLeaks": 0,
+    "animated": true
+  },
+  "soil": {
+    "dryKey": "prepared-soil-v2:dry:15:0",
+    "wetKey": "prepared-soil-v2:wet:15:1",
+    "dryBrightness": 84.86474062500024,
+    "wetBrightness": 53.94253750000003,
+    "water": 6,
+    "count": 4
+  },
+  "forestWater": {
+    "sprites": 371,
+    "animated": true,
+    "crops": 2
+  },
+  "authorMapsPreserved": true,
+  "pageErrors": [],
+  "at": "2026-10-24T23:41:53.399Z"
+}

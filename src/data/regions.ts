@@ -1,7 +1,7 @@
-/** Geometria lógica compartilhada por mundo, interface e salvamento. */
-export const TILE = 32;
-export const WORLD_WIDTH = 96;
-export const WORLD_HEIGHT = 72;
+import {TILE} from './world-size';
+import {isWaterPoint} from './property-water';
+import {PROPERTY_BRIDGES} from './bridges';
+export {TILE,WORLD_WIDTH,WORLD_HEIGHT} from './world-size';
 
 export type RegionId = 'property' | 'pine-forest' | 'open-fields';
 export interface RegionDefinition {
@@ -31,16 +31,17 @@ export function isFarmTile(x: number, y: number): boolean {
   return x >= 21 && x <= 29 && y >= 20 && y <= 24;
 }
 
-export function isWaterTile(x: number, y: number): boolean {
+export function legacyWaterTile(x: number, y: number): boolean {
   const river = 44 + Math.floor(Math.sin(y * 0.24) * 2);
   const pond = ((x - 36) ** 2) / 33 + ((y - 30) ** 2) / 15 < 1;
   const forestPond = ((x - 80) ** 2) / 30 + ((y - 10) ** 2) / 10 < 1;
   return (x >= river && x <= river + 3) || pond || forestPond;
 }
 
-export function isBridgeTile(x: number, y: number): boolean {
-  return (x >= 42 && x <= 48 && y >= 18 && y <= 19)
-    || (x >= 41 && x <= 49 && y >= 52 && y <= 53);
+/** Tile decisions sample the same continuous shoreline used by the renderer. */
+export function isWaterTile(x:number,y:number):boolean {return isWaterPoint((x+.5)*TILE,(y+.5)*TILE);}
+export function isBridgeTile(x:number,y:number):boolean {
+  return PROPERTY_BRIDGES.some(b=>x>=b.x&&x<b.x+b.width&&y>=b.y&&y<b.y+b.height);
 }
 
 export function isPathTile(x: number, y: number): boolean {

@@ -1,6 +1,6 @@
 import type { InventoryData, ItemId, QuickSlot, Tool } from '../types';
 import { ITEM_IDS } from '../data/items';
-export const QUICK_TOOLS: Tool[] = ['hand', 'plant', 'water', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
+export const QUICK_TOOLS: Tool[] = ['hand', 'plant', 'water', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'hoe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
 export const emptyQuickbar = (): QuickSlot[] => Array.from({ length: 9 }, () => null);
 export function isQuickSlot(value: unknown): value is Exclude<QuickSlot, null> {
   return typeof value === 'string' && (QUICK_TOOLS.includes(value as Tool) || value === 'item:wateringCan'
@@ -16,7 +16,7 @@ export function quickAction(slot: QuickSlot): Tool {
   const item = quickItem(slot);
   if (!item) return slot as Tool || 'hand';
   return item === 'wateringCan' ? 'water' : item === 'seeds' ? 'plant'
-    : item === 'hatchet' || item === 'pickaxe' ? item : 'hand';
+    : item === 'hatchet' || item === 'pickaxe' || item === 'hoe' ? item : 'hand';
 }
 export function quickQuantity(slot: QuickSlot, inventory: InventoryData, wateringCan: boolean): number | null {
   const item = quickItem(slot);

@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { CHARACTER_DIRECTIONS, directionVector, type CharacterDirection } from './character-directions';
-import { toolIdleArt, toolUseArt, TOOL_USE_FRAMES, TOOL_FRAME_SIZE, type AnimatedTool } from './data/tool-art';
+import { toolIdleArt, toolUseArt, hoeSwingAngle, TOOL_USE_FRAMES, TOOL_FRAME_SIZE, type AnimatedTool } from './data/tool-art';
 import type { CharacterProfile } from './types';
 import type { ToolUse } from './systems/tool-use';
 import { resolveCharacter } from './data/characters';
@@ -19,7 +19,7 @@ const HANDS: Record<'farmer-female' | 'farmer-male', Record<CharacterDirection, 
 
 export function preloadToolArt(scene: Phaser.Scene): void {
   const sources = new Map<string, string>();
-  for (const tool of ['hatchet', 'pickaxe', 'water'] as const) for (const direction of CHARACTER_DIRECTIONS) {
+  for (const tool of ['hatchet', 'pickaxe', 'water', 'hoe'] as const) for (const direction of CHARACTER_DIRECTIONS) {
     const idle = toolIdleArt(tool, direction); sources.set(idle.key, idle.path);
     for (let frame = 0; frame < TOOL_USE_FRAMES; frame++) {
       const art = toolUseArt(tool, direction, frame); sources.set(art.key, art.path);
@@ -45,9 +45,9 @@ export class ToolVisual {
     this.sprite.setTexture(art.key);
     this.sprite.setFlipX(art.flipX);
     this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-    const size = tool === 'water' ? 256 : TOOL_FRAME_SIZE;
+    const size = tool === 'hoe' ? 320 : tool === 'water' ? 256 : TOOL_FRAME_SIZE;
     const gripX = art.flipX ? size - art.grip[0] : art.grip[0];
-    this.sprite.setOrigin(gripX / size, art.grip[1] / size).setScale(tool === 'water' ? .14 : .30);
+    this.sprite.setOrigin(gripX / size, art.grip[1] / size).setScale(tool === 'hoe' ? .115 : tool === 'water' ? .14 : .30);
     const behind = direction.startsWith('up');
     const character = resolveCharacter(this.profile);
     const hand = HANDS[character.id][direction];
@@ -56,7 +56,7 @@ export class ToolVisual {
     // Keep the authored swing upright, slightly ahead in the facing direction.
     // The tool stays hidden outside the action.
     const forward = directionVector(direction);
-    this.sprite.setAngle(0).setPosition(x + handX + forward.x * 7, y + handY + forward.y * 7)
+    this.sprite.setAngle(tool === 'hoe' ? hoeSwingAngle(use.frame, art.flipX) : 0).setPosition(x + handX + forward.x * 7, y + handY + forward.y * 7)
       .setDepth(y + (behind ? -1 : 1)).setVisible(true);
   }
 }

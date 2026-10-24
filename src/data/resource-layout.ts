@@ -11,7 +11,7 @@ export interface ResourceLayoutContext {
 
 // Include a small safety margin around each complete sprite, not just its feet.
 const DIMENSIONS: Record<ResourceKind, readonly [number, number]> = {
-  stone: [30, 20], vein: [48, 54], seeds: [36, 36], fiber: [32, 38],
+  fallenLog: [68,68], stump:[38,38], stone: [32,24], vein: [48, 54], seeds: [36, 36], fiber: [32, 38],
   tree: [36, 24], scrap: [30, 28], standingTree: [104, 132],
 };
 const key = (x: number, y: number): string => `${x},${y}`;

@@ -45,6 +45,11 @@ export const RECIPES: CraftingRecipe[] = [
     cost: { handle: 1, flakedStone: 2, cord: 1 }, output: { pickaxe: 1 },
   },
   {
+    id: 'hoe', name: 'Enxada simples',
+    description: 'Prepare novos canteiros no chão livre da propriedade, plante, regue e colha.',
+    cost: { handle: 1, flakedStone: 1, cord: 1 }, output: { hoe: 1 },
+  },
+  {
     id: 'hammer', name: 'Martelo rudimentar',
     description: 'Monte a bancada e junte os módulos do primeiro abrigo.',
     cost: { handle: 1, stone: 1, cord: 1 }, output: { hammer: 1 },

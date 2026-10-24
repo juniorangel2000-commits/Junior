@@ -1,3 +1,4 @@
+import { Daylight } from '../daylight';
 import {AnimalPopulation} from '../animals';
 import {startAnimalEscort,releaseAnimalEscort,transferAnimalEscort} from '../systems/animals';
 import {sampleWaterDepth} from '../swimming/config';
@@ -29,6 +30,7 @@ import { loadCameraZoom, saveCameraZoom, stepCameraZoom } from '../camera-zoom';
 export interface ForestStart { save: SaveData; ui: GameUI; onReturn: (save: SaveData, title?: boolean) => void }
 export class ForestScene extends Phaser.Scene {
   private state!: SaveData;
+  private daylight!: Daylight;
   private resources!:Resources;
   private resourceLifecycle?:ResourceLifecycle;
   private toolUse=new ToolUse();
@@ -59,7 +61,7 @@ export class ForestScene extends Phaser.Scene {
   create(data:ForestStart):void {
     this.ui=data.ui;this.state=structuredClone(data.save);this.state.activeArea='forest';this.onReturn=data.onReturn;
     this.paused=false;this.leaving=false;this.elapsed=0;this.hudElapsed=0;this.wildlife?.destroy();this.wildlife=undefined;
-    this.zoom=loadCameraZoom();this.farming=new Farming(this.state.crops);setupAnimalArt(this);
+    this.zoom=loadCameraZoom();this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);setupAnimalArt(this);
     this.world=new ForestWorld(this);
     this.world.depleted=new Set(this.state.depletedResources);this.world.rebuildEnvironment(this.state.forestMapEdits);
     this.resources=new Resources(this.state.resourceProgress);this.toolUse=new ToolUse();this.toolVisual=new ToolVisual(this,this.state.profile);
@@ -69,6 +71,7 @@ export class ForestScene extends Phaser.Scene {
     this.player.facing=directionVector(valid?p.direction??'up':'up');this.player.update(0,this.movementBlockedAt,undefined,true,this.swimmingPoint);
 
     this.resetNaturalResources();this.rebuildAnimals();
+    this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time);
     this.cameras.main.setBounds(0,0,3072,2304);this.applyCamera();this.cameras.main.fadeIn(300);
     document.querySelector<HTMLElement>('#ui')!.style.display='';this.ui.setQuickbar(this.state.quickbar??emptyQuickbar());this.ui.showHUD('forest');this.updateHUD();
     this.input.keyboard!.on('keydown',this.key,this);this.input.on('wheel',this.wheel,this);
@@ -83,7 +86,7 @@ export class ForestScene extends Phaser.Scene {
     if(this.mapEditor||this.leaving)return;
     this.toolUse.cancel();this.toolVisual?.hide();this.save();const original=structuredClone(this.state);this.paused=true;this.ui.showMapEditorMode();this.player.setVisible(false);this.input.keyboard?.resetKeys();
     this.scene.setVisible(false);this.scene.pause();this.scene.launch('Editor',{save:original,area:'forest',onClose:(updated:SaveData|undefined,area:'property'|'forest')=>{
-      this.scene.resume();this.scene.setVisible(true);this.state=updated??original;this.world.depleted=new Set(this.state.depletedResources);this.world.rebuildEnvironment(this.state.forestMapEdits);this.resetNaturalResources();this.rebuildAnimals();this.farming=new Farming(this.state.crops);this.paused=false;
+      this.scene.resume();this.scene.setVisible(true);this.state=updated??original;this.world.depleted=new Set(this.state.depletedResources);this.world.rebuildEnvironment(this.state.forestMapEdits);this.resetNaturalResources();this.rebuildAnimals();this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);this.paused=false;
       if(this.movementBlockedAt(Math.floor(this.player.x/32),Math.floor(this.player.y/32))){this.player.x=(this.entry().x+.5)*32;this.player.y=(this.entry().y+.5)*32;}
       this.player.setVisible(true);this.ui.showHUD('forest');this.applyCamera();this.updateHUD();this.input.keyboard?.resetKeys();
       if(updated){this.save();if(area==='property')this.leave();}
@@ -112,7 +115,7 @@ export class ForestScene extends Phaser.Scene {
     this.paused=paused;this.input.keyboard?.resetKeys();this.ui.updateCameraZoom(this.zoom,!paused&&!this.mapEditor);
     if(paused)this.save();
   }
-  selectTool(tool:Tool):void {if(this.player.isSwimming)return;if((tool==='pickaxe'||tool==='hatchet')&&this.state.inventory[tool]<1){this.ui.toast('Fabrique essa ferramenta na propriedade.');return;}this.toolUse.cancel();this.toolVisual?.hide();this.state.equippedTool=tool;this.updateHUD();}
+  selectTool(tool:Tool):void {if(this.player.isSwimming)return;if((tool==='pickaxe'||tool==='hatchet'||tool==='hoe')&&this.state.inventory[tool]<1){this.ui.toast('Fabrique essa ferramenta na propriedade.');return;}this.toolUse.cancel();this.toolVisual?.hide();this.state.equippedTool=tool;this.updateHUD();}
   persist():boolean {return this.save();}
   craftRecipe(id:string):void {
     if(!this.ui.isCraftingOpen())return;
@@ -129,7 +132,7 @@ export class ForestScene extends Phaser.Scene {
   captureMap():Promise<string> {
     this.updateHUD();
     const texture=this.make.renderTexture({width:960,height:720},false);texture.camera.setZoom(960/3072).setScroll(0,0).setOrigin(0,0);
-    this.children.depthSort();texture.draw(this.children.list.filter(o=>o!==this.player.sprite&&'visible' in o&&o.visible));
+    this.children.depthSort();texture.draw(this.children.list.filter(o=>!this.daylight.contains(o)&&o!==this.player.sprite&&'visible' in o&&o.visible));
     return new Promise(resolve=>texture.snapshot(image=>{const url=image instanceof HTMLImageElement?image.src:'';texture.destroy();resolve(url);}));
   }
   private updateHUD():void {
@@ -137,7 +140,7 @@ export class ForestScene extends Phaser.Scene {
     this.ui.updateHUD({area:'forest',inHome:false,swimming:this.player.isSwimming,name:this.state.profile.name,day:this.state.day,time:this.state.time,
       inventory:this.state.inventory,tool:this.state.equippedTool??'hand',wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,
       playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:this.state.animalEscort&&!this.nearExit()?'G':'E',prompt:this.player.isSwimming?'Nadar · siga até a margem para sair':this.nearExit()?this.state.animalEscort?'Levar animal à propriedade':'Voltar à Propriedade Abandonada':this.state.animalEscort?'Conduzindo animal · siga até a saída · soltar corda':info?'Prender '+ANIMAL_NAMES[info.kind].toLowerCase()+' com corda':node?`${RESOURCE_DEFINITIONS[node.kind].label} · ${RESOURCE_DEFINITIONS[node.kind].tool==='pickaxe'?'use a picareta':RESOURCE_DEFINITIONS[node.kind].tool==='hatchet'?'use a machadinha':'recolher'}`:'Explorar a floresta',
-      location:'Floresta Antiga',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress});
+      location:'Floresta Antiga',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});
     this.ui.updateCameraZoom(this.zoom,!this.paused&&!this.mapEditor);
   }
   private key(e:KeyboardEvent):void {
@@ -167,6 +170,7 @@ export class ForestScene extends Phaser.Scene {
     if(this.player.isSwimming||this.toolUse.active)return;
     if(this.nearExit()){if(!this.wildlife?.canLeave(this.player)){this.ui.toast('Traga o animal para perto da saída.');return;}this.leave();return;}
     if(this.state.animalEscort){this.ui.toast('Conduza o animal até a propriedade. G solta a corda.');return;}
+    if(this.state.equippedTool==='hoe'){this.ui.toast('Prepare sua horta na Propriedade Abandonada.');return;}
     const a=this.nearest();if(!a){
       const node=this.nearestResource();if(!node)return;const tool=this.state.equippedTool;
       if(RESOURCE_DEFINITIONS[node.kind].tool!=='hand'&&tool!==RESOURCE_DEFINITIONS[node.kind].tool){this.ui.toast('Equipe a ferramenta indicada.');return;}
@@ -201,6 +205,7 @@ export class ForestScene extends Phaser.Scene {
     this.time.delayedCall(250,()=>{const save=structuredClone(this.state);this.scene.stop();this.onReturn(save,title);});
   }
   update(_time:number,ms:number):void {
+    this.daylight?.update(this.state.time);
     if(!this.player||this.paused||this.leaving||this.mapEditor||document.hidden)return;
     const delta=Math.min(ms/1000,.1);this.player.update(delta,this.movementBlockedAt,undefined,!this.toolUse.active,this.swimmingPoint,this.allowLeashMovement);this.wildlife?.update(delta,this.player);this.farming.update(delta);if(this.player.isSwimming){this.state.equippedTool='hand';this.toolUse.cancel();this.toolVisual?.hide();}
     const strike=this.toolUse.advance(delta);if(strike){const node=this.world.resourceAt(strike.target.x,strike.target.y);if(node?.id===strike.target.id&&!this.player.isSwimming)this.hitResource(node,strike.tool);}

@@ -1,3 +1,4 @@
+import {isFiberPlant,fiberPlantFor,fiberPlantArt} from './data/fiber-plants';
 import Phaser from 'phaser';
 import type {WorldEditorObject} from './world';
 import type {MapEditData,EditorObjectKind} from './systems/map-editor';
@@ -21,9 +22,12 @@ export class ForestWorld {
   resourceAt=(x:number,y:number):ResourceNode|undefined=>this.resources.find(n=>n.x===x&&n.y===y);
   removeResource(id:string):void {const n=this.resources.find(n=>n.id===id);if(!n)return;this.resources=this.resources.filter(r=>r.id!==id);this.images.get(id)?.destroy();this.images.delete(id);this.solid.delete(`${n.x},${n.y}`);this.trees=this.trees.filter(t=>t.active);}
   setNaturalResources(nodes:readonly ResourceNode[]):void {
-    const next=new Set(nodes.map(n=>n.id));for(const n of [...this.resources])if(n.id.startsWith('spawn-')&&!next.has(n.id))this.removeResource(n.id);
-    for(const n of nodes)if(!this.resources.some(r=>r.id===n.id)&&!this.isBlocked(n.x,n.y)){
-      const image=this.scene.add.image(n.x*32+16,n.y*32+29,naturalResourceTexture(n.kind)).setOrigin(.5,1).setDepth(n.y*32+29);this.images.set(n.id,image);this.resources.push({...n});this.environment.push(image);if(n.kind==='vein')this.solid.add(`${n.x},${n.y}`);
+    const next=new Set(nodes.map(n=>n.id));for(const n of [...this.resources])if(n.id.startsWith('spawn-')?!next.has(n.id):(n.kind==='fiber'||n.kind==='fallenLog'||n.kind==='stump')&&!Object.hasOwn(this.edits?.objects??{},n.id.replace(/^f-/,'')))this.removeResource(n.id);
+    for(const n of nodes)if(!this.resources.some(r=>r.id===n.id)&&!this.isBlocked(n.x,n.y)&&!((n.kind==='fiber'||n.kind==='seeds')&&this.edits?.terrain[`${n.x},${n.y}`]!==undefined)){
+      const plant=n.kind==='fiber'?fiberPlantArt(fiberPlantFor(n)):undefined;
+      const image=this.scene.add.image(n.x*32+16,n.y*32+29,plant?.texture??naturalResourceTexture(n.kind)).setOrigin(.5,plant?.pivot??1).setDepth(n.y*32+29);
+      if(n.kind==='tree')image.setDisplaySize(36,27);if(n.kind==='stone')image.setDisplaySize(32,24);
+      if(plant)image.setDisplaySize(plant.size,plant.size);if(n.kind==='seeds')image.setDisplaySize(44,44);if(n.kind==='vein')image.setDisplaySize(52,52).setOrigin(.5,124/128);if(n.kind==='fallenLog'||n.kind==='stump')image.setDisplaySize(n.kind==='fallenLog'?68:38,n.kind==='fallenLog'?68:38).setOrigin(.5,124/128);this.images.set(n.id,image);this.resources.push({...n});this.environment.push(image);if(n.kind==='vein'||n.kind==='fallenLog'||n.kind==='stump')this.solid.add(`${n.x},${n.y}`);
     }
   }
   constructor(private readonly scene:Phaser.Scene,edits?:MapEditData,private readonly textureNamespace='forest'){this.rebuildEnvironment(edits);}
@@ -32,13 +36,13 @@ export class ForestWorld {
   entry(){return this.edits?.points?.entry??FOREST_ENTRY;}
   exit(){return this.edits?.points?.exit??{x:48,y:69};}
   private addEnvironmentObject(id:string,kind:EditorObjectKind,x:number,y:number,texture:string,width:number,height:number,pivot:number,solid:boolean,flip=false):void {
-    const edit=this.edits?.objects[id];if(edit?.removed)return;
+    const edit=this.edits?.objects[id];if(edit?.removed||kind==='reeds')return;
     const collectible=collectibleKind(kind),resourceID=`f-${id}`;if(collectible&&this.depleted.has(resourceID))return;
     x=edit?.x??x;y=edit?.y??y;
     if(this.editorObjects.some(o=>o.x===x&&o.y===y)||this.waterAt(x,y)&&!natureArt(kind)?.water)return;
     const sprite=this.scene.add.image(x*32+16,y*32+25,texture).setOrigin(.5,pivot).setDisplaySize(width,height).setFlipX(flip).setDepth(y*32+25);
-    this.editorObjects.push({id,kind,x,y,texture});if(collectible){this.resources.push({id:resourceID,kind:collectible,x,y});this.images.set(resourceID,sprite);}
-    if(solid||collectible==='vein')this.solid.add(`${x},${y}`);
+    this.editorObjects.push({id,kind,x,y,texture});if(collectible){this.resources.push({id:resourceID,kind:collectible,x,y,...(isFiberPlant(kind)?{plant:kind}:{})});this.images.set(resourceID,sprite);}
+    if(solid||collectible==='vein'||collectible==='fallenLog'||collectible==='stump')this.solid.add(`${x},${y}`);
     if(kind==='standingTree'||kind==='pine'||kind.startsWith('oak')||kind.startsWith('pine'))this.trees.push(sprite);
   }
   rebuildEnvironment(edits?:MapEditData):void {
@@ -60,9 +64,9 @@ export class ForestWorld {
     for(const [id,edit] of Object.entries(edits?.objects??{})){
       if(!id.startsWith('editor-')||!edit.kind||edit.removed)continue;
       const art=natureArt(edit.kind);
-      const fallback:Record<string,string>={standingTree:'asset-tree-0',pine:'asset-pine-0',stone:'asset-stone',vein:'asset-vein',tree:'asset-branch',fiber:'asset-fiber',seeds:'asset-seeds',scrap:'asset-scrap'};
+      const fallback:Record<string,string>={standingTree:'asset-tree-0',pine:'asset-pine-0',stone:'asset-small-stones',vein:'lake-rock-0',tree:'asset-new-branches',fiber:'forest-detail-fern',seeds:'asset-berry-bush',scrap:'asset-scrap'};
       const tree=edit.kind==='standingTree'||edit.kind==='pine';
-      this.addEnvironmentObject(id,edit.kind,edit.x,edit.y,art?.texture??fallback[edit.kind],art?.width??(tree?166:32),art?.height??(tree?211:32),art?.pivot??(tree?128/132:1),art?.solid??tree);
+      this.addEnvironmentObject(id,edit.kind,edit.x,edit.y,art?.texture??fallback[edit.kind],art?.width??(tree?166:edit.kind==='tree'?36:edit.kind==='seeds'?44:32),art?.height??(tree?211:edit.kind==='tree'?27:edit.kind==='stone'?24:edit.kind==='seeds'?44:32),art?.pivot??(tree?128/132:1),art?.solid??tree);
     }
     const exit=this.exit();this.scene.add.text((exit.x+.5)*32,(exit.y+.5)*32,'Propriedade Abandonada',{fontFamily:'Georgia',fontSize:'17px',color:'#fff1ca',backgroundColor:'#443b29',padding:{x:9,y:6}}).setOrigin(exit.x>90?1:exit.x<4?0:.5).setDepth(exit.y*32+30);
     this.environment=this.scene.children.list.filter(o=>!before.has(o));
@@ -114,7 +118,7 @@ export class ForestWorld {
       const kinds:Record<string,EditorObjectKind>={boulder:'mossBoulder',log:'fallenLog',stump:'stump',fern:'fern',flowers:'whiteFlowers',bush:'bush',shore:'shoreStones',reeds:'reeds',mushrooms:'mushrooms'};
       const k=kinds[kind];x=Math.floor(x);y=Math.floor(y);
       if(FOREST_TREES.some(t=>t.x===x&&t.y===y)||FOREST_ROCKS.some(r=>r.x===x&&r.y===y))return;
-      this.addEnvironmentObject(`${k}-${x}-${y}`,k,x,y,`forest-detail-${kind}`,size,size,124/128,false);
+      this.addEnvironmentObject(`${k}-${x}-${y}`,k,x,y,natureArt(k)?.texture??`forest-detail-${kind}`,size,size,124/128,false);
     };
     // Soft vegetation is walk-through; large wood rests against existing blocked trunks.
     for(let y=3;y<69;y+=2)for(let x=3;x<94;x+=2){

@@ -1,12 +1,17 @@
+import {nearRiverBank} from '../data/fiber-plants';
+import {Farming} from '../systems/farming';
+import {drawPreparedSoil} from '../farming-art';
 import Phaser from 'phaser';
 import {MapEditor} from '../map-editor';
 import {MapEditHistory,isProtectedMapTile,type MapEditData} from '../systems/map-editor';
 import {defaultMap,type MapArea} from '../data/default-maps';
 import {createWorld,TILE,NPC_POSITION,type WorldView,type WorldEditorObject} from '../world';
 import {ForestWorld} from '../forest-world';
+import {isTreeKind,treeGroundClear} from '../systems/tree-ground';
 import {forestWater,FOREST_ANIMALS} from '../data/ancient-forest';
 import {animalSprite} from '../forest-art';
 import {isWaterTile} from '../data/regions';
+import {isWaterPoint} from '../data/property-water';
 import {buildingFootprint} from '../systems/building';
 import {natureArt} from '../data/nature-catalog';
 import {saveGame} from '../systems/save';
@@ -29,22 +34,24 @@ export class MapEditorScene extends Phaser.Scene {
  private openArea(area:MapArea):void {
   this.editor?.destroy();this.children.removeAll(true);this.area=area;
   const save=this.editorStart.save,edits=this.histories[area].current;
+  const farming=new Farming(save.crops,save.preparedSoil,save.farmingProgress,save.restoredFarmSoil);
   let property:WorldView|undefined,forest:ForestWorld|undefined;
-  if(area==='property')property=createWorld(this,[],save.buildings,undefined,'editor-property');
+  if(area==='property')property=createWorld(this,[],save.buildings,undefined,'editor-property',(x,y)=>farming.isPrepared(x,y));
   else forest=new ForestWorld(this,undefined,'editor-forest');
   const original=(property?.editorObjects??forest!.editorObjects).map(o=>({...o,depleted:save.depletedResources.includes(area==='forest'?`f-${o.id}`:o.id)}));
-  const buildings=new Set(save.buildings.flatMap(buildingFootprint).map(p=>`${p.x},${p.y}`));
+  const buildings=new Set([...save.buildings.flatMap(buildingFootprint),...farming.soilTiles].map(p=>`${p.x},${p.y}`));
   const render=(map:MapEditData):void=>{
    this.children.removeAll(true);
    if(area==='forest'){forest=new ForestWorld(this,map,'editor-forest');forest.depleted=new Set(save.depletedResources);forest.rebuildEnvironment(map);property=undefined;for(const animal of FOREST_ANIMALS)if(!save.recruitedAnimals?.includes(animal.id))animalSprite(this,animal.kind,animal.x*32+16,animal.y*32+16);}
    else {
-    property=createWorld(this,save.depletedResources,save.buildings,map,'editor-property');forest=undefined;
+    property=createWorld(this,save.depletedResources,save.buildings,map,'editor-property',(x,y)=>farming.isPrepared(x,y));forest=undefined;
     this.add.sprite(NPC_POSITION.x,NPC_POSITION.y,'lia').setOrigin(.5,1).setDepth(NPC_POSITION.y);
     for(const b of save.buildings){
      if(b.kind==='roof')this.add.image(b.x*TILE,b.y*TILE,b.rotation?'roof-vertical':'roof').setOrigin(0).setDepth(3000);
      else if(b.kind==='floor')this.add.sprite(b.x*TILE,b.y*TILE,'floor').setOrigin(0).setDepth(-20);
      else this.add.sprite(b.x*TILE+16,b.y*TILE+29,b.kind==='door'&&b.open?'door-open':b.kind).setOrigin(.5,1).setDepth(b.y*TILE+30);
     }
+    drawPreparedSoil(this,farming.soilTiles,save.crops);
     for(const c of save.crops)this.add.sprite(c.x*TILE+16,c.y*TILE+29,`crop-${c.growth>=1?2:c.growth>=.45?1:0}`).setOrigin(.5,1).setDepth(c.y*TILE+25);
    }
   };
@@ -55,9 +62,11 @@ export class MapEditorScene extends Phaser.Scene {
   this.editor=new MapEditor(this,edits,{
    rebuild:render,objects,originalObjects:original,
    protectedTile:(x,y)=>isProtectedMapTile(x,y,area==='forest'?'forest':undefined)||area==='property'&&buildings.has(`${x},${y}`),
+   protectedTerrainTile:(x,y)=>area==='property'&&buildings.has(`${x},${y}`),
    baseWater:area==='forest'?forestWater:isWaterTile,
+   baseWaterPoint:area==='forest'?(x,y)=>forestWater(Math.floor(x/TILE),Math.floor(y/TILE)):isWaterPoint,
    defaultPoints:defaultMap(area).points as {entry:{x:number;y:number};exit:{x:number;y:number}},
-   canPlace:(x,y,id,kind)=>!blocked(x,y)||objects().some(o=>o.id===id&&o.x===x&&o.y===y)||!!natureArt(kind)?.water&&water(x,y),
+   canPlace:(x,y,id,kind)=>(kind!=='reeds'||area==='property'&&nearRiverBank(x,y))&&(!isTreeKind(kind)||(property?property.canPlantTree(x,y):treeGroundClear(x,y,(px,py)=>forest!.waterAt(Math.floor(px/TILE),Math.floor(py/TILE)))))&&(!blocked(x,y)||objects().some(o=>o.id===id&&o.x===x&&o.y===y)||!!natureArt(kind)?.water&&water(x,y)),
    switchArea:next=>this.openArea(next),
    apply:()=>{
     const next=structuredClone(save);next.mapEdits=this.histories.property.current;next.forestMapEdits=this.histories.forest.current;

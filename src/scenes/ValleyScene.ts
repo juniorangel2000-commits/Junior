@@ -1,3 +1,5 @@
+import { Daylight } from '../daylight';
+import {bridgeAllowsStep} from '../data/bridges';
 import {AnimalPopulation} from '../animals';
 import {deliverAnimalEscort,releaseAnimalEscort} from '../systems/animals';
 import {sampleWaterDepth} from '../swimming/config';
@@ -13,11 +15,12 @@ import { Player,PLAYER_SPEED } from '../player';
 import { CHARACTER_HEIGHT, createArt } from '../art';
 import { directionFromVector, directionVector } from '../character-directions';
 import { preloadVisualAssets } from '../visual-assets';
-import { locationAt, getRegionAt } from '../data/regions';
+import { isPathTile, isBridgeTile, locationAt, getRegionAt } from '../data/regions';
 import { createWorld, NPC_POSITION, TILE, WORLD_WIDTH, WORLD_HEIGHT } from '../world';
 import type { WorldView, ResourceNode } from '../world';
 import { Inventory, ITEM_NAMES } from '../systems/inventory';
-import { Farming } from '../systems/farming';
+import { Farming, soilGroundReason, type SoilGround } from '../systems/farming';
+import { drawPreparedSoil } from '../farming-art';
 import { Building, BUILD_COSTS, BUILD_NAMES, BUILD_REQUIREMENTS, buildingFootprint, buildingLayer } from '../systems/building';
 import { BLUEPRINT_COST, BLUEPRINT_LABEL, BLUEPRINT_SHELTER } from '../data/blueprints';
 import { RECIPES } from '../data/recipes';
@@ -65,10 +68,12 @@ export class ValleyScene extends Phaser.Scene {
   private cropSprites: Phaser.GameObjects.Sprite[] = [];
   private buildingSprites: Phaser.GameObjects.Sprite[] = [];
   private cropSignature = '';
+  private soilSprites: Phaser.GameObjects.Image[] = [];
+  private soilSignature = '';
   private buildingSignature = '';
   private cropSoil!: Phaser.GameObjects.Graphics;
   private selection!: Phaser.GameObjects.Graphics;
-  private night!: Phaser.GameObjects.Rectangle;
+  private daylight!: Daylight;
   private lastAim: TilePoint | null = null;
   private aimUntil = 0;
   private saveTimer = 0;
@@ -80,6 +85,7 @@ export class ValleyScene extends Phaser.Scene {
   private shelter: ShelterInfo = { sheltered: false, tiles: [], reason: 'Construa piso, paredes, porta e cobertura para formar seu abrigo.' };
   private craftJob: { id: string; name: string; elapsed: number; duration: number } | null = null;
   private nextInteractionAt = 0;
+  private restoreSoilHeld = false;
   private currentRegion = '';
   private titleBackgroundMode: TitleBackgroundMode = 'off';
   private titleElapsed = 0;
@@ -124,6 +130,7 @@ export class ValleyScene extends Phaser.Scene {
     this.loadState(createNewSave(DEFAULT_PROFILE));
     this.ui.showTitle(hasSave());
     window.addEventListener('keydown', this.handleKey);
+    window.addEventListener('keyup', this.handleKeyUp);
     window.addEventListener('pagehide', this.handlePageHide);
     window.addEventListener('beforeunload', this.handlePageHide);
     document.addEventListener('visibilitychange', this.handleVisibility);
@@ -136,10 +143,12 @@ export class ValleyScene extends Phaser.Scene {
       const tile = { x: Math.floor(pointer.worldX / TILE), y: Math.floor(pointer.worldY / TILE) };
       this.lastAim = tile;
       this.aimUntil = this.time.now + 3000;
-      this.interact(tile);
+      this.restoreSoilHeld = (pointer.event as MouseEvent).shiftKey;
+      this.interact(tile, this.restoreSoilHeld);
     });
     this.events.once('shutdown', () => {
       window.removeEventListener('keydown', this.handleKey);
+      window.removeEventListener('keyup', this.handleKeyUp);
       window.removeEventListener('pagehide', this.handlePageHide);
       window.removeEventListener('beforeunload', this.handlePageHide);
       document.removeEventListener('visibilitychange', this.handleVisibility);
@@ -179,7 +188,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   setPaused(value: boolean): void {
-    if (value) { this.toolUse.cancel(); this.toolVisual?.hide(); }
+    if (value) { this.restoreSoilHeld = false; this.toolUse.cancel(); this.toolVisual?.hide(); }
     this.paused = value;
     this.ui.updateCameraZoom(this.cameraZoomFactor, !value && this.running);
     this.input.keyboard?.resetKeys();
@@ -269,7 +278,7 @@ export class ValleyScene extends Phaser.Scene {
     // Preserve each object's visibility: title lighting and hidden roofs must not reappear on leaving.
     this.outdoorVisibility.clear();
     for (const object of this.children.list) {
-      if (object === this.player.sprite || object === this.night) continue;
+      if (object === this.player.sprite || this.daylight?.contains(object)) continue;
       if ('visible' in object && 'setVisible' in object) {
         this.outdoorVisibility.set(object, Boolean(object.visible));
         (object as Phaser.GameObjects.Image).setVisible(false);
@@ -370,7 +379,7 @@ export class ValleyScene extends Phaser.Scene {
     this.titleBackgroundMode = mode;
     this.cameras.main.zoomEffect.reset();
     document.body.classList.toggle('rainy-title-active', mode !== 'off');
-    this.night?.setVisible(mode === 'off');
+    this.daylight?.setVisible(mode === 'off');
     this.titleLights?.setVisible(mode !== 'off');
     this.npcLabel?.setVisible(mode === 'off');
     if (mode === 'off') {
@@ -395,7 +404,7 @@ export class ValleyScene extends Phaser.Scene {
   selectTool(tool: Tool): void {
     if(this.player?.isSwimming)return;
     if (tool === 'water' && !this.state.homeSupplies?.wateringCan) { this.ui.toast('Recolha o regador dentro da casa.'); return; }
-    if ((tool === 'hatchet' || tool === 'pickaxe') && !this.inventory.has(tool)) {
+    if ((tool === 'hatchet' || tool === 'pickaxe' || tool === 'hoe') && !this.inventory.has(tool)) {
       this.ui.toast('Fabrique essa ferramenta primeiro. Abra a fabricação com C.');
       return;
     }
@@ -458,7 +467,7 @@ export class ValleyScene extends Phaser.Scene {
     const texture = this.make.renderTexture({ width: Math.round(width * scale), height: Math.round(height * scale) }, false);
     texture.camera.setZoom(scale).setScroll(0, 0).setOrigin(0, 0);
     this.children.depthSort();
-    const objects = this.children.list.filter(object => object !== this.night && object !== this.selection && object !== this.player.sprite && 'visible' in object && object.visible);
+    const objects = this.children.list.filter(object => !this.daylight?.contains(object) && object !== this.selection && object !== this.player.sprite && 'visible' in object && object.visible);
     texture.draw(objects);
     return new Promise(resolve => texture.snapshot(image => {
       const url = image instanceof HTMLImageElement ? image.src : '';
@@ -487,6 +496,9 @@ export class ValleyScene extends Phaser.Scene {
       homePosition: this.inHome ? this.playerPosition() : undefined,
       inventory: { ...this.inventory.data },
       crops: this.farming.crops.map(crop => ({ ...crop })),
+      preparedSoil: this.farming.preparedSoil.map(p => ({ ...p })),
+      restoredFarmSoil: this.farming.restoredFarmSoil.map(p => ({ ...p })),
+      farmingProgress: { ...this.farming.progress },
       buildings: this.building.buildings.map(building => ({ ...building })),
       resourceProgress: this.resources.progress.map(entry => ({ ...entry })),
       equippedTool: this.tool,
@@ -506,16 +518,18 @@ export class ValleyScene extends Phaser.Scene {
     this.supplySprites = [];
     this.ui.setQuickbar(data.quickbar ?? emptyQuickbar());
     this.inventory = new Inventory(this.state.inventory);
-    this.farming = new Farming(data.crops);
+    this.farming = new Farming(data.crops, data.preparedSoil, data.farmingProgress, data.restoredFarmSoil);
+    this.farming.progress.harvested ||= data.inventory.turnip > 0;
     this.building = new Building(data.buildings);
     this.resources = new Resources(data.resourceProgress);
     this.home = new Home(data.home);
     this.cropSprites = [];
+    this.soilSprites = []; this.soilSignature = '';
     this.buildingSprites = [];
     this.roofSprites = [];
     this.cropSignature = '';
     this.buildingSignature = '';
-    this.world = createWorld(this, data.depletedResources, data.buildings, data.mapEdits);
+    this.world = createWorld(this, data.depletedResources, data.buildings, data.mapEdits, 'world', (x,y)=>this.farming.isPrepared(x,y));
     setupAnimalArt(this);
     this.add.text((this.forestGate().x+.5)*TILE,(this.forestGate().y-1)*TILE,'Floresta Antiga\nE para seguir a trilha', {fontFamily:'Georgia',fontSize:'12px',color:'#fff0cd',backgroundColor:'#59452e',padding:{x:6,y:5}}).setOrigin(this.forestGate().x<4?0:this.forestGate().x>90?1:.5,1).setDepth(this.forestGate().y*TILE);
     // A warm refuge in the opening only; the facade and gameplay lighting stay intact.
@@ -545,7 +559,7 @@ export class ValleyScene extends Phaser.Scene {
         }
       }
     }
-    this.cropSoil = this.add.graphics().setDepth(-50);
+    this.cropSoil = this.add.graphics().setDepth(-49);
     this.damageMarks = this.add.graphics().setDepth(3500);
     this.player = new Player(this, data.profile, data.player.x, data.player.y);
     this.toolVisual = new ToolVisual(this, data.profile);
@@ -554,7 +568,7 @@ export class ValleyScene extends Phaser.Scene {
     this.input.keyboard?.resetKeys();
     this.player.update(0, this.movementBlocked, this.movementBlockedPoint,true,this.swimmingPoint);
     this.recoverPlayerPosition();
-    this.resourceLifecycle=new ResourceLifecycle(this.state,'property',this.world,(x,y)=>!this.world.isBlocked(x,y)&&!this.world.resourceAt(x,y)&&!this.world.isFarm(x,y)&&!this.building.buildings.some(b=>buildingFootprint(b).some(p=>p.x===x&&p.y===y))&&!(x===Math.floor(NPC_POSITION.x/TILE)&&y===Math.floor(NPC_POSITION.y/TILE))&&Math.hypot(x-this.player.x/TILE,y-this.player.y/TILE)>3&&[this.state.mapEdits?.points?.entry,this.state.mapEdits?.points?.exit,{x:25,y:18}].every(p=>!p||Math.hypot(x-p.x,y-p.y)>3)&&(this.animals?.animals.every(a=>Math.hypot(x-a.x/TILE,y-a.y/TILE)>2)??true));
+    this.resourceLifecycle=new ResourceLifecycle(this.state,'property',this.world,(x,y)=>!this.world.isBlocked(x,y)&&!this.world.resourceAt(x,y)&&!this.farming.isPrepared(x,y)&&!this.building.buildings.some(b=>buildingFootprint(b).some(p=>p.x===x&&p.y===y))&&!(x===Math.floor(NPC_POSITION.x/TILE)&&y===Math.floor(NPC_POSITION.y/TILE))&&Math.hypot(x-this.player.x/TILE,y-this.player.y/TILE)>3&&[this.state.mapEdits?.points?.entry,this.state.mapEdits?.points?.exit,{x:25,y:18}].every(p=>!p||Math.hypot(x-p.x,y-p.y)>3)&&(this.animals?.animals.every(a=>Math.hypot(x-a.x/TILE,y-a.y/TILE)>2)??true));
     this.resources=new Resources(this.state.resourceProgress);
     this.animals=new AnimalPopulation(this,this.state,'property',this.animalBlocked,PLAYER_SPEED);
     this.world.updateOcclusion(this.player.x, this.player.y);
@@ -564,7 +578,7 @@ export class ValleyScene extends Phaser.Scene {
       stroke: '#263b31', strokeThickness: 2,
     }).setOrigin(0.5, 1).setDepth(NPC_POSITION.y + 1);
     this.selection = this.add.graphics().setDepth(4000);
-    this.night = this.add.rectangle(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE, 0x14203c, 1).setOrigin(0).setDepth(5000).setAlpha(0);
+    this.daylight = new Daylight(this, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE);
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE);
     this.updateZoom();
     this.cameras.main.startFollow(this.player, false, 0.12, 0.12);
@@ -661,14 +675,14 @@ export class ValleyScene extends Phaser.Scene {
     : this.world.isBlocked(x, y) || this.building.isBlocked(x, y)
       || (x === Math.floor(NPC_POSITION.x / TILE) && y === Math.floor(NPC_POSITION.y / TILE));
 
-  private animalBlocked=(x:number,y:number):boolean=>this.world.isBlocked(x,y)||this.world.isFarm(x,y)||this.building.isBlocked(x,y)||(x===Math.floor(NPC_POSITION.x/TILE)&&y===Math.floor(NPC_POSITION.y/TILE));
-  private allowLeashMovement=(x:number,y:number):boolean=>this.animals?.allowsPlayerCenter(x,y,this.player)??true;
+  private animalBlocked=(x:number,y:number):boolean=>this.world.isBlocked(x,y)||this.farming.isPrepared(x,y)||this.building.isBlocked(x,y)||(x===Math.floor(NPC_POSITION.x/TILE)&&y===Math.floor(NPC_POSITION.y/TILE));
+  private allowLeashMovement=(x:number,y:number):boolean=>(this.inHome || bridgeAllowsStep(this.player.x,this.player.y,x,y,this.world.isSwimmingPoint)) && (this.animals?.allowsPlayerCenter(x,y,this.player)??true);
   private releaseRope():void {
     if(!this.state.animalEscort)return;Object.assign(this.state.inventory,this.inventory.data);
     if(releaseAnimalEscort(this.state)){Object.assign(this.inventory.data,this.state.inventory);this.animals?.store();this.animals?.destroy();this.animals=new AnimalPopulation(this,this.state,'property',this.animalBlocked,PLAYER_SPEED);this.updateHUD();this.persist();this.ui.toast('Corda solta e guardada.');}
   }
   private movementBlocked=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(x,y):this.world.isSolid(x,y)||this.building.isBlocked(x,y)||(x===Math.floor(NPC_POSITION.x/TILE)&&y===Math.floor(NPC_POSITION.y/TILE));
-  private movementBlockedPoint=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):this.movementBlocked(Math.floor(x/TILE),Math.floor(y/TILE));
+  private movementBlockedPoint=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):this.world.isSolidPoint(x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE))||(Math.floor(x/TILE)===Math.floor(NPC_POSITION.x/TILE)&&Math.floor(y/TILE)===Math.floor(NPC_POSITION.y/TILE));
   private swimmingPoint=(x:number,y:number):number=>this.inHome?0:sampleWaterDepth((px,py)=>!this.building.at(Math.floor(px/TILE),Math.floor(py/TILE),'floor')&&this.world.isSwimmingPoint(px,py),x,y);
 
   private blockedPoint = (x: number, y: number): boolean => {
@@ -682,6 +696,7 @@ export class ValleyScene extends Phaser.Scene {
   };
 
   private handleKey = (event: KeyboardEvent): void => {
+    this.restoreSoilHeld = event.shiftKey;
     if (this.forestActive) return;
     if (this.editingMap) return;
     if (event.ctrlKey && event.shiftKey && event.key === 'F10' && this.running) {
@@ -713,6 +728,7 @@ export class ValleyScene extends Phaser.Scene {
     if (event.key.toLowerCase() === 'm' && this.running) { event.preventDefault(); this.ui.toggleMap(); return; }
     if (event.key.toLowerCase() === 'h' && this.running) { event.preventDefault(); this.openHomeMenu(); return; }
     if (!this.canPlay()) return;
+    if (event.key === 'Shift') { this.updateHUD(); return; }
     if (!event.ctrlKey && !event.metaKey && !event.altKey) {
       if (event.key === '+' || event.key === '=' || event.key === '-' || event.key === '_' || event.key === 'Home') {
         event.preventDefault();
@@ -726,7 +742,13 @@ export class ValleyScene extends Phaser.Scene {
     if (event.key.toLowerCase() === 'p') this.selectTool('door');
     if (event.key.toLowerCase() === 'r' && this.tool === 'roof') { this.rotation = this.rotation ? 0 : 1; this.ui.toast(this.rotation ? 'Cobertura na vertical.' : 'Cobertura na horizontal.'); }
     if (event.key.toLowerCase() === 'g') {event.preventDefault();this.releaseRope();return;}
-    if (event.key.toLowerCase() === 'e') { event.preventDefault(); this.interact(); }
+    if (event.key.toLowerCase() === 'e') { event.preventDefault(); this.interact(undefined, event.shiftKey); }
+  };
+
+  private handleKeyUp = (event: KeyboardEvent): void => {
+    if (event.key !== 'Shift') return;
+    this.restoreSoilHeld = false;
+    if (this.canPlay()) this.updateHUD();
   };
 
   private handlePageHide = (): void => { if (this.running) this.persist(); };
@@ -779,8 +801,22 @@ export class ValleyScene extends Phaser.Scene {
     return (usable.length ? usable : nearby).sort((a, b) => this.tileDistance(a) - this.tileDistance(b))[0];
   }
 
+  private soilGround(): SoilGround {
+    return {
+      area: 'property',
+      terrainAt: (x,y) => this.state.mapEdits?.terrain[`${x},${y}`]
+        ?? (this.world.isWater(x,y) ? 'water' : isBridgeTile(x,y) ? 'wood' : this.world.isFarm(x,y) ? 'soil' : isPathTile(x,y) ? 'path' : 'grass'),
+      occupied: (x,y) => this.world.isBlocked(x,y) || (!this.world.isFarm(x,y) && !this.world.isBuildable(x,y))
+        || !!this.world.resourceAt(x,y) || this.building.buildings.some(b => buildingFootprint(b).some(p => p.x===x && p.y===y))
+        || (this.animals?.animals.some(a => Math.floor(a.x/TILE)===x && Math.floor(a.y/TILE)===y) ?? false),
+      reserved: (x,y) => (x>=20 && x<=28 && y>=9 && y<=17) || (x>=24 && x<=26 && y>=18 && y<=19)
+        || x===Math.floor(NPC_POSITION.x/TILE) && y===Math.floor(NPC_POSITION.y/TILE)
+        || [this.state.mapEdits?.points?.entry,this.forestGate()].some(p => !!p && Math.abs(x-p.x)<=1 && Math.abs(y-p.y)<=1),
+    };
+  }
+
   private freeForBuilding(x: number, y: number, kind: BuildingData['kind']): boolean {
-    if (!this.world.isBuildable(x, y) || this.farming.cropAt(x, y)) return false;
+    if (!this.world.isBuildable(x, y) || this.farming.isPrepared(x, y) || this.farming.cropAt(x, y)) return false;
     if (buildingLayer(kind) === 'structure') {
       if (this.feetTiles().some(point => point.x === x && point.y === y)) return false;
       if (Math.floor(NPC_POSITION.x / TILE) === x && Math.floor(NPC_POSITION.y / TILE) === y) return false;
@@ -817,7 +853,7 @@ export class ValleyScene extends Phaser.Scene {
     return '';
   }
 
-  private interact(explicitTile?: TilePoint): void {
+  private interact(explicitTile?: TilePoint, restoreSoil = false): void {
     if (!this.canPlay() || this.toolUse.active || this.time.now < this.nextInteractionAt) return;
     if (this.inHome) { this.interactHome(explicitTile); return; }
     if(this.player.isSwimming)return;
@@ -862,6 +898,24 @@ export class ValleyScene extends Phaser.Scene {
       const station = this.building.at(tile.x, tile.y, 'structure');
       if (station?.kind === 'workbench') { this.ui.toggleCrafting(this.inventory.data, this.nearWorkbench()); return; }
     }
+    if (this.tool === 'hoe') {
+      const reason = restoreSoil ? this.farming.restoreReason(tile.x,tile.y,this.inventory)
+        : this.farming.prepareReason(tile.x, tile.y, this.inventory, this.soilGround());
+      if (reason) { this.ui.toast(reason); return; }
+      const dx = (tile.x + .5) * TILE - this.player.x;
+      const direction = dx < -4 ? 'left' : dx > 4 ? 'right' : this.player.facing.x < 0 ? 'left' : 'right';
+      this.player.facing = directionVector(direction);
+      this.player.update(0, this.blocked, this.blockedPoint, false);
+      this.toolUse.start({ tool: 'hoe', direction, soilAction: restoreSoil ? 'restore' : 'prepare', target: { ...tile, id: 'prepare-soil', kind: 'seeds' } });
+      this.nextInteractionAt = this.time.now + TOOL_USE_DURATION * 1000;
+      this.updateToolVisual(); return;
+    }
+    // A deliberately aimed crop wins over automatic nearby resource pickup.
+    if (this.tool === 'hand' && this.farming.cropAt(tile.x, tile.y)) {
+      const result = this.farming.harvest(tile.x, tile.y, this.inventory);
+      if (result.ok) gameAudio.play('pickup');
+      this.ui.toast(result.message); this.afterAction(); return;
+    }
     if (this.tool === 'hand' || this.tool === 'hatchet' || this.tool === 'pickaxe') {
       const resource = explicitTile ? this.world.resourceAt(tile.x, tile.y)
         : this.world.resourceAt(tile.x, tile.y) ?? this.nearestResource();
@@ -879,18 +933,14 @@ export class ValleyScene extends Phaser.Scene {
         }
         this.applyResourceHit(resource, this.tool); return;
       }
-      if (this.tool === 'hand' && this.farming.cropAt(tile.x, tile.y)) {
-        const result = this.farming.harvest(tile.x, tile.y, this.inventory);
-        if (result.ok) gameAudio.play('pickup');
-        this.ui.toast(result.message); this.afterAction(); return;
-      }
       this.ui.toast('Recolha galhos, pedras e fibras. C abre fabricação; B abre construção.'); return;
     }
-    if (!explicitTile && (this.tool === 'plant' || this.tool === 'water') && !this.world.isFarm(tile.x, tile.y)) {
+    if (!explicitTile && (this.tool === 'plant' || this.tool === 'water') && !this.farming.isPrepared(tile.x, tile.y)) {
       const candidates: TilePoint[] = [];
-      for (let y = 20; y <= 24; y++) for (let x = 21; x <= 29; x++) {
+      const px = Math.floor(this.player.x / TILE), py = Math.floor(this.player.y / TILE);
+      for (let y = py - 2; y <= py + 2; y++) for (let x = px - 2; x <= px + 2; x++) {
         const crop = this.farming.cropAt(x, y);
-        if (this.tileDistance({ x, y }) <= 58 && this.clearReach({ x, y })
+        if (this.farming.isPrepared(x,y) && !soilGroundReason(x,y,this.soilGround()) && this.tileDistance({ x, y }) <= 58 && this.clearReach({ x, y })
           && (this.tool === 'plant' ? !crop : crop && !crop.watered)) candidates.push({ x, y });
       }
       candidates.sort((a, b) => this.tileDistance(a) - this.tileDistance(b));
@@ -910,6 +960,8 @@ export class ValleyScene extends Phaser.Scene {
       this.updateToolVisual(); return;
     }
     if (this.tool === 'plant') {
+      const reason = soilGroundReason(tile.x, tile.y, this.soilGround());
+      if (reason) { this.ui.toast(reason); return; }
       const result = this.farming.plant(tile.x, tile.y, this.inventory);
       if (result.ok) gameAudio.play(this.tool);
       this.ui.toast(result.message);
@@ -957,6 +1009,13 @@ export class ValleyScene extends Phaser.Scene {
   private applyToolImpact(strike: ToolStrike): void {
     // Recheck the target at contact: no delayed reward for a removed, moved or unreachable node.
     if (!this.canPlay() || this.inHome || this.tool !== strike.tool) return;
+    if (strike.tool === 'hoe') {
+      if (this.tileDistance(strike.target) > 78 || !this.clearReach(strike.target)) return;
+      const result = strike.soilAction === 'restore' ? this.farming.restore(strike.target.x,strike.target.y,this.inventory)
+        : this.farming.prepare(strike.target.x, strike.target.y, this.inventory, this.soilGround());
+      if (result.ok) { this.resourceFeedback(strike.target); gameAudio.play('plant'); }
+      this.ui.toast(result.message); this.afterAction(); return;
+    }
     if (strike.tool === 'water') {
       if (!this.state.homeSupplies?.wateringCan || !(this.state.wateringCanWater! > 0) || this.tileDistance(strike.target) > 78) return;
       const result = this.farming.water(strike.target.x, strike.target.y);
@@ -1010,13 +1069,19 @@ export class ValleyScene extends Phaser.Scene {
   private afterAction(): void { this.syncSprites(); this.updateShelter(); this.updateHUD(); this.persist(); }
 
   private syncSprites(): void {
+    const soilSignature = JSON.stringify([this.farming.soilTiles,this.farming.crops.filter(c=>c.watered).map(c=>[c.x,c.y])]);
+    if (soilSignature !== this.soilSignature) {
+      this.soilSprites.forEach(sprite => sprite.destroy());
+      this.soilSprites = drawPreparedSoil(this, this.farming.soilTiles, this.farming.crops);
+      this.soilSignature = soilSignature;
+    }
     const crops = this.farming.crops;
     const cropSignature = crops.map(c => `${c.x},${c.y},${c.growth >= 1 ? 2 : c.growth >= 0.45 ? 1 : 0},${c.watered}`).join(';');
     if (cropSignature !== this.cropSignature) {
       this.cropSprites.forEach(sprite => sprite.destroy());
       this.cropSoil.clear();
       this.cropSprites = crops.map(c => {
-        if (c.watered) this.cropSoil.fillStyle(0x443c30, 0.55).fillRect(c.x * TILE + 2, c.y * TILE + 2, 28, 28);
+
         const stage = c.growth >= 1 ? 2 : c.growth >= 0.45 ? 1 : 0;
         const sprite = this.add.sprite(c.x * TILE + 16, c.y * TILE + 29, `crop-${stage}`).setOrigin(0.5, 1).setDepth(c.y * TILE + 25);
         if (!c.watered) sprite.setTint(0xd5ba86);
@@ -1083,9 +1148,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private updateNight(): void {
-    const hour = this.state.time / 60;
-    const darkness = hour >= 19 ? Math.min(0.49, (hour - 19) * 0.12) : hour < 6 ? 0.49 : hour < 8 ? (8 - hour) * 0.245 : 0;
-    this.night.setAlpha(this.inHome ? Math.min(.12, darkness) : darkness);
+    this.daylight?.update(this.state.time, this.inHome);
   }
 
   private updateHUD(): void {
@@ -1094,7 +1157,7 @@ export class ValleyScene extends Phaser.Scene {
       const bed = this.home.bedNear(playerTile, 1.1);
       const nearExit = this.nearHomeExit();
       const supply = HOME_SUPPLIES.find(s => !this.state.homeSupplies?.[s.id] && this.tileDistance(s) <= 48);
-      this.ui.updateHUD({ wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: true, name: this.state.profile.name, day: this.state.day, time: this.state.time,
+      this.ui.updateHUD({ farmingProgress: this.farming.progress, wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: true, name: this.state.profile.name, day: this.state.day, time: this.state.time,
         inventory: this.inventory.data, tool: this.tool,
         playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
         interactionKey: nearExit || bed || supply ? 'E' : 'H',
@@ -1107,7 +1170,10 @@ export class ValleyScene extends Phaser.Scene {
     let prompt = 'Explorar e coletar';
     const resource = this.world.resourceAt(tile.x, tile.y) ?? this.nearestResource();
     let resourceProgress = '';
-    if (this.tool === 'plant') prompt = 'Plantar nabo · 1 semente';
+    if (this.tool === 'hoe') prompt = this.restoreSoilHeld
+      ? this.farming.restoreReason(tile.x,tile.y,this.inventory) || 'Desfazer canteiro · Shift + E ou clique'
+      : 'E: preparar · Shift + E: desfazer canteiro';
+    else if (this.tool === 'plant') prompt = 'Plantar nabo · 1 semente';
     else if (this.tool === 'water') prompt = `Regador: ${this.state.wateringCanWater ?? 0}/8 · E junto à água para encher`;
     else if (this.tool === 'blueprint') prompt = this.blueprintReason(tile) || `Montar ${BLUEPRINT_LABEL} · clique ou E`;
     else if (this.tool in BUILD_COSTS) prompt = this.placementReason(tile, this.tool as BuildingData['kind']) || `Colocar ${BUILD_NAMES[this.tool as BuildingData['kind']]} · clique ou E`;
@@ -1128,7 +1194,7 @@ export class ValleyScene extends Phaser.Scene {
     if (this.nearHouseEntrance()) prompt = 'Entrar em casa';
     if(this.player.isSwimming)prompt='Nadar · siga até a margem para sair';
     if (this.tool === 'hand' && this.atForestExit()) prompt = 'E · Seguir para a Floresta Antiga';
-    this.ui.updateHUD({ wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, swimming:this.player.isSwimming, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
+    this.ui.updateHUD({ farmingProgress: this.farming.progress, wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, swimming:this.player.isSwimming, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
       tool: this.tool, prompt, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
       playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
       harvests: this.inventory.data.turnip, metLia: this.state.metLia,
@@ -1140,6 +1206,7 @@ export class ValleyScene extends Phaser.Scene {
     if (!this.state) return;
     const delta = Math.min(deltaMs / 1000, 0.25);
     if (this.titleBackgroundMode !== 'off') { this.updateTitleBackground(delta); return; }
+    this.updateNight();
     if (this.craftJob) {
       if (!this.ui.isCraftingOpen() || document.hidden) this.cancelCrafting();
       else {
@@ -1173,7 +1240,8 @@ export class ValleyScene extends Phaser.Scene {
       const kind = this.tool in BUILD_COSTS ? this.tool as BuildingData['kind'] : null;
       const crop = this.farming.cropAt(tile.x, tile.y);
       const valid = this.clearReach(tile) && (kind ? !this.placementReason(tile, kind) : this.tool === 'blueprint' ? !this.blueprintReason(tile)
-        : this.tool === 'plant' ? this.world.isFarm(tile.x, tile.y) && !crop && this.inventory.has('seeds')
+        : this.tool === 'hoe' ? !(this.restoreSoilHeld ? this.farming.restoreReason(tile.x,tile.y,this.inventory) : this.farming.prepareReason(tile.x,tile.y,this.inventory,this.soilGround()))
+        : this.tool === 'plant' ? this.farming.isPrepared(tile.x, tile.y) && !soilGroundReason(tile.x,tile.y,this.soilGround()) && !crop && this.inventory.has('seeds')
         : this.tool === 'water' ? !!crop && !crop.watered : this.tool === 'remove' ? !!this.building.at(tile.x, tile.y) : !!this.world.resourceAt(tile.x, tile.y));
       const footprint = this.tool === 'blueprint' ? Array.from({ length: 9 }, (_, i) => ({ x: tile.x + i % 3, y: tile.y + Math.floor(i / 3) }))
         : kind ? buildingFootprint({ ...tile, kind, rotation: this.rotation }) : [tile];

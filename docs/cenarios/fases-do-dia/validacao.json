@@ -1,0 +1,64 @@
+{
+  "passed": true,
+  "property": [
+    {
+      "time": 180,
+      "label": "Madrugada",
+      "shade": 0.4553125,
+      "warmth": 0
+    },
+    {
+      "time": 540,
+      "label": "Manhã",
+      "shade": 0,
+      "warmth": 0.03306122448979592
+    },
+    {
+      "time": 1080,
+      "label": "Tarde",
+      "shade": 0.0625,
+      "warmth": 0.12
+    },
+    {
+      "time": 1290,
+      "label": "Noite",
+      "shade": 0.39296296296296296,
+      "warmth": 0
+    }
+  ],
+  "forest": [
+    {
+      "time": 180,
+      "label": "Madrugada",
+      "shade": 0.4553125,
+      "warmth": 0
+    },
+    {
+      "time": 540,
+      "label": "Manhã",
+      "shade": 0,
+      "warmth": 0.03306122448979592
+    },
+    {
+      "time": 1080,
+      "label": "Tarde",
+      "shade": 0.0625,
+      "warmth": 0.12
+    },
+    {
+      "time": 1290,
+      "label": "Noite",
+      "shade": 0.39296296296296296,
+      "warmth": 0
+    }
+  ],
+  "indoor": 0.10016875,
+  "editorPaint": {
+    "id": "editor-bush-5288124b-fed9-4179-be6e-6fc157919836",
+    "kind": "bush",
+    "passed": true
+  },
+  "preferencesPersist": true,
+  "pageErrors": [],
+  "at": "2026-10-24T23:39:00.377Z"
+}

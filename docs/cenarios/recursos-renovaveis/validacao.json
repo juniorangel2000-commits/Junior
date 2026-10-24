@@ -1,0 +1,130 @@
+{
+  "passed": true,
+  "initial": {
+    "count": 64,
+    "kinds": [
+      "standingTree",
+      "fiber",
+      "vein",
+      "seeds",
+      "tree",
+      "stone",
+      "fallenLog",
+      "stump",
+      "scrap"
+    ],
+    "plants": [
+      "bush",
+      "fern",
+      "whiteFlowers",
+      "reeds"
+    ],
+    "badReeds": []
+  },
+  "collected": [
+    "spawn-p-fiber-1",
+    "spawn-p-fiber-2",
+    "spawn-p-fiber-3",
+    "spawn-p-fiber-4",
+    "spawn-p-seeds-5",
+    "spawn-p-stone-7",
+    "spawn-p-tree-6"
+  ],
+  "wood": [
+    {
+      "kind": "fallenLog",
+      "id": "spawn-p-fallenLog-8",
+      "gain": {
+        "wood": 6,
+        "log": 2,
+        "branch": 2
+      }
+    },
+    {
+      "kind": "stump",
+      "id": "spawn-p-stump-9",
+      "gain": {
+        "wood": 4,
+        "log": 1,
+        "branch": 1
+      }
+    }
+  ],
+  "rocks": [
+    "lakeRockA",
+    "lakeRockB",
+    "lakeRockC",
+    "lakeRockF"
+  ],
+  "respawn": {
+    "days": 3,
+    "waits": [
+      {
+        "kind": "fiber",
+        "at": 4800.3,
+        "plant": "fern"
+      },
+      {
+        "kind": "fiber",
+        "at": 4800.3,
+        "plant": "whiteFlowers"
+      },
+      {
+        "kind": "fiber",
+        "at": 4800.3,
+        "plant": "bush"
+      },
+      {
+        "kind": "fiber",
+        "at": 4800.3,
+        "plant": "reeds"
+      },
+      {
+        "kind": "seeds",
+        "at": 4800.3
+      },
+      {
+        "kind": "stone",
+        "at": 4800.3
+      },
+      {
+        "kind": "tree",
+        "at": 4800.3
+      }
+    ],
+    "early": {
+      "count": 59,
+      "waiting": 7,
+      "reedNodes": []
+    },
+    "late": {
+      "count": 63,
+      "waiting": 0,
+      "reedNodes": [
+        {
+          "id": "spawn-p-fiber-49",
+          "kind": "fiber",
+          "x": 48,
+          "y": 25,
+          "plant": "reeds"
+        }
+      ]
+    }
+  },
+  "forest": {
+    "count": 48,
+    "kinds": [
+      "standingTree",
+      "vein",
+      "fiber",
+      "seeds",
+      "tree",
+      "stone",
+      "fallenLog",
+      "stump"
+    ],
+    "badReeds": 0
+  },
+  "pageErrors": [],
+  "at": "2026-10-24T23:40:41.829Z"
+}

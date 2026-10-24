@@ -1,7 +1,7 @@
 {
   "name": "depois-da-chuva",
   "private": true,
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "Um jogo de cultivo, exploração e recomeços.",
   "author": "Depois da Chuva",
   "main": "desktop/main.cjs",

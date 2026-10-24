@@ -1,3 +1,8 @@
+import {isFiberPlant,fiberPlantFor,fiberPlantArt,nearRiverBank} from './data/fiber-plants';
+import {drawPropertyBridges} from './bridge-art';
+import {isTreeKind,treeGroundClear} from './systems/tree-ground';
+import {bridgeRailAtPoint} from './data/bridges';
+import {forestTreeAppearance} from './data/ancient-forest';
 import { natureArt,collectibleKind } from './data/nature-catalog';
 import { addWaterMotion } from './water-motion';
 import Phaser from 'phaser';
@@ -7,11 +12,11 @@ import { readTerrainSprites } from './terrain-sprites';
 import { readTerrainDecoration } from './decor-sprites';
 import { decorateProperty } from './property-art';
 import { placeLooseResources } from './data/resource-layout';
-import { isWaterPoint } from './data/terrain-shape';
+import { isWaterPoint,roadDistanceAt } from './data/terrain-shape';
 import { drawMapTerrainEdits } from './map-editor-terrain';
 import type { EditorObjectKind, MapEditData } from './systems/map-editor';
 import { buildingFootprint } from './systems/building';
-import { createLegacyTrees, getRegionAt, isBridgeTile, isFarmTile, isPathTile, isWaterTile, TILE, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
+import { createLegacyTrees, getRegionAt, isBridgeTile, isFarmTile, isPathTile, isWaterTile, legacyWaterTile, TILE, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 
 export type { ResourceNode } from './types';
 
@@ -45,6 +50,7 @@ export interface WorldView {
   isSolid(x:number,y:number):boolean;
   isSolidPoint(x:number,y:number):boolean;
   isSwimmingPoint(x:number,y:number):boolean;
+  canPlantTree(x:number,y:number):boolean;
   isFarm(x: number, y: number): boolean;
   isWater(x: number, y: number): boolean;
   isBuildable(x: number, y: number): boolean;
@@ -57,7 +63,7 @@ function randomSource(seed: number): () => number {
   return () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
 }
 
-export function createWorld(scene: Phaser.Scene, depletedResources: string[], buildings: readonly BuildingData[] = [], mapEdits?: MapEditData,textureNamespace='world'): WorldView {
+export function createWorld(scene: Phaser.Scene, depletedResources: string[], buildings: readonly BuildingData[] = [], mapEdits?: MapEditData,textureNamespace='world', farmAt = isFarmTile): WorldView {
   const blocked = new Set<string>();
   // Resource collision is separate: felling a tree must never erase a ruin wall.
   const resourceBlocked = new Set<string>();
@@ -73,7 +79,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   let fadedTrees = new Set<string>();
   const key = (x: number, y: number) => `${x},${y}`;
   const buildingTiles = new Set(buildings.flatMap(buildingFootprint).map(tile => key(tile.x, tile.y)));
-  const isFarm = isFarmTile;
+  const isFarm = farmAt;
   const waterAt = (x: number, y: number): boolean => {
     const terrain = mapEdits?.terrain[key(x, y)];
     return terrain === undefined ? isWaterTile(x, y) : terrain === 'water';
@@ -83,21 +89,33 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     return terrain === undefined ? isWaterPoint(x, y) : terrain === 'water';
   };
   const bridgeAt = isBridgeTile;
+  const treeReservations=new Set<string>();
+  const dryTreeCell=(x:number,y:number)=>treeGroundClear(x,y,waterPointAt)&&!bridgeAt(x,y);
+  const shoreTreePosition=(x:number,y:number):{x:number;y:number}|undefined=>{
+    for(let radius=1;radius<=8;radius++) {
+      const candidates:Array<{x:number;y:number;distance:number}>=[];
+      for(let dy=-radius;dy<=radius;dy++)for(let dx=-radius;dx<=radius;dx++)if(Math.max(Math.abs(dx),Math.abs(dy))===radius)candidates.push({x:x+dx,y:y+dy,distance:dx*dx+dy*dy});
+      const land=candidates.sort((a,b)=>a.distance-b.distance||a.y-b.y||a.x-b.x).find(p=>dryTreeCell(p.x,p.y)&&!pathAt(p.x,p.y)&&roadDistanceAt((p.x+.5)*TILE,(p.y+.5)*TILE)>28&&!isFarm(p.x,p.y)&&!blocked.has(key(p.x,p.y))&&!buildingTiles.has(key(p.x,p.y))&&!forestTiles.has(key(p.x,p.y))&&!treeReservations.has(key(p.x,p.y)));
+      if(land)return land;
+    }
+    return undefined;
+  };
   const pathAt = isPathTile;
 
   // Static obstacles are separate from water: precise movement can follow the
   // rounded water edge while tile navigation/building remains conservative.
   // The ground is independent of saves. Reuse its GPU texture on new/continue.
-  if (!scene.textures.exists('world-ground')) {
+  if (!scene.textures.exists('world-ground-sandy-river-v3')) {
     const terrain = document.createElement('canvas');
     terrain.width = WORLD_WIDTH * TILE;
     terrain.height = WORLD_HEIGHT * TILE;
-    paintTerrain(terrain.getContext('2d')!, readTerrainSprites(scene), readTerrainDecoration(scene));
-    scene.textures.addCanvas('world-ground', terrain)?.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    paintTerrain(terrain.getContext('2d')!, readTerrainSprites(scene), readTerrainDecoration(scene), () => false);
+    scene.textures.addCanvas('world-ground-sandy-river-v3', terrain)?.setFilter(Phaser.Textures.FilterMode.NEAREST);
   }
-  scene.add.image(0, 0, 'world-ground').setOrigin(0).setDepth(-100);
+  scene.add.image(0, 0, 'world-ground-sandy-river-v3').setOrigin(0).setDepth(-100);
   if (mapEdits) drawMapTerrainEdits(scene,mapEdits.terrain,`${textureNamespace}-map-edits`);
-  addWaterMotion(scene,waterAt);
+  addWaterMotion(scene,(x,y)=>waterAt(x,y)&&!bridgeAt(x,y),(x,y)=>waterPointAt(x,y)&&!bridgeAt(Math.floor(x/TILE),Math.floor(y/TILE)));
+  drawPropertyBridges(scene);
 
   const texture = (name: string, width: number, height: number, paint: (ctx: CanvasRenderingContext2D) => void) => {
     if (scene.textures.exists(name)) return;
@@ -252,10 +270,16 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
       ? ((x - 67) ** 2 + (y - 18) ** 2 < 42) || ((x - 81) ** 2 + (y - 28) ** 2 < 30)
       : ((x - 27) ** 2 / 120 + (y - 54) ** 2 / 55 < 1) || ((x - 68) ** 2 / 160 + (y - 57) ** 2 / 40 < 1);
     const chance = region.id === 'pine-forest' ? 0.2 : 0.075;
-    if (forestRandom() < chance && !clearing && !reservedSupplies.has(key(x, y)) && !isWaterTile(x, y) && !pathAt(x, y) && !bridgeAt(x, y)) trees.push({ x, y, pine: region.id === 'pine-forest' ? forestRandom() > 0.2 : forestRandom() > 0.8 });
+    if (forestRandom() < chance && !clearing && !reservedSupplies.has(key(x, y)) && !legacyWaterTile(x, y) && !pathAt(x, y) && !bridgeAt(x, y)) trees.push({ x, y, pine: region.id === 'pine-forest' ? forestRandom() > 0.2 : forestRandom() > 0.8 });
   }
   for (const [x, y] of [[58, 21], [63, 22], [74, 22], [29, 48], [34, 48], [60, 57]]) trees.push({ x, y, pine: x >= 50 && y < 42 });
+  for(const t of trees){treeReservations.add(key(t.x,t.y));const edit=mapEdits?.objects[`standingTree-${t.x}-${t.y}`];if(edit)treeReservations.add(key(edit.x,edit.y));}
+  for(const edit of Object.values(mapEdits?.objects??{}))if(!edit.removed&&isTreeKind(edit.kind))treeReservations.add(key(edit.x,edit.y));
   const addTree = (id: string, x: number, y: number, pine: boolean, variantX = x, variantY = y): void => {
+    if(!dryTreeCell(x,y)) {
+      const land=shoreTreePosition(x,y);if(!land)return;
+      x=land.x;y=land.y;
+    }
     const tile = key(x, y);
     if (forestTiles.has(tile)) return;
     forestTiles.add(tile);
@@ -267,14 +291,16 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     }
     resources.push({ id, x, y, kind: 'standingTree' });
     const base = pine ? 'asset-pine' : 'asset-tree';
-    const variant = Math.abs(Math.imul(variantX, 73856093) ^ Math.imul(variantY, 19349663)) % 3;
+    const appearance=forestTreeAppearance({x:variantX,y:variantY,pine,ancient:false});
+    const variant = appearance.variant;
     const artwork = scene.textures.exists(`${base}-${variant}`) ? `${base}-${variant}` : base;
     const useArtwork = scene.textures.exists(artwork);
     const treeTexture = useArtwork ? artwork : pine ? 'pine' : 'oak';
     const footX = x * TILE + 16, footY = y * TILE + 25;
     const pivot = artwork.endsWith(`-${variant}`) ? 128 / 132 : useArtwork ? 1 : 0.93;
-    const artScale = TREE_VISUAL_SCALE / (useArtwork && scene.textures.exists('reference-trees-source') ? 2 : 1);
+    const artScale = (useArtwork ? appearance.scale : TREE_VISUAL_SCALE) / (useArtwork && scene.textures.exists('reference-trees-source') ? 2 : 1);
     const treeImage = scene.add.image(footX, footY, treeTexture).setOrigin(0.5, pivot).setScale(artScale).setDepth(footY);
+    if (treeImage.setFlipX) treeImage.setFlipX(appearance.flip);
     resourceImages.set(id, treeImage);
     editorObjects.push({ id, x, y, kind, texture: treeTexture });
     const width = (treeImage.width || 88) * artScale;
@@ -293,14 +319,13 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     const edit = mapEdits?.objects[id];
     if (edit?.removed) continue;
     const x = edit?.x ?? tree.x, y = edit?.y ?? tree.y;
-    if (mapEdits?.terrain[key(x, y)] === 'water'
-      || edit && (waterAt(x, y) || blocked.has(key(x, y)) || buildingTiles.has(key(x, y)))) continue;
+    if (edit && (blocked.has(key(x, y)) || buildingTiles.has(key(x, y)))) continue;
     // Preserve the original artwork variant as well as the resource ID on moves.
     addTree(id, x, y, tree.pine, tree.x, tree.y);
   }
   for (const [id, edit] of Object.entries(mapEdits?.objects ?? {})) {
     if (!id.startsWith('editor-') || edit.removed || (edit.kind !== 'standingTree' && edit.kind !== 'pine')) continue;
-    if (waterAt(edit.x, edit.y) || blocked.has(key(edit.x, edit.y)) || buildingTiles.has(key(edit.x, edit.y))) continue;
+    if (blocked.has(key(edit.x, edit.y)) || buildingTiles.has(key(edit.x, edit.y))) continue;
     addTree(id, edit.x, edit.y, edit.kind === 'pine');
   }
   const positions: Array<[number, number, ResourceKind]> = [
@@ -321,12 +346,12 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   for (const [x, y, kind] of positions) {
     const id = `${kind}-${x}-${y}`;
     // Keep legacy loose-resource availability stable even after trees are cut.
-    if ((isWaterTile(x, y) && !bridgeAt(x, y)) || blocked.has(key(x, y)) || originalForestTiles.has(key(x, y))) continue;
+    if ((legacyWaterTile(x, y) && !bridgeAt(x, y)) || blocked.has(key(x, y)) || originalForestTiles.has(key(x, y))) continue;
     candidates.push({ id, x, y, kind });
   }
   const looseLayout = placeLooseResources(candidates, {
     isStaticBlocked: (x, y) => blocked.has(key(x, y)),
-    isTreeTile: (x, y) => originalForestTiles.has(key(x, y)), buildings,
+    isTreeTile: (x, y) => originalForestTiles.has(key(x, y))||forestTiles.has(key(x,y)), buildings,
   });
   const occupiedResources = new Set(forestTiles);
   const addLooseResource = (node: ResourceNode): void => {
@@ -334,13 +359,22 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     const { id, x, y, kind } = node;
     occupiedResources.add(key(x, y));
     resources.push(node);
-    const asset = ({ tree: 'asset-branch', stone: 'asset-stone', seeds: 'asset-seeds', scrap: 'asset-scrap', fiber: 'asset-fiber', vein: 'asset-vein', standingTree: 'asset-tree' } as const)[kind];
+    const asset = ({ tree: 'asset-new-branches', stone: 'asset-small-stones', seeds: 'asset-berry-bush', scrap: 'asset-scrap', fiber: 'asset-fiber', vein: 'lake-rock-0', standingTree: 'asset-tree',fallenLog:'forest-detail-log',stump:'forest-detail-stump' } as const)[kind];
     const useAsset = scene.textures.exists(asset);
-    const texture = useAsset ? asset : `resource-${kind}`;
+    const rockVariant=[0,1,2,5][Math.abs(Math.imul(x,73856093)^Math.imul(y,19349663))%4];
+    const forestRock=kind==='vein'&&scene.textures.exists(`lake-rock-${rockVariant}`);
+    const plant=kind==='fiber'?fiberPlantArt(fiberPlantFor(node)):undefined;
+    const texture = plant?.texture??(forestRock ? `lake-rock-${rockVariant}` : useAsset ? asset : `resource-${kind}`);
     const resourceImage = scene.add.image(x * TILE + 16, y * TILE + 29, texture).setOrigin(0.5, 1).setDepth(y * TILE + 29);
+    if(plant)resourceImage.setDisplaySize(plant.size,plant.size).setOrigin(.5,plant.pivot);
+    if(kind==='tree')resourceImage.setDisplaySize(36,27);
+    if(kind==='stone')resourceImage.setDisplaySize(32,24);
+    if(kind==='fallenLog'||kind==='stump')resourceImage.setDisplaySize(kind==='fallenLog'?68:38,kind==='fallenLog'?68:38).setOrigin(.5,124/128);
+    if(kind==='seeds'&&useAsset)resourceImage.setDisplaySize(44,44);
+    if(forestRock)resourceImage.setDisplaySize(52,52).setOrigin(.5,124/128);
     resourceImages.set(id, resourceImage);
     editorObjects.push({ id, x, y, kind, texture });
-    if (kind === 'vein') resourceBlocked.add(key(x, y));
+    if (kind === 'vein'||kind==='fallenLog'||kind==='stump') resourceBlocked.add(key(x, y));
   };
   for (const node of looseLayout) {
     const edit = mapEdits?.objects[node.id];
@@ -358,14 +392,17 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     addLooseResource({ id, x: edit.x, y: edit.y, kind: edit.kind as ResourceKind });
   }
   for(const [id,edit] of Object.entries(mapEdits?.objects??{})){
-    const art=natureArt(edit.kind),collectible=collectibleKind(edit.kind);if(edit.removed||!art||!edit.kind||collectible&&depleted.has(id))continue;
-    if((waterAt(edit.x,edit.y)&&!art.water)||blocked.has(key(edit.x,edit.y))||buildingTiles.has(key(edit.x,edit.y))||occupiedResources.has(key(edit.x,edit.y)))continue;
-    const image=scene.add.image(edit.x*TILE+16,edit.y*TILE+25,art.texture).setOrigin(.5,art.pivot).setDisplaySize(art.width,art.height).setDepth(edit.y*TILE+25);
-    editorObjects.push({id,x:edit.x,y:edit.y,kind:edit.kind,texture:art.texture});
-    if(collectible){resources.push({id,x:edit.x,y:edit.y,kind:collectible});resourceImages.set(id,image);occupiedResources.add(key(edit.x,edit.y));if(art.solid)resourceBlocked.add(key(edit.x,edit.y));}
-    else if(art.solid)blocked.add(key(edit.x,edit.y));
+    const art=natureArt(edit.kind),collectible=collectibleKind(edit.kind);if(edit.removed||!art||!edit.kind||collectible&&depleted.has(id)||edit.kind==='reeds'&&!nearRiverBank(edit.x,edit.y))continue;
+    if((waterAt(edit.x,edit.y)&&!art.water&&!isTreeKind(edit.kind))||blocked.has(key(edit.x,edit.y))||buildingTiles.has(key(edit.x,edit.y))||occupiedResources.has(key(edit.x,edit.y)))continue;
+    let x=edit.x,y=edit.y;
+    if(isTreeKind(edit.kind)&&!dryTreeCell(x,y)){const land=shoreTreePosition(x,y);if(!land)continue;x=land.x;y=land.y;}
+    const image=scene.add.image(x*TILE+16,y*TILE+25,art.texture).setOrigin(.5,art.pivot).setDisplaySize(art.width,art.height).setDepth(y*TILE+25);
+    editorObjects.push({id,x,y,kind:edit.kind,texture:art.texture});
+    if(collectible){resources.push({id,x,y,kind:collectible,...(isFiberPlant(edit.kind)?{plant:edit.kind}:{})});resourceImages.set(id,image);occupiedResources.add(key(x,y));if(art.solid)resourceBlocked.add(key(x,y));}
+    else if(art.solid)blocked.add(key(x,y));
     if(edit.kind.startsWith('oak')||edit.kind.startsWith('pine')){
-      canopies.set(key(edit.x,edit.y),{image,x:edit.x*TILE+16,y:edit.y*TILE+25,width:art.width,height:art.height*art.pivot});
+      forestTiles.add(key(x,y));
+      canopies.set(key(x,y),{image,x:x*TILE+16,y:y*TILE+25,width:art.width,height:art.height*art.pivot});
       canopyRadiusX=Math.max(canopyRadiusX,Math.ceil(art.width/2/TILE)+1);canopyRadiusY=Math.max(canopyRadiusY,Math.ceil(art.height/TILE)+1);
     }
   }
@@ -378,7 +415,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
       occupiedResources.delete(key(node.x,node.y));
       canopies.delete(key(node.x, node.y));
       fadedTrees.delete(key(node.x, node.y));
-      if (node.kind === 'standingTree' || node.kind === 'vein') resourceBlocked.delete(key(node.x, node.y));
+      if (node.kind === 'standingTree' || node.kind === 'vein'||node.kind==='fallenLog'||node.kind==='stump') resourceBlocked.delete(key(node.x, node.y));
       const editorIndex = editorObjects.findIndex(object => object.id === id);
       if (node.kind === 'standingTree') {
         scene.add.image(node.x * TILE + 16, node.y * TILE + 29, 'tree-stump').setOrigin(0.5, 1).setDepth(node.y * TILE + 24);
@@ -390,12 +427,12 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   const isBlocked = (x: number, y: number) => solidTile(x, y) || waterAt(x, y) && !bridgeAt(x, y);
   const isBlockedPoint = (x: number, y: number) => {
     const tx = Math.floor(x / TILE), ty = Math.floor(y / TILE);
-    return solidTile(tx, ty) || !bridgeAt(tx, ty) && waterPointAt(x, y);
+    return solidTile(tx, ty) || bridgeRailAtPoint(x,y) || !bridgeAt(tx, ty) && waterPointAt(x, y);
   };
   const waterTouchesTile = (x: number, y: number) => [0.01, TILE / 2, TILE - 0.01].some(dx =>
     [0.01, TILE / 2, TILE - 0.01].some(dy => waterPointAt(x * TILE + dx, y * TILE + dy)));
   // Old grass decorations must not appear on a newly painted path or pond.
-  decorateProperty(scene, { isBlocked: (x, y) => mapEdits?.terrain[key(x, y)] !== undefined || isBlocked(x, y), resourceAt,buildings,textureKey:`${textureNamespace}-ground-details`,placeStone:(x,y)=>{const id=`shoreStones-${x}-${y}`;addLooseResource({id,x,y,kind:'vein'});const image=resourceImages.get(id);if(image&&scene.textures.exists('asset-shore-stones')){image.setTexture('asset-shore-stones').setDisplaySize(30,18);const object=editorObjects.find(o=>o.id===id);if(object){object.kind='shoreStones';object.texture='asset-shore-stones';}}} });
+  decorateProperty(scene, { isBlocked: (x, y) => mapEdits?.terrain[key(x, y)] !== undefined || isBlocked(x, y), resourceAt,buildings,textureKey:`${textureNamespace}-ground-details`,placeStone:(x,y)=>{const id=`shoreStones-${x}-${y}`;addLooseResource({id,x,y,kind:'vein'});const image=resourceImages.get(id);if(image&&scene.textures.exists('lake-rock-2')){image.setTexture('lake-rock-2').setDisplaySize(52,52).setOrigin(.5,124/128);const object=editorObjects.find(o=>o.id===id);if(object){object.kind='shoreStones';object.texture='lake-rock-2';}}} });
 
   return {
     resources,
@@ -403,13 +440,14 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     setNaturalResources:(nodes,preserve=[])=>{
       const keep=new Set([...preserve,...Object.keys(mapEdits?.objects??{})]),next=new Set(nodes.map(n=>n.id));
       for(const n of [...resources])if(n.id.startsWith('spawn-')?!next.has(n.id):n.kind!=='standingTree'&&!n.id.startsWith('editor-')&&!n.id.startsWith('shoreStones-')&&!keep.has(n.id))eraseResource(n.id);
-      for(const node of nodes)if(!resources.some(n=>n.id===node.id)&&!solidTile(node.x,node.y)&&!waterAt(node.x,node.y))addLooseResource(node);
+      for(const node of nodes)if(!resources.some(n=>n.id===node.id)&&!solidTile(node.x,node.y)&&!waterAt(node.x,node.y)&&!((node.kind==='fiber'||node.kind==='seeds')&&mapEdits?.terrain[key(node.x,node.y)]!==undefined))addLooseResource(node);
     },
     isBlocked,
     isBlockedPoint,
     isSolid:solidTile,
-    isSolidPoint:(x,y)=>solidTile(Math.floor(x/TILE),Math.floor(y/TILE)),
+    isSolidPoint:(x,y)=>solidTile(Math.floor(x/TILE),Math.floor(y/TILE))||bridgeRailAtPoint(x,y),
     isSwimmingPoint:(x,y)=>!bridgeAt(Math.floor(x/TILE),Math.floor(y/TILE))&&waterPointAt(x,y),
+    canPlantTree:dryTreeCell,
     isFarm,
     isWater: waterAt,
     isBuildable: (x, y) => !isBlocked(x, y) && !waterTouchesTile(x, y) && !isFarm(x, y) && !resourceAt(x, y) && !bridgeAt(x, y) && !(x === 29 && y === 17),

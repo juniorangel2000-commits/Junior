@@ -107,14 +107,22 @@ describe('protected gameplay landmarks', () => {
     expect(validateMapEdits({ ...emptyMapEdits(), terrain: { [`${x},${y}`]: 'grass' } })).toBe(true);
   });
   it.each([
-    ['house', 20, 9], ['porch', 28, 17], ['arrival', 25, 18], ['farm', 21, 20],
+    ['house', 20, 9],
     ['Lia', 29, 17],
-    ['north bridge', 42, 18], ['south bridge', 49, 53],
+    ['north bridge', 42, 18], ['south bridge', 48, 53],
     ['world boundary', 0, 20],
   ] as const)('protects %s from terrain and object edits', (_name, x, y) => {
     expect(isProtectedMapTile(x, y)).toBe(true);
     expect(validateMapEdits({ ...emptyMapEdits(), terrain: { [`${x},${y}`]: 'grass' } })).toBe(false);
     expect(validateMapEdits({ ...emptyMapEdits(), objects: { 'tree-7-7': { x, y } } })).toBe(false);
+  });
+
+  it('permite trocar pisos secos da entrada e horta, preservando o acesso e a reserva de objetos', () => {
+    for (const [x,y] of [[28,17],[25,18],[21,20]]) {
+      expect(validateMapEdits({...emptyMapEdits(),terrain:{[`${x},${y}`]:'paving'}})).toBe(true);
+      expect(validateMapEdits({...emptyMapEdits(),terrain:{[`${x},${y}`]:'water'}})).toBe(false);
+      expect(validateMapEdits({...emptyMapEdits(),objects:{'tree-7-7':{x,y}}})).toBe(false);
+    }
   });
 
   it('allows editing surrounding land and the distant playable map', () => {

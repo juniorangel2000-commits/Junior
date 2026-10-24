@@ -1,3 +1,4 @@
+import type {FiberPlant} from './data/fiber-plants';
 import type {AnimalPosition,AnimalEscort} from './systems/animals';
 import type {ResourceField} from './systems/resource-spawns';
 import type { HomeData } from './systems/home';
@@ -20,17 +21,18 @@ export interface CharacterProfile {
   shirtColor?: string;
   accessory?: CharacterAccessory;
 }
-export type ItemId = 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 'plank' | 'scrap' | 'hatchet' | 'pickaxe' | 'handsaw'
+export type ItemId = 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 'plank' | 'scrap' | 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw'
   | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer';
 export type InventoryData = Record<ItemId, number>;
-export type OwnedTool = 'hatchet' | 'pickaxe' | 'handsaw' | 'hammer';
-export type Tool = 'hand' | 'plant' | 'water' | 'fence' | 'bench' | 'remove' | 'hatchet' | 'pickaxe' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof' | 'blueprint';
+export type OwnedTool = 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw' | 'hammer';
+export type Tool = 'hand' | 'plant' | 'water' | 'fence' | 'bench' | 'remove' | 'hatchet' | 'pickaxe' | 'hoe' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof' | 'blueprint';
 export type QuickSlot = Tool | `item:${ItemId}` | 'item:wateringCan' | null;
 export interface TilePoint { x: number; y: number }
 export interface CropData extends TilePoint { growth: number; watered: boolean }
+export interface FarmingProgress { prepared: boolean; planted: boolean; watered: boolean; harvested: boolean }
 export interface BuildingData extends TilePoint { kind: 'fence' | 'bench' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof'; open?: boolean; rotation?: 0 | 1 }
-export type ResourceKind = 'tree' | 'stone' | 'seeds' | 'scrap' | 'standingTree' | 'vein' | 'fiber';
-export interface ResourceNode extends TilePoint { id: string; kind: ResourceKind }
+export type ResourceKind = 'tree' | 'stone' | 'seeds' | 'scrap' | 'standingTree' | 'vein' | 'fiber' | 'fallenLog' | 'stump';
+export interface ResourceNode extends TilePoint { id: string; kind: ResourceKind; plant?: FiberPlant }
 export interface ResourceProgressData { id: string; hits: number }
 export interface ProgressData {
   collected: boolean;
@@ -58,6 +60,11 @@ export interface SaveData {
   player: TilePoint & { direction?: CharacterDirection };
   inventory: InventoryData;
   crops: CropData[];
+  /** Novos canteiros; a horta original continua preparada nos saves antigos. */
+  preparedSoil?: TilePoint[];
+  /** Quadrados da horta inicial que o jogador devolveu à grama. */
+  restoredFarmSoil?: TilePoint[];
+  farmingProgress?: FarmingProgress;
   buildings: BuildingData[];
   depletedResources: string[];
   resourceProgress: ResourceProgressData[];
@@ -75,6 +82,7 @@ export interface SaveData {
   forestMapEdits?: MapEditData;
 }
 export interface HudData {
+  farmingProgress?: FarmingProgress;
   swimming?:boolean;
   area?: 'property'|'forest';
   wateringCan?: boolean;

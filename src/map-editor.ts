@@ -1,20 +1,24 @@
+import {nearRiverBank,isFiberPlant} from './data/fiber-plants';
 import type {MapArea} from './data/default-maps';
 import { NATURE_KINDS, NATURE_ART, natureArt } from './data/nature-catalog';
 import Phaser from 'phaser';
 import { MapEditorUI } from './map-editor-ui';
 import type { EditorAction, EditorTool } from './map-editor-ui';
-import { MapEditHistory, cloneMapEdits, createEditorObjectId, isProtectedMapTile, loadMapDraft, parseMapEdits, saveMapDraft } from './systems/map-editor';
+import { MapEditHistory, cloneMapEdits, createEditorObjectId, isProtectedMapTile, isProtectedTerrainTile, loadMapDraft, parseMapEdits, saveMapDraft } from './systems/map-editor';
 import type { EditorObjectKind, MapEditData } from './systems/map-editor';
 import { isWaterTile, TILE, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 import type { WorldEditorObject } from './world';
+import {isTreeKind,treeGroundClear} from './systems/tree-ground';
 
 export interface MapEditorAdapter {
   rebuild(edits: MapEditData): void;
   objects(): WorldEditorObject[];
   originalObjects: WorldEditorObject[];
   protectedTile(x: number, y: number): boolean;
+  protectedTerrainTile?(x:number,y:number):boolean;
   canPlace(x: number, y: number, ignoreId?: string, kind?: EditorObjectKind): boolean;
   baseWater?(x:number,y:number):boolean;
+  baseWaterPoint?(x:number,y:number):boolean;
   defaultPoints?: {entry:{x:number;y:number};exit:{x:number;y:number}};
   apply(edits: MapEditData): boolean;
   cancel(): void;
@@ -51,7 +55,7 @@ export class MapEditor {
   private pan?: { screen: Point; scroll: Point };
   private moving?: WorldEditorObject;
   private strokeBlocked = false;
-  private status = 'Edite o cenário. Casa, pontes e canteiro inicial ficam protegidos.';
+  private status = 'Troque os pisos livres. Construções, plantas e canteiros preparados ficam protegidos.';
   private storedDraft:MapEditData|null=null;
 
   constructor(private readonly scene: Phaser.Scene, initial: MapEditData, private readonly adapter: MapEditorAdapter, history?:MapEditHistory, initialJSON?:string) {
@@ -162,7 +166,11 @@ export class MapEditor {
     return { screen, tile: { x: Math.floor(p.x / TILE), y: Math.floor(p.y / TILE) } };
   }
 
-  private protected(p: Point): boolean { return isProtectedMapTile(p.x, p.y,this.history.current.area) || this.adapter.protectedTile(p.x, p.y); }
+  private protected(p: Point, terrain = false): boolean {
+    return terrain ? isProtectedTerrainTile(p.x,p.y,this.history.current.area,this.tool.mode==='restore'?undefined:this.tool.terrain)
+      || (this.adapter.protectedTerrainTile ?? this.adapter.protectedTile)(p.x,p.y)
+      : isProtectedMapTile(p.x,p.y,this.history.current.area) || this.adapter.protectedTile(p.x,p.y);
+  }
   private objectAt(p: Point): WorldEditorObject | undefined { return this.adapter.objects().find(o => o.x === p.x && o.y === p.y); }
   private free(p: Point, ignoreId?: string): boolean {
     return !this.protected(p) && !this.adapter.objects().some(o => o.id !== ignoreId && o.x === p.x && o.y === p.y)
@@ -242,13 +250,15 @@ export class MapEditor {
     const radius = this.tool.mode === 'terrain' || this.tool.mode === 'restore' ? Math.floor(this.brush / 2) : 0;
     for (let y = center.y - radius; y <= center.y + radius; y++) for (let x = center.x - radius; x <= center.x + radius; x++) {
       const p = { x, y };
-      if (this.protected(p)) { this.strokeBlocked = true; continue; }
+      if (this.protected(p,this.tool.mode==='terrain'||this.tool.mode==='restore')) { this.strokeBlocked = true; continue; }
       const cell = key(p), object = this.objectAt(p);
       if(this.tool.mode==='entry'||this.tool.mode==='exit'){
         if(!this.free(p)){this.strokeBlocked=true;continue;}
         this.stroke.points={...this.stroke.points,[this.tool.mode]:{x,y}};
       } else if (this.tool.mode === 'terrain' && this.tool.terrain) {
-        if (this.tool.terrain === 'water' && object && !natureArt(object.kind)?.water) { this.strokeBlocked = true; continue; }
+        const plant=object&&(isFiberPlant(object.kind)||object.kind==='berryBush'||object.kind==='fiber'||object.kind==='seeds');
+        if (this.tool.terrain === 'water' && object && !plant && !natureArt(object.kind)?.water) { this.strokeBlocked = true; continue; }
+        if(plant&&object)this.stroke.objects[object.id]={...this.stroke.objects[object.id],x:object.x,y:object.y,removed:true};
         this.stroke.terrain[cell] = this.tool.terrain;
         this.strokePreview.fillStyle(colors[this.tool.terrain], .7).fillRect(x * TILE, y * TILE, TILE, TILE);
       } else if (this.tool.mode === 'restore') {
@@ -279,7 +289,7 @@ export class MapEditor {
     if (selected) this.cursor.lineStyle(2 / zoom, 0xffdc87).strokeRect(selected.x * TILE, selected.y * TILE, TILE, TILE);
     if (!this.hover || this.pan) return;
     const p = this.hover;
-    const allowed = this.tool.mode === 'object' || this.moving ? this.free(p, this.moving?.id) : !this.protected(p);
+    const allowed = this.tool.mode === 'object' || this.moving ? this.free(p, this.moving?.id) : !this.protected(p,this.tool.mode==='terrain'||this.tool.mode==='restore');
     const radius = ['terrain', 'restore'].includes(this.tool.mode) ? Math.floor(this.brush / 2) : 0;
     this.cursor.lineStyle(2 / zoom, allowed ? 0xffedbd : 0xe37366).strokeRect((p.x - radius) * TILE, (p.y - radius) * TILE, (radius * 2 + 1) * TILE, (radius * 2 + 1) * TILE);
     if (this.moving) this.cursor.fillStyle(allowed ? 0xc8e5a9 : 0xe37366, .35).fillRect(p.x * TILE, p.y * TILE, TILE, TILE);
@@ -317,7 +327,7 @@ export class MapEditor {
     const current = this.history.current;
     for (const cell of new Set([...Object.keys(data.terrain), ...Object.keys(current.terrain)])) {
       const [x, y] = cell.split(',').map(Number);
-      if (this.adapter.protectedTile(x, y) && data.terrain[cell] !== current.terrain[cell]) return 'O terreno sob uma construção da partida precisa ser preservado.';
+      if ((this.adapter.protectedTerrainTile ?? this.adapter.protectedTile)(x,y) && data.terrain[cell] !== current.terrain[cell]) return 'Preserve o terreno sob construções, plantas e canteiros preparados. Desfaça o canteiro antes de trocar o piso.';
     }
     for(const point of Object.values({...this.adapter.defaultPoints,...data.points})){
       if(!point)continue;const ground=data.terrain[key(point)];
@@ -326,6 +336,11 @@ export class MapEditor {
     const occupied = new Set<string>();
     for (const object of resolved.values()) {
       const cell = key(object);
+      if(object.kind==='reeds'&&(data.area==='forest'||!nearRiverBank(object.x,object.y)))return 'Os juncos precisam ficar nas margens do rio da propriedade.';
+      if(isTreeKind(object.kind)&&!treeGroundClear(object.x,object.y,(px,py)=>{
+        const tx=Math.floor(px/TILE),ty=Math.floor(py/TILE),edit=data.terrain[`${tx},${ty}`];
+        return edit!==undefined?edit==='water':this.adapter.baseWaterPoint?.(px,py)??(this.adapter.baseWater??isWaterTile)(tx,ty);
+      }))return 'As árvores precisam de terra firme em toda a base, fora da água e das margens alagadas.';
       if (occupied.has(cell)) return 'Dois objetos ficariam no mesmo ponto. Mova ou remova um deles antes.';
       occupied.add(cell);
       const ground = data.terrain[cell];

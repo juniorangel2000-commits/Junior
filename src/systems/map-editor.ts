@@ -51,6 +51,13 @@ export function isProtectedMapTile(x: number, y: number, area?: 'forest'): boole
     || (x === 29 && y === 17);
 }
 
+/** Dry floor changes preserve access while objects still keep their old reservations. */
+export function isProtectedTerrainTile(x:number,y:number,area?:'forest',terrain?:TerrainKind):boolean {
+  if (!validCell(x,y)) return true;
+  if (!area && ((x>=20 && x<=28 && y>=16 && y<=19) || isFarmTile(x,y))) return terrain==='water';
+  return isProtectedMapTile(x,y,area);
+}
+
 /** Data objects only: reject custom prototypes, accessors, symbols and hidden properties. */
 function plainRecord(value: unknown): value is Record<string, unknown> {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
@@ -91,7 +98,7 @@ export function validateMapEdits(value: unknown): value is MapEditData {
     if (Object.keys(value.terrain).length > MAX_CELLS || Object.keys(value.objects).length > MAX_CELLS) return false;
     for (const [key, terrain] of Object.entries(value.terrain)) {
       const match = TILE_KEY.exec(key);
-      if (!match || isProtectedMapTile(Number(match[1]), Number(match[2]),value.area as 'forest'|undefined)
+      if (!match || isProtectedTerrainTile(Number(match[1]), Number(match[2]),value.area as 'forest'|undefined,terrain as TerrainKind)
         || !MAP_TERRAIN_KINDS.includes(terrain as TerrainKind)) return false;
     }
     if(value.points!==undefined){

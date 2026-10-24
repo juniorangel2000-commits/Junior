@@ -1,3 +1,5 @@
+import { dayPhase, SUNRISE_MINUTES, SUNSET_MINUTES } from './daylight-model';
+import { getVisualSettings, setVisualSettings } from './visual-settings';
 import { makeDraggablePanel } from './draggable-panel';
 import { CAMERA_ZOOM_MIN, CAMERA_ZOOM_MAX } from './camera-zoom';
 import './camera-zoom.css';
@@ -95,12 +97,13 @@ function icon(name: string, cls = ''): string {
 }
 const tools: { id: Tool; label: string; icon: string; detail: string }[] = [
   { id: 'hand', label: 'Explorar', icon: 'hand', detail: 'Coletar, conversar e colher' },
-  { id: 'plant', label: 'Plantar', icon: 'seeds', detail: 'Plantar uma semente na horta' },
+  { id: 'plant', label: 'Plantar', icon: 'seeds', detail: 'Plantar uma semente em terra preparada' },
   { id: 'water', label: 'Regar', icon: 'water', detail: 'Regar uma plantação' },
   { id: 'fence', label: 'Cerca', icon: 'fence', detail: 'Construir uma cerca' },
   { id: 'bench', label: 'Banco', icon: 'bench', detail: 'Construir um banco' },
   { id: 'remove', label: 'Remover', icon: 'remove', detail: 'Remover e recuperar parte dos materiais'  },
   { id: 'hatchet', label: 'Machadinha', icon: 'hatchet', detail: 'Cortar árvores com uma machadinha da mochila' },
+  { id: 'hoe', label: 'Enxada', icon: 'hoe', detail: 'E prepara · Shift + E desfaz canteiros vazios' },
   { id: 'pickaxe', label: 'Picareta', icon: 'pickaxe', detail: 'Minerar rochas com uma picareta da mochila' },
   { id: 'workbench', label: 'Bancada', icon: 'workbench', detail: 'Colocar uma bancada de trabalho' },
   { id: 'wall', label: 'Parede', icon: 'wall', detail: 'Construir uma parede com martelo perto da bancada' },
@@ -332,13 +335,13 @@ export class GameUI {
     this.overlay.classList.remove('active');
     this.lastHudKey = '';
     this.base.innerHTML = `<div class="hud">
-      <header class="hud-header hud-status" aria-label="Dia, hora e recursos"><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><strong id="hud-day">Dia 1</strong><span class="status-time"><b id="hud-time">08:00</b></span></div><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}</div></header>
+      <header class="hud-header hud-status" aria-label="Dia, hora e recursos"><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><strong id="hud-day">Dia 1</strong><span class="status-time"><b id="hud-time">08:00</b><small id="hud-day-phase">Manhã</small></span></div><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}</div></header>
       <div class="camera-zoom" role="group" aria-label="Zoom da câmera">
         <button type="button" data-zoom="-1" aria-label="Diminuir zoom" title="Afastar a câmera · − ou roda do mouse">−</button>
         <button type="button" data-zoom="0" aria-label="Restaurar zoom padrão" title="Restaurar para 100% · Home"><span class="camera-zoom-value" aria-live="polite">100%</span></button>
         <button type="button" data-zoom="1" aria-label="Aumentar zoom" title="Aproximar a câmera · + ou roda do mouse">+</button>
       </div>
-      <button class="journal-reopen" ${this.journalCollapsed ? '' : 'hidden'} aria-controls="journal-panel" aria-expanded="false" aria-label="Abrir missões" title="Abrir missões">${icon('leaf')}<span>Missões</span></button><aside id="journal-panel" class="journal" ${this.journalCollapsed ? 'hidden' : ''}><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="journal-close" aria-controls="journal-panel" aria-label="Fechar missões" title="Fechar missões">${icon('close')}</button></header><div id="journal-content" class="journal-content"><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera na parte oeste da propriedade.</p><div class="journal-rule"></div><div class="quest" id="harvest-quest"><span class="quest-circle"></span>Colha seu primeiro nabo</div><div class="quest" id="lia-quest"><span class="quest-circle"></span>Converse com Lia <kbd>E</kbd></div><small>Seu tempo. Seu caminho.</small></div></aside>
+      <button class="journal-reopen" ${this.journalCollapsed ? '' : 'hidden'} aria-controls="journal-panel" aria-expanded="false" aria-label="Abrir missões" title="Abrir missões">${icon('leaf')}<span>Missões</span></button><aside id="journal-panel" class="journal" ${this.journalCollapsed ? 'hidden' : ''}><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="journal-close" aria-controls="journal-panel" aria-label="Fechar missões" title="Fechar missões">${icon('close')}</button></header><div id="journal-content" class="journal-content"><div id="farming-quest" aria-label="Missão primeira colheita"></div><div class="journal-rule"></div><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera na parte oeste da propriedade.</p><div class="journal-rule"></div><div class="quest" id="lia-quest"><span class="quest-circle"></span>Converse com Lia <kbd>E</kbd></div><small>Seu tempo. Seu caminho.</small></div></aside>
       <div class="location-pill">${icon('pin')}<span id="hud-location">Minha propriedade</span></div>
       <div class="bottom-center"><div class="interaction-prompt"><kbd id="hud-interaction-key">E</kbd><span id="hud-prompt">Explore o vale ao seu redor</span></div><div id="hud-resource-progress" class="resource-progress" hidden></div><div class="toolbelt"></div><div class="tool-status"><strong id="active-tool">Explorar</strong><span id="tool-cost">Coletar · conversar · colher</span></div></div>
     </div>`;
@@ -442,7 +445,12 @@ export class GameUI {
     const progressLabel = this.base.querySelector<HTMLElement>('#hud-resource-progress')!;
     progressLabel.hidden = !data.resourceProgress;
     progressLabel.textContent = data.resourceProgress;
-    const night = minutes < 360 || minutes >= 1140;
+    const phase = dayPhase(minutes);
+    const night = minutes < SUNRISE_MINUTES || minutes >= SUNSET_MINUTES;
+    const clock = this.base.querySelector<HTMLElement>('.day-clock')!;
+    clock.title = `${phase} · Nascer do sol 06:00 · Pôr do sol 19:00`;
+    clock.setAttribute('aria-label', `${phase}, dia ${data.day}`);
+    set('#hud-day-phase', phase);
     const weather = this.base.querySelector('.weather-icon')!;
     if (weather.getAttribute('data-night') !== String(night)) {
       weather.innerHTML = icon(night ? 'moon' : 'sun');
@@ -495,7 +503,21 @@ export class GameUI {
       progress.setAttribute('data-progress', progressKey);
       progress.innerHTML = progressSteps.map(([id, label]) => `<div class="quest${data.progress[id] ? ' complete' : ''}" data-step="${id}"><span class="quest-circle"></span>${label}</div>`).join('');
     }
-    this.base.querySelector('#harvest-quest')?.classList.toggle('complete', data.harvests > 0);
+    const farming = data.farmingProgress;
+    const farmingSteps: [string, string, boolean][] = [
+      ['hoe', 'Fabricar uma enxada · C', data.inventory.hoe > 0],
+      ['prepared', 'Preparar um novo canteiro · enxada + E', !!farming?.prepared],
+      ['planted', 'Plantar nabo · sementes + E', !!farming?.planted],
+      ['watered', 'Regar a plantinha · regador + E', !!farming?.watered],
+      ['harvested', 'Colher o primeiro nabo · mãos vazias + E', !!farming?.harvested || data.harvests > 0],
+    ];
+    const farmingQuest = this.base.querySelector('#farming-quest');
+    const farmingKey = farmingSteps.map(step => step[2]).join(',');
+    if (farmingQuest && farmingQuest.getAttribute('data-progress') !== farmingKey) {
+      farmingQuest.setAttribute('data-progress', farmingKey);
+      farmingQuest.innerHTML = '<p class="eyebrow">PRIMEIRA COLHEITA</p>' + farmingSteps.map(([id,label,done]) =>
+        `<div class="quest${done ? ' complete' : ''}" data-farming-step="${id}"><span class="quest-circle"></span>${label}</div>`).join('');
+    }
     this.base.querySelector('#lia-quest')?.classList.toggle('complete', data.metLia);
   }
 
@@ -621,7 +643,7 @@ export class GameUI {
       for (const [item, quantity] of inputs) {
         if (inventory[item] < quantity) missing.push(`${quantity - inventory[item]} ${ITEM_NAMES[item].toLocaleLowerCase('pt-BR')}`);
       }
-      const outputTool = outputs.find(([item]) => ['hatchet', 'pickaxe', 'handsaw', 'hammer'].includes(item));
+      const outputTool = outputs.find(([item]) => ['hatchet', 'pickaxe', 'hoe', 'handsaw', 'hammer'].includes(item));
       const alreadyOwned = !!outputTool && inventory[outputTool[0]] > 0;
       const missingTool = recipe.requiresTool && inventory[recipe.requiresTool] < 1;
       const missingStation = recipe.requiresWorkbench && !nearWorkbench;
@@ -781,6 +803,16 @@ export class GameUI {
     editor.textContent = 'Editar mapa · F2';
     editor.addEventListener('click', () => this.callbacks.onMapEditor());
     panel.querySelector('.pause-actions')!.insertBefore(editor, panel.querySelector('[data-action="admin"]'));
+    const visuals = getVisualSettings();
+    const lighting = document.createElement('fieldset');
+    lighting.className = 'daylight-settings';
+    lighting.innerHTML = `<legend>Visual do vale</legend><label><input type="checkbox" data-daylight ${visuals.daylight ? 'checked' : ''}> Iluminação das fases do dia</label><label>Intensidade <input aria-label="Intensidade da iluminação" type="range" min="0" max="100" value="${Math.round(visuals.intensity * 100)}"><output>${Math.round(visuals.intensity * 100)}%</output></label><p>Madrugada, manhã, tarde e noite com transições suaves. Preferência salva automaticamente.</p>`;
+    const enabled = lighting.querySelector<HTMLInputElement>('[data-daylight]')!;
+    const strength = lighting.querySelector<HTMLInputElement>('input[type=range]')!;
+    strength.disabled = !visuals.daylight;
+    enabled.addEventListener('change', () => { setVisualSettings({ daylight: enabled.checked }); strength.disabled = !enabled.checked; });
+    strength.addEventListener('input', () => { setVisualSettings({ intensity: Number(strength.value) / 100 }); strength.nextElementSibling!.textContent = `${strength.value}%`; });
+    panel.querySelector('.pause-actions')!.before(lighting);
     this.overlay.append(panel);
   }
 

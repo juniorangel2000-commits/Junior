@@ -15,6 +15,7 @@ export function setupResourceSprites(scene: Phaser.Scene): void {
   if (!scene.textures.exists('resource-atlas-source')) return;
   const source = scene.textures.get('resource-atlas-source').getSourceImage() as HTMLImageElement;
   RESOURCE_SPRITES.forEach(({ id, width, height }, index) => {
+    if(['stone','vein','branch','seeds','fiber'].includes(id))return;
     const key = `asset-${id}`;
     if (scene.textures.exists(key)) return;
     const cellWidth = Math.floor(source.width / 3), cellHeight = Math.floor(source.height / 2);

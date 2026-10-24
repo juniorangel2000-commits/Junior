@@ -194,3 +194,12 @@
  #ui .after-rain-title .title-actions{width:auto}
 }
 .rainy-title-active #game canvas{filter:saturate(.8) brightness(.95)}
+#ui #hud-day-phase{display:block;font:10px Georgia,serif;margin-top:3px;opacity:.8}
+#ui .pause-card{max-height:calc(100vh - 32px);overflow-y:auto}
+#ui .daylight-settings{margin:15px 0;padding:10px 14px;border:1px solid #b58d56;border-radius:4px;text-align:left;color:#5b432a;background:#fff1d4}
+#ui .daylight-settings legend{padding:0 5px;font:16px Georgia,serif}
+#ui .daylight-settings label{display:flex;align-items:center;gap:8px;margin:8px 0;font-size:12px}
+#ui .daylight-settings input{accent-color:#856034}
+#ui .daylight-settings input[type=range]{flex:1;min-width:40px}
+#ui .daylight-settings output{min-width:34px;text-align:right}
+#ui .daylight-settings p{font:11px/1.5 Arial,sans-serif;margin:8px 0 0}

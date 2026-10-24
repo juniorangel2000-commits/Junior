@@ -1,22 +1,46 @@
 import Phaser from 'phaser';
-/** Tiny looping glints; the terrain and collision stay fixed. */
-export function addWaterMotion(scene:Phaser.Scene,water:(x:number,y:number)=>boolean):void {
-  const key='water-ripple-frames';
-  if(!scene.textures.exists(key)){
-    const c=document.createElement('canvas');c.width=256;c.height=16;const g=c.getContext('2d')!;
-    for(let f=0;f<8;f++){
-      g.fillStyle=`rgba(180,230,219,${Math.sin((f+1)/9*Math.PI)*.50})`;
-      g.fillRect(f*32+4+f,5,9,1);g.fillRect(f*32+9+f,6,5,1);
-      g.fillRect(f*32+15-Math.floor(f/2),11,7,1);
+import {WATER_ANIMATION,waterSurfaceAlpha} from './data/water-animation';
+
+/** Prebaked smooth waves. Per-cell shore masks keep every pixel off land and bridges. */
+export function addWaterMotion(scene:Phaser.Scene,water:(x:number,y:number)=>boolean,contains?:(x:number,y:number)=>boolean):void {
+  const {frames,fps,tile}=WATER_ANIMATION;
+  const point=contains??((x:number,y:number)=>water(Math.floor(x/tile),Math.floor(y/tile)));
+  // Four shared phase tiles form a continuous 64px pattern. Cache masks separately.
+  const sourceKey='water-surface-v2-base';
+  const sources:Uint8ClampedArray[]=[];
+  for(let quadrant=0;quadrant<4;quadrant++) {
+    const key=`${sourceKey}:${quadrant}`;
+    if(!scene.textures.exists(key)) {
+      const canvas=document.createElement('canvas');canvas.width=frames*tile;canvas.height=tile;
+      const g=canvas.getContext('2d')!,image=g.createImageData(canvas.width,tile);
+      for(let f=0;f<frames;f++)for(let y=0;y<tile;y++)for(let x=0;x<tile;x++) {
+        const i=(y*canvas.width+f*tile+x)*4;
+        image.data.set([175,222,209,waterSurfaceAlpha(f,x+(quadrant%2)*tile,y+Math.floor(quadrant/2)*tile)],i);
+      }
+      g.putImageData(image,0,0);scene.textures.addCanvas(key,canvas)?.setFilter(0);
     }
-    const texture=scene.textures.addCanvas(key,c)!;
-    for(let f=0;f<8;f++)texture.add(f,0,f*32,0,32,16);
-    texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    const canvas=scene.textures.get(key).getSourceImage() as HTMLCanvasElement;
+    sources.push(canvas.getContext('2d')!.getImageData(0,0,canvas.width,tile).data);
   }
-  if(!scene.anims.exists(key))scene.anims.create({key,frames:Array.from({length:8},(_,frame)=>({key,frame})),frameRate:4,repeat:-1});
-  for(let y=2;y<70;y+=2)for(let x=2;x<94;x+=2){
-    if(!water(x,y)||!water(x-1,y)||!water(x+1,y)||!water(x,y+1))continue;
-    const phase=((x*17+y*31)>>>0)%8;
-    scene.add.sprite(x*32+16,y*32+12,key,phase).setDepth(-80).play({key,startFrame:phase});
+  for(let ty=1;ty<71;ty++)for(let tx=1;tx<95;tx++) {
+    if(!water(tx,ty)&&![[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>water(tx+dx,ty+dy)))continue;
+    const mask=new Uint8Array(tile*tile);let count=0,hash=2166136261;
+    for(let y=0;y<tile;y++)for(let x=0;x<tile;x++) {
+      const wet=point(tx*tile+x+.5,ty*tile+y+.5);mask[y*tile+x]=Number(wet);count+=Number(wet);
+      hash=Math.imul(hash^Number(wet),16777619)>>>0;
+    }
+    if(!count)continue;
+    const quadrant=tx%2+(ty%2)*2;
+    const key=count===tile*tile?`${sourceKey}:${quadrant}`:`water-surface-v2:${quadrant}:${hash.toString(16)}:${count}`;
+    if(!scene.textures.exists(key)) {
+      const canvas=document.createElement('canvas');canvas.width=frames*tile;canvas.height=tile;
+      const g=canvas.getContext('2d')!,image=g.createImageData(canvas.width,tile);image.data.set(sources[quadrant]);
+      for(let f=0;f<frames;f++)for(let y=0;y<tile;y++)for(let x=0;x<tile;x++)if(!mask[y*tile+x])image.data[(y*canvas.width+f*tile+x)*4+3]=0;
+      g.putImageData(image,0,0);scene.textures.addCanvas(key,canvas)?.setFilter(0);
+    }
+    const texture=scene.textures.get(key);
+    if(!texture.has('0'))for(let f=0;f<frames;f++)texture.add(f,0,f*tile,0,tile,tile);
+    if(!scene.anims.exists(key))scene.anims.create({key,frames:Array.from({length:frames},(_,frame)=>({key,frame})),frameRate:fps,repeat:-1});
+    scene.add.sprite(tx*tile,ty*tile,key,0).setOrigin(0).setDepth(-80).play(key).setData('water-surface',true);
   }
 }
