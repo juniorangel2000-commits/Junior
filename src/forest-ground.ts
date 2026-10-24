@@ -47,6 +47,16 @@ export function forestGroundPixels(sprites:TerrainSprites|undefined,left:number,
     color[0]=color[0]*(1-bank*.25)+76*bank*.25;
     color[1]=color[1]*(1-bank*.25)+117*bank*.25;
     color[2]=color[2]*(1-bank*.25)+78*bank*.25;
+    // An irregular sand bank follows the lake's ellipse in world coordinates.
+    const shoreDistance=(Math.hypot((gx-54)/13,(gy-16)/8)-1)*8;
+    const shoreWidth=1.05+Math.sin(wx*.009+wy*.004)*.25+Math.sin(wy*.015)*.15;
+    const sandWeight=(1-weights[3])*smooth((shoreWidth-Math.max(0,shoreDistance))/.55);
+    if(shoreDistance>-.75&&sandWeight>0){
+      const sand=sprites?.sand,si=sand?((wy%sand.size)*sand.size+wx%sand.size)*4:0;
+      const dry=.76+.24*smooth((shoreDistance-.05)/.65);
+      const base=[179,154,108];
+      for(let c=0;c<3;c++)color[c]=color[c]*(1-sandWeight)+(sand?sand.pixels[si+c]:base[c])*dry*sandWeight;
+    }
     const i=(py*size+px)*4;
     output[i]=color[0];output[i+1]=color[1];output[i+2]=color[2];output[i+3]=255;
   }

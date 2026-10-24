@@ -33,3 +33,9 @@ Testes de composição conferem continuidade entre blocos, opacidade e reproduç
 `public/assets/visual/nature/lake-rocks.png` contém seis rochas novas, incluindo versões submersas. O lago recebe essas rochas e ondulações animadas; o deck foi removido.
 
 As 21 novas sprites ambientais estão disponíveis no editor da propriedade e da floresta. Os mapas, rascunhos, exportações e pontos de chegada/saída são independentes. Instruções em `LEIA-0.9.2.md`; evidências em `validacao-editor-floresta.json`.
+
+## 0.9.3 — margens e zoom
+
+Uma faixa de areia de largura variável acompanha o lago, misturando-se ao piso da mata e à borda úmida. A composição em blocos é montada em uma única textura contínua para eliminar lacunas de arredondamento no zoom. A HUD comum substitui os painéis exclusivos da floresta.
+
+Animação de nado em `swimming.ts`, com poses derivadas da arte original das duas personagens e sem alterar os PNGs fonte. Evidências: `validacao-nado.json`, `nado-feminino.png`, `nado-masculino.png`, `lago-zoom-afastado.png`.

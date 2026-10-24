@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checks": [
+    "water entry",
+    "swim poses animate",
+    "movement in water",
+    "shared inventory pauses swimming",
+    "save reload in water",
+    "return to walking on shore",
+    "both supplied characters",
+    "eight directions",
+    "continuous terrain at zoom out",
+    "swimming and reload in property"
+  ],
+  "at": "2026-10-24T17:54:56.884Z"
+}

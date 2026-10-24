@@ -2,6 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { forestGroundPixels } from '../src/forest-ground';
 
 describe('forest terrain composition',()=>{
+  it('adds a sandy bank around the lake while keeping the middle as water',()=>{
+    const sample=(x:number,y:number)=>forestGroundPixels(undefined,Math.floor((x+.5)*32),Math.floor((y+.5)*32),1);
+    const shore=sample(54,24),inland=sample(54,28),water=sample(54,16);
+    expect(shore[0]).toBeGreaterThan(inland[0]+30);
+    expect(water[2]).toBeGreaterThan(water[0]);
+  });
+
   it('uses world coordinates so neighboring chunks match a single larger bake',()=>{
     const whole=forestGroundPixels(undefined,640,1056,64);
     const right=forestGroundPixels(undefined,672,1056,32);

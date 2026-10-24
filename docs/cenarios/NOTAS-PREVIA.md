@@ -1,11 +1,11 @@
-# After Rain 0.9.2 — floresta e editor
+# After Rain 0.9.3 — HUD padrão e nado
 
-Nova arte da floresta, seis variações de árvores, piso de mata com folhas e bordas suaves, seis rochas novas e água animada. Deck do lago removido.
+A floresta agora usa a mesma HUD da propriedade: inventário, nove slots, missões, música, mapa, zoom e pausa. Os painéis exclusivos da floresta foram removidos.
 
-Editor na propriedade e na floresta, com 21 novas sprites ambientais. Saídas entre cenários e pontos de chegada podem ser reposicionados no editor. Mapas e rascunhos ficam separados; exporte o JSON de cada cenário para guardar ou enviar suas edições.
+Lago com areia natural e terreno contínuo para corrigir as linhas do zoom afastado. Nado automático com animação provisória para as duas personagens, quatro poses e oito direções; velocidade reduzida, flutuação e ondulações. Ao sair da água, a caminhada é restaurada. Salvar e recarregar na água funciona nos dois mapas. A animação poderá ser substituída pela versão do PixelLab depois.
 
-**Baixe `After-Rain-0.9.2-Windows-x64.exe`. Use F2 para editar e Aplicar e jogar para salvar.** Instruções completas em `LEIA.md`.
+**Baixe `After-Rain-0.9.3-Windows-x64.exe`.** Controles e instruções em `LEIA.md`. O editor e suas passagens configuráveis continuam disponíveis por F2.
 
-Validação: 331 testes, TypeScript, build e testes Chromium de exploração, animais sem duplicação, água animada, editor, exportação JSON, passagens personalizadas e recarga nos dois mapas. O executável é gerado pelo GitHub Actions em Windows; não houve teste interativo em Windows neste ambiente.
+Validação: 337 testes, TypeScript, build, testes Chromium de HUD, transições e editor; nado e recarga na água nos dois cenários; uso e enchimento do regador preservados. Executável gerado no Windows pelo GitHub Actions; jogabilidade validada no Chromium neste ambiente.
 
-[Ver floresta](https://github.com/juniorangel2000-commits/Junior/blob/preview/nature-0.9.2/docs/cenarios/floresta-mapa.png) · [Ver lago](https://github.com/juniorangel2000-commits/Junior/blob/preview/nature-0.9.2/docs/cenarios/floresta-lago.png) · [Ver editor](https://github.com/juniorangel2000-commits/Junior/blob/preview/nature-0.9.2/docs/cenarios/editor-floresta.png)
+[Ver lago com zoom afastado](https://github.com/juniorangel2000-commits/Junior/blob/preview/swimming-0.9.3/docs/cenarios/lago-zoom-afastado.png) · [Ver nado](https://github.com/juniorangel2000-commits/Junior/blob/preview/swimming-0.9.3/docs/cenarios/nado-feminino.png)

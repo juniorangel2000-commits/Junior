@@ -68,6 +68,7 @@ export interface SaveData {
   forestMapEdits?: MapEditData;
 }
 export interface HudData {
+  area?: 'property'|'forest';
   wateringCan?: boolean;
   wateringCanWater?: number;
   inHome: boolean;

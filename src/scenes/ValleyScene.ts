@@ -287,7 +287,7 @@ export class ValleyScene extends Phaser.Scene {
     this.cameras.main.fadeOut(250);
     this.time.delayedCall(250,()=>{
       this.scene.sleep();
-      this.scene.launch('Floresta',{save:data,onReturn:(updated:SaveData,title=false)=>{
+      this.scene.launch('Floresta',{save:data,ui:this.ui,onReturn:(updated:SaveData,title=false)=>{
         if(!title){const p=updated.mapEdits?.points?.entry??PROPERTY_FOREST_GATE;updated.player={...updated.player,x:(p.x+.5)*TILE,y:(p.y+.5)*TILE};}
         this.scene.wake();this.forestActive=false;this.loadState(updated);this.running=true;this.paused=false;
         root.style.display='';this.ui.showHUD();this.updateHUD();this.cameras.main.fadeIn(250);
@@ -326,7 +326,7 @@ export class ValleyScene extends Phaser.Scene {
     this.player.y = position?.y ?? HOME_SPAWN.y;
     this.player.facing = directionVector(position?.direction ?? 'up');
     this.input.keyboard?.resetKeys();
-    this.player.update(0, this.blocked, this.blockedPoint);
+    this.player.update(0, this.movementBlocked, this.movementBlockedPoint,true,this.swimmingPoint);
     this.updateZoom();
     this.lastAim = null;
     this.selection.clear();
@@ -359,7 +359,7 @@ export class ValleyScene extends Phaser.Scene {
     this.player.x = this.outdoorPosition.x;
     this.player.y = this.outdoorPosition.y;
     this.player.facing = { x: 0, y: 1 };
-    this.player.update(0, this.blocked, this.blockedPoint);
+    this.player.update(0, this.movementBlocked, this.movementBlockedPoint,true,this.swimmingPoint);
     this.recoverPlayerPosition();
     this.input.keyboard?.resetKeys();
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE);
@@ -602,7 +602,7 @@ export class ValleyScene extends Phaser.Scene {
     const direction = data.player.direction;
     this.player.facing = directionVector(direction ?? 'down');
     this.input.keyboard?.resetKeys();
-    this.player.update(0, this.blocked, this.blockedPoint);
+    this.player.update(0, this.movementBlocked, this.movementBlockedPoint,true,this.swimmingPoint);
     this.recoverPlayerPosition();
     this.world.updateOcclusion(this.player.x, this.player.y);
     this.add.sprite(NPC_POSITION.x, NPC_POSITION.y, 'lia').setOrigin(0.5, 1).setDepth(NPC_POSITION.y);
@@ -685,7 +685,7 @@ export class ValleyScene extends Phaser.Scene {
 
   private recoverPlayerPosition(): void {
     const clearFeet = (x: number, y: number): boolean => [[-7, -5], [7, -5], [-7, 3], [7, 3]]
-      .every(([ox, oy]) => !this.blockedPoint(x + ox, y + oy));
+      .every(([ox, oy]) => !this.movementBlockedPoint(x + ox, y + oy));
     if (clearFeet(this.player.x, this.player.y)) return;
     const startX = Math.floor(this.player.x / TILE);
     const startY = Math.floor(this.player.y / TILE);
@@ -706,6 +706,10 @@ export class ValleyScene extends Phaser.Scene {
   private blocked = (x: number, y: number): boolean => this.inHome ? this.home.isBlocked(x, y)
     : this.world.isBlocked(x, y) || this.building.isBlocked(x, y)
       || (x === Math.floor(NPC_POSITION.x / TILE) && y === Math.floor(NPC_POSITION.y / TILE));
+
+  private movementBlocked=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(x,y):this.world.isSolid(x,y)||this.building.isBlocked(x,y)||(x===Math.floor(NPC_POSITION.x/TILE)&&y===Math.floor(NPC_POSITION.y/TILE));
+  private movementBlockedPoint=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):this.movementBlocked(Math.floor(x/TILE),Math.floor(y/TILE));
+  private swimmingPoint=(x:number,y:number):boolean=>!this.inHome&&!this.building.at(Math.floor(x/TILE),Math.floor(y/TILE),'floor')&&this.world.isSwimmingPoint(x,y);
 
   private blockedPoint = (x: number, y: number): boolean => {
     const tx = Math.floor(x / TILE), ty = Math.floor(y / TILE);
@@ -855,6 +859,7 @@ export class ValleyScene extends Phaser.Scene {
   private interact(explicitTile?: TilePoint): void {
     if (!this.canPlay() || this.toolUse.active || this.time.now < this.nextInteractionAt) return;
     if (this.inHome) { this.interactHome(explicitTile); return; }
+    if(this.player.isSwimming)return;
     if (this.tool === 'hand' && this.tileDistance(this.forestGate()) < 58 && (!explicitTile || Math.hypot(explicitTile.x-this.forestGate().x,explicitTile.y-this.forestGate().y)<2)) { this.enterForest(); return; }
     if (this.tool === 'water' && this.state.homeSupplies?.wateringCan) {
       const px = Math.floor(this.player.x / TILE), py = Math.floor(this.player.y / TILE);
@@ -1007,7 +1012,7 @@ export class ValleyScene extends Phaser.Scene {
 
   private updateToolVisual(): void {
     if (!this.toolVisual) return;
-    if (!this.toolUse.active || !this.canPlay() || !isAnimatedTool(this.tool) || !(this.tool === 'water' ? this.state.homeSupplies?.wateringCan : this.inventory.has(this.tool))) { this.toolVisual.hide(); return; }
+    if (this.player.isSwimming || !this.toolUse.active || !this.canPlay() || !isAnimatedTool(this.tool) || !(this.tool === 'water' ? this.state.homeSupplies?.wateringCan : this.inventory.has(this.tool))) { this.toolVisual.hide(); return; }
     const direction = this.toolUse.current?.direction ?? directionFromVector(this.player.facing.x, this.player.facing.y);
     this.toolVisual.show(this.tool, direction, this.player.x, this.player.y, this.toolUse);
   }
@@ -1161,6 +1166,7 @@ export class ValleyScene extends Phaser.Scene {
       if (definition.hits > 1) resourceProgress = `${definition.label}: ${hits}/${definition.hits} golpes · ${toolName}`;
     }
     if (this.nearHouseEntrance()) prompt = 'Entrar em casa';
+    if(this.player.isSwimming)prompt='Nadar · siga até a margem para sair';
     if (this.tool === 'hand' && this.tileDistance(this.forestGate()) < 58) prompt = 'E · Seguir para a Floresta Antiga';
     this.ui.updateHUD({ wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
       tool: this.tool, prompt, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
@@ -1187,11 +1193,11 @@ export class ValleyScene extends Phaser.Scene {
     if (!this.canPlay()) { this.toolUse.cancel(); this.toolVisual?.hide(); return; }
     this.cameras.main.setLerp(1 - Math.exp(-9 * delta));
     const previousX = this.player.x, previousY = this.player.y;
-    this.player.update(delta, this.blocked, this.blockedPoint, !this.toolUse.active);
+    this.player.update(delta, this.movementBlocked, this.movementBlockedPoint, !this.toolUse.active,this.swimmingPoint);
     const impact = this.toolUse.advance(delta);
     if (impact) this.applyToolImpact(impact);
     this.updateToolVisual();
-    if (Math.hypot(this.player.x - previousX, this.player.y - previousY) > .1) gameAudio.play('step');
+    if (!this.player.isSwimming&&Math.hypot(this.player.x - previousX, this.player.y - previousY) > .1) gameAudio.play('step');
     if (!this.inHome) this.world.updateOcclusion(this.player.x, this.player.y);
     this.farming.update(delta);
     const previousDay = this.state.day;
@@ -1200,7 +1206,7 @@ export class ValleyScene extends Phaser.Scene {
     this.updateNight();
     const tile = this.targetTile();
     this.selection.clear();
-    if (!this.inHome && this.tool !== 'hand' && this.tileDistance(tile) < 80) {
+    if (!this.inHome && !this.player.isSwimming && this.tool !== 'hand' && this.tileDistance(tile) < 80) {
       const kind = this.tool in BUILD_COSTS ? this.tool as BuildingData['kind'] : null;
       const crop = this.farming.cropAt(tile.x, tile.y);
       const valid = this.clearReach(tile) && (kind ? !this.placementReason(tile, kind) : this.tool === 'blueprint' ? !this.blueprintReason(tile)

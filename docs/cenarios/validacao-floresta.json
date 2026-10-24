@@ -9,7 +9,10 @@
     "return",
     "property herd",
     "no respawn",
-    "reload in forest"
+    "reload in forest",
+    "shared standard HUD",
+    "custom bars removed",
+    "pause menu save and exit"
   ],
-  "at": "2026-10-24T15:30:51.974Z"
+  "at": "2026-10-24T17:50:26.508Z"
 }

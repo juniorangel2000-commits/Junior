@@ -41,6 +41,9 @@ export interface WorldView {
   editorObjects: WorldEditorObject[];
   isBlocked(x: number, y: number): boolean;
   isBlockedPoint(x: number, y: number): boolean;
+  isSolid(x:number,y:number):boolean;
+  isSolidPoint(x:number,y:number):boolean;
+  isSwimmingPoint(x:number,y:number):boolean;
   isFarm(x: number, y: number): boolean;
   isWater(x: number, y: number): boolean;
   isBuildable(x: number, y: number): boolean;
@@ -381,6 +384,9 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     editorObjects,
     isBlocked,
     isBlockedPoint,
+    isSolid:solidTile,
+    isSolidPoint:(x,y)=>solidTile(Math.floor(x/TILE),Math.floor(y/TILE)),
+    isSwimmingPoint:(x,y)=>!bridgeAt(Math.floor(x/TILE),Math.floor(y/TILE))&&waterPointAt(x,y),
     isFarm,
     isWater: waterAt,
     isBuildable: (x, y) => !isBlocked(x, y) && !waterTouchesTile(x, y) && !isFarm(x, y) && !resourceAt(x, y) && !bridgeAt(x, y) && !(x === 29 && y === 17),

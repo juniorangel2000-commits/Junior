@@ -144,3 +144,15 @@ export function drawRigPose(ctx: CanvasRenderingContext2D, rig: CharacterRig, cy
   ctx.drawImage(rig.body, 0, drop);
   arm(1 - rear);
 }
+
+/** Four restrained arm strokes; the original head and torso stay rigid. */
+export function drawRigSwimPose(ctx:CanvasRenderingContext2D,rig:CharacterRig,cycle:number,waterline:number):void {
+  ctx.save();ctx.beginPath();ctx.rect(0,0,rig.body.width,waterline);ctx.clip();
+  const heading=directionVector(rig.direction),rear=heading.x>0?1:0;
+  const arm=(index:number):void=>{
+    const part=rig.arms[index],phase=cycle*Math.PI*2+index*Math.PI;
+    const spread=Math.sin(phase)*10,reach=Math.cos(phase)*10;
+    bendRows(ctx,part,part.top,part.bottom,{x:0,y:0},{x:(index?1:-1)*(7+spread)+heading.x*reach,y:-10+heading.y*reach*.45});
+  };
+  arm(rear);ctx.drawImage(rig.body,0,0);arm(1-rear);ctx.restore();
+}

@@ -1,3 +1,4 @@
+import { SwimmingVisual, SWIM_SPEED_FACTOR } from './swimming';
 import Phaser from 'phaser';
 import type { CharacterProfile } from './types';
 import { createCharacterFrames } from './art';
@@ -19,13 +20,15 @@ export class Player {
   x: number;
   y: number;
   facing = { x: 0, y: 1 };
+  isSwimming=false;
+  private swimmingVisual?:SwimmingVisual;
   private walkDistance = 0;
   private previousInput = { x: 0, y: 0 };
   private releaseTurn?: { x: number; y: number; elapsed: number };
   private readonly keys: MovementKeys;
   private readonly walkFrames: number;
 
-  constructor(scene: Phaser.Scene, profile: CharacterProfile, x: number, y: number, textureKey = 'player') {
+  constructor(private readonly scene: Phaser.Scene, private readonly profile: CharacterProfile, x: number, y: number, private readonly textureKey = 'player') {
     this.x = x;
     this.y = y;
     this.walkFrames = resolveCharacter(profile).walkFrames;
@@ -35,8 +38,11 @@ export class Player {
     this.keys = scene.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT', false) as MovementKeys;
   }
 
+  setVisible(visible:boolean):void {this.sprite.setVisible(visible);this.swimmingVisual?.setVisible(visible&&this.isSwimming);}
+
   update(delta: number, isBlocked: (x: number, y: number) => boolean,
-    isBlockedPoint?: (x: number, y: number) => boolean, movementEnabled = true): void {
+    isBlockedPoint?: (x: number, y: number) => boolean, movementEnabled = true, isWaterPoint?: (x:number,y:number)=>boolean): void {
+    const speed=PLAYER_SPEED*(isWaterPoint?.(this.x,this.y)?SWIM_SPEED_FACTOR:1);
     const inputX = movementEnabled ? Number(this.keys.D.isDown || this.keys.RIGHT.isDown) - Number(this.keys.A.isDown || this.keys.LEFT.isDown) : 0;
     const inputY = movementEnabled ? Number(this.keys.S.isDown || this.keys.DOWN.isDown) - Number(this.keys.W.isDown || this.keys.UP.isDown) : 0;
     const moving = inputX !== 0 || inputY !== 0;
@@ -68,11 +74,11 @@ export class Player {
         if (horizontal) this.x += allowed; else this.y += allowed;
       };
       // Small substeps preserve the existing foot collision box even after a slow frame.
-      const steps = Math.max(1, Math.ceil(PLAYER_SPEED * delta / 6));
+      const steps = Math.max(1, Math.ceil(speed * delta / 6));
       for (let i = 0; i < steps; i++) {
         const startX = this.x, startY = this.y;
-        moveAxis(dx * PLAYER_SPEED * delta / steps, true);
-        moveAxis(dy * PLAYER_SPEED * delta / steps, false);
+        moveAxis(dx * speed * delta / steps, true);
+        moveAxis(dy * speed * delta / steps, false);
         distance += Math.hypot(this.x - startX, this.y - startY);
       }
 
@@ -104,6 +110,13 @@ export class Player {
     if (walked) this.walkDistance = (this.walkDistance + distance) % PLAYER_WALK_CYCLE_DISTANCE;
     const phase = Math.floor((this.walkDistance + 1e-7) / PLAYER_WALK_CYCLE_DISTANCE * this.walkFrames) % this.walkFrames + 1;
     const direction = directionFromVector(this.facing.x, this.facing.y);
+    const swimming=!!isWaterPoint?.(this.x,this.y);
+    if(swimming){
+      this.isSwimming=true;this.swimmingVisual??=new SwimmingVisual(this.scene,this.profile);
+      this.swimmingVisual.update(this.sprite,this.x,this.y,direction,walked,delta);return;
+    }
+    if(this.isSwimming){this.sprite.setTexture(this.textureKey).setOrigin(.5,1);this.swimmingVisual?.setVisible(false);}
+    this.isSwimming=false;
     this.sprite.setFrame(characterFrame(direction, walked ? phase : 0, this.walkFrames));
     this.sprite.setPosition(this.x, this.y).setDepth(this.y);
   }
