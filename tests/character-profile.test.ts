@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_ACCESSORY, DEFAULT_SHIRT_COLOR, resolveCharacterAppearance } from '../src/data/character-options';
 import { createNewSave, loadSave, migrateSave, SAVE_KEY, saveGame, validateProfile, validateSave } from '../src/systems/save';
 import type { CharacterProfile } from '../src/types';
+import { CHARACTERS, createCharacterProfile, DEFAULT_CHARACTER_ID, resolveCharacter } from '../src/data/characters';
+import { emptyMapEdits } from '../src/systems/map-editor';
 
 const legacyProfile: CharacterProfile = {
   name: 'Ana', skin: '#d9a474', hairStyle: 'preso', hairColor: '#4b3029', outfit: '#638a9d',
@@ -20,7 +22,7 @@ function installStorage(raw?: string) {
 
 afterEach(() => vi.unstubAllGlobals());
 
-describe('personalização compatível com partidas existentes', () => {
+describe('compatibilidade dos dados antigos de aparência', () => {
   it('resolve camisa e bolsa do modelo original sem alterar o perfil antigo', () => {
     const profile = { ...legacyProfile };
     expect(resolveCharacterAppearance(profile)).toEqual({
@@ -85,6 +87,41 @@ describe('personalização compatível com partidas existentes', () => {
     expect(migrateSave({ ...saved, profile })).toBeNull();
     const { storage } = installStorage();
     expect(saveGame({ ...saved, profile } as unknown as typeof saved)).toBe(false);
+    expect(storage.setItem).not.toHaveBeenCalled();
+  });
+});
+
+describe('personagens com visual fixo', () => {
+  it.each(CHARACTERS)('salva $label e mantém o progresso ao recarregar', ({ id }) => {
+    installStorage();
+    const save = createNewSave(createCharacterProfile('  Clara  ', id));
+    save.inventory.seeds = 7;
+    save.homeSupplies = { wateringCan: true, seedPacket: true };
+    save.mapEdits = emptyMapEdits();
+    save.mapEdits.terrain['12,30'] = 'sand';
+    expect(save.profile.name).toBe('Clara');
+    expect(save.profile.characterId).toBe(id);
+    expect(saveGame(save)).toBe(true);
+    expect(loadSave()).toEqual(save);
+  });
+
+  it('usa a fazendeira em partidas antigas sem modificar o perfil ou o save original', () => {
+    const save = createNewSave(legacyProfile);
+    const raw = JSON.stringify(save);
+    const { values, storage } = installStorage(raw);
+    const loaded = loadSave()!;
+    expect(resolveCharacter(loaded.profile).id).toBe(DEFAULT_CHARACTER_ID);
+    expect(loaded).toEqual(save);
+    expect(values.get(SAVE_KEY)).toBe(raw);
+    expect(storage.setItem).not.toHaveBeenCalled();
+  });
+
+  it.each([null, 42, {}, '../unknown', 'unknown-character'])('recusa ID inválido sem sobrescrever o save: %j', characterId => {
+    const save = createNewSave(createCharacterProfile('Clara'));
+    const raw = JSON.stringify(save);
+    const { values, storage } = installStorage(raw);
+    expect(saveGame({ ...save, profile: { ...save.profile, characterId } } as typeof save)).toBe(false);
+    expect(values.get(SAVE_KEY)).toBe(raw);
     expect(storage.setItem).not.toHaveBeenCalled();
   });
 });

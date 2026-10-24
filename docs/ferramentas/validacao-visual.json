@@ -1,0 +1,15 @@
+{
+  "completedAt": "2026-10-24T04:14:46.523Z",
+  "characters": [
+    {
+      "character": "farmer-female",
+      "status": "passed",
+      "frames": 40
+    },
+    {
+      "character": "farmer-male",
+      "status": "passed",
+      "frames": 40
+    }
+  ]
+}

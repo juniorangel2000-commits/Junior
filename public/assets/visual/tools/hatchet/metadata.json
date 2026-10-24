@@ -1,0 +1,62 @@
+{
+  "group_id": "79094104-f684-4be3-8667-12fd3c1ee21d",
+  "objects": [
+    {
+      "id": "ef95370e-0c25-48cb-aa98-e7fb81498776",
+      "name": "base",
+      "prompt": "troque a imagem do cabo para mais marrom",
+      "size": {
+        "width": 97,
+        "height": 97
+      },
+      "directions": 8,
+      "view": "low top-down",
+      "rotations": {
+        "south": "rotations/south.png",
+        "south-east": "rotations/south-east.png",
+        "east": "rotations/east.png",
+        "north-east": "rotations/north-east.png",
+        "north": "rotations/north.png",
+        "north-west": "rotations/north-west.png",
+        "west": "rotations/west.png",
+        "south-west": "rotations/south-west.png"
+      },
+      "animations": {
+        "Prompt_machado_animado_batendo_na_arvore_Creat": {
+          "directions": {
+            "east": {
+              "frames": [
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/east/frame_000.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/east/frame_001.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/east/frame_002.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/east/frame_003.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/east/frame_004.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/east/frame_005.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/east/frame_006.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/east/frame_007.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/east/frame_008.png"
+              ],
+              "frame_count": 9
+            },
+            "west": {
+              "frames": [
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/west/frame_000.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/west/frame_001.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/west/frame_002.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/west/frame_003.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/west/frame_004.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/west/frame_005.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/west/frame_006.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/west/frame_007.png",
+                "animations/Prompt_machado_animado_batendo_na_arvore_Creat/west/frame_008.png"
+              ],
+              "frame_count": 9
+            }
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "1.1",
+  "export_date": "2026-10-23T22:01:18.147148"
+}

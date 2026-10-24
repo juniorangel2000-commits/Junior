@@ -1,7 +1,9 @@
 import Phaser from 'phaser';
 import type { CharacterProfile } from './types';
 import { createCharacterFrames } from './art';
-import { CHARACTER_WALK_FRAMES, characterFrame, directionFromVector } from './character-directions';
+import { CHARACTER_WIDTH, CHARACTER_HEIGHT } from './character-sprites';
+import { characterFrame, directionFromVector } from './character-directions';
+import { resolveCharacter } from './data/characters';
 import { TILE } from './world';
 
 type MovementKeys = Record<string, Phaser.Input.Keyboard.Key>;
@@ -21,19 +23,22 @@ export class Player {
   private previousInput = { x: 0, y: 0 };
   private releaseTurn?: { x: number; y: number; elapsed: number };
   private readonly keys: MovementKeys;
+  private readonly walkFrames: number;
 
   constructor(scene: Phaser.Scene, profile: CharacterProfile, x: number, y: number) {
     this.x = x;
     this.y = y;
+    this.walkFrames = resolveCharacter(profile).walkFrames;
     const texture = createCharacterFrames(scene, profile, 'player');
-    this.sprite = scene.add.sprite(x, y, texture, characterFrame('down')).setOrigin(0.5, 1);
+    this.sprite = scene.add.sprite(x, y, texture, characterFrame('down'))
+      .setOrigin(0.5, 1).setDisplaySize(CHARACTER_WIDTH, CHARACTER_HEIGHT);
     this.keys = scene.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT', false) as MovementKeys;
   }
 
   update(delta: number, isBlocked: (x: number, y: number) => boolean,
-    isBlockedPoint?: (x: number, y: number) => boolean): void {
-    const inputX = Number(this.keys.D.isDown || this.keys.RIGHT.isDown) - Number(this.keys.A.isDown || this.keys.LEFT.isDown);
-    const inputY = Number(this.keys.S.isDown || this.keys.DOWN.isDown) - Number(this.keys.W.isDown || this.keys.UP.isDown);
+    isBlockedPoint?: (x: number, y: number) => boolean, movementEnabled = true): void {
+    const inputX = movementEnabled ? Number(this.keys.D.isDown || this.keys.RIGHT.isDown) - Number(this.keys.A.isDown || this.keys.LEFT.isDown) : 0;
+    const inputY = movementEnabled ? Number(this.keys.S.isDown || this.keys.DOWN.isDown) - Number(this.keys.W.isDown || this.keys.UP.isDown) : 0;
     const moving = inputX !== 0 || inputY !== 0;
     const previousX = this.x, previousY = this.y;
     let distance = 0;
@@ -97,9 +102,9 @@ export class Player {
     this.previousInput = { x: inputX, y: inputY };
     const walked = distance > 1e-7;
     if (walked) this.walkDistance = (this.walkDistance + distance) % PLAYER_WALK_CYCLE_DISTANCE;
-    const phase = Math.floor((this.walkDistance + 1e-7) / PLAYER_WALK_CYCLE_DISTANCE * CHARACTER_WALK_FRAMES) % CHARACTER_WALK_FRAMES + 1;
+    const phase = Math.floor((this.walkDistance + 1e-7) / PLAYER_WALK_CYCLE_DISTANCE * this.walkFrames) % this.walkFrames + 1;
     const direction = directionFromVector(this.facing.x, this.facing.y);
-    this.sprite.setFrame(characterFrame(direction, walked ? phase : 0));
+    this.sprite.setFrame(characterFrame(direction, walked ? phase : 0, this.walkFrames));
     this.sprite.setPosition(this.x, this.y).setDepth(this.y);
   }
 }

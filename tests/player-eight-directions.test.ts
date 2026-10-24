@@ -1,23 +1,43 @@
 import { describe, expect, it, vi } from 'vitest';
 import type Phaser from 'phaser';
 import { Player, PLAYER_SPEED, PLAYER_WALK_CYCLE_DISTANCE } from '../src/player';
-import { CHARACTER_DIRECTIONS, CHARACTER_FRAMES_PER_DIRECTION, CHARACTER_WALK_FRAMES, characterFrame } from '../src/character-directions';
+import { CHARACTER_DIRECTIONS, characterFrame as atlasFrame, type CharacterDirection } from '../src/character-directions';
+import { CHARACTERS, createCharacterProfile, type CharacterId, characterWalkFps } from '../src/data/characters';
 
 vi.mock('phaser', () => ({ default: {} }));
 vi.mock('../src/art', () => ({ createCharacterFrames: () => 'player' }));
 
-function fixture(x = 300, y = 300) {
+function createFixture(x: number, y: number, characterId: CharacterId) {
   const keys = Object.fromEntries('W,A,S,D,UP,DOWN,LEFT,RIGHT'.split(',').map(key => [key, { isDown: false }]));
   const sprite = {
+    setDisplaySize() { return this; },
     setOrigin() { return this; }, setFrame: vi.fn().mockReturnThis(),
     setPosition: vi.fn().mockReturnThis(), setDepth() { return this; },
   };
   const scene = { add: { sprite: () => sprite }, input: { keyboard: { addKeys: () => keys } } } as unknown as Phaser.Scene;
-  const player = new Player(scene, { name: 'Teste', skin: '#d9a276', hairStyle: 'preso', hairColor: '#754323', outfit: '#638a9d' }, x, y);
+  const player = new Player(scene, createCharacterProfile('Teste', characterId), x, y);
   return { player, keys, sprite };
 }
 
-describe('movimento e orientação em oito direções', () => {
+describe.each(CHARACTERS)('$label: movimento e orientação em oito direções', character => {
+  const CHARACTER_WALK_FRAMES = character.walkFrames;
+  const CHARACTER_FRAMES_PER_DIRECTION = CHARACTER_WALK_FRAMES + 1;
+  const characterFrame = (direction: CharacterDirection, phase = 0) => atlasFrame(direction, phase, CHARACTER_WALK_FRAMES);
+  const fixture = (x = 300, y = 300) => createFixture(x, y, character.id);
+
+  it('mantém pés e orientação durante o golpe e retoma o movimento ao terminar', () => {
+    const { player, keys } = fixture();
+    player.facing = { x: -1, y: 0 }; keys.D.isDown = true;
+    player.update(.25, () => false, undefined, false);
+    expect(player.x).toBe(300); expect(player.y).toBe(300);
+    expect(player.facing).toEqual({ x: -1, y: 0 });
+    player.update(.25, () => false);
+    expect(player.x).toBe(321);
+  });
+
+  it('a prévia completa o ciclo na mesma cadência da caminhada real', () => {
+    expect(characterWalkFps({ characterId: character.id })).toBe(PLAYER_SPEED / PLAYER_WALK_CYCLE_DISTANCE * CHARACTER_WALK_FRAMES);
+  });
   it.each([
     ['baixo', ['S'], 0, 1, 0], ['esquerda', ['A'], -1, 0, 1],
     ['direita', ['RIGHT'], 1, 0, 2], ['cima', ['UP'], 0, -1, 3],

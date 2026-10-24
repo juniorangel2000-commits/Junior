@@ -1,9 +1,11 @@
 /** Keep the four historic rows stable, then add the four diagonal poses. */
 export const CHARACTER_DIRECTIONS = ['down', 'left', 'right', 'up', 'down-left', 'down-right', 'up-left', 'up-right'] as const;
 export type CharacterDirection = typeof CHARACTER_DIRECTIONS[number];
-export const CHARACTER_WALK_FRAMES = 4;
+/** Default/legacy character; other characters pass their own count to characterFrame. */
+export const CHARACTER_WALK_FRAMES = 6;
 export const CHARACTER_FRAMES_PER_DIRECTION = CHARACTER_WALK_FRAMES + 1;
-export const CHARACTER_WALK_FPS = 7;
+// Match a 48-world-pixel cycle at the player's 84 pixels/second walking speed.
+export const CHARACTER_WALK_FPS = 10.5;
 
 export function directionFromVector(x: number, y: number): CharacterDirection {
   if (y < 0) return x < 0 ? 'up-left' : x > 0 ? 'up-right' : 'up';
@@ -18,9 +20,9 @@ export function directionVector(direction: CharacterDirection): { x: number; y: 
   return { x: x / length, y: y / length };
 }
 
-/** Column zero is idle; contact, passing, opposite contact, opposite passing. */
-export function characterFrame(direction: CharacterDirection, phase = 0): number {
+/** Column zero is idle, followed by the supplied walk frames in their original order. */
+export function characterFrame(direction: CharacterDirection, phase = 0, walkFrames = CHARACTER_WALK_FRAMES): number {
   const walkPhase = Number.isFinite(phase) && phase >= 1
-    ? (Math.floor(phase) - 1) % CHARACTER_WALK_FRAMES + 1 : 0;
-  return CHARACTER_DIRECTIONS.indexOf(direction) * CHARACTER_FRAMES_PER_DIRECTION + walkPhase;
+    ? (Math.floor(phase) - 1) % walkFrames + 1 : 0;
+  return CHARACTER_DIRECTIONS.indexOf(direction) * (walkFrames + 1) + walkPhase;
 }

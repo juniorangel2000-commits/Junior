@@ -1,6 +1,6 @@
 # Validação da prévia do editor
 
-Prévia local `0.8.1-editor.1`, gerada em 23/10/2026 sobre o trabalho existente da branch `title-screen-0.5`. Este registro descreve a validação local antes da disponibilização da prévia. A publicação do executável é feita pelo workflow editor-preview.yml, mantendo a versão estável e o site atuais. As alterações anteriores de personagem e zoom foram preservadas.
+Prévia local `0.8.1-editor.1`, gerada em 23/10/2026 sobre o trabalho existente da branch `title-screen-0.5`. A prévia foi disponibilizada no GitHub em 23/10/2026; a versão estável 0.8.0 e o site permanecem iguais. As alterações anteriores de personagem e zoom foram preservadas.
 
 - `npm run check`: passou.
 - `npm test`: 271 testes passaram em 23 arquivos.
@@ -11,3 +11,12 @@ Prévia local `0.8.1-editor.1`, gerada em 23/10/2026 sobre o trabalho existente 
 - O teste interativo do aplicativo foi executado no Linux. Não houve execução nativa no Windows 11 neste ambiente.
 
 A prévia está em `release/editor-preview/After-Rain-Editor-Preview-Windows-x64.exe`, acompanhada de instruções e SHA-256. A pasta release é ignorada pelo Git.
+
+## Download público conferido
+
+- Pré-release: https://github.com/juniorangel2000-commits/Junior/releases/tag/editor-preview-0.8.1-1
+- Executável: https://github.com/juniorangel2000-commits/Junior/releases/download/editor-preview-0.8.1-1/After-Rain-Editor-Preview-Windows-x64.exe
+- Código preservado na branch `preview/editor-0.8.1`, commit `217d4c31732c69ec796849edd69c5ef7346e9861`. O trabalho local na branch original foi mantido.
+- CI Windows: https://github.com/juniorangel2000-commits/Junior/actions/runs/40038454594 — tipos, 271 testes, build e publicação concluídos.
+- Download anônimo integral verificado: HTTP 200, 133324825 bytes, SHA-256 `b528d66c11a53de585a32894904a67cb4a8ab4bbc9657239d573c747b7a515ab`.
+- O executável em release/editor-preview foi atualizado para esse pacote gerado no Windows. A execução interativa no Windows 11 continua não testada.

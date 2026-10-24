@@ -8,6 +8,7 @@ import { buildingFootprint, buildingLayer } from './building';
 import { TILE, WORLD_HEIGHT, WORLD_WIDTH } from '../data/regions';
 import { Home, HOME_WIDTH, HOME_HEIGHT, validateHome } from './home';
 import { validateMapEdits } from './map-editor';
+import { isCharacterId } from '../data/characters';
 
 // A chave e a origem do aplicativo permanecem iguais para localizar partidas antigas.
 export const SAVE_KEY = 'depois-da-chuva-v1';
@@ -27,6 +28,7 @@ const MAX_RESOURCES = WORLD_WIDTH * WORLD_HEIGHT;
 
 export function validateProfile(value: unknown): value is CharacterProfile {
   return isRecord(value) && typeof value.name === 'string' && value.name.trim().length > 0 && value.name.length <= 24
+    && (value.characterId === undefined || isCharacterId(value.characterId))
     && color(value.skin) && color(value.hairColor) && color(value.outfit)
     && ['curto', 'longo', 'preso'].includes(value.hairStyle as string)
     && (value.shirtColor === undefined || color(value.shirtColor))

@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import type { CharacterProfile } from './types';
 import { setupVisualAssets } from './visual-assets';
-import { CHARACTER_WIDTH, CHARACTER_HEIGHT, drawStyledCharacter } from './character-sprites';
-import { CHARACTER_DIRECTIONS, CHARACTER_FRAMES_PER_DIRECTION, characterFrame } from './character-directions';
+import { CHARACTER_FRAME_WIDTH, CHARACTER_FRAME_HEIGHT, drawStyledCharacter } from './character-sprites';
+import { CHARACTER_DIRECTIONS, characterFrame } from './character-directions';
+import { resolveCharacter } from './data/characters';
 import type { CharacterDirection } from './character-directions';
 
 export { CHARACTER_WIDTH, CHARACTER_HEIGHT } from './character-sprites';
@@ -16,8 +17,8 @@ export function shade(hex: string, amount: number): string {
 
 /** Preview, portraits and the world use the same eight-direction pixel poses. */
 export function drawCharacter(canvas: HTMLCanvasElement, profile: CharacterProfile, direction: CharacterDirection = 'down', phase = 0): void {
-  canvas.width = CHARACTER_WIDTH;
-  canvas.height = CHARACTER_HEIGHT;
+  canvas.width = CHARACTER_FRAME_WIDTH;
+  canvas.height = CHARACTER_FRAME_HEIGHT;
   const ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
   drawStyledCharacter(ctx, profile, direction, phase);
@@ -34,20 +35,22 @@ export function createCharacterTexture(scene: Phaser.Scene, profile: CharacterPr
 /** One local canvas atlas; frame order is defined by characterFrame(). */
 export function createCharacterFrames(scene: Phaser.Scene, profile: CharacterProfile, key: string): string {
   if (scene.textures.exists(key)) scene.textures.remove(key);
+  const { walkFrames } = resolveCharacter(profile);
+  const columns = walkFrames + 1;
   const atlas = document.createElement('canvas');
-  atlas.width = CHARACTER_WIDTH * CHARACTER_FRAMES_PER_DIRECTION;
-  atlas.height = CHARACTER_HEIGHT * CHARACTER_DIRECTIONS.length;
+  atlas.width = CHARACTER_FRAME_WIDTH * columns;
+  atlas.height = CHARACTER_FRAME_HEIGHT * CHARACTER_DIRECTIONS.length;
   const ctx = atlas.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
   const frameCanvas = document.createElement('canvas');
-  for (const [row, direction] of CHARACTER_DIRECTIONS.entries()) for (let phase = 0; phase < CHARACTER_FRAMES_PER_DIRECTION; phase++) {
+  for (const [row, direction] of CHARACTER_DIRECTIONS.entries()) for (let phase = 0; phase < columns; phase++) {
     drawCharacter(frameCanvas, profile, direction, phase);
-    ctx.drawImage(frameCanvas, phase * CHARACTER_WIDTH, row * CHARACTER_HEIGHT);
+    ctx.drawImage(frameCanvas, phase * CHARACTER_FRAME_WIDTH, row * CHARACTER_FRAME_HEIGHT);
   }
   const texture = scene.textures.addCanvas(key, atlas);
   texture?.setFilter(Phaser.Textures.FilterMode.NEAREST);
-  for (const [row, direction] of CHARACTER_DIRECTIONS.entries()) for (let phase = 0; phase < CHARACTER_FRAMES_PER_DIRECTION; phase++) {
-    texture?.add(characterFrame(direction, phase), 0, phase * CHARACTER_WIDTH, row * CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTER_HEIGHT);
+  for (const [row, direction] of CHARACTER_DIRECTIONS.entries()) for (let phase = 0; phase < columns; phase++) {
+    texture?.add(characterFrame(direction, phase, walkFrames), 0, phase * CHARACTER_FRAME_WIDTH, row * CHARACTER_FRAME_HEIGHT, CHARACTER_FRAME_WIDTH, CHARACTER_FRAME_HEIGHT);
   }
   return key;
 }
@@ -209,5 +212,6 @@ export function createArt(scene: Phaser.Scene): void {
       }
     });
   }
-  createCharacterTexture(scene, {name: 'Lia', skin: '#b87952', hairStyle: 'preso', hairColor: '#3b3029', outfit: '#b46e4e'}, 'lia');
+  // Lia keeps her existing portrait; she does not inherit the selected player's art.
+  adopt('lia', 'asset-lia');
 }

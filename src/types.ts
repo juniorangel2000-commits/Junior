@@ -1,11 +1,15 @@
 import type { HomeData } from './systems/home';
 import type { CharacterDirection } from './character-directions';
 import type { MapEditData } from './systems/map-editor';
+import type { CharacterId } from './data/characters';
 
 export type HairStyle = 'curto' | 'longo' | 'preso';
 export type CharacterAccessory = 'bolsa' | 'nenhum';
 export interface CharacterProfile {
   name: string;
+  /** Absent in older saves; render the default fixed character without rewriting them. */
+  characterId?: CharacterId;
+  /** Legacy appearance data is preserved in saves, but no longer changes player art. */
   skin: string;
   hairStyle: HairStyle;
   hairColor: string;

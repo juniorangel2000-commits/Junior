@@ -13,7 +13,7 @@ const waterBlocks = (x: number, y: number): boolean => isWaterPoint(x, y)
 
 function playerAt(x: number, y: number): Player {
   const keys = Object.fromEntries('W,A,S,D,UP,DOWN,LEFT,RIGHT'.split(',').map(key => [key, { isDown: key === 'D' }]));
-  const sprite = { setOrigin() { return this; }, setFrame() { return this; }, setPosition() { return this; }, setDepth() { return this; } };
+  const sprite = { setOrigin() { return this; }, setDisplaySize() { return this; }, setFrame() { return this; }, setPosition() { return this; }, setDepth() { return this; } };
   const scene = { add: { sprite: () => sprite }, input: { keyboard: { addKeys: () => keys } } } as unknown as Phaser.Scene;
   return new Player(scene, { name: 'Teste', skin: '#d9a276', hairStyle: 'preso', hairColor: '#754323', outfit: '#638a9d' }, x, y);
 }

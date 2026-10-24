@@ -3,7 +3,7 @@ import { CAMERA_ZOOM_MIN, CAMERA_ZOOM_MAX } from './camera-zoom';
 import './camera-zoom.css';
 import { gameAudio } from './audio';
 import { toolbarIcon } from './toolbar-icons';
-import { CHARACTER_WIDTH, drawCharacter } from './art';
+import { CHARACTER_WIDTH, drawLiaPortrait } from './character-sprites';
 import { createCharacterEditor } from './character-creator';
 import { createTitleScreen } from './title-screen';
 import { TopToolbar } from './top-toolbar';
@@ -515,7 +515,7 @@ export class GameUI {
     panel.innerHTML = `<div class="dialogue-portrait"><canvas width="24" height="32" aria-label="Lia"></canvas></div><div class="dialogue-copy"><div class="eyebrow">GENTE DO VALE</div><h2></h2><p></p><div class="dialogue-footer"><small></small><button class="text-button"></button></div></div>`;
     panel.querySelector('h2')!.textContent = name;
     const portrait = panel.querySelector('canvas')!;
-    drawCharacter(portrait, { name, skin: '#b87952', hairStyle: 'preso', hairColor: '#3b3029', outfit: '#b46e4e' });
+    drawLiaPortrait(portrait);
     portrait.style.width = `${CHARACTER_WIDTH * 2}px`;
     portrait.style.height = 'auto';
     let index = 0;

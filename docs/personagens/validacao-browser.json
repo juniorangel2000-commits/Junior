@@ -1,0 +1,17 @@
+{
+  "completedAt": "2026-10-24T03:47:51.794Z",
+  "characters": [
+    {
+      "character": "farmer-female",
+      "nativeFramesVerified": 56,
+      "preservedVisiblePixels": true,
+      "status": "passed"
+    },
+    {
+      "character": "farmer-male",
+      "nativeFramesVerified": 72,
+      "preservedVisiblePixels": true,
+      "status": "passed"
+    }
+  ]
+}

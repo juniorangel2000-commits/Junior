@@ -35,6 +35,9 @@ import { baseCameraZoom, homeFitsCamera, loadCameraZoom, saveCameraZoom, stepCam
 import { MapEditor } from '../map-editor';
 import { emptyMapEdits, isProtectedMapTile } from '../systems/map-editor';
 import type { MapEditData } from '../systems/map-editor';
+import { ToolUse, TOOL_USE_DURATION, type ToolStrike } from '../systems/tool-use';
+import { ToolVisual } from '../tool-visual';
+import { isAnimatedTool } from '../data/tool-art';
 
 const DEFAULT_PROFILE: CharacterProfile = { name: 'Viajante', skin: '#d9a276', hairStyle: 'preso', hairColor: '#754323', outfit: '#638a9d' };
 
@@ -50,6 +53,8 @@ export class ValleyScene extends Phaser.Scene {
   private running = false;
   private paused = true;
   private tool: Tool = 'hand';
+  private toolUse = new ToolUse();
+  private toolVisual?: ToolVisual;
   private cropSprites: Phaser.GameObjects.Sprite[] = [];
   private buildingSprites: Phaser.GameObjects.Sprite[] = [];
   private cropSignature = '';
@@ -163,6 +168,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   setPaused(value: boolean): void {
+    if (value) { this.toolUse.cancel(); this.toolVisual?.hide(); }
     this.paused = value;
     this.ui.updateCameraZoom(this.cameraZoomFactor, !value && this.running);
     this.input.keyboard?.resetKeys();
@@ -276,6 +282,7 @@ export class ValleyScene extends Phaser.Scene {
 
   private enterHome(position?: SaveData['player'], notify = true): void {
     if (this.inHome) return;
+    this.toolUse.cancel(); this.toolVisual?.hide();
     this.outdoorPosition = this.playerPosition();
     // Preserve each object's visibility: title lighting and hidden roofs must not reappear on leaving.
     this.outdoorVisibility.clear();
@@ -375,6 +382,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   setTitleBackground(mode: TitleBackgroundMode): void {
+    if (mode !== 'off') { this.toolUse.cancel(); this.toolVisual?.hide(); }
     if (mode !== 'off') gameAudio.setScene('title');
     const wasOff = this.titleBackgroundMode === 'off';
     this.titleBackgroundMode = mode;
@@ -408,7 +416,9 @@ export class ValleyScene extends Phaser.Scene {
       this.ui.toast('Fabrique essa ferramenta primeiro. Abra a fabricação com C.');
       return;
     }
+    if (this.tool !== tool) this.toolUse.cancel();
     this.tool = tool;
+    this.updateToolVisual();
     if (this.state) { this.state.equippedTool = tool; this.updateHUD(); }
   }
 
@@ -499,6 +509,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private loadState(data: SaveData): void {
+    this.toolUse.cancel(); this.toolVisual = undefined;
     this.craftJob = null;
     this.inHome = false;
     this.homeView = undefined;
@@ -548,6 +559,7 @@ export class ValleyScene extends Phaser.Scene {
     this.cropSoil = this.add.graphics().setDepth(-50);
     this.damageMarks = this.add.graphics().setDepth(3500);
     this.player = new Player(this, data.profile, data.player.x, data.player.y);
+    this.toolVisual = new ToolVisual(this, data.profile);
     const direction = data.player.direction;
     this.player.facing = directionVector(direction ?? 'down');
     this.input.keyboard?.resetKeys();
@@ -720,7 +732,12 @@ export class ValleyScene extends Phaser.Scene {
     if (this.ui.dismissTopToolbar()) return;
     if (!this.ui.isModalOpen()) this.ui.toggleTopToolbar();
   };
-  private handleVisibility = (): void => { if (document.hidden && this.running) { this.persist(); this.input.keyboard?.resetKeys(); } };
+  private handleVisibility = (): void => {
+    if (document.hidden && this.running) {
+      this.toolUse.cancel(); this.toolVisual?.hide();
+      this.persist(); this.input.keyboard?.resetKeys();
+    }
+  };
   private handleBlur = (): void => { if (!this.editingMap && this.running && !this.ui.isModalOpen() && !this.adminMenu?.isOpen) this.ui.togglePause(); };
 
   private tileDistance(tile: TilePoint): number {
@@ -796,7 +813,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private interact(explicitTile?: TilePoint): void {
-    if (!this.canPlay() || this.time.now < this.nextInteractionAt) return;
+    if (!this.canPlay() || this.toolUse.active || this.time.now < this.nextInteractionAt) return;
     if (this.inHome) { this.interactHome(explicitTile); return; }
     if (this.nearHouseEntrance() && (!explicitTile || (explicitTile.x >= 23 && explicitTile.x <= 25 && explicitTile.y >= 15 && explicitTile.y <= 16))) {
       this.enterHome(); return;
@@ -830,21 +847,18 @@ export class ValleyScene extends Phaser.Scene {
       const resource = explicitTile ? this.world.resourceAt(tile.x, tile.y)
         : this.world.resourceAt(tile.x, tile.y) ?? this.nearestResource();
       if (resource && this.clearReach(resource) && this.tileDistance(resource) <= 78) {
-        const result = this.resources.hit(resource, this.tool, this.inventory);
-        if (result.ok) {
-          this.nextInteractionAt = this.time.now + 260;
-          this.resourceFeedback(resource);
-          gameAudio.play(this.tool === 'pickaxe' ? 'stone' : this.tool === 'hatchet' ? 'wood' : 'pickup');
-          if (result.depleted) {
-            this.world.removeResource(resource.id);
-            this.state.depletedResources.push(resource.id);
-            this.state.progress.collected = this.state.progress.collected
-              || ['tree-', 'stone-', 'fiber-'].every(prefix => this.state.depletedResources.some(id => id.startsWith(prefix)));
-            this.state.progress.harvested = this.state.depletedResources.some(id => id.startsWith('standingTree-'))
-              && this.state.depletedResources.some(id => id.startsWith('vein-'));
-          }
+        const required = RESOURCE_DEFINITIONS[resource.kind].tool;
+        if (isAnimatedTool(this.tool) && this.inventory.has(this.tool) && (required === 'hand' || required === this.tool)) {
+          const dx = (resource.x + .5) * TILE - this.player.x, dy = (resource.y + .5) * TILE - this.player.y;
+          const direction = directionFromVector(Math.abs(dx) < 4 ? 0 : dx, Math.abs(dy) < 4 ? 0 : dy);
+          this.player.facing = directionVector(direction);
+          this.player.update(0, this.blocked, this.blockedPoint, false);
+          this.toolUse.start({ tool: this.tool, direction, target: resource });
+          this.nextInteractionAt = this.time.now + TOOL_USE_DURATION * 1000;
+          this.updateToolVisual();
+          return;
         }
-        this.ui.toast(result.message); this.afterAction(); return;
+        this.applyResourceHit(resource, this.tool); return;
       }
       if (this.tool === 'hand' && this.farming.cropAt(tile.x, tile.y)) {
         const result = this.farming.harvest(tile.x, tile.y, this.inventory);
@@ -890,6 +904,40 @@ export class ValleyScene extends Phaser.Scene {
     }
     this.nextInteractionAt = this.time.now + 220;
     this.afterAction();
+  }
+
+  private applyResourceHit(resource: ResourceNode, tool: Tool): void {
+    const result = this.resources.hit(resource, tool, this.inventory);
+    if (result.ok) {
+      if (!isAnimatedTool(tool)) this.nextInteractionAt = this.time.now + 260;
+      this.resourceFeedback(resource);
+      gameAudio.play(tool === 'pickaxe' ? 'stone' : tool === 'hatchet' ? 'wood' : 'pickup');
+      if (result.depleted) {
+        this.world.removeResource(resource.id);
+        this.state.depletedResources.push(resource.id);
+        this.state.progress.collected = this.state.progress.collected
+          || ['tree-', 'stone-', 'fiber-'].every(prefix => this.state.depletedResources.some(id => id.startsWith(prefix)));
+        this.state.progress.harvested = this.state.depletedResources.some(id => id.startsWith('standingTree-'))
+          && this.state.depletedResources.some(id => id.startsWith('vein-'));
+      }
+    }
+    this.ui.toast(result.message); this.afterAction();
+  }
+
+  private applyToolImpact(strike: ToolStrike): void {
+    // Recheck the target at contact: no delayed reward for a removed, moved or unreachable node.
+    if (!this.canPlay() || this.inHome || this.tool !== strike.tool || !this.inventory.has(strike.tool)) return;
+    const resource = this.world.resourceAt(strike.target.x, strike.target.y);
+    if (resource?.id !== strike.target.id || resource.kind !== strike.target.kind
+      || this.tileDistance(resource) > 78 || !this.clearReach(resource)) return;
+    this.applyResourceHit(resource, strike.tool);
+  }
+
+  private updateToolVisual(): void {
+    if (!this.toolVisual) return;
+    if (!this.canPlay() || !isAnimatedTool(this.tool) || !this.inventory.has(this.tool)) { this.toolVisual.hide(); return; }
+    const direction = this.toolUse.current?.direction ?? directionFromVector(this.player.facing.x, this.player.facing.y);
+    this.toolVisual.show(this.tool, direction, this.player.x, this.player.y, this.toolUse);
   }
 
   private resourceFeedback(resource: ResourceNode): void {
@@ -1042,10 +1090,13 @@ export class ValleyScene extends Phaser.Scene {
         }
       }
     }
-    if (!this.canPlay()) return;
+    if (!this.canPlay()) { this.toolUse.cancel(); this.toolVisual?.hide(); return; }
     this.cameras.main.setLerp(1 - Math.exp(-9 * delta));
     const previousX = this.player.x, previousY = this.player.y;
-    this.player.update(delta, this.blocked, this.blockedPoint);
+    this.player.update(delta, this.blocked, this.blockedPoint, !this.toolUse.active);
+    const impact = this.toolUse.advance(delta);
+    if (impact) this.applyToolImpact(impact);
+    this.updateToolVisual();
     if (Math.hypot(this.player.x - previousX, this.player.y - previousY) > .1) gameAudio.play('step');
     if (!this.inHome) this.world.updateOcclusion(this.player.x, this.player.y);
     this.farming.update(delta);
