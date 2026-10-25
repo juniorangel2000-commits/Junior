@@ -5,7 +5,8 @@ import {deliverAnimalEscort,releaseAnimalEscort} from '../systems/animals';
 import {sampleWaterDepth} from '../swimming/config';
 import {ResourceLifecycle} from '../resource-lifecycle';
 import type {MapEditorScene} from './MapEditorScene';
-import {atMapExit} from '../data/default-maps';
+import {MapExitPassage} from '../systems/map-transition';
+import {DEVELOPMENT_TOOLS} from '../development-tools';
 import { PROPERTY_FOREST_GATE } from '../data/ancient-forest';
 import { setupAnimalArt } from '../forest-art';
 import { WATER_CAPACITY } from '../data/watering-can';
@@ -105,6 +106,8 @@ export class ValleyScene extends Phaser.Scene {
   get mapEditor():MapEditor|undefined{return this.scene.isActive('Editor')?(this.scene.get('Editor') as MapEditorScene).editor:undefined;}
   private editingMap = false;
   private forestActive = false;
+  private readonly exitPassage=new MapExitPassage();
+  private exitWarningShown=false;
   private resourceLifecycle?:ResourceLifecycle;
   private animals?:AnimalPopulation;
 
@@ -203,6 +206,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   openMapEditor(): void {
+    if(!DEVELOPMENT_TOOLS)return;
     if(this.state?.animalEscort){this.ui.toast('Leve o animal à propriedade ou solte a corda com G antes de editar.');return;}
     if(this.editingMap)return;
     const wasRunning=this.running,original=this.snapshotState(),base=wasRunning?original:loadSave()??createNewSave(DEFAULT_PROFILE);
@@ -239,7 +243,6 @@ export class ValleyScene extends Phaser.Scene {
     return { x: this.player.x, y: this.player.y, direction: directionFromVector(this.player.facing.x, this.player.facing.y) };
   }
 
-  private atForestExit(){return atMapExit(this.player.x,this.player.y,this.forestGate());}
   private forestGate(){return this.state.mapEdits?.points?.exit??PROPERTY_FOREST_GATE;}
   private enterForest(saved?: SaveData): void {
     if(!saved&&this.state.animalEscort){this.ui.toast('Conclua a condução ou solte a corda com G antes de sair.');return;}
@@ -507,6 +510,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private loadState(data: SaveData): void {
+    this.exitPassage.reset();this.exitWarningShown=false;
     this.daylight?.destroy();
     this.toolUse.cancel(); this.toolVisual = undefined;
     this.craftJob = null;
@@ -533,7 +537,6 @@ export class ValleyScene extends Phaser.Scene {
     this.buildingSignature = '';
     this.world = createWorld(this, data.depletedResources, data.buildings, data.mapEdits, 'world', (x,y)=>this.farming.isPrepared(x,y));
     setupAnimalArt(this);
-    this.add.text((this.forestGate().x+.5)*TILE,(this.forestGate().y-1)*TILE,'Floresta Antiga\nE para seguir a trilha', {fontFamily:'Georgia',fontSize:'12px',color:'#fff0cd',backgroundColor:'#59452e',padding:{x:6,y:5}}).setOrigin(this.forestGate().x<4?0:this.forestGate().x>90?1:.5,1).setDepth(this.forestGate().y*TILE);
     // A warm refuge in the opening only; the facade and gameplay lighting stay intact.
     this.titleLights = this.add.graphics().setDepth(16 * TILE + 5).setVisible(false);
     const newHouseArt = this.textures.exists('house-cottage-source');
@@ -710,7 +713,7 @@ export class ValleyScene extends Phaser.Scene {
     }
     const target = event.target;
     if (event.key !== 'Escape' && target instanceof HTMLElement && target.matches('input, textarea, select, [contenteditable="true"]')) return;
-    if (event.key === 'F2' && !event.repeat) { event.preventDefault(); this.openMapEditor(); return; }
+    if (DEVELOPMENT_TOOLS && event.key === 'F2' && !event.repeat) { event.preventDefault(); this.openMapEditor(); return; }
     if (event.key === ' ' && target instanceof HTMLElement && target.closest('button')) return;
     if (this.canPlay() && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(event.key)) event.preventDefault();
     if (event.repeat) return;
@@ -859,7 +862,6 @@ export class ValleyScene extends Phaser.Scene {
     if (!this.canPlay() || this.toolUse.active || this.time.now < this.nextInteractionAt) return;
     if (this.inHome) { this.interactHome(explicitTile); return; }
     if(this.player.isSwimming)return;
-    if (this.tool === 'hand' && this.atForestExit() && (!explicitTile || explicitTile.x===this.forestGate().x&&explicitTile.y===this.forestGate().y)) { this.enterForest(); return; }
     if (this.tool === 'water' && this.state.homeSupplies?.wateringCan) {
       const px = Math.floor(this.player.x / TILE), py = Math.floor(this.player.y / TILE);
       for (let y = py - 1; y <= py + 1; y++) for (let x = px - 1; x <= px + 1; x++) {
@@ -1195,9 +1197,10 @@ export class ValleyScene extends Phaser.Scene {
     }
     if (this.nearHouseEntrance()) prompt = 'Entrar em casa';
     if(this.player.isSwimming)prompt='Nadar · siga até a margem para sair';
-    if (this.tool === 'hand' && this.atForestExit()) prompt = 'E · Seguir para a Floresta Antiga';
+    const nearPassage=Math.abs(this.player.x-(this.forestGate().x+.5)*TILE)<64&&Math.abs(this.player.y-(this.forestGate().y+.5)*TILE)<TILE;
+    if(nearPassage&&!this.player.isSwimming)prompt=this.state.animalEscort?'Conclua a condução ou solte a corda antes de sair':'Siga a seta e ultrapasse a placa para continuar';
     this.ui.updateHUD({ farmingProgress: this.farming.progress, wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, swimming:this.player.isSwimming, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
-      tool: this.tool, prompt, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
+      tool: this.tool, prompt, interactionKey:nearPassage?null:undefined, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
       playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
       harvests: this.inventory.data.turnip, metLia: this.state.metLia,
       nearWorkbench: this.nearWorkbench(), sheltered: this.shelter.sheltered, shelterReason: this.shelter.reason,
@@ -1224,6 +1227,10 @@ export class ValleyScene extends Phaser.Scene {
     const previousX = this.player.x, previousY = this.player.y;
     this.player.update(delta, this.movementBlocked, this.movementBlockedPoint, !this.toolUse.active,this.swimmingPoint,this.allowLeashMovement);
     if(!this.inHome)this.animals?.update(delta,this.player);
+    if(!this.inHome&&!this.player.isSwimming&&this.exitPassage.update({x:previousX,y:previousY},this.player,this.forestGate(),this.state.mapEdits?.points?.entry)){
+      if(!this.state.animalEscort){this.enterForest();return;}
+      if(!this.exitWarningShown){this.ui.toast('Conclua a condução ou solte a corda com G antes de sair.');this.exitWarningShown=true;}
+    }else this.exitWarningShown=false;
     if(this.player.isSwimming){this.tool='hand';this.state.equippedTool='hand';this.toolUse.cancel();this.toolVisual?.hide();}
     const impact = this.toolUse.advance(delta);
     if (impact) this.applyToolImpact(impact);

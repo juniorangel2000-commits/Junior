@@ -5,6 +5,7 @@ import { emptyMapEdits, isProtectedMapTile } from '../src/systems/map-editor';
 import { createNewSave, loadSave, saveGame, validateSave } from '../src/systems/save';
 import type { CharacterProfile } from '../src/types';
 
+vi.mock('../src/bridge-art',()=>({drawPropertyBridges:vi.fn()}));
 vi.mock('../src/water-motion',()=>({addWaterMotion:vi.fn()}));
 vi.mock('phaser', () => ({ default: { Textures: { FilterMode: { NEAREST: 0 } } } }));
 vi.mock('../src/map-editor-terrain', () => ({ drawMapTerrainEdits: vi.fn() }));

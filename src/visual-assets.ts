@@ -30,6 +30,7 @@ const WORLD_SOURCES: Record<string, string> = {
 };
 const MODULES = ['parede_creme', 'parede_janela_floreira', 'parede_trepadeira', 'parede_porta', 'porta_madeira', 'janela_turquesa', 'telha_lisa', 'telha_variante', 'chamine', 'floreira', 'cerca_natural', 'banco_jardim', 'barril', 'vaso_flor', 'piso_tabuas', 'piso_pedra', 'terra', 'caminho', 'planta'];
 export function preloadVisualAssets(scene: Phaser.Scene): void {
+  scene.load.image('graphics-controls-signs-source','assets/ui/graphics-controls-signs.png');
   scene.load.image('source-small-stones','assets/visual/nature/small-stones.png');
   scene.load.image('source-new-branches','assets/visual/nature/fallen-branches.png');
   scene.load.image('source-berry-bush','assets/visual/nature/berry-bush.png');

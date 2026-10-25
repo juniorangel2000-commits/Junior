@@ -11,7 +11,8 @@ import {ToolVisual} from '../tool-visual';
 import type {ResourceNode} from '../types';
 import type {MapEditorScene} from './MapEditorScene';
 import {ForestWorld} from '../forest-world';
-import {atMapExit} from '../data/default-maps';
+import {MapExitPassage} from '../systems/map-transition';
+import {DEVELOPMENT_TOOLS} from '../development-tools';
 import { emptyQuickbar } from '../systems/quickbar';
 import { MapEditor } from '../map-editor';
 import Phaser from 'phaser';
@@ -45,6 +46,8 @@ export class ForestScene extends Phaser.Scene {
   private get animals(){return this.wildlife?.animals??[];}
   private paused=false;
   private leaving=false;
+  private readonly exitPassage=new MapExitPassage();
+  private exitWarningShown=false;
   private zoom=1;
   private elapsed=0;
   private hudElapsed=0;
@@ -59,6 +62,7 @@ export class ForestScene extends Phaser.Scene {
   constructor(){super('Floresta');}
 
   create(data:ForestStart):void {
+    this.exitPassage.reset();this.exitWarningShown=false;
     this.ui=data.ui;this.state=structuredClone(data.save);this.state.activeArea='forest';this.onReturn=data.onReturn;
     this.paused=false;this.leaving=false;this.elapsed=0;this.hudElapsed=0;this.wildlife?.destroy();this.wildlife=undefined;
     this.zoom=loadCameraZoom();this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);setupAnimalArt(this);
@@ -82,6 +86,7 @@ export class ForestScene extends Phaser.Scene {
     this.save();
   }
   openMapEditor():void {
+    if(!DEVELOPMENT_TOOLS)return;
     if(this.state.animalEscort){this.ui.toast('Leve o animal à propriedade ou solte a corda com G antes de editar.');return;}
     if(this.mapEditor||this.leaving)return;
     this.toolUse.cancel();this.toolVisual?.hide();this.save();const original=structuredClone(this.state);this.paused=true;this.ui.showMapEditorMode();this.player.setVisible(false);this.input.keyboard?.resetKeys();
@@ -139,7 +144,7 @@ export class ForestScene extends Phaser.Scene {
     const nearest=this.nearest(),info=nearest&&FOREST_ANIMALS.find(a=>a.id===nearest.id),node=this.nearestResource();
     this.ui.updateHUD({area:'forest',inHome:false,swimming:this.player.isSwimming,name:this.state.profile.name,day:this.state.day,time:this.state.time,
       inventory:this.state.inventory,tool:this.state.equippedTool??'hand',wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,
-      playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:this.state.animalEscort&&!this.nearExit()?'G':'E',prompt:this.player.isSwimming?'Nadar · siga até a margem para sair':this.nearExit()?this.state.animalEscort?'Levar animal à propriedade':'Voltar à Propriedade Abandonada':this.state.animalEscort?'Conduzindo animal · siga até a saída · soltar corda':info?'Prender '+ANIMAL_NAMES[info.kind].toLowerCase()+' com corda':node?`${RESOURCE_DEFINITIONS[node.kind].label} · ${RESOURCE_DEFINITIONS[node.kind].tool==='pickaxe'?'use a picareta':RESOURCE_DEFINITIONS[node.kind].tool==='hatchet'?'use a machadinha':'recolher'}`:'Explorar a floresta',
+      playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:this.nearExit()?null:this.state.animalEscort?'G':'E',prompt:this.player.isSwimming?'Nadar · siga até a margem para sair':this.nearExit()?this.state.animalEscort?'Siga pela placa para levar o animal à propriedade':'Siga a seta e ultrapasse a placa para continuar':this.state.animalEscort?'Conduzindo animal · siga até a saída · soltar corda':info?'Prender '+ANIMAL_NAMES[info.kind].toLowerCase()+' com corda':node?`${RESOURCE_DEFINITIONS[node.kind].label} · ${RESOURCE_DEFINITIONS[node.kind].tool==='pickaxe'?'use a picareta':RESOURCE_DEFINITIONS[node.kind].tool==='hatchet'?'use a machadinha':'recolher'}`:'Explorar a floresta',
       location:'Floresta Antiga',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});
     this.ui.updateCameraZoom(this.zoom,!this.paused&&!this.mapEditor);
   }
@@ -147,7 +152,7 @@ export class ForestScene extends Phaser.Scene {
     if(e.repeat||this.mapEditor)return;
     const target=e.target;if(e.key!=='Escape'&&target instanceof HTMLElement&&target.matches('input,textarea,select,[contenteditable="true"]'))return;
     const key=e.key.toLowerCase();
-    if(e.key==='F2'){e.preventDefault();this.openMapEditor();return;}
+    if(DEVELOPMENT_TOOLS&&e.key==='F2'){e.preventDefault();this.openMapEditor();return;}
     if(e.key==='Escape'){e.preventDefault();if(!this.ui.dismissTopToolbar())this.ui.togglePause();return;}
     if(key==='m'){e.preventDefault();this.updateHUD();this.ui.toggleMap();return;}
     if(key==='g'&&!this.paused){e.preventDefault();this.releaseRope();return;}
@@ -164,11 +169,10 @@ export class ForestScene extends Phaser.Scene {
   private wheel=(_p:unknown,_objects:unknown,_dx:number,dy:number):void=>{if(!this.paused)this.changeCameraZoom(dy<0?1:-1);};
   private blur=():void=>{if(!this.paused){this.setPaused(true);this.ui.togglePause();}this.save();};
   private visibility=():void=>{if(document.hidden)this.blur();};
-  private nearExit():boolean {return atMapExit(this.player.x,this.player.y,this.exit());}
+  private nearExit():boolean {const p=this.exit();return Math.abs(this.player.x-(p.x+.5)*32)<64&&Math.abs(this.player.y-(p.y+.5)*32)<32;}
   private nearest(){return this.wildlife?.nearest(this.player);}
   private interact():void {
     if(this.player.isSwimming||this.toolUse.active)return;
-    if(this.nearExit()){if(!this.wildlife?.canLeave(this.player)){this.ui.toast('Traga o animal para perto da saída.');return;}this.leave();return;}
     if(this.state.animalEscort){this.ui.toast('Conduza o animal até a propriedade. G solta a corda.');return;}
     if(this.state.equippedTool==='hoe'){this.ui.toast('Prepare sua horta na Propriedade Abandonada.');return;}
     const a=this.nearest();if(!a){
@@ -207,7 +211,12 @@ export class ForestScene extends Phaser.Scene {
   update(_time:number,ms:number):void {
     this.daylight?.update(this.state.time);
     if(!this.player||this.paused||this.leaving||this.mapEditor||document.hidden)return;
+    const previous={x:this.player.x,y:this.player.y};
     const delta=Math.min(ms/1000,.1);this.player.update(delta,this.movementBlockedAt,undefined,!this.toolUse.active,this.swimmingPoint,this.allowLeashMovement);this.wildlife?.update(delta,this.player);this.farming.update(delta);if(this.player.isSwimming){this.state.equippedTool='hand';this.toolUse.cancel();this.toolVisual?.hide();}
+    if(!this.player.isSwimming&&this.exitPassage.update(previous,this.player,this.exit(),this.entry())){
+      if(this.wildlife?.canLeave(this.player)??true){this.leave();return;}
+      if(!this.exitWarningShown){this.ui.toast('Traga o animal para perto da saída.');this.exitWarningShown=true;}
+    }else this.exitWarningShown=false;
     const strike=this.toolUse.advance(delta);if(strike){const node=this.world.resourceAt(strike.target.x,strike.target.y);if(node?.id===strike.target.id&&!this.player.isSwimming)this.hitResource(node,strike.tool);}
     const active=this.toolUse.current;if(active&&(active.tool==='pickaxe'||active.tool==='hatchet'))this.toolVisual?.show(active.tool,active.direction,this.player.x,this.player.y,this.toolUse);else this.toolVisual?.hide();
     Object.assign(this.state,advanceClock(this.state,delta*GAME_MINUTES_PER_SECOND));

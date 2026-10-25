@@ -1,4 +1,5 @@
 import {isFiberPlant,fiberPlantFor,fiberPlantArt} from './data/fiber-plants';
+import {drawExitSign} from './exit-signs';
 import {paintedWaterPoint} from './data/terrain-paint';
 import {treeGroundClear,isTreeKind} from './systems/tree-ground';
 import Phaser from 'phaser';
@@ -80,7 +81,7 @@ export class ForestWorld {
       const tree=edit.kind==='standingTree'||edit.kind==='pine';
       this.addEnvironmentObject(id,edit.kind,edit.x,edit.y,art?.texture??fallback[edit.kind],art?.width??(tree?166:edit.kind==='tree'?36:edit.kind==='seeds'?44:32),art?.height??(tree?211:edit.kind==='tree'?27:edit.kind==='stone'?24:edit.kind==='seeds'?44:32),art?.pivot??(tree?128/132:1),art?.solid??tree);
     }
-    const exit=this.exit();this.scene.add.text((exit.x+.5)*32,(exit.y+.5)*32,'Propriedade Abandonada',{fontFamily:'Georgia',fontSize:'17px',color:'#fff1ca',backgroundColor:'#443b29',padding:{x:9,y:6}}).setOrigin(exit.x>90?1:exit.x<4?0:.5).setDepth(exit.y*32+30);
+    drawExitSign(this.scene,this.exit(),this.edits?.points?.entry??FOREST_ENTRY);
     this.environment=this.scene.children.list.filter(o=>!before.has(o));
   }
   private drawGround():void {

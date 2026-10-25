@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "mapsRevision": 2,
+  "propertyCells": 955,
+  "forestCells": 230,
+  "crossings": [
+    {
+      "id": "north",
+      "north": true,
+      "before": true,
+      "swimming": true,
+      "blocked": true
+    },
+    {
+      "id": "north",
+      "north": false,
+      "before": true,
+      "swimming": true,
+      "blocked": true
+    },
+    {
+      "id": "south",
+      "north": true,
+      "before": true,
+      "swimming": true,
+      "blocked": true
+    },
+    {
+      "id": "south",
+      "north": false,
+      "before": true,
+      "swimming": true,
+      "blocked": true
+    }
+  ],
+  "sign": [
+    {
+      "direction": "left",
+      "x": 88,
+      "y": 1652
+    }
+  ],
+  "forestSign": [
+    "right"
+  ],
+  "pageErrors": [],
+  "at": "2026-10-25T01:40:32.273Z"
+}

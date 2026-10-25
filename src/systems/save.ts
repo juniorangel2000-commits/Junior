@@ -2,7 +2,7 @@ import {validateResourceField} from './resource-spawns';
 import {repairPropertyShore,PROPERTY_SHORE_REVISION} from '../data/property-shore-repair';
 import {collectibleKind} from '../data/nature-catalog';
 import {editorObjectKind} from './map-editor';
-import {MAP_BASE_REVISION,defaultMap,mergeDefaultMap} from '../data/default-maps';
+import {MAP_BASE_REVISION,defaultMap,mergeDefaultMap,upgradeAuthorMap} from '../data/default-maps';
 import { FOREST_ANIMALS } from '../data/ancient-forest';
 import { validQuickbar, emptyQuickbar } from './quickbar';
 import { CHARACTER_DIRECTIONS, type CharacterDirection } from '../character-directions';
@@ -168,7 +168,13 @@ export function migrateSave(value: unknown): SaveData | null {
   }
   if(validateSave(value)){
     const data=structuredClone(value);
-    if(data.mapBaseRevision!==MAP_BASE_REVISION){data.mapEdits=mergeDefaultMap('property',data.mapEdits,false);data.forestMapEdits=mergeDefaultMap('forest',data.forestMapEdits,false);data.mapBaseRevision=MAP_BASE_REVISION;}
+    if(data.mapBaseRevision!==MAP_BASE_REVISION){
+      if(data.mapBaseRevision===1){
+        const protectedCells=new Set([...(data.preparedSoil??[]),...data.crops,...data.buildings.flatMap(buildingFootprint)].map(p=>`${p.x},${p.y}`));
+        data.mapEdits=upgradeAuthorMap('property',data.mapEdits,protectedCells);data.forestMapEdits=upgradeAuthorMap('forest',data.forestMapEdits);
+      }else{data.mapEdits=mergeDefaultMap('property',data.mapEdits,false);data.forestMapEdits=mergeDefaultMap('forest',data.forestMapEdits,false);}
+      data.mapBaseRevision=MAP_BASE_REVISION;
+    }
     if(data.propertyShoreRevision!==PROPERTY_SHORE_REVISION){
       const protectedCells=new Set([...(data.preparedSoil??[]),...data.crops,...data.buildings.flatMap(buildingFootprint)].map(p=>`${p.x},${p.y}`));
       repairPropertyShore(data.mapEdits,protectedCells);data.propertyShoreRevision=PROPERTY_SHORE_REVISION;

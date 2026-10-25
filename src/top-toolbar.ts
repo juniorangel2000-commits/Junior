@@ -1,7 +1,7 @@
 import './top-toolbar.css';
 import { toolbarIcon } from './toolbar-icons';
 
-export type ToolbarAction = 'inventory' | 'map' | 'crafting' | 'building' | 'save' | 'options' | 'controls' | 'audio';
+export type ToolbarAction = 'inventory' | 'map' | 'crafting' | 'building' | 'save' | 'options' | 'controls' | 'audio' | 'graphics';
 interface ToolbarCallbacks {
   onOpenChange(open: boolean): void;
   onAction(action: ToolbarAction): void;
@@ -25,6 +25,7 @@ export class TopToolbar {
       { id: 'crafting', label: 'Fabricação', shortcut: 'C', cls: 'crafting-button' },
       { id: 'building', label: 'Construção', shortcut: 'B', cls: 'building-button' },
       { id: 'audio', label: 'Música', cls: 'toolbar-audio-button' },
+      { id: 'graphics', label: 'Gráficos', cls: 'toolbar-graphics-button' },
       { id: 'save', label: 'Salvar', cls: 'toolbar-save-button' },
       { id: 'controls', label: 'Controles', cls: 'toolbar-controls-button' },
       { id: 'options', label: 'Opções', shortcut: 'Esc', cls: 'pause-button' },

@@ -5,6 +5,8 @@ import { CAMERA_ZOOM_MIN, CAMERA_ZOOM_MAX } from './camera-zoom';
 import './camera-zoom.css';
 import { gameAudio } from './audio';
 import { toolbarIcon } from './toolbar-icons';
+import {controlGuide} from './control-guide';
+import {DEVELOPMENT_TOOLS} from './development-tools';
 import { CHARACTER_WIDTH, drawLiaPortrait } from './character-sprites';
 import { createCharacterEditor } from './character-creator';
 import { createTitleScreen } from './title-screen';
@@ -121,7 +123,7 @@ export class GameUI {
   private overlay = document.createElement('div');
   private notifications = document.createElement('div');
   private mode: 'title' | 'creation' | 'hud' = 'title';
-  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | null = null;
+  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | null = null;
   private focusBeforeModal?: HTMLElement;
   private onModalClose?: () => void;
   private existingSave = false;
@@ -259,7 +261,7 @@ export class GameUI {
     // Mantém a navegação pelo teclado no menu que está pausando a partida.
     this.overlay.addEventListener('keydown', event => {
       if (event.key !== 'Tab' || !this.modal) return;
-      const controls = Array.from(this.overlay.querySelectorAll<HTMLElement>('button:not(:disabled), input, summary, [tabindex="0"]'))
+      const controls = Array.from(this.overlay.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), summary, [tabindex="0"]'))
         .filter(control => control.getClientRects().length > 0);
       if (!controls.length) return;
       const first = controls[0], last = controls[controls.length - 1];
@@ -293,7 +295,7 @@ export class GameUI {
       icon,
       onNewGame: () => this.showCreation(),
       onContinue: () => this.callbacks.onContinue(),
-      onMapEditor: () => this.callbacks.onMapEditor(),
+      onMapEditor: DEVELOPMENT_TOOLS ? () => this.callbacks.onMapEditor() : undefined,
       onBackgroundMode: mode => this.callbacks.onTitleBackground(mode),
     });
   }
@@ -404,11 +406,12 @@ export class GameUI {
     this.topToolbar?.setOpen(false, false);
     if (action === 'controls') {
       this.openModal('controls');
-      this.overlay.innerHTML = `<section class="panel inventory-card" role="dialog" aria-label="Controles"><div class="modal-heading"><h2>Controles</h2><button class="icon-button" aria-label="Fechar controles">${icon('close')}</button></div><p>WASD / setas — mover<br>Roda do mouse ou + / − — aproximar / afastar<br>Home ou porcentagem do zoom — voltar a 100%<br>E — interagir / prender animal com corda<br>G — soltar a corda<br>1–9 — selecionar slot; vazio deixa as mãos livres<br>Botão direito no slot — trocar ou esvaziar<br>I — inventário · C — fabricar · B — construir<br>M — mapa · H — personalizar casa<br>0 — parede · P — porta · R — girar cobertura<br>Esc — fechar / pausar<br>Ctrl + Alt — entrar / sair da tela cheia</p></section>`;
+      this.overlay.innerHTML = `<section class="panel controls-panel" role="dialog" aria-modal="true" aria-label="Controles"><div class="modal-heading"><div><span class="eyebrow">CADA TECLA, UM NOVO CAMINHO</span><h2>Controles</h2></div><button class="icon-button" aria-label="Fechar controles">${icon('close')}</button></div>${controlGuide()}</section>`;
       this.overlay.querySelector('button')!.onclick = () => this.closeModal();
       this.overlay.querySelector('button')!.focus();
     }
     else if (action === 'audio') this.toggleAudio();
+    else if (action === 'graphics') this.toggleGraphics();
     else if (action === 'options') this.togglePause();
     else if (action === 'map') this.toggleMap();
     else if (action === 'inventory' && this.latest) this.toggleInventory(this.latest.inventory);
@@ -441,6 +444,7 @@ export class GameUI {
     }
     this.base.querySelector('.hud')!.classList.toggle('in-home', data.inHome === true);
     set('#hud-interaction-key', data.interactionKey ?? 'E');
+    this.base.querySelector<HTMLElement>('#hud-interaction-key')!.hidden=data.interactionKey===null;
     set('#hud-prompt', data.prompt || 'Aproxime-se de algo para interagir');
     const progressLabel = this.base.querySelector<HTMLElement>('#hud-resource-progress')!;
     progressLabel.hidden = !data.resourceProgress;
@@ -782,6 +786,39 @@ export class GameUI {
     panel.querySelector<HTMLButtonElement>('.icon-button')!.focus();
   }
 
+  toggleGraphics(): void {
+    if (this.mode !== 'hud' || this.modal) return;
+    this.openModal('graphics');
+    const panel = document.createElement('section');
+    panel.className = 'panel graphics-panel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    panel.setAttribute('aria-label', 'Gráficos do vale');
+    panel.innerHTML = `<div class="modal-heading"><div class="audio-title">${toolbarIcon('graphics')}<div><span class="eyebrow">LUZ PARA O SEU CAMINHO</span><h2>Gráficos do vale</h2></div></div><button class="icon-button" aria-label="Fechar configurações gráficas">${icon('close')}</button></div><p class="audio-intro">Ajuste a luz e as sombras do seu vale.</p><div class="graphics-controls"></div><p class="audio-note">Preferências salvas automaticamente para todos os cenários. O zoom continua disponível pelos botões da câmera, pela roda do mouse ou por + e −.</p><button class="button button-light" data-graphics-defaults>Restaurar padrão</button>`;
+    const visuals = getVisualSettings();
+    const lighting = document.createElement('fieldset');
+    lighting.className = 'daylight-settings';
+    lighting.innerHTML = `<legend>Iluminação e shaders</legend><label><input type="checkbox" data-daylight ${visuals.daylight ? 'checked' : ''}> Iluminação das fases do dia</label><label>Intensidade <input aria-label="Intensidade da iluminação" type="range" min="0" max="100" value="${Math.round(visuals.intensity * 100)}"><output>${Math.round(visuals.intensity * 100)}%</output></label><label><input type="checkbox" data-dynamic-lighting ${visuals.dynamicLighting ? 'checked' : ''}> Sombras do sol e luzes das janelas</label><p>Transições suaves e iluminação dinâmica opcional. Preferências salvas automaticamente.</p>`;
+    const enabled = lighting.querySelector<HTMLInputElement>('[data-daylight]')!;
+    const strength = lighting.querySelector<HTMLInputElement>('input[type=range]')!;
+    const dynamic = lighting.querySelector<HTMLInputElement>('[data-dynamic-lighting]')!;
+    dynamic.disabled = !visuals.daylight;
+    dynamic.addEventListener('change', () => setVisualSettings({ dynamicLighting: dynamic.checked }));
+    strength.disabled = !visuals.daylight;
+    enabled.addEventListener('change', () => { setVisualSettings({ daylight: enabled.checked }); strength.disabled = !enabled.checked; dynamic.disabled = !enabled.checked; });
+    strength.addEventListener('input', () => { setVisualSettings({ intensity: Number(strength.value) / 100 }); strength.nextElementSibling!.textContent = `${strength.value}%`; });
+    panel.querySelector('.graphics-controls')!.append(lighting);
+
+    panel.querySelector('.icon-button')!.addEventListener('click', () => this.closeModal());
+    panel.querySelector('[data-graphics-defaults]')!.addEventListener('click', () => {
+      setVisualSettings({daylight:true,dynamicLighting:true,intensity:1});
+      enabled.checked = true; dynamic.checked = true; dynamic.disabled = false;
+      strength.value = '100'; strength.disabled = false; strength.nextElementSibling!.textContent = '100%';
+    });
+    this.overlay.append(panel);
+    panel.querySelector<HTMLButtonElement>('.icon-button')!.focus();
+  }
+
   togglePause(): void {
     if (this.mode !== 'hud') return;
     if (this.modal) { this.closeModal(); return; }
@@ -797,25 +834,14 @@ export class GameUI {
     });
     panel.querySelector('[data-action="title"]')!.addEventListener('click', () => this.callbacks.onMainMenu());
     panel.querySelector('[data-action="admin"]')!.addEventListener('click', () => { this.closeModal(); this.callbacks.onAdminMenu(); });
+    if(DEVELOPMENT_TOOLS){
     const editor = document.createElement('button');
     editor.className = 'button button-light';
     editor.dataset.action = 'map-editor';
     editor.textContent = 'Editar mapa · F2';
     editor.addEventListener('click', () => this.callbacks.onMapEditor());
     panel.querySelector('.pause-actions')!.insertBefore(editor, panel.querySelector('[data-action="admin"]'));
-    const visuals = getVisualSettings();
-    const lighting = document.createElement('fieldset');
-    lighting.className = 'daylight-settings';
-    lighting.innerHTML = `<legend>Visual do vale</legend><label><input type="checkbox" data-daylight ${visuals.daylight ? 'checked' : ''}> Iluminação das fases do dia</label><label>Intensidade <input aria-label="Intensidade da iluminação" type="range" min="0" max="100" value="${Math.round(visuals.intensity * 100)}"><output>${Math.round(visuals.intensity * 100)}%</output></label><label><input type="checkbox" data-dynamic-lighting ${visuals.dynamicLighting ? 'checked' : ''}> Sombras do sol e luzes das janelas</label><p>Transições suaves e iluminação dinâmica opcional. Preferências salvas automaticamente.</p>`;
-    const enabled = lighting.querySelector<HTMLInputElement>('[data-daylight]')!;
-    const strength = lighting.querySelector<HTMLInputElement>('input[type=range]')!;
-    const dynamic = lighting.querySelector<HTMLInputElement>('[data-dynamic-lighting]')!;
-    dynamic.disabled = !visuals.daylight;
-    dynamic.addEventListener('change', () => setVisualSettings({ dynamicLighting: dynamic.checked }));
-    strength.disabled = !visuals.daylight;
-    enabled.addEventListener('change', () => { setVisualSettings({ daylight: enabled.checked }); strength.disabled = !enabled.checked; dynamic.disabled = !enabled.checked; });
-    strength.addEventListener('input', () => { setVisualSettings({ intensity: Number(strength.value) / 100 }); strength.nextElementSibling!.textContent = `${strength.value}%`; });
-    panel.querySelector('.pause-actions')!.before(lighting);
+    }
     this.overlay.append(panel);
   }
 
@@ -896,7 +922,7 @@ export class GameUI {
     callback?.();
   }
 
-  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio'): void {
+  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics'): void {
     this.topToolbar?.setOpen(false, false);
     this.topToolbar?.setEnabled(false);
     this.focusBeforeModal = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;

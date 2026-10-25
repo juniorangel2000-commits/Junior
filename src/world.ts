@@ -1,6 +1,8 @@
 import {isFiberPlant,fiberPlantFor,fiberPlantArt,nearRiverBank} from './data/fiber-plants';
 import {paintedWaterPoint} from './data/terrain-paint';
 import {drawPropertyBridges} from './bridge-art';
+import {drawExitSign} from './exit-signs';
+import {PROPERTY_FOREST_GATE} from './data/ancient-forest';
 import {isTreeKind,treeGroundClear} from './systems/tree-ground';
 import {bridgeRailAtPoint} from './data/bridges';
 import {forestTreeAppearance} from './data/ancient-forest';
@@ -117,6 +119,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   if (mapEdits) drawMapTerrainEdits(scene,mapEdits.terrain,`${textureNamespace}-map-edits`);
   addWaterMotion(scene,(x,y)=>waterAt(x,y)&&!bridgeAt(x,y),(x,y)=>waterPointAt(x,y)&&!bridgeAt(Math.floor(x/TILE),Math.floor(y/TILE)));
   drawPropertyBridges(scene);
+  drawExitSign(scene,mapEdits?.points?.exit??PROPERTY_FOREST_GATE,mapEdits?.points?.entry);
 
   const texture = (name: string, width: number, height: number, paint: (ctx: CanvasRenderingContext2D) => void) => {
     if (scene.textures.exists(name)) return;

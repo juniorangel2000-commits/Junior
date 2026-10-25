@@ -6,6 +6,7 @@ import { isWaterPoint, roadDistanceAt } from '../src/data/terrain-shape';
 import { Resources } from '../src/systems/resources';
 import { Inventory } from '../src/systems/inventory';
 
+vi.mock('../src/bridge-art',()=>({drawPropertyBridges:vi.fn()}));
 vi.mock('../src/water-motion',()=>({addWaterMotion:vi.fn()}));
 vi.mock('phaser', () => ({ default: { Textures: { FilterMode: { NEAREST: 0 } } } }));
 

@@ -95,7 +95,7 @@ export interface HudData {
   time: number;
   inventory: InventoryData;
   tool: Tool;
-  interactionKey?: 'E' | 'H' | 'G';
+  interactionKey?: 'E' | 'H' | 'G' | null;
   prompt: string;
   location: string;
   harvests: number;
