@@ -11,7 +11,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "check": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --maxWorkers=2",
     "desktop": "npm run build && electron .",
     "desktop:win": "npm run build && electron-builder --win portable --x64",
     "desktop:linux": "npm run build && electron-builder --linux dir --x64"

@@ -91,12 +91,17 @@ describe('porteiras, cercados e reparos',()=>{
   const b=pen(),blocked=(x:number,y:number)=>x<1||y<1||x>=95||y>=71||b.isBlocked(x,y);
   const a=new AnimalBrain('test-'+kind,kind,13.5*32,13.5*32,false,blocked,84);
   const player={x:30*32,y:30*32};
-  for(let i=0;i<4000;i++){a.update(.1,player,[a]);expect(a.x).toBeGreaterThan(11*32);expect(a.x).toBeLessThan(16*32);expect(a.y).toBeGreaterThan(11*32);expect(a.y).toBeLessThan(16*32);expect(a.canStand(a.x,a.y)).toBe(true)}
+  // Check every simulated step, without allocating thousands of matcher objects.
+  // Hosted Windows runners can share their CPU with the other world simulations.
+  for(let i=0;i<4000;i++){
+   a.update(.1,player,[a]);
+   if(!(a.x>11*32&&a.x<16*32&&a.y>11*32&&a.y<16*32&&a.canStand(a.x,a.y)))throw new Error(`Animal left the closed pen at step ${i}: ${a.x},${a.y}`);
+  }
   expect(a.distanceMoved).toBeGreaterThan(100);
   b.toggleGate(13,16);let escaped=false;
   for(let i=0;i<16000;i++){a.update(.1,player,[a]);if(a.y>17*32){escaped=true;break}}
   expect(escaped).toBe(true);
- });
+ },15000);
  it('restaura os três desgastes sem desmontar nem repetir o consumo',()=>{
   for(const day of [31,61,91]){const b=new Building([{kind:'fence',x:10,y:10,fenceBuiltDay:1}]),i=inv();
    expect(fenceStage(b.buildings[0],day)).not.toBe('new');expect(b.repairFence(10,10,i,day).ok).toBe(true);expect(i.data.wood).toBe(99);expect(fenceStage(b.buildings[0],day)).toBe('new');expect(b.repairFence(10,10,i,day).ok).toBe(false);expect(i.data.wood).toBe(99);expect(b.isBlocked(10,10)).toBe(true);
