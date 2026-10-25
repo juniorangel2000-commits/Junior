@@ -231,3 +231,5 @@
 @media(max-width:620px){#ui .control-guide-grid{grid-template-columns:1fr}#ui .controls-panel{padding:18px}#ui .controls-intro .toolbar-art-icon{width:68px;height:68px}#ui .controls-intro p{font-size:17px}}
 #ui .controls-panel>.modal-heading{position:sticky;z-index:3}
 #ui #hud-interaction-key[hidden]{display:none}
+
+.fence-stages{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;margin:8px 0}.fence-stages figure{margin:0;text-align:center}.fence-stages img{width:100%;height:64px;object-fit:contain;image-rendering:pixelated}.fence-stages figcaption{font-size:10px}.fence-stages small{display:block;opacity:.7}.fence-aging-note{font-size:12px;line-height:1.5}

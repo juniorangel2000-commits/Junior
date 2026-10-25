@@ -1,3 +1,4 @@
+import { drawConnectedFence, drawGate } from '../fence-art';
 import {nearRiverBank} from '../data/fiber-plants';
 import {EditorResourceVisibility,editorResourceTexture} from '../editor-resource-visibility';
 import {Farming} from '../systems/farming';
@@ -52,7 +53,9 @@ export class MapEditorScene extends Phaser.Scene {
     property=createWorld(this,save.depletedResources,save.buildings,map,'editor-property',(x,y)=>farming.isPrepared(x,y));forest=undefined;
     this.add.sprite(NPC_POSITION.x,NPC_POSITION.y,'lia').setOrigin(.5,1).setDepth(NPC_POSITION.y);
     for(const b of save.buildings){
-     if(b.kind==='roof')this.add.image(b.x*TILE,b.y*TILE,b.rotation?'roof-vertical':'roof').setOrigin(0).setDepth(3000);
+     if(b.kind==='fence')drawConnectedFence(this,b,save.buildings,save.day);
+     else if(b.kind==='gate')drawGate(this,b);
+     else if(b.kind==='roof')this.add.image(b.x*TILE,b.y*TILE,b.rotation?'roof-vertical':'roof').setOrigin(0).setDepth(3000);
      else if(b.kind==='floor')this.add.sprite(b.x*TILE,b.y*TILE,'floor').setOrigin(0).setDepth(-20);
      else this.add.sprite(b.x*TILE+16,b.y*TILE+29,b.kind==='door'&&b.open?'door-open':b.kind).setOrigin(.5,1).setDepth(b.y*TILE+30);
     }

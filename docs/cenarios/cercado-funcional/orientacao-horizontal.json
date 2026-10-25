@@ -1,0 +1,45 @@
+{
+  "gate": {
+    "x": 52,
+    "y": 25,
+    "kind": "gate",
+    "open": true,
+    "rotation": 0
+  },
+  "layers": [
+    {
+      "layer": 0,
+      "depth": 818,
+      "y": 816
+    },
+    {
+      "layer": 1,
+      "depth": 806,
+      "y": 816
+    },
+    {
+      "layer": 2,
+      "depth": 818,
+      "y": 816
+    },
+    {
+      "layer": 0,
+      "depth": 818,
+      "y": 816
+    },
+    {
+      "layer": 1,
+      "depth": 806,
+      "y": 816
+    },
+    {
+      "layer": 2,
+      "depth": 818,
+      "y": 816
+    }
+  ],
+  "panelInPassage": 0,
+  "blocked": false,
+  "valid": true,
+  "errors": []
+}

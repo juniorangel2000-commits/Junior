@@ -1,6 +1,6 @@
 import type { InventoryData, ItemId, QuickSlot, Tool } from '../types';
 import { ITEM_IDS } from '../data/items';
-export const QUICK_TOOLS: Tool[] = ['hand', 'plant', 'water', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'hoe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
+export const QUICK_TOOLS: Tool[] = ['hand', 'plant', 'water', 'gate', 'repair', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'hoe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
 export const emptyQuickbar = (): QuickSlot[] => Array.from({ length: 9 }, () => null);
 export function isQuickSlot(value: unknown): value is Exclude<QuickSlot, null> {
   return typeof value === 'string' && (QUICK_TOOLS.includes(value as Tool) || value === 'item:wateringCan'

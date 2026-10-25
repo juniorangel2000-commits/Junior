@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "idle": {
+    "x": 1008,
+    "y": 528,
+    "texture": "property-well-idle",
+    "frame": "__BASE",
+    "width": 107.52,
+    "height": 107.52
+  },
+  "early": {
+    "frame": 1,
+    "water": 0,
+    "elapsed": 180
+  },
+  "pause": {
+    "elapsed": 280,
+    "after": 280,
+    "water": 0
+  },
+  "movement": {
+    "stoppedY": 524.2011328124997,
+    "inside": false,
+    "passedRoof": 42.000000000000455
+  },
+  "loaded": {
+    "water": 8,
+    "busy": false,
+    "texture": "property-well-idle"
+  },
+  "pageErrors": [],
+  "at": "2026-10-25T02:55:13.897Z"
+}

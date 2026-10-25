@@ -1,0 +1,277 @@
+{
+  "placement": [
+    {
+      "x": 19,
+      "y": 18,
+      "kind": "fence",
+      "fenceBuiltDay": 11
+    },
+    {
+      "x": 20,
+      "y": 18,
+      "kind": "fence",
+      "fenceBuiltDay": 11
+    }
+  ],
+  "aging": {
+    "out": [
+      {
+        "day": 40,
+        "stage": "new"
+      },
+      {
+        "day": 41,
+        "stage": "worn"
+      },
+      {
+        "day": 70,
+        "stage": "worn"
+      },
+      {
+        "day": 71,
+        "stage": "damaged"
+      },
+      {
+        "day": 100,
+        "stage": "damaged"
+      },
+      {
+        "day": 101,
+        "stage": "ruined"
+      }
+    ],
+    "day": 101,
+    "builtDay": 11,
+    "stage": "ruined"
+  },
+  "art": {
+    "ruinedOnlyPosts": true,
+    "fallenOnlyAtGround": true,
+    "coveredNails": [
+      {
+        "stage": "new",
+        "isolated": 76,
+        "horizontal": 74,
+        "vertical": [
+          {
+            "mask": 4,
+            "metalPixels": 0
+          },
+          {
+            "mask": 5,
+            "metalPixels": 0
+          },
+          {
+            "mask": 7,
+            "metalPixels": 0
+          },
+          {
+            "mask": 15,
+            "metalPixels": 0
+          }
+        ]
+      },
+      {
+        "stage": "worn",
+        "isolated": 87,
+        "horizontal": 85,
+        "vertical": [
+          {
+            "mask": 4,
+            "metalPixels": 0
+          },
+          {
+            "mask": 5,
+            "metalPixels": 0
+          },
+          {
+            "mask": 7,
+            "metalPixels": 0
+          },
+          {
+            "mask": 15,
+            "metalPixels": 0
+          }
+        ]
+      }
+    ],
+    "terminalFaces": [
+      {
+        "stage": "new",
+        "pairs": [
+          {
+            "terminal": 1,
+            "plain": 0,
+            "noForegroundStub": true
+          },
+          {
+            "terminal": 3,
+            "plain": 2,
+            "noForegroundStub": true
+          },
+          {
+            "terminal": 9,
+            "plain": 8,
+            "noForegroundStub": true
+          },
+          {
+            "terminal": 11,
+            "plain": 10,
+            "noForegroundStub": true
+          }
+        ]
+      },
+      {
+        "stage": "worn",
+        "pairs": [
+          {
+            "terminal": 1,
+            "plain": 0,
+            "noForegroundStub": true
+          },
+          {
+            "terminal": 3,
+            "plain": 2,
+            "noForegroundStub": true
+          },
+          {
+            "terminal": 9,
+            "plain": 8,
+            "noForegroundStub": true
+          },
+          {
+            "terminal": 11,
+            "plain": 10,
+            "noForegroundStub": true
+          }
+        ]
+      }
+    ],
+    "singleRail": [
+      {
+        "stage": "new",
+        "runs": 1
+      },
+      {
+        "stage": "worn",
+        "runs": 1
+      }
+    ],
+    "mossPixels": 374,
+    "verticalMinX": 29,
+    "verticalMaxX": 34.75,
+    "approvedStage3Unchanged": true,
+    "approvedStage4Unchanged": true
+  },
+  "alignment": [
+    {
+      "tile": {
+        "x": 21,
+        "y": 25
+      },
+      "footX": 688,
+      "footY": 816,
+      "depth": 818
+    },
+    {
+      "tile": {
+        "x": 22,
+        "y": 25
+      },
+      "footX": 720,
+      "footY": 816,
+      "depth": 818
+    },
+    {
+      "tile": {
+        "x": 23,
+        "y": 25
+      },
+      "footX": 752,
+      "footY": 816,
+      "depth": 818
+    },
+    {
+      "tile": {
+        "x": 24,
+        "y": 25
+      },
+      "footX": 784,
+      "footY": 816,
+      "depth": 818
+    },
+    {
+      "tile": {
+        "x": 25,
+        "y": 25
+      },
+      "footX": 816,
+      "footY": 816,
+      "depth": 818
+    },
+    {
+      "tile": {
+        "x": 26,
+        "y": 25
+      },
+      "footX": 848,
+      "footY": 816,
+      "depth": 818
+    },
+    {
+      "tile": {
+        "x": 27,
+        "y": 25
+      },
+      "footX": 880,
+      "footY": 816,
+      "depth": 818
+    },
+    {
+      "tile": {
+        "x": 28,
+        "y": 25
+      },
+      "footX": 912,
+      "footY": 816,
+      "depth": 818
+    },
+    {
+      "tile": {
+        "x": 29,
+        "y": 25
+      },
+      "footX": 944,
+      "footY": 816,
+      "depth": 818
+    },
+    {
+      "tile": {
+        "x": 30,
+        "y": 25
+      },
+      "footX": 976,
+      "footY": 816,
+      "depth": 818
+    },
+    {
+      "tile": {
+        "x": 23,
+        "y": 26
+      },
+      "footX": 752,
+      "footY": 848,
+      "depth": 850
+    },
+    {
+      "tile": {
+        "x": 23,
+        "y": 27
+      },
+      "footX": 752,
+      "footY": 880,
+      "depth": 882
+    }
+  ],
+  "errors": []
+}

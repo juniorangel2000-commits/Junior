@@ -4,6 +4,7 @@ import {updateAnimalSprite,animalRopeAnchor} from './animal-sprites';
 import {FOREST_ANIMALS} from './data/ancient-forest';
 import {AnimalBrain,ANIMAL_BEHAVIOR,type AnimalArea,type AnimalBlocked,type AnimalPoint,type AnimalPosition} from './systems/animals';
 import type {SaveData} from './types';
+import {TreeAvoidanceField} from './systems/tree-avoidance';
 
 export interface MovingAnimal {
  id:string; brain:AnimalBrain; sprite:Phaser.GameObjects.Sprite;
@@ -14,9 +15,12 @@ export class AnimalPopulation {
  readonly animals:MovingAnimal[]=[];
  private readonly brains:AnimalBrain[]=[];
  private readonly rope:Phaser.GameObjects.Graphics;
+ private readonly treeCover=new TreeAvoidanceField();
+ private treeCheck=0;
  constructor(scene:Phaser.Scene,private readonly save:SaveData,readonly area:AnimalArea,
-   private readonly blocked:AnimalBlocked,playerSpeed:number){
+   private readonly blocked:AnimalBlocked,playerSpeed:number,private readonly trees:()=>readonly {x:number;y:number}[]=()=>[]){
   this.rope=scene.add.graphics();
+  this.treeCover.refresh(this.trees());
   const escort=save.animalEscort?.area===area?save.animalEscort.id:undefined;
   let index=0;
   for(const definition of FOREST_ANIMALS){
@@ -25,7 +29,7 @@ export class AnimalPopulation {
    const saved=save.animalPositions?.[area].find(p=>p.id===definition.id);
    const x=area==='forest'?definition.x*32+16:(20+(index%8)*3)*32+16;
    const y=area==='forest'?definition.y*32+16:(44+Math.floor(index/8)*3)*32+16;index++;
-   const brain=new AnimalBrain(definition.id,definition.kind,saved?.x??x,saved?.y??y,!owned,blocked,playerSpeed);
+   const brain=new AnimalBrain(definition.id,definition.kind,saved?.x??x,saved?.y??y,!owned,blocked,playerSpeed,this.treeCover.cost);
    if(saved)brain.restore(saved);
    if(!this.placeSafely(brain))continue;
    const sprite=animalSprite(scene,definition.kind,brain.x,brain.y);
@@ -52,6 +56,7 @@ export class AnimalPopulation {
     .sort((a,b)=>Math.hypot(a.x-player.x,a.y-player.y)-Math.hypot(b.x-player.x,b.y-player.y))[0];
  }
  update(delta:number,player:AnimalPoint&{readonly leftHandPosition:AnimalPoint}):void {
+  this.treeCheck-=delta;if(this.treeCheck<=0){this.treeCover.refresh(this.trees());this.treeCheck=.5;}
   for(const a of this.animals){
    if(!a.brain.canStand(a.x,a.y))this.placeSafely(a.brain);
    a.brain.update(delta,player,this.brains,a===this.led);

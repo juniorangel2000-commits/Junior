@@ -10,8 +10,8 @@ describe('bounded renewable resource fields',()=>{
  it('does not reappear before cooldown, and persists the timer without duplicate drops',()=>{
   const field=newResourceField(81);replenishResources(field,'property',0,allowed);const id=field.nodes[0].id;
   expect(harvestSpawn(field,id,10)).toBe(true);expect(harvestSpawn(field,id,10)).toBe(false);
-  const loaded=JSON.parse(JSON.stringify(field));replenishResources(loaded,'property',10+RESOURCE_RESPAWN_MINUTES-1,allowed);expect(loaded.nodes.length).toBe(63);
-  replenishResources(loaded,'property',10+RESOURCE_RESPAWN_MINUTES,allowed);expect(loaded.nodes.length).toBe(64);expect(loaded.nodes.some((n:{id:string})=>n.id===id)).toBe(false);expect(new Set(loaded.nodes.map((n:{id:string})=>n.id)).size).toBe(64);
+  const loaded=JSON.parse(JSON.stringify(field));replenishResources(loaded,'property',10+RESOURCE_RESPAWN_MINUTES-1,allowed);expect(loaded.nodes.length).toBe(RESOURCE_LIMITS.property-1);
+  replenishResources(loaded,'property',10+RESOURCE_RESPAWN_MINUTES,allowed);expect(loaded.nodes.length).toBe(RESOURCE_LIMITS.property);expect(loaded.nodes.some((n:{id:string})=>n.id===id)).toBe(false);expect(new Set(loaded.nodes.map((n:{id:string})=>n.id)).size).toBe(RESOURCE_LIMITS.property);
  });
  it('uses a saved seed and never multiplies resources when reloaded',()=>{
   const a=newResourceField(24),b=newResourceField(24);replenishResources(a,'forest',0,allowed);replenishResources(b,'forest',0,allowed);expect(a).toEqual(b);

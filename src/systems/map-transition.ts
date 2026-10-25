@@ -1,6 +1,32 @@
 import {exitSignLayout} from '../data/exit-signs';
 import {TILE} from '../data/world-size';
 type Point={x:number;y:number};
+/** Short matched fades avoid holding a black frame between small scenes. */
+export const SCENE_FADE_MS=120;
+
+export interface Doorway {
+ x:number;
+ y:number;
+ halfWidth:number;
+ depth:number;
+ direction:'up'|'down';
+}
+
+/** A bounded door strip, armed only by a step through it in the travel direction.
+ * Arrival and recovered saves cannot trigger merely by standing on the strip. */
+export class DoorwayPassage {
+ private pending=false;
+ reset():void {this.pending=false;}
+ update(from:Point,to:Point,door:Doorway):boolean {
+  const sign=door.direction==='down'?1:-1;
+  const inside=(x:number)=>x>=door.x-door.halfWidth&&x<door.x+door.halfWidth;
+  const past=(to.y-door.y)*sign;
+  if(!inside(to.x)||past<=0||past>door.depth){this.pending=false;return false;}
+  if(inside(from.x)&&(to.y-from.y)*sign>0)this.pending=true;
+  return this.pending;
+ }
+}
+
 /** One marked passage, armed by an outward step past the sign, never by a key. */
 export class MapExitPassage {
  private pending=false;

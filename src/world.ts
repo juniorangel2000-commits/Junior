@@ -1,6 +1,11 @@
 import {isFiberPlant,fiberPlantFor,fiberPlantArt,nearRiverBank} from './data/fiber-plants';
 import {paintedWaterPoint} from './data/terrain-paint';
 import {drawPropertyBridges} from './bridge-art';
+import {naturalPlantGround} from './systems/tree-avoidance';
+import {drawPropertyWell,type PropertyWell} from './property-well';
+import {wellSiteTile,wellSolidTile,wellSolidPoint} from './data/property-well';
+import {HOMESTEAD_HOUSE,homesteadResourceReserved} from './data/property-homestead';
+import {drawHouseSmoke} from './house-smoke';
 import {drawExitSign} from './exit-signs';
 import {PROPERTY_FOREST_GATE} from './data/ancient-forest';
 import {isTreeKind,treeGroundClear} from './systems/tree-ground';
@@ -45,6 +50,7 @@ export interface WorldEditorObject {
 }
 
 export interface WorldView {
+  well?:PropertyWell;
   resources: ResourceNode[];
   setNaturalResources(nodes:readonly ResourceNode[],preserve?:readonly string[]):void;
   editorObjects: WorldEditorObject[];
@@ -93,7 +99,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   };
   const bridgeAt = isBridgeTile;
   const treeReservations=new Set<string>();
-  const dryTreeCell=(x:number,y:number)=>treeGroundClear(x,y,waterPointAt)&&!bridgeAt(x,y);
+  const dryTreeCell=(x:number,y:number)=>treeGroundClear(x,y,waterPointAt)&&!bridgeAt(x,y)&&!wellSiteTile(x,y)&&!homesteadResourceReserved(x,y);
   const shoreTreePosition=(x:number,y:number):{x:number;y:number}|undefined=>{
     for(let radius=1;radius<=8;radius++) {
       const candidates:Array<{x:number;y:number;distance:number}>=[];
@@ -253,7 +259,9 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     r('#566b48', 151, 169, 8, 15); r('#d9bd77', 152, 161, 6, 7);
   });
   const houseTexture = scene.textures.exists('asset-house') ? 'asset-house' : 'cabin';
-  scene.add.image(24.5 * TILE, 16 * TILE + 4, houseTexture).setOrigin(0.5, 1).setDepth(16 * TILE + 4);
+  const houseImage=scene.add.image(HOMESTEAD_HOUSE.x,HOMESTEAD_HOUSE.y,houseTexture).setOrigin(0.5,1).setDepth(HOMESTEAD_HOUSE.y);
+  if(houseTexture==='asset-house')drawHouseSmoke(scene,houseImage);
+  const well=drawPropertyWell(scene);
   for (let y = 11; y <= 15; y++) for (let x = 21; x <= 27; x++) blocked.add(key(x, y));
 
   // Wild woodland frames the clearing without filling it with combat or obstacles.
@@ -280,7 +288,8 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   for(const t of trees){treeReservations.add(key(t.x,t.y));const edit=mapEdits?.objects[`standingTree-${t.x}-${t.y}`];if(edit)treeReservations.add(key(edit.x,edit.y));}
   for(const edit of Object.values(mapEdits?.objects??{}))if(!edit.removed&&isTreeKind(edit.kind))treeReservations.add(key(edit.x,edit.y));
   const addTree = (id: string, x: number, y: number, pine: boolean, variantX = x, variantY = y): void => {
-    if(!dryTreeCell(x,y)) {
+    const explicitlyPlaced=!!mapEdits?.objects[id];
+    if(!treeGroundClear(x,y,waterPointAt)||bridgeAt(x,y)||wellSiteTile(x,y)||homesteadResourceReserved(x,y)&&!explicitlyPlaced) {
       const land=shoreTreePosition(x,y);if(!land)return;
       x=land.x;y=land.y;
     }
@@ -354,11 +363,12 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     candidates.push({ id, x, y, kind });
   }
   const looseLayout = placeLooseResources(candidates, {
-    isStaticBlocked: (x, y) => blocked.has(key(x, y)),
+    isStaticBlocked: (x, y) => blocked.has(key(x, y))||wellSiteTile(x,y)||homesteadResourceReserved(x,y),
     isTreeTile: (x, y) => originalForestTiles.has(key(x, y))||forestTiles.has(key(x,y)), buildings,
   });
   const occupiedResources = new Set(forestTiles);
   const addLooseResource = (node: ResourceNode): void => {
+    if(wellSiteTile(node.x,node.y)||homesteadResourceReserved(node.x,node.y)&&!mapEdits?.objects[node.id])return;
     if (depleted.has(node.id) || occupiedResources.has(key(node.x, node.y))) return;
     const {id,kind}=node;let {x,y}=node;
     if(kind!=='vein'&&!bridgeAt(x,y)&&waterPointAt(x*TILE+16,y*TILE+16)){
@@ -436,10 +446,10 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   };
   const resourceAt = (x: number, y: number) => resources.find((node) => node.x === x && node.y === y);
   const solidTile = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y));
-  const isBlocked = (x: number, y: number) => solidTile(x, y) || waterAt(x, y) && !bridgeAt(x, y);
+  const isBlocked = (x: number, y: number) => solidTile(x, y) || wellSolidTile(x,y) || waterAt(x, y) && !bridgeAt(x, y);
   const isBlockedPoint = (x: number, y: number) => {
     const tx = Math.floor(x / TILE), ty = Math.floor(y / TILE);
-    return solidTile(tx, ty) || bridgeRailAtPoint(x,y) || !bridgeAt(tx, ty) && waterPointAt(x, y);
+    return solidTile(tx, ty) || wellSolidPoint(x,y) || bridgeRailAtPoint(x,y) || !bridgeAt(tx, ty) && waterPointAt(x, y);
   };
   const waterTouchesTile = (x: number, y: number) => [0.01, TILE / 2, TILE - 0.01].some(dx =>
     [0.01, TILE / 2, TILE - 0.01].some(dy => waterPointAt(x * TILE + dx, y * TILE + dy)));
@@ -447,17 +457,18 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   decorateProperty(scene, { isBlocked: (x, y) => mapEdits?.terrain[key(x, y)] !== undefined || isBlocked(x, y), resourceAt,buildings,textureKey:`${textureNamespace}-ground-details`,placeStone:(x,y)=>{const id=`shoreStones-${x}-${y}`;addLooseResource({id,x,y,kind:'vein'});const image=resourceImages.get(id);if(image&&scene.textures.exists('lake-rock-2')){image.setTexture('lake-rock-2').setDisplaySize(52,52).setOrigin(.5,124/128);const object=editorObjects.find(o=>o.id===id);if(object){object.kind='shoreStones';object.texture='lake-rock-2';}}} });
 
   return {
+    well,
     resources,
     editorObjects,
     setNaturalResources:(nodes,preserve=[])=>{
       const keep=new Set([...preserve,...Object.keys(mapEdits?.objects??{})]),next=new Set(nodes.map(n=>n.id));
       for(const n of [...resources])if(n.id.startsWith('spawn-')?!next.has(n.id):n.kind!=='standingTree'&&!n.id.startsWith('editor-')&&!n.id.startsWith('shoreStones-')&&!keep.has(n.id))eraseResource(n.id);
-      for(const node of nodes)if(!resources.some(n=>n.id===node.id)&&!solidTile(node.x,node.y)&&!waterAt(node.x,node.y)&&!((node.kind==='fiber'||node.kind==='seeds')&&mapEdits?.terrain[key(node.x,node.y)]!==undefined))addLooseResource(node);
+      for(const node of nodes)if(!resources.some(n=>n.id===node.id)&&!solidTile(node.x,node.y)&&!wellSiteTile(node.x,node.y)&&!homesteadResourceReserved(node.x,node.y)&&!waterAt(node.x,node.y)&&!((node.kind==='fiber'||node.kind==='seeds')&&!naturalPlantGround(mapEdits?.terrain[key(node.x,node.y)])))addLooseResource(node);
     },
     isBlocked,
     isBlockedPoint,
-    isSolid:solidTile,
-    isSolidPoint:(x,y)=>solidTile(Math.floor(x/TILE),Math.floor(y/TILE))||bridgeRailAtPoint(x,y),
+    isSolid:(x,y)=>solidTile(x,y)||wellSolidTile(x,y),
+    isSolidPoint:(x,y)=>solidTile(Math.floor(x/TILE),Math.floor(y/TILE))||wellSolidPoint(x,y)||bridgeRailAtPoint(x,y),
     isSwimmingPoint:(x,y)=>!bridgeAt(Math.floor(x/TILE),Math.floor(y/TILE))&&waterPointAt(x,y),
     isWaterGroundPoint:waterPointAt,
     canPlantTree:dryTreeCell,

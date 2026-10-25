@@ -25,12 +25,12 @@ export type ItemId = 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 
   | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer';
 export type InventoryData = Record<ItemId, number>;
 export type OwnedTool = 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw' | 'hammer';
-export type Tool = 'hand' | 'plant' | 'water' | 'fence' | 'bench' | 'remove' | 'hatchet' | 'pickaxe' | 'hoe' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof' | 'blueprint';
+export type Tool = 'hand' | 'plant' | 'water' | 'gate' | 'repair' | 'fence' | 'bench' | 'remove' | 'hatchet' | 'pickaxe' | 'hoe' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof' | 'blueprint';
 export type QuickSlot = Tool | `item:${ItemId}` | 'item:wateringCan' | null;
 export interface TilePoint { x: number; y: number }
 export interface CropData extends TilePoint { growth: number; watered: boolean }
 export interface FarmingProgress { prepared: boolean; planted: boolean; watered: boolean; harvested: boolean }
-export interface BuildingData extends TilePoint { kind: 'fence' | 'bench' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof'; open?: boolean; rotation?: 0 | 1 }
+export interface BuildingData extends TilePoint { kind: 'gate' | 'fence' | 'bench' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof'; open?: boolean; rotation?: 0 | 1 | 2 | 3; gateFlip?: boolean; fenceBuiltDay?: number }
 export type ResourceKind = 'tree' | 'stone' | 'seeds' | 'scrap' | 'standingTree' | 'vein' | 'fiber' | 'fallenLog' | 'stump';
 export interface ResourceNode extends TilePoint { id: string; kind: ResourceKind; plant?: FiberPlant }
 export interface ResourceProgressData { id: string; hits: number }
@@ -48,6 +48,8 @@ export interface SaveData {
   resourceMilestones?:{felled:boolean;mined:boolean};
   mapBaseRevision?:number;
   propertyShoreRevision?:number;
+  /** One-time homestead layout; removed starter fences/beds are never recreated. */
+  homesteadRevision?:1;
   activeArea?: 'property' | 'forest';
   forestPosition?: TilePoint & { direction?: CharacterDirection };
   recruitedAnimals?: string[];

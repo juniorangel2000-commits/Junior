@@ -1,3 +1,4 @@
+import {treeTiles} from '../systems/tree-avoidance';
 import { Daylight } from '../daylight';
 import {AnimalPopulation} from '../animals';
 import {startAnimalEscort,releaseAnimalEscort,transferAnimalEscort} from '../systems/animals';
@@ -11,7 +12,7 @@ import {ToolVisual} from '../tool-visual';
 import type {ResourceNode} from '../types';
 import type {MapEditorScene} from './MapEditorScene';
 import {ForestWorld} from '../forest-world';
-import {MapExitPassage} from '../systems/map-transition';
+import {MapExitPassage,SCENE_FADE_MS} from '../systems/map-transition';
 import {DEVELOPMENT_TOOLS} from '../development-tools';
 import { emptyQuickbar } from '../systems/quickbar';
 import { MapEditor } from '../map-editor';
@@ -76,7 +77,7 @@ export class ForestScene extends Phaser.Scene {
 
     this.resetNaturalResources();this.rebuildAnimals();
     this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time);
-    this.cameras.main.setBounds(0,0,3072,2304);this.applyCamera();this.cameras.main.fadeIn(300);
+    this.cameras.main.setBounds(0,0,3072,2304);this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
     document.querySelector<HTMLElement>('#ui')!.style.display='';this.ui.setQuickbar(this.state.quickbar??emptyQuickbar());this.ui.showHUD('forest');this.updateHUD();
     this.input.keyboard!.on('keydown',this.key,this);this.input.on('wheel',this.wheel,this);
     this.scale.on('resize',this.applyCamera,this);
@@ -99,7 +100,7 @@ export class ForestScene extends Phaser.Scene {
   }
   private animalBlocked=(x:number,y:number):boolean=>this.movementBlockedAt(x,y)||this.waterContains(x*32+16,y*32+16);
   private allowLeashMovement=(x:number,y:number):boolean=>this.wildlife?.allowsPlayerCenter(x,y,this.player)??true;
-  private rebuildAnimals():void {this.wildlife?.destroy();this.wildlife=new AnimalPopulation(this,this.state,'forest',this.animalBlocked,PLAYER_SPEED);}
+  private rebuildAnimals():void {this.wildlife?.destroy();this.wildlife=new AnimalPopulation(this,this.state,'forest',this.animalBlocked,PLAYER_SPEED,()=>treeTiles(this.world.resources));}
   private releaseRope():void {
     if(!this.state.animalEscort)return;
     if(releaseAnimalEscort(this.state)){this.ui.toast('Animal solto. A corda voltou para você.');this.updateHUD();this.save();}
@@ -205,8 +206,8 @@ export class ForestScene extends Phaser.Scene {
   private leave(title=false):void {
     if(this.leaving)return;this.save();this.leaving=true;
     if(!title){this.state.activeArea='property';this.state.forestPosition=undefined;const entry=this.state.mapEdits?.points?.entry??{x:2,y:52};transferAnimalEscort(this.state,{x:(entry.x+.5)*32,y:(entry.y+.5)*32});}
-    saveGame(this.state);this.cameras.main.fadeOut(250);
-    this.time.delayedCall(250,()=>{const save=structuredClone(this.state);this.scene.stop();this.onReturn(save,title);});
+    saveGame(this.state);this.cameras.main.fadeOut(SCENE_FADE_MS);
+    this.time.delayedCall(SCENE_FADE_MS,()=>{const save=structuredClone(this.state);this.scene.stop();this.onReturn(save,title);});
   }
   update(_time:number,ms:number):void {
     this.daylight?.update(this.state.time);

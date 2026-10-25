@@ -1,3 +1,5 @@
+import { fencePreview, gatePreview } from './fence-art';
+import { FENCE_STAGES, FENCE_NAMES, FENCE_STAGE_DAYS } from './data/fences';
 import { dayPhase, SUNRISE_MINUTES, SUNSET_MINUTES } from './daylight-model';
 import { getVisualSettings, setVisualSettings } from './visual-settings';
 import { makeDraggablePanel } from './draggable-panel';
@@ -93,7 +95,7 @@ const paths: Record<string, string> = {
   keys: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h1m4 0h1m4 0h1M6 12h1m4 0h1m4 0h1M7 16h10"/>',
 };
 function icon(name: string, cls = ''): string {
-  const asset = itemIconUrl(name);
+  const asset = name === 'gate' ? gatePreview() : name === 'fence' ? fencePreview() ?? itemIconUrl(name) : itemIconUrl(name);
   if (asset) return `<img class="icon asset-icon ${cls}" src="${asset}" alt="" aria-hidden="true" draggable="false" />`;
   return `<svg class="icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] ?? paths.leaf}</svg>`;
 }
@@ -101,6 +103,8 @@ const tools: { id: Tool; label: string; icon: string; detail: string }[] = [
   { id: 'hand', label: 'Explorar', icon: 'hand', detail: 'Coletar, conversar e colher' },
   { id: 'plant', label: 'Plantar', icon: 'seeds', detail: 'Plantar uma semente em terra preparada' },
   { id: 'water', label: 'Regar', icon: 'water', detail: 'Regar uma plantação' },
+  { id: 'gate', label: 'Porteira', icon: 'gate', detail: 'R gira 4 posições · F inverte abertura · mãos + E abre/fecha' },
+  { id: 'repair', label: 'Reparar cerca', icon: 'hammer', detail: 'Restaurar cerca desgastada · 1 madeira · E ou clique' },
   { id: 'fence', label: 'Cerca', icon: 'fence', detail: 'Construir uma cerca' },
   { id: 'bench', label: 'Banco', icon: 'bench', detail: 'Construir um banco' },
   { id: 'remove', label: 'Remover', icon: 'remove', detail: 'Remover e recuperar parte dos materiais'  },
@@ -151,7 +155,7 @@ export class GameUI {
 
   private slotInfo(slot: QuickSlot): { label: string; icon: string; detail: string } {
     const item = quickItem(slot);
-    if (item === 'wateringCan' || slot === 'water') return { label: (this.latest?.wateringCanWater ?? 0) > 0 ? 'Regador com água' : 'Regador vazio', icon: (this.latest?.wateringCanWater ?? 0) > 0 ? 'water-full' : 'water-empty', detail: `${this.latest?.wateringCanWater ?? 0}/8 regas · Equipe e pressione E junto ao rio ou lago para encher.` };
+    if (item === 'wateringCan' || slot === 'water') return { label: (this.latest?.wateringCanWater ?? 0) > 0 ? 'Regador com água' : 'Regador vazio', icon: (this.latest?.wateringCanWater ?? 0) > 0 ? 'water-full' : 'water-empty', detail: `${this.latest?.wateringCanWater ?? 0}/8 regas · Equipe e pressione E no poço ou junto ao rio/lago para encher.` };
     if (item) return { label: ITEMS[item].name, icon: item, detail: ITEMS[item].description };
     return tools.find(tool => tool.id === slot) ?? { label: 'Vazio', icon: 'bag', detail: 'Arraste um item da mochila para este slot.' };
   }
@@ -704,8 +708,8 @@ export class GameUI {
       if (requirement.nearWorkbench) descriptions.push(nearWorkbench ? 'Bancada ao alcance' : 'Aproxime-se de uma bancada');
       return descriptions.join(' · ') || 'Construção manual';
     };
-    const kinds: BuildingData['kind'][] = ['floor', 'wall', 'door', 'window', 'roof', 'workbench', 'fence', 'bench'];
-    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">PEÇA POR PEÇA, UM LAR</span><h2>Construção</h2></div><button class="icon-button" aria-label="Fechar construção">${icon('close')}</button></div><p class="crafting-intro">Selecione uma peça e confira a prévia no terreno. Os materiais são consumidos somente ao colocar. Use as mãos para abrir ou fechar uma porta.</p><div class="build-blueprint"><div class="recipe-title">${icon('blueprint')}<h3>${BLUEPRINT_LABEL}</h3></div><p>Um molde para começar: piso, paredes, porta, janela e cobertura, com espaço interno para se abrigar.</p><div class="recipe-materials">${materialList(BLUEPRINT_COST)}</div><small class="recipe-requirements">${requirementText('wall')}</small><button class="button button-primary" data-build="blueprint" aria-label="Selecionar molde ${BLUEPRINT_LABEL}">Selecionar molde ${icon('arrow')}</button></div><div class="build-grid">${kinds.map(kind => `<article class="build-option"><div class="recipe-title">${icon(kind)}<h3>${BUILD_NAMES[kind]}</h3></div><div class="recipe-materials">${materialList(BUILD_COSTS[kind])}</div><small class="recipe-requirements">${requirementText(kind)}</small><button class="button button-light" data-build="${kind}" aria-label="Selecionar construção: ${BUILD_NAMES[kind]}">Selecionar ${icon('arrow')}</button></article>`).join('')}<article class="build-option"><div class="recipe-title">${icon('remove')}<h3>Remover</h3></div><p>Recolha uma peça colocada por você. Cercas e bancos devolvem os materiais; as novas peças devolvem parte deles.</p><button class="button button-light" data-build="remove" aria-label="Selecionar remoção de construção">Selecionar ${icon('arrow')}</button></article></div><div class="inventory-footer">${icon('leaf')} Um abrigo precisa de piso, limites fechados, porta e cobertura.<span>SIMULAÇÃO PAUSADA</span></div>`;
+    const kinds: BuildingData['kind'][] = ['floor', 'wall', 'door', 'window', 'roof', 'workbench', 'fence', 'gate', 'bench'];
+    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">PEÇA POR PEÇA, UM LAR</span><h2>Construção</h2></div><button class="icon-button" aria-label="Fechar construção">${icon('close')}</button></div><p class="crafting-intro">Selecione uma peça e confira a prévia no terreno. Os materiais são consumidos somente ao colocar. Use as mãos + E para abrir portas ou porteiras. R gira a porteira em quatro posições; F inverte a abertura antes de colocar. Com a porteira fechada, os animais ficam no cercado; aberta, podem sair.</p><div class="build-blueprint"><div class="recipe-title">${icon('blueprint')}<h3>${BLUEPRINT_LABEL}</h3></div><p>Um molde para começar: piso, paredes, porta, janela e cobertura, com espaço interno para se abrigar.</p><div class="recipe-materials">${materialList(BLUEPRINT_COST)}</div><small class="recipe-requirements">${requirementText('wall')}</small><button class="button button-primary" data-build="blueprint" aria-label="Selecionar molde ${BLUEPRINT_LABEL}">Selecionar molde ${icon('arrow')}</button></div><div class="build-grid">${kinds.map(kind => `<article class="build-option"><div class="recipe-title">${icon(kind)}<h3>${BUILD_NAMES[kind]}</h3></div><div class="recipe-materials">${materialList(BUILD_COSTS[kind])}</div><small class="recipe-requirements">${requirementText(kind)}</small>${kind === 'gate' ? '<p class="fence-aging-note">R gira entre quatro posições e troca o lado da dobradiça. F inverte para onde ela abre. A seta no terreno mostra a abertura. Mãos + E abre e fecha. Não fecha sobre o jogador ou um animal.</p>' : ''}${kind === 'fence' ? `<div class="fence-stages" aria-label="Estágios de desgaste da cerca">${FENCE_STAGES.map((stage,i)=>`<figure><img src="${fencePreview(stage)}" alt="Cerca ${FENCE_NAMES[i].toLowerCase()}"/><figcaption>${FENCE_NAMES[i]}<small>${i*FENCE_STAGE_DAYS} dias</small></figcaption></figure>`).join('')}</div><p class="fence-aging-note">Conecta em todas as direções. Desgasta a cada 30 dias do jogo, até ficar arruinada; permanece no terreno até ser recolhida.</p>` : ''}<button class="button button-light" data-build="${kind}" aria-label="Selecionar construção: ${BUILD_NAMES[kind]}">Selecionar ${icon('arrow')}</button></article>`).join('')}<article class="build-option"><div class="recipe-title">${icon('hammer')}<h3>Reparar cerca</h3></div><p>Restaure uma cerca desgastada por 1 madeira, sem desmontar. Uma cerca nova não gasta material.</p><button class="button button-light" data-build="repair">Selecionar reparo ${icon('arrow')}</button></article><article class="build-option"><div class="recipe-title">${icon('remove')}<h3>Remover</h3></div><p>Recolha uma peça colocada por você. Cercas e bancos devolvem os materiais; as novas peças devolvem parte deles.</p><button class="button button-light" data-build="remove" aria-label="Selecionar remoção de construção">Selecionar ${icon('arrow')}</button></article></div><div class="inventory-footer">${icon('leaf')} Um abrigo precisa de piso, limites fechados, porta e cobertura.<span>SIMULAÇÃO PAUSADA</span></div>`;
     panel.querySelector('.modal-heading button')!.addEventListener('click', () => this.closeModal());
     panel.querySelectorAll<HTMLButtonElement>('[data-build]').forEach(button => button.addEventListener('click', () => {
       const mode = button.dataset.build!;

@@ -1,0 +1,36 @@
+{
+  "property": {
+    "count": 96,
+    "hand": 63,
+    "kinds": {
+      "fiber": 22,
+      "vein": 20,
+      "seeds": 7,
+      "tree": 14,
+      "stone": 13,
+      "fallenLog": 5,
+      "stump": 8,
+      "scrap": 7
+    },
+    "generated": 77,
+    "waiting": 0,
+    "grassWaterLeaks": 0
+  },
+  "forest": {
+    "count": 80,
+    "hand": 37,
+    "kinds": {
+      "vein": 34,
+      "fiber": 15,
+      "seeds": 6,
+      "fallenLog": 6,
+      "stump": 3,
+      "tree": 7,
+      "stone": 6,
+      "scrap": 3
+    },
+    "generated": 39,
+    "waiting": 0,
+    "grassWaterLeaks": 0
+  }
+}

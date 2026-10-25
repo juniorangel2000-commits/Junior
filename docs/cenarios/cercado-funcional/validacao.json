@@ -1,0 +1,73 @@
+{
+  "pen": {
+    "root": {
+      "x": 52,
+      "y": 50,
+      "score": 259.56495208725227
+    },
+    "gate": {
+      "x": 55,
+      "y": 56
+    }
+  },
+  "build": {
+    "gate": {
+      "x": 55,
+      "y": 56,
+      "kind": "gate",
+      "open": false,
+      "rotation": 0,
+      "gateFlip": false
+    },
+    "cost": 50,
+    "fences": 23
+  },
+  "repair": {
+    "before": 150,
+    "after": 149,
+    "afterRepeat": 149,
+    "builtDay": 61
+  },
+  "animalId": "forest-chicken-1",
+  "route": {
+    "tiles": 64,
+    "frames": 1448,
+    "maxRope": 86.65599999998244,
+    "animal": {
+      "id": "forest-chicken-1",
+      "x": 1774.9790091886457,
+      "y": 1711.7897299064864,
+      "direction": "up"
+    }
+  },
+  "confined": {
+    "escaped": false,
+    "moved": 2891.700000000017,
+    "position": {
+      "id": "forest-chicken-1",
+      "x": 1768.6530335778598,
+      "y": 1643.6077406571992,
+      "direction": "right"
+    }
+  },
+  "animalCloseGuard": {
+    "valid": true,
+    "refused": true
+  },
+  "escaped": {
+    "escaped": true,
+    "route": {
+      "tiles": 11,
+      "frames": 236,
+      "maxRope": 47.85529032889297,
+      "animal": {
+        "id": "forest-chicken-1",
+        "x": 1871.940082713462,
+        "y": 1838.6618497044124,
+        "direction": "right"
+      }
+    }
+  },
+  "valid": true,
+  "errors": []
+}

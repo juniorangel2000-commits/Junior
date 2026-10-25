@@ -1,6 +1,7 @@
 import {describe,it,expect} from 'vitest';
-import {MapExitPassage} from '../src/systems/map-transition';
+import {DoorwayPassage,MapExitPassage,SCENE_FADE_MS} from '../src/systems/map-transition';
 import {exitSignLayout} from '../src/data/exit-signs';
+import {HOME_OUTDOOR_DOORWAY,HOME_INTERIOR_DOORWAY,HOME_OUTDOOR_SPAWN,HOME_SPAWN} from '../src/systems/home';
 describe('troca automática ao ultrapassar a placa',()=>{
  const exit={x:1,y:52},entry={x:2,y:52},y=52.5*32;
  it('não troca parado, ao apertar interagir ou ao chegar exatamente à linha',()=>{
@@ -34,5 +35,38 @@ describe('troca automática ao ultrapassar a placa',()=>{
   expect(passage.update({x:336,y:380},{x:336,y:383},{x:10,y:12},{x:10,y:11})).toBe(false);
   expect(passage.update({x:336,y:383},{x:336,y:385},{x:10,y:12},{x:10,y:11})).toBe(true);
   passage.reset();expect(passage.update({x:336,y:418},{x:336,y:415},{x:10,y:12},{x:10,y:13})).toBe(true);
+ });
+});
+
+describe('portas automáticas da casa',()=>{
+ it('entra apenas por um passo para dentro da faixa da porta',()=>{
+  const passage=new DoorwayPassage(),door=HOME_OUTDOOR_DOORWAY;
+  expect(passage.update({x:door.x,y:door.y+8},{x:door.x,y:door.y+8},door)).toBe(false);
+  expect(passage.update({x:door.x,y:door.y+2},{x:door.x,y:door.y},door)).toBe(false);
+  expect(passage.update({x:door.x,y:door.y+2},{x:door.x,y:door.y-1},door)).toBe(true);
+  expect(passage.update({x:door.x,y:door.y-1},{x:door.x,y:door.y-1},door)).toBe(true);
+ });
+ it('não entra pela lateral, pelos fundos ou andando para fora',()=>{
+  const passage=new DoorwayPassage(),door=HOME_OUTDOOR_DOORWAY;
+  expect(passage.update({x:door.x+25,y:door.y+1},{x:door.x+25,y:door.y-1},door)).toBe(false);
+  expect(passage.update({x:door.x+25,y:door.y-1},{x:door.x,y:door.y-1},door)).toBe(false);
+  expect(passage.update({x:door.x,y:door.y-70},{x:door.x,y:door.y-72},door)).toBe(false);
+  expect(passage.update({x:door.x,y:door.y-2},{x:door.x,y:door.y-1},door)).toBe(false);
+ });
+ it('não retorna parado ao chegar, salvar ou recarregar perto das portas',()=>{
+  const passage=new DoorwayPassage();
+  expect(passage.update(HOME_SPAWN,HOME_SPAWN,HOME_INTERIOR_DOORWAY)).toBe(false);
+  expect(passage.update(HOME_OUTDOOR_SPAWN,HOME_OUTDOOR_SPAWN,HOME_OUTDOOR_DOORWAY)).toBe(false);
+  const saved={x:HOME_OUTDOOR_DOORWAY.x,y:HOME_OUTDOOR_DOORWAY.y-3};
+  expect(passage.update(saved,saved,HOME_OUTDOOR_DOORWAY)).toBe(false);
+  expect(passage.update(saved,{...saved,y:saved.y-1},HOME_OUTDOOR_DOORWAY)).toBe(true);
+  passage.reset();expect(passage.update(saved,saved,HOME_OUTDOOR_DOORWAY)).toBe(false);
+ });
+ it('sai somente andando para baixo no vão interno e desarma ao retornar',()=>{
+  const passage=new DoorwayPassage(),door=HOME_INTERIOR_DOORWAY;
+  expect(passage.update({x:door.x,y:door.y-1},{x:door.x,y:door.y+1},door)).toBe(true);
+  expect(passage.update({x:door.x,y:door.y+1},{x:door.x,y:door.y-1},door)).toBe(false);
+  expect(passage.update({x:door.x-40,y:door.y-1},{x:door.x-40,y:door.y+1},door)).toBe(false);
+  expect(SCENE_FADE_MS).toBeLessThan(250);
  });
 });

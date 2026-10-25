@@ -1,0 +1,96 @@
+{
+  "publishedBase": "0.9.7",
+  "state": "local implementation validated",
+  "files": [
+    {
+      "path": "src/world.ts",
+      "bytes": 31660,
+      "sha256": "058be485df30dddd05629b38324e47af09fd149198f5d705554cd52585f20de5"
+    },
+    {
+      "path": "src/animals.ts",
+      "bytes": 5469,
+      "sha256": "e445a6bd05cba2a60f53e2c8f13e0fd8a49495c8bc70af7abbb531470fa0c738"
+    },
+    {
+      "path": "src/resource-lifecycle.ts",
+      "bytes": 4293,
+      "sha256": "abde745de5b39189dd160055adfb50ecc9529722ab8483d91c56a7186d552b91"
+    },
+    {
+      "path": "src/forest-ground.ts",
+      "bytes": 3702,
+      "sha256": "e26a6c4e21b0e8646fd34c9ff272eaa2b11b073d46b0565968956471638fc6fe"
+    },
+    {
+      "path": "src/forest-world.ts",
+      "bytes": 12083,
+      "sha256": "cc296eb543ef98414c438b4dfb7e97eb7c19ae7d520cce932a6b450d99413d44"
+    },
+    {
+      "path": "src/map-editor-terrain.ts",
+      "bytes": 7797,
+      "sha256": "ec6ead165ec89bce0e8617814b19f4765f61396f3880f9d970f3b14df0477940"
+    },
+    {
+      "path": "src/scenes/ValleyScene.ts",
+      "bytes": 72660,
+      "sha256": "092b34c3e705e430117d84a51f230aa1fcf3f952cf87e64c83b605a6bf42e4c0"
+    },
+    {
+      "path": "src/scenes/ForestScene.ts",
+      "bytes": 18591,
+      "sha256": "ceb08c6e2cfbe3cfd2bdee16105bf8f1a24e2d90c84cb932d5dae2a2b8deb852"
+    },
+    {
+      "path": "src/systems/animals.ts",
+      "bytes": 12823,
+      "sha256": "c8553570eaf08608761b8057cbc9c9449f1e9e52912efae8be9db375fa5802df"
+    },
+    {
+      "path": "src/systems/tree-avoidance.ts",
+      "bytes": 1497,
+      "sha256": "e756a9604ad6c36e337d44c91ba6d6ee404c35839841333fb8bcbfc2acfc253a"
+    },
+    {
+      "path": "src/systems/resource-spawns.ts",
+      "bytes": 8074,
+      "sha256": "84a987d1bf442ed1f3a7338c8a9a67cd0798f22d98ca6deb03f478396bec6a37"
+    },
+    {
+      "path": "src/data/forest-glade.ts",
+      "bytes": 872,
+      "sha256": "9bb151339e09adf746e1051d862791be436a1d1c58215ad50376e70aaef79299"
+    },
+    {
+      "path": "src/data/grass-blend.ts",
+      "bytes": 1498,
+      "sha256": "4eaf3cef3a5746dccc0f46cc4517387650a1c42c6b98c54c22229d4d3401cd4c"
+    },
+    {
+      "path": "tests/grass-blend.test.ts",
+      "bytes": 1810,
+      "sha256": "fd3263998eaaddf462fff1eb4f743e931e2c6d18e76a6b60e118c2a3dbc845a9"
+    },
+    {
+      "path": "tests/resource-spawns.test.ts",
+      "bytes": 2713,
+      "sha256": "5ff52fed0a76b85731b9812dfb16a04a9e7e4b5e7d613500d1d9c47a371e4e81"
+    },
+    {
+      "path": "tests/foraging-ecology.test.ts",
+      "bytes": 5481,
+      "sha256": "0245447600c22abde3f0148ca4900fb6cd92cc7aec4feb871ba96fa2f6061112"
+    },
+    {
+      "path": "scripts/qa-renewable-collection.cjs",
+      "bytes": 11386,
+      "sha256": "19cea6521398eb65e7e4f68e6fbab47f9f049a0a6e504cf56a82ad3a9120e891"
+    },
+    {
+      "path": "scripts/qa-glade-foraging-animals.cjs",
+      "bytes": 7675,
+      "sha256": "ac4dce2e21964cb97daed44d6456380468e3b45f8e1503a5ac06dc5f7bd6e387"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "property": {
+    "resources": {
+      "fiber": 15,
+      "vein": 19,
+      "seeds": 6,
+      "tree": 7,
+      "stone": 6,
+      "fallenLog": 4,
+      "stump": 2,
+      "scrap": 5
+    },
+    "generated": 45,
+    "waiting": 0
+  },
+  "forest": {
+    "resources": {
+      "vein": 31,
+      "fiber": 5,
+      "seeds": 2,
+      "tree": 3,
+      "stone": 3,
+      "fallenLog": 3,
+      "stump": 1
+    },
+    "generated": 18,
+    "waiting": 0
+  }
+}

@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { CHARACTER_DIRECTIONS, directionVector, type CharacterDirection } from './character-directions';
-import { toolIdleArt, toolUseArt, hoeSwingAngle, TOOL_USE_FRAMES, TOOL_FRAME_SIZE, type AnimatedTool } from './data/tool-art';
+import { toolIdleArt, toolUseArt, toolSwingAngle, TOOL_USE_FRAMES, TOOL_FRAME_SIZE, type AnimatedTool } from './data/tool-art';
 import type { CharacterProfile } from './types';
 import type { ToolUse } from './systems/tool-use';
 import { resolveCharacter } from './data/characters';
@@ -53,10 +53,10 @@ export class ToolVisual {
     const hand = HANDS[character.id][direction];
     const handX = (hand[0] - character.originX) / 4;
     const handY = (hand[1] - character.originY) / 4 - 3;
-    // Keep the authored swing upright, slightly ahead in the facing direction.
-    // The tool stays hidden outside the action.
+    // Rotate rigid timber/metal around a fixed palm pivot, like the hoe, without
+    // frame-to-frame grip jumps. The tool stays hidden outside the action.
     const forward = directionVector(direction);
-    this.sprite.setAngle(tool === 'hoe' ? hoeSwingAngle(use.frame, art.flipX) : 0).setPosition(x + handX + forward.x * 7, y + handY + forward.y * 7)
+    this.sprite.setAngle(toolSwingAngle(tool, use.frame, direction === 'left')).setPosition(x + handX + forward.x * 7, y + handY + forward.y * 7)
       .setDepth(y + (behind ? -1 : 1)).setVisible(true);
   }
 }

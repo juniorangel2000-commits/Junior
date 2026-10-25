@@ -1,0 +1,45 @@
+{
+  "passed": true,
+  "pngs": [
+    {
+      "file": "01_Poco_Sem_Interacao/poco_parado_256x256.png",
+      "sha256": "1adac429b48bd4dad3dfc1db5d9f7307c717f67905b279bdf435218f0f3b192d"
+    },
+    {
+      "file": "02_Animacao_Interacao/quadro_01.png",
+      "sha256": "1adac429b48bd4dad3dfc1db5d9f7307c717f67905b279bdf435218f0f3b192d"
+    },
+    {
+      "file": "02_Animacao_Interacao/quadro_02.png",
+      "sha256": "18a26f045afbff9996c7597401830103dc708b81d6e312850f3aa2a9c07ed606"
+    },
+    {
+      "file": "02_Animacao_Interacao/quadro_03.png",
+      "sha256": "93dcec21be84d214f7e2f842b6c685c51bad86d355cffa47ddbaff54285c91e8"
+    },
+    {
+      "file": "02_Animacao_Interacao/quadro_04.png",
+      "sha256": "1f7868d084fb28b71c37004aa47097ef7c6b263bb4630305e78c9756fdcd19b6"
+    },
+    {
+      "file": "02_Animacao_Interacao/quadro_05.png",
+      "sha256": "b85eaa62031b1a87f13815c45962ea30f838238d820b5fbd5adbb31198561a07"
+    },
+    {
+      "file": "02_Animacao_Interacao/quadro_06.png",
+      "sha256": "e6bf0f8cc776fc0d7da0e612a5bc9bc308e2aab6f904cf860b3a6aabd45e6a7f"
+    },
+    {
+      "file": "02_Animacao_Interacao/quadro_07.png",
+      "sha256": "28214a6b09951d7d7f80320296e966833a48d00c16512e8874ef04ddf2a25168"
+    },
+    {
+      "file": "02_Animacao_Interacao/quadro_08.png",
+      "sha256": "3ab1e3dc85bdd1e52780e8d32d8318e0b56862122dd5ca54482be16da82ecafd"
+    },
+    {
+      "file": "02_Animacao_Interacao/spritesheet_8_quadros_2048x256.png",
+      "sha256": "50719759e508a6a56e557219188338569d8f64d6a9d793967a8da5d7c30c4df7"
+    }
+  ]
+}

@@ -20,7 +20,7 @@ import { isCharacterId } from '../data/characters';
 export const SAVE_KEY = 'depois-da-chuva-v1';
 export const SAVE_BACKUP_KEY = 'depois-da-chuva-v1-backup';
 export const SAVE_VERSION = 2;
-const TOOLS: Tool[] = ['hand', 'plant', 'water', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'hoe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
+const TOOLS: Tool[] = ['hand', 'plant', 'water', 'gate', 'repair', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'hoe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
 const PROGRESS_KEYS: Array<keyof ProgressData> = ['collected', 'craftedTools', 'harvested', 'processed', 'builtWorkbench', 'sawn', 'builtShelter'];
 const emptyProgress = (): ProgressData => ({ collected: false, craftedTools: false, harvested: false, processed: false, builtWorkbench: false, sawn: false, builtShelter: false });
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -46,6 +46,7 @@ export function validateSave(value: unknown): value is SaveData {
   if (value.forestMapEdits !== undefined && (!validateMapEdits(value.forestMapEdits)||value.forestMapEdits.area!=='forest')) return false;
   if (value.mapEdits !== undefined && (!validateMapEdits(value.mapEdits)||value.mapEdits.area!==undefined)) return false;
   if(value.propertyShoreRevision!==undefined&&value.propertyShoreRevision!==PROPERTY_SHORE_REVISION)return false;
+  if(value.homesteadRevision!==undefined&&value.homesteadRevision!==1)return false;
   if(value.resourceFields!==undefined&&(!isRecord(value.resourceFields)||!validateResourceField(value.resourceFields.property,'property')||!validateResourceField(value.resourceFields.forest,'forest')))return false;
   if(value.resourceMilestones!==undefined&&(!isRecord(value.resourceMilestones)||typeof value.resourceMilestones.felled!=='boolean'||typeof value.resourceMilestones.mined!=='boolean'))return false;
   if (value.quickbar !== undefined && !validQuickbar(value.quickbar)) return false;
@@ -53,7 +54,7 @@ export function validateSave(value: unknown): value is SaveData {
   if (value.recruitedAnimals !== undefined && (!Array.isArray(value.recruitedAnimals) || new Set(value.recruitedAnimals).size !== value.recruitedAnimals.length || !value.recruitedAnimals.every(id => FOREST_ANIMALS.some(a => a.id === id)))) return false;
   if(value.animalEscort!==undefined){
     const escort=value.animalEscort;
-    if(!isRecord(escort)||!FOREST_ANIMALS.some(a=>a.id===escort.id)||!['forest','property'].includes(escort.area as string)||escort.area!==(value.activeArea??'property')||(value.recruitedAnimals as string[]|undefined)?.includes(escort.id as string))return false;
+    if(!isRecord(escort)||!FOREST_ANIMALS.some(a=>a.id===escort.id)||!['forest','property'].includes(escort.area as string)||escort.area!==(value.activeArea??'property')||escort.area==='forest'&&(value.recruitedAnimals as string[]|undefined)?.includes(escort.id as string))return false;
   }
   if(value.animalPositions!==undefined){
     if(!isRecord(value.animalPositions))return false;
@@ -124,10 +125,12 @@ export function validateSave(value: unknown): value is SaveData {
   }
   for (const building of value.buildings) {
     if (!isRecord(building) || !integer(building.x, 1, WORLD_WIDTH - 2) || !integer(building.y, 1, WORLD_HEIGHT - 2)
-      || !['fence', 'bench', 'workbench', 'wall', 'door', 'floor', 'window', 'roof'].includes(building.kind as string)
+      || !['gate', 'fence', 'bench', 'workbench', 'wall', 'door', 'floor', 'window', 'roof'].includes(building.kind as string)
       || isFarmTile(building.x, building.y) && !restored.has(`${building.x},${building.y}`)) return false;
-    if (building.open !== undefined && (building.kind !== 'door' || typeof building.open !== 'boolean')) return false;
-    if (building.rotation !== undefined && (building.kind !== 'roof' || ![0, 1].includes(building.rotation as number))) return false;
+    if (building.open !== undefined && (!['door','gate'].includes(building.kind as string) || typeof building.open !== 'boolean')) return false;
+    if (building.rotation !== undefined && !(building.kind === 'gate' ? [0, 1, 2, 3] : building.kind === 'roof' ? [0, 1] : []).includes(building.rotation as number)) return false;
+    if (building.gateFlip !== undefined && (building.kind !== 'gate' || typeof building.gateFlip !== 'boolean')) return false;
+    if (building.fenceBuiltDay !== undefined && (building.kind !== 'fence' || !integer(building.fenceBuiltDay, 1, value.day))) return false;
     const piece = building as unknown as SaveData['buildings'][number];
     for (const tile of buildingFootprint(piece)) {
       if (!integer(tile.x, 1, WORLD_WIDTH - 2) || !integer(tile.y, 1, WORLD_HEIGHT - 2)

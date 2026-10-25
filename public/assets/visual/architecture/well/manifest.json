@@ -1,0 +1,43 @@
+{
+  "frame_size": [
+    256,
+    256
+  ],
+  "frames": 8,
+  "format": "PNG RGBA",
+  "sprite_sheet": {
+    "width": 2048,
+    "height": 256,
+    "layout": "horizontal",
+    "frame_width": 256,
+    "frame_height": 256
+  },
+  "frame_duration_ms": [
+    180,
+    180,
+    220,
+    270,
+    210,
+    180,
+    190,
+    230
+  ],
+  "source": "Base: After_Rain_Poco_Baldes_256x256.zip; procedural mechanism motion, coil count, crank positions",
+  "notes": "Idle image uses frame 1 of animated version, ensuring no sprite jump at the start. All images 256x256 RGBA, same alignment and transparent background. 8 frames ~1.66 seconds. Preview GIF is opaque (not suitable as a sprite).",
+  "animation_key": "poco_usar",
+  "idle_key": "poco_parado",
+  "loop": false,
+  "interaction_key": "E",
+  "frame_paths": [
+    "02_Animacao_Interacao/quadro_01.png",
+    "02_Animacao_Interacao/quadro_02.png",
+    "02_Animacao_Interacao/quadro_03.png",
+    "02_Animacao_Interacao/quadro_04.png",
+    "02_Animacao_Interacao/quadro_05.png",
+    "02_Animacao_Interacao/quadro_06.png",
+    "02_Animacao_Interacao/quadro_07.png",
+    "02_Animacao_Interacao/quadro_08.png"
+  ],
+  "idle_path": "01_Poco_Sem_Interacao/poco_parado_256x256.png",
+  "after_animation": "Return to idle texture and clear interaction lock; grant water according to game inventory rules, not automatically on load."
+}

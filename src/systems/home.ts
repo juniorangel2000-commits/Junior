@@ -7,6 +7,9 @@ export const HOME_TILE = 32;
 export const HOME_EXIT: Readonly<TilePoint> = { x: 5, y: 9 };
 export const HOME_SPAWN: Readonly<TilePoint> = { x: 5.5 * HOME_TILE, y: 8.5 * HOME_TILE };
 export const HOME_ENTRANCE_WORLD: Readonly<TilePoint> = { x: 24.5 * HOME_TILE, y: 16.5 * HOME_TILE };
+export const HOME_OUTDOOR_SPAWN = { x: HOME_ENTRANCE_WORLD.x, y: HOME_ENTRANCE_WORLD.y + 18 } as const;
+export const HOME_OUTDOOR_DOORWAY = { ...HOME_ENTRANCE_WORLD, halfWidth: 18, depth: 16, direction: 'up' } as const;
+export const HOME_INTERIOR_DOORWAY = { x: 6 * HOME_TILE, y: 9 * HOME_TILE, halfWidth: HOME_TILE, depth: HOME_TILE, direction: 'down' } as const;
 
 export type FurnitureKind = 'bed' | 'table' | 'chair' | 'shelf' | 'rug' | 'plant';
 export type FloorStyle = 'oak' | 'dark' | 'stone';

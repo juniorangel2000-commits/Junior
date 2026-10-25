@@ -1,0 +1,150 @@
+{
+  "passed": true,
+  "property": {
+    "count": 96,
+    "hand": 63,
+    "kinds": {
+      "fiber": 22,
+      "vein": 20,
+      "seeds": 7,
+      "tree": 14,
+      "stone": 13,
+      "fallenLog": 5,
+      "stump": 8,
+      "scrap": 7
+    },
+    "generated": 77,
+    "waiting": 0,
+    "grassWaterLeaks": 0
+  },
+  "forest": {
+    "count": 80,
+    "hand": 37,
+    "kinds": {
+      "vein": 34,
+      "fiber": 15,
+      "seeds": 6,
+      "fallenLog": 6,
+      "stump": 3,
+      "tree": 7,
+      "stone": 6,
+      "scrap": 3
+    },
+    "generated": 39,
+    "waiting": 0,
+    "grassWaterLeaks": 0
+  },
+  "glade": [
+    {
+      "kind": "whiteFlowers",
+      "x": 82,
+      "y": 5,
+      "id": "whiteFlowers-82-5"
+    },
+    {
+      "kind": "whiteFlowers",
+      "x": 88,
+      "y": 6,
+      "id": "whiteFlowers-88-6"
+    },
+    {
+      "kind": "whiteFlowers",
+      "x": 86,
+      "y": 12,
+      "id": "whiteFlowers-86-12"
+    },
+    {
+      "kind": "fern",
+      "x": 80,
+      "y": 7,
+      "id": "fern-80-7"
+    },
+    {
+      "kind": "fern",
+      "x": 89,
+      "y": 10,
+      "id": "fern-89-10"
+    },
+    {
+      "kind": "fern",
+      "x": 81,
+      "y": 12,
+      "id": "fern-81-12"
+    },
+    {
+      "kind": "berryBush",
+      "x": 79,
+      "y": 10,
+      "id": "berryBush-79-10"
+    },
+    {
+      "kind": "berryBush",
+      "x": 90,
+      "y": 6,
+      "id": "berryBush-90-6"
+    },
+    {
+      "kind": "mushrooms",
+      "x": 80,
+      "y": 4,
+      "id": "mushrooms-80-4"
+    },
+    {
+      "kind": "mushrooms",
+      "x": 89,
+      "y": 4,
+      "id": "mushrooms-89-4"
+    },
+    {
+      "kind": "mushrooms",
+      "x": 90,
+      "y": 12,
+      "id": "mushrooms-90-12"
+    },
+    {
+      "kind": "mushrooms",
+      "x": 79,
+      "y": 13,
+      "id": "mushrooms-79-13"
+    },
+    {
+      "kind": "fallenLog",
+      "x": 88,
+      "y": 14,
+      "id": "fallenLog-88-14"
+    },
+    {
+      "kind": "stump",
+      "x": 79,
+      "y": 5,
+      "id": "stump-79-5"
+    },
+    {
+      "kind": "mossBoulder",
+      "x": 91,
+      "y": 11,
+      "id": "mossBoulder-91-11"
+    }
+  ],
+  "collected": [
+    "spawn-p-tree-6",
+    "spawn-p-stone-7",
+    "spawn-p-fiber-1",
+    "spawn-p-seeds-5",
+    "spawn-p-scrap-11"
+  ],
+  "respawn": {
+    "early": 5,
+    "late": 0,
+    "count": 96
+  },
+  "flowersAfterReload": true,
+  "ai": {
+    "initial": 2.564384698867798,
+    "min": 0,
+    "distance": 408.23999999997744,
+    "simulationMs": 101.29999995231628
+  },
+  "pageErrors": [],
+  "at": "2026-10-25T02:37:12.438Z"
+}

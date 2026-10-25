@@ -1,10 +1,11 @@
 import type Phaser from 'phaser';
-import { TILE, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
+import { TILE, WORLD_HEIGHT, WORLD_WIDTH,isFarmTile,isBridgeTile } from './data/regions';
 import { isWaterPoint } from './data/terrain-shape';
 import { readTerrainSprites, type TerrainSprites } from './terrain-sprites';
 import type { TerrainKind } from './systems/map-editor';
 import {terrainPaintAlpha} from './data/terrain-paint';
 import {propertyGrassStyle} from './terrain-art';
+import {GRASS_KINDS,isGrassKind,grassBlendAt,type GrassBlend} from './data/grass-blend';
 
 
 const MATERIALS: Record<TerrainKind, keyof TerrainSprites> = {
@@ -32,15 +33,23 @@ export function drawMapTerrainEdits(
   terrain: Readonly<Record<string, TerrainKind>>,
   textureKey='world-map-edits',
   baseWater?: (x:number,y:number)=>boolean,
+  naturalSampling:'property'|'forest'='property',
 ): Phaser.GameObjects.Image | undefined {
   if (scene.textures.exists(textureKey)) scene.textures.remove(textureKey);
-  const cells = Object.entries(terrain).flatMap(([key, material]) => {
+  const cells:Array<{x:number;y:number;material:TerrainKind;extended?:boolean}> = Object.entries(terrain).flatMap(([key, material]) => {
     if (!/^[0-9]+,[0-9]+$/.test(key) || !Object.hasOwn(MATERIALS, material)) return [];
     const [x, y] = key.split(',').map(Number);
     return Number.isSafeInteger(x) && Number.isSafeInteger(y)
       && x >= 0 && y >= 0 && x < WORLD_WIDTH && y < WORLD_HEIGHT ? [{ x, y, material }] : [];
   });
   if (!cells.length) return undefined;
+  const occupied=new Set(cells.map(c=>`${c.x},${c.y}`));
+  for(const cell of [...cells])if(isGrassKind(cell.material))for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+    const x=cell.x+dx,y=cell.y+dy,key=`${x},${y}`;
+    if(x<0||y<0||x>=WORLD_WIDTH||y>=WORLD_HEIGHT||occupied.has(key)||terrain[key]!==undefined)continue;
+    if(naturalSampling==='property'&&(isFarmTile(x,y)||isBridgeTile(x,y)))continue;
+    occupied.add(key);cells.push({x,y,material:'grass',extended:true});
+  }
 
   const canvas = document.createElement('canvas');
   canvas.width = WORLD_WIDTH * TILE;
@@ -54,7 +63,7 @@ export function drawMapTerrainEdits(
     return edit ? edit === 'water' : baseWater?baseWater(x,y):isWaterPoint((x + .5) * TILE, (y + .5) * TILE);
   };
 
-  for (const { x, y, material } of cells) {
+  for (const { x, y, material,extended } of cells) {
     const left = x * TILE, top = y * TILE;
     const sprite = sprites?.[MATERIALS[material]];
     const edges = material === 'water' ? {
@@ -62,11 +71,22 @@ export function drawMapTerrainEdits(
       top: !neighbourIsWater(x, y - 1), bottom: !neighbourIsWater(x, y + 1),
     } : undefined;
     const grassStyles:Array<ReturnType<typeof propertyGrassStyle>>=[];
+    const blends:Array<GrassBlend|undefined>=[],computed=new Set<number>();
+    const waterNearby=isGrassKind(material)&&[-1,0,1].some(dy=>[-1,0,1].some(dx=>{
+      const tx=x+dx,ty=y+dy;return terrain[`${tx},${ty}`]==='water'||(baseWater?baseWater(tx,ty):isWaterPoint((tx+.5)*TILE,(ty+.5)*TILE));
+    }));
+    if(extended&&waterNearby)continue;
     for (let py = 0; py < TILE; py++) for (let px = 0; px < TILE; px++) {
       const wx = left + px, wy = top + py, destination = (py * TILE + px) * 4;
+      const block=(py>>1)*16+(px>>1);
+      let blend:GrassBlend|undefined;
+      if(isGrassKind(material)&&!waterNearby){
+        if(!computed.has(block)){blends[block]=grassBlendAt(terrain,(wx&~1)+.5,(wy&~1)+.5);computed.add(block);}
+        blend=blends[block];
+      }
+      if(extended&&!blend){pixels.data[destination+3]=0;continue;}
       let grassStyle:ReturnType<typeof propertyGrassStyle>|undefined;
-      if(material==='grass'){
-        const block=(py>>1)*16+(px>>1);
+      if(material==='grass'||blend?.grass){
         grassStyle=grassStyles[block]??(grassStyles[block]=propertyGrassStyle(wx&~1,wy&~1));
       }
       let sample = 0;
@@ -78,7 +98,7 @@ export function drawMapTerrainEdits(
           const offsetY = Math.round(Math.sin(wx * .009 + wy * .005) * 4);
           sample = (((wy + offsetY + sprite.size) % sprite.size) * sprite.size
             + (wx + offsetX + sprite.size) % sprite.size) * 4;
-        } else sample = (mirror(wy, sprite.size) * sprite.size + mirror(wx, sprite.size)) * 4;
+        } else sample = (naturalSampling==='forest'&&isGrassKind(material)?((wy%sprite.size)*sprite.size+wx%sprite.size):(mirror(wy, sprite.size) * sprite.size + mirror(wx, sprite.size))) * 4;
       }
       const edgeDistance = edges ? Math.min(
         edges.left ? px : TILE, edges.right ? TILE - px - 1 : TILE,
@@ -87,8 +107,22 @@ export function drawMapTerrainEdits(
       const shallow = material === 'water' ? Math.max(0, 1 - edgeDistance / 5) * .22 : 0;
       for (let channel = 0; channel < 3; channel++) {
         let value = sprite?.pixels[sample + channel] ?? FALLBACK[material][channel];
+        if(blend){
+          value=0;
+          for(const kind of GRASS_KINDS){
+            if(!blend[kind])continue;
+            let mixed=sprites?.[kind].pixels[sample+channel]??FALLBACK[kind][channel];
+            if(kind==='grass'&&grassStyle&&sprites){
+              const {forest,field,moss,light}=grassStyle;
+              mixed=mixed*(1-forest-field)+sprites.forest.pixels[sample+channel]*forest+sprites.meadow.pixels[sample+channel]*field;
+              mixed=mixed*(1-moss)+sprites.moss.pixels[sample+channel]*moss+light;
+            }
+            value+=mixed*blend[kind];
+          }
+          value/=1-blend.base;
+        }
         if(material==='forestPath'&&sprites){value=value*.6+sprites.meadow.pixels[sample+channel]*.3+sprites['path-dry'].pixels[sample+channel]*.1;}
-        if (grassStyle && sprites && sprite) {
+        if (!blend&&grassStyle && sprites && sprite) {
           const {forest,field,moss,light}=grassStyle;
           value = value * (1 - forest - field) + sprites.forest.pixels[sample + channel] * forest + sprites.meadow.pixels[sample + channel] * field;
           value=value*(1-moss)+sprites.moss.pixels[sample+channel]*moss+light;
@@ -96,7 +130,7 @@ export function drawMapTerrainEdits(
         if (shallow) value = value * (1 - shallow) + [125, 176, 160][channel] * shallow;
         pixels.data[destination + channel] = value;
       }
-      pixels.data[destination + 3] = Math.round(255*terrainPaintAlpha(terrain,wx+.5,wy+.5));
+      pixels.data[destination + 3] = Math.round(255*(blend?1-blend.base:terrainPaintAlpha(terrain,wx+.5,wy+.5)));
     }
     context.putImageData(pixels, left, top);
   }

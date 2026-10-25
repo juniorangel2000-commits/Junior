@@ -1,4 +1,6 @@
 import {isFiberPlant,fiberPlantFor,fiberPlantArt} from './data/fiber-plants';
+import {naturalPlantGround} from './systems/tree-avoidance';
+import {FOREST_GLADE_DETAILS,FOREST_GLADE_RESOURCE_IDS,gladeObjectId} from './data/forest-glade';
 import {drawExitSign} from './exit-signs';
 import {paintedWaterPoint} from './data/terrain-paint';
 import {treeGroundClear,isTreeKind} from './systems/tree-ground';
@@ -25,8 +27,8 @@ export class ForestWorld {
   resourceAt=(x:number,y:number):ResourceNode|undefined=>this.resources.find(n=>n.x===x&&n.y===y);
   removeResource(id:string):void {const n=this.resources.find(n=>n.id===id);if(!n)return;this.resources=this.resources.filter(r=>r.id!==id);this.images.get(id)?.destroy();this.images.delete(id);this.solid.delete(`${n.x},${n.y}`);this.trees=this.trees.filter(t=>t.active);}
   setNaturalResources(nodes:readonly ResourceNode[]):void {
-    const next=new Set(nodes.map(n=>n.id));for(const n of [...this.resources])if(n.id.startsWith('spawn-')?!next.has(n.id):(n.kind==='fiber'||n.kind==='fallenLog'||n.kind==='stump')&&!Object.hasOwn(this.edits?.objects??{},n.id.replace(/^f-/,'')))this.removeResource(n.id);
-    for(const n of nodes)if(!this.resources.some(r=>r.id===n.id)&&!this.isBlocked(n.x,n.y)&&!((n.kind==='fiber'||n.kind==='seeds')&&this.edits?.terrain[`${n.x},${n.y}`]!==undefined)){
+    const next=new Set(nodes.map(n=>n.id));for(const n of [...this.resources])if(n.id.startsWith('spawn-')?!next.has(n.id):(n.kind==='fiber'||n.kind==='fallenLog'||n.kind==='stump')&&!FOREST_GLADE_RESOURCE_IDS.has(n.id)&&!Object.hasOwn(this.edits?.objects??{},n.id.replace(/^f-/,'')))this.removeResource(n.id);
+    for(const n of nodes)if(!this.resources.some(r=>r.id===n.id)&&!this.isBlocked(n.x,n.y)&&!((n.kind==='fiber'||n.kind==='seeds')&&!naturalPlantGround(this.edits?.terrain[`${n.x},${n.y}`]))){
       const plant=n.kind==='fiber'?fiberPlantArt(fiberPlantFor(n)):undefined;
       const image=this.scene.add.image(n.x*32+16,n.y*32+29,plant?.texture??naturalResourceTexture(n.kind)).setOrigin(.5,plant?.pivot??1).setDepth(n.y*32+29);
       if(n.kind==='tree')image.setDisplaySize(36,27);if(n.kind==='stone')image.setDisplaySize(32,24);
@@ -62,7 +64,7 @@ export class ForestWorld {
     this.environment.forEach(o=>o.destroy());this.environment=[];this.editorObjects=[];this.trees=[];this.solid.clear();this.resources=[];this.images.clear();this.edits=edits;
     const before=new Set(this.scene.children.list);
     this.drawGround();
-    if(edits)drawMapTerrainEdits(this.scene,edits.terrain,`${this.textureNamespace}-map-edits`,forestWater);
+    if(edits)drawMapTerrainEdits(this.scene,edits.terrain,`${this.textureNamespace}-map-edits`,forestWater,'forest');
     addWaterMotion(this.scene,this.waterAt,this.waterPointAt);
     for(const t of FOREST_TREES){
       const art=forestTreeAppearance(t),scale=art.scale/(this.scene.textures.exists('reference-trees-source')?2:1),texture=`asset-${t.pine?'pine':'tree'}-${art.variant}`;
@@ -73,7 +75,6 @@ export class ForestWorld {
       const kind=(`lakeRock${String.fromCharCode(65+r.variant)}`) as EditorObjectKind,art=natureArt(kind)!;
       this.addEnvironmentObject(`${kind}-${r.x}-${r.y}`,kind,r.x,r.y,art.texture,art.width,art.height,art.pivot,true);
     }
-    this.drawWoodlandDetails();
     for(const [id,edit] of Object.entries(edits?.objects??{})){
       if(!id.startsWith('editor-')||!edit.kind||edit.removed)continue;
       const art=natureArt(edit.kind);
@@ -81,11 +82,18 @@ export class ForestWorld {
       const tree=edit.kind==='standingTree'||edit.kind==='pine';
       this.addEnvironmentObject(id,edit.kind,edit.x,edit.y,art?.texture??fallback[edit.kind],art?.width??(tree?166:edit.kind==='tree'?36:edit.kind==='seeds'?44:32),art?.height??(tree?211:edit.kind==='tree'?27:edit.kind==='stone'?24:edit.kind==='seeds'?44:32),art?.pivot??(tree?128/132:1),art?.solid??tree);
     }
+    for(const detail of FOREST_GLADE_DETAILS){
+      const id=gladeObjectId(detail),edit=edits?.objects[id],x=edit?.x??detail.x,y=edit?.y??detail.y;
+      if(!naturalPlantGround(edits?.terrain[`${x},${y}`])||this.solid.has(`${x},${y}`))continue;
+      const art=natureArt(detail.kind)!;
+      this.addEnvironmentObject(id,detail.kind,detail.x,detail.y,art.texture,art.width,art.height,art.pivot,art.solid);
+    }
+    this.drawWoodlandDetails();
     drawExitSign(this.scene,this.exit(),this.edits?.points?.entry??FOREST_ENTRY);
     this.environment=this.scene.children.list.filter(o=>!before.has(o));
   }
   private drawGround():void {
-    const key='forest-ground-organic-shore-v2';
+    const key='forest-ground-organic-shore-v3-grass';
     if(!this.scene.textures.exists(key)){
       const sprites=readTerrainSprites(this.scene);
       const terrain=document.createElement('canvas');terrain.width=3072;terrain.height=2304;

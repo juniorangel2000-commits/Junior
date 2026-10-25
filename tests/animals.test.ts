@@ -78,7 +78,7 @@ describe('reusable fiber cord and animal transport',()=>{
   const s=save();startAnimalEscort(s,position);transferAnimalEscort(s,{x:80,y:1680});expect(validateSave(s)).toBe(true);
   expect(s.animalPositions?.forest).toEqual([]);expect(s.animalPositions?.property[0].id).toBe(position.id);
   const restored=migrateSave(JSON.parse(JSON.stringify(s)))!;expect(deliverAnimalEscort(restored)).toBe(true);expect(restored.inventory.cord).toBe(1);expect(restored.recruitedAnimals).toEqual([position.id]);
-  expect(deliverAnimalEscort(restored)).toBe(false);expect(startAnimalEscort(restored,position)).toBe(false);expect(validateSave(restored)).toBe(true);
+  expect(deliverAnimalEscort(restored)).toBe(false);expect(startAnimalEscort(restored,position)).toBe(true);expect(validateSave(restored)).toBe(true);expect(releaseAnimalEscort(restored)).toBe(true);expect(restored.recruitedAnimals).toEqual([position.id]);expect(restored.inventory.cord).toBe(1);
  });
  it('rejects missing cords/unknown animals and does not lose an allocated cord when refund is temporarily impossible',()=>{
   const s=save();s.inventory.cord=0;expect(startAnimalEscort(s,position)).toBe(false);s.inventory.cord=1;expect(startAnimalEscort(s,{...position,id:'unknown'})).toBe(false);

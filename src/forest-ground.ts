@@ -17,10 +17,10 @@ export function forestGroundPixels(sprites:TerrainSprites|undefined,left:number,
   for(let py=0;py<size;py++)for(let px=0;px<size;px++){
     const wx=left+px,wy=top+py;
     // A small coherent displacement breaks straight tile edges without obscuring paths.
-    const nx=Math.sin(wx*.083+wy*.047)*3+Math.sin(wy*.19)*2;
-    const ny=Math.sin(wy*.079-wx*.061)*3+Math.sin(wx*.17)*2;
+    const nx=Math.sin(wx*.027+wy*.019)*5+Math.sin(wy*.073)*2;
+    const ny=Math.sin(wy*.029-wx*.017)*5+Math.sin(wx*.067)*2;
     const gx=(wx+nx)/32-.5,gy=(wy+ny)/32-.5,x=Math.floor(gx),y=Math.floor(gy);
-    const tx=smooth((gx-x-.20)/.60),ty=smooth((gy-y-.20)/.60);
+    const tx=smooth((gx-x-.10)/.80),ty=smooth((gy-y-.10)/.80);
     weights.fill(0);
     weights[materialAt(x,y)]+=(1-tx)*(1-ty);
     weights[materialAt(x+1,y)]+=tx*(1-ty);

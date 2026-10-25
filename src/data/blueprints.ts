@@ -4,6 +4,7 @@ import type { ItemCost } from '../systems/inventory';
 // Construção livre e projetos consultam a mesma tabela; os valores são ajustáveis aqui.
 export const BUILD_COSTS: Record<BuildingData['kind'], ItemCost> = {
   fence: { wood: 2 },
+  gate: { wood: 4 },
   bench: { wood: 4, stone: 2 },
   workbench: { plank: 4, peg: 4 },
   wall: { plank: 2, peg: 1 },

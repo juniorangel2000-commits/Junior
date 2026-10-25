@@ -1,0 +1,22 @@
+{
+  "group_id": "7412bd62-149b-4a39-a749-0c9efc10bffa",
+  "objects": [
+    {
+      "id": "f58c3a8c-c00f-45df-a430-be1354ff4847",
+      "name": "base",
+      "prompt": "fa\u00e7a uma casa nesse estilo, com um porta central e duas janelas, uma na direita e outra na esquerda",
+      "size": {
+        "width": 256,
+        "height": 256
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/faca_uma_casa_nesse_estilo_com_um_porta_central_e.png"
+      },
+      "animations": {}
+    }
+  ],
+  "export_version": "1.1",
+  "export_date": "2026-10-25T05:43:34.609658"
+}

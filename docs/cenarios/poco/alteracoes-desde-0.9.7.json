@@ -1,0 +1,191 @@
+{
+  "publishedBase": "0.9.7",
+  "state": "local implementation validated",
+  "files": [
+    {
+      "path": "src/ui.ts",
+      "bytes": 66333,
+      "sha256": "88532615bdbfb134070434f3ae0fc17e9239816f25e2b8a8dc07e40897a5d029"
+    },
+    {
+      "path": "src/world.ts",
+      "bytes": 32088,
+      "sha256": "dcc0fa1835fa46ba3d7f27395b33c894471e3da322e6bb608f471455fed03c28"
+    },
+    {
+      "path": "src/property-well.ts",
+      "bytes": 1567,
+      "sha256": "99da1a1477cf8208add02f592227f6247333612b7e8532b92232b81a40154d2f"
+    },
+    {
+      "path": "src/animals.ts",
+      "bytes": 5469,
+      "sha256": "e445a6bd05cba2a60f53e2c8f13e0fd8a49495c8bc70af7abbb531470fa0c738"
+    },
+    {
+      "path": "src/solar-shadows.ts",
+      "bytes": 4430,
+      "sha256": "1280b0b9c5da7beee626fd476cdb2ad0398c0e0f10e73cac24bdcbf8f936a8c2"
+    },
+    {
+      "path": "src/visual-assets.ts",
+      "bytes": 14450,
+      "sha256": "0903fb6a3fc0aba947198c86c4af2a5bb6f9d608aa5c9d826e5faeab93072079"
+    },
+    {
+      "path": "src/resource-lifecycle.ts",
+      "bytes": 4293,
+      "sha256": "abde745de5b39189dd160055adfb50ecc9529722ab8483d91c56a7186d552b91"
+    },
+    {
+      "path": "src/forest-ground.ts",
+      "bytes": 3702,
+      "sha256": "e26a6c4e21b0e8646fd34c9ff272eaa2b11b073d46b0565968956471638fc6fe"
+    },
+    {
+      "path": "src/forest-world.ts",
+      "bytes": 12083,
+      "sha256": "cc296eb543ef98414c438b4dfb7e97eb7c19ae7d520cce932a6b450d99413d44"
+    },
+    {
+      "path": "src/map-editor-terrain.ts",
+      "bytes": 7797,
+      "sha256": "ec6ead165ec89bce0e8617814b19f4765f61396f3880f9d970f3b14df0477940"
+    },
+    {
+      "path": "src/scenes/ValleyScene.ts",
+      "bytes": 74402,
+      "sha256": "d108fe172cd196916ccea92a4876c6a619caa120e59dbc2bdd8101bc073b54aa"
+    },
+    {
+      "path": "src/scenes/ForestScene.ts",
+      "bytes": 18591,
+      "sha256": "ceb08c6e2cfbe3cfd2bdee16105bf8f1a24e2d90c84cb932d5dae2a2b8deb852"
+    },
+    {
+      "path": "src/systems/animals.ts",
+      "bytes": 12823,
+      "sha256": "c8553570eaf08608761b8057cbc9c9449f1e9e52912efae8be9db375fa5802df"
+    },
+    {
+      "path": "src/systems/tree-avoidance.ts",
+      "bytes": 1497,
+      "sha256": "e756a9604ad6c36e337d44c91ba6d6ee404c35839841333fb8bcbfc2acfc253a"
+    },
+    {
+      "path": "src/systems/resource-spawns.ts",
+      "bytes": 8074,
+      "sha256": "84a987d1bf442ed1f3a7338c8a9a67cd0798f22d98ca6deb03f478396bec6a37"
+    },
+    {
+      "path": "src/data/forest-glade.ts",
+      "bytes": 872,
+      "sha256": "9bb151339e09adf746e1051d862791be436a1d1c58215ad50376e70aaef79299"
+    },
+    {
+      "path": "src/data/property-well.ts",
+      "bytes": 2072,
+      "sha256": "ccded1b384acd9d7e8abf5f46fa9dd4b4003f4b48062adaa68864dfce8f5b84c"
+    },
+    {
+      "path": "src/data/grass-blend.ts",
+      "bytes": 1498,
+      "sha256": "4eaf3cef3a5746dccc0f46cc4517387650a1c42c6b98c54c22229d4d3401cd4c"
+    },
+    {
+      "path": "tests/grass-blend.test.ts",
+      "bytes": 1810,
+      "sha256": "fd3263998eaaddf462fff1eb4f743e931e2c6d18e76a6b60e118c2a3dbc845a9"
+    },
+    {
+      "path": "tests/resource-spawns.test.ts",
+      "bytes": 2713,
+      "sha256": "5ff52fed0a76b85731b9812dfb16a04a9e7e4b5e7d613500d1d9c47a371e4e81"
+    },
+    {
+      "path": "tests/property-well.test.ts",
+      "bytes": 1804,
+      "sha256": "8541eb825f52dab6e166d3eac75604de10b5b3147a64858c30b8db0145a8947f"
+    },
+    {
+      "path": "tests/world-regions.test.ts",
+      "bytes": 10502,
+      "sha256": "4e210f814d86972507582039228dc3fc9c69ac18631b612b0b96f052e8f31fec"
+    },
+    {
+      "path": "tests/foraging-ecology.test.ts",
+      "bytes": 5481,
+      "sha256": "0245447600c22abde3f0148ca4900fb6cd92cc7aec4feb871ba96fa2f6061112"
+    },
+    {
+      "path": "scripts/qa-renewable-collection.cjs",
+      "bytes": 11386,
+      "sha256": "19cea6521398eb65e7e4f68e6fbab47f9f049a0a6e504cf56a82ad3a9120e891"
+    },
+    {
+      "path": "scripts/qa-glade-foraging-animals.cjs",
+      "bytes": 7675,
+      "sha256": "ac4dce2e21964cb97daed44d6456380468e3b45f8e1503a5ac06dc5f7bd6e387"
+    },
+    {
+      "path": "scripts/qa-property-well.cjs",
+      "bytes": 5951,
+      "sha256": "6ce66afb29bcaa4cb41e52436eb6633adcc2f1a50db25718db550a245ebb064d"
+    },
+    {
+      "path": "public/assets/visual/architecture/well/manifest.json",
+      "bytes": 1358,
+      "sha256": "e14743f9f3087f99831af82f13bef76e983fcf8187054743fd79596317a170f0"
+    },
+    {
+      "path": "public/assets/visual/architecture/well/02_Animacao_Interacao/quadro_05.png",
+      "bytes": 85199,
+      "sha256": "b85eaa62031b1a87f13815c45962ea30f838238d820b5fbd5adbb31198561a07"
+    },
+    {
+      "path": "public/assets/visual/architecture/well/02_Animacao_Interacao/spritesheet_8_quadros_2048x256.png",
+      "bytes": 122186,
+      "sha256": "50719759e508a6a56e557219188338569d8f64d6a9d793967a8da5d7c30c4df7"
+    },
+    {
+      "path": "public/assets/visual/architecture/well/02_Animacao_Interacao/quadro_08.png",
+      "bytes": 85499,
+      "sha256": "3ab1e3dc85bdd1e52780e8d32d8318e0b56862122dd5ca54482be16da82ecafd"
+    },
+    {
+      "path": "public/assets/visual/architecture/well/02_Animacao_Interacao/quadro_02.png",
+      "bytes": 85573,
+      "sha256": "18a26f045afbff9996c7597401830103dc708b81d6e312850f3aa2a9c07ed606"
+    },
+    {
+      "path": "public/assets/visual/architecture/well/02_Animacao_Interacao/quadro_04.png",
+      "bytes": 84993,
+      "sha256": "1f7868d084fb28b71c37004aa47097ef7c6b263bb4630305e78c9756fdcd19b6"
+    },
+    {
+      "path": "public/assets/visual/architecture/well/02_Animacao_Interacao/quadro_06.png",
+      "bytes": 85480,
+      "sha256": "e6bf0f8cc776fc0d7da0e612a5bc9bc308e2aab6f904cf860b3a6aabd45e6a7f"
+    },
+    {
+      "path": "public/assets/visual/architecture/well/02_Animacao_Interacao/quadro_01.png",
+      "bytes": 85678,
+      "sha256": "1adac429b48bd4dad3dfc1db5d9f7307c717f67905b279bdf435218f0f3b192d"
+    },
+    {
+      "path": "public/assets/visual/architecture/well/02_Animacao_Interacao/quadro_07.png",
+      "bytes": 85736,
+      "sha256": "28214a6b09951d7d7f80320296e966833a48d00c16512e8874ef04ddf2a25168"
+    },
+    {
+      "path": "public/assets/visual/architecture/well/02_Animacao_Interacao/quadro_03.png",
+      "bytes": 85272,
+      "sha256": "93dcec21be84d214f7e2f842b6c685c51bad86d355cffa47ddbaff54285c91e8"
+    },
+    {
+      "path": "public/assets/visual/architecture/well/01_Poco_Sem_Interacao/poco_parado_256x256.png",
+      "bytes": 85678,
+      "sha256": "1adac429b48bd4dad3dfc1db5d9f7307c717f67905b279bdf435218f0f3b192d"
+    }
+  ]
+}

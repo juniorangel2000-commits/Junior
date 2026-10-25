@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "walkingOnly": true,
+  "noArrivalBounce": true,
+  "otherEdgesDoNotTransition": true,
+  "animalDelivery": {
+    "owned": true,
+    "escort": null,
+    "cord": 1
+  },
+  "productionEditorHidden": true,
+  "pageErrors": [],
+  "at": "2026-10-25T02:38:26.789Z"
+}

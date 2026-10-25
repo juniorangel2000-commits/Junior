@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ToolUse, TOOL_USE_DURATION } from '../src/systems/tool-use';
-import { TOOL_USE_FPS, TOOL_IMPACT_FRAME, toolUseArt, toolIdleArt } from '../src/data/tool-art';
+import { TOOL_USE_FPS, TOOL_IMPACT_FRAME, toolUseArt, toolSwingAngle, hoeSwingAngle } from '../src/data/tool-art';
 import { Resources } from '../src/systems/resources';
 import { Inventory } from '../src/systems/inventory';
 
@@ -70,24 +70,34 @@ describe('golpe de ferramenta', () => {
 });
 
 describe('artes de ferramenta disponíveis', () => {
-  it('mantém a sequência original à esquerda e espelha os nove quadros à direita', () => {
-    for (let frame = 0; frame < 9; frame++) {
-      const right = toolUseArt('pickaxe', 'right', frame);
-      for (const direction of ['left', 'down-left', 'up-left'] as const) {
-        const left = toolUseArt('pickaxe', direction, frame);
-        expect(left.path).toBe(right.path);
-        expect(left.key).toBe(right.key);
-        expect(left.flipX).toBe(false);
+  it.each(['hatchet','pickaxe'] as const)('mantém a forma e o ponto de pega do %s durante o golpe, respeitando o lado nativo da arte',tool=>{
+    const first=toolUseArt(tool,'right',0);
+    expect(first.path).toContain('/rotations/');
+    expect(first.flipX).toBe(tool==='pickaxe');
+    for(let frame=0;frame<9;frame++){
+      expect(toolUseArt(tool,'right',frame)).toEqual(first);
+      for(const direction of ['left','down-left','up-left'] as const){
+        expect(toolUseArt(tool,direction,frame)).toEqual({...first,flipX:!first.flipX});
       }
-      expect(right.flipX).toBe(true);
     }
   });
 
-  it('usa as animações próprias dos dois lados do machado e as poses nas outras vistas', () => {
-    expect(toolUseArt('hatchet', 'right', 4).path).toContain('/west/frame_004.png');
-    expect(toolUseArt('hatchet', 'left', 4).path).toContain('/east/frame_004.png');
-    for (const direction of ['up', 'down', 'up-left', 'down-left', 'up-right', 'down-right'] as const) {
-      expect(toolUseArt('hatchet', direction, 4)).toEqual(toolIdleArt('hatchet', direction));
+  it.each(['hatchet','pickaxe'] as const)('leva a cabeça do %s para a frente no contato e retorna sem mudar a recompensa',tool=>{
+    const use=new ToolUse();use.start({...strike,tool});
+    const windup=toolSwingAngle(tool,1,false),contact=toolSwingAngle(tool,TOOL_IMPACT_FRAME,false);
+    expect(windup).toBeLessThan(0);
+    expect(contact).toBeGreaterThan(90);expect(contact).toBeLessThan(125);
+    expect(toolSwingAngle(tool,8,false)).toBeLessThan(contact);
+    for(let frame=0;frame<9;frame++)expect(toolSwingAngle(tool,frame,true)).toBe(-toolSwingAngle(tool,frame,false));
+    expect(use.advance(TOOL_IMPACT_FRAME/TOOL_USE_FPS-.001)).toBeNull();
+    expect(use.advance(.001)).toMatchObject({tool});
+    expect(use.advance(TOOL_USE_DURATION)).toBeNull();
+  });
+
+  it('preserva o movimento da enxada e a animação sem rotação do regador',()=>{
+    for(let frame=0;frame<9;frame++)for(const left of [false,true]){
+      expect(toolSwingAngle('hoe',frame,left)).toBe(hoeSwingAngle(frame,left));
+      expect(toolSwingAngle('water',frame,left)).toBe(0);
     }
   });
 });

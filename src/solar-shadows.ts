@@ -1,9 +1,11 @@
 import Phaser from 'phaser';
 import { solarLight } from './solar-light';
 import { ProjectedShadow } from './projected-shadow';
+import { HOUSE_SHADOW_FOOT } from './house-sprites';
+import { WELL_SHADOW_FOOT } from './data/property-well';
 
 type Caster = Phaser.GameObjects.Image | Phaser.GameObjects.Sprite;
-const CASTER = /^(asset-(tree|pine)(-[012])?|lake-rock-[0-5]|asset-house|cabin|player|forest-player|lia)$/;
+const CASTER = /^(asset-(tree|pine)(-[012])?|lake-rock-[0-5]|asset-house|property-well-(idle|use)|cabin|player|forest-player|lia)$/;
 
 /** Reuses sprite alpha, including animated character frames. No source art is modified. */
 export class SolarShadows {
@@ -38,8 +40,11 @@ export class SolarShadows {
       const onScreen = source.x >= view.x - 300 && source.x <= view.right + 300 && source.y >= view.y - 300 && source.y <= view.bottom + 300;
       if (!source.visible || source.isCropped || !onScreen) { shadow.setVisible(false); continue; }
       const texture = this.texture(source);
-      // The cottage's last eight pixels are transparent ground below its foot.
-      const foot = this.footPivots.get(texture) ?? (source.texture.key === 'asset-house' ? 216 / 224 : source.originY);
+      // Authored transparent ground margins stay below their measured foot,
+      // keeping the projection attached to the same visible grass contact.
+      const authoredFoot = source.texture.key === 'asset-house' ? HOUSE_SHADOW_FOOT
+        : /^property-well-(idle|use)$/.test(source.texture.key) ? WELL_SHADOW_FOOT : source.originY;
+      const foot = this.footPivots.get(texture) ?? authoredFoot;
       shadow.setTexture(texture).setOrigin(source.originX, 1 - foot)
         .setPosition(source.x, source.y + (foot-source.originY)*source.displayHeight + .25).setRotation(0)
         .setScale(source.scaleX, source.scaleY * sun.projectionY)

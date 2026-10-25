@@ -1,0 +1,1210 @@
+{
+  "rotationCycle": [
+    0,
+    1,
+    2,
+    3,
+    0
+  ],
+  "placed": [
+    {
+      "x": 24,
+      "y": 29,
+      "rotation": 0,
+      "gateFlip": false
+    },
+    {
+      "x": 29,
+      "y": 29,
+      "rotation": 0,
+      "gateFlip": true
+    },
+    {
+      "x": 36,
+      "y": 24,
+      "rotation": 1,
+      "gateFlip": false
+    },
+    {
+      "x": 25,
+      "y": 48,
+      "rotation": 1,
+      "gateFlip": true
+    },
+    {
+      "x": 29,
+      "y": 51,
+      "rotation": 2,
+      "gateFlip": false
+    },
+    {
+      "x": 23,
+      "y": 52,
+      "rotation": 2,
+      "gateFlip": true
+    },
+    {
+      "x": 33,
+      "y": 51,
+      "rotation": 3,
+      "gateFlip": false
+    },
+    {
+      "x": 19,
+      "y": 53,
+      "rotation": 3,
+      "gateFlip": true
+    }
+  ],
+  "saved": {
+    "gates": [
+      {
+        "x": 24,
+        "y": 29,
+        "kind": "gate",
+        "open": true,
+        "rotation": 0,
+        "gateFlip": false
+      },
+      {
+        "x": 29,
+        "y": 29,
+        "kind": "gate",
+        "open": false,
+        "rotation": 0,
+        "gateFlip": true
+      },
+      {
+        "x": 36,
+        "y": 24,
+        "kind": "gate",
+        "open": true,
+        "rotation": 1,
+        "gateFlip": false
+      },
+      {
+        "x": 25,
+        "y": 48,
+        "kind": "gate",
+        "open": true,
+        "rotation": 1,
+        "gateFlip": true
+      },
+      {
+        "x": 29,
+        "y": 51,
+        "kind": "gate",
+        "open": false,
+        "rotation": 2,
+        "gateFlip": false
+      },
+      {
+        "x": 23,
+        "y": 52,
+        "kind": "gate",
+        "open": true,
+        "rotation": 2,
+        "gateFlip": true
+      },
+      {
+        "x": 33,
+        "y": 51,
+        "kind": "gate",
+        "open": true,
+        "rotation": 3,
+        "gateFlip": false
+      },
+      {
+        "x": 19,
+        "y": 53,
+        "kind": "gate",
+        "open": false,
+        "rotation": 3,
+        "gateFlip": true
+      }
+    ],
+    "wood": 160,
+    "valid": true
+  },
+  "reloaded": {
+    "gates": [
+      {
+        "x": 24,
+        "y": 29,
+        "kind": "gate",
+        "open": true,
+        "rotation": 0,
+        "gateFlip": false
+      },
+      {
+        "x": 29,
+        "y": 29,
+        "kind": "gate",
+        "open": false,
+        "rotation": 0,
+        "gateFlip": true
+      },
+      {
+        "x": 36,
+        "y": 24,
+        "kind": "gate",
+        "open": true,
+        "rotation": 1,
+        "gateFlip": false
+      },
+      {
+        "x": 25,
+        "y": 48,
+        "kind": "gate",
+        "open": true,
+        "rotation": 1,
+        "gateFlip": true
+      },
+      {
+        "x": 29,
+        "y": 51,
+        "kind": "gate",
+        "open": false,
+        "rotation": 2,
+        "gateFlip": false
+      },
+      {
+        "x": 23,
+        "y": 52,
+        "kind": "gate",
+        "open": true,
+        "rotation": 2,
+        "gateFlip": true
+      },
+      {
+        "x": 33,
+        "y": 51,
+        "kind": "gate",
+        "open": true,
+        "rotation": 3,
+        "gateFlip": false
+      },
+      {
+        "x": 19,
+        "y": 53,
+        "kind": "gate",
+        "open": false,
+        "rotation": 3,
+        "gateFlip": true
+      }
+    ],
+    "blocked": [
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true
+    ],
+    "wood": 160,
+    "valid": true
+  },
+  "swings": [
+    {
+      "rotation": 0,
+      "gateFlip": false,
+      "direction": "north",
+      "closedCentroid": {
+        "x": 128.8852659466069,
+        "y": 215.60260851844305
+      },
+      "openCentroid": {
+        "x": 94.47562189054726,
+        "y": 159.5273631840796
+      }
+    },
+    {
+      "rotation": 0,
+      "gateFlip": true,
+      "direction": "south",
+      "closedCentroid": {
+        "x": 128.8852659466069,
+        "y": 215.60260851844305
+      },
+      "openCentroid": {
+        "x": 94.47312541473126,
+        "y": 271.5
+      }
+    },
+    {
+      "rotation": 1,
+      "gateFlip": false,
+      "direction": "east",
+      "closedCentroid": {
+        "x": 127.46004480955938,
+        "y": 187.5
+      },
+      "openCentroid": {
+        "x": 184.8852659466069,
+        "y": 159.60260851844305
+      }
+    },
+    {
+      "rotation": 1,
+      "gateFlip": true,
+      "direction": "west",
+      "closedCentroid": {
+        "x": 127.46004480955938,
+        "y": 187.5
+      },
+      "openCentroid": {
+        "x": 70.11473405339311,
+        "y": 159.60260851844305
+      }
+    },
+    {
+      "rotation": 2,
+      "gateFlip": false,
+      "direction": "south",
+      "closedCentroid": {
+        "x": 126.11473405339311,
+        "y": 215.60260851844305
+      },
+      "openCentroid": {
+        "x": 160.47312541473124,
+        "y": 271.5
+      }
+    },
+    {
+      "rotation": 2,
+      "gateFlip": true,
+      "direction": "north",
+      "closedCentroid": {
+        "x": 126.11473405339311,
+        "y": 215.60260851844305
+      },
+      "openCentroid": {
+        "x": 160.47562189054727,
+        "y": 159.5273631840796
+      }
+    },
+    {
+      "rotation": 3,
+      "gateFlip": false,
+      "direction": "west",
+      "closedCentroid": {
+        "x": 127.53995519044062,
+        "y": 187.5
+      },
+      "openCentroid": {
+        "x": 70.11473405339311,
+        "y": 271.60260851844305
+      }
+    },
+    {
+      "rotation": 3,
+      "gateFlip": true,
+      "direction": "east",
+      "closedCentroid": {
+        "x": 127.53995519044062,
+        "y": 187.5
+      },
+      "openCentroid": {
+        "x": 184.8852659466069,
+        "y": 271.60260851844305
+      }
+    }
+  ],
+  "horizontalProfiles": [
+    {
+      "rotation": 0,
+      "gateFlip": false,
+      "width": 4.5,
+      "height": 42
+    },
+    {
+      "rotation": 0,
+      "gateFlip": true,
+      "width": 4.5,
+      "height": 42
+    },
+    {
+      "rotation": 2,
+      "gateFlip": false,
+      "width": 4.5,
+      "height": 42
+    },
+    {
+      "rotation": 2,
+      "gateFlip": true,
+      "width": 4.5,
+      "height": 42
+    }
+  ],
+  "textures": [
+    {
+      "key": "gate-0-normal-closed",
+      "width": 256,
+      "height": 384,
+      "alpha": 8789,
+      "centroid": {
+        "x": 127.83775173512345,
+        "y": 209.47843895778814
+      },
+      "hash": 4275153456
+    },
+    {
+      "key": "gate-0-normal-closed-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 5258,
+      "centroid": {
+        "x": 126.41194370483073,
+        "y": 205.2890833016356
+      },
+      "hash": 3624423853
+    },
+    {
+      "key": "gate-0-normal-closed-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 4907,
+      "centroid": {
+        "x": 128.8852659466069,
+        "y": 215.60260851844305
+      },
+      "hash": 3607553711
+    },
+    {
+      "key": "gate-0-normal-closed-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 0,
+      "centroid": {
+        "x": 0,
+        "y": 0
+      },
+      "hash": 2958335429
+    },
+    {
+      "key": "gate-0-normal-open",
+      "width": 256,
+      "height": 384,
+      "alpha": 8273,
+      "centroid": {
+        "x": 114.77311736975705,
+        "y": 188.6117490632177
+      },
+      "hash": 4126386246
+    },
+    {
+      "key": "gate-0-normal-open-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 5258,
+      "centroid": {
+        "x": 126.41194370483073,
+        "y": 205.2890833016356
+      },
+      "hash": 3624423853
+    },
+    {
+      "key": "gate-0-normal-open-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 3015,
+      "centroid": {
+        "x": 94.47562189054726,
+        "y": 159.5273631840796
+      },
+      "hash": 338051386
+    },
+    {
+      "key": "gate-0-normal-open-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 0,
+      "centroid": {
+        "x": 0,
+        "y": 0
+      },
+      "hash": 2958335429
+    },
+    {
+      "key": "gate-0-flipped-closed",
+      "width": 256,
+      "height": 384,
+      "alpha": 8789,
+      "centroid": {
+        "x": 127.83775173512345,
+        "y": 209.47843895778814
+      },
+      "hash": 4275153456
+    },
+    {
+      "key": "gate-0-flipped-closed-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 5258,
+      "centroid": {
+        "x": 126.41194370483073,
+        "y": 205.2890833016356
+      },
+      "hash": 3624423853
+    },
+    {
+      "key": "gate-0-flipped-closed-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 4907,
+      "centroid": {
+        "x": 128.8852659466069,
+        "y": 215.60260851844305
+      },
+      "hash": 3607553711
+    },
+    {
+      "key": "gate-0-flipped-closed-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 0,
+      "centroid": {
+        "x": 0,
+        "y": 0
+      },
+      "hash": 2958335429
+    },
+    {
+      "key": "gate-0-flipped-open",
+      "width": 256,
+      "height": 384,
+      "alpha": 8272,
+      "centroid": {
+        "x": 114.77466150870406,
+        "y": 229.41380560928434
+      },
+      "hash": 1222577062
+    },
+    {
+      "key": "gate-0-flipped-open-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 5258,
+      "centroid": {
+        "x": 126.41194370483073,
+        "y": 205.2890833016356
+      },
+      "hash": 3624423853
+    },
+    {
+      "key": "gate-0-flipped-open-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 3014,
+      "centroid": {
+        "x": 94.47312541473126,
+        "y": 271.5
+      },
+      "hash": 901556978
+    },
+    {
+      "key": "gate-0-flipped-open-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 0,
+      "centroid": {
+        "x": 0,
+        "y": 0
+      },
+      "hash": 2958335429
+    },
+    {
+      "key": "gate-1-normal-closed",
+      "width": 256,
+      "height": 384,
+      "alpha": 5424,
+      "centroid": {
+        "x": 127.5119837758112,
+        "y": 204.27304572271387
+      },
+      "hash": 2011631350
+    },
+    {
+      "key": "gate-1-normal-closed-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 2681,
+      "centroid": {
+        "x": 127.51920925027974,
+        "y": 149.41924654979485
+      },
+      "hash": 3966879492
+    },
+    {
+      "key": "gate-1-normal-closed-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 2678,
+      "centroid": {
+        "x": 127.46004480955938,
+        "y": 187.5
+      },
+      "hash": 3481153473
+    },
+    {
+      "key": "gate-1-normal-closed-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 2577,
+      "centroid": {
+        "x": 127.51998447807529,
+        "y": 261.1536670547148
+      },
+      "hash": 2533236849
+    },
+    {
+      "key": "gate-1-normal-open",
+      "width": 256,
+      "height": 384,
+      "alpha": 9455,
+      "centroid": {
+        "x": 156.8065573770492,
+        "y": 184.4286620835537
+      },
+      "hash": 3265147611
+    },
+    {
+      "key": "gate-1-normal-open-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 2681,
+      "centroid": {
+        "x": 127.51920925027974,
+        "y": 149.41924654979485
+      },
+      "hash": 3966879492
+    },
+    {
+      "key": "gate-1-normal-open-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 4907,
+      "centroid": {
+        "x": 184.8852659466069,
+        "y": 159.60260851844305
+      },
+      "hash": 3517629615
+    },
+    {
+      "key": "gate-1-normal-open-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 2577,
+      "centroid": {
+        "x": 127.51998447807529,
+        "y": 261.1536670547148
+      },
+      "hash": 2533236849
+    },
+    {
+      "key": "gate-1-flipped-closed",
+      "width": 256,
+      "height": 384,
+      "alpha": 5424,
+      "centroid": {
+        "x": 127.5119837758112,
+        "y": 204.27304572271387
+      },
+      "hash": 2295847693
+    },
+    {
+      "key": "gate-1-flipped-closed-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 2681,
+      "centroid": {
+        "x": 127.51920925027974,
+        "y": 149.41924654979485
+      },
+      "hash": 1340780838
+    },
+    {
+      "key": "gate-1-flipped-closed-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 2678,
+      "centroid": {
+        "x": 127.46004480955938,
+        "y": 187.5
+      },
+      "hash": 3481153473
+    },
+    {
+      "key": "gate-1-flipped-closed-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 2577,
+      "centroid": {
+        "x": 127.51998447807529,
+        "y": 261.1536670547148
+      },
+      "hash": 1086864961
+    },
+    {
+      "key": "gate-1-flipped-open",
+      "width": 256,
+      "height": 384,
+      "alpha": 9455,
+      "centroid": {
+        "x": 98.21523003701745,
+        "y": 184.4286620835537
+      },
+      "hash": 1545333210
+    },
+    {
+      "key": "gate-1-flipped-open-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 2681,
+      "centroid": {
+        "x": 127.51920925027974,
+        "y": 149.41924654979485
+      },
+      "hash": 1340780838
+    },
+    {
+      "key": "gate-1-flipped-open-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 4907,
+      "centroid": {
+        "x": 70.11473405339311,
+        "y": 159.60260851844305
+      },
+      "hash": 943878427
+    },
+    {
+      "key": "gate-1-flipped-open-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 2577,
+      "centroid": {
+        "x": 127.51998447807529,
+        "y": 261.1536670547148
+      },
+      "hash": 1086864961
+    },
+    {
+      "key": "gate-2-normal-closed",
+      "width": 256,
+      "height": 384,
+      "alpha": 8789,
+      "centroid": {
+        "x": 127.18568665377175,
+        "y": 209.47843895778814
+      },
+      "hash": 2478549246
+    },
+    {
+      "key": "gate-2-normal-closed-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 5258,
+      "centroid": {
+        "x": 128.6272346899962,
+        "y": 205.2890833016356
+      },
+      "hash": 208969620
+    },
+    {
+      "key": "gate-2-normal-closed-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 4907,
+      "centroid": {
+        "x": 126.11473405339311,
+        "y": 215.60260851844305
+      },
+      "hash": 2090036507
+    },
+    {
+      "key": "gate-2-normal-closed-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 0,
+      "centroid": {
+        "x": 0,
+        "y": 0
+      },
+      "hash": 2958335429
+    },
+    {
+      "key": "gate-2-normal-open",
+      "width": 256,
+      "height": 384,
+      "alpha": 8272,
+      "centroid": {
+        "x": 140.2306576402321,
+        "y": 229.41380560928434
+      },
+      "hash": 850702139
+    },
+    {
+      "key": "gate-2-normal-open-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 5258,
+      "centroid": {
+        "x": 128.6272346899962,
+        "y": 205.2890833016356
+      },
+      "hash": 208969620
+    },
+    {
+      "key": "gate-2-normal-open-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 3014,
+      "centroid": {
+        "x": 160.47312541473124,
+        "y": 271.5
+      },
+      "hash": 1844813778
+    },
+    {
+      "key": "gate-2-normal-open-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 0,
+      "centroid": {
+        "x": 0,
+        "y": 0
+      },
+      "hash": 2958335429
+    },
+    {
+      "key": "gate-2-flipped-closed",
+      "width": 256,
+      "height": 384,
+      "alpha": 8789,
+      "centroid": {
+        "x": 127.18568665377175,
+        "y": 209.47843895778814
+      },
+      "hash": 2478549246
+    },
+    {
+      "key": "gate-2-flipped-closed-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 5258,
+      "centroid": {
+        "x": 128.6272346899962,
+        "y": 205.2890833016356
+      },
+      "hash": 208969620
+    },
+    {
+      "key": "gate-2-flipped-closed-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 4907,
+      "centroid": {
+        "x": 126.11473405339311,
+        "y": 215.60260851844305
+      },
+      "hash": 2090036507
+    },
+    {
+      "key": "gate-2-flipped-closed-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 0,
+      "centroid": {
+        "x": 0,
+        "y": 0
+      },
+      "hash": 2958335429
+    },
+    {
+      "key": "gate-2-flipped-open",
+      "width": 256,
+      "height": 384,
+      "alpha": 8273,
+      "centroid": {
+        "x": 140.23401426326603,
+        "y": 188.6117490632177
+      },
+      "hash": 1921345567
+    },
+    {
+      "key": "gate-2-flipped-open-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 5258,
+      "centroid": {
+        "x": 128.6272346899962,
+        "y": 205.2890833016356
+      },
+      "hash": 208969620
+    },
+    {
+      "key": "gate-2-flipped-open-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 3015,
+      "centroid": {
+        "x": 160.47562189054727,
+        "y": 159.5273631840796
+      },
+      "hash": 981918426
+    },
+    {
+      "key": "gate-2-flipped-open-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 0,
+      "centroid": {
+        "x": 0,
+        "y": 0
+      },
+      "hash": 2958335429
+    },
+    {
+      "key": "gate-3-normal-closed",
+      "width": 256,
+      "height": 384,
+      "alpha": 5424,
+      "centroid": {
+        "x": 127.5119837758112,
+        "y": 206.4205383480826
+      },
+      "hash": 3258904808
+    },
+    {
+      "key": "gate-3-normal-closed-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 2577,
+      "centroid": {
+        "x": 127.51998447807529,
+        "y": 149.1536670547148
+      },
+      "hash": 583810625
+    },
+    {
+      "key": "gate-3-normal-closed-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 2678,
+      "centroid": {
+        "x": 127.53995519044062,
+        "y": 187.5
+      },
+      "hash": 1219581101
+    },
+    {
+      "key": "gate-3-normal-closed-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 2681,
+      "centroid": {
+        "x": 127.51920925027974,
+        "y": 261.4192465497949
+      },
+      "hash": 4092309798
+    },
+    {
+      "key": "gate-3-normal-open",
+      "width": 256,
+      "height": 384,
+      "alpha": 9455,
+      "centroid": {
+        "x": 98.21523003701745,
+        "y": 235.3765203595981
+      },
+      "hash": 1388278930
+    },
+    {
+      "key": "gate-3-normal-open-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 2577,
+      "centroid": {
+        "x": 127.51998447807529,
+        "y": 149.1536670547148
+      },
+      "hash": 583810625
+    },
+    {
+      "key": "gate-3-normal-open-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 4907,
+      "centroid": {
+        "x": 70.11473405339311,
+        "y": 271.60260851844305
+      },
+      "hash": 425226523
+    },
+    {
+      "key": "gate-3-normal-open-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 2681,
+      "centroid": {
+        "x": 127.51920925027974,
+        "y": 261.4192465497949
+      },
+      "hash": 4092309798
+    },
+    {
+      "key": "gate-3-flipped-closed",
+      "width": 256,
+      "height": 384,
+      "alpha": 5424,
+      "centroid": {
+        "x": 127.5119837758112,
+        "y": 206.4205383480826
+      },
+      "hash": 279515141
+    },
+    {
+      "key": "gate-3-flipped-closed-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 2577,
+      "centroid": {
+        "x": 127.51998447807529,
+        "y": 149.1536670547148
+      },
+      "hash": 2027036785
+    },
+    {
+      "key": "gate-3-flipped-closed-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 2678,
+      "centroid": {
+        "x": 127.53995519044062,
+        "y": 187.5
+      },
+      "hash": 1219581101
+    },
+    {
+      "key": "gate-3-flipped-closed-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 2681,
+      "centroid": {
+        "x": 127.51920925027974,
+        "y": 261.4192465497949
+      },
+      "hash": 3910190852
+    },
+    {
+      "key": "gate-3-flipped-open",
+      "width": 256,
+      "height": 384,
+      "alpha": 9455,
+      "centroid": {
+        "x": 156.8065573770492,
+        "y": 235.3765203595981
+      },
+      "hash": 3621708687
+    },
+    {
+      "key": "gate-3-flipped-open-0",
+      "width": 256,
+      "height": 384,
+      "alpha": 2577,
+      "centroid": {
+        "x": 127.51998447807529,
+        "y": 149.1536670547148
+      },
+      "hash": 2027036785
+    },
+    {
+      "key": "gate-3-flipped-open-1",
+      "width": 256,
+      "height": 384,
+      "alpha": 4907,
+      "centroid": {
+        "x": 184.8852659466069,
+        "y": 271.60260851844305
+      },
+      "hash": 1389675695
+    },
+    {
+      "key": "gate-3-flipped-open-2",
+      "width": 256,
+      "height": 384,
+      "alpha": 2681,
+      "centroid": {
+        "x": 127.51920925027974,
+        "y": 261.4192465497949
+      },
+      "hash": 3910190852
+    }
+  ],
+  "layers": [
+    {
+      "expected": "gate-0-normal-open",
+      "sprites": [
+        {
+          "key": "gate-0-normal-open-0",
+          "layer": 0,
+          "depth": 946
+        },
+        {
+          "key": "gate-0-normal-open-1",
+          "layer": 1,
+          "depth": 931
+        },
+        {
+          "key": "gate-0-normal-open-2",
+          "layer": 2,
+          "depth": 946
+        }
+      ]
+    },
+    {
+      "expected": "gate-0-flipped-closed",
+      "sprites": [
+        {
+          "key": "gate-0-flipped-closed-0",
+          "layer": 0,
+          "depth": 946
+        },
+        {
+          "key": "gate-0-flipped-closed-1",
+          "layer": 1,
+          "depth": 945
+        },
+        {
+          "key": "gate-0-flipped-closed-2",
+          "layer": 2,
+          "depth": 946
+        }
+      ]
+    },
+    {
+      "expected": "gate-1-normal-open",
+      "sprites": [
+        {
+          "key": "gate-1-normal-open-0",
+          "layer": 0,
+          "depth": 772
+        },
+        {
+          "key": "gate-1-normal-open-1",
+          "layer": 1,
+          "depth": 771
+        },
+        {
+          "key": "gate-1-normal-open-2",
+          "layer": 2,
+          "depth": 800
+        }
+      ]
+    },
+    {
+      "expected": "gate-1-flipped-open",
+      "sprites": [
+        {
+          "key": "gate-1-flipped-open-0",
+          "layer": 0,
+          "depth": 1540
+        },
+        {
+          "key": "gate-1-flipped-open-1",
+          "layer": 1,
+          "depth": 1539
+        },
+        {
+          "key": "gate-1-flipped-open-2",
+          "layer": 2,
+          "depth": 1568
+        }
+      ]
+    },
+    {
+      "expected": "gate-2-normal-closed",
+      "sprites": [
+        {
+          "key": "gate-2-normal-closed-0",
+          "layer": 0,
+          "depth": 1650
+        },
+        {
+          "key": "gate-2-normal-closed-1",
+          "layer": 1,
+          "depth": 1649
+        },
+        {
+          "key": "gate-2-normal-closed-2",
+          "layer": 2,
+          "depth": 1650
+        }
+      ]
+    },
+    {
+      "expected": "gate-2-flipped-open",
+      "sprites": [
+        {
+          "key": "gate-2-flipped-open-0",
+          "layer": 0,
+          "depth": 1682
+        },
+        {
+          "key": "gate-2-flipped-open-1",
+          "layer": 1,
+          "depth": 1667
+        },
+        {
+          "key": "gate-2-flipped-open-2",
+          "layer": 2,
+          "depth": 1682
+        }
+      ]
+    },
+    {
+      "expected": "gate-3-normal-open",
+      "sprites": [
+        {
+          "key": "gate-3-normal-open-0",
+          "layer": 0,
+          "depth": 1636
+        },
+        {
+          "key": "gate-3-normal-open-1",
+          "layer": 1,
+          "depth": 1663
+        },
+        {
+          "key": "gate-3-normal-open-2",
+          "layer": 2,
+          "depth": 1664
+        }
+      ]
+    },
+    {
+      "expected": "gate-3-flipped-closed",
+      "sprites": [
+        {
+          "key": "gate-3-flipped-closed-0",
+          "layer": 0,
+          "depth": 1700
+        },
+        {
+          "key": "gate-3-flipped-closed-1",
+          "layer": 1,
+          "depth": 1713
+        },
+        {
+          "key": "gate-3-flipped-closed-2",
+          "layer": 2,
+          "depth": 1728
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

@@ -3,14 +3,30 @@ import Phaser from 'phaser';
 /** One stable canvas and entrance anchor preserve the existing house collision. */
 export const HOUSE_SPRITE_SIZE = { width: 256, height: 224 } as const;
 export const HOUSE_FOOT = { x: 128, y: 216 } as const;
-export const HOUSE_WINDOW_LIGHTS = [
-  { x: 54, y: 162, width: 19, height: 19 },
-  { x: 185, y: 162, width: 19, height: 19 },
+// Measured in the uploaded 256×256 PNG. All anchors use the same proportional
+// fit as the facade, so changing its world position never detaches its lights.
+const SOURCE_BOUNDS = { x: 16, y: 16, width: 219, height: 227 } as const;
+const DRAW = { x: 26, y: 4, width: 205, height: 212 } as const;
+const SOURCE_WINDOWS = [
+  { x: 64, y: 143, width: 24, height: 22 },
+  { x: 166, y: 143, width: 23, height: 22 },
 ] as const;
+const sourcePoint = (x: number, y: number) => ({
+  x: DRAW.x + (x - SOURCE_BOUNDS.x) * DRAW.width / SOURCE_BOUNDS.width,
+  y: DRAW.y + (y - SOURCE_BOUNDS.y) * DRAW.height / SOURCE_BOUNDS.height,
+});
+export const HOUSE_WINDOW_LIGHTS = SOURCE_WINDOWS.map(box => ({
+  ...sourcePoint(box.x, box.y),
+  width: box.width * DRAW.width / SOURCE_BOUNDS.width,
+  height: box.height * DRAW.height / SOURCE_BOUNDS.height,
+}));
+export const HOUSE_CHIMNEY = sourcePoint(184, 22);
+export const HOUSE_SHADOW_FOOT = HOUSE_FOOT.y / HOUSE_SPRITE_SIZE.height;
+export const HOUSE_WINDOW_GLOW = 'asset-house-window-glow';
 const SOURCE = 'house-cottage-source';
 
 export function preloadHouseSprite(scene: Phaser.Scene): void {
-  scene.load.image(SOURCE, 'assets/visual/architecture/starter-cottage.png');
+  scene.load.image(SOURCE, 'assets/visual/architecture/authored-cottage.png');
 }
 
 /** Keep the source intact. Trim transparency and scale proportionally at load,
@@ -44,8 +60,32 @@ export function setupHouseSprite(scene: Phaser.Scene): boolean {
   canvas.width = HOUSE_SPRITE_SIZE.width; canvas.height = HOUSE_SPRITE_SIZE.height;
   const context = canvas.getContext('2d')!;
   context.imageSmoothingEnabled = false;
-  context.drawImage(scan, left, top, sourceWidth, sourceHeight,
-    Math.round(HOUSE_FOOT.x - width / 2), HOUSE_FOOT.y - height, width, height);
+  const drawX = Math.round(HOUSE_FOOT.x - width / 2), drawY = HOUSE_FOOT.y - height;
+  context.drawImage(scan, left, top, sourceWidth, sourceHeight, drawX, drawY, width, height);
   scene.textures.addCanvas('asset-house', canvas)?.setFilter(Phaser.Textures.FilterMode.NEAREST);
+  // Select only the original blue-grey glass pixels inside the two openings.
+  // The frame, crossbars, stones and foliage keep their original dark artwork.
+  const mask = document.createElement('canvas'); mask.width = scan.width; mask.height = scan.height;
+  const maskContext = mask.getContext('2d')!;
+  const glowPixels = maskContext.createImageData(mask.width, mask.height);
+  for (const box of SOURCE_WINDOWS) for (let y = box.y; y < box.y + box.height; y++) for (let x = box.x; x < box.x + box.width; x++) {
+    const at = (y * scan.width + x) * 4;
+    const r = image.data[at], g = image.data[at + 1], b = image.data[at + 2];
+    if (!image.data[at + 3] || !(b >= g && g > r && b - r >= 3 && b < 70)) continue;
+    glowPixels.data[at] = 255; glowPixels.data[at + 1] = 209; glowPixels.data[at + 2] = 138; glowPixels.data[at + 3] = 255;
+  }
+  maskContext.putImageData(glowPixels, 0, 0);
+  const glow = document.createElement('canvas'); glow.width = canvas.width; glow.height = canvas.height;
+  const glowContext = glow.getContext('2d')!; glowContext.imageSmoothingEnabled = false;
+  glowContext.drawImage(mask, left, top, sourceWidth, sourceHeight, drawX, drawY, width, height);
+  scene.textures.addCanvas(HOUSE_WINDOW_GLOW, glow)?.setFilter(Phaser.Textures.FilterMode.NEAREST);
   return true;
+}
+
+/** The title and gameplay share the exact same glass mask and world transform. */
+export function drawHouseWindowGlow(scene: Phaser.Scene, house: Phaser.GameObjects.Image): Phaser.GameObjects.Image | undefined {
+  if (!scene.textures.exists(HOUSE_WINDOW_GLOW)) return undefined;
+  return scene.add.image(house.x, house.y, HOUSE_WINDOW_GLOW)
+    .setOrigin(house.originX, house.originY).setScale(house.scaleX, house.scaleY)
+    .setDepth(house.depth + .1).setVisible(false).setData('house-window-glow', true);
 }

@@ -1,0 +1,706 @@
+{
+  "passed": true,
+  "at": "2026-10-25T06:06:54.773Z",
+  "sourceSha256": "b7ed010b594516766e7b9e052286ee2e8889a5582b669100c3f13af111f31c4b",
+  "layout": {
+    "house": {
+      "x": 784,
+      "y": 516,
+      "scaleX": 1,
+      "scaleY": 1,
+      "originX": 0.5,
+      "originY": 1,
+      "width": 256,
+      "height": 224,
+      "footY": 508,
+      "shadowFoot": 0.9642857142857143
+    },
+    "native": {
+      "width": 256,
+      "height": 256,
+      "identical": true
+    },
+    "rendered": {
+      "width": 256,
+      "height": 224,
+      "alphaBounds": {
+        "left": 26,
+        "top": 4,
+        "width": 205,
+        "height": 212
+      },
+      "partialAlpha": 0
+    },
+    "well": {
+      "sourceFoot": 247,
+      "authoredFoot": 247,
+      "shadowFoot": 0.96484375,
+      "visibleFootY": 508
+    },
+    "constants": {
+      "HOMESTEAD_HOUSE": {
+        "x": 784,
+        "y": 516,
+        "groundY": 508
+      },
+      "HOMESTEAD_GARDEN": {
+        "left": 12,
+        "right": 19,
+        "top": 10,
+        "bottom": 16
+      },
+      "HOMESTEAD_GATE": {
+        "x": 16,
+        "y": 16
+      },
+      "WELL_BASE": {
+        "x": 1008,
+        "y": 487.41999999999996,
+        "rx": 30,
+        "ry": 16
+      },
+      "PROPERTY_WELL": {
+        "x": 1008,
+        "y": 511.78,
+        "scale": 0.42
+      },
+      "HOUSE_SPRITE_SIZE": {
+        "width": 256,
+        "height": 224
+      }
+    },
+    "garden": [
+      {
+        "x": 12,
+        "y": 10,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 13,
+        "y": 10,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 14,
+        "y": 10,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 15,
+        "y": 10,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 16,
+        "y": 10,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 17,
+        "y": 10,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 18,
+        "y": 10,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 19,
+        "y": 10,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 12,
+        "y": 11,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 19,
+        "y": 11,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 12,
+        "y": 12,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 19,
+        "y": 12,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 12,
+        "y": 13,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 19,
+        "y": 13,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 12,
+        "y": 14,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 19,
+        "y": 14,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 12,
+        "y": 15,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 19,
+        "y": 15,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 12,
+        "y": 16,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 13,
+        "y": 16,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 14,
+        "y": 16,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 15,
+        "y": 16,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 16,
+        "y": 16,
+        "kind": "gate",
+        "rotation": 0,
+        "gateFlip": true,
+        "open": false
+      },
+      {
+        "x": 17,
+        "y": 16,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 18,
+        "y": 16,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      {
+        "x": 19,
+        "y": 16,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      }
+    ],
+    "preparedBeds": [
+      {
+        "x": 13,
+        "y": 11
+      },
+      {
+        "x": 14,
+        "y": 11
+      },
+      {
+        "x": 15,
+        "y": 11
+      },
+      {
+        "x": 16,
+        "y": 11
+      },
+      {
+        "x": 17,
+        "y": 11
+      },
+      {
+        "x": 18,
+        "y": 11
+      },
+      {
+        "x": 13,
+        "y": 12
+      },
+      {
+        "x": 14,
+        "y": 12
+      },
+      {
+        "x": 15,
+        "y": 12
+      },
+      {
+        "x": 16,
+        "y": 12
+      },
+      {
+        "x": 17,
+        "y": 12
+      },
+      {
+        "x": 18,
+        "y": 12
+      },
+      {
+        "x": 13,
+        "y": 13
+      },
+      {
+        "x": 14,
+        "y": 13
+      },
+      {
+        "x": 15,
+        "y": 13
+      },
+      {
+        "x": 16,
+        "y": 13
+      },
+      {
+        "x": 17,
+        "y": 13
+      },
+      {
+        "x": 18,
+        "y": 13
+      },
+      {
+        "x": 13,
+        "y": 14
+      },
+      {
+        "x": 14,
+        "y": 14
+      },
+      {
+        "x": 15,
+        "y": 14
+      },
+      {
+        "x": 16,
+        "y": 14
+      },
+      {
+        "x": 17,
+        "y": 14
+      },
+      {
+        "x": 18,
+        "y": 14
+      },
+      {
+        "x": 13,
+        "y": 15
+      },
+      {
+        "x": 14,
+        "y": 15
+      },
+      {
+        "x": 15,
+        "y": 15
+      },
+      {
+        "x": 16,
+        "y": 15
+      },
+      {
+        "x": 17,
+        "y": 15
+      },
+      {
+        "x": 18,
+        "y": 15
+      }
+    ],
+    "reservedResources": [],
+    "houseWindows": [
+      {
+        "x": 738.1643835616438,
+        "y": 424.8810572687225
+      },
+      {
+        "x": 833.1757990867579,
+        "y": 424.8810572687225
+      }
+    ],
+    "expectedWindows": [
+      {
+        "x": 738.1643835616438,
+        "y": 424.88105726872243
+      },
+      {
+        "x": 833.1757990867579,
+        "y": 424.88105726872243
+      }
+    ],
+    "glow": {
+      "pixels": 356,
+      "outside": 0
+    },
+    "revision": 1
+  },
+  "smoke": {
+    "count": 1,
+    "visible": true,
+    "commands": 234,
+    "middleCommands": 234,
+    "loopCommands": 234,
+    "moves": true,
+    "loopError": 8.881784197001252e-16
+  },
+  "captures": [
+    {
+      "name": "dia",
+      "minute": 720,
+      "paneAlpha": 0,
+      "paneVisible": false,
+      "shaderVisible": true,
+      "paneAligned": true,
+      "houseShadow": {
+        "x": 784,
+        "y": 508.25,
+        "visible": true
+      },
+      "wellShadow": {
+        "x": 1008,
+        "y": 508.25,
+        "visible": true
+      },
+      "shaderWindows": [
+        {
+          "x": 738.1643835616438,
+          "y": 424.8810572687225
+        },
+        {
+          "x": 833.1757990867579,
+          "y": 424.8810572687225
+        }
+      ]
+    },
+    {
+      "name": "noite",
+      "minute": 1290,
+      "paneAlpha": 0.88,
+      "paneVisible": true,
+      "shaderVisible": true,
+      "paneAligned": true,
+      "houseShadow": {
+        "x": 784,
+        "y": 508.25,
+        "visible": false
+      },
+      "wellShadow": {
+        "x": 1008,
+        "y": 508.25,
+        "visible": false
+      },
+      "shaderWindows": [
+        {
+          "x": 738.1643835616438,
+          "y": 424.8810572687225
+        },
+        {
+          "x": 833.1757990867579,
+          "y": 424.8810572687225
+        }
+      ]
+    }
+  ],
+  "legacy": {
+    "expected": {
+      "crop": {
+        "x": 24,
+        "y": 22,
+        "watered": true,
+        "growth": 0.4
+      },
+      "building": {
+        "x": 12,
+        "y": 10,
+        "kind": "bench"
+      },
+      "home": {
+        "floor": "dark",
+        "wall": "clay",
+        "furniture": [
+          {
+            "id": "home-bed-1",
+            "kind": "bed",
+            "x": 2,
+            "y": 2
+          },
+          {
+            "id": "home-shelf-2",
+            "kind": "shelf",
+            "x": 8,
+            "y": 2
+          },
+          {
+            "id": "home-table-3",
+            "kind": "table",
+            "x": 7,
+            "y": 4
+          },
+          {
+            "id": "home-chair-4",
+            "kind": "chair",
+            "x": 6,
+            "y": 4
+          },
+          {
+            "id": "home-rug-5",
+            "kind": "rug",
+            "x": 4,
+            "y": 5
+          },
+          {
+            "id": "home-plant-6",
+            "kind": "plant",
+            "x": 2,
+            "y": 6
+          }
+        ]
+      },
+      "wood": 17
+    },
+    "migrated": {
+      "revision": 1,
+      "crop": {
+        "x": 24,
+        "y": 22,
+        "watered": true,
+        "growth": 0.4044444444444443
+      },
+      "home": {
+        "floor": "dark",
+        "wall": "clay",
+        "furniture": [
+          {
+            "id": "home-bed-1",
+            "kind": "bed",
+            "x": 2,
+            "y": 2
+          },
+          {
+            "id": "home-shelf-2",
+            "kind": "shelf",
+            "x": 8,
+            "y": 2
+          },
+          {
+            "id": "home-table-3",
+            "kind": "table",
+            "x": 7,
+            "y": 4
+          },
+          {
+            "id": "home-chair-4",
+            "kind": "chair",
+            "x": 6,
+            "y": 4
+          },
+          {
+            "id": "home-rug-5",
+            "kind": "rug",
+            "x": 4,
+            "y": 5
+          },
+          {
+            "id": "home-plant-6",
+            "kind": "plant",
+            "x": 2,
+            "y": 6
+          }
+        ]
+      },
+      "building": {
+        "x": 12,
+        "y": 10,
+        "kind": "bench"
+      },
+      "wood": 17,
+      "prepared": true
+    },
+    "removed": {
+      "fence": {
+        "x": 13,
+        "y": 10,
+        "kind": "fence",
+        "fenceBuiltDay": 1
+      },
+      "bed": {
+        "x": 13,
+        "y": 11
+      }
+    },
+    "onceOnly": {
+      "fenceMissing": true,
+      "bedMissing": true,
+      "revision": 1
+    }
+  },
+  "door": {
+    "entry": {
+      "frames": 25,
+      "triggered": true,
+      "duration": 133.33333333332848,
+      "fadeDuration": 120,
+      "inHome": true,
+      "x": 176,
+      "y": 272
+    },
+    "interior": {
+      "inHome": true,
+      "home": {
+        "floor": "dark",
+        "wall": "clay",
+        "furniture": [
+          {
+            "id": "home-bed-1",
+            "kind": "bed",
+            "x": 2,
+            "y": 2
+          },
+          {
+            "id": "home-shelf-2",
+            "kind": "shelf",
+            "x": 8,
+            "y": 2
+          },
+          {
+            "id": "home-table-3",
+            "kind": "table",
+            "x": 7,
+            "y": 4
+          },
+          {
+            "id": "home-chair-4",
+            "kind": "chair",
+            "x": 6,
+            "y": 4
+          },
+          {
+            "id": "home-rug-5",
+            "kind": "rug",
+            "x": 4,
+            "y": 5
+          },
+          {
+            "id": "home-plant-6",
+            "kind": "plant",
+            "x": 2,
+            "y": 6
+          }
+        ]
+      },
+      "smokeHidden": true,
+      "saved": true
+    },
+    "insideReload": {
+      "inHome": true,
+      "home": {
+        "floor": "dark",
+        "wall": "clay",
+        "furniture": [
+          {
+            "id": "home-bed-1",
+            "kind": "bed",
+            "x": 2,
+            "y": 2
+          },
+          {
+            "id": "home-shelf-2",
+            "kind": "shelf",
+            "x": 8,
+            "y": 2
+          },
+          {
+            "id": "home-table-3",
+            "kind": "table",
+            "x": 7,
+            "y": 4
+          },
+          {
+            "id": "home-chair-4",
+            "kind": "chair",
+            "x": 6,
+            "y": 4
+          },
+          {
+            "id": "home-rug-5",
+            "kind": "rug",
+            "x": 4,
+            "y": 5
+          },
+          {
+            "id": "home-plant-6",
+            "kind": "plant",
+            "x": 2,
+            "y": 6
+          }
+        ]
+      },
+      "x": 176,
+      "y": 272
+    },
+    "exit": {
+      "frames": 19,
+      "triggered": true,
+      "duration": 133.33333333334303,
+      "fadeDuration": 120,
+      "inHome": false,
+      "x": 784,
+      "y": 546
+    },
+    "outside": {
+      "inHome": false,
+      "smokeVisible": true,
+      "position": {
+        "x": 784,
+        "y": 546
+      }
+    },
+    "hCustomization": true,
+    "eIndoorInteraction": true
+  },
+  "errors": []
+}

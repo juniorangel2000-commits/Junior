@@ -4,7 +4,7 @@ import { getVisualSettings } from './visual-settings';
 import { SolarShadows } from './solar-shadows';
 import { WINDOW_LIGHT_FRAGMENT } from './window-light-shader';
 import { windowLight } from './solar-light';
-import { HOUSE_WINDOW_LIGHTS } from './house-sprites';
+import { drawHouseWindowGlow, HOUSE_WINDOW_LIGHTS } from './house-sprites';
 
 /** Lightweight color grading, shared by Canvas and WebGL, below the HTML HUD. */
 export class Daylight {
@@ -12,7 +12,7 @@ export class Daylight {
   readonly warmth: Phaser.GameObjects.Rectangle;
   readonly shader?: Phaser.GameObjects.Shader;
   private readonly shadows: SolarShadows;
-  private readonly panes: Phaser.GameObjects.Graphics;
+  private readonly panes: Phaser.GameObjects.Image | Phaser.GameObjects.Graphics;
   private shown = true;
   private windows: Array<{ x: number; y: number }> = [];
   constructor(scene: Phaser.Scene, width: number, height: number) {
@@ -20,15 +20,13 @@ export class Daylight {
     this.warmth = scene.add.rectangle(0, 0, width, height, 0xf3b56c).setOrigin(0).setDepth(5001).setAlpha(0);
     this.shadows = new SolarShadows(scene);
     const house = scene.children.list.find(o => (o as Phaser.GameObjects.Image).texture?.key === 'asset-house') as Phaser.GameObjects.Image | undefined;
-    this.panes = scene.add.graphics().setDepth(house ? house.depth + .1 : 4999).setVisible(false);
+    this.panes = house ? drawHouseWindowGlow(scene, house) ?? scene.add.graphics().setVisible(false)
+      : scene.add.graphics().setVisible(false);
     if (house) {
       const left = house.x - house.displayWidth * house.originX, top = house.y - house.displayHeight * house.originY;
       for (const pane of HOUSE_WINDOW_LIGHTS) {
         const x = left + pane.x * house.scaleX, y = top + pane.y * house.scaleY;
         this.windows.push({ x: x + pane.width * house.scaleX / 2, y: y + pane.height * house.scaleY / 2 });
-        this.panes.fillStyle(0xffd18a, 1);
-        const w=(pane.width-2)/2, h=(pane.height-2)/2;
-        for(let row=0;row<2;row++)for(let col=0;col<2;col++)this.panes.fillRect(x+col*(w+2)*house.scaleX,y+row*(h+2)*house.scaleY,w*house.scaleX,h*house.scaleY);
       }
     }
     if (scene.game.renderer.type === Phaser.WEBGL) {

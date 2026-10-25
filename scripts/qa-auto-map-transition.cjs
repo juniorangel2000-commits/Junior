@@ -10,7 +10,7 @@ const {walkMapExit}=require('./qa-walk-exit.cjs');
  await p.evaluate(()=>{window.f=game.scene.getScene('Floresta');game.loop.sleep();Object.values(f.player.keys).forEach(k=>k.isDown=false);for(let i=0;i<60;i++)f.update(0,1000/60)});assert.equal(await p.locator('#ui').getAttribute('data-area'),'forest');
  await p.keyboard.press('e');assert.equal(await p.locator('#ui').getAttribute('data-area'),'forest');
  await walkMapExit(p,'Floresta');await p.evaluate(()=>{game.loop.sleep();Object.values(s.player.keys).forEach(k=>k.isDown=false);for(let i=0;i<60;i++)s.update(0,1000/60)});assert.equal(await p.locator('#ui').getAttribute('data-area'),'property');
- // Repeat with a tethered animal. Reuse the existing real leash/transfer/delivery path.
+ // Repeat with a tethered animal; the rope stays allocated until G in the property.
  await walkMapExit(p,'Vale');
  const led=await p.evaluate(async()=>{game.loop.sleep();window.f=game.scene.getScene('Floresta');const {startAnimalEscort}=await import('/src/systems/animals.ts');const a=f.wildlife.animals[0],entry=f.state.forestMapEdits.points.entry;
   Object.values(f.player.keys).forEach(k=>k.isDown=false);f.player.x=(entry.x+.5)*32;f.player.y=(entry.y+.5)*32;
@@ -18,6 +18,8 @@ const {walkMapExit}=require('./qa-walk-exit.cjs');
   if(!startAnimalEscort(f.state,a.brain.snapshot()))throw Error('Cannot attach test animal');
   return a.id;
  });await walkMapExit(p,'Floresta');
+ const arrival=await p.evaluate(id=>({owned:(s.state.recruitedAnimals??[]).includes(id),escort:s.state.animalEscort,cord:s.inventory.data.cord}),led);assert.equal(arrival.owned,false);assert.equal(arrival.escort.id,led);assert.equal(arrival.cord,0);
+ await p.keyboard.press('g');
  const delivery=await p.evaluate(id=>({owned:s.state.recruitedAnimals.includes(id),escort:s.state.animalEscort??null,cord:s.inventory.data.cord}),led);
  assert.deepEqual(delivery,{owned:true,escort:null,cord:1});assert.deepEqual(errors,[]);console.log('PASS walking only, both directions, no E transition, no arrival bounce, off-gate movement, selected tool, animal leash and delivery');await p.close();
  // Normal production build must not offer the development editor anywhere.

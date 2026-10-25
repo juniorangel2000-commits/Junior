@@ -1,3 +1,4 @@
+import { fenceStage } from '../data/fences';
 import type { BuildingData, ItemId, TilePoint } from '../types';
 import type { ActionResult } from './farming';
 import { Inventory, ITEM_NAMES, type ItemCost } from './inventory';
@@ -7,17 +8,18 @@ import { WORLD_HEIGHT, WORLD_WIDTH } from '../data/regions';
 export { BUILD_COSTS } from '../data/blueprints';
 
 export const BUILD_NAMES: Record<BuildingData['kind'], string> = {
-  fence: 'Cerca', bench: 'Banco', workbench: 'Bancada', wall: 'Parede', door: 'Porta',
+  gate: 'Porteira', fence: 'Cerca', bench: 'Banco', workbench: 'Bancada', wall: 'Parede', door: 'Porta',
   floor: 'Piso', window: 'Janela', roof: 'Cobertura',
 };
 
 export type BuildingLayer = 'floor' | 'structure' | 'roof';
-export interface BuildContext { nearWorkbench: boolean; rotation?: 0 | 1 }
+export interface BuildContext { nearWorkbench: boolean; rotation?: 0 | 1 | 2 | 3; gateFlip?: boolean; day?: number }
 export interface BuildRequirements { tools: readonly ItemId[]; nearWorkbench: boolean }
 export type BuildValidator = (x: number, y: number, kind: BuildingData['kind']) => boolean;
 export const BUILD_RECOVERY_RATE = 0.6;
 
 export const BUILD_REQUIREMENTS: Record<BuildingData['kind'], BuildRequirements> = {
+  gate: { tools: [], nearWorkbench: false },
   fence: { tools: [], nearWorkbench: false },
   bench: { tools: [], nearWorkbench: false },
   workbench: { tools: ['hammer'], nearWorkbench: false },
@@ -33,9 +35,10 @@ export function buildingLayer(kind: BuildingData['kind']): BuildingLayer {
 }
 
 export function buildingFootprint(building: BuildingData): TilePoint[] {
+  const vertical = (building.rotation ?? 0) % 2 === 1;
   return Array.from({ length: building.kind === 'roof' ? 3 : 1 }, (_, offset) => ({
-    x: building.x + (building.rotation === 1 ? 0 : offset),
-    y: building.y + (building.rotation === 1 ? offset : 0),
+    x: building.x + (vertical ? 0 : offset),
+    y: building.y + (vertical ? offset : 0),
   }));
 }
 
@@ -61,8 +64,10 @@ const inBounds = (tile: TilePoint): boolean => Number.isInteger(tile.x) && Numbe
 export class Building {
   readonly buildings: BuildingData[];
 
-  constructor(buildings: BuildingData[] = []) {
-    this.buildings = buildings.map((building) => ({ ...building }));
+  constructor(buildings: BuildingData[] = [], day?: number) {
+    this.buildings = buildings.map((building) => ({ ...building,
+      ...(building.kind === 'roof' && building.rotation !== undefined ? { rotation: ((building.rotation % 2) as 0 | 1) } : {}),
+      ...(building.kind === 'fence' && building.fenceBuiltDay === undefined && day !== undefined ? { fenceBuiltDay: day } : {}) }));
   }
 
   at(x: number, y: number, layer?: BuildingLayer): BuildingData | undefined {
@@ -75,13 +80,15 @@ export class Building {
 
   isBlocked(x: number, y: number): boolean {
     const building = this.at(x, y, 'structure');
-    return !!building && !(building.kind === 'door' && building.open === true);
+    return !!building && !((building.kind === 'door' || building.kind === 'gate') && building.open === true);
   }
 
   place(kind: BuildingData['kind'], x: number, y: number, inventory: Inventory, isBuildable: boolean,
     context: BuildContext = { nearWorkbench: false }): ActionResult {
-    const piece: BuildingData = kind === 'door' ? { x, y, kind, open: false }
-      : kind === 'roof' ? { x, y, kind, rotation: context.rotation ?? 0 } : { x, y, kind };
+    const piece: BuildingData = kind === 'gate' ? { x, y, kind, open: false, rotation: context.rotation ?? 0, gateFlip: context.gateFlip ?? false }
+      : kind === 'door' ? { x, y, kind, open: false }
+      : kind === 'roof' ? { x, y, kind, rotation: ((context.rotation ?? 0) % 2) as 0 | 1 } : { x, y, kind };
+    if (kind === 'fence' && context.day !== undefined) piece.fenceBuiltDay = context.day;
     const footprint = buildingFootprint(piece);
     if (!isBuildable || !footprint.every(inBounds)) {
       return { ok: false, message: 'Escolha um espaço livre de grama perto de você.' };
@@ -137,6 +144,23 @@ export class Building {
     return { ok: true, message: legacy ? 'Construção recolhida. Os materiais voltaram para a mochila.'
       : Object.keys(refund).length ? 'Peça desmontada. Você recuperou 60% dos componentes, arredondados para baixo.'
         : 'Piso desmontado. O reembolso de 60% de uma tábua é arredondado para zero.' };
+  }
+
+  repairFence(x:number,y:number,inventory:Inventory,day:number):ActionResult {
+    const fence=this.at(x,y,'structure');
+    if(fence?.kind!=='fence')return {ok:false,message:'Aponte para uma cerca desgastada.'};
+    if(fenceStage(fence,day)==='new')return {ok:false,message:'Esta cerca ainda está nova.'};
+    if(!inventory.spend({wood:1}))return {ok:false,message:'Você precisa de 1 madeira para reparar a cerca.'};
+    fence.fenceBuiltDay=day;
+    return {ok:true,message:'Cerca restaurada. Custo: 1 madeira.'};
+  }
+
+  toggleGate(x:number,y:number,occupied=false):ActionResult {
+    const gate=this.at(x,y,'structure');
+    if(gate?.kind!=='gate')return {ok:false,message:'Não há uma porteira aqui.'};
+    if(gate.open&&occupied)return {ok:false,message:'A passagem está ocupada. Afaste-se e espere o animal passar.'};
+    gate.open=!gate.open;
+    return {ok:true,message:gate.open?'Porteira aberta. Os animais podem passar.':'Porteira fechada.'};
   }
 
   toggleDoor(x: number, y: number): ActionResult {

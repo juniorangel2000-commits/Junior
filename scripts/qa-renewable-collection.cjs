@@ -1,3 +1,4 @@
+const {walkMapExit}=require('./qa-walk-exit.cjs');
 const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=require('node:fs');
 (async()=>{const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox','--disable-dev-shm-usage']});try{
  const dir='docs/cenarios/recursos-renovaveis';fs.mkdirSync(dir,{recursive:true});
@@ -11,7 +12,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  });
  await page.goto(process.env.QA_URL||'http://127.0.0.1:5175');await page.locator('#new-game').click();await page.locator('#character-name').fill('Coleta');await page.getByRole('button',{name:'Começar minha história'}).click();await attach();
  const initial=await page.evaluate(async()=>{const {nearRiverBank}=await import('/src/data/fiber-plants.ts');return {count:scene.world.resources.filter(n=>n.kind!=='standingTree').length,kinds:[...new Set(scene.world.resources.map(n=>n.kind))],plants:[...new Set(scene.world.resources.filter(n=>n.kind==='fiber').map(n=>n.plant))],badReeds:scene.world.resources.filter(n=>n.plant==='reeds'&&!nearRiverBank(n.x,n.y))};});
- assert.ok(initial.count<=64);for(const k of ['fiber','seeds','stone','tree','fallenLog','stump','vein'])assert.ok(initial.kinds.includes(k),k);for(const p of ['fern','whiteFlowers','bush','reeds'])assert.ok(initial.plants.includes(p),p);assert.deepEqual(initial.badReeds,[]);
+ assert.ok(initial.count<=96);for(const k of ['fiber','seeds','stone','tree','fallenLog','stump','vein'])assert.ok(initial.kinds.includes(k),k);for(const p of ['fern','whiteFlowers','bush','reeds'])assert.ok(initial.plants.includes(p),p);assert.deepEqual(initial.badReeds,[]);
  const collected=[];
  for(const plant of ['fern','whiteFlowers','bush','reeds']){
   const info=await page.evaluate(p=>{const n=scene.world.resources.find(n=>n.kind==='fiber'&&n.plant===p&&n.id.startsWith('spawn-'));approach(n);scene.selectTool('hand');return {id:n.id,before:scene.inventory.data.fiber};},plant);
@@ -57,10 +58,10 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  const waits=await page.evaluate(()=>{scene.persist();return scene.state.resourceFields.property.waiting.filter(w=>['tree','stone','fiber','seeds','scrap'].includes(w.kind)).map(w=>({...w}));});assert.ok(waits.length>=7);
  const firstDue=Math.min(...waits.map(w=>w.at));
  const advance=async now=>page.evaluate(now=>{scene.state.day=Math.floor(now/1440)+1;scene.state.time=now%1440;scene.resourceLifecycle.tick(true);scene.resources.progress.splice(0);scene.afterAction();return {count:scene.world.resources.filter(n=>n.kind!=='standingTree').length,waiting:scene.state.resourceFields.property.waiting.filter(w=>['tree','stone','fiber','seeds','scrap'].includes(w.kind)).length,reedNodes:scene.world.resources.filter(n=>n.plant==='reeds').map(n=>({...n}))};},now);
- const early=await advance(firstDue-.01);assert.equal(early.waiting,waits.length);assert.ok(early.count<=64);
+ const early=await advance(firstDue-.01);assert.equal(early.waiting,waits.length);assert.ok(early.count<=96);
  await page.reload();await page.locator('#continue-game').click();await attach();
  const savedWaits=await page.evaluate(()=>scene.state.resourceFields.property.waiting.filter(w=>['tree','stone','fiber','seeds','scrap'].includes(w.kind)).map(w=>w.at).sort((a,b)=>a-b));assert.deepEqual(savedWaits,waits.map(w=>w.at).sort((a,b)=>a-b));
- const late=await advance(Math.max(...waits.map(w=>w.at))+1);assert.equal(late.waiting,0);assert.ok(late.count<=64);
+ const late=await advance(Math.max(...waits.map(w=>w.at))+1);assert.equal(late.waiting,0);assert.ok(late.count<=96);
  assert.ok(await page.evaluate(async()=>{const {nearRiverBank}=await import('/src/data/fiber-plants.ts');return scene.world.resources.filter(n=>n.plant==='reeds').every(n=>nearRiverBank(n.x,n.y));}));
  console.log('logs/stumps require axe and persist partial hits; four rocks require pickaxe; hand pickups return only after 3 game days');
  const art=await page.evaluate(()=>{
@@ -68,9 +69,9 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
   return entries.map(([label,key])=>({label,key,url:scene.textures.getBase64(key)}));
  });
  fs.writeFileSync(`${dir}/sprites.json`,JSON.stringify(art.map(({url,...item})=>item),null,2));
- await page.evaluate(()=>{game.loop.wake();scene.selectTool('hand');const gate=scene.forestGate();scene.player.x=gate.x*32+16;scene.player.y=gate.y*32+16;scene.nextInteractionAt=0;});await page.keyboard.press('e');await page.waitForSelector('#ui[data-area="forest"]');
+ await page.evaluate(()=>{game.loop.wake();scene.selectTool('hand');const gate=scene.forestGate();scene.player.x=gate.x*32+16;scene.player.y=gate.y*32+16;scene.nextInteractionAt=0;});await walkMapExit(page,'Vale');
  const forest=await page.evaluate(()=>{const f=game.scene.getScene('Floresta');game.loop.sleep();return {count:f.world.resources.filter(n=>n.kind!=='standingTree').length,kinds:[...new Set(f.world.resources.map(n=>n.kind))],badReeds:f.world.resources.filter(n=>n.plant==='reeds').length};});
- assert.ok(forest.count<=48);assert.ok(forest.kinds.includes('fallenLog')&&forest.kinds.includes('stump')&&forest.kinds.includes('fiber'));assert.equal(forest.badReeds,0);
+ assert.ok(forest.count<=80);assert.ok(forest.kinds.includes('fallenLog')&&forest.kinds.includes('stump')&&forest.kinds.includes('fiber'));assert.equal(forest.badReeds,0);
  assert.deepEqual(errors,[]);
  fs.writeFileSync(`${dir}/validacao.json`,JSON.stringify({passed:true,initial,collected,wood,rocks,respawn:{days:3,waits,early,late},forest,pageErrors:errors,at:new Date().toISOString()},null,2));
  // Contact sheet uses the actual runtime sprites, enlarged without smoothing.

@@ -6,6 +6,7 @@ import { setupTerrainSprites } from './terrain-sprites';
 import { setupResourceSprites } from './resource-sprites';
 import { setupDecorSprites } from './decor-sprites';
 import { preloadHouseSprite, setupHouseSprite } from './house-sprites';
+import {preloadPropertyWell} from './property-well';
 import { preloadToolArt } from './tool-visual';
 import {preloadAnimalSprites} from './animal-sprites';
 import { WATER_EMPTY_ICON, WATER_FULL_ICON } from './data/watering-can';
@@ -30,11 +31,15 @@ const WORLD_SOURCES: Record<string, string> = {
 };
 const MODULES = ['parede_creme', 'parede_janela_floreira', 'parede_trepadeira', 'parede_porta', 'porta_madeira', 'janela_turquesa', 'telha_lisa', 'telha_variante', 'chamine', 'floreira', 'cerca_natural', 'banco_jardim', 'barril', 'vaso_flor', 'piso_tabuas', 'piso_pedra', 'terra', 'caminho', 'planta'];
 export function preloadVisualAssets(scene: Phaser.Scene): void {
+  scene.load.image('fence-components-source','assets/visual/architecture/fence-components.png');
+  scene.load.image('fence-moss-source','assets/visual/architecture/fence-moss.png');
+  scene.load.image('finished-gate-source','assets/visual/architecture/finished-gate-source.png');
   scene.load.image('graphics-controls-signs-source','assets/ui/graphics-controls-signs.png');
   scene.load.image('source-small-stones','assets/visual/nature/small-stones.png');
   scene.load.image('source-new-branches','assets/visual/nature/fallen-branches.png');
   scene.load.image('source-berry-bush','assets/visual/nature/berry-bush.png');
   preloadHouseSprite(scene);
+  preloadPropertyWell(scene);
   preloadCharacterSprites(scene);
   preloadToolArt(scene);
   preloadAnimalSprites(scene);

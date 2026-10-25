@@ -1,0 +1,12 @@
+{
+  "property": {
+    "beforeHand": 39,
+    "afterHand": 63,
+    "totalLimit": 96
+  },
+  "forest": {
+    "beforeHand": 13,
+    "afterHand": 37,
+    "totalLimit": 80
+  }
+}
