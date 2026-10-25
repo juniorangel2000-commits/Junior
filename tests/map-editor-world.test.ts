@@ -45,10 +45,11 @@ describe('mapa editado no mundo e na partida', () => {
     const edited = createWorld(scene, [], [], edits);
     for (const offset of [1, 16, 31]) {
       expect(edited.isBlockedPoint(67 * 32 + offset, 18 * 32 + offset)).toBe(true);
-      expect(edited.isBlockedPoint(44 * 32 + offset, 20 * 32 + offset)).toBe(false);
     }
+    expect(edited.isBlockedPoint(44*32+16,20*32+16)).toBe(false);
+    expect(edited.isBlockedPoint(44*32+1,20*32+1)).toBe(true); // Rounded edge still belongs to the river.
     expect(edited.isBuildable(67, 18)).toBe(false);
-    expect(edited.isBuildable(44, 20)).toBe(true);
+    expect(edited.isBuildable(44, 20)).toBe(false); // Construction cannot cover the wet corners.
     expect(edited.isBlocked(44, 18)).toBe(false); // Existing bridge.
   });
   it('recarrega recurso novo com golpes parciais e sem repetir uma recompensa já coletada', () => {

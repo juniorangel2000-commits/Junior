@@ -1,8 +1,13 @@
 import { describe,it,expect } from 'vitest';
 import { FOREST_ANIMALS, FOREST_ENTRY, FOREST_WIDTH, FOREST_HEIGHT, forestBlocked, recruitAnimal } from '../src/data/ancient-forest';
+import {forestWater} from '../src/data/ancient-forest';
 import { createNewSave, migrateSave, validateSave } from '../src/systems/save';
 const profile={name:'Floresta',skin:'#e9bc98',hairColor:'#563b2c',outfit:'#457398',hairStyle:'preso' as const};
 describe('Floresta Antiga',()=>{
+  it('mantém somente o lago, com o antigo riacho transformado em terra',()=>{
+    expect(forestWater(54,16)).toBe(true);
+    for(let y=1;y<=13;y++)expect(forestWater(84-y,y),`antigo riacho em ${84-y},${y}`).toBe(false);
+  });
   it('tem o tamanho da propriedade e todas as clareiras são alcançáveis pela entrada',()=>{
     expect([FOREST_WIDTH,FOREST_HEIGHT]).toEqual([96,72]);
     const visited=new Set<string>(),queue=[FOREST_ENTRY];

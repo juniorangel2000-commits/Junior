@@ -1,0 +1,508 @@
+{
+  "passed": true,
+  "coast": {
+    "leftovers": [],
+    "pointsUnchanged": true
+  },
+  "waterFrames": [],
+  "masks": {
+    "leaks": 0,
+    "pixels": 20858
+  },
+  "shadowFrames": [
+    {
+      "time": 540,
+      "shear": -1.7821684480264313,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 546,
+      "shear": -1.743496825232794,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 552,
+      "shear": -1.7038070493907644,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 558,
+      "shear": -1.6631222982117553,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 564,
+      "shear": -1.621466330444755,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 570,
+      "shear": -1.5788634720018937,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 576,
+      "shear": -1.5353386017527872,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 582,
+      "shear": -1.4909171369959853,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 588,
+      "shear": -1.4456250186159791,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 594,
+      "shear": -1.3994886959344601,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 600,
+      "shear": -1.3525351112646569,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 606,
+      "shear": -1.3047916841777858,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 612,
+      "shear": -1.2562862954907923,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 618,
+      "shear": -1.207047270984739,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 624,
+      "shear": -1.1571033648633477,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 630,
+      "shear": -1.1064837429613539,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 636,
+      "shear": -1.0552179657124794,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 642,
+      "shear": -1.0033359708869745,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 648,
+      "shear": -0.9508680561087987,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 654,
+      "shear": -0.8978448611626678,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 660,
+      "shear": -0.8442973501012752,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 666,
+      "shear": -0.7902567931631633,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 672,
+      "shear": -0.7357547485117797,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 678,
+      "shear": -0.680823043806403,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 684,
+      "shear": -0.625493757615683,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 690,
+      "shear": -0.5697992006846615,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 696,
+      "shear": -0.5137718970662051,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 702,
+      "shear": -0.4574445651278775,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 708,
+      "shear": -0.4008500984453296,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 714,
+      "shear": -0.34402154659338413,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 720,
+      "shear": -0.28699209584600716,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 726,
+      "shear": -0.22979504979646484,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 732,
+      "shear": -0.1724638099089581,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 738,
+      "shear": -0.11503185601311203,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 744,
+      "shear": -0.057532726752695704,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 750,
+      "shear": -1.4579128561278014e-16,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 756,
+      "shear": 0.05753272675269541,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 762,
+      "shear": 0.11503185601311172,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 768,
+      "shear": 0.17246380990895782,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 774,
+      "shear": 0.22979504979646453,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 780,
+      "shear": 0.2869920958460069,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 786,
+      "shear": 0.34402154659338335,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 792,
+      "shear": 0.4008500984453298,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 798,
+      "shear": 0.4574445651278771,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 804,
+      "shear": 0.5137718970662049,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 810,
+      "shear": 0.5697992006846607,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 816,
+      "shear": 0.6254937576156832,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 822,
+      "shear": 0.6808230438064027,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 828,
+      "shear": 0.7357547485117795,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 834,
+      "shear": 0.7902567931631624,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 840,
+      "shear": 0.8442973501012755,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 846,
+      "shear": 0.8978448611626675,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 852,
+      "shear": 0.9508680561087985,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 858,
+      "shear": 1.0033359708869738,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 864,
+      "shear": 1.0552179657124792,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 870,
+      "shear": 1.1064837429613537,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 876,
+      "shear": 1.157103364863348,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 882,
+      "shear": 1.2070472709847384,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 888,
+      "shear": 1.2562862954907925,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 894,
+      "shear": 1.3047916841777851,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 900,
+      "shear": 1.3525351112646564,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 906,
+      "shear": 1.3994886959344597,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 912,
+      "shear": 1.4456250186159791,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 918,
+      "shear": 1.4909171369959853,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 924,
+      "shear": 1.5353386017527866,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 930,
+      "shear": 1.5788634720018928,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 936,
+      "shear": 1.6214663304447554,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 942,
+      "shear": 1.6631222982117544,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 948,
+      "shear": 1.7038070493907644,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 954,
+      "shear": 1.7434968252327934,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 960,
+      "shear": 1.7821684480264315,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 966,
+      "shear": 1.8197993346329724,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 972,
+      "shear": 1.8563675096743388,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 978,
+      "shear": 1.8918516183660816,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 984,
+      "shear": 1.9262309389879702,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 990,
+      "shear": 1.959485394984896,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 996,
+      "shear": 1.9915955666910161,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 1002,
+      "shear": 2.022542702670288,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 1008,
+      "shear": 2.052308730666784,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 1014,
+      "shear": 2.080876268158376,
+      "rotation": 0,
+      "gl": 0
+    },
+    {
+      "time": 1020,
+      "shear": 2.1082286325076423,
+      "rotation": 0,
+      "gl": 0
+    }
+  ],
+  "pageErrors": [],
+  "at": "2026-10-25T00:55:18.984Z",
+  "tests": 477,
+  "testFiles": 47,
+  "waterFrameCount": 80,
+  "waterLoopExactPixels": true,
+  "waterPixelMeanChange": 7.56,
+  "published": false
+}

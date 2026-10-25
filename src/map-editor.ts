@@ -1,4 +1,5 @@
 import {nearRiverBank,isFiberPlant} from './data/fiber-plants';
+import {paintedWaterPoint} from './data/terrain-paint';
 import type {MapArea} from './data/default-maps';
 import { NATURE_KINDS, NATURE_ART, natureArt } from './data/nature-catalog';
 import Phaser from 'phaser';
@@ -23,6 +24,8 @@ export interface MapEditorAdapter {
   apply(edits: MapEditData): boolean;
   cancel(): void;
   switchArea?(area:MapArea,current:MapEditData):void;
+  resourcesHidden?: boolean;
+  setResourcesHidden?(hidden:boolean):void;
 }
 type Point = { x: number; y: number };
 const labels = {
@@ -45,6 +48,7 @@ export class MapEditor {
   private tool: EditorTool = { mode: 'select' };
   private brush = 1;
   private grid = true;
+  private resourcesHidden = false;
   private space = false;
   private alive = true;
   private selected: string | null = null;
@@ -60,12 +64,17 @@ export class MapEditor {
 
   constructor(private readonly scene: Phaser.Scene, initial: MapEditData, private readonly adapter: MapEditorAdapter, history?:MapEditHistory, initialJSON?:string) {
     this.history = history??new MapEditHistory(initial);
+    this.resourcesHidden = !!adapter.resourcesHidden;
     this.storedDraft=loadMapDraft(undefined,initial.area);
     this.initial = initialJSON??JSON.stringify(cloneMapEdits(initial));
     this.canvas = scene.game.canvas;
     this.ui = new MapEditorUI({
       action: action => this.action(action),
-      tool: tool => { this.finishStroke(); this.tool = tool; this.selected = null; this.drawCursor(); this.refresh(); },
+      tool: tool => {
+        this.finishStroke();
+        if(this.resourcesHidden&&['select','object','remove'].includes(tool.mode))this.setResourcesHidden(false);
+        this.tool = tool; this.selected = null; this.drawCursor(); this.refresh();
+      },
       brush: size => { this.brush = size; this.drawCursor(); },
       import: text => this.importMap(text),
     });
@@ -191,6 +200,7 @@ export class MapEditor {
     }
     this.strokeBlocked = false;
     if (this.tool.mode === 'select') {
+      if(this.resourcesHidden){this.selected=null;this.status='Recursos ocultos. Escolha um piso para pintar ou clique em Mostrar recursos.';this.drawCursor();this.refresh();return;}
       const object = this.objectAt(tile);
       this.selected = object?.id ?? null;
       if (object && !this.protected(tile)) this.moving = { ...object };
@@ -338,8 +348,7 @@ export class MapEditor {
       const cell = key(object);
       if(object.kind==='reeds'&&(data.area==='forest'||!nearRiverBank(object.x,object.y)))return 'Os juncos precisam ficar nas margens do rio da propriedade.';
       if(isTreeKind(object.kind)&&!treeGroundClear(object.x,object.y,(px,py)=>{
-        const tx=Math.floor(px/TILE),ty=Math.floor(py/TILE),edit=data.terrain[`${tx},${ty}`];
-        return edit!==undefined?edit==='water':this.adapter.baseWaterPoint?.(px,py)??(this.adapter.baseWater??isWaterTile)(tx,ty);
+        return paintedWaterPoint(data.terrain,px,py,(x,y)=>this.adapter.baseWaterPoint?.(x,y)??(this.adapter.baseWater??isWaterTile)(Math.floor(x/TILE),Math.floor(y/TILE)));
       }))return 'As árvores precisam de terra firme em toda a base, fora da água e das margens alagadas.';
       if (occupied.has(cell)) return 'Dois objetos ficariam no mesmo ponto. Mova ou remova um deles antes.';
       occupied.add(cell);
@@ -383,6 +392,7 @@ export class MapEditor {
         this.storedDraft = loadMapDraft(undefined,this.history.current.area);
       }
     } else if (action === 'grid') { this.grid = !this.grid; this.drawGrid(); }
+    else if(action==='resources')this.setResourcesHidden(!this.resourcesHidden);
     else if (action === 'zoom-in') this.zoom(1.25);
     else if (action === 'zoom-out') this.zoom(1 / 1.25);
     else if (action === 'zoom-fit') this.fit();
@@ -397,6 +407,12 @@ export class MapEditor {
       this.status = 'Mapa exportado. Guarde o JSON para continuar ou enviar suas alterações.';
     }
     this.refresh();
+  }
+
+  private setResourcesHidden(hidden:boolean):void {
+    this.resourcesHidden=hidden;this.selected=null;this.adapter.setResourcesHidden?.(hidden);
+    this.status=hidden?'Recursos ocultos apenas nesta visualização. Escolha um piso para editar.':'Recursos visíveis novamente.';
+    this.drawCursor();
   }
 
   private wheel = (event: WheelEvent): void => {
@@ -432,7 +448,7 @@ export class MapEditor {
     const selected = this.adapter.objects().find(o => o.id === this.selected);
     this.ui.update({ undo: this.history.canUndo, redo: this.history.canRedo,
       dirty: JSON.stringify(this.history.current) !== this.initial, status: this.status,
-      zoom: this.scene.cameras.main.zoom, grid: this.grid, canLoadDraft: !!this.storedDraft,
+      zoom: this.scene.cameras.main.zoom, grid: this.grid, resourcesHidden:this.resourcesHidden, canLoadDraft: !!this.storedDraft,
       selected: selected ? `${labels[selected.kind]} · ${selected.x}, ${selected.y}${selected.depleted ? ' · já coletado' : ''}` : null,
       tile: this.hover, error });
   }

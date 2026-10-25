@@ -1,4 +1,6 @@
 /** Separate 96×72 area. Property coordinates and resource IDs never change. */
+import {lakeDistance} from './water-contours';
+import {TILE} from './world-size';
 export const FOREST_WIDTH = 96, FOREST_HEIGHT = 72;
 export const FOREST_ENTRY = { x: 48, y: 66 };
 export const PROPERTY_FOREST_GATE = { x: 75, y: 18 };
@@ -22,7 +24,13 @@ export function forestPathDistance(x: number, y: number): number {
   }));
 }
 export function forestWater(x: number, y: number): boolean {
+  return forestWaterDistanceAt((x+.5)*TILE,(y+.5)*TILE)<0;
+}
+function legacyForestWater(x:number,y:number):boolean {
   return ((x-54)/13)**2+((y-16)/8)**2 < 1 || (y < 17 && x > 65 && Math.abs(x-(84-y)) < 1.4);
+}
+export function forestWaterDistanceAt(x:number,y:number):number {
+  return lakeDistance(x,y,54.5*TILE,16.5*TILE,13*TILE,8*TILE,2.7);
 }
 
 export function forestClearing(x: number,y: number): boolean {
@@ -31,7 +39,7 @@ export function forestClearing(x: number,y: number): boolean {
 function hash(x:number,y:number):number { return ((Math.imul(x+19,73856093)^Math.imul(y+7,19349663))>>>0)/4294967296; }
 export const FOREST_TREES: Array<{x:number;y:number;pine:boolean;ancient:boolean}> = [];
 for(let y=3;y<70;y+=3) for(let x=3;x<94;x+=3) {
-  if(forestWater(x,y)||forestPathDistance(x,y)<3.5||forestClearing(x,y))continue;
+  if(legacyForestWater(x,y)||forestPathDistance(x,y)<3.5||forestClearing(x,y))continue;
   if(hash(x,y)>.18)FOREST_TREES.push({x,y,pine:hash(y,x)>.76,ancient:false});
 }
 FOREST_TREES.push({x:48,y:42,pine:false,ancient:true});

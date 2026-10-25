@@ -152,7 +152,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs');
   assert.equal(await page.evaluate(()=>valley.farming.isPrepared(21,20)),false);
   assert.deepEqual(await page.evaluate(()=>valley.farming.restoredFarmSoil),[{x:21,y:20}]);
   assert.equal(await page.evaluate(()=>valley.world.isBuildable(21,20)),true);
-  const grass=await page.evaluate(()=>Array.from(valley.textures.get('world-ground-sandy-river-v3').getSourceImage().getContext('2d').getImageData(21*32+16,20*32+16,1,1).data));
+  const grass=await page.evaluate(()=>Array.from(valley.textures.get('world-ground-organic-water-v4').getSourceImage().getContext('2d').getImageData(21*32+16,20*32+16,1,1).data));
   assert.ok(grass[1]>grass[0] && grass[1]>grass[2],'original garden has green grass underneath');
   await reload();assert.equal(await page.evaluate(()=>valley.farming.isPrepared(21,20)),false);
   await page.evaluate(()=>{valley.cameras.main.centerOn(24.5*32,17*32);step(0);});

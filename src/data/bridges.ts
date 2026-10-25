@@ -17,5 +17,13 @@ export function bridgeRailAtPoint(x:number,y:number):boolean {
 /** Actual wet ground, including shallow wading, cannot become a bridge entrance. */
 export function bridgeAllowsStep(fromX:number,fromY:number,toX:number,toY:number,water:(x:number,y:number)=>boolean):boolean {
   const from=bridgeAtPoint(fromX,fromY),to=bridgeAtPoint(toX,toY);
-  return !(!from && to && water(fromX,fromY)) && !(from && !to && water(toX,toY));
+  if(!from&&to){
+    const head=(fromX<to.x*TILE&&toX>=to.x*TILE)||(fromX>=(to.x+to.width)*TILE&&toX<(to.x+to.width)*TILE);
+    return head&&!water(fromX,fromY);
+  }
+  if(from&&!to){
+    const head=toX<from.x*TILE||toX>=(from.x+from.width)*TILE;
+    return head&&!water(toX,toY);
+  }
+  return true;
 }

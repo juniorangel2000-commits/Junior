@@ -1,4 +1,5 @@
 import {isFiberPlant,fiberPlantFor,fiberPlantArt,nearRiverBank} from './data/fiber-plants';
+import {paintedWaterPoint} from './data/terrain-paint';
 import {drawPropertyBridges} from './bridge-art';
 import {isTreeKind,treeGroundClear} from './systems/tree-ground';
 import {bridgeRailAtPoint} from './data/bridges';
@@ -50,6 +51,7 @@ export interface WorldView {
   isSolid(x:number,y:number):boolean;
   isSolidPoint(x:number,y:number):boolean;
   isSwimmingPoint(x:number,y:number):boolean;
+  isWaterGroundPoint(x:number,y:number):boolean;
   canPlantTree(x:number,y:number):boolean;
   isFarm(x: number, y: number): boolean;
   isWater(x: number, y: number): boolean;
@@ -85,8 +87,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     return terrain === undefined ? isWaterTile(x, y) : terrain === 'water';
   };
   const waterPointAt = (x: number, y: number): boolean => {
-    const terrain = mapEdits?.terrain[key(Math.floor(x / TILE), Math.floor(y / TILE))];
-    return terrain === undefined ? isWaterPoint(x, y) : terrain === 'water';
+    return paintedWaterPoint(mapEdits?.terrain,x,y,isWaterPoint);
   };
   const bridgeAt = isBridgeTile;
   const treeReservations=new Set<string>();
@@ -105,14 +106,14 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   // Static obstacles are separate from water: precise movement can follow the
   // rounded water edge while tile navigation/building remains conservative.
   // The ground is independent of saves. Reuse its GPU texture on new/continue.
-  if (!scene.textures.exists('world-ground-sandy-river-v3')) {
+  if (!scene.textures.exists('world-ground-organic-water-v4')) {
     const terrain = document.createElement('canvas');
     terrain.width = WORLD_WIDTH * TILE;
     terrain.height = WORLD_HEIGHT * TILE;
     paintTerrain(terrain.getContext('2d')!, readTerrainSprites(scene), readTerrainDecoration(scene), () => false);
-    scene.textures.addCanvas('world-ground-sandy-river-v3', terrain)?.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    scene.textures.addCanvas('world-ground-organic-water-v4', terrain)?.setFilter(Phaser.Textures.FilterMode.NEAREST);
   }
-  scene.add.image(0, 0, 'world-ground-sandy-river-v3').setOrigin(0).setDepth(-100);
+  scene.add.image(0, 0, 'world-ground-organic-water-v4').setOrigin(0).setDepth(-100);
   if (mapEdits) drawMapTerrainEdits(scene,mapEdits.terrain,`${textureNamespace}-map-edits`);
   addWaterMotion(scene,(x,y)=>waterAt(x,y)&&!bridgeAt(x,y),(x,y)=>waterPointAt(x,y)&&!bridgeAt(Math.floor(x/TILE),Math.floor(y/TILE)));
   drawPropertyBridges(scene);
@@ -356,9 +357,17 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   const occupiedResources = new Set(forestTiles);
   const addLooseResource = (node: ResourceNode): void => {
     if (depleted.has(node.id) || occupiedResources.has(key(node.x, node.y))) return;
-    const { id, x, y, kind } = node;
+    const {id,kind}=node;let {x,y}=node;
+    if(kind!=='vein'&&!bridgeAt(x,y)&&waterPointAt(x*TILE+16,y*TILE+16)){
+      let dry:{x:number;y:number}|undefined;
+      for(let radius=1;radius<=8&&!dry;radius++)for(let dy=-radius;dy<=radius&&!dry;dy++)for(let dx=-radius;dx<=radius;dx++){
+        if(Math.max(Math.abs(dx),Math.abs(dy))!==radius)continue;const nx=x+dx,ny=y+dy;
+        if(nx>1&&ny>1&&nx<WORLD_WIDTH-2&&ny<WORLD_HEIGHT-2&&!waterPointAt(nx*TILE+16,ny*TILE+16)&&!occupiedResources.has(key(nx,ny))&&!blocked.has(key(nx,ny))&&!buildingTiles.has(key(nx,ny))&&!isFarm(nx,ny)){dry={x:nx,y:ny};break;}
+      }
+      if(!dry)return;x=dry.x;y=dry.y;
+    }
     occupiedResources.add(key(x, y));
-    resources.push(node);
+    resources.push({...node,x,y});
     const asset = ({ tree: 'asset-new-branches', stone: 'asset-small-stones', seeds: 'asset-berry-bush', scrap: 'asset-scrap', fiber: 'asset-fiber', vein: 'lake-rock-0', standingTree: 'asset-tree',fallenLog:'forest-detail-log',stump:'forest-detail-stump' } as const)[kind];
     const useAsset = scene.textures.exists(asset);
     const rockVariant=[0,1,2,5][Math.abs(Math.imul(x,73856093)^Math.imul(y,19349663))%4];
@@ -447,6 +456,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     isSolid:solidTile,
     isSolidPoint:(x,y)=>solidTile(Math.floor(x/TILE),Math.floor(y/TILE))||bridgeRailAtPoint(x,y),
     isSwimmingPoint:(x,y)=>!bridgeAt(Math.floor(x/TILE),Math.floor(y/TILE))&&waterPointAt(x,y),
+    isWaterGroundPoint:waterPointAt,
     canPlantTree:dryTreeCell,
     isFarm,
     isWater: waterAt,

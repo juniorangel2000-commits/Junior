@@ -54,4 +54,11 @@ describe('pontes e entrada em terra',()=>{
    expect(bridgeAllowsStep(b.x*TILE-1,b.y*TILE+32,b.x*TILE+1,b.y*TILE+32,()=>true)).toBe(false);
    expect(bridgeAllowsStep(b.x*TILE-1,b.y*TILE+32,b.x*TILE+1,b.y*TILE+32,()=>false)).toBe(true);
  });
+ it('recusa entrada pelas laterais mesmo que o ponto externo esteja seco',()=>{
+   for(const b of PROPERTY_BRIDGES){
+     const x=(b.x+b.width/2)*TILE,top=b.y*TILE,bottom=(b.y+b.height)*TILE;
+     expect(bridgeAllowsStep(x,top-1,x,top+1,()=>false)).toBe(false);
+     expect(bridgeAllowsStep(x,bottom+1,x,bottom-1,()=>false)).toBe(false);
+   }
+ });
 });

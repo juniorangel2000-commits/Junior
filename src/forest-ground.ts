@@ -1,4 +1,4 @@
-import { forestClearing, forestPathDistance, forestWater } from './data/ancient-forest';
+import { forestClearing, forestPathDistance, forestWaterDistanceAt } from './data/ancient-forest';
 import type { TerrainSprites } from './terrain-sprites';
 
 const materials = ['forest', 'meadow', 'path-dry', 'water'] as const;
@@ -7,7 +7,7 @@ const smooth = (v:number):number => {const t=Math.max(0,Math.min(1,v));return t*
 const cells = new Map<string,number>();
 function materialAt(x:number,y:number):number {
   const key=`${x},${y}`;let value=cells.get(key);
-  if(value===undefined){value=forestWater(x,y)?3:forestPathDistance(x,y)<1.5&&!(y>=60&&x>=44&&x<=52)?2:forestClearing(x,y)?1:0;cells.set(key,value);}
+  if(value===undefined){value=forestPathDistance(x,y)<1.5&&!(y>=60&&x>=44&&x<=52)?2:forestClearing(x,y)?1:0;cells.set(key,value);}
   return value;
 }
 
@@ -26,6 +26,8 @@ export function forestGroundPixels(sprites:TerrainSprites|undefined,left:number,
     weights[materialAt(x+1,y)]+=tx*(1-ty);
     weights[materialAt(x,y+1)]+=(1-tx)*ty;
     weights[materialAt(x+1,y+1)]+=tx*ty;
+    const shorePixels=forestWaterDistanceAt(wx+.5,wy+.5);
+    if(shorePixels<0){weights.fill(0);weights[3]=1;}
     const color=[0,0,0];
     for(let m=0;m<4;m++){
       if(!weights[m])continue;
@@ -47,8 +49,12 @@ export function forestGroundPixels(sprites:TerrainSprites|undefined,left:number,
     color[0]=color[0]*(1-bank*.25)+76*bank*.25;
     color[1]=color[1]*(1-bank*.25)+117*bank*.25;
     color[2]=color[2]*(1-bank*.25)+78*bank*.25;
-    // An irregular sand bank follows the lake's ellipse in world coordinates.
-    const shoreDistance=(Math.hypot((gx-54)/13,(gy-16)/8)-1)*8;
+    if(shorePixels<0){
+      const shallow=smooth((shorePixels+28)/28)*.22,depth=.9+.1*smooth((shorePixels+100)/100);
+      for(let c=0;c<3;c++)color[c]=color[c]*depth*(1-shallow)+[125,176,160][c]*shallow;
+    }
+    // Sand shares the exact asymmetric contour used by swimming and waves.
+    const shoreDistance=shorePixels/32;
     const shoreWidth=1.05+Math.sin(wx*.009+wy*.004)*.25+Math.sin(wy*.015)*.15;
     const sandWeight=(1-weights[3])*smooth((shoreWidth-Math.max(0,shoreDistance))/.55);
     if(shoreDistance>-.75&&sandWeight>0){

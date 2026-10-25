@@ -1,9 +1,10 @@
-export interface VisualSettings { daylight: boolean; intensity: number }
+export interface VisualSettings { daylight: boolean; intensity: number; dynamicLighting: boolean }
 export const VISUAL_SETTINGS_KEY = 'after-rain-visual-settings-v1';
 
 export function visualSettings(value: unknown): VisualSettings {
   const v = value && typeof value === 'object' ? value as Partial<VisualSettings> : {};
   return { daylight: typeof v.daylight === 'boolean' ? v.daylight : true,
+    dynamicLighting: typeof v.dynamicLighting === 'boolean' ? v.dynamicLighting : true,
     intensity: typeof v.intensity === 'number' && Number.isFinite(v.intensity) ? Math.max(0, Math.min(1, v.intensity)) : 1 };
 }
 let current: VisualSettings | undefined;

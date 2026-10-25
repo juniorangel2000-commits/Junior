@@ -1,4 +1,6 @@
 import {isFiberPlant,fiberPlantFor,fiberPlantArt} from './data/fiber-plants';
+import {paintedWaterPoint} from './data/terrain-paint';
+import {treeGroundClear,isTreeKind} from './systems/tree-ground';
 import Phaser from 'phaser';
 import type {WorldEditorObject} from './world';
 import type {MapEditData,EditorObjectKind} from './systems/map-editor';
@@ -9,7 +11,7 @@ import {drawMapTerrainEdits} from './map-editor-terrain';
 import {addWaterMotion} from './water-motion';
 import {readTerrainSprites} from './terrain-sprites';
 import {forestGroundPixels} from './forest-ground';
-import {FOREST_ENTRY,FOREST_TREES,FOREST_ROCKS,forestWater,forestPathDistance,forestTreeAppearance} from './data/ancient-forest';
+import {FOREST_ENTRY,FOREST_TREES,FOREST_ROCKS,forestWater,forestWaterDistanceAt,forestPathDistance,forestTreeAppearance} from './data/ancient-forest';
 export class ForestWorld {
   private environment:Phaser.GameObjects.GameObject[]=[];
   editorObjects:WorldEditorObject[]=[];
@@ -32,6 +34,7 @@ export class ForestWorld {
   }
   constructor(private readonly scene:Phaser.Scene,edits?:MapEditData,private readonly textureNamespace='forest'){this.rebuildEnvironment(edits);}
   waterAt=(x:number,y:number):boolean=>{const t=this.edits?.terrain[`${x},${y}`];return t?t==='water':forestWater(x,y);};
+  waterPointAt=(x:number,y:number):boolean=>paintedWaterPoint(this.edits?.terrain,x,y,(px,py)=>forestWaterDistanceAt(px,py)<0);
   isBlocked=(x:number,y:number):boolean=>x<1||y<1||x>=95||y>=71||this.waterAt(x,y)||this.solid.has(`${x},${y}`);
   entry(){return this.edits?.points?.entry??FOREST_ENTRY;}
   exit(){return this.edits?.points?.exit??{x:48,y:69};}
@@ -39,6 +42,15 @@ export class ForestWorld {
     const edit=this.edits?.objects[id];if(edit?.removed||kind==='reeds')return;
     const collectible=collectibleKind(kind),resourceID=`f-${id}`;if(collectible&&this.depleted.has(resourceID))return;
     x=edit?.x??x;y=edit?.y??y;
+    if(isTreeKind(kind)&&!treeGroundClear(x,y,this.waterPointAt)){
+      let dry:{x:number;y:number}|undefined;
+      for(let radius=1;radius<=8&&!dry;radius++)for(let dy=-radius;dy<=radius&&!dry;dy++)for(let dx=-radius;dx<=radius;dx++){
+        if(Math.max(Math.abs(dx),Math.abs(dy))!==radius)continue;
+        const nx=x+dx,ny=y+dy;
+        if(treeGroundClear(nx,ny,this.waterPointAt)&&!this.solid.has(`${nx},${ny}`)&&!this.editorObjects.some(o=>o.x===nx&&o.y===ny)&&!FOREST_TREES.some(t=>t.x===nx&&t.y===ny)&&forestPathDistance(nx,ny)>2.2){dry={x:nx,y:ny};break;}
+      }
+      if(!dry)return;x=dry.x;y=dry.y;
+    }
     if(this.editorObjects.some(o=>o.x===x&&o.y===y)||this.waterAt(x,y)&&!natureArt(kind)?.water)return;
     const sprite=this.scene.add.image(x*32+16,y*32+25,texture).setOrigin(.5,pivot).setDisplaySize(width,height).setFlipX(flip).setDepth(y*32+25);
     this.editorObjects.push({id,kind,x,y,texture});if(collectible){this.resources.push({id:resourceID,kind:collectible,x,y,...(isFiberPlant(kind)?{plant:kind}:{})});this.images.set(resourceID,sprite);}
@@ -50,7 +62,7 @@ export class ForestWorld {
     const before=new Set(this.scene.children.list);
     this.drawGround();
     if(edits)drawMapTerrainEdits(this.scene,edits.terrain,`${this.textureNamespace}-map-edits`,forestWater);
-    addWaterMotion(this.scene,this.waterAt);
+    addWaterMotion(this.scene,this.waterAt,this.waterPointAt);
     for(const t of FOREST_TREES){
       const art=forestTreeAppearance(t),scale=art.scale/(this.scene.textures.exists('reference-trees-source')?2:1),texture=`asset-${t.pine?'pine':'tree'}-${art.variant}`;
       const source=this.scene.textures.get(texture).getSourceImage() as HTMLCanvasElement;
@@ -72,7 +84,7 @@ export class ForestWorld {
     this.environment=this.scene.children.list.filter(o=>!before.has(o));
   }
   private drawGround():void {
-    const key='forest-ground-sandy-shore';
+    const key='forest-ground-organic-shore-v2';
     if(!this.scene.textures.exists(key)){
       const sprites=readTerrainSprites(this.scene);
       const terrain=document.createElement('canvas');terrain.width=3072;terrain.height=2304;

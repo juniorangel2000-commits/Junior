@@ -1,5 +1,5 @@
 import { Daylight } from '../daylight';
-import {bridgeAllowsStep} from '../data/bridges';
+import {bridgeAllowsStep,bridgeAtPoint} from '../data/bridges';
 import {AnimalPopulation} from '../animals';
 import {deliverAnimalEscort,releaseAnimalEscort} from '../systems/animals';
 import {sampleWaterDepth} from '../swimming/config';
@@ -147,6 +147,7 @@ export class ValleyScene extends Phaser.Scene {
       this.interact(tile, this.restoreSoilHeld);
     });
     this.events.once('shutdown', () => {
+      this.daylight?.destroy();
       window.removeEventListener('keydown', this.handleKey);
       window.removeEventListener('keyup', this.handleKeyUp);
       window.removeEventListener('pagehide', this.handlePageHide);
@@ -506,6 +507,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private loadState(data: SaveData): void {
+    this.daylight?.destroy();
     this.toolUse.cancel(); this.toolVisual = undefined;
     this.craftJob = null;
     this.inHome = false;
@@ -683,7 +685,7 @@ export class ValleyScene extends Phaser.Scene {
   }
   private movementBlocked=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(x,y):this.world.isSolid(x,y)||this.building.isBlocked(x,y)||(x===Math.floor(NPC_POSITION.x/TILE)&&y===Math.floor(NPC_POSITION.y/TILE));
   private movementBlockedPoint=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):this.world.isSolidPoint(x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE))||(Math.floor(x/TILE)===Math.floor(NPC_POSITION.x/TILE)&&Math.floor(y/TILE)===Math.floor(NPC_POSITION.y/TILE));
-  private swimmingPoint=(x:number,y:number):number=>this.inHome?0:sampleWaterDepth((px,py)=>!this.building.at(Math.floor(px/TILE),Math.floor(py/TILE),'floor')&&this.world.isSwimmingPoint(px,py),x,y);
+  private swimmingPoint=(x:number,y:number):number=>this.inHome||bridgeAtPoint(x,y)?0:sampleWaterDepth((px,py)=>!this.building.at(Math.floor(px/TILE),Math.floor(py/TILE),'floor')&&this.world.isWaterGroundPoint(px,py),x,y);
 
   private blockedPoint = (x: number, y: number): boolean => {
     const tx = Math.floor(x / TILE), ty = Math.floor(y / TILE);

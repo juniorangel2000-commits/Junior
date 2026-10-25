@@ -23,7 +23,7 @@ import { advanceClock, GAME_MINUTES_PER_SECOND } from '../systems/clock';
 import { Farming } from '../systems/farming';
 import { directionFromVector, directionVector } from '../character-directions';
 import { setupAnimalArt } from '../forest-art';
-import { FOREST_ANIMALS, FOREST_ENTRY,  forestWater, ANIMAL_NAMES } from '../data/ancient-forest';
+import { FOREST_ANIMALS, FOREST_ENTRY, ANIMAL_NAMES } from '../data/ancient-forest';
 import { gameAudio } from '../audio';
 import { loadCameraZoom, saveCameraZoom, stepCameraZoom } from '../camera-zoom';
 
@@ -52,7 +52,7 @@ export class ForestScene extends Phaser.Scene {
   private get solid(){return this.world.solid;}
   private get edits(){return this.world.edits;}
   private movementBlockedAt=(x:number,y:number):boolean=>x<1||y<1||x>=95||y>=71||this.solid.has(`${x},${y}`);
-  private waterContains=(x:number,y:number):boolean=>{const terrain=this.edits?.terrain[`${Math.floor(x/32)},${Math.floor(y/32)}`];return terrain?terrain==='water':forestWater(x/32-.5,y/32-.5);};
+  private waterContains=(x:number,y:number):boolean=>this.world.waterPointAt(x,y);
   private swimmingPoint=(x:number,y:number):number=>sampleWaterDepth(this.waterContains,x,y);
   private entry(){return this.edits?.points?.entry??FOREST_ENTRY;}
   private exit(){return this.edits?.points?.exit??{x:48,y:69};}
@@ -78,7 +78,7 @@ export class ForestScene extends Phaser.Scene {
     this.scale.on('resize',this.applyCamera,this);
     window.addEventListener('pagehide',this.save);window.addEventListener('beforeunload',this.save);window.addEventListener('blur',this.blur);
     document.addEventListener('visibilitychange',this.visibility);
-    this.events.once('shutdown',()=>{this.wildlife?.destroy();this.wildlife=undefined;this.input.keyboard?.off('keydown',this.key,this);this.input.off('wheel',this.wheel,this);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
+    this.events.once('shutdown',()=>{this.daylight?.destroy();this.wildlife?.destroy();this.wildlife=undefined;this.input.keyboard?.off('keydown',this.key,this);this.input.off('wheel',this.wheel,this);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
     this.save();
   }
   openMapEditor():void {

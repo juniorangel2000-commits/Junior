@@ -1,9 +1,14 @@
 import property from './maps/property.json';
 import forest from './maps/forest.json';
 import type {MapEditData} from '../systems/map-editor';
+import {repairPropertyShore} from './property-shore-repair';
 export type MapArea='property'|'forest';
 export const MAP_BASE_REVISION=1;
-export function defaultMap(area:MapArea):MapEditData{return structuredClone((area==='forest'?forest:property) as MapEditData);}
+export function defaultMap(area:MapArea):MapEditData{
+ const map=structuredClone((area==='forest'?forest:property) as MapEditData);
+ if(area==='property')repairPropertyShore(map);
+ return map;
+}
 /** New shared layout plus local edits; existing local object edits retain priority. */
 export function mergeDefaultMap(area:MapArea,local?:MapEditData,keepLocalPoints=true):MapEditData {
  const base=defaultMap(area);if(!local)return base;

@@ -47,6 +47,7 @@ export interface SaveData {
   resourceFields?:{property:ResourceField;forest:ResourceField};
   resourceMilestones?:{felled:boolean;mined:boolean};
   mapBaseRevision?:number;
+  propertyShoreRevision?:number;
   activeArea?: 'property' | 'forest';
   forestPosition?: TilePoint & { direction?: CharacterDirection };
   recruitedAnimals?: string[];

@@ -8,7 +8,7 @@ export interface EditorTool {
   object?: EditorObjectKind;
 }
 export type EditorAction = 'undo' | 'redo' | 'zoom-out' | 'zoom-fit' | 'zoom-in'
-  | 'grid' | 'export' | 'load-draft' | 'apply' | 'cancel' | 'map-property' | 'map-forest';
+  | 'grid' | 'resources' | 'export' | 'load-draft' | 'apply' | 'cancel' | 'map-property' | 'map-forest';
 export interface MapEditorCallbacks {
   action(action: EditorAction): void | Promise<void>;
   tool(tool: EditorTool): void;
@@ -23,6 +23,7 @@ export interface MapEditorUIState {
   zoom: number;
   canLoadDraft: boolean;
   grid: boolean;
+  resourcesHidden?: boolean;
   selected?: string | null;
   tile?: { x: number; y: number } | null;
   error?: boolean;
@@ -116,6 +117,7 @@ export class MapEditorUI {
           </div>
           <div class="me-command-group" role="group" aria-label="Guias visuais">
             <button type="button" data-action="grid" aria-pressed="true">${icon('grid')}<span>Grade</span></button>
+            <button type="button" data-action="resources" aria-pressed="false" title="Ocultar árvores, pedras, sucata e vegetação para editar os pisos">${icon('standingTree')}<span>Ocultar recursos</span></button>
             <button type="button" data-reference aria-expanded="false" aria-controls="map-editor-reference">${icon('map')}<span>Referência</span></button>
           </div>
           <div class="me-command-group" role="group" aria-label="Trocar cenário em edição"><button type="button" data-action="map-property" data-map-area="property">Propriedade</button><button type="button" data-action="map-forest" data-map-area="forest">Floresta Antiga</button></div><span class="me-map-caption">96 × 72</span>
@@ -259,6 +261,8 @@ export class MapEditorUI {
     this.element.querySelector<HTMLButtonElement>('[data-action="redo"]')!.disabled = !state.redo;
     this.element.querySelector<HTMLButtonElement>('[data-action="load-draft"]')!.disabled = !state.canLoadDraft;
     this.element.querySelector('[data-action="grid"]')!.setAttribute('aria-pressed', String(state.grid));
+    this.element.querySelector('[data-action="resources"]')!.setAttribute('aria-pressed',String(!!state.resourcesHidden));
+    this.element.querySelector('[data-action="resources"] span')!.textContent=state.resourcesHidden?'Mostrar recursos':'Ocultar recursos';
     const draft = this.element.querySelector<HTMLElement>('[data-draft-state]')!;
     draft.textContent = state.dirty ? 'Rascunho alterado' : 'Rascunho';
     draft.dataset.changed = String(state.dirty);

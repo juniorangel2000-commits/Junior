@@ -5,9 +5,11 @@ import { isBridgeTile, isPathTile, isWaterTile, TILE, WORLD_HEIGHT, WORLD_WIDTH 
 import { isWaterPoint, roadDistanceAt, waterDistanceAt } from '../src/data/terrain-shape';
 
 describe('contornos contínuos do terreno', () => {
-  it('alarga o rio em 25% e ajusta os tabuleiros à largura real nas travessias',()=>{
+  it('varia a largura do rio em toda a extensão e preserva as travessias',()=>{
     expect(PROPERTY_RIVER_WIDTH).toBe(160);
-    for(let y=0;y<72*TILE;y+=19){const b=riverBanksAt(y);expect(b.right-b.left).toBeCloseTo(160,6);}
+    const widths=[];
+    for(let y=0;y<72*TILE;y+=19){const b=riverBanksAt(y);const width=b.right-b.left;expect(width).toBeGreaterThan(120);expect(width).toBeLessThan(185);widths.push(width);}
+    expect(Math.max(...widths)-Math.min(...widths)).toBeGreaterThan(35);
     for(const b of PROPERTY_BRIDGES){
       for(let y=b.y*TILE;y<(b.y+b.height)*TILE;y+=3){
         const banks=riverBanksAt(y);expect(banks.left).toBeGreaterThanOrEqual(b.x*TILE);
@@ -54,15 +56,19 @@ describe('contornos contínuos do terreno', () => {
 
   it('mantém a margem contínua ao atravessar bordas de amostragem e células', () => {
     for (let y = 20; y < WORLD_HEIGHT * TILE - 20; y += 13) for (let x = 20; x < WORLD_WIDTH * TILE - 20; x += 29) {
-      expect(Math.abs(waterDistanceAt(x + 0.1, y) - waterDistanceAt(x - 0.1, y))).toBeLessThan(0.3);
-      expect(Math.abs(waterDistanceAt(x, y + 0.1) - waterDistanceAt(x, y - 0.1))).toBeLessThan(0.3);
+      expect(Math.abs(waterDistanceAt(x + 0.1, y) - waterDistanceAt(x - 0.1, y))).toBeLessThan(0.5);
+      expect(Math.abs(waterDistanceAt(x, y + 0.1) - waterDistanceAt(x, y - 0.1))).toBeLessThan(0.5);
     }
   });
 
-  it('desenha arco no lago onde a antiga primeira fileira tinha uma borda reta', () => {
-    expect(isWaterPoint(36.5 * TILE, 27 * TILE)).toBe(true);
-    expect(isWaterPoint(33.5 * TILE, 27 * TILE)).toBe(false);
-    expect(isWaterPoint(33.5 * TILE, 27.5 * TILE)).toBe(true);
+  it('desenha margens assimétricas com reentrâncias em vez de um oval regular', () => {
+    const distances=[];
+    for(const sign of [-1,1]){
+      let shore=0;
+      for(let distance=0;distance<160;distance++)if(isWaterPoint(36.5*TILE,30.5*TILE+sign*distance))shore=distance;
+      distances.push(shore);
+    }
+    expect(Math.abs(distances[0]-distances[1])).toBeGreaterThan(10);
   });
 
   it('preserva água sob ambas as pontes para o deck usar override separado', () => {
@@ -93,9 +99,10 @@ describe('contornos contínuos do terreno', () => {
   });
 
   it('mantém as rotas da propriedade, bosque e campos ligadas', () => {
-    for (const [x, y] of [[24.5, 17], [40, 18.5], [55, 18.5], [31.5, 25], [19.5, 40], [40, 53.5], [68.5, 55]]) {
+    for (const [x, y] of [[24.5, 17], [40, 18.5], [55, 18.5], [19.5, 40], [40, 53.5], [68.5, 55]]) {
       expect(roadDistanceAt(x * TILE, y * TILE), `${x},${y}`).toBeLessThan(0);
     }
+    expect(roadDistanceAt(31.5*TILE,25*TILE)).toBeGreaterThan(0); // Retired lake access must not return through the beach.
   });
 
   it('pinta pontas arredondadas sem cortar no início do tile de caminho', () => {

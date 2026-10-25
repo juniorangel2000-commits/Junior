@@ -3,6 +3,8 @@ import { TILE, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 import { isWaterPoint } from './data/terrain-shape';
 import { readTerrainSprites, type TerrainSprites } from './terrain-sprites';
 import type { TerrainKind } from './systems/map-editor';
+import {terrainPaintAlpha} from './data/terrain-paint';
+import {propertyGrassStyle} from './terrain-art';
 
 
 const MATERIALS: Record<TerrainKind, keyof TerrainSprites> = {
@@ -12,10 +14,6 @@ const FALLBACK: Record<TerrainKind, readonly [number, number, number]> = {
   grass: [92, 133, 51], path: [187, 148, 94], water: [48, 130, 138],
   sand:[179,154,108],soil:[105,72,45],meadow:[125,150,62],forest:[52,87,56],moss:[62,104,53],forestPath:[79,108,58],wetPath:[124,100,69],wood:[153,111,65],paving:[157,154,129],
 };
-const smooth = (value: number): number => {
-  const t = Math.max(0, Math.min(1, value));
-  return t * t * (3 - 2 * t);
-};
 const mirror = (position: number, size: number): number => {
   const local = position % (size * 2);
   return local < size ? local : size * 2 - local - 1;
@@ -23,8 +21,9 @@ const mirror = (position: number, size: number): number => {
 
 /**
  * Paint edits above the original ground without changing or rebaking that atlas.
- * Every edited tile stays opaque, including shoreline highlights: its visual
- * footprint therefore agrees with the editor's tile-sized water collision.
+ * Painted land feathers into the original floor. The same alpha mask decides
+ * the edge of reclaimed land for swimming, so curved shores and movement agree.
+ * Explicit water, wood and paving retain their full painted footprint.
  * The caller must destroy the previous world's images before replacing its
  * texture. Reusing one key prevents GPU textures accumulating after each stroke.
  */
@@ -62,10 +61,14 @@ export function drawMapTerrainEdits(
       left: !neighbourIsWater(x - 1, y), right: !neighbourIsWater(x + 1, y),
       top: !neighbourIsWater(x, y - 1), bottom: !neighbourIsWater(x, y + 1),
     } : undefined;
+    const grassStyles:Array<ReturnType<typeof propertyGrassStyle>>=[];
     for (let py = 0; py < TILE; py++) for (let px = 0; px < TILE; px++) {
       const wx = left + px, wy = top + py, destination = (py * TILE + px) * 4;
-      const field = smooth((wy - 38 * TILE) / (10 * TILE));
-      const forest = smooth((wx - 45 * TILE) / (12 * TILE)) * (1 - field);
+      let grassStyle:ReturnType<typeof propertyGrassStyle>|undefined;
+      if(material==='grass'){
+        const block=(py>>1)*16+(px>>1);
+        grassStyle=grassStyles[block]??(grassStyles[block]=propertyGrassStyle(wx&~1,wy&~1));
+      }
       let sample = 0;
       if (sprite) {
         // Match the existing world's continuous sampling; water keeps its wave
@@ -85,14 +88,15 @@ export function drawMapTerrainEdits(
       for (let channel = 0; channel < 3; channel++) {
         let value = sprite?.pixels[sample + channel] ?? FALLBACK[material][channel];
         if(material==='forestPath'&&sprites){value=value*.6+sprites.meadow.pixels[sample+channel]*.3+sprites['path-dry'].pixels[sample+channel]*.1;}
-        if (material === 'grass' && sprites && sprite) {
-          value = value * (1 - forest - field) + sprites.forest.pixels[sample + channel] * forest
-            + sprites.meadow.pixels[sample + channel] * field;
+        if (grassStyle && sprites && sprite) {
+          const {forest,field,moss,light}=grassStyle;
+          value = value * (1 - forest - field) + sprites.forest.pixels[sample + channel] * forest + sprites.meadow.pixels[sample + channel] * field;
+          value=value*(1-moss)+sprites.moss.pixels[sample+channel]*moss+light;
         }
         if (shallow) value = value * (1 - shallow) + [125, 176, 160][channel] * shallow;
         pixels.data[destination + channel] = value;
       }
-      pixels.data[destination + 3] = 255;
+      pixels.data[destination + 3] = Math.round(255*terrainPaintAlpha(terrain,wx+.5,wy+.5));
     }
     context.putImageData(pixels, left, top);
   }

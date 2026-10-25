@@ -26,8 +26,8 @@ describe('iluminação das quatro fases', () => {
     expect(daylightAt(1110,.5).warmth).toBe(daylightAt(1110).warmth*.5);
   });
   it('preferências e horários inválidos têm valores seguros', () => {
-    expect(visualSettings(null)).toEqual({daylight:true,intensity:1});
-    expect(visualSettings({daylight:false,intensity:Infinity})).toEqual({daylight:false,intensity:1});
+    expect(visualSettings(null)).toEqual({daylight:true,intensity:1,dynamicLighting:true});
+    expect(visualSettings({daylight:false,intensity:Infinity})).toEqual({daylight:false,intensity:1,dynamicLighting:true});
     expect(visualSettings({intensity:-4}).intensity).toBe(0);
     expect(daylightAt(NaN)).toEqual(daylightAt(720));
     expect(daylightAt(-1)).toEqual(daylightAt(1439));

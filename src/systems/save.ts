@@ -1,4 +1,5 @@
 import {validateResourceField} from './resource-spawns';
+import {repairPropertyShore,PROPERTY_SHORE_REVISION} from '../data/property-shore-repair';
 import {collectibleKind} from '../data/nature-catalog';
 import {editorObjectKind} from './map-editor';
 import {MAP_BASE_REVISION,defaultMap,mergeDefaultMap} from '../data/default-maps';
@@ -44,6 +45,7 @@ export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
   if (value.forestMapEdits !== undefined && (!validateMapEdits(value.forestMapEdits)||value.forestMapEdits.area!=='forest')) return false;
   if (value.mapEdits !== undefined && (!validateMapEdits(value.mapEdits)||value.mapEdits.area!==undefined)) return false;
+  if(value.propertyShoreRevision!==undefined&&value.propertyShoreRevision!==PROPERTY_SHORE_REVISION)return false;
   if(value.resourceFields!==undefined&&(!isRecord(value.resourceFields)||!validateResourceField(value.resourceFields.property,'property')||!validateResourceField(value.resourceFields.forest,'forest')))return false;
   if(value.resourceMilestones!==undefined&&(!isRecord(value.resourceMilestones)||typeof value.resourceMilestones.felled!=='boolean'||typeof value.resourceMilestones.mined!=='boolean'))return false;
   if (value.quickbar !== undefined && !validQuickbar(value.quickbar)) return false;
@@ -167,6 +169,10 @@ export function migrateSave(value: unknown): SaveData | null {
   if(validateSave(value)){
     const data=structuredClone(value);
     if(data.mapBaseRevision!==MAP_BASE_REVISION){data.mapEdits=mergeDefaultMap('property',data.mapEdits,false);data.forestMapEdits=mergeDefaultMap('forest',data.forestMapEdits,false);data.mapBaseRevision=MAP_BASE_REVISION;}
+    if(data.propertyShoreRevision!==PROPERTY_SHORE_REVISION){
+      const protectedCells=new Set([...(data.preparedSoil??[]),...data.crops,...data.buildings.flatMap(buildingFootprint)].map(p=>`${p.x},${p.y}`));
+      repairPropertyShore(data.mapEdits,protectedCells);data.propertyShoreRevision=PROPERTY_SHORE_REVISION;
+    }
     return data;
   }
   if (!isRecord(value) || value.version !== 1 || !isRecord(value.inventory)) return null;
@@ -185,7 +191,7 @@ export function migrateSave(value: unknown): SaveData | null {
 
 export function createNewSave(profile: CharacterProfile): SaveData {
   return {
-    version:SAVE_VERSION,mapBaseRevision:MAP_BASE_REVISION,mapEdits:defaultMap('property'),forestMapEdits:defaultMap('forest'),
+    version:SAVE_VERSION,mapBaseRevision:MAP_BASE_REVISION,propertyShoreRevision:PROPERTY_SHORE_REVISION,mapEdits:defaultMap('property'),forestMapEdits:defaultMap('forest'),
     quickbar: emptyQuickbar(), homeSupplies: { wateringCan: false, seedPacket: false },
     profile: { ...profile, name: profile.name.trim() },
     player: { x: 25 * TILE + TILE / 2, y: 18 * TILE + TILE / 2 },

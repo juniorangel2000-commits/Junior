@@ -6,9 +6,7 @@ export {waterDistanceAt,isWaterPoint} from './property-water';
 type Trail = readonly [horizontal: boolean, from: number, to: number, centre: number, halfWidth: number, seed: number];
 const TRAILS: readonly Trail[] = [
   // O acesso termina na soleira da casa, centrada em 24,5 tiles.
-  [true, 15, 23, 18.5, 20, 2],
   [true, 47, 76.5, 19, 22, 2],
-  [false, 19, 30.5, 31.5, 22, 3],
   [false, 24, 53.5, 19.5, 23, 4],
   [true, 19.5, 75.5, 53.5, 25, 5],
   [false, 18.5, 61.5, 68.5, 23, 6],

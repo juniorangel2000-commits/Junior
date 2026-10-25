@@ -1,21 +1,23 @@
 import Phaser from 'phaser';
-import {WATER_ANIMATION,waterSurfaceAlpha} from './data/water-animation';
+import {WATER_ANIMATION,animatedWaterRGB} from './data/water-animation';
+import {readTerrainSprites} from './terrain-sprites';
 
 /** Prebaked smooth waves. Per-cell shore masks keep every pixel off land and bridges. */
 export function addWaterMotion(scene:Phaser.Scene,water:(x:number,y:number)=>boolean,contains?:(x:number,y:number)=>boolean):void {
-  const {frames,fps,tile}=WATER_ANIMATION;
+  const {frames,fps,tile,period}=WATER_ANIMATION;
   const point=contains??((x:number,y:number)=>water(Math.floor(x/tile),Math.floor(y/tile)));
-  // Four shared phase tiles form a continuous 64px pattern. Cache masks separately.
-  const sourceKey='water-surface-v2-base';
+  // Nine shared phase tiles preserve the original 96px water drawing across seams.
+  const sourceKey='water-surface-v3-base',columns=period/tile;
+  const art=readTerrainSprites(scene)?.water;
   const sources:Uint8ClampedArray[]=[];
-  for(let quadrant=0;quadrant<4;quadrant++) {
+  for(let quadrant=0;quadrant<columns*columns;quadrant++) {
     const key=`${sourceKey}:${quadrant}`;
     if(!scene.textures.exists(key)) {
       const canvas=document.createElement('canvas');canvas.width=frames*tile;canvas.height=tile;
       const g=canvas.getContext('2d')!,image=g.createImageData(canvas.width,tile);
       for(let f=0;f<frames;f++)for(let y=0;y<tile;y++)for(let x=0;x<tile;x++) {
         const i=(y*canvas.width+f*tile+x)*4;
-        image.data.set([175,222,209,waterSurfaceAlpha(f,x+(quadrant%2)*tile,y+Math.floor(quadrant/2)*tile)],i);
+        image.data.set([...animatedWaterRGB(f,x+(quadrant%columns)*tile,y+Math.floor(quadrant/columns)*tile,art),190],i);
       }
       g.putImageData(image,0,0);scene.textures.addCanvas(key,canvas)?.setFilter(0);
     }
@@ -30,8 +32,8 @@ export function addWaterMotion(scene:Phaser.Scene,water:(x:number,y:number)=>boo
       hash=Math.imul(hash^Number(wet),16777619)>>>0;
     }
     if(!count)continue;
-    const quadrant=tx%2+(ty%2)*2;
-    const key=count===tile*tile?`${sourceKey}:${quadrant}`:`water-surface-v2:${quadrant}:${hash.toString(16)}:${count}`;
+    const quadrant=tx%columns+(ty%columns)*columns;
+    const key=count===tile*tile?`${sourceKey}:${quadrant}`:`water-surface-v3:${quadrant}:${hash.toString(16)}:${count}`;
     if(!scene.textures.exists(key)) {
       const canvas=document.createElement('canvas');canvas.width=frames*tile;canvas.height=tile;
       const g=canvas.getContext('2d')!,image=g.createImageData(canvas.width,tile);image.data.set(sources[quadrant]);

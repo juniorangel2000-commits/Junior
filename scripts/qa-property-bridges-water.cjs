@@ -47,7 +47,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
    const {riverBanksAt,shoreSandAt,isWaterPoint,PROPERTY_RIVER_WIDTH}=await import('/src/data/property-water.ts');
    const trees=valley.world.resources.filter(n=>n.kind==='standingTree');
    const wetTrees=trees.filter(t=>!valley.world.canPlantTree(t.x,t.y));
-   const source=valley.textures.get('world-ground-sandy-river-v3').getSourceImage(),ctx=source.getContext('2d');
+   const source=valley.textures.get('world-ground-organic-water-v4').getSourceImage(),ctx=source.getContext('2d');
    const sample=(x,y)=>Array.from(ctx.getImageData(Math.floor(x),Math.floor(y),1,1).data);
    const banks=riverBanksAt(30*32);
    const places=[{name:'river',x:banks.right+12,y:30*32},{name:'home-lake',x:36.5*32,y:(30.5+Math.sqrt(15))*32+12},{name:'east-lake',x:80.5*32,y:(10.5+Math.sqrt(10))*32+12}];

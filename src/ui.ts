@@ -806,11 +806,14 @@ export class GameUI {
     const visuals = getVisualSettings();
     const lighting = document.createElement('fieldset');
     lighting.className = 'daylight-settings';
-    lighting.innerHTML = `<legend>Visual do vale</legend><label><input type="checkbox" data-daylight ${visuals.daylight ? 'checked' : ''}> Iluminação das fases do dia</label><label>Intensidade <input aria-label="Intensidade da iluminação" type="range" min="0" max="100" value="${Math.round(visuals.intensity * 100)}"><output>${Math.round(visuals.intensity * 100)}%</output></label><p>Madrugada, manhã, tarde e noite com transições suaves. Preferência salva automaticamente.</p>`;
+    lighting.innerHTML = `<legend>Visual do vale</legend><label><input type="checkbox" data-daylight ${visuals.daylight ? 'checked' : ''}> Iluminação das fases do dia</label><label>Intensidade <input aria-label="Intensidade da iluminação" type="range" min="0" max="100" value="${Math.round(visuals.intensity * 100)}"><output>${Math.round(visuals.intensity * 100)}%</output></label><label><input type="checkbox" data-dynamic-lighting ${visuals.dynamicLighting ? 'checked' : ''}> Sombras do sol e luzes das janelas</label><p>Transições suaves e iluminação dinâmica opcional. Preferências salvas automaticamente.</p>`;
     const enabled = lighting.querySelector<HTMLInputElement>('[data-daylight]')!;
     const strength = lighting.querySelector<HTMLInputElement>('input[type=range]')!;
+    const dynamic = lighting.querySelector<HTMLInputElement>('[data-dynamic-lighting]')!;
+    dynamic.disabled = !visuals.daylight;
+    dynamic.addEventListener('change', () => setVisualSettings({ dynamicLighting: dynamic.checked }));
     strength.disabled = !visuals.daylight;
-    enabled.addEventListener('change', () => { setVisualSettings({ daylight: enabled.checked }); strength.disabled = !enabled.checked; });
+    enabled.addEventListener('change', () => { setVisualSettings({ daylight: enabled.checked }); strength.disabled = !enabled.checked; dynamic.disabled = !enabled.checked; });
     strength.addEventListener('input', () => { setVisualSettings({ intensity: Number(strength.value) / 100 }); strength.nextElementSibling!.textContent = `${strength.value}%`; });
     panel.querySelector('.pause-actions')!.before(lighting);
     this.overlay.append(panel);

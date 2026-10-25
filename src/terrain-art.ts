@@ -28,6 +28,15 @@ function noise(x: number, y: number, scale: number, seed: number): number {
     lerp(hash(ix, iy + 1, seed), hash(ix + 1, iy + 1, seed), fx), fy);
 }
 
+/** Shared by grass repainting, so old path corrections do not leave a second palette. */
+export function propertyGrassStyle(x:number,y:number){
+  const field=smooth((y-38*TILE)/(10*TILE));
+  const grove=Math.max(smooth((16*TILE-x)/(11*TILE)),smooth((9*TILE-y)/(7*TILE)))*.45;
+  return {field,forest:Math.max(grove,smooth((x-45*TILE)/(12*TILE)))*(1-field),
+    moss:smooth((noise(x,y,112,52)-.45)/.42)*.3,
+    light:(noise(x,y,146,71)-.5)*13+(noise(x,y,38,14)-.5)*5};
+}
+
 function color(rgb: RGB, light: number): string {
   return `rgb(${Math.round(clamp(rgb[0] + light, 0, 255))},${Math.round(clamp(rgb[1] + light, 0, 255))},${Math.round(clamp(rgb[2] + light * 0.7, 0, 255))})`;
 }
@@ -83,7 +92,8 @@ function paintSpriteGround(ctx: CanvasRenderingContext2D, tiles: readonly Ground
           const index = sample + channel;
           let value: number;
           if (waterHere) {
-            value = water[waterSample + channel] * (1 - shallow * 0.24) + [125, 176, 160][channel] * shallow * 0.24;
+            const depth=.9+.1*smooth((90-shore)/90);
+            value = water[waterSample + channel] * depth * (1 - shallow * 0.24) + [125, 176, 160][channel] * shallow * 0.24;
           } else if (tile.farm) {
             value = soil[index] + light * 0.5;
           } else {
@@ -106,7 +116,7 @@ function paintSpriteGround(ctx: CanvasRenderingContext2D, tiles: readonly Ground
  * A static, pixel-aligned ground layer. Detail is concentrated at paths and banks;
  * clear grass remains readable for resources and player-built structures.
  */
-export function paintTerrain(ctx: CanvasRenderingContext2D, sprites?: TerrainSprites, decoration?: TerrainDecoration, farmAt = isFarmTile): void {
+export function paintTerrain(ctx: CanvasRenderingContext2D, sprites?: TerrainSprites, _decoration?: TerrainDecoration, farmAt = isFarmTile): void {
   ctx.imageSmoothingEnabled = false;
   const rect = (fill: string, x: number, y: number, w: number, h: number): void => {
     ctx.fillStyle = fill;
@@ -166,28 +176,6 @@ export function paintTerrain(ctx: CanvasRenderingContext2D, sprites?: TerrainSpr
     rect(fill, x, y, 4, 4);
   }
 
-  const pebble = (x: number, y: number, w: number, h: number, wet = false, chosenVariant?: number): void => {
-    const variants = decoration?.paving ?? [];
-    const variant = chosenVariant ?? Math.abs(Math.imul(Math.floor(x), 73856093) ^ Math.imul(Math.floor(y), 19349663));
-    const art = wet && decoration?.shoreStones ? decoration.shoreStones : variants[variant % variants.length];
-    if (art) {
-      const height = Math.max(2, Math.round(w * art.height / art.width));
-      ctx.drawImage(art, Math.round(x), Math.round(y + (h - height) / 2), Math.round(w), height);
-      return;
-    }
-    rect(wet ? '#4d7675' : '#766d51', x + 1, y + h - 1, w, 2);
-    rect(wet ? '#849d94' : '#afa58b', x + 2, y, w - 4, h);
-    rect(wet ? '#849d94' : '#afa58b', x, y + 2, w, Math.max(1, h - 4));
-    rect(wet ? '#aec4b1' : '#d2c3a1', x + 2, y, w - 5, 2);
-    rect(wet ? '#66877f' : '#8f886e', x + w - 4, y + 2, 3, Math.max(1, h - 3));
-    if (sprites && w >= 20) {
-      const stone = sprites.paving;
-      for (let py = 2; py < h - 2; py++) for (let px = 3; px < w - 3; px++) {
-        const i = (((Math.floor(y + py) % stone.size) * stone.size + Math.floor(x + px) % stone.size) * 4);
-        rect(`rgb(${stone.pixels[i]},${stone.pixels[i + 1]},${stone.pixels[i + 2]})`, x + px, y + py, 1, 1);
-      }
-    }
-  };
   const tuft = (x: number, y: number, seed: number, bright = false): void => {
     const dark = bright ? '#658745' : '#476e40';
     const light = bright ? '#c2c778' : '#9cb75b';
@@ -235,7 +223,6 @@ export function paintTerrain(ctx: CanvasRenderingContext2D, sprites?: TerrainSpr
     const chance = hash(tx, ty, 803);
     const shoreField = waterDistanceAt(x, y), shore = Math.abs(shoreField);
     if (shoreField < 0) {
-      if (shore < 15 && chance > 0.78) pebble(x - 4, y, 10, 6, true);
       if (chance > 0.6) {
         const width = 9 + Math.floor(chance * 8);
         for (let px = 0; px < width; px++) if (isWaterPoint(x + px, y)) rect('#8bc0bd', x + px, y, 1, 1);
@@ -243,17 +230,17 @@ export function paintTerrain(ctx: CanvasRenderingContext2D, sprites?: TerrainSpr
       }
       continue;
     }
+    // Old tiny puddles on the access trail looked like detached water holes in the beach.
+    if(shore<56)continue;
     const road = roadDistanceAt(x, y);
     if (road < -6) {
       if (tx>=23 && tx<=47 && ty>=16 && ty<=20) continue;
       if (chance > 0.83) puddle(x - 9, y, seed);
-      else if (chance < 0.2) pebble(x - 4, y, 6 + Math.floor(chance * 24), 4);
       else if (chance > 0.48 && chance < 0.63) {
         rect('#dbc18b', x - 3, y, 3, 1); rect('#a28459', x + 2, y + 3, 4, 1);
       }
     } else if (road < 15 || shore < 18) {
       if (!sprites) tuft(x, y, seed, getRegionAt(tx, ty).id === 'open-fields');
-      if (chance > 0.72) pebble(x + 4, y + 5, 8, 5, shore < 18);
       if (!sprites && chance < 0.3) tuft(x + 9, y + 4, seed + 3);
     } else if (!sprites && chance > 0.94) {
       tuft(x, y, seed, true);
