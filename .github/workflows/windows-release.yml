@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches: ['title-screen-0.5']
-    paths: ['package.json']
+    paths: ['package.json', '.gitattributes', '.github/workflows/windows-release.yml']
     tags:
       - 'v*'
 
@@ -19,6 +19,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Preservar os bytes originais no checkout
+        run: git config --global core.autocrlf false
+
       - name: Obter o código
         uses: actions/checkout@v4
 

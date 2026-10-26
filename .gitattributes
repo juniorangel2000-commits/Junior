@@ -4,3 +4,7 @@
 /documentacao/** -text -whitespace
 /pacotes_existentes/Jardim*/** -text -whitespace
 /referencias/otimizadas/** -text -whitespace
+
+# Biblioteca auditada: hashes e originais devem ser idênticos no Windows e Linux.
+/public/dev/vila-v31/** -text -whitespace
+/public/assets/visual/**/*.manifest.json -text -whitespace
