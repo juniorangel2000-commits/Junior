@@ -1,0 +1,2576 @@
+{
+  "version": 1,
+  "width": 96,
+  "height": 72,
+  "terrain": {
+    "44,60": "forest",
+    "44,61": "forest",
+    "44,62": "forest",
+    "44,63": "forest",
+    "44,64": "forest",
+    "44,65": "forest",
+    "44,66": "forest",
+    "44,67": "forest",
+    "44,68": "forest",
+    "44,69": "forest",
+    "44,70": "forest",
+    "45,60": "forest",
+    "45,61": "forest",
+    "45,62": "forest",
+    "45,63": "forest",
+    "45,64": "forest",
+    "45,65": "forest",
+    "45,66": "forest",
+    "45,67": "forest",
+    "45,68": "forest",
+    "45,69": "forest",
+    "45,70": "forest",
+    "46,60": "forest",
+    "46,61": "forest",
+    "46,62": "forest",
+    "46,63": "forest",
+    "46,64": "forest",
+    "46,65": "forest",
+    "46,66": "forest",
+    "46,67": "forest",
+    "46,68": "forest",
+    "46,69": "forest",
+    "46,70": "forest",
+    "47,60": "forest",
+    "47,61": "forest",
+    "47,62": "forest",
+    "47,63": "forest",
+    "47,64": "forest",
+    "47,65": "forest",
+    "47,66": "forest",
+    "47,67": "forest",
+    "47,68": "forest",
+    "47,69": "forest",
+    "47,70": "forest",
+    "48,60": "forest",
+    "48,61": "forest",
+    "48,62": "forest",
+    "48,63": "forest",
+    "48,64": "forest",
+    "48,65": "forest",
+    "48,66": "forest",
+    "48,67": "forest",
+    "48,68": "forest",
+    "48,69": "forest",
+    "48,70": "forest",
+    "49,60": "forest",
+    "49,61": "forest",
+    "49,62": "forest",
+    "49,63": "forest",
+    "49,64": "forest",
+    "49,65": "forest",
+    "49,66": "forest",
+    "49,67": "forest",
+    "49,68": "forest",
+    "49,69": "forest",
+    "49,70": "forest",
+    "50,60": "forest",
+    "50,61": "forest",
+    "50,62": "forest",
+    "50,63": "forest",
+    "50,64": "forest",
+    "50,65": "forest",
+    "50,66": "forest",
+    "50,67": "forest",
+    "50,68": "forest",
+    "50,69": "forest",
+    "50,70": "forest",
+    "51,60": "forest",
+    "51,61": "forest",
+    "51,62": "forest",
+    "51,63": "forest",
+    "51,64": "forest",
+    "51,65": "forest",
+    "51,66": "forest",
+    "51,67": "forest",
+    "51,68": "forest",
+    "51,69": "forest",
+    "51,70": "forest",
+    "52,60": "forest",
+    "52,61": "forest",
+    "52,62": "forest",
+    "52,63": "forest",
+    "52,64": "forest",
+    "52,65": "forest",
+    "52,66": "forest",
+    "52,67": "forest",
+    "52,68": "forest",
+    "52,69": "forest",
+    "52,70": "forest",
+    "78,10": "meadow",
+    "78,11": "meadow",
+    "78,7": "grass",
+    "78,8": "meadow",
+    "78,9": "meadow",
+    "79,10": "meadow",
+    "79,11": "meadow",
+    "79,12": "meadow",
+    "79,6": "meadow",
+    "79,7": "meadow",
+    "79,8": "meadow",
+    "79,9": "meadow",
+    "80,10": "meadow",
+    "80,11": "meadow",
+    "80,12": "meadow",
+    "80,4": "meadow",
+    "80,5": "meadow",
+    "80,6": "meadow",
+    "80,7": "meadow",
+    "80,8": "meadow",
+    "80,9": "meadow",
+    "81,10": "meadow",
+    "81,11": "meadow",
+    "81,12": "meadow",
+    "81,13": "meadow",
+    "81,3": "meadow",
+    "81,4": "meadow",
+    "81,5": "meadow",
+    "81,6": "meadow",
+    "81,7": "meadow",
+    "81,8": "meadow",
+    "81,9": "meadow",
+    "82,10": "meadow",
+    "82,11": "meadow",
+    "82,12": "meadow",
+    "82,13": "meadow",
+    "82,3": "meadow",
+    "82,4": "meadow",
+    "82,5": "meadow",
+    "82,6": "meadow",
+    "82,7": "meadow",
+    "82,8": "meadow",
+    "82,9": "meadow",
+    "83,10": "meadow",
+    "83,11": "meadow",
+    "83,12": "meadow",
+    "83,13": "meadow",
+    "83,14": "meadow",
+    "83,3": "meadow",
+    "83,4": "meadow",
+    "83,5": "meadow",
+    "83,6": "meadow",
+    "83,7": "meadow",
+    "83,8": "meadow",
+    "83,9": "meadow",
+    "84,10": "meadow",
+    "84,11": "meadow",
+    "84,12": "meadow",
+    "84,13": "meadow",
+    "84,14": "meadow",
+    "84,3": "meadow",
+    "84,4": "meadow",
+    "84,5": "meadow",
+    "84,6": "meadow",
+    "84,7": "meadow",
+    "84,8": "meadow",
+    "84,9": "meadow",
+    "85,10": "meadow",
+    "85,11": "meadow",
+    "85,12": "meadow",
+    "85,13": "meadow",
+    "85,14": "meadow",
+    "85,3": "meadow",
+    "85,4": "meadow",
+    "85,5": "meadow",
+    "85,6": "meadow",
+    "85,7": "meadow",
+    "85,8": "meadow",
+    "85,9": "meadow",
+    "86,10": "meadow",
+    "86,11": "meadow",
+    "86,12": "meadow",
+    "86,13": "meadow",
+    "86,14": "meadow",
+    "86,4": "meadow",
+    "86,5": "meadow",
+    "86,6": "meadow",
+    "86,7": "meadow",
+    "86,8": "meadow",
+    "86,9": "meadow",
+    "87,10": "meadow",
+    "87,11": "meadow",
+    "87,12": "meadow",
+    "87,13": "meadow",
+    "87,14": "meadow",
+    "87,4": "meadow",
+    "87,5": "meadow",
+    "87,6": "meadow",
+    "87,7": "meadow",
+    "87,8": "meadow",
+    "87,9": "meadow",
+    "88,10": "meadow",
+    "88,11": "meadow",
+    "88,12": "meadow",
+    "88,13": "meadow",
+    "88,4": "meadow",
+    "88,5": "meadow",
+    "88,6": "meadow",
+    "88,7": "meadow",
+    "88,8": "meadow",
+    "88,9": "meadow",
+    "89,10": "meadow",
+    "89,11": "meadow",
+    "89,12": "meadow",
+    "89,13": "meadow",
+    "89,5": "meadow",
+    "89,6": "meadow",
+    "89,7": "meadow",
+    "89,8": "meadow",
+    "89,9": "meadow",
+    "90,10": "meadow",
+    "90,11": "meadow",
+    "90,12": "meadow",
+    "90,6": "meadow",
+    "90,7": "meadow",
+    "90,8": "meadow",
+    "90,9": "meadow",
+    "91,10": "meadow",
+    "91,7": "meadow",
+    "91,8": "meadow",
+    "91,9": "meadow"
+  },
+  "objects": {
+    "editor-oakA-old-south-45-66": {
+      "x": 45,
+      "y": 66,
+      "kind": "oakA"
+    },
+    "editor-oakA-old-south-45-69": {
+      "x": 45,
+      "y": 69,
+      "kind": "oakA"
+    },
+    "editor-oakB-0d729df8-c3d1-49d9-926b-d6c56867ec78": {
+      "x": 57,
+      "y": 64,
+      "kind": "oakB"
+    },
+    "editor-oakB-100ced8e-686e-4a07-b999-a94dddc0adb9": {
+      "x": 56,
+      "y": 64,
+      "kind": "oakB"
+    },
+    "editor-oakB-114a6632-0788-43b2-a7b3-95ceed7e8b98": {
+      "x": 61,
+      "y": 64,
+      "kind": "oakB"
+    },
+    "editor-oakB-15497f04-ca5c-43dc-9986-f602fd3629eb": {
+      "x": 66,
+      "y": 64,
+      "kind": "oakB"
+    },
+    "editor-oakB-2d1b4c21-54ce-4391-8960-1cf1b128de41": {
+      "x": 66,
+      "y": 65,
+      "kind": "oakB"
+    },
+    "editor-oakB-47d8f85b-cefc-482d-9906-f50b85c01ef3": {
+      "x": 56,
+      "y": 65,
+      "kind": "oakB"
+    },
+    "editor-oakB-53053ae9-3b40-42d5-bd12-bae55b056585": {
+      "x": 66,
+      "y": 67,
+      "kind": "oakB"
+    },
+    "editor-oakB-58356486-0754-4442-b05f-c0b6251ddafc": {
+      "x": 53,
+      "y": 69,
+      "kind": "oakB"
+    },
+    "editor-oakB-71a873dd-a0c3-4147-ace5-f04dced4ba71": {
+      "x": 55,
+      "y": 66,
+      "kind": "oakB"
+    },
+    "editor-oakB-8270701a-75a8-41b8-9bf7-226dd9f66523": {
+      "x": 55,
+      "y": 67,
+      "kind": "oakB"
+    },
+    "editor-oakB-8a9d019a-da79-4ccb-9586-df761f51a737": {
+      "x": 55,
+      "y": 63,
+      "kind": "oakB"
+    },
+    "editor-oakB-8b1021e8-23a8-4408-9e5b-46e01c0a257d": {
+      "x": 56,
+      "y": 63,
+      "kind": "oakB"
+    },
+    "editor-oakB-97122224-870c-4d7e-a261-f07ac380dc34": {
+      "x": 81,
+      "y": 2,
+      "kind": "oakB"
+    },
+    "editor-oakB-9be207ca-c5ba-4ce2-955b-0846d403f3ff": {
+      "x": 58,
+      "y": 65,
+      "kind": "oakB"
+    },
+    "editor-oakB-a8b7ec98-ff50-4c9b-a519-e76bb8a972bf": {
+      "x": 56,
+      "y": 66,
+      "kind": "oakB"
+    },
+    "editor-oakB-ca1f3999-2b68-41ab-9a93-f6b4211ca4fe": {
+      "x": 55,
+      "y": 64,
+      "kind": "oakB"
+    },
+    "editor-oakB-d1f22bf5-af6f-45f9-887f-9fa855ea4b30": {
+      "x": 60,
+      "y": 64,
+      "kind": "oakB"
+    },
+    "editor-oakB-d316fb45-0bbe-4144-83c6-43e1def3083e": {
+      "x": 59,
+      "y": 65,
+      "kind": "oakB"
+    },
+    "editor-oakB-dbedbf05-9c2c-493d-8a0d-4861c32a9446": {
+      "x": 35,
+      "y": 28,
+      "kind": "oakB"
+    },
+    "editor-oakB-e3b74ad3-06be-4cb4-ae3d-71f00c7d9876": {
+      "x": 57,
+      "y": 65,
+      "kind": "oakB"
+    },
+    "editor-oakB-ec2f8e31-9dd7-419f-a8a6-00e14af4eaeb": {
+      "x": 67,
+      "y": 65,
+      "kind": "oakB"
+    },
+    "editor-oakB-ecb752a2-a322-4d2c-b871-b9658b7d7caa": {
+      "x": 58,
+      "y": 63,
+      "kind": "oakB"
+    },
+    "editor-oakB-fc125c98-3799-4a69-92c2-187206c78c8b": {
+      "x": 65,
+      "y": 64,
+      "kind": "oakB"
+    },
+    "editor-oakB-ff9b1fb3-7538-45e9-bdc0-49777d06e2c3": {
+      "x": 58,
+      "y": 64,
+      "kind": "oakB"
+    },
+    "editor-oakB-old-south-48-63": {
+      "x": 48,
+      "y": 63,
+      "kind": "oakB"
+    },
+    "editor-oakB-old-south-48-69": {
+      "x": 48,
+      "y": 69,
+      "kind": "oakB"
+    },
+    "editor-oakC-0372120d-c8b0-4554-89b6-2da4a9f9b2bd": {
+      "x": 27,
+      "y": 70,
+      "kind": "oakC"
+    },
+    "editor-oakC-04fbf64a-abc6-4b38-921d-1637556c92c6": {
+      "x": 6,
+      "y": 51,
+      "kind": "oakC"
+    },
+    "editor-oakC-06ce0cd3-701f-4b4a-bf2b-c004e44a1b47": {
+      "x": 16,
+      "y": 70,
+      "kind": "oakC",
+      "removed": true
+    },
+    "editor-oakC-0c065d2c-0e3b-4e17-b007-4e2c82a4a7bd": {
+      "x": 32,
+      "y": 70,
+      "kind": "oakC"
+    },
+    "editor-oakC-0cdd3a63-dca6-4ff1-9e66-1d99c9dc2e81": {
+      "x": 46,
+      "y": 6,
+      "kind": "oakC"
+    },
+    "editor-oakC-0f06ef1a-b9af-4715-aa88-e9e6a28f0e89": {
+      "x": 43,
+      "y": 4,
+      "kind": "oakC"
+    },
+    "editor-oakC-1ec59b23-04ef-46b6-8ae2-5957d6967c23": {
+      "x": 70,
+      "y": 15,
+      "kind": "oakC"
+    },
+    "editor-oakC-21f7d4b9-3997-438e-91bc-57a1ff147eb7": {
+      "x": 2,
+      "y": 52,
+      "kind": "oakC"
+    },
+    "editor-oakC-23c43bd0-a9f2-42a4-a93f-f8237050d0ac": {
+      "x": 26,
+      "y": 70,
+      "kind": "oakC"
+    },
+    "editor-oakC-25c83d3a-e203-4d4f-bc44-13265af313dc": {
+      "x": 1,
+      "y": 49,
+      "kind": "oakC"
+    },
+    "editor-oakC-25f138fe-3b58-43f0-b587-1c6ff1c073ae": {
+      "x": 92,
+      "y": 19,
+      "kind": "oakC"
+    },
+    "editor-oakC-2603ce1e-6b2d-49eb-8ee9-3d9be58e4b7b": {
+      "x": 1,
+      "y": 56,
+      "kind": "oakC"
+    },
+    "editor-oakC-28b1e67f-6a5d-40ad-a6d6-afe0ab1b8019": {
+      "x": 7,
+      "y": 52,
+      "kind": "oakC"
+    },
+    "editor-oakC-2c07fd2e-76f1-4299-abf7-aeeba4bdd601": {
+      "x": 36,
+      "y": 70,
+      "kind": "oakC",
+      "removed": true
+    },
+    "editor-oakC-2fb6b058-8c0a-4cce-88c2-1dc2e0090d6f": {
+      "x": 59,
+      "y": 25,
+      "kind": "oakC"
+    },
+    "editor-oakC-31fb3e59-394d-4cbc-affb-8bddb9e0034e": {
+      "x": 31,
+      "y": 70,
+      "kind": "oakC"
+    },
+    "editor-oakC-38113b71-4729-4d32-9774-04ba5287a917": {
+      "x": 39,
+      "y": 70,
+      "kind": "oakC"
+    },
+    "editor-oakC-3860f231-2308-42dc-837a-909b8149a4c8": {
+      "x": 18,
+      "y": 70,
+      "kind": "oakC"
+    },
+    "editor-oakC-3a26f192-a185-4e90-9cff-76548bf4c4e0": {
+      "x": 4,
+      "y": 46,
+      "kind": "oakC"
+    },
+    "editor-oakC-3bf25f00-6622-484f-85ad-b7a169ce5e1e": {
+      "x": 29,
+      "y": 70,
+      "kind": "oakC",
+      "removed": true
+    },
+    "editor-oakC-40cee8f4-3ced-48a6-8b90-c70e05cff92e": {
+      "x": 91,
+      "y": 20,
+      "kind": "oakC"
+    },
+    "editor-oakC-479235ba-e472-41a1-a90d-d65beb3b0bd9": {
+      "x": 94,
+      "y": 15,
+      "kind": "oakC"
+    },
+    "editor-oakC-4afddc58-ac26-4f50-b0fb-a96f29043d7c": {
+      "x": 9,
+      "y": 68,
+      "kind": "oakC"
+    },
+    "editor-oakC-5257e026-1c72-43b7-9049-dde2e73eae21": {
+      "x": 15,
+      "y": 70,
+      "kind": "oakC"
+    },
+    "editor-oakC-59a5f716-ef23-4162-a129-d501e0c7af07": {
+      "x": 5,
+      "y": 50,
+      "kind": "oakC"
+    },
+    "editor-oakC-5aa80611-2bdd-4ade-b78e-4076792e5ca8": {
+      "x": 2,
+      "y": 47,
+      "kind": "oakC"
+    },
+    "editor-oakC-63b3a88f-333d-43e2-bf24-7de228a953ba": {
+      "x": 86,
+      "y": 19,
+      "kind": "oakC"
+    },
+    "editor-oakC-6747c2fc-6100-4354-81af-253bcbd5e588": {
+      "x": 10,
+      "y": 69,
+      "kind": "oakC"
+    },
+    "editor-oakC-6dcdc1df-c082-4d1b-8aa8-9ddecca083cb": {
+      "x": 47,
+      "y": 5,
+      "kind": "oakC"
+    },
+    "editor-oakC-6eb29a08-438e-4400-ac51-0a68b2a7119a": {
+      "x": 74,
+      "y": 16,
+      "kind": "oakC"
+    },
+    "editor-oakC-719e92d5-c1a2-4e39-bc2f-1349a042700b": {
+      "x": 1,
+      "y": 52,
+      "kind": "oakC"
+    },
+    "editor-oakC-7716bc36-b55d-4e1f-9b20-b57870361d15": {
+      "x": 1,
+      "y": 57,
+      "kind": "oakC"
+    },
+    "editor-oakC-7bf6ff68-7a8e-483c-a4ff-94fc1d699517": {
+      "x": 20,
+      "y": 70,
+      "kind": "oakC"
+    },
+    "editor-oakC-7ebaa1b0-025a-49b6-b4be-e31a5aba1d92": {
+      "x": 2,
+      "y": 57,
+      "kind": "oakC"
+    },
+    "editor-oakC-7f902486-6886-41cc-a5ea-c4984dfc74c3": {
+      "x": 34,
+      "y": 70,
+      "kind": "oakC"
+    },
+    "editor-oakC-81cac163-0638-4d32-8b45-e76729185e45": {
+      "x": 5,
+      "y": 47,
+      "kind": "oakC"
+    },
+    "editor-oakC-81f13dbb-969f-44f1-afd8-f36204099df4": {
+      "x": 33,
+      "y": 70,
+      "kind": "oakC"
+    },
+    "editor-oakC-8eb5c06f-0d2a-4f20-80e1-c615656de4e1": {
+      "x": 68,
+      "y": 22,
+      "kind": "oakC"
+    },
+    "editor-oakC-9106c460-3b5d-4669-ba25-aa30f8af66ee": {
+      "x": 5,
+      "y": 52,
+      "kind": "oakC"
+    },
+    "editor-oakC-9a1825f1-24cf-43b4-9532-72e3a22735cf": {
+      "x": 30,
+      "y": 70,
+      "kind": "oakC"
+    },
+    "editor-oakC-a7dd7acd-5c68-4e20-80bd-3e6779fa9b0e": {
+      "x": 11,
+      "y": 69,
+      "kind": "oakC"
+    },
+    "editor-oakC-afa1e27f-411b-4930-931d-ba351139669d": {
+      "x": 5,
+      "y": 65,
+      "kind": "oakC"
+    },
+    "editor-oakC-b1cc9be0-f314-44ac-85c3-57d6702481f4": {
+      "x": 19,
+      "y": 70,
+      "kind": "oakC",
+      "removed": true
+    },
+    "editor-oakC-b2a2147f-f570-4b5a-b295-dfe11183021e": {
+      "x": 62,
+      "y": 22,
+      "kind": "oakC"
+    },
+    "editor-oakC-b58f802d-07e7-4adf-96e9-502b4ea9709f": {
+      "x": 6,
+      "y": 55,
+      "kind": "oakC"
+    },
+    "editor-oakC-b6f5f386-48c7-4a87-8f2d-794977939cc2": {
+      "x": 4,
+      "y": 57,
+      "kind": "oakC",
+      "removed": true
+    },
+    "editor-oakC-b836aaab-5dfa-4f22-9063-0cf1740399ba": {
+      "x": 6,
+      "y": 52,
+      "kind": "oakC"
+    },
+    "editor-oakC-bc52d338-cc0b-4f43-9867-22bb098baf40": {
+      "x": 1,
+      "y": 48,
+      "kind": "oakC"
+    },
+    "editor-oakC-bc9a9640-4463-4638-9eb6-133cc3b3fcec": {
+      "x": 2,
+      "y": 55,
+      "kind": "oakC"
+    },
+    "editor-oakC-be37aa03-553f-4ba5-a5ec-c03099305de5": {
+      "x": 86,
+      "y": 21,
+      "kind": "oakC"
+    },
+    "editor-oakC-bf5df055-d029-40b5-b371-80d72a0a861f": {
+      "x": 6,
+      "y": 54,
+      "kind": "oakC"
+    },
+    "editor-oakC-c183bb85-5b7b-4c8f-977e-55f88d556633": {
+      "x": 4,
+      "y": 58,
+      "kind": "oakC"
+    },
+    "editor-oakC-c60635df-ba88-4c01-8ab1-d04b8c6b4c27": {
+      "x": 46,
+      "y": 2,
+      "kind": "oakC"
+    },
+    "editor-oakC-c6e04cae-8823-4a97-9305-a0e257d0cd99": {
+      "x": 46,
+      "y": 5,
+      "kind": "oakC"
+    },
+    "editor-oakC-c8fff5e9-cf13-4389-a9fc-270ba786ef1d": {
+      "x": 1,
+      "y": 54,
+      "kind": "oakC"
+    },
+    "editor-oakC-d37dbb3d-f0ac-46b0-b28e-4e4cfa2d1e09": {
+      "x": 45,
+      "y": 2,
+      "kind": "oakC"
+    },
+    "editor-oakC-d38ae94e-69e7-4612-9b16-96d9b38794a8": {
+      "x": 2,
+      "y": 48,
+      "kind": "oakC"
+    },
+    "editor-oakC-d3c03fbf-8649-4b59-9766-3f08ee00c983": {
+      "x": 5,
+      "y": 48,
+      "kind": "oakC"
+    },
+    "editor-oakC-d6dab776-08e5-4863-8919-a9df12abf9b2": {
+      "x": 37,
+      "y": 70,
+      "kind": "oakC",
+      "removed": true
+    },
+    "editor-oakC-d7ddf9fd-f9d0-4654-8904-7844f1bc8d5d": {
+      "x": 14,
+      "y": 70,
+      "kind": "oakC"
+    },
+    "editor-oakC-dc2007ce-bc36-4278-8c04-a27562e8a9a2": {
+      "x": 1,
+      "y": 53,
+      "kind": "oakC"
+    },
+    "editor-oakC-dcddf272-2fa8-4cfc-b24a-5f0754b85838": {
+      "x": 89,
+      "y": 20,
+      "kind": "oakC"
+    },
+    "editor-oakC-e3c60f51-dfd4-44d2-a99e-91f5301b3eb5": {
+      "x": 28,
+      "y": 70,
+      "kind": "oakC"
+    },
+    "editor-oakC-e744cd08-854c-4808-a948-d8778b7d6db1": {
+      "x": 7,
+      "y": 54,
+      "kind": "oakC"
+    },
+    "editor-oakC-e90420c4-194e-4d87-a151-94e5bc03c8ca": {
+      "x": 35,
+      "y": 70,
+      "kind": "oakC",
+      "removed": true
+    },
+    "editor-oakC-e95c9732-826b-4eab-b633-76ff3b6a29f4": {
+      "x": 8,
+      "y": 67,
+      "kind": "oakC"
+    },
+    "editor-oakC-f1729eaf-b862-4bee-8c07-2f8fd0958b32": {
+      "x": 4,
+      "y": 56,
+      "kind": "oakC"
+    },
+    "editor-oakC-f480d49a-24c9-4092-bcb6-9b9fa008cac1": {
+      "x": 17,
+      "y": 70,
+      "kind": "oakC",
+      "removed": true
+    },
+    "editor-oakC-old-south-48-66": {
+      "x": 48,
+      "y": 66,
+      "kind": "oakC"
+    },
+    "editor-pineA-00791caa-77ab-44fa-ac2b-4e20b75b868c": {
+      "x": 5,
+      "y": 13,
+      "kind": "pineA"
+    },
+    "editor-pineA-0104dd4a-36b2-4659-8e3d-b136a60ee370": {
+      "x": 11,
+      "y": 44,
+      "kind": "pineA"
+    },
+    "editor-pineA-01e1911b-f626-4fb7-9da9-b08ee5eecfdd": {
+      "x": 86,
+      "y": 63,
+      "kind": "pineA"
+    },
+    "editor-pineA-039c1afb-bbad-458c-8da7-e85b2b041d99": {
+      "x": 47,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-04cfd391-b51e-4288-bd71-0a70a19db9f0": {
+      "x": 32,
+      "y": 1,
+      "kind": "pineA"
+    },
+    "editor-pineA-0564699f-c122-49b4-bc93-c92f5743f8b2": {
+      "x": 28,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-06383853-3dc7-4790-bd1f-41d3d293878e": {
+      "x": 5,
+      "y": 16,
+      "kind": "pineA"
+    },
+    "editor-pineA-079943f2-a74a-4419-aa5c-3b39d14b9ee1": {
+      "x": 88,
+      "y": 36,
+      "kind": "pineA"
+    },
+    "editor-pineA-07bdc118-b53d-462c-a344-d54794fd479b": {
+      "x": 9,
+      "y": 14,
+      "kind": "pineA"
+    },
+    "editor-pineA-09e60a88-fc16-4850-a668-c57c742904d5": {
+      "x": 44,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-0ad12d77-a8df-4be6-b21d-3c7fc6b73124": {
+      "x": 21,
+      "y": 1,
+      "kind": "pineA"
+    },
+    "editor-pineA-0b353caa-ff4d-4a4d-bf60-489ddbc19b22": {
+      "x": 36,
+      "y": 43,
+      "kind": "pineA"
+    },
+    "editor-pineA-0d908b7a-130e-4625-844c-3fc014d28257": {
+      "x": 34,
+      "y": 7,
+      "kind": "pineA"
+    },
+    "editor-pineA-0e4c6d8d-3681-47e8-a273-1313eb3aa021": {
+      "x": 3,
+      "y": 59,
+      "kind": "pineA"
+    },
+    "editor-pineA-0e99fd80-c4ff-4182-ad29-5fad1508d0d6": {
+      "x": 11,
+      "y": 53,
+      "kind": "pineA"
+    },
+    "editor-pineA-10b68dd2-ae16-4f3b-a7d8-cd5e0a9492a6": {
+      "x": 29,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-10e6eb0f-fd65-4f2b-9de0-3e2c67afe18b": {
+      "x": 33,
+      "y": 19,
+      "kind": "pineA"
+    },
+    "editor-pineA-11b47413-0dce-462c-a8be-0f18d2098f16": {
+      "x": 4,
+      "y": 49,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-136b4b22-1d7b-4763-9407-8f16ab74d332": {
+      "x": 37,
+      "y": 1,
+      "kind": "pineA"
+    },
+    "editor-pineA-13a65d13-9744-4526-9d8d-f119017e6bf6": {
+      "x": 10,
+      "y": 10,
+      "kind": "pineA"
+    },
+    "editor-pineA-140eb26a-945b-4548-9bf1-13266d03f031": {
+      "x": 57,
+      "y": 69,
+      "kind": "pineA"
+    },
+    "editor-pineA-15a75430-aa5e-423f-8970-51936e3667ea": {
+      "x": 39,
+      "y": 47,
+      "kind": "pineA"
+    },
+    "editor-pineA-15e57873-909b-4e71-8722-4c138bea89ca": {
+      "x": 8,
+      "y": 20,
+      "kind": "pineA"
+    },
+    "editor-pineA-16458fd9-1b4e-4390-bbd0-b44ef5b9a214": {
+      "x": 13,
+      "y": 3,
+      "kind": "pineA"
+    },
+    "editor-pineA-165026ec-8345-479a-b9de-c2f6ff8bc4d4": {
+      "x": 31,
+      "y": 1,
+      "kind": "pineA"
+    },
+    "editor-pineA-17fda15a-cda1-4045-bbbe-20a4f8c8c3dc": {
+      "x": 39,
+      "y": 4,
+      "kind": "pineA"
+    },
+    "editor-pineA-1a651557-38a6-4639-b5f6-59fecc7d1e7b": {
+      "x": 31,
+      "y": 3,
+      "kind": "pineA"
+    },
+    "editor-pineA-1c2ed994-dceb-4a34-a35d-3e06ff0317ed": {
+      "x": 53,
+      "y": 64,
+      "kind": "pineA"
+    },
+    "editor-pineA-1d175287-353a-4ccf-9e6a-a567efa1393f": {
+      "x": 5,
+      "y": 14,
+      "kind": "pineA"
+    },
+    "editor-pineA-1e70de26-93d5-409a-9af4-e5ba372d9dbb": {
+      "x": 14,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-1f434177-3b0f-4bce-ae5d-eebcc34ba91e": {
+      "x": 22,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-1f73aaa5-64ce-428d-88a1-8d77bce11198": {
+      "x": 21,
+      "y": 70,
+      "kind": "pineA"
+    },
+    "editor-pineA-2094928f-d7e9-497e-8523-8ce2a6f26b99": {
+      "x": 17,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-20eb2765-abfb-478d-873f-8ff5e48ee052": {
+      "x": 91,
+      "y": 59,
+      "kind": "pineA"
+    },
+    "editor-pineA-2154a17c-6ae4-44d1-b6f0-bd9ded71ab22": {
+      "x": 19,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-22255a35-5bbe-40ad-b590-6a92fa028706": {
+      "x": 15,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-228c2b82-ce1e-44dd-98df-7220f04c2c98": {
+      "x": 90,
+      "y": 56,
+      "kind": "pineA"
+    },
+    "editor-pineA-247fb889-f2ff-40ce-9606-bddf374e7059": {
+      "x": 5,
+      "y": 11,
+      "kind": "pineA"
+    },
+    "editor-pineA-25c49333-bb90-48e0-ae31-3e2ae63b2ed6": {
+      "x": 6,
+      "y": 17,
+      "kind": "pineA"
+    },
+    "editor-pineA-25f4997f-b137-4342-b395-7129bc36d793": {
+      "x": 11,
+      "y": 56,
+      "kind": "pineA"
+    },
+    "editor-pineA-267bfce8-0c63-4dc8-a269-93e0db2e50c2": {
+      "x": 36,
+      "y": 62,
+      "kind": "pineA"
+    },
+    "editor-pineA-2713c0c1-ecc4-471b-b34e-0e91ac232610": {
+      "x": 20,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-280e9b7e-5b86-4ef5-8d4c-462f0b866557": {
+      "x": 24,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-29c7cede-842c-4c17-bb73-a1d1144d697f": {
+      "x": 54,
+      "y": 62,
+      "kind": "pineA"
+    },
+    "editor-pineA-2ad96424-a054-406a-a565-06cc9b73f544": {
+      "x": 36,
+      "y": 19,
+      "kind": "pineA"
+    },
+    "editor-pineA-2b9bdb8a-936b-4ed2-8e6d-562a52fff732": {
+      "x": 5,
+      "y": 58,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-2ba56773-db0f-4643-9166-20c7c8426c33": {
+      "x": 65,
+      "y": 34,
+      "kind": "pineA"
+    },
+    "editor-pineA-2dc96e30-6e5f-4771-8192-3d9d0aeed13d": {
+      "x": 32,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-2de2d0fa-220a-4751-9599-1fd366ab345a": {
+      "x": 43,
+      "y": 69,
+      "kind": "pineA"
+    },
+    "editor-pineA-2f1f16f4-5b0a-478e-b11b-c3a20ada72a5": {
+      "x": 13,
+      "y": 2,
+      "kind": "pineA"
+    },
+    "editor-pineA-2f31a112-e8cd-4b63-915d-2812e4167c17": {
+      "x": 4,
+      "y": 51,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-2fb31204-702e-4909-a481-2477d98fe6c2": {
+      "x": 40,
+      "y": 66,
+      "kind": "pineA"
+    },
+    "editor-pineA-2fe8b0bb-d8ac-4710-a9d8-33269a8bdfcc": {
+      "x": 38,
+      "y": 69,
+      "kind": "pineA"
+    },
+    "editor-pineA-3056fc8f-1fae-46a0-9a53-7ac5c7335563": {
+      "x": 41,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-327e379e-563c-4c97-b327-a431c067d19a": {
+      "x": 8,
+      "y": 61,
+      "kind": "pineA"
+    },
+    "editor-pineA-34ab2700-8245-4c72-8d99-3e4f40fb705d": {
+      "x": 11,
+      "y": 41,
+      "kind": "pineA"
+    },
+    "editor-pineA-35845ba3-8b46-4624-9906-d4dc6454774a": {
+      "x": 38,
+      "y": 5,
+      "kind": "pineA"
+    },
+    "editor-pineA-35c4946f-3f86-4324-9468-4915b425ec72": {
+      "x": 47,
+      "y": 69,
+      "kind": "pineA"
+    },
+    "editor-pineA-36701cde-e7b4-4a9c-939d-5aa12c78a375": {
+      "x": 91,
+      "y": 58,
+      "kind": "pineA"
+    },
+    "editor-pineA-372224a7-082f-4236-b386-52747c7346e6": {
+      "x": 12,
+      "y": 44,
+      "kind": "pineA"
+    },
+    "editor-pineA-383ad92e-4f67-494e-a99d-21474f24f2cd": {
+      "x": 8,
+      "y": 64,
+      "kind": "pineA"
+    },
+    "editor-pineA-38436c1f-c712-4c18-a985-f0180ffa4f85": {
+      "x": 55,
+      "y": 69,
+      "kind": "pineA"
+    },
+    "editor-pineA-38abbb91-e68f-4b3b-b112-7919c7e6400c": {
+      "x": 6,
+      "y": 38,
+      "kind": "pineA"
+    },
+    "editor-pineA-38ce9355-9ca9-4faa-8dad-574892de5265": {
+      "x": 15,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-3b1db2eb-fd3a-419e-b5f6-2bce5dd17672": {
+      "x": 5,
+      "y": 12,
+      "kind": "pineA"
+    },
+    "editor-pineA-3cc4aa18-292e-490f-8030-d3daa9a1d396": {
+      "x": 34,
+      "y": 46,
+      "kind": "pineA"
+    },
+    "editor-pineA-3d01fc03-c166-4609-8be2-b2cad89b3392": {
+      "x": 11,
+      "y": 49,
+      "kind": "pineA"
+    },
+    "editor-pineA-3d418298-107c-43fe-bf12-6d311ff1de28": {
+      "x": 90,
+      "y": 55,
+      "kind": "pineA"
+    },
+    "editor-pineA-3e3612c5-1358-4b58-9e92-31276ec10218": {
+      "x": 54,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-3e59152a-efab-4b6c-9375-948880036fdc": {
+      "x": 64,
+      "y": 45,
+      "kind": "pineA"
+    },
+    "editor-pineA-3ef401b5-4dda-43fe-8668-597a23e5d71d": {
+      "x": 23,
+      "y": 70,
+      "kind": "pineA"
+    },
+    "editor-pineA-3f9f7ce7-9bb0-4bb4-afdd-93d54e6f1025": {
+      "x": 35,
+      "y": 46,
+      "kind": "pineA"
+    },
+    "editor-pineA-3fabeee1-ea1f-40ca-b874-08b5fe0cc5c5": {
+      "x": 8,
+      "y": 3,
+      "kind": "pineA"
+    },
+    "editor-pineA-40746478-acdc-412d-a05e-ef5270c1808d": {
+      "x": 29,
+      "y": 43,
+      "kind": "pineA"
+    },
+    "editor-pineA-40c28e1d-d8e7-4af0-abf1-5f96644a86d7": {
+      "x": 10,
+      "y": 66,
+      "kind": "pineA"
+    },
+    "editor-pineA-40eb5076-4d0a-46e3-a600-47b58fca4b64": {
+      "x": 20,
+      "y": 69,
+      "kind": "pineA"
+    },
+    "editor-pineA-419c43ba-3fe8-422f-aa87-98a0e10d8aaf": {
+      "x": 12,
+      "y": 56,
+      "kind": "pineA"
+    },
+    "editor-pineA-41bdcc5c-20b4-4d24-a822-76164a9df39b": {
+      "x": 41,
+      "y": 62,
+      "kind": "pineA"
+    },
+    "editor-pineA-41f88bc0-39d0-4b26-8906-a21e378559d2": {
+      "x": 61,
+      "y": 66,
+      "kind": "pineA"
+    },
+    "editor-pineA-424453bf-980c-4d68-9d20-98329a26b8fe": {
+      "x": 4,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-4276bcf0-fb05-4d7a-9703-8a437368f486": {
+      "x": 40,
+      "y": 70,
+      "kind": "pineA"
+    },
+    "editor-pineA-43814a81-7d43-44cc-8157-ffd041487311": {
+      "x": 31,
+      "y": 7,
+      "kind": "pineA"
+    },
+    "editor-pineA-43e0c8aa-464e-45de-86e1-fdfa4837b05c": {
+      "x": 3,
+      "y": 49,
+      "kind": "pineA"
+    },
+    "editor-pineA-454d435b-d68a-4836-9169-b48bd7f7eb69": {
+      "x": 12,
+      "y": 5,
+      "kind": "pineA"
+    },
+    "editor-pineA-45b29665-be4e-4b61-84ef-1d5bbf9bcbca": {
+      "x": 56,
+      "y": 69,
+      "kind": "pineA"
+    },
+    "editor-pineA-46f3dfeb-2f2e-4d1d-ba9c-a14816986cab": {
+      "x": 8,
+      "y": 17,
+      "kind": "pineA"
+    },
+    "editor-pineA-47530467-30f3-4a62-93be-c4b58b0f9e16": {
+      "x": 36,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-478e0bcd-e70d-4663-9846-f0078fd22c06": {
+      "x": 11,
+      "y": 54,
+      "kind": "pineA"
+    },
+    "editor-pineA-489a03c3-3dab-4c73-b8d1-2552bfc01dc1": {
+      "x": 62,
+      "y": 50,
+      "kind": "pineA"
+    },
+    "editor-pineA-496c87b0-79d3-49a8-af73-6b2e7a714886": {
+      "x": 38,
+      "y": 70,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-4a9517d1-9bc8-468c-a611-0c058283a5d1": {
+      "x": 26,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-4ab31afc-8559-4d92-b39e-3b17d6d875fe": {
+      "x": 92,
+      "y": 38,
+      "kind": "pineA"
+    },
+    "editor-pineA-4d19d8e6-f5a8-412c-8179-5f69a30adfcc": {
+      "x": 11,
+      "y": 8,
+      "kind": "pineA"
+    },
+    "editor-pineA-507d392b-db28-4cef-bd0e-17124b6a3a36": {
+      "x": 89,
+      "y": 30,
+      "kind": "pineA"
+    },
+    "editor-pineA-50caaf69-eea6-41ab-b18f-22af46436203": {
+      "x": 7,
+      "y": 41,
+      "kind": "pineA"
+    },
+    "editor-pineA-52050ec7-3445-46fb-9bcc-4276118d81bf": {
+      "x": 12,
+      "y": 7,
+      "kind": "pineA"
+    },
+    "editor-pineA-536b5be5-5f50-4da1-8095-ee0d6f828af5": {
+      "x": 13,
+      "y": 70,
+      "kind": "pineA"
+    },
+    "editor-pineA-54447a17-caf4-4711-8196-33681ed71c0a": {
+      "x": 5,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-545a1222-b6f0-4975-9d99-a626ea94aab3": {
+      "x": 88,
+      "y": 31,
+      "kind": "pineA"
+    },
+    "editor-pineA-56194d67-7728-4fd1-9dd2-90977b949ff7": {
+      "x": 92,
+      "y": 35,
+      "kind": "pineA"
+    },
+    "editor-pineA-568c99c2-e24e-4f52-ada3-eb95130d751e": {
+      "x": 7,
+      "y": 6,
+      "kind": "pineA"
+    },
+    "editor-pineA-57fd371a-81c0-41cc-b0a5-4edbda200884": {
+      "x": 14,
+      "y": 3,
+      "kind": "pineA"
+    },
+    "editor-pineA-583333ef-4344-4d53-9d4f-57d342111ec7": {
+      "x": 14,
+      "y": 1,
+      "kind": "pineA"
+    },
+    "editor-pineA-58604c4d-56fe-4571-b5f4-7e3c9aff4608": {
+      "x": 65,
+      "y": 44,
+      "kind": "pineA"
+    },
+    "editor-pineA-5879856c-5bc4-4f9b-bfa7-e48fdf30105c": {
+      "x": 6,
+      "y": 7,
+      "kind": "pineA"
+    },
+    "editor-pineA-5932855d-a405-4a15-b1dd-27fb54adac58": {
+      "x": 34,
+      "y": 4,
+      "kind": "pineA"
+    },
+    "editor-pineA-59847d34-308b-47f1-b1b3-9a0feea7dbdc": {
+      "x": 3,
+      "y": 52,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-599a13c1-602c-48e9-921d-b43308a74753": {
+      "x": 35,
+      "y": 7,
+      "kind": "pineA"
+    },
+    "editor-pineA-5a2d5155-1ddb-4760-987f-29a0a42cf48f": {
+      "x": 32,
+      "y": 7,
+      "kind": "pineA"
+    },
+    "editor-pineA-5aafe9fa-ba2a-4e98-9d94-e1e59b7f19f9": {
+      "x": 10,
+      "y": 7,
+      "kind": "pineA"
+    },
+    "editor-pineA-5b349a7d-72e2-4b3a-928d-76cc2a5ef45a": {
+      "x": 12,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-5bd6fb29-df94-4ff2-a53b-584c4c18a3a1": {
+      "x": 8,
+      "y": 42,
+      "kind": "pineA"
+    },
+    "editor-pineA-5c7df9e6-e890-4fc4-96b3-ec39d8cd2950": {
+      "x": 35,
+      "y": 66,
+      "kind": "pineA"
+    },
+    "editor-pineA-5c7faf1b-1315-4fd8-9424-302006b7d5d4": {
+      "x": 46,
+      "y": 69,
+      "kind": "pineA"
+    },
+    "editor-pineA-5d351a23-b9f4-4b4b-ad64-471b10e07fb8": {
+      "x": 12,
+      "y": 43,
+      "kind": "pineA"
+    },
+    "editor-pineA-5d5522bf-d2ad-4d99-a764-7f01c260a353": {
+      "x": 25,
+      "y": 70,
+      "kind": "pineA"
+    },
+    "editor-pineA-5e8d9dba-d742-40cc-97ae-8f0f1f39797d": {
+      "x": 60,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-5ed85118-2ce4-43e8-b220-205b3a5451b7": {
+      "x": 66,
+      "y": 35,
+      "kind": "pineA"
+    },
+    "editor-pineA-60ace792-33db-4fa0-88d8-9ff7b8653481": {
+      "x": 22,
+      "y": 1,
+      "kind": "pineA"
+    },
+    "editor-pineA-60dd7e2e-3e43-49e0-abc6-351ce113458f": {
+      "x": 5,
+      "y": 10,
+      "kind": "pineA"
+    },
+    "editor-pineA-60e26b05-834c-4428-8f47-69ba9623f356": {
+      "x": 30,
+      "y": 20,
+      "kind": "pineA"
+    },
+    "editor-pineA-616f7471-f18c-4be8-b45a-13fa2897fe48": {
+      "x": 41,
+      "y": 70,
+      "kind": "pineA"
+    },
+    "editor-pineA-61cc7f85-0742-4e17-b20d-cbfb401102c5": {
+      "x": 4,
+      "y": 50,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-621d4615-a16b-411d-986c-cefb99e40d7c": {
+      "x": 90,
+      "y": 61,
+      "kind": "pineA"
+    },
+    "editor-pineA-62b46f7c-5ad9-4020-a518-da5515908165": {
+      "x": 91,
+      "y": 36,
+      "kind": "pineA"
+    },
+    "editor-pineA-63b2ce0b-7d71-4966-883b-98b9194b4f52": {
+      "x": 8,
+      "y": 65,
+      "kind": "pineA"
+    },
+    "editor-pineA-652ba671-c3f4-4bd4-9d52-31722a72747e": {
+      "x": 10,
+      "y": 40,
+      "kind": "pineA"
+    },
+    "editor-pineA-6575e803-7a47-4396-84a4-a179fa2a77dc": {
+      "x": 4,
+      "y": 52,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-65d09081-d933-45da-9497-a25f840856d5": {
+      "x": 54,
+      "y": 63,
+      "kind": "pineA"
+    },
+    "editor-pineA-66ea07fc-c99e-45b0-ab5e-100df4bda5eb": {
+      "x": 3,
+      "y": 58,
+      "kind": "pineA"
+    },
+    "editor-pineA-6722de5b-82d0-4d2d-b102-cc1d0291cfbe": {
+      "x": 88,
+      "y": 62,
+      "kind": "pineA"
+    },
+    "editor-pineA-6755480c-6c55-46fb-b037-fe970067414c": {
+      "x": 7,
+      "y": 62,
+      "kind": "pineA"
+    },
+    "editor-pineA-67cfdbfc-b4c3-4c44-9fc0-dffb404756c7": {
+      "x": 32,
+      "y": 2,
+      "kind": "pineA"
+    },
+    "editor-pineA-68eeed79-07c1-46d7-a4aa-fb1e46004d18": {
+      "x": 62,
+      "y": 65,
+      "kind": "pineA"
+    },
+    "editor-pineA-698a540a-3193-4f72-b7e6-8079b5490bac": {
+      "x": 32,
+      "y": 44,
+      "kind": "pineA"
+    },
+    "editor-pineA-6b8b50a8-0581-4f7c-b873-3aebbec64f27": {
+      "x": 38,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-6bdd44b6-324b-40bc-9982-cb51eface97d": {
+      "x": 66,
+      "y": 40,
+      "kind": "pineA"
+    },
+    "editor-pineA-6cf64909-234e-458f-a5b5-a5facc26829d": {
+      "x": 87,
+      "y": 62,
+      "kind": "pineA"
+    },
+    "editor-pineA-6cf6641a-1959-43b3-ba14-295888099278": {
+      "x": 38,
+      "y": 4,
+      "kind": "pineA"
+    },
+    "editor-pineA-6f3284b3-0996-467e-963d-1ef0b5208c00": {
+      "x": 41,
+      "y": 48,
+      "kind": "pineA"
+    },
+    "editor-pineA-72a8f007-3754-483a-9317-6e3336cede9a": {
+      "x": 3,
+      "y": 57,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-733b1c03-93ab-4a99-89ba-96ebe2afe97a": {
+      "x": 11,
+      "y": 45,
+      "kind": "pineA"
+    },
+    "editor-pineA-73634563-e6d9-4064-b1a7-5c33a704a4a7": {
+      "x": 31,
+      "y": 2,
+      "kind": "pineA"
+    },
+    "editor-pineA-74008dc9-7eb3-435a-bc39-b68f9c2f1a5d": {
+      "x": 92,
+      "y": 33,
+      "kind": "pineA"
+    },
+    "editor-pineA-74639528-760e-419f-bcf4-ebff74da005e": {
+      "x": 38,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-74e9122e-815a-4266-8405-2b4fab63fd40": {
+      "x": 37,
+      "y": 46,
+      "kind": "pineA"
+    },
+    "editor-pineA-756c430e-934a-4aac-9c38-8f05d9a5d5c5": {
+      "x": 43,
+      "y": 70,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-75b3cd91-2a96-4542-953c-045c70216bc0": {
+      "x": 59,
+      "y": 40,
+      "kind": "pineA"
+    },
+    "editor-pineA-75fcc272-f0ab-4c91-907f-0d3d8ec93ea0": {
+      "x": 7,
+      "y": 38,
+      "kind": "pineA"
+    },
+    "editor-pineA-7654997d-9352-43c8-ad5e-193e2a88b3ee": {
+      "x": 12,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-772ba972-8eb5-46b6-9db7-fc2c4cdd991a": {
+      "x": 37,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-77ea42ac-7e62-41de-a212-b4a5faaa740b": {
+      "x": 11,
+      "y": 48,
+      "kind": "pineA"
+    },
+    "editor-pineA-7816768d-fd77-4971-b494-f8d581c7aa0b": {
+      "x": 27,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-78dcfc74-8c05-43e7-a07a-330b3d8e920b": {
+      "x": 30,
+      "y": 43,
+      "kind": "pineA"
+    },
+    "editor-pineA-7a39c5b7-11df-4e5b-994d-fe559d70ddf1": {
+      "x": 60,
+      "y": 34,
+      "kind": "pineA"
+    },
+    "editor-pineA-7d56a4b1-ba09-423c-8b03-91467d060dba": {
+      "x": 55,
+      "y": 62,
+      "kind": "pineA"
+    },
+    "editor-pineA-7db77c2c-7124-428b-be0a-768ac8157316": {
+      "x": 35,
+      "y": 63,
+      "kind": "pineA"
+    },
+    "editor-pineA-7e0ca32d-8b69-4a7a-aea7-d79899a54254": {
+      "x": 59,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-7e8a589d-b505-4389-9aef-e2a8537a7254": {
+      "x": 9,
+      "y": 44,
+      "kind": "pineA"
+    },
+    "editor-pineA-7e903e31-45a3-4f3e-b9f9-a4744ab5b591": {
+      "x": 5,
+      "y": 59,
+      "kind": "pineA"
+    },
+    "editor-pineA-7f18930c-d7b9-46b8-9309-18b66b27906e": {
+      "x": 11,
+      "y": 52,
+      "kind": "pineA"
+    },
+    "editor-pineA-810186d8-dad0-4c87-a0a0-79ce0cf30433": {
+      "x": 3,
+      "y": 54,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-8324ebbd-96a1-4d38-b719-ccfaf537572f": {
+      "x": 23,
+      "y": 1,
+      "kind": "pineA"
+    },
+    "editor-pineA-834e7a55-6c34-45f1-9c55-9d9feee90220": {
+      "x": 33,
+      "y": 4,
+      "kind": "pineA"
+    },
+    "editor-pineA-83c5c349-4e27-4a69-b68a-99d4b1aeb23d": {
+      "x": 89,
+      "y": 62,
+      "kind": "pineA"
+    },
+    "editor-pineA-841ecefc-d157-4b24-8d71-0101ac5a3bf3": {
+      "x": 13,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-864bbb8c-2867-49c6-a8ce-496f3e2689a6": {
+      "x": 88,
+      "y": 32,
+      "kind": "pineA"
+    },
+    "editor-pineA-8762c0c4-c651-44f1-8bd2-c2c16ce007c5": {
+      "x": 24,
+      "y": 70,
+      "kind": "pineA"
+    },
+    "editor-pineA-87bcc0c8-dc01-4c42-9978-bfa81698dc84": {
+      "x": 10,
+      "y": 13,
+      "kind": "pineA"
+    },
+    "editor-pineA-8aae542d-5a9d-476f-a74c-6d2d426a1706": {
+      "x": 31,
+      "y": 4,
+      "kind": "pineA"
+    },
+    "editor-pineA-8b8103e6-4d2b-42a0-8b4e-1ea6a56a12fb": {
+      "x": 14,
+      "y": 69,
+      "kind": "pineA"
+    },
+    "editor-pineA-8bc8a1aa-b11c-4882-b198-df535c984b4a": {
+      "x": 16,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-8d835148-4c7c-449e-9afc-76facdebf931": {
+      "x": 12,
+      "y": 55,
+      "kind": "pineA"
+    },
+    "editor-pineA-8e46418b-cdfe-4797-8282-1b1296ead4b3": {
+      "x": 90,
+      "y": 53,
+      "kind": "pineA"
+    },
+    "editor-pineA-8f013638-92bb-4f70-9a4f-dd39cc9bbffb": {
+      "x": 7,
+      "y": 5,
+      "kind": "pineA"
+    },
+    "editor-pineA-8fe6f3bd-5f95-418c-a1a8-3a78c3d59199": {
+      "x": 31,
+      "y": 43,
+      "kind": "pineA"
+    },
+    "editor-pineA-904a8071-b969-49f8-b02d-2ee7d290fed6": {
+      "x": 42,
+      "y": 70,
+      "kind": "pineA"
+    },
+    "editor-pineA-91cff9d6-8da5-441d-94d0-6a08ab22f20d": {
+      "x": 43,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-94f47e64-1139-4561-a32f-d47e0a48ccbd": {
+      "x": 10,
+      "y": 6,
+      "kind": "pineA"
+    },
+    "editor-pineA-962eb0a5-6f56-4018-8158-d13b08b972b5": {
+      "x": 10,
+      "y": 4,
+      "kind": "pineA"
+    },
+    "editor-pineA-97515685-70b0-4960-a599-e00ac1328dc1": {
+      "x": 9,
+      "y": 2,
+      "kind": "pineA"
+    },
+    "editor-pineA-987f34d5-ac8c-4f50-9f84-64626a9353ae": {
+      "x": 7,
+      "y": 42,
+      "kind": "pineA"
+    },
+    "editor-pineA-98a538c8-9a7a-4f9a-8a00-740710ee775e": {
+      "x": 36,
+      "y": 7,
+      "kind": "pineA"
+    },
+    "editor-pineA-9bb276b6-c696-4990-bae6-04084de444fa": {
+      "x": 16,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-9c07160e-7c77-4bf1-acf9-0e39d6ffb79c": {
+      "x": 10,
+      "y": 12,
+      "kind": "pineA"
+    },
+    "editor-pineA-9c4752c0-ac5a-4208-a340-239f5f41d568": {
+      "x": 66,
+      "y": 34,
+      "kind": "pineA"
+    },
+    "editor-pineA-9c5ee045-538b-4e18-a38b-9bf8cdc51fcd": {
+      "x": 9,
+      "y": 16,
+      "kind": "pineA"
+    },
+    "editor-pineA-9c90b7b8-c3d9-4021-af2a-44813875081b": {
+      "x": 36,
+      "y": 44,
+      "kind": "pineA"
+    },
+    "editor-pineA-9ce59b19-33d1-4c4c-a13a-f6f81a6ee56a": {
+      "x": 30,
+      "y": 1,
+      "kind": "pineA"
+    },
+    "editor-pineA-9dc3b71a-874d-4d6c-b5cb-5fc2fb064146": {
+      "x": 91,
+      "y": 37,
+      "kind": "pineA"
+    },
+    "editor-pineA-9e016dfb-d55f-4550-98bb-0e83d4de69be": {
+      "x": 60,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-9e85c59a-85e9-4efb-8ee1-8f36ce0cc1fa": {
+      "x": 10,
+      "y": 11,
+      "kind": "pineA"
+    },
+    "editor-pineA-9edbd9a8-533c-48f1-9bc7-395595bf3791": {
+      "x": 13,
+      "y": 5,
+      "kind": "pineA"
+    },
+    "editor-pineA-a12bd071-4e8e-4d40-a65c-6bf4826f5606": {
+      "x": 89,
+      "y": 61,
+      "kind": "pineA"
+    },
+    "editor-pineA-a40a57fb-aa08-47d6-934a-cad5d16fe159": {
+      "x": 8,
+      "y": 4,
+      "kind": "pineA"
+    },
+    "editor-pineA-a425cc7f-5b40-487a-b752-09f953426db1": {
+      "x": 58,
+      "y": 62,
+      "kind": "pineA"
+    },
+    "editor-pineA-a5cb29e8-7c0f-428b-ad8a-dadec55dcd63": {
+      "x": 34,
+      "y": 66,
+      "kind": "pineA"
+    },
+    "editor-pineA-a8006b0b-61eb-4ab0-b60b-8ad6cd51903c": {
+      "x": 12,
+      "y": 46,
+      "kind": "pineA"
+    },
+    "editor-pineA-a8ccf407-25af-46c9-be07-88004aa3f7b4": {
+      "x": 60,
+      "y": 38,
+      "kind": "pineA"
+    },
+    "editor-pineA-aaa9c8c3-cf40-4c42-8de0-5279713673a2": {
+      "x": 33,
+      "y": 2,
+      "kind": "pineA"
+    },
+    "editor-pineA-ae19d0d3-f0f7-405b-b88f-3d90477fdc6f": {
+      "x": 39,
+      "y": 61,
+      "kind": "pineA"
+    },
+    "editor-pineA-b2d49c96-7e29-4645-a91d-32eb3153f259": {
+      "x": 25,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-b2d9d135-01b5-4727-a118-9bacbb4d78ee": {
+      "x": 11,
+      "y": 66,
+      "kind": "pineA"
+    },
+    "editor-pineA-b3b5c2b5-9e46-42d3-9d1a-7d3712289513": {
+      "x": 32,
+      "y": 5,
+      "kind": "pineA"
+    },
+    "editor-pineA-b52b28d1-8901-4b76-9530-625c12e39d0c": {
+      "x": 10,
+      "y": 60,
+      "kind": "pineA"
+    },
+    "editor-pineA-b74dd1f1-ef40-4103-ad63-234764a3846d": {
+      "x": 5,
+      "y": 15,
+      "kind": "pineA"
+    },
+    "editor-pineA-b855f0b4-fdb1-4716-b647-da9ef247984b": {
+      "x": 92,
+      "y": 39,
+      "kind": "pineA"
+    },
+    "editor-pineA-b8708eb7-8e88-4ed4-9f8c-1f0150e80c4a": {
+      "x": 54,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-b89dc8a7-c09e-4304-ab56-28b6e112d046": {
+      "x": 91,
+      "y": 40,
+      "kind": "pineA"
+    },
+    "editor-pineA-b9664e54-1b14-4d90-8396-37b153f91f76": {
+      "x": 46,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-ba369156-2533-49a3-b0cd-fb729310eb2c": {
+      "x": 56,
+      "y": 62,
+      "kind": "pineA"
+    },
+    "editor-pineA-bba16a56-edc8-4a6d-83d6-2c64186bc969": {
+      "x": 11,
+      "y": 58,
+      "kind": "pineA"
+    },
+    "editor-pineA-bc8bac19-f351-4741-9b43-7d5e2b4012ae": {
+      "x": 59,
+      "y": 38,
+      "kind": "pineA"
+    },
+    "editor-pineA-bd354c43-0580-475a-90b3-b7cf38f8bdf7": {
+      "x": 11,
+      "y": 6,
+      "kind": "pineA"
+    },
+    "editor-pineA-bd646b88-f931-44a6-9caf-3c48835a821c": {
+      "x": 6,
+      "y": 8,
+      "kind": "pineA"
+    },
+    "editor-pineA-bdbb2cee-9f64-4406-9e40-c63f0001981f": {
+      "x": 44,
+      "y": 70,
+      "kind": "pineA"
+    },
+    "editor-pineA-bdc42007-c9d9-4eb7-8a0b-2ef02219023d": {
+      "x": 40,
+      "y": 62,
+      "kind": "pineA"
+    },
+    "editor-pineA-bde8da62-47c1-4786-9e5d-03e90eb921b9": {
+      "x": 7,
+      "y": 40,
+      "kind": "pineA"
+    },
+    "editor-pineA-bfad6ba6-4df5-45e3-afa7-6da464cc3928": {
+      "x": 11,
+      "y": 60,
+      "kind": "pineA"
+    },
+    "editor-pineA-bfe77e8e-5c91-46b3-9c77-be496f054f50": {
+      "x": 10,
+      "y": 44,
+      "kind": "pineA"
+    },
+    "editor-pineA-c17d0777-c991-4cb6-aaf9-37135d9f4cd8": {
+      "x": 67,
+      "y": 37,
+      "kind": "pineA"
+    },
+    "editor-pineA-c1b3850b-fb19-43ce-944a-772b0164d2bf": {
+      "x": 90,
+      "y": 59,
+      "kind": "pineA"
+    },
+    "editor-pineA-c34444f3-b020-42f3-a9d5-9c09ee8b1e82": {
+      "x": 30,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-c375f1cc-9a7e-4c17-a4c5-593db78dfc0e": {
+      "x": 65,
+      "y": 42,
+      "kind": "pineA"
+    },
+    "editor-pineA-c41a0ccf-a8f3-4d8e-a249-b9c0b274176b": {
+      "x": 10,
+      "y": 22,
+      "kind": "pineA"
+    },
+    "editor-pineA-c573074e-6abd-4ffd-979f-c0d6473a837d": {
+      "x": 12,
+      "y": 47,
+      "kind": "pineA"
+    },
+    "editor-pineA-c60c59c1-e07d-4aa8-9399-e7541d3d6be6": {
+      "x": 4,
+      "y": 48,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-c67250dd-6e70-4f05-bf1d-e1557c49b37a": {
+      "x": 8,
+      "y": 39,
+      "kind": "pineA"
+    },
+    "editor-pineA-c6f5b459-4c78-4a8f-9129-9939e295808e": {
+      "x": 59,
+      "y": 39,
+      "kind": "pineA"
+    },
+    "editor-pineA-c73eb7b6-90ab-41ee-984b-7678ebfe9466": {
+      "x": 45,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-c74ed0ae-4692-4e0b-9a3d-ecddd25fbc43": {
+      "x": 10,
+      "y": 9,
+      "kind": "pineA"
+    },
+    "editor-pineA-c7f1351a-8ddf-4ec7-b8d1-6eaa03f2eb62": {
+      "x": 67,
+      "y": 36,
+      "kind": "pineA"
+    },
+    "editor-pineA-c8489880-f886-4f27-8538-a4457cdc191f": {
+      "x": 18,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-c8680d55-1820-4f0f-b683-6bcf1030659b": {
+      "x": 13,
+      "y": 4,
+      "kind": "pineA"
+    },
+    "editor-pineA-c8f21002-b2db-43c8-951c-03744b8dc360": {
+      "x": 11,
+      "y": 59,
+      "kind": "pineA"
+    },
+    "editor-pineA-c9f1af88-5cca-404e-a03c-fe2da87fc741": {
+      "x": 8,
+      "y": 60,
+      "kind": "pineA"
+    },
+    "editor-pineA-cb88d443-64ce-4f6e-9144-0393d8ba1e3f": {
+      "x": 11,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-cb9a90ea-6570-4722-864f-e0c3bfd6fbac": {
+      "x": 3,
+      "y": 53,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-cc6bbb59-65d0-42d5-ba4e-d7793a5d13aa": {
+      "x": 67,
+      "y": 38,
+      "kind": "pineA"
+    },
+    "editor-pineA-cc85f3d8-1de0-43b4-8d22-8e1a67e38d96": {
+      "x": 10,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-ccc11b4d-a077-4dae-94df-f1fb4646b0d5": {
+      "x": 4,
+      "y": 54,
+      "kind": "pineA"
+    },
+    "editor-pineA-cf4de2c3-1033-47dc-b3b8-c4a3c314e468": {
+      "x": 31,
+      "y": 44,
+      "kind": "pineA"
+    },
+    "editor-pineA-cfb23a3c-bfc5-4332-a41f-121791db14e9": {
+      "x": 3,
+      "y": 56,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-d0c9f8aa-a899-4f66-bb1b-332449cd6337": {
+      "x": 7,
+      "y": 19,
+      "kind": "pineA"
+    },
+    "editor-pineA-d1c4c08a-3a9c-4aaa-bd1b-e766d538d1bc": {
+      "x": 42,
+      "y": 21,
+      "kind": "pineA"
+    },
+    "editor-pineA-d3797bde-c3df-4861-88b2-da1073225c6c": {
+      "x": 92,
+      "y": 34,
+      "kind": "pineA"
+    },
+    "editor-pineA-d3b46ecc-da8d-488a-94d8-183459c32605": {
+      "x": 4,
+      "y": 53,
+      "kind": "pineA"
+    },
+    "editor-pineA-d3d76db4-46ac-4c84-b6a2-72f443706bf5": {
+      "x": 13,
+      "y": 66,
+      "kind": "pineA"
+    },
+    "editor-pineA-d56b553a-cf8b-4009-b092-65f8efa71860": {
+      "x": 35,
+      "y": 64,
+      "kind": "pineA"
+    },
+    "editor-pineA-d65f4305-23dd-4bc7-bb1e-afc4da430947": {
+      "x": 8,
+      "y": 43,
+      "kind": "pineA"
+    },
+    "editor-pineA-d7518bca-9cc6-460a-8d60-2dbfed8ff57c": {
+      "x": 8,
+      "y": 18,
+      "kind": "pineA"
+    },
+    "editor-pineA-d8219ec9-f8e2-4831-aeda-681cdf64e90b": {
+      "x": 53,
+      "y": 66,
+      "kind": "pineA"
+    },
+    "editor-pineA-d85d996e-0edc-43bb-8135-85b6c88b55fc": {
+      "x": 14,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-d8db0974-6f21-4834-8127-0961756176d8": {
+      "x": 38,
+      "y": 61,
+      "kind": "pineA"
+    },
+    "editor-pineA-d9eadd08-e0d9-4db2-bb8b-096c1df4ff81": {
+      "x": 38,
+      "y": 3,
+      "kind": "pineA"
+    },
+    "editor-pineA-dc866407-98e5-47a0-b50f-07bb022e2840": {
+      "x": 4,
+      "y": 55,
+      "kind": "pineA"
+    },
+    "editor-pineA-dd0acdf7-71b5-4359-a576-8f8223ad202e": {
+      "x": 38,
+      "y": 2,
+      "kind": "pineA"
+    },
+    "editor-pineA-dd201e43-8300-4894-9330-d06482659153": {
+      "x": 11,
+      "y": 7,
+      "kind": "pineA"
+    },
+    "editor-pineA-dd342103-ac67-4f05-a2b2-e7496409cda5": {
+      "x": 91,
+      "y": 35,
+      "kind": "pineA"
+    },
+    "editor-pineA-dd62fb1a-2459-44c2-ba02-64ec7f8e9c8c": {
+      "x": 60,
+      "y": 50,
+      "kind": "pineA"
+    },
+    "editor-pineA-dddd6409-e9f9-4e92-ac11-58df3455146a": {
+      "x": 46,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-dde52f8f-fe91-4e78-84c4-eab0fd93e5c5": {
+      "x": 37,
+      "y": 5,
+      "kind": "pineA"
+    },
+    "editor-pineA-de324a3e-0166-4cae-868b-d0689cee4810": {
+      "x": 31,
+      "y": 6,
+      "kind": "pineA"
+    },
+    "editor-pineA-de71fe23-b287-4251-a2a6-af38662c52cd": {
+      "x": 65,
+      "y": 33,
+      "kind": "pineA"
+    },
+    "editor-pineA-e008b4fb-9bf9-49df-ba30-407f36d0b424": {
+      "x": 21,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-e03fef5d-cd17-4041-b02d-e1b673588d16": {
+      "x": 60,
+      "y": 35,
+      "kind": "pineA"
+    },
+    "editor-pineA-e09b644c-73d5-452b-90c2-2dc46e53aff7": {
+      "x": 11,
+      "y": 50,
+      "kind": "pineA"
+    },
+    "editor-pineA-e0c0075e-a4da-4156-88a3-8e88a183f4dd": {
+      "x": 11,
+      "y": 5,
+      "kind": "pineA"
+    },
+    "editor-pineA-e132fb95-4b12-4e0a-8da3-0ecc2c932f09": {
+      "x": 11,
+      "y": 57,
+      "kind": "pineA"
+    },
+    "editor-pineA-e2a1a643-3c02-47aa-ba28-587a6bd9424c": {
+      "x": 42,
+      "y": 67,
+      "kind": "pineA"
+    },
+    "editor-pineA-e2d388d0-69df-4c6b-ac61-3331f0140f3d": {
+      "x": 18,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-e2dda972-451f-46d2-8393-c0c029b10036": {
+      "x": 19,
+      "y": 2,
+      "kind": "pineA"
+    },
+    "editor-pineA-e2f3d953-db42-4c29-9a99-c41d8e524ee1": {
+      "x": 3,
+      "y": 55,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-e5396e52-2860-4c69-96cc-e61eafa1c2a9": {
+      "x": 22,
+      "y": 70,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-e5f9c63f-5097-45c4-b8eb-52847fdc7303": {
+      "x": 9,
+      "y": 10,
+      "kind": "pineA"
+    },
+    "editor-pineA-e882dc4e-1ee0-46fc-b5e1-3e21b087225f": {
+      "x": 54,
+      "y": 64,
+      "kind": "pineA"
+    },
+    "editor-pineA-e905d6b8-9939-4ebb-9cd3-db44dce5383a": {
+      "x": 5,
+      "y": 56,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-ea2dc7be-5ce2-45e3-8abe-c419b8a67c0f": {
+      "x": 66,
+      "y": 41,
+      "kind": "pineA"
+    },
+    "editor-pineA-eafc0832-abff-4b27-9e9f-19070cd64ff3": {
+      "x": 38,
+      "y": 47,
+      "kind": "pineA"
+    },
+    "editor-pineA-ec27451b-faa7-4d18-9211-137720783147": {
+      "x": 57,
+      "y": 62,
+      "kind": "pineA"
+    },
+    "editor-pineA-ec2f1e99-9b51-41f2-87f1-ec9bcd2a7dbf": {
+      "x": 7,
+      "y": 63,
+      "kind": "pineA"
+    },
+    "editor-pineA-ec86bf15-d8d0-435b-ab09-5e57f3da326e": {
+      "x": 37,
+      "y": 61,
+      "kind": "pineA"
+    },
+    "editor-pineA-ec910d86-60fa-4346-921f-4812d9abdf20": {
+      "x": 55,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-ece3bf0f-e096-4b06-8870-6388de4fa084": {
+      "x": 60,
+      "y": 37,
+      "kind": "pineA"
+    },
+    "editor-pineA-ede7ac64-126d-42d0-8db5-5b9c89f262a3": {
+      "x": 23,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineA-ef3803d5-0c03-40ad-8164-96a4ecfc538f": {
+      "x": 88,
+      "y": 34,
+      "kind": "pineA"
+    },
+    "editor-pineA-efda69f1-353c-4ea2-a311-8081b6b95701": {
+      "x": 10,
+      "y": 8,
+      "kind": "pineA"
+    },
+    "editor-pineA-f0275b23-0c3b-4ed3-8f93-cb66455ebdc0": {
+      "x": 44,
+      "y": 69,
+      "kind": "pineA"
+    },
+    "editor-pineA-f184f089-5fbd-4b62-a5af-4d0de7e8862c": {
+      "x": 37,
+      "y": 6,
+      "kind": "pineA"
+    },
+    "editor-pineA-f19e7231-0f69-4299-8c99-fa629fde7d00": {
+      "x": 88,
+      "y": 33,
+      "kind": "pineA"
+    },
+    "editor-pineA-f2ee7c53-56ee-4f6e-beae-f432287dd046": {
+      "x": 26,
+      "y": 69,
+      "kind": "pineA"
+    },
+    "editor-pineA-f2f3f3bb-8981-43cc-be82-394daff76e60": {
+      "x": 11,
+      "y": 40,
+      "kind": "pineA"
+    },
+    "editor-pineA-f6d75975-ae78-4a8d-90d7-f308ca1a74a3": {
+      "x": 13,
+      "y": 69,
+      "kind": "pineA"
+    },
+    "editor-pineA-f70486ce-4b97-44c1-881d-86c8af2df689": {
+      "x": 5,
+      "y": 57,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-f93266fe-6a5c-4fba-8e2b-ec6d1c26a0c8": {
+      "x": 29,
+      "y": 1,
+      "kind": "pineA"
+    },
+    "editor-pineA-f9b823f7-f445-4887-b627-ea13e8223621": {
+      "x": 32,
+      "y": 6,
+      "kind": "pineA"
+    },
+    "editor-pineA-fae1842a-a47b-4b01-a649-ca917744f2ea": {
+      "x": 88,
+      "y": 35,
+      "kind": "pineA"
+    },
+    "editor-pineA-fb673e7f-dec2-4921-89f0-02920374483c": {
+      "x": 20,
+      "y": 2,
+      "kind": "pineA"
+    },
+    "editor-pineA-fc50df5d-1e84-4ad1-a147-3b96d229b175": {
+      "x": 7,
+      "y": 61,
+      "kind": "pineA"
+    },
+    "editor-pineA-fd98c47a-582e-4220-bdd7-fc301047749f": {
+      "x": 40,
+      "y": 48,
+      "kind": "pineA"
+    },
+    "editor-pineA-fdc34fce-dd99-475f-9870-8d6e25138661": {
+      "x": 3,
+      "y": 50,
+      "kind": "pineA",
+      "removed": true
+    },
+    "editor-pineA-fdf9fe3d-71ff-424a-8093-36f1effbae8f": {
+      "x": 11,
+      "y": 51,
+      "kind": "pineA"
+    },
+    "editor-pineA-ff4fc11f-e452-474f-a2cc-609f84c94bc6": {
+      "x": 58,
+      "y": 68,
+      "kind": "pineA"
+    },
+    "editor-pineB-old-south-45-63": {
+      "x": 45,
+      "y": 63,
+      "kind": "pineB"
+    },
+    "editor-pineB-old-south-51-69": {
+      "x": 51,
+      "y": 69,
+      "kind": "pineB"
+    },
+    "editor-pineC-0aa30e5a-d1c0-4b04-869c-911cb0d33e8b": {
+      "x": 59,
+      "y": 3,
+      "kind": "pineC"
+    },
+    "editor-pineC-0af7e12b-2be3-40c8-8815-2c05e00cdeaf": {
+      "x": 77,
+      "y": 5,
+      "kind": "pineC"
+    },
+    "editor-pineC-0f0b5cbf-06c8-4bd8-8efd-b9d1194753e6": {
+      "x": 62,
+      "y": 2,
+      "kind": "pineC"
+    },
+    "editor-pineC-11f5fa7c-f4be-428c-bb1c-643045a17c89": {
+      "x": 43,
+      "y": 6,
+      "kind": "pineC"
+    },
+    "editor-pineC-2bf6cb18-8fae-4152-9717-00c930193572": {
+      "x": 54,
+      "y": 2,
+      "kind": "pineC"
+    },
+    "editor-pineC-2f07dcec-41c1-4c63-a28f-c45983fbfc1f": {
+      "x": 44,
+      "y": 3,
+      "kind": "pineC"
+    },
+    "editor-pineC-35b80de5-dafd-4949-82e6-b9b12b88fe7a": {
+      "x": 45,
+      "y": 6,
+      "kind": "pineC"
+    },
+    "editor-pineC-4c9571e5-fe98-4145-ae63-3a20293c39fb": {
+      "x": 43,
+      "y": 7,
+      "kind": "pineC"
+    },
+    "editor-pineC-5197669d-9d29-43ee-9dbb-56fb4e2c1f09": {
+      "x": 60,
+      "y": 7,
+      "kind": "pineC"
+    },
+    "editor-pineC-64f64ed6-98b1-4daa-ad38-8c42f407cda2": {
+      "x": 45,
+      "y": 5,
+      "kind": "pineC"
+    },
+    "editor-pineC-6938c433-a4aa-424d-a6d8-9d3d89a1211f": {
+      "x": 64,
+      "y": 3,
+      "kind": "pineC"
+    },
+    "editor-pineC-6974fb2e-1cf5-41e6-81cb-c3e0fb9fed18": {
+      "x": 48,
+      "y": 3,
+      "kind": "pineC"
+    },
+    "editor-pineC-6a5ce3e4-8beb-4d40-a354-09f8108769b5": {
+      "x": 44,
+      "y": 4,
+      "kind": "pineC"
+    },
+    "editor-pineC-77851834-9b19-43d3-9e49-c614db792640": {
+      "x": 43,
+      "y": 1,
+      "kind": "pineC"
+    },
+    "editor-pineC-7dd0edca-d9f8-43a1-a7a3-352439372b2e": {
+      "x": 44,
+      "y": 2,
+      "kind": "pineC"
+    },
+    "editor-pineC-83829935-f728-4cbb-a0a1-e5ae32d995be": {
+      "x": 90,
+      "y": 4,
+      "kind": "pineC"
+    },
+    "editor-pineC-8e28eff5-f191-40e8-b6bc-bd68a73280c0": {
+      "x": 48,
+      "y": 5,
+      "kind": "pineC"
+    },
+    "editor-pineC-911f98d6-eada-43e7-af3c-9f907d6ffcaa": {
+      "x": 84,
+      "y": 2,
+      "kind": "pineC"
+    },
+    "editor-pineC-9622eedf-8044-40ff-a9a9-61e621ca39cf": {
+      "x": 43,
+      "y": 2,
+      "kind": "pineC"
+    },
+    "editor-pineC-a5174155-23c3-4a88-a2db-0df31c17cb67": {
+      "x": 67,
+      "y": 2,
+      "kind": "pineC"
+    },
+    "editor-pineC-b444fa24-c4a2-4314-834f-df823d3c73e4": {
+      "x": 44,
+      "y": 5,
+      "kind": "pineC"
+    },
+    "editor-pineC-d129cb27-886d-4865-b289-84fe59528fd8": {
+      "x": 43,
+      "y": 5,
+      "kind": "pineC"
+    },
+    "editor-pineC-d6b8d984-177c-4d84-8b29-2c4c69d2871c": {
+      "x": 45,
+      "y": 1,
+      "kind": "pineC"
+    },
+    "editor-pineC-f517b001-e5b9-4ab7-8b59-a341658cce2f": {
+      "x": 44,
+      "y": 6,
+      "kind": "pineC"
+    },
+    "editor-pineC-old-south-51-63": {
+      "x": 51,
+      "y": 63,
+      "kind": "pineC"
+    },
+    "editor-pineC-old-south-51-66": {
+      "x": 51,
+      "y": 66,
+      "kind": "pineC"
+    },
+    "fern-3-51": {
+      "x": 3,
+      "y": 51,
+      "removed": true
+    },
+    "fern-79-7": {
+      "x": 79,
+      "y": 7,
+      "removed": true
+    },
+    "fern-81-9": {
+      "x": 81,
+      "y": 9,
+      "removed": true
+    },
+    "fern-85-13": {
+      "x": 85,
+      "y": 13,
+      "removed": true
+    },
+    "fern-87-11": {
+      "x": 87,
+      "y": 11,
+      "removed": true
+    },
+    "fern-89-45": {
+      "x": 89,
+      "y": 45,
+      "removed": true
+    },
+    "standingTree-78-12": {
+      "x": 78,
+      "y": 12,
+      "removed": true
+    },
+    "standingTree-78-9": {
+      "x": 78,
+      "y": 9,
+      "removed": true
+    },
+    "standingTree-81-6": {
+      "x": 81,
+      "y": 6,
+      "removed": true
+    },
+    "standingTree-84-3": {
+      "x": 84,
+      "y": 3,
+      "removed": true
+    },
+    "standingTree-84-45": {
+      "x": 84,
+      "y": 45,
+      "removed": true
+    },
+    "standingTree-87-12": {
+      "x": 87,
+      "y": 12,
+      "removed": true
+    },
+    "standingTree-87-15": {
+      "x": 87,
+      "y": 15,
+      "removed": true
+    },
+    "standingTree-87-45": {
+      "x": 87,
+      "y": 45,
+      "removed": true
+    },
+    "standingTree-87-48": {
+      "x": 87,
+      "y": 48,
+      "removed": true
+    },
+    "standingTree-87-51": {
+      "x": 87,
+      "y": 51,
+      "removed": true
+    },
+    "standingTree-87-6": {
+      "x": 87,
+      "y": 6,
+      "removed": true
+    },
+    "standingTree-90-12": {
+      "x": 90,
+      "y": 12,
+      "removed": true
+    },
+    "standingTree-90-15": {
+      "x": 90,
+      "y": 15,
+      "removed": true
+    },
+    "standingTree-90-45": {
+      "x": 90,
+      "y": 45,
+      "removed": true
+    },
+    "standingTree-90-48": {
+      "x": 90,
+      "y": 48,
+      "removed": true
+    },
+    "standingTree-90-51": {
+      "x": 90,
+      "y": 51,
+      "removed": true
+    },
+    "standingTree-90-6": {
+      "x": 90,
+      "y": 6,
+      "removed": true
+    },
+    "standingTree-90-9": {
+      "x": 90,
+      "y": 9,
+      "removed": true
+    },
+    "standingTree-93-45": {
+      "x": 93,
+      "y": 45,
+      "removed": true
+    },
+    "standingTree-93-48": {
+      "x": 93,
+      "y": 48,
+      "removed": true
+    },
+    "standingTree-93-51": {
+      "x": 93,
+      "y": 51,
+      "removed": true
+    },
+    "whiteFlowers-79-11": {
+      "x": 79,
+      "y": 11,
+      "removed": true
+    },
+    "whiteFlowers-81-7": {
+      "x": 81,
+      "y": 7,
+      "removed": true
+    },
+    "whiteFlowers-87-13": {
+      "x": 87,
+      "y": 13,
+      "removed": true
+    },
+    "whiteFlowers-87-47": {
+      "x": 87,
+      "y": 47,
+      "removed": true
+    },
+    "whiteFlowers-91-9": {
+      "x": 91,
+      "y": 9,
+      "removed": true
+    }
+  },
+  "area": "forest",
+  "points": {
+    "entry": {
+      "x": 93,
+      "y": 46
+    },
+    "exit": {
+      "x": 94,
+      "y": 46
+    }
+  }
+}

@@ -1,0 +1,29 @@
+import type Phaser from 'phaser';
+import {ECONOMY_ART_ROOT as ROOT,ART_TOOL_IDS,TOOL_MATERIALS,MERCHANT_ART_IDS,NPC_ART_DIRECTIONS,tierToolIcon,mineralTexture} from './data/economy-art';
+import {CHARACTER_DIRECTIONS} from './character-directions';
+
+/** Dedicated art is loaded beside the original assets; none of the supplied art is replaced. */
+export function preloadEconomyArt(scene:Phaser.Scene):void{
+ for(const metal of ['iron','gold','blackMetal'] as const)scene.load.image(mineralTexture(metal),`${ROOT}/deposits/${metal}.png`);
+ for(const tool of ART_TOOL_IDS)for(const [tier,material]of TOOL_MATERIALS.entries())scene.load.image(`economy-tool-${material}-${tool}`,tierToolIcon(tool,tier));
+ for(const id of ['anvil','tongs'])scene.load.image(`economy-workshop-${id}`,`${ROOT}/workshop/${id}.png`);
+ for(let frame=0;frame<4;frame++)scene.load.image(`economy-forge-${frame}`,`${ROOT}/forge/frame-${frame}.png`);
+ for(const id of MERCHANT_ART_IDS)for(const direction of NPC_ART_DIRECTIONS)scene.load.image(`economy-npc-${id}-${direction}`,`${ROOT}/npcs/${id}-${direction}.png`);
+}
+
+/** Merchants are stationary. Eight look directions share four authored views,
+ * without inventing walk frames or changing the player's authored sprites. */
+export function merchantTexture(scene:Phaser.Scene,id:string):string{
+ const key=`village-npc-${id}`;
+ if(scene.textures.exists(key))return key;
+ const canvas=document.createElement('canvas');canvas.width=192*8;canvas.height=256;
+ const c=canvas.getContext('2d')!;c.imageSmoothingEnabled=false;
+ for(const [i,direction]of CHARACTER_DIRECTIONS.entries()){
+  const view=direction==='up'||direction.startsWith('up-')?'up':direction==='down'||direction.startsWith('down-')?'down':direction;
+  const image=scene.textures.get(`economy-npc-${id}-${view}`).getSourceImage() as HTMLImageElement;
+  c.drawImage(image,i*192,0,192,256);
+ }
+ const texture=scene.textures.addCanvas(key,canvas);texture?.setFilter(0);
+ for(let frame=0;frame<8;frame++)texture?.add(frame,0,frame*192,0,192,256);
+ return key;
+}

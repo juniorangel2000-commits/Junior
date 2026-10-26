@@ -28,3 +28,5 @@
 #ui:has(.top-toolbar.is-open) .toast-stack{top:230px}
 @media(max-width:760px){#ui:has(.top-toolbar.is-open) .toast-stack{top:320px}}
 .top-toolbar[hidden]{display:none}
+
+.hud-status .resources .resource:nth-child(5),.hud-status .resources .resource:nth-child(6){grid-column:span 2}.hud-status .resources .resource:nth-child(6){justify-content:flex-end;gap:4px}

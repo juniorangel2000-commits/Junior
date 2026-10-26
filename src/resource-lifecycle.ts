@@ -1,4 +1,6 @@
 import {TreeAvoidanceField,treeTiles,naturalPlantGround} from './systems/tree-avoidance';
+import {hasMapSeam,seamPassage} from './data/map-seam';
+import {isPropertyVillagePassage} from './data/property-village-gate';
 import {roadDistanceAt} from './data/terrain-shape';
 import {fiberPlantFor,type FiberPlant} from './data/fiber-plants';
 import {isPathTile,isBridgeTile} from './data/regions';
@@ -21,10 +23,11 @@ export class ResourceLifecycle {
   const now=clockMinutes(this.save);if(!force&&now-this.lastCheck<15)return;this.lastCheck=now;
   const fixed=this.world.resources.filter(n=>n.kind!=='standingTree'&&!n.id.startsWith('spawn-')).length;
   const budget=Math.max(0,RESOURCE_LIMITS[this.area]-fixed);
+  const continuation=hasMapSeam(this.area==='forest'?this.save.forestMapEdits:this.save.mapEdits);
   while(this.field.nodes.length>budget){const n=this.field.nodes.pop()!;this.field.waiting.push({kind:n.kind as SpawnKind,at:now+resourceRespawnMinutes(n.kind as SpawnKind),...(n.kind==='fiber'?{plant:fiberPlantFor(n)}:{})});this.save.resourceProgress=this.save.resourceProgress.filter(p=>p.id!==n.id);}
   this.world.setNaturalResources(this.field.nodes,this.save.resourceProgress.map(p=>p.id));
   this.treeCover.refresh(treeTiles(this.world.resources));
-  if(replenishResources(this.field,this.area,now,(x,y,_kind,plant?:FiberPlant)=>{if(plant==='reeds'&&(this.area!=='property'||!this.world.isWater||![-2,-1,0,1,2].some(dx=>[-2,-1,0,1,2].some(dy=>this.world.isWater!(x+dx,y+dy)))))return false;const paint=(this.area==='forest'?this.save.forestMapEdits:this.save.mapEdits)?.terrain[`${x},${y}`];if((_kind==='fiber'||_kind==='seeds')&&!naturalPlantGround(paint))return false;if(this.area==='property'&&paint===undefined&&roadDistanceAt((x+.5)*32,(y+.5)*32)<26)return false;const ground=paint?['grass','meadow','forest','moss','soil','sand'].includes(paint):this.area==='forest'?forestPathDistance(x,y)>1.8:!isPathTile(x,y)&&!isBridgeTile(x,y);return ground&&this.canPlace(x,y);},budget,(x,y,kind)=>{const hand=['fiber','seeds','tree','stone','scrap'].includes(kind);const trail=this.area==='forest'?forestPathDistance(x,y):roadDistanceAt((x+.5)*32,(y+.5)*32)/32;return this.treeCover.cost(x,y)*(hand?12:3)+(hand?Math.abs(trail-3)*.7:0);}))this.world.setNaturalResources(this.field.nodes,this.save.resourceProgress.map(p=>p.id));
+  if(replenishResources(this.field,this.area,now,(x,y,_kind,plant?:FiberPlant)=>{if(continuation&&(seamPassage(x,y,this.area)||this.area==='property'&&isPropertyVillagePassage(x,y)))return false;if(plant==='reeds'&&(this.area!=='property'||!this.world.isWater||![-2,-1,0,1,2].some(dx=>[-2,-1,0,1,2].some(dy=>this.world.isWater!(x+dx,y+dy)))))return false;const paint=(this.area==='forest'?this.save.forestMapEdits:this.save.mapEdits)?.terrain[`${x},${y}`];if((_kind==='fiber'||_kind==='seeds')&&!naturalPlantGround(paint))return false;if(this.area==='property'&&paint===undefined&&roadDistanceAt((x+.5)*32,(y+.5)*32)<26)return false;const ground=paint?['grass','meadow','forest','moss','soil','sand'].includes(paint):this.area==='forest'?forestPathDistance(x,y)>1.8:!isPathTile(x,y)&&!isBridgeTile(x,y);return ground&&this.canPlace(x,y);},budget,(x,y,kind)=>{const hand=['fiber','seeds','tree','stone','scrap'].includes(kind);const trail=this.area==='forest'?forestPathDistance(x,y):roadDistanceAt((x+.5)*32,(y+.5)*32)/32;return this.treeCover.cost(x,y)*(hand?12:3)+(hand?Math.abs(trail-3)*.7:0);}))this.world.setNaturalResources(this.field.nodes,this.save.resourceProgress.map(p=>p.id));
  }
  collected(node:ResourceNode):boolean {
   const now=clockMinutes(this.save),generated=harvestSpawn(this.field,node.id,now);

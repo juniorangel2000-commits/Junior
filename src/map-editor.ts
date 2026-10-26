@@ -10,6 +10,7 @@ import type { EditorObjectKind, MapEditData } from './systems/map-editor';
 import { isWaterTile, TILE, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 import type { WorldEditorObject } from './world';
 import {isTreeKind,treeGroundClear} from './systems/tree-ground';
+import {editorBaselineObjects} from './map-editor-baseline';
 
 export interface MapEditorAdapter {
   rebuild(edits: MapEditData): void;
@@ -327,7 +328,7 @@ export class MapEditor {
   private layoutError(data: MapEditData): string | null {
     if(data.area!==this.history.current.area)return 'Este arquivo pertence a outro cenário. Abra o editor no cenário correspondente.';
     const original = new Map(this.adapter.originalObjects.map(o => [o.id, o]));
-    const resolved = new Map([...original].filter(([, o]) => !o.depleted || o.kind === 'standingTree' || o.kind === 'pine'));
+    const resolved = new Map(editorBaselineObjects(this.adapter.originalObjects,data).map(o=>[o.id,o]));
     for (const [id, edit] of Object.entries(data.objects)) {
       if (!id.startsWith('editor-') && !original.has(id)) return 'O arquivo contém um objeto que não pertence a este mapa.';
       if (edit.removed) { resolved.delete(id); continue; }

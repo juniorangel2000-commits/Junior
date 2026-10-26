@@ -203,36 +203,516 @@
     "87,7": "meadow",
     "87,8": "meadow",
     "87,9": "meadow",
-    "88,10": "meadow",
-    "88,11": "meadow",
-    "88,12": "meadow",
-    "88,13": "meadow",
-    "88,4": "meadow",
-    "88,5": "meadow",
-    "88,6": "meadow",
-    "88,7": "meadow",
-    "88,8": "meadow",
-    "88,9": "meadow",
-    "89,10": "meadow",
-    "89,11": "meadow",
-    "89,12": "meadow",
-    "89,13": "meadow",
-    "89,5": "meadow",
-    "89,6": "meadow",
-    "89,7": "meadow",
-    "89,8": "meadow",
-    "89,9": "meadow",
-    "90,10": "meadow",
-    "90,11": "meadow",
-    "90,12": "meadow",
-    "90,6": "meadow",
-    "90,7": "meadow",
-    "90,8": "meadow",
-    "90,9": "meadow",
-    "91,10": "meadow",
-    "91,7": "meadow",
-    "91,8": "meadow",
-    "91,9": "meadow"
+    "88,10": "forest",
+    "88,11": "moss",
+    "88,12": "moss",
+    "88,13": "moss",
+    "88,4": "forest",
+    "88,5": "forest",
+    "88,6": "forest",
+    "88,7": "forest",
+    "88,8": "forest",
+    "88,9": "forest",
+    "89,10": "forest",
+    "89,11": "forest",
+    "89,12": "forest",
+    "89,13": "moss",
+    "89,5": "moss",
+    "89,6": "forest",
+    "89,7": "forest",
+    "89,8": "forest",
+    "89,9": "forest",
+    "90,10": "forest",
+    "90,11": "forest",
+    "90,12": "forest",
+    "90,6": "moss",
+    "90,7": "forest",
+    "90,8": "forest",
+    "90,9": "forest",
+    "91,10": "forest",
+    "91,7": "forest",
+    "91,8": "forest",
+    "91,9": "forest",
+    "88,1": "forest",
+    "89,1": "moss",
+    "90,1": "moss",
+    "91,1": "moss",
+    "92,1": "moss",
+    "93,1": "moss",
+    "94,1": "moss",
+    "88,2": "moss",
+    "89,2": "moss",
+    "90,2": "moss",
+    "91,2": "moss",
+    "92,2": "moss",
+    "93,2": "moss",
+    "94,2": "moss",
+    "88,3": "moss",
+    "89,3": "moss",
+    "90,3": "moss",
+    "91,3": "moss",
+    "92,3": "moss",
+    "93,3": "moss",
+    "94,3": "forest",
+    "89,4": "moss",
+    "90,4": "moss",
+    "91,4": "moss",
+    "92,4": "moss",
+    "93,4": "moss",
+    "94,4": "forest",
+    "90,5": "moss",
+    "91,5": "moss",
+    "92,5": "moss",
+    "93,5": "forest",
+    "94,5": "forest",
+    "91,6": "forest",
+    "92,6": "forest",
+    "93,6": "forest",
+    "94,6": "forest",
+    "92,7": "forest",
+    "93,7": "forest",
+    "94,7": "grass",
+    "92,8": "forest",
+    "93,8": "grass",
+    "94,8": "grass",
+    "92,9": "grass",
+    "93,9": "grass",
+    "94,9": "grass",
+    "92,10": "grass",
+    "93,10": "grass",
+    "94,10": "grass",
+    "91,11": "forest",
+    "92,11": "grass",
+    "93,11": "grass",
+    "94,11": "grass",
+    "91,12": "forest",
+    "92,12": "grass",
+    "93,12": "grass",
+    "94,12": "grass",
+    "90,13": "forest",
+    "91,13": "forest",
+    "92,13": "grass",
+    "93,13": "grass",
+    "94,13": "grass",
+    "88,14": "moss",
+    "89,14": "moss",
+    "90,14": "forest",
+    "91,14": "forest",
+    "92,14": "grass",
+    "93,14": "grass",
+    "94,14": "grass",
+    "88,15": "moss",
+    "89,15": "moss",
+    "90,15": "forest",
+    "91,15": "forest",
+    "92,15": "forest",
+    "93,15": "grass",
+    "94,15": "grass",
+    "88,16": "moss",
+    "89,16": "forest",
+    "90,16": "forest",
+    "91,16": "forest",
+    "92,16": "forest",
+    "93,16": "forest",
+    "94,16": "forest",
+    "88,17": "moss",
+    "89,17": "forest",
+    "90,17": "forest",
+    "91,17": "forest",
+    "92,17": "forest",
+    "93,17": "forest",
+    "94,17": "forest",
+    "88,18": "forest",
+    "89,18": "forest",
+    "90,18": "forest",
+    "91,18": "forest",
+    "92,18": "forest",
+    "93,18": "forest",
+    "94,18": "forest",
+    "88,19": "forest",
+    "89,19": "forest",
+    "90,19": "grass",
+    "91,19": "grass",
+    "92,19": "grass",
+    "93,19": "forest",
+    "94,19": "forest",
+    "88,20": "forest",
+    "89,20": "grass",
+    "90,20": "grass",
+    "91,20": "grass",
+    "92,20": "grass",
+    "93,20": "forest",
+    "94,20": "forest",
+    "88,21": "grass",
+    "89,21": "grass",
+    "90,21": "grass",
+    "91,21": "grass",
+    "92,21": "grass",
+    "93,21": "grass",
+    "94,21": "forest",
+    "88,22": "grass",
+    "89,22": "grass",
+    "90,22": "grass",
+    "91,22": "grass",
+    "92,22": "grass",
+    "93,22": "grass",
+    "94,22": "forest",
+    "88,23": "grass",
+    "89,23": "grass",
+    "90,23": "grass",
+    "91,23": "grass",
+    "92,23": "grass",
+    "93,23": "grass",
+    "94,23": "forest",
+    "88,24": "grass",
+    "89,24": "grass",
+    "90,24": "grass",
+    "91,24": "grass",
+    "92,24": "grass",
+    "93,24": "grass",
+    "94,24": "forest",
+    "88,25": "grass",
+    "89,25": "grass",
+    "90,25": "grass",
+    "91,25": "grass",
+    "92,25": "grass",
+    "93,25": "forest",
+    "94,25": "forest",
+    "88,26": "grass",
+    "89,26": "grass",
+    "90,26": "grass",
+    "91,26": "grass",
+    "92,26": "forest",
+    "93,26": "forest",
+    "94,26": "forest",
+    "88,27": "grass",
+    "89,27": "grass",
+    "90,27": "grass",
+    "91,27": "forest",
+    "92,27": "forest",
+    "93,27": "forest",
+    "94,27": "forest",
+    "88,28": "grass",
+    "89,28": "forest",
+    "90,28": "forest",
+    "91,28": "forest",
+    "92,28": "forest",
+    "93,28": "forest",
+    "94,28": "moss",
+    "88,29": "forest",
+    "89,29": "forest",
+    "90,29": "forest",
+    "91,29": "forest",
+    "92,29": "forest",
+    "93,29": "moss",
+    "94,29": "moss",
+    "88,30": "forest",
+    "89,30": "forest",
+    "90,30": "forest",
+    "91,30": "forest",
+    "92,30": "moss",
+    "93,30": "moss",
+    "94,30": "moss",
+    "88,31": "forest",
+    "89,31": "forest",
+    "90,31": "forest",
+    "91,31": "moss",
+    "92,31": "moss",
+    "93,31": "moss",
+    "94,31": "moss",
+    "88,32": "forest",
+    "89,32": "forest",
+    "90,32": "forest",
+    "91,32": "moss",
+    "92,32": "moss",
+    "93,32": "moss",
+    "94,32": "moss",
+    "88,33": "forest",
+    "89,33": "forest",
+    "90,33": "forest",
+    "91,33": "moss",
+    "92,33": "moss",
+    "93,33": "moss",
+    "94,33": "moss",
+    "88,34": "forest",
+    "89,34": "forest",
+    "90,34": "forest",
+    "91,34": "moss",
+    "92,34": "moss",
+    "93,34": "moss",
+    "94,34": "moss",
+    "88,35": "grass",
+    "89,35": "forest",
+    "90,35": "forest",
+    "91,35": "forest",
+    "92,35": "moss",
+    "93,35": "moss",
+    "94,35": "moss",
+    "88,36": "grass",
+    "89,36": "forest",
+    "90,36": "forest",
+    "91,36": "forest",
+    "92,36": "forest",
+    "93,36": "forest",
+    "94,36": "forest",
+    "88,37": "forest",
+    "89,37": "forest",
+    "90,37": "forest",
+    "91,37": "forest",
+    "92,37": "forest",
+    "93,37": "forest",
+    "94,37": "forest",
+    "88,38": "forest",
+    "89,38": "forest",
+    "90,38": "forest",
+    "91,38": "forest",
+    "92,38": "forest",
+    "93,38": "forest",
+    "94,38": "forest",
+    "88,39": "forest",
+    "89,39": "forest",
+    "90,39": "forest",
+    "91,39": "forest",
+    "92,39": "forest",
+    "93,39": "forest",
+    "94,39": "forest",
+    "88,40": "forest",
+    "89,40": "forest",
+    "90,40": "forest",
+    "91,40": "forest",
+    "92,40": "forest",
+    "93,40": "forest",
+    "94,40": "forest",
+    "88,41": "forest",
+    "89,41": "forest",
+    "90,41": "forest",
+    "91,41": "forest",
+    "92,41": "forest",
+    "93,41": "forest",
+    "94,41": "forest",
+    "88,42": "moss",
+    "89,42": "moss",
+    "90,42": "moss",
+    "91,42": "forest",
+    "92,42": "forest",
+    "93,42": "forest",
+    "94,42": "forest",
+    "88,43": "moss",
+    "89,43": "moss",
+    "90,43": "moss",
+    "91,43": "forest",
+    "92,43": "forest",
+    "93,43": "forest",
+    "94,43": "forest",
+    "88,44": "moss",
+    "89,44": "moss",
+    "90,44": "moss",
+    "91,44": "forest",
+    "92,44": "forest",
+    "93,44": "forest",
+    "94,44": "forest",
+    "88,45": "moss",
+    "89,45": "moss",
+    "90,45": "moss",
+    "91,45": "forest",
+    "92,45": "forest",
+    "93,45": "forest",
+    "94,45": "forest",
+    "88,46": "moss",
+    "89,46": "moss",
+    "90,46": "moss",
+    "91,46": "forest",
+    "92,46": "forest",
+    "93,46": "forest",
+    "94,46": "forest",
+    "88,47": "moss",
+    "89,47": "forest",
+    "90,47": "forest",
+    "91,47": "forest",
+    "92,47": "forest",
+    "93,47": "forest",
+    "94,47": "forest",
+    "88,48": "forest",
+    "89,48": "forest",
+    "90,48": "forest",
+    "91,48": "forest",
+    "92,48": "forest",
+    "93,48": "forest",
+    "94,48": "forest",
+    "88,49": "forest",
+    "89,49": "forest",
+    "90,49": "forest",
+    "91,49": "forest",
+    "92,49": "forest",
+    "93,49": "forest",
+    "94,49": "forest",
+    "88,50": "forest",
+    "89,50": "forest",
+    "90,50": "forest",
+    "91,50": "grass",
+    "92,50": "forest",
+    "93,50": "forest",
+    "94,50": "forest",
+    "88,51": "grass",
+    "89,51": "grass",
+    "90,51": "grass",
+    "91,51": "grass",
+    "92,51": "grass",
+    "93,51": "grass",
+    "94,51": "grass",
+    "88,52": "grass",
+    "89,52": "grass",
+    "90,52": "grass",
+    "91,52": "grass",
+    "92,52": "grass",
+    "93,52": "grass",
+    "94,52": "grass",
+    "88,53": "grass",
+    "89,53": "grass",
+    "90,53": "grass",
+    "91,53": "grass",
+    "92,53": "grass",
+    "93,53": "grass",
+    "94,53": "grass",
+    "88,54": "grass",
+    "89,54": "grass",
+    "90,54": "grass",
+    "91,54": "grass",
+    "92,54": "grass",
+    "93,54": "forest",
+    "94,54": "forest",
+    "88,55": "forest",
+    "89,55": "grass",
+    "90,55": "grass",
+    "91,55": "grass",
+    "92,55": "forest",
+    "93,55": "forest",
+    "94,55": "forest",
+    "88,56": "forest",
+    "89,56": "forest",
+    "90,56": "grass",
+    "91,56": "forest",
+    "92,56": "forest",
+    "93,56": "forest",
+    "94,56": "forest",
+    "88,57": "forest",
+    "89,57": "forest",
+    "90,57": "forest",
+    "91,57": "forest",
+    "92,57": "forest",
+    "93,57": "forest",
+    "94,57": "forest",
+    "88,58": "forest",
+    "89,58": "forest",
+    "90,58": "forest",
+    "91,58": "forest",
+    "92,58": "forest",
+    "93,58": "moss",
+    "94,58": "moss",
+    "88,59": "forest",
+    "89,59": "forest",
+    "90,59": "forest",
+    "91,59": "forest",
+    "92,59": "moss",
+    "93,59": "moss",
+    "94,59": "moss",
+    "88,60": "forest",
+    "89,60": "forest",
+    "90,60": "forest",
+    "91,60": "moss",
+    "92,60": "moss",
+    "93,60": "moss",
+    "94,60": "moss",
+    "88,61": "forest",
+    "89,61": "forest",
+    "90,61": "forest",
+    "91,61": "moss",
+    "92,61": "moss",
+    "93,61": "moss",
+    "94,61": "moss",
+    "88,62": "forest",
+    "89,62": "forest",
+    "90,62": "forest",
+    "91,62": "moss",
+    "92,62": "moss",
+    "93,62": "moss",
+    "94,62": "moss",
+    "88,63": "forest",
+    "89,63": "forest",
+    "90,63": "forest",
+    "91,63": "moss",
+    "92,63": "moss",
+    "93,63": "moss",
+    "94,63": "moss",
+    "88,64": "grass",
+    "89,64": "forest",
+    "90,64": "forest",
+    "91,64": "moss",
+    "92,64": "moss",
+    "93,64": "moss",
+    "94,64": "moss",
+    "88,65": "grass",
+    "89,65": "forest",
+    "90,65": "forest",
+    "91,65": "moss",
+    "92,65": "moss",
+    "93,65": "moss",
+    "94,65": "moss",
+    "88,66": "grass",
+    "89,66": "forest",
+    "90,66": "forest",
+    "91,66": "forest",
+    "92,66": "moss",
+    "93,66": "moss",
+    "94,66": "moss",
+    "88,67": "forest",
+    "89,67": "forest",
+    "90,67": "forest",
+    "91,67": "forest",
+    "92,67": "moss",
+    "93,67": "moss",
+    "94,67": "forest",
+    "88,68": "forest",
+    "89,68": "forest",
+    "90,68": "forest",
+    "91,68": "moss",
+    "92,68": "moss",
+    "93,68": "forest",
+    "94,68": "forest",
+    "88,69": "forest",
+    "89,69": "forest",
+    "90,69": "moss",
+    "91,69": "moss",
+    "92,69": "moss",
+    "93,69": "forest",
+    "94,69": "forest",
+    "88,70": "forest",
+    "89,70": "moss",
+    "90,70": "moss",
+    "91,70": "moss",
+    "92,70": "moss",
+    "93,70": "forest",
+    "94,70": "forest",
+    "84,50": "grass",
+    "85,50": "grass",
+    "86,50": "grass",
+    "87,50": "grass",
+    "84,51": "grass",
+    "85,51": "grass",
+    "86,51": "grass",
+    "87,51": "grass",
+    "84,52": "grass",
+    "85,52": "grass",
+    "86,52": "grass",
+    "87,52": "grass",
+    "84,53": "grass",
+    "85,53": "grass",
+    "86,53": "grass",
+    "87,53": "grass",
+    "84,54": "grass",
+    "85,54": "grass",
+    "86,54": "grass",
+    "87,54": "grass"
   },
   "objects": {
     "editor-oakA-old-south-45-66": {
@@ -429,7 +909,8 @@
     "editor-oakC-25f138fe-3b58-43f0-b587-1c6ff1c073ae": {
       "x": 92,
       "y": 19,
-      "kind": "oakC"
+      "kind": "oakC",
+      "removed": true
     },
     "editor-oakC-2603ce1e-6b2d-49eb-8ee9-3d9be58e4b7b": {
       "x": 1,
@@ -481,12 +962,14 @@
     "editor-oakC-40cee8f4-3ced-48a6-8b90-c70e05cff92e": {
       "x": 91,
       "y": 20,
-      "kind": "oakC"
+      "kind": "oakC",
+      "removed": true
     },
     "editor-oakC-479235ba-e472-41a1-a90d-d65beb3b0bd9": {
       "x": 94,
       "y": 15,
-      "kind": "oakC"
+      "kind": "oakC",
+      "removed": true
     },
     "editor-oakC-4afddc58-ac26-4f50-b0fb-a96f29043d7c": {
       "x": 9,
@@ -689,7 +1172,8 @@
     "editor-oakC-dcddf272-2fa8-4cfc-b24a-5f0754b85838": {
       "x": 89,
       "y": 20,
-      "kind": "oakC"
+      "kind": "oakC",
+      "removed": true
     },
     "editor-oakC-e3c60f51-dfd4-44d2-a99e-91f5301b3eb5": {
       "x": 28,
@@ -766,7 +1250,8 @@
     "editor-pineA-079943f2-a74a-4419-aa5c-3b39d14b9ee1": {
       "x": 88,
       "y": 36,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-07bdc118-b53d-462c-a344-d54794fd479b": {
       "x": 9,
@@ -897,7 +1382,8 @@
     "editor-pineA-20eb2765-abfb-478d-873f-8ff5e48ee052": {
       "x": 91,
       "y": 59,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-2154a17c-6ae4-44d1-b6f0-bd9ded71ab22": {
       "x": 19,
@@ -912,7 +1398,8 @@
     "editor-pineA-228c2b82-ce1e-44dd-98df-7220f04c2c98": {
       "x": 90,
       "y": 56,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-247fb889-f2ff-40ce-9606-bddf374e7059": {
       "x": 5,
@@ -1024,7 +1511,8 @@
     "editor-pineA-36701cde-e7b4-4a9c-939d-5aa12c78a375": {
       "x": 91,
       "y": 58,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-372224a7-082f-4236-b386-52747c7346e6": {
       "x": 12,
@@ -1069,7 +1557,8 @@
     "editor-pineA-3d418298-107c-43fe-bf12-6d311ff1de28": {
       "x": 90,
       "y": 55,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-3e3612c5-1358-4b58-9e92-31276ec10218": {
       "x": 54,
@@ -1190,7 +1679,8 @@
     "editor-pineA-4ab31afc-8559-4d92-b39e-3b17d6d875fe": {
       "x": 92,
       "y": 38,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-4d19d8e6-f5a8-412c-8179-5f69a30adfcc": {
       "x": 11,
@@ -1200,7 +1690,8 @@
     "editor-pineA-507d392b-db28-4cef-bd0e-17124b6a3a36": {
       "x": 89,
       "y": 30,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-50caaf69-eea6-41ab-b18f-22af46436203": {
       "x": 7,
@@ -1225,12 +1716,14 @@
     "editor-pineA-545a1222-b6f0-4975-9d99-a626ea94aab3": {
       "x": 88,
       "y": 31,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-56194d67-7728-4fd1-9dd2-90977b949ff7": {
       "x": 92,
       "y": 35,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-568c99c2-e24e-4f52-ada3-eb95130d751e": {
       "x": 7,
@@ -1352,12 +1845,14 @@
     "editor-pineA-621d4615-a16b-411d-986c-cefb99e40d7c": {
       "x": 90,
       "y": 61,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-62b46f7c-5ad9-4020-a518-da5515908165": {
       "x": 91,
       "y": 36,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-63b2ce0b-7d71-4966-883b-98b9194b4f52": {
       "x": 8,
@@ -1388,7 +1883,8 @@
     "editor-pineA-6722de5b-82d0-4d2d-b102-cc1d0291cfbe": {
       "x": 88,
       "y": 62,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-6755480c-6c55-46fb-b037-fe970067414c": {
       "x": 7,
@@ -1454,7 +1950,8 @@
     "editor-pineA-74008dc9-7eb3-435a-bc39-b68f9c2f1a5d": {
       "x": 92,
       "y": 33,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-74639528-760e-419f-bcf4-ebff74da005e": {
       "x": 38,
@@ -1561,7 +2058,8 @@
     "editor-pineA-83c5c349-4e27-4a69-b68a-99d4b1aeb23d": {
       "x": 89,
       "y": 62,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-841ecefc-d157-4b24-8d71-0101ac5a3bf3": {
       "x": 13,
@@ -1571,7 +2069,8 @@
     "editor-pineA-864bbb8c-2867-49c6-a8ce-496f3e2689a6": {
       "x": 88,
       "y": 32,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-8762c0c4-c651-44f1-8bd2-c2c16ce007c5": {
       "x": 24,
@@ -1606,7 +2105,8 @@
     "editor-pineA-8e46418b-cdfe-4797-8282-1b1296ead4b3": {
       "x": 90,
       "y": 53,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-8f013638-92bb-4f70-9a4f-dd39cc9bbffb": {
       "x": 7,
@@ -1686,7 +2186,8 @@
     "editor-pineA-9dc3b71a-874d-4d6c-b5cb-5fc2fb064146": {
       "x": 91,
       "y": 37,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-9e016dfb-d55f-4550-98bb-0e83d4de69be": {
       "x": 60,
@@ -1706,7 +2207,8 @@
     "editor-pineA-a12bd071-4e8e-4d40-a65c-6bf4826f5606": {
       "x": 89,
       "y": 61,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-a40a57fb-aa08-47d6-934a-cad5d16fe159": {
       "x": 8,
@@ -1771,7 +2273,8 @@
     "editor-pineA-b855f0b4-fdb1-4716-b647-da9ef247984b": {
       "x": 92,
       "y": 39,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-b8708eb7-8e88-4ed4-9f8c-1f0150e80c4a": {
       "x": 54,
@@ -1781,7 +2284,8 @@
     "editor-pineA-b89dc8a7-c09e-4304-ab56-28b6e112d046": {
       "x": 91,
       "y": 40,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-b9664e54-1b14-4d90-8396-37b153f91f76": {
       "x": 46,
@@ -1846,7 +2350,8 @@
     "editor-pineA-c1b3850b-fb19-43ce-944a-772b0164d2bf": {
       "x": 90,
       "y": 59,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-c34444f3-b020-42f3-a9d5-9c09ee8b1e82": {
       "x": 30,
@@ -1969,7 +2474,8 @@
     "editor-pineA-d3797bde-c3df-4861-88b2-da1073225c6c": {
       "x": 92,
       "y": 34,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-d3b46ecc-da8d-488a-94d8-183459c32605": {
       "x": 4,
@@ -2034,7 +2540,8 @@
     "editor-pineA-dd342103-ac67-4f05-a2b2-e7496409cda5": {
       "x": 91,
       "y": 35,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-dd62fb1a-2459-44c2-ba02-64ec7f8e9c8c": {
       "x": 60,
@@ -2172,7 +2679,8 @@
     "editor-pineA-ef3803d5-0c03-40ad-8164-96a4ecfc538f": {
       "x": 88,
       "y": 34,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-efda69f1-353c-4ea2-a311-8081b6b95701": {
       "x": 10,
@@ -2192,7 +2700,8 @@
     "editor-pineA-f19e7231-0f69-4299-8c99-fa629fde7d00": {
       "x": 88,
       "y": 33,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-f2ee7c53-56ee-4f6e-beae-f432287dd046": {
       "x": 26,
@@ -2228,7 +2737,8 @@
     "editor-pineA-fae1842a-a47b-4b01-a649-ca917744f2ea": {
       "x": 88,
       "y": 35,
-      "kind": "pineA"
+      "kind": "pineA",
+      "removed": true
     },
     "editor-pineA-fb673e7f-dec2-4921-89f0-02920374483c": {
       "x": 20,
@@ -2349,7 +2859,8 @@
     "editor-pineC-83829935-f728-4cbb-a0a1-e5ae32d995be": {
       "x": 90,
       "y": 4,
-      "kind": "pineC"
+      "kind": "pineC",
+      "removed": true
     },
     "editor-pineC-8e28eff5-f191-40e8-b6bc-bd68a73280c0": {
       "x": 48,
@@ -2560,17 +3071,123 @@
       "x": 91,
       "y": 9,
       "removed": true
+    },
+    "standingTree-87-54": {
+      "x": 87,
+      "y": 54,
+      "removed": true
+    },
+    "editor-pineB-seam-f-89-5": {
+      "x": 89,
+      "y": 5,
+      "kind": "pineB"
+    },
+    "editor-pineB-seam-f-92-5": {
+      "x": 92,
+      "y": 5,
+      "kind": "pineB"
+    },
+    "editor-pineA-seam-f-90-10": {
+      "x": 90,
+      "y": 10,
+      "kind": "pineA"
+    },
+    "editor-pineB-seam-f-89-14": {
+      "x": 89,
+      "y": 14,
+      "kind": "pineB"
+    },
+    "editor-pineA-seam-f-92-15": {
+      "x": 92,
+      "y": 15,
+      "kind": "pineA"
+    },
+    "editor-pineA-seam-f-89-19": {
+      "x": 89,
+      "y": 19,
+      "kind": "pineA"
+    },
+    "editor-pineA-seam-f-92-19": {
+      "x": 92,
+      "y": 19,
+      "kind": "pineA"
+    },
+    "editor-oakB-seam-f-90-25": {
+      "x": 90,
+      "y": 25,
+      "kind": "oakB"
+    },
+    "editor-oakA-seam-f-92-25": {
+      "x": 92,
+      "y": 25,
+      "kind": "oakA"
+    },
+    "editor-oakC-seam-f-89-28": {
+      "x": 89,
+      "y": 28,
+      "kind": "oakC"
+    },
+    "editor-oakA-seam-f-92-29": {
+      "x": 92,
+      "y": 29,
+      "kind": "oakA"
+    },
+    "editor-oakB-seam-f-90-33": {
+      "x": 90,
+      "y": 33,
+      "kind": "oakB"
+    },
+    "editor-oakC-seam-f-89-39": {
+      "x": 89,
+      "y": 39,
+      "kind": "oakC"
+    },
+    "editor-oakC-seam-f-92-39": {
+      "x": 92,
+      "y": 39,
+      "kind": "oakC"
+    },
+    "editor-oakC-seam-f-92-43": {
+      "x": 92,
+      "y": 43,
+      "kind": "oakC"
+    },
+    "editor-oakB-seam-f-92-48": {
+      "x": 92,
+      "y": 48,
+      "kind": "oakB"
+    },
+    "editor-pineA-seam-f-89-64": {
+      "x": 89,
+      "y": 64,
+      "kind": "pineA"
+    },
+    "editor-pineB-seam-f-92-63": {
+      "x": 92,
+      "y": 63,
+      "kind": "pineB"
+    },
+    "editor-pineB-seam-f-90-70": {
+      "x": 90,
+      "y": 70,
+      "kind": "pineB"
+    },
+    "editor-pineB-seam-f-92-70": {
+      "x": 92,
+      "y": 70,
+      "kind": "pineB"
     }
   },
   "area": "forest",
   "points": {
     "entry": {
       "x": 93,
-      "y": 46
+      "y": 52
     },
     "exit": {
       "x": 94,
-      "y": 46
+      "y": 52
     }
-  }
+  },
+  "continuation": 1
 }

@@ -1,3 +1,8 @@
+import {toolCondition,spendDurability,toolWork,notifyReadyOrders} from '../systems/economy';
+import {markMinerals} from '../economy-visuals';
+import {useConsumable} from '../systems/consumables';
+import {fishAtBank} from '../fishing-ui';
+import {updateVillageEquipment} from '../village-equipment';
 import {treeTiles} from '../systems/tree-avoidance';
 import { Daylight } from '../daylight';
 import {AnimalPopulation} from '../animals';
@@ -125,8 +130,8 @@ export class ForestScene extends Phaser.Scene {
   persist():boolean {return this.save();}
   craftRecipe(id:string):void {
     if(!this.ui.isCraftingOpen())return;
-    if(id!=='cord'){this.ui.toast('Volte à propriedade para fabricar esse item.');return;}
-    const inventory=new Inventory(this.state.inventory),result=craft(id,inventory,false);
+    if(id!=='cord'&&!this.state.villageProgress?.recipes.includes(id)){this.ui.toast('Volte à propriedade para fabricar esse item.');return;}
+    const inventory=new Inventory(this.state.inventory),result=craft(id,inventory,false,this.state.villageProgress);
     if(result.ok){Object.assign(this.state.inventory,inventory.data);gameAudio.play('craft');this.updateHUD();this.save();}
     this.ui.toast(result.message);this.ui.refreshCrafting(this.state.inventory,false);
   }
@@ -135,6 +140,26 @@ export class ForestScene extends Phaser.Scene {
     if(this.paused||this.mapEditor||this.leaving)return;
     this.zoom=stepCameraZoom(this.zoom,direction);saveCameraZoom(this.zoom);this.applyCamera();this.ui.updateCameraZoom(this.zoom,true);
   }
+  async useVillageItem(item:import('../types').ItemId):Promise<void>{
+    if(this.paused||this.player.isSwimming||this.toolUse.active||this.toolVisual?.sprite.getData('gathering'))return;
+    if(item==='sickle'){
+      if(this.state.inventory.sickle<1||toolCondition(this.state,'sickle').durability<=0){this.ui.toast('A foice precisa ser fabricada ou reparada.');return;}
+      const nodes=this.world.resources.filter(n=>n.kind==='fiber'&&Math.hypot(n.x*32+16-this.player.x,n.y*32+25-this.player.y)<75&&!this.world.waterAt(n.x,n.y)).slice(0,toolWork(this.state,'sickle'));let done=false;
+      for(const node of nodes){const inventory=new Inventory(this.state.inventory),r=this.resources.hit(node,'hand',inventory,this.state);if(r.ok)Object.assign(this.state.inventory,inventory.data);if(r.depleted){this.world.removeResource(node.id);if(!this.resourceLifecycle?.collected(node)){this.state.depletedResources.push(node.id);this.world.depleted.add(node.id);}done=true;}}
+      if(done){spendDurability(this.state,'sickle');this.toolVisual?.playGather('sickle',directionFromVector(this.player.facing.x,this.player.facing.y),this.player,toolCondition(this.state,'sickle').tier);this.state.resourceProgress=this.resources.progress;this.save();}this.ui.toast(done?'Vegetação recolhida.':'Aproxime-se de uma planta coletável.');this.updateHUD();return;
+    }
+    this.state.inventory={...this.state.inventory};this.state.crops=this.farming.crops.map(c=>({...c}));
+    const point={x:Math.floor(this.player.x/32+this.player.facing.x),y:Math.floor(this.player.y/32+this.player.facing.y)};
+    const water=(x:number,y:number)=>this.world.waterPointAt(x,y);
+    const near=Array.from({length:7},(_,a)=>a-3).some(dx=>Array.from({length:7},(_,a)=>a-3).some(dy=>water(this.player.x+dx*16,this.player.y+dy*16)));
+    if(item==='waterPump'&&!near){this.ui.toast('Instale a bomba perto de um rio ou lago.');return;}
+    if(item==='fishingRod'||item==='net'){
+      if(this.player.isSwimming||!near){this.ui.toast('Fique em terra firme, perto da água, para pescar.');return;}
+      this.setPaused(true);const message=await fishAtBank(this.state,item==='net',()=>{;this.persist();});this.setPaused(false);this.ui.toast(message);
+    }else{const result=useConsumable(this.state,item,point,(x,y)=>this.world.isBlocked(x,y));if(result.ok){;this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);this.persist();}this.ui.toast(result.message);}
+    this.updateHUD();
+  }
+
   captureMap():Promise<string> {
     this.updateHUD();
     const texture=this.make.renderTexture({width:960,height:720},false);texture.camera.setZoom(960/3072).setScroll(0,0).setOrigin(0,0);
@@ -142,8 +167,9 @@ export class ForestScene extends Phaser.Scene {
     return new Promise(resolve=>texture.snapshot(image=>{const url=image instanceof HTMLImageElement?image.src:'';texture.destroy();resolve(url);}));
   }
   private updateHUD():void {
+  this.state.crops=this.farming.crops;updateVillageEquipment(this,this.state,this.player);notifyReadyOrders(this.state,m=>this.ui.toast(m));markMinerals(this,this.world.resources);
     const nearest=this.nearest(),info=nearest&&FOREST_ANIMALS.find(a=>a.id===nearest.id),node=this.nearestResource();
-    this.ui.updateHUD({area:'forest',inHome:false,swimming:this.player.isSwimming,name:this.state.profile.name,day:this.state.day,time:this.state.time,
+    this.ui.updateHUD({toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'forest',coins:this.state.villageEconomy?.coins??0,inHome:false,swimming:this.player.isSwimming,name:this.state.profile.name,day:this.state.day,time:this.state.time,
       inventory:this.state.inventory,tool:this.state.equippedTool??'hand',wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,
       playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:this.nearExit()?null:this.state.animalEscort?'G':'E',prompt:this.player.isSwimming?'Nadar · siga até a margem para sair':this.nearExit()?this.state.animalEscort?'Siga pela placa para levar o animal à propriedade':'Siga a seta e ultrapasse a placa para continuar':this.state.animalEscort?'Conduzindo animal · siga até a saída · soltar corda':info?'Prender '+ANIMAL_NAMES[info.kind].toLowerCase()+' com corda':node?`${RESOURCE_DEFINITIONS[node.kind].label} · ${RESOURCE_DEFINITIONS[node.kind].tool==='pickaxe'?'use a picareta':RESOURCE_DEFINITIONS[node.kind].tool==='hatchet'?'use a machadinha':'recolher'}`:'Explorar a floresta',
       location:'Floresta Antiga',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});
@@ -191,7 +217,7 @@ export class ForestScene extends Phaser.Scene {
     this.ui.toast('Corda presa! Leve o animal até a propriedade. G para soltar.');this.updateHUD();this.save();
   }
   private hitResource(node:ResourceNode,tool:Tool):void {
-    const inventory=new Inventory(this.state.inventory),result=this.resources.hit(node,tool,inventory);
+    const inventory=new Inventory(this.state.inventory),result=this.resources.hit(node,tool,inventory,this.state);
     if(result.ok){Object.assign(this.state.inventory,inventory.data);this.state.resourceProgress=this.resources.progress;if(result.depleted){this.world.removeResource(node.id);if(!this.resourceLifecycle?.collected(node)){this.state.depletedResources.push(node.id);this.world.depleted.add(node.id);}this.state.progress.collected ||=this.state.inventory.wood>0&&this.state.inventory.stone>0&&this.state.inventory.fiber>0;}
       gameAudio.play(tool==='pickaxe'?'stone':tool==='hatchet'?'wood':'pickup');}
     this.ui.toast(result.message);this.updateHUD();this.save();
@@ -213,13 +239,13 @@ export class ForestScene extends Phaser.Scene {
     this.daylight?.update(this.state.time);
     if(!this.player||this.paused||this.leaving||this.mapEditor||document.hidden)return;
     const previous={x:this.player.x,y:this.player.y};
-    const delta=Math.min(ms/1000,.1);this.player.update(delta,this.movementBlockedAt,undefined,!this.toolUse.active,this.swimmingPoint,this.allowLeashMovement);this.wildlife?.update(delta,this.player);this.farming.update(delta);if(this.player.isSwimming){this.state.equippedTool='hand';this.toolUse.cancel();this.toolVisual?.hide();}
+    const delta=Math.min(ms/1000,.1);this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta,this.movementBlockedAt,undefined,!this.toolUse.active,this.swimmingPoint,this.allowLeashMovement);this.wildlife?.update(delta,this.player);this.farming.update(delta);if(this.player.isSwimming){this.state.equippedTool='hand';this.toolUse.cancel();this.toolVisual?.hide();}
     if(!this.player.isSwimming&&this.exitPassage.update(previous,this.player,this.exit(),this.entry())){
       if(this.wildlife?.canLeave(this.player)??true){this.leave();return;}
       if(!this.exitWarningShown){this.ui.toast('Traga o animal para perto da saída.');this.exitWarningShown=true;}
     }else this.exitWarningShown=false;
     const strike=this.toolUse.advance(delta);if(strike){const node=this.world.resourceAt(strike.target.x,strike.target.y);if(node?.id===strike.target.id&&!this.player.isSwimming)this.hitResource(node,strike.tool);}
-    const active=this.toolUse.current;if(active&&(active.tool==='pickaxe'||active.tool==='hatchet'))this.toolVisual?.show(active.tool,active.direction,this.player.x,this.player.y,this.toolUse);else this.toolVisual?.hide();
+    const active=this.toolUse.current;if(active&&(active.tool==='pickaxe'||active.tool==='hatchet'))this.toolVisual?.show(active.tool,active.direction,this.player.x,this.player.y,this.toolUse,toolCondition(this.state,active.tool).tier);else if(!this.toolVisual?.sprite.getData('gathering'))this.toolVisual?.hide();
     Object.assign(this.state,advanceClock(this.state,delta*GAME_MINUTES_PER_SECOND));
     this.trees.forEach(t=>t.setAlpha(this.player.y<t.y&&Math.abs(this.player.x-t.x)<t.displayWidth*.4&&this.player.y>t.y-t.displayHeight*.85?.42:1));
     this.resourceLifecycle?.tick();

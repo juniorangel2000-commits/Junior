@@ -1,3 +1,8 @@
+import {preloadEconomyArt} from './economy-art';
+import {economyIcon,tierToolIcon,ART_TOOL_IDS} from './data/economy-art';
+import type {EconomicTool} from './data/economy-balance';
+import {ITEMS} from './data/items';
+import type {ItemId} from './types';
 import Phaser from 'phaser';
 import { setupReferenceNature } from './reference-nature';
 import { preloadCharacterSprites, setupCharacterSprites } from './character-sprites';
@@ -15,7 +20,11 @@ import { TOOL_ICON_URLS } from './data/tool-art';
 /** Local assets from the received packages and original tree/ground atlases. */
 const BASE = 'assets/visual/';
 const ICON_IDS = new Set(['wood', 'stone', 'branch', 'log', 'plank', 'scrap', 'hatchet', 'pickaxe', 'handsaw', 'fiber', 'cord', 'flakedStone', 'handle', 'blade', 'board', 'hammer', 'water', 'workbench', 'seeds']);
-export function itemIconUrl(id: string): string | undefined {
+export function itemIconUrl(id: string, tier=0): string | undefined {
+  const dedicated=economyIcon(id);if(dedicated)return dedicated;
+  if((ART_TOOL_IDS as readonly string[]).includes(id)&&(tier>0||id==='sickle'||id==='shovel'))return tierToolIcon(id as EconomicTool,tier);
+  const fallback=Object.hasOwn(ITEMS,id)?ITEMS[id as ItemId].iconFallback:undefined;
+  if(fallback)return itemIconUrl(fallback);
   if (id === 'stone') return 'assets/visual/nature/small-stones.png';
   if (id === 'branch') return 'assets/visual/nature/fallen-branches.png';
   if (id === 'hatchet' || id === 'pickaxe' || id === 'hoe') return TOOL_ICON_URLS[id];
@@ -31,6 +40,7 @@ const WORLD_SOURCES: Record<string, string> = {
 };
 const MODULES = ['parede_creme', 'parede_janela_floreira', 'parede_trepadeira', 'parede_porta', 'porta_madeira', 'janela_turquesa', 'telha_lisa', 'telha_variante', 'chamine', 'floreira', 'cerca_natural', 'banco_jardim', 'barril', 'vaso_flor', 'piso_tabuas', 'piso_pedra', 'terra', 'caminho', 'planta'];
 export function preloadVisualAssets(scene: Phaser.Scene): void {
+  preloadEconomyArt(scene);
   scene.load.image('fence-components-source','assets/visual/architecture/fence-components.png');
   scene.load.image('fence-moss-source','assets/visual/architecture/fence-moss.png');
   scene.load.image('finished-gate-source','assets/visual/architecture/finished-gate-source.png');

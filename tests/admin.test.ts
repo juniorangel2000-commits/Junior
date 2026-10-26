@@ -70,9 +70,9 @@ describe('acesso local de administrador', () => {
   it('permite todos os itens reais e recusa IDs, quantidades e estouros inválidos', async () => {
     const access = new AdminAccess(credential);
     await access.unlock(testPassword);
-    const inventory = new Inventory();
-    for (const item of ITEM_IDS) expect(grantAdminItem(access, inventory, item, 10).ok).toBe(true);
-    for (const item of ITEM_IDS) expect(inventory.data[item]).toBe(10);
+    for(const item of ITEM_IDS){const single=new Inventory();expect(grantAdminItem(access,single,item,item==='backpack'?2:10).ok).toBe(true);}
+    const inventory=new Inventory({wood:10,backpack:2});
+    expect(grantAdminItem(access,inventory,'backpack',1).ok).toBe(false);
     const snapshot = { ...inventory.data };
     for (const amount of [0, -1, .5, NaN, Infinity, '10', MAX_ITEM_COUNT + 1]) {
       expect(grantAdminItem(access, inventory, 'wood', amount).ok).toBe(false);

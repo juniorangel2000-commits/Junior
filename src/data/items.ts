@@ -1,7 +1,25 @@
+import {ECONOMY_ITEM_IDS} from './economy-balance';
 import type { ItemId } from '../types';
 
 // IDs de saves são estáveis. Madeira legada continua distinta de troncos e tábuas.
-export const ITEMS: Record<ItemId, { name: string; description: string }> = {
+export const ITEMS: Record<ItemId, { name: string; description: string;iconFallback?:string }> = {
+  ironShard: {name:'Fragmento bruto de Ferro',description:'Material metálico para a ferraria.',iconFallback:'scrap'},
+  ironOre: {name:'Minério bruto inteiro de Ferro',description:'Equivale a nove fragmentos, não é um lingote.',iconFallback:'scrap'},
+  ironIngot: {name:'Lingote de Ferro',description:'Material metálico para a ferraria.',iconFallback:'scrap'},
+  goldShard: {name:'Fragmento bruto de Ouro',description:'Material metálico para a ferraria.',iconFallback:'scrap'},
+  goldOre: {name:'Minério bruto inteiro de Ouro',description:'Equivale a nove fragmentos, não é um lingote.',iconFallback:'scrap'},
+  goldIngot: {name:'Lingote de Ouro',description:'Material metálico para a ferraria.',iconFallback:'scrap'},
+  blackMetalShard: {name:'Fragmento bruto de Metal Negro',description:'Material metálico para a ferraria.',iconFallback:'scrap'},
+  blackMetalOre: {name:'Minério bruto inteiro de Metal Negro',description:'Equivale a nove fragmentos, não é um lingote.',iconFallback:'scrap'},
+  blackMetalIngot: {name:'Lingote de Metal Negro',description:'Material metálico para a ferraria.',iconFallback:'scrap'},
+  sickle: {name:'Foice de Pedra',description:'Produzido ou coletado na região.',iconFallback:'board'},
+  shovel: {name:'Pá de Pedra',description:'Produzido ou coletado na região.',iconFallback:'board'},
+  furniture: {name:'Móvel de madeira',description:'Produzido ou coletado na região.',iconFallback:'board'},
+  doorKit: {name:'Porta pronta',description:'Produzido ou coletado na região.',iconFallback:'board'},
+  windowKit: {name:'Janela pronta',description:'Produzido ou coletado na região.',iconFallback:'board'},
+  fenceKit: {name:'Cerca pronta',description:'Produzido ou coletado na região.',iconFallback:'board'},
+  forge: {name:'Forja própria',description:'Produzido ou coletado na região.',iconFallback:'workbench'},
+  mushroom: {name:'Cogumelos',description:'Produzido ou coletado na região.',iconFallback:'board'},
   wood: { name: 'Madeira', description: 'Lenha e madeira reaproveitada, usada nas cercas e nos bancos.' },
   stone: { name: 'Pedra', description: 'Pedras pequenas para ferramentas e construção.' },
   seeds: { name: 'Sementes', description: 'Sementes de nabo para a horta.' },
@@ -22,7 +40,33 @@ export const ITEMS: Record<ItemId, { name: string; description: string }> = {
   blade: { name: 'Lâminas de sucata', description: 'Preparadas na bancada para montar o serrote.' },
   board: { name: 'Tábuas regulares', description: 'O serrote improvisado aproveita um tronco em três tábuas regulares, reservadas para carpintaria futura.' },
   hammer: { name: 'Martelo rudimentar', description: 'Necessário para montar bancada e peças do abrigo.' },
+  herb: {name:'Ervas',description:'Ervas comuns para curativos, tônicos e receitas de Amélia.',iconFallback:'fiber'},
+  rareHerb: {name:'Ervas raras',description:'Plantas incomuns procuradas pela curandeira da vila.',iconFallback:'seeds'},
+  bandage: {name:'Curativos',description:'Faixas preparadas para recuperar o vigor durante a exploração.',iconFallback:'cord'},
+  herbalTonic: {name:'Tônico de ervas',description:'Preparado de Amélia para recuperar o vigor.',iconFallback:'water'},
+  fertilizer: {name:'Fertilizante',description:'Adubo preparado para cuidar dos canteiros da propriedade.',iconFallback:'fiber'},
+  fishingRod: {name:'Vara de pesca',description:'Equipamento de Damião para pescar nas margens dos lagos.',iconFallback:'branch'},
+  bait: {name:'Iscas',description:'Iscas consumidas ao tentar pescar com a vara.',iconFallback:'seeds'},
+  net: {name:'Rede de pesca',description:'Equipamento de pesca vendido por Damião.',iconFallback:'cord'},
+  fish: {name:'Peixes',description:'Pescado fresco para vender, cozinhar ou negociar na vila.',iconFallback:'seeds'},
+  rareFish: {name:'Peixe raro',description:'Uma captura incomum procurada por Damião.',iconFallback:'seeds'},
+  meal: {name:'Refeições',description:'Comida preparada por Helena para recuperar o vigor.',iconFallback:'seeds'},
+  lantern: {name:'Lanterna',description:'Luz portátil para explorar depois do pôr do sol.',iconFallback:'hammer'},
+  oldMap: {name:'Mapa antigo',description:'Anotações de viajantes que ajudam a descobrir lugares e rumores.',iconFallback:'board'},
+  metalPart: {name:'Peças metálicas',description:'Componentes aproveitados por Ícaro em equipamentos e melhorias.',iconFallback:'scrap'},
+  electronicPart: {name:'Componentes eletrônicos',description:'Peças delicadas para as invenções da oficina.',iconFallback:'blade'},
+  waterPump: {name:'Bomba de água',description:'Equipamento de Ícaro que pode ser instalado na propriedade.',iconFallback:'water'},
+  lamp: {name:'Luminárias',description:'Luzes de exterior para iluminar a propriedade à noite.',iconFallback:'hammer'},
+  backpack: {name:'Mochila reforçada',description:'Uma mochila de Celina para aumentar o espaço disponível ao explorar.',iconFallback:'cord'},
+  boots: {name:'Botas',description:'Calçado preparado por Celina para as caminhadas.',iconFallback:'handle'},
+  cloth: {name:'Tecidos',description:'Matéria-prima para a costura e para os curativos.',iconFallback:'fiber'},
+  clothing: {name:'Roupas',description:'Uma muda de roupa costurada na vila.',iconFallback:'fiber'},
+  accessory: {name:'Acessórios',description:'Peças de costura feitas para acompanhar a exploração.',iconFallback:'cord'},
 };
+
+/** Only these stock fields may be absent in a save from before the village
+ * services update. Missing any older field still indicates a corrupt save. */
+export const VILLAGE_ITEM_IDS=[...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory'] as const satisfies readonly ItemId[];
 
 export const ITEM_IDS = Object.keys(ITEMS) as ItemId[];
 export const ITEM_NAMES = Object.fromEntries(ITEM_IDS.map(id => [id, ITEMS[id].name])) as Record<ItemId, string>;

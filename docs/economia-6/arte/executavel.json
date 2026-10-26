@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "version": "0.10.0-preview.1",
+  "exe": "release/economy6-preview/After-Rain-0.10.0-preview.1-Windows-x64.exe",
+  "bytes": 149059540,
+  "sha256": "173e907608d08971d2fe9d8eda8ceaa5e2f6ef216a5aaf5c366f589c9ca54f99",
+  "machine": "AMD64 (0x8664)",
+  "bundles": [
+    "index-BrA0I0uJ.js",
+    "index-DfWHEFLL.css"
+  ],
+  "newSprites": 85,
+  "originalsVerified": 228,
+  "published": false,
+  "nativeWindowsRun": false,
+  "validation": "656 automated tests; TypeScript; Vite production; Chromium; ASAR and AMD64 content inspection",
+  "embeddedArchiveMatches": true
+}

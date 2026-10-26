@@ -1,3 +1,5 @@
+import {inventoryCapacity} from './systems/inventory';
+import {USABLE_VILLAGE_ITEMS} from './systems/consumables';
 import { fencePreview, gatePreview } from './fence-art';
 import { FENCE_STAGES, FENCE_NAMES, FENCE_STAGE_DAYS } from './data/fences';
 import { dayPhase, SUNRISE_MINUTES, SUNSET_MINUTES } from './daylight-model';
@@ -17,7 +19,7 @@ import type { ToolbarAction } from './top-toolbar';
 import type { TitleBackgroundMode } from './title-screen';
 import { itemIconUrl } from './visual-assets';
 import { HOME_WIDTH, HOME_HEIGHT } from './systems/home';
-import { emptyQuickbar, assignQuickSlot, quickItem, quickAction, quickQuantity, isQuickSlot, inventoryEntries, INVENTORY_CAPACITY } from './systems/quickbar';
+import { emptyQuickbar, assignQuickSlot, quickItem, quickAction, quickQuantity, isQuickSlot, inventoryEntries } from './systems/quickbar';
 import type { QuickSlot } from './types';
 import './inventory-ui.css';
 import { WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
@@ -31,6 +33,7 @@ import type { HomeData, HomeEditAction } from './systems/home';
 import type { BuildingData, CharacterProfile, HudData, InventoryData, ItemId, Tool } from './types';
 
 interface UICallbacks {
+  onUseItem(item:ItemId):void;
   onNewGame(profile: CharacterProfile): void;
   onContinue(): void;
   onTool(tool: Tool): void;
@@ -94,8 +97,8 @@ const paths: Record<string, string> = {
   blueprint: '<path d="M3 2h15l3 3v17H3Zm4 5h10M7 11h10M7 15h4m3 0h3M7 19h10"/>',
   keys: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h1m4 0h1m4 0h1M6 12h1m4 0h1m4 0h1M7 16h10"/>',
 };
-function icon(name: string, cls = ''): string {
-  const asset = name === 'gate' ? gatePreview() : name === 'fence' ? fencePreview() ?? itemIconUrl(name) : itemIconUrl(name);
+function icon(name: string, cls = '', tier=0): string {
+  const asset = name === 'gate' ? gatePreview() : name === 'fence' ? fencePreview() ?? itemIconUrl(name) : itemIconUrl(name,tier);
   if (asset) return `<img class="icon asset-icon ${cls}" src="${asset}" alt="" aria-hidden="true" draggable="false" />`;
   return `<svg class="icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] ?? paths.leaf}</svg>`;
 }
@@ -173,7 +176,7 @@ export class GameUI {
   private slotMarkup(slot: QuickSlot, index: number, inventory = false): string {
     const info = this.slotInfo(slot);
     const quantity = this.latest ? quickQuantity(slot, this.latest.inventory, !!this.latest.wateringCan) : null;
-    return `<button type="button" class="${inventory ? 'bag-slot quick-target' : 'tool'}" data-slot="${index}" ${slot ? `data-tool="${quickAction(slot)}"` : ''} aria-label="Slot ${index + 1}: ${slot ? info.label : 'vazio — mãos vazias'}" title="${slot ? info.label : 'Mãos vazias'} · ${inventory ? 'solte um item aqui; Delete remove' : 'I abre a mochila; botão direito configura'}"><span class="tool-key">${index + 1}</span>${slot ? icon(info.icon) : '<span class="empty-slot">+</span>'}<strong class="slot-quantity">${quantity ?? ''}</strong></button>`;
+    return `<button type="button" class="${inventory ? 'bag-slot quick-target' : 'tool'}" data-slot="${index}" ${slot ? `data-tool="${quickAction(slot)}"` : ''} aria-label="Slot ${index + 1}: ${slot ? info.label : 'vazio — mãos vazias'}" title="${slot ? info.label : 'Mãos vazias'} · ${inventory ? 'solte um item aqui; Delete remove' : 'I abre a mochila; botão direito configura'}"><span class="tool-key">${index + 1}</span>${slot ? icon(info.icon,'',this.latest?.toolConditions?.[info.icon as 'hatchet']?.tier??0) : '<span class="empty-slot">+</span>'}<strong class="slot-quantity">${quantity ?? ''}</strong></button>`;
   }
   private renderQuickbar(): void {
     const belt = this.base.querySelector('.toolbelt');
@@ -191,6 +194,7 @@ export class GameUI {
       const index = Number(button.dataset.slot), slot = this.quickbar[index];
       const quantity = quickQuantity(slot, this.latest!.inventory, !!this.latest!.wateringCan);
       button.querySelector('.slot-quantity')!.textContent = quantity === null ? '' : String(quantity);
+      if(slot){const info=this.slotInfo(slot),img=button.querySelector<HTMLImageElement>('img.asset-icon'),src=itemIconUrl(info.icon,this.latest?.toolConditions?.[info.icon as 'hatchet']?.tier??0);if(img&&src&&img.getAttribute('src')!==src)img.src=src;}
       const selected = quickAction(slot) === this.latest!.tool && (slot === null || quickItem(slot) ? this.activeSlot === index : true);
       button.classList.toggle('selected', selected);
       button.classList.toggle('depleted', quantity === 0);
@@ -322,7 +326,7 @@ export class GameUI {
     });
   }
 
-  showHUD(area: 'property'|'forest'='property'): void {
+  showHUD(area: 'property'|'forest'|'village'='property'): void {
     this.root.dataset.area=area;
     this.base.style.display = '';
     this.journalCleanup?.();
@@ -341,7 +345,7 @@ export class GameUI {
     this.overlay.classList.remove('active');
     this.lastHudKey = '';
     this.base.innerHTML = `<div class="hud">
-      <header class="hud-header hud-status" aria-label="Dia, hora e recursos"><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><strong id="hud-day">Dia 1</strong><span class="status-time"><b id="hud-time">08:00</b><small id="hud-day-phase">Manhã</small></span></div><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}</div></header>
+      <header class="hud-header hud-status" aria-label="Dia, hora e recursos"><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><strong id="hud-day">Dia 1</strong><span class="status-time"><b id="hud-time">08:00</b><small id="hud-day-phase">Manhã</small></span></div><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}<div class="resource" title="Coroas (C) para comprar nas lojas da vila">${icon('crown')}<strong id="hud-coins">0</strong></div><div class="resource" title="Vigor — refeições e preparados medicinais recuperam o vigor"><strong id="hud-vigor">100</strong><small>vigor</small></div></div></header>
       <div class="camera-zoom" role="group" aria-label="Zoom da câmera">
         <button type="button" data-zoom="-1" aria-label="Diminuir zoom" title="Afastar a câmera · − ou roda do mouse">−</button>
         <button type="button" data-zoom="0" aria-label="Restaurar zoom padrão" title="Restaurar para 100% · Home"><span class="camera-zoom-value" aria-live="polite">100%</span></button>
@@ -440,6 +444,7 @@ export class GameUI {
     set('#hud-time', `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`);
     for (const item of items) set(`#count-${item.id}`, String(data.inventory[item.id]));
     set('#hud-location', data.location);
+    set('#hud-coins',String(data.coins??0)+' C');set('#hud-vigor',String(data.vigor??100));
     if (this.locationName !== data.location) {
       this.locationName = data.location;
       const pill = this.base.querySelector<HTMLElement>('.location-pill')!;
@@ -580,11 +585,11 @@ export class GameUI {
     this.selectedInventoryItem = null;
     const entries = inventoryEntries(inventory, !!this.latest?.wateringCan);
     panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">TUDO PARA UM NOVO COMEÇO</span><h2>Minha mochila</h2></div><button class="icon-button" aria-label="Fechar inventário">${icon('close')}</button></div>
-      <div class="backpack-meta"><span>${icon('bag')} Mochila inicial</span><strong>${entries.length} / ${INVENTORY_CAPACITY} espaços</strong></div>
-      <div class="backpack-grid" aria-label="Mochila com 30 espaços">${Array.from({ length: INVENTORY_CAPACITY }, (_, index) => {
+      <div class="backpack-meta"><span>${icon('bag')} Mochila inicial</span><strong>${entries.length} / ${inventoryCapacity(inventory)} espaços</strong></div>
+      <div class="backpack-grid" aria-label="Mochila com ${inventoryCapacity(inventory)} espaços">${Array.from({ length: Math.max(entries.length,inventoryCapacity(inventory)) }, (_, index) => {
         const slot = entries[index] ?? null, info = this.slotInfo(slot);
         const quantity = quickQuantity(slot, inventory, !!this.latest?.wateringCan);
-        return `<button type="button" class="bag-slot${slot ? ' occupied' : ''}" ${slot ? `data-bag-item="${slot}" draggable="true"` : 'disabled'} aria-label="${slot ? `${info.label}, quantidade ${quantity}` : `Espaço ${index + 1} vazio`}" title="${slot ? info.label : 'Vazio'}">${slot ? `${icon(info.icon)}<strong class="slot-quantity">${quantity}</strong>` : ''}</button>`;
+        return `<button type="button" class="bag-slot${slot ? ' occupied' : ''}" ${slot ? `data-bag-item="${slot}" draggable="true"` : 'disabled'} aria-label="${slot ? `${info.label}, quantidade ${quantity}` : `Espaço ${index + 1} vazio`}" title="${slot ? info.label : 'Vazio'}">${slot ? `${icon(info.icon,'',this.latest?.toolConditions?.[info.icon as 'hatchet']?.tier??0)}<strong class="slot-quantity">${quantity}</strong>` : ''}</button>`;
       }).join('')}</div>
       <div class="backpack-detail" aria-live="polite"><span class="detail-icon">${icon('leaf')}</span><div><strong class="detail-name">Cada coisa no seu lugar</strong><p class="detail-text">Arraste um item para a barra abaixo. Ou clique no item e depois no slot.</p></div></div>
       <div class="backpack-bar-heading"><strong>Barra rápida</strong><span>Teclas 1–9</span></div><div class="inventory-quickbar" aria-label="Nove slots da barra rápida"></div>
@@ -596,9 +601,13 @@ export class GameUI {
       const select = (): void => {
         this.selectedInventoryItem = item;
         const info = this.slotInfo(item);
-        panel.querySelector('.detail-icon')!.innerHTML = icon(info.icon);
+        panel.querySelector('.detail-icon')!.innerHTML = icon(info.icon,'',this.latest?.toolConditions?.[info.icon as 'hatchet']?.tier??0);
         panel.querySelector('.detail-name')!.textContent = info.label;
-        panel.querySelector('.detail-text')!.textContent = info.detail;
+        const condition=this.latest?.toolConditions?.[item.replace('item:','') as 'hatchet'];
+        panel.querySelector('.detail-text')!.textContent = info.detail+(condition?` · Material: ${['Pedra','Ferro','Ouro','Metal Negro'][condition.tier]} · Durabilidade: ${condition.durability}`:'');
+        panel.querySelector('[data-use-item]')?.remove();
+        const id=item.startsWith('item:')?item.slice(5) as ItemId:undefined;
+        if(id&&USABLE_VILLAGE_ITEMS.includes(id)){const use=document.createElement('button');use.dataset.useItem=id;use.className='button button-light';use.textContent='Usar / instalar';use.onclick=()=>{this.closeModal();this.callbacks.onUseItem(id);};panel.querySelector('.backpack-detail')!.append(use);}
         panel.querySelectorAll('[data-bag-item]').forEach(cell => cell.classList.toggle('chosen', cell === button));
       };
       button.onclick = select;
@@ -655,7 +664,8 @@ export class GameUI {
       const alreadyOwned = !!outputTool && inventory[outputTool[0]] > 0;
       const missingTool = recipe.requiresTool && inventory[recipe.requiresTool] < 1;
       const missingStation = recipe.requiresWorkbench && !nearWorkbench;
-      const ready = !missing.length && !missingTool && !missingStation && !alreadyOwned && !this.craftingBusy;
+      const learned=!recipe.unlock||this.latest?.learnedRecipes?.includes(recipe.unlock);
+      const ready = learned && !missing.length && !missingTool && !missingStation && !alreadyOwned && !this.craftingBusy;
       const requirements = [
         recipe.requiresTool ? ITEM_NAMES[recipe.requiresTool] : '',
         recipe.requiresWorkbench ? 'Bancada próxima' : 'À mão',
@@ -731,7 +741,7 @@ export class GameUI {
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Mapa das regiões exploráveis');
-    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM VALE PARA CONHECER</span><h2>${this.latest?.inHome ? "Interior da casa" : this.latest?.area==='forest' ? "Floresta Antiga" : "Mapa completo do vale"}</h2></div><button class="icon-button" aria-label="Fechar mapa">${icon('close')}</button></div>
+    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM VALE PARA CONHECER</span><h2>${this.latest?.inHome ? "Interior da casa" : this.latest?.area==='forest' ? "Floresta Antiga" : this.latest?.area==='village' ? "Vila do Recomeço" : "Mapa completo do vale"}</h2></div><button class="icon-button" aria-label="Fechar mapa">${icon('close')}</button></div>
       <p class="map-current">Você está em <strong></strong>.</p>
       <div class="exploration-map real-map" role="img" aria-label="Cenário real e posição do personagem"><img class="map-snapshot" alt="Vista do cenário atual" /><span class="map-player" hidden><i></i><b>Você</b></span><span class="map-north">N ↑</span></div>
       <p class="map-caption">Vista atual do cenário. Seu marcador indica a posição exata.</p>

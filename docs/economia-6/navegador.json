@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "tests": [
+    "100 Coroas",
+    "bloqueio dias1-30",
+    "Metal Negro estoque1 e persistência",
+    "entrega antes de pagamento",
+    "encomenda paga persistente",
+    "retirada somente no prazo",
+    "tier/durabilidade250",
+    "rollback em falha de salvamento",
+    "forja própria real com combinação de minério e fragmentos sem mão de obra"
+  ],
+  "errors": []
+}

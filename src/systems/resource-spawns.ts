@@ -1,3 +1,5 @@
+import {depositMetal} from './mining';
+import {ECONOMY_BALANCE as EB} from '../data/economy-balance';
 import type {ResourceNode,ResourceKind} from '../types';
 import {FIBER_PLANTS,isFiberPlant,fiberPlantFor,nearRiverBank,type FiberPlant} from '../data/fiber-plants';
 export type ResourceArea='property'|'forest';
@@ -76,7 +78,7 @@ export function replenishResources(field:ResourceField,area:ResourceArea,now:num
 export function harvestSpawn(field:ResourceField,id:string,now:number):boolean {
  const index=field.nodes.findIndex(n=>n.id===id);if(index<0)return false;
  const [node]=field.nodes.splice(index,1);const kind=node.kind as SpawnKind;
- field.waiting.push({kind,at:now+resourceRespawnMinutes(kind),...(kind==='fiber'?{plant:fiberPlantFor(node)}:{})});return true;
+ field.waiting.push({kind,at:now+(depositMetal(node)==='blackMetal'?EB.rareDepositRespawnDays*1440:resourceRespawnMinutes(kind)),...(kind==='fiber'?{plant:fiberPlantFor(node)}:{})});return true;
 }
 export function validateResourceField(value:unknown,area:ResourceArea):value is ResourceField {
  if(!value||typeof value!=='object')return false;const f=value as ResourceField,cap=RESOURCE_LIMITS[area];
@@ -84,7 +86,7 @@ export function validateResourceField(value:unknown,area:ResourceArea):value is 
  const ids=new Set<string>(),tiles=new Set<string>();
  const validPlant=(kind:string,plant:unknown)=>plant===undefined||kind==='fiber'&&isFiberPlant(plant)&&(area==='property'||plant!=='reeds');
  for(const n of f.nodes){if(!n||typeof n!=='object'||typeof n.id!=='string')return false;const kind=n.kind as SpawnKind,prefix=`spawn-${area==='forest'?'f':'p'}-${kind}-`,suffix=n.id.slice(prefix.length),tile=`${n.x},${n.y}`;
-  if(!SPAWN_KINDS.includes(kind)||!validPlant(kind,n.plant)||!n.id.startsWith(prefix)||!/^\d+$/.test(suffix)||Number(suffix)>f.sequence||Number(suffix)<1||ids.has(n.id)||tiles.has(tile)||!Number.isSafeInteger(n.x)||!Number.isSafeInteger(n.y)||n.x<1||n.x>=95||n.y<1||n.y>=71)return false;
+  if(!SPAWN_KINDS.includes(kind)||(n.metal!==undefined&&!['iron','gold','blackMetal'].includes(n.metal))||!validPlant(kind,n.plant)||!n.id.startsWith(prefix)||!/^\d+$/.test(suffix)||Number(suffix)>f.sequence||Number(suffix)<1||ids.has(n.id)||tiles.has(tile)||!Number.isSafeInteger(n.x)||!Number.isSafeInteger(n.y)||n.x<1||n.x>=95||n.y<1||n.y>=71)return false;
   ids.add(n.id);tiles.add(tile);
  }
  return f.waiting.every(w=>!!w&&typeof w==='object'&&SPAWN_KINDS.includes(w.kind)&&validPlant(w.kind,w.plant)&&Number.isFinite(w.at)&&w.at>=0);

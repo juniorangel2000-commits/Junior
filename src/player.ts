@@ -24,6 +24,7 @@ export class Player {
   y: number;
   facing = { x: 0, y: 1 };
   isSwimming=false;
+  speedMultiplier=1;
   readonly swimming=new SwimmingController();
   get swimState(){return this.swimming.state;}
   get waterDepth(){return this.swimming.depth;}
@@ -52,7 +53,7 @@ export class Player {
     const depthAt=(x:number,y:number):number=>{const value=isWaterPoint?.(x,y);return typeof value==='number'?Math.max(0,Math.min(1,value)):value?1:0;};
     const initialDepth=depthAt(this.x,this.y);
     const swimAmount=Math.max(0,(initialDepth-SWIMMING_CONFIG.deepThreshold)/(1-SWIMMING_CONFIG.deepThreshold));
-    const speed=PLAYER_SPEED*(1-(1-SWIM_SPEED_FACTOR)*swimAmount);
+    const speed=PLAYER_SPEED*this.speedMultiplier*(1-(1-SWIM_SPEED_FACTOR)*swimAmount);
     const inputX = movementEnabled ? Number(this.keys.D.isDown || this.keys.RIGHT.isDown) - Number(this.keys.A.isDown || this.keys.LEFT.isDown) : 0;
     const inputY = movementEnabled ? Number(this.keys.S.isDown || this.keys.DOWN.isDown) - Number(this.keys.W.isDown || this.keys.UP.isDown) : 0;
     const moving = inputX !== 0 || inputY !== 0;

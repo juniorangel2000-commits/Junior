@@ -1,0 +1,434 @@
+{
+  "sources": {
+    "materials": "docs/economia-6/arte/fontes/materiais-forja.png",
+    "tools": "docs/economia-6/arte/fontes/ferramentas.png",
+    "npcs": "docs/economia-6/arte/fontes/comerciantes.png"
+  },
+  "files": [
+    {
+      "file": "public/assets/visual/economy/icons/ironShard.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/icons/ironOre.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/icons/ironIngot.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/icons/goldShard.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/icons/goldOre.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/icons/goldIngot.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/icons/blackMetalShard.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/icons/blackMetalOre.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/icons/blackMetalIngot.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/deposits/iron.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/deposits/gold.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/deposits/blackMetal.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/forge/frame-0.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/forge/frame-1.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/forge/frame-2.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/forge/frame-3.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/icons/crown.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/icons/furniture.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/icons/doorKit.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/icons/windowKit.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/icons/fenceKit.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/icons/mushroom.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/workshop/anvil.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/workshop/tongs.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/icons/forge.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/stone-hatchet.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/stone-pickaxe.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/stone-hoe.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/stone-sickle.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/stone-shovel.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/iron-hatchet.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/iron-pickaxe.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/iron-hoe.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/iron-sickle.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/iron-shovel.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/gold-hatchet.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/gold-pickaxe.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/gold-hoe.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/gold-sickle.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/gold-shovel.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/blackMetal-hatchet.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/blackMetal-pickaxe.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/blackMetal-hoe.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/blackMetal-sickle.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/tools/blackMetal-shovel.png",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/augusto-down.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/augusto-left.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/augusto-up.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/augusto-right.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/bento-down.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/bento-left.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/bento-up.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/bento-right.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/amelia-down.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/amelia-left.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/amelia-up.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/amelia-right.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/tobias-down.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/tobias-left.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/tobias-up.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/tobias-right.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/rosa-down.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/rosa-left.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/rosa-up.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/rosa-right.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/nilo-down.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/nilo-left.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/nilo-up.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/nilo-right.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/celina-down.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/celina-left.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/celina-up.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/celina-right.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/damiao-down.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/damiao-left.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/damiao-up.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/damiao-right.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/helena-down.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/helena-left.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/helena-up.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/helena-right.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/icaro-down.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/icaro-left.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/icaro-up.png",
+      "width": 192,
+      "height": 256
+    },
+    {
+      "file": "public/assets/visual/economy/npcs/icaro-right.png",
+      "width": 192,
+      "height": 256
+    }
+  ]
+}

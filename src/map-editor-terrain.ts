@@ -6,6 +6,8 @@ import type { TerrainKind } from './systems/map-editor';
 import {terrainPaintAlpha} from './data/terrain-paint';
 import {propertyGrassStyle} from './terrain-art';
 import {GRASS_KINDS,isGrassKind,grassBlendAt,type GrassBlend} from './data/grass-blend';
+import {seamBand,seamGlobalX,seamGrassKind} from './data/map-seam';
+import {seamGroundColor,seamGroundWeight} from './map-seam-ground';
 
 
 const MATERIALS: Record<TerrainKind, keyof TerrainSprites> = {
@@ -34,6 +36,7 @@ export function drawMapTerrainEdits(
   textureKey='world-map-edits',
   baseWater?: (x:number,y:number)=>boolean,
   naturalSampling:'property'|'forest'='property',
+  seamLayout=false,
 ): Phaser.GameObjects.Image | undefined {
   if (scene.textures.exists(textureKey)) scene.textures.remove(textureKey);
   const cells:Array<{x:number;y:number;material:TerrainKind;extended?:boolean}> = Object.entries(terrain).flatMap(([key, material]) => {
@@ -66,6 +69,7 @@ export function drawMapTerrainEdits(
   for (const { x, y, material,extended } of cells) {
     const left = x * TILE, top = y * TILE;
     const sprite = sprites?.[MATERIALS[material]];
+    const sharedGround=seamLayout&&isGrassKind(material)&&seamBand(x,y,naturalSampling)&&(extended||material===seamGrassKind(seamGlobalX(x,naturalSampling),y));
     const edges = material === 'water' ? {
       left: !neighbourIsWater(x - 1, y), right: !neighbourIsWater(x + 1, y),
       top: !neighbourIsWater(x, y - 1), bottom: !neighbourIsWater(x, y + 1),
@@ -76,8 +80,11 @@ export function drawMapTerrainEdits(
       const tx=x+dx,ty=y+dy;return terrain[`${tx},${ty}`]==='water'||(baseWater?baseWater(tx,ty):isWaterPoint((tx+.5)*TILE,(ty+.5)*TILE));
     }));
     if(extended&&waterNearby)continue;
+    const seamRGB=[0,0,0];
     for (let py = 0; py < TILE; py++) for (let px = 0; px < TILE; px++) {
       const wx = left + px, wy = top + py, destination = (py * TILE + px) * 4;
+      const seamWeight=sharedGround?seamGroundWeight(naturalSampling,wx,wy):0;
+      const seamColor=seamWeight>0?seamGroundColor(sprites,naturalSampling,wx,wy,seamRGB):undefined;
       const block=(py>>1)*16+(px>>1);
       let blend:GrassBlend|undefined;
       if(isGrassKind(material)&&!waterNearby){
@@ -128,9 +135,10 @@ export function drawMapTerrainEdits(
           value=value*(1-moss)+sprites.moss.pixels[sample+channel]*moss+light;
         }
         if (shallow) value = value * (1 - shallow) + [125, 176, 160][channel] * shallow;
+        if(seamColor)value=value*(1-seamWeight)+seamColor[channel]*seamWeight;
         pixels.data[destination + channel] = value;
       }
-      pixels.data[destination + 3] = Math.round(255*(blend?1-blend.base:terrainPaintAlpha(terrain,wx+.5,wy+.5)));
+      pixels.data[destination + 3] = Math.round(255*Math.max(seamWeight,blend?1-blend.base:terrainPaintAlpha(terrain,wx+.5,wy+.5)));
     }
     context.putImageData(pixels, left, top);
   }

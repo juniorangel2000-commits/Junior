@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import { gameAudio } from './audio';
 import { installFullscreenShortcut } from './fullscreen';
 import { ForestScene } from './scenes/ForestScene';
+import { VillageScene } from './scenes/VillageScene';
 import { ValleyScene } from './scenes/ValleyScene';
 import { GameUI } from './ui';
 import './style.css';
@@ -12,8 +13,9 @@ import './character-studio.css';
 
 gameAudio.init();
 const scene = new ValleyScene();
-const activeForest=():ForestScene|undefined=>scene.scene?.isActive('Floresta')?scene.scene.get('Floresta') as ForestScene:undefined;
+const activeForest=():ForestScene|VillageScene|undefined=>scene.scene?.isActive('Vila')?scene.scene.get('Vila') as VillageScene:scene.scene?.isActive('Floresta')?scene.scene.get('Floresta') as ForestScene:undefined;
 const ui = new GameUI({
+  onUseItem: item => {void (activeForest()??scene).useVillageItem(item);},
   onNewGame: profile => scene.startNew(profile),
   onContinue: () => scene.continueGame(),
   onTool: tool => {const forest=activeForest();if(forest)forest.selectTool(tool);else scene.selectTool(tool);},
@@ -40,7 +42,7 @@ export const game = new Phaser.Game({
   roundPixels: true,
   render: { antialias: false, powerPreference: 'high-performance' },
   scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight },
-  scene: [scene, new ForestScene(),new MapEditorScene()],
+  scene: [scene, new ForestScene(),new VillageScene(),new MapEditorScene()],
   audio: { noAudio: true },
   banner: false,
 });

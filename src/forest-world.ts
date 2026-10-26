@@ -14,6 +14,8 @@ import {drawMapTerrainEdits} from './map-editor-terrain';
 import {addWaterMotion} from './water-motion';
 import {readTerrainSprites} from './terrain-sprites';
 import {forestGroundPixels} from './forest-ground';
+import {hasMapSeam,seamBand,seamPassage} from './data/map-seam';
+import {drawMapSeamGround} from './map-seam-ground';
 import {FOREST_ENTRY,FOREST_TREES,FOREST_ROCKS,forestWater,forestWaterDistanceAt,forestPathDistance,forestTreeAppearance} from './data/ancient-forest';
 export class ForestWorld {
   private environment:Phaser.GameObjects.GameObject[]=[];
@@ -21,6 +23,7 @@ export class ForestWorld {
   trees:Phaser.GameObjects.Image[]=[];
   solid=new Set<string>();
   edits?:MapEditData;
+  private seamLayout=false;
   resources:ResourceNode[]=[];
   depleted=new Set<string>();
   private images=new Map<string,Phaser.GameObjects.Image>();
@@ -28,7 +31,7 @@ export class ForestWorld {
   removeResource(id:string):void {const n=this.resources.find(n=>n.id===id);if(!n)return;this.resources=this.resources.filter(r=>r.id!==id);this.images.get(id)?.destroy();this.images.delete(id);this.solid.delete(`${n.x},${n.y}`);this.trees=this.trees.filter(t=>t.active);}
   setNaturalResources(nodes:readonly ResourceNode[]):void {
     const next=new Set(nodes.map(n=>n.id));for(const n of [...this.resources])if(n.id.startsWith('spawn-')?!next.has(n.id):(n.kind==='fiber'||n.kind==='fallenLog'||n.kind==='stump')&&!FOREST_GLADE_RESOURCE_IDS.has(n.id)&&!Object.hasOwn(this.edits?.objects??{},n.id.replace(/^f-/,'')))this.removeResource(n.id);
-    for(const n of nodes)if(!this.resources.some(r=>r.id===n.id)&&!this.isBlocked(n.x,n.y)&&!((n.kind==='fiber'||n.kind==='seeds')&&!naturalPlantGround(this.edits?.terrain[`${n.x},${n.y}`]))){
+    for(const n of nodes)if(!this.resources.some(r=>r.id===n.id)&&!this.isBlocked(n.x,n.y)&&!(this.seamLayout&&seamPassage(n.x,n.y,'forest'))&&!((n.kind==='fiber'||n.kind==='seeds')&&!naturalPlantGround(this.edits?.terrain[`${n.x},${n.y}`]))){
       const plant=n.kind==='fiber'?fiberPlantArt(fiberPlantFor(n)):undefined;
       const image=this.scene.add.image(n.x*32+16,n.y*32+29,plant?.texture??naturalResourceTexture(n.kind)).setOrigin(.5,plant?.pivot??1).setDepth(n.y*32+29);
       if(n.kind==='tree')image.setDisplaySize(36,27);if(n.kind==='stone')image.setDisplaySize(32,24);
@@ -45,6 +48,8 @@ export class ForestWorld {
     const edit=this.edits?.objects[id];if(edit?.removed||kind==='reeds')return;
     const collectible=collectibleKind(kind),resourceID=`f-${id}`;if(collectible&&this.depleted.has(resourceID))return;
     x=edit?.x??x;y=edit?.y??y;
+    if(this.seamLayout&&!edit&&seamPassage(x,y,'forest'))return;
+    if(this.seamLayout&&!edit&&isTreeKind(kind)&&(seamBand(x,y,'forest')||seamPassage(x,y,'forest')))return;
     if(isTreeKind(kind)&&!treeGroundClear(x,y,this.waterPointAt)){
       let dry:{x:number;y:number}|undefined;
       for(let radius=1;radius<=8&&!dry;radius++)for(let dy=-radius;dy<=radius&&!dry;dy++)for(let dx=-radius;dx<=radius;dx++){
@@ -61,10 +66,10 @@ export class ForestWorld {
     if(kind==='standingTree'||kind==='pine'||kind.startsWith('oak')||kind.startsWith('pine'))this.trees.push(sprite);
   }
   rebuildEnvironment(edits?:MapEditData):void {
-    this.environment.forEach(o=>o.destroy());this.environment=[];this.editorObjects=[];this.trees=[];this.solid.clear();this.resources=[];this.images.clear();this.edits=edits;
+    this.environment.forEach(o=>o.destroy());this.environment=[];this.editorObjects=[];this.trees=[];this.solid.clear();this.resources=[];this.images.clear();this.edits=edits;this.seamLayout=hasMapSeam(edits);
     const before=new Set(this.scene.children.list);
     this.drawGround();
-    if(edits)drawMapTerrainEdits(this.scene,edits.terrain,`${this.textureNamespace}-map-edits`,forestWater,'forest');
+    if(edits)drawMapTerrainEdits(this.scene,edits.terrain,`${this.textureNamespace}-map-edits`,forestWater,'forest',this.seamLayout);
     addWaterMotion(this.scene,this.waterAt,this.waterPointAt);
     for(const t of FOREST_TREES){
       const art=forestTreeAppearance(t),scale=art.scale/(this.scene.textures.exists('reference-trees-source')?2:1),texture=`asset-${t.pine?'pine':'tree'}-${art.variant}`;
@@ -133,6 +138,7 @@ export class ForestWorld {
     }
     // One continuous quad prevents rounding gaps between chunks at fractional zoom.
     this.scene.add.image(0,0,key).setOrigin(0).setDepth(-100);
+    if(this.seamLayout)drawMapSeamGround(this.scene,'forest');
   }
   private drawWoodlandDetails():void {
     const detail=(kind:string,x:number,y:number,size:number)=>{

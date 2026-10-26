@@ -2,24 +2,38 @@ import property from './maps/property.json';
 import forest from './maps/forest.json';
 import previousProperty from './maps/previous-property-v1.json';
 import previousForest from './maps/previous-forest-v1.json';
+import previousPropertyV2 from './maps/previous-property-v2.json';
+import previousForestV2 from './maps/previous-forest-v2.json';
+import previousPropertyV3 from './maps/previous-property-v3.json';
+import previousForestV3 from './maps/previous-forest-v3.json';
 import type {MapEditData} from '../systems/map-editor';
 import {repairPropertyShore} from './property-shore-repair';
 export type MapArea='property'|'forest';
-export const MAP_BASE_REVISION=2;
+export const MAP_BASE_REVISION=4;
 export function defaultMap(area:MapArea):MapEditData{
  return structuredClone((area==='forest'?forest:property) as MapEditData);
 }
-/** Revision one as it appeared in 0.9.6, before the author's finished maps. */
-export function previousDefaultMap(area:MapArea):MapEditData {
+/** The exact author layout a save was based on, before its local edits. */
+export function previousDefaultMap(area:MapArea,revision:1|2|3=1):MapEditData {
+ if(revision===3)return structuredClone((area==='forest'?previousForestV3:previousPropertyV3) as MapEditData);
+ if(revision===2)return structuredClone((area==='forest'?previousForestV2:previousPropertyV2) as MapEditData);
  const map=structuredClone((area==='forest'?previousForest:previousProperty) as MapEditData);
  if(area==='property')repairPropertyShore(map);
  return map;
 }
 /** Apply the new author layout while keeping only actual player edits to the old one. */
-export function upgradeAuthorMap(area:MapArea,local?:MapEditData,protectedCells:ReadonlySet<string>=new Set()):MapEditData {
- const next=defaultMap(area);if(!local)return next;
- const old=previousDefaultMap(area);
- for(const key of new Set([...Object.keys(old.terrain),...Object.keys(local.terrain)])){
+export function upgradeAuthorMap(area:MapArea,local?:MapEditData,protectedCells:ReadonlySet<string>=new Set(),fromRevision:1|2|3=1):MapEditData {
+ const next=defaultMap(area);
+ const old=previousDefaultMap(area,fromRevision);
+ local??=old;
+ // An author-added/moved prop cannot bury a saved crop, tilled cell or building.
+ // Local object overrides are applied below and retain their original priority.
+ for(const [id,object] of Object.entries(next.objects)){
+  if(object.removed||!protectedCells.has(`${object.x},${object.y}`))continue;
+  const before=old.objects[id];
+  if(!before||before.removed||before.x!==object.x||before.y!==object.y||before.kind!==object.kind)next.objects[id]={...object,removed:true};
+ }
+ for(const key of new Set([...Object.keys(old.terrain),...Object.keys(local.terrain),...protectedCells])){
   if(local.terrain[key]===old.terrain[key]&&!protectedCells.has(key))continue;
   if(local.terrain[key]===undefined)delete next.terrain[key];else next.terrain[key]=local.terrain[key];
  }

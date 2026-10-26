@@ -1,3 +1,7 @@
+import {depositMetal,canMine,metalDrop,recordMetal} from './mining';
+import {toolCondition,configureTool} from './economy';
+import {ECONOMY_BALANCE as BALANCE} from '../data/economy-balance';
+import type {SaveData} from '../types';
 import type { ResourceKind, ResourceNode, ResourceProgressData, Tool } from '../types';
 import type { ActionResult } from './farming';
 import { Inventory, ITEM_NAMES, type ItemCost } from './inventory';
@@ -38,8 +42,17 @@ export class Resources {
     this.progress = progress.map((entry) => ({ ...entry }));
   }
 
-  hit(node: ResourceNode, tool: Tool, inventory: Inventory): ResourceActionResult {
+  hit(node: ResourceNode, tool: Tool, inventory: Inventory,context:number|SaveData=0): ResourceActionResult {
     const definition = RESOURCE_DEFINITIONS[node.kind];
+    const state=typeof context==='object'?context:undefined;
+    const metal=depositMetal(node);
+    const economicTool=tool==='pickaxe'||tool==='hatchet'?tool:undefined;
+    const condition=state&&economicTool?toolCondition(state,economicTool):undefined;
+    if(state&&metal&&!canMine(state,metal))return{ok:false,message:'Você precisa de uma picareta melhor para extrair este minério.'};
+    if(condition&&condition.durability<=0)return{ok:false,message:'Ferramenta sem durabilidade. Repare-a na ferraria.'};
+    const damage=condition?Math.floor(BALANCE.efficiency[condition.tier]+(condition.work??0)):1;
+    const wear=()=>{if(state&&economicTool&&condition){configureTool(state,economicTool,condition.tier);state.economy6!.tools[economicTool]={...condition,durability:condition.durability-1,work:(BALANCE.efficiency[condition.tier]+(condition.work??0))%1};}};
+
     if (!definition || !node.id || node.id.length > 80) {
       return { ok: false, message: 'Este recurso não está disponível.' };
     }
@@ -58,19 +71,21 @@ export class Resources {
     if (savedProgress && savedProgress.hits >= definition.hits) {
       return { ok: false, message: 'O progresso deste recurso é inválido.' };
     }
-    const hits = (savedProgress?.hits ?? 0) + 1;
+    const hits = (savedProgress?.hits ?? 0) + damage;
     if (hits < definition.hits) {
       if (savedProgress) savedProgress.hits = hits;
       else this.progress.push({ id: node.id, hits });
-      return { ok: true, message: `${definition.label}: ${hits} de ${definition.hits} golpes.` };
+      wear();return { ok: true, message: `${definition.label}: ${hits} de ${definition.hits} golpes.` };
     }
 
     // O golpe final e todos os drops são uma única operação: uma mochila cheia não perde o recurso.
-    if (!inventory.transact({}, definition.drops)) {
+    const drops=metal?metalDrop(metal,node.id):{...definition.drops};
+    if(node.kind==='fiber'&&node.plant){drops.herb=1;let h=0;for(const c of node.id)h=(Math.imul(h,31)+c.charCodeAt(0))>>>0;if((node.id.startsWith('f-')||node.id.startsWith('spawn-f-'))&&h%7===0)drops.rareHerb=1;}
+    if (!inventory.transact({}, drops)) {
       return { ok: false, message: 'A mochila está cheia. Libere espaço antes de recolher este recurso.' };
     }
     if (savedProgress) this.progress.splice(this.progress.indexOf(savedProgress), 1);
-    this.depleted.add(node.id);
+    this.depleted.add(node.id);wear();if(state&&metal)recordMetal(state,metal);
     return { ok: true, message: `${definition.label}: materiais guardados na mochila.`, depleted: true };
   }
 }

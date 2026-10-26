@@ -5,7 +5,7 @@ import { HOUSE_SHADOW_FOOT } from './house-sprites';
 import { WELL_SHADOW_FOOT } from './data/property-well';
 
 type Caster = Phaser.GameObjects.Image | Phaser.GameObjects.Sprite;
-const CASTER = /^(asset-(tree|pine)(-[012])?|lake-rock-[0-5]|asset-house|property-well-(idle|use)|cabin|player|forest-player|lia)$/;
+const CASTER = /^(asset-(tree|pine)(-[012])?|lake-rock-[0-5]|asset-house|property-well-(idle|use)|cabin|player|forest-player|village-player|village-npc-[a-z]+|lia)$/;
 
 /** Reuses sprite alpha, including animated character frames. No source art is modified. */
 export class SolarShadows {
@@ -63,7 +63,7 @@ export class SolarShadows {
     c.translate(0, canvas.height); c.scale(1, -1);c.filter='blur(1px)';
     c.drawImage(frame.source.image as HTMLImageElement, frame.cutX, frame.cutY, frame.cutWidth, frame.cutHeight,
       frame.x, frame.y, frame.cutWidth, frame.cutHeight);
-    if(['player','forest-player','lia'].includes(source.texture.key)){
+    if(['player','forest-player','village-player','lia'].includes(source.texture.key)||source.texture.key.startsWith('village-npc-')){
       const alpha=c.getImageData(0,0,canvas.width,canvas.height).data;
       let first=canvas.height;
       for(let y=0;y<canvas.height&&first===canvas.height;y++)for(let x=0;x<canvas.width;x++)if(alpha[(y*canvas.width+x)*4+3]>=200){first=y;break;}

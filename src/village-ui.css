@@ -1,0 +1,49 @@
+.village-layer{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:#14281ed1;pointer-events:auto;color:#563e27}
+.village-layer[hidden]{display:none}
+.village-panel{display:flex;flex-direction:column;width:min(900px,100%);max-height:calc(100dvh - 48px);border:12px solid #87552f;border-image:url('/assets/ui/cozy-frame.svg') 14 / 12px / 0 stretch;border-radius:5px;background:linear-gradient(118deg,#fff3d9,#efdbb8);box-shadow:0 6px 0 #2e201e66,0 18px 65px #071c15a3;overflow:hidden;outline:none}
+.village-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:17px 22px;background:repeating-linear-gradient(0deg,#85522d 0 3px,#8d5931 3px 6px,#7b4928 6px 7px,#925e34 7px 11px);border-bottom:3px solid #603a21;color:#fff0d0;box-shadow:inset 0 1px #dbac66}
+.village-eyebrow{font:9px Arial,sans-serif;letter-spacing:2px;color:#e3c390}
+.village-panel-heading h2{font:29px Georgia,serif;margin:5px 0 0;color:#fff1d4;text-shadow:0 2px #4d311d}
+.village-npc-role{font:12px Georgia,serif;margin:5px 0 0;color:#f1d7aa}
+.village-heading-actions{display:flex;align-items:center;gap:18px}
+.village-wallet{display:flex;align-items:center;gap:8px;background:#55351f80;border:1px solid #bf9153;padding:9px 12px;border-radius:4px;color:#ffe5a6;white-space:nowrap}
+.village-wallet strong{font-size:17px}.village-wallet small{font-size:10px;color:#f5d7a1}
+.village-coin{width:18px;height:18px;border:3px solid #b67922;border-radius:50%;background:#e8b94d;box-shadow:inset 2px 2px #ffe199,1px 2px #432d1a;image-rendering:pixelated}
+.village-close{width:31px;height:31px;display:grid;place-items:center;border:1px solid #4f321b;border-radius:3px;background:linear-gradient(#eac995,#c2965d);box-shadow:inset 0 0 0 1px #f6d6a0;color:#53371e;font:24px/1 Georgia,serif;padding:0}
+.village-close:hover{background:#f5d8a7}
+.village-tabs{display:flex;gap:8px;padding:15px 22px 0}
+.village-tab{border:1px solid #b39160;border-bottom:3px solid #ac844f;background:#f6e9cc;color:#765632;padding:10px 20px;border-radius:4px 4px 0 0;font-size:12px;min-width:100px}
+.village-tab[aria-pressed=true]{background:#71824b;border-color:#4f6538;border-bottom-color:#41592d;color:#fff2d3;box-shadow:inset 0 1px #a2b172}
+.village-tab:not([aria-pressed=true]):hover{background:#ffefd0}
+.village-panel-body{min-height:270px;overflow:auto;padding:22px;scrollbar-width:thin;scrollbar-color:#b68d55 #edd6b0}
+.village-dialogue{display:flex;gap:24px;align-items:center;min-height:300px;background:radial-gradient(ellipse at 20% 50%,#ebd9ab70,transparent 65%)}
+.village-item-icon{flex:none;display:grid;place-items:center;width:43px;height:43px;border:1px solid #c8a56e;border-radius:4px;background:linear-gradient(125deg,#fff7e2,#e7cea3);box-shadow:inset 0 0 0 1px #fff6e0;color:#a57542}
+.village-item-icon :is(img,svg){width:34px;height:34px;object-fit:contain;image-rendering:pixelated}
+.village-dialogue-emblem{width:136px;height:136px;border:6px solid #9d7749;background:linear-gradient(#dce0b7,#c7ce96);box-shadow:inset 0 0 0 2px #eef0cd,0 3px #c7ac79;transform:rotate(-3deg)}
+.village-dialogue-emblem img{width:91px;height:91px;filter:drop-shadow(0 3px 0 #6b754c33)}
+.village-dialogue-copy{flex:1;min-width:0}.village-dialogue-text{font:19px/1.65 Georgia,serif;color:#604829;min-height:110px;margin:0 0 26px;white-space:pre-line}
+.village-dialogue-actions{display:flex;justify-content:space-between;gap:16px;align-items:center}.village-dialogue-count{font-size:11px;color:#907451}
+.village-primary{min-height:39px;border:1px solid #563a21;border-radius:4px;padding:10px 17px;background:linear-gradient(#8d6d41,#684928);box-shadow:inset 0 1px #d7b278,0 2px #4a311f;color:#fff1cf;font-size:12px}
+.village-primary:hover:not(:disabled){background:linear-gradient(#9a794b,#795735)}
+.village-trade{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(230px,1fr);gap:20px;padding-top:16px;min-height:380px}
+.village-catalog{display:flex;flex-direction:column;min-height:0}.village-shop-note{font-size:11px;line-height:1.6;color:#826543;margin:0 0 13px;min-height:34px}
+.village-item-list{display:flex;flex-direction:column;gap:7px;overflow:auto;max-height:min(42dvh,370px);padding:2px 4px 4px 2px;scrollbar-width:thin;scrollbar-color:#b58b50 #ead5ad}
+.village-item{display:flex;align-items:center;gap:11px;width:100%;padding:9px;background:#faedce;border:1px solid #bc9863;border-radius:4px;box-shadow:inset 0 0 0 1px #fff5da;color:#61472b;text-align:left}
+.village-item:hover{background:#fff3d5;border-color:#9b743e}.village-item[aria-pressed=true]{background:#e9e8bf;border-color:#7f8b4c;box-shadow:inset 0 0 0 1px #b6bf81}
+.village-item-copy{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}.village-item-copy strong{font-size:12px;font-weight:600;overflow-wrap:anywhere}.village-item-copy small{font-size:10px;color:#8c7452}
+.village-item-price{flex:none;font-size:11px;color:#93702e;text-align:right;max-width:90px;line-height:1.5}
+.village-trade-detail{display:flex;flex-direction:column;align-items:stretch;padding:18px;background:#fff2d6;border:1px solid #c8a36d;border-radius:4px;box-shadow:inset 0 0 0 2px #f3e1bb}
+.village-selected-icon{align-self:center;width:68px;height:68px;margin-bottom:12px}.village-selected-icon img{width:53px;height:53px}
+.village-trade-detail h3{font:23px/1.25 Georgia,serif;color:#64482a;text-align:center;margin:0 0 8px}.village-selected-description{font-size:11px;line-height:1.65;color:#816444;margin:0 0 12px}.village-owned{font-size:11px;color:#7d6645;padding-bottom:12px;border-bottom:1px solid #d6bb8b;margin:0 0 12px}
+.village-quantity{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:11px;color:#765733}.village-quantity input{width:76px;min-height:34px;border:1px solid #ad8750;background:#fff9e9;color:#634629;border-radius:3px;padding:6px 7px;text-align:center;font-size:14px}
+.village-total{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:17px 0;font-size:11px;color:#80623d}.village-total strong{font-size:16px;color:#8e681e;white-space:nowrap}
+.village-trade-confirm{width:100%;margin-top:auto}.village-trade-hint{font-size:10px;line-height:1.55;color:#876c48;min-height:31px;margin:10px 0 0}
+.village-feedback{font-size:12px;line-height:1.6;color:#536a38;min-height:36px;padding:0 22px;margin:0}.village-feedback.is-error{color:#a45235}
+.village-panel-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 22px;border-top:1px solid #c9ac7a;background:#e8d1aa77;color:#8a704a;font-size:10px;line-height:1.6}
+.village-panel-footer>span:last-child{white-space:nowrap}.village-panel-footer kbd{border-color:#b59460;background:#f3e4c4;color:#72532e;margin-right:4px;min-width:27px}
+.village-layer :is(button,input):focus-visible{outline:3px solid #bf8b34;outline-offset:2px}
+@media(max-width:700px){.village-layer{padding:12px}.village-panel{max-height:calc(100dvh - 24px);border-width:9px;border-image-width:9px}.village-panel-heading{padding:12px 14px;gap:12px}.village-panel-heading h2{font-size:24px}.village-heading-actions{gap:9px}.village-wallet{padding:7px;gap:6px}.village-wallet small{display:none}.village-tabs{padding:12px 14px 0;gap:5px}.village-tab{min-width:0;flex:1;padding:9px 12px}.village-panel-body{padding:15px}.village-trade{grid-template-columns:minmax(0,1fr) minmax(190px,1fr);gap:12px}.village-item{gap:8px;padding:7px}.village-item-icon{width:33px;height:33px}.village-item-icon img{width:27px;height:27px}.village-item-price{font-size:10px;max-width:64px}.village-item-copy strong{font-size:11px}.village-item-copy small{font-size:9px}.village-trade-detail{padding:12px}.village-dialogue{gap:18px}.village-dialogue-emblem{width:90px;height:100px}.village-dialogue-emblem img{width:65px;height:65px}.village-dialogue-text{font-size:17px}.village-panel-footer{padding:10px 15px}.village-feedback{padding:0 15px}.village-selected-icon{width:54px;height:54px}.village-selected-icon img{width:43px;height:43px}}
+@media(max-width:480px){.village-trade{grid-template-columns:1fr}.village-item-list{max-height:25dvh}.village-trade-detail{min-height:280px}.village-trade-detail .village-selected-icon{display:none}.village-selected-description{display:none}.village-panel-footer>span:first-child{display:none}.village-panel-footer{justify-content:flex-end}.village-dialogue{display:block;min-height:260px}.village-dialogue-emblem{display:none}.village-dialogue-text{min-height:135px}.village-dialogue-actions{gap:10px}.village-wallet strong{font-size:14px}.village-coin{width:15px;height:15px}.village-panel-heading h2{font-size:22px}.village-eyebrow{font-size:7px;letter-spacing:1.3px}}
+@media(max-height:650px) and (min-width:700px){.village-layer{padding:12px}.village-panel{max-height:calc(100dvh - 24px)}.village-panel-heading{padding:10px 18px}.village-panel-heading h2{font-size:24px}.village-tabs{padding-top:10px}.village-trade{min-height:0;padding-top:12px;padding-bottom:12px}.village-selected-icon{display:none}.village-dialogue{min-height:230px}.village-feedback{min-height:28px}.village-panel-footer{padding-top:8px;padding-bottom:8px}}
+
+.smith-art{width:58px;height:58px;object-fit:contain;image-rendering:pixelated;float:left;margin:0 15px 9px 0}.village-coin{background:transparent url('/assets/visual/economy/icons/crown.png') center/contain no-repeat!important;border:0!important;box-shadow:none!important;border-radius:0!important}.village-dialogue-emblem img{width:96px;height:128px;object-fit:contain;image-rendering:pixelated}

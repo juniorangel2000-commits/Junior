@@ -6,6 +6,7 @@ export type ItemCost = Partial<InventoryData>;
 export const EMPTY_INVENTORY = Object.fromEntries(ITEM_IDS.map(id => [id, 0])) as InventoryData;
 export const INITIAL_INVENTORY: InventoryData = { ...EMPTY_INVENTORY };
 export const INVENTORY_CAPACITY = 30;
+export const inventoryCapacity=(data:Partial<InventoryData>):number=>30+10*Math.min(2,data.backpack??0);
 export const occupiedInventorySlots = (data: InventoryData): number => ITEM_IDS.filter(id => data[id] > 0).length;
 export const MAX_ITEM_COUNT = 999_999;
 
@@ -50,7 +51,7 @@ export class Inventory {
       if (!Number.isSafeInteger(value) || value < 0 || value > MAX_ITEM_COUNT) return false;
       next[id] = value;
     }
-    if (occupiedInventorySlots(next) > INVENTORY_CAPACITY) return false;
+    if (next.backpack>2 || occupiedInventorySlots(next) > inventoryCapacity(next)) return false;
     Object.assign(this.data, next);
     return true;
   }

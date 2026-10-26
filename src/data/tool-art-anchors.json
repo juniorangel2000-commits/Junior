@@ -1,0 +1,82 @@
+{
+  "stone-hatchet": {
+    "x": 52,
+    "y": 104
+  },
+  "stone-pickaxe": {
+    "x": 64,
+    "y": 104
+  },
+  "stone-hoe": {
+    "x": 47,
+    "y": 104
+  },
+  "stone-sickle": {
+    "x": 57,
+    "y": 104
+  },
+  "stone-shovel": {
+    "x": 63,
+    "y": 104
+  },
+  "iron-hatchet": {
+    "x": 53,
+    "y": 104
+  },
+  "iron-pickaxe": {
+    "x": 63,
+    "y": 104
+  },
+  "iron-hoe": {
+    "x": 47,
+    "y": 104
+  },
+  "iron-sickle": {
+    "x": 56,
+    "y": 104
+  },
+  "iron-shovel": {
+    "x": 64,
+    "y": 104
+  },
+  "gold-hatchet": {
+    "x": 55,
+    "y": 104
+  },
+  "gold-pickaxe": {
+    "x": 64,
+    "y": 104
+  },
+  "gold-hoe": {
+    "x": 47,
+    "y": 104
+  },
+  "gold-sickle": {
+    "x": 56,
+    "y": 104
+  },
+  "gold-shovel": {
+    "x": 63,
+    "y": 104
+  },
+  "blackMetal-hatchet": {
+    "x": 53,
+    "y": 104
+  },
+  "blackMetal-pickaxe": {
+    "x": 64,
+    "y": 104
+  },
+  "blackMetal-hoe": {
+    "x": 48,
+    "y": 104
+  },
+  "blackMetal-sickle": {
+    "x": 56,
+    "y": 104
+  },
+  "blackMetal-shovel": {
+    "x": 63,
+    "y": 104
+  }
+}

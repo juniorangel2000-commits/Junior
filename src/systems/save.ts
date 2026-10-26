@@ -1,3 +1,4 @@
+import {validateEconomyState,newEconomyState} from './economy';
 import {validateResourceField} from './resource-spawns';
 import {repairPropertyShore,PROPERTY_SHORE_REVISION} from '../data/property-shore-repair';
 import {collectibleKind} from '../data/nature-catalog';
@@ -15,6 +16,9 @@ import { TILE, WORLD_HEIGHT, WORLD_WIDTH } from '../data/regions';
 import { Home, HOME_WIDTH, HOME_HEIGHT, validateHome } from './home';
 import { validateMapEdits } from './map-editor';
 import { isCharacterId } from '../data/characters';
+import {createVillageEconomy,validateVillageEconomy} from '../data/village-commerce';
+import {createVillageProgress,validateVillageProgress,validateVillageInstallations,validateVillageSurvivors} from '../data/village-progress';
+import {VILLAGE_ITEM_IDS} from '../data/items';
 
 // A chave e a origem do aplicativo permanecem iguais para localizar partidas antigas.
 export const SAVE_KEY = 'depois-da-chuva-v1';
@@ -50,7 +54,13 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.resourceFields!==undefined&&(!isRecord(value.resourceFields)||!validateResourceField(value.resourceFields.property,'property')||!validateResourceField(value.resourceFields.forest,'forest')))return false;
   if(value.resourceMilestones!==undefined&&(!isRecord(value.resourceMilestones)||typeof value.resourceMilestones.felled!=='boolean'||typeof value.resourceMilestones.mined!=='boolean'))return false;
   if (value.quickbar !== undefined && !validQuickbar(value.quickbar)) return false;
-  if (value.activeArea !== undefined && value.activeArea !== 'property' && value.activeArea !== 'forest') return false;
+  if (value.activeArea !== undefined && value.activeArea !== 'property' && value.activeArea !== 'forest' && value.activeArea !== 'village') return false;
+  if(value.activeArea==='village'&&(value.homePosition!==undefined||value.animalEscort!==undefined))return false;
+  if(value.villageEconomy!==undefined&&!validateVillageEconomy(value.villageEconomy))return false;
+  if(value.economy6!==undefined&&!validateEconomyState(value.economy6))return false;
+  if(value.villageProgress!==undefined&&!validateVillageProgress(value.villageProgress))return false;
+  if(value.villageInstallations!==undefined&&!validateVillageInstallations(value.villageInstallations))return false;
+  if(value.villageSurvivors!==undefined&&!validateVillageSurvivors(value.villageSurvivors))return false;
   if (value.recruitedAnimals !== undefined && (!Array.isArray(value.recruitedAnimals) || new Set(value.recruitedAnimals).size !== value.recruitedAnimals.length || !value.recruitedAnimals.every(id => FOREST_ANIMALS.some(a => a.id === id)))) return false;
   if(value.animalEscort!==undefined){
     const escort=value.animalEscort;
@@ -71,6 +81,7 @@ export function validateSave(value: unknown): value is SaveData {
     if(isRecord(value.animalEscort)&&!(value.animalPositions[value.animalEscort.area as string] as Array<{id:string}>).some(p=>p.id===(value.animalEscort as Record<string,unknown>).id))return false;
   }else if(value.animalEscort!==undefined)return false;
   if (value.forestPosition !== undefined && (!isRecord(value.forestPosition) || !finite(value.forestPosition.x, 32, 3040) || !finite(value.forestPosition.y, 32, 2272) || (value.forestPosition.direction !== undefined && !CHARACTER_DIRECTIONS.includes(value.forestPosition.direction as CharacterDirection)))) return false;
+  if (value.villagePosition !== undefined && (!isRecord(value.villagePosition) || !finite(value.villagePosition.x, 32, 3040) || !finite(value.villagePosition.y, 32, 2272) || (value.villagePosition.direction !== undefined && !CHARACTER_DIRECTIONS.includes(value.villagePosition.direction as CharacterDirection)))) return false;
   if (value.wateringCanWater !== undefined && (!Number.isInteger(value.wateringCanWater) || !finite(value.wateringCanWater, 0, 8))) return false;
   if (value.homeSupplies !== undefined && (!isRecord(value.homeSupplies) || typeof value.homeSupplies.wateringCan !== 'boolean' || typeof value.homeSupplies.seedPacket !== 'boolean')) return false;
   if (!isRecord(value.player) || !finite(value.player.x, TILE / 2, WORLD_WIDTH * TILE - TILE / 2)
@@ -169,12 +180,39 @@ export function migrateSave(value: unknown): SaveData | null {
   if (isRecord(value) && value.version === SAVE_VERSION && isRecord(value.inventory) && value.inventory.hoe === undefined) {
     value = { ...value, inventory: { ...value.inventory, hoe: 0 } };
   }
+  if(isRecord(value)&&value.version===SAVE_VERSION&&isRecord(value.inventory)){
+    const stock=value.inventory;
+    const missing=VILLAGE_ITEM_IDS.filter(id=>!Object.hasOwn(stock,id));
+    if(missing.length)value={...value,inventory:{...value.inventory,...Object.fromEntries(missing.map(id=>[id,0]))}};
+  }
+  // Preserve the unpublished village preview wallet after the residents were
+  // named. Reading still leaves the original save and its coin balance intact.
+  if(isRecord(value)&&value.version===SAVE_VERSION&&isRecord(value.villageEconomy)){
+    const economy=value.villageEconomy,met=economy.met;
+    const aliases:Record<string,string>={clara:'rosa',olivia:'tobias',tomas:'augusto'};
+    if(Array.isArray(met)&&new Set(met).size===met.length&&met.every(id=>typeof id==='string')
+      &&met.some(id=>Object.hasOwn(aliases,id))){
+      value={...value,villageEconomy:{...economy,met:[...new Set(met.map(id=>Object.hasOwn(aliases,id)?aliases[id]:id))]}};
+    }
+  }
   if(validateSave(value)){
     const data=structuredClone(value);
+    if(!data.economy6){data.economy6=newEconomyState();for(const tool of ['hatchet','pickaxe','hoe'] as const){const tier=data.villageProgress?.toolLevels[tool]??0;if(tier>0&&data.inventory[tool]>0)data.economy6.tools[tool]={tier,durability:[100,250,450,800][tier]};}}
     if(data.mapBaseRevision!==MAP_BASE_REVISION){
-      if(data.mapBaseRevision===1){
-        const protectedCells=new Set([...(data.preparedSoil??[]),...data.crops,...data.buildings.flatMap(buildingFootprint)].map(p=>`${p.x},${p.y}`));
-        data.mapEdits=upgradeAuthorMap('property',data.mapEdits,protectedCells);data.forestMapEdits=upgradeAuthorMap('forest',data.forestMapEdits);
+      if(data.mapBaseRevision===1||data.mapBaseRevision===2||data.mapBaseRevision===3){
+        const protectedCells={
+          property:new Set([...(data.preparedSoil??[]),...data.crops,...data.buildings.flatMap(buildingFootprint)].map(p=>`${p.x},${p.y}`)),
+          forest:new Set<string>(),
+        };
+        const protectBody=(cells:Set<string>,point:{x:number;y:number},radiusX:number,above:number,below=above):void=>{
+          for(let y=Math.floor((point.y-above)/TILE);y<=Math.floor((point.y+below)/TILE);y++)
+            for(let x=Math.floor((point.x-radiusX)/TILE);x<=Math.floor((point.x+radiusX)/TILE);x++)cells.add(`${x},${y}`);
+        };
+        if(data.activeArea==='forest'){
+          if(data.forestPosition)protectBody(protectedCells.forest,data.forestPosition,7,5,3);
+        }else if(data.activeArea!=='village')protectBody(protectedCells.property,data.player,7,5,3);
+        for(const area of ['property','forest'] as const)for(const animal of data.animalPositions?.[area]??[])protectBody(protectedCells[area],animal,9,6);
+        data.mapEdits=upgradeAuthorMap('property',data.mapEdits,protectedCells.property,data.mapBaseRevision);data.forestMapEdits=upgradeAuthorMap('forest',data.forestMapEdits,protectedCells.forest,data.mapBaseRevision);
       }else{data.mapEdits=mergeDefaultMap('property',data.mapEdits,false);data.forestMapEdits=mergeDefaultMap('forest',data.forestMapEdits,false);}
       data.mapBaseRevision=MAP_BASE_REVISION;
     }
@@ -206,7 +244,7 @@ export function createNewSave(profile: CharacterProfile): SaveData {
     player: { x: 25 * TILE + TILE / 2, y: 18 * TILE + TILE / 2 },
     inventory: { ...INITIAL_INVENTORY },
     crops: [], buildings: [], depletedResources: [], resourceProgress: [], equippedTool: 'hand', progress: emptyProgress(),
-    day: 1, time: 8 * 60, metLia: false,
+    economy6:newEconomyState(),day: 1, time: 8 * 60, metLia: false, villageEconomy: createVillageEconomy(), villageProgress:createVillageProgress(),
   };
 }
 
