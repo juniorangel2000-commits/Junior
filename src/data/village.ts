@@ -1,8 +1,14 @@
+import {cottageSolidPoint,wellFootprint} from './architecture-collision';
+import {blacksmithBlockedPoint} from './blacksmith-house';
 import {TILE,WORLD_WIDTH,WORLD_HEIGHT} from './world-size';
 import type {NatureKind} from './nature-catalog';
 
 export const VILLAGE_LAKE={x:87,y:44,rx:5.8,ry:7.5};
-export function villageLakeDistance(x:number,y:number):number {return (Math.hypot((x-87)/5.8,(y-44)/7.5)-1)*5.8+.18*Math.sin(y*1.7)+.1*Math.cos(x*2);}
+export function villageLakeDistance(x:number,y:number):number {
+ const u=(x-VILLAGE_LAKE.x)/VILLAGE_LAKE.rx,v=(y-VILLAGE_LAKE.y)/VILLAGE_LAKE.ry;
+ const angle=Math.atan2(v,u),shore=.065*Math.sin(angle*3+.4)+.045*Math.cos(angle*5-.8)+.018*Math.sin(angle*9);
+ return (Math.hypot(u,v)-1-shore)*VILLAGE_LAKE.rx;
+}
 export const villageWater=(x:number,y:number)=>villageLakeDistance(x+.5,y+.5)<0;
 export const VILLAGE_NAME='Vila do Recomeço';
 export const VILLAGE_ENTRY={x:2,y:52} as const;
@@ -70,59 +76,146 @@ export const VILLAGE_BUILDINGS:readonly VillageBuilding[]=[
  {id:'pousada',x:46,y:19,shop:'inn'},
  {id:'oficina',x:68,y:58,shop:'mechanic'},
 ];
-const ROADS:readonly (readonly [number,number,number,number])[]=[
- [1,52,19,52],[19,52,33,53],[33,53,46,46],[46,46,46,38],
- [33,33,39,37],[39,37,46,38],[46,38,57,33],
- [46,38,46,22],[46,25,22,25],[46,25,70,25],
- [46,45,78,45],[46,46,46,63],[46,63,37,63],[46,63,68,63],[68,63,68,60],
- [19,52,11,54],[11,54,11,64],[11,64,17,64],
+export interface VillageWalkway {width:number;points:readonly (readonly [number,number])[]}
+/** Half-widths in tiles. Main lanes allow two people to pass; side lanes have
+ * softer bends, and each future front door keeps its own clear approach. */
+export const VILLAGE_WALKWAYS:readonly VillageWalkway[]=[
+ {width:1.45,points:[[1,52],[19,52],[26,52.4],[33,53],[39,50],[46,46],[46,38]]},
+ {width:1.05,points:[[33,32],[33,34],[37,36],[40,37.3],[46,38]]},
+ {width:1.05,points:[[57,32],[57,34],[53,36],[49,37.5],[46,38]]},
+ {width:1.2,points:[[46,38],[46,29],[46,20]]},
+ {width:.95,points:[[22,23],[22,25],[29,25],[36,25.6],[46,26]]},
+ {width:.95,points:[[46,26],[50,23],[53,21.5],[60,21.5],[65,25],[70,25],[70,23]]},
+ {width:1.1,points:[[46,44],[55,44.5],[64,45.4],[72,45.1],[78,45],[78,43]]},
+ {width:1.1,points:[[46,46],[46.4,53],[46,63]]},
+ {width:1.05,points:[[37,61],[37,63],[41,63.4],[46,63],[55,63],[63,63.3],[68,63],[68,59]]},
+ {width:.95,points:[[19,52],[13,54],[11,57],[11,61],[12,64],[17,64],[17,62]]},
+ {width:.9,points:[[25,50],[25,52.3]]},
+ {width:.7,points:[[19,24],[22,24]]},
+ {width:.8,points:[[57,33],[62,33]]},
+ {width:.7,points:[[30,64],[30,65.5],[37,65.5],[37,63]]},
 ];
-export function villageRoadDistance(x:number,y:number):number {
+function walkwayDistance(x:number,y:number,edge:boolean):number {
  let nearest=Infinity;
- for(const [ax,ay,bx,by] of ROADS){
+ for(const road of VILLAGE_WALKWAYS)for(let i=1;i<road.points.length;i++){
+  const [ax,ay]=road.points[i-1],[bx,by]=road.points[i];
   const dx=bx-ax,dy=by-ay,t=Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/(dx*dx+dy*dy)));
-  nearest=Math.min(nearest,Math.hypot(x-ax-dx*t,y-ay-dy*t));
+  nearest=Math.min(nearest,Math.hypot(x-ax-dx*t,y-ay-dy*t)-(edge?road.width:0));
  }
  return nearest;
 }
+export function villageRoadDistance(x:number,y:number):number {
+ return walkwayDistance(x,y,false);
+}
+export const villagePathEdge=(x:number,y:number)=>walkwayDistance(x,y,true);
+export const VILLAGE_LAWNS=[{x:39.8,y:36.6,rx:2.2,ry:2.9},{x:52.2,y:36.6,rx:2.2,ry:2.9}] as const;
+export const villageLawnDistance=(x:number,y:number)=>Math.min(...VILLAGE_LAWNS.map(p=>Math.hypot((x-p.x)/p.rx,(y-p.y)/p.ry)));
+/** Entrance coordinates are useful to future indoor scenes and NPC schedules.
+ * No interior or routine is enabled until its own artwork/gameplay is ready. */
+export const VILLAGE_DOOR_APPROACHES=VILLAGE_BUILDINGS.map(b=>({id:b.id,x:b.x,y:b.y+1}));
+export const villageDoorApproach=(x:number,y:number)=>VILLAGE_BUILDINGS.some(b=>Math.abs(x-b.x)<=1.5&&y>b.y&&y<=b.y+4);
+export const VILLAGE_GARDENS=[
+ {id:'ervas',x:16.8,y:24,rx:2.7,ry:2.2,kind:'herbs'},
+ {id:'rosa',x:30,y:61,rx:2.6,ry:2.4,kind:'crops'},
+ {id:'pousada',x:54,y:17.8,rx:2.6,ry:1.9,kind:'flowers'},
+ {id:'costura',x:77,y:23.6,rx:2.3,ry:1.9,kind:'flowers'},
+] as const;
+export const VILLAGE_GROVES=[
+ {x:30,y:15,rx:7,ry:4},{x:63,y:11,rx:10,ry:5},
+ {x:20,y:38,rx:9,ry:5},{x:70,y:35,rx:6,ry:5},
+ {x:58,y:54,rx:6,ry:4},{x:26,y:62,rx:4,ry:4},
+] as const;
 export function villagePlazaDistance(x:number,y:number):number {
  return Math.hypot((x-VILLAGE_PLAZA.x)/VILLAGE_PLAZA.rx,(y-VILLAGE_PLAZA.y)/VILLAGE_PLAZA.ry);
 }
 /** Describes the ground independently of graphics, for layout and editor tools. */
 export function villageGround(x:number,y:number):'grass'|'forest'|'path'|'paving' {
- if(villagePlazaDistance(x,y)<1)return 'paving';
- if(villageRoadDistance(x,y)<1.5)return 'path';
+ if(villagePlazaDistance(x,y)<1&&villageLawnDistance(x,y)>1)return 'paving';
+ if(villagePathEdge(x,y)<.35||villageDoorApproach(x,y))return 'path';
  const edge=Math.min(x,WORLD_WIDTH-1-x,y,WORLD_HEIGHT-1-y);
  return edge<8+Math.sin(x*.27+y*.13)*1.4?'forest':'grass';
 }
 export function villageBuildingAt(x:number,y:number):VillageBuilding|undefined {
- return VILLAGE_BUILDINGS.find(b=>x>=b.x-3&&x<=b.x+3&&y>=b.y-3&&y<=b.y);
+ return VILLAGE_BUILDINGS.find(b=>b.shop==='blacksmith'
+  ? blacksmithBlockedPoint((x+.5)*32,(y+.5)*32,b)
+  :x>=b.x-3&&x<=b.x+3&&y>=b.y-3&&y<=b.y);
 }
 const hash=(x:number,y:number):number=>(Math.imul(x+83,73856093)^Math.imul(y+37,19349663))>>>0;
 export interface VillageTree {x:number;y:number;kind:NatureKind}
+export const VILLAGE_PROPS:readonly {kind:'well'|'bench'|'lantern'|'barrel'|'flowerpot'|'woodpile'|'anvil'|'crates'|'sacks'|'basket'|'planter';x:number;y:number}[]=[
+ {kind:'well',x:46,y:37},
+ {kind:'bench',x:40,y:40},{kind:'bench',x:52,y:40},
+ {kind:'bench',x:42,y:28},{kind:'bench',x:60,y:51},
+ {kind:'lantern',x:21,y:50},{kind:'lantern',x:36,y:41},
+ {kind:'lantern',x:55,y:39},{kind:'lantern',x:44,y:28},
+ {kind:'lantern',x:12,y:50},{kind:'lantern',x:33,y:50},
+ {kind:'lantern',x:27,y:27},{kind:'lantern',x:65,y:27},
+ {kind:'lantern',x:49,y:55},{kind:'lantern',x:58,y:61},
+ {kind:'bench',x:76,y:48},{kind:'bench',x:50,y:60},
+ {kind:'crates',x:29,y:33},{kind:'sacks',x:37,y:32},
+ {kind:'barrel',x:66,y:32},
+ {kind:'woodpile',x:21,y:49},{kind:'barrel',x:29,y:50},
+ {kind:'flowerpot',x:42,y:21},{kind:'flowerpot',x:50,y:21},
+ {kind:'flowerpot',x:66,y:24},{kind:'flowerpot',x:74,y:24},
+ {kind:'flowerpot',x:34,y:63},{kind:'barrel',x:72,y:60},
+ {kind:'crates',x:21,y:63},{kind:'flowerpot',x:18,y:24},
+ {kind:'basket',x:42,y:61},{kind:'barrel',x:75,y:44},
+ {kind:'planter',x:54,y:16},{kind:'planter',x:77,y:23},
+];
 export const VILLAGE_TREES:readonly VillageTree[]=(()=>{
  const trees:VillageTree[]=[],kinds=['oakA','oakB','oakC','pineA','pineB','pineC'] as const;
  for(let y=3;y<70;y+=4)for(let x=3;x<94;x+=4){
   const seed=hash(x,y),tx=x+(seed>>>4)%2,ty=y+(seed>>>7)%2;
-  if(villageLakeDistance(tx,ty)<2||seed%7===0||villageRoadDistance(tx,ty)<4.8||villagePlazaDistance(tx,ty)<1.6)continue;
+  if(villageLakeDistance(tx,ty)<2||seed%7===0||villageRoadDistance(tx,ty)<4.2||villagePlazaDistance(tx,ty)<1.3)continue;
   // Roofs and storefronts stay readable; keep the complete canopy away from doors.
   if(VILLAGE_BUILDINGS.some(b=>Math.abs(b.x-tx)<7&&ty>b.y-8&&ty<b.y+8))continue;
-  if(tx>11&&tx<86&&ty>10&&ty<67&&seed%13!==0)continue;
+  if(VILLAGE_PROPS.some(p=>Math.hypot(tx-p.x,ty-p.y)<2.6))continue;
+  if(VILLAGE_GARDENS.some(p=>Math.hypot((tx-p.x)/p.rx,(ty-p.y)/p.ry)<1.7))continue;
+  const grove=VILLAGE_GROVES.some(p=>Math.hypot((tx-p.x)/p.rx,(ty-p.y)/p.ry)<1);
+  if(tx>11&&tx<86&&ty>10&&ty<67&&!grove&&seed%17!==0)continue;
   if(tx<9&&ty>=49&&ty<=59)continue;
   trees.push({x:tx,y:ty,kind:kinds[(seed>>>12)%kinds.length]});
  }
  return trees;
 })();
-export const VILLAGE_PROPS:readonly {kind:'well'|'bench'|'lantern';x:number;y:number}[]=[
- {kind:'well',x:46,y:37},
- {kind:'bench',x:40,y:40},{kind:'bench',x:52,y:40},
- {kind:'bench',x:44,y:24},{kind:'bench',x:60,y:51},
- {kind:'lantern',x:21,y:50},{kind:'lantern',x:36,y:41},
- {kind:'lantern',x:55,y:39},{kind:'lantern',x:44,y:28},
-];
-export function villageBlockedAt(x:number,y:number):boolean {
+/** Garden borders use the approved connected fence, leaving physical gates
+ * open so future residents can enter without scene-specific interaction hacks. */
+export const VILLAGE_FENCES:readonly {kind:'fence';x:number;y:number}[]=(()=>{
+ const result:Array<{kind:'fence';x:number;y:number}>=[];
+ for(const box of [{left:14,right:19,top:21,bottom:27},{left:27,right:33,top:58,bottom:64}]){
+  for(let y=box.top;y<=box.bottom;y++)for(let x=box.left;x<=box.right;x++){
+   if(x!==box.left&&x!==box.right&&y!==box.top&&y!==box.bottom)continue;
+   if(box.left===14&&x===box.right&&(y===24||y===25))continue;
+   if(box.left===27&&y===box.bottom&&(x===30||x===31))continue;
+   result.push({kind:'fence',x,y});
+  }
+ }
+ return result;
+})();
+export const villageWellTile=(x:number,y:number)=>VILLAGE_PROPS.filter(p=>p.kind==='well').some(p=>[0,16,31].some(dx=>[0,16,31].some(dy=>wellFootprint(x*32+dx,y*32+dy,{x:(p.x+.5)*32,y:p.y*32+25},.49))));
+export function villagePropAt(x:number,y:number):boolean {
+ return villageWellTile(x,y)||VILLAGE_PROPS.some(p=>p.kind!=='well'&&p.y===y&&Math.abs(p.x-x)<=(p.kind==='bench'||p.kind==='woodpile'||p.kind==='planter'?1:0));
+}
+export const VILLAGE_SHORE_DETAILS:readonly {kind:'reeds'|'shoreStones';x:number;y:number}[]=(()=>{
+ const result:Array<{kind:'reeds'|'shoreStones';x:number;y:number}>=[],seen=new Set<string>();
+ for(let i=0;i<22;i++){
+  const a=i/22*Math.PI*2,r=1+.065*Math.sin(a*3+.4)+.045*Math.cos(a*5-.8)+.018*Math.sin(a*9);
+  const x=Math.round(VILLAGE_LAKE.x+Math.cos(a)*VILLAGE_LAKE.rx*(r+.04)),y=Math.round(VILLAGE_LAKE.y+Math.sin(a)*VILLAGE_LAKE.ry*(r+.04)),key=`${x},${y}`;
+  if(seen.has(key)||villageRoadDistance(x,y)<1.9||VILLAGE_BUILDINGS.some(b=>Math.abs(b.x-x)<5&&Math.abs(b.y-y)<4))continue;
+  seen.add(key);result.push({x,y,kind:i%5===0?'shoreStones':'reeds'});
+ }
+ return result;
+})();
+export function villageSceneryBlockedAt(x:number,y:number):boolean {
  return villageWater(x,y)||x<1||y<1||x>=WORLD_WIDTH-1||y>=WORLD_HEIGHT-1
-  ||!!villageBuildingAt(x,y)||VILLAGE_TREES.some(t=>t.x===x&&t.y===y)
-  ||VILLAGE_PROPS.some(p=>p.x===x&&p.y===y);
+  ||VILLAGE_TREES.some(t=>t.x===x&&t.y===y)
+  ||villagePropAt(x,y)||VILLAGE_SHORE_DETAILS.some(p=>p.kind==='shoreStones'&&p.x===x&&p.y===y)||VILLAGE_FENCES.some(p=>p.x===x&&p.y===y);
+}
+export const villageBlockedAt=(x:number,y:number)=>villageSceneryBlockedAt(x,y)||!!villageBuildingAt(x,y);
+export function villagePointBlocked(x:number,y:number):boolean{
+ const tx=Math.floor(x/32),ty=Math.floor(y/32);
+ const propWell=villageWellTile(tx,ty);const scenery=villageSceneryBlockedAt(tx,ty);
+ const well=VILLAGE_PROPS.find(p=>p.kind==='well'&&Math.abs(p.x-tx)<=2&&Math.abs(p.y-ty)<=3);
+ return (scenery&&!propWell)||(!!well&&wellFootprint(x,y,{x:(well.x+.5)*32,y:well.y*32+25},.49))||VILLAGE_BUILDINGS.some(b=>b.shop==='blacksmith'?blacksmithBlockedPoint(x,y,b):cottageSolidPoint(x,y,{x:(b.x+.5)*32,y:b.y*32+25}));
 }
 export const villagePixelPoint=(point:{x:number;y:number})=>({x:(point.x+.5)*TILE,y:(point.y+.5)*TILE});

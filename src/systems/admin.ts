@@ -5,8 +5,8 @@ import { Inventory, MAX_ITEM_COUNT } from './inventory';
 
 /** Credencial desta versão: somente a derivação é distribuída. A sessão nunca entra no save. */
 const LOCAL_CREDENTIAL: AdminCredential = {
-  salt: 'dbc7550413cb9613b2815ab750f3ec8d091a54224e9edfb2',
-  hash: '50a19d31fec77d9bf2f4d0df01e9767115a5f6d77f8b2a8c615a4e9e1538e3a4',
+  salt: '4eb8a076dffcb2a737cdc7087ba5544f82d4cd60b16a0266',
+  hash: 'db3c2f63bbbd2849409d1628f8820990d4450b0a5d7056545ff03f7d0a517e11',
   iterations: 210_000,
 };
 

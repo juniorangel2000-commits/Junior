@@ -1,3 +1,5 @@
+import {preloadSmithLayout} from './smith-layout-art';
+import {preloadVillageScenery} from './village-scenery-art';
 import {preloadEconomyArt} from './economy-art';
 import {economyIcon,tierToolIcon,ART_TOOL_IDS} from './data/economy-art';
 import type {EconomicTool} from './data/economy-balance';
@@ -40,7 +42,9 @@ const WORLD_SOURCES: Record<string, string> = {
 };
 const MODULES = ['parede_creme', 'parede_janela_floreira', 'parede_trepadeira', 'parede_porta', 'porta_madeira', 'janela_turquesa', 'telha_lisa', 'telha_variante', 'chamine', 'floreira', 'cerca_natural', 'banco_jardim', 'barril', 'vaso_flor', 'piso_tabuas', 'piso_pedra', 'terra', 'caminho', 'planta'];
 export function preloadVisualAssets(scene: Phaser.Scene): void {
+  preloadSmithLayout(scene);
   preloadEconomyArt(scene);
+  preloadVillageScenery(scene);
   scene.load.image('fence-components-source','assets/visual/architecture/fence-components.png');
   scene.load.image('fence-moss-source','assets/visual/architecture/fence-moss.png');
   scene.load.image('finished-gate-source','assets/visual/architecture/finished-gate-source.png');

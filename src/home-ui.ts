@@ -1,6 +1,6 @@
 import {
   FURNITURE_CATALOG, FLOOR_STYLES, WALL_STYLES, HOME_WIDTH, HOME_HEIGHT,
-  furnitureFootprint,
+  furnitureFootprint,RESIDENTIAL_FURNITURE_KINDS,
 } from './systems/home';
 import type { HomeData, HomeEditAction, FurnitureKind } from './systems/home';
 export type { HomeEditAction } from './systems/home';
@@ -8,22 +8,28 @@ import './home-ui.css';
 
 export interface HomeEditResponse { ok: boolean; message: string; home: HomeData }
 export interface HomeEditor { refresh(home: HomeData, message?: string, ok?: boolean): void; destroy(): void }
+export interface HomeEditorOptions {title?:string;eyebrow?:string;catalog?:readonly FurnitureKind[];legend?:string;note?:string}
 
 /** Editor de planta: só o sistema Home decide se uma alteração pode ser aplicada. */
 export function createHomeEditor(
   holder: HTMLElement,
   initial: HomeData,
   onAction: (action: HomeEditAction) => HomeEditResponse,
+  options:HomeEditorOptions={},
 ): HomeEditor {
   let home = initial;
   let selected: string | undefined;
   let mode: 'select' | 'place' | 'move' = 'select';
-  let kind: FurnitureKind = 'chair';
+  const palette=options.catalog??RESIDENTIAL_FURNITURE_KINDS;
+  let kind: FurnitureKind = palette[0]??'chair';
   let disposed = false;
   const root = document.createElement('div');
   root.className = 'home-editor';
   root.innerHTML = `<div class="home-editor-body"><div class="home-plan-column"><p class="home-editor-help">Escolha um móvel para adicionar ou selecione uma peça da casa. Clique na planta para posicionar.</p><div class="home-grid" role="group" aria-label="Planta da casa"></div><p class="home-plan-legend">Entrada ao sul · mantenha livre o caminho até a cama.</p><p class="home-edit-status" role="status" aria-live="polite">Selecione uma peça ou adicione um móvel.</p></div><div class="home-options"><section><h3>Móveis da casa</h3><p class="home-editor-note">Acervo da casa. Recolha e reorganize seus móveis; consulte as quantidades disponíveis.</p><div class="home-catalog"></div></section><section class="home-selected"><h3>Peça selecionada</h3><p class="home-selection-label">Nenhuma peça.</p><div class="home-piece-actions"><button class="button button-light" data-home-move disabled>Mover</button><button class="button button-light" data-home-remove disabled>Recolher</button><button class="text-button" data-home-cancel>Cancelar seleção</button></div><div class="home-piece-list" role="group" aria-label="Móveis colocados"></div></section><section><h3>Acabamentos</h3><span class="home-style-label">Assoalho</span><div class="home-floor-styles"></div><span class="home-style-label">Paredes</span><div class="home-wall-styles"></div></section></div></div>`;
   holder.append(root);
+  if(options.legend)root.querySelector<HTMLElement>('.home-plan-legend')!.textContent=options.legend;
+  if(options.note)root.querySelector<HTMLElement>('.home-editor-note')!.textContent=options.note;
+  if(options.catalog){root.querySelector<HTMLElement>('.home-options h3')!.textContent='Objetos do interior';root.querySelector<HTMLElement>('.home-editor-help')!.textContent='Escolha um objeto do catálogo ou uma peça colocada. Use a planta para posicionar, mover ou recolher.';}
   const grid = root.querySelector<HTMLElement>('.home-grid')!;
   const status = root.querySelector<HTMLElement>('.home-edit-status')!;
   const moveButton = root.querySelector<HTMLButtonElement>('[data-home-move]')!;
@@ -66,11 +72,13 @@ export function createHomeEditor(
       const name = piece ? FURNITURE_CATALOG[piece.kind].name : entry ? 'Saída' : floor ? 'Espaço livre' : 'Parede';
       button.setAttribute('aria-label', `${name}, coluna ${x + 1}, linha ${y + 1}`);
       button.title = name;
-      button.disabled = !floor && !entry;
+      const wallPlacement=(mode==='place'&&FURNITURE_CATALOG[kind].surface==='wall')||(mode==='move'&&chosen&&FURNITURE_CATALOG[chosen.kind].surface==='wall');
+      button.disabled = wallPlacement?!(x>=1&&x<=HOME_WIDTH-2&&y<=1):!floor&&!entry&&!piece;
       if (piece && piece.x === x && piece.y === y) {
         const label = document.createElement('span');
         label.className = 'home-furniture-label';
         label.textContent = FURNITURE_CATALOG[piece.kind].name;
+        label.style.width=`calc(${FURNITURE_CATALOG[piece.kind].width} * 100% - 6px)`;
         button.append(label);
       } else if (entry) button.textContent = '↓';
       button.addEventListener('click', () => {
@@ -86,7 +94,7 @@ export function createHomeEditor(
     }
     const catalog = root.querySelector<HTMLElement>('.home-catalog')!;
     catalog.replaceChildren();
-    for (const id of Object.keys(FURNITURE_CATALOG) as FurnitureKind[]) {
+    for (const id of palette) {
       const item = FURNITURE_CATALOG[id];
       const count = home.furniture.filter(piece => piece.kind === id).length;
       const button = document.createElement('button');

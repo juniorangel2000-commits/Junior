@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
-import { FLOOR_STYLES, FURNITURE_CATALOG, FURNITURE_KINDS, HOME_HEIGHT, HOME_TILE, HOME_WIDTH, WALL_STYLES } from './systems/home';
-import type { FloorStyle, FurnitureKind, HomeData, WallStyle } from './systems/home';
+import { FLOOR_STYLES, FURNITURE_CATALOG, RESIDENTIAL_FURNITURE_KINDS, HOME_HEIGHT, HOME_TILE, HOME_WIDTH, WALL_STYLES } from './systems/home';
+import type { FloorStyle, FurnitureKind, HomeData, HomeFurniture, WallStyle } from './systems/home';
 
 type Paint = CanvasRenderingContext2D;
 const COLORS = { outline: '#423e32', wood: '#987047', light: '#c69b60', dark: '#654832', teal: '#497879', cream: '#e7dbb9' };
@@ -252,7 +252,7 @@ export function createHomeArt(scene: Phaser.Scene): void {
       texture(scene, `home-room-${floor}-${wall}`, HOME_WIDTH * HOME_TILE, HOME_HEIGHT * HOME_TILE, ctx => room(ctx, floor, wall, finishes));
     }
   }
-  for (const kind of FURNITURE_KINDS) {
+  for (const kind of RESIDENTIAL_FURNITURE_KINDS) {
     const definition = FURNITURE_CATALOG[kind];
     const height = kind === 'bed' ? 88 : kind === 'table' ? 80 : kind === 'shelf' ? 70 : kind === 'rug' ? 64 : kind === 'plant' ? 60 : 56;
     texture(scene, `home-furniture-${kind}`, definition.width * HOME_TILE, height,
@@ -265,14 +265,17 @@ export interface HomeView {
   destroy(): void;
 }
 
-export function drawHome(scene: Phaser.Scene, data: HomeData): HomeView {
+export interface HomeFurnitureArt {key:string;w:number;h:number;offsetX?:number;offsetY?:number;depth?:number}
+export function drawHome(scene: Phaser.Scene, data: HomeData, resolveArt?:(piece:HomeFurniture)=>HomeFurnitureArt): HomeView {
   createHomeArt(scene);
   const objects = [scene.add.image(0, 0, `home-room-${data.floor}-${data.wall}`).setOrigin(0).setDepth(-1000)];
   for (const piece of data.furniture) {
     const definition = FURNITURE_CATALOG[piece.kind];
     const bottom = (piece.y + definition.height) * HOME_TILE;
-    const image = scene.add.image(piece.x * HOME_TILE, bottom, `home-furniture-${piece.kind}`)
+    const art=resolveArt?.(piece);
+    const image = scene.add.image(piece.x * HOME_TILE, bottom, art?.key??`home-furniture-${piece.kind}`)
       .setOrigin(0, 1).setDepth(definition.blocking ? bottom - 1 : -500);
+    if(art)image.setPosition((piece.x+definition.width/2)*HOME_TILE+(art.offsetX??0),bottom+(art.offsetY??0)).setOrigin(.5,1).setDisplaySize(art.w,art.h).setDepth(art.depth??(definition.blocking?bottom-1:-500));
     image.setData('homeFurnitureId', piece.id);
     objects.push(image);
   }

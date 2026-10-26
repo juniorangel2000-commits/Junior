@@ -1,6 +1,7 @@
 import manifest from '../../public/assets/visual/architecture/well/manifest.json';
 import {TILE} from './world-size';
 import {HOMESTEAD_HOUSE} from './property-homestead';
+import {wellFootprint} from './architecture-collision';
 
 export const WELL_ROOT='assets/visual/architecture/well';
 /** Dense grass/stone silhouette ends here in all eight supplied frames. */
@@ -11,13 +12,11 @@ export const WELL_FRAME_DURATIONS=manifest.frame_duration_ms;
 export const WELL_USE_MS=WELL_FRAME_DURATIONS.reduce((sum,ms)=>sum+ms,0);
 export const WELL_BASE={x:PROPERTY_WELL.x,y:PROPERTY_WELL.y-(256-198)*PROPERTY_WELL.scale,rx:30,ry:16} as const;
 export function wellSolidPoint(x:number,y:number):boolean {
- return ((x-WELL_BASE.x)/WELL_BASE.rx)**2+((y-WELL_BASE.y)/WELL_BASE.ry)**2<1;
+ return wellFootprint(x,y,PROPERTY_WELL,PROPERTY_WELL.scale);
 }
 /** Tile navigation is conservative; player movement uses the exact stone ellipse. */
 export function wellSolidTile(x:number,y:number):boolean {
- const px=Math.max(x*TILE,Math.min((x+1)*TILE,WELL_BASE.x));
- const py=Math.max(y*TILE,Math.min((y+1)*TILE,WELL_BASE.y));
- return wellSolidPoint(px,py);
+ return [0,8,16,24,31].some(dx=>[0,8,16,24,31].some(dy=>wellSolidPoint(x*TILE+dx,y*TILE+dy)));
 }
 export function wellSiteTile(x:number,y:number):boolean {return x>=30&&x<=33&&y>=13&&y<=18;}
 export function nearPropertyWell(x:number,y:number):boolean {

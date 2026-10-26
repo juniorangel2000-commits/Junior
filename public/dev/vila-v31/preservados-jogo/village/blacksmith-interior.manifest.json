@@ -1,0 +1,57 @@
+{
+  "source": "docs/cenarios/vila-refinada/fontes/ferraria-interior-objetos.png",
+  "sprites": [
+    {
+      "id": "armor-stand",
+      "width": 96,
+      "height": 144,
+      "worldWidth": 48,
+      "worldHeight": 72,
+      "sourceBounds": {
+        "x": 155,
+        "y": 90,
+        "width": 334,
+        "height": 557
+      }
+    },
+    {
+      "id": "tool-rack",
+      "width": 160,
+      "height": 104,
+      "worldWidth": 80,
+      "worldHeight": 52,
+      "sourceBounds": {
+        "x": 638,
+        "y": 227,
+        "width": 586,
+        "height": 400
+      }
+    },
+    {
+      "id": "counter",
+      "width": 128,
+      "height": 96,
+      "worldWidth": 64,
+      "worldHeight": 48,
+      "sourceBounds": {
+        "x": 25,
+        "y": 766,
+        "width": 651,
+        "height": 407
+      }
+    },
+    {
+      "id": "parts-shelf",
+      "width": 128,
+      "height": 112,
+      "worldWidth": 64,
+      "worldHeight": 56,
+      "sourceBounds": {
+        "x": 689,
+        "y": 769,
+        "width": 541,
+        "height": 405
+      }
+    }
+  ]
+}

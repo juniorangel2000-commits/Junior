@@ -1,0 +1,292 @@
+[
+  {
+    "npc": "augusto",
+    "id": "balcao_central_recorte_guiado",
+    "original_id": "balcao_central",
+    "file": "05_MELHORIAS_V3/01_BALCOES_REFINADOS/augusto/balcao_central_recorte_guiado.png",
+    "source_image": "01_LOJAS/augusto/referencia_aprovada.png",
+    "original_bbox": [
+      391,
+      919,
+      737,
+      1047
+    ],
+    "original_crop_size": [
+      349,
+      141
+    ],
+    "final_size": [
+      346,
+      128
+    ],
+    "origin_bottom_center": [
+      173,
+      128
+    ],
+    "alpha_pixel_ratio": 0.837,
+    "extraction": "polygon-guided original pixel conservation",
+    "validation": "CANDIDATO - pode conter parte de piso/parede ou sofrer recorte de objeto",
+    "approved_for_game": false
+  },
+  {
+    "npc": "bento",
+    "id": "mesa_atendimento_recorte_guiado",
+    "original_id": "mesa_atendimento",
+    "file": "05_MELHORIAS_V3/01_BALCOES_REFINADOS/bento/mesa_atendimento_recorte_guiado.png",
+    "source_image": "01_LOJAS/bento/referencia_aprovada.png",
+    "original_bbox": [
+      294,
+      933,
+      496,
+      1032
+    ],
+    "original_crop_size": [
+      204,
+      181
+    ],
+    "final_size": [
+      202,
+      99
+    ],
+    "origin_bottom_center": [
+      101,
+      99
+    ],
+    "alpha_pixel_ratio": 0.475,
+    "extraction": "polygon-guided original pixel conservation",
+    "validation": "CANDIDATO - pode conter parte de piso/parede ou sofrer recorte de objeto",
+    "approved_for_game": false
+  },
+  {
+    "npc": "amelia",
+    "id": "balcao_vendas_recorte_guiado",
+    "original_id": "balcao_vendas",
+    "file": "05_MELHORIAS_V3/01_BALCOES_REFINADOS/amelia/balcao_vendas_recorte_guiado.png",
+    "source_image": "01_LOJAS/amelia/referencia_aprovada.png",
+    "original_bbox": [
+      268,
+      1053,
+      625,
+      1179
+    ],
+    "original_crop_size": [
+      364,
+      156
+    ],
+    "final_size": [
+      357,
+      126
+    ],
+    "origin_bottom_center": [
+      178,
+      126
+    ],
+    "alpha_pixel_ratio": 0.729,
+    "extraction": "polygon-guided original pixel conservation",
+    "validation": "CANDIDATO - pode conter parte de piso/parede ou sofrer recorte de objeto",
+    "approved_for_game": false
+  },
+  {
+    "npc": "tobias",
+    "id": "mesa_catalogo_recorte_guiado",
+    "original_id": "mesa_catalogo",
+    "file": "05_MELHORIAS_V3/01_BALCOES_REFINADOS/tobias/mesa_catalogo_recorte_guiado.png",
+    "source_image": "01_LOJAS/tobias/referencia_aprovada.png",
+    "original_bbox": [
+      364,
+      987,
+      582,
+      1181
+    ],
+    "original_crop_size": [
+      234,
+      208
+    ],
+    "final_size": [
+      218,
+      194
+    ],
+    "origin_bottom_center": [
+      109,
+      194
+    ],
+    "alpha_pixel_ratio": 0.797,
+    "extraction": "polygon-guided original pixel conservation",
+    "validation": "CANDIDATO - pode conter parte de piso/parede ou sofrer recorte de objeto",
+    "approved_for_game": false
+  },
+  {
+    "npc": "rosa",
+    "id": "balcao_sementes_recorte_guiado",
+    "original_id": "balcao_sementes",
+    "file": "05_MELHORIAS_V3/01_BALCOES_REFINADOS/rosa/balcao_sementes_recorte_guiado.png",
+    "source_image": "01_LOJAS/rosa/referencia_aprovada.png",
+    "original_bbox": [
+      386,
+      977,
+      753,
+      1138
+    ],
+    "original_crop_size": [
+      371,
+      180
+    ],
+    "final_size": [
+      367,
+      161
+    ],
+    "origin_bottom_center": [
+      184,
+      161
+    ],
+    "alpha_pixel_ratio": 0.834,
+    "extraction": "polygon-guided original pixel conservation",
+    "validation": "CANDIDATO - pode conter parte de piso/parede ou sofrer recorte de objeto",
+    "approved_for_game": false
+  },
+  {
+    "npc": "nilo",
+    "id": "balcao_antiguidades_recorte_guiado",
+    "original_id": "balcao_antiguidades",
+    "file": "05_MELHORIAS_V3/01_BALCOES_REFINADOS/nilo/balcao_antiguidades_recorte_guiado.png",
+    "source_image": "01_LOJAS/nilo/referencia_aprovada.png",
+    "original_bbox": [
+      411,
+      915,
+      690,
+      1022
+    ],
+    "original_crop_size": [
+      286,
+      143
+    ],
+    "final_size": [
+      279,
+      107
+    ],
+    "origin_bottom_center": [
+      140,
+      107
+    ],
+    "alpha_pixel_ratio": 0.672,
+    "extraction": "polygon-guided original pixel conservation",
+    "validation": "CANDIDATO - pode conter parte de piso/parede ou sofrer recorte de objeto",
+    "approved_for_game": false
+  },
+  {
+    "npc": "celina",
+    "id": "balcao_vendas_recorte_guiado",
+    "original_id": "balcao_vendas",
+    "file": "05_MELHORIAS_V3/01_BALCOES_REFINADOS/celina/balcao_vendas_recorte_guiado.png",
+    "source_image": "01_LOJAS/celina/referencia_aprovada.png",
+    "original_bbox": [
+      479,
+      954,
+      709,
+      1088
+    ],
+    "original_crop_size": [
+      230,
+      148
+    ],
+    "final_size": [
+      230,
+      134
+    ],
+    "origin_bottom_center": [
+      115,
+      134
+    ],
+    "alpha_pixel_ratio": 0.848,
+    "extraction": "polygon-guided original pixel conservation",
+    "validation": "CANDIDATO - pode conter parte de piso/parede ou sofrer recorte de objeto",
+    "approved_for_game": false
+  },
+  {
+    "npc": "damiao",
+    "id": "bancada_vendas_recorte_guiado",
+    "original_id": "bancada_vendas",
+    "file": "05_MELHORIAS_V3/01_BALCOES_REFINADOS/damiao/bancada_vendas_recorte_guiado.png",
+    "source_image": "01_LOJAS/damiao/referencia_aprovada.png",
+    "original_bbox": [
+      372,
+      1026,
+      673,
+      1136
+    ],
+    "original_crop_size": [
+      304,
+      128
+    ],
+    "final_size": [
+      301,
+      110
+    ],
+    "origin_bottom_center": [
+      150,
+      110
+    ],
+    "alpha_pixel_ratio": 0.788,
+    "extraction": "polygon-guided original pixel conservation",
+    "validation": "CANDIDATO - pode conter parte de piso/parede ou sofrer recorte de objeto",
+    "approved_for_game": false
+  },
+  {
+    "npc": "helena",
+    "id": "balcao_taverna_recorte_guiado",
+    "original_id": "balcao_taverna",
+    "file": "05_MELHORIAS_V3/01_BALCOES_REFINADOS/helena/balcao_taverna_recorte_guiado.png",
+    "source_image": "01_LOJAS/helena/referencia_aprovada.png",
+    "original_bbox": [
+      461,
+      877,
+      748,
+      964
+    ],
+    "original_crop_size": [
+      287,
+      200
+    ],
+    "final_size": [
+      287,
+      87
+    ],
+    "origin_bottom_center": [
+      144,
+      87
+    ],
+    "alpha_pixel_ratio": 0.398,
+    "extraction": "polygon-guided original pixel conservation",
+    "validation": "CANDIDATO - pode conter parte de piso/parede ou sofrer recorte de objeto",
+    "approved_for_game": false
+  },
+  {
+    "npc": "icaro",
+    "id": "bancada_atendimento_recorte_guiado",
+    "original_id": "bancada_atendimento",
+    "file": "05_MELHORIAS_V3/01_BALCOES_REFINADOS/icaro/bancada_atendimento_recorte_guiado.png",
+    "source_image": "01_LOJAS/icaro/referencia_aprovada.png",
+    "original_bbox": [
+      611,
+      1084,
+      937,
+      1173
+    ],
+    "original_crop_size": [
+      326,
+      142
+    ],
+    "final_size": [
+      326,
+      89
+    ],
+    "origin_bottom_center": [
+      163,
+      89
+    ],
+    "alpha_pixel_ratio": 0.567,
+    "extraction": "polygon-guided original pixel conservation",
+    "validation": "CANDIDATO - pode conter parte de piso/parede ou sofrer recorte de objeto",
+    "approved_for_game": false
+  }
+]

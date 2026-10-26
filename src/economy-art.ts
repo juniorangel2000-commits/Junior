@@ -1,9 +1,11 @@
+import {bentoTexture,preloadBentoSprites} from './bento-sprites';
 import type Phaser from 'phaser';
 import {ECONOMY_ART_ROOT as ROOT,ART_TOOL_IDS,TOOL_MATERIALS,MERCHANT_ART_IDS,NPC_ART_DIRECTIONS,tierToolIcon,mineralTexture} from './data/economy-art';
 import {CHARACTER_DIRECTIONS} from './character-directions';
 
 /** Dedicated art is loaded beside the original assets; none of the supplied art is replaced. */
 export function preloadEconomyArt(scene:Phaser.Scene):void{
+ preloadBentoSprites(scene);
  for(const metal of ['iron','gold','blackMetal'] as const)scene.load.image(mineralTexture(metal),`${ROOT}/deposits/${metal}.png`);
  for(const tool of ART_TOOL_IDS)for(const [tier,material]of TOOL_MATERIALS.entries())scene.load.image(`economy-tool-${material}-${tool}`,tierToolIcon(tool,tier));
  for(const id of ['anvil','tongs'])scene.load.image(`economy-workshop-${id}`,`${ROOT}/workshop/${id}.png`);
@@ -14,6 +16,7 @@ export function preloadEconomyArt(scene:Phaser.Scene):void{
 /** Merchants are stationary. Eight look directions share four authored views,
  * without inventing walk frames or changing the player's authored sprites. */
 export function merchantTexture(scene:Phaser.Scene,id:string):string{
+ if(id==='bento')return bentoTexture(scene);
  const key=`village-npc-${id}`;
  if(scene.textures.exists(key))return key;
  const canvas=document.createElement('canvas');canvas.width=192*8;canvas.height=256;

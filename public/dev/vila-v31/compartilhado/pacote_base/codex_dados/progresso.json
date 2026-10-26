@@ -1,0 +1,90 @@
+{
+  "source": "Pacote v1.0",
+  "version": "2.0 - reconstrução em revisão",
+  "stores": [
+    {
+      "npc": "augusto",
+      "facade": true,
+      "interior": true,
+      "original_contextual_crops": 14,
+      "isolated_candidates": 4,
+      "approved_isolated": 0
+    },
+    {
+      "npc": "bento",
+      "facade": true,
+      "interior": true,
+      "original_contextual_crops": 14,
+      "isolated_candidates": 8,
+      "approved_isolated": 0
+    },
+    {
+      "npc": "amelia",
+      "facade": true,
+      "interior": true,
+      "original_contextual_crops": 13,
+      "isolated_candidates": 5,
+      "approved_isolated": 0
+    },
+    {
+      "npc": "tobias",
+      "facade": true,
+      "interior": true,
+      "original_contextual_crops": 13,
+      "isolated_candidates": 4,
+      "approved_isolated": 0
+    },
+    {
+      "npc": "rosa",
+      "facade": true,
+      "interior": true,
+      "original_contextual_crops": 13,
+      "isolated_candidates": 4,
+      "approved_isolated": 0
+    },
+    {
+      "npc": "nilo",
+      "facade": true,
+      "interior": true,
+      "original_contextual_crops": 13,
+      "isolated_candidates": 4,
+      "approved_isolated": 0
+    },
+    {
+      "npc": "celina",
+      "facade": true,
+      "interior": true,
+      "original_contextual_crops": 13,
+      "isolated_candidates": 4,
+      "approved_isolated": 0
+    },
+    {
+      "npc": "damiao",
+      "facade": true,
+      "interior": true,
+      "original_contextual_crops": 12,
+      "isolated_candidates": 3,
+      "approved_isolated": 0
+    },
+    {
+      "npc": "helena",
+      "facade": true,
+      "interior": true,
+      "original_contextual_crops": 13,
+      "isolated_candidates": 3,
+      "approved_isolated": 0
+    },
+    {
+      "npc": "icaro",
+      "facade": true,
+      "interior": true,
+      "original_contextual_crops": 12,
+      "isolated_candidates": 3,
+      "approved_isolated": 0
+    }
+  ],
+  "native_sprites_ready": 24,
+  "candidate_objects": 42,
+  "approved_rebuilt_sprites": 0,
+  "github_changes": false
+}

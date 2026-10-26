@@ -1,0 +1,1223 @@
+[
+  {
+    "npc": "augusto",
+    "item": "tapete_central",
+    "arquivo": "01_LOJAS/augusto/01_SPRITES_EM_RECONSTRUCAO/tapete_central.png",
+    "original": "01_LOJAS/augusto/00_REFERENCIAS_RECORTES/tapete_central.png",
+    "resolution_px": [
+      238,
+      84
+    ],
+    "source_bbox_xyxy": [
+      442,
+      1035,
+      708,
+      1135
+    ],
+    "offset_from_source_crop_px": [
+      12,
+      8
+    ],
+    "restored_source_coordinate_xy": [
+      454,
+      1043
+    ],
+    "opaque_ratio": 0.656,
+    "method": "poligono_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "augusto",
+    "item": "placa_botanica",
+    "arquivo": "01_LOJAS/augusto/01_SPRITES_EM_RECONSTRUCAO/placa_botanica.png",
+    "original": "01_LOJAS/augusto/00_REFERENCIAS_RECORTES/placa_botanica.png",
+    "resolution_px": [
+      48,
+      55
+    ],
+    "source_bbox_xyxy": [
+      366,
+      795,
+      425,
+      875
+    ],
+    "offset_from_source_crop_px": [
+      4,
+      22
+    ],
+    "restored_source_coordinate_xy": [
+      370,
+      817
+    ],
+    "opaque_ratio": 0.357,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "augusto",
+    "item": "barril_canto",
+    "arquivo": "01_LOJAS/augusto/01_SPRITES_EM_RECONSTRUCAO/barril_canto.png",
+    "original": "01_LOJAS/augusto/00_REFERENCIAS_RECORTES/barril_canto.png",
+    "resolution_px": [
+      51,
+      55
+    ],
+    "source_bbox_xyxy": [
+      732,
+      1118,
+      798,
+      1207
+    ],
+    "offset_from_source_crop_px": [
+      8,
+      23
+    ],
+    "restored_source_coordinate_xy": [
+      740,
+      1141
+    ],
+    "opaque_ratio": 0.268,
+    "method": "poligono_contorno_ajustado_manualmente",
+    "status": "CONTORNO_REVISTO_PENDENTE_TESTE_NO_GAME",
+    "game_ready": false,
+    "notice": "Recorte sem partes relevantes do piso, aprovado visualmente para prototipo; validar bordas ampliadas e sombras no Phaser.",
+    "anchor_validation_required": true
+  },
+  {
+    "npc": "augusto",
+    "item": "enfeite_floral",
+    "arquivo": "01_LOJAS/augusto/01_SPRITES_EM_RECONSTRUCAO/enfeite_floral.png",
+    "original": "01_LOJAS/augusto/00_REFERENCIAS_RECORTES/enfeite_floral.png",
+    "resolution_px": [
+      64,
+      66
+    ],
+    "source_bbox_xyxy": [
+      391,
+      911,
+      461,
+      986
+    ],
+    "offset_from_source_crop_px": [
+      4,
+      2
+    ],
+    "restored_source_coordinate_xy": [
+      395,
+      913
+    ],
+    "opaque_ratio": 0.478,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "bento",
+    "item": "bigorna_e_toco",
+    "arquivo": "01_LOJAS/bento/01_SPRITES_EM_RECONSTRUCAO/bigorna_e_toco.png",
+    "original": "01_LOJAS/bento/00_REFERENCIAS_RECORTES/bigorna_e_toco.png",
+    "resolution_px": [
+      112,
+      132
+    ],
+    "source_bbox_xyxy": [
+      684,
+      1044,
+      802,
+      1189
+    ],
+    "offset_from_source_crop_px": [
+      5,
+      7
+    ],
+    "restored_source_coordinate_xy": [
+      689,
+      1051
+    ],
+    "opaque_ratio": 0.561,
+    "method": "poligono_contorno_ajustado_manualmente",
+    "status": "CONTORNO_REVISTO_PENDENTE_TESTE_NO_GAME",
+    "game_ready": false,
+    "notice": "Recorte sem partes relevantes do piso, aprovado visualmente para prototipo; validar bordas ampliadas e sombras no Phaser.",
+    "anchor_validation_required": true
+  },
+  {
+    "npc": "bento",
+    "item": "tanque_resfriamento",
+    "arquivo": "01_LOJAS/bento/01_SPRITES_EM_RECONSTRUCAO/tanque_resfriamento.png",
+    "original": "01_LOJAS/bento/00_REFERENCIAS_RECORTES/tanque_resfriamento.png",
+    "resolution_px": [
+      95,
+      110
+    ],
+    "source_bbox_xyxy": [
+      575,
+      910,
+      686,
+      1045
+    ],
+    "offset_from_source_crop_px": [
+      8,
+      21
+    ],
+    "restored_source_coordinate_xy": [
+      583,
+      931
+    ],
+    "opaque_ratio": 0.501,
+    "method": "poligono_contorno_ajustado_manualmente",
+    "status": "CONTORNO_REVISTO_PENDENTE_TESTE_NO_GAME",
+    "game_ready": false,
+    "notice": "Recorte sem partes relevantes do piso, aprovado visualmente para prototipo; validar bordas ampliadas e sombras no Phaser.",
+    "anchor_validation_required": true
+  },
+  {
+    "npc": "bento",
+    "item": "cesto_lingotes",
+    "arquivo": "01_LOJAS/bento/01_SPRITES_EM_RECONSTRUCAO/cesto_lingotes.png",
+    "original": "01_LOJAS/bento/00_REFERENCIAS_RECORTES/cesto_lingotes.png",
+    "resolution_px": [
+      72,
+      94
+    ],
+    "source_bbox_xyxy": [
+      177,
+      1097,
+      259,
+      1196
+    ],
+    "offset_from_source_crop_px": [
+      2,
+      3
+    ],
+    "restored_source_coordinate_xy": [
+      179,
+      1100
+    ],
+    "opaque_ratio": 0.614,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "bento",
+    "item": "caixa_minerios",
+    "arquivo": "01_LOJAS/bento/01_SPRITES_EM_RECONSTRUCAO/caixa_minerios.png",
+    "original": "01_LOJAS/bento/00_REFERENCIAS_RECORTES/caixa_minerios.png",
+    "resolution_px": [
+      75,
+      71
+    ],
+    "source_bbox_xyxy": [
+      256,
+      1097,
+      339,
+      1198
+    ],
+    "offset_from_source_crop_px": [
+      0,
+      23
+    ],
+    "restored_source_coordinate_xy": [
+      256,
+      1120
+    ],
+    "opaque_ratio": 0.419,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "bento",
+    "item": "barril_hastes",
+    "arquivo": "01_LOJAS/bento/01_SPRITES_EM_RECONSTRUCAO/barril_hastes.png",
+    "original": "01_LOJAS/bento/00_REFERENCIAS_RECORTES/barril_hastes.png",
+    "resolution_px": [
+      62,
+      123
+    ],
+    "source_bbox_xyxy": [
+      105,
+      1053,
+      175,
+      1205
+    ],
+    "offset_from_source_crop_px": [
+      1,
+      19
+    ],
+    "restored_source_coordinate_xy": [
+      106,
+      1072
+    ],
+    "opaque_ratio": 0.428,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "bento",
+    "item": "tapete_ferraria",
+    "arquivo": "01_LOJAS/bento/01_SPRITES_EM_RECONSTRUCAO/tapete_ferraria.png",
+    "original": "01_LOJAS/bento/00_REFERENCIAS_RECORTES/tapete_ferraria.png",
+    "resolution_px": [
+      115,
+      70
+    ],
+    "source_bbox_xyxy": [
+      404,
+      1129,
+      541,
+      1210
+    ],
+    "offset_from_source_crop_px": [
+      11,
+      7
+    ],
+    "restored_source_coordinate_xy": [
+      415,
+      1136
+    ],
+    "opaque_ratio": 0.595,
+    "method": "poligono_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "bento",
+    "item": "lamparina",
+    "arquivo": "01_LOJAS/bento/01_SPRITES_EM_RECONSTRUCAO/lamparina.png",
+    "original": "01_LOJAS/bento/00_REFERENCIAS_RECORTES/lamparina.png",
+    "resolution_px": [
+      36,
+      47
+    ],
+    "source_bbox_xyxy": [
+      588,
+      758,
+      627,
+      820
+    ],
+    "offset_from_source_crop_px": [
+      0,
+      13
+    ],
+    "restored_source_coordinate_xy": [
+      588,
+      771
+    ],
+    "opaque_ratio": 0.249,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "bento",
+    "item": "banquinho",
+    "arquivo": "01_LOJAS/bento/01_SPRITES_EM_RECONSTRUCAO/banquinho.png",
+    "original": "01_LOJAS/bento/00_REFERENCIAS_RECORTES/banquinho.png",
+    "resolution_px": [
+      51,
+      65
+    ],
+    "source_bbox_xyxy": [
+      634,
+      1118,
+      686,
+      1192
+    ],
+    "offset_from_source_crop_px": [
+      0,
+      4
+    ],
+    "restored_source_coordinate_xy": [
+      634,
+      1122
+    ],
+    "opaque_ratio": 0.57,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "amelia",
+    "item": "almofariz",
+    "arquivo": "01_LOJAS/amelia/01_SPRITES_EM_RECONSTRUCAO/almofariz.png",
+    "original": "01_LOJAS/amelia/00_REFERENCIAS_RECORTES/almofariz.png",
+    "resolution_px": [
+      63,
+      68
+    ],
+    "source_bbox_xyxy": [
+      508,
+      891,
+      585,
+      971
+    ],
+    "offset_from_source_crop_px": [
+      7,
+      6
+    ],
+    "restored_source_coordinate_xy": [
+      515,
+      897
+    ],
+    "opaque_ratio": 0.384,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "amelia",
+    "item": "tapete_folhas",
+    "arquivo": "01_LOJAS/amelia/01_SPRITES_EM_RECONSTRUCAO/tapete_folhas.png",
+    "original": "01_LOJAS/amelia/00_REFERENCIAS_RECORTES/tapete_folhas.png",
+    "resolution_px": [
+      238,
+      89
+    ],
+    "source_bbox_xyxy": [
+      314,
+      1185,
+      586,
+      1282
+    ],
+    "offset_from_source_crop_px": [
+      15,
+      4
+    ],
+    "restored_source_coordinate_xy": [
+      329,
+      1189
+    ],
+    "opaque_ratio": 0.705,
+    "method": "poligono_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "amelia",
+    "item": "cesto_cogumelos",
+    "arquivo": "01_LOJAS/amelia/01_SPRITES_EM_RECONSTRUCAO/cesto_cogumelos.png",
+    "original": "01_LOJAS/amelia/00_REFERENCIAS_RECORTES/cesto_cogumelos.png",
+    "resolution_px": [
+      69,
+      46
+    ],
+    "source_bbox_xyxy": [
+      185,
+      1011,
+      284,
+      1061
+    ],
+    "offset_from_source_crop_px": [
+      10,
+      2
+    ],
+    "restored_source_coordinate_xy": [
+      195,
+      1013
+    ],
+    "opaque_ratio": 0.378,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "amelia",
+    "item": "planta_grande",
+    "arquivo": "01_LOJAS/amelia/01_SPRITES_EM_RECONSTRUCAO/planta_grande.png",
+    "original": "01_LOJAS/amelia/00_REFERENCIAS_RECORTES/planta_grande.png",
+    "resolution_px": [
+      82,
+      116
+    ],
+    "source_bbox_xyxy": [
+      85,
+      982,
+      175,
+      1127
+    ],
+    "offset_from_source_crop_px": [
+      1,
+      26
+    ],
+    "restored_source_coordinate_xy": [
+      86,
+      1008
+    ],
+    "opaque_ratio": 0.445,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "amelia",
+    "item": "mudas_caixotes",
+    "arquivo": "01_LOJAS/amelia/01_SPRITES_EM_RECONSTRUCAO/mudas_caixotes.png",
+    "original": "01_LOJAS/amelia/00_REFERENCIAS_RECORTES/mudas_caixotes.png",
+    "resolution_px": [
+      121,
+      91
+    ],
+    "source_bbox_xyxy": [
+      687,
+      1150,
+      831,
+      1262
+    ],
+    "offset_from_source_crop_px": [
+      15,
+      8
+    ],
+    "restored_source_coordinate_xy": [
+      702,
+      1158
+    ],
+    "opaque_ratio": 0.442,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "tobias",
+    "item": "toras_empilhadas",
+    "arquivo": "01_LOJAS/tobias/01_SPRITES_EM_RECONSTRUCAO/toras_empilhadas.png",
+    "original": "01_LOJAS/tobias/00_REFERENCIAS_RECORTES/toras_empilhadas.png",
+    "resolution_px": [
+      102,
+      122
+    ],
+    "source_bbox_xyxy": [
+      962,
+      1032,
+      1096,
+      1169
+    ],
+    "offset_from_source_crop_px": [
+      8,
+      7
+    ],
+    "restored_source_coordinate_xy": [
+      970,
+      1039
+    ],
+    "opaque_ratio": 0.403,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "tobias",
+    "item": "barril_rolos",
+    "arquivo": "01_LOJAS/tobias/01_SPRITES_EM_RECONSTRUCAO/barril_rolos.png",
+    "original": "01_LOJAS/tobias/00_REFERENCIAS_RECORTES/barril_rolos.png",
+    "resolution_px": [
+      59,
+      99
+    ],
+    "source_bbox_xyxy": [
+      564,
+      861,
+      645,
+      968
+    ],
+    "offset_from_source_crop_px": [
+      11,
+      6
+    ],
+    "restored_source_coordinate_xy": [
+      575,
+      867
+    ],
+    "opaque_ratio": 0.354,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "tobias",
+    "item": "tapete_verde",
+    "arquivo": "01_LOJAS/tobias/01_SPRITES_EM_RECONSTRUCAO/tapete_verde.png",
+    "original": "01_LOJAS/tobias/00_REFERENCIAS_RECORTES/tapete_verde.png",
+    "resolution_px": [
+      267,
+      144
+    ],
+    "source_bbox_xyxy": [
+      297,
+      1019,
+      623,
+      1195
+    ],
+    "offset_from_source_crop_px": [
+      35,
+      19
+    ],
+    "restored_source_coordinate_xy": [
+      332,
+      1038
+    ],
+    "opaque_ratio": 0.613,
+    "method": "poligono_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "tobias",
+    "item": "banquinho",
+    "arquivo": "01_LOJAS/tobias/01_SPRITES_EM_RECONSTRUCAO/banquinho.png",
+    "original": "01_LOJAS/tobias/00_REFERENCIAS_RECORTES/banquinho.png",
+    "resolution_px": [
+      24,
+      51
+    ],
+    "source_bbox_xyxy": [
+      715,
+      909,
+      772,
+      981
+    ],
+    "offset_from_source_crop_px": [
+      17,
+      3
+    ],
+    "restored_source_coordinate_xy": [
+      732,
+      912
+    ],
+    "opaque_ratio": 0.134,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "rosa",
+    "item": "sacos_adubo",
+    "arquivo": "01_LOJAS/rosa/01_SPRITES_EM_RECONSTRUCAO/sacos_adubo.png",
+    "original": "01_LOJAS/rosa/00_REFERENCIAS_RECORTES/sacos_adubo.png",
+    "resolution_px": [
+      124,
+      92
+    ],
+    "source_bbox_xyxy": [
+      189,
+      945,
+      331,
+      1050
+    ],
+    "offset_from_source_crop_px": [
+      7,
+      6
+    ],
+    "restored_source_coordinate_xy": [
+      196,
+      951
+    ],
+    "opaque_ratio": 0.42,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "rosa",
+    "item": "tapete_verde",
+    "arquivo": "01_LOJAS/rosa/01_SPRITES_EM_RECONSTRUCAO/tapete_verde.png",
+    "original": "01_LOJAS/rosa/00_REFERENCIAS_RECORTES/tapete_verde.png",
+    "resolution_px": [
+      211,
+      88
+    ],
+    "source_bbox_xyxy": [
+      438,
+      1134,
+      670,
+      1247
+    ],
+    "offset_from_source_crop_px": [
+      12,
+      16
+    ],
+    "restored_source_coordinate_xy": [
+      450,
+      1150
+    ],
+    "opaque_ratio": 0.618,
+    "method": "poligono_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "rosa",
+    "item": "vaso_flores",
+    "arquivo": "01_LOJAS/rosa/01_SPRITES_EM_RECONSTRUCAO/vaso_flores.png",
+    "original": "01_LOJAS/rosa/00_REFERENCIAS_RECORTES/vaso_flores.png",
+    "resolution_px": [
+      56,
+      66
+    ],
+    "source_bbox_xyxy": [
+      651,
+      985,
+      716,
+      1063
+    ],
+    "offset_from_source_crop_px": [
+      4,
+      3
+    ],
+    "restored_source_coordinate_xy": [
+      655,
+      988
+    ],
+    "opaque_ratio": 0.428,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "rosa",
+    "item": "caixa_aboboras",
+    "arquivo": "01_LOJAS/rosa/01_SPRITES_EM_RECONSTRUCAO/caixa_aboboras.png",
+    "original": "01_LOJAS/rosa/00_REFERENCIAS_RECORTES/caixa_aboboras.png",
+    "resolution_px": [
+      92,
+      98
+    ],
+    "source_bbox_xyxy": [
+      807,
+      981,
+      913,
+      1087
+    ],
+    "offset_from_source_crop_px": [
+      3,
+      4
+    ],
+    "restored_source_coordinate_xy": [
+      810,
+      985
+    ],
+    "opaque_ratio": 0.525,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "nilo",
+    "item": "estatua_direita",
+    "arquivo": "01_LOJAS/nilo/01_SPRITES_EM_RECONSTRUCAO/estatua_direita.png",
+    "original": "01_LOJAS/nilo/00_REFERENCIAS_RECORTES/estatua_direita.png",
+    "resolution_px": [
+      63,
+      133
+    ],
+    "source_bbox_xyxy": [
+      996,
+      837,
+      1082,
+      1049
+    ],
+    "offset_from_source_crop_px": [
+      7,
+      21
+    ],
+    "restored_source_coordinate_xy": [
+      1003,
+      858
+    ],
+    "opaque_ratio": 0.258,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "nilo",
+    "item": "busto_esquerda",
+    "arquivo": "01_LOJAS/nilo/01_SPRITES_EM_RECONSTRUCAO/busto_esquerda.png",
+    "original": "01_LOJAS/nilo/00_REFERENCIAS_RECORTES/busto_esquerda.png",
+    "resolution_px": [
+      57,
+      79
+    ],
+    "source_bbox_xyxy": [
+      167,
+      800,
+      256,
+      884
+    ],
+    "offset_from_source_crop_px": [
+      17,
+      4
+    ],
+    "restored_source_coordinate_xy": [
+      184,
+      804
+    ],
+    "opaque_ratio": 0.359,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "nilo",
+    "item": "tapete_persa",
+    "arquivo": "01_LOJAS/nilo/01_SPRITES_EM_RECONSTRUCAO/tapete_persa.png",
+    "original": "01_LOJAS/nilo/00_REFERENCIAS_RECORTES/tapete_persa.png",
+    "resolution_px": [
+      313,
+      163
+    ],
+    "source_bbox_xyxy": [
+      412,
+      1008,
+      762,
+      1200
+    ],
+    "offset_from_source_crop_px": [
+      21,
+      19
+    ],
+    "restored_source_coordinate_xy": [
+      433,
+      1027
+    ],
+    "opaque_ratio": 0.703,
+    "method": "poligono_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "nilo",
+    "item": "globo_terrestre",
+    "arquivo": "01_LOJAS/nilo/01_SPRITES_EM_RECONSTRUCAO/globo_terrestre.png",
+    "original": "01_LOJAS/nilo/00_REFERENCIAS_RECORTES/globo_terrestre.png",
+    "resolution_px": [
+      70,
+      88
+    ],
+    "source_bbox_xyxy": [
+      402,
+      762,
+      482,
+      865
+    ],
+    "offset_from_source_crop_px": [
+      3,
+      12
+    ],
+    "restored_source_coordinate_xy": [
+      405,
+      774
+    ],
+    "opaque_ratio": 0.453,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "celina",
+    "item": "espelho_oval",
+    "arquivo": "01_LOJAS/celina/01_SPRITES_EM_RECONSTRUCAO/espelho_oval.png",
+    "original": "01_LOJAS/celina/00_REFERENCIAS_RECORTES/espelho_oval.png",
+    "resolution_px": [
+      54,
+      141
+    ],
+    "source_bbox_xyxy": [
+      956,
+      902,
+      1041,
+      1054
+    ],
+    "offset_from_source_crop_px": [
+      14,
+      6
+    ],
+    "restored_source_coordinate_xy": [
+      970,
+      908
+    ],
+    "opaque_ratio": 0.366,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "celina",
+    "item": "tapete_redondo",
+    "arquivo": "01_LOJAS/celina/01_SPRITES_EM_RECONSTRUCAO/tapete_redondo.png",
+    "original": "01_LOJAS/celina/00_REFERENCIAS_RECORTES/tapete_redondo.png",
+    "resolution_px": [
+      229,
+      167
+    ],
+    "source_bbox_xyxy": [
+      172,
+      1018,
+      443,
+      1202
+    ],
+    "offset_from_source_crop_px": [
+      20,
+      9
+    ],
+    "restored_source_coordinate_xy": [
+      192,
+      1027
+    ],
+    "opaque_ratio": 0.553,
+    "method": "poligono_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "celina",
+    "item": "cadeira_costura",
+    "arquivo": "01_LOJAS/celina/01_SPRITES_EM_RECONSTRUCAO/cadeira_costura.png",
+    "original": "01_LOJAS/celina/00_REFERENCIAS_RECORTES/cadeira_costura.png",
+    "resolution_px": [
+      76,
+      75
+    ],
+    "source_bbox_xyxy": [
+      225,
+      1106,
+      319,
+      1192
+    ],
+    "offset_from_source_crop_px": [
+      6,
+      8
+    ],
+    "restored_source_coordinate_xy": [
+      231,
+      1114
+    ],
+    "opaque_ratio": 0.474,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "celina",
+    "item": "tesouras_na_parede",
+    "arquivo": "01_LOJAS/celina/01_SPRITES_EM_RECONSTRUCAO/tesouras_na_parede.png",
+    "original": "01_LOJAS/celina/00_REFERENCIAS_RECORTES/tesouras_na_parede.png",
+    "resolution_px": [
+      44,
+      60
+    ],
+    "source_bbox_xyxy": [
+      734,
+      831,
+      787,
+      897
+    ],
+    "offset_from_source_crop_px": [
+      1,
+      3
+    ],
+    "restored_source_coordinate_xy": [
+      735,
+      834
+    ],
+    "opaque_ratio": 0.417,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "damiao",
+    "item": "varas_pesca",
+    "arquivo": "01_LOJAS/damiao/01_SPRITES_EM_RECONSTRUCAO/varas_pesca.png",
+    "original": "01_LOJAS/damiao/00_REFERENCIAS_RECORTES/varas_pesca.png",
+    "resolution_px": [
+      51,
+      100
+    ],
+    "source_bbox_xyxy": [
+      296,
+      794,
+      399,
+      1011
+    ],
+    "offset_from_source_crop_px": [
+      28,
+      65
+    ],
+    "restored_source_coordinate_xy": [
+      324,
+      859
+    ],
+    "opaque_ratio": 0.146,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "damiao",
+    "item": "tapete_azul",
+    "arquivo": "01_LOJAS/damiao/01_SPRITES_EM_RECONSTRUCAO/tapete_azul.png",
+    "original": "01_LOJAS/damiao/00_REFERENCIAS_RECORTES/tapete_azul.png",
+    "resolution_px": [
+      202,
+      80
+    ],
+    "source_bbox_xyxy": [
+      413,
+      1126,
+      648,
+      1221
+    ],
+    "offset_from_source_crop_px": [
+      17,
+      8
+    ],
+    "restored_source_coordinate_xy": [
+      430,
+      1134
+    ],
+    "opaque_ratio": 0.624,
+    "method": "poligono_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "damiao",
+    "item": "corda_enrolada",
+    "arquivo": "01_LOJAS/damiao/01_SPRITES_EM_RECONSTRUCAO/corda_enrolada.png",
+    "original": "01_LOJAS/damiao/00_REFERENCIAS_RECORTES/corda_enrolada.png",
+    "resolution_px": [
+      67,
+      99
+    ],
+    "source_bbox_xyxy": [
+      726,
+      791,
+      809,
+      927
+    ],
+    "offset_from_source_crop_px": [
+      9,
+      15
+    ],
+    "restored_source_coordinate_xy": [
+      735,
+      806
+    ],
+    "opaque_ratio": 0.381,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "helena",
+    "item": "barris_bebidas",
+    "arquivo": "01_LOJAS/helena/01_SPRITES_EM_RECONSTRUCAO/barris_bebidas.png",
+    "original": "01_LOJAS/helena/00_REFERENCIAS_RECORTES/barris_bebidas.png",
+    "resolution_px": [
+      95,
+      91
+    ],
+    "source_bbox_xyxy": [
+      645,
+      735,
+      776,
+      888
+    ],
+    "offset_from_source_crop_px": [
+      21,
+      26
+    ],
+    "restored_source_coordinate_xy": [
+      666,
+      761
+    ],
+    "opaque_ratio": 0.255,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "helena",
+    "item": "tapete_vermelho",
+    "arquivo": "01_LOJAS/helena/01_SPRITES_EM_RECONSTRUCAO/tapete_vermelho.png",
+    "original": "01_LOJAS/helena/00_REFERENCIAS_RECORTES/tapete_vermelho.png",
+    "resolution_px": [
+      218,
+      168
+    ],
+    "source_bbox_xyxy": [
+      426,
+      996,
+      675,
+      1187
+    ],
+    "offset_from_source_crop_px": [
+      16,
+      13
+    ],
+    "restored_source_coordinate_xy": [
+      442,
+      1009
+    ],
+    "opaque_ratio": 0.706,
+    "method": "poligono_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "helena",
+    "item": "plantas_canto",
+    "arquivo": "01_LOJAS/helena/01_SPRITES_EM_RECONSTRUCAO/plantas_canto.png",
+    "original": "01_LOJAS/helena/00_REFERENCIAS_RECORTES/plantas_canto.png",
+    "resolution_px": [
+      56,
+      98
+    ],
+    "source_bbox_xyxy": [
+      721,
+      1001,
+      810,
+      1159
+    ],
+    "offset_from_source_crop_px": [
+      13,
+      7
+    ],
+    "restored_source_coordinate_xy": [
+      734,
+      1008
+    ],
+    "opaque_ratio": 0.268,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "icaro",
+    "item": "barril_azul",
+    "arquivo": "01_LOJAS/icaro/01_SPRITES_EM_RECONSTRUCAO/barril_azul.png",
+    "original": "01_LOJAS/icaro/00_REFERENCIAS_RECORTES/barril_azul.png",
+    "resolution_px": [
+      60,
+      102
+    ],
+    "source_bbox_xyxy": [
+      106,
+      1092,
+      171,
+      1200
+    ],
+    "offset_from_source_crop_px": [
+      4,
+      2
+    ],
+    "restored_source_coordinate_xy": [
+      110,
+      1094
+    ],
+    "opaque_ratio": 0.542,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "icaro",
+    "item": "tapete_vermelho",
+    "arquivo": "01_LOJAS/icaro/01_SPRITES_EM_RECONSTRUCAO/tapete_vermelho.png",
+    "original": "01_LOJAS/icaro/00_REFERENCIAS_RECORTES/tapete_vermelho.png",
+    "resolution_px": [
+      104,
+      83
+    ],
+    "source_bbox_xyxy": [
+      500,
+      1102,
+      622,
+      1206
+    ],
+    "offset_from_source_crop_px": [
+      8,
+      14
+    ],
+    "restored_source_coordinate_xy": [
+      508,
+      1116
+    ],
+    "opaque_ratio": 0.565,
+    "method": "poligono_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  },
+  {
+    "npc": "icaro",
+    "item": "peças_engrenagens",
+    "arquivo": "01_LOJAS/icaro/01_SPRITES_EM_RECONSTRUCAO/peças_engrenagens.png",
+    "original": "01_LOJAS/icaro/00_REFERENCIAS_RECORTES/peças_engrenagens.png",
+    "resolution_px": [
+      84,
+      67
+    ],
+    "source_bbox_xyxy": [
+      390,
+      938,
+      520,
+      1035
+    ],
+    "offset_from_source_crop_px": [
+      9,
+      11
+    ],
+    "restored_source_coordinate_xy": [
+      399,
+      949
+    ],
+    "opaque_ratio": 0.256,
+    "method": "grabcut_guiado",
+    "status": "CANDIDATO_EM_REVISAO_MANUAL",
+    "game_ready": false,
+    "notice": "Remocao parcial de fundo por segmentacao; bordas e partes ocultas ainda requerem verificacao pixel a pixel."
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "reference": "bento/originais/interior.png",
+  "coordinateSystem": "reference pixels; world = reference * 0.5 + 24",
+  "canonical": [
+    {"id":"fornalha_completa","box":[652,39,801,301],"fit":"bounds","note":"Chaminé junto à parede de fundo, como na referência."},
+    {"id":"mesa_atendimento","newSource":"balcao_referencia","box":[242,217,466,327],"fit":"bounds","note":"Balcão com tampo profundo e dois painéis frontais, sem gavetas; lateral unida ao expositor baixo."},
+    {"id":"prateleira_ferramentas","box":[150,198,257,355]},
+    {"id":"estante_metal","box":[898,132,1003,260]},
+    {"id":"cesto_lingotes","box":[154,356,228,416]},
+    {"id":"caixa_minerios","box":[228,414,310,482]},
+    {"id":"porta_ferramentas","box":[925,380,997,452],"supportId":"bancada_ferraria"},
+    {"id":"martelos_parede","sceneVisible":false,"note":"Variante anterior preservada no catálogo; suporte longo é mais fiel a esta composição."}
+  ],
+  "additions": [
+    {"id":"expositor_alto_ferramentas","name":"Expositor alto de ferramentas","source":"expositor_alto_ferramentas","box":[84,103,181,354],"referenceRole":"expositor esquerdo"},
+    {"id":"caixa_ferramentas","name":"Caixa de ferramentas","source":"caixa_ferramentas","box":[94,77,146,109],"supportId":"expositor_alto_ferramentas","referenceRole":"caixa sobre o expositor"},
+    {"id":"folha_encomendas","name":"Folha de encomendas","source":"folha_encomendas","box":[334,232,362,264],"supportId":"mesa_atendimento","referenceRole":"papel sobre o balcão"},
+    {"id":"vaso_flores_brancas","name":"Vaso de flores brancas","source":"vaso_flores_brancas","box":[403,192,447,250],"supportId":"mesa_atendimento","referenceRole":"flores sobre o balcão"},
+    {"id":"lampiao_balcao","name":"Lampião de balcão","source":"lampiao_balcao","box":[383,219,407,265],"supportId":"mesa_atendimento","referenceRole":"luminária do balcão"},
+    {"id":"escudo_parede","name":"Escudo redondo de parede","source":"escudo_parede","box":[430,87,470,127],"mounted":true,"supportId":"armario_pecas_loja","referenceRole":"escudo acima do armário"},
+    {"id":"suporte_ferramentas_longas","name":"Suporte de ferramentas longas","source":"suporte_ferramentas_longas","box":[303,84,375,203],"fit":"bounds","mounted":true,"referenceRole":"tenazes na parede da loja"},
+    {"id":"caixa_carvao_madeira","name":"Caixa de carvão de madeira","source":"caixa_carvao_madeira","box":[153,414,227,482],"referenceRole":"carvão sob os lingotes"},
+    {"id":"armario_carvao_ferro","name":"Armário de carvão e ferro","source":"armario_carvao_ferro","box":[832,146,904,276],"fit":"bounds","referenceRole":"depósito à direita da fornalha"},
+    {"id":"bancada_ferraria","name":"Bancada de trabalho da ferraria","source":"bancada_ferraria","box":[918,328,1008,468],"fit":"bounds","referenceRole":"bancada da direita"},
+    {"id":"balde_tenazes","name":"Balde com tenazes","source":"balde_tenazes","box":[774,264,814,334],"referenceRole":"balde ao lado da fornalha"},
+    {"id":"toco_martelo","name":"Toco auxiliar com martelo","source":"toco_martelo","box":[770,352,810,426],"referenceRole":"toco ao lado da bigorna"},
+    {"id":"armario_pecas_loja","name":"Armário de peças da loja","existing":"village/blacksmith-parts-shelf.png","box":[380,118,476,206],"mounted":true,"referenceRole":"armário atrás do balcão"},
+    {"id":"pedra_amolar","name":"Pedra de amolar","existing":"village/blacksmith-grindstone.png","box":[917,250,985,332],"referenceRole":"roda de afiação"},
+    {"id":"carvao_metal_frente","name":"Recipiente de carvão de metal","existing":"village/blacksmith-coal-bin.png","box":[856,412,924,480],"referenceRole":"carvão no chão da oficina"},
+    {"id":"painel_ferro_direita","name":"Painel de ferramentas da oficina","existing":"village/blacksmith-tool-rack.png","box":[842,55,974,141],"mounted":true,"referenceRole":"ferramentas na parede da direita"},
+    {"id":"painel_ferro_fornalha","name":"Ferramentas junto à fornalha","existing":"village/blacksmith-tool-rack.png","box":[560,155,650,215],"mounted":true,"referenceRole":"ferramentas abaixo do lampião"},
+    {"id":"lamparina_loja","name":"Lamparina da loja","canonicalSource":"lamparina","box":[378,72,414,128],"mounted":true,"supportId":"armario_pecas_loja","referenceRole":"lamparina acima do armário"}
+  ],
+  "wallAnchors": [
+    {"id":"expositor_alto_ferramentas","edge":"left","value":55},
+    {"id":"barril_hastes","edge":"left","value":59},
+    {"id":"estante_metal","edge":"right","value":531},
+    {"id":"bancada_ferraria","edge":"right","value":534},
+    {"id":"pedra_amolar","edge":"right","value":529},
+    {"id":"armario_pecas_loja","edge":"bottom","value":114.5}
+  ],
+  "assemblyOffsets": [
+    {"id":"mesa_atendimento","dx":0,"dy":-5},
+    {"id":"prateleira_ferramentas","dx":-5.5,"dy":0},
+    {"id":"fornalha_completa","dx":0,"dy":-4},
+    {"id":"balde_tenazes","dx":0,"dy":-4}
+  ],
+  "clearanceAdjustments": [
+    {"id":"caixa_ferramentas","dx":6,"dy":0},
+    {"id":"escudo_parede","dx":0,"dy":5},
+    {"id":"lamparina_loja","dx":0,"dy":5}
+  ],
+  "sideWallOcclusion": [
+    {"x":0,"y":0,"width":60,"height":352},
+    {"x":527,"y":0,"width":49,"height":352}
+  ],
+  "floorTransitions": [
+    {"id":"soleira_pisos","name":"Soleira desgastada entre madeira e pedra","source":"soleira_pisos","position":{"x":289.5,"y":275},"visibleWidth":11,"visibleHeight":156,"depth":-820,"collision":null}
+  ]
+}

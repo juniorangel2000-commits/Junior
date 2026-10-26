@@ -50,9 +50,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Gerar o executável portátil
-        env:
-          VITE_DEVELOPMENT_TOOLS: '0'
-        run: npm run desktop:win -- --publish never
+        shell: pwsh
+        run: |
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          $env:VITE_DEVELOPMENT_TOOLS = if ($version.Contains('-')) { '1' } else { '0' }
+          npm run desktop:win -- --publish never
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Calcular a verificação de integridade
         shell: pwsh
@@ -88,7 +91,7 @@ jobs:
           $tag = "v$version"
           $previewFlag = if ($version.Contains('-')) { '--prerelease' } else { '--prerelease=false' }
           $latestFlag = if ($version.Contains('-')) { '--latest=false' } else { '--latest' }
-          gh release create $tag --draft $previewFlag --target $env:RELEASE_COMMIT --repo $env:RELEASE_REPOSITORY --title "After Rain $tag — vila e Economia 6.0 (Windows x64)" --notes-file "docs/cenarios/NOTAS-$version.md"
+          gh release create $tag --draft $previewFlag --target $env:RELEASE_COMMIT --repo $env:RELEASE_REPOSITORY --title "After Rain $tag — ferraria e vila (Windows x64)" --notes-file "docs/cenarios/NOTAS-$version.md"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $assets = @((Get-ChildItem release/*.exe).FullName) + @('release/SHA256SUMS.txt', 'release/LEIA.md')
           gh release upload $tag @assets --repo $env:RELEASE_REPOSITORY

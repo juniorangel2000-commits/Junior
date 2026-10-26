@@ -1,0 +1,1593 @@
+{
+  "npc": "bento",
+  "objects": [
+    {
+      "id": "fornalha_completa",
+      "name": "Fornalha completa",
+      "status": "incompleto",
+      "gameReady": false,
+      "original": "bento/originais/recortes_referencia/fornalha_completa.png",
+      "before": "bento/originais/recortes_referencia/fornalha_completa.png",
+      "sourcePosition": {
+        "x": 652,
+        "y": 39,
+        "width": 149,
+        "height": 268,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "sourceReferenceBBox": [
+        682,
+        758,
+        831,
+        1026
+      ],
+      "hiddenSurfaceReconstructed": false,
+      "interaction": null,
+      "scale": 0.5,
+      "file": null,
+      "reason": "Recorte contextual corta partes do capuz/chaminé e inclui piso, parede e objetos vizinhos. Requer separação arquitetônica e reconstrução revisada."
+    },
+    {
+      "id": "bigorna_e_toco",
+      "name": "Bigorna e toco",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "original": "bento/originais/recortes_referencia/bigorna_e_toco.png",
+      "before": "bento/originais/sprites_alpha_limpo/bigorna_e_toco.png",
+      "sourcePosition": {
+        "x": 654,
+        "y": 325,
+        "width": 118,
+        "height": 145,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "sourceReferenceBBox": [
+        684,
+        1044,
+        802,
+        1189
+      ],
+      "hiddenSurfaceReconstructed": false,
+      "interaction": "trabalhar_metal",
+      "scale": 0.5,
+      "file": "bento/em_revisao/bigorna_e_toco.png",
+      "width": 144,
+      "height": 150,
+      "origin": {
+        "x": 0.5,
+        "y": 0.9466666666666667
+      },
+      "originPx": {
+        "x": 72.0,
+        "y": 142
+      },
+      "sourceBBox": [
+        650,
+        331,
+        778,
+        465
+      ],
+      "sourceOffsetPx": {
+        "x": -8,
+        "y": -8
+      },
+      "recommendedPosition": {
+        "x": 381.0,
+        "y": 256.5
+      },
+      "depth": {
+        "mode": "feet",
+        "offset": 0,
+        "layer": "objects"
+      },
+      "collision": {
+        "x": 31.04,
+        "y": 109.84,
+        "width": 81.92,
+        "height": 26.8
+      },
+      "reason": "Piso removido e RGB recuperado; contorno da ponta da bigorna e encontro do toco com o martelo adjacente exigem revisão artística em zoom.",
+      "padding": 8,
+      "alphaBBox": [
+        20,
+        16,
+        128,
+        138
+      ],
+      "opaquePixels": 10746,
+      "restoredAlphaPixels": 0,
+      "originalRGBMismatches": 0,
+      "sha256": "98dbca314616e14c44446f37b5aef55318d6489e8edc2415f0737e99143e400a",
+      "repair": "manual_foreground_polygon_and_original_RGB_alpha_recovery",
+      "maskPolygon": [
+        [
+          12,
+          13
+        ],
+        [
+          46,
+          10
+        ],
+        [
+          47,
+          8
+        ],
+        [
+          89,
+          8
+        ],
+        [
+          91,
+          11
+        ],
+        [
+          112,
+          17
+        ],
+        [
+          119,
+          21
+        ],
+        [
+          119,
+          31
+        ],
+        [
+          115,
+          35
+        ],
+        [
+          107,
+          40
+        ],
+        [
+          111,
+          50
+        ],
+        [
+          112,
+          72
+        ],
+        [
+          111,
+          105
+        ],
+        [
+          107,
+          114
+        ],
+        [
+          98,
+          120
+        ],
+        [
+          80,
+          128
+        ],
+        [
+          56,
+          129
+        ],
+        [
+          37,
+          124
+        ],
+        [
+          22,
+          116
+        ],
+        [
+          17,
+          109
+        ],
+        [
+          16,
+          88
+        ],
+        [
+          17,
+          60
+        ],
+        [
+          22,
+          49
+        ],
+        [
+          29,
+          42
+        ],
+        [
+          35,
+          40
+        ],
+        [
+          24,
+          35
+        ],
+        [
+          19,
+          30
+        ],
+        [
+          13,
+          23
+        ]
+      ]
+    },
+    {
+      "id": "tanque_resfriamento",
+      "name": "Tanque resfriamento",
+      "status": "aprovado",
+      "gameReady": true,
+      "original": "bento/originais/recortes_referencia/tanque_resfriamento.png",
+      "before": "bento/originais/sprites_alpha_limpo/tanque_resfriamento.png",
+      "sourcePosition": {
+        "x": 545,
+        "y": 191,
+        "width": 111,
+        "height": 135,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "sourceReferenceBBox": [
+        575,
+        910,
+        686,
+        1045
+      ],
+      "hiddenSurfaceReconstructed": false,
+      "interaction": "resfriar",
+      "scale": 0.5,
+      "file": "bento/aprovados/tanque_resfriamento.png",
+      "width": 121,
+      "height": 144,
+      "origin": {
+        "x": 0.5,
+        "y": 0.9444444444444444
+      },
+      "originPx": {
+        "x": 60.5,
+        "y": 136
+      },
+      "sourceBBox": [
+        548,
+        202,
+        653,
+        330
+      ],
+      "sourceOffsetPx": {
+        "x": -8,
+        "y": -8
+      },
+      "recommendedPosition": {
+        "x": 324.25,
+        "y": 189.0
+      },
+      "depth": {
+        "mode": "feet",
+        "offset": 0,
+        "layer": "objects"
+      },
+      "collision": {
+        "x": 26.9,
+        "y": 105.28,
+        "width": 67.2,
+        "height": 25.6
+      },
+      "reason": "Contorno frontal completo recuperado da referência maior; aro e base preservados, sem piso anexado.",
+      "padding": 8,
+      "alphaBBox": [
+        15,
+        22,
+        105,
+        133
+      ],
+      "opaquePixels": 8647,
+      "restoredAlphaPixels": 0,
+      "originalRGBMismatches": 0,
+      "sha256": "62c40335442690852dd8d6ed78f2e94f2bfbac3678ec33b43f00cf53f0f001d7",
+      "repair": "manual_foreground_polygon_and_original_RGB_alpha_recovery",
+      "maskPolygon": [
+        [
+          42,
+          14
+        ],
+        [
+          64,
+          14
+        ],
+        [
+          77,
+          19
+        ],
+        [
+          87,
+          27
+        ],
+        [
+          93,
+          37
+        ],
+        [
+          96,
+          48
+        ],
+        [
+          95,
+          79
+        ],
+        [
+          94,
+          96
+        ],
+        [
+          89,
+          110
+        ],
+        [
+          79,
+          118
+        ],
+        [
+          63,
+          123
+        ],
+        [
+          42,
+          124
+        ],
+        [
+          25,
+          120
+        ],
+        [
+          14,
+          112
+        ],
+        [
+          9,
+          102
+        ],
+        [
+          7,
+          85
+        ],
+        [
+          7,
+          42
+        ],
+        [
+          10,
+          32
+        ],
+        [
+          18,
+          25
+        ],
+        [
+          29,
+          19
+        ]
+      ]
+    },
+    {
+      "id": "mesa_atendimento",
+      "name": "Mesa atendimento",
+      "status": "incompleto",
+      "gameReady": false,
+      "original": "bento/originais/recortes_referencia/mesa_atendimento.png",
+      "before": "bento/originais/recortes_referencia/mesa_atendimento.png",
+      "sourcePosition": {
+        "x": 262,
+        "y": 174,
+        "width": 204,
+        "height": 181,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "sourceReferenceBBox": [
+        292,
+        893,
+        496,
+        1074
+      ],
+      "hiddenSurfaceReconstructed": false,
+      "interaction": null,
+      "scale": 0.5,
+      "file": null,
+      "reason": "Balcão com decoração fundida e frente cortada no candidato; tampo sob os objetos está oculto. Não há reconstrução exata aprovada."
+    },
+    {
+      "id": "prateleira_ferramentas",
+      "name": "Prateleira ferramentas",
+      "status": "incompleto",
+      "gameReady": false,
+      "original": "bento/originais/recortes_referencia/prateleira_ferramentas.png",
+      "before": "bento/originais/recortes_referencia/prateleira_ferramentas.png",
+      "sourcePosition": {
+        "x": 80,
+        "y": 75,
+        "width": 196,
+        "height": 269,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "sourceReferenceBBox": [
+        110,
+        794,
+        306,
+        1063
+      ],
+      "hiddenSurfaceReconstructed": false,
+      "interaction": null,
+      "scale": 0.5,
+      "file": null,
+      "reason": "Composição de duas estantes, painel de ferramentas e janela; partes ocultas não podem ser tratadas como sprite único acabado."
+    },
+    {
+      "id": "estante_metal",
+      "name": "Estante metal",
+      "status": "incompleto",
+      "gameReady": false,
+      "original": "bento/originais/recortes_referencia/estante_metal.png",
+      "before": "bento/originais/recortes_referencia/estante_metal.png",
+      "sourcePosition": {
+        "x": 830,
+        "y": 67,
+        "width": 182,
+        "height": 209,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "sourceReferenceBBox": [
+        860,
+        786,
+        1042,
+        995
+      ],
+      "hiddenSurfaceReconstructed": false,
+      "interaction": null,
+      "scale": 0.5,
+      "file": null,
+      "reason": "Recorte contém ferramentas de parede e partes de outras estações; base não está integralmente separada."
+    },
+    {
+      "id": "cesto_lingotes",
+      "name": "Cesto lingotes",
+      "status": "incompleto",
+      "gameReady": false,
+      "original": "bento/originais/recortes_referencia/cesto_lingotes.png",
+      "before": "bento/originais/sprites_alpha_limpo/cesto_lingotes.png",
+      "sourcePosition": {
+        "x": 147,
+        "y": 378,
+        "width": 82,
+        "height": 99,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "sourceReferenceBBox": [
+        177,
+        1097,
+        259,
+        1196
+      ],
+      "hiddenSurfaceReconstructed": false,
+      "interaction": null,
+      "scale": 0.5,
+      "file": null,
+      "reason": "O recorte é um módulo composto com carvão e lingotes; base cortada e nome comercial impreciso."
+    },
+    {
+      "id": "caixa_minerios",
+      "name": "Caixa minerios",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "original": "bento/originais/recortes_referencia/caixa_minerios.png",
+      "before": "bento/originais/sprites_alpha_limpo/caixa_minerios.png",
+      "sourcePosition": {
+        "x": 226,
+        "y": 378,
+        "width": 83,
+        "height": 101,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "sourceReferenceBBox": [
+        256,
+        1097,
+        339,
+        1198
+      ],
+      "hiddenSurfaceReconstructed": false,
+      "interaction": "minerios",
+      "scale": 0.5,
+      "file": "bento/em_revisao/caixa_minerios.png",
+      "width": 92,
+      "height": 119,
+      "origin": {
+        "x": 0.5,
+        "y": 0.9327731092436975
+      },
+      "originPx": {
+        "x": 46.0,
+        "y": 111
+      },
+      "sourceBBox": [
+        226,
+        399,
+        302,
+        502
+      ],
+      "sourceOffsetPx": {
+        "x": -8,
+        "y": -8
+      },
+      "recommendedPosition": {
+        "x": 156.0,
+        "y": 275.0
+      },
+      "depth": {
+        "mode": "feet",
+        "offset": 0,
+        "layer": "objects"
+      },
+      "collision": {
+        "x": 21.68,
+        "y": 86.28,
+        "width": 48.64,
+        "height": 20.6
+      },
+      "reason": "Face inferior ausente nos recortes recuperada do interior; topologia da pilha de minério e limite esquerdo ainda precisam de retoque artístico.",
+      "padding": 8,
+      "alphaBBox": [
+        11,
+        14,
+        82,
+        105
+      ],
+      "opaquePixels": 6021,
+      "restoredAlphaPixels": 593,
+      "originalRGBMismatches": 0,
+      "sha256": "4279c50a08b14f87c52fc94221dcfc10a401a54dc80f208e6dcc243fbbebfc77",
+      "repair": "manual_foreground_polygon_and_original_RGB_alpha_recovery",
+      "maskPolygon": [
+        [
+          5,
+          9
+        ],
+        [
+          20,
+          9
+        ],
+        [
+          23,
+          6
+        ],
+        [
+          31,
+          6
+        ],
+        [
+          36,
+          10
+        ],
+        [
+          42,
+          7
+        ],
+        [
+          49,
+          9
+        ],
+        [
+          51,
+          13
+        ],
+        [
+          59,
+          13
+        ],
+        [
+          63,
+          17
+        ],
+        [
+          69,
+          17
+        ],
+        [
+          69,
+          7
+        ],
+        [
+          73,
+          7
+        ],
+        [
+          73,
+          94
+        ],
+        [
+          66,
+          96
+        ],
+        [
+          10,
+          96
+        ],
+        [
+          3,
+          94
+        ],
+        [
+          3,
+          45
+        ],
+        [
+          7,
+          40
+        ],
+        [
+          7,
+          29
+        ],
+        [
+          11,
+          23
+        ],
+        [
+          8,
+          20
+        ]
+      ]
+    },
+    {
+      "id": "porta_ferramentas",
+      "name": "Porta ferramentas",
+      "status": "incompleto",
+      "gameReady": false,
+      "original": "bento/originais/recortes_referencia/porta_ferramentas.png",
+      "before": "bento/originais/recortes_referencia/porta_ferramentas.png",
+      "sourcePosition": {
+        "x": 922,
+        "y": 244,
+        "width": 97,
+        "height": 232,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "sourceReferenceBBox": [
+        952,
+        963,
+        1049,
+        1195
+      ],
+      "hiddenSurfaceReconstructed": false,
+      "interaction": null,
+      "scale": 0.5,
+      "file": null,
+      "reason": "Painel se sobrepõe à estação de afiação. Precisa de máscara própria e revisão do topo."
+    },
+    {
+      "id": "barril_hastes",
+      "name": "Barril hastes",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "original": "bento/originais/recortes_referencia/barril_hastes.png",
+      "before": "bento/originais/sprites_alpha_limpo/barril_hastes.png",
+      "sourcePosition": {
+        "x": 75,
+        "y": 334,
+        "width": 70,
+        "height": 152,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "sourceReferenceBBox": [
+        105,
+        1053,
+        175,
+        1205
+      ],
+      "hiddenSurfaceReconstructed": false,
+      "interaction": "estoque",
+      "scale": 0.5,
+      "file": "bento/em_revisao/barril_hastes.png",
+      "width": 81,
+      "height": 132,
+      "origin": {
+        "x": 0.5,
+        "y": 0.9393939393939394
+      },
+      "originPx": {
+        "x": 40.5,
+        "y": 124
+      },
+      "sourceBBox": [
+        76,
+        352,
+        141,
+        468
+      ],
+      "sourceOffsetPx": {
+        "x": -8,
+        "y": -8
+      },
+      "recommendedPosition": {
+        "x": 78.25,
+        "y": 258.0
+      },
+      "depth": {
+        "mode": "feet",
+        "offset": 0,
+        "layer": "objects"
+      },
+      "collision": {
+        "x": 19.7,
+        "y": 96.16,
+        "width": 41.6,
+        "height": 23.200000000000003
+      },
+      "reason": "Estrados externos removidos e pixels internos recuperados; hastes finas e arco da base ainda exigem revisão de contorno.",
+      "padding": 8,
+      "alphaBBox": [
+        10,
+        12,
+        71,
+        115
+      ],
+      "opaquePixels": 4962,
+      "restoredAlphaPixels": 1138,
+      "originalRGBMismatches": 0,
+      "sha256": "757aa167b089dc7d48486bdb54c8ce243f669dd5e96cc91878d2b45fae4d7701",
+      "repair": "manual_foreground_polygon_and_original_RGB_alpha_recovery",
+      "maskPolygon": [
+        [
+          25,
+          4
+        ],
+        [
+          33,
+          4
+        ],
+        [
+          35,
+          7
+        ],
+        [
+          36,
+          20
+        ],
+        [
+          39,
+          9
+        ],
+        [
+          44,
+          11
+        ],
+        [
+          44,
+          27
+        ],
+        [
+          48,
+          16
+        ],
+        [
+          54,
+          16
+        ],
+        [
+          58,
+          20
+        ],
+        [
+          58,
+          29
+        ],
+        [
+          55,
+          40
+        ],
+        [
+          61,
+          42
+        ],
+        [
+          62,
+          52
+        ],
+        [
+          61,
+          70
+        ],
+        [
+          58,
+          79
+        ],
+        [
+          58,
+          92
+        ],
+        [
+          54,
+          99
+        ],
+        [
+          47,
+          103
+        ],
+        [
+          39,
+          106
+        ],
+        [
+          24,
+          106
+        ],
+        [
+          14,
+          102
+        ],
+        [
+          9,
+          97
+        ],
+        [
+          6,
+          88
+        ],
+        [
+          5,
+          77
+        ],
+        [
+          3,
+          67
+        ],
+        [
+          3,
+          59
+        ],
+        [
+          2,
+          53
+        ],
+        [
+          4,
+          43
+        ],
+        [
+          3,
+          36
+        ],
+        [
+          2,
+          27
+        ],
+        [
+          6,
+          23
+        ],
+        [
+          11,
+          25
+        ],
+        [
+          9,
+          13
+        ],
+        [
+          12,
+          10
+        ],
+        [
+          17,
+          12
+        ],
+        [
+          21,
+          35
+        ],
+        [
+          24,
+          35
+        ],
+        [
+          24,
+          9
+        ]
+      ]
+    },
+    {
+      "id": "tapete_ferraria",
+      "name": "Tapete ferraria",
+      "status": "aprovado",
+      "gameReady": true,
+      "original": "bento/originais/recortes_referencia/tapete_ferraria.png",
+      "before": "bento/originais/sprites_alpha_limpo/tapete_ferraria.png",
+      "sourcePosition": {
+        "x": 374,
+        "y": 410,
+        "width": 137,
+        "height": 81,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "sourceReferenceBBox": [
+        404,
+        1129,
+        541,
+        1210
+      ],
+      "hiddenSurfaceReconstructed": false,
+      "interaction": null,
+      "scale": 0.5,
+      "file": "bento/aprovados/tapete_ferraria.png",
+      "width": 143,
+      "height": 84,
+      "origin": {
+        "x": 0.5,
+        "y": 0.9047619047619048
+      },
+      "originPx": {
+        "x": 71.5,
+        "y": 76
+      },
+      "sourceBBox": [
+        380,
+        416,
+        507,
+        484
+      ],
+      "sourceOffsetPx": {
+        "x": -8,
+        "y": -8
+      },
+      "recommendedPosition": {
+        "x": 245.75,
+        "y": 266.0
+      },
+      "depth": {
+        "mode": "feet",
+        "offset": 0,
+        "layer": "objects"
+      },
+      "collision": null,
+      "reason": "Tapete plano separado dos batentes de madeira; somente superfície visível, sem móveis incorporados.",
+      "padding": 8,
+      "alphaBBox": [
+        10,
+        10,
+        132,
+        75
+      ],
+      "opaquePixels": 7699,
+      "restoredAlphaPixels": 0,
+      "originalRGBMismatches": 0,
+      "sha256": "fbce8388f3e696bcfca63a8915b13ddb377a58356085299f81697f02aad538d4",
+      "repair": "manual_foreground_polygon_and_original_RGB_alpha_recovery",
+      "maskPolygon": [
+        [
+          6,
+          2
+        ],
+        [
+          120,
+          2
+        ],
+        [
+          123,
+          62
+        ],
+        [
+          120,
+          66
+        ],
+        [
+          5,
+          66
+        ],
+        [
+          2,
+          62
+        ]
+      ]
+    },
+    {
+      "id": "martelos_parede",
+      "name": "Martelos parede",
+      "status": "incompleto",
+      "gameReady": false,
+      "original": "bento/originais/recortes_referencia/martelos_parede.png",
+      "before": "bento/originais/recortes_referencia/martelos_parede.png",
+      "sourcePosition": {
+        "x": 304,
+        "y": 82,
+        "width": 72,
+        "height": 121,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "sourceReferenceBBox": [
+        334,
+        801,
+        406,
+        922
+      ],
+      "hiddenSurfaceReconstructed": false,
+      "interaction": null,
+      "scale": 0.5,
+      "file": null,
+      "reason": "Ferramentas penduradas têm espaços vazios e suportes finos; máscara completa ainda não revisada."
+    },
+    {
+      "id": "lamparina",
+      "name": "Lamparina",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "original": "bento/originais/recortes_referencia/lamparina.png",
+      "before": "bento/originais/sprites_alpha_limpo/lamparina.png",
+      "sourcePosition": {
+        "x": 558,
+        "y": 39,
+        "width": 39,
+        "height": 62,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "sourceReferenceBBox": [
+        588,
+        758,
+        627,
+        820
+      ],
+      "hiddenSurfaceReconstructed": false,
+      "interaction": "iluminar",
+      "scale": 0.5,
+      "file": "bento/em_revisao/lamparina.png",
+      "width": 54,
+      "height": 101,
+      "origin": {
+        "x": 0.5,
+        "y": 0.9207920792079208
+      },
+      "originPx": {
+        "x": 27.0,
+        "y": 93
+      },
+      "sourceBBox": [
+        558,
+        40,
+        596,
+        125
+      ],
+      "sourceOffsetPx": {
+        "x": -8,
+        "y": -8
+      },
+      "recommendedPosition": {
+        "x": 312.5,
+        "y": 86.5
+      },
+      "depth": {
+        "mode": "feet",
+        "offset": 0,
+        "layer": "structure"
+      },
+      "collision": null,
+      "reason": "Vidro e base recuperados; ancoragem superior e contorno do halo precisam de validação artística. Não aprovada como luminária independente.",
+      "padding": 8,
+      "alphaBBox": [
+        11,
+        17,
+        39,
+        84
+      ],
+      "opaquePixels": 1214,
+      "restoredAlphaPixels": 28,
+      "originalRGBMismatches": 0,
+      "sha256": "c0dbabba4a7e94fb1831cdd87ce3f151c4418b138e90d3679c3de1f70c79cde3",
+      "repair": "manual_foreground_polygon_and_original_RGB_alpha_recovery",
+      "maskPolygon": [
+        [
+          15,
+          9
+        ],
+        [
+          21,
+          9
+        ],
+        [
+          22,
+          13
+        ],
+        [
+          21,
+          22
+        ],
+        [
+          23,
+          27
+        ],
+        [
+          24,
+          31
+        ],
+        [
+          28,
+          34
+        ],
+        [
+          30,
+          39
+        ],
+        [
+          29,
+          43
+        ],
+        [
+          28,
+          47
+        ],
+        [
+          28,
+          67
+        ],
+        [
+          25,
+          72
+        ],
+        [
+          24,
+          75
+        ],
+        [
+          12,
+          75
+        ],
+        [
+          9,
+          73
+        ],
+        [
+          7,
+          69
+        ],
+        [
+          6,
+          64
+        ],
+        [
+          6,
+          48
+        ],
+        [
+          4,
+          44
+        ],
+        [
+          3,
+          40
+        ],
+        [
+          7,
+          35
+        ],
+        [
+          10,
+          32
+        ],
+        [
+          12,
+          25
+        ],
+        [
+          14,
+          22
+        ],
+        [
+          13,
+          16
+        ]
+      ]
+    },
+    {
+      "id": "banquinho",
+      "name": "Banquinho",
+      "status": "aprovado",
+      "gameReady": true,
+      "original": "bento/originais/recortes_referencia/banquinho.png",
+      "before": "bento/originais/sprites_alpha_limpo/banquinho.png",
+      "sourcePosition": {
+        "x": 604,
+        "y": 399,
+        "width": 52,
+        "height": 74,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "sourceReferenceBBox": [
+        634,
+        1118,
+        686,
+        1192
+      ],
+      "hiddenSurfaceReconstructed": false,
+      "interaction": "examinar",
+      "scale": 0.5,
+      "file": "bento/aprovados/banquinho.png",
+      "width": 70,
+      "height": 85,
+      "origin": {
+        "x": 0.5,
+        "y": 0.9058823529411765
+      },
+      "originPx": {
+        "x": 35.0,
+        "y": 77
+      },
+      "sourceBBox": [
+        603,
+        401,
+        657,
+        470
+      ],
+      "sourceOffsetPx": {
+        "x": -8,
+        "y": -8
+      },
+      "recommendedPosition": {
+        "x": 339.0,
+        "y": 259.0
+      },
+      "depth": {
+        "mode": "feet",
+        "offset": 0,
+        "layer": "objects"
+      },
+      "collision": {
+        "x": 17.72,
+        "y": 60.44,
+        "width": 34.56,
+        "height": 13.8
+      },
+      "reason": "Assento, pernas e travessa visíveis; piso entre as pernas excluído sem reamostragem.",
+      "padding": 8,
+      "alphaBBox": [
+        13,
+        14,
+        58,
+        72
+      ],
+      "opaquePixels": 1998,
+      "restoredAlphaPixels": 0,
+      "originalRGBMismatches": 0,
+      "sha256": "82d1432067ff7a1ac6f00855e96ecf3692a7e5d0bc82e871bbbd8f7e7d033b74",
+      "repair": "manual_foreground_polygon_and_original_RGB_alpha_recovery",
+      "maskPolygon": [
+        [
+          18,
+          6
+        ],
+        [
+          32,
+          6
+        ],
+        [
+          41,
+          10
+        ],
+        [
+          48,
+          17
+        ],
+        [
+          49,
+          29
+        ],
+        [
+          45,
+          36
+        ],
+        [
+          47,
+          56
+        ],
+        [
+          46,
+          62
+        ],
+        [
+          39,
+          63
+        ],
+        [
+          36,
+          57
+        ],
+        [
+          34,
+          48
+        ],
+        [
+          23,
+          48
+        ],
+        [
+          20,
+          60
+        ],
+        [
+          18,
+          63
+        ],
+        [
+          8,
+          63
+        ],
+        [
+          7,
+          60
+        ],
+        [
+          10,
+          38
+        ],
+        [
+          7,
+          34
+        ],
+        [
+          5,
+          24
+        ],
+        [
+          7,
+          16
+        ],
+        [
+          12,
+          10
+        ]
+      ]
+    }
+  ],
+  "layers": {
+    "floor": {
+      "file": "bento/camadas/01-piso.png",
+      "provenance": "tiles atuais repetidos sem suavização; nenhum preenchimento sobre móveis"
+    },
+    "structure": {
+      "file": "bento/camadas/02-estrutura.png",
+      "provenance": "moldura/janela RGB visível da referência + módulo oficial 0.8.1; não é réplica pixel a pixel do interior inteiro"
+    },
+    "upper": {
+      "file": "bento/camadas/04-superiores.png",
+      "depth": "front-frame"
+    },
+    "tile": 32,
+    "scale": 0.5,
+    "offset": {
+      "x": 24,
+      "y": 24
+    },
+    "world": {
+      "width": 576,
+      "height": 352
+    },
+    "walkable": {
+      "left": 60,
+      "top": 119,
+      "right": 527,
+      "bottom": 275,
+      "door": {
+        "left": 214,
+        "right": 276,
+        "bottom": 329
+      }
+    },
+    "spawn": {
+      "x": 245,
+      "y": 309
+    },
+    "interactions": [
+      {
+        "id": "bigorna_e_toco",
+        "type": "trabalhar_metal",
+        "position": {
+          "x": 381.0,
+          "y": 256.5
+        },
+        "enabled": false
+      },
+      {
+        "id": "tanque_resfriamento",
+        "type": "resfriar",
+        "position": {
+          "x": 324.25,
+          "y": 189.0
+        },
+        "enabled": true
+      },
+      {
+        "id": "caixa_minerios",
+        "type": "minerios",
+        "position": {
+          "x": 156.0,
+          "y": 275.0
+        },
+        "enabled": false
+      },
+      {
+        "id": "barril_hastes",
+        "type": "estoque",
+        "position": {
+          "x": 78.25,
+          "y": 258.0
+        },
+        "enabled": false
+      },
+      {
+        "id": "lamparina",
+        "type": "iluminar",
+        "position": {
+          "x": 312.5,
+          "y": 86.5
+        },
+        "enabled": false
+      },
+      {
+        "id": "banquinho",
+        "type": "examinar",
+        "position": {
+          "x": 339.0,
+          "y": 259.0
+        },
+        "enabled": true
+      }
+    ],
+    "finalInteriorApproved": false,
+    "reason": "Objetos essenciais incompletos: balcão, estantes e fornalha. Cena navegável é demonstração técnica, não interior artístico final."
+  },
+  "atlas": "bento/atlas/aprovados.json",
+  "alignment": {
+    "offset": [
+      -30,
+      -719
+    ],
+    "matches": {
+      "fornalha_completa": {
+        "x": 652,
+        "y": 39,
+        "width": 149,
+        "height": 268,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "bigorna_e_toco": {
+        "x": 654,
+        "y": 325,
+        "width": 118,
+        "height": 145,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "tanque_resfriamento": {
+        "x": 545,
+        "y": 191,
+        "width": 111,
+        "height": 135,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "mesa_atendimento": {
+        "x": 262,
+        "y": 174,
+        "width": 204,
+        "height": 181,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "prateleira_ferramentas": {
+        "x": 80,
+        "y": 75,
+        "width": 196,
+        "height": 269,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "estante_metal": {
+        "x": 830,
+        "y": 67,
+        "width": 182,
+        "height": 209,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "cesto_lingotes": {
+        "x": 147,
+        "y": 378,
+        "width": 82,
+        "height": 99,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "caixa_minerios": {
+        "x": 226,
+        "y": 378,
+        "width": 83,
+        "height": 101,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "porta_ferramentas": {
+        "x": 922,
+        "y": 244,
+        "width": 97,
+        "height": 232,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "barril_hastes": {
+        "x": 75,
+        "y": 334,
+        "width": 70,
+        "height": 152,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "tapete_ferraria": {
+        "x": 374,
+        "y": 410,
+        "width": 137,
+        "height": 81,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "martelos_parede": {
+        "x": 304,
+        "y": 82,
+        "width": 72,
+        "height": 121,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "lamparina": {
+        "x": 558,
+        "y": 39,
+        "width": 39,
+        "height": 62,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      },
+      "banquinho": {
+        "x": 604,
+        "y": 399,
+        "width": 52,
+        "height": 74,
+        "exactRGB": true,
+        "mismatchedPixels": 0
+      }
+    }
+  },
+  "sources": {
+    "facade": {
+      "file": "bento/originais/fachada.png",
+      "sha256": "a395f7248e6a4de67946791e232c59570ef85f568dcbdaee04e9eab14325807e"
+    },
+    "interior": {
+      "file": "bento/originais/interior.png",
+      "sha256": "2ea5929426ca7be4ccfec377acc3e6499029343aea7e06526e2eb5b952750866"
+    }
+  },
+  "stats": {
+    "aprovado": 3,
+    "precisa_revisao": 4,
+    "incompleto": 7
+  }
+}

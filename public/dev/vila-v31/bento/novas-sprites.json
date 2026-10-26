@@ -1,0 +1,2064 @@
+{
+  "npc": "bento",
+  "collection": "new_independent_art",
+  "objects": [
+    {
+      "id": "fornalha_completa",
+      "name": "Fornalha completa",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fresh-fornalha_completa",
+      "file": "bento/novas-sprites/fornalha_completa.png",
+      "before": "bento/originais/recortes_referencia/fornalha_completa.png",
+      "original": "bento/originais/recortes_referencia/fornalha_completa.png",
+      "width": 1024,
+      "height": 1536,
+      "origin": {
+        "x": 0.5,
+        "y": 0.91796875
+      },
+      "scale": 0.09961977186311786,
+      "recommendedPosition": {
+        "x": 387.25,
+        "y": 170.5
+      },
+      "collision": {
+        "x": 206.68,
+        "y": 1107.5500000000002,
+        "width": 610.6400000000001,
+        "height": 249.85
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      },
+      "interaction": "fundir",
+      "reason": "Arte nova independente, criada do zero. Prévia técnica completa; acabamento e proporções aguardam revisão visual do conjunto. Nenhum recorte do interior foi utilizado.",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "a6ecb20a740ef001a8f5c7fa1fbebd809740e64990124906397fd1b8ac627166",
+      "sourceSha256": "a6ecb20a740ef001a8f5c7fa1fbebd809740e64990124906397fd1b8ac627166",
+      "visibleBoundsAlpha128": [
+        63,
+        95,
+        961,
+        1410
+      ],
+      "technicalValidation": {
+        "rgba": true,
+        "transparentPixels": 699222,
+        "visiblePixels": 853350,
+        "fullyContainedAlpha128": true
+      },
+      "referenceBBox": [
+        652,
+        39,
+        801,
+        301
+      ],
+      "referenceRole": "Chaminé junto à parede de fundo, como na referência.",
+      "supportId": null,
+      "scaleX": 0.08296213808463251
+    },
+    {
+      "id": "bigorna_e_toco",
+      "name": "Bigorna e toco",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fresh-bigorna_e_toco",
+      "file": "bento/novas-sprites/bigorna_e_toco.png",
+      "before": "bento/originais/recortes_referencia/bigorna_e_toco.png",
+      "original": "bento/originais/recortes_referencia/bigorna_e_toco.png",
+      "width": 1174,
+      "height": 1340,
+      "origin": {
+        "x": 0.4987223168654174,
+        "y": 0.905223880597015
+      },
+      "scale": 0.06533776301218161,
+      "recommendedPosition": {
+        "x": 380.5,
+        "y": 259.0
+      },
+      "collision": {
+        "x": 278.48,
+        "y": 986.91,
+        "width": 614.0400000000001,
+        "height": 186.77
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      },
+      "interaction": "trabalhar_metal",
+      "reason": "Arte nova independente, criada do zero. Prévia técnica completa; acabamento e proporções aguardam revisão visual do conjunto. Nenhum recorte do interior foi utilizado.",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "7a657d56ceb4b459518b324a19a596ef5dbb8f88d8d4fe64ccbf5370f5a0216c",
+      "sourceSha256": "7a657d56ceb4b459518b324a19a596ef5dbb8f88d8d4fe64ccbf5370f5a0216c",
+      "visibleBoundsAlpha128": [
+        134,
+        230,
+        1037,
+        1213
+      ],
+      "technicalValidation": {
+        "rgba": true,
+        "transparentPixels": 911125,
+        "visiblePixels": 645164,
+        "fullyContainedAlpha128": true
+      }
+    },
+    {
+      "id": "tanque_resfriamento",
+      "name": "Tanque resfriamento",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fresh-tanque_resfriamento",
+      "file": "bento/novas-sprites/tanque_resfriamento.png",
+      "before": "bento/originais/recortes_referencia/tanque_resfriamento.png",
+      "original": "bento/originais/recortes_referencia/tanque_resfriamento.png",
+      "width": 1161,
+      "height": 1355,
+      "origin": {
+        "x": 0.5004306632213609,
+        "y": 0.9136531365313653
+      },
+      "scale": 0.06019522776572668,
+      "recommendedPosition": {
+        "x": 324.25,
+        "y": 187.0
+      },
+      "collision": {
+        "x": 267.52,
+        "y": 993.51,
+        "width": 626.96,
+        "height": 201.97
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      },
+      "interaction": "resfriar",
+      "reason": "Arte nova independente, criada do zero. Prévia técnica completa; acabamento e proporções aguardam revisão visual do conjunto. Nenhum recorte do interior foi utilizado.",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "d8db172387a3fe1bdc5a4e17564d3f2c6d349dade84321aeaa8a2609bff455de",
+      "sourceSha256": "d8db172387a3fe1bdc5a4e17564d3f2c6d349dade84321aeaa8a2609bff455de",
+      "visibleBoundsAlpha128": [
+        120,
+        175,
+        1042,
+        1238
+      ],
+      "technicalValidation": {
+        "rgba": true,
+        "transparentPixels": 732659,
+        "visiblePixels": 821952,
+        "fullyContainedAlpha128": true
+      }
+    },
+    {
+      "id": "mesa_atendimento",
+      "name": "Mesa atendimento",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fresh-mesa_atendimento",
+      "file": "bento/fidelidade/balcao_referencia.png",
+      "before": "bento/originais/recortes_referencia/mesa_atendimento.png",
+      "original": "bento/originais/recortes_referencia/mesa_atendimento.png",
+      "width": 1774,
+      "height": 887,
+      "origin": {
+        "x": 0.5005636978579482,
+        "y": 0.8714768883878241
+      },
+      "scale": 0.08580343213728549,
+      "recommendedPosition": {
+        "x": 201.0,
+        "y": 182.5
+      },
+      "collision": {
+        "x": 320.88,
+        "y": 625.5699999999999,
+        "width": 1134.24,
+        "height": 121.79
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      },
+      "interaction": "comercio",
+      "reason": "Balcão redesenhado para a referência: tampo mais profundo e dois painéis frontais, sem gavetas. Versão anterior preservada.",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "b1a137e280c8e01453953814632bc3b6be5dd08dfed66c1ee58647d66e13390f",
+      "sourceSha256": "b1a137e280c8e01453953814632bc3b6be5dd08dfed66c1ee58647d66e13390f",
+      "visibleBoundsAlpha128": [
+        54,
+        132,
+        1722,
+        773
+      ],
+      "technicalValidation": {
+        "rgba": true,
+        "transparentPixels": 804146,
+        "visiblePixels": 752229,
+        "fullyContainedAlpha128": true
+      },
+      "referenceBBox": [
+        242,
+        217,
+        466,
+        327
+      ],
+      "referenceRole": "Balcão com tampo profundo e dois painéis frontais, sem gavetas; lateral unida ao expositor baixo.",
+      "supportId": null,
+      "scaleX": 0.0671462829736211
+    },
+    {
+      "id": "prateleira_ferramentas",
+      "name": "Prateleira ferramentas",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fresh-prateleira_ferramentas",
+      "file": "bento/novas-sprites/prateleira_ferramentas.png",
+      "before": "bento/originais/recortes_referencia/prateleira_ferramentas.png",
+      "original": "bento/originais/recortes_referencia/prateleira_ferramentas.png",
+      "width": 1024,
+      "height": 1536,
+      "origin": {
+        "x": 0.5,
+        "y": 0.8639322916666666
+      },
+      "scale": 0.06928508384819064,
+      "recommendedPosition": {
+        "x": 120.25,
+        "y": 201.5
+      },
+      "collision": {
+        "x": 254.96,
+        "y": 1066.4099999999999,
+        "width": 514.08,
+        "height": 215.27
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      },
+      "interaction": null,
+      "reason": "Arte nova independente, criada do zero. Prévia técnica completa; acabamento e proporções aguardam revisão visual do conjunto. Nenhum recorte do interior foi utilizado.",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "17f66d7d4df1ae8f8a8766045c81793d38a4837ef4ba29380cc7c909329a2193",
+      "sourceSha256": "17f66d7d4df1ae8f8a8766045c81793d38a4837ef4ba29380cc7c909329a2193",
+      "visibleBoundsAlpha128": [
+        134,
+        194,
+        890,
+        1327
+      ],
+      "technicalValidation": {
+        "rgba": true,
+        "transparentPixels": 822026,
+        "visiblePixels": 734538,
+        "fullyContainedAlpha128": true
+      },
+      "referenceBBox": [
+        150,
+        198,
+        257,
+        355
+      ],
+      "referenceRole": "Prateleira ferramentas",
+      "supportId": null
+    },
+    {
+      "id": "estante_metal",
+      "name": "Estante metal",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fresh-estante_metal",
+      "file": "bento/novas-sprites/estante_metal.png",
+      "before": "bento/originais/recortes_referencia/estante_metal.png",
+      "original": "bento/originais/recortes_referencia/estante_metal.png",
+      "width": 1122,
+      "height": 1402,
+      "origin": {
+        "x": 0.5,
+        "y": 0.9108416547788873
+      },
+      "scale": 0.05599300087489064,
+      "recommendedPosition": {
+        "x": 505.915135608049,
+        "y": 154.0
+      },
+      "collision": {
+        "x": 256.36,
+        "y": 1014.11,
+        "width": 609.2800000000001,
+        "height": 217.17000000000002
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      },
+      "interaction": null,
+      "reason": "Arte nova independente, criada do zero. Prévia técnica completa; acabamento e proporções aguardam revisão visual do conjunto. Nenhum recorte do interior foi utilizado.",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "6bd235e6f3f93d6d84d19346a554c33d7c4f185f42c2869632677196a7b96ce8",
+      "sourceSha256": "6bd235e6f3f93d6d84d19346a554c33d7c4f185f42c2869632677196a7b96ce8",
+      "visibleBoundsAlpha128": [
+        113,
+        134,
+        1009,
+        1277
+      ],
+      "technicalValidation": {
+        "rgba": true,
+        "transparentPixels": 675099,
+        "visiblePixels": 869131,
+        "fullyContainedAlpha128": true
+      },
+      "referenceBBox": [
+        898,
+        132,
+        1003,
+        260
+      ],
+      "referenceRole": "Estante metal",
+      "supportId": null,
+      "wallAnchor": {
+        "id": "estante_metal",
+        "edge": "right",
+        "value": 531
+      }
+    },
+    {
+      "id": "cesto_lingotes",
+      "name": "Cesto lingotes",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fresh-cesto_lingotes",
+      "file": "bento/novas-sprites/cesto_lingotes.png",
+      "before": "bento/originais/recortes_referencia/cesto_lingotes.png",
+      "original": "bento/originais/recortes_referencia/cesto_lingotes.png",
+      "width": 1312,
+      "height": 1199,
+      "origin": {
+        "x": 0.5,
+        "y": 0.7889908256880734
+      },
+      "scale": 0.043731778425655975,
+      "recommendedPosition": {
+        "x": 119.5,
+        "y": 232.0
+      },
+      "collision": {
+        "x": 416.64,
+        "y": 788.22,
+        "width": 478.72,
+        "height": 130.34
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      },
+      "interaction": null,
+      "reason": "Arte nova independente, criada do zero. Prévia técnica completa; acabamento e proporções aguardam revisão visual do conjunto. Nenhum recorte do interior foi utilizado.",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "c46aaf71bd0578bb08fab9a44fc1d7cf53ef68ec7870efb19f61613956ecf22b",
+      "sourceSha256": "c46aaf71bd0578bb08fab9a44fc1d7cf53ef68ec7870efb19f61613956ecf22b",
+      "visibleBoundsAlpha128": [
+        304,
+        260,
+        1008,
+        946
+      ],
+      "technicalValidation": {
+        "rgba": true,
+        "transparentPixels": 1137460,
+        "visiblePixels": 427631,
+        "fullyContainedAlpha128": true
+      },
+      "referenceBBox": [
+        154,
+        356,
+        228,
+        416
+      ],
+      "referenceRole": "Cesto lingotes",
+      "supportId": null
+    },
+    {
+      "id": "caixa_minerios",
+      "name": "Caixa minerios",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fresh-caixa_minerios",
+      "file": "bento/novas-sprites/caixa_minerios.png",
+      "before": "bento/originais/recortes_referencia/caixa_minerios.png",
+      "original": "bento/originais/recortes_referencia/caixa_minerios.png",
+      "width": 1312,
+      "height": 1199,
+      "origin": {
+        "x": 0.5003810975609756,
+        "y": 0.8273561301084237
+      },
+      "scale": 0.04875148632580262,
+      "recommendedPosition": {
+        "x": 158.5,
+        "y": 265.0
+      },
+      "collision": {
+        "x": 370.56,
+        "y": 832.84,
+        "width": 571.88,
+        "height": 131.48
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      },
+      "interaction": null,
+      "reason": "Arte nova independente, criada do zero. Prévia técnica completa; acabamento e proporções aguardam revisão visual do conjunto. Nenhum recorte do interior foi utilizado.",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "2452ba491b095fbfa8ef30f92e571e8d9d9072b770cbc8f8cc48a430362a4114",
+      "sourceSha256": "2452ba491b095fbfa8ef30f92e571e8d9d9072b770cbc8f8cc48a430362a4114",
+      "visibleBoundsAlpha128": [
+        236,
+        300,
+        1077,
+        992
+      ],
+      "technicalValidation": {
+        "rgba": true,
+        "transparentPixels": 1053660,
+        "visiblePixels": 508384,
+        "fullyContainedAlpha128": true
+      },
+      "referenceBBox": [
+        228,
+        414,
+        310,
+        482
+      ],
+      "referenceRole": "Caixa minerios",
+      "supportId": null
+    },
+    {
+      "id": "porta_ferramentas",
+      "name": "Porta ferramentas",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fresh-porta_ferramentas",
+      "file": "bento/novas-sprites/porta_ferramentas.png",
+      "before": "bento/originais/recortes_referencia/porta_ferramentas.png",
+      "original": "bento/originais/recortes_referencia/porta_ferramentas.png",
+      "width": 1254,
+      "height": 1254,
+      "origin": {
+        "x": 0.5003987240829346,
+        "y": 0.8811802232854864
+      },
+      "scale": 0.03715170278637771,
+      "recommendedPosition": {
+        "x": 510.5,
+        "y": 250.0
+      },
+      "collision": null,
+      "depth": {
+        "mode": "support",
+        "layer": "objects"
+      },
+      "interaction": null,
+      "reason": "Arte nova independente, criada do zero. Prévia técnica completa; acabamento e proporções aguardam revisão visual do conjunto. Nenhum recorte do interior foi utilizado.",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "4e78512f44eb534d09feb39d8e29638657be5dd9554fd39adefb078921ad0476",
+      "sourceSha256": "4e78512f44eb534d09feb39d8e29638657be5dd9554fd39adefb078921ad0476",
+      "visibleBoundsAlpha128": [
+        143,
+        150,
+        1112,
+        1105
+      ],
+      "technicalValidation": {
+        "rgba": true,
+        "transparentPixels": 721120,
+        "visiblePixels": 823420,
+        "fullyContainedAlpha128": true
+      },
+      "referenceBBox": [
+        925,
+        380,
+        997,
+        452
+      ],
+      "referenceRole": "Porta ferramentas",
+      "supportId": "bancada_ferraria"
+    },
+    {
+      "id": "barril_hastes",
+      "name": "Barril hastes",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fresh-barril_hastes",
+      "file": "bento/novas-sprites/barril_hastes.png",
+      "before": "bento/originais/recortes_referencia/barril_hastes.png",
+      "original": "bento/originais/recortes_referencia/barril_hastes.png",
+      "width": 1024,
+      "height": 1536,
+      "origin": {
+        "x": 0.501953125,
+        "y": 0.9505208333333334
+      },
+      "scale": 0.052083333333333336,
+      "recommendedPosition": {
+        "x": 76.5,
+        "y": 267.0
+      },
+      "collision": {
+        "x": 285.52,
+        "y": 1142.83,
+        "width": 456.96000000000004,
+        "height": 262.01
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      },
+      "interaction": null,
+      "reason": "Arte nova independente, criada do zero. Prévia técnica completa; acabamento e proporções aguardam revisão visual do conjunto. Nenhum recorte do interior foi utilizado.",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "a1ee06bd5d5b5ed8fa4cbd6ab6bf95207524a78c373cae0ddb10c89b9220f8cd",
+      "sourceSha256": "a1ee06bd5d5b5ed8fa4cbd6ab6bf95207524a78c373cae0ddb10c89b9220f8cd",
+      "visibleBoundsAlpha128": [
+        178,
+        81,
+        850,
+        1460
+      ],
+      "technicalValidation": {
+        "rgba": true,
+        "transparentPixels": 808404,
+        "visiblePixels": 751088,
+        "fullyContainedAlpha128": true
+      },
+      "wallAnchor": {
+        "id": "barril_hastes",
+        "edge": "left",
+        "value": 59
+      }
+    },
+    {
+      "id": "tapete_ferraria",
+      "name": "Tapete ferraria",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fresh-tapete_ferraria",
+      "file": "bento/novas-sprites/tapete_ferraria.png",
+      "before": "bento/originais/recortes_referencia/tapete_ferraria.png",
+      "original": "bento/originais/recortes_referencia/tapete_ferraria.png",
+      "width": 1774,
+      "height": 887,
+      "origin": {
+        "x": 0.5,
+        "y": 0.8759864712514093
+      },
+      "scale": 0.04244114002478315,
+      "recommendedPosition": {
+        "x": 245.25,
+        "y": 269.5
+      },
+      "collision": null,
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      },
+      "interaction": null,
+      "reason": "Arte nova independente, criada do zero. Prévia técnica completa; acabamento e proporções aguardam revisão visual do conjunto. Nenhum recorte do interior foi utilizado.",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "89800323cd0799d28a3c4275a81e83e64e7255019e721137210d90034dbab5bc",
+      "sourceSha256": "89800323cd0799d28a3c4275a81e83e64e7255019e721137210d90034dbab5bc",
+      "visibleBoundsAlpha128": [
+        80,
+        110,
+        1694,
+        777
+      ],
+      "technicalValidation": {
+        "rgba": true,
+        "transparentPixels": 519532,
+        "visiblePixels": 1016479,
+        "fullyContainedAlpha128": true
+      }
+    },
+    {
+      "id": "martelos_parede",
+      "name": "Martelos parede",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fresh-martelos_parede",
+      "file": "bento/novas-sprites/martelos_parede.png",
+      "before": "bento/originais/recortes_referencia/martelos_parede.png",
+      "original": "bento/originais/recortes_referencia/martelos_parede.png",
+      "width": 1536,
+      "height": 1024,
+      "origin": {
+        "x": 0.5003255208333334,
+        "y": 0.859375
+      },
+      "scale": 0.027293404094010616,
+      "recommendedPosition": {
+        "x": 194.0,
+        "y": 125.5
+      },
+      "collision": null,
+      "depth": {
+        "mode": "feet",
+        "layer": "structure"
+      },
+      "interaction": null,
+      "reason": "Arte nova independente, criada do zero. Prévia técnica completa; acabamento e proporções aguardam revisão visual do conjunto. Nenhum recorte do interior foi utilizado.",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "cc5fc5ff0270d2137ae02d97f096fe83b5c24d65573f2e2174782b8a512b1133",
+      "sourceSha256": "cc5fc5ff0270d2137ae02d97f096fe83b5c24d65573f2e2174782b8a512b1133",
+      "visibleBoundsAlpha128": [
+        109,
+        97,
+        1428,
+        880
+      ],
+      "technicalValidation": {
+        "rgba": true,
+        "transparentPixels": 1035166,
+        "visiblePixels": 497968,
+        "fullyContainedAlpha128": true
+      },
+      "sceneVisible": false
+    },
+    {
+      "id": "lamparina",
+      "name": "Lamparina",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fresh-lamparina",
+      "file": "bento/novas-sprites/lamparina.png",
+      "before": "bento/originais/recortes_referencia/lamparina.png",
+      "original": "bento/originais/recortes_referencia/lamparina.png",
+      "width": 821,
+      "height": 1916,
+      "origin": {
+        "x": 0.5006090133982948,
+        "y": 0.9342379958246346
+      },
+      "scale": 0.019218846869187848,
+      "recommendedPosition": {
+        "x": 312.75,
+        "y": 74.5
+      },
+      "collision": null,
+      "depth": {
+        "mode": "feet",
+        "layer": "structure"
+      },
+      "interaction": "iluminar",
+      "reason": "Arte nova independente, criada do zero. Prévia técnica completa; acabamento e proporções aguardam revisão visual do conjunto. Nenhum recorte do interior foi utilizado.",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "ce7717f7f6589233c9c56ee1ffb698eeeb29ef173dbec785476eaa06fa0a44e3",
+      "sourceSha256": "ce7717f7f6589233c9c56ee1ffb698eeeb29ef173dbec785476eaa06fa0a44e3",
+      "visibleBoundsAlpha128": [
+        106,
+        177,
+        716,
+        1790
+      ],
+      "technicalValidation": {
+        "rgba": true,
+        "transparentPixels": 864677,
+        "visiblePixels": 679364,
+        "fullyContainedAlpha128": true
+      }
+    },
+    {
+      "id": "banquinho",
+      "name": "Banquinho",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fresh-banquinho",
+      "file": "bento/novas-sprites/banquinho.png",
+      "before": "bento/originais/recortes_referencia/banquinho.png",
+      "original": "bento/originais/recortes_referencia/banquinho.png",
+      "width": 1254,
+      "height": 1254,
+      "origin": {
+        "x": 0.5,
+        "y": 0.828548644338118
+      },
+      "scale": 0.03768115942028986,
+      "recommendedPosition": {
+        "x": 339.0,
+        "y": 260.5
+      },
+      "collision": {
+        "x": 392.4,
+        "y": 852.47,
+        "width": 469.20000000000005,
+        "height": 154.09
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      },
+      "interaction": null,
+      "reason": "Arte nova independente, criada do zero. Prévia técnica completa; acabamento e proporções aguardam revisão visual do conjunto. Nenhum recorte do interior foi utilizado.",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "35696264a8f7b8e919c3f646f20df4f0513d74fc827222cd4a5bb9a2e46859e1",
+      "sourceSha256": "35696264a8f7b8e919c3f646f20df4f0513d74fc827222cd4a5bb9a2e46859e1",
+      "visibleBoundsAlpha128": [
+        282,
+        228,
+        972,
+        1039
+      ],
+      "technicalValidation": {
+        "rgba": true,
+        "transparentPixels": 1166748,
+        "visiblePixels": 390771,
+        "fullyContainedAlpha128": true
+      }
+    },
+    {
+      "id": "meia-divisoria",
+      "file": "bento/interior-novo/meia-divisoria.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "e0a1d25c7e19febc6eb1d395b42dfaad0e17c42dbce3dbe945fe3ff9d5345e89",
+      "sourceSha256": "e0a1d25c7e19febc6eb1d395b42dfaad0e17c42dbce3dbe945fe3ff9d5345e89",
+      "pixelsChanged": 0,
+      "sourceKind": "new_independent_art",
+      "visibleBoundsAlpha128": [
+        449,
+        24,
+        573,
+        1508
+      ],
+      "origin": {
+        "x": 0.4990234375,
+        "y": 0.9817708333333334
+      },
+      "name": "Meia divisória vertical",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "room-meia-divisoria",
+      "before": "bento/interior-novo/meia-divisoria.png",
+      "original": "bento/interior-novo/meia-divisoria.png",
+      "scale": 0.14016172506738545,
+      "scaleX": 0.14516129032258066,
+      "recommendedPosition": {
+        "x": 281.5,
+        "y": 232
+      },
+      "collision": {
+        "x": 482.46153846153845,
+        "y": 737.4615384615385,
+        "width": 57.07692307692308,
+        "height": 713.4615384615385
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      },
+      "interaction": null,
+      "reason": "Divisória reta encaixada no vão central da parede de fundo, alinhada aos contornos arquitetônicos. Borda superior em y=24; passagem frontal mantida. Nenhuma imagem anterior foi substituída.",
+      "croppedFromInterior": false
+    }
+  ],
+  "layers": {
+    "floor": {
+      "file": "bento/camadas/01-piso.png",
+      "provenance": "tiles atuais repetidos sem suavização; nenhum preenchimento sobre móveis"
+    },
+    "structure": {
+      "file": "bento/camadas/02-estrutura.png",
+      "provenance": "moldura/janela RGB visível da referência + módulo oficial 0.8.1; não é réplica pixel a pixel do interior inteiro"
+    },
+    "upper": {
+      "file": "bento/camadas/04-superiores.png",
+      "depth": "front-frame"
+    },
+    "tile": 32,
+    "scale": 0.5,
+    "offset": {
+      "x": 24,
+      "y": 24
+    },
+    "world": {
+      "width": 576,
+      "height": 352
+    },
+    "walkable": {
+      "left": 60,
+      "top": 119,
+      "right": 527,
+      "bottom": 275,
+      "door": {
+        "left": 214,
+        "right": 276,
+        "bottom": 329
+      }
+    },
+    "spawn": {
+      "x": 245,
+      "y": 309
+    },
+    "interactions": [
+      {
+        "id": "fornalha_completa",
+        "type": "fundir",
+        "position": {
+          "x": 387.25,
+          "y": 170.5
+        },
+        "enabled": false,
+        "previewEnabled": true
+      },
+      {
+        "id": "bigorna_e_toco",
+        "type": "trabalhar_metal",
+        "position": {
+          "x": 380.5,
+          "y": 259.0
+        },
+        "enabled": false,
+        "previewEnabled": true
+      },
+      {
+        "id": "tanque_resfriamento",
+        "type": "resfriar",
+        "position": {
+          "x": 324.25,
+          "y": 187.0
+        },
+        "enabled": false,
+        "previewEnabled": true
+      },
+      {
+        "id": "mesa_atendimento",
+        "type": "comercio",
+        "position": {
+          "x": 201.0,
+          "y": 182.5
+        },
+        "enabled": false,
+        "previewEnabled": true
+      },
+      {
+        "id": "lamparina",
+        "type": "iluminar",
+        "position": {
+          "x": 312.75,
+          "y": 74.5
+        },
+        "enabled": false,
+        "previewEnabled": true
+      }
+    ],
+    "finalInteriorApproved": false,
+    "reason": "Proposta nova com objetos completos e independentes, materiais separados e divisória vertical. Em revisão artística; não é recuperação exata de superfícies ocultas do original."
+  },
+  "stats": {
+    "newIndependentSprites": 14,
+    "croppedFromInterior": 0,
+    "existingSpritesReplaced": 0,
+    "pendingArtReview": 32,
+    "newRoomMaterials": 3,
+    "newPartition": 1,
+    "fidelityNewSprites": 14,
+    "fidelityAddedObjects": 18,
+    "fidelityReusedUniqueSprites": 4,
+    "totalGeneratedPNGFiles": 32,
+    "catalogObjectRecords": 33,
+    "sceneObjectInstances": 32,
+    "pendingArtReviewUnit": "new_png_files_including_preserved_variants",
+    "floorTransitionPieces": 1
+  },
+  "note": "Interior e objetos existentes preservados; a nova coleção não modifica a partida.",
+  "roomMaterials": [
+    {
+      "id": "piso-madeira",
+      "file": "bento/interior-novo/piso-madeira.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "60aa77020d25c9c2550233c52ae046006dbec1bbb41027d71f66d17c4f978820",
+      "sourceSha256": "60aa77020d25c9c2550233c52ae046006dbec1bbb41027d71f66d17c4f978820",
+      "pixelsChanged": 0,
+      "sourceKind": "new_independent_art",
+      "visibleBoundsAlpha128": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "origin": {
+        "x": 0.5,
+        "y": 1.0
+      }
+    },
+    {
+      "id": "piso-lajes",
+      "file": "bento/interior-novo/piso-lajes.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "7909a576ed05edd92e4ad761d637fe180e460840a70744f8ec85a5e4d5b21f16",
+      "sourceSha256": "7909a576ed05edd92e4ad761d637fe180e460840a70744f8ec85a5e4d5b21f16",
+      "pixelsChanged": 0,
+      "sourceKind": "new_independent_art",
+      "visibleBoundsAlpha128": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "origin": {
+        "x": 0.5,
+        "y": 1.0
+      }
+    },
+    {
+      "id": "lambril-madeira",
+      "file": "bento/interior-novo/lambril-madeira.png",
+      "width": 2172,
+      "height": 724,
+      "sha256": "1dc8e0136d1bf74c8b029e1be9dbec50c2ae85c170b8b66c37785855c6cba9d6",
+      "sourceSha256": "1dc8e0136d1bf74c8b029e1be9dbec50c2ae85c170b8b66c37785855c6cba9d6",
+      "pixelsChanged": 0,
+      "sourceKind": "new_independent_art",
+      "visibleBoundsAlpha128": [
+        41,
+        121,
+        2131,
+        603
+      ],
+      "origin": {
+        "x": 0.5,
+        "y": 0.8328729281767956
+      }
+    }
+  ],
+  "fidelityObjects": [
+    {
+      "id": "expositor_alto_ferramentas",
+      "name": "Expositor alto de ferramentas",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-expositor_alto_ferramentas",
+      "file": "bento/fidelidade/expositor_alto_ferramentas.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Arte nova; PNG integral preservado.",
+      "width": 1024,
+      "height": 1536,
+      "visibleBoundsAlpha128": [
+        305,
+        53,
+        721,
+        1425
+      ],
+      "origin": {
+        "x": 0.5009765625,
+        "y": 0.927734375
+      },
+      "sha256": "a097504fafdf9c58f3291d3454d855e9c6af77e3dfc68b80d630f1ad8c25aef3",
+      "sourceSha256": "a097504fafdf9c58f3291d3454d855e9c6af77e3dfc68b80d630f1ad8c25aef3",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 74.0262390670554,
+        "y": 201.0
+      },
+      "scale": 0.09147230320699709,
+      "referenceBBox": [
+        84,
+        103,
+        181,
+        354
+      ],
+      "referenceRole": "expositor esquerdo",
+      "supportId": null,
+      "collision": {
+        "x": 371.56,
+        "y": 1109.44,
+        "width": 282.88,
+        "height": 260.68
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      },
+      "wallAnchor": {
+        "id": "expositor_alto_ferramentas",
+        "edge": "left",
+        "value": 55
+      }
+    },
+    {
+      "id": "caixa_ferramentas",
+      "name": "Caixa de ferramentas",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-caixa_ferramentas",
+      "file": "bento/fidelidade/caixa_ferramentas.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Arte nova; PNG integral preservado.",
+      "width": 1536,
+      "height": 1024,
+      "visibleBoundsAlpha128": [
+        408,
+        365,
+        1127,
+        706
+      ],
+      "origin": {
+        "x": 0.4996744791666667,
+        "y": 0.689453125
+      },
+      "sha256": "216482f72f4b2adb23ccde15dc0ea8ea3ef65785627e3eeb2e2a1be557bb62f9",
+      "sourceSha256": "216482f72f4b2adb23ccde15dc0ea8ea3ef65785627e3eeb2e2a1be557bb62f9",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 73.7762390670554,
+        "y": 78.5
+      },
+      "scale": 0.03616133518776078,
+      "referenceBBox": [
+        94,
+        77,
+        146,
+        109
+      ],
+      "referenceRole": "caixa sobre o expositor",
+      "supportId": "expositor_alto_ferramentas",
+      "collision": null,
+      "depth": {
+        "mode": "support",
+        "layer": "objects"
+      }
+    },
+    {
+      "id": "folha_encomendas",
+      "name": "Folha de encomendas",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-folha_encomendas",
+      "file": "bento/fidelidade/folha_encomendas.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Arte nova; PNG integral preservado.",
+      "width": 1402,
+      "height": 1122,
+      "visibleBoundsAlpha128": [
+        469,
+        291,
+        943,
+        828
+      ],
+      "origin": {
+        "x": 0.5035663338088445,
+        "y": 0.7379679144385026
+      },
+      "sha256": "38069f34608e004c4b4eac3e3a38ab0f98c2e6d346388dd52bd2f9b3f9ae73a2",
+      "sourceSha256": "38069f34608e004c4b4eac3e3a38ab0f98c2e6d346388dd52bd2f9b3f9ae73a2",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 198.0,
+        "y": 151.0
+      },
+      "scale": 0.029535864978902954,
+      "referenceBBox": [
+        334,
+        232,
+        362,
+        264
+      ],
+      "referenceRole": "papel sobre o balcão",
+      "supportId": "mesa_atendimento",
+      "collision": null,
+      "depth": {
+        "mode": "support",
+        "layer": "objects"
+      }
+    },
+    {
+      "id": "vaso_flores_brancas",
+      "name": "Vaso de flores brancas",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-vaso_flores_brancas",
+      "file": "bento/fidelidade/vaso_flores_brancas.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Arte nova; PNG integral preservado.",
+      "width": 1182,
+      "height": 1330,
+      "visibleBoundsAlpha128": [
+        302,
+        367,
+        884,
+        1039
+      ],
+      "origin": {
+        "x": 0.5016920473773265,
+        "y": 0.781203007518797
+      },
+      "sha256": "3280dcd1f3cc45a1591060a41258fa9ac0d58b16452afdcfda0b97fd6cb72300",
+      "sourceSha256": "3280dcd1f3cc45a1591060a41258fa9ac0d58b16452afdcfda0b97fd6cb72300",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 236.5,
+        "y": 144.0
+      },
+      "scale": 0.037800687285223365,
+      "referenceBBox": [
+        403,
+        192,
+        447,
+        250
+      ],
+      "referenceRole": "flores sobre o balcão",
+      "supportId": "mesa_atendimento",
+      "collision": null,
+      "depth": {
+        "mode": "support",
+        "layer": "objects"
+      }
+    },
+    {
+      "id": "lampiao_balcao",
+      "name": "Lampião de balcão",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-lampiao_balcao",
+      "file": "bento/fidelidade/lampiao_balcao.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Arte nova; PNG integral preservado.",
+      "width": 927,
+      "height": 1697,
+      "visibleBoundsAlpha128": [
+        240,
+        329,
+        677,
+        1307
+      ],
+      "origin": {
+        "x": 0.49460625674217906,
+        "y": 0.7701826753093695
+      },
+      "sha256": "9a4be69b7c04cd2d2206303141f6d183c1652400591c26b4b4f59ee8fada9677",
+      "sourceSha256": "9a4be69b7c04cd2d2206303141f6d183c1652400591c26b4b4f59ee8fada9677",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 221.5,
+        "y": 151.5
+      },
+      "scale": 0.023517382413087935,
+      "referenceBBox": [
+        383,
+        219,
+        407,
+        265
+      ],
+      "referenceRole": "luminária do balcão",
+      "supportId": "mesa_atendimento",
+      "collision": null,
+      "depth": {
+        "mode": "support",
+        "layer": "objects"
+      }
+    },
+    {
+      "id": "escudo_parede",
+      "name": "Escudo redondo de parede",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-escudo_parede",
+      "file": "bento/fidelidade/escudo_parede.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Arte nova; PNG integral preservado.",
+      "width": 1254,
+      "height": 1254,
+      "visibleBoundsAlpha128": [
+        323,
+        321,
+        932,
+        920
+      ],
+      "origin": {
+        "x": 0.5003987240829346,
+        "y": 0.733652312599681
+      },
+      "sha256": "06a6e97eeb64d73ec07dc4af72fe5f90134e5f6e38e68950c7cc6bc87e90862d",
+      "sourceSha256": "06a6e97eeb64d73ec07dc4af72fe5f90134e5f6e38e68950c7cc6bc87e90862d",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 249.0,
+        "y": 80.0
+      },
+      "scale": 0.03284072249589491,
+      "referenceBBox": [
+        430,
+        87,
+        470,
+        127
+      ],
+      "referenceRole": "escudo acima do armário",
+      "supportId": "armario_pecas_loja",
+      "collision": null,
+      "depth": {
+        "mode": "support",
+        "layer": "objects"
+      }
+    },
+    {
+      "id": "suporte_ferramentas_longas",
+      "name": "Suporte de ferramentas longas",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-suporte_ferramentas_longas",
+      "file": "bento/fidelidade/suporte_ferramentas_longas.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Arte nova; PNG integral preservado.",
+      "width": 992,
+      "height": 1586,
+      "visibleBoundsAlpha128": [
+        76,
+        143,
+        943,
+        1405
+      ],
+      "origin": {
+        "x": 0.5136088709677419,
+        "y": 0.8858764186633039
+      },
+      "sha256": "27d6d4e3ef214ea88bd4ae039676437420f358bc98d0fcbcd9233eb78362a8dd",
+      "sourceSha256": "27d6d4e3ef214ea88bd4ae039676437420f358bc98d0fcbcd9233eb78362a8dd",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 193.5,
+        "y": 125.5
+      },
+      "scale": 0.04714738510301109,
+      "referenceBBox": [
+        303,
+        84,
+        375,
+        203
+      ],
+      "referenceRole": "tenazes na parede da loja",
+      "scaleX": 0.04152249134948097,
+      "supportId": null,
+      "collision": null,
+      "depth": {
+        "mode": "feet",
+        "layer": "structure"
+      }
+    },
+    {
+      "id": "caixa_carvao_madeira",
+      "name": "Caixa de carvão de madeira",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-caixa_carvao_madeira",
+      "file": "bento/fidelidade/caixa_carvao_madeira.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Arte nova; PNG integral preservado.",
+      "width": 1254,
+      "height": 1254,
+      "visibleBoundsAlpha128": [
+        284,
+        363,
+        970,
+        995
+      ],
+      "origin": {
+        "x": 0.5,
+        "y": 0.7934609250398724
+      },
+      "sha256": "4bdbb1ae7e4ce0708ad35e451bf77343331bc389a46eeaba94bd94fab9a516e8",
+      "sourceSha256": "4bdbb1ae7e4ce0708ad35e451bf77343331bc389a46eeaba94bd94fab9a516e8",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 119.0,
+        "y": 265.0
+      },
+      "scale": 0.05379746835443038,
+      "referenceBBox": [
+        153,
+        414,
+        227,
+        482
+      ],
+      "referenceRole": "carvão sob os lingotes",
+      "supportId": null,
+      "collision": {
+        "x": 393.76,
+        "y": 849.64,
+        "width": 466.48,
+        "height": 120.08
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      }
+    },
+    {
+      "id": "armario_carvao_ferro",
+      "name": "Armário de carvão e ferro",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-armario_carvao_ferro",
+      "file": "bento/fidelidade/armario_carvao_ferro.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Arte nova; PNG integral preservado.",
+      "width": 1024,
+      "height": 1536,
+      "visibleBoundsAlpha128": [
+        246,
+        124,
+        778,
+        1448
+      ],
+      "origin": {
+        "x": 0.5,
+        "y": 0.9427083333333334
+      },
+      "sha256": "f155028b71d918e2fdd244cb96c3b5bc967e0e53dad851acb29ea53c01bfc539",
+      "sourceSha256": "f155028b71d918e2fdd244cb96c3b5bc967e0e53dad851acb29ea53c01bfc539",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 458.0,
+        "y": 162.0
+      },
+      "scale": 0.04909365558912387,
+      "referenceBBox": [
+        832,
+        146,
+        904,
+        276
+      ],
+      "referenceRole": "depósito à direita da fornalha",
+      "scaleX": 0.06766917293233082,
+      "supportId": null,
+      "collision": {
+        "x": 331.12,
+        "y": 1143.48,
+        "width": 361.76000000000005,
+        "height": 251.56
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      }
+    },
+    {
+      "id": "bancada_ferraria",
+      "name": "Bancada de trabalho da ferraria",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-bancada_ferraria",
+      "file": "bento/fidelidade/bancada_ferraria.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Arte nova; PNG integral preservado.",
+      "width": 1024,
+      "height": 1536,
+      "visibleBoundsAlpha128": [
+        203,
+        171,
+        821,
+        1364
+      ],
+      "origin": {
+        "x": 0.5,
+        "y": 0.8880208333333334
+      },
+      "sha256": "5c3e33071ace37fe96d1b74fff023f335a005fb2ad0782f0d2504b63f71c1964",
+      "sourceSha256": "5c3e33071ace37fe96d1b74fff023f335a005fb2ad0782f0d2504b63f71c1964",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 511.5,
+        "y": 258.0
+      },
+      "scale": 0.0586756077116513,
+      "referenceBBox": [
+        918,
+        328,
+        1008,
+        468
+      ],
+      "referenceRole": "bancada da direita",
+      "scaleX": 0.07281553398058252,
+      "supportId": null,
+      "collision": {
+        "x": 301.88,
+        "y": 1089.6100000000001,
+        "width": 420.24,
+        "height": 226.67000000000002
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      },
+      "wallAnchor": {
+        "id": "bancada_ferraria",
+        "edge": "right",
+        "value": 534
+      }
+    },
+    {
+      "id": "balde_tenazes",
+      "name": "Balde com tenazes",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-balde_tenazes",
+      "file": "bento/fidelidade/balde_tenazes.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Arte nova; PNG integral preservado.",
+      "width": 899,
+      "height": 1748,
+      "visibleBoundsAlpha128": [
+        207,
+        161,
+        737,
+        1578
+      ],
+      "origin": {
+        "x": 0.525027808676307,
+        "y": 0.902745995423341
+      },
+      "sha256": "b8abc79a87439c5993b77db8f6c2db2b11665ed0d434e4d46fa9516aaebec4df",
+      "sourceSha256": "b8abc79a87439c5993b77db8f6c2db2b11665ed0d434e4d46fa9516aaebec4df",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 421.0,
+        "y": 187.0
+      },
+      "scale": 0.024700070571630206,
+      "referenceBBox": [
+        774,
+        264,
+        814,
+        334
+      ],
+      "referenceRole": "balde ao lado da fornalha",
+      "supportId": null,
+      "collision": {
+        "x": 291.8,
+        "y": 1252.09,
+        "width": 360.40000000000003,
+        "height": 269.23
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      }
+    },
+    {
+      "id": "toco_martelo",
+      "name": "Toco auxiliar com martelo",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-toco_martelo",
+      "file": "bento/fidelidade/toco_martelo.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Arte nova; PNG integral preservado.",
+      "width": 948,
+      "height": 1659,
+      "visibleBoundsAlpha128": [
+        227,
+        471,
+        724,
+        1254
+      ],
+      "origin": {
+        "x": 0.5015822784810127,
+        "y": 0.755877034358047
+      },
+      "sha256": "849e8473cf6bde366696bf7bd5091ba80a6bab4185b0e4dd84cd5e12b4ca0de1",
+      "sourceSha256": "849e8473cf6bde366696bf7bd5091ba80a6bab4185b0e4dd84cd5e12b4ca0de1",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 419.0,
+        "y": 237.0
+      },
+      "scale": 0.04024144869215292,
+      "referenceBBox": [
+        770,
+        352,
+        810,
+        426
+      ],
+      "referenceRole": "toco ao lado da bigorna",
+      "supportId": null,
+      "collision": {
+        "x": 306.52,
+        "y": 1073.9099999999999,
+        "width": 337.96000000000004,
+        "height": 148.77
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      }
+    },
+    {
+      "id": "armario_pecas_loja",
+      "name": "Armário de peças da loja",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-armario_pecas_loja",
+      "file": "preservados-jogo/village/blacksmith-parts-shelf.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "existing_preserved_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Sprite já existente reutilizada sem alterações.",
+      "width": 128,
+      "height": 112,
+      "visibleBoundsAlpha128": [
+        2,
+        17,
+        126,
+        110
+      ],
+      "origin": {
+        "x": 0.5,
+        "y": 0.9821428571428571
+      },
+      "sha256": "9daf22b881e856f89c3d0c0ba21b6c436c90976eed1ab88d6edb6d50e6ff2481",
+      "sourceSha256": "9daf22b881e856f89c3d0c0ba21b6c436c90976eed1ab88d6edb6d50e6ff2481",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 238.0,
+        "y": 114.5
+      },
+      "scale": 0.3870967741935484,
+      "referenceBBox": [
+        380,
+        118,
+        476,
+        206
+      ],
+      "referenceRole": "armário atrás do balcão",
+      "supportId": null,
+      "collision": null,
+      "depth": {
+        "mode": "feet",
+        "layer": "structure"
+      },
+      "wallAnchor": {
+        "id": "armario_pecas_loja",
+        "edge": "bottom",
+        "value": 114.5
+      }
+    },
+    {
+      "id": "pedra_amolar",
+      "name": "Pedra de amolar",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-pedra_amolar",
+      "file": "preservados-jogo/village/blacksmith-grindstone.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "existing_preserved_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Sprite já existente reutilizada sem alterações.",
+      "width": 88,
+      "height": 104,
+      "visibleBoundsAlpha128": [
+        2,
+        41,
+        86,
+        102
+      ],
+      "origin": {
+        "x": 0.5,
+        "y": 0.9807692307692307
+      },
+      "sha256": "9e4fb1391f360af4753acbe1f2139ad38f3b062749451e066fe178e9e218aa2c",
+      "sourceSha256": "9e4fb1391f360af4753acbe1f2139ad38f3b062749451e066fe178e9e218aa2c",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 512.0,
+        "y": 190.0
+      },
+      "scale": 0.40476190476190477,
+      "referenceBBox": [
+        917,
+        250,
+        985,
+        332
+      ],
+      "referenceRole": "roda de afiação",
+      "supportId": null,
+      "collision": {
+        "x": 15.44,
+        "y": 87.97,
+        "width": 57.120000000000005,
+        "height": 11.59
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      },
+      "wallAnchor": {
+        "id": "pedra_amolar",
+        "edge": "right",
+        "value": 529
+      }
+    },
+    {
+      "id": "carvao_metal_frente",
+      "name": "Recipiente de carvão de metal",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-carvao_metal_frente",
+      "file": "preservados-jogo/village/blacksmith-coal-bin.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "existing_preserved_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Sprite já existente reutilizada sem alterações.",
+      "width": 64,
+      "height": 64,
+      "visibleBoundsAlpha128": [
+        2,
+        6,
+        62,
+        62
+      ],
+      "origin": {
+        "x": 0.5,
+        "y": 0.96875
+      },
+      "sha256": "d8361665b00b96b51dcd7c36472e0a1da443faaa35cd4734e2101ae5920a2be6",
+      "sourceSha256": "d8361665b00b96b51dcd7c36472e0a1da443faaa35cd4734e2101ae5920a2be6",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 469.0,
+        "y": 264.0
+      },
+      "scale": 0.5666666666666667,
+      "referenceBBox": [
+        856,
+        412,
+        924,
+        480
+      ],
+      "referenceRole": "carvão no chão da oficina",
+      "supportId": null,
+      "collision": {
+        "x": 11.6,
+        "y": 49.120000000000005,
+        "width": 40.800000000000004,
+        "height": 10.64
+      },
+      "depth": {
+        "mode": "feet",
+        "layer": "objects"
+      }
+    },
+    {
+      "id": "painel_ferro_direita",
+      "name": "Painel de ferramentas da oficina",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-painel_ferro_direita",
+      "file": "preservados-jogo/village/blacksmith-tool-rack.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "existing_preserved_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Sprite já existente reutilizada sem alterações.",
+      "width": 160,
+      "height": 104,
+      "visibleBoundsAlpha128": [
+        6,
+        2,
+        153,
+        102
+      ],
+      "origin": {
+        "x": 0.496875,
+        "y": 0.9807692307692307
+      },
+      "sha256": "fdd9f53347d897d92805b9e7dc8a2d14ac1a58eea34121292685dd64cf93fc76",
+      "sourceSha256": "fdd9f53347d897d92805b9e7dc8a2d14ac1a58eea34121292685dd64cf93fc76",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 478.0,
+        "y": 94.5
+      },
+      "scale": 0.43,
+      "referenceBBox": [
+        842,
+        55,
+        974,
+        141
+      ],
+      "referenceRole": "ferramentas na parede da direita",
+      "supportId": null,
+      "collision": null,
+      "depth": {
+        "mode": "feet",
+        "layer": "structure"
+      }
+    },
+    {
+      "id": "painel_ferro_fornalha",
+      "name": "Ferramentas junto à fornalha",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-painel_ferro_fornalha",
+      "file": "preservados-jogo/village/blacksmith-tool-rack.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "existing_preserved_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Sprite já existente reutilizada sem alterações.",
+      "width": 160,
+      "height": 104,
+      "visibleBoundsAlpha128": [
+        6,
+        2,
+        153,
+        102
+      ],
+      "origin": {
+        "x": 0.496875,
+        "y": 0.9807692307692307
+      },
+      "sha256": "fdd9f53347d897d92805b9e7dc8a2d14ac1a58eea34121292685dd64cf93fc76",
+      "sourceSha256": "fdd9f53347d897d92805b9e7dc8a2d14ac1a58eea34121292685dd64cf93fc76",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 326.5,
+        "y": 131.5
+      },
+      "scale": 0.3,
+      "referenceBBox": [
+        560,
+        155,
+        650,
+        215
+      ],
+      "referenceRole": "ferramentas abaixo do lampião",
+      "supportId": null,
+      "collision": null,
+      "depth": {
+        "mode": "feet",
+        "layer": "structure"
+      }
+    },
+    {
+      "id": "lamparina_loja",
+      "name": "Lamparina da loja",
+      "status": "precisa_revisao",
+      "gameReady": false,
+      "previewReady": true,
+      "textureKey": "fidelity-lamparina_loja",
+      "file": "bento/novas-sprites/lamparina.png",
+      "before": "bento/originais/interior.png",
+      "original": "bento/originais/interior.png",
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "interaction": null,
+      "reason": "Objeto independente posicionado conforme o inventário da referência. Arte nova; PNG integral preservado.",
+      "width": 821,
+      "height": 1916,
+      "visibleBoundsAlpha128": [
+        106,
+        177,
+        716,
+        1790
+      ],
+      "origin": {
+        "x": 0.5006090133982948,
+        "y": 0.9342379958246346
+      },
+      "sha256": "ce7717f7f6589233c9c56ee1ffb698eeeb29ef173dbec785476eaa06fa0a44e3",
+      "sourceSha256": "ce7717f7f6589233c9c56ee1ffb698eeeb29ef173dbec785476eaa06fa0a44e3",
+      "pixelsChanged": 0,
+      "recommendedPosition": {
+        "x": 222.0,
+        "y": 80.5
+      },
+      "scale": 0.01735895846249225,
+      "referenceBBox": [
+        378,
+        72,
+        414,
+        128
+      ],
+      "referenceRole": "lamparina acima do armário",
+      "supportId": "armario_pecas_loja",
+      "collision": null,
+      "depth": {
+        "mode": "support",
+        "layer": "objects"
+      }
+    }
+  ],
+  "fidelity": {
+    "reference": "bento/originais/interior.png",
+    "referenceSha256": "2ea5929426ca7be4ccfec377acc3e6499029343aea7e06526e2eb5b952750866",
+    "referenceSize": [
+      1062,
+      617
+    ],
+    "scale": 0.5,
+    "offset": {
+      "x": 24,
+      "y": 24
+    },
+    "newPNGs": 14,
+    "reusedUniquePNGs": 4,
+    "additionalInstances": 18,
+    "visibleInstances": 32,
+    "wallAnchors": [
+      {
+        "id": "expositor_alto_ferramentas",
+        "edge": "left",
+        "value": 55
+      },
+      {
+        "id": "barril_hastes",
+        "edge": "left",
+        "value": 59
+      },
+      {
+        "id": "estante_metal",
+        "edge": "right",
+        "value": 531
+      },
+      {
+        "id": "bancada_ferraria",
+        "edge": "right",
+        "value": 534
+      },
+      {
+        "id": "pedra_amolar",
+        "edge": "right",
+        "value": 529
+      },
+      {
+        "id": "armario_pecas_loja",
+        "edge": "bottom",
+        "value": 114.5
+      }
+    ],
+    "assemblyOffsets": [
+      {
+        "id": "mesa_atendimento",
+        "dx": 0,
+        "dy": -5
+      },
+      {
+        "id": "prateleira_ferramentas",
+        "dx": -5.5,
+        "dy": 0
+      },
+      {
+        "id": "fornalha_completa",
+        "dx": 0,
+        "dy": -4
+      },
+      {
+        "id": "balde_tenazes",
+        "dx": 0,
+        "dy": -4
+      }
+    ],
+    "clearanceAdjustments": [
+      {
+        "id": "caixa_ferramentas",
+        "dx": 6,
+        "dy": 0
+      },
+      {
+        "id": "escudo_parede",
+        "dx": 0,
+        "dy": 5
+      },
+      {
+        "id": "lamparina_loja",
+        "dx": 0,
+        "dy": 5
+      }
+    ],
+    "preservedVariants": [
+      {
+        "file": "bento/novas-sprites/mesa_atendimento.png",
+        "sha256": "0ae935787093e6ff63e2befebecf59b6aca1ee375caee8f59af57adc4b0357da"
+      },
+      {
+        "file": "bento/novas-sprites/martelos_parede.png",
+        "sha256": "cc5fc5ff0270d2137ae02d97f096fe83b5c24d65573f2e2174782b8a512b1133"
+      }
+    ],
+    "note": "Composição aproximada por marcos visuais; não é cópia pixel a pixel da referência. Todas as imagens anteriores permanecem disponíveis."
+  },
+  "sideWallOcclusion": [
+    {
+      "x": 0,
+      "y": 0,
+      "width": 60,
+      "height": 352
+    },
+    {
+      "x": 527,
+      "y": 0,
+      "width": 49,
+      "height": 352
+    }
+  ],
+  "floorTransitions": [
+    {
+      "width": 957,
+      "height": 1644,
+      "visibleBoundsAlpha128": [
+        400,
+        186,
+        560,
+        1467
+      ],
+      "origin": {
+        "x": 0.5015673981191222,
+        "y": 0.8923357664233577
+      },
+      "sha256": "f96644d979f048bed717206a902536de4ff9b954c8d6816a6d8dd942fccbf12e",
+      "sourceSha256": "f96644d979f048bed717206a902536de4ff9b954c8d6816a6d8dd942fccbf12e",
+      "pixelsChanged": 0,
+      "id": "soleira_pisos",
+      "name": "Soleira desgastada entre madeira e pedra",
+      "source": "soleira_pisos",
+      "position": {
+        "x": 289.5,
+        "y": 275
+      },
+      "visibleWidth": 11,
+      "visibleHeight": 156,
+      "depth": -820,
+      "collision": null,
+      "file": "bento/fidelidade/soleira_pisos.png",
+      "scaleX": 0.06875,
+      "scale": 0.12177985948477751,
+      "status": "precisa_revisao",
+      "sourceKind": "new_independent_art"
+    }
+  ]
+}

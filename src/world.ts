@@ -4,6 +4,7 @@ import {drawPropertyBridges} from './bridge-art';
 import {naturalPlantGround} from './systems/tree-avoidance';
 import {drawPropertyWell,type PropertyWell} from './property-well';
 import {wellSiteTile,wellSolidTile,wellSolidPoint} from './data/property-well';
+import {cottageSolidPoint} from './data/architecture-collision';
 import {HOMESTEAD_HOUSE,homesteadResourceReserved} from './data/property-homestead';
 import {drawHouseSmoke} from './house-smoke';
 import {hasMapSeam,seamBand,seamPassage} from './data/map-seam';
@@ -457,10 +458,14 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   };
   const resourceAt = (x: number, y: number) => resources.find((node) => node.x === x && node.y === y);
   const solidTile = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y));
+  const pointSolid=(x:number,y:number)=>{
+    const tx=Math.floor(x/TILE),ty=Math.floor(y/TILE),oldHouse=tx>=21&&tx<=27&&ty>=11&&ty<=15;
+    return tx<1||ty<1||tx>=WORLD_WIDTH-1||ty>=WORLD_HEIGHT-1||blocked.has(key(tx,ty))&&!oldHouse||resourceBlocked.has(key(tx,ty))||cottageSolidPoint(x,y,HOMESTEAD_HOUSE);
+  };
   const isBlocked = (x: number, y: number) => solidTile(x, y) || wellSolidTile(x,y) || waterAt(x, y) && !bridgeAt(x, y);
   const isBlockedPoint = (x: number, y: number) => {
     const tx = Math.floor(x / TILE), ty = Math.floor(y / TILE);
-    return solidTile(tx, ty) || wellSolidPoint(x,y) || bridgeRailAtPoint(x,y) || !bridgeAt(tx, ty) && waterPointAt(x, y);
+    return pointSolid(x,y) || wellSolidPoint(x,y) || bridgeRailAtPoint(x,y) || !bridgeAt(tx, ty) && waterPointAt(x, y);
   };
   const waterTouchesTile = (x: number, y: number) => [0.01, TILE / 2, TILE - 0.01].some(dx =>
     [0.01, TILE / 2, TILE - 0.01].some(dy => waterPointAt(x * TILE + dx, y * TILE + dy)));
@@ -479,7 +484,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     isBlocked,
     isBlockedPoint,
     isSolid:(x,y)=>solidTile(x,y)||wellSolidTile(x,y),
-    isSolidPoint:(x,y)=>solidTile(Math.floor(x/TILE),Math.floor(y/TILE))||wellSolidPoint(x,y)||bridgeRailAtPoint(x,y),
+    isSolidPoint:(x,y)=>pointSolid(x,y)||wellSolidPoint(x,y)||bridgeRailAtPoint(x,y),
     isSwimmingPoint:(x,y)=>!bridgeAt(Math.floor(x/TILE),Math.floor(y/TILE))&&waterPointAt(x,y),
     isWaterGroundPoint:waterPointAt,
     canPlantTree:dryTreeCell,

@@ -5,7 +5,7 @@ import { HOUSE_SHADOW_FOOT } from './house-sprites';
 import { WELL_SHADOW_FOOT } from './data/property-well';
 
 type Caster = Phaser.GameObjects.Image | Phaser.GameObjects.Sprite;
-const CASTER = /^(asset-(tree|pine)(-[012])?|lake-rock-[0-5]|asset-house|property-well-(idle|use)|cabin|player|forest-player|village-player|village-npc-[a-z]+|lia)$/;
+const CASTER = /^(asset-(tree|pine)(-[012])?|lake-rock-[0-5]|asset-house|property-well-(idle|use)|cabin|player|forest-player|village-player|village-npc-[a-z]+|village-lantern|village-blacksmith-house(-front)?|lia)$/;
 
 /** Reuses sprite alpha, including animated character frames. No source art is modified. */
 export class SolarShadows {
@@ -42,7 +42,7 @@ export class SolarShadows {
       const texture = this.texture(source);
       // Authored transparent ground margins stay below their measured foot,
       // keeping the projection attached to the same visible grass contact.
-      const authoredFoot = source.texture.key === 'asset-house' ? HOUSE_SHADOW_FOOT
+      const authoredFoot = typeof source.getData('shadow-foot')==='number'?source.getData('shadow-foot') as number : source.texture.key === 'asset-house' ? HOUSE_SHADOW_FOOT
         : /^property-well-(idle|use)$/.test(source.texture.key) ? WELL_SHADOW_FOOT : source.originY;
       const foot = this.footPivots.get(texture) ?? authoredFoot;
       shadow.setTexture(texture).setOrigin(source.originX, 1 - foot)
@@ -53,7 +53,8 @@ export class SolarShadows {
     }
   }
   private texture(source: Caster): string {
-    const frame = source.frame;
+    const override=source.getData('shadow-source') as string|undefined;
+    const frame = override&&this.scene.textures.exists(override)?this.scene.textures.get(override).get():source.frame;
     const key = `solar-silhouette:${this.scene.sys.settings.key}:${source.texture.key}:${frame.name}`;
     if (this.scene.textures.exists(key)) return key;
     const canvas = document.createElement('canvas');

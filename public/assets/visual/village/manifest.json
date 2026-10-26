@@ -1,0 +1,110 @@
+{
+  "source": "docs/cenarios/vila-refinada/fontes/objetos.png",
+  "lamp": "Original PNG (20×80), unchanged",
+  "sprites": [
+    {
+      "id": "bench",
+      "width": 124,
+      "height": 88,
+      "worldWidth": 62,
+      "worldHeight": 44,
+      "sourceBounds": {
+        "x": 45,
+        "y": 208,
+        "width": 356,
+        "height": 234
+      }
+    },
+    {
+      "id": "flowerpot",
+      "width": 58,
+      "height": 72,
+      "worldWidth": 29,
+      "worldHeight": 36,
+      "sourceBounds": {
+        "x": 485,
+        "y": 170,
+        "width": 225,
+        "height": 278
+      }
+    },
+    {
+      "id": "planter",
+      "width": 128,
+      "height": 80,
+      "worldWidth": 64,
+      "worldHeight": 40,
+      "sourceBounds": {
+        "x": 778,
+        "y": 237,
+        "width": 392,
+        "height": 208
+      }
+    },
+    {
+      "id": "crates",
+      "width": 76,
+      "height": 108,
+      "worldWidth": 38,
+      "worldHeight": 54,
+      "sourceBounds": {
+        "x": 1225,
+        "y": 104,
+        "width": 267,
+        "height": 379
+      }
+    },
+    {
+      "id": "barrel",
+      "width": 56,
+      "height": 76,
+      "worldWidth": 28,
+      "worldHeight": 38,
+      "sourceBounds": {
+        "x": 89,
+        "y": 585,
+        "width": 246,
+        "height": 339
+      }
+    },
+    {
+      "id": "sacks",
+      "width": 82,
+      "height": 84,
+      "worldWidth": 41,
+      "worldHeight": 42,
+      "sourceBounds": {
+        "x": 413,
+        "y": 633,
+        "width": 325,
+        "height": 302
+      }
+    },
+    {
+      "id": "woodpile",
+      "width": 108,
+      "height": 76,
+      "worldWidth": 54,
+      "worldHeight": 38,
+      "sourceBounds": {
+        "x": 777,
+        "y": 665,
+        "width": 371,
+        "height": 263
+      }
+    },
+    {
+      "id": "basket",
+      "width": 68,
+      "height": 60,
+      "worldWidth": 34,
+      "worldHeight": 30,
+      "sourceBounds": {
+        "x": 1199,
+        "y": 676,
+        "width": 290,
+        "height": 241
+      }
+    }
+  ]
+}

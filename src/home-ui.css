@@ -2,3 +2,5 @@
 
 .hud.in-home .toolbelt,.hud.in-home .tool-status,.hud.in-home .building-button,.hud.in-home .crafting-button{display:none}.hud.in-home .bottom-center{bottom:25px}.hud.in-home .interaction-prompt{white-space:normal;text-align:center;max-width:min(550px,90vw)}
 .hud.in-home .controls-card{top:auto;bottom:24px;right:24px}
+.modal-root:has(.home-customization-card){z-index:20}
+.home-customization-card .home-furniture-label{overflow:hidden;text-overflow:ellipsis;box-sizing:border-box}

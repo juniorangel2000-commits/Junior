@@ -1,0 +1,800 @@
+[
+  {
+    "npc": "augusto",
+    "item": "tapete_central",
+    "original_size": [
+      238,
+      84
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      234,
+      80
+    ],
+    "transparent_fraction": 0.127,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "augusto",
+    "item": "placa_botanica",
+    "original_size": [
+      48,
+      55
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      44,
+      51
+    ],
+    "transparent_fraction": 0.362,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "augusto",
+    "item": "barril_canto",
+    "original_size": [
+      43,
+      62
+    ],
+    "alpha_bounds": [
+      0,
+      0,
+      43,
+      62
+    ],
+    "transparent_fraction": 0.113,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "augusto",
+    "item": "enfeite_floral",
+    "original_size": [
+      64,
+      66
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      60,
+      62
+    ],
+    "transparent_fraction": 0.406,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "bento",
+    "item": "bigorna_e_toco",
+    "original_size": [
+      109,
+      122
+    ],
+    "alpha_bounds": [
+      0,
+      0,
+      109,
+      122
+    ],
+    "transparent_fraction": 0.164,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "bento",
+    "item": "tanque_resfriamento",
+    "original_size": [
+      83,
+      97
+    ],
+    "alpha_bounds": [
+      0,
+      0,
+      83,
+      97
+    ],
+    "transparent_fraction": 0.099,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "bento",
+    "item": "cesto_lingotes",
+    "original_size": [
+      72,
+      94
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      68,
+      90
+    ],
+    "transparent_fraction": 0.263,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "bento",
+    "item": "caixa_minerios",
+    "original_size": [
+      75,
+      71
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      71,
+      67
+    ],
+    "transparent_fraction": 0.34,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "bento",
+    "item": "barril_hastes",
+    "original_size": [
+      62,
+      123
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      58,
+      119
+    ],
+    "transparent_fraction": 0.403,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "bento",
+    "item": "tapete_ferraria",
+    "original_size": [
+      115,
+      70
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      111,
+      66
+    ],
+    "transparent_fraction": 0.18,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "bento",
+    "item": "lamparina",
+    "original_size": [
+      36,
+      47
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      32,
+      43
+    ],
+    "transparent_fraction": 0.644,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "bento",
+    "item": "banquinho",
+    "original_size": [
+      51,
+      65
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      47,
+      61
+    ],
+    "transparent_fraction": 0.338,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "amelia",
+    "item": "almofariz",
+    "original_size": [
+      63,
+      68
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      59,
+      64
+    ],
+    "transparent_fraction": 0.448,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "amelia",
+    "item": "tapete_folhas",
+    "original_size": [
+      238,
+      89
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      234,
+      85
+    ],
+    "transparent_fraction": 0.122,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "amelia",
+    "item": "cesto_cogumelos",
+    "original_size": [
+      69,
+      46
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      65,
+      42
+    ],
+    "transparent_fraction": 0.411,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "amelia",
+    "item": "planta_grande",
+    "original_size": [
+      82,
+      116
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      78,
+      112
+    ],
+    "transparent_fraction": 0.389,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "amelia",
+    "item": "mudas_caixotes",
+    "original_size": [
+      121,
+      91
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      117,
+      87
+    ],
+    "transparent_fraction": 0.352,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "tobias",
+    "item": "toras_empilhadas",
+    "original_size": [
+      102,
+      122
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      98,
+      118
+    ],
+    "transparent_fraction": 0.405,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "tobias",
+    "item": "barril_rolos",
+    "original_size": [
+      59,
+      99
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      55,
+      95
+    ],
+    "transparent_fraction": 0.474,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "tobias",
+    "item": "tapete_verde",
+    "original_size": [
+      267,
+      144
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      263,
+      140
+    ],
+    "transparent_fraction": 0.085,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": true,
+    "notice": "Inclui uma mesa de catálogo; não é tapete isolado."
+  },
+  {
+    "npc": "tobias",
+    "item": "banquinho",
+    "original_size": [
+      24,
+      51
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      20,
+      47
+    ],
+    "transparent_fraction": 0.551,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "rosa",
+    "item": "sacos_adubo",
+    "original_size": [
+      124,
+      92
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      120,
+      88
+    ],
+    "transparent_fraction": 0.451,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "rosa",
+    "item": "tapete_verde",
+    "original_size": [
+      211,
+      88
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      207,
+      84
+    ],
+    "transparent_fraction": 0.127,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "rosa",
+    "item": "vaso_flores",
+    "original_size": [
+      56,
+      66
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      52,
+      62
+    ],
+    "transparent_fraction": 0.413,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "rosa",
+    "item": "caixa_aboboras",
+    "original_size": [
+      92,
+      98
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      88,
+      94
+    ],
+    "transparent_fraction": 0.345,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "nilo",
+    "item": "estatua_direita",
+    "original_size": [
+      63,
+      133
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      59,
+      129
+    ],
+    "transparent_fraction": 0.439,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "nilo",
+    "item": "busto_esquerda",
+    "original_size": [
+      57,
+      79
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      53,
+      75
+    ],
+    "transparent_fraction": 0.405,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "nilo",
+    "item": "tapete_persa",
+    "original_size": [
+      313,
+      163
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      309,
+      159
+    ],
+    "transparent_fraction": 0.074,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": true,
+    "notice": "Inclui mesa e outros itens sobre o tapete; conjunto composto."
+  },
+  {
+    "npc": "nilo",
+    "item": "globo_terrestre",
+    "original_size": [
+      70,
+      88
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      66,
+      84
+    ],
+    "transparent_fraction": 0.394,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "celina",
+    "item": "espelho_oval",
+    "original_size": [
+      54,
+      141
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      50,
+      137
+    ],
+    "transparent_fraction": 0.378,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "celina",
+    "item": "tapete_redondo",
+    "original_size": [
+      229,
+      167
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      225,
+      163
+    ],
+    "transparent_fraction": 0.279,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": true,
+    "notice": "Inclui bancada e banco sobre o tapete; conjunto composto."
+  },
+  {
+    "npc": "celina",
+    "item": "cadeira_costura",
+    "original_size": [
+      76,
+      75
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      72,
+      71
+    ],
+    "transparent_fraction": 0.328,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "celina",
+    "item": "tesouras_na_parede",
+    "original_size": [
+      44,
+      60
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      40,
+      56
+    ],
+    "transparent_fraction": 0.447,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "damiao",
+    "item": "varas_pesca",
+    "original_size": [
+      51,
+      100
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      47,
+      96
+    ],
+    "transparent_fraction": 0.361,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "damiao",
+    "item": "tapete_azul",
+    "original_size": [
+      202,
+      80
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      198,
+      76
+    ],
+    "transparent_fraction": 0.138,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "damiao",
+    "item": "corda_enrolada",
+    "original_size": [
+      67,
+      99
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      63,
+      95
+    ],
+    "transparent_fraction": 0.352,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "helena",
+    "item": "barris_bebidas",
+    "original_size": [
+      95,
+      91
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      91,
+      87
+    ],
+    "transparent_fraction": 0.409,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "helena",
+    "item": "tapete_vermelho",
+    "original_size": [
+      218,
+      168
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      214,
+      164
+    ],
+    "transparent_fraction": 0.084,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": true,
+    "notice": "Inclui mesa e cadeiras; conjunto composto."
+  },
+  {
+    "npc": "helena",
+    "item": "plantas_canto",
+    "original_size": [
+      56,
+      98
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      52,
+      94
+    ],
+    "transparent_fraction": 0.313,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "icaro",
+    "item": "barril_azul",
+    "original_size": [
+      60,
+      102
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      56,
+      98
+    ],
+    "transparent_fraction": 0.378,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  },
+  {
+    "npc": "icaro",
+    "item": "tapete_vermelho",
+    "original_size": [
+      104,
+      83
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      100,
+      79
+    ],
+    "transparent_fraction": 0.17,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": true,
+    "notice": "Inclui parte do chão; remover ambiente antes do uso."
+  },
+  {
+    "npc": "icaro",
+    "item": "peças_engrenagens",
+    "original_size": [
+      84,
+      67
+    ],
+    "alpha_bounds": [
+      4,
+      4,
+      80,
+      63
+    ],
+    "transparent_fraction": 0.426,
+    "has_partial_alpha": false,
+    "status": "CANDIDATO - requer revisao visual",
+    "composite": false,
+    "notice": ""
+  }
+]

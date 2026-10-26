@@ -66,6 +66,11 @@ export interface SaveData {
   activeArea?: 'property' | 'forest' | 'village';
   forestPosition?: TilePoint & { direction?: CharacterDirection };
   villagePosition?: TilePoint & { direction?: CharacterDirection };
+  blacksmithInterior?: TilePoint & {direction?:CharacterDirection};
+  blacksmithHome?:HomeData;
+  blacksmithScene?:import('./systems/smith-layout').SmithLayout;
+  blacksmithLayoutRevision?:2|3;
+  bentoRoutine?:import('./systems/bento-routine').BentoRoutineState;
   /** Absent in older saves; entering the village starts with zero coins. */
   villageEconomy?: VillageEconomy;
   villageProgress?: VillageProgress;
@@ -115,6 +120,7 @@ export interface HudData {
   wateringCanWater?: number;
   inHome: boolean;
   playerTile?: TilePoint;
+  interiorMapSize?: {width:number;height:number};
   name: string;
   day: number;
   time: number;

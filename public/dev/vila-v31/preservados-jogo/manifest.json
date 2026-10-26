@@ -1,0 +1,89 @@
+{
+  "unchangedFiles": [
+    {
+      "file": "village/blacksmith-house.png",
+      "sha256": "db65f78da21a4d62329b832ce5db2109c644d50ac86b42fab68412a12f2ea66d"
+    },
+    {
+      "file": "village/blacksmith-interior.manifest.json",
+      "sha256": "91ea4abb113cedda69db65554094ffe20ded8545f9a65db6c0e4ad4482e6f583"
+    },
+    {
+      "file": "village/blacksmith-iron-stock.png",
+      "sha256": "17251c252dadd805a1bad87a08e6b9bfe9b1890111c524a79ee5cbfa97d489ba"
+    },
+    {
+      "file": "village/blacksmith-extras.manifest.json",
+      "sha256": "ff1ffac1fed7a57133c1a85396338213340a2ac3b1e42f52b4151651187c2886"
+    },
+    {
+      "file": "village/blacksmith-tool-rack.png",
+      "sha256": "fdd9f53347d897d92805b9e7dc8a2d14ac1a58eea34121292685dd64cf93fc76"
+    },
+    {
+      "file": "village/blacksmith-counter-middle.png",
+      "sha256": "11549d49da57c3266156fea355e50a6cc8cee7924aeec7f741435f80ca0a1ce3"
+    },
+    {
+      "file": "village/blacksmith-counter.png",
+      "sha256": "71ac34f1acf872660b9c516cc2d058afabb129b15be5c3c2990cb58f1556cc38"
+    },
+    {
+      "file": "village/blacksmith-armor-stand.png",
+      "sha256": "f74ce5af842e6a582e5bdcd8080ec290c641310a87035b4139c31e574db74d6d"
+    },
+    {
+      "file": "village/blacksmith-weapon-rack.png",
+      "sha256": "21cabbcc56a2ed81bbd06200fa2af359f6937a43404d3ad69f864301583052b0"
+    },
+    {
+      "file": "village/blacksmith-bellows.png",
+      "sha256": "84161463a4f7062d6205acfdf7ffcfad2b731411b9eda86bace7727332b93b86"
+    },
+    {
+      "file": "village/blacksmith-coal-bin.png",
+      "sha256": "d8361665b00b96b51dcd7c36472e0a1da443faaa35cd4734e2101ae5920a2be6"
+    },
+    {
+      "file": "village/blacksmith-counter-long.png",
+      "sha256": "1db9958671b234c99c4daecb6f3611263aa967d44716859a8720a3b944f03941"
+    },
+    {
+      "file": "village/blacksmith-grindstone.png",
+      "sha256": "9e4fb1391f360af4753acbe1f2139ad38f3b062749451e066fe178e9e218aa2c"
+    },
+    {
+      "file": "village/blacksmith-counter-right.png",
+      "sha256": "7bf657465e4eb86419283945a538487f621ab9fb3730b3f5cb5048111e0e1118"
+    },
+    {
+      "file": "village/blacksmith-counter-left.png",
+      "sha256": "fadf5a1b678dd39af506ff1fdd7a0d359b3c80b5590845a65a03770f6975d45e"
+    },
+    {
+      "file": "village/blacksmith-parts-shelf.png",
+      "sha256": "9daf22b881e856f89c3d0c0ba21b6c436c90976eed1ab88d6edb6d50e6ff2481"
+    },
+    {
+      "file": "economy/forge/frame-0.png",
+      "sha256": "41f79ec7f1082e5c3f2aba6551f20daf2dd6ea66f3b1e64b443d764fd09f7514"
+    },
+    {
+      "file": "economy/forge/frame-3.png",
+      "sha256": "278565e7da92fb0532365c4c9f9aee09ae8f88e000ce6bdda70ca4489d850c04"
+    },
+    {
+      "file": "economy/forge/frame-2.png",
+      "sha256": "4b7cbd1626b01fae6a9ce73d9c65aa7ce79215eb10a48f8fe123ef2d2d989c65"
+    },
+    {
+      "file": "economy/forge/frame-1.png",
+      "sha256": "7768e5e7d1b0218a0d6ae6489aa3125a95405b775e78a6cdd42bb346d1ca2a23"
+    },
+    {
+      "file": "economy/icons/forge.png",
+      "sha256": "41f79ec7f1082e5c3f2aba6551f20daf2dd6ea66f3b1e64b443d764fd09f7514"
+    }
+  ],
+  "preserved": true
+}

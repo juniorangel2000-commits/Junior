@@ -1,0 +1,56 @@
+[
+  {
+    "id": "bigorna_e_toco",
+    "type": "trabalhar_metal",
+    "position": {
+      "x": 381.0,
+      "y": 256.5
+    },
+    "enabled": false
+  },
+  {
+    "id": "tanque_resfriamento",
+    "type": "resfriar",
+    "position": {
+      "x": 324.25,
+      "y": 189.0
+    },
+    "enabled": true
+  },
+  {
+    "id": "caixa_minerios",
+    "type": "minerios",
+    "position": {
+      "x": 156.0,
+      "y": 275.0
+    },
+    "enabled": false
+  },
+  {
+    "id": "barril_hastes",
+    "type": "estoque",
+    "position": {
+      "x": 78.25,
+      "y": 258.0
+    },
+    "enabled": false
+  },
+  {
+    "id": "lamparina",
+    "type": "iluminar",
+    "position": {
+      "x": 312.5,
+      "y": 86.5
+    },
+    "enabled": false
+  },
+  {
+    "id": "banquinho",
+    "type": "examinar",
+    "position": {
+      "x": 339.0,
+      "y": 259.0
+    },
+    "enabled": true
+  }
+]

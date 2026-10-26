@@ -1,0 +1,30 @@
+import './smith-layout-editor.css';
+import {SMITH_ASSETS,smithAsset,moveSmithPiece,type SmithLayout} from './systems/smith-layout';
+import type {SmithView} from './smith-layout-art';
+
+export function mountSmithEditor(host:HTMLElement,get:()=>SmithLayout,getView:()=>SmithView|undefined,commit:(data:SmithLayout)=>string|null,close:()=>void):()=>void{
+ host.classList.add('smith-editor-overlay');let selected='mesa_atendimento';
+ const panel=document.createElement('section');panel.className='panel smith-editor';panel.setAttribute('aria-label','Editor completo da ferraria');
+ panel.innerHTML=`<h2>Editar ferraria</h2><p>Selecione ou arraste uma peça. Pisos, janela, paredes e objetos ficam salvos na partida.</p><label>Peça <select data-pieces></select></label><label>Acervo <select data-assets></select></label><button data-add>Adicionar peça</button><label data-material-label>Material do piso <select data-material></select></label><div class="smith-fields"><label>X <input data-x type="number" step="1"></label><label>Y <input data-y type="number" step="1"></label><label>Largura <input data-w type="number" step="1" min="1"></label><label>Altura <input data-h type="number" step="1" min="1"></label></div><label data-shade-label>Tom escuro da parede <input data-shade type="range" min="0" max="1" step="0.02"></label><label><input data-visible type="checkbox"> Exibir peça</label><label><input data-solid type="checkbox"> Colisão</label><label><input data-effects type="checkbox"> Animação e luz</label><label>Apoiada em <select data-parent></select></label><div><button data-apply>Aplicar</button><button data-hide>Guardar</button></div><button data-export>Exportar cenário JSON</button><label>Importar cenário JSON <input data-import type="file" accept="application/json,.json"></label><button data-close>Concluir · H / Esc</button><p role="status" data-message></p>`;
+ host.append(panel);const $=<T extends HTMLElement>(s:string)=>panel.querySelector<T>(s)!;
+ for(const a of SMITH_ASSETS){const o=document.createElement('option');o.value=a.id;o.textContent=a.name;$<HTMLSelectElement>('[data-assets]').append(o);}
+ for(const a of SMITH_ASSETS.filter(a=>a.tile))$<HTMLSelectElement>('[data-material]').append(new Option(a.name,a.id));
+ const refresh=()=>{const d=get();const options=$<HTMLSelectElement>('[data-pieces]');options.replaceChildren();for(const p of d.pieces){const o=document.createElement('option');o.value=p.id;o.textContent=smithAsset(p.asset)!.name+(p.visible?'':' · guardada');options.append(o);}if(!d.pieces.some(p=>p.id===selected))selected=d.pieces[0].id;options.value=selected;
+  const p=d.pieces.find(p=>p.id===selected)!,a=smithAsset(p.asset)!,b=a.bounds;
+  $('[data-material-label]').hidden=!a.tile;$<HTMLSelectElement>('[data-material]').value=p.asset;
+  for(const[k,v]of Object.entries({x:p.x,y:p.y,w:(b[2]-b[0])*p.sx,h:(b[3]-b[1])*p.sy}))$<HTMLInputElement>('[data-'+k+']').value=String(Math.round(v*100)/100);
+  $('[data-shade-label]').hidden=p.id!=='structure';$<HTMLInputElement>('[data-shade]').value=String(p.wallShade??.98);
+  $<HTMLInputElement>('[data-effects]').checked=p.effects!==false;
+  $<HTMLInputElement>('[data-visible]').checked=p.visible;$<HTMLInputElement>('[data-solid]').checked=p.solid??!!a.collision;
+  const parent=$<HTMLSelectElement>('[data-parent]');parent.replaceChildren(new Option('Nenhum',''));for(const n of d.pieces.filter(n=>n.id!==p.id))parent.append(new Option(smithAsset(n.asset)!.name+' · '+n.id,n.id));parent.value=p.parent??'';
+  getView()?.editing(true,id=>{selected=id;refresh();},(id,x,y)=>{const candidate=structuredClone(get());moveSmithPiece(candidate,id,x,y);const error=commit(candidate);$('[data-message]').textContent=error??'Posição salva.';selected=id;refresh();});
+ };
+ const apply=(candidate:SmithLayout)=>{$('[data-message]').textContent=commit(candidate)??'Alterações salvas.';refresh();};
+ $('[data-apply]').onclick=()=>{const d=structuredClone(get()),p=d.pieces.find(p=>p.id===selected)!,a=smithAsset(p.asset)!,b=a.bounds;const number=(s:string)=>Number($<HTMLInputElement>('[data-'+s+']').value);moveSmithPiece(d,p.id,number('x'),number('y'));p.sx=number('w')/(b[2]-b[0]);p.sy=number('h')/(b[3]-b[1]);if(a.tile)p.asset=$<HTMLSelectElement>('[data-material]').value;if(p.id==='structure')p.wallShade=Number($<HTMLInputElement>('[data-shade]').value);p.effects=$<HTMLInputElement>('[data-effects]').checked;p.visible=$<HTMLInputElement>('[data-visible]').checked;p.solid=$<HTMLInputElement>('[data-solid]').checked;p.parent=$<HTMLSelectElement>('[data-parent]').value||undefined;apply(d);};
+ $('[data-hide]').onclick=()=>{const d=structuredClone(get());d.pieces.find(p=>p.id===selected)!.visible=false;apply(d);};
+ $('[data-add]').onclick=()=>{const d=structuredClone(get()),asset=$<HTMLSelectElement>('[data-assets]').value;if(asset==='structure'){$('[data-message]').textContent='A estrutura já está no cenário; selecione-a para editar.';return;}let n=1;while(d.pieces.some(p=>p.id===asset+'-'+n))n++;selected=asset+'-'+n;const original=d.pieces.find(p=>p.asset===asset);d.pieces.push(original?{...original,id:selected,parent:undefined,visible:true,x:200,y:230}:{id:selected,asset,x:200,y:230,sx:.5,sy:.5,visible:true});apply(d);};
+ $('[data-export]').onclick=()=>{const a=document.createElement('a'),url=URL.createObjectURL(new Blob([JSON.stringify(get(),null,2)],{type:'application/json'}));a.href=url;a.download='After-Rain-Ferraria-Editada.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+ $<HTMLInputElement>('[data-import]').onchange=async()=>{const f=$<HTMLInputElement>('[data-import]').files?.[0];if(!f)return;try{const d=JSON.parse(await f.text());apply(d);}catch{$('[data-message]').textContent='Arquivo de cenário inválido.';}};
+ $('[data-close]').onclick=close;$<HTMLSelectElement>('[data-pieces]').onchange=()=>{selected=$<HTMLSelectElement>('[data-pieces]').value;refresh();};refresh();
+ return()=>{getView()?.editing(false);host.classList.remove('smith-editor-overlay');panel.remove();};
+}

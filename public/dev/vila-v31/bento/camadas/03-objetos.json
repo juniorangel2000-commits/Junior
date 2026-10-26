@@ -1,0 +1,413 @@
+[
+  {
+    "id": "tanque_resfriamento",
+    "name": "Tanque resfriamento",
+    "status": "aprovado",
+    "gameReady": true,
+    "original": "bento/originais/recortes_referencia/tanque_resfriamento.png",
+    "before": "bento/originais/sprites_alpha_limpo/tanque_resfriamento.png",
+    "sourcePosition": {
+      "x": 545,
+      "y": 191,
+      "width": 111,
+      "height": 135,
+      "exactRGB": true,
+      "mismatchedPixels": 0
+    },
+    "sourceReferenceBBox": [
+      575,
+      910,
+      686,
+      1045
+    ],
+    "hiddenSurfaceReconstructed": false,
+    "interaction": "resfriar",
+    "scale": 0.5,
+    "file": "bento/aprovados/tanque_resfriamento.png",
+    "width": 121,
+    "height": 144,
+    "origin": {
+      "x": 0.5,
+      "y": 0.9444444444444444
+    },
+    "originPx": {
+      "x": 60.5,
+      "y": 136
+    },
+    "sourceBBox": [
+      548,
+      202,
+      653,
+      330
+    ],
+    "sourceOffsetPx": {
+      "x": -8,
+      "y": -8
+    },
+    "recommendedPosition": {
+      "x": 324.25,
+      "y": 189.0
+    },
+    "depth": {
+      "mode": "feet",
+      "offset": 0,
+      "layer": "objects"
+    },
+    "collision": {
+      "x": 26.9,
+      "y": 105.28,
+      "width": 67.2,
+      "height": 25.6
+    },
+    "reason": "Contorno frontal completo recuperado da referência maior; aro e base preservados, sem piso anexado.",
+    "padding": 8,
+    "alphaBBox": [
+      15,
+      22,
+      105,
+      133
+    ],
+    "opaquePixels": 8647,
+    "restoredAlphaPixels": 0,
+    "originalRGBMismatches": 0,
+    "sha256": "62c40335442690852dd8d6ed78f2e94f2bfbac3678ec33b43f00cf53f0f001d7",
+    "repair": "manual_foreground_polygon_and_original_RGB_alpha_recovery",
+    "maskPolygon": [
+      [
+        42,
+        14
+      ],
+      [
+        64,
+        14
+      ],
+      [
+        77,
+        19
+      ],
+      [
+        87,
+        27
+      ],
+      [
+        93,
+        37
+      ],
+      [
+        96,
+        48
+      ],
+      [
+        95,
+        79
+      ],
+      [
+        94,
+        96
+      ],
+      [
+        89,
+        110
+      ],
+      [
+        79,
+        118
+      ],
+      [
+        63,
+        123
+      ],
+      [
+        42,
+        124
+      ],
+      [
+        25,
+        120
+      ],
+      [
+        14,
+        112
+      ],
+      [
+        9,
+        102
+      ],
+      [
+        7,
+        85
+      ],
+      [
+        7,
+        42
+      ],
+      [
+        10,
+        32
+      ],
+      [
+        18,
+        25
+      ],
+      [
+        29,
+        19
+      ]
+    ]
+  },
+  {
+    "id": "tapete_ferraria",
+    "name": "Tapete ferraria",
+    "status": "aprovado",
+    "gameReady": true,
+    "original": "bento/originais/recortes_referencia/tapete_ferraria.png",
+    "before": "bento/originais/sprites_alpha_limpo/tapete_ferraria.png",
+    "sourcePosition": {
+      "x": 374,
+      "y": 410,
+      "width": 137,
+      "height": 81,
+      "exactRGB": true,
+      "mismatchedPixels": 0
+    },
+    "sourceReferenceBBox": [
+      404,
+      1129,
+      541,
+      1210
+    ],
+    "hiddenSurfaceReconstructed": false,
+    "interaction": null,
+    "scale": 0.5,
+    "file": "bento/aprovados/tapete_ferraria.png",
+    "width": 143,
+    "height": 84,
+    "origin": {
+      "x": 0.5,
+      "y": 0.9047619047619048
+    },
+    "originPx": {
+      "x": 71.5,
+      "y": 76
+    },
+    "sourceBBox": [
+      380,
+      416,
+      507,
+      484
+    ],
+    "sourceOffsetPx": {
+      "x": -8,
+      "y": -8
+    },
+    "recommendedPosition": {
+      "x": 245.75,
+      "y": 266.0
+    },
+    "depth": {
+      "mode": "feet",
+      "offset": 0,
+      "layer": "objects"
+    },
+    "collision": null,
+    "reason": "Tapete plano separado dos batentes de madeira; somente superfície visível, sem móveis incorporados.",
+    "padding": 8,
+    "alphaBBox": [
+      10,
+      10,
+      132,
+      75
+    ],
+    "opaquePixels": 7699,
+    "restoredAlphaPixels": 0,
+    "originalRGBMismatches": 0,
+    "sha256": "fbce8388f3e696bcfca63a8915b13ddb377a58356085299f81697f02aad538d4",
+    "repair": "manual_foreground_polygon_and_original_RGB_alpha_recovery",
+    "maskPolygon": [
+      [
+        6,
+        2
+      ],
+      [
+        120,
+        2
+      ],
+      [
+        123,
+        62
+      ],
+      [
+        120,
+        66
+      ],
+      [
+        5,
+        66
+      ],
+      [
+        2,
+        62
+      ]
+    ]
+  },
+  {
+    "id": "banquinho",
+    "name": "Banquinho",
+    "status": "aprovado",
+    "gameReady": true,
+    "original": "bento/originais/recortes_referencia/banquinho.png",
+    "before": "bento/originais/sprites_alpha_limpo/banquinho.png",
+    "sourcePosition": {
+      "x": 604,
+      "y": 399,
+      "width": 52,
+      "height": 74,
+      "exactRGB": true,
+      "mismatchedPixels": 0
+    },
+    "sourceReferenceBBox": [
+      634,
+      1118,
+      686,
+      1192
+    ],
+    "hiddenSurfaceReconstructed": false,
+    "interaction": "examinar",
+    "scale": 0.5,
+    "file": "bento/aprovados/banquinho.png",
+    "width": 70,
+    "height": 85,
+    "origin": {
+      "x": 0.5,
+      "y": 0.9058823529411765
+    },
+    "originPx": {
+      "x": 35.0,
+      "y": 77
+    },
+    "sourceBBox": [
+      603,
+      401,
+      657,
+      470
+    ],
+    "sourceOffsetPx": {
+      "x": -8,
+      "y": -8
+    },
+    "recommendedPosition": {
+      "x": 339.0,
+      "y": 259.0
+    },
+    "depth": {
+      "mode": "feet",
+      "offset": 0,
+      "layer": "objects"
+    },
+    "collision": {
+      "x": 17.72,
+      "y": 60.44,
+      "width": 34.56,
+      "height": 13.8
+    },
+    "reason": "Assento, pernas e travessa visíveis; piso entre as pernas excluído sem reamostragem.",
+    "padding": 8,
+    "alphaBBox": [
+      13,
+      14,
+      58,
+      72
+    ],
+    "opaquePixels": 1998,
+    "restoredAlphaPixels": 0,
+    "originalRGBMismatches": 0,
+    "sha256": "82d1432067ff7a1ac6f00855e96ecf3692a7e5d0bc82e871bbbd8f7e7d033b74",
+    "repair": "manual_foreground_polygon_and_original_RGB_alpha_recovery",
+    "maskPolygon": [
+      [
+        18,
+        6
+      ],
+      [
+        32,
+        6
+      ],
+      [
+        41,
+        10
+      ],
+      [
+        48,
+        17
+      ],
+      [
+        49,
+        29
+      ],
+      [
+        45,
+        36
+      ],
+      [
+        47,
+        56
+      ],
+      [
+        46,
+        62
+      ],
+      [
+        39,
+        63
+      ],
+      [
+        36,
+        57
+      ],
+      [
+        34,
+        48
+      ],
+      [
+        23,
+        48
+      ],
+      [
+        20,
+        60
+      ],
+      [
+        18,
+        63
+      ],
+      [
+        8,
+        63
+      ],
+      [
+        7,
+        60
+      ],
+      [
+        10,
+        38
+      ],
+      [
+        7,
+        34
+      ],
+      [
+        5,
+        24
+      ],
+      [
+        7,
+        16
+      ],
+      [
+        12,
+        10
+      ]
+    ]
+  }
+]

@@ -1,0 +1,110 @@
+{
+  "version": "v3.1",
+  "base": "After_Rain_Vila_10_Comercios_Reconstrucao_v3",
+  "lojas": [
+    {
+      "loja": "amelia",
+      "fachada": true,
+      "interior": true,
+      "referencia_aprovada": true,
+      "recortes_referencia": 13,
+      "sprites_em_reconstrucao": 5,
+      "balcoes_refinados": 1,
+      "sprites_alpha_limpo": 5
+    },
+    {
+      "loja": "augusto",
+      "fachada": true,
+      "interior": true,
+      "referencia_aprovada": true,
+      "recortes_referencia": 14,
+      "sprites_em_reconstrucao": 4,
+      "balcoes_refinados": 1,
+      "sprites_alpha_limpo": 4
+    },
+    {
+      "loja": "bento",
+      "fachada": true,
+      "interior": true,
+      "referencia_aprovada": true,
+      "recortes_referencia": 14,
+      "sprites_em_reconstrucao": 8,
+      "balcoes_refinados": 1,
+      "sprites_alpha_limpo": 8
+    },
+    {
+      "loja": "celina",
+      "fachada": true,
+      "interior": true,
+      "referencia_aprovada": true,
+      "recortes_referencia": 13,
+      "sprites_em_reconstrucao": 4,
+      "balcoes_refinados": 1,
+      "sprites_alpha_limpo": 4
+    },
+    {
+      "loja": "damiao",
+      "fachada": true,
+      "interior": true,
+      "referencia_aprovada": true,
+      "recortes_referencia": 12,
+      "sprites_em_reconstrucao": 3,
+      "balcoes_refinados": 1,
+      "sprites_alpha_limpo": 3
+    },
+    {
+      "loja": "helena",
+      "fachada": true,
+      "interior": true,
+      "referencia_aprovada": true,
+      "recortes_referencia": 13,
+      "sprites_em_reconstrucao": 3,
+      "balcoes_refinados": 1,
+      "sprites_alpha_limpo": 3
+    },
+    {
+      "loja": "icaro",
+      "fachada": true,
+      "interior": true,
+      "referencia_aprovada": true,
+      "recortes_referencia": 12,
+      "sprites_em_reconstrucao": 3,
+      "balcoes_refinados": 1,
+      "sprites_alpha_limpo": 3
+    },
+    {
+      "loja": "nilo",
+      "fachada": true,
+      "interior": true,
+      "referencia_aprovada": true,
+      "recortes_referencia": 13,
+      "sprites_em_reconstrucao": 4,
+      "balcoes_refinados": 1,
+      "sprites_alpha_limpo": 4
+    },
+    {
+      "loja": "rosa",
+      "fachada": true,
+      "interior": true,
+      "referencia_aprovada": true,
+      "recortes_referencia": 13,
+      "sprites_em_reconstrucao": 4,
+      "balcoes_refinados": 1,
+      "sprites_alpha_limpo": 4
+    },
+    {
+      "loja": "tobias",
+      "fachada": true,
+      "interior": true,
+      "referencia_aprovada": true,
+      "recortes_referencia": 13,
+      "sprites_em_reconstrucao": 4,
+      "balcoes_refinados": 1,
+      "sprites_alpha_limpo": 4
+    }
+  ],
+  "notas": [
+    "Arquivos preservados da v3.0 com acréscimo de manifest e previews por loja.",
+    "Separação ainda em revisão; sprites listados como alpha limpo não implicam validação final em jogo."
+  ]
+}

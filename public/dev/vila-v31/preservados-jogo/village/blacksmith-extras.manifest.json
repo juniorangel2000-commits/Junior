@@ -1,0 +1,94 @@
+{
+  "source": "docs/cenarios/vila-refinada/fontes/ferraria-objetos-adicionais.png",
+  "modules": {
+    "width": 64,
+    "height": 96,
+    "worldWidth": 32,
+    "worldHeight": 48,
+    "parts": [
+      "left",
+      "middle",
+      "right"
+    ]
+  },
+  "sprites": [
+    {
+      "id": "counter-long",
+      "width": 256,
+      "height": 96,
+      "worldWidth": 128,
+      "worldHeight": 48,
+      "sourceBounds": {
+        "x": 35,
+        "y": 243,
+        "width": 608,
+        "height": 198
+      }
+    },
+    {
+      "id": "weapon-rack",
+      "width": 128,
+      "height": 128,
+      "worldWidth": 64,
+      "worldHeight": 64,
+      "sourceBounds": {
+        "x": 692,
+        "y": 120,
+        "width": 352,
+        "height": 321
+      }
+    },
+    {
+      "id": "bellows",
+      "width": 80,
+      "height": 72,
+      "worldWidth": 40,
+      "worldHeight": 36,
+      "sourceBounds": {
+        "x": 1108,
+        "y": 206,
+        "width": 395,
+        "height": 235
+      }
+    },
+    {
+      "id": "grindstone",
+      "width": 88,
+      "height": 104,
+      "worldWidth": 44,
+      "worldHeight": 52,
+      "sourceBounds": {
+        "x": 107,
+        "y": 594,
+        "width": 444,
+        "height": 320
+      }
+    },
+    {
+      "id": "coal-bin",
+      "width": 64,
+      "height": 64,
+      "worldWidth": 32,
+      "worldHeight": 32,
+      "sourceBounds": {
+        "x": 658,
+        "y": 637,
+        "width": 297,
+        "height": 277
+      }
+    },
+    {
+      "id": "iron-stock",
+      "width": 128,
+      "height": 80,
+      "worldWidth": 64,
+      "worldHeight": 40,
+      "sourceBounds": {
+        "x": 1077,
+        "y": 688,
+        "width": 428,
+        "height": 223
+      }
+    }
+  ]
+}

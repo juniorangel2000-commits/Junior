@@ -1,3 +1,4 @@
+import {validSmithLayout,smithFits,smithNavigation} from './smith-layout';
 import {validateEconomyState,newEconomyState} from './economy';
 import {validateResourceField} from './resource-spawns';
 import {repairPropertyShore,PROPERTY_SHORE_REVISION} from '../data/property-shore-repair';
@@ -19,6 +20,8 @@ import { isCharacterId } from '../data/characters';
 import {createVillageEconomy,validateVillageEconomy} from '../data/village-commerce';
 import {createVillageProgress,validateVillageProgress,validateVillageInstallations,validateVillageSurvivors} from '../data/village-progress';
 import {VILLAGE_ITEM_IDS} from '../data/items';
+import {blacksmithRoomPosition,previousBlacksmithPosition,BLACKSMITH_INSIDE,validateBlacksmithHome,BLACKSMITH_ROOM} from '../data/blacksmith-interior';
+import {validBentoRoutine} from './bento-routine';
 
 // A chave e a origem do aplicativo permanecem iguais para localizar partidas antigas.
 export const SAVE_KEY = 'depois-da-chuva-v1';
@@ -56,6 +59,15 @@ export function validateSave(value: unknown): value is SaveData {
   if (value.quickbar !== undefined && !validQuickbar(value.quickbar)) return false;
   if (value.activeArea !== undefined && value.activeArea !== 'property' && value.activeArea !== 'forest' && value.activeArea !== 'village') return false;
   if(value.activeArea==='village'&&(value.homePosition!==undefined||value.animalEscort!==undefined))return false;
+  if(value.blacksmithScene!==undefined&&!validSmithLayout(value.blacksmithScene))return false;
+  if(value.blacksmithHome!==undefined&&!validateBlacksmithHome(value.blacksmithHome))return false;
+  const smithRoom=value.blacksmithHome?new Home(value.blacksmithHome as SaveData['home'],false):BLACKSMITH_ROOM;
+  if(value.bentoRoutine!==undefined&&!validBentoRoutine(value.bentoRoutine,value.blacksmithScene?smithNavigation(value.blacksmithScene as NonNullable<SaveData['blacksmithScene']>):smithRoom))return false;
+  if(value.blacksmithLayoutRevision!==undefined&&value.blacksmithLayoutRevision!==2&&value.blacksmithLayoutRevision!==3)return false;
+  if(value.blacksmithInterior!==undefined){
+    const p=value.blacksmithInterior;
+    if(value.activeArea!=='village'||!isRecord(p)||typeof p.x!=='number'||typeof p.y!=='number'||!(value.blacksmithScene?smithFits(value.blacksmithScene as NonNullable<SaveData['blacksmithScene']>,p.x,p.y):blacksmithRoomPosition(p.x,p.y,smithRoom))||(p.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(p.direction as CharacterDirection)))return false;
+  }
   if(value.villageEconomy!==undefined&&!validateVillageEconomy(value.villageEconomy))return false;
   if(value.economy6!==undefined&&!validateEconomyState(value.economy6))return false;
   if(value.villageProgress!==undefined&&!validateVillageProgress(value.villageProgress))return false;
@@ -176,6 +188,18 @@ export function validateSave(value: unknown): value is SaveData {
 
 /** Converte em memória; a leitura nunca modifica nem substitui o slot original. */
 export function migrateSave(value: unknown): SaveData | null {
+  // New shop fixtures can cover a previously valid saved position. Recover
+  // only proven old-layout positions, keeping inventory, money and orders intact.
+  if(isRecord(value)&&value.version===SAVE_VERSION&&value.blacksmithHome===undefined&&(value.blacksmithLayoutRevision===undefined||value.blacksmithLayoutRevision===2)){
+    const revision=value.blacksmithLayoutRevision;
+    const displaced=(p:unknown):p is Record<string,unknown>&{x:number;y:number}=>isRecord(p)&&typeof p.x==='number'&&typeof p.y==='number'&&previousBlacksmithPosition(p.x,p.y,revision)&&!blacksmithRoomPosition(p.x,p.y);
+    const p=value.blacksmithInterior,b=value.bentoRoutine;
+    if(value.activeArea==='village'&&displaced(p))value={...value,blacksmithInterior:{...p,...BLACKSMITH_INSIDE},blacksmithLayoutRevision:3};
+    if(displaced(b)&&b.area==='blacksmith-home'){
+      const recovered={...b,...BLACKSMITH_INSIDE};
+      if(validBentoRoutine(recovered))value={...(value as Record<string,unknown>),bentoRoutine:recovered,blacksmithLayoutRevision:3};
+    }
+  }
   // Only the new item is filled in. Missing older stock fields still reject a corrupt save.
   if (isRecord(value) && value.version === SAVE_VERSION && isRecord(value.inventory) && value.inventory.hoe === undefined) {
     value = { ...value, inventory: { ...value.inventory, hoe: 0 } };

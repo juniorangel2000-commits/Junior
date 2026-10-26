@@ -1,0 +1,389 @@
+{
+  "stats": {
+    "providedNPCs": 1,
+    "expectedNPCs": 10,
+    "pendingNPCs": 9,
+    "bentoTargetObjects": 14,
+    "bento": {
+      "aprovado": 3,
+      "precisa_revisao": 4,
+      "incompleto": 7
+    },
+    "objectFilesCorrected": 7,
+    "newAtlasFrames": 3,
+    "officialOriginalFiles": 24,
+    "referenceCropsExactRGB": 14,
+    "hiddenSurfacesReconstructed": 0,
+    "sourceFilesChanged": 0,
+    "restoredAlphaPixels": 1759
+  },
+  "inputFiles": [
+    {
+      "file": "base_codex/LEIA_PRIMEIRO_v31.md",
+      "sha256": "6d054f6a9c02012b53c0435b79c7a0684a10409247233f766c9c25cd51a35e9a",
+      "bytes": 2621
+    },
+    {
+      "file": "bento/fachada.png",
+      "sha256": "a395f7248e6a4de67946791e232c59570ef85f568dcbdaee04e9eab14325807e",
+      "bytes": 1239934
+    },
+    {
+      "file": "bento/interior.png",
+      "sha256": "2ea5929426ca7be4ccfec377acc3e6499029343aea7e06526e2eb5b952750866",
+      "bytes": 1060440
+    },
+    {
+      "file": "base_codex/codex_dados/SHA256_ARQUIVOS.json",
+      "sha256": "595054efd811e8983169e4cd8c5e48068ecff39dbeeb2a496228105c17a862e8",
+      "bytes": 31305
+    },
+    {
+      "file": "base_codex/codex_dados/codigo_segmentacao_base.py",
+      "sha256": "6a0569f747d4e479838945c48b664aac41ffed6d454a44bcbe5c89ad117095e6",
+      "bytes": 14953
+    },
+    {
+      "file": "base_codex/codex_dados/recortes_candidatos.json",
+      "sha256": "6d78103e463b4ac4e4f0288b30914b7aff6d750db34ff76285ba42e968ea27ac",
+      "bytes": 30630
+    },
+    {
+      "file": "base_codex/codex_dados/progresso.json",
+      "sha256": "e6ccd5763c77e078f4fb62380a1622da6c3478cad4e604984ce695ddabcee385",
+      "bytes": 2028
+    },
+    {
+      "file": "base_codex/codex_dados/progresso.csv",
+      "sha256": "57adcc45e5ea0e164f7471d6953b7b29be8477e5964eb73ee2c03944f3275275",
+      "bytes": 333
+    },
+    {
+      "file": "base_codex/codex_v3/EXEMPLO_PHASER_INTEGRACAO.ts",
+      "sha256": "d063edf8a5ad746c8fcd709b14489542482c5deeec070bed722142e5ed073195",
+      "bytes": 916
+    },
+    {
+      "file": "base_codex/codex_v3/balcoes_recortes_v3.json",
+      "sha256": "ba1e023fcbeb9a7208d5105d7959b791c10fa755bc794c5b1e3a39bc4d88678d",
+      "bytes": 7243
+    },
+    {
+      "file": "base_codex/codex_v3/RESUMO.json",
+      "sha256": "9013db9b02a19853d64460ef69eafc7d0e6891754e7caa19cd10fc64b0a1428d",
+      "bytes": 270
+    },
+    {
+      "file": "base_codex/codex_v3/relatorio_mascaras_v3.json",
+      "sha256": "aa0729d9b8256e8db7cba22efadf3e8a5f0de280f7139b499f2d8b79a0193cf5",
+      "bytes": 14285
+    },
+    {
+      "file": "base_codex/codex_v3/PROGRESSO_REAL_V3.md",
+      "sha256": "d44e71d235bf1de01e0d6a976a0066628949a38105fbf7c6aacedad4b312b532",
+      "bytes": 2206
+    },
+    {
+      "file": "base_codex/codex_v3/validar_pacote.py",
+      "sha256": "80a11dc88e05b81cd645be743a8ecba2142b47ef218ec7ff56a6f57a871e579e",
+      "bytes": 644
+    },
+    {
+      "file": "base_codex/codex_v3/layout_10_lojas_referencia.json",
+      "sha256": "6b84fcc54c6ec3c13ddf807c67f45f0a664753bd712b6e4a206a5468715a6c61",
+      "bytes": 54986
+    },
+    {
+      "file": "base_codex/auditoria_v31/status_manifest_v31.json",
+      "sha256": "3e4d14cef46a896fc47f291b9cc4485142e11ea009cf0f757bcda5a0d9db0eef",
+      "bytes": 2797
+    },
+    {
+      "file": "base_codex/auditoria_v31/status_manifest_v31.csv",
+      "sha256": "f094cb437aa4412fd36bdc4f423af6f6f8e2123414bb486b43bd2eb2a3db7656",
+      "bytes": 440
+    },
+    {
+      "file": "base_codex/originais_v081/visual__modules__cerca_natural.png",
+      "sha256": "0d8ef8c6221f72eacd0abb2721034301421004409a32484cd9ecaf4f4bb9b856",
+      "bytes": 22586
+    },
+    {
+      "file": "base_codex/originais_v081/visual__modules__porta_madeira.png",
+      "sha256": "23a1a1560eca772644917c0c9c757136c94f891d7b3e0a16189c1024669dc7bc",
+      "bytes": 16382
+    },
+    {
+      "file": "base_codex/originais_v081/visual__modules__barril.png",
+      "sha256": "8209b46ba26f52f45eb890edf15361c551a6e0d5f37ef3251dbc5dfe61982f10",
+      "bytes": 16304
+    },
+    {
+      "file": "base_codex/originais_v081/visual__world__tabuas.png",
+      "sha256": "38485257492a8f648ac2ad692574aef50d2f6f0de68e7c734b4b9b604e242192",
+      "bytes": 9166
+    },
+    {
+      "file": "base_codex/originais_v081/visual__modules__vaso_flor.png",
+      "sha256": "51a6edebcdc03993cfc28bba3507027b19a1b5a39511ede307396020f723f787",
+      "bytes": 14484
+    },
+    {
+      "file": "base_codex/originais_v081/visual__modules__parede_trepadeira.png",
+      "sha256": "c10648f5d30f87f5618e12e654b7cef370a4b95fb77ea2299e6383e024242b24",
+      "bytes": 23890
+    },
+    {
+      "file": "base_codex/originais_v081/visual__world__branch.png",
+      "sha256": "5767a3c8689f0898a81d1be9db149b2b4b52ddd5d0ca914146dbd02bc9080d48",
+      "bytes": 70148
+    },
+    {
+      "file": "base_codex/originais_v081/visual__world__vein.png",
+      "sha256": "a6d9e846e744e8ee4e1f6d43d7bce106fd16b2271dac27b904c02e5fd0879470",
+      "bytes": 72585
+    },
+    {
+      "file": "base_codex/originais_v081/visual__modules__parede_janela_floreira.png",
+      "sha256": "e1a4fc573b42cfe8451397fc0fb256665a9391724d4e5a81f55f260a837ce797",
+      "bytes": 27399
+    },
+    {
+      "file": "base_codex/originais_v081/visual__world__workbench.png",
+      "sha256": "28c6e5179672534942899177469695dd14c1b734d69543e498868df40aa7807c",
+      "bytes": 147452
+    },
+    {
+      "file": "base_codex/originais_v081/visual__modules__janela_turquesa.png",
+      "sha256": "03015e3b6b5adbc41fc9adcb0de983413a18db10dee720a61c2f5d520bac5fd1",
+      "bytes": 21700
+    },
+    {
+      "file": "base_codex/originais_v081/visual__modules__parede_creme.png",
+      "sha256": "8783026f37914b2d9e0b5729f3074fbe91bff74ef1fa5b5daebcfa175eabda4a",
+      "bytes": 22547
+    },
+    {
+      "file": "base_codex/originais_v081/visual__world__fiber.png",
+      "sha256": "08b6fcecd008605b9b58df2a054c79c57fb63f94e1b9b2af35b8ac3051e72aa0",
+      "bytes": 74679
+    },
+    {
+      "file": "base_codex/originais_v081/visual__world__sucata.png",
+      "sha256": "e78f44723447b9a41ac2db4db8228dfd483588d7250aa0720d22a3356c3217e3",
+      "bytes": 12657
+    },
+    {
+      "file": "base_codex/originais_v081/visual__modules__floreira.png",
+      "sha256": "7bc66e9945d7acbf67bdbca318b8cf1c96930a497cf6e32c02aebb557a338467",
+      "bytes": 16167
+    },
+    {
+      "file": "base_codex/originais_v081/visual__modules__planta.png",
+      "sha256": "fbd80fb6a8c875056d8a00f1308f5f81fbe073259710b76ea22ddc6d5df01f60",
+      "bytes": 6552
+    },
+    {
+      "file": "base_codex/originais_v081/visual__world__pedra.png",
+      "sha256": "8c3f758287309c4f0fa7e007df1a064e702bb2c880c8ed43aca2d3c075f3d5ec",
+      "bytes": 11276
+    },
+    {
+      "file": "base_codex/originais_v081/visual__modules__telha_lisa.png",
+      "sha256": "42913fadc28d52be85ddfe811d09774d349dc62387d0bcdfeac8d109fa004b7b",
+      "bytes": 15538
+    },
+    {
+      "file": "base_codex/originais_v081/visual__world__seed-shrub.png",
+      "sha256": "094ace6bc7df681308cb68c92a412c68175e65add266ec2023b6f07547ad3eea",
+      "bytes": 82649
+    },
+    {
+      "file": "base_codex/originais_v081/visual__modules__parede_porta.png",
+      "sha256": "069627945ed9e0432c4ea8aac877f9f317452bc8ca9fb14b5782d772f969c6fb",
+      "bytes": 25197
+    },
+    {
+      "file": "base_codex/originais_v081/visual__modules__telha_variante.png",
+      "sha256": "83dfa278ab8a8295fc84111b878910ba9566ebb10394571d5ae426e6e2a3fd82",
+      "bytes": 15481
+    },
+    {
+      "file": "base_codex/originais_v081/visual__modules__banco_jardim.png",
+      "sha256": "a981249395bc23d8a9e5ea89dcfb32bcc9b3bc8765a93b1b446b4b808d086049",
+      "bytes": 19929
+    },
+    {
+      "file": "base_codex/originais_v081/visual__world__tronco.png",
+      "sha256": "4818da970613ccbc7985a0c698a2aab153bc997989ae22ad995482f6941a7444",
+      "bytes": 10776
+    },
+    {
+      "file": "base_codex/originais_v081/visual__modules__chamine.png",
+      "sha256": "d6ead98d3b9451d3866fb60d0ee491caacf82164a88e9288da31421246284d9b",
+      "bytes": 10143
+    },
+    {
+      "file": "bento/sprites_em_revisao/lamparina.png",
+      "sha256": "07ef88ff7ac9b5765584605d288d366584943b9f122f7afab2e2a6d71af6e549",
+      "bytes": 3803
+    },
+    {
+      "file": "bento/sprites_em_revisao/tanque_resfriamento.png",
+      "sha256": "0006615cf408c81c6354b2ac37bde9f3ea6b86fde0005ad700cfd7cf02e82847",
+      "bytes": 17658
+    },
+    {
+      "file": "bento/sprites_em_revisao/tapete_ferraria.png",
+      "sha256": "842291a2a0e2f4307cca2d1937056ca05ed53890dff4e647f5efed6ef2213ed7",
+      "bytes": 16575
+    },
+    {
+      "file": "bento/sprites_em_revisao/bigorna_e_toco.png",
+      "sha256": "5368cdf66fa982009a1e910bdea6ffa43d291f53fd8ffb381271aab18032fe92",
+      "bytes": 29134
+    },
+    {
+      "file": "bento/sprites_em_revisao/cesto_lingotes.png",
+      "sha256": "069f755a98a79096c3cbb9e41aba92230939e2dd69585918b6d51b1c4326cfc2",
+      "bytes": 14678
+    },
+    {
+      "file": "bento/sprites_em_revisao/banquinho.png",
+      "sha256": "af4ba12fb2cd1fd7ad6aa67ac59a946f3103ea245fb4b5ce5d04c6556b0ac186",
+      "bytes": 7535
+    },
+    {
+      "file": "bento/sprites_em_revisao/barril_hastes.png",
+      "sha256": "b21f164e3c690f54e8c765b89a0257fe9734b79938b5e7aec85da7c9e77a6b03",
+      "bytes": 16815
+    },
+    {
+      "file": "bento/sprites_em_revisao/caixa_minerios.png",
+      "sha256": "0d0df1e0268c92fd0a365c7889fdc96ee1bfa6be5709bb8b2ff9d511622cd015",
+      "bytes": 12129
+    },
+    {
+      "file": "bento/sprites_alpha_limpo/lamparina.png",
+      "sha256": "887db10a16732f45c5b55eabb2f43eca30788a47f6d13a7827349dafb06c0a3c",
+      "bytes": 1792
+    },
+    {
+      "file": "bento/sprites_alpha_limpo/tanque_resfriamento.png",
+      "sha256": "d7d5c5c7c1ab2f85b245e895d1d71ba0d9ed627ffd5ffeb6c14bd059d601e7f4",
+      "bytes": 16527
+    },
+    {
+      "file": "bento/sprites_alpha_limpo/tapete_ferraria.png",
+      "sha256": "7f21033440c7451b4892d674bede2ba4cd1f0adaec579d4c27f47bfcc9cfe896",
+      "bytes": 13968
+    },
+    {
+      "file": "bento/sprites_alpha_limpo/bigorna_e_toco.png",
+      "sha256": "3836ed9c22c09d165bfa46be77822225e67fb73df9bd2b616adc909957bf5aad",
+      "bytes": 25200
+    },
+    {
+      "file": "bento/sprites_alpha_limpo/cesto_lingotes.png",
+      "sha256": "d76484adf9f0dfe17538595486fb4ba2b642837b21ce8db3663d90362879da42",
+      "bytes": 11463
+    },
+    {
+      "file": "bento/sprites_alpha_limpo/banquinho.png",
+      "sha256": "42ad00c9e5071fd97d9e878cdde50498a6f5c58e6a24e4fb58709905691111a1",
+      "bytes": 5360
+    },
+    {
+      "file": "bento/sprites_alpha_limpo/barril_hastes.png",
+      "sha256": "d62db2e55aa6b69492ba5a504ed1319973edf4534ae936d440521e32eded431b",
+      "bytes": 11364
+    },
+    {
+      "file": "bento/sprites_alpha_limpo/caixa_minerios.png",
+      "sha256": "f01a088e455f509aa8e25d6f5be1a9be104d3054b1f45a9b2a49de82a1bb3bac",
+      "bytes": 8974
+    },
+    {
+      "file": "bento/balcoes_em_revisao/mesa_atendimento_recorte_guiado.png",
+      "sha256": "b1cf7510430cc5e78ad75d68c8adfe1ad3823a6ece792620c22a8c1400f4aa51",
+      "bytes": 34969
+    },
+    {
+      "file": "bento/recortes_referencia/lamparina.png",
+      "sha256": "70fd1a06d23b433f46dee9f3bf4db760c1dc6412c2a2449a094bd5d58480ac68",
+      "bytes": 5029
+    },
+    {
+      "file": "bento/recortes_referencia/martelos_parede.png",
+      "sha256": "4165c672dc63f411706f5e9cd0bd258dd4735bc45a0d960881e22a4558a98d04",
+      "bytes": 17342
+    },
+    {
+      "file": "bento/recortes_referencia/tanque_resfriamento.png",
+      "sha256": "eeb3f9396a264f5efa405933ed39d19bb1670c3f26b610f59706f435a7f8fef5",
+      "bytes": 31296
+    },
+    {
+      "file": "bento/recortes_referencia/fornalha_completa.png",
+      "sha256": "c37fb1193e00518adc5447cddacce3a98c15f7a3afbc4dcc1d349a09fe78d41f",
+      "bytes": 78921
+    },
+    {
+      "file": "bento/recortes_referencia/tapete_ferraria.png",
+      "sha256": "9a15bde3656140a6d7d4d2d1dcbd444eea1264ec55a28198564debf756685613",
+      "bytes": 22349
+    },
+    {
+      "file": "bento/recortes_referencia/bigorna_e_toco.png",
+      "sha256": "23c4d2e0eb5fddf6ed7eef1cf83b8260df20172b05bab0b3e8e45926b000def5",
+      "bytes": 36382
+    },
+    {
+      "file": "bento/recortes_referencia/cesto_lingotes.png",
+      "sha256": "1ea95f14e673bda42a2e68cb027f4d34481da104dc265344f58b6f11810a2d5a",
+      "bytes": 17163
+    },
+    {
+      "file": "bento/recortes_referencia/estante_metal.png",
+      "sha256": "0a7693d4644205b81cc35334c1132691ba8badb3601f84215402d7689e1f7706",
+      "bytes": 74335
+    },
+    {
+      "file": "bento/recortes_referencia/porta_ferramentas.png",
+      "sha256": "b72ca26c29c253a8c095f084f0c9241c6f44cfe3db86f6bf6441f1a64422e42a",
+      "bytes": 40184
+    },
+    {
+      "file": "bento/recortes_referencia/prateleira_ferramentas.png",
+      "sha256": "c393b0b0bbcf724962c2661d488c11e36e0ef980602c975171424849b7a0deac",
+      "bytes": 99514
+    },
+    {
+      "file": "bento/recortes_referencia/banquinho.png",
+      "sha256": "0c3d498479872f94b3fe697719ae2f3a8d290e32014cf15520a98b6869c8b0f3",
+      "bytes": 8575
+    },
+    {
+      "file": "bento/recortes_referencia/barril_hastes.png",
+      "sha256": "bde6cb7b34f806dbd05b0f0e9eec60c8dc4a529dbe3d9084dd70bbf3b3534a6c",
+      "bytes": 21888
+    },
+    {
+      "file": "bento/recortes_referencia/caixa_minerios.png",
+      "sha256": "fd11f20d9a99d601fc2979f70664d7863518117186233232681b3faf3668df6e",
+      "bytes": 17042
+    },
+    {
+      "file": "bento/recortes_referencia/mesa_atendimento.png",
+      "sha256": "6cab79732a7aa0bc79529b328819a17105fad48c744a319bbd845f74e007edd8",
+      "bytes": 63794
+    }
+  ],
+  "maskSpecificationSha256": "1c95c3dbaadef891f701a84da48388b5776358be4783e5554b41b702405ade14",
+  "limitations": [
+    "Apenas Bento e pacote oficial recebidos. Os outros nove comércios não foram auditados.",
+    "Sprites em revisão e incompletos não entram no atlas aprovado nem na cena padrão.",
+    "Nenhuma superfície oculta foi inventada. Interior reconstruído não aprovado como final.",
+    "Arquivo de instruções cita 26 oficiais, mas o pacote contém 24 PNGs oficiais."
+  ]
+}

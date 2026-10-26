@@ -1,0 +1,357 @@
+{
+  "version": "v3.1-auditoria-fase1",
+  "stores": [
+    {
+      "id": "augusto",
+      "name": "Augusto — Armazém",
+      "received": false,
+      "manifest": null,
+      "status": "aguardando_pacote"
+    },
+    {
+      "id": "bento",
+      "name": "Bento — Ferraria",
+      "received": true,
+      "manifest": "bento/manifest.json",
+      "status": "fase_1_parcial"
+    },
+    {
+      "id": "amelia",
+      "name": "Amélia — Herbalista",
+      "received": false,
+      "manifest": null,
+      "status": "aguardando_pacote"
+    },
+    {
+      "id": "tobias",
+      "name": "Tobias — Carpintaria",
+      "received": false,
+      "manifest": null,
+      "status": "aguardando_pacote"
+    },
+    {
+      "id": "rosa",
+      "name": "Rosa — Loja agrícola",
+      "received": false,
+      "manifest": null,
+      "status": "aguardando_pacote"
+    },
+    {
+      "id": "nilo",
+      "name": "Nilo — Antiguidades",
+      "received": false,
+      "manifest": null,
+      "status": "aguardando_pacote"
+    },
+    {
+      "id": "celina",
+      "name": "Celina — Costureira",
+      "received": false,
+      "manifest": null,
+      "status": "aguardando_pacote"
+    },
+    {
+      "id": "damiao",
+      "name": "Damião — Pescador",
+      "received": false,
+      "manifest": null,
+      "status": "aguardando_pacote"
+    },
+    {
+      "id": "helena",
+      "name": "Helena — Pousada",
+      "received": false,
+      "manifest": null,
+      "status": "aguardando_pacote"
+    },
+    {
+      "id": "icaro",
+      "name": "Ícaro — Oficina mecânica",
+      "received": false,
+      "manifest": null,
+      "status": "aguardando_pacote"
+    }
+  ],
+  "stats": {
+    "providedNPCs": 1,
+    "expectedNPCs": 10,
+    "pendingNPCs": 9,
+    "bentoTargetObjects": 14,
+    "bento": {
+      "aprovado": 3,
+      "precisa_revisao": 4,
+      "incompleto": 7
+    },
+    "objectFilesCorrected": 7,
+    "newAtlasFrames": 3,
+    "officialOriginalFiles": 24,
+    "referenceCropsExactRGB": 14,
+    "hiddenSurfacesReconstructed": 0,
+    "sourceFilesChanged": 0,
+    "restoredAlphaPixels": 1759
+  },
+  "officials": [
+    {
+      "id": "visual__modules__banco_jardim",
+      "file": "compartilhado/pacote_base/originais_v081/visual__modules__banco_jardim.png",
+      "width": 101,
+      "height": 74,
+      "sha256": "a981249395bc23d8a9e5ea89dcfb32bcc9b3bc8765a93b1b446b4b808d086049",
+      "partialAlphaPixels": 0,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__modules__barril",
+      "file": "compartilhado/pacote_base/originais_v081/visual__modules__barril.png",
+      "width": 73,
+      "height": 83,
+      "sha256": "8209b46ba26f52f45eb890edf15361c551a6e0d5f37ef3251dbc5dfe61982f10",
+      "partialAlphaPixels": 0,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__modules__cerca_natural",
+      "file": "compartilhado/pacote_base/originais_v081/visual__modules__cerca_natural.png",
+      "width": 110,
+      "height": 75,
+      "sha256": "0d8ef8c6221f72eacd0abb2721034301421004409a32484cd9ecaf4f4bb9b856",
+      "partialAlphaPixels": 0,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__modules__chamine",
+      "file": "compartilhado/pacote_base/originais_v081/visual__modules__chamine.png",
+      "width": 45,
+      "height": 78,
+      "sha256": "d6ead98d3b9451d3866fb60d0ee491caacf82164a88e9288da31421246284d9b",
+      "partialAlphaPixels": 0,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__modules__floreira",
+      "file": "compartilhado/pacote_base/originais_v081/visual__modules__floreira.png",
+      "width": 64,
+      "height": 86,
+      "sha256": "7bc66e9945d7acbf67bdbca318b8cf1c96930a497cf6e32c02aebb557a338467",
+      "partialAlphaPixels": 0,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__modules__janela_turquesa",
+      "file": "compartilhado/pacote_base/originais_v081/visual__modules__janela_turquesa.png",
+      "width": 101,
+      "height": 83,
+      "sha256": "03015e3b6b5adbc41fc9adcb0de983413a18db10dee720a61c2f5d520bac5fd1",
+      "partialAlphaPixels": 0,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__modules__parede_creme",
+      "file": "compartilhado/pacote_base/originais_v081/visual__modules__parede_creme.png",
+      "width": 76,
+      "height": 117,
+      "sha256": "8783026f37914b2d9e0b5729f3074fbe91bff74ef1fa5b5daebcfa175eabda4a",
+      "partialAlphaPixels": 0,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__modules__parede_janela_floreira",
+      "file": "compartilhado/pacote_base/originais_v081/visual__modules__parede_janela_floreira.png",
+      "width": 74,
+      "height": 134,
+      "sha256": "e1a4fc573b42cfe8451397fc0fb256665a9391724d4e5a81f55f260a837ce797",
+      "partialAlphaPixels": 0,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__modules__parede_porta",
+      "file": "compartilhado/pacote_base/originais_v081/visual__modules__parede_porta.png",
+      "width": 73,
+      "height": 134,
+      "sha256": "069627945ed9e0432c4ea8aac877f9f317452bc8ca9fb14b5782d772f969c6fb",
+      "partialAlphaPixels": 0,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__modules__parede_trepadeira",
+      "file": "compartilhado/pacote_base/originais_v081/visual__modules__parede_trepadeira.png",
+      "width": 73,
+      "height": 117,
+      "sha256": "c10648f5d30f87f5618e12e654b7cef370a4b95fb77ea2299e6383e024242b24",
+      "partialAlphaPixels": 0,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__modules__planta",
+      "file": "compartilhado/pacote_base/originais_v081/visual__modules__planta.png",
+      "width": 45,
+      "height": 55,
+      "sha256": "fbd80fb6a8c875056d8a00f1308f5f81fbe073259710b76ea22ddc6d5df01f60",
+      "partialAlphaPixels": 0,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__modules__porta_madeira",
+      "file": "compartilhado/pacote_base/originais_v081/visual__modules__porta_madeira.png",
+      "width": 66,
+      "height": 97,
+      "sha256": "23a1a1560eca772644917c0c9c757136c94f891d7b3e0a16189c1024669dc7bc",
+      "partialAlphaPixels": 0,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__modules__telha_lisa",
+      "file": "compartilhado/pacote_base/originais_v081/visual__modules__telha_lisa.png",
+      "width": 71,
+      "height": 85,
+      "sha256": "42913fadc28d52be85ddfe811d09774d349dc62387d0bcdfeac8d109fa004b7b",
+      "partialAlphaPixels": 0,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__modules__telha_variante",
+      "file": "compartilhado/pacote_base/originais_v081/visual__modules__telha_variante.png",
+      "width": 69,
+      "height": 85,
+      "sha256": "83dfa278ab8a8295fc84111b878910ba9566ebb10394571d5ae426e6e2a3fd82",
+      "partialAlphaPixels": 0,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__modules__vaso_flor",
+      "file": "compartilhado/pacote_base/originais_v081/visual__modules__vaso_flor.png",
+      "width": 67,
+      "height": 75,
+      "sha256": "51a6edebcdc03993cfc28bba3507027b19a1b5a39511ede307396020f723f787",
+      "partialAlphaPixels": 0,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__world__branch",
+      "file": "compartilhado/pacote_base/originais_v081/visual__world__branch.png",
+      "width": 320,
+      "height": 320,
+      "sha256": "5767a3c8689f0898a81d1be9db149b2b4b52ddd5d0ca914146dbd02bc9080d48",
+      "partialAlphaPixels": 38289,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__world__fiber",
+      "file": "compartilhado/pacote_base/originais_v081/visual__world__fiber.png",
+      "width": 320,
+      "height": 320,
+      "sha256": "08b6fcecd008605b9b58df2a054c79c57fb63f94e1b9b2af35b8ac3051e72aa0",
+      "partialAlphaPixels": 40652,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__world__pedra",
+      "file": "compartilhado/pacote_base/originais_v081/visual__world__pedra.png",
+      "width": 96,
+      "height": 96,
+      "sha256": "8c3f758287309c4f0fa7e007df1a064e702bb2c880c8ed43aca2d3c075f3d5ec",
+      "partialAlphaPixels": 3880,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__world__seed-shrub",
+      "file": "compartilhado/pacote_base/originais_v081/visual__world__seed-shrub.png",
+      "width": 320,
+      "height": 320,
+      "sha256": "094ace6bc7df681308cb68c92a412c68175e65add266ec2023b6f07547ad3eea",
+      "partialAlphaPixels": 39472,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__world__sucata",
+      "file": "compartilhado/pacote_base/originais_v081/visual__world__sucata.png",
+      "width": 96,
+      "height": 96,
+      "sha256": "e78f44723447b9a41ac2db4db8228dfd483588d7250aa0720d22a3356c3217e3",
+      "partialAlphaPixels": 3940,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__world__tabuas",
+      "file": "compartilhado/pacote_base/originais_v081/visual__world__tabuas.png",
+      "width": 96,
+      "height": 96,
+      "sha256": "38485257492a8f648ac2ad692574aef50d2f6f0de68e7c734b4b9b604e242192",
+      "partialAlphaPixels": 3038,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__world__tronco",
+      "file": "compartilhado/pacote_base/originais_v081/visual__world__tronco.png",
+      "width": 96,
+      "height": 96,
+      "sha256": "4818da970613ccbc7985a0c698a2aab153bc997989ae22ad995482f6941a7444",
+      "partialAlphaPixels": 3735,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__world__vein",
+      "file": "compartilhado/pacote_base/originais_v081/visual__world__vein.png",
+      "width": 320,
+      "height": 320,
+      "sha256": "a6d9e846e744e8ee4e1f6d43d7bce106fd16b2271dac27b904c02e5fd0879470",
+      "partialAlphaPixels": 43181,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    },
+    {
+      "id": "visual__world__workbench",
+      "file": "compartilhado/pacote_base/originais_v081/visual__world__workbench.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "28c6e5179672534942899177469695dd14c1b734d69543e498868df40aa7807c",
+      "partialAlphaPixels": 87143,
+      "status": "precisa_revisao",
+      "reason": "Original oficial preservado; não herda aprovação do pacote sem inspeção visual individual para esta biblioteca."
+    }
+  ],
+  "tiles": [
+    {
+      "file": "piso_tabuas.png",
+      "sha256": "1ca9662b7e32d645111053001ca0820ea5fc52212337bdec15bc9a6c5e78c2f0",
+      "provenance": "Piso gerado do atlas floor-finishes.png do jogo atual, nearest 256px; módulo 64px também preservado como referência, sem atribuir origem v0.8.1 ao piso",
+      "originalSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "file": "piso_pedra.png",
+      "sha256": "a4a0804726789524724294cf1b9d90f7976ff0c230a4f08db67c337ff5cd56ef",
+      "provenance": "Piso gerado do atlas floor-finishes.png do jogo atual, nearest 256px; módulo 64px também preservado como referência, sem atribuir origem v0.8.1 ao piso",
+      "originalSize": [
+        256,
+        256
+      ]
+    }
+  ],
+  "githubChanged": false,
+  "gameProductionScenesChanged": false
+}

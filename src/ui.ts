@@ -28,7 +28,7 @@ import { ITEMS, ITEM_IDS, ITEM_NAMES } from './data/items';
 import { BLUEPRINT_COST, BLUEPRINT_LABEL } from './data/blueprints';
 import { RECIPES } from './data/recipes';
 import { createHomeEditor } from './home-ui';
-import type { HomeEditor, HomeEditResponse } from './home-ui';
+import type { HomeEditor, HomeEditResponse,HomeEditorOptions } from './home-ui';
 import type { HomeData, HomeEditAction } from './systems/home';
 import type { BuildingData, CharacterProfile, HudData, InventoryData, ItemId, Tool } from './types';
 
@@ -741,21 +741,23 @@ export class GameUI {
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Mapa das regiões exploráveis');
-    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM VALE PARA CONHECER</span><h2>${this.latest?.inHome ? "Interior da casa" : this.latest?.area==='forest' ? "Floresta Antiga" : this.latest?.area==='village' ? "Vila do Recomeço" : "Mapa completo do vale"}</h2></div><button class="icon-button" aria-label="Fechar mapa">${icon('close')}</button></div>
+    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM VALE PARA CONHECER</span><h2>${this.latest?.inHome ? this.latest.area==='village'?'Interior da ferraria':"Interior da casa" : this.latest?.area==='forest' ? "Floresta Antiga" : this.latest?.area==='village' ? "Vila do Recomeço" : "Mapa completo do vale"}</h2></div><button class="icon-button" aria-label="Fechar mapa">${icon('close')}</button></div>
       <p class="map-current">Você está em <strong></strong>.</p>
       <div class="exploration-map real-map" role="img" aria-label="Cenário real e posição do personagem"><img class="map-snapshot" alt="Vista do cenário atual" /><span class="map-player" hidden><i></i><b>Você</b></span><span class="map-north">N ↑</span></div>
       <p class="map-caption">Vista atual do cenário. Seu marcador indica a posição exata.</p>
       <div class="inventory-footer">${icon('leaf')} Sempre há um caminho de volta.<span>SIMULAÇÃO PAUSADA · M OU ESC PARA VOLTAR</span></div>`;
     const map = panel.querySelector<HTMLElement>('.exploration-map')!;
-    map.style.aspectRatio = this.latest?.inHome ? `${HOME_WIDTH}/${HOME_HEIGHT}` : `${WORLD_WIDTH}/${WORLD_HEIGHT}`;
+    const mapWidth=this.latest?.inHome?(this.latest.interiorMapSize?.width??HOME_WIDTH):WORLD_WIDTH;
+    const mapHeight=this.latest?.inHome?(this.latest.interiorMapSize?.height??HOME_HEIGHT):WORLD_HEIGHT;
+    map.style.aspectRatio = `${mapWidth}/${mapHeight}`;
     void this.callbacks.onMap().then(url => { if (panel.isConnected) panel.querySelector<HTMLImageElement>('.map-snapshot')!.src = url; });
     panel.querySelector('.map-current strong')!.textContent = this.latest?.location || 'Propriedade';
     const position = this.latest?.playerTile;
     if (position) {
       const marker = panel.querySelector<HTMLElement>('.map-player')!;
       marker.hidden = false;
-      marker.style.left = `${position.x / (this.latest?.inHome ? HOME_WIDTH : WORLD_WIDTH) * 100}%`;
-      marker.style.top = `${position.y / (this.latest?.inHome ? HOME_HEIGHT : WORLD_HEIGHT) * 100}%`;
+      marker.style.left = `${position.x / mapWidth * 100}%`;
+      marker.style.top = `${position.y / mapHeight * 100}%`;
     }
     panel.querySelector('button')!.addEventListener('click', () => this.closeModal());
     this.overlay.append(panel);
@@ -872,7 +874,7 @@ export class GameUI {
     this.base.style.display = 'none';
   }
 
-  showHomeCustomization(home: HomeData, onAction: (action: HomeEditAction) => HomeEditResponse): void {
+  showHomeCustomization(home: HomeData, onAction: (action: HomeEditAction) => HomeEditResponse,options:HomeEditorOptions={}): void {
     if (this.mode !== 'hud' || this.modal) return;
     this.openModal('home');
     const panel = document.createElement('section');
@@ -881,10 +883,17 @@ export class GameUI {
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Personalizar minha casa');
     panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM REFÚGIO COM A SUA CARA</span><h2>Minha casa</h2></div><button class="icon-button" aria-label="Fechar personalização da casa">${icon('close')}</button></div><div class="home-editor-holder"></div><div class="inventory-footer">${icon('shelter')} Móveis e acabamentos ficam salvos na sua partida.<span>SIMULAÇÃO PAUSADA · ESC PARA VOLTAR</span></div>`;
+    if(options.title){panel.querySelector('h2')!.textContent=options.title;panel.setAttribute('aria-label',`Personalizar ${options.title}`);}
+    if(options.eyebrow)panel.querySelector<HTMLElement>('.eyebrow')!.textContent=options.eyebrow;
     panel.querySelector('button')!.addEventListener('click', () => this.closeModal());
     this.overlay.append(panel);
-    this.homeEditor = createHomeEditor(panel.querySelector<HTMLElement>('.home-editor-holder')!, home, onAction);
+    this.homeEditor = createHomeEditor(panel.querySelector<HTMLElement>('.home-editor-holder')!, home, onAction,options);
     panel.querySelector<HTMLButtonElement>('button')!.focus();
+  }
+
+  showSceneEditor(mount:(host:HTMLElement)=>()=>void):void {
+    if(this.mode!=='hud'||this.modal)return;
+    this.openModal('home');this.onModalClose=mount(this.overlay);
   }
 
   refreshHomeCustomization(home: HomeData, message?: string): void {

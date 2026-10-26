@@ -1,0 +1,74 @@
+{
+  "frames": {
+    "tanque_resfriamento": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 121,
+        "h": 144
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 121,
+        "h": 144
+      },
+      "sourceSize": {
+        "w": 121,
+        "h": 144
+      }
+    },
+    "tapete_ferraria": {
+      "frame": {
+        "x": 127,
+        "y": 2,
+        "w": 143,
+        "h": 84
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 143,
+        "h": 84
+      },
+      "sourceSize": {
+        "w": 143,
+        "h": 84
+      }
+    },
+    "banquinho": {
+      "frame": {
+        "x": 274,
+        "y": 2,
+        "w": 70,
+        "h": 85
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 70,
+        "h": 85
+      },
+      "sourceSize": {
+        "w": 70,
+        "h": 85
+      }
+    }
+  },
+  "meta": {
+    "image": "aprovados.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 512,
+      "h": 512
+    },
+    "scale": "1",
+    "sampling": "nearest"
+  }
+}

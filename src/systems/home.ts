@@ -11,7 +11,9 @@ export const HOME_OUTDOOR_SPAWN = { x: HOME_ENTRANCE_WORLD.x, y: HOME_ENTRANCE_W
 export const HOME_OUTDOOR_DOORWAY = { ...HOME_ENTRANCE_WORLD, halfWidth: 18, depth: 16, direction: 'up' } as const;
 export const HOME_INTERIOR_DOORWAY = { x: 6 * HOME_TILE, y: 9 * HOME_TILE, halfWidth: HOME_TILE, depth: HOME_TILE, direction: 'down' } as const;
 
-export type FurnitureKind = 'bed' | 'table' | 'chair' | 'shelf' | 'rug' | 'plant';
+export type FurnitureKind = 'bed' | 'table' | 'chair' | 'shelf' | 'rug' | 'plant'
+ | 'armorStand' | 'partsShelf' | 'smithWorkbench' | 'counter' | 'anvil' | 'ironStock' | 'grindstone' | 'weaponRack' | 'bellows' | 'coalBin' | 'fireplace' | 'toolRack' | 'tongs';
+export const RESIDENTIAL_FURNITURE_KINDS:readonly FurnitureKind[]=['bed','table','chair','shelf','rug','plant'];
 export type FloorStyle = 'oak' | 'dark' | 'stone';
 export type WallStyle = 'cream' | 'sage' | 'clay';
 export interface HomeFurniture extends TilePoint { id: string; kind: FurnitureKind }
@@ -32,7 +34,7 @@ export const WALL_STYLES: Record<WallStyle, { name: string; color: string }> = {
   clay: { name: 'Argila suave', color: '#bf9982' },
 };
 export const FURNITURE_CATALOG: Record<FurnitureKind, {
-  name: string; width: number; height: number; blocking: boolean; limit: number;
+  name: string; width: number; height: number; blocking: boolean; limit: number; surface?:'wall'|'tabletop';
 }> = {
   bed: { name: 'Cama', width: 2, height: 2, blocking: true, limit: 2 },
   table: { name: 'Mesa', width: 2, height: 2, blocking: true, limit: 2 },
@@ -40,6 +42,19 @@ export const FURNITURE_CATALOG: Record<FurnitureKind, {
   shelf: { name: 'Estante', width: 2, height: 1, blocking: true, limit: 3 },
   rug: { name: 'Tapete', width: 3, height: 2, blocking: false, limit: 2 },
   plant: { name: 'Vaso de planta', width: 1, height: 1, blocking: true, limit: 6 },
+  armorStand:{name:'Expositor de armadura',width:1,height:1,blocking:true,limit:4},
+  partsShelf:{name:'Prateleira de peças',width:2,height:1,blocking:true,limit:4},
+  smithWorkbench:{name:'Bancada de ferraria',width:2,height:1,blocking:true,limit:4},
+  counter:{name:'Módulo de balcão',width:1,height:1,blocking:true,limit:16},
+  anvil:{name:'Bigorna',width:1,height:1,blocking:true,limit:4},
+  ironStock:{name:'Estoque de ferro',width:2,height:1,blocking:true,limit:4},
+  grindstone:{name:'Rebolo de afiação',width:1,height:1,blocking:true,limit:4},
+  weaponRack:{name:'Suporte de armas e escudo',width:2,height:2,blocking:true,limit:3},
+  bellows:{name:'Fole',width:1,height:1,blocking:true,limit:4},
+  coalBin:{name:'Recipiente de carvão',width:1,height:1,blocking:true,limit:6},
+  fireplace:{name:'Lareira de pedra',width:2,height:2,blocking:true,limit:2},
+  toolRack:{name:'Painel de ferramentas',width:3,height:2,blocking:false,limit:3,surface:'wall'},
+  tongs:{name:'Tenaz de bancada',width:1,height:1,blocking:false,limit:6,surface:'tabletop'},
 };
 export const FURNITURE_KINDS = Object.keys(FURNITURE_CATALOG) as FurnitureKind[];
 
@@ -86,30 +101,38 @@ function reachableTiles(data: HomeData): Set<string> {
 }
 
 /** Saves and editing share the same geometry and access validation. */
-export function validateHome(value: unknown): value is HomeData {
+export function validateHome(value: unknown, requireBed = true): value is HomeData {
   if (!isRecord(value) || typeof value.floor !== 'string' || !Object.hasOwn(FLOOR_STYLES, value.floor)
     || typeof value.wall !== 'string' || !Object.hasOwn(WALL_STYLES, value.wall)
-    || !Array.isArray(value.furniture) || value.furniture.length < 1 || value.furniture.length > 21) return false;
+    || !Array.isArray(value.furniture) || value.furniture.length < (requireBed?1:0) || value.furniture.length > (requireBed?21:64)) return false;
   const ids = new Set<string>(), solid = new Set<string>(), ground = new Set<string>();
   const counts = new Map<FurnitureKind, number>();
   for (const piece of value.furniture) {
-    if (!isRecord(piece) || typeof piece.id !== 'string' || !/^home-(bed|table|chair|shelf|rug|plant)-\d{1,6}$/.test(piece.id)
+    if (!isRecord(piece) || typeof piece.id !== 'string' || !/^home-[a-zA-Z]+-\d{1,6}$/.test(piece.id)
       || ids.has(piece.id) || typeof piece.kind !== 'string' || !FURNITURE_KINDS.includes(piece.kind as FurnitureKind)
       || !Number.isInteger(piece.x) || !Number.isInteger(piece.y)) return false;
     const furniture = piece as unknown as HomeFurniture;
+    if(!furniture.id.startsWith(`home-${furniture.kind}-`))return false;
+    if(requireBed&&!RESIDENTIAL_FURNITURE_KINDS.includes(furniture.kind))return false;
     const definition = FURNITURE_CATALOG[furniture.kind];
     const count = (counts.get(furniture.kind) ?? 0) + 1;
     if (count > definition.limit) return false;
     counts.set(furniture.kind, count);
     const layer = definition.blocking ? solid : ground;
     for (const tile of furnitureFootprint(furniture)) {
-      if (!isHomeFloor(tile.x, tile.y) || reservedEntrance(tile) || layer.has(key(tile))) return false;
+      const wall=definition.surface==='wall';
+      if ((wall?!(tile.x>=1&&tile.x<=HOME_WIDTH-2&&tile.y>=0&&tile.y<=1):!isHomeFloor(tile.x,tile.y)||reservedEntrance(tile)) || layer.has(key(tile))) return false;
       layer.add(key(tile));
     }
     ids.add(furniture.id);
   }
-  if (!counts.get('bed')) return false;
+  if (requireBed && !counts.get('bed')) return false;
   const data = value as unknown as HomeData;
+  // Bench accessories share their support's floor cell, without floating or
+  // becoming a second obstacle. Wall decorations never occupy walkable floor.
+  for(const piece of data.furniture.filter(p=>FURNITURE_CATALOG[p.kind].surface==='tabletop')){
+    if(!data.furniture.some(p=>['smithWorkbench','counter'].includes(p.kind)&&furnitureFootprint(p).some(t=>t.x===piece.x&&t.y===piece.y)))return false;
+  }
   const reached = reachableTiles(data);
   for (let y = 2; y <= HOME_HEIGHT - 2; y++) for (let x = 1; x <= HOME_WIDTH - 2; x++) {
     if (!solid.has(key({ x, y })) && !reached.has(key({ x, y }))) return false;
@@ -124,8 +147,8 @@ export function validateHome(value: unknown): value is HomeData {
 export class Home {
   readonly data: HomeData;
 
-  constructor(data: HomeData = createDefaultHome()) {
-    this.data = structuredClone(validateHome(data) ? data : createDefaultHome());
+  constructor(data: HomeData = createDefaultHome(), private readonly requireBed = true) {
+    this.data = structuredClone(validateHome(data, requireBed) ? data : createDefaultHome());
   }
 
   at(x: number, y: number): HomeFurniture | undefined {
@@ -155,7 +178,7 @@ export class Home {
   }
 
   private commit(candidate: HomeData, message: string, playerTile?: TilePoint): ActionResult {
-    if (!validateHome(candidate)) return { ok: false, message: 'Não foi possível: respeite o limite de móveis e mantenha o caminho da porta até a cama livre.' };
+    if (!validateHome(candidate, this.requireBed)) return { ok: false, message: 'Não foi possível: respeite o limite de móveis e mantenha os caminhos livres.' };
     const player = playerTile && { x: Math.floor(playerTile.x), y: Math.floor(playerTile.y) };
     const blocked = new Set(candidate.furniture.filter(piece => FURNITURE_CATALOG[piece.kind].blocking).flatMap(furnitureFootprint).map(key));
     if (player && (!isHomeFloor(player.x, player.y) || blocked.has(key(player)) || !reachableTiles(candidate).has(key(player)))) {
@@ -176,18 +199,20 @@ export class Home {
   }
 
   move(id: string, x: number, y: number, playerTile?: TilePoint): ActionResult {
-    if (!this.data.furniture.some(piece => piece.id === id)) return { ok: false, message: 'Selecione um móvel da casa.' };
-    return this.commit({ ...this.data, furniture: this.data.furniture.map(piece => piece.id === id ? { ...piece, x, y } : { ...piece }) },
+    const moved=this.data.furniture.find(piece=>piece.id===id);
+    if (!moved) return { ok: false, message: 'Selecione um móvel da casa.' };
+    const attached=(piece:HomeFurniture)=>FURNITURE_CATALOG[piece.kind].surface==='tabletop'&&furnitureFootprint(moved).some(t=>t.x===piece.x&&t.y===piece.y);
+    return this.commit({ ...this.data, furniture: this.data.furniture.map(piece => piece.id === id ? { ...piece, x, y } : attached(piece)?{...piece,x:piece.x+x-moved.x,y:piece.y+y-moved.y}:{ ...piece }) },
       'Móvel reposicionado.', playerTile);
   }
 
   remove(id: string, playerTile?: TilePoint): ActionResult {
     const furniture = this.data.furniture.find(piece => piece.id === id);
     if (!furniture) return { ok: false, message: 'Selecione um móvel da casa.' };
-    if (furniture.kind === 'bed' && this.data.furniture.filter(piece => piece.kind === 'bed').length === 1) {
+    if (this.requireBed && furniture.kind === 'bed' && this.data.furniture.filter(piece => piece.kind === 'bed').length === 1) {
       return { ok: false, message: 'Mantenha ao menos uma cama para descansar. Você pode movê-la.' };
     }
-    return this.commit({ ...this.data, furniture: this.data.furniture.filter(piece => piece.id !== id) },
+    return this.commit({ ...this.data, furniture: this.data.furniture.filter(piece => piece.id !== id&&!(FURNITURE_CATALOG[piece.kind].surface==='tabletop'&&furnitureFootprint(furniture).some(t=>t.x===piece.x&&t.y===piece.y))) },
       `${FURNITURE_CATALOG[furniture.kind].name} guardado no acervo da casa.`, playerTile);
   }
 

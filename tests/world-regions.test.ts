@@ -5,6 +5,8 @@ import { getRegionAt, isBridgeTile, isFarmTile, isPathTile, isWaterTile, locatio
 import { isWaterPoint, roadDistanceAt } from '../src/data/terrain-shape';
 import { Resources } from '../src/systems/resources';
 import {wellSolidTile,wellSolidPoint} from '../src/data/property-well';
+import {cottageSolidPoint} from '../src/data/architecture-collision';
+import {HOMESTEAD_HOUSE} from '../src/data/property-homestead';
 import { Inventory } from '../src/systems/inventory';
 
 vi.mock('../src/bridge-art',()=>({drawPropertyBridges:vi.fn()}));
@@ -176,8 +178,11 @@ describe('expansão da região inicial', () => {
     expect(resources.hit(node, 'pickaxe', inventory).ok).toBe(false);
   });
 
-  it('usa a margem contínua nos pés e mantém os mesmos centros de colisão', () => {
+  it('usa a margem contínua nos pés, com poço e casa seguindo a geometria real', () => {
     for (let y = 1; y < WORLD_HEIGHT - 1; y++) for (let x = 1; x < WORLD_WIDTH - 1; x++) {
+      if(x>=21&&x<=27&&y>=11&&y<=15){
+        expect(world.isBlocked(x,y)).toBe(true);expect(world.isBlockedPoint(x*32+16,y*32+16)).toBe(cottageSolidPoint(x*32+16,y*32+16,HOMESTEAD_HOUSE));continue;
+      }
       if(wellSolidTile(x,y)&&!wellSolidPoint(x*32+16,y*32+16)){
         expect(world.isBlocked(x,y)).toBe(true);expect(world.isBlockedPoint(x*32+16,y*32+16)).toBe(false);continue;
       }

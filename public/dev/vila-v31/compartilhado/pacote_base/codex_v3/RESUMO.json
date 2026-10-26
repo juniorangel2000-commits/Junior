@@ -1,0 +1,12 @@
+{
+  "version": "3.0 - em revisao",
+  "npcs": 10,
+  "facades": 10,
+  "interiors": 10,
+  "new_counter_candidates": 10,
+  "cleaned_older_candidates": 42,
+  "native_game_sprites": 24,
+  "approved_new_sprites": 0,
+  "approved_native_sprites": 24,
+  "github_modified": false
+}

@@ -1,0 +1,2352 @@
+[
+  {
+    "npc": "augusto",
+    "shop_name": "Armazém de mantimentos",
+    "reference_image_size_px": [
+      1122,
+      1402
+    ],
+    "facade": "01_LOJAS/augusto/fachada.png",
+    "interior": "01_LOJAS/augusto/interior.png",
+    "reference_split_y": 676,
+    "elements": [
+      {
+        "id": "balcao_central",
+        "reference_bbox_xyxy": [
+          390,
+          907,
+          739,
+          1048
+        ],
+        "reference_anchor_bottom_center_px": [
+          564,
+          1048
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": true,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "balanca_balcoes",
+        "reference_bbox_xyxy": [
+          607,
+          880,
+          722,
+          988
+        ],
+        "reference_anchor_bottom_center_px": [
+          664,
+          988
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "livro_caixa",
+        "reference_bbox_xyxy": [
+          501,
+          909,
+          595,
+          976
+        ],
+        "reference_anchor_bottom_center_px": [
+          548,
+          976
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "estante_potes",
+        "reference_bbox_xyxy": [
+          424,
+          771,
+          704,
+          930
+        ],
+        "reference_anchor_bottom_center_px": [
+          564,
+          930
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "armario_fundos",
+        "reference_bbox_xyxy": [
+          788,
+          773,
+          930,
+          996
+        ],
+        "reference_anchor_bottom_center_px": [
+          859,
+          996
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "prateleira_lateral_esquerda",
+        "reference_bbox_xyxy": [
+          116,
+          802,
+          318,
+          907
+        ],
+        "reference_anchor_bottom_center_px": [
+          217,
+          907
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "sacos_graos",
+        "reference_bbox_xyxy": [
+          130,
+          873,
+          293,
+          1034
+        ],
+        "reference_anchor_bottom_center_px": [
+          212,
+          1034
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "caixas_frutas",
+        "reference_bbox_xyxy": [
+          195,
+          1041,
+          376,
+          1199
+        ],
+        "reference_anchor_bottom_center_px": [
+          286,
+          1199
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "frutas_hortalicas",
+        "reference_bbox_xyxy": [
+          767,
+          1040,
+          964,
+          1212
+        ],
+        "reference_anchor_bottom_center_px": [
+          866,
+          1212
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "sacos_lateral_direita",
+        "reference_bbox_xyxy": [
+          901,
+          942,
+          1066,
+          1208
+        ],
+        "reference_anchor_bottom_center_px": [
+          984,
+          1208
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "tapete_central",
+        "reference_bbox_xyxy": [
+          442,
+          1035,
+          708,
+          1135
+        ],
+        "reference_anchor_bottom_center_px": [
+          575,
+          1135
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "placa_botanica",
+        "reference_bbox_xyxy": [
+          366,
+          795,
+          425,
+          875
+        ],
+        "reference_anchor_bottom_center_px": [
+          396,
+          875
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "barril_canto",
+        "reference_bbox_xyxy": [
+          732,
+          1118,
+          798,
+          1207
+        ],
+        "reference_anchor_bottom_center_px": [
+          765,
+          1207
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "enfeite_floral",
+        "reference_bbox_xyxy": [
+          391,
+          911,
+          461,
+          986
+        ],
+        "reference_anchor_bottom_center_px": [
+          426,
+          986
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      }
+    ],
+    "notes": "Coordinates belong to approved reference composition; translate and scale to Phaser world only after validating actual interior tile grid."
+  },
+  {
+    "npc": "bento",
+    "shop_name": "Ferraria",
+    "reference_image_size_px": [
+      1122,
+      1402
+    ],
+    "facade": "01_LOJAS/bento/fachada.png",
+    "interior": "01_LOJAS/bento/interior.png",
+    "reference_split_y": 719,
+    "elements": [
+      {
+        "id": "fornalha_completa",
+        "reference_bbox_xyxy": [
+          682,
+          758,
+          831,
+          1026
+        ],
+        "reference_anchor_bottom_center_px": [
+          756,
+          1026
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "bigorna_e_toco",
+        "reference_bbox_xyxy": [
+          684,
+          1044,
+          802,
+          1189
+        ],
+        "reference_anchor_bottom_center_px": [
+          743,
+          1189
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "tanque_resfriamento",
+        "reference_bbox_xyxy": [
+          575,
+          910,
+          686,
+          1045
+        ],
+        "reference_anchor_bottom_center_px": [
+          630,
+          1045
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "mesa_atendimento",
+        "reference_bbox_xyxy": [
+          292,
+          893,
+          496,
+          1074
+        ],
+        "reference_anchor_bottom_center_px": [
+          394,
+          1074
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": true,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "prateleira_ferramentas",
+        "reference_bbox_xyxy": [
+          110,
+          794,
+          306,
+          1063
+        ],
+        "reference_anchor_bottom_center_px": [
+          208,
+          1063
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "estante_metal",
+        "reference_bbox_xyxy": [
+          860,
+          786,
+          1042,
+          995
+        ],
+        "reference_anchor_bottom_center_px": [
+          951,
+          995
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "cesto_lingotes",
+        "reference_bbox_xyxy": [
+          177,
+          1097,
+          259,
+          1196
+        ],
+        "reference_anchor_bottom_center_px": [
+          218,
+          1196
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "caixa_minerios",
+        "reference_bbox_xyxy": [
+          256,
+          1097,
+          339,
+          1198
+        ],
+        "reference_anchor_bottom_center_px": [
+          298,
+          1198
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "porta_ferramentas",
+        "reference_bbox_xyxy": [
+          952,
+          963,
+          1049,
+          1195
+        ],
+        "reference_anchor_bottom_center_px": [
+          1000,
+          1195
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "barril_hastes",
+        "reference_bbox_xyxy": [
+          105,
+          1053,
+          175,
+          1205
+        ],
+        "reference_anchor_bottom_center_px": [
+          140,
+          1205
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "tapete_ferraria",
+        "reference_bbox_xyxy": [
+          404,
+          1129,
+          541,
+          1210
+        ],
+        "reference_anchor_bottom_center_px": [
+          472,
+          1210
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "martelos_parede",
+        "reference_bbox_xyxy": [
+          334,
+          801,
+          406,
+          922
+        ],
+        "reference_anchor_bottom_center_px": [
+          370,
+          922
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "lamparina",
+        "reference_bbox_xyxy": [
+          588,
+          758,
+          627,
+          820
+        ],
+        "reference_anchor_bottom_center_px": [
+          608,
+          820
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "banquinho",
+        "reference_bbox_xyxy": [
+          634,
+          1118,
+          686,
+          1192
+        ],
+        "reference_anchor_bottom_center_px": [
+          660,
+          1192
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      }
+    ],
+    "notes": "Coordinates belong to approved reference composition; translate and scale to Phaser world only after validating actual interior tile grid."
+  },
+  {
+    "npc": "amelia",
+    "shop_name": "Herbalista",
+    "reference_image_size_px": [
+      1122,
+      1402
+    ],
+    "facade": "01_LOJAS/amelia/fachada.png",
+    "interior": "01_LOJAS/amelia/interior.png",
+    "reference_split_y": 710,
+    "elements": [
+      {
+        "id": "estante_ervas_vidros",
+        "reference_bbox_xyxy": [
+          163,
+          770,
+          405,
+          1035
+        ],
+        "reference_anchor_bottom_center_px": [
+          284,
+          1035
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "bancada_alquimia",
+        "reference_bbox_xyxy": [
+          391,
+          876,
+          659,
+          1035
+        ],
+        "reference_anchor_bottom_center_px": [
+          525,
+          1035
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "almofariz",
+        "reference_bbox_xyxy": [
+          508,
+          891,
+          585,
+          971
+        ],
+        "reference_anchor_bottom_center_px": [
+          546,
+          971
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "frasquinhos",
+        "reference_bbox_xyxy": [
+          571,
+          910,
+          663,
+          986
+        ],
+        "reference_anchor_bottom_center_px": [
+          617,
+          986
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "ervas_penduradas",
+        "reference_bbox_xyxy": [
+          667,
+          787,
+          818,
+          1016
+        ],
+        "reference_anchor_bottom_center_px": [
+          742,
+          1016
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "balcao_vendas",
+        "reference_bbox_xyxy": [
+          262,
+          1032,
+          626,
+          1188
+        ],
+        "reference_anchor_bottom_center_px": [
+          444,
+          1188
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": true,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "vasos_estufa",
+        "reference_bbox_xyxy": [
+          826,
+          802,
+          1054,
+          1194
+        ],
+        "reference_anchor_bottom_center_px": [
+          940,
+          1194
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "mesa_preparacao",
+        "reference_bbox_xyxy": [
+          704,
+          1064,
+          808,
+          1170
+        ],
+        "reference_anchor_bottom_center_px": [
+          756,
+          1170
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "tapete_folhas",
+        "reference_bbox_xyxy": [
+          314,
+          1185,
+          586,
+          1282
+        ],
+        "reference_anchor_bottom_center_px": [
+          450,
+          1282
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "cesto_cogumelos",
+        "reference_bbox_xyxy": [
+          185,
+          1011,
+          284,
+          1061
+        ],
+        "reference_anchor_bottom_center_px": [
+          234,
+          1061
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "planta_grande",
+        "reference_bbox_xyxy": [
+          85,
+          982,
+          175,
+          1127
+        ],
+        "reference_anchor_bottom_center_px": [
+          130,
+          1127
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "mudas_caixotes",
+        "reference_bbox_xyxy": [
+          687,
+          1150,
+          831,
+          1262
+        ],
+        "reference_anchor_bottom_center_px": [
+          759,
+          1262
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "janela_estufa",
+        "reference_bbox_xyxy": [
+          820,
+          754,
+          1083,
+          1003
+        ],
+        "reference_anchor_bottom_center_px": [
+          952,
+          1003
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      }
+    ],
+    "notes": "Coordinates belong to approved reference composition; translate and scale to Phaser world only after validating actual interior tile grid."
+  },
+  {
+    "npc": "tobias",
+    "shop_name": "Carpintaria",
+    "reference_image_size_px": [
+      1122,
+      1402
+    ],
+    "facade": "01_LOJAS/tobias/fachada.png",
+    "interior": "01_LOJAS/tobias/interior.png",
+    "reference_split_y": 692,
+    "elements": [
+      {
+        "id": "bancada_ferramentas",
+        "reference_bbox_xyxy": [
+          108,
+          785,
+          299,
+          984
+        ],
+        "reference_anchor_bottom_center_px": [
+          204,
+          984
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "bancada_serrote",
+        "reference_bbox_xyxy": [
+          103,
+          1080,
+          292,
+          1174
+        ],
+        "reference_anchor_bottom_center_px": [
+          198,
+          1174
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "mesa_catalogo",
+        "reference_bbox_xyxy": [
+          349,
+          982,
+          583,
+          1190
+        ],
+        "reference_anchor_bottom_center_px": [
+          466,
+          1190
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": true,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "estante_materiais",
+        "reference_bbox_xyxy": [
+          354,
+          782,
+          574,
+          966
+        ],
+        "reference_anchor_bottom_center_px": [
+          464,
+          966
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "armario_desenhos",
+        "reference_bbox_xyxy": [
+          634,
+          783,
+          842,
+          1042
+        ],
+        "reference_anchor_bottom_center_px": [
+          738,
+          1042
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "prancheta_projetos",
+        "reference_bbox_xyxy": [
+          638,
+          780,
+          809,
+          902
+        ],
+        "reference_anchor_bottom_center_px": [
+          724,
+          902
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "toras_empilhadas",
+        "reference_bbox_xyxy": [
+          962,
+          1032,
+          1096,
+          1169
+        ],
+        "reference_anchor_bottom_center_px": [
+          1029,
+          1169
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "tabuas_em_pe",
+        "reference_bbox_xyxy": [
+          958,
+          824,
+          1075,
+          1028
+        ],
+        "reference_anchor_bottom_center_px": [
+          1016,
+          1028
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "tabuas_prateleira",
+        "reference_bbox_xyxy": [
+          795,
+          1138,
+          915,
+          1243
+        ],
+        "reference_anchor_bottom_center_px": [
+          855,
+          1243
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "barril_rolos",
+        "reference_bbox_xyxy": [
+          564,
+          861,
+          645,
+          968
+        ],
+        "reference_anchor_bottom_center_px": [
+          604,
+          968
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "tapete_verde",
+        "reference_bbox_xyxy": [
+          297,
+          1019,
+          623,
+          1195
+        ],
+        "reference_anchor_bottom_center_px": [
+          460,
+          1195
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "serrote_manual",
+        "reference_bbox_xyxy": [
+          168,
+          1090,
+          283,
+          1150
+        ],
+        "reference_anchor_bottom_center_px": [
+          226,
+          1150
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "banquinho",
+        "reference_bbox_xyxy": [
+          715,
+          909,
+          772,
+          981
+        ],
+        "reference_anchor_bottom_center_px": [
+          744,
+          981
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      }
+    ],
+    "notes": "Coordinates belong to approved reference composition; translate and scale to Phaser world only after validating actual interior tile grid."
+  },
+  {
+    "npc": "rosa",
+    "shop_name": "Loja de sementes e agricultura",
+    "reference_image_size_px": [
+      1122,
+      1402
+    ],
+    "facade": "01_LOJAS/rosa/fachada.png",
+    "interior": "01_LOJAS/rosa/interior.png",
+    "reference_split_y": 687,
+    "elements": [
+      {
+        "id": "prateleira_sementes",
+        "reference_bbox_xyxy": [
+          351,
+          766,
+          711,
+          989
+        ],
+        "reference_anchor_bottom_center_px": [
+          531,
+          989
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "pacotes_sementes",
+        "reference_bbox_xyxy": [
+          378,
+          814,
+          700,
+          947
+        ],
+        "reference_anchor_bottom_center_px": [
+          539,
+          947
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "ferramentas_agricolas",
+        "reference_bbox_xyxy": [
+          117,
+          787,
+          310,
+          995
+        ],
+        "reference_anchor_bottom_center_px": [
+          214,
+          995
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "ervas_secas",
+        "reference_bbox_xyxy": [
+          778,
+          774,
+          984,
+          880
+        ],
+        "reference_anchor_bottom_center_px": [
+          881,
+          880
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "balcao_sementes",
+        "reference_bbox_xyxy": [
+          385,
+          974,
+          756,
+          1154
+        ],
+        "reference_anchor_bottom_center_px": [
+          570,
+          1154
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": true,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "sacos_adubo",
+        "reference_bbox_xyxy": [
+          189,
+          945,
+          331,
+          1050
+        ],
+        "reference_anchor_bottom_center_px": [
+          260,
+          1050
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "frutas_legumes",
+        "reference_bbox_xyxy": [
+          808,
+          966,
+          1014,
+          1196
+        ],
+        "reference_anchor_bottom_center_px": [
+          911,
+          1196
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "prateleira_pacotes",
+        "reference_bbox_xyxy": [
+          914,
+          909,
+          1033,
+          1057
+        ],
+        "reference_anchor_bottom_center_px": [
+          974,
+          1057
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "tapete_verde",
+        "reference_bbox_xyxy": [
+          438,
+          1134,
+          670,
+          1247
+        ],
+        "reference_anchor_bottom_center_px": [
+          554,
+          1247
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "jarros_na_parede",
+        "reference_bbox_xyxy": [
+          701,
+          811,
+          921,
+          951
+        ],
+        "reference_anchor_bottom_center_px": [
+          811,
+          951
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "vaso_flores",
+        "reference_bbox_xyxy": [
+          651,
+          985,
+          716,
+          1063
+        ],
+        "reference_anchor_bottom_center_px": [
+          684,
+          1063
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "plantas_esquerda",
+        "reference_bbox_xyxy": [
+          101,
+          1089,
+          293,
+          1249
+        ],
+        "reference_anchor_bottom_center_px": [
+          197,
+          1249
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "caixa_aboboras",
+        "reference_bbox_xyxy": [
+          807,
+          981,
+          913,
+          1087
+        ],
+        "reference_anchor_bottom_center_px": [
+          860,
+          1087
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      }
+    ],
+    "notes": "Coordinates belong to approved reference composition; translate and scale to Phaser world only after validating actual interior tile grid."
+  },
+  {
+    "npc": "nilo",
+    "shop_name": "Loja de antiguidades",
+    "reference_image_size_px": [
+      1122,
+      1402
+    ],
+    "facade": "01_LOJAS/nilo/fachada.png",
+    "interior": "01_LOJAS/nilo/interior.png",
+    "reference_split_y": 641,
+    "elements": [
+      {
+        "id": "balcao_antiguidades",
+        "reference_bbox_xyxy": [
+          409,
+          887,
+          695,
+          1030
+        ],
+        "reference_anchor_bottom_center_px": [
+          552,
+          1030
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": true,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "estante_mapa_mundo",
+        "reference_bbox_xyxy": [
+          469,
+          701,
+          688,
+          894
+        ],
+        "reference_anchor_bottom_center_px": [
+          578,
+          894
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "vitrine_esquerda",
+        "reference_bbox_xyxy": [
+          113,
+          831,
+          322,
+          981
+        ],
+        "reference_anchor_bottom_center_px": [
+          218,
+          981
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "vitrine_direita",
+        "reference_bbox_xyxy": [
+          804,
+          824,
+          960,
+          987
+        ],
+        "reference_anchor_bottom_center_px": [
+          882,
+          987
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "mesa_artefatos_esquerda",
+        "reference_bbox_xyxy": [
+          124,
+          1000,
+          333,
+          1152
+        ],
+        "reference_anchor_bottom_center_px": [
+          228,
+          1152
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "mesa_artefatos_central",
+        "reference_bbox_xyxy": [
+          479,
+          1065,
+          645,
+          1180
+        ],
+        "reference_anchor_bottom_center_px": [
+          562,
+          1180
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "mesa_mapas_direita",
+        "reference_bbox_xyxy": [
+          833,
+          1087,
+          1020,
+          1212
+        ],
+        "reference_anchor_bottom_center_px": [
+          926,
+          1212
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "estante_objetos",
+        "reference_bbox_xyxy": [
+          332,
+          727,
+          466,
+          919
+        ],
+        "reference_anchor_bottom_center_px": [
+          399,
+          919
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "estatua_direita",
+        "reference_bbox_xyxy": [
+          996,
+          837,
+          1082,
+          1049
+        ],
+        "reference_anchor_bottom_center_px": [
+          1039,
+          1049
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "busto_esquerda",
+        "reference_bbox_xyxy": [
+          167,
+          800,
+          256,
+          884
+        ],
+        "reference_anchor_bottom_center_px": [
+          212,
+          884
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "tapete_persa",
+        "reference_bbox_xyxy": [
+          412,
+          1008,
+          762,
+          1200
+        ],
+        "reference_anchor_bottom_center_px": [
+          587,
+          1200
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "livros_e_mapas",
+        "reference_bbox_xyxy": [
+          789,
+          714,
+          991,
+          846
+        ],
+        "reference_anchor_bottom_center_px": [
+          890,
+          846
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "globo_terrestre",
+        "reference_bbox_xyxy": [
+          402,
+          762,
+          482,
+          865
+        ],
+        "reference_anchor_bottom_center_px": [
+          442,
+          865
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      }
+    ],
+    "notes": "Coordinates belong to approved reference composition; translate and scale to Phaser world only after validating actual interior tile grid."
+  },
+  {
+    "npc": "celina",
+    "shop_name": "Costureira e alfaiataria",
+    "reference_image_size_px": [
+      1122,
+      1402
+    ],
+    "facade": "01_LOJAS/celina/fachada.png",
+    "interior": "01_LOJAS/celina/interior.png",
+    "reference_split_y": 698,
+    "elements": [
+      {
+        "id": "maquina_costura_e_mesa",
+        "reference_bbox_xyxy": [
+          115,
+          969,
+          369,
+          1138
+        ],
+        "reference_anchor_bottom_center_px": [
+          242,
+          1138
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "manequins",
+        "reference_bbox_xyxy": [
+          609,
+          807,
+          750,
+          996
+        ],
+        "reference_anchor_bottom_center_px": [
+          680,
+          996
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "tecidos_bobinas",
+        "reference_bbox_xyxy": [
+          108,
+          781,
+          228,
+          986
+        ],
+        "reference_anchor_bottom_center_px": [
+          168,
+          986
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "estante_tecidos",
+        "reference_bbox_xyxy": [
+          406,
+          777,
+          604,
+          967
+        ],
+        "reference_anchor_bottom_center_px": [
+          505,
+          967
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "araras_roupas",
+        "reference_bbox_xyxy": [
+          783,
+          812,
+          971,
+          1001
+        ],
+        "reference_anchor_bottom_center_px": [
+          877,
+          1001
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "balcao_vendas",
+        "reference_bbox_xyxy": [
+          479,
+          947,
+          709,
+          1095
+        ],
+        "reference_anchor_bottom_center_px": [
+          594,
+          1095
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": true,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "espelho_oval",
+        "reference_bbox_xyxy": [
+          956,
+          902,
+          1041,
+          1054
+        ],
+        "reference_anchor_bottom_center_px": [
+          998,
+          1054
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "tapete_redondo",
+        "reference_bbox_xyxy": [
+          172,
+          1018,
+          443,
+          1202
+        ],
+        "reference_anchor_bottom_center_px": [
+          308,
+          1202
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "caixa_rolos_tecido",
+        "reference_bbox_xyxy": [
+          760,
+          1088,
+          910,
+          1225
+        ],
+        "reference_anchor_bottom_center_px": [
+          835,
+          1225
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "cadeira_costura",
+        "reference_bbox_xyxy": [
+          225,
+          1106,
+          319,
+          1192
+        ],
+        "reference_anchor_bottom_center_px": [
+          272,
+          1192
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "tesouras_na_parede",
+        "reference_bbox_xyxy": [
+          734,
+          831,
+          787,
+          897
+        ],
+        "reference_anchor_bottom_center_px": [
+          760,
+          897
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "caixa_retales",
+        "reference_bbox_xyxy": [
+          831,
+          941,
+          954,
+          1067
+        ],
+        "reference_anchor_bottom_center_px": [
+          892,
+          1067
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "placa_moldes",
+        "reference_bbox_xyxy": [
+          240,
+          776,
+          392,
+          928
+        ],
+        "reference_anchor_bottom_center_px": [
+          316,
+          928
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      }
+    ],
+    "notes": "Coordinates belong to approved reference composition; translate and scale to Phaser world only after validating actual interior tile grid."
+  },
+  {
+    "npc": "damiao",
+    "shop_name": "Loja de pesca",
+    "reference_image_size_px": [
+      1122,
+      1402
+    ],
+    "facade": "01_LOJAS/damiao/fachada.png",
+    "interior": "01_LOJAS/damiao/interior.png",
+    "reference_split_y": 723,
+    "elements": [
+      {
+        "id": "varas_pesca",
+        "reference_bbox_xyxy": [
+          296,
+          794,
+          399,
+          1011
+        ],
+        "reference_anchor_bottom_center_px": [
+          348,
+          1011
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "rede_parede",
+        "reference_bbox_xyxy": [
+          96,
+          786,
+          213,
+          923
+        ],
+        "reference_anchor_bottom_center_px": [
+          154,
+          923
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "isca_expositor",
+        "reference_bbox_xyxy": [
+          378,
+          843,
+          512,
+          1012
+        ],
+        "reference_anchor_bottom_center_px": [
+          445,
+          1012
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "bancada_vendas",
+        "reference_bbox_xyxy": [
+          372,
+          1012,
+          676,
+          1140
+        ],
+        "reference_anchor_bottom_center_px": [
+          524,
+          1140
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": true,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "peixes_pendurados",
+        "reference_bbox_xyxy": [
+          789,
+          783,
+          945,
+          938
+        ],
+        "reference_anchor_bottom_center_px": [
+          867,
+          938
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "mesa_preparacao_peixe",
+        "reference_bbox_xyxy": [
+          759,
+          910,
+          984,
+          1078
+        ],
+        "reference_anchor_bottom_center_px": [
+          872,
+          1078
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "caixas_pescados",
+        "reference_bbox_xyxy": [
+          801,
+          1037,
+          1017,
+          1217
+        ],
+        "reference_anchor_bottom_center_px": [
+          909,
+          1217
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "barris_e_cestos",
+        "reference_bbox_xyxy": [
+          117,
+          989,
+          314,
+          1212
+        ],
+        "reference_anchor_bottom_center_px": [
+          216,
+          1212
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "prateleira_vidros",
+        "reference_bbox_xyxy": [
+          488,
+          847,
+          704,
+          1024
+        ],
+        "reference_anchor_bottom_center_px": [
+          596,
+          1024
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "tapete_azul",
+        "reference_bbox_xyxy": [
+          413,
+          1126,
+          648,
+          1221
+        ],
+        "reference_anchor_bottom_center_px": [
+          530,
+          1221
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "corda_enrolada",
+        "reference_bbox_xyxy": [
+          726,
+          791,
+          809,
+          927
+        ],
+        "reference_anchor_bottom_center_px": [
+          768,
+          927
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "caixas_rede",
+        "reference_bbox_xyxy": [
+          97,
+          1075,
+          245,
+          1208
+        ],
+        "reference_anchor_bottom_center_px": [
+          171,
+          1208
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      }
+    ],
+    "notes": "Coordinates belong to approved reference composition; translate and scale to Phaser world only after validating actual interior tile grid."
+  },
+  {
+    "npc": "helena",
+    "shop_name": "Pousada e refeições",
+    "reference_image_size_px": [
+      1122,
+      1402
+    ],
+    "facade": "01_LOJAS/helena/fachada.png",
+    "interior": "01_LOJAS/helena/interior.png",
+    "reference_split_y": 687,
+    "elements": [
+      {
+        "id": "mesa_comensais_a",
+        "reference_bbox_xyxy": [
+          116,
+          846,
+          286,
+          1010
+        ],
+        "reference_anchor_bottom_center_px": [
+          201,
+          1010
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "mesa_comensais_b",
+        "reference_bbox_xyxy": [
+          285,
+          852,
+          399,
+          1009
+        ],
+        "reference_anchor_bottom_center_px": [
+          342,
+          1009
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "mesa_comensais_c",
+        "reference_bbox_xyxy": [
+          137,
+          985,
+          246,
+          1109
+        ],
+        "reference_anchor_bottom_center_px": [
+          192,
+          1109
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "mesa_comensais_d",
+        "reference_bbox_xyxy": [
+          276,
+          1042,
+          420,
+          1180
+        ],
+        "reference_anchor_bottom_center_px": [
+          348,
+          1180
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "mesa_grande_centro",
+        "reference_bbox_xyxy": [
+          451,
+          1020,
+          649,
+          1176
+        ],
+        "reference_anchor_bottom_center_px": [
+          550,
+          1176
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "balcao_taverna",
+        "reference_bbox_xyxy": [
+          461,
+          770,
+          748,
+          970
+        ],
+        "reference_anchor_bottom_center_px": [
+          604,
+          970
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": true,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "barris_bebidas",
+        "reference_bbox_xyxy": [
+          645,
+          735,
+          776,
+          888
+        ],
+        "reference_anchor_bottom_center_px": [
+          710,
+          888
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "cozinha_fornalha",
+        "reference_bbox_xyxy": [
+          811,
+          757,
+          941,
+          934
+        ],
+        "reference_anchor_bottom_center_px": [
+          876,
+          934
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "bancada_cozinha",
+        "reference_bbox_xyxy": [
+          886,
+          940,
+          1069,
+          1079
+        ],
+        "reference_anchor_bottom_center_px": [
+          978,
+          1079
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "ingredientes_caixas",
+        "reference_bbox_xyxy": [
+          925,
+          770,
+          1079,
+          939
+        ],
+        "reference_anchor_bottom_center_px": [
+          1002,
+          939
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "estante_alimentos",
+        "reference_bbox_xyxy": [
+          393,
+          746,
+          513,
+          910
+        ],
+        "reference_anchor_bottom_center_px": [
+          453,
+          910
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "tapete_vermelho",
+        "reference_bbox_xyxy": [
+          426,
+          996,
+          675,
+          1187
+        ],
+        "reference_anchor_bottom_center_px": [
+          550,
+          1187
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "plantas_canto",
+        "reference_bbox_xyxy": [
+          721,
+          1001,
+          810,
+          1159
+        ],
+        "reference_anchor_bottom_center_px": [
+          766,
+          1159
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      }
+    ],
+    "notes": "Coordinates belong to approved reference composition; translate and scale to Phaser world only after validating actual interior tile grid."
+  },
+  {
+    "npc": "icaro",
+    "shop_name": "Oficina mecânica",
+    "reference_image_size_px": [
+      1122,
+      1402
+    ],
+    "facade": "01_LOJAS/icaro/fachada.png",
+    "interior": "01_LOJAS/icaro/interior.png",
+    "reference_split_y": 693,
+    "elements": [
+      {
+        "id": "mesa_trabalho_central",
+        "reference_bbox_xyxy": [
+          294,
+          903,
+          617,
+          1082
+        ],
+        "reference_anchor_bottom_center_px": [
+          456,
+          1082
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "parede_ferramentas",
+        "reference_bbox_xyxy": [
+          284,
+          754,
+          564,
+          903
+        ],
+        "reference_anchor_bottom_center_px": [
+          424,
+          903
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "armario_peças",
+        "reference_bbox_xyxy": [
+          667,
+          772,
+          849,
+          969
+        ],
+        "reference_anchor_bottom_center_px": [
+          758,
+          969
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "maquina_energia",
+        "reference_bbox_xyxy": [
+          894,
+          785,
+          1018,
+          986
+        ],
+        "reference_anchor_bottom_center_px": [
+          956,
+          986
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "bancada_atendimento",
+        "reference_bbox_xyxy": [
+          611,
+          1045,
+          937,
+          1187
+        ],
+        "reference_anchor_bottom_center_px": [
+          774,
+          1187
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": true,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "caixas_sucata",
+        "reference_bbox_xyxy": [
+          139,
+          1082,
+          470,
+          1205
+        ],
+        "reference_anchor_bottom_center_px": [
+          304,
+          1205
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "barril_azul",
+        "reference_bbox_xyxy": [
+          106,
+          1092,
+          171,
+          1200
+        ],
+        "reference_anchor_bottom_center_px": [
+          138,
+          1200
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "tapete_vermelho",
+        "reference_bbox_xyxy": [
+          500,
+          1102,
+          622,
+          1206
+        ],
+        "reference_anchor_bottom_center_px": [
+          561,
+          1206
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "bancada_componentes",
+        "reference_bbox_xyxy": [
+          568,
+          820,
+          676,
+          965
+        ],
+        "reference_anchor_bottom_center_px": [
+          622,
+          965
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "peças_engrenagens",
+        "reference_bbox_xyxy": [
+          390,
+          938,
+          520,
+          1035
+        ],
+        "reference_anchor_bottom_center_px": [
+          455,
+          1035
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "prateleiras_esquerda",
+        "reference_bbox_xyxy": [
+          118,
+          755,
+          204,
+          1053
+        ],
+        "reference_anchor_bottom_center_px": [
+          161,
+          1053
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      },
+      {
+        "id": "estantes_peças_lado",
+        "reference_bbox_xyxy": [
+          927,
+          988,
+          1043,
+          1158
+        ],
+        "reference_anchor_bottom_center_px": [
+          985,
+          1158
+        ],
+        "source_class": "reference_contextual_crop",
+        "interactive": false,
+        "collision": "UNVERIFIED",
+        "walkable": "UNKNOWN"
+      }
+    ],
+    "notes": "Coordinates belong to approved reference composition; translate and scale to Phaser world only after validating actual interior tile grid."
+  }
+]
