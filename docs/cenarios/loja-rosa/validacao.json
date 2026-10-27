@@ -1,0 +1,286 @@
+{
+  "checks": [
+    {
+      "name": "Movimento para na parede da casa e permite aproximação dos degraus",
+      "passed": true,
+      "details": {
+        "house": {
+          "x": 829,
+          "y": 486.00097656250074
+        },
+        "wall": 481,
+        "well": {
+          "x": 1008,
+          "y": 504.3012500000005
+        },
+        "wellTop": 487.41999999999996,
+        "roofFree": true,
+        "wellRoofFree": true
+      }
+    },
+    {
+      "name": "Movimento não entra na abertura do poço",
+      "passed": true,
+      "details": {
+        "house": {
+          "x": 829,
+          "y": 486.00097656250074
+        },
+        "wall": 481,
+        "well": {
+          "x": 1008,
+          "y": 504.3012500000005
+        },
+        "wellTop": 487.41999999999996,
+        "roofFree": true,
+        "wellRoofFree": true
+      }
+    },
+    {
+      "name": "Beirais da casa e telhado do poço não criam paredes invisíveis",
+      "passed": true,
+      "details": {
+        "house": {
+          "x": 829,
+          "y": 486.00097656250074
+        },
+        "wall": 481,
+        "well": {
+          "x": 1008,
+          "y": 504.3012500000005
+        },
+        "wellTop": 487.41999999999996,
+        "roofFree": true,
+        "wellRoofFree": true
+      }
+    },
+    {
+      "name": "Rosa usa os 40 PNGs fornecidos em atlas de oito direções",
+      "passed": true,
+      "details": {
+        "routines": [
+          "augusto",
+          "bento",
+          "rosa"
+        ],
+        "rosa": {
+          "area": "shop",
+          "x": 284,
+          "y": 156,
+          "direction": "up-right",
+          "stop": 1,
+          "wait": 0,
+          "serviceUntil": 0,
+          "socialUntil": 0,
+          "socialDay": 0
+        },
+        "frames": 41,
+        "display": 64,
+        "pieces": 19
+      }
+    },
+    {
+      "name": "Rosa entra no próprio comércio no horário de trabalho",
+      "passed": true,
+      "details": {
+        "routines": [
+          "augusto",
+          "bento",
+          "rosa"
+        ],
+        "rosa": {
+          "area": "shop",
+          "x": 284,
+          "y": 156,
+          "direction": "up-right",
+          "stop": 1,
+          "wait": 0,
+          "serviceUntil": 0,
+          "socialUntil": 0,
+          "socialDay": 0
+        },
+        "frames": 41,
+        "display": 64,
+        "pieces": 19
+      }
+    },
+    {
+      "name": "Loja agrícola possui 19 peças editáveis",
+      "passed": true
+    },
+    {
+      "name": "Fachada própria substitui a genérica e mantém escala da vila",
+      "passed": true,
+      "details": {
+        "texture": "village-rosa-shop",
+        "width": 353.28000000000003,
+        "duplicate": false
+      }
+    },
+    {
+      "name": "As dez portas deixam passar o corpo inteiro",
+      "passed": true,
+      "details": [
+        {
+          "id": "augusto",
+          "clear": true
+        },
+        {
+          "id": "bento",
+          "clear": true
+        },
+        {
+          "id": "amelia",
+          "clear": true
+        },
+        {
+          "id": "tobias",
+          "clear": true
+        },
+        {
+          "id": "rosa",
+          "clear": true
+        },
+        {
+          "id": "nilo",
+          "clear": true
+        },
+        {
+          "id": "celina",
+          "clear": true
+        },
+        {
+          "id": "damiao",
+          "clear": true
+        },
+        {
+          "id": "helena",
+          "clear": true
+        },
+        {
+          "id": "icaro",
+          "clear": true
+        }
+      ]
+    },
+    {
+      "name": "Compras fora do comércio são recusadas",
+      "passed": true,
+      "details": {
+        "allowed": false,
+        "result": {
+          "ok": false,
+          "reason": "invalid-economy",
+          "message": "Atendendo na loja · 08:00–12:00 e 13:30–18:00"
+        }
+      }
+    },
+    {
+      "name": "Compra e venda aparecem dentro da loja da Rosa",
+      "passed": true
+    },
+    {
+      "name": "Editor da Rosa abre com o acervo independente e exportação",
+      "passed": true
+    },
+    {
+      "name": "Exporta cenário em JSON com nome próprio",
+      "passed": true
+    },
+    {
+      "name": "As duas lanternas internas fornecem iluminação",
+      "passed": true,
+      "details": 2
+    },
+    {
+      "name": "Rosa caminha até a praça e interrompe vendas no intervalo",
+      "passed": true,
+      "details": {
+        "area": "village",
+        "x": 1552,
+        "y": 1392,
+        "direction": "up-right",
+        "stop": 0,
+        "wait": 0.30000000000000016,
+        "serviceUntil": 0,
+        "socialUntil": 0,
+        "socialDay": 0,
+        "canTrade": false
+      }
+    },
+    {
+      "name": "Rosa volta caminhando ao comércio após o intervalo",
+      "passed": true,
+      "details": {
+        "area": "shop",
+        "serving": true
+      }
+    },
+    {
+      "name": "Salva rotina e interior da Rosa no mesmo arquivo de partida",
+      "passed": true,
+      "details": {
+        "success": true,
+        "routine": {
+          "area": "shop",
+          "x": 284,
+          "y": 156,
+          "direction": "up-right",
+          "stop": 1,
+          "wait": 0,
+          "serviceUntil": 0,
+          "socialUntil": 0,
+          "socialDay": 0
+        },
+        "room": "rosa",
+        "pieces": 19
+      }
+    },
+    {
+      "name": "As três rochas metálicas usam a arte detalhada sem trocar decorações",
+      "passed": true,
+      "details": {
+        "decoration": "lake-rock-0",
+        "ores": [
+          {
+            "id": "qa-ore-iron",
+            "texture": "detailed-ore-atlas",
+            "frame": "iron",
+            "visibleWidth": 70.33835845896148
+          },
+          {
+            "id": "qa-ore-gold",
+            "texture": "detailed-ore-atlas",
+            "frame": "gold",
+            "visibleWidth": 71.5366269165247
+          },
+          {
+            "id": "qa-ore-blackMetal",
+            "texture": "detailed-ore-atlas",
+            "frame": "blackMetal",
+            "visibleWidth": 68.95238095238095
+          }
+        ]
+      }
+    },
+    {
+      "name": "Janelas externas recebem iluminação noturna sem erro WebGL",
+      "passed": true,
+      "details": {
+        "windows": [
+          {
+            "visible": true,
+            "alpha": 0.88
+          }
+        ],
+        "error": 0
+      }
+    },
+    {
+      "name": "Nenhum erro de execução ou arquivo ausente",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

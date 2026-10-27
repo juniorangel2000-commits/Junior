@@ -5,7 +5,7 @@ import { getRegionAt, isBridgeTile, isFarmTile, isPathTile, isWaterTile, locatio
 import { isWaterPoint, roadDistanceAt } from '../src/data/terrain-shape';
 import { Resources } from '../src/systems/resources';
 import {wellSolidTile,wellSolidPoint} from '../src/data/property-well';
-import {cottageSolidPoint} from '../src/data/architecture-collision';
+import {cottageSolidPoint,cottageSolidTile} from '../src/data/architecture-collision';
 import {HOMESTEAD_HOUSE} from '../src/data/property-homestead';
 import { Inventory } from '../src/systems/inventory';
 
@@ -15,7 +15,7 @@ vi.mock('phaser', () => ({ default: { Textures: { FilterMode: { NEAREST: 0 } } }
 
 // O teste exercita o mapa real e suas colisões sem precisar de WebGL/DOM.
 const object = {
-  setDisplaySize() { return this; }, setOrigin() { return this; }, setScale() { return this; }, setDepth() { return this; }, destroy() { return this; },
+  setData(){return this;},setDisplaySize() { return this; }, setOrigin() { return this; }, setScale() { return this; }, setDepth() { return this; }, destroy() { return this; },
   fillStyle() { return this; }, fillRect() { return this; }, lineStyle() { return this; }, lineBetween() { return this; },
 };
 const scene = {
@@ -181,7 +181,7 @@ describe('expansão da região inicial', () => {
   it('usa a margem contínua nos pés, com poço e casa seguindo a geometria real', () => {
     for (let y = 1; y < WORLD_HEIGHT - 1; y++) for (let x = 1; x < WORLD_WIDTH - 1; x++) {
       if(x>=21&&x<=27&&y>=11&&y<=15){
-        expect(world.isBlocked(x,y)).toBe(true);expect(world.isBlockedPoint(x*32+16,y*32+16)).toBe(cottageSolidPoint(x*32+16,y*32+16,HOMESTEAD_HOUSE));continue;
+        const ground={x:HOMESTEAD_HOUSE.x,y:HOMESTEAD_HOUSE.groundY};expect(world.isBlocked(x,y)).toBe(cottageSolidTile(x,y,ground));expect(world.isBlockedPoint(x*32+16,y*32+16)).toBe(cottageSolidPoint(x*32+16,y*32+16,ground));continue;
       }
       if(wellSolidTile(x,y)&&!wellSolidPoint(x*32+16,y*32+16)){
         expect(world.isBlocked(x,y)).toBe(true);expect(world.isBlockedPoint(x*32+16,y*32+16)).toBe(false);continue;

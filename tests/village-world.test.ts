@@ -21,7 +21,7 @@ describe('walkable village layout',()=>{
  });
  it('keeps buildings solid and trees away from every storefront approach',()=>{
   expect(VILLAGE_BUILDINGS.length).toBeGreaterThanOrEqual(6);
-  for(const building of VILLAGE_BUILDINGS)expect(villageBlockedAt(building.x,building.y)).toBe(true);
+  for(const building of VILLAGE_BUILDINGS)expect(villageBlockedAt(building.x,building.y-1)).toBe(true);
   for(const npc of VILLAGE_NPCS)expect(VILLAGE_TREES.some(tree=>Math.abs(tree.x-npc.x)<3&&Math.abs(tree.y-npc.y)<3)).toBe(false);
  });
 });

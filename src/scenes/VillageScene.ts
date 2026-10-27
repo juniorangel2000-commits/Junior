@@ -3,6 +3,7 @@ import {drawSmithLayout,type SmithView} from '../smith-layout-art';
 import {mountSmithEditor} from '../smith-layout-editor';
 import {BENTO_WALK_FRAMES,BENTO_DISPLAY,bentoSourceKey} from '../bento-sprites';
 import {AUGUSTO_WALK_FRAMES,AUGUSTO_DISPLAY,AUGUSTO_ORIGIN_Y,augustoSourceKey} from '../augusto-sprites';
+import {ROSA_WALK_FRAMES,ROSA_DISPLAY,ROSA_ORIGIN_Y,rosaSourceKey} from '../rosa-sprites';
 import {BentoRoutine} from '../systems/bento-routine';
 import {VillageNpcOverlays} from '../village-npc-overlays';
 import {MerchantDailyRoutine,dailyMerchant,merchantPeriod,MERCHANT_SMALL_TALK,MERCHANT_DAILY_PLAN,type RoutineId,type RoutineArea,type RoutineEnvironment} from '../systems/merchant-routine';
@@ -106,7 +107,7 @@ export class VillageScene extends Phaser.Scene {
   this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
   this.shop=new VillageInteractionUI({
    canTrade:id=>this.canTrade(id),isInside:id=>merchantCanTrade(id,this.roomOwner),getAvailability:id=>dailyMerchant(id)?this.routines.get(id)?.availability(this.state):undefined,onGuide:id=>this.beginGuide(id),
-   getPortrait:id=>id==='bento'?this.textures.getBase64(bentoSourceKey('down')):id==='augusto'?this.textures.getBase64(augustoSourceKey('down')):this.textures.getBase64(`village-npc-${id}`,0),
+   getPortrait:id=>id==='bento'?this.textures.getBase64(bentoSourceKey('down')):id==='augusto'?this.textures.getBase64(augustoSourceKey('down')):id==='rosa'?this.textures.getBase64(rosaSourceKey('down')):this.textures.getBase64(`village-npc-${id}`,0),
    onBlacksmith:()=>{this.shop?.close();this.setPaused(true);openBlacksmithPanel(()=>({...this.state,inventory:{...this.inventory.data}}),change=>{const before=structuredClone(this.state);this.state.inventory={...this.inventory.data};const r=change(this.state);if(r.ok){Object.assign(this.inventory.data,this.state.inventory);if(!this.persist()){this.state=before;Object.assign(this.inventory.data,before.inventory);return{ok:false,message:'Falha ao salvar. A operação foi revertida.'};}this.updateHUD();}return r;},()=>this.setPaused(false));},
    getServices:npc=>listVillageServices(npc),
    onService:id=>{const previous=structuredClone(this.state);const previousStock={...this.inventory.data};this.state.inventory={...this.inventory.data};this.state.crops=this.farming.crops.map(c=>({...c}));const result=performVillageService(this.state,id);if(result.ok){Object.assign(this.inventory.data,this.state.inventory);this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);const x=this.player.x,y=this.player.y;this.player.sprite.destroy();this.player=new Player(this,this.state.profile,x,y,'village-player');this.applyCamera();if(!this.persist()){this.state=previous;Object.assign(this.inventory.data,previousStock);return{ok:false,message:'Falha ao salvar. A operação foi revertida.'};}this.updateHUD();}return result;},
@@ -140,7 +141,7 @@ export class VillageScene extends Phaser.Scene {
  }
  private createDailyRoutines():void {
   this.routines=new Map();this.speech=undefined;
-  for(const id of ['augusto','bento'] as const){
+  for(const id of ['augusto','bento','rosa'] as const){
    const npc=this.villagers.find(n=>n.data.id===id)!;
    const shop=id==='bento'?this.bentoRoutine.state.area==='blacksmith-home':this.residents.get(id)!.shop;
    const nav=id==='bento'?smithNavigation(this.smithLayout):merchantRoomNavigation(id,this.merchantLayouts.get(id));
@@ -187,8 +188,8 @@ export class VillageScene extends Phaser.Scene {
  }
  private createVillagers():void {
   this.villagers=VILLAGE_NPCS.map(npc=>{
-   const frames=npc.id==='bento'?BENTO_WALK_FRAMES:npc.id==='augusto'?AUGUSTO_WALK_FRAMES:0,key=merchantTexture(this,npc.id),p=villagePixelPoint(npc);
-   const sprite=this.add.sprite(p.x,p.y,key,characterFrame(npc.direction,0,frames)).setOrigin(.5,npc.id==='augusto'?AUGUSTO_ORIGIN_Y:1).setDisplaySize(npc.id==='bento'?BENTO_DISPLAY:npc.id==='augusto'?AUGUSTO_DISPLAY:CHARACTER_WIDTH,npc.id==='augusto'?AUGUSTO_DISPLAY:CHARACTER_HEIGHT).setDepth(p.y);
+   const frames=npc.id==='bento'?BENTO_WALK_FRAMES:npc.id==='augusto'?AUGUSTO_WALK_FRAMES:npc.id==='rosa'?ROSA_WALK_FRAMES:0,key=merchantTexture(this,npc.id),p=villagePixelPoint(npc);
+   const sprite=this.add.sprite(p.x,p.y,key,characterFrame(npc.direction,0,frames)).setOrigin(.5,npc.id==='augusto'?AUGUSTO_ORIGIN_Y:npc.id==='rosa'?ROSA_ORIGIN_Y:1).setDisplaySize(npc.id==='bento'?BENTO_DISPLAY:npc.id==='augusto'?AUGUSTO_DISPLAY:npc.id==='rosa'?ROSA_DISPLAY:CHARACTER_WIDTH,npc.id==='augusto'?AUGUSTO_DISPLAY:npc.id==='rosa'?ROSA_DISPLAY:CHARACTER_HEIGHT).setDepth(p.y);
    if(npc.id==='bento'){const b=this.bentoRoutine.state;if(b.area==='village'){const free=freeArrival(b,this.world.isBlockedPoint,[]);if(free)Object.assign(b,free);}sprite.setPosition(b.x,b.y).setDepth(b.y).setFrame(characterFrame(b.direction,0,frames)).setVisible(b.area==='village');}
    else{const resident=this.residents.get(npc.id)??{id:npc.id,...p,direction:npc.direction,shop:false};if(!resident.shop){const free=freeArrival(resident,this.world.isBlockedPoint,[]);if(free)Object.assign(resident,free);}this.residents.set(npc.id,resident);sprite.setPosition(resident.x,resident.y).setDepth(resident.y).setFrame(characterFrame(resident.direction,0,frames)).setVisible(!resident.shop);}
    return {data:npc,sprite,frames};
@@ -256,9 +257,10 @@ export class VillageScene extends Phaser.Scene {
  }
  openHomeMenu():void {
   if(!DEVELOPMENT_TOOLS)return;
-  if(this.merchantRoom==='augusto'&&!this.changingRoom&&!this.leaving&&!this.shop?.isOpen){
+  if((this.merchantRoom==='augusto'||this.merchantRoom==='rosa')&&!this.changingRoom&&!this.leaving&&!this.shop?.isOpen){
+   const id=this.merchantRoom,title=id==='rosa'?'Editar loja agrícola da Rosa':'Editar armazém do Augusto',fileName=id==='rosa'?'After-Rain-Rosa-Editada.json':'After-Rain-Armazem-Editado.json';
    if(this.editingRoom){this.ui.closeModal();return;}if(this.ui.isModalOpen())this.ui.closeModal();this.editingRoom=true;this.applyCamera();
-   this.ui.showSceneEditor(host=>{const dispose=mountSmithEditor(host,()=>this.merchantLayouts.get('augusto')!,()=>this.merchantView,data=>this.editMerchantLayout('augusto',data),()=>this.ui.closeModal(),{title:'Editar armazém do Augusto',fileName:'After-Rain-Armazem-Editado.json',assets:MERCHANT_ROOM_ASSETS});return()=>{dispose();this.editingRoom=false;this.applyCamera();};});return;
+   this.ui.showSceneEditor(host=>{const dispose=mountSmithEditor(host,()=>this.merchantLayouts.get(id)!,()=>this.merchantView,data=>this.editMerchantLayout(id,data),()=>this.ui.closeModal(),{title,fileName,assets:MERCHANT_ROOM_ASSETS});return()=>{dispose();this.editingRoom=false;this.applyCamera();};});return;
   }
   if(!this.inBlacksmith||this.changingRoom||this.leaving||this.shop?.isOpen){this.ui.toast('Entre na ferraria e pressione H para editar.');return;}
   if(this.editingRoom){this.ui.closeModal();return;}

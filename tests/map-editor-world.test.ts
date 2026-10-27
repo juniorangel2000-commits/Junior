@@ -10,7 +10,7 @@ vi.mock('../src/water-motion',()=>({addWaterMotion:vi.fn()}));
 vi.mock('phaser', () => ({ default: { Textures: { FilterMode: { NEAREST: 0 } } } }));
 vi.mock('../src/map-editor-terrain', () => ({ drawMapTerrainEdits: vi.fn() }));
 const object = {
-  setDisplaySize() { return this; }, setOrigin() { return this; }, setScale() { return this; }, setDepth() { return this; }, destroy() { return this; },
+  setData(){return this;},setDisplaySize() { return this; }, setOrigin() { return this; }, setScale() { return this; }, setDepth() { return this; }, destroy() { return this; },
   fillStyle() { return this; }, fillRect() { return this; }, lineStyle() { return this; }, lineBetween() { return this; },
 };
 const scene = {

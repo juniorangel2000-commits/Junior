@@ -1,4 +1,6 @@
 import {AUGUSTO_SHOP,setupAugustoShop} from './augusto-shop';
+import {ROSA_SHOP} from './data/rosa-shop';
+import {setupRosaShop} from './rosa-shop';
 import {BLACKSMITH_HOUSE,setupBlacksmithHouse,blacksmithPoint} from './blacksmith-house';
 import {villageWater,villageLakeDistance,villagePointBlocked,villageDoorApproach,villagePathEdge,VILLAGE_LAWNS,VILLAGE_GARDENS,VILLAGE_FENCES,VILLAGE_SHORE_DETAILS} from './data/village';
 import {villageGroundWeights,villageSmooth as smooth} from './data/village-ground';
@@ -161,8 +163,8 @@ export class VillageWorld {
     for(const point of b.lamps){const p=blacksmithPoint(house,point);this.scene.add.zone(p.x,p.y,1,1).setData('fixture-light',{radius:65});}
     continue;
    }
-   if(building.shop==='general'){
-    const b=AUGUSTO_SHOP;setupAugustoShop(this.scene);
+   if(building.shop==='general'||building.shop==='seeds'){
+    const b=building.shop==='seeds'?ROSA_SHOP:AUGUSTO_SHOP;if(building.shop==='seeds')setupRosaShop(this.scene);else setupAugustoShop(this.scene);
     const house=this.scene.add.image(x,y,b.texture).setOrigin(b.door.x/b.width,b.door.y/b.height).setScale(b.scale).setDepth(y).setData({'village-building':building.id,'shadow-foot':b.foot});
     this.windows.push(this.scene.add.image(x,y,b.texture+'-windows').setOrigin(house.originX,house.originY).setScale(b.scale).setDepth(y+.1).setVisible(false));
     for(const p of b.lamps)this.scene.add.zone(x+(p.x-b.door.x)*b.scale,y+(p.y-b.door.y)*b.scale,1,1).setData('fixture-light',{radius:65});

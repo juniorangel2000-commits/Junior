@@ -68,7 +68,7 @@ describe('architecture footprints follow ground geometry',()=>{
   expect(wellFootprint(0,-30,{x:0,y:0},.49)).toBe(true);
  });
  it('lets the player approach the cottage facade without passing inside the wall',()=>{
-  const a={x:784,y:516};expect(cottageSolidPoint(a.x,a.y-10,a)).toBe(false);expect(cottageSolidPoint(a.x,a.y-17,a)).toBe(true);
+  const a={x:784,y:516};expect(cottageSolidPoint(a.x,a.y-10,a)).toBe(false);expect(cottageSolidPoint(a.x,a.y-40,a)).toBe(true);
   expect(cottageSolidPoint(a.x+80,a.y-50,a)).toBe(false);expect(cottageSolidPoint(a.x+70,a.y-50,a)).toBe(true);
  });
 });

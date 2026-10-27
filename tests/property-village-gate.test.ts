@@ -15,7 +15,7 @@ vi.mock('../src/exit-signs',()=>({drawExitSign:vi.fn()}));
 vi.mock('../src/map-editor-terrain',()=>({drawMapTerrainEdits:vi.fn()}));
 vi.mock('phaser',()=>({default:{Textures:{FilterMode:{NEAREST:0}}}}));
 const object={
- setDisplaySize(){return this;},setOrigin(){return this;},setScale(){return this;},setDepth(){return this;},setFlipX(){return this;},setAlpha(){return this;},destroy(){return this;},
+ setData(){return this;},setDisplaySize(){return this;},setOrigin(){return this;},setScale(){return this;},setDepth(){return this;},setFlipX(){return this;},setAlpha(){return this;},destroy(){return this;},
  fillStyle(){return this;},fillRect(){return this;},lineStyle(){return this;},lineBetween(){return this;},
 };
 const scene={

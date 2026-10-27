@@ -53,6 +53,6 @@ describe('daily merchants share routes, clock and persistent actors',()=>{
  it('persists lunch conversations and rejects corrupted daily states without invalidating old saves',()=>{
   const {r,env,nav}=fixture('augusto');r.socialize({day:3,time:750});const restored=new MerchantDailyRoutine('augusto',{x:288,y:151,direction:'down',shop:true},nav,JSON.parse(JSON.stringify(r.state)));expect(restored.state).toEqual(r.state);const p={x:r.state.x,y:r.state.y};restored.step(.1,{day:3,time:751},env);expect(restored.state.x).toBe(p.x);expect(restored.state.y).toBe(p.y);
   const save=createNewSave({name:'Rotina',skin:'#d9a276',hairStyle:'preso',hairColor:'#754323',outfit:'#638a9d'});expect(validateSave(save)).toBe(true);save.villageRoutines={augusto:restored.state};expect(validateSave(JSON.parse(JSON.stringify(save)))).toBe(true);
-  expect(validMerchantRoutines({rosa:r.state})).toBe(false);expect(validMerchantRoutine({...r.state,wait:-1})).toBe(false);expect(validMerchantRoutine({...r.state,x:NaN})).toBe(false);expect(validateSave({...save,villageRoutines:{augusto:{...r.state,serviceUntil:Infinity}}})).toBe(false);
+  expect(validMerchantRoutines({desconhecido:r.state})).toBe(false);expect(validMerchantRoutine({...r.state,wait:-1})).toBe(false);expect(validMerchantRoutine({...r.state,x:NaN})).toBe(false);expect(validateSave({...save,villageRoutines:{augusto:{...r.state,serviceUntil:Infinity}}})).toBe(false);
  });
 });

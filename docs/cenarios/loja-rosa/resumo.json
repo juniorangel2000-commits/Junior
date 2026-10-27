@@ -1,0 +1,15 @@
+{
+  "automatedTests": 749,
+  "testFiles": 76,
+  "browserChecks": 41,
+  "typescript": "passed",
+  "build": "passed",
+  "newInteriorObjects": 16,
+  "interiorPieces": 19,
+  "characterOriginalPngs": 40,
+  "newExteriorFacades": 1,
+  "newMineralSprites": 3,
+  "wallColor": "#26302c",
+  "publication": "v0.10.0-preview.6 — authorized Windows release",
+  "originalCharacterFilesPreserved": true
+}

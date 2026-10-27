@@ -6,7 +6,7 @@ export const BLACKSMITH_HOUSE={
  lamps:[{x:174,y:810},{x:846,y:660}],furnace:{x:970,y:752},
 } as const;
 const solids=[
- {x:115,y:735,w:493,h:270}, // Closed cottage.
+ {x:140,y:746,w:448,h:258}, // Closed cottage.
  {x:690,y:670,w:470,h:220}, // Workshop rear wall and hanging tools.
  {x:870,y:760,w:205,h:160}, // Furnace masonry; the apron remains walkable.
  {x:650,y:640,w:60,h:365},{x:1144,y:640,w:60,h:370}, // Posts.
@@ -18,4 +18,4 @@ export function blacksmithLocalPoint(x:number,y:number,building:{x:number;y:numb
  return{x:BLACKSMITH_HOUSE.door.x+(x-(building.x+.5)*32)/BLACKSMITH_HOUSE.scale,y:BLACKSMITH_HOUSE.door.y+(y-(building.y*32+25))/BLACKSMITH_HOUSE.scale};
 }
 export const blacksmithSourceSolid=(x:number,y:number)=>solids.some(r=>x>=r.x&&x<=r.x+r.w&&y>=r.y&&y<=r.y+r.h);
-export function blacksmithBlockedPoint(x:number,y:number,building:{x:number;y:number}):boolean{const p=blacksmithLocalPoint(x,y,building);return blacksmithSourceSolid(p.x,p.y);}
+export function blacksmithBlockedPoint(x:number,y:number,building:{x:number;y:number}):boolean{const p=blacksmithLocalPoint(x,y,building);return !(p.x>=264&&p.x<=356&&p.y>=980)&&blacksmithSourceSolid(p.x,p.y);}

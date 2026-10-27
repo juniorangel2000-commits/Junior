@@ -35,7 +35,7 @@ export class ForestWorld {
       const plant=n.kind==='fiber'?fiberPlantArt(fiberPlantFor(n)):undefined;
       const image=this.scene.add.image(n.x*32+16,n.y*32+29,plant?.texture??naturalResourceTexture(n.kind)).setOrigin(.5,plant?.pivot??1).setDepth(n.y*32+29);
       if(n.kind==='tree')image.setDisplaySize(36,27);if(n.kind==='stone')image.setDisplaySize(32,24);
-      if(plant)image.setDisplaySize(plant.size,plant.size);if(n.kind==='seeds')image.setDisplaySize(44,44);if(n.kind==='vein')image.setDisplaySize(52,52).setOrigin(.5,124/128);if(n.kind==='fallenLog'||n.kind==='stump')image.setDisplaySize(n.kind==='fallenLog'?68:38,n.kind==='fallenLog'?68:38).setOrigin(.5,124/128);this.images.set(n.id,image);this.resources.push({...n});this.environment.push(image);if(n.kind==='vein'||n.kind==='fallenLog'||n.kind==='stump')this.solid.add(`${n.x},${n.y}`);
+      if(plant)image.setDisplaySize(plant.size,plant.size);if(n.kind==='seeds')image.setDisplaySize(44,44);if(n.kind==='vein')image.setDisplaySize(52,52).setOrigin(.5,124/128);if(n.kind==='fallenLog'||n.kind==='stump')image.setDisplaySize(n.kind==='fallenLog'?68:38,n.kind==='fallenLog'?68:38).setOrigin(.5,124/128);image.setData('resource-id',n.id);this.images.set(n.id,image);this.resources.push({...n});this.environment.push(image);if(n.kind==='vein'||n.kind==='fallenLog'||n.kind==='stump')this.solid.add(`${n.x},${n.y}`);
     }
   }
   constructor(private readonly scene:Phaser.Scene,edits?:MapEditData,private readonly textureNamespace='forest'){this.rebuildEnvironment(edits);}
@@ -61,7 +61,7 @@ export class ForestWorld {
     }
     if(this.editorObjects.some(o=>o.x===x&&o.y===y)||this.waterAt(x,y)&&!natureArt(kind)?.water)return;
     const sprite=this.scene.add.image(x*32+16,y*32+25,texture).setOrigin(.5,pivot).setDisplaySize(width,height).setFlipX(flip).setDepth(y*32+25);
-    this.editorObjects.push({id,kind,x,y,texture});if(collectible){this.resources.push({id:resourceID,kind:collectible,x,y,...(isFiberPlant(kind)?{plant:kind}:{})});this.images.set(resourceID,sprite);}
+    this.editorObjects.push({id,kind,x,y,texture});if(collectible){sprite.setData('resource-id',resourceID);this.resources.push({id:resourceID,kind:collectible,x,y,...(isFiberPlant(kind)?{plant:kind}:{})});this.images.set(resourceID,sprite);}
     if(solid||collectible==='vein'||collectible==='fallenLog'||collectible==='stump')this.solid.add(`${x},${y}`);
     if(kind==='standingTree'||kind==='pine'||kind.startsWith('oak')||kind.startsWith('pine'))this.trees.push(sprite);
   }

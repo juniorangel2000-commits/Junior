@@ -1,6 +1,9 @@
 import {AUGUSTO_SHOP} from './data/augusto-shop';
 import {bentoTexture,preloadBentoSprites} from './bento-sprites';
 import {augustoTexture,preloadAugustoSprites} from './augusto-sprites';
+import {rosaTexture,preloadRosaSprites} from './rosa-sprites';
+import {ROSA_SHOP} from './data/rosa-shop';
+import oreFrames from '../public/assets/visual/economy/deposits/rochas-detalhadas.json';
 import {preloadMerchantRooms} from './merchant-interior';
 import type Phaser from 'phaser';
 import {ECONOMY_ART_ROOT as ROOT,ART_TOOL_IDS,TOOL_MATERIALS,MERCHANT_ART_IDS,NPC_ART_DIRECTIONS,tierToolIcon,mineralTexture} from './data/economy-art';
@@ -10,6 +13,9 @@ import {CHARACTER_DIRECTIONS} from './character-directions';
 export function preloadEconomyArt(scene:Phaser.Scene):void{
  preloadBentoSprites(scene);
  preloadAugustoSprites(scene);
+ preloadRosaSprites(scene);
+ scene.load.image(ROSA_SHOP.texture,ROSA_SHOP.file);
+ scene.load.image('detailed-ore-atlas',`${ROOT}/deposits/rochas-detalhadas.png`);
  scene.load.image(AUGUSTO_SHOP.texture,AUGUSTO_SHOP.file);
  preloadMerchantRooms(scene);
  for(const metal of ['iron','gold','blackMetal'] as const)scene.load.image(mineralTexture(metal),`${ROOT}/deposits/${metal}.png`);
@@ -24,6 +30,7 @@ export function preloadEconomyArt(scene:Phaser.Scene):void{
 export function merchantTexture(scene:Phaser.Scene,id:string):string{
  if(id==='bento')return bentoTexture(scene);
  if(id==='augusto')return augustoTexture(scene);
+ if(id==='rosa')return rosaTexture(scene);
  const key=`village-npc-${id}`;
  if(scene.textures.exists(key))return key;
  const canvas=document.createElement('canvas');canvas.width=192*8;canvas.height=256;
@@ -36,4 +43,10 @@ export function merchantTexture(scene:Phaser.Scene,id:string):string{
  const texture=scene.textures.addCanvas(key,canvas);texture?.setFilter(0);
  for(let frame=0;frame<8;frame++)texture?.add(frame,0,frame*192,0,192,256);
  return key;
+}
+
+/** Atlas frames are registered on demand, once per texture manager. */
+export function detailedOreFrame(scene:Phaser.Scene,metal:string){
+ const frame=oreFrames.find(f=>f.metal===metal);if(!frame||!scene.textures.exists('detailed-ore-atlas'))return;
+ const t=scene.textures.get('detailed-ore-atlas');if(!t.has(metal))t.add(metal,0,frame.x,frame.y,frame.width,frame.height);t.setFilter(0);return frame;
 }

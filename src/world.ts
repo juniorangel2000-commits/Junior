@@ -4,7 +4,7 @@ import {drawPropertyBridges} from './bridge-art';
 import {naturalPlantGround} from './systems/tree-avoidance';
 import {drawPropertyWell,type PropertyWell} from './property-well';
 import {wellSiteTile,wellSolidTile,wellSolidPoint} from './data/property-well';
-import {cottageSolidPoint} from './data/architecture-collision';
+import {cottageSolidPoint,cottageSolidTile} from './data/architecture-collision';
 import {HOMESTEAD_HOUSE,homesteadResourceReserved} from './data/property-homestead';
 import {drawHouseSmoke} from './house-smoke';
 import {hasMapSeam,seamBand,seamPassage} from './data/map-seam';
@@ -270,7 +270,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   const houseImage=scene.add.image(HOMESTEAD_HOUSE.x,HOMESTEAD_HOUSE.y,houseTexture).setOrigin(0.5,1).setDepth(HOMESTEAD_HOUSE.y);
   if(houseTexture==='asset-house')drawHouseSmoke(scene,houseImage);
   const well=drawPropertyWell(scene);
-  for (let y = 11; y <= 15; y++) for (let x = 21; x <= 27; x++) blocked.add(key(x, y));
+  const houseGround={x:HOMESTEAD_HOUSE.x,y:HOMESTEAD_HOUSE.groundY};
 
   // Wild woodland frames the clearing without filling it with combat or obstacles.
   const expandedSupplies: Array<[number, number, ResourceKind]> = [
@@ -406,7 +406,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     if(kind==='fallenLog'||kind==='stump')resourceImage.setDisplaySize(kind==='fallenLog'?68:38,kind==='fallenLog'?68:38).setOrigin(.5,124/128);
     if(kind==='seeds'&&useAsset)resourceImage.setDisplaySize(44,44);
     if(forestRock)resourceImage.setDisplaySize(52,52).setOrigin(.5,124/128);
-    resourceImages.set(id, resourceImage);
+    resourceImage.setData('resource-id',id);resourceImages.set(id, resourceImage);
     editorObjects.push({ id, x, y, kind, texture });
     if (kind === 'vein'||kind==='fallenLog'||kind==='stump') resourceBlocked.add(key(x, y));
   };
@@ -432,7 +432,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     if(isTreeKind(edit.kind)&&!dryTreeCell(x,y)){const land=shoreTreePosition(x,y);if(!land)continue;x=land.x;y=land.y;}
     const image=scene.add.image(x*TILE+16,y*TILE+25,art.texture).setOrigin(.5,art.pivot).setDisplaySize(art.width,art.height).setDepth(y*TILE+25);
     editorObjects.push({id,x,y,kind:edit.kind,texture:art.texture});
-    if(collectible){resources.push({id,x,y,kind:collectible,...(isFiberPlant(edit.kind)?{plant:edit.kind}:{})});resourceImages.set(id,image);occupiedResources.add(key(x,y));if(art.solid)resourceBlocked.add(key(x,y));}
+    if(collectible){image.setData('resource-id',id);resources.push({id,x,y,kind:collectible,...(isFiberPlant(edit.kind)?{plant:edit.kind}:{})});resourceImages.set(id,image);occupiedResources.add(key(x,y));if(art.solid)resourceBlocked.add(key(x,y));}
     else if(art.solid)blocked.add(key(x,y));
     if(edit.kind.startsWith('oak')||edit.kind.startsWith('pine')){
       forestTiles.add(key(x,y));
@@ -457,10 +457,10 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
       } else if (editorIndex >= 0) editorObjects.splice(editorIndex, 1);
   };
   const resourceAt = (x: number, y: number) => resources.find((node) => node.x === x && node.y === y);
-  const solidTile = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y));
+  const solidTile = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y))||cottageSolidTile(x,y,houseGround);
   const pointSolid=(x:number,y:number)=>{
-    const tx=Math.floor(x/TILE),ty=Math.floor(y/TILE),oldHouse=tx>=21&&tx<=27&&ty>=11&&ty<=15;
-    return tx<1||ty<1||tx>=WORLD_WIDTH-1||ty>=WORLD_HEIGHT-1||blocked.has(key(tx,ty))&&!oldHouse||resourceBlocked.has(key(tx,ty))||cottageSolidPoint(x,y,HOMESTEAD_HOUSE);
+    const tx=Math.floor(x/TILE),ty=Math.floor(y/TILE);
+    return tx<1||ty<1||tx>=WORLD_WIDTH-1||ty>=WORLD_HEIGHT-1||blocked.has(key(tx,ty))||resourceBlocked.has(key(tx,ty))||cottageSolidPoint(x,y,houseGround);
   };
   const isBlocked = (x: number, y: number) => solidTile(x, y) || wellSolidTile(x,y) || waterAt(x, y) && !bridgeAt(x, y);
   const isBlockedPoint = (x: number, y: number) => {

@@ -5,19 +5,19 @@ import {villageGround} from '../data/village';
 import type {BentoRoomNavigation} from './bento-routine';
 import type {GameClock} from './clock';
 
-export type RoutineId='augusto'|'bento';
+export type RoutineId='augusto'|'bento'|'rosa';
 export type RoutineArea='village'|'shop';
 export interface MerchantRoutineState {
  area:RoutineArea;x:number;y:number;direction:CharacterDirection;stop:number;wait:number;
  serviceUntil:number;socialUntil:number;socialDay:number;
 }
 export const MERCHANT_DAILY_PLAN={
- opening:8*60,lunch:12*60,return:13*60+30,closing:{augusto:20*60,bento:19*60},
+ opening:8*60,lunch:12*60,return:13*60+30,closing:{augusto:20*60,bento:19*60,rosa:18*60},
  speed:34,stopSeconds:6,guideMinutes:45,socialMinutes:12,
- plaza:{augusto:{x:50,y:41},bento:{x:49,y:41}},
+ plaza:{augusto:{x:50,y:41},bento:{x:49,y:41},rosa:{x:48,y:43}},
 } as const;
 const absolute=(c:GameClock)=>c.day*1440+c.time;
-export const dailyMerchant=(id:ResidentId):id is RoutineId=>id==='augusto'||id==='bento';
+export const dailyMerchant=(id:ResidentId):id is RoutineId=>id==='augusto'||id==='bento'||id==='rosa';
 export function merchantPeriod(id:RoutineId,time:number):'work'|'break'|'closed'{
  const p=MERCHANT_DAILY_PLAN;
  return time<p.opening||time>=p.closing[id]?'closed':time>=p.lunch&&time<p.return?'break':'work';
@@ -56,7 +56,7 @@ export class MerchantDailyRoutine {
  get activity():string{return this.target;}
  isServing(clock:GameClock):boolean{return this.state.area==='shop'&&(merchantPeriod(this.owner,clock.time)==='work'||merchantPeriod(this.owner,clock.time)==='break'&&this.state.serviceUntil>absolute(clock));}
  availability(clock:GameClock):{message:string;canGuide:boolean}{
-  const period=merchantPeriod(this.owner,clock.time),hours=this.owner==='augusto'?'08:00–12:00 e 13:30–20:00':'08:00–12:00 e 13:30–19:00';
+  const period=merchantPeriod(this.owner,clock.time),hours=`08:00–12:00 e 13:30–${String(MERCHANT_DAILY_PLAN.closing[this.owner]/60).padStart(2,'0')}:00`;
   return {message:this.isServing(clock)?`Atendendo na loja · ${hours}`:period==='break'?'Intervalo na praça · volta às 13:30':period==='closed'?`Atendimento encerrado · abre às 08:00 · ${hours}`:`A caminho da loja · ${hours}`,canGuide:period==='work'};
  }
  guided(clock:GameClock,position:{x:number;y:number},shop:boolean):void{

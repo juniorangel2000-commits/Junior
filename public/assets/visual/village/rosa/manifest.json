@@ -1,0 +1,441 @@
+{
+  "npc": "rosa",
+  "createdFromScratch": 16,
+  "referenceCrops": 0,
+  "assets": [
+    {
+      "id": "rosa-counter",
+      "name": "Balcão agrícola",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-counter",
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 425,
+        "height": 310
+      },
+      "w": 425,
+      "h": 310,
+      "ox": 0.5176470588235295,
+      "oy": 0.9516129032258065,
+      "bounds": [
+        39,
+        135,
+        401,
+        295
+      ],
+      "collision": {
+        "x": 60.72,
+        "y": 239.0,
+        "width": 318.56,
+        "height": 54.400000000000006
+      },
+      "layer": "object"
+    },
+    {
+      "id": "rosa-seeds",
+      "name": "Estante de sementes",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-seeds",
+      "crop": {
+        "x": 425,
+        "y": 0,
+        "width": 350,
+        "height": 310
+      },
+      "w": 350,
+      "h": 310,
+      "ox": 0.45714285714285713,
+      "oy": 0.9774193548387097,
+      "bounds": [
+        34,
+        22,
+        286,
+        303
+      ],
+      "collision": {
+        "x": 49.12,
+        "y": 204.65,
+        "width": 221.76,
+        "height": 95.54
+      },
+      "layer": "object"
+    },
+    {
+      "id": "rosa-cabinet",
+      "name": "Armário de vasos",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-cabinet",
+      "crop": {
+        "x": 775,
+        "y": 0,
+        "width": 255,
+        "height": 310
+      },
+      "w": 255,
+      "h": 310,
+      "ox": 0.49019607843137253,
+      "oy": 0.9903225806451613,
+      "bounds": [
+        40,
+        40,
+        210,
+        307
+      ],
+      "collision": {
+        "x": 50.2,
+        "y": 213.55,
+        "width": 149.6,
+        "height": 90.78
+      },
+      "layer": "object"
+    },
+    {
+      "id": "rosa-produce",
+      "name": "Expositor de hortaliças",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-produce",
+      "crop": {
+        "x": 1030,
+        "y": 0,
+        "width": 418,
+        "height": 310
+      },
+      "w": 418,
+      "h": 310,
+      "ox": 0.5023923444976076,
+      "oy": 0.9612903225806452,
+      "bounds": [
+        37,
+        128,
+        383,
+        298
+      ],
+      "collision": {
+        "x": 57.76,
+        "y": 238.5,
+        "width": 304.48,
+        "height": 57.800000000000004
+      },
+      "layer": "object"
+    },
+    {
+      "id": "rosa-potting",
+      "name": "Bancada de mudas",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-potting",
+      "crop": {
+        "x": 0,
+        "y": 310,
+        "width": 425,
+        "height": 290
+      },
+      "w": 425,
+      "h": 290,
+      "ox": 0.5117647058823529,
+      "oy": 0.9620689655172414,
+      "bounds": [
+        52,
+        14,
+        383,
+        279
+      ],
+      "collision": {
+        "x": 71.86,
+        "y": 186.25,
+        "width": 291.28000000000003,
+        "height": 90.10000000000001
+      },
+      "layer": "object"
+    },
+    {
+      "id": "rosa-sacks",
+      "name": "Sacos de grãos e adubo",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-sacks",
+      "crop": {
+        "x": 425,
+        "y": 310,
+        "width": 350,
+        "height": 290
+      },
+      "w": 350,
+      "h": 290,
+      "ox": 0.49,
+      "oy": 0.9551724137931035,
+      "bounds": [
+        8,
+        45,
+        335,
+        277
+      ],
+      "collision": {
+        "x": 27.62,
+        "y": 195.8,
+        "width": 287.76,
+        "height": 78.88000000000001
+      },
+      "layer": "object"
+    },
+    {
+      "id": "rosa-tools",
+      "name": "Suporte de utensílios agrícolas",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-tools",
+      "crop": {
+        "x": 775,
+        "y": 310,
+        "width": 335,
+        "height": 290
+      },
+      "w": 335,
+      "h": 290,
+      "ox": 0.46865671641791046,
+      "oy": 0.9413793103448276,
+      "bounds": [
+        21,
+        51,
+        293,
+        273
+      ],
+      "collision": null,
+      "layer": "wall"
+    },
+    {
+      "id": "rosa-window",
+      "name": "Janela do comércio",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-window",
+      "crop": {
+        "x": 1110,
+        "y": 310,
+        "width": 338,
+        "height": 290
+      },
+      "w": 338,
+      "h": 290,
+      "ox": 0.45710059171597633,
+      "oy": 0.9344827586206896,
+      "bounds": [
+        40,
+        39,
+        269,
+        271
+      ],
+      "collision": null,
+      "layer": "wall"
+    },
+    {
+      "id": "rosa-basket",
+      "name": "Cesto de colheitas",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-basket",
+      "crop": {
+        "x": 0,
+        "y": 600,
+        "width": 425,
+        "height": 240
+      },
+      "w": 425,
+      "h": 240,
+      "ox": 0.4894117647058824,
+      "oy": 0.8625,
+      "bounds": [
+        99,
+        23,
+        317,
+        207
+      ],
+      "collision": {
+        "x": 112.08,
+        "y": 142.60000000000002,
+        "width": 191.84,
+        "height": 62.56
+      },
+      "layer": "object"
+    },
+    {
+      "id": "rosa-seedlings",
+      "name": "Caixote de mudas",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-seedlings",
+      "crop": {
+        "x": 425,
+        "y": 600,
+        "width": 350,
+        "height": 240
+      },
+      "w": 350,
+      "h": 240,
+      "ox": 0.48142857142857143,
+      "oy": 0.8541666666666666,
+      "bounds": [
+        40,
+        30,
+        297,
+        205
+      ],
+      "collision": {
+        "x": 55.42,
+        "y": 143.75,
+        "width": 226.16,
+        "height": 59.50000000000001
+      },
+      "layer": "object"
+    },
+    {
+      "id": "rosa-lantern",
+      "name": "Lanterna de parede",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-lantern",
+      "crop": {
+        "x": 775,
+        "y": 600,
+        "width": 320,
+        "height": 240
+      },
+      "w": 320,
+      "h": 240,
+      "ox": 0.4734375,
+      "oy": 0.9625,
+      "bounds": [
+        89,
+        7,
+        214,
+        231
+      ],
+      "collision": null,
+      "layer": "wall"
+    },
+    {
+      "id": "rosa-stool",
+      "name": "Banquinho da Rosa",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-stool",
+      "crop": {
+        "x": 1095,
+        "y": 600,
+        "width": 353,
+        "height": 240
+      },
+      "w": 353,
+      "h": 240,
+      "ox": 0.45892351274787535,
+      "oy": 0.9833333333333333,
+      "bounds": [
+        73,
+        35,
+        251,
+        236
+      ],
+      "collision": {
+        "x": 83.68,
+        "y": 165.65,
+        "width": 156.64000000000001,
+        "height": 68.34
+      },
+      "layer": "object"
+    },
+    {
+      "id": "rosa-scale",
+      "name": "Balança de colheitas",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-scale",
+      "crop": {
+        "x": 0,
+        "y": 840,
+        "width": 425,
+        "height": 246
+      },
+      "w": 425,
+      "h": 246,
+      "ox": 0.48823529411764705,
+      "oy": 0.7642276422764228,
+      "bounds": [
+        53,
+        15,
+        362,
+        188
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "rosa-ledger",
+      "name": "Livro de vendas",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-ledger",
+      "crop": {
+        "x": 425,
+        "y": 840,
+        "width": 350,
+        "height": 246
+      },
+      "w": 350,
+      "h": 246,
+      "ox": 0.48857142857142855,
+      "oy": 0.7804878048780488,
+      "bounds": [
+        15,
+        25,
+        327,
+        192
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "rosa-pots",
+      "name": "Vasos e pazinha",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-pots",
+      "crop": {
+        "x": 775,
+        "y": 840,
+        "width": 275,
+        "height": 246
+      },
+      "w": 275,
+      "h": 246,
+      "ox": 0.5290909090909091,
+      "oy": 0.8008130081300813,
+      "bounds": [
+        48,
+        17,
+        243,
+        197
+      ],
+      "collision": {
+        "x": 59.7,
+        "y": 134.0,
+        "width": 171.6,
+        "height": 61.2
+      },
+      "layer": "object"
+    },
+    {
+      "id": "rosa-rug",
+      "name": "Tapete de folhas",
+      "file": "assets/visual/village/rosa/objetos.png",
+      "frame": "rosa-rug",
+      "crop": {
+        "x": 1050,
+        "y": 840,
+        "width": 398,
+        "height": 246
+      },
+      "w": 398,
+      "h": 246,
+      "ox": 0.5037688442211056,
+      "oy": 0.7967479674796748,
+      "bounds": [
+        37,
+        33,
+        364,
+        196
+      ],
+      "collision": null,
+      "layer": "floor"
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 import {compileRoomNavigation,type NavigationRect} from '../systems/room-navigation';
 import catalog from '../../public/dev/augusto/manifest.json';
 import authoredAugusto from './augusto-layout.json';
+import authoredRosa from './rosa-layout.json';
+import rosaCatalog from '../../public/assets/visual/village/rosa/manifest.json';
 import type {ResidentId} from '../systems/merchant-visit';
 import type {SmithAsset,SmithLayout} from '../systems/smith-layout';
 export const MERCHANT_ROOM_SIZE={width:576,height:384};
@@ -21,17 +23,18 @@ const sets:Partial<Record<ResidentId,string[]>>={
 const common=['balcao_central','balanca_balcoes','livro_caixa','caixa_registro','lamparina_parede','tapete_central','capacho_entrada','toalha_balcao'];
 export const merchantRoomPieces=(id:ResidentId)=>id==='augusto'?merchantAssets:merchantAssets.filter(a=>common.includes(a.id)||sets[id]?.includes(a.id));
 export const MERCHANT_ROOM_ASSETS:readonly SmithAsset[]=[...merchantAssets.map(a=>({id:a.id,name:a.name,file:a.file,w:a.width,h:a.height,ox:a.origin.x,oy:a.origin.y,bounds:a.visibleBoundsAlpha128,collision:a.collision,layer:a.depth.previewLayer==='floor'?'floor' as const:a.depth.previewLayer==='wall'?'wall' as const:'object' as const})),
+ ...rosaCatalog.assets as SmithAsset[],
  {id:'structure',name:'Paredes e estrutura',file:'',w:576,h:384,ox:0,oy:0,bounds:[0,0,576,384],collision:null,layer:'wall'},
  {id:'floor-wood',name:'Piso de madeira',file:'materiais/piso-madeira.png',w:1,h:1,ox:0,oy:0,bounds:[0,0,1,1],collision:null,layer:'floor',tile:true},
  {id:'floor-stone',name:'Piso de pedra',file:'../vila-v31/bento/interior-novo/piso-lajes.png',w:1,h:1,ox:0,oy:0,bounds:[0,0,1,1],collision:null,layer:'floor',tile:true},
 ];
 const cached=new Map<ResidentId,SmithLayout>();
 function previousRoomDefault(id:ResidentId):SmithLayout{let data=cached.get(id);if(!data){data={version:1,pieces:[{id:'structure',asset:'structure',x:0,y:0,sx:1,sy:1,visible:true,wallShade:1},{id:'floor',asset:'floor-wood',x:33,y:116,sx:510,sy:234,visible:true},...merchantRoomPieces(id).map(a=>({id:a.id,asset:a.id,x:a.recommendedPosition.x*.6,y:a.recommendedPosition.y*.6,sx:a.scale*.6,sy:a.scale*.6,visible:true,...a.supportId?{parent:a.supportId}:{}}))]};cached.set(id,data);}return data;}
-const roomDefault=(id:ResidentId):SmithLayout=>id==='augusto'?authoredAugusto as SmithLayout:previousRoomDefault(id);
+const roomDefault=(id:ResidentId):SmithLayout=>id==='augusto'?authoredAugusto as SmithLayout:id==='rosa'?authoredRosa as SmithLayout:previousRoomDefault(id);
 export const createMerchantLayout=(id:ResidentId)=>structuredClone(roomDefault(id));
 /** Upgrade only the untouched original room; preserve any player-authored edits. */
 export function resolveMerchantLayout(id:ResidentId,saved?:SmithLayout):SmithLayout{
- return structuredClone(!saved||id==='augusto'&&JSON.stringify(saved)===JSON.stringify(previousRoomDefault(id))?roomDefault(id):saved);
+ return structuredClone(!saved||(id==='augusto'||id==='rosa')&&JSON.stringify(saved)===JSON.stringify(previousRoomDefault(id))?roomDefault(id):saved);
 }
 export function validMerchantLayout(value:unknown):value is SmithLayout{
  if(!value||typeof value!=='object')return false;const d=value as SmithLayout;if(d.version!==1||!Array.isArray(d.pieces)||d.pieces.length>140)return false;const ids=new Set<string>();
