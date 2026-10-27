@@ -1,0 +1,179 @@
+{
+  "version": 1,
+  "pieces": [
+    {
+      "id": "structure",
+      "asset": "structure",
+      "x": 0,
+      "y": 0,
+      "sx": 1,
+      "sy": 1,
+      "visible": true,
+      "wallShade": 1
+    },
+    {
+      "id": "floor",
+      "asset": "floor-wood",
+      "x": 33,
+      "y": 116,
+      "sx": 510,
+      "sy": 234,
+      "visible": true
+    },
+    {
+      "id": "rosa-counter",
+      "asset": "rosa-counter",
+      "x": 288,
+      "y": 218,
+      "sx": 0.4,
+      "sy": 0.4,
+      "visible": true
+    },
+    {
+      "id": "rosa-seeds",
+      "asset": "rosa-seeds",
+      "x": 288,
+      "y": 143,
+      "sx": 0.37722419928825623,
+      "sy": 0.37722419928825623,
+      "visible": true
+    },
+    {
+      "id": "rosa-cabinet",
+      "asset": "rosa-cabinet",
+      "x": 478,
+      "y": 164,
+      "sx": 0.38823529411764707,
+      "sy": 0.38823529411764707,
+      "visible": true
+    },
+    {
+      "id": "rosa-produce",
+      "asset": "rosa-produce",
+      "x": 443,
+      "y": 286,
+      "sx": 0.3236994219653179,
+      "sy": 0.3236994219653179,
+      "visible": true
+    },
+    {
+      "id": "rosa-potting",
+      "asset": "rosa-potting",
+      "x": 111,
+      "y": 213,
+      "sx": 0.2943396226415094,
+      "sy": 0.2943396226415094,
+      "visible": true
+    },
+    {
+      "id": "rosa-sacks",
+      "asset": "rosa-sacks",
+      "x": 103,
+      "y": 304,
+      "sx": 0.21100917431192662,
+      "sy": 0.21100917431192662,
+      "visible": true
+    },
+    {
+      "id": "rosa-tools",
+      "asset": "rosa-tools",
+      "x": 116,
+      "y": 108,
+      "sx": 0.33455882352941174,
+      "sy": 0.33455882352941174,
+      "visible": true
+    },
+    {
+      "id": "rosa-window",
+      "asset": "rosa-window",
+      "x": 404,
+      "y": 108,
+      "sx": 0.27510917030567683,
+      "sy": 0.27510917030567683,
+      "visible": true
+    },
+    {
+      "id": "rosa-basket",
+      "asset": "rosa-basket",
+      "x": 474,
+      "y": 322,
+      "sx": 0.1926605504587156,
+      "sy": 0.1926605504587156,
+      "visible": true
+    },
+    {
+      "id": "rosa-seedlings",
+      "asset": "rosa-seedlings",
+      "x": 417,
+      "y": 168,
+      "sx": 0.24124513618677043,
+      "sy": 0.24124513618677043,
+      "visible": true
+    },
+    {
+      "id": "rosa-lantern",
+      "asset": "rosa-lantern",
+      "x": 190,
+      "y": 94,
+      "sx": 0.16,
+      "sy": 0.16,
+      "visible": true
+    },
+    {
+      "id": "rosa-stool",
+      "asset": "rosa-stool",
+      "x": 358,
+      "y": 161,
+      "sx": 0.13432835820895522,
+      "sy": 0.13432835820895522,
+      "visible": true
+    },
+    {
+      "id": "rosa-scale",
+      "asset": "rosa-scale",
+      "x": 327,
+      "y": 185,
+      "sx": 0.10679611650485436,
+      "sy": 0.10679611650485436,
+      "visible": true,
+      "parent": "rosa-counter"
+    },
+    {
+      "id": "rosa-ledger",
+      "asset": "rosa-ledger",
+      "x": 250,
+      "y": 186,
+      "sx": 0.08653846153846154,
+      "sy": 0.08653846153846154,
+      "visible": true,
+      "parent": "rosa-counter"
+    },
+    {
+      "id": "rosa-pots",
+      "asset": "rosa-pots",
+      "x": 168,
+      "y": 309,
+      "sx": 0.2153846153846154,
+      "sy": 0.2153846153846154,
+      "visible": true
+    },
+    {
+      "id": "rosa-rug",
+      "asset": "rosa-rug",
+      "x": 288,
+      "y": 290,
+      "sx": 0.3730886850152905,
+      "sy": 0.3730886850152905,
+      "visible": true
+    },
+    {
+      "id": "rosa-lantern-right",
+      "asset": "rosa-lantern",
+      "x": 530,
+      "y": 100,
+      "sx": 0.16,
+      "sy": 0.16,
+      "visible": true
+    }
+  ]
+}

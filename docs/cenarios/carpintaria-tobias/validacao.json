@@ -1,0 +1,243 @@
+{
+  "checks": [
+    {
+      "name": "Quatro comerciantes possuem rotina e atendimento na própria loja",
+      "passed": true,
+      "details": [
+        {
+          "id": "augusto",
+          "area": "shop",
+          "serving": true
+        },
+        {
+          "id": "bento",
+          "area": "shop",
+          "serving": true
+        },
+        {
+          "id": "rosa",
+          "area": "shop",
+          "serving": true
+        },
+        {
+          "id": "tobias",
+          "area": "shop",
+          "serving": true
+        }
+      ]
+    },
+    {
+      "name": "Tobias usa seis quadros nas oito direções com south refinado e escala uniforme",
+      "passed": true,
+      "details": {
+        "frames": 6,
+        "atlasFrames": 57,
+        "width": 1792,
+        "height": 2048,
+        "display": 64,
+        "tops": [
+          26,
+          24,
+          24,
+          24,
+          24,
+          24,
+          24
+        ],
+        "feet": [
+          243,
+          243,
+          247,
+          243,
+          243,
+          247,
+          243
+        ],
+        "distinct": 6
+      }
+    },
+    {
+      "name": "bento: H, F2 e menu não abrem mais a edição",
+      "passed": true
+    },
+    {
+      "name": "bento: botão de editar retirado da pausa",
+      "passed": true
+    },
+    {
+      "name": "bento: guia de controles não oferece editor do interior",
+      "passed": true
+    },
+    {
+      "name": "bento: comércio permanece disponível dentro da loja",
+      "passed": true
+    },
+    {
+      "name": "augusto: H, F2 e menu não abrem mais a edição",
+      "passed": true
+    },
+    {
+      "name": "augusto: botão de editar retirado da pausa",
+      "passed": true
+    },
+    {
+      "name": "augusto: guia de controles não oferece editor do interior",
+      "passed": true
+    },
+    {
+      "name": "augusto: comércio permanece disponível dentro da loja",
+      "passed": true
+    },
+    {
+      "name": "rosa: H, F2 e menu não abrem mais a edição",
+      "passed": true
+    },
+    {
+      "name": "rosa: botão de editar retirado da pausa",
+      "passed": true
+    },
+    {
+      "name": "rosa: guia de controles não oferece editor do interior",
+      "passed": true
+    },
+    {
+      "name": "rosa: comércio permanece disponível dentro da loja",
+      "passed": true
+    },
+    {
+      "name": "Rosa utiliza exatamente as vinte peças do novo arquivo enviado",
+      "passed": true,
+      "details": {
+        "pieces": 20,
+        "counter": {
+          "id": "rosa-counter",
+          "asset": "rosa-counter",
+          "x": 287.4079946963331,
+          "y": 223.32804773300208,
+          "sx": 0.4,
+          "sy": 0.4,
+          "visible": true
+        }
+      }
+    },
+    {
+      "name": "Fachada da carpintaria possui oficina aberta e substitui a genérica",
+      "passed": true,
+      "details": {
+        "texture": "village-tobias-shop-front",
+        "width": 460.79999999999995,
+        "duplicate": false,
+        "porch": true
+      }
+    },
+    {
+      "name": "Jogador pode caminhar na área aberta da oficina",
+      "passed": true,
+      "details": {
+        "x": 985.9999999999998,
+        "y": 1604,
+        "clear": true
+      }
+    },
+    {
+      "name": "Tobias não vende itens fora do comércio",
+      "passed": true,
+      "details": {
+        "ok": false,
+        "reason": "invalid-economy",
+        "message": "Atendendo na loja · 08:00–12:00 e 13:30–18:00"
+      }
+    },
+    {
+      "name": "Interior da carpintaria mantém somente o piso de madeira",
+      "passed": true
+    },
+    {
+      "name": "Carpintaria oferece compra e venda dentro do interior",
+      "passed": true
+    },
+    {
+      "name": "Somente a carpintaria nova mantém o editor de desenvolvimento",
+      "passed": true
+    },
+    {
+      "name": "Edição da carpintaria altera uma peça e preserva a navegação",
+      "passed": true
+    },
+    {
+      "name": "Carpintaria exporta JSON com nome próprio",
+      "passed": true
+    },
+    {
+      "name": "Lanternas internas da carpintaria iluminam o cenário",
+      "passed": true,
+      "details": 2
+    },
+    {
+      "name": "Tobias caminha até a praça durante o intervalo",
+      "passed": true,
+      "details": {
+        "area": "village",
+        "x": 1456,
+        "y": 1392,
+        "direction": "up-right",
+        "stop": 0,
+        "wait": 0.10000000000000014,
+        "serviceUntil": 2025,
+        "socialUntil": 0,
+        "socialDay": 0,
+        "serving": false
+      }
+    },
+    {
+      "name": "Tobias volta à carpintaria e retoma o atendimento",
+      "passed": true,
+      "details": {
+        "area": "shop",
+        "x": 292,
+        "y": 308,
+        "direction": "right",
+        "stop": 0,
+        "wait": 5.3000000000000025,
+        "serviceUntil": 2025,
+        "socialUntil": 0,
+        "socialDay": 0,
+        "serving": true
+      }
+    },
+    {
+      "name": "Janelas iluminadas à noite e atendimento encerrado às 18h",
+      "passed": true,
+      "details": {
+        "closed": true,
+        "windows": [
+          {
+            "visible": true,
+            "alpha": 0.88
+          }
+        ],
+        "gl": 0
+      }
+    },
+    {
+      "name": "Save preserva os interiores finalizados, a carpintaria e as quatro rotinas",
+      "passed": true,
+      "details": {
+        "count": 4,
+        "room": "tobias",
+        "mat": 292,
+        "rosa": 20
+      }
+    },
+    {
+      "name": "Editor dos mapas externos continua disponível para desenvolvimento",
+      "passed": true
+    },
+    {
+      "name": "Sem erros de execução ou assets ausentes",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

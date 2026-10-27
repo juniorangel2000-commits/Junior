@@ -1,0 +1,458 @@
+{
+  "npc": "tobias",
+  "createdFromScratch": 17,
+  "referenceCrops": 0,
+  "assets": [
+    {
+      "id": "tobias-counter",
+      "name": "Balcão de encomendas",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-counter",
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 440,
+        "height": 285
+      },
+      "w": 440,
+      "h": 285,
+      "ox": 0.5159090909090909,
+      "oy": 0.8912280701754386,
+      "bounds": [
+        32,
+        68,
+        422,
+        254
+      ],
+      "collision": {
+        "x": 59.300000000000004,
+        "y": 194.48000000000002,
+        "width": 335.4,
+        "height": 57.66
+      },
+      "layer": "object"
+    },
+    {
+      "id": "tobias-timber-rack",
+      "name": "Estante de madeiras",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-timber-rack",
+      "crop": {
+        "x": 440,
+        "y": 0,
+        "width": 315,
+        "height": 285
+      },
+      "w": 315,
+      "h": 285,
+      "ox": 0.4301587301587302,
+      "oy": 0.968421052631579,
+      "bounds": [
+        15,
+        30,
+        256,
+        276
+      ],
+      "collision": {
+        "x": 31.87,
+        "y": 197.28,
+        "width": 207.26,
+        "height": 76.26
+      },
+      "layer": "object"
+    },
+    {
+      "id": "tobias-tool-rack",
+      "name": "Painel de ferramentas",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-tool-rack",
+      "crop": {
+        "x": 755,
+        "y": 0,
+        "width": 355,
+        "height": 285
+      },
+      "w": 355,
+      "h": 285,
+      "ox": 0.49577464788732395,
+      "oy": 0.9157894736842105,
+      "bounds": [
+        13,
+        73,
+        339,
+        261
+      ],
+      "collision": null,
+      "layer": "wall"
+    },
+    {
+      "id": "tobias-workbench",
+      "name": "Bancada com morsa",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-workbench",
+      "crop": {
+        "x": 1110,
+        "y": 0,
+        "width": 426,
+        "height": 285
+      },
+      "w": 426,
+      "h": 285,
+      "ox": 0.47183098591549294,
+      "oy": 0.9859649122807017,
+      "bounds": [
+        14,
+        76,
+        388,
+        281
+      ],
+      "collision": {
+        "x": 40.18000000000001,
+        "y": 215.4,
+        "width": 321.64,
+        "height": 63.55
+      },
+      "layer": "object"
+    },
+    {
+      "id": "tobias-cabinet",
+      "name": "Armário em exposição",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-cabinet",
+      "crop": {
+        "x": 0,
+        "y": 285,
+        "width": 425,
+        "height": 275
+      },
+      "w": 425,
+      "h": 275,
+      "ox": 0.5376470588235294,
+      "oy": 0.88,
+      "bounds": [
+        71,
+        21,
+        386,
+        242
+      ],
+      "collision": {
+        "x": 93.05,
+        "y": 171.28,
+        "width": 270.9,
+        "height": 68.51
+      },
+      "layer": "object"
+    },
+    {
+      "id": "tobias-planks",
+      "name": "Tábuas agrupadas",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-planks",
+      "crop": {
+        "x": 425,
+        "y": 285,
+        "width": 375,
+        "height": 275
+      },
+      "w": 375,
+      "h": 275,
+      "ox": 0.48133333333333334,
+      "oy": 0.8872727272727273,
+      "bounds": [
+        34,
+        82,
+        327,
+        244
+      ],
+      "collision": {
+        "x": 54.510000000000005,
+        "y": 192.16000000000003,
+        "width": 251.98,
+        "height": 50.22
+      },
+      "layer": "object"
+    },
+    {
+      "id": "tobias-chair",
+      "name": "Cadeira em construção",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-chair",
+      "crop": {
+        "x": 800,
+        "y": 285,
+        "width": 310,
+        "height": 275
+      },
+      "w": 310,
+      "h": 275,
+      "ox": 0.4129032258064516,
+      "oy": 0.9818181818181818,
+      "bounds": [
+        39,
+        5,
+        217,
+        270
+      ],
+      "collision": {
+        "x": 51.46,
+        "y": 185.20000000000002,
+        "width": 153.07999999999998,
+        "height": 82.15
+      },
+      "layer": "object"
+    },
+    {
+      "id": "tobias-offcuts",
+      "name": "Barril de retalhos",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-offcuts",
+      "crop": {
+        "x": 1110,
+        "y": 285,
+        "width": 426,
+        "height": 275
+      },
+      "w": 426,
+      "h": 275,
+      "ox": 0.5598591549295775,
+      "oy": 0.9454545454545454,
+      "bounds": [
+        160,
+        27,
+        317,
+        260
+      ],
+      "collision": {
+        "x": 170.99,
+        "y": 185.44,
+        "width": 135.02,
+        "height": 72.23
+      },
+      "layer": "object"
+    },
+    {
+      "id": "tobias-sawhorses",
+      "name": "Cavaletes de montagem",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-sawhorses",
+      "crop": {
+        "x": 0,
+        "y": 560,
+        "width": 435,
+        "height": 205
+      },
+      "w": 435,
+      "h": 205,
+      "ox": 0.5183908045977011,
+      "oy": 0.9853658536585366,
+      "bounds": [
+        53,
+        13,
+        398,
+        202
+      ],
+      "collision": {
+        "x": 77.15,
+        "y": 141.52,
+        "width": 296.7,
+        "height": 58.589999999999996
+      },
+      "layer": "object"
+    },
+    {
+      "id": "tobias-clamps",
+      "name": "Suporte de grampos",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-clamps",
+      "crop": {
+        "x": 435,
+        "y": 560,
+        "width": 350,
+        "height": 205
+      },
+      "w": 350,
+      "h": 205,
+      "ox": 0.52,
+      "oy": 0.9804878048780488,
+      "bounds": [
+        41,
+        6,
+        323,
+        201
+      ],
+      "collision": null,
+      "layer": "wall"
+    },
+    {
+      "id": "tobias-blueprint",
+      "name": "Projeto e lápis",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-blueprint",
+      "crop": {
+        "x": 785,
+        "y": 560,
+        "width": 335,
+        "height": 205
+      },
+      "w": 335,
+      "h": 205,
+      "ox": 0.4746268656716418,
+      "oy": 0.9219512195121952,
+      "bounds": [
+        10,
+        20,
+        308,
+        189
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "tobias-ledger",
+      "name": "Livro de encomendas",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-ledger",
+      "crop": {
+        "x": 1120,
+        "y": 560,
+        "width": 416,
+        "height": 205
+      },
+      "w": 416,
+      "h": 205,
+      "ox": 0.46875,
+      "oy": 0.9414634146341463,
+      "bounds": [
+        34,
+        27,
+        356,
+        193
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "tobias-hand-tools",
+      "name": "Plaina, esquadro e malho",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-hand-tools",
+      "crop": {
+        "x": 0,
+        "y": 765,
+        "width": 460,
+        "height": 259
+      },
+      "w": 460,
+      "h": 259,
+      "ox": 0.5282608695652173,
+      "oy": 0.8378378378378378,
+      "bounds": [
+        57,
+        19,
+        429,
+        217
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "tobias-lantern",
+      "name": "Lanterna da carpintaria",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-lantern",
+      "crop": {
+        "x": 460,
+        "y": 765,
+        "width": 310,
+        "height": 259
+      },
+      "w": 310,
+      "h": 259,
+      "ox": 0.45,
+      "oy": 0.8803088803088803,
+      "bounds": [
+        69,
+        7,
+        210,
+        228
+      ],
+      "collision": null,
+      "layer": "wall"
+    },
+    {
+      "id": "tobias-stool",
+      "name": "Banco de trabalho",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-stool",
+      "crop": {
+        "x": 770,
+        "y": 765,
+        "width": 340,
+        "height": 259
+      },
+      "w": 340,
+      "h": 259,
+      "ox": 0.45294117647058824,
+      "oy": 0.8687258687258688,
+      "bounds": [
+        66,
+        19,
+        242,
+        225
+      ],
+      "collision": {
+        "x": 78.32,
+        "y": 159.08,
+        "width": 151.35999999999999,
+        "height": 63.86
+      },
+      "layer": "object"
+    },
+    {
+      "id": "tobias-mat",
+      "name": "Tapete de atendimento",
+      "file": "assets/visual/village/tobias/objetos.png",
+      "frame": "tobias-mat",
+      "crop": {
+        "x": 1110,
+        "y": 765,
+        "width": 426,
+        "height": 259
+      },
+      "w": 426,
+      "h": 259,
+      "ox": 0.4765258215962441,
+      "oy": 0.7915057915057915,
+      "bounds": [
+        42,
+        41,
+        364,
+        205
+      ],
+      "collision": null,
+      "layer": "floor"
+    },
+    {
+      "id": "tobias-window",
+      "name": "Janela com venezianas",
+      "file": "assets/visual/village/tobias/janela.png",
+      "w": 1254,
+      "h": 1254,
+      "ox": 0.5,
+      "oy": 0.784688995215311,
+      "bounds": [
+        195,
+        333,
+        1059,
+        984
+      ],
+      "collision": null,
+      "layer": "wall"
+    }
+  ],
+  "sourceHashes": {
+    "fachada.png": "75244fe21e2d92b079ec59c400e300d7e26627ccdeb17790e221d962f730e6ac",
+    "objetos.png": "c1ce0ab7fc02f73a556a5fe68f8a12c59363fc0e72f2d5e317047634a16ca87b",
+    "janela.png": "10799c6e9c592c475f26da4c27c8f6a0242530e1628f73422bc02e01d4b32434"
+  }
+}

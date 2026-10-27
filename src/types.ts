@@ -114,6 +114,8 @@ export interface SaveData {
   forestMapEdits?: MapEditData;
 }
 export interface HudData {
+  mapEditorAvailable?:boolean;
+  interiorEditor?:boolean;
   toolConditions?:EconomyState['tools'];
   learnedRecipes?:string[];
   farmingProgress?: FarmingProgress;

@@ -1,5 +1,6 @@
 import {augustoShopBlockedPoint} from './augusto-shop';
 import {rosaShopBlockedPoint} from './rosa-shop';
+import {tobiasShopBlockedPoint} from './tobias-shop';
 import {cottageSolidPoint,cottageSolidTile,wellFootprint} from './architecture-collision';
 import {blacksmithBlockedPoint} from './blacksmith-house';
 import {TILE,WORLD_WIDTH,WORLD_HEIGHT} from './world-size';
@@ -142,7 +143,7 @@ export function villageGround(x:number,y:number):'grass'|'forest'|'path'|'paving
 export function villageBuildingAt(x:number,y:number):VillageBuilding|undefined {
  return VILLAGE_BUILDINGS.find(b=>b.shop==='blacksmith'
   ? blacksmithBlockedPoint((x+.5)*32,(y+.5)*32,b)
-  :b.shop==='general'?augustoShopBlockedPoint((x+.5)*32,(y+.5)*32,b):b.shop==='seeds'?rosaShopBlockedPoint((x+.5)*32,(y+.5)*32,b):cottageSolidTile(x,y,{x:(b.x+.5)*32,y:b.y*32+25}));
+  :b.shop==='general'?augustoShopBlockedPoint((x+.5)*32,(y+.5)*32,b):b.shop==='seeds'?rosaShopBlockedPoint((x+.5)*32,(y+.5)*32,b):b.shop==='carpenter'?tobiasShopBlockedPoint((x+.5)*32,(y+.5)*32,b):cottageSolidTile(x,y,{x:(b.x+.5)*32,y:b.y*32+25}));
 }
 const hash=(x:number,y:number):number=>(Math.imul(x+83,73856093)^Math.imul(y+37,19349663))>>>0;
 export interface VillageTree {x:number;y:number;kind:NatureKind}
@@ -150,15 +151,15 @@ export const VILLAGE_PROPS:readonly {kind:'well'|'bench'|'lantern'|'barrel'|'flo
  {kind:'well',x:46,y:37},
  {kind:'bench',x:40,y:40},{kind:'bench',x:52,y:40},
  {kind:'bench',x:42,y:28},{kind:'bench',x:60,y:51},
- {kind:'lantern',x:21,y:50},{kind:'lantern',x:36,y:41},
+ {kind:'lantern',x:20,y:51},{kind:'lantern',x:36,y:41},
  {kind:'lantern',x:55,y:39},{kind:'lantern',x:44,y:28},
- {kind:'lantern',x:12,y:50},{kind:'lantern',x:33,y:50},
+ {kind:'lantern',x:12,y:50},{kind:'lantern',x:35,y:50},
  {kind:'lantern',x:27,y:27},{kind:'lantern',x:65,y:27},
  {kind:'lantern',x:49,y:55},{kind:'lantern',x:58,y:61},
  {kind:'bench',x:76,y:48},{kind:'bench',x:50,y:60},
  {kind:'crates',x:29,y:33},{kind:'sacks',x:37,y:32},
  {kind:'barrel',x:66,y:32},
- {kind:'woodpile',x:21,y:49},{kind:'barrel',x:29,y:50},
+ {kind:'woodpile',x:21,y:49},{kind:'barrel',x:34,y:51},
  {kind:'flowerpot',x:42,y:21},{kind:'flowerpot',x:50,y:21},
  {kind:'flowerpot',x:66,y:24},{kind:'flowerpot',x:74,y:24},
  {kind:'flowerpot',x:34,y:63},{kind:'barrel',x:72,y:60},
@@ -223,6 +224,6 @@ export function villagePointBlocked(x:number,y:number,edits?:MapEditData):boolea
  const tx=Math.floor(x/32),ty=Math.floor(y/32);
  const scenery=villageSceneryBlockedAt(tx,ty,false,edits);
  const well=VILLAGE_PROPS.find(p=>p.kind==='well'&&Math.abs(p.x-tx)<=2&&Math.abs(p.y-ty)<=3);
- return scenery||(!!well&&wellFootprint(x,y,{x:(well.x+.5)*32,y:well.y*32+25},.49))||VILLAGE_BUILDINGS.some(b=>b.shop==='blacksmith'?blacksmithBlockedPoint(x,y,b):b.shop==='general'?augustoShopBlockedPoint(x,y,b):b.shop==='seeds'?rosaShopBlockedPoint(x,y,b):cottageSolidPoint(x,y,{x:(b.x+.5)*32,y:b.y*32+25}));
+ return scenery||(!!well&&wellFootprint(x,y,{x:(well.x+.5)*32,y:well.y*32+25},.49))||VILLAGE_BUILDINGS.some(b=>b.shop==='blacksmith'?blacksmithBlockedPoint(x,y,b):b.shop==='general'?augustoShopBlockedPoint(x,y,b):b.shop==='seeds'?rosaShopBlockedPoint(x,y,b):b.shop==='carpenter'?tobiasShopBlockedPoint(x,y,b):cottageSolidPoint(x,y,{x:(b.x+.5)*32,y:b.y*32+25}));
 }
 export const villagePixelPoint=(point:{x:number;y:number})=>({x:(point.x+.5)*TILE,y:(point.y+.5)*TILE});

@@ -414,7 +414,7 @@ export class GameUI {
     this.topToolbar?.setOpen(false, false);
     if (action === 'controls') {
       this.openModal('controls');
-      this.overlay.innerHTML = `<section class="panel controls-panel" role="dialog" aria-modal="true" aria-label="Controles"><div class="modal-heading"><div><span class="eyebrow">CADA TECLA, UM NOVO CAMINHO</span><h2>Controles</h2></div><button class="icon-button" aria-label="Fechar controles">${icon('close')}</button></div>${controlGuide()}</section>`;
+      this.overlay.innerHTML = `<section class="panel controls-panel" role="dialog" aria-modal="true" aria-label="Controles"><div class="modal-heading"><div><span class="eyebrow">CADA TECLA, UM NOVO CAMINHO</span><h2>Controles</h2></div><button class="icon-button" aria-label="Fechar controles">${icon('close')}</button></div>${controlGuide({mapEditor:this.latest?.mapEditorAvailable!==false,homeCustomization:this.latest?.area!=='village',interiorEditor:DEVELOPMENT_TOOLS&&this.latest?.interiorEditor})}</section>`;
       this.overlay.querySelector('button')!.onclick = () => this.closeModal();
       this.overlay.querySelector('button')!.focus();
     }
@@ -850,11 +850,11 @@ export class GameUI {
     });
     panel.querySelector('[data-action="title"]')!.addEventListener('click', () => this.callbacks.onMainMenu());
     panel.querySelector('[data-action="admin"]')!.addEventListener('click', () => { this.closeModal(); this.callbacks.onAdminMenu(); });
-    if(DEVELOPMENT_TOOLS){
+    if(DEVELOPMENT_TOOLS&&this.latest?.mapEditorAvailable!==false){
     const editor = document.createElement('button');
     editor.className = 'button button-light';
     editor.dataset.action = 'map-editor';
-    editor.textContent = 'Editar mapa · F2';
+    editor.textContent = this.latest?.interiorEditor?'Editar interior · H':'Editar mapa · F2';
     editor.addEventListener('click', () => this.callbacks.onMapEditor());
     panel.querySelector('.pause-actions')!.insertBefore(editor, panel.querySelector('[data-action="admin"]'));
     }

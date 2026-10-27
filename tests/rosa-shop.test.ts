@@ -4,6 +4,7 @@ import {resolve,relative} from 'node:path';
 import {createHash} from 'node:crypto';
 import catalog from '../public/assets/visual/village/rosa/manifest.json';
 import sourceHashes from '../public/assets/visual/village/rosa/personagem-sha256.json';
+import previousRosa from '../src/data/rosa-layout-v1.json';
 import {createMerchantLayout,MERCHANT_ROOM_ASSETS,merchantRoomConnected,merchantRoomFits,merchantRoomNavigation,validMerchantLayout,resolveMerchantLayout,merchantAssets,merchantRoomPieces} from '../src/data/merchant-rooms';
 import {MerchantDailyRoutine,merchantPeriod,dailyMerchant,validMerchantRoutines} from '../src/systems/merchant-routine';
 import {merchantOutside,merchantDoor,merchantCanTrade} from '../src/systems/merchant-visit';
@@ -15,15 +16,20 @@ import {ROSA_SHOP,rosaShopBlockedPoint} from '../src/data/rosa-shop';
 import type {SmithLayout} from '../src/systems/smith-layout';
 
 describe('Rosa agricultural shop',()=>{
- it('has 16 new independent atlas objects and an editable connected interior',()=>{
+ it('has 16 new independent atlas objects and the final connected 20-piece interior',()=>{
   expect(catalog.createdFromScratch).toBe(16);expect(catalog.referenceCrops).toBe(0);
-  const layout=createMerchantLayout('rosa');expect(layout.pieces).toHaveLength(19);expect(validMerchantLayout(layout)).toBe(true);expect(merchantRoomConnected('rosa',layout)).toBe(true);
-  expect(merchantRoomFits('rosa',288,151)).toBe(true);expect(merchantRoomFits('rosa',288,225)).toBe(true);expect(merchantRoomFits('rosa',288,335)).toBe(true);
+  const layout=createMerchantLayout('rosa');expect(layout.pieces).toHaveLength(20);expect(validMerchantLayout(layout)).toBe(true);expect(merchantRoomConnected('rosa',layout)).toBe(true);
+  expect(merchantRoomFits('rosa',288,151)).toBe(true);expect(merchantRoomFits('rosa',288,233)).toBe(true);expect(merchantRoomFits('rosa',288,335)).toBe(true);
   for(const p of layout.pieces)expect(MERCHANT_ROOM_ASSETS.some(a=>a.id===p.asset)).toBe(true);
  });
  it('adopts the new default only when the former shared layout was untouched',()=>{
   const old:SmithLayout={version:1,pieces:[{id:'structure',asset:'structure',x:0,y:0,sx:1,sy:1,visible:true,wallShade:1},{id:'floor',asset:'floor-wood',x:33,y:116,sx:510,sy:234,visible:true},...merchantRoomPieces('rosa').map(a=>({id:a.id,asset:a.id,x:a.recommendedPosition.x*.6,y:a.recommendedPosition.y*.6,sx:a.scale*.6,sy:a.scale*.6,visible:true,...a.supportId?{parent:a.supportId}:{}}))]};
   expect(resolveMerchantLayout('rosa',old)).toEqual(createMerchantLayout('rosa'));old.pieces[2].x+=3;expect(resolveMerchantLayout('rosa',old)).toEqual(old);expect(merchantAssets.length).toBe(31);
+ });
+ it('migrates the former 19-piece Rosa interior, including normalized editor flags, without discarding other custom edits',()=>{
+  const old=structuredClone(previousRosa) as SmithLayout;expect(resolveMerchantLayout('rosa',old)).toEqual(createMerchantLayout('rosa'));
+  for(const p of old.pieces){p.effects=true;p.solid=!!MERCHANT_ROOM_ASSETS.find(a=>a.id===p.asset)?.collision;}
+  expect(resolveMerchantLayout('rosa',old)).toEqual(createMerchantLayout('rosa'));old.pieces[2].x+=4;expect(resolveMerchantLayout('rosa',old)).toEqual(old);
  });
  it('uses the game clock to enter, take a plaza break, return and close at 18h',()=>{
   const nav=merchantRoomNavigation('rosa'),r=new MerchantDailyRoutine('rosa',{...merchantOutside('rosa'),direction:'down',shop:false},nav);

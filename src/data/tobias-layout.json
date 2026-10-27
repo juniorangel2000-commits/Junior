@@ -1,0 +1,189 @@
+{
+  "version": 1,
+  "pieces": [
+    {
+      "id": "structure",
+      "asset": "structure",
+      "x": 0,
+      "y": 0,
+      "sx": 1,
+      "sy": 1,
+      "visible": true,
+      "wallShade": 1
+    },
+    {
+      "id": "floor",
+      "asset": "floor-wood",
+      "x": 33,
+      "y": 116,
+      "sx": 510,
+      "sy": 234,
+      "visible": true
+    },
+    {
+      "id": "tobias-counter",
+      "asset": "tobias-counter",
+      "x": 270,
+      "y": 218,
+      "sx": 0.3225806451612903,
+      "sy": 0.3225806451612903,
+      "visible": true
+    },
+    {
+      "id": "tobias-timber-rack",
+      "asset": "tobias-timber-rack",
+      "x": 482,
+      "y": 157,
+      "sx": 0.3029045643153527,
+      "sy": 0.3029045643153527,
+      "visible": true
+    },
+    {
+      "id": "tobias-tool-rack",
+      "asset": "tobias-tool-rack",
+      "x": 398,
+      "y": 108,
+      "sx": 0.3282208588957055,
+      "sy": 0.3282208588957055,
+      "visible": true
+    },
+    {
+      "id": "tobias-workbench",
+      "asset": "tobias-workbench",
+      "x": 447,
+      "y": 246,
+      "sx": 0.3074866310160428,
+      "sy": 0.3074866310160428,
+      "visible": true
+    },
+    {
+      "id": "tobias-cabinet",
+      "asset": "tobias-cabinet",
+      "x": 92,
+      "y": 182,
+      "sx": 0.24126984126984127,
+      "sy": 0.24126984126984127,
+      "visible": true
+    },
+    {
+      "id": "tobias-planks",
+      "asset": "tobias-planks",
+      "x": 465,
+      "y": 309,
+      "sx": 0.2832764505119454,
+      "sy": 0.2832764505119454,
+      "visible": true
+    },
+    {
+      "id": "tobias-chair",
+      "asset": "tobias-chair",
+      "x": 140,
+      "y": 276,
+      "sx": 0.23595505617977527,
+      "sy": 0.23595505617977527,
+      "visible": true
+    },
+    {
+      "id": "tobias-offcuts",
+      "asset": "tobias-offcuts",
+      "x": 490,
+      "y": 208,
+      "sx": 0.22929936305732485,
+      "sy": 0.22929936305732485,
+      "visible": true
+    },
+    {
+      "id": "tobias-sawhorses",
+      "asset": "tobias-sawhorses",
+      "x": 113,
+      "y": 330,
+      "sx": 0.25396825396825395,
+      "sy": 0.25396825396825395,
+      "visible": true
+    },
+    {
+      "id": "tobias-clamps",
+      "asset": "tobias-clamps",
+      "x": 133,
+      "y": 106,
+      "sx": 0.29432624113475175,
+      "sy": 0.29432624113475175,
+      "visible": true
+    },
+    {
+      "id": "tobias-blueprint",
+      "asset": "tobias-blueprint",
+      "x": 243,
+      "y": 182,
+      "sx": 0.13087248322147652,
+      "sy": 0.13087248322147652,
+      "visible": true,
+      "parent": "tobias-counter"
+    },
+    {
+      "id": "tobias-ledger",
+      "asset": "tobias-ledger",
+      "x": 294,
+      "y": 183,
+      "sx": 0.09627329192546584,
+      "sy": 0.09627329192546584,
+      "visible": true,
+      "parent": "tobias-counter"
+    },
+    {
+      "id": "tobias-hand-tools",
+      "asset": "tobias-hand-tools",
+      "x": 436,
+      "y": 201,
+      "sx": 0.11021505376344086,
+      "sy": 0.11021505376344086,
+      "visible": true,
+      "parent": "tobias-workbench"
+    },
+    {
+      "id": "tobias-lantern",
+      "asset": "tobias-lantern",
+      "x": 204,
+      "y": 89,
+      "sx": 0.14893617021276595,
+      "sy": 0.14893617021276595,
+      "visible": true
+    },
+    {
+      "id": "tobias-stool",
+      "asset": "tobias-stool",
+      "x": 368,
+      "y": 281,
+      "sx": 0.1534090909090909,
+      "sy": 0.1534090909090909,
+      "visible": true
+    },
+    {
+      "id": "tobias-mat",
+      "asset": "tobias-mat",
+      "x": 288,
+      "y": 291,
+      "sx": 0.3597560975609756,
+      "sy": 0.3597560975609756,
+      "visible": true
+    },
+    {
+      "id": "tobias-lantern-right",
+      "asset": "tobias-lantern",
+      "x": 535,
+      "y": 92,
+      "sx": 0.14893617021276595,
+      "sy": 0.14893617021276595,
+      "visible": true
+    },
+    {
+      "id": "tobias-window",
+      "asset": "tobias-window",
+      "x": 288,
+      "y": 109,
+      "sx": 0.09490740740740741,
+      "sy": 0.09490740740740741,
+      "visible": true
+    }
+  ]
+}

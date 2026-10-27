@@ -11,8 +11,10 @@ export const PROPERTY_WELL={x:31.5*TILE,y:HOMESTEAD_HOUSE.groundY+(256-WELL_SOUR
 export const WELL_FRAME_DURATIONS=manifest.frame_duration_ms;
 export const WELL_USE_MS=WELL_FRAME_DURATIONS.reduce((sum,ms)=>sum+ms,0);
 export const WELL_BASE={x:PROPERTY_WELL.x,y:PROPERTY_WELL.y-(256-198)*PROPERTY_WELL.scale,rx:30,ry:16} as const;
+/** World pixels: padding around both stonework and timber feet. */
+export const PROPERTY_WELL_COLLISION_MARGIN=8;
 export function wellSolidPoint(x:number,y:number):boolean {
- return wellFootprint(x,y,PROPERTY_WELL,PROPERTY_WELL.scale);
+ return wellFootprint(x,y,PROPERTY_WELL,PROPERTY_WELL.scale,PROPERTY_WELL_COLLISION_MARGIN);
 }
 /** Tile navigation is conservative; player movement uses the exact stone ellipse. */
 export function wellSolidTile(x:number,y:number):boolean {

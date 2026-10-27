@@ -43,7 +43,10 @@ for i,(name,title,x,y,w,h,layer,parent) in enumerate(spec):
 # Second light, independent editable instance from the same source frame.
 pieces.append(dict(id='rosa-lantern-right',asset='rosa-lantern',x=530,y=100,sx=pieces[12]['sx'],sy=pieces[12]['sy'],visible=True))
 (OUT/'manifest.json').write_text(json.dumps(dict(npc='rosa',createdFromScratch=16,referenceCrops=0,assets=assets),ensure_ascii=False,indent=2)+'\n')
-(ROOT/'src/data/rosa-layout.json').write_text(json.dumps(dict(version=1,pieces=pieces),ensure_ascii=False,indent=2)+'\n')
+# Never overwrite an interior already edited by the author.
+layout_path=ROOT/'src/data/rosa-layout.json'
+if not layout_path.exists():
+ layout_path.write_text(json.dumps(dict(version=1,pieces=pieces),ensure_ascii=False,indent=2)+'\n')
 rocks=ROOT/'public/assets/visual/economy/deposits/rochas-detalhadas.png'
 shutil.copy2('/workspace/generated_images/exec-ca7b0862-34c3-4bd1-b7b3-36b4c84cef6f.png',rocks)
 im=Image.open(rocks);alpha=np.array(im)[:,:,3];frames=[]

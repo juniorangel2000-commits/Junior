@@ -1,0 +1,39 @@
+{
+  "status": "implemented and verified locally; not yet published",
+  "objectsCreatedFromScratch": 17,
+  "carpentryPieces": 20,
+  "floor": "wood only",
+  "nativeCharacterPngsPreserved": 56,
+  "directions": 8,
+  "walkingFramesPerDirection": 6,
+  "repairedDirections": [
+    "south"
+  ],
+  "southRepairSeparateFromOriginals": true,
+  "tests": 761,
+  "testFiles": 79,
+  "browserChecks": 30,
+  "typescript": "passed",
+  "build": "passed",
+  "finalizedInteriorPieces": {
+    "bento": 52,
+    "augusto": 41,
+    "rosa": 20
+  },
+  "approvedLayoutsPreserved": {
+    "src/data/blacksmith-layout.json": true,
+    "src/data/augusto-layout.json": true
+  },
+  "rosaExactUploadedBytes": true,
+  "rosaUploadSha256": "e63ad0ed71c7415d2e5a68b5b4ae5027a7115fcbd33185bef69bd283c5b8036b",
+  "editorsRemovedFrom": [
+    "bento",
+    "augusto",
+    "rosa"
+  ],
+  "developmentEditorRetainedFor": [
+    "tobias",
+    "outdoor maps",
+    "player house customization"
+  ]
+}

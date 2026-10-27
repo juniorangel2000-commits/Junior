@@ -4,7 +4,7 @@ import {drawPropertyBridges} from './bridge-art';
 import {naturalPlantGround} from './systems/tree-avoidance';
 import {drawPropertyWell,type PropertyWell} from './property-well';
 import {wellSiteTile,wellSolidTile,wellSolidPoint} from './data/property-well';
-import {cottageSolidPoint,cottageSolidTile} from './data/architecture-collision';
+import {propertyHouseSolidPoint,propertyHouseSolidTile} from './data/property-collision';
 import {HOMESTEAD_HOUSE,homesteadResourceReserved} from './data/property-homestead';
 import {drawHouseSmoke} from './house-smoke';
 import {hasMapSeam,seamBand,seamPassage} from './data/map-seam';
@@ -270,7 +270,6 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   const houseImage=scene.add.image(HOMESTEAD_HOUSE.x,HOMESTEAD_HOUSE.y,houseTexture).setOrigin(0.5,1).setDepth(HOMESTEAD_HOUSE.y);
   if(houseTexture==='asset-house')drawHouseSmoke(scene,houseImage);
   const well=drawPropertyWell(scene);
-  const houseGround={x:HOMESTEAD_HOUSE.x,y:HOMESTEAD_HOUSE.groundY};
 
   // Wild woodland frames the clearing without filling it with combat or obstacles.
   const expandedSupplies: Array<[number, number, ResourceKind]> = [
@@ -457,10 +456,10 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
       } else if (editorIndex >= 0) editorObjects.splice(editorIndex, 1);
   };
   const resourceAt = (x: number, y: number) => resources.find((node) => node.x === x && node.y === y);
-  const solidTile = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y))||cottageSolidTile(x,y,houseGround);
+  const solidTile = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y))||propertyHouseSolidTile(x,y);
   const pointSolid=(x:number,y:number)=>{
     const tx=Math.floor(x/TILE),ty=Math.floor(y/TILE);
-    return tx<1||ty<1||tx>=WORLD_WIDTH-1||ty>=WORLD_HEIGHT-1||blocked.has(key(tx,ty))||resourceBlocked.has(key(tx,ty))||cottageSolidPoint(x,y,houseGround);
+    return tx<1||ty<1||tx>=WORLD_WIDTH-1||ty>=WORLD_HEIGHT-1||blocked.has(key(tx,ty))||resourceBlocked.has(key(tx,ty))||propertyHouseSolidPoint(x,y);
   };
   const isBlocked = (x: number, y: number) => solidTile(x, y) || wellSolidTile(x,y) || waterAt(x, y) && !bridgeAt(x, y);
   const isBlockedPoint = (x: number, y: number) => {

@@ -1,0 +1,185 @@
+{
+  "checks": [
+    {
+      "name": "Casa: frente esquerda bloqueia sem prender o jogador",
+      "passed": true,
+      "details": {
+        "name": "Casa: frente esquerda",
+        "startClear": true,
+        "x": 739,
+        "y": 521.0005859375007,
+        "stopped": true,
+        "clear": true
+      }
+    },
+    {
+      "name": "Casa: frente direita bloqueia sem prender o jogador",
+      "passed": true,
+      "details": {
+        "name": "Casa: frente direita",
+        "startClear": true,
+        "x": 829,
+        "y": 521.0005859375007,
+        "stopped": true,
+        "clear": true
+      }
+    },
+    {
+      "name": "Casa: lateral esquerda bloqueia sem prender o jogador",
+      "passed": true,
+      "details": {
+        "name": "Casa: lateral esquerda",
+        "startClear": true,
+        "x": 686.9996093749995,
+        "y": 453,
+        "stopped": true,
+        "clear": true
+      }
+    },
+    {
+      "name": "Casa: lateral direita bloqueia sem prender o jogador",
+      "passed": true,
+      "details": {
+        "name": "Casa: lateral direita",
+        "startClear": true,
+        "x": 881.0003906250005,
+        "y": 453,
+        "stopped": true,
+        "clear": true
+      }
+    },
+    {
+      "name": "Casa: fundos bloqueia sem prender o jogador",
+      "passed": true,
+      "details": {
+        "name": "Casa: fundos",
+        "startClear": true,
+        "x": 784,
+        "y": 369.9988281249994,
+        "stopped": true,
+        "clear": true
+      }
+    },
+    {
+      "name": "Poço: frente bloqueia sem prender o jogador",
+      "passed": true,
+      "details": {
+        "name": "Poço: frente",
+        "startClear": true,
+        "x": 1008,
+        "y": 512.3336718750005,
+        "stopped": true,
+        "clear": true
+      }
+    },
+    {
+      "name": "Poço: esquerda bloqueia sem prender o jogador",
+      "passed": true,
+      "details": {
+        "name": "Poço: esquerda",
+        "startClear": true,
+        "x": 962.3451171874995,
+        "y": 487.41999999999996,
+        "stopped": true,
+        "clear": true
+      }
+    },
+    {
+      "name": "Poço: direita bloqueia sem prender o jogador",
+      "passed": true,
+      "details": {
+        "name": "Poço: direita",
+        "startClear": true,
+        "x": 1052.4011718749978,
+        "y": 487.41999999999996,
+        "stopped": true,
+        "clear": true
+      }
+    },
+    {
+      "name": "Poço: fundos bloqueia sem prender o jogador",
+      "passed": true,
+      "details": {
+        "name": "Poço: fundos",
+        "startClear": true,
+        "x": 1008,
+        "y": 447.97820312499954,
+        "stopped": true,
+        "clear": true
+      }
+    },
+    {
+      "name": "Frente da casa interrompe a aproximação 35px antes do limite anterior",
+      "passed": true,
+      "details": [
+        {
+          "name": "Casa: frente esquerda",
+          "startClear": true,
+          "x": 739,
+          "y": 521.0005859375007,
+          "stopped": true,
+          "clear": true
+        },
+        {
+          "name": "Casa: frente direita",
+          "startClear": true,
+          "x": 829,
+          "y": 521.0005859375007,
+          "stopped": true,
+          "clear": true
+        }
+      ]
+    },
+    {
+      "name": "Frente do poço mantém os pés fora da sprite",
+      "passed": true,
+      "details": {
+        "name": "Poço: frente",
+        "startClear": true,
+        "x": 1008,
+        "y": 512.3336718750005,
+        "stopped": true,
+        "clear": true
+      }
+    },
+    {
+      "name": "Posições antigas dentro das áreas ampliadas são recuperadas",
+      "passed": true,
+      "details": [
+        {
+          "changed": true,
+          "clear": true
+        },
+        {
+          "changed": true,
+          "clear": true
+        }
+      ]
+    },
+    {
+      "name": "Coleta de água funciona fora da nova margem",
+      "passed": true,
+      "details": {
+        "started": true,
+        "water": 8,
+        "busy": false
+      }
+    },
+    {
+      "name": "Porta mantém entrada automática e saída livre",
+      "passed": true,
+      "details": {
+        "requested": true,
+        "inside": true,
+        "outside": true,
+        "clear": true
+      }
+    },
+    {
+      "name": "Sem erros de execução ou arquivos ausentes",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}
