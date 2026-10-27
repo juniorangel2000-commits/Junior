@@ -67,6 +67,10 @@ export interface SaveData {
   forestPosition?: TilePoint & { direction?: CharacterDirection };
   villagePosition?: TilePoint & { direction?: CharacterDirection };
   blacksmithInterior?: TilePoint & {direction?:CharacterDirection};
+  merchantInterior?:import('./systems/merchant-visit').ShopVisit;
+  villageMapEdits?:import('./systems/map-editor').MapEditData;
+  merchantScenes?:Partial<Record<import('./systems/merchant-visit').ResidentId,import('./systems/smith-layout').SmithLayout>>;
+  shopResidents?:import('./systems/merchant-visit').ShopResident[];
   blacksmithHome?:HomeData;
   blacksmithScene?:import('./systems/smith-layout').SmithLayout;
   blacksmithLayoutRevision?:2|3;

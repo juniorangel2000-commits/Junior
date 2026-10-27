@@ -1,0 +1,12 @@
+{
+  "revision": 2,
+  "totalSprites": 31,
+  "newFurniture": 6,
+  "original25HashesPreserved": true,
+  "wallColor": "#26302c",
+  "wallSource": "src/smith-finish.ts#SMITH_WALL_COLOR",
+  "technicalValidation": "passed",
+  "browserValidation": "passed",
+  "artStatus": "em revisão",
+  "remoteChanged": false
+}

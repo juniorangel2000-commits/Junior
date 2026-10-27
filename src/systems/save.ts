@@ -22,6 +22,8 @@ import {createVillageProgress,validateVillageProgress,validateVillageInstallatio
 import {VILLAGE_ITEM_IDS} from '../data/items';
 import {blacksmithRoomPosition,previousBlacksmithPosition,BLACKSMITH_INSIDE,validateBlacksmithHome,BLACKSMITH_ROOM} from '../data/blacksmith-interior';
 import {validBentoRoutine} from './bento-routine';
+import {validResidentId,validShopResidents} from './merchant-visit';
+import {merchantRoomFits,validMerchantLayout} from '../data/merchant-rooms';
 
 // A chave e a origem do aplicativo permanecem iguais para localizar partidas antigas.
 export const SAVE_KEY = 'depois-da-chuva-v1';
@@ -51,6 +53,7 @@ export function validateProfile(value: unknown): value is CharacterProfile {
 export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
   if (value.forestMapEdits !== undefined && (!validateMapEdits(value.forestMapEdits)||value.forestMapEdits.area!=='forest')) return false;
+  if(value.villageMapEdits!==undefined&&(!validateMapEdits(value.villageMapEdits)||value.villageMapEdits.area!=='village'))return false;
   if (value.mapEdits !== undefined && (!validateMapEdits(value.mapEdits)||value.mapEdits.area!==undefined)) return false;
   if(value.propertyShoreRevision!==undefined&&value.propertyShoreRevision!==PROPERTY_SHORE_REVISION)return false;
   if(value.homesteadRevision!==undefined&&value.homesteadRevision!==1)return false;
@@ -61,6 +64,9 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.activeArea==='village'&&(value.homePosition!==undefined||value.animalEscort!==undefined))return false;
   if(value.blacksmithScene!==undefined&&!validSmithLayout(value.blacksmithScene))return false;
   if(value.blacksmithHome!==undefined&&!validateBlacksmithHome(value.blacksmithHome))return false;
+  if(value.shopResidents!==undefined&&!validShopResidents(value.shopResidents))return false;
+  if(value.merchantScenes!==undefined&&(!isRecord(value.merchantScenes)||Object.entries(value.merchantScenes).some(([id,room])=>!validResidentId(id)||id==='bento'||!validMerchantLayout(room))))return false;
+  if(value.merchantInterior!==undefined){const p=value.merchantInterior;if(value.activeArea!=='village'||value.blacksmithInterior!==undefined||!isRecord(p)||!validResidentId(p.owner)||p.owner==='bento'||typeof p.x!=='number'||typeof p.y!=='number'||!merchantRoomFits(p.owner,p.x,p.y,(value.merchantScenes as SaveData['merchantScenes'])?.[p.owner])||(p.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(p.direction as CharacterDirection)))return false;}
   const smithRoom=value.blacksmithHome?new Home(value.blacksmithHome as SaveData['home'],false):BLACKSMITH_ROOM;
   if(value.bentoRoutine!==undefined&&!validBentoRoutine(value.bentoRoutine,value.blacksmithScene?smithNavigation(value.blacksmithScene as NonNullable<SaveData['blacksmithScene']>):smithRoom))return false;
   if(value.blacksmithLayoutRevision!==undefined&&value.blacksmithLayoutRevision!==2&&value.blacksmithLayoutRevision!==3)return false;

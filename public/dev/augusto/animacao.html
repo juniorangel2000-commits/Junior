@@ -1,0 +1,21 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Augusto — caminhada em oito direções</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#202a29;color:#f6e7c8;font:16px system-ui}main{max-width:1160px;padding:20px;margin:auto}h1{font:700 26px Georgia}p{color:#d1c5ad;line-height:1.5}nav{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:20px 0}a,button,select{color:#f6e7c8;background:#594531;border:1px solid #a18458;border-radius:4px;padding:9px 13px;font:inherit;text-decoration:none;cursor:pointer}canvas{width:100%;height:auto;image-rendering:pixelated;border:1px solid #806c4b}small{display:block;margin-top:14px;color:#c3b99f}</style>
+<main><h1>Augusto — animações recebidas</h1><p>8 poses paradas e 6 quadros de caminhada por direção. PNGs originais preservados, com alinhamento fixo entre as telas de 112 e 160 pixels.</p><nav><a href="index.html">Voltar ao armazém</a><button id="play">Pausar</button><button id="mode">Mostrar parado</button><label>Velocidade <select id="fps"><option>6</option><option selected>8</option><option>10</option></select> quadros/s</label></nav><canvas id="walk" width="1120" height="496" aria-label="Caminhada do Augusto nas oito direções"></canvas><small>Prévia da arte enviada. Os seis quadros seguem a ordem original, sem redimensionar cada pose separadamente.</small></main>
+<script type="module">
+const root='personagem/Idle';
+const views=[['south','Frente'],['south-east','Frente / direita'],['east','Direita'],['north-east','Costas / direita'],['north','Costas'],['north-west','Costas / esquerda'],['west','Esquerda'],['south-west','Frente / esquerda']];
+const sources=new Map();await Promise.all(views.flatMap(([dir])=>Array.from({length:7},async(_,frame)=>{const img=new Image();img.src=frame===0?`${root}/rotations/${dir}.png`:`${root}/animations/Walk/${dir}/frame_${String(frame-1).padStart(3,'0')}.png`;await img.decode();sources.set(`${dir}:${frame}`,img);})));const canvas=document.querySelector('#walk'),c=canvas.getContext('2d');c.imageSmoothingEnabled=false;
+let playing=true,moving=true,fps=8,start=performance.now(),phase=1;
+function draw(frame){phase=frame;c.fillStyle='#26302c';c.fillRect(0,0,1120,496);c.font='15px Georgia';c.textAlign='center';
+ for(const[i,[dir,name]]of views.entries()){const x=(i%4)*280,y=Math.floor(i/4)*248;
+ c.strokeStyle='#55604f';c.strokeRect(x+.5,y+.5,279,247);c.fillStyle='#e9d5ae';c.fillText(name,x+140,y+29);
+ c.strokeStyle='#71806b';c.beginPath();c.moveTo(x+50,y+204.5);c.lineTo(x+230,y+204.5);c.stroke();
+ const img=sources.get(`${dir}:${frame}`),s=1.25;c.drawImage(img,Math.round(x+140-img.width*s/2),Math.round(y+204-(136-(160-img.height)/2)*s),img.width*s,img.height*s);
+ c.fillStyle='#c3b99f';c.font='12px system-ui';c.fillText(frame===0?'Parado':`Caminhada · ${frame}/6`,x+140,y+233);c.font='15px Georgia';
+ }}
+document.querySelector('#play').onclick=()=>{playing=!playing;start=performance.now()-(Math.max(phase,1)-1)*1000/fps;document.querySelector('#play').textContent=playing?'Pausar':'Reproduzir';};
+document.querySelector('#mode').onclick=()=>{moving=!moving;start=performance.now();document.querySelector('#mode').textContent=moving?'Mostrar parado':'Mostrar caminhada';draw(moving?1:0);};document.querySelector('#fps').onchange=e=>{fps=Number(e.target.value);start=performance.now();};
+function tick(t){if(playing)draw(moving?Math.floor((t-start)*fps/1000)%6+1:0);requestAnimationFrame(tick);}requestAnimationFrame(tick);
+window.augustoWalkPreview={images:sources.size,frame:()=>phase,renderFrame(frame){playing=false;draw(frame);}};
+</script></html>

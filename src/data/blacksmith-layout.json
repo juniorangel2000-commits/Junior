@@ -1,0 +1,472 @@
+{
+  "version": 1,
+  "finishRevision": 1,
+  "pieces": [
+    {
+      "id": "fornalha_completa",
+      "asset": "fornalha_completa",
+      "x": 379.95886075949363,
+      "y": 146.6012658227848,
+      "sx": 0.08296213808463251,
+      "sy": 0.09961977186311786,
+      "visible": true
+    },
+    {
+      "id": "bigorna_e_toco",
+      "asset": "bigorna_e_toco",
+      "x": 365.9177215189874,
+      "y": 271.55696202531647,
+      "sx": 0.06533776301218161,
+      "sy": 0.06533776301218161,
+      "visible": true
+    },
+    {
+      "id": "tanque_resfriamento",
+      "asset": "tanque_resfriamento",
+      "x": 321.00949367088606,
+      "y": 169.9873417721519,
+      "sx": 0.06019522776572668,
+      "sy": 0.06019522776572668,
+      "visible": true
+    },
+    {
+      "id": "mesa_atendimento",
+      "asset": "mesa_atendimento",
+      "x": 217.20253164556965,
+      "y": 178.44936708860754,
+      "sx": 0.0671462829736211,
+      "sy": 0.08580343213728549,
+      "visible": true
+    },
+    {
+      "id": "prateleira_ferramentas",
+      "asset": "prateleira_ferramentas",
+      "x": 92.70569620253173,
+      "y": 125.75316455696202,
+      "sx": 0.06928508384819064,
+      "sy": 0.06928508384819064,
+      "visible": true
+    },
+    {
+      "id": "estante_metal",
+      "asset": "estante_metal",
+      "x": 502.2695659877959,
+      "y": 154,
+      "sx": 0.05599300087489064,
+      "sy": 0.05599300087489064,
+      "visible": true
+    },
+    {
+      "id": "cesto_lingotes",
+      "asset": "cesto_lingotes",
+      "x": 102.89240506329116,
+      "y": 254.68354430379742,
+      "sx": 0.043731778425655975,
+      "sy": 0.043731778425655975,
+      "visible": true
+    },
+    {
+      "id": "caixa_minerios",
+      "asset": "caixa_minerios",
+      "x": 115.5632911392405,
+      "y": 274.3164556962025,
+      "sx": 0.04875148632580262,
+      "sy": 0.04875148632580262,
+      "visible": true
+    },
+    {
+      "id": "porta_ferramentas",
+      "asset": "porta_ferramentas",
+      "x": 437.1835443037975,
+      "y": 86.35443037974687,
+      "sx": 0.03715170278637771,
+      "sy": 0.03715170278637771,
+      "visible": true,
+      "parent": "bancada_ferraria"
+    },
+    {
+      "id": "barril_hastes",
+      "asset": "barril_hastes",
+      "x": 66.37341772151899,
+      "y": 268.2151898734177,
+      "sx": 0.052083333333333336,
+      "sy": 0.052083333333333336,
+      "visible": true
+    },
+    {
+      "id": "tapete_ferraria",
+      "asset": "tapete_ferraria",
+      "x": 245.66,
+      "y": 280.63,
+      "sx": 0.04244114002478315,
+      "sy": 0.042443778110944526,
+      "visible": false,
+      "effects": true,
+      "solid": false
+    },
+    {
+      "id": "martelos_parede",
+      "asset": "martelos_parede",
+      "x": 194,
+      "y": 125.5,
+      "sx": 0.027293404094010616,
+      "sy": 0.027293404094010616,
+      "visible": false
+    },
+    {
+      "id": "lamparina",
+      "asset": "lamparina",
+      "x": 312.75,
+      "y": 77.3354430379747,
+      "sx": 0.019218846869187848,
+      "sy": 0.019218846869187848,
+      "visible": true
+    },
+    {
+      "id": "banquinho",
+      "asset": "banquinho",
+      "x": 464.9746835443038,
+      "y": 227.28481012658227,
+      "sx": 0.03768115942028986,
+      "sy": 0.03768115942028986,
+      "visible": true
+    },
+    {
+      "id": "meia-divisoria",
+      "asset": "meia-divisoria",
+      "x": 281.5,
+      "y": 232,
+      "sx": 0.14516129032258066,
+      "sy": 0.14016172506738545,
+      "visible": true
+    },
+    {
+      "id": "expositor_alto_ferramentas",
+      "asset": "expositor_alto_ferramentas",
+      "x": 72.81104919363779,
+      "y": 194.9240506329114,
+      "sx": 0.09147230320699709,
+      "sy": 0.09147230320699709,
+      "visible": true
+    },
+    {
+      "id": "caixa_ferramentas",
+      "asset": "caixa_ferramentas",
+      "x": 72.56104919363779,
+      "y": 72.42405063291139,
+      "sx": 0.03616133518776078,
+      "sy": 0.03616133518776078,
+      "visible": true,
+      "parent": "expositor_alto_ferramentas"
+    },
+    {
+      "id": "folha_encomendas",
+      "asset": "folha_encomendas",
+      "x": 215.82278481012668,
+      "y": 138.84810126582275,
+      "sx": 0.029535864978902954,
+      "sy": 0.029535864978902954,
+      "visible": true,
+      "parent": "mesa_atendimento"
+    },
+    {
+      "id": "vaso_flores_brancas",
+      "asset": "vaso_flores_brancas",
+      "x": 256.3481012658228,
+      "y": 138.3291139240506,
+      "sx": 0.037800687285223365,
+      "sy": 0.037800687285223365,
+      "visible": true,
+      "parent": "mesa_atendimento"
+    },
+    {
+      "id": "lampiao_balcao",
+      "asset": "lampiao_balcao",
+      "x": 234.46202531645574,
+      "y": 135.7025316455696,
+      "sx": 0.023517382413087935,
+      "sy": 0.023517382413087935,
+      "visible": true,
+      "parent": "mesa_atendimento"
+    },
+    {
+      "id": "escudo_parede",
+      "asset": "escudo_parede",
+      "x": 226.72151898734177,
+      "y": 79.59493670886076,
+      "sx": 0.03284072249589491,
+      "sy": 0.03284072249589491,
+      "visible": true,
+      "parent": "armario_pecas_loja"
+    },
+    {
+      "id": "suporte_ferramentas_longas",
+      "asset": "suporte_ferramentas_longas",
+      "x": 193.5,
+      "y": 115.77848101265826,
+      "sx": 0.04152249134948097,
+      "sy": 0.04714738510301109,
+      "visible": true
+    },
+    {
+      "id": "caixa_carvao_madeira",
+      "asset": "caixa_carvao_madeira",
+      "x": 136.8227848101265,
+      "y": 257.70886075949363,
+      "sx": 0.05379746835443038,
+      "sy": 0.05379746835443038,
+      "visible": true
+    },
+    {
+      "id": "armario_carvao_ferro",
+      "asset": "armario_carvao_ferro",
+      "x": 437.34177215189874,
+      "y": 152.2784810126582,
+      "sx": 0.06766917293233082,
+      "sy": 0.04909365558912387,
+      "visible": true
+    },
+    {
+      "id": "bancada_ferraria",
+      "asset": "bancada_ferraria",
+      "x": 506.2341772151899,
+      "y": 240.98734177215192,
+      "sx": 0.07281553398058252,
+      "sy": 0.0586756077116513,
+      "visible": true
+    },
+    {
+      "id": "balde_tenazes",
+      "asset": "balde_tenazes",
+      "x": 410.06329113924045,
+      "y": 156.62025316455697,
+      "sx": 0.024700070571630206,
+      "sy": 0.024700070571630206,
+      "visible": true
+    },
+    {
+      "id": "toco_martelo",
+      "asset": "toco_martelo",
+      "x": 406.8481012658228,
+      "y": 258.46835443037975,
+      "sx": 0.04024144869215292,
+      "sy": 0.04024144869215292,
+      "visible": true
+    },
+    {
+      "id": "armario_pecas_loja",
+      "asset": "armario_pecas_loja",
+      "x": 238,
+      "y": 114.5,
+      "sx": 0.3870967741935484,
+      "sy": 0.3870967741935484,
+      "visible": true
+    },
+    {
+      "id": "pedra_amolar",
+      "asset": "pedra_amolar",
+      "x": 509.56962025316454,
+      "y": 177.84810126582278,
+      "sx": 0.40476190476190477,
+      "sy": 0.40476190476190477,
+      "visible": true
+    },
+    {
+      "id": "carvao_metal_frente",
+      "asset": "carvao_metal_frente",
+      "x": 430.52,
+      "y": 174.89,
+      "sx": 0.5666666666666667,
+      "sy": 0.5666071428571429,
+      "visible": true,
+      "effects": true,
+      "solid": true
+    },
+    {
+      "id": "painel_ferro_direita",
+      "asset": "painel_ferro_direita",
+      "x": 492.98734177215186,
+      "y": 91.6645569620253,
+      "sx": 0.43,
+      "sy": 0.43,
+      "visible": true
+    },
+    {
+      "id": "painel_ferro_fornalha",
+      "asset": "painel_ferro_fornalha",
+      "x": 315.1582278481013,
+      "y": 106.79113924050631,
+      "sx": 0.3,
+      "sy": 0.3,
+      "visible": true
+    },
+    {
+      "id": "lamparina_loja",
+      "asset": "lamparina_loja",
+      "x": 250.35443037974684,
+      "y": 74.01898734177217,
+      "sx": 0.01735895846249225,
+      "sy": 0.01735895846249225,
+      "visible": true,
+      "parent": "armario_pecas_loja"
+    },
+    {
+      "id": "floor-left",
+      "asset": "floor-left",
+      "x": 60,
+      "y": 119,
+      "sx": 229.5,
+      "sy": 156,
+      "visible": true
+    },
+    {
+      "id": "floor-right",
+      "asset": "floor-right",
+      "x": 289.5,
+      "y": 119,
+      "sx": 238,
+      "sy": 156,
+      "visible": true
+    },
+    {
+      "id": "floor-door",
+      "asset": "floor-door",
+      "x": 214.41228938297118,
+      "y": 265.10505480869153,
+      "sx": 62,
+      "sy": 54,
+      "visible": true
+    },
+    {
+      "id": "structure",
+      "asset": "structure",
+      "x": 24,
+      "y": 24,
+      "sx": 0.5,
+      "sy": 0.5,
+      "visible": true,
+      "wallShade": 0.98
+    },
+    {
+      "id": "window",
+      "asset": "window",
+      "x": 119,
+      "y": 56,
+      "sx": 0.5,
+      "sy": 0.5,
+      "visible": true
+    },
+    {
+      "id": "wall-panel-1",
+      "asset": "wall-panel-1",
+      "x": 89,
+      "y": 119,
+      "sx": 0.027751196172248804,
+      "sy": 0.058091286307053944,
+      "visible": true
+    },
+    {
+      "id": "wall-panel-2",
+      "asset": "wall-panel-2",
+      "x": 199.875,
+      "y": 119,
+      "sx": 0.028588516746411483,
+      "sy": 0.058091286307053944,
+      "visible": true
+    },
+    {
+      "id": "wall-panel-3",
+      "asset": "wall-panel-3",
+      "x": 259.625,
+      "y": 119,
+      "sx": 0.028588516746411483,
+      "sy": 0.058091286307053944,
+      "visible": true
+    },
+    {
+      "id": "wall-panel-4",
+      "asset": "wall-panel-4",
+      "x": 319.1875,
+      "y": 119,
+      "sx": 0.028409090909090908,
+      "sy": 0.058091286307053944,
+      "visible": true
+    },
+    {
+      "id": "wall-panel-5",
+      "asset": "wall-panel-5",
+      "x": 378.5625,
+      "y": 119,
+      "sx": 0.028409090909090908,
+      "sy": 0.058091286307053944,
+      "visible": true
+    },
+    {
+      "id": "wall-panel-6",
+      "asset": "wall-panel-6",
+      "x": 437.9375,
+      "y": 119,
+      "sx": 0.028409090909090908,
+      "sy": 0.058091286307053944,
+      "visible": true
+    },
+    {
+      "id": "wall-panel-7",
+      "asset": "wall-panel-7",
+      "x": 497.3125,
+      "y": 119,
+      "sx": 0.028409090909090908,
+      "sy": 0.058091286307053944,
+      "visible": true
+    },
+    {
+      "id": "soleira_pisos",
+      "asset": "soleira_pisos",
+      "x": 289.5,
+      "y": 275,
+      "sx": 0.06875,
+      "sy": 0.12177985948477751,
+      "visible": false
+    },
+    {
+      "id": "wall-edge-left",
+      "asset": "wall-edge-vertical",
+      "x": 54,
+      "y": 119,
+      "sx": 0.5,
+      "sy": 0.44571428571428573,
+      "visible": true,
+      "parent": "structure"
+    },
+    {
+      "id": "wall-edge-right",
+      "asset": "wall-edge-vertical",
+      "x": 527,
+      "y": 119,
+      "sx": 0.5,
+      "sy": 0.44571428571428573,
+      "visible": true,
+      "parent": "structure"
+    },
+    {
+      "id": "wall-edge-front-left",
+      "asset": "wall-edge-horizontal",
+      "x": 60,
+      "y": 275,
+      "sx": 1.54,
+      "sy": 0.375,
+      "visible": true,
+      "parent": "structure"
+    },
+    {
+      "id": "wall-edge-front-right",
+      "asset": "wall-edge-horizontal",
+      "x": 276,
+      "y": 275,
+      "sx": 2.51,
+      "sy": 0.375,
+      "visible": true,
+      "parent": "structure"
+    }
+  ]
+}

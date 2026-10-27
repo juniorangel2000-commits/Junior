@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>After Rain — Objetos do armazém do Augusto</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#202a29;color:#f6e7c8;font:16px system-ui,sans-serif}main{max-width:1460px;margin:auto;padding:24px}h1{font:700 27px Georgia,serif;margin:0 0 10px}p{line-height:1.55;margin:8px 0 18px;color:#d1c5ad}nav{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}button,a{font:inherit;color:#f6e7c8;background:#594531;border:1px solid #a18458;padding:9px 14px;border-radius:4px;text-decoration:none;cursor:pointer}button[aria-pressed=true]{background:#80623e}section[hidden]{display:none}#room{display:block;width:min(100%,1200px);margin:auto;image-rendering:pixelated;border:1px solid #927044;touch-action:none;background:#1b2422}#gallery{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.card{background:#2f3a36;border:1px solid #66705b;padding:10px;border-radius:5px}.card canvas{width:100%;height:auto;display:block;image-rendering:pixelated}.card strong{display:block;margin:8px 0;font-size:14px}.card a{padding:3px 8px;font-size:13px}.card small{display:block;color:#bdbbaa;font-size:12px;margin-top:7px}#reference img{width:min(100%,1100px);display:block;margin:auto;image-rendering:pixelated}#details{min-height:30px;margin:12px 0;color:#e2c68e}.note{font-size:14px}footer{margin-top:26px;color:#adad9f;font-size:13px}@media(max-width:900px){#gallery{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:550px){main{padding:14px}#gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+<main>
+<h1>Armazém do Augusto — objetos novos</h1>
+<p><span id="total">31</span> peças criadas do zero, em PNG independente. Parede na mesma cor da ferraria e seis novos móveis para o armazém.</p>
+<nav><button data-view="assembly" aria-pressed="true">Ver conjunto</button><button data-view="catalog" aria-pressed="false">Todos os objetos</button><button data-view="reference" aria-pressed="false">Referência recebida</button><a href="animacao.html">Animações do Augusto</a><button id="reset">Restaurar posições</button><button id="export">Salvar posições JSON</button><a href="manifest.json" download>Configuração dos sprites</a></nav>
+<section id="assembly"><canvas id="room" width="960" height="640" aria-label="Composição de desenvolvimento do armazém"></canvas><p id="details">Arraste as peças para conferir a composição. A seleção acompanha os acessórios apoiados no balcão ou na mesa.</p><p class="note">O piso reaproveita o material da ferraria. As paredes são apenas um guia de composição. A fachada original está preservada.</p></section>
+<section id="catalog" hidden><div id="gallery"></div><p class="note">O xadrez mostra a transparência real. Os arquivos originais mantêm resolução, detalhes e pixels gerados.</p></section>
+<section id="reference" hidden><img src="referencias/interior-original.png" alt="Interior original recebido para referência"><p class="note">Referência preservada sem edição. Nenhum objeto foi recortado desta imagem.</p></section>
+<footer>Biblioteca de desenvolvimento · Em revisão visual · Nenhum sprite existente foi substituído.</footer>
+</main>
+<script type="module">
+const manifest=await(await fetch('manifest.json')).json();
+document.querySelector('#total').textContent=manifest.objects.length;
+const images=new Map();
+const load=async(key,src)=>{const image=new Image();image.src=src;await image.decode();images.set(key,image);};
+await Promise.all([...manifest.objects.map(a=>load(a.id,a.file)),load('floor','materiais/piso-madeira.png'),load('augusto','materiais/augusto-down.png')]);
+const canvas=document.querySelector('#room'),ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;
+const original=manifest.objects.map(a=>({id:a.id,...a.recommendedPosition,scale:a.scale}));let pieces=structuredClone(original),selected=null;
+const asset=id=>manifest.objects.find(a=>a.id===id);
+function rect(p){const a=asset(p.id),b=a.visibleBoundsAlpha128;return{x:p.x-(b[2]-b[0])*p.scale/2,y:p.y-(b[3]-b[1])*p.scale,w:(b[2]-b[0])*p.scale,h:(b[3]-b[1])*p.scale};}
+const depth=p=>{const a=asset(p.id),layer=a.depth.previewLayer;return layer==='floor'?-1000:layer==='wall'?-500:a.supportId?(pieces.find(s=>s.id===a.supportId)?.y??p.y)+1:p.y;};
+const sorted=()=>[...pieces].sort((a,b)=>depth(a)-depth(b));
+function drawProp(context,p){const a=asset(p.id),img=images.get(p.id);context.drawImage(img,Math.round(p.x-a.origin.x*a.width*p.scale),Math.round(p.y-a.origin.y*a.height*p.scale),Math.round(a.width*p.scale),Math.round(a.height*p.scale));}
+function room(){ctx.clearRect(0,0,960,640);ctx.fillStyle='#202a29';ctx.fillRect(0,0,960,640);
+ ctx.fillStyle='#3a291d';ctx.fillRect(39,38,882,568);ctx.fillStyle=manifest.preview.wallColor;ctx.fillRect(55,53,850,140);
+ for(let y=193;y<584;y+=160)for(let x=55;x<905;x+=160){ctx.save();ctx.beginPath();ctx.rect(55,193,850,391);ctx.clip();ctx.drawImage(images.get('floor'),x,y,160,160);ctx.restore();}
+ ctx.fillStyle='#6a492a';ctx.fillRect(55,181,850,18);ctx.fillRect(55,53,850,14);ctx.fillRect(55,53,14,140);ctx.fillRect(891,53,14,140);
+ ctx.fillStyle='#39271d';for(const x of [55,277,679,891])ctx.fillRect(x,53,12,140);
+ ctx.fillStyle='#9c7245';ctx.fillRect(55,184,850,3);ctx.fillRect(55,193,5,391);ctx.fillRect(900,193,5,391);
+ // Augusto is a scale reference behind the counter, not an installed NPC routine.
+ let actorDrawn=false;for(const p of sorted()){if(!actorDrawn&&depth(p)>=263){ctx.drawImage(images.get('augusto'),455,213,50,50);actorDrawn=true;}drawProp(ctx,p);}
+ ctx.fillStyle='#33251c';ctx.fillRect(39,584,390,22);ctx.fillRect(531,584,390,22);
+ ctx.fillStyle='#caa368';ctx.fillRect(429,584,102,3);
+ if(selected){const r=rect(pieces.find(p=>p.id===selected));ctx.strokeStyle='#f0e19e';ctx.lineWidth=1;ctx.strokeRect(Math.floor(r.x)-2,Math.floor(r.y)-2,Math.ceil(r.w)+4,Math.ceil(r.h)+4);}
+}
+for(const a of manifest.objects){const card=document.createElement('div');card.className='card';const thumb=document.createElement('canvas');thumb.width=260;thumb.height=180;const c=thumb.getContext('2d');c.imageSmoothingEnabled=false;for(let y=0;y<180;y+=12)for(let x=0;x<260;x+=12){c.fillStyle=((x/12+y/12)%2)?'#c8c7b9':'#e0dfd1';c.fillRect(x,y,12,12);}const b=a.visibleBoundsAlpha128,s=Math.min(234/(b[2]-b[0]),156/(b[3]-b[1]));drawProp(c,{id:a.id,x:130,y:168,scale:s});const name=document.createElement('strong');name.textContent=a.name;const link=document.createElement('a');link.href=a.file;link.download=a.id+'.png';link.textContent='PNG original';const info=document.createElement('small');info.textContent=`${a.width} × ${a.height} · Em revisão`;card.append(thumb,name,link,info);document.querySelector('#gallery').append(card);}
+document.querySelectorAll('[data-view]').forEach(button=>button.onclick=()=>{for(const id of ['assembly','catalog','reference'])document.getElementById(id).hidden=id!==button.dataset.view;document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));});
+let drag=null;
+const point=e=>{const b=canvas.getBoundingClientRect();return{x:(e.clientX-b.left)*960/b.width,y:(e.clientY-b.top)*640/b.height};};
+canvas.onpointerdown=e=>{const m=point(e);const p=sorted().reverse().find(p=>{const r=rect(p);return m.x>=r.x&&m.x<=r.x+r.w&&m.y>=r.y&&m.y<=r.y+r.h;});selected=p?.id??null;if(p){drag={x:m.x,y:m.y};canvas.setPointerCapture(e.pointerId);document.querySelector('#details').textContent=asset(p.id).name+' · posição '+Math.round(p.x)+', '+Math.round(p.y);}room();};
+canvas.onpointermove=e=>{if(!drag||!selected)return;const m=point(e),p=pieces.find(p=>p.id===selected),dx=m.x-drag.x,dy=m.y-drag.y;for(const piece of pieces)if(piece===p||asset(piece.id).supportId===p.id){piece.x+=dx;piece.y+=dy;}drag=m;room();};
+canvas.onpointerup=()=>drag=null;canvas.onpointercancel=()=>drag=null;
+document.querySelector('#reset').onclick=()=>{pieces=structuredClone(original);selected=null;room();};
+document.querySelector('#export').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,npc:'augusto',previewOnly:true,pieces},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='After-Rain-Augusto-Composicao.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+room();window.augustoPreview={manifest,pieces:()=>pieces,render:room};
+</script>
+</html>

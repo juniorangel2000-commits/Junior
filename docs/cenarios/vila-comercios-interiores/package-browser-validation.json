@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "source": "dist extraído de app.asar do Windows x64",
+  "checks": [
+    "Carregar partida anterior no armazém",
+    "Editor disponível no build de desenvolvimento",
+    "Acervo independente com 31 objetos",
+    "Campos contextuais sem sobreposição",
+    "Compra e venda dentro do armazém",
+    "Recarregar e continuar partida"
+  ],
+  "errors": []
+}

@@ -8,7 +8,7 @@ export interface EditorTool {
   object?: EditorObjectKind;
 }
 export type EditorAction = 'undo' | 'redo' | 'zoom-out' | 'zoom-fit' | 'zoom-in'
-  | 'grid' | 'resources' | 'export' | 'load-draft' | 'apply' | 'cancel' | 'map-property' | 'map-forest';
+  | 'grid' | 'resources' | 'export' | 'load-draft' | 'apply' | 'cancel' | 'map-property' | 'map-forest' | 'map-village';
 export interface MapEditorCallbacks {
   action(action: EditorAction): void | Promise<void>;
   tool(tool: EditorTool): void;
@@ -120,7 +120,7 @@ export class MapEditorUI {
             <button type="button" data-action="resources" aria-pressed="false" title="Ocultar árvores, pedras, sucata e vegetação para editar os pisos">${icon('standingTree')}<span>Ocultar recursos</span></button>
             <button type="button" data-reference aria-expanded="false" aria-controls="map-editor-reference">${icon('map')}<span>Referência</span></button>
           </div>
-          <div class="me-command-group" role="group" aria-label="Trocar cenário em edição"><button type="button" data-action="map-property" data-map-area="property">Propriedade</button><button type="button" data-action="map-forest" data-map-area="forest">Floresta Antiga</button></div><span class="me-map-caption">96 × 72</span>
+          <div class="me-command-group" role="group" aria-label="Trocar cenário em edição"><button type="button" data-action="map-property" data-map-area="property">Propriedade</button><button type="button" data-action="map-forest" data-map-area="forest">Floresta Antiga</button><button type="button" data-action="map-village" data-map-area="village">Vila</button></div><span class="me-map-caption">96 × 72</span>
         </div>
       </header>
       <aside class="me-palette me-panel" aria-label="Ferramentas e elementos do mapa">

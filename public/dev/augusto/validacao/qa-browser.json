@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "objects": 31,
+  "browserErrors": [],
+  "wallRGBA": [
+    38,
+    48,
+    44,
+    255
+  ],
+  "checks": [
+    "31 PNGs carregados",
+    "Parede renderizada em RGB 38,48,44, igual à ferraria",
+    "Conjunto renderizado com transparência real",
+    "Arraste do balcão e seus 5 acessórios",
+    "Exportação JSON",
+    "Restaurar posições",
+    "Referência original acessível"
+  ]
+}

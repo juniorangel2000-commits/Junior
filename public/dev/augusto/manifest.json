@@ -1,0 +1,1539 @@
+{
+  "npc": "augusto",
+  "version": 2,
+  "collection": "novas-artes-independentes",
+  "preview": {
+    "width": 960,
+    "height": 640,
+    "draftArchitecture": true,
+    "wallColor": "#26302c",
+    "wallColorSource": "src/smith-finish.ts#SMITH_WALL_COLOR"
+  },
+  "objects": [
+    {
+      "id": "balcao_central",
+      "name": "Balcão central",
+      "file": "sprites/balcao_central.png",
+      "textureKey": "augusto-balcao_central",
+      "width": 1881,
+      "height": 836,
+      "origin": {
+        "x": 0.5,
+        "y": 0.8708133971291866
+      },
+      "visibleBoundsAlpha128": [
+        64,
+        170,
+        1817,
+        728
+      ],
+      "scale": 0.17113519680547631,
+      "recommendedPosition": {
+        "x": 480,
+        "y": 350
+      },
+      "collision": {
+        "x": 274.36,
+        "y": 605.24,
+        "width": 1332.28,
+        "height": 111.60000000000001
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": "comercio",
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "5f85b33c27c9539150ac82d6526edc720322baf44edf4fa5ba5b3bd5ec2dfebc",
+      "sourceSha256": "5f85b33c27c9539150ac82d6526edc720322baf44edf4fa5ba5b3bd5ec2dfebc",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 672190,
+        "visiblePixels": 880919,
+        "softAlphaPixels": 19407
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "balanca_balcoes",
+      "name": "Balança de pratos",
+      "file": "sprites/balanca_balcoes.png",
+      "textureKey": "augusto-balanca_balcoes",
+      "width": 1536,
+      "height": 1024,
+      "origin": {
+        "x": 0.5,
+        "y": 0.90625
+      },
+      "visibleBoundsAlpha128": [
+        286,
+        68,
+        1250,
+        928
+      ],
+      "scale": 0.04149377593360996,
+      "recommendedPosition": {
+        "x": 535,
+        "y": 280
+      },
+      "collision": null,
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "counter"
+      },
+      "supportId": "balcao_central",
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "1c3ae9b03d433ee00dd6b59be86a74a617f728f8cba4820510499953877030e8",
+      "sourceSha256": "1c3ae9b03d433ee00dd6b59be86a74a617f728f8cba4820510499953877030e8",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 1232822,
+        "visiblePixels": 297430,
+        "softAlphaPixels": 42612
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "livro_caixa",
+      "name": "Livro-caixa aberto",
+      "file": "sprites/livro_caixa.png",
+      "textureKey": "augusto-livro_caixa",
+      "width": 1536,
+      "height": 1024,
+      "origin": {
+        "x": 0.5003255208333334,
+        "y": 0.7744140625
+      },
+      "visibleBoundsAlpha128": [
+        221,
+        233,
+        1316,
+        793
+      ],
+      "scale": 0.038356164383561646,
+      "recommendedPosition": {
+        "x": 435,
+        "y": 277
+      },
+      "collision": null,
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "counter"
+      },
+      "supportId": "balcao_central",
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "04900d4e3c571550ae83d34888f0be80126dd66fdf838b7728eaaad440c8501f",
+      "sourceSha256": "04900d4e3c571550ae83d34888f0be80126dd66fdf838b7728eaaad440c8501f",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 1026559,
+        "visiblePixels": 529285,
+        "softAlphaPixels": 17020
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "estante_potes",
+      "name": "Estante de mantimentos",
+      "file": "sprites/estante_potes.png",
+      "textureKey": "augusto-estante_potes",
+      "width": 1536,
+      "height": 1024,
+      "origin": {
+        "x": 0.5003255208333334,
+        "y": 0.9296875
+      },
+      "visibleBoundsAlpha128": [
+        197,
+        85,
+        1340,
+        952
+      ],
+      "scale": 0.1845444059976932,
+      "recommendedPosition": {
+        "x": 480,
+        "y": 232
+      },
+      "collision": {
+        "x": 334.15999999999997,
+        "y": 761.26,
+        "width": 868.6800000000001,
+        "height": 173.4
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "4f7894d8d84ddacec2c0b2dd6c72baab8d37bc0a7fe63d4c981b65d5cb5d045a",
+      "sourceSha256": "4f7894d8d84ddacec2c0b2dd6c72baab8d37bc0a7fe63d4c981b65d5cb5d045a",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 629002,
+        "visiblePixels": 916907,
+        "softAlphaPixels": 26955
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "armario_fundos",
+      "name": "Armário de estoque",
+      "file": "sprites/armario_fundos.png",
+      "textureKey": "augusto-armario_fundos",
+      "width": 1312,
+      "height": 1199,
+      "origin": {
+        "x": 0.5003810975609756,
+        "y": 0.9407839866555463
+      },
+      "visibleBoundsAlpha128": [
+        222,
+        69,
+        1091,
+        1128
+      ],
+      "scale": 0.1323360184119678,
+      "recommendedPosition": {
+        "x": 760,
+        "y": 238
+      },
+      "collision": {
+        "x": 326.28,
+        "y": 895.02,
+        "width": 660.44,
+        "height": 211.8
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "2918f3bd5eafb308be836c96ad30b7287373fc476a1ad5733f1f7e16c96fad16",
+      "sourceSha256": "2918f3bd5eafb308be836c96ad30b7287373fc476a1ad5733f1f7e16c96fad16",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 738518,
+        "visiblePixels": 818045,
+        "softAlphaPixels": 16525
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "prateleira_lateral_esquerda",
+      "name": "Estante estreita de garrafas",
+      "file": "sprites/prateleira_lateral_esquerda.png",
+      "textureKey": "augusto-prateleira_lateral_esquerda",
+      "width": 1159,
+      "height": 1358,
+      "origin": {
+        "x": 0.5,
+        "y": 0.9020618556701031
+      },
+      "visibleBoundsAlpha128": [
+        205,
+        146,
+        954,
+        1225
+      ],
+      "scale": 0.14018691588785046,
+      "recommendedPosition": {
+        "x": 205,
+        "y": 244
+      },
+      "collision": {
+        "x": 294.88,
+        "y": 987.62,
+        "width": 569.24,
+        "height": 215.8
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "7b980c1cc00add40e9625250b2c05404fdf5d9a066ba6fe6e9cf8891e15922eb",
+      "sourceSha256": "7b980c1cc00add40e9625250b2c05404fdf5d9a066ba6fe6e9cf8891e15922eb",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 799356,
+        "visiblePixels": 756076,
+        "softAlphaPixels": 18490
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "sacos_graos",
+      "name": "Sacos de grãos",
+      "file": "sprites/sacos_graos.png",
+      "textureKey": "augusto-sacos_graos",
+      "width": 1536,
+      "height": 1024,
+      "origin": {
+        "x": 0.5065104166666666,
+        "y": 0.88671875
+      },
+      "visibleBoundsAlpha128": [
+        248,
+        142,
+        1308,
+        908
+      ],
+      "scale": 0.07735849056603773,
+      "recommendedPosition": {
+        "x": 113,
+        "y": 450
+      },
+      "collision": {
+        "x": 375.2,
+        "y": 739.48,
+        "width": 805.6,
+        "height": 153.20000000000002
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "7ac61fdd308f1258c9c0793c80710df6e5c42474c39bb5bf4f767a8e056834eb",
+      "sourceSha256": "7ac61fdd308f1258c9c0793c80710df6e5c42474c39bb5bf4f767a8e056834eb",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 981513,
+        "visiblePixels": 572762,
+        "softAlphaPixels": 18589
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "caixas_frutas",
+      "name": "Caixas de frutas",
+      "file": "sprites/caixas_frutas.png",
+      "textureKey": "augusto-caixas_frutas",
+      "width": 1536,
+      "height": 1024,
+      "origin": {
+        "x": 0.55078125,
+        "y": 0.923828125
+      },
+      "visibleBoundsAlpha128": [
+        281,
+        112,
+        1411,
+        946
+      ],
+      "scale": 0.09734513274336283,
+      "recommendedPosition": {
+        "x": 219,
+        "y": 488
+      },
+      "collision": {
+        "x": 416.6,
+        "y": 762.52,
+        "width": 858.8,
+        "height": 166.8
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "1f595d6b5369151ec40afa6847296d5906870bd62d20d80e28f56e1050415cd6",
+      "sourceSha256": "1f595d6b5369151ec40afa6847296d5906870bd62d20d80e28f56e1050415cd6",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 871995,
+        "visiblePixels": 680291,
+        "softAlphaPixels": 20578
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "frutas_hortalicas",
+      "name": "Caixas de hortaliças",
+      "file": "sprites/frutas_hortalicas.png",
+      "textureKey": "augusto-frutas_hortalicas",
+      "width": 1536,
+      "height": 1024,
+      "origin": {
+        "x": 0.5003255208333334,
+        "y": 0.7958984375
+      },
+      "visibleBoundsAlpha128": [
+        114,
+        225,
+        1423,
+        815
+      ],
+      "scale": 0.07639419404125286,
+      "recommendedPosition": {
+        "x": 700,
+        "y": 478
+      },
+      "collision": {
+        "x": 271.08,
+        "y": 685.2,
+        "width": 994.84,
+        "height": 118.0
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "table"
+      },
+      "supportId": "mesa_expositora",
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "e47710f61407e8c8e47abd48fd800c909c589ee59d79fc09e38b4aff70db3486",
+      "sourceSha256": "e47710f61407e8c8e47abd48fd800c909c589ee59d79fc09e38b4aff70db3486",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 945198,
+        "visiblePixels": 601319,
+        "softAlphaPixels": 26347
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "sacos_lateral_direita",
+      "name": "Pilha de sacos de estoque",
+      "file": "sprites/sacos_lateral_direita.png",
+      "textureKey": "augusto-sacos_lateral_direita",
+      "width": 1312,
+      "height": 1199,
+      "origin": {
+        "x": 0.5007621951219512,
+        "y": 0.9766472060050042
+      },
+      "visibleBoundsAlpha128": [
+        22,
+        33,
+        1292,
+        1171
+      ],
+      "scale": 0.07480314960629922,
+      "recommendedPosition": {
+        "x": 838,
+        "y": 430
+      },
+      "collision": {
+        "x": 174.4,
+        "y": 920.64,
+        "width": 965.2,
+        "height": 227.60000000000002
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "5d853e5408631a5fa7d7a031b47e28e22279aeba6f830b36b80e17b1352365e0",
+      "sourceSha256": "5d853e5408631a5fa7d7a031b47e28e22279aeba6f830b36b80e17b1352365e0",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 598668,
+        "visiblePixels": 949034,
+        "softAlphaPixels": 25386
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "tapete_central",
+      "name": "Tapete central verde",
+      "file": "sprites/tapete_central.png",
+      "textureKey": "augusto-tapete_central",
+      "width": 1882,
+      "height": 836,
+      "origin": {
+        "x": 0.5,
+        "y": 0.8588516746411483
+      },
+      "visibleBoundsAlpha128": [
+        32,
+        174,
+        1850,
+        718
+      ],
+      "scale": 0.16501650165016502,
+      "recommendedPosition": {
+        "x": 480,
+        "y": 520
+      },
+      "collision": null,
+      "depth": {
+        "mode": "floor",
+        "previewLayer": "floor"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "d2e325da20091341a4e792747eb299dacfcd5cd5d93d3c60ac5bedd5c829144b",
+      "sourceSha256": "d2e325da20091341a4e792747eb299dacfcd5cd5d93d3c60ac5bedd5c829144b",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 617886,
+        "visiblePixels": 928015,
+        "softAlphaPixels": 27451
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "placa_botanica",
+      "name": "Quadro botânico",
+      "file": "sprites/placa_botanica.png",
+      "textureKey": "augusto-placa_botanica",
+      "width": 1374,
+      "height": 1145,
+      "origin": {
+        "x": 0.5003639010189228,
+        "y": 0.9519650655021834
+      },
+      "visibleBoundsAlpha128": [
+        375,
+        58,
+        1000,
+        1090
+      ],
+      "scale": 0.06976744186046512,
+      "recommendedPosition": {
+        "x": 315,
+        "y": 139
+      },
+      "collision": null,
+      "depth": {
+        "mode": "wall",
+        "previewLayer": "wall"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "3737da6bbf3ba1704ddf213a6a9ccdfb9ce6029d7ad3bc95c3812d29b704990c",
+      "sourceSha256": "3737da6bbf3ba1704ddf213a6a9ccdfb9ce6029d7ad3bc95c3812d29b704990c",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 1059786,
+        "visiblePixels": 498670,
+        "softAlphaPixels": 14774
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "barril_canto",
+      "name": "Barril de madeira",
+      "file": "sprites/barril_canto.png",
+      "textureKey": "augusto-barril_canto",
+      "width": 1304,
+      "height": 1206,
+      "origin": {
+        "x": 0.4996165644171779,
+        "y": 0.9519071310116086
+      },
+      "visibleBoundsAlpha128": [
+        193,
+        96,
+        1110,
+        1148
+      ],
+      "scale": 0.07088331515812432,
+      "recommendedPosition": {
+        "x": 110,
+        "y": 350
+      },
+      "collision": {
+        "x": 303.03999999999996,
+        "y": 916.5600000000001,
+        "width": 696.92,
+        "height": 210.4
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "68a15805de2e446f4dff16e03de2e657367f6bbdd69da454f25dc660eade31bf",
+      "sourceSha256": "68a15805de2e446f4dff16e03de2e657367f6bbdd69da454f25dc660eade31bf",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 739330,
+        "visiblePixels": 819259,
+        "softAlphaPixels": 14035
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "enfeite_floral",
+      "name": "Vaso de flores brancas",
+      "file": "sprites/enfeite_floral.png",
+      "textureKey": "augusto-enfeite_floral",
+      "width": 1374,
+      "height": 1145,
+      "origin": {
+        "x": 0.5007278020378457,
+        "y": 0.9074235807860263
+      },
+      "visibleBoundsAlpha128": [
+        288,
+        173,
+        1088,
+        1039
+      ],
+      "scale": 0.05,
+      "recommendedPosition": {
+        "x": 596,
+        "y": 283
+      },
+      "collision": null,
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "counter"
+      },
+      "supportId": "balcao_central",
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "dd807ea4b7be123e520092aacb34d8f85e785b4190219e5177bddf0c98a26198",
+      "sourceSha256": "dd807ea4b7be123e520092aacb34d8f85e785b4190219e5177bddf0c98a26198",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 1093718,
+        "visiblePixels": 454548,
+        "softAlphaPixels": 24964
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "lamparina_parede",
+      "name": "Lanterna pendurada",
+      "file": "sprites/lamparina_parede.png",
+      "textureKey": "augusto-lamparina_parede",
+      "width": 1536,
+      "height": 1024,
+      "origin": {
+        "x": 0.5,
+        "y": 0.94921875
+      },
+      "visibleBoundsAlpha128": [
+        532,
+        9,
+        1004,
+        972
+      ],
+      "scale": 0.05192107995846314,
+      "recommendedPosition": {
+        "x": 117,
+        "y": 142
+      },
+      "collision": null,
+      "depth": {
+        "mode": "wall",
+        "previewLayer": "wall"
+      },
+      "supportId": null,
+      "interaction": "iluminacao",
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "41beddc16340e1174fa74c5c964cc138583aa91c9943652d594db47552cb3b92",
+      "sourceSha256": "41beddc16340e1174fa74c5c964cc138583aa91c9943652d594db47552cb3b92",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 1278376,
+        "visiblePixels": 280782,
+        "softAlphaPixels": 13706
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "escada_estoque",
+      "name": "Escada de estoque",
+      "file": "sprites/escada_estoque.png",
+      "textureKey": "augusto-escada_estoque",
+      "width": 1024,
+      "height": 1536,
+      "origin": {
+        "x": 0.50927734375,
+        "y": 0.974609375
+      },
+      "visibleBoundsAlpha128": [
+        237,
+        49,
+        806,
+        1497
+      ],
+      "scale": 0.070298769771529,
+      "recommendedPosition": {
+        "x": 296,
+        "y": 248
+      },
+      "collision": null,
+      "depth": {
+        "mode": "wall",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "a2b6c4586754377253044a314761a2c1effc1dcae9a8c5374ca324c8cb88efa0",
+      "sourceSha256": "a2b6c4586754377253044a314761a2c1effc1dcae9a8c5374ca324c8cb88efa0",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 1166340,
+        "visiblePixels": 356971,
+        "softAlphaPixels": 49553
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "banquinho",
+      "name": "Banquinho do armazém",
+      "file": "sprites/banquinho.png",
+      "textureKey": "augusto-banquinho",
+      "width": 1378,
+      "height": 1142,
+      "origin": {
+        "x": 0.5,
+        "y": 0.9045534150612959
+      },
+      "visibleBoundsAlpha128": [
+        209,
+        142,
+        1169,
+        1033
+      ],
+      "scale": 0.04479166666666667,
+      "recommendedPosition": {
+        "x": 600,
+        "y": 410
+      },
+      "collision": {
+        "x": 324.2,
+        "y": 836.98,
+        "width": 729.6,
+        "height": 178.20000000000002
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "b17cb94b84eac67c403de1c5883212b46c6c925d2ebe5cb06462d33c6ab2e8b5",
+      "sourceSha256": "b17cb94b84eac67c403de1c5883212b46c6c925d2ebe5cb06462d33c6ab2e8b5",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 927597,
+        "visiblePixels": 620591,
+        "softAlphaPixels": 25488
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "ervas_penduradas",
+      "name": "Varal de ervas",
+      "file": "sprites/ervas_penduradas.png",
+      "textureKey": "augusto-ervas_penduradas",
+      "width": 1536,
+      "height": 1024,
+      "origin": {
+        "x": 0.5,
+        "y": 0.8916015625
+      },
+      "visibleBoundsAlpha128": [
+        91,
+        111,
+        1445,
+        913
+      ],
+      "scale": 0.07385524372230429,
+      "recommendedPosition": {
+        "x": 669,
+        "y": 171
+      },
+      "collision": null,
+      "depth": {
+        "mode": "wall",
+        "previewLayer": "wall"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "f641e203170955f5041753623164c78fd074bc3a92e4361f094500a68e9397f2",
+      "sourceSha256": "f641e203170955f5041753623164c78fd074bc3a92e4361f094500a68e9397f2",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 862729,
+        "visiblePixels": 564274,
+        "softAlphaPixels": 145861
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "caixa_registro",
+      "name": "Caixa de troco",
+      "file": "sprites/caixa_registro.png",
+      "textureKey": "augusto-caixa_registro",
+      "width": 1536,
+      "height": 1024,
+      "origin": {
+        "x": 0.5006510416666666,
+        "y": 0.88671875
+      },
+      "visibleBoundsAlpha128": [
+        246,
+        111,
+        1292,
+        908
+      ],
+      "scale": 0.05771643663739021,
+      "recommendedPosition": {
+        "x": 367,
+        "y": 284
+      },
+      "collision": null,
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "counter"
+      },
+      "supportId": "balcao_central",
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "2cbb58f44dcb186eeaad9d4a1c3c02785803a217d862cb3794ab21e243c67e5b",
+      "sourceSha256": "2cbb58f44dcb186eeaad9d4a1c3c02785803a217d862cb3794ab21e243c67e5b",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 947440,
+        "visiblePixels": 606831,
+        "softAlphaPixels": 18593
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "mesa_expositora",
+      "name": "Mesa expositora",
+      "file": "sprites/mesa_expositora.png",
+      "textureKey": "augusto-mesa_expositora",
+      "width": 1536,
+      "height": 1024,
+      "origin": {
+        "x": 0.4996744791666667,
+        "y": 0.8857421875
+      },
+      "visibleBoundsAlpha128": [
+        59,
+        164,
+        1476,
+        907
+      ],
+      "scale": 0.09174311926605505,
+      "recommendedPosition": {
+        "x": 700,
+        "y": 505
+      },
+      "collision": {
+        "x": 229.04,
+        "y": 743.54,
+        "width": 1076.92,
+        "height": 148.6
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "45fbad0c476d9861c2d28e7b57e216b2c50b07760e37b92afec23012a1c03b86",
+      "sourceSha256": "45fbad0c476d9861c2d28e7b57e216b2c50b07760e37b92afec23012a1c03b86",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 781478,
+        "visiblePixels": 762716,
+        "softAlphaPixels": 28670
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "cesta_macas",
+      "name": "Cesta de maçãs",
+      "file": "sprites/cesta_macas.png",
+      "textureKey": "augusto-cesta_macas",
+      "width": 1342,
+      "height": 1172,
+      "origin": {
+        "x": 0.5007451564828614,
+        "y": 0.8848122866894198
+      },
+      "visibleBoundsAlpha128": [
+        122,
+        144,
+        1222,
+        1037
+      ],
+      "scale": 0.05909090909090909,
+      "recommendedPosition": {
+        "x": 321,
+        "y": 472
+      },
+      "collision": null,
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "8a667bb23642ec63c6799b16892c560c0799ad87e63ed86c3c54db4273f0bf0c",
+      "sourceSha256": "8a667bb23642ec63c6799b16892c560c0799ad87e63ed86c3c54db4273f0bf0c",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 797341,
+        "visiblePixels": 752340,
+        "softAlphaPixels": 23143
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "capacho_entrada",
+      "name": "Capacho de entrada",
+      "file": "sprites/capacho_entrada.png",
+      "textureKey": "augusto-capacho_entrada",
+      "width": 1536,
+      "height": 1024,
+      "origin": {
+        "x": 0.5006510416666666,
+        "y": 0.779296875
+      },
+      "visibleBoundsAlpha128": [
+        214,
+        236,
+        1324,
+        798
+      ],
+      "scale": 0.09009009009009009,
+      "recommendedPosition": {
+        "x": 480,
+        "y": 576
+      },
+      "collision": null,
+      "depth": {
+        "mode": "floor",
+        "previewLayer": "floor"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "106c58565f159638a17550ba3401869915948879d7d5cc6eaddef921404fb4e0",
+      "sourceSha256": "106c58565f159638a17550ba3401869915948879d7d5cc6eaddef921404fb4e0",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 965642,
+        "visiblePixels": 594783,
+        "softAlphaPixels": 12439
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "toalha_balcao",
+      "name": "Toalha do balcão",
+      "file": "sprites/toalha_balcao.png",
+      "textureKey": "augusto-toalha_balcao",
+      "width": 1774,
+      "height": 887,
+      "origin": {
+        "x": 0.5002818489289741,
+        "y": 0.8410372040586246
+      },
+      "visibleBoundsAlpha128": [
+        183,
+        164,
+        1592,
+        746
+      ],
+      "scale": 0.07523066004258339,
+      "recommendedPosition": {
+        "x": 480,
+        "y": 324
+      },
+      "collision": null,
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "counter"
+      },
+      "supportId": "balcao_central",
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "e5858c4490d440b1927e223cbb66084595cda2e60a2f51a1f9291c895f736d1f",
+      "sourceSha256": "e5858c4490d440b1927e223cbb66084595cda2e60a2f51a1f9291c895f736d1f",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 795286,
+        "visiblePixels": 757704,
+        "softAlphaPixels": 20548
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "caixote_vazio",
+      "name": "Caixote vazio",
+      "file": "sprites/caixote_vazio.png",
+      "textureKey": "augusto-caixote_vazio",
+      "width": 1536,
+      "height": 1024,
+      "origin": {
+        "x": 0.5,
+        "y": 0.9248046875
+      },
+      "visibleBoundsAlpha128": [
+        89,
+        86,
+        1447,
+        947
+      ],
+      "scale": 0.053019145802650956,
+      "recommendedPosition": {
+        "x": 111,
+        "y": 499
+      },
+      "collision": {
+        "x": 251.96,
+        "y": 757.58,
+        "width": 1032.08,
+        "height": 172.20000000000002
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "30a5f8f4589c83b5bbf2044befb291eb832a2e40aba15e2e851846320bd731bb",
+      "sourceSha256": "30a5f8f4589c83b5bbf2044befb291eb832a2e40aba15e2e851846320bd731bb",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 504510,
+        "visiblePixels": 1041671,
+        "softAlphaPixels": 26683
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "vaso_ervas",
+      "name": "Vaso de ervas verdes",
+      "file": "sprites/vaso_ervas.png",
+      "textureKey": "augusto-vaso_ervas",
+      "width": 1301,
+      "height": 1209,
+      "origin": {
+        "x": 0.5023059185242121,
+        "y": 0.9305210918114144
+      },
+      "visibleBoundsAlpha128": [
+        220,
+        104,
+        1087,
+        1125
+      ],
+      "scale": 0.05420991926182238,
+      "recommendedPosition": {
+        "x": 868,
+        "y": 520
+      },
+      "collision": null,
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "563fb83735cecd113dcb2c313d35fe42f79e081525e5848ff74eb3880aac2b57",
+      "sourceSha256": "563fb83735cecd113dcb2c313d35fe42f79e081525e5848ff74eb3880aac2b57",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 1032151,
+        "visiblePixels": 512856,
+        "softAlphaPixels": 27902
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "comoda_estoque",
+      "name": "Cômoda de estoque",
+      "file": "sprites/comoda_estoque.png",
+      "textureKey": "augusto-comoda_estoque",
+      "width": 1774,
+      "height": 887,
+      "origin": {
+        "x": 0.5,
+        "y": 0.8895152198421646
+      },
+      "visibleBoundsAlpha128": [
+        43,
+        138,
+        1731,
+        789
+      ],
+      "scale": 0.07701421800947868,
+      "recommendedPosition": {
+        "x": 230,
+        "y": 337
+      },
+      "collision": {
+        "x": 245.56,
+        "y": 645.78,
+        "width": 1282.88,
+        "height": 130.20000000000002
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "b87c3338ced2f81775a4845b8c59451edfc420a46dc151d864222baa13eac2a1",
+      "sourceSha256": "b87c3338ced2f81775a4845b8c59451edfc420a46dc151d864222baa13eac2a1",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 534394,
+        "visiblePixels": 1009265,
+        "softAlphaPixels": 29879
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "estante_sementes",
+      "name": "Gaveteiro de sementes",
+      "file": "sprites/estante_sementes.png",
+      "textureKey": "augusto-estante_sementes",
+      "width": 1024,
+      "height": 1536,
+      "origin": {
+        "x": 0.49951171875,
+        "y": 0.9381510416666666
+      },
+      "visibleBoundsAlpha128": [
+        15,
+        105,
+        1008,
+        1441
+      ],
+      "scale": 0.05840886203423968,
+      "recommendedPosition": {
+        "x": 96,
+        "y": 246
+      },
+      "collision": {
+        "x": 134.16,
+        "y": 1147.08,
+        "width": 754.6800000000001,
+        "height": 267.2
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "7fd6481948b66bba7e787e2f7748d7574be59d36a67e1887e8d45517d68ff6cd",
+      "sourceSha256": "7fd6481948b66bba7e787e2f7748d7574be59d36a67e1887e8d45517d68ff6cd",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 366657,
+        "visiblePixels": 1189778,
+        "softAlphaPixels": 16429
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "banco_espera",
+      "name": "Banco de espera",
+      "file": "sprites/banco_espera.png",
+      "textureKey": "augusto-banco_espera",
+      "width": 1882,
+      "height": 836,
+      "origin": {
+        "x": 0.5,
+        "y": 0.9078947368421053
+      },
+      "visibleBoundsAlpha128": [
+        41,
+        88,
+        1841,
+        759
+      ],
+      "scale": 0.07777777777777778,
+      "recommendedPosition": {
+        "x": 260,
+        "y": 568
+      },
+      "collision": {
+        "x": 257.0,
+        "y": 611.38,
+        "width": 1368.0,
+        "height": 134.20000000000002
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "9af9aacb552cd7121bf4052ba7866019416ed6b78c2be3f40d4f7ff4dee569b5",
+      "sourceSha256": "9af9aacb552cd7121bf4052ba7866019416ed6b78c2be3f40d4f7ff4dee569b5",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 675005,
+        "visiblePixels": 861525,
+        "softAlphaPixels": 36822
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "cadeira_augusto",
+      "name": "Cadeira do comerciante",
+      "file": "sprites/cadeira_augusto.png",
+      "textureKey": "augusto-cadeira_augusto",
+      "width": 1312,
+      "height": 1199,
+      "origin": {
+        "x": 0.4996189024390244,
+        "y": 0.932443703085905
+      },
+      "visibleBoundsAlpha128": [
+        316,
+        97,
+        995,
+        1118
+      ],
+      "scale": 0.061704211557296766,
+      "recommendedPosition": {
+        "x": 657,
+        "y": 270
+      },
+      "collision": {
+        "x": 397.48,
+        "y": 893.38,
+        "width": 516.04,
+        "height": 204.20000000000002
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "ae66638a7bd73f999142eebeacca9659499a19056777ff0fde27fbfca0e4d0c8",
+      "sourceSha256": "ae66638a7bd73f999142eebeacca9659499a19056777ff0fde27fbfca0e4d0c8",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 1082380,
+        "visiblePixels": 464001,
+        "softAlphaPixels": 26707
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "expositor_suprimentos",
+      "name": "Expositor de suprimentos",
+      "file": "sprites/expositor_suprimentos.png",
+      "textureKey": "augusto-expositor_suprimentos",
+      "width": 1135,
+      "height": 1386,
+      "origin": {
+        "x": 0.49911894273127755,
+        "y": 0.9285714285714286
+      },
+      "visibleBoundsAlpha128": [
+        71,
+        70,
+        1062,
+        1287
+      ],
+      "scale": 0.06559031281533804,
+      "recommendedPosition": {
+        "x": 850,
+        "y": 315
+      },
+      "collision": {
+        "x": 189.92000000000002,
+        "y": 1019.26,
+        "width": 753.16,
+        "height": 243.4
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "35aebc5addb5a02e42519de8cf0ceed6bb4e7a6a4df97be9d02d9d4f66528b12",
+      "sourceSha256": "35aebc5addb5a02e42519de8cf0ceed6bb4e7a6a4df97be9d02d9d4f66528b12",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 455559,
+        "visiblePixels": 1102466,
+        "softAlphaPixels": 15085
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    },
+    {
+      "id": "mesa_embalagem",
+      "name": "Mesa de embalagem",
+      "file": "sprites/mesa_embalagem.png",
+      "textureKey": "augusto-mesa_embalagem",
+      "width": 1312,
+      "height": 1199,
+      "origin": {
+        "x": 0.5003810975609756,
+        "y": 0.8623853211009175
+      },
+      "visibleBoundsAlpha128": [
+        50,
+        168,
+        1263,
+        1034
+      ],
+      "scale": 0.06595218466611706,
+      "recommendedPosition": {
+        "x": 680,
+        "y": 332
+      },
+      "collision": {
+        "x": 195.56,
+        "y": 843.48,
+        "width": 921.88,
+        "height": 173.20000000000002
+      },
+      "depth": {
+        "mode": "feet",
+        "previewLayer": "objects"
+      },
+      "supportId": null,
+      "interaction": null,
+      "status": "em_revisao",
+      "previewReady": true,
+      "gameReady": false,
+      "sourceKind": "new_independent_art",
+      "croppedFromInterior": false,
+      "pixelsChanged": 0,
+      "sha256": "cd50ca9c511b4232d59723d3a7e27d3c0545c56e640ec8a4054bddec59088fa1",
+      "sourceSha256": "cd50ca9c511b4232d59723d3a7e27d3c0545c56e640ec8a4054bddec59088fa1",
+      "technicalValidation": {
+        "rgba": true,
+        "fullyContainedAlpha128": true,
+        "transparentPixels": 770249,
+        "visiblePixels": 756944,
+        "softAlphaPixels": 45895
+      },
+      "review": "Arte independente completa. Validar proporções e acabamento no conjunto antes da integração ao jogo."
+    }
+  ],
+  "stats": {
+    "createdFromScratch": 31,
+    "addedThisRevision": 6,
+    "croppedFromReference": 0,
+    "nativePngsUnchanged": 31,
+    "pendingVisualReview": 31,
+    "existingAssetsReplaced": 0
+  },
+  "note": "Etapa de criação de objetos. A arquitetura da prévia é um guia; comércio, colisões e editor em jogo ainda não foram integrados."
+}

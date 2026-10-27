@@ -1,5 +1,5 @@
 import {describe,it,expect,vi,afterEach} from 'vitest';
-import {createSmithLayout,validSmithLayout,smithAsset,smithBlocked,smithConnected,smithFits,smithSpawn,smithDoor,smithNavigation,smithPieceVisible,moveSmithPiece,upgradeSmithFinish,smithFloorSeam,smithPieceDepth} from '../src/systems/smith-layout';
+import {createSmithLayout,createLegacySmithLayout,resolveSmithLayout,validSmithLayout,smithAsset,smithBlocked,smithConnected,smithFits,smithSpawn,smithDoor,smithNavigation,smithPieceVisible,moveSmithPiece,upgradeSmithFinish,smithFloorSeam,smithPieceDepth} from '../src/systems/smith-layout';
 import {createNewSave,saveGame,loadSave,validateSave,SAVE_KEY} from '../src/systems/save';
 import {BentoRoutine,validBentoRoutine} from '../src/systems/bento-routine';
 import {finishSmithPixel,finishSmithWindow} from '../src/smith-finish';
@@ -30,6 +30,8 @@ describe('editable faithful smith room',()=>{
  });
  it('recolors the window halo without changing enclosed wood',()=>{const data=new Uint8ClampedArray(5*5*4);for(let p=0;p<25;p++)data.set([240,208,151,255],p*4);for(const p of [6,7,8,11,13,16,17,18])data.set([30,20,10,255],p*4);data.set([170,110,60,255],12*4);const out=finishSmithWindow(data,5,5,1);expect([...out.slice(0,4)]).toEqual([38,48,44,255]);expect([...out.slice(48,52)]).toEqual([170,110,60,255]);});
  it('keeps objects mounted on any wall in front of its wooden moulding',()=>{const d=createSmithLayout(),lamp=d.pieces.find(p=>p.id==='lamparina')!;for(const id of ['lamparina','suporte_ferramentas_longas','armario_pecas_loja','painel_ferro_direita','painel_ferro_fornalha'])expect(smithAsset(id)!.layer).toBe('object');for(const wall of ['structure','wall-panel-1','wall-edge-left']){lamp.parent=wall;expect(smithPieceDepth(d,lamp)).toBeGreaterThan(smithPieceDepth(d,d.pieces.find(p=>p.id==='wall-edge-left')!));}});
+ it('adopts the author layout for untouched rooms without mutating the prior save',()=>{const old=createLegacySmithLayout(),before=structuredClone(old);expect(resolveSmithLayout(old)).toEqual(createSmithLayout());expect(old).toEqual(before);expect(resolveSmithLayout()).toEqual(createSmithLayout());});
+ it('preserves customized rooms and their individual animation/collision choices',()=>{const customized=createLegacySmithLayout();customized.pieces.find(p=>p.id==='window')!.x+=1;customized.pieces.find(p=>p.id==='lamparina')!.effects=false;expect(resolveSmithLayout(customized)).toEqual(customized);const room=createSmithLayout();expect(resolveSmithLayout(room)).toEqual(room);});
  it('moves supported objects together and hides their contents with the support',()=>{
   const d=createSmithLayout(),child=d.pieces.find(p=>p.parent)!;expect(child).toBeDefined();const p=d.pieces.find(p=>p.id===child.parent)!,x=child.x,y=child.y;
   moveSmithPiece(d,p.id,p.x+12,p.y+5);expect(child.x).toBe(x+12);expect(child.y).toBe(y+5);

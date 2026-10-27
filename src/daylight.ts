@@ -5,6 +5,7 @@ import { SolarShadows } from './solar-shadows';
 import { WINDOW_LIGHT_FRAGMENT } from './window-light-shader';
 import { windowLight } from './solar-light';
 import { drawHouseWindowGlow, HOUSE_WINDOW_LIGHTS } from './house-sprites';
+import {FixtureLighting} from './fixture-lighting';
 
 /** Lightweight color grading, shared by Canvas and WebGL, below the HTML HUD. */
 export class Daylight {
@@ -12,6 +13,7 @@ export class Daylight {
   readonly warmth: Phaser.GameObjects.Rectangle;
   readonly shader?: Phaser.GameObjects.Shader;
   private readonly shadows: SolarShadows;
+  private readonly fixtures:FixtureLighting;
   private readonly panes: Phaser.GameObjects.Image | Phaser.GameObjects.Graphics;
   private shown = true;
   private windows: Array<{ x: number; y: number }> = [];
@@ -19,6 +21,7 @@ export class Daylight {
     this.shade = scene.add.rectangle(0, 0, width, height, 0x182642).setOrigin(0).setDepth(5000).setAlpha(0);
     this.warmth = scene.add.rectangle(0, 0, width, height, 0xf3b56c).setOrigin(0).setDepth(5001).setAlpha(0);
     this.shadows = new SolarShadows(scene);
+    this.fixtures=new FixtureLighting(scene);
     const house = scene.children.list.find(o => (o as Phaser.GameObjects.Image).texture?.key === 'asset-house') as Phaser.GameObjects.Image | undefined;
     this.panes = house ? drawHouseWindowGlow(scene, house) ?? scene.add.graphics().setVisible(false)
       : scene.add.graphics().setVisible(false);
@@ -39,17 +42,18 @@ export class Daylight {
     }
   }
   contains(object: Phaser.GameObjects.GameObject): boolean {
-    return object === this.shade || object === this.warmth || object === this.shader || object === this.panes || !!object.getData('solar-shadow');
+    return object === this.shade || object === this.warmth || object === this.shader || object === this.panes || !!object.getData('solar-shadow')||this.fixtures.contains(object);
   }
   setVisible(visible: boolean): void {
     this.shown=visible;this.shade.setVisible(visible);this.warmth.setVisible(visible);
     if(!visible){this.shader?.setVisible(false);this.panes.setVisible(false);this.shadows.setVisible(false);}
   }
   destroy(): void {
-    this.shadows.destroy();this.shader?.destroy();
+    this.shadows.destroy();this.fixtures.destroy();this.shader?.destroy();
     this.shade.destroy();this.warmth.destroy();this.panes.destroy();
   }
   update(time: number, indoors = false): void {
+    this.fixtures.update(time);
     const settings = getVisualSettings();
     const light = daylightAt(time, settings.daylight ? settings.intensity : 0, indoors);
     this.shade.setAlpha(light.shade); this.warmth.setAlpha(light.warmth);

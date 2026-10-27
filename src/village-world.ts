@@ -17,14 +17,17 @@ import {getVisualSettings} from './visual-settings';
 import {setupVillageArt} from './village-art';
 import type {ResourceNode} from './types';
 import type {WorldEditorObject} from './world';
+import type {MapEditData} from './systems/map-editor';
+import {villageTreeId} from './data/village';
+import {terrainPaintAlpha,paintedWaterPoint} from './data/terrain-paint';
 
 const MAP_WIDTH=WORLD_WIDTH*TILE,MAP_HEIGHT=WORLD_HEIGHT*TILE;
 
 /** Bake crisp source materials, feathering their weights rather than blurring
  * pixels. Geometry is sampled on an 8px grid and interpolated below: movement
  * never reruns the expensive terrain generation. */
-function drawGround(scene:Phaser.Scene):void {
- const key='village-ground-v2';
+function drawGround(scene:Phaser.Scene,edits?:MapEditData,namespace='village'):void {
+ const key=namespace+'-ground-v3';if(scene.textures.exists(key))scene.textures.remove(key);
  if(!scene.textures.exists(key)){
   const canvas=document.createElement('canvas');canvas.width=MAP_WIDTH;canvas.height=MAP_HEIGHT;
   const c=canvas.getContext('2d')!,sprites=readTerrainSprites(scene);c.imageSmoothingEnabled=false;
@@ -49,6 +52,8 @@ function drawGround(scene:Phaser.Scene):void {
       const source=sources[m],at=source.rows[y]+source.cols[x];
       red+=source.pixels[at]*mixed[m];green+=source.pixels[at+1]*mixed[m];blue+=source.pixels[at+2]*mixed[m];
      }
+     const kind=edits?.terrain[`${Math.floor(x/32)},${Math.floor(y/32)}`];
+     if(kind){const names={grass:'grass',meadow:'meadow',forest:'forest',moss:'moss',forestPath:'forest',path:'path-dry',wetPath:'path-wet',water:'water',sand:'sand',soil:'soil',wood:'wood',paving:'paving'} as const;const source=sprites[names[kind]],at=((y%source.size)*source.size+x%source.size)*4,alpha=terrainPaintAlpha(edits!.terrain,x,y);red=red*(1-alpha)+source.pixels[at]*alpha;green=green*(1-alpha)+source.pixels[at+1]*alpha;blue=blue*(1-alpha)+source.pixels[at+2]*alpha;}
      const at=(y*MAP_WIDTH+x)*4;pixels.data[at]=red;pixels.data[at+1]=green;pixels.data[at+2]=blue;pixels.data[at+3]=255;
     }
    }
@@ -74,19 +79,19 @@ export class VillageWorld {
  private readonly fires:Phaser.GameObjects.Image[]=[];
  private shown=true;
  private readonly visibility=new Map<Phaser.GameObjects.GameObject,boolean>();
- constructor(private readonly scene:Phaser.Scene){
-  const before=new Set(scene.children.list);setupVillageArt(scene);drawGround(scene);
+ constructor(private readonly scene:Phaser.Scene,private readonly edits?:MapEditData,private readonly namespace='village'){
+  const before=new Set(scene.children.list);setupVillageArt(scene);drawGround(scene,edits,namespace);
   this.drawLake();this.drawTrees();this.drawBuildings();this.drawGardens();this.drawProps();
-  drawExitSign(scene,VILLAGE_EXIT,VILLAGE_ENTRY);
+  drawExitSign(scene,this.exit(),this.entry());
   this.environment=scene.children.list.filter(object=>!before.has(object));
-  for(let y=0;y<WORLD_HEIGHT;y++)for(let x=0;x<WORLD_WIDTH;x++)if(villageBlockedAt(x,y))this.solid.add(`${x},${y}`);
+  for(let y=0;y<WORLD_HEIGHT;y++)for(let x=0;x<WORLD_WIDTH;x++)if(villageBlockedAt(x,y,edits))this.solid.add(`${x},${y}`);
  }
- entry(){return VILLAGE_ENTRY;}
- exit(){return VILLAGE_EXIT;}
+ entry(){return this.edits?.points?.entry??VILLAGE_ENTRY;}
+ exit(){return this.edits?.points?.exit??VILLAGE_EXIT;}
  isBlocked=(x:number,y:number):boolean=>x<1||y<1||x>=WORLD_WIDTH-1||y>=WORLD_HEIGHT-1||this.solid.has(`${x},${y}`);
- isBlockedPoint=(x:number,y:number)=>villagePointBlocked(x,y);
- waterAt=(x:number,y:number):boolean=>villageWater(x,y);
- waterPointAt=(x:number,y:number):boolean=>villageLakeDistance(x/32,y/32)<0;
+ isBlockedPoint=(x:number,y:number)=>villagePointBlocked(x,y,this.edits);
+ waterAt=(x:number,y:number):boolean=>villageWater(x,y,this.edits);
+ waterPointAt=(x:number,y:number):boolean=>paintedWaterPoint(this.edits?.terrain,x,y,(x,y)=>villageLakeDistance(x/32,y/32)<0);
  resourceAt=(_x:number,_y:number):ResourceNode|undefined=>undefined;
  update(timeMs:number):void {if(Number.isFinite(timeMs))this.elapsed=timeMs;}
  setVisible(shown:boolean):void {
@@ -101,7 +106,7 @@ export class VillageWorld {
  updateLighting(time:number):void {
   if(!this.shown)return;
   const settings=getVisualSettings(),alpha=settings.daylight&&settings.dynamicLighting?windowLight(time)*settings.intensity:0;
-  for(const fire of this.fires)fire.setVisible(settings.dynamicLighting).setAlpha(settings.dynamicLighting?(.08+alpha*.24)*(.94+Math.sin(this.elapsed*.009)*.06):0);
+  for(const fire of this.fires)fire.setVisible(true).setAlpha(.48+Math.sin(this.elapsed*.012)*.12+Math.sin(this.elapsed*.021)*.06);
   for(const pane of this.windows)pane.setVisible(alpha>0).setAlpha(alpha*.88);
   for(let index=0;index<this.lamps.length;index++){
    const lamp=this.lamps[index],flicker=.96+Math.sin(this.elapsed*.002+index)*.025;
@@ -112,7 +117,7 @@ export class VillageWorld {
   this.smoke.forEach(plume=>plume.destroy());this.environment.forEach(object=>{if(object.active)object.destroy();});
  }
  private drawLake():void {
-  const key='village-lake-v2';
+  const key=this.namespace+'-lake-v3';if(this.scene.textures.exists(key))this.scene.textures.remove(key);
   if(!this.scene.textures.exists(key)){
    const sprites=readTerrainSprites(this.scene);if(!sprites)return;
    const canvas=document.createElement('canvas');canvas.width=608;canvas.height=768;
@@ -122,7 +127,8 @@ export class VillageWorld {
     const water=1-smooth((d+.16)/.32),wet=(1-smooth((d-.05)/.5))*(1-water);
     const a=sprites.water,b=sprites.sand,ai=((wy%a.size)*a.size+wx%a.size)*4,bi=((wy%b.size)*b.size+wx%b.size)*4;
     for(let channel=0;channel<3;channel++)pixels.data[at+channel]=a.pixels[ai+channel]*water+b.pixels[bi+channel]*(1-water-wet)+b.pixels[bi+channel]*.78*wet;
-    pixels.data[at+3]=Math.round(255*(1-smooth((d-.65)/.85)));
+    const kind=this.edits?.terrain[`${Math.floor(wx/32)},${Math.floor(wy/32)}`];const cover=kind&&kind!=='water'?terrainPaintAlpha(this.edits!.terrain,wx,wy):0;
+    pixels.data[at+3]=Math.round(255*(1-smooth((d-.65)/.85))*(1-cover));
    }
    c.putImageData(pixels,0,0);this.scene.textures.addCanvas(key,canvas)?.setFilter(0);
   }
@@ -130,11 +136,13 @@ export class VillageWorld {
   addWaterMotion(this.scene,this.waterAt,this.waterPointAt);
  }
  private drawTrees():void {
-  for(const tree of VILLAGE_TREES){
+  const originalIds=new Set(VILLAGE_TREES.map(villageTreeId));
+  const rows=[...VILLAGE_TREES.map(t=>({id:villageTreeId(t),...t})),...Object.entries(this.edits?.objects??{}).filter(([id,e])=>!originalIds.has(id)&&!e.removed&&natureArt(e.kind)).map(([id,e])=>({id,x:e.x,y:e.y,kind:e.kind!}))];
+  for(const original of rows){const edit=this.edits?.objects[original.id];if(edit?.removed)continue;const tree={...original,x:edit?.x??original.x,y:edit?.y??original.y};
    const art=natureArt(tree.kind)!;
    const sprite=this.scene.add.image(tree.x*TILE+16,tree.y*TILE+25,art.texture).setOrigin(.5,art.pivot)
     .setDisplaySize(art.width,art.height).setDepth(tree.y*TILE+25);
-   this.trees.push(sprite);this.editorObjects.push({id:`editor-${tree.kind}-village-${tree.x}-${tree.y}`,kind:tree.kind,x:tree.x,y:tree.y,texture:art.texture});
+   if(tree.kind.startsWith('oak')||tree.kind.startsWith('pine'))this.trees.push(sprite);this.editorObjects.push({id:original.id,kind:tree.kind,x:tree.x,y:tree.y,texture:art.texture});
   }
  }
  private drawBuildings():void {
@@ -146,9 +154,9 @@ export class VillageWorld {
     const layer=(key:string)=>this.scene.add.image(x,y,key).setOrigin(house.originX,house.originY).setScale(house.scaleX).setDepth(y+.1).setVisible(false);
     layer('village-blacksmith-floor').setDepth(-15).setVisible(true).setData('blacksmith-floor',true);
     layer('village-blacksmith-anvil').setDepth(blacksmithPoint(house,{x:930,y:1045}).y).setVisible(true).setData('blacksmith-anvil',true);
-    this.windows.push(layer('village-blacksmith-windows'));this.fires.push(layer('village-blacksmith-fire'));
+    this.windows.push(layer('village-blacksmith-windows'));const flame=layer('village-blacksmith-fire').setVisible(true).setData('fixture-light',{offsetX:(b.furnace.x-b.door.x)*b.scale,offsetY:(b.furnace.y-b.door.y)*b.scale,radius:90,always:true});this.fires.push(flame);
     for(const point of b.chimneys)this.smoke.push(drawHouseSmoke(this.scene,house,point,1/b.scale));
-    for(const point of [...b.lamps,b.furnace]){const p=blacksmithPoint(house,point),light=this.scene.add.graphics().setPosition(p.x,p.y).setDepth(5003).setBlendMode(Phaser.BlendModes.ADD).setVisible(false);for(let ring=4;ring>0;ring--)light.fillStyle(0xffc16f,.013).fillCircle(0,0,ring*13);this.lamps.push(light);}
+    for(const point of b.lamps){const p=blacksmithPoint(house,point);this.scene.add.zone(p.x,p.y,1,1).setData('fixture-light',{radius:65});}
     continue;
    }
    const house=this.scene.add.image(x,y,'asset-house').setOrigin(.5,HOUSE_FOOT.y/HOUSE_SPRITE_SIZE.height)
@@ -166,10 +174,7 @@ export class VillageWorld {
    if(prop.kind==='well'){
     if(this.scene.textures.exists('property-well-idle'))this.scene.add.image(x,y,'property-well-idle').setOrigin(.5,1).setScale(.49).setDepth(y);
    }else if(prop.kind==='lantern'){
-    this.scene.add.image(x,y,VILLAGE_LAMP.key).setOrigin(.5,1).setDepth(y).setData('village-street-lamp',true);
-    const glow=this.scene.add.graphics().setPosition(x,y+VILLAGE_LAMP.lightY).setDepth(5003).setBlendMode(Phaser.BlendModes.ADD).setVisible(false).setData('village-lamp-light',true);
-    for(let ring=6;ring>0;ring--){glow.fillStyle(0xf9d47b,.014).fillEllipse(0,-VILLAGE_LAMP.lightY+4,ring*26,ring*14);glow.fillStyle(0xffdc9b,.018).fillCircle(0,0,ring*3);}
-    glow.fillStyle(0xffe3a0,.5).fillCircle(0,0,4);this.lamps.push(glow);
+    this.scene.add.image(x,y,VILLAGE_LAMP.key).setOrigin(.5,1).setDepth(y).setData({'village-street-lamp':true,'fixture-light':{offsetY:VILLAGE_LAMP.lightY,radius:95}});
    }else{
     const sizes={bench:[62,44],barrel:[28,38],flowerpot:[29,36],woodpile:[54,38],crates:[38,54],sacks:[41,42],basket:[34,30],planter:[64,40],anvil:[46,46]} as const;
     const [w,h]=sizes[prop.kind];
@@ -179,12 +184,14 @@ export class VillageWorld {
  }
  private drawGardens():void {
   const place=(kind:string,x:number,y:number,scale=1)=>{
+   if(this.edits?.terrain[`${Math.floor(x+.5)},${Math.floor(y+.5)}`]!==undefined)return;
    const art=natureArt(kind);if(!art||villageDoorApproach(x,y)||VILLAGE_PROPS.some(p=>Math.hypot(x-p.x,y-p.y)<1.1)||villageBlockedAt(x,y)&&!art.water)return;
    this.scene.add.image(x*TILE+16,y*TILE+25,art.texture).setOrigin(.5,art.pivot).setDisplaySize(art.width*scale,art.height*scale).setDepth(y*TILE+25).setData('village-plant',true);
   };
   for(const fence of VILLAGE_FENCES)drawConnectedFence(this.scene,fence,VILLAGE_FENCES,1);
   for(const garden of VILLAGE_GARDENS)for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
    const x=garden.x+dx*1.3,y=garden.y+dy*1.25;
+   if(this.edits?.terrain[`${Math.floor(x+.5)},${Math.floor(y+.5)}`]!==undefined)continue;
    if(villageDoorApproach(x,y)||villageBlockedAt(x,y))continue;
    if(garden.kind==='crops'&&this.scene.textures.exists('crop-2'))this.scene.add.image(x*TILE+16,y*TILE+25,'crop-2').setOrigin(.5,1).setDisplaySize(26,32).setDepth(y*TILE+25);
    else place(garden.kind==='herbs'?(dx%2?'whiteFlowers':'fern'):'whiteFlowers',x,y,.85);

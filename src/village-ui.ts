@@ -11,6 +11,8 @@ import { itemIconUrl } from './visual-assets';
 import './village-ui.css';
 
 export interface VillageInteractionCallbacks {
+  canTrade?(npcId:VillageNPC['id']):boolean;
+  onGuide?(npcId:VillageNPC['id']):void;
   getPortrait?(npcId:string):string;
   onBlacksmith?():void;
   getServices?(npcId:string):VillageServiceOffer[];
@@ -153,7 +155,7 @@ export class VillageInteractionUI {
     const options: Array<[Tab, string]> = [['talk', 'Conversar']];
     if(this.npc.id==='bento'){const b=document.createElement('button');b.className='village-primary';b.textContent='Fundição, ferramentas e encomendas';b.dataset.openBlacksmith='';b.onclick=()=>this.callbacks.onBlacksmith?.();this.tabs.append(b);}
     if(this.callbacks.getServices?.(this.npc.id).length)options.push(['services','Serviços']);
-    if (available) options.push(['buy', this.npc.id==='bento'?'Comprar materiais':'Comprar'], ['sell', 'Vender']);
+    if (available&&(this.callbacks.canTrade?.(this.npc.id)??true)) options.push(['buy', this.npc.id==='bento'?'Comprar materiais':'Comprar'], ['sell', 'Vender']);
     for (const [tab, label] of options) {
       const button = document.createElement('button');
       button.type = 'button'; button.dataset.villageTab = tab; button.textContent = label;
@@ -201,6 +203,7 @@ export class VillageInteractionUI {
     const npc = this.npc;
     this.body.replaceChildren(); this.body.className = 'village-panel-body village-dialogue';
     const available = npc.merchantId && isMerchantOpen(npc.merchantId, this.day);
+    const inside=this.callbacks.canTrade?.(npc.id)??true;
     const emblem = this.emblem(npc.merchantId ? merchantEmblems[npc.merchantId] : 'fiber');
     emblem.classList.add('village-dialogue-emblem');
     const copy = document.createElement('div'); copy.className = 'village-dialogue-copy';
@@ -211,16 +214,19 @@ export class VillageInteractionUI {
     progress.textContent = `${Math.min(this.dialogueIndex + 1, npc.dialogue.length)} de ${npc.dialogue.length}`;
     const next = document.createElement('button'); next.type = 'button'; next.className = 'village-primary'; next.dataset.villageDialogueNext = '';
     const remaining = this.dialogueIndex < npc.dialogue.length - 1;
-    next.textContent = remaining ? 'Continuar conversa →' : available ? 'Ver a loja →' : 'Até mais';
+    next.textContent = remaining ? 'Continuar conversa →' : available&&inside ? 'Ver a loja →' : 'Até mais';
     next.addEventListener('click', () => {
       if (remaining) { this.dialogueIndex++; this.renderDialogue(); this.body.querySelector<HTMLButtonElement>('[data-village-dialogue-next]')?.focus(); }
-      else if (available) this.selectTab('buy');
+      else if (available&&inside) this.selectTab('buy');
       else this.close();
     });
-    actions.append(progress, next); copy.append(quote, actions); this.body.append(emblem, copy);
+    actions.append(progress, next);
+    if(available&&!inside&&this.callbacks.onGuide){const guide=document.createElement('button');guide.type='button';guide.className='village-primary';guide.dataset.guideToShop='';guide.textContent='Leve-me até sua loja';guide.onclick=()=>{this.close();this.callbacks.onGuide?.(npc.id);};actions.append(guide);const note=document.createElement('p');note.textContent='Compra e venda acontecem dentro da loja. Conversas e serviços continuam disponíveis aqui.';copy.append(note);}
+    copy.prepend(quote);copy.append(actions); this.body.append(emblem, copy);
   }
 
   private renderTrade(merchantId: MerchantId, side: TradeSide): void {
+    if(this.npc&&this.callbacks.canTrade?.(this.npc.id)===false){this.tab='talk';this.render();return;}
     const merchant = getMerchant(merchantId, this.day);
     if (!merchant || !isMerchantOpen(merchantId, this.day)) {
       this.tab = 'talk'; this.render(); this.report(merchantSchedule(merchantId), false); return;

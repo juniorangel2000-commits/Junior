@@ -1,0 +1,27 @@
+import type Phaser from 'phaser';
+import {MERCHANT_ROOM_ASSETS,merchantPieceVisible,createMerchantLayout} from './data/merchant-rooms';
+import {VILLAGE_NPCS} from './data/village';
+import type {ResidentId} from './systems/merchant-visit';
+import type {SmithLayout} from './systems/smith-layout';
+import type {SmithView} from './smith-layout-art';
+export function preloadMerchantRooms(scene:Phaser.Scene){for(const a of MERCHANT_ROOM_ASSETS)if(a.file)scene.load.image('merchant-room-'+a.id,'dev/augusto/'+a.file);}
+export function drawMerchantInterior(scene:Phaser.Scene,id:ResidentId,data:SmithLayout=createMerchantLayout(id)):SmithView{
+ const owned:Phaser.GameObjects.GameObject[]=[],sprites=new Map<string,Phaser.GameObjects.Image|Phaser.GameObjects.TileSprite>();const add=<T extends Phaser.GameObjects.GameObject>(o:T)=>{owned.push(o);return o;};
+ const frame=data.pieces.find(p=>p.id==='structure')!,shade=frame.wallShade??1,key='merchant-wall-'+Math.round(shade*1000);
+ if(!scene.textures.exists(key)){const texture=scene.textures.createCanvas(key,576,384)!,c=texture.getContext();c.fillStyle='#3a291d';c.fillRect(24,23,528,341);c.clearRect(33,116,510,234);c.clearRect(257,350,62,18);
+  c.fillStyle=`rgb(${[38,48,44].map((n,i)=>Math.round([183,163,123][i]*(1-shade)+n*shade)).join(',')})`;c.fillRect(33,32,510,84);c.fillStyle='#6a492a';c.fillRect(33,108,510,10);c.fillRect(33,32,510,8);for(const x of [33,166,407,535])c.fillRect(x,32,7,84);texture.refresh();texture.setFilter(0);}
+ for(const p of data.pieces){const a=MERCHANT_ROOM_ASSETS.find(a=>a.id===p.asset)!;
+  const image=a.tile?scene.add.tileSprite(p.x,p.y,p.sx,p.sy,'merchant-room-'+a.id).setOrigin(0).setTileScale(96/1254):scene.add.image(p.x,p.y,a.id==='structure'?key:'merchant-room-'+a.id).setOrigin(a.ox,a.oy).setScale(p.sx,p.sy);
+  add(image);sprites.set(p.id,image);image.setVisible(merchantPieceVisible(data,p.id)).setData('smithLayoutId',p.id);
+  image.setDepth(a.id==='structure'?-1000:a.tile?-990:a.layer==='floor'?-900:a.layer==='wall'?-600:p.parent?(data.pieces.find(b=>b.id===p.parent)!.y)+.1:p.y);
+  if(a.id==='lamparina_parede'&&p.effects!==false){const b=a.bounds,w=b[2]-b[0],h=b[3]-b[1];image.setData('fixture-light',{offsetX:(b[0]+w*.5-a.ox*a.w)*p.sx,offsetY:(b[1]+h*.65-a.oy*a.h)*p.sy,radius:60,always:true});}
+ }
+ const front=add(scene.add.graphics().setDepth(10000).setVisible(frame.visible));front.fillStyle(0x33251c).fillRect(24,350,233,14).fillRect(319,350,233,14);
+ const npc=VILLAGE_NPCS.find(n=>n.id===id)!;add(scene.add.text(288,14,npc.role+' · '+npc.name,{fontFamily:'Georgia',fontSize:'12px',color:'#f0dcba'}).setOrigin(.5).setDepth(10001));
+ let select:((id:string)=>void)|undefined,move:((id:string,x:number,y:number)=>void)|undefined;
+ const click=(_p:unknown,o:Phaser.GameObjects.Image)=>{const id=o.getData('smithLayoutId');if(id)select?.(id);};
+ const drag=(_pointer:unknown,o:Phaser.GameObjects.Image,x:number,y:number)=>{const id=o.getData('smithLayoutId'),p=data.pieces.find(p=>p.id===id);if(!p||!move)return;const dx=x-p.x,dy=y-p.y;const update=(id:string)=>{const piece=data.pieces.find(p=>p.id===id)!,sprite=sprites.get(id);sprite?.setPosition(piece.x+dx,piece.y+dy);for(const child of data.pieces)if(child.parent===id)update(child.id);};update(id);};
+ const end=(_p:unknown,o:Phaser.GameObjects.Image)=>{const id=o.getData('smithLayoutId');if(id)move?.(id,o.x,o.y);};
+ scene.input.on('gameobjectdown',click);scene.input.on('drag',drag);scene.input.on('dragend',end);
+ return{objects:owned,editing(enabled,onSelect,onMove){select=enabled?onSelect:undefined;move=enabled?onMove:undefined;for(const image of sprites.values())if(enabled){image.setInteractive({pixelPerfect:false});scene.input.setDraggable(image);}else{image.disableInteractive();scene.input.setDraggable(image,false);}},destroy(){scene.input.off('gameobjectdown',click);scene.input.off('drag',drag);scene.input.off('dragend',end);for(const o of owned)o.destroy();}};
+}

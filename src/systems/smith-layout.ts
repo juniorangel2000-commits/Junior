@@ -1,4 +1,5 @@
 import catalog from '../../public/dev/vila-v31/bento/novas-sprites.json';
+import authoredLayout from '../data/blacksmith-layout.json';
 
 export interface SmithPiece {id:string;asset:string;x:number;y:number;sx:number;sy:number;visible:boolean;parent?:string;solid?:boolean;effects?:boolean;wallShade?:number}
 export interface SmithLayout {version:1;finishRevision?:1;pieces:SmithPiece[]}
@@ -32,7 +33,8 @@ for(const [id,name,w,h,bounds]of [
 ] as const)assets.push({id:'preserved-'+id,name,file:'preservados-jogo/village/blacksmith-'+id+'.png',w,h,ox:.5,oy:1,bounds:[...bounds],layer:'object',collision:{x:bounds[0]+4,y:bounds[1]+(bounds[3]-bounds[1])*.76,width:bounds[2]-bounds[0]-8,height:(bounds[3]-bounds[1])*.2}});
 export const SMITH_ASSETS:readonly SmithAsset[]=assets;
 export const smithAsset=(id:string)=>assets.find(a=>a.id===id);
-export const createSmithLayout=():SmithLayout=>({version:1,finishRevision:1,pieces:structuredClone(defaults)});
+export const createLegacySmithLayout=():SmithLayout=>({version:1,finishRevision:1,pieces:structuredClone(defaults)});
+export const createSmithLayout=():SmithLayout=>structuredClone(authoredLayout) as SmithLayout;
 export function validSmithLayout(v:unknown):v is SmithLayout{
  if(!v||typeof v!=='object')return false;const d=v as SmithLayout;
  if(d.version!==1||d.finishRevision!==undefined&&d.finishRevision!==1||!Array.isArray(d.pieces)||d.pieces.length>140)return false;
@@ -74,4 +76,12 @@ export function smithPieceDepth(d:SmithLayout,p:SmithPiece):number{
  const a=smithAsset(p.asset)!;
  if(p.parent){const parent=d.pieces.find(a=>a.id===p.parent);if(parent){if(a.layer==='object'&&smithAsset(parent.asset)!.layer==='wall')return p.y;return smithPieceDepth(d,parent)+.1;}}
  return a.tile?-1000:a.layer==='floor'?-810:a.layer==='wall'?-500:a.layer==='front'?10000:p.y;
+}
+
+/** Adopt the author's new default only when the saved room was never customized. */
+export function resolveSmithLayout(saved?:SmithLayout):SmithLayout{
+ if(!saved)return createSmithLayout();
+ const d=upgradeSmithFinish(saved);
+ const comparable=(layout:SmithLayout)=>JSON.stringify([...layout.pieces].sort((a,b)=>a.id.localeCompare(b.id)).map(p=>({id:p.id,asset:p.asset,x:p.x,y:p.y,sx:p.sx,sy:p.sy,visible:p.visible,parent:p.parent??null,solid:p.solid??!!smithAsset(p.asset)?.collision,effects:p.effects!==false,wallShade:p.wallShade??(p.id==='structure'?.98:0)})));
+ return comparable(d)===comparable(createLegacySmithLayout())?createSmithLayout():d;
 }

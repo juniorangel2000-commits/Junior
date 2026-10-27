@@ -1,0 +1,20 @@
+{
+  "typescript": "passed",
+  "tests": 725,
+  "testFiles": 71,
+  "defaultBuild": "passed",
+  "authorBuild": "passed",
+  "browserChecks": 22,
+  "canvasFallback": true,
+  "augustoOriginalPngHashesVerified": 56,
+  "arrivalDifferentTile": {
+    "dx": 0,
+    "dy": 16,
+    "sameTile": false
+  },
+  "published": false,
+  "windowsPackageVersion": "0.10.0-preview.3",
+  "windowsPackageDistFilesVerified": 947,
+  "packagedBrowserChecks": 6,
+  "windowsNativeRuntimeTested": false
+}

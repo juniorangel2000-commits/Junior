@@ -1,0 +1,145 @@
+{
+  "checks": [
+    {
+      "name": "Conversa externa oferece condução opcional",
+      "passed": true
+    },
+    {
+      "name": "Compra e venda indisponíveis na rua",
+      "passed": true
+    },
+    {
+      "name": "Transação externa também bloqueada no comando",
+      "passed": true,
+      "detail": {
+        "ok": false,
+        "unchanged": true
+      }
+    },
+    {
+      "name": "Augusto caminha e espera ao lado da entrada",
+      "passed": true,
+      "detail": {
+        "waiting": true,
+        "steps": 10,
+        "x": 1098,
+        "y": 1040
+      }
+    },
+    {
+      "name": "Passagem física abre o interior do armazém",
+      "passed": true
+    },
+    {
+      "name": "Loja disponível dentro do próprio comércio",
+      "passed": true
+    },
+    {
+      "name": "Editor do armazém abre com peças independentes",
+      "passed": true
+    },
+    {
+      "name": "Edição do armazém salva posição real",
+      "passed": true
+    },
+    {
+      "name": "Editor oculta campos incompatíveis e título fica livre da HUD",
+      "passed": true,
+      "detail": {
+        "irrelevantHidden": true,
+        "titleUncovered": true
+      }
+    },
+    {
+      "name": "Serviços de Bento continuam disponíveis fora da loja",
+      "passed": true
+    },
+    {
+      "name": "Bento não vende materiais na rua",
+      "passed": true
+    },
+    {
+      "name": "Saída não coloca jogador e Bento na mesma posição",
+      "passed": true,
+      "detail": {
+        "dx": 0,
+        "dy": 16,
+        "sameTile": false
+      }
+    },
+    {
+      "name": "Iluminação real WebGL nas luminárias e fornalha",
+      "passed": true,
+      "detail": {
+        "visible": 13,
+        "gl": 0,
+        "shader": true
+      }
+    },
+    {
+      "name": "Opção de gráficos desliga todas as luzes dinâmicas",
+      "passed": true
+    },
+    {
+      "name": "Fornalha continua iluminada de dia",
+      "passed": true
+    },
+    {
+      "name": "Editor de mapas inclui os três cenários",
+      "passed": true
+    },
+    {
+      "name": "Pintura real da vila altera o rascunho",
+      "passed": true
+    },
+    {
+      "name": "Desfazer preserva o piso original",
+      "passed": true
+    },
+    {
+      "name": "Mapa e interior persistem após reiniciar a cena",
+      "passed": true,
+      "detail": {
+        "area": "village",
+        "x": 160,
+        "paint": "path"
+      }
+    },
+    {
+      "name": "Poste instalável e lanterna portátil recebem iluminação",
+      "passed": true,
+      "detail": {
+        "visible": 2
+      }
+    },
+    {
+      "name": "Lanterna interna e portátil acendem sem vazar o poste externo",
+      "passed": true,
+      "detail": {
+        "sources": [
+          {
+            "offsetX": 231,
+            "offsetY": 32,
+            "radius": 65,
+            "always": true
+          },
+          {
+            "radius": 90,
+            "always": true
+          }
+        ],
+        "visible": 2
+      }
+    },
+    {
+      "name": "Sem erros de execução ou shaders",
+      "passed": true,
+      "detail": {
+        "errors": [],
+        "consoleErrors": []
+      }
+    }
+  ],
+  "errors": [],
+  "consoleErrors": []
+}

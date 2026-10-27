@@ -234,9 +234,9 @@ export class ValleyScene extends Phaser.Scene {
     if(this.editingMap)return;
     const wasRunning=this.running,original=this.snapshotState(),base=wasRunning?original:loadSave()??createNewSave(DEFAULT_PROFILE);
     this.editingMap=true;this.paused=true;this.adminMenu?.close();this.cancelCrafting();this.toolUse.cancel();this.ui.showMapEditorMode();this.input.keyboard?.resetKeys();
-    this.scene.setVisible(false);this.scene.pause();this.scene.launch('Editor',{save:base,area:'property',onClose:(updated:SaveData|undefined,area:'property'|'forest')=>{
+    this.scene.setVisible(false);this.scene.pause();this.scene.launch('Editor',{save:base,area:'property',onClose:(updated:SaveData|undefined,area:'property'|'forest'|'village')=>{
       this.scene.resume();this.scene.setVisible(true);this.editingMap=false;this.loadState(updated??original);this.running=updated?true:wasRunning;this.paused=!this.running;
-      if(this.running){this.ui.showHUD();this.updateHUD();if(updated){this.persist();if(area==='forest')this.enterForest(updated);}}
+      if(this.running){this.ui.showHUD();this.updateHUD();if(updated){this.persist();if(area==='forest')this.enterForest(updated);else if(area==='village')this.enterVillage(updated);}}
       else this.ui.showTitle(hasSave());
     }});
   }
@@ -1288,7 +1288,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private updateHUD(): void {
-    this.state.crops=this.farming.crops;updateVillageEquipment(this,this.state,this.player);notifyReadyOrders(this.state,m=>this.ui.toast(m));markMinerals(this,this.world.resources);
+    this.state.crops=this.farming.crops;updateVillageEquipment(this,this.state,this.player,this.inHome);notifyReadyOrders(this.state,m=>this.ui.toast(m));markMinerals(this,this.world.resources);
     if (this.inHome) {
       const playerTile = { x: Math.floor(this.player.x / TILE), y: Math.floor(this.player.y / TILE) };
       const bed = this.home.bedNear(playerTile, 1.1);

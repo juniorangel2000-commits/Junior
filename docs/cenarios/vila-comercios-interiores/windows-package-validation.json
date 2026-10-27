@@ -1,0 +1,18 @@
+{
+  "version": "0.10.0-preview.3",
+  "portable": {
+    "bytes": 229781752,
+    "machine": "0x14c",
+    "sha256": "ba0967edd75d73d3faf0b61684e7ca463193a8d0326a07059551ab65a69d1f00"
+  },
+  "app": {
+    "bytes": 246588928,
+    "machine": "0x8664",
+    "sha256": "20d76020e03ab9e7379e692eeb99d2fce8f06bacd16e7f5438e28022f288d96b"
+  },
+  "distFilesVerified": 947,
+  "desktopFilesVerified": 2,
+  "developmentEditorsIncluded": true,
+  "windowsRuntimeExecuted": false,
+  "published": false
+}

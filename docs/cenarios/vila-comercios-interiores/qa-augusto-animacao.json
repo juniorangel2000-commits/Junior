@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "images": 56,
+  "directions": 8,
+  "walkFramesPerDirection": 6,
+  "errors": []
+}

@@ -1,6 +1,7 @@
 import { NATURE_KINDS, natureArt } from '../data/nature-catalog';
 import { FOREST_ANIMALS } from '../data/ancient-forest';
 import { isBridgeTile, isFarmTile, WORLD_HEIGHT, WORLD_WIDTH } from '../data/regions';
+import {villageBuildingAt,villageDoorApproach,villagePropAt} from '../data/village';
 
 export const MAP_EDIT_VERSION = 1;
 export const MAP_DRAFT_KEY = 'after-rain-map-editor-draft-v1';
@@ -22,7 +23,7 @@ export interface MapObjectEdit {
 export interface MapEditData {
   version: 1;
   continuation?:1;
-  area?: 'forest';
+  area?: 'forest'|'village';
   points?: {entry?: {x:number;y:number};exit?: {x:number;y:number}};
   width: typeof WORLD_WIDTH;
   height: typeof WORLD_HEIGHT;
@@ -43,9 +44,10 @@ const validCell = (x: unknown, y: unknown): boolean => typeof x === 'number' && 
   && x >= 1 && x < WORLD_WIDTH - 1 && y >= 1 && y < WORLD_HEIGHT - 1;
 
 /** Keep fixed gameplay entrances and landmarks intact while editing their surroundings. */
-export function isProtectedMapTile(x: number, y: number, area?: 'forest'): boolean {
+export function isProtectedMapTile(x: number, y: number, area?: 'forest'|'village'): boolean {
   if (!validCell(x, y)) return true;
   if(area==='forest')return FOREST_ANIMALS.some(a=>Math.abs(a.x-x)<=1&&Math.abs(a.y-y)<=1);
+  if(area==='village')return !!villageBuildingAt(x,y)||villageDoorApproach(x,y)||villagePropAt(x,y);
   const houseAndPorch = x >= 20 && x <= 28 && y >= 9 && y <= 17;
   const arrival = x >= 24 && x <= 26 && y >= 18 && y <= 19;
   return houseAndPorch || arrival || isFarmTile(x, y) || isBridgeTile(x, y)
@@ -53,7 +55,7 @@ export function isProtectedMapTile(x: number, y: number, area?: 'forest'): boole
 }
 
 /** Dry floor changes preserve access while objects still keep their old reservations. */
-export function isProtectedTerrainTile(x:number,y:number,area?:'forest',terrain?:TerrainKind):boolean {
+export function isProtectedTerrainTile(x:number,y:number,area?:'forest'|'village',terrain?:TerrainKind):boolean {
   if (!validCell(x,y)) return true;
   if (!area && ((x>=20 && x<=28 && y>=16 && y<=19) || isFarmTile(x,y))) return terrain==='water';
   return isProtectedMapTile(x,y,area);
@@ -85,7 +87,7 @@ export function editorObjectKind(id: string): EditorObjectKind | null {
   return original && validCell(Number(original[2]), Number(original[3])) ? original[1] as EditorObjectKind : null;
 }
 
-export function emptyMapEdits(area?: 'forest'): MapEditData {
+export function emptyMapEdits(area?: 'forest'|'village'): MapEditData {
   return { version: MAP_EDIT_VERSION, width: WORLD_WIDTH, height: WORLD_HEIGHT, terrain: {}, objects: {}, ...(area?{area}:{}) };
 }
 
@@ -94,13 +96,13 @@ export function validateMapEdits(value: unknown): value is MapEditData {
   try {
     if (!plainRecord(value) || !keysAre(value, ['version', 'width', 'height', 'terrain', 'objects','area','points','continuation'])
       || (value.continuation!==undefined&&value.continuation!==1)
-      || (value.area!==undefined&&value.area!=='forest')
+      || (value.area!==undefined&&value.area!=='forest'&&value.area!=='village')
       || value.version !== MAP_EDIT_VERSION || value.width !== WORLD_WIDTH || value.height !== WORLD_HEIGHT
       || !plainRecord(value.terrain) || !plainRecord(value.objects)) return false;
     if (Object.keys(value.terrain).length > MAX_CELLS || Object.keys(value.objects).length > MAX_CELLS) return false;
     for (const [key, terrain] of Object.entries(value.terrain)) {
       const match = TILE_KEY.exec(key);
-      if (!match || isProtectedTerrainTile(Number(match[1]), Number(match[2]),value.area as 'forest'|undefined,terrain as TerrainKind)
+      if (!match || isProtectedTerrainTile(Number(match[1]), Number(match[2]),value.area as 'forest'|'village'|undefined,terrain as TerrainKind)
         || !MAP_TERRAIN_KINDS.includes(terrain as TerrainKind)) return false;
     }
     if(value.points!==undefined){
@@ -111,7 +113,7 @@ export function validateMapEdits(value: unknown): value is MapEditData {
     for (const [id, object] of Object.entries(value.objects)) {
       const kind = editorObjectKind(id);
       if (!kind || !plainRecord(object) || !keysAre(object, ['x', 'y', 'kind', 'removed'])
-        || !validCell(object.x, object.y) || isProtectedMapTile(object.x as number, object.y as number,value.area as 'forest'|undefined)
+        || !validCell(object.x, object.y) || isProtectedMapTile(object.x as number, object.y as number,value.area as 'forest'|'village'|undefined)
         || (own(object, 'removed') && typeof object.removed !== 'boolean')) return false;
       if (id.startsWith('editor-') ? object.kind !== kind : own(object, 'kind')) return false;
       if (!object.removed) {
@@ -193,9 +195,9 @@ export class MapEditHistory {
 }
 
 /** A draft is independent from the live save and can be exported if storage is full. */
-export function loadMapDraft(storage?: Pick<Storage, 'getItem'>,area?:'forest'): MapEditData | null {
+export function loadMapDraft(storage?: Pick<Storage, 'getItem'>,area?:'forest'|'village'): MapEditData | null {
   try {
-    const text = (storage ?? localStorage).getItem(MAP_DRAFT_KEY+(area?'-forest':''));
+    const text = (storage ?? localStorage).getItem(MAP_DRAFT_KEY+(area?'-'+area:''));
     return text === null ? null : parseMapEdits(text);
   } catch { return null; }
 }
@@ -203,7 +205,7 @@ export function loadMapDraft(storage?: Pick<Storage, 'getItem'>,area?:'forest'):
 export function saveMapDraft(data: MapEditData, storage?: Pick<Storage, 'setItem'>): boolean {
   try {
     if (!validateMapEdits(data)) return false;
-    (storage ?? localStorage).setItem(MAP_DRAFT_KEY+(data.area?'-forest':''), JSON.stringify(cloneMapEdits(data)));
+    (storage ?? localStorage).setItem(MAP_DRAFT_KEY+(data.area?'-'+data.area:''), JSON.stringify(cloneMapEdits(data)));
     return true;
   } catch { return false; }
 }

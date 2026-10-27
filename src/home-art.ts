@@ -268,7 +268,7 @@ export interface HomeView {
 export interface HomeFurnitureArt {key:string;w:number;h:number;offsetX?:number;offsetY?:number;depth?:number}
 export function drawHome(scene: Phaser.Scene, data: HomeData, resolveArt?:(piece:HomeFurniture)=>HomeFurnitureArt): HomeView {
   createHomeArt(scene);
-  const objects = [scene.add.image(0, 0, `home-room-${data.floor}-${data.wall}`).setOrigin(0).setDepth(-1000)];
+  const objects = [scene.add.image(0, 0, `home-room-${data.floor}-${data.wall}`).setOrigin(0).setDepth(-1000).setData('fixture-light',{offsetX:231,offsetY:32,radius:65,always:true})];
   for (const piece of data.furniture) {
     const definition = FURNITURE_CATALOG[piece.kind];
     const bottom = (piece.y + definition.height) * HOME_TILE;

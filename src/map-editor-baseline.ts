@@ -7,6 +7,7 @@ import type {WorldEditorObject} from './world';
 /** Keep the import validator's implicit objects in the same order as world
  * generation. The full original map is still used separately to validate IDs. */
 export function editorBaselineObjects(original:readonly WorldEditorObject[],data:MapEditData):WorldEditorObject[] {
+  if(data.area==='village')return original.filter(o=>!o.depleted);
   const continuation=hasMapSeam(data),area=data.area??'property';
   const explicitCells=new Set(Object.entries(data.objects)
     .filter(([id,edit])=>id.startsWith('editor-')&&!edit.removed)

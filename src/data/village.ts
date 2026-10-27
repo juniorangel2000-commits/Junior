@@ -1,7 +1,9 @@
-import {cottageSolidPoint,wellFootprint} from './architecture-collision';
+import {cottageSolidPoint,cottageSolidTile,wellFootprint} from './architecture-collision';
 import {blacksmithBlockedPoint} from './blacksmith-house';
 import {TILE,WORLD_WIDTH,WORLD_HEIGHT} from './world-size';
 import type {NatureKind} from './nature-catalog';
+import {natureArt} from './nature-catalog';
+import type {MapEditData} from '../systems/map-editor';
 
 export const VILLAGE_LAKE={x:87,y:44,rx:5.8,ry:7.5};
 export function villageLakeDistance(x:number,y:number):number {
@@ -9,7 +11,7 @@ export function villageLakeDistance(x:number,y:number):number {
  const angle=Math.atan2(v,u),shore=.065*Math.sin(angle*3+.4)+.045*Math.cos(angle*5-.8)+.018*Math.sin(angle*9);
  return (Math.hypot(u,v)-1-shore)*VILLAGE_LAKE.rx;
 }
-export const villageWater=(x:number,y:number)=>villageLakeDistance(x+.5,y+.5)<0;
+export const villageWater=(x:number,y:number,edits?:MapEditData)=>{const kind=edits?.terrain[`${x},${y}`];return kind?kind==='water':villageLakeDistance(x+.5,y+.5)<0;};
 export const VILLAGE_NAME='Vila do Recomeço';
 export const VILLAGE_ENTRY={x:2,y:52} as const;
 export const VILLAGE_EXIT={x:1,y:52} as const;
@@ -138,7 +140,7 @@ export function villageGround(x:number,y:number):'grass'|'forest'|'path'|'paving
 export function villageBuildingAt(x:number,y:number):VillageBuilding|undefined {
  return VILLAGE_BUILDINGS.find(b=>b.shop==='blacksmith'
   ? blacksmithBlockedPoint((x+.5)*32,(y+.5)*32,b)
-  :x>=b.x-3&&x<=b.x+3&&y>=b.y-3&&y<=b.y);
+  :cottageSolidTile(x,y,{x:(b.x+.5)*32,y:b.y*32+25}));
 }
 const hash=(x:number,y:number):number=>(Math.imul(x+83,73856093)^Math.imul(y+37,19349663))>>>0;
 export interface VillageTree {x:number;y:number;kind:NatureKind}
@@ -206,16 +208,19 @@ export const VILLAGE_SHORE_DETAILS:readonly {kind:'reeds'|'shoreStones';x:number
  }
  return result;
 })();
-export function villageSceneryBlockedAt(x:number,y:number):boolean {
- return villageWater(x,y)||x<1||y<1||x>=WORLD_WIDTH-1||y>=WORLD_HEIGHT-1
-  ||VILLAGE_TREES.some(t=>t.x===x&&t.y===y)
-  ||villagePropAt(x,y)||VILLAGE_SHORE_DETAILS.some(p=>p.kind==='shoreStones'&&p.x===x&&p.y===y)||VILLAGE_FENCES.some(p=>p.x===x&&p.y===y);
+export const villageTreeId=(t:VillageTree)=>`editor-${t.kind}-village-${t.x}-${t.y}`;
+const villageTreeIds=new Set(VILLAGE_TREES.map(villageTreeId));
+export function villageSceneryBlockedAt(x:number,y:number,includeWell=true,edits?:MapEditData):boolean {
+ return villageWater(x,y,edits)||x<1||y<1||x>=WORLD_WIDTH-1||y>=WORLD_HEIGHT-1
+  ||VILLAGE_TREES.some(t=>{const e=edits?.objects[villageTreeId(t)];return !e?.removed&&(e?.x??t.x)===x&&(e?.y??t.y)===y;})
+  ||Object.entries(edits?.objects??{}).some(([id,e])=>!e.removed&&e.x===x&&e.y===y&&natureArt(e.kind)?.solid&&!villageTreeIds.has(id))
+  ||(includeWell?villagePropAt(x,y):VILLAGE_PROPS.some(p=>p.kind!=='well'&&p.y===y&&Math.abs(p.x-x)<=(p.kind==='bench'||p.kind==='woodpile'||p.kind==='planter'?1:0)))||VILLAGE_SHORE_DETAILS.some(p=>p.kind==='shoreStones'&&p.x===x&&p.y===y)||VILLAGE_FENCES.some(p=>p.x===x&&p.y===y);
 }
-export const villageBlockedAt=(x:number,y:number)=>villageSceneryBlockedAt(x,y)||!!villageBuildingAt(x,y);
-export function villagePointBlocked(x:number,y:number):boolean{
+export const villageBlockedAt=(x:number,y:number,edits?:MapEditData)=>villageSceneryBlockedAt(x,y,true,edits)||!!villageBuildingAt(x,y);
+export function villagePointBlocked(x:number,y:number,edits?:MapEditData):boolean{
  const tx=Math.floor(x/32),ty=Math.floor(y/32);
- const propWell=villageWellTile(tx,ty);const scenery=villageSceneryBlockedAt(tx,ty);
+ const scenery=villageSceneryBlockedAt(tx,ty,false,edits);
  const well=VILLAGE_PROPS.find(p=>p.kind==='well'&&Math.abs(p.x-tx)<=2&&Math.abs(p.y-ty)<=3);
- return (scenery&&!propWell)||(!!well&&wellFootprint(x,y,{x:(well.x+.5)*32,y:well.y*32+25},.49))||VILLAGE_BUILDINGS.some(b=>b.shop==='blacksmith'?blacksmithBlockedPoint(x,y,b):cottageSolidPoint(x,y,{x:(b.x+.5)*32,y:b.y*32+25}));
+ return scenery||(!!well&&wellFootprint(x,y,{x:(well.x+.5)*32,y:well.y*32+25},.49))||VILLAGE_BUILDINGS.some(b=>b.shop==='blacksmith'?blacksmithBlockedPoint(x,y,b):cottageSolidPoint(x,y,{x:(b.x+.5)*32,y:b.y*32+25}));
 }
 export const villagePixelPoint=(point:{x:number;y:number})=>({x:(point.x+.5)*TILE,y:(point.y+.5)*TILE});

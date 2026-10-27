@@ -79,7 +79,8 @@ export class MapEditor {
       brush: size => { this.brush = size; this.drawCursor(); },
       import: text => this.importMap(text),
     });
-    this.ui.element.querySelector('h1')!.textContent=initial.area==='forest'?'Editor · Floresta Antiga':'Editor · Propriedade';
+    this.ui.element.querySelector('h1')!.textContent=initial.area==='village'?'Editor · Vila':initial.area==='forest'?'Editor · Floresta Antiga':'Editor · Propriedade';
+    if(initial.area==='village')this.status='Edite os pisos e a vegetação da vila. As casas e passagens das lojas ficam protegidas.';
     if(initial.area==='forest')this.status='Edite a floresta. As clareiras dos animais ficam protegidas.';
     for(const button of this.ui.element.querySelectorAll<HTMLButtonElement>('[data-map-area]')){button.disabled=!adapter.switchArea||button.dataset.mapArea===(initial.area??'property');button.setAttribute('aria-pressed',String(button.dataset.mapArea===(initial.area??'property')));}
     this.createGuides();
@@ -347,7 +348,7 @@ export class MapEditor {
     const occupied = new Set<string>();
     for (const object of resolved.values()) {
       const cell = key(object);
-      if(object.kind==='reeds'&&(data.area==='forest'||!nearRiverBank(object.x,object.y)))return 'Os juncos precisam ficar nas margens do rio da propriedade.';
+      if(object.kind==='reeds'&&(data.area==='forest'||!data.area&&!nearRiverBank(object.x,object.y)))return 'Os juncos precisam ficar nas margens do rio da propriedade.';
       if(isTreeKind(object.kind)&&!treeGroundClear(object.x,object.y,(px,py)=>{
         return paintedWaterPoint(data.terrain,px,py,(x,y)=>this.adapter.baseWaterPoint?.(x,y)??(this.adapter.baseWater??isWaterTile)(Math.floor(x/TILE),Math.floor(y/TILE)));
       }))return 'As árvores precisam de terra firme em toda a base, fora da água e das margens alagadas.';
@@ -369,9 +370,9 @@ export class MapEditor {
 
   private action(action: EditorAction): void {
     this.finishStroke();
-    if(action==='map-property'||action==='map-forest'){
+    if(action==='map-property'||action==='map-forest'||action==='map-village'){
       const error=this.layoutError(this.history.current);if(error){this.status=error;this.refresh(true);return;}
-      this.adapter.switchArea?.(action==='map-forest'?'forest':'property',this.history.current);return;
+      this.adapter.switchArea?.(action==='map-village'?'village':action==='map-forest'?'forest':'property',this.history.current);return;
     }
     if (action === 'cancel') { this.adapter.cancel(); return; }
     if (action === 'apply') {
