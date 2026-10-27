@@ -10,7 +10,7 @@ describe('editable faithful smith room',()=>{
  it('keeps independent floors, structure, window, divider, props and floor transition',()=>{
   const d=createSmithLayout();expect(validSmithLayout(d)).toBe(true);expect(smithConnected(d)).toBe(true);
   for(const id of ['floor-left','floor-right','floor-door','structure','window','soleira_pisos'])expect(d.pieces.some(p=>p.id===id)).toBe(true);
-  expect(d.pieces.filter(p=>p.id.startsWith('wall-panel')).length).toBe(7);
+  expect(d.pieces.filter(p=>p.id.startsWith('wall-panel')&&p.visible).length).toBe(7);
   expect(d.pieces.every(p=>!!smithAsset(p.asset))).toBe(true);
   expect(smithFits(d,smithSpawn(d).x,smithSpawn(d).y)).toBe(true);
   expect(smithDoor(d)).toMatchObject({x:245,y:321,direction:'down'});

@@ -3,7 +3,7 @@ import {CHARACTER_DIRECTIONS,characterFrame,type CharacterDirection} from './cha
 
 export const AUGUSTO_WALK_FRAMES=6;
 export const AUGUSTO_FRAME_SIZE=160;
-export const AUGUSTO_DISPLAY=72;
+export const AUGUSTO_DISPLAY=84;
 export const AUGUSTO_ORIGIN_Y=.85;
 const root='assets/visual/village/augusto/Idle';
 const views:Record<CharacterDirection,string>={down:'south',up:'north',left:'west',right:'east','down-left':'south-west','down-right':'south-east','up-left':'north-west','up-right':'north-east'};

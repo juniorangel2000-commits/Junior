@@ -1,0 +1,59 @@
+{
+  "routines": {
+    "count": 1200,
+    "total": 21.899999976158142,
+    "p50": 0,
+    "p95": 0.09999996423721313,
+    "p99": 0.5,
+    "max": 4.300000011920929,
+    "over16": 0,
+    "over50": 0
+  },
+  "save": {
+    "count": 5,
+    "total": 28.30000001192093,
+    "p50": 5.099999964237213,
+    "p95": 7.5,
+    "p99": 7.5,
+    "max": 7.5,
+    "over16": 0,
+    "over50": 0
+  },
+  "overlay": {
+    "count": 120,
+    "total": 0.3999999761581421,
+    "p50": 0,
+    "p95": 0,
+    "p99": 0.10000002384185791,
+    "max": 0.10000002384185791,
+    "over16": 0,
+    "over50": 0
+  },
+  "actors": [
+    {
+      "id": "augusto",
+      "area": "shop",
+      "x": 396,
+      "y": 148,
+      "direction": "right",
+      "stop": 2,
+      "wait": 2.800000000000006,
+      "serviceUntil": 0,
+      "socialUntil": 0,
+      "socialDay": 0
+    },
+    {
+      "id": "bento",
+      "area": "shop",
+      "x": 206.59999999999994,
+      "y": 148,
+      "direction": "left",
+      "stop": 2,
+      "wait": 0,
+      "serviceUntil": 0,
+      "socialUntil": 0,
+      "socialDay": 0
+    }
+  ],
+  "errors": []
+}

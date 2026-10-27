@@ -35,6 +35,7 @@ export function validMerchantRoutines(value:unknown):boolean{
  return !!value&&typeof value==='object'&&!Array.isArray(value)&&Object.entries(value).every(([id,s])=>dailyMerchant(id as ResidentId)&&validMerchantRoutine(s));
 }
 export interface RoutineEnvironment {
+ cellBlocked?:(area:RoutineArea,x:number,y:number)=>boolean;
  blocked:(area:RoutineArea,x:number,y:number)=>boolean;
  fits:(area:RoutineArea,x:number,y:number)=>boolean;
  arrival:(area:RoutineArea,preferred:{x:number;y:number})=>{x:number;y:number}|null;
@@ -51,6 +52,7 @@ export class MerchantDailyRoutine {
  }
  setRoom(room:BentoRoomNavigation):void{this.room=room;this.resetPath();}
  private resetPath():void{this.walker=undefined;this.target='';}
+ get navigation():BentoRoomNavigation{return this.room;}
  get activity():string{return this.target;}
  isServing(clock:GameClock):boolean{return this.state.area==='shop'&&(merchantPeriod(this.owner,clock.time)==='work'||merchantPeriod(this.owner,clock.time)==='break'&&this.state.serviceUntil>absolute(clock));}
  availability(clock:GameClock):{message:string;canGuide:boolean}{
@@ -62,6 +64,7 @@ export class MerchantDailyRoutine {
  }
  socialize(clock:GameClock):void{this.state.socialUntil=absolute(clock)+MERCHANT_DAILY_PLAN.socialMinutes;this.state.socialDay=clock.day;this.resetPath();}
  private blocked(area:RoutineArea,x:number,y:number,env:RoutineEnvironment):boolean {
+  if(env.cellBlocked)return env.cellBlocked(area,x,y);
   if(env.blocked(area,x,y))return true;const tile=this.room.tileSize??32;
   return area==='shop'&&[[0,0],[tile,0],[0,tile],[tile,tile]].some(([dx,dy])=>!env.fits(area,x*tile+dx,y*tile+dy));
  }

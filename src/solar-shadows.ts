@@ -5,7 +5,7 @@ import { HOUSE_SHADOW_FOOT } from './house-sprites';
 import { WELL_SHADOW_FOOT } from './data/property-well';
 
 type Caster = Phaser.GameObjects.Image | Phaser.GameObjects.Sprite;
-const CASTER = /^(asset-(tree|pine)(-[012])?|lake-rock-[0-5]|asset-house|property-well-(idle|use)|cabin|player|forest-player|village-player|village-npc-[a-z]+|village-lantern|village-blacksmith-house(-front)?|lia)$/;
+const CASTER = /^(asset-(tree|pine)(-[012])?|lake-rock-[0-5]|asset-house|property-well-(idle|use)|cabin|player|forest-player|village-player|village-npc-[a-z]+|village-lantern|village-augusto-shop|village-blacksmith-house(-front)?|lia)$/;
 
 /** Reuses sprite alpha, including animated character frames. No source art is modified. */
 export class SolarShadows {

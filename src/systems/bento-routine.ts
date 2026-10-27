@@ -2,7 +2,7 @@ import {CHARACTER_DIRECTIONS,type CharacterDirection,directionFromVector} from '
 import {BLACKSMITH_ROOM,BLACKSMITH_DOOR,BLACKSMITH_OUTSIDE} from '../data/blacksmith-interior';
 import {villageBlockedAt,villageGround} from '../data/village';
 import {VillageWalk} from './village-walk';
-export interface BentoRoomNavigation{isBlocked:(x:number,y:number)=>boolean;validPosition?:(x:number,y:number)=>boolean;entry?:{x:number;y:number};exit?:{x:number;y:number};width?:number;height?:number;tileSize?:number;stops?:readonly {x:number;y:number}[]}
+export interface BentoRoomNavigation{cellBlocked?:(x:number,y:number)=>boolean;isBlocked:(x:number,y:number)=>boolean;validPosition?:(x:number,y:number)=>boolean;entry?:{x:number;y:number};exit?:{x:number;y:number};width?:number;height?:number;tileSize?:number;stops?:readonly {x:number;y:number}[]}
 
 export type BentoArea='village'|'blacksmith-home';
 export interface BentoRoutineState {area:BentoArea;x:number;y:number;direction:CharacterDirection;stop:number;wait:number;doorway:boolean}

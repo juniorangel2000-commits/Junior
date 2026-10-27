@@ -1,5 +1,7 @@
+import {compileRoomNavigation,type NavigationRect} from './room-navigation';
 import catalog from '../../public/dev/vila-v31/bento/novas-sprites.json';
 import authoredLayout from '../data/blacksmith-layout.json';
+import previousAuthoredLayout from '../data/blacksmith-layout-v3.json';
 
 export interface SmithPiece {id:string;asset:string;x:number;y:number;sx:number;sy:number;visible:boolean;parent?:string;solid?:boolean;effects?:boolean;wallShade?:number}
 export interface SmithLayout {version:1;finishRevision?:1;pieces:SmithPiece[]}
@@ -59,7 +61,15 @@ export function smithConnected(d:SmithLayout):boolean{
  const q=[start],seen=new Set([`${start.x},${start.y}`]);for(let i=0;i<q.length&&q.length<16000;i++){const p=q[i];if(Math.hypot(p.x-goal.x,p.y-goal.y)<9)return true;for(const[dx,dy]of[[4,0],[-4,0],[0,4],[0,-4]]){const x=p.x+dx,y=p.y+dy,k=`${x},${y}`;if(!seen.has(k)&&smithFits(d,x,y)){seen.add(k);q.push({x,y});}}}return false;
 }
 export function moveSmithPiece(d:SmithLayout,id:string,x:number,y:number):void{const p=d.pieces.find(a=>a.id===id);if(!p)return;const dx=x-p.x,dy=y-p.y;const move=(p:SmithPiece)=>{p.x+=dx;p.y+=dy;for(const c of d.pieces)if(c.parent===p.id)move(c);};move(p);}
-export function smithNavigation(d:SmithLayout){return{isBlocked:(x:number,y:number)=>!smithFits(d,x*8+4,y*8+4),validPosition:(x:number,y:number)=>smithFits(d,x,y),entry:smithSpawn(d),exit:{...smithDoor(d),y:smithDoor(d).y+4},width:72,height:44,tileSize:8,stops:[{x:30,y:29},{x:30,y:18},{x:48,y:24},{x:30,y:34}]};}
+export function smithNavigation(d:SmithLayout){
+ const f=d.pieces.find(p=>p.id==='structure')!,frame={x:f.x,y:f.y,sx:f.sx,sy:f.sy};
+ const rects:NavigationRect[]=[];
+ for(const p of d.pieces){const a=smithAsset(p.asset)!,b=a.bounds,c=a.collision??(p.solid?{x:b[0]+(b[2]-b[0])*.16,y:b[1]+(b[3]-b[1])*.77,width:(b[2]-b[0])*.68,height:(b[3]-b[1])*.19}:null);
+  if(!c||p.solid===false||!smithPieceVisible(d,p))continue;const left=p.x+(c.x-a.ox*a.w)*p.sx,top=p.y+(c.y-a.oy*a.h)*p.sy;rects.push({left,top,right:left+c.width*p.sx,bottom:top+c.height*p.sy});
+ }
+ return compileRoomNavigation((x,y)=>{const wx=(x-frame.x)*.5/frame.sx+24,wy=(y-frame.y)*.5/frame.sy+24;return wx>=60&&wx<=527&&wy>=119&&wy<=275||wx>=214&&wx<=276&&wy>=275&&wy<=329;},rects,
+  {entry:smithSpawn(d),exit:{...smithDoor(d),y:smithDoor(d).y+4},width:72,height:44,tileSize:8,stops:[{x:30,y:29},{x:30,y:18},{x:48,y:24},{x:30,y:34}]});
+}
 
 /** One-time visual upgrade, preserving every authored furniture position and material. */
 export function upgradeSmithFinish(layout:SmithLayout):SmithLayout{
@@ -83,5 +93,5 @@ export function resolveSmithLayout(saved?:SmithLayout):SmithLayout{
  if(!saved)return createSmithLayout();
  const d=upgradeSmithFinish(saved);
  const comparable=(layout:SmithLayout)=>JSON.stringify([...layout.pieces].sort((a,b)=>a.id.localeCompare(b.id)).map(p=>({id:p.id,asset:p.asset,x:p.x,y:p.y,sx:p.sx,sy:p.sy,visible:p.visible,parent:p.parent??null,solid:p.solid??!!smithAsset(p.asset)?.collision,effects:p.effects!==false,wallShade:p.wallShade??(p.id==='structure'?.98:0)})));
- return comparable(d)===comparable(createLegacySmithLayout())?createSmithLayout():d;
+ return comparable(d)===comparable(createLegacySmithLayout())||comparable(d)===comparable(previousAuthoredLayout as SmithLayout)?createSmithLayout():d;
 }

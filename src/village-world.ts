@@ -1,3 +1,4 @@
+import {AUGUSTO_SHOP,setupAugustoShop} from './augusto-shop';
 import {BLACKSMITH_HOUSE,setupBlacksmithHouse,blacksmithPoint} from './blacksmith-house';
 import {villageWater,villageLakeDistance,villagePointBlocked,villageDoorApproach,villagePathEdge,VILLAGE_LAWNS,VILLAGE_GARDENS,VILLAGE_FENCES,VILLAGE_SHORE_DETAILS} from './data/village';
 import {villageGroundWeights,villageSmooth as smooth} from './data/village-ground';
@@ -146,7 +147,8 @@ export class VillageWorld {
   }
  }
  private drawBuildings():void {
-  for(const [index,building] of VILLAGE_BUILDINGS.entries()){
+  let firstCottage=true;
+  for(const building of VILLAGE_BUILDINGS){
    const x=(building.x+.5)*TILE,y=building.y*TILE+25;
    if(building.shop==='blacksmith'){
     setupBlacksmithHouse(this.scene);const b=BLACKSMITH_HOUSE;
@@ -159,12 +161,20 @@ export class VillageWorld {
     for(const point of b.lamps){const p=blacksmithPoint(house,point);this.scene.add.zone(p.x,p.y,1,1).setData('fixture-light',{radius:65});}
     continue;
    }
+   if(building.shop==='general'){
+    const b=AUGUSTO_SHOP;setupAugustoShop(this.scene);
+    const house=this.scene.add.image(x,y,b.texture).setOrigin(b.door.x/b.width,b.door.y/b.height).setScale(b.scale).setDepth(y).setData({'village-building':building.id,'shadow-foot':b.foot});
+    this.windows.push(this.scene.add.image(x,y,b.texture+'-windows').setOrigin(house.originX,house.originY).setScale(b.scale).setDepth(y+.1).setVisible(false));
+    for(const p of b.lamps)this.scene.add.zone(x+(p.x-b.door.x)*b.scale,y+(p.y-b.door.y)*b.scale,1,1).setData('fixture-light',{radius:65});
+    this.smoke.push(drawHouseSmoke(this.scene,house,b.chimney,1/b.scale));continue;
+   }
    const house=this.scene.add.image(x,y,'asset-house').setOrigin(.5,HOUSE_FOOT.y/HOUSE_SPRITE_SIZE.height)
     .setDepth(y).setFlipX(!!building.flip).setData('village-building',building.id);
    if(building.shop)this.scene.add.image(x,y+3,`village-shop-${building.shop}`).setOrigin(.5,1).setDepth(y+.5);
    // Daylight handles the first native cottage; all other panes use its exact
    // source mask and the same dusk curve, with no rectangles over the frames.
-   if(index>0){const glow=drawHouseWindowGlow(this.scene,house);if(glow)this.windows.push(glow);}
+   if(!firstCottage){const glow=drawHouseWindowGlow(this.scene,house);if(glow)this.windows.push(glow);}
+   firstCottage=false;
    if(building.shop==='inn')this.smoke.push(drawHouseSmoke(this.scene,house));
   }
  }

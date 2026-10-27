@@ -10,7 +10,11 @@ const inside=(x:number,y:number)=>x>=1&&y>=1&&x<WORLD_WIDTH-1&&y<WORLD_HEIGHT-1;
  * walls, trees, garden fences or the new street lamps. */
 export function villageRoute(start:Point,goal:Point,blocked:Blocked,cost:Cost=()=>1):Point[]{
  const sx=Math.floor(start.x),sy=Math.floor(start.y),gx=Math.floor(goal.x),gy=Math.floor(goal.y);
- if(!inside(sx,sy)||!inside(gx,gy)||blocked(gx,gy))return [];
+ if(!inside(sx,sy)||!inside(gx,gy))return [];
+ const blockedCells=new Uint8Array(WORLD_WIDTH*WORLD_HEIGHT),costs=new Float64Array(blockedCells.length);
+ const occupied=(x:number,y:number)=>{const i=index(x,y);if(!blockedCells[i])blockedCells[i]=blocked(x,y)?2:1;return blockedCells[i]===2;};
+ const weight=(x:number,y:number)=>{const i=index(x,y);return costs[i]||(costs[i]=Math.max(1,cost(x,y)));};
+ if(occupied(gx,gy)||sx===gx&&sy===gy)return [];
  const from=new Int32Array(WORLD_WIDTH*WORLD_HEIGHT).fill(-1),scores=new Float64Array(from.length).fill(Infinity);
  const open:Array<{id:number;priority:number}>=[];
  const push=(value:{id:number;priority:number})=>{let i=open.length;open.push(value);while(i>0){const p=(i-1)>>1;if(open[p].priority<=value.priority)break;open[i]=open[p];i=p;}open[i]=value;};
@@ -22,8 +26,8 @@ export function villageRoute(start:Point,goal:Point,blocked:Blocked,cost:Cost=()
   if(current===target){const path:Point[]=[];for(let p=target;p!==source;p=from[p]){if(p<0)return [];path.push({x:p%WORLD_WIDTH,y:Math.floor(p/WORLD_WIDTH)});}return path.reverse();}
   const x=current%WORLD_WIDTH,y=Math.floor(current/WORLD_WIDTH);
   for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){
-   const nx=x+dx,ny=y+dy;if(!inside(nx,ny)||blocked(nx,ny)||dx&&dy&&(blocked(x+dx,y)||blocked(x,y+dy)))continue;
-   const next=index(nx,ny),score=scores[current]+Math.hypot(dx,dy)*Math.max(1,cost(nx,ny));
+   const nx=x+dx,ny=y+dy;if(!inside(nx,ny)||occupied(nx,ny)||dx&&dy&&(occupied(x+dx,y)||occupied(x,y+dy)))continue;
+   const next=index(nx,ny),score=scores[current]+Math.hypot(dx,dy)*weight(nx,ny);
    if(score>=scores[next])continue;scores[next]=score;from[next]=current;push({id:next,priority:score+Math.hypot(gx-nx,gy-ny)});
   }
  }

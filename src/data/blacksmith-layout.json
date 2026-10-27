@@ -467,6 +467,26 @@
       "sy": 0.375,
       "visible": true,
       "parent": "structure"
+    },
+    {
+      "id": "wall-panel-1-1",
+      "asset": "wall-panel-1",
+      "x": 214.18275477420877,
+      "y": 232.63865205101558,
+      "sx": 0.027751196172248804,
+      "sy": 0.058091286307053944,
+      "visible": false
+    },
+    {
+      "id": "tapete_ferraria-1",
+      "asset": "tapete_ferraria",
+      "x": 246.51,
+      "y": 278.82,
+      "sx": 0.04244114002478315,
+      "sy": 0.042443778110944526,
+      "visible": true,
+      "effects": true,
+      "solid": false
     }
   ]
 }

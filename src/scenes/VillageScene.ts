@@ -156,12 +156,15 @@ export class VillageScene extends Phaser.Scene {
   if(this.player&&(area==='shop'?this.roomOwner===owner:!this.inShop))actors.push({x:this.player.x,y:this.player.y});return actors;
  }
  private routineEnvironment(id:RoutineId):RoutineEnvironment {
-  const nav=id==='bento'?smithNavigation(this.smithLayout):merchantRoomNavigation(id,this.merchantLayouts.get(id));
+  const nav=this.routines.get(id)!.navigation;
+  const actors={shop:this.spaceActors(id,'shop'),village:this.spaceActors(id,'village')};
   const scenery=(area:RoutineArea,x:number,y:number)=>area==='shop'?!nav.validPosition!(x,y):[[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>this.world.isBlockedPoint(x+dx,y+dy));
+  const outsideBlocked=(x:number,y:number)=>this.world.isBlocked(x,y)||actors.village.some(a=>Math.floor(a.x/32)===x&&Math.floor(a.y/32)===y);
   return {
-   blocked:(area,x,y)=>{const tile=area==='shop'?(nav.tileSize??32):32,p={x:(x+.5)*tile,y:(y+.5)*tile};return (area==='shop'?nav.isBlocked(x,y):this.world.isBlocked(x,y))||this.spaceActors(id,area).some(a=>area==='village'?Math.floor(a.x/32)===x&&Math.floor(a.y/32)===y:actorsOverlap(p,a));},
-   fits:(area,x,y)=>!scenery(area,x,y)&&!this.spaceActors(id,area).some(a=>actorsOverlap({x,y},a)),
-   arrival:(area,p)=>freeArrival(p,(x,y)=>scenery(area,x,y),this.spaceActors(id,area)),
+   blocked:(area,x,y)=>area==='village'?outsideBlocked(x,y):nav.isBlocked(x,y)||actors.shop.some(a=>actorsOverlap({x:(x+.5)*8,y:(y+.5)*8},a)),
+   cellBlocked:(area,x,y)=>area==='village'?outsideBlocked(x,y):!!nav.cellBlocked?.(x,y)||nav.isBlocked(x,y)||actors.shop.some(a=>a.x>x*8-20&&a.x<(x+1)*8+20&&a.y>y*8-12&&a.y<(y+1)*8+12),
+   fits:(area,x,y)=>!scenery(area,x,y)&&!actors[area].some(a=>actorsOverlap({x,y},a)),
+   arrival:(area,p)=>freeArrival(p,(x,y)=>scenery(area,x,y),actors[area]),
   };
  }
  private syncRoutine(id:RoutineId,phase:number):void {

@@ -1,0 +1,13 @@
+{
+  "tests": 741,
+  "testFiles": 74,
+  "browserChecks": 47,
+  "build": "passed",
+  "beforeRoutineMaxMs": 556.3999999761581,
+  "afterRoutineMaxMs": 4.300000011920929,
+  "sameSample": 1200,
+  "over16msBefore": 15,
+  "over16msAfter": 0,
+  "smithPieces": 52,
+  "augustoDisplay": 84
+}

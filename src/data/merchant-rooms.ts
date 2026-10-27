@@ -1,3 +1,4 @@
+import {compileRoomNavigation,type NavigationRect} from '../systems/room-navigation';
 import catalog from '../../public/dev/augusto/manifest.json';
 import authoredAugusto from './augusto-layout.json';
 import type {ResidentId} from '../systems/merchant-visit';
@@ -49,6 +50,10 @@ export function merchantRoomConnected(id:ResidentId,data:SmithLayout):boolean{if
 
 /** The same fine navigation grid used by the blacksmith, with movable furniture. */
 export function merchantRoomNavigation(id:ResidentId,layout?:SmithLayout):import('../systems/bento-routine').BentoRoomNavigation{
- return {isBlocked:(x,y)=>!merchantRoomFits(id,x*8+4,y*8+4,layout),validPosition:(x,y)=>merchantRoomFits(id,x,y,layout),entry:MERCHANT_ROOM_ENTRY,exit:MERCHANT_ROOM_EXIT,width:72,height:48,tileSize:8,
- stops:[{x:36,y:18},{x:49,y:18},{x:17,y:30},{x:36,y:38}]};
+ const data=layout??roomDefault(id),rects:NavigationRect[]=[];
+ for(const p of data.pieces){const a=MERCHANT_ROOM_ASSETS.find(a=>a.id===p.asset)!,b=a.bounds,c=a.collision??(p.solid?{x:b[0]+(b[2]-b[0])*.12,y:b[1]+(b[3]-b[1])*.78,width:(b[2]-b[0])*.76,height:(b[3]-b[1])*.2}:null);
+  if(!c||p.solid===false||!merchantPieceVisible(data,p.id))continue;const left=p.x+(c.x-a.ox*a.w)*p.sx,top=p.y+(c.y-a.oy*a.h)*p.sy;rects.push({left,top,right:left+c.width*p.sx,bottom:top+c.height*p.sy});
+ }
+ return compileRoomNavigation((x,y)=>x>=36&&x<=540&&y>=118&&y<=350||x>=263&&x<=313&&y>=350&&y<=368,rects,
+  {entry:MERCHANT_ROOM_ENTRY,exit:MERCHANT_ROOM_EXIT,width:72,height:48,tileSize:8,stops:[{x:36,y:18},{x:49,y:18},{x:17,y:30},{x:36,y:38}]});
 }

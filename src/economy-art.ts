@@ -1,3 +1,4 @@
+import {AUGUSTO_SHOP} from './data/augusto-shop';
 import {bentoTexture,preloadBentoSprites} from './bento-sprites';
 import {augustoTexture,preloadAugustoSprites} from './augusto-sprites';
 import {preloadMerchantRooms} from './merchant-interior';
@@ -9,6 +10,7 @@ import {CHARACTER_DIRECTIONS} from './character-directions';
 export function preloadEconomyArt(scene:Phaser.Scene):void{
  preloadBentoSprites(scene);
  preloadAugustoSprites(scene);
+ scene.load.image(AUGUSTO_SHOP.texture,AUGUSTO_SHOP.file);
  preloadMerchantRooms(scene);
  for(const metal of ['iron','gold','blackMetal'] as const)scene.load.image(mineralTexture(metal),`${ROOT}/deposits/${metal}.png`);
  for(const tool of ART_TOOL_IDS)for(const [tier,material]of TOOL_MATERIALS.entries())scene.load.image(`economy-tool-${material}-${tool}`,tierToolIcon(tool,tier));
