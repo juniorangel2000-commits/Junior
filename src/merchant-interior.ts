@@ -1,6 +1,5 @@
 import type Phaser from 'phaser';
 import {MERCHANT_ROOM_ASSETS,merchantPieceVisible,createMerchantLayout} from './data/merchant-rooms';
-import {VILLAGE_NPCS} from './data/village';
 import type {ResidentId} from './systems/merchant-visit';
 import type {SmithLayout} from './systems/smith-layout';
 import type {SmithView} from './smith-layout-art';
@@ -17,7 +16,6 @@ export function drawMerchantInterior(scene:Phaser.Scene,id:ResidentId,data:Smith
   if(a.id==='lamparina_parede'&&p.effects!==false){const b=a.bounds,w=b[2]-b[0],h=b[3]-b[1];image.setData('fixture-light',{offsetX:(b[0]+w*.5-a.ox*a.w)*p.sx,offsetY:(b[1]+h*.65-a.oy*a.h)*p.sy,radius:60,always:true});}
  }
  const front=add(scene.add.graphics().setDepth(10000).setVisible(frame.visible));front.fillStyle(0x33251c).fillRect(24,350,233,14).fillRect(319,350,233,14);
- const npc=VILLAGE_NPCS.find(n=>n.id===id)!;add(scene.add.text(288,14,npc.role+' · '+npc.name,{fontFamily:'Georgia',fontSize:'12px',color:'#f0dcba'}).setOrigin(.5).setDepth(10001));
  let select:((id:string)=>void)|undefined,move:((id:string,x:number,y:number)=>void)|undefined;
  const click=(_p:unknown,o:Phaser.GameObjects.Image)=>{const id=o.getData('smithLayoutId');if(id)select?.(id);};
  const drag=(_pointer:unknown,o:Phaser.GameObjects.Image,x:number,y:number)=>{const id=o.getData('smithLayoutId'),p=data.pieces.find(p=>p.id===id);if(!p||!move)return;const dx=x-p.x,dy=y-p.y;const update=(id:string)=>{const piece=data.pieces.find(p=>p.id===id)!,sprite=sprites.get(id);sprite?.setPosition(piece.x+dx,piece.y+dy);for(const child of data.pieces)if(child.parent===id)update(child.id);};update(id);};

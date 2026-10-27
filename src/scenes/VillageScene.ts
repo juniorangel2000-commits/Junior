@@ -4,6 +4,8 @@ import {mountSmithEditor} from '../smith-layout-editor';
 import {BENTO_WALK_FRAMES,BENTO_DISPLAY,bentoSourceKey} from '../bento-sprites';
 import {AUGUSTO_WALK_FRAMES,AUGUSTO_DISPLAY,AUGUSTO_ORIGIN_Y,augustoSourceKey} from '../augusto-sprites';
 import {BentoRoutine} from '../systems/bento-routine';
+import {VillageNpcOverlays} from '../village-npc-overlays';
+import {MerchantDailyRoutine,dailyMerchant,merchantPeriod,MERCHANT_SMALL_TALK,MERCHANT_DAILY_PLAN,type RoutineId,type RoutineArea,type RoutineEnvironment} from '../systems/merchant-routine';
 import {BLACKSMITH_DOOR,BLACKSMITH_OUTSIDE} from '../data/blacksmith-interior';
 import {notifyReadyOrders} from '../systems/economy';
 import {markMinerals} from '../economy-visuals';
@@ -35,14 +37,14 @@ import {emptyQuickbar} from '../systems/quickbar';
 import type {SaveData,Tool} from '../types';
 import type {GameUI} from '../ui';
 import {MerchantGuide,merchantDoor,merchantOutside,merchantCanTrade,type ResidentId,type ShopResident} from '../systems/merchant-visit';
-import {merchantRoomBlocked,merchantRoomFits,createMerchantLayout,validMerchantLayout,merchantRoomConnected,MERCHANT_ROOM_ASSETS,MERCHANT_ROOM_ENTRY,MERCHANT_ROOM_OWNER,MERCHANT_ROOM_EXIT,MERCHANT_ROOM_SIZE} from '../data/merchant-rooms';
+import {merchantRoomBlocked,merchantRoomFits,resolveMerchantLayout,validMerchantLayout,merchantRoomConnected,MERCHANT_ROOM_ASSETS,MERCHANT_ROOM_ENTRY,MERCHANT_ROOM_OWNER,MERCHANT_ROOM_EXIT,MERCHANT_ROOM_SIZE,merchantRoomNavigation} from '../data/merchant-rooms';
 import {drawMerchantInterior} from '../merchant-interior';
 import {freeArrival,actorsOverlap} from '../systems/actor-arrival';
 import {DEVELOPMENT_TOOLS} from '../development-tools';
 import type {MapArea} from '../data/default-maps';
 
 export interface VillageStart {save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
-type Villager={data:VillageNPC;sprite:Phaser.GameObjects.Sprite;label:Phaser.GameObjects.Text;frames:number};
+type Villager={data:VillageNPC;sprite:Phaser.GameObjects.Sprite;frames:number};
 
 /** Town state travels through the same save as the farm, without replacing its
  * outdoor position, crops, resource fields or animal population. */
@@ -70,6 +72,9 @@ export class VillageScene extends Phaser.Scene {
  private merchantLayouts=new Map<ResidentId,SmithLayout>();
  private residents=new Map<ResidentId,ShopResident>();
  private guide?:MerchantGuide;
+ private routines=new Map<RoutineId,MerchantDailyRoutine>();
+ private npcOverlays?:VillageNpcOverlays;
+ private speech?:{id:RoutineId;text:string};
  private readonly merchantPassage=new DoorwayPassage();
  private get inShop():boolean{return this.inBlacksmith||!!this.merchantRoom;}
  private get roomOwner():ResidentId|undefined{return this.inBlacksmith?'bento':this.merchantRoom;}
@@ -86,11 +91,11 @@ export class VillageScene extends Phaser.Scene {
   this.smithLayout=resolveSmithLayout(this.state.blacksmithScene);this.editingRoom=false;
   this.bentoRoutine=new BentoRoutine(this.state.blacksmithScene?this.state.bentoRoutine:undefined,smithNavigation(this.smithLayout));this.inBlacksmith=false;this.changingRoom=false;this.homePassage.reset();
   this.merchantRoom=undefined;this.merchantView=undefined;this.guide=undefined;this.merchantPassage.reset();this.residents=new Map((this.state.shopResidents??[]).map(p=>[p.id,structuredClone(p)]));
-  this.merchantLayouts=new Map(VILLAGE_NPCS.filter(n=>n.id!=='bento').map(n=>[n.id,structuredClone(this.state.merchantScenes?.[n.id]??createMerchantLayout(n.id))]));
+  this.merchantLayouts=new Map(VILLAGE_NPCS.filter(n=>n.id!=='bento').map(n=>[n.id,resolveMerchantLayout(n.id,this.state.merchantScenes?.[n.id])]));
   this.paused=false;this.leaving=false;this.elapsed=0;this.hudElapsed=0;this.exitPassage.reset();
   this.zoom=loadCameraZoom();this.inventory=new Inventory(this.state.inventory);
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
-  this.world=new VillageWorld(this,this.state.villageMapEdits);this.createVillagers();
+  this.world=new VillageWorld(this,this.state.villageMapEdits);this.createVillagers();this.createDailyRoutines();
   const saved=this.state.villagePosition,entry=villagePixelPoint(this.world.entry());
   const valid=saved&&![[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>this.blockedPoint(saved.x+dx,saved.y+dy));
   this.player=new Player(this,this.state.profile,valid?saved.x:entry.x,valid?saved.y:entry.y,'village-player');
@@ -100,14 +105,14 @@ export class VillageScene extends Phaser.Scene {
   else if(this.state.merchantInterior)this.setMerchantRoom(this.state.merchantInterior.owner,this.state.merchantInterior);
   this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
   this.shop=new VillageInteractionUI({
-   canTrade:id=>merchantCanTrade(id,this.roomOwner),onGuide:id=>this.beginGuide(id),
+   canTrade:id=>this.canTrade(id),isInside:id=>merchantCanTrade(id,this.roomOwner),getAvailability:id=>dailyMerchant(id)?this.routines.get(id)?.availability(this.state):undefined,onGuide:id=>this.beginGuide(id),
    getPortrait:id=>id==='bento'?this.textures.getBase64(bentoSourceKey('down')):id==='augusto'?this.textures.getBase64(augustoSourceKey('down')):this.textures.getBase64(`village-npc-${id}`,0),
    onBlacksmith:()=>{this.shop?.close();this.setPaused(true);openBlacksmithPanel(()=>({...this.state,inventory:{...this.inventory.data}}),change=>{const before=structuredClone(this.state);this.state.inventory={...this.inventory.data};const r=change(this.state);if(r.ok){Object.assign(this.inventory.data,this.state.inventory);if(!this.persist()){this.state=before;Object.assign(this.inventory.data,before.inventory);return{ok:false,message:'Falha ao salvar. A operação foi revertida.'};}this.updateHUD();}return r;},()=>this.setPaused(false));},
    getServices:npc=>listVillageServices(npc),
    onService:id=>{const previous=structuredClone(this.state);const previousStock={...this.inventory.data};this.state.inventory={...this.inventory.data};this.state.crops=this.farming.crops.map(c=>({...c}));const result=performVillageService(this.state,id);if(result.ok){Object.assign(this.inventory.data,this.state.inventory);this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);const x=this.player.x,y=this.player.y;this.player.sprite.destroy();this.player=new Player(this,this.state.profile,x,y,'village-player');this.applyCamera();if(!this.persist()){this.state=previous;Object.assign(this.inventory.data,previousStock);return{ok:false,message:'Falha ao salvar. A operação foi revertida.'};}this.updateHUD();}return result;},
    getInventory:()=>this.inventory.data,getEconomy:()=>this.state.villageEconomy!,getDay:()=>this.state.day,
    onTrade:(merchant,side,item,quantity)=>{
-    const owner=VILLAGE_NPCS.find(n=>n.merchantId===merchant);if(!owner||!merchantCanTrade(owner.id,this.roomOwner))return{ok:false,reason:'invalid-economy',message:'Compre e venda dentro do comércio desse morador.'};
+    const owner=VILLAGE_NPCS.find(n=>n.merchantId===merchant);if(!owner||!this.canTrade(owner.id))return{ok:false,reason:'invalid-economy',message:owner&&dailyMerchant(owner.id)?this.routines.get(owner.id)?.availability(this.state).message??'Compre e venda dentro do comércio desse morador.':'Compre e venda dentro do comércio desse morador.'};
     const before=structuredClone(this.state);const stockBefore={...this.inventory.data};
     const result=trade(merchant,side,item,quantity,this.inventory,this.state.villageEconomy!,this.state.day);
     if(result.ok){Object.assign(this.state.inventory,this.inventory.data);if(!this.persist()){this.state=before;Object.assign(this.inventory.data,stockBefore);return{ok:false,reason:'invalid-economy',message:'Falha ao salvar. A operação foi revertida.'};}this.updateHUD();gameAudio.play('craft');}
@@ -117,26 +122,73 @@ export class VillageScene extends Phaser.Scene {
   });
   document.querySelector<HTMLElement>('#ui')!.style.display='';this.ui.setQuickbar(this.state.quickbar??emptyQuickbar());
   this.ui.showHUD('village');this.updateHUD();
+  this.npcOverlays=new VillageNpcOverlays(this,()=>({actors:this.villagers.map(n=>({id:n.data.id,name:n.data.name,role:n.data.role,sprite:n.sprite})),blocked:this.paused||this.leaving||this.changingRoom||!!this.shop?.isOpen||this.ui.isModalOpen(),speech:this.inShop?undefined:this.speech}));
   this.input.keyboard!.on('keydown',this.key,this);this.input.on('wheel',this.wheel,this);
   this.input.on('pointerdown',this.pointer,this);this.scale.on('resize',this.applyCamera,this);
   window.addEventListener('pagehide',this.save);window.addEventListener('beforeunload',this.save);
   window.addEventListener('blur',this.blur);document.addEventListener('visibilitychange',this.visibility);
   this.events.once('shutdown',()=>{
-   this.leaving=true;this.shop?.destroy();this.shop=undefined;this.roomView?.destroy();this.roomView=undefined;this.merchantView?.destroy();this.merchantView=undefined;this.daylight?.destroy();this.world?.destroy();
+   this.leaving=true;this.npcOverlays?.destroy();this.npcOverlays=undefined;this.shop?.destroy();this.shop=undefined;this.roomView?.destroy();this.roomView=undefined;this.merchantView?.destroy();this.merchantView=undefined;this.daylight?.destroy();this.world?.destroy();
    this.input.keyboard?.off('keydown',this.key,this);this.input.off('wheel',this.wheel,this);this.input.off('pointerdown',this.pointer,this);
    this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);
    window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);
   });
   this.persist();
  }
+ private canTrade(id:ResidentId):boolean {
+  return merchantCanTrade(id,this.roomOwner)&&(!dailyMerchant(id)||this.routines.get(id)?.isServing(this.state)===true);
+ }
+ private createDailyRoutines():void {
+  this.routines=new Map();this.speech=undefined;
+  for(const id of ['augusto','bento'] as const){
+   const npc=this.villagers.find(n=>n.data.id===id)!;
+   const shop=id==='bento'?this.bentoRoutine.state.area==='blacksmith-home':this.residents.get(id)!.shop;
+   const nav=id==='bento'?smithNavigation(this.smithLayout):merchantRoomNavigation(id,this.merchantLayouts.get(id));
+   const direction=id==='bento'?this.bentoRoutine.state.direction:this.residents.get(id)!.direction;
+   const routine=new MerchantDailyRoutine(id,{x:npc.sprite.x,y:npc.sprite.y,direction,shop},nav,this.state.villageRoutines?.[id]);
+   const s=routine.state,blocked=s.area==='shop'?(x:number,y:number)=>id==='bento'?smithBlocked(this.smithLayout,x,y):merchantRoomBlocked(id,x,y,this.merchantLayouts.get(id)):this.world.isBlockedPoint;
+   const free=freeArrival(s,blocked,[]);if(free)Object.assign(s,free);
+   this.routines.set(id,routine);this.syncRoutine(id,0);
+  }
+ }
+ private spaceActors(owner:RoutineId,area:RoutineArea):{x:number;y:number}[]{
+  const actors=this.villagers.filter(n=>n.data.id!==owner&&(n.data.id==='bento'?(area==='shop'?owner==='bento'&&this.bentoRoutine.state.area==='blacksmith-home':this.bentoRoutine.state.area==='village'):(area==='shop'?n.data.id===owner&&!!this.residents.get(n.data.id)?.shop:!this.residents.get(n.data.id)?.shop))).map(n=>({x:n.sprite.x,y:n.sprite.y}));
+  if(this.player&&(area==='shop'?this.roomOwner===owner:!this.inShop))actors.push({x:this.player.x,y:this.player.y});return actors;
+ }
+ private routineEnvironment(id:RoutineId):RoutineEnvironment {
+  const nav=id==='bento'?smithNavigation(this.smithLayout):merchantRoomNavigation(id,this.merchantLayouts.get(id));
+  const scenery=(area:RoutineArea,x:number,y:number)=>area==='shop'?!nav.validPosition!(x,y):[[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>this.world.isBlockedPoint(x+dx,y+dy));
+  return {
+   blocked:(area,x,y)=>{const tile=area==='shop'?(nav.tileSize??32):32,p={x:(x+.5)*tile,y:(y+.5)*tile};return (area==='shop'?nav.isBlocked(x,y):this.world.isBlocked(x,y))||this.spaceActors(id,area).some(a=>area==='village'?Math.floor(a.x/32)===x&&Math.floor(a.y/32)===y:actorsOverlap(p,a));},
+   fits:(area,x,y)=>!scenery(area,x,y)&&!this.spaceActors(id,area).some(a=>actorsOverlap({x,y},a)),
+   arrival:(area,p)=>freeArrival(p,(x,y)=>scenery(area,x,y),this.spaceActors(id,area)),
+  };
+ }
+ private syncRoutine(id:RoutineId,phase:number):void {
+  const s=this.routines.get(id)!.state,npc=this.villagers.find(n=>n.data.id===id)!;
+  if(id==='bento')Object.assign(this.bentoRoutine.state,{x:s.x,y:s.y,direction:s.direction,area:s.area==='shop'?'blacksmith-home':'village',stop:s.area==='shop'?4:0,wait:0,doorway:false});
+  else Object.assign(this.residents.get(id)!,{x:s.x,y:s.y,direction:s.direction,shop:s.area==='shop'});
+  npc.sprite.setPosition(s.x,s.y).setDepth(s.y).setFrame(characterFrame(s.direction,phase,npc.frames));
+ }
+ private updateDailyRoutines(seconds:number):void {
+  for(const [id,routine] of this.routines){if(this.guide?.owner===id)continue;const step=routine.step(seconds,this.state,this.routineEnvironment(id));this.syncRoutine(id,step.phase);}
+  const a=this.routines.get('augusto')!,b=this.routines.get('bento')!;
+  if(!this.guide&&merchantPeriod('augusto',this.state.time)==='break'&&a.state.area==='village'&&b.state.area==='village'&&a.state.socialDay!==this.state.day&&b.state.socialDay!==this.state.day&&a.activity==='plaza'&&b.activity==='plaza'&&Math.hypot(a.state.x-b.state.x,a.state.y-b.state.y)<70){a.socialize(this.state);b.socialize(this.state);}
+  const social=a.state.socialUntil>this.state.day*1440+this.state.time&&b.state.socialUntil>this.state.day*1440+this.state.time;
+  this.speech=undefined;
+  if(social){
+   const speaker=a.state.socialUntil-(this.state.day*1440+this.state.time)>MERCHANT_DAILY_PLAN.socialMinutes/2?'augusto':'bento';
+   this.speech={id:speaker,text:MERCHANT_SMALL_TALK[(this.state.day-1)%MERCHANT_SMALL_TALK.length][speaker==='augusto'?0:1]};
+   for(const id of ['augusto','bento'] as const){const npc=this.villagers.find(n=>n.data.id===id)!,peer=id==='augusto'?b.state:a.state,own=this.routines.get(id)!.state;own.direction=directionFromVector(peer.x-own.x,peer.y-own.y);npc.sprite.setFrame(characterFrame(own.direction,0,npc.frames));}
+  }
+ }
  private createVillagers():void {
   this.villagers=VILLAGE_NPCS.map(npc=>{
    const frames=npc.id==='bento'?BENTO_WALK_FRAMES:npc.id==='augusto'?AUGUSTO_WALK_FRAMES:0,key=merchantTexture(this,npc.id),p=villagePixelPoint(npc);
    const sprite=this.add.sprite(p.x,p.y,key,characterFrame(npc.direction,0,frames)).setOrigin(.5,npc.id==='augusto'?AUGUSTO_ORIGIN_Y:1).setDisplaySize(npc.id==='bento'?BENTO_DISPLAY:npc.id==='augusto'?AUGUSTO_DISPLAY:CHARACTER_WIDTH,npc.id==='augusto'?AUGUSTO_DISPLAY:CHARACTER_HEIGHT).setDepth(p.y);
-   const label=this.add.text(p.x,p.y-CHARACTER_HEIGHT-5,`${npc.name}\n${npc.role}`,{fontFamily:'Georgia',fontSize:'11px',align:'center',color:'#fff1cf',stroke:'#293b28',strokeThickness:3}).setOrigin(.5,1).setDepth(p.y+1);
-   if(npc.id==='bento'){const b=this.bentoRoutine.state;if(b.area==='village'){const free=freeArrival(b,this.world.isBlockedPoint,[]);if(free)Object.assign(b,free);}sprite.setPosition(b.x,b.y).setDepth(b.y).setFrame(characterFrame(b.direction,0,frames)).setVisible(b.area==='village');label.setVisible(false);}
+   if(npc.id==='bento'){const b=this.bentoRoutine.state;if(b.area==='village'){const free=freeArrival(b,this.world.isBlockedPoint,[]);if(free)Object.assign(b,free);}sprite.setPosition(b.x,b.y).setDepth(b.y).setFrame(characterFrame(b.direction,0,frames)).setVisible(b.area==='village');}
    else{const resident=this.residents.get(npc.id)??{id:npc.id,...p,direction:npc.direction,shop:false};if(!resident.shop){const free=freeArrival(resident,this.world.isBlockedPoint,[]);if(free)Object.assign(resident,free);}this.residents.set(npc.id,resident);sprite.setPosition(resident.x,resident.y).setDepth(resident.y).setFrame(characterFrame(resident.direction,0,frames)).setVisible(!resident.shop);}
-   return {data:npc,sprite,label,frames};
+   return {data:npc,sprite,frames};
   });
  }
  private blocked=(x:number,y:number):boolean=>(this.inBlacksmith?smithBlocked(this.smithLayout,x*32+16,y*32+16):this.merchantRoom?merchantRoomBlocked(this.merchantRoom,x*32+16,y*32+16,this.merchantLayouts.get(this.merchantRoom)):this.world.isBlocked(x,y))||this.villagers.some(n=>n.sprite.visible&&Math.floor(n.sprite.x/32)===x&&Math.floor(n.sprite.y/32)===y);
@@ -147,23 +199,25 @@ export class VillageScene extends Phaser.Scene {
  }
  private beginGuide(id:ResidentId):void {
   if(this.inShop||this.leaving)return;const npc=this.villagers.find(n=>n.data.id===id);if(!npc?.sprite.visible)return;
+  const routine=dailyMerchant(id)?this.routines.get(id):undefined;if(routine&&!routine.availability(this.state).canGuide){this.ui.toast(routine.availability(this.state).message);return;}
   const blocked=(x:number,y:number)=>this.world.isBlocked(x,y)||this.villagers.some(n=>n!==npc&&n.sprite.visible&&Math.floor(n.sprite.x/32)===x&&Math.floor(n.sprite.y/32)===y);
   if(!MerchantGuide.canStart(id,npc.sprite,blocked)){this.ui.toast('O caminho até a loja está bloqueado. Libere a passagem e tente novamente.');return;}
   if(id==='bento'||this.guide?.owner==='bento')this.bentoRoutine.setRoom(smithNavigation(this.smithLayout));
-  this.guide=new MerchantGuide(id);this.setPaused(false);this.ui.toast(`${npc.data.name}: venha comigo até ${npc.data.role.toLowerCase()}. Vou esperar se você ficar para trás.`);
+  routine?.guided(this.state,npc.sprite,false);this.guide=new MerchantGuide(id);this.setPaused(false);this.ui.toast(`${npc.data.name}: venha comigo até ${npc.data.role.toLowerCase()}. Vou esperar se você ficar para trás.`);
  }
  private completeGuide(id:ResidentId):void {
   if(this.guide?.owner!==id)return;const npc=this.villagers.find(n=>n.data.id===id)!;
   if(id==='bento'){const nav=smithNavigation(this.smithLayout),point=nav.stops.map(p=>({x:p.x*8+4,y:p.y*8+4})).find(p=>smithFits(this.smithLayout,p.x,p.y))??nav.entry;
    Object.assign(this.bentoRoutine.state,{...point,area:'blacksmith-home',stop:4,wait:60,direction:'down',doorway:false});this.bentoRoutine.setRoom(nav);npc.sprite.setPosition(point.x,point.y).setDepth(point.y);
   }else{const resident=this.residents.get(id)!;Object.assign(resident,MERCHANT_ROOM_OWNER,{shop:true,direction:'down'});npc.sprite.setPosition(resident.x,resident.y).setDepth(resident.y);}
+  if(dailyMerchant(id)){const routine=this.routines.get(id)!;const free=this.routineEnvironment(id).arrival('shop',npc.sprite);if(free)npc.sprite.setPosition(free.x,free.y);routine.guided(this.state,npc.sprite,true);this.syncRoutine(id,0);}
   npc.sprite.setFrame(characterFrame('down',0,npc.frames));this.guide=undefined;
  }
  private setMerchantRoom(id?:ResidentId,position?:{x:number;y:number;direction?:import('../character-directions').CharacterDirection}):void {
   const previous=this.merchantRoom;this.merchantRoom=id;this.inBlacksmith=false;this.merchantPassage.reset();this.homePassage.reset();this.world.setVisible(!id);
   this.merchantView?.destroy();this.merchantView=id?drawMerchantInterior(this,id,this.merchantLayouts.get(id)):undefined;
   const p=position??(id?MERCHANT_ROOM_ENTRY:merchantOutside(previous!));this.player.x=p.x;this.player.y=p.y;this.player.facing=directionVector(position?.direction??(id?'up':'down'));
-  for(const npc of this.villagers){npc.sprite.setVisible(this.sameRoom(npc));npc.label.setVisible(false);}
+  for(const npc of this.villagers){npc.sprite.setVisible(this.sameRoom(npc));}
   const free=freeArrival(this.player,(x,y)=>id?merchantRoomBlocked(id,x,y,this.merchantLayouts.get(id)):this.world.isBlockedPoint(x,y),this.villagers.filter(n=>n.sprite.visible).map(n=>n.sprite));if(free){this.player.x=free.x;this.player.y=free.y;}
   this.input.keyboard?.resetKeys();this.player.update(0,this.blocked,this.blockedPoint,false);this.daylight.update(this.state.time,!!id);this.applyCamera();
  }
@@ -212,15 +266,15 @@ export class VillageScene extends Phaser.Scene {
   const fail=(message:string)=>{this.roomView?.destroy();this.roomView=drawSmithLayout(this,this.smithLayout);return message;};
   if(!validSmithLayout(data)||!smithConnected(data))return fail('Mantenha a estrutura válida e a passagem da entrada livre.');
   const b=this.bentoRoutine.state;if(!smithFits(data,this.player.x,this.player.y)||b.area==='blacksmith-home'&&!smithFits(data,b.x,b.y))return fail('Mova o personagem ou Bento antes de ocupar esse espaço.');
-  const before=this.smithLayout,save=structuredClone(this.state);this.smithLayout=structuredClone(data);this.bentoRoutine.setRoom(smithNavigation(this.smithLayout));
-  if(!this.persist()){this.smithLayout=before;this.state=save;this.bentoRoutine.setRoom(smithNavigation(before));return fail('Falha ao salvar. A edição foi revertida.');}
+  const before=this.smithLayout,save=structuredClone(this.state);this.smithLayout=structuredClone(data);this.bentoRoutine.setRoom(smithNavigation(this.smithLayout));this.routines.get('bento')?.setRoom(smithNavigation(this.smithLayout));
+  if(!this.persist()){this.smithLayout=before;this.state=save;this.bentoRoutine.setRoom(smithNavigation(before));this.routines.get('bento')?.setRoom(smithNavigation(before));return fail('Falha ao salvar. A edição foi revertida.');}
   this.roomView?.destroy();this.roomView=drawSmithLayout(this,this.smithLayout);return null;
  }
  private editMerchantLayout(id:ResidentId,data:SmithLayout):string|null {
   const redraw=()=>{this.merchantView?.destroy();this.merchantView=drawMerchantInterior(this,id,this.merchantLayouts.get(id));};
   if(!validMerchantLayout(data)||!merchantRoomConnected(id,data)){redraw();return 'Mantenha a estrutura no lugar e a entrada, o balcão e o espaço do comerciante livres.';}
   if(!merchantRoomFits(id,this.player.x,this.player.y,data)||this.villagers.some(n=>n.sprite.visible&&!merchantRoomFits(id,n.sprite.x,n.sprite.y,data))){redraw();return 'Mova o personagem ou o morador antes de ocupar esse espaço.';}
-  const before=this.merchantLayouts.get(id)!,save=structuredClone(this.state);this.merchantLayouts.set(id,structuredClone(data));if(!this.persist()){this.merchantLayouts.set(id,before);this.state=save;redraw();return 'Falha ao salvar. A edição foi revertida.';}redraw();return null;
+  const before=this.merchantLayouts.get(id)!,save=structuredClone(this.state);this.merchantLayouts.set(id,structuredClone(data));if(dailyMerchant(id))this.routines.get(id)?.setRoom(merchantRoomNavigation(id,this.merchantLayouts.get(id)));if(!this.persist()){this.merchantLayouts.set(id,before);this.state=save;if(dailyMerchant(id))this.routines.get(id)?.setRoom(merchantRoomNavigation(id,before));redraw();return 'Falha ao salvar. A edição foi revertida.';}redraw();return null;
  }
 
  mainMenu():void {this.shop?.close();this.ui.closeModal();this.leave(true);}
@@ -242,7 +296,7 @@ export class VillageScene extends Phaser.Scene {
  private setBlacksmithRoom(inside:boolean,position?:SaveData['blacksmithInterior']):void {
   this.inBlacksmith=inside;this.homePassage.reset();this.world.setVisible(!inside);
   this.roomView?.destroy();this.roomView=inside?drawSmithLayout(this,this.smithLayout):undefined;
-  for(const npc of this.villagers){npc.sprite.setVisible(this.sameRoom(npc));npc.label.setVisible(false);}
+  for(const npc of this.villagers){npc.sprite.setVisible(this.sameRoom(npc));}
   const p=position??(inside?smithSpawn(this.smithLayout):BLACKSMITH_OUTSIDE);
   this.player.x=p.x;this.player.y=p.y;this.player.facing=directionVector(position?.direction??(inside?'up':'down'));
   // A resident standing in the doorway must never strand the arriving player.
@@ -285,7 +339,7 @@ export class VillageScene extends Phaser.Scene {
   const npc=this.nearest(),nearExit=!this.inShop&&Math.abs(this.player.x-64)<70&&Math.abs(this.player.y-1680)<32,location=this.inBlacksmith?'Ferraria de Bento':this.merchantRoom?`${VILLAGE_NPCS.find(n=>n.id===this.merchantRoom)!.role} · ${VILLAGE_NPCS.find(n=>n.id===this.merchantRoom)!.name}`:VILLAGE_NAME;
   this.ui.updateHUD({toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'village',coins:this.state.villageEconomy!.coins,inHome:this.inShop,swimming:false,name:this.state.profile.name,
    day:this.state.day,time:this.state.time,inventory:this.inventory.data,tool:'hand',wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,
-   playerTile:{x:this.player.x/32,y:this.player.y/32},interiorMapSize:this.inShop?{width:18,height:this.merchantRoom?12:11}:undefined,interactionKey:npc?'E':null,prompt:npc?`Conversar com ${npc.data.name}${merchantCanTrade(npc.data.id,this.roomOwner)?' · comprar e vender':' · conversa e serviços'}`:this.guide?`Siga ${VILLAGE_NPCS.find(n=>n.id===this.guide!.owner)!.name} até a loja`:this.inBlacksmith?'H: editar interior · caminhe pela porta ao sul para sair':this.merchantRoom?'Caminhe pela porta ao sul para sair':nearExit?'Siga a seta para voltar à propriedade':'Explore a praça e converse com os moradores',
+   playerTile:{x:this.player.x/32,y:this.player.y/32},interiorMapSize:this.inShop?{width:18,height:this.merchantRoom?12:11}:undefined,interactionKey:npc?'E':null,prompt:npc?`Conversar com ${npc.data.name}${this.canTrade(npc.data.id)?' · comprar e vender':' · conversa e serviços'}`:this.guide?`Siga ${VILLAGE_NPCS.find(n=>n.id===this.guide!.owner)!.name} até a loja`:this.inBlacksmith?'H: editar interior · caminhe pela porta ao sul para sair':this.merchantRoom?'Caminhe pela porta ao sul para sair':nearExit?'Siga a seta para voltar à propriedade':'Explore a praça e converse com os moradores',
    location,harvests:this.inventory.data.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:this.inShop,shelterReason:this.inShop?location:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});
   this.ui.updateCameraZoom(this.zoom,!this.paused&&!this.shop?.isOpen);
  }
@@ -299,6 +353,7 @@ export class VillageScene extends Phaser.Scene {
   this.state.shopResidents=[...this.residents.values()].map(p=>({...p}));
   this.state.merchantScenes=Object.fromEntries([...this.merchantLayouts].map(([id,data])=>[id,structuredClone(data)]));
   this.state.bentoRoutine=structuredClone(this.bentoRoutine.state);
+  this.state.villageRoutines=Object.fromEntries([...this.routines].map(([id,r])=>[id,structuredClone(r.state)]));
   this.state.blacksmithScene=structuredClone(this.smithLayout);
   this.state.blacksmithLayoutRevision=3;
   this.state.crops=this.farming.crops.map(c=>({...c}));return saveGame(this.state);
@@ -343,25 +398,18 @@ export class VillageScene extends Phaser.Scene {
   if(Math.hypot(this.player.x-previous.x,this.player.y-previous.y)>.1)gameAudio.play('step');
   this.farming.update(delta);Object.assign(this.state,advanceClock(this.state,delta*GAME_MINUTES_PER_SECOND));
   for(const tree of this.world.trees)tree.setAlpha(this.player.y<tree.y&&Math.abs(this.player.x-tree.x)<tree.displayWidth*.4&&this.player.y>tree.y-tree.displayHeight*.85?.42:1);
-  const bento=this.villagers.find(n=>n.data.id==='bento');
-  if(bento&&this.guide?.owner!=='bento'){
-   const blocked=(x:number,y:number)=>this.world.isBlocked(x,y)||this.villagers.some(n=>n!==bento&&Math.floor(n.sprite.x/32)===x&&Math.floor(n.sprite.y/32)===y);
-   const nearPlayer=this.sameRoom(bento)&&Math.hypot(bento.sprite.x-this.player.x,bento.sprite.y-this.player.y)<68;
-   const step=this.bentoRoutine.step(delta,nearPlayer,blocked);
-   if((step.area==='blacksmith-home')===this.inBlacksmith&&!this.merchantRoom&&actorsOverlap(step,this.player)){const free=freeArrival(step,(x,y)=>this.inBlacksmith?smithBlocked(this.smithLayout,x,y):this.world.isBlockedPoint(x,y),[this.player,...this.villagers.filter(n=>n!==bento&&n.sprite.visible).map(n=>n.sprite)]);if(free){Object.assign(step,free);Object.assign(this.bentoRoutine.state,free);}}
-   bento.sprite.setPosition(step.x,step.y).setDepth(step.y).setFrame(characterFrame(nearPlayer?directionFromVector(this.player.x-step.x,this.player.y-step.y):step.direction,step.phase,bento.frames));
-   bento.label.setPosition(step.x,step.y-CHARACTER_HEIGHT-5).setDepth(step.y+1);
-  }
+  this.updateDailyRoutines(delta);
   if(this.guide&&!this.inShop){const guide=this.guide,npc=this.villagers.find(n=>n.data.id===guide.owner)!;
    const blocked=(x:number,y:number)=>this.world.isBlocked(x,y)||this.villagers.some(n=>n!==npc&&n.sprite.visible&&Math.floor(n.sprite.x/32)===x&&Math.floor(n.sprite.y/32)===y);
    const step=guide.step(delta,npc.sprite,this.player,blocked);let x=step.x,y=step.y;
    if(actorsOverlap(step,this.player)){x=npc.sprite.x;y=npc.sprite.y;step.phase=0;}
-   if(step.arrived){const side={x:x+26,y};if(!this.world.isBlockedPoint(side.x,side.y)){x=side.x;}}
-   npc.sprite.setPosition(x,y).setDepth(y).setFrame(characterFrame(step.waiting?directionFromVector(this.player.x-x,this.player.y-y):step.direction,npc.frames?step.phase:0,npc.frames));npc.label.setPosition(x,y-CHARACTER_HEIGHT-5).setDepth(y+1);
+   if(step.arrived){const side=freeArrival({x:x+26,y},this.world.isBlockedPoint,[this.player,...this.villagers.filter(n=>n!==npc&&n.sprite.visible).map(n=>n.sprite)]);if(side&&Math.hypot(side.x-x,side.y-y)<64){x=side.x;y=side.y;}}
+   npc.sprite.setPosition(x,y).setDepth(y).setFrame(characterFrame(step.waiting?directionFromVector(this.player.x-x,this.player.y-y):step.direction,npc.frames?step.phase:0,npc.frames));
    if(guide.owner==='bento')Object.assign(this.bentoRoutine.state,{x,y,direction:step.direction});else Object.assign(this.residents.get(guide.owner)!,{x,y,direction:step.direction});
+   if(dailyMerchant(guide.owner))Object.assign(this.routines.get(guide.owner)!.state,{x,y,direction:step.direction});
   }
   for(const npc of this.villagers)npc.sprite.setVisible(this.sameRoom(npc)&&(!npc.data.merchantId||isMerchantOpen(npc.data.merchantId,this.state.day)));
-  const nearest=this.nearest();for(const npc of this.villagers)npc.label.setVisible(npc.sprite.visible&&(npc===nearest||Math.hypot(npc.sprite.x-this.player.x,npc.sprite.y-this.player.y)<220));
+
   this.hudElapsed+=delta;if(this.hudElapsed>.1){this.updateHUD();this.hudElapsed=0;}
   this.elapsed+=delta;if(this.elapsed>5){this.persist();this.elapsed=0;}
  }

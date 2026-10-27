@@ -1,3 +1,4 @@
+import {VillageNpcOverlays} from '../village-npc-overlays';
 import {notifyReadyOrders} from '../systems/economy';
 import {markMinerals} from '../economy-visuals';
 import {toolCondition,spendDurability,toolWork} from '../systems/economy';
@@ -27,7 +28,7 @@ import {initializeHomestead,homesteadResourceReserved} from '../data/property-ho
 import { gameAudio } from '../audio';
 import Phaser from 'phaser';
 import { Player,PLAYER_SPEED } from '../player';
-import { CHARACTER_HEIGHT, createArt } from '../art';
+import { createArt } from '../art';
 import { directionFromVector, directionVector } from '../character-directions';
 import { preloadVisualAssets } from '../visual-assets';
 import { isPathTile, isBridgeTile, locationAt, getRegionAt } from '../data/regions';
@@ -106,7 +107,8 @@ export class ValleyScene extends Phaser.Scene {
   private titleBackgroundMode: TitleBackgroundMode = 'off';
   private titleElapsed = 0;
   private titleLights?: Phaser.GameObjects.Graphics | Phaser.GameObjects.Image;
-  private npcLabel?: Phaser.GameObjects.Text;
+  private npcSprite?: Phaser.GameObjects.Sprite;
+  private npcOverlays?: VillageNpcOverlays;
   private supplySprites: Phaser.GameObjects.Image[] = [];
   private home = new Home();
   private inHome = false;
@@ -171,7 +173,7 @@ export class ValleyScene extends Phaser.Scene {
       this.interact(tile, this.restoreSoilHeld);
     });
     this.events.once('shutdown', () => {
-      this.daylight?.destroy();
+      this.daylight?.destroy();this.npcOverlays?.destroy();this.npcOverlays=undefined;
       window.removeEventListener('keydown', this.handleKey);
       window.removeEventListener('keyup', this.handleKeyUp);
       window.removeEventListener('pagehide', this.handlePageHide);
@@ -443,7 +445,7 @@ export class ValleyScene extends Phaser.Scene {
     document.body.classList.toggle('rainy-title-active', mode !== 'off');
     this.daylight?.setVisible(mode === 'off');
     this.titleLights?.setVisible(mode !== 'off');
-    this.npcLabel?.setVisible(mode === 'off');
+
     if (mode === 'off') {
       this.updateZoom();
       if (this.player && !this.inHome) {
@@ -610,6 +612,7 @@ export class ValleyScene extends Phaser.Scene {
     this.homeView = undefined;
     this.outdoorVisibility.clear();
     this.animals?.destroy();this.animals=undefined;
+    this.npcOverlays?.destroy();this.npcOverlays=undefined;
     this.children.removeAll(true);
     this.state = structuredClone(data);
 
@@ -657,11 +660,8 @@ export class ValleyScene extends Phaser.Scene {
     this.resources=new Resources(this.state.resourceProgress);
     this.animals=new AnimalPopulation(this,this.state,'property',this.animalBlocked,PLAYER_SPEED,()=>treeTiles(this.world.resources));
     this.world.updateOcclusion(this.player.x, this.player.y);
-    this.add.sprite(NPC_POSITION.x, NPC_POSITION.y, 'lia').setOrigin(0.5, 1).setDepth(NPC_POSITION.y);
-    this.npcLabel = this.add.text(NPC_POSITION.x, NPC_POSITION.y - CHARACTER_HEIGHT - 6, 'Lia', {
-      fontFamily: 'monospace', fontSize: '10px', color: '#fff1d2',
-      stroke: '#263b31', strokeThickness: 2,
-    }).setOrigin(0.5, 1).setDepth(NPC_POSITION.y + 1);
+    this.npcSprite=this.add.sprite(NPC_POSITION.x,NPC_POSITION.y,'lia').setOrigin(.5,1).setDepth(NPC_POSITION.y);
+    this.npcOverlays=new VillageNpcOverlays(this,()=>({actors:this.npcSprite?[{id:'lia',name:'Lia',role:'Moradora',sprite:this.npcSprite}]:[],blocked:!this.canPlay()||this.inHome||this.titleBackgroundMode!=='off'}));
     this.selection = this.add.graphics().setDepth(4000);
     this.daylight = new Daylight(this, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE);
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE);

@@ -1,0 +1,309 @@
+{
+  "version": 1,
+  "pieces": [
+    {
+      "id": "structure",
+      "asset": "structure",
+      "x": 0,
+      "y": 0,
+      "sx": 1,
+      "sy": 1,
+      "visible": true,
+      "wallShade": 1
+    },
+    {
+      "id": "floor",
+      "asset": "floor-wood",
+      "x": 33,
+      "y": 116,
+      "sx": 510,
+      "sy": 234,
+      "visible": true
+    },
+    {
+      "id": "balcao_central",
+      "asset": "balcao_central",
+      "x": 288.0,
+      "y": 210.0,
+      "sx": 0.10268111808328578,
+      "sy": 0.10268111808328578,
+      "visible": true
+    },
+    {
+      "id": "balanca_balcoes",
+      "asset": "balanca_balcoes",
+      "x": 321.0,
+      "y": 168.0,
+      "sx": 0.024896265560165973,
+      "sy": 0.024896265560165973,
+      "visible": true,
+      "parent": "balcao_central"
+    },
+    {
+      "id": "livro_caixa",
+      "asset": "livro_caixa",
+      "x": 261.0,
+      "y": 166.2,
+      "sx": 0.023013698630136987,
+      "sy": 0.023013698630136987,
+      "visible": true,
+      "parent": "balcao_central"
+    },
+    {
+      "id": "estante_potes",
+      "asset": "estante_potes",
+      "x": 288.0,
+      "y": 139.2,
+      "sx": 0.11072664359861592,
+      "sy": 0.11072664359861592,
+      "visible": true
+    },
+    {
+      "id": "armario_fundos",
+      "asset": "armario_fundos",
+      "x": 456.0,
+      "y": 142.79999999999998,
+      "sx": 0.07940161104718067,
+      "sy": 0.07940161104718067,
+      "visible": true
+    },
+    {
+      "id": "prateleira_lateral_esquerda",
+      "asset": "prateleira_lateral_esquerda",
+      "x": 123.0,
+      "y": 146.4,
+      "sx": 0.08411214953271028,
+      "sy": 0.08411214953271028,
+      "visible": true
+    },
+    {
+      "id": "sacos_graos",
+      "asset": "sacos_graos",
+      "x": 67.8,
+      "y": 270.0,
+      "sx": 0.04641509433962264,
+      "sy": 0.04641509433962264,
+      "visible": true
+    },
+    {
+      "id": "caixas_frutas",
+      "asset": "caixas_frutas",
+      "x": 131.4,
+      "y": 292.8,
+      "sx": 0.0584070796460177,
+      "sy": 0.0584070796460177,
+      "visible": true
+    },
+    {
+      "id": "frutas_hortalicas",
+      "asset": "frutas_hortalicas",
+      "x": 420.0,
+      "y": 286.8,
+      "sx": 0.045836516424751714,
+      "sy": 0.045836516424751714,
+      "visible": true,
+      "parent": "mesa_expositora"
+    },
+    {
+      "id": "sacos_lateral_direita",
+      "asset": "sacos_lateral_direita",
+      "x": 502.79999999999995,
+      "y": 258.0,
+      "sx": 0.04488188976377953,
+      "sy": 0.04488188976377953,
+      "visible": true
+    },
+    {
+      "id": "tapete_central",
+      "asset": "tapete_central",
+      "x": 288.0,
+      "y": 312.0,
+      "sx": 0.099009900990099,
+      "sy": 0.099009900990099,
+      "visible": true
+    },
+    {
+      "id": "placa_botanica",
+      "asset": "placa_botanica",
+      "x": 189.0,
+      "y": 83.39999999999999,
+      "sx": 0.04186046511627907,
+      "sy": 0.04186046511627907,
+      "visible": true
+    },
+    {
+      "id": "barril_canto",
+      "asset": "barril_canto",
+      "x": 66.0,
+      "y": 210.0,
+      "sx": 0.04252998909487459,
+      "sy": 0.04252998909487459,
+      "visible": true
+    },
+    {
+      "id": "enfeite_floral",
+      "asset": "enfeite_floral",
+      "x": 357.59999999999997,
+      "y": 169.79999999999998,
+      "sx": 0.03,
+      "sy": 0.03,
+      "visible": true,
+      "parent": "balcao_central"
+    },
+    {
+      "id": "lamparina_parede",
+      "asset": "lamparina_parede",
+      "x": 70.2,
+      "y": 85.2,
+      "sx": 0.03115264797507788,
+      "sy": 0.03115264797507788,
+      "visible": true
+    },
+    {
+      "id": "escada_estoque",
+      "asset": "escada_estoque",
+      "x": 177.6,
+      "y": 148.79999999999998,
+      "sx": 0.0421792618629174,
+      "sy": 0.0421792618629174,
+      "visible": true
+    },
+    {
+      "id": "banquinho",
+      "asset": "banquinho",
+      "x": 360.0,
+      "y": 246.0,
+      "sx": 0.026875,
+      "sy": 0.026875,
+      "visible": true
+    },
+    {
+      "id": "ervas_penduradas",
+      "asset": "ervas_penduradas",
+      "x": 401.4,
+      "y": 102.6,
+      "sx": 0.04431314623338257,
+      "sy": 0.04431314623338257,
+      "visible": true
+    },
+    {
+      "id": "caixa_registro",
+      "asset": "caixa_registro",
+      "x": 220.2,
+      "y": 170.4,
+      "sx": 0.034629861982434125,
+      "sy": 0.034629861982434125,
+      "visible": true,
+      "parent": "balcao_central"
+    },
+    {
+      "id": "mesa_expositora",
+      "asset": "mesa_expositora",
+      "x": 420.0,
+      "y": 303.0,
+      "sx": 0.05504587155963303,
+      "sy": 0.05504587155963303,
+      "visible": true
+    },
+    {
+      "id": "cesta_macas",
+      "asset": "cesta_macas",
+      "x": 192.6,
+      "y": 283.2,
+      "sx": 0.035454545454545454,
+      "sy": 0.035454545454545454,
+      "visible": true
+    },
+    {
+      "id": "capacho_entrada",
+      "asset": "capacho_entrada",
+      "x": 288.0,
+      "y": 345.59999999999997,
+      "sx": 0.05405405405405405,
+      "sy": 0.05405405405405405,
+      "visible": true
+    },
+    {
+      "id": "toalha_balcao",
+      "asset": "toalha_balcao",
+      "x": 288.0,
+      "y": 194.4,
+      "sx": 0.04513839602555003,
+      "sy": 0.04513839602555003,
+      "visible": true,
+      "parent": "balcao_central"
+    },
+    {
+      "id": "caixote_vazio",
+      "asset": "caixote_vazio",
+      "x": 66.6,
+      "y": 299.4,
+      "sx": 0.03181148748159057,
+      "sy": 0.03181148748159057,
+      "visible": true
+    },
+    {
+      "id": "vaso_ervas",
+      "asset": "vaso_ervas",
+      "x": 520.8,
+      "y": 312.0,
+      "sx": 0.032525951557093424,
+      "sy": 0.032525951557093424,
+      "visible": true
+    },
+    {
+      "id": "comoda_estoque",
+      "asset": "comoda_estoque",
+      "x": 138.0,
+      "y": 202.2,
+      "sx": 0.0462085308056872,
+      "sy": 0.0462085308056872,
+      "visible": true
+    },
+    {
+      "id": "estante_sementes",
+      "asset": "estante_sementes",
+      "x": 57.599999999999994,
+      "y": 147.6,
+      "sx": 0.035045317220543805,
+      "sy": 0.035045317220543805,
+      "visible": true
+    },
+    {
+      "id": "banco_espera",
+      "asset": "banco_espera",
+      "x": 156.0,
+      "y": 340.8,
+      "sx": 0.04666666666666667,
+      "sy": 0.04666666666666667,
+      "visible": true
+    },
+    {
+      "id": "cadeira_augusto",
+      "asset": "cadeira_augusto",
+      "x": 394.2,
+      "y": 162.0,
+      "sx": 0.03702252693437806,
+      "sy": 0.03702252693437806,
+      "visible": true
+    },
+    {
+      "id": "expositor_suprimentos",
+      "asset": "expositor_suprimentos",
+      "x": 510.0,
+      "y": 189.0,
+      "sx": 0.039354187689202826,
+      "sy": 0.039354187689202826,
+      "visible": true
+    },
+    {
+      "id": "mesa_embalagem",
+      "asset": "mesa_embalagem",
+      "x": 408.0,
+      "y": 199.2,
+      "sx": 0.03957131079967024,
+      "sy": 0.03957131079967024,
+      "visible": true
+    }
+  ]
+}

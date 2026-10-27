@@ -75,6 +75,7 @@ export interface SaveData {
   blacksmithScene?:import('./systems/smith-layout').SmithLayout;
   blacksmithLayoutRevision?:2|3;
   bentoRoutine?:import('./systems/bento-routine').BentoRoutineState;
+  villageRoutines?:Partial<Record<import('./systems/merchant-routine').RoutineId,import('./systems/merchant-routine').MerchantRoutineState>>;
   /** Absent in older saves; entering the village starts with zero coins. */
   villageEconomy?: VillageEconomy;
   villageProgress?: VillageProgress;

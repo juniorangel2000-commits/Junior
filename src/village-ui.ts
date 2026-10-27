@@ -12,6 +12,8 @@ import './village-ui.css';
 
 export interface VillageInteractionCallbacks {
   canTrade?(npcId:VillageNPC['id']):boolean;
+  isInside?(npcId:VillageNPC['id']):boolean;
+  getAvailability?(npcId:VillageNPC['id']):{message:string;canGuide:boolean}|undefined;
   onGuide?(npcId:VillageNPC['id']):void;
   getPortrait?(npcId:string):string;
   onBlacksmith?():void;
@@ -149,7 +151,8 @@ export class VillageInteractionUI {
     if (!available) this.tab = 'talk';
     this.title.textContent = this.npc.name;
     this.panel.querySelector('[data-npc-portrait]')?.remove();const portrait=this.callbacks.getPortrait?.(this.npc.id);if(portrait){const img=document.createElement('img');img.dataset.npcPortrait='';img.src=portrait;img.alt=this.npc.name;img.style.cssText='width:48px;height:64px;object-fit:contain;image-rendering:pixelated;float:left;margin-right:14px';this.title.parentElement!.prepend(img);}
-    this.subtitle.textContent = merchant?.shop ?? this.npc.role;
+    const schedule=this.callbacks.getAvailability?.(this.npc.id);
+    this.subtitle.textContent = (merchant?.shop ?? this.npc.role)+(schedule?' · '+schedule.message:'');
     this.balance.textContent = count(this.callbacks.getEconomy().coins);
     this.tabs.replaceChildren();
     const options: Array<[Tab, string]> = [['talk', 'Conversar']];
@@ -203,7 +206,8 @@ export class VillageInteractionUI {
     const npc = this.npc;
     this.body.replaceChildren(); this.body.className = 'village-panel-body village-dialogue';
     const available = npc.merchantId && isMerchantOpen(npc.merchantId, this.day);
-    const inside=this.callbacks.canTrade?.(npc.id)??true;
+    const inside=this.callbacks.isInside?.(npc.id)??this.callbacks.canTrade?.(npc.id)??true;
+    const trading=inside&&(this.callbacks.canTrade?.(npc.id)??true);
     const emblem = this.emblem(npc.merchantId ? merchantEmblems[npc.merchantId] : 'fiber');
     emblem.classList.add('village-dialogue-emblem');
     const copy = document.createElement('div'); copy.className = 'village-dialogue-copy';
@@ -214,14 +218,14 @@ export class VillageInteractionUI {
     progress.textContent = `${Math.min(this.dialogueIndex + 1, npc.dialogue.length)} de ${npc.dialogue.length}`;
     const next = document.createElement('button'); next.type = 'button'; next.className = 'village-primary'; next.dataset.villageDialogueNext = '';
     const remaining = this.dialogueIndex < npc.dialogue.length - 1;
-    next.textContent = remaining ? 'Continuar conversa →' : available&&inside ? 'Ver a loja →' : 'Até mais';
+    next.textContent = remaining ? 'Continuar conversa →' : available&&trading ? 'Ver a loja →' : 'Até mais';
     next.addEventListener('click', () => {
       if (remaining) { this.dialogueIndex++; this.renderDialogue(); this.body.querySelector<HTMLButtonElement>('[data-village-dialogue-next]')?.focus(); }
-      else if (available&&inside) this.selectTab('buy');
+      else if (available&&trading) this.selectTab('buy');
       else this.close();
     });
     actions.append(progress, next);
-    if(available&&!inside&&this.callbacks.onGuide){const guide=document.createElement('button');guide.type='button';guide.className='village-primary';guide.dataset.guideToShop='';guide.textContent='Leve-me até sua loja';guide.onclick=()=>{this.close();this.callbacks.onGuide?.(npc.id);};actions.append(guide);const note=document.createElement('p');note.textContent='Compra e venda acontecem dentro da loja. Conversas e serviços continuam disponíveis aqui.';copy.append(note);}
+    if(available&&!inside&&this.callbacks.onGuide){const guide=document.createElement('button');guide.type='button';guide.className='village-primary';guide.dataset.guideToShop='';guide.textContent='Leve-me até sua loja';guide.disabled=this.callbacks.getAvailability?.(npc.id)?.canGuide===false;guide.onclick=()=>{this.close();this.callbacks.onGuide?.(npc.id);};actions.append(guide);const note=document.createElement('p');note.textContent='Compra e venda acontecem dentro da loja. Conversas e serviços continuam disponíveis aqui.';copy.append(note);}
     copy.prepend(quote);copy.append(actions); this.body.append(emblem, copy);
   }
 

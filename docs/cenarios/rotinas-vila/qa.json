@@ -1,0 +1,165 @@
+{
+  "checks": [
+    {
+      "name": "Lia também fica sem nome permanente",
+      "passed": true
+    },
+    {
+      "name": "Lia mostra a identificação ao passar o mouse",
+      "passed": true
+    },
+    {
+      "name": "Augusto e Bento entram e circulam nos próprios comércios",
+      "passed": true,
+      "detail": [
+        {
+          "id": "augusto",
+          "area": "shop",
+          "x": 292,
+          "y": 308,
+          "direction": "right",
+          "stop": 0,
+          "wait": 4.579669976578771e-15,
+          "serviceUntil": 0,
+          "socialUntil": 0,
+          "socialDay": 0,
+          "activity": ""
+        },
+        {
+          "id": "bento",
+          "area": "shop",
+          "x": 244,
+          "y": 245.4000000000001,
+          "direction": "up",
+          "stop": 0,
+          "wait": 0,
+          "serviceUntil": 0,
+          "socialUntil": 0,
+          "socialDay": 0,
+          "activity": "work-0"
+        }
+      ]
+    },
+    {
+      "name": "Atendimento aberto mostra compra, venda e horário",
+      "passed": true
+    },
+    {
+      "name": "Nomes não aparecem por proximidade",
+      "passed": true
+    },
+    {
+      "name": "Nome do Augusto aparece somente sob o cursor",
+      "passed": true
+    },
+    {
+      "name": "Tipografia mantém o tamanho ao mudar o zoom",
+      "passed": true
+    },
+    {
+      "name": "Nome desaparece ao retirar o mouse do personagem",
+      "passed": true
+    },
+    {
+      "name": "Armazém usa as 41 peças do arquivo enviado",
+      "passed": true
+    },
+    {
+      "name": "Encontro na praça inicia uma conversa entre os NPCs",
+      "passed": true,
+      "detail": {
+        "time": 756.2000000000082,
+        "a": {
+          "area": "village",
+          "x": 1524.8082810199471,
+          "y": 1296,
+          "direction": "down-right",
+          "stop": 0,
+          "wait": 0,
+          "serviceUntil": 0,
+          "socialUntil": 2208.200000000008,
+          "socialDay": 1
+        },
+        "b": {
+          "area": "village",
+          "x": 1584,
+          "y": 1328,
+          "direction": "up-left",
+          "stop": 0,
+          "wait": 0.40000000000000013,
+          "serviceUntil": 0,
+          "socialUntil": 2208.200000000008,
+          "socialDay": 1
+        },
+        "speech": {
+          "id": "augusto",
+          "text": "Bento, preciso de umas dobradiças para o armazém."
+        }
+      }
+    },
+    {
+      "name": "Balão usa texto HTML e a moldura de papel e madeira da HUD",
+      "passed": true
+    },
+    {
+      "name": "Uma fala de cada vez, com resposta do Bento",
+      "passed": true
+    },
+    {
+      "name": "Intervalo informa retorno e desabilita condução e comércio",
+      "passed": true
+    },
+    {
+      "name": "Após o intervalo os dois retornam e retomam o atendimento",
+      "passed": true,
+      "detail": [
+        {
+          "id": "augusto",
+          "area": "shop",
+          "serving": true
+        },
+        {
+          "id": "bento",
+          "area": "shop",
+          "serving": true
+        }
+      ]
+    },
+    {
+      "name": "À noite há conversa, sem venda nem botão de condução dentro da loja",
+      "passed": true
+    },
+    {
+      "name": "Comando de compra também rejeita atendimento encerrado sem consumir Coroas",
+      "passed": true,
+      "detail": {
+        "ok": false,
+        "unchanged": true
+      }
+    },
+    {
+      "name": "Serviços do ferreiro continuam disponíveis após encerrar a venda",
+      "passed": true
+    },
+    {
+      "name": "Save conserva áreas, rotinas e conversa já realizada",
+      "passed": true,
+      "detail": {
+        "saved": true,
+        "count": 2,
+        "day": 1,
+        "area": "shop"
+      }
+    },
+    {
+      "name": "Partida reabre no armazém sem perder o encontro do dia",
+      "passed": true
+    },
+    {
+      "name": "Sem erros de execução ou arquivos ausentes",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "errors": []
+}

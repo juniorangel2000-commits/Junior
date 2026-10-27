@@ -1,0 +1,11 @@
+.village-npc-overlays{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.village-npc-overlays [hidden]{display:none!important}
+.village-npc-name,.village-npc-speech{position:absolute;box-sizing:border-box;max-width:min(300px,calc(100vw - 32px));border:8px solid #87552f;border-image:var(--cozy-frame) 14 / 8px / 0 stretch;border-radius:4px;background:linear-gradient(115deg,#fff2d5,var(--cozy-paper,#f5e6c5));color:var(--cozy-ink,#513c26);box-shadow:0 3px #372a1b55,0 5px 12px #14271925;font:14px/1.45 Georgia,serif;letter-spacing:0;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;image-rendering:auto;pointer-events:none}
+.village-npc-name{width:max-content;padding:3px 8px;font-size:13px}
+.village-npc-name strong{display:block;font-weight:700;color:#513c26}
+.village-npc-name small{display:block;font:11px/1.4 Arial,sans-serif;color:#785b3c}
+.village-npc-speech{width:max-content;padding:7px 10px;overflow:visible}
+.village-npc-speech::before,.village-npc-speech::after{content:'';position:absolute;left:var(--speech-tail,50%);transform:translateX(-50%);width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent}
+.village-npc-speech::before{bottom:-18px;border-top:10px solid #87552f}
+.village-npc-speech::after{bottom:-12px;border-left-width:6px;border-right-width:6px;border-top:8px solid #f5e6c5}
+@media(max-width:760px){.village-npc-speech{max-width:240px;font-size:13px}.village-npc-name{font-size:12px}}

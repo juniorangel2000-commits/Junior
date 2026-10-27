@@ -1,4 +1,5 @@
 import catalog from '../../public/dev/augusto/manifest.json';
+import authoredAugusto from './augusto-layout.json';
 import type {ResidentId} from '../systems/merchant-visit';
 import type {SmithAsset,SmithLayout} from '../systems/smith-layout';
 export const MERCHANT_ROOM_SIZE={width:576,height:384};
@@ -24,8 +25,13 @@ export const MERCHANT_ROOM_ASSETS:readonly SmithAsset[]=[...merchantAssets.map(a
  {id:'floor-stone',name:'Piso de pedra',file:'../vila-v31/bento/interior-novo/piso-lajes.png',w:1,h:1,ox:0,oy:0,bounds:[0,0,1,1],collision:null,layer:'floor',tile:true},
 ];
 const cached=new Map<ResidentId,SmithLayout>();
-function roomDefault(id:ResidentId):SmithLayout{let data=cached.get(id);if(!data){data={version:1,pieces:[{id:'structure',asset:'structure',x:0,y:0,sx:1,sy:1,visible:true,wallShade:1},{id:'floor',asset:'floor-wood',x:33,y:116,sx:510,sy:234,visible:true},...merchantRoomPieces(id).map(a=>({id:a.id,asset:a.id,x:a.recommendedPosition.x*.6,y:a.recommendedPosition.y*.6,sx:a.scale*.6,sy:a.scale*.6,visible:true,...a.supportId?{parent:a.supportId}:{}}))]};cached.set(id,data);}return data;}
+function previousRoomDefault(id:ResidentId):SmithLayout{let data=cached.get(id);if(!data){data={version:1,pieces:[{id:'structure',asset:'structure',x:0,y:0,sx:1,sy:1,visible:true,wallShade:1},{id:'floor',asset:'floor-wood',x:33,y:116,sx:510,sy:234,visible:true},...merchantRoomPieces(id).map(a=>({id:a.id,asset:a.id,x:a.recommendedPosition.x*.6,y:a.recommendedPosition.y*.6,sx:a.scale*.6,sy:a.scale*.6,visible:true,...a.supportId?{parent:a.supportId}:{}}))]};cached.set(id,data);}return data;}
+const roomDefault=(id:ResidentId):SmithLayout=>id==='augusto'?authoredAugusto as SmithLayout:previousRoomDefault(id);
 export const createMerchantLayout=(id:ResidentId)=>structuredClone(roomDefault(id));
+/** Upgrade only the untouched original room; preserve any player-authored edits. */
+export function resolveMerchantLayout(id:ResidentId,saved?:SmithLayout):SmithLayout{
+ return structuredClone(!saved||id==='augusto'&&JSON.stringify(saved)===JSON.stringify(previousRoomDefault(id))?roomDefault(id):saved);
+}
 export function validMerchantLayout(value:unknown):value is SmithLayout{
  if(!value||typeof value!=='object')return false;const d=value as SmithLayout;if(d.version!==1||!Array.isArray(d.pieces)||d.pieces.length>140)return false;const ids=new Set<string>();
  for(const p of d.pieces){const a=MERCHANT_ROOM_ASSETS.find(a=>a.id===p?.asset);if(!p||!a||typeof p.id!=='string'||!/^[-\w]{1,90}$/.test(p.id)||ids.has(p.id)||![p.x,p.y,p.sx,p.sy].every(Number.isFinite)||p.x< -100||p.y< -100||p.x>700||p.y>450||p.sx<=0||p.sy<=0||(a.bounds[2]-a.bounds[0])*p.sx>700||(a.bounds[3]-a.bounds[1])*p.sy>450||typeof p.visible!=='boolean'||p.solid!==undefined&&typeof p.solid!=='boolean'||p.effects!==undefined&&typeof p.effects!=='boolean'||p.wallShade!==undefined&&(!Number.isFinite(p.wallShade)||p.wallShade<0||p.wallShade>1))return false;ids.add(p.id);}
@@ -40,3 +46,9 @@ export function merchantRoomBlocked(id:ResidentId,x:number,y:number,layout?:Smit
 }
 export const merchantRoomFits=(id:ResidentId,x:number,y:number,layout?:SmithLayout)=>Number.isFinite(x)&&Number.isFinite(y)&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!merchantRoomBlocked(id,x+dx,y+dy,layout));
 export function merchantRoomConnected(id:ResidentId,data:SmithLayout):boolean{if(!merchantRoomFits(id,288,335,data)||!merchantRoomFits(id,288,151,data))return false;const queue=[{x:288,y:335}],seen=new Set(['288,335']);for(let i=0;i<queue.length&&queue.length<20000;i++){const p=queue[i];if(Math.hypot(p.x-288,p.y-225)<8)return true;for(const[dx,dy]of[[4,0],[-4,0],[0,4],[0,-4]]){const next={x:p.x+dx,y:p.y+dy},key=`${next.x},${next.y}`;if(!seen.has(key)&&merchantRoomFits(id,next.x,next.y,data)){seen.add(key);queue.push(next);}}}return false;}
+
+/** The same fine navigation grid used by the blacksmith, with movable furniture. */
+export function merchantRoomNavigation(id:ResidentId,layout?:SmithLayout):import('../systems/bento-routine').BentoRoomNavigation{
+ return {isBlocked:(x,y)=>!merchantRoomFits(id,x*8+4,y*8+4,layout),validPosition:(x,y)=>merchantRoomFits(id,x,y,layout),entry:MERCHANT_ROOM_ENTRY,exit:MERCHANT_ROOM_EXIT,width:72,height:48,tileSize:8,
+ stops:[{x:36,y:18},{x:49,y:18},{x:17,y:30},{x:36,y:38}]};
+}

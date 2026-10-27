@@ -22,6 +22,7 @@ import {createVillageProgress,validateVillageProgress,validateVillageInstallatio
 import {VILLAGE_ITEM_IDS} from '../data/items';
 import {blacksmithRoomPosition,previousBlacksmithPosition,BLACKSMITH_INSIDE,validateBlacksmithHome,BLACKSMITH_ROOM} from '../data/blacksmith-interior';
 import {validBentoRoutine} from './bento-routine';
+import {validMerchantRoutines} from './merchant-routine';
 import {validResidentId,validShopResidents} from './merchant-visit';
 import {merchantRoomFits,validMerchantLayout} from '../data/merchant-rooms';
 
@@ -65,6 +66,7 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.blacksmithScene!==undefined&&!validSmithLayout(value.blacksmithScene))return false;
   if(value.blacksmithHome!==undefined&&!validateBlacksmithHome(value.blacksmithHome))return false;
   if(value.shopResidents!==undefined&&!validShopResidents(value.shopResidents))return false;
+  if(value.villageRoutines!==undefined&&!validMerchantRoutines(value.villageRoutines))return false;
   if(value.merchantScenes!==undefined&&(!isRecord(value.merchantScenes)||Object.entries(value.merchantScenes).some(([id,room])=>!validResidentId(id)||id==='bento'||!validMerchantLayout(room))))return false;
   if(value.merchantInterior!==undefined){const p=value.merchantInterior;if(value.activeArea!=='village'||value.blacksmithInterior!==undefined||!isRecord(p)||!validResidentId(p.owner)||p.owner==='bento'||typeof p.x!=='number'||typeof p.y!=='number'||!merchantRoomFits(p.owner,p.x,p.y,(value.merchantScenes as SaveData['merchantScenes'])?.[p.owner])||(p.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(p.direction as CharacterDirection)))return false;}
   const smithRoom=value.blacksmithHome?new Home(value.blacksmithHome as SaveData['home'],false):BLACKSMITH_ROOM;

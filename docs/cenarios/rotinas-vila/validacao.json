@@ -1,0 +1,10 @@
+{
+  "typescript": "passed",
+  "tests": 736,
+  "testFiles": 73,
+  "build": "passed",
+  "browserRoutineAndUiChecks": 20,
+  "browserRegressionChecks": 22,
+  "authoredPieces": 41,
+  "publication": "local only"
+}
