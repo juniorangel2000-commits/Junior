@@ -1,4 +1,6 @@
 import {preloadSmithLayout} from './smith-layout-art';
+import {preloadEcologyArt,setupEcologyArt,ecologyIcon} from './ecology-art';
+import {setupTreeWind} from './tree-wind';
 import {preloadVillageScenery} from './village-scenery-art';
 import {preloadEconomyArt} from './economy-art';
 import {economyIcon,tierToolIcon,ART_TOOL_IDS} from './data/economy-art';
@@ -23,6 +25,7 @@ import { TOOL_ICON_URLS } from './data/tool-art';
 const BASE = 'assets/visual/';
 const ICON_IDS = new Set(['wood', 'stone', 'branch', 'log', 'plank', 'scrap', 'hatchet', 'pickaxe', 'handsaw', 'fiber', 'cord', 'flakedStone', 'handle', 'blade', 'board', 'hammer', 'water', 'workbench', 'seeds']);
 export function itemIconUrl(id: string, tier=0): string | undefined {
+  const natural=ecologyIcon(id);if(natural)return natural;
   const dedicated=economyIcon(id);if(dedicated)return dedicated;
   if((ART_TOOL_IDS as readonly string[]).includes(id)&&(tier>0||id==='sickle'||id==='shovel'))return tierToolIcon(id as EconomicTool,tier);
   const fallback=Object.hasOwn(ITEMS,id)?ITEMS[id as ItemId].iconFallback:undefined;
@@ -42,6 +45,7 @@ const WORLD_SOURCES: Record<string, string> = {
 };
 const MODULES = ['parede_creme', 'parede_janela_floreira', 'parede_trepadeira', 'parede_porta', 'porta_madeira', 'janela_turquesa', 'telha_lisa', 'telha_variante', 'chamine', 'floreira', 'cerca_natural', 'banco_jardim', 'barril', 'vaso_flor', 'piso_tabuas', 'piso_pedra', 'terra', 'caminho', 'planta'];
 export function preloadVisualAssets(scene: Phaser.Scene): void {
+  preloadEcologyArt(scene);
   preloadSmithLayout(scene);
   preloadEconomyArt(scene);
   preloadVillageScenery(scene);
@@ -240,6 +244,8 @@ function createHouse(scene: Phaser.Scene): void {
 }
 
 export function setupVisualAssets(scene: Phaser.Scene): void {
+  setupEcologyArt(scene);
+  setupTreeWind(scene);
   setupCharacterSprites(scene);
   setupReferenceNature(scene);
   fitSource(scene,'source-small-stones','asset-small-stones',128,96,4);

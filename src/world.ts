@@ -1,3 +1,5 @@
+import {drawTreePlantingSoil} from './tree-planting-soil';
+import {styleGrowingTree} from './tree-growth-art';
 import {isFiberPlant,fiberPlantFor,fiberPlantArt,nearRiverBank} from './data/fiber-plants';
 import {paintedWaterPoint} from './data/terrain-paint';
 import {drawPropertyBridges} from './bridge-art';
@@ -89,6 +91,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   const depleted = new Set(depletedResources);
   const resources: ResourceNode[] = [];
   const editorObjects: WorldEditorObject[] = [];
+  const treeSoils=new Map<string,Phaser.GameObjects.Image>();
   const resourceImages = new Map<string, Phaser.GameObjects.Image>();
   const canopies = new Map<string, { image: Phaser.GameObjects.Image; x: number; y: number; width: number; height: number }>();
   let canopyRadiusX = 0, canopyRadiusY = 0;
@@ -307,11 +310,11 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     forestTiles.add(tile);
     const kind = pine ? 'pine' : 'standingTree';
     if (depleted.has(id)) {
-      scene.add.image(x * TILE + 16, y * TILE + 29, 'tree-stump').setOrigin(0.5, 1).setDepth(y * TILE + 24);
+      forestTiles.delete(tile);
       editorObjects.push({ id, x, y, kind, texture: 'tree-stump', depleted: true });
       return;
     }
-    resources.push({ id, x, y, kind: 'standingTree' });
+    resources.push({ id, x, y, kind: 'standingTree',treeSpecies:pine?'pine':'oak' });
     const base = pine ? 'asset-pine' : 'asset-tree';
     const appearance=forestTreeAppearance({x:variantX,y:variantY,pine,ancient:false});
     const variant = appearance.variant;
@@ -380,7 +383,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     if(seamLayout&&seamPassage(node.x,node.y,'property'))return;
     if(villageGate&&!mapEdits?.objects[node.id]&&isPropertyVillagePassage(node.x,node.y))return;
     if(wellSiteTile(node.x,node.y)||homesteadResourceReserved(node.x,node.y)&&!mapEdits?.objects[node.id])return;
-    if (depleted.has(node.id) || occupiedResources.has(key(node.x, node.y))) return;
+    if (depleted.has(node.id) || occupiedResources.has(key(node.x, node.y))&&!node.id.startsWith('growth-')) return;
     const {id,kind}=node;let {x,y}=node;
     if(kind!=='vein'&&!bridgeAt(x,y)&&waterPointAt(x*TILE+16,y*TILE+16)){
       let dry:{x:number;y:number}|undefined;
@@ -392,7 +395,8 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     }
     occupiedResources.add(key(x, y));
     resources.push({...node,x,y});
-    const asset = ({ tree: 'asset-new-branches', stone: 'asset-small-stones', seeds: 'asset-berry-bush', scrap: 'asset-scrap', fiber: 'asset-fiber', vein: 'lake-rock-0', standingTree: 'asset-tree',fallenLog:'forest-detail-log',stump:'forest-detail-stump' } as const)[kind];
+    const soil=drawTreePlantingSoil(scene,{...node,x,y});if(soil)treeSoils.set(id,soil);
+    const asset = ({ tree: 'asset-new-branches', stone: 'asset-small-stones', seeds: 'asset-berry-bush', scrap: 'asset-scrap', fiber: 'asset-fiber', vein: 'lake-rock-0', standingTree: 'asset-tree',fallenLog:'forest-detail-log',stump:'forest-detail-stump',herb:'ecology-herbs',mushroom:'forest-detail-mushrooms' } as const)[kind];
     const useAsset = scene.textures.exists(asset);
     const rockVariant=[0,1,2,5][Math.abs(Math.imul(x,73856093)^Math.imul(y,19349663))%4];
     const forestRock=kind==='vein'&&scene.textures.exists(`lake-rock-${rockVariant}`);
@@ -402,12 +406,19 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     if(plant)resourceImage.setDisplaySize(plant.size,plant.size).setOrigin(.5,plant.pivot);
     if(kind==='tree')resourceImage.setDisplaySize(36,27);
     if(kind==='stone')resourceImage.setDisplaySize(32,24);
+    if(kind==='herb')resourceImage.setDisplaySize(34,38).setOrigin(.5,124/128);if(kind==='mushroom')resourceImage.setDisplaySize(26,26).setOrigin(.5,124/128);
+    styleGrowingTree(resourceImage,node);
+    if(kind==='standingTree'){
+      const tile=key(x,y);canopies.set(tile,{image:resourceImage,x:x*TILE+16,y:y*TILE+29,width:resourceImage.displayWidth,height:resourceImage.displayHeight*resourceImage.originY});
+      canopyRadiusX=Math.max(canopyRadiusX,Math.ceil(resourceImage.displayWidth/2/TILE)+1);canopyRadiusY=Math.max(canopyRadiusY,Math.ceil(resourceImage.displayHeight/TILE)+1);
+    }
     if(kind==='fallenLog'||kind==='stump')resourceImage.setDisplaySize(kind==='fallenLog'?68:38,kind==='fallenLog'?68:38).setOrigin(.5,124/128);
+    if(kind==='stump')styleGrowingTree(resourceImage,node);
     if(kind==='seeds'&&useAsset)resourceImage.setDisplaySize(44,44);
     if(forestRock)resourceImage.setDisplaySize(52,52).setOrigin(.5,124/128);
     resourceImage.setData('resource-id',id);resourceImages.set(id, resourceImage);
-    editorObjects.push({ id, x, y, kind, texture });
-    if (kind === 'vein'||kind==='fallenLog'||kind==='stump') resourceBlocked.add(key(x, y));
+    editorObjects.push({ id, x, y, kind:kind==='herb'?'herbs':kind==='mushroom'?'mushrooms':kind, texture });
+    if (kind === 'standingTree'||kind === 'vein'||kind==='fallenLog'||kind==='stump') resourceBlocked.add(key(x, y));
   };
   for (const node of looseLayout) {
     const edit = mapEdits?.objects[node.id];
@@ -425,13 +436,13 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     addLooseResource({ id, x: edit.x, y: edit.y, kind: edit.kind as ResourceKind });
   }
   for(const [id,edit] of Object.entries(mapEdits?.objects??{})){
-    const art=natureArt(edit.kind),collectible=collectibleKind(edit.kind);if(edit.removed||!art||!edit.kind||collectible&&depleted.has(id)||edit.kind==='reeds'&&!nearRiverBank(edit.x,edit.y))continue;
+    const art=natureArt(edit.kind),collectible=collectibleKind(edit.kind);if(edit.removed||!art||!edit.kind||(collectible==='herb'||collectible==='mushroom')&&!naturalPlantGround(mapEdits?.terrain[key(edit.x,edit.y)])||collectible&&depleted.has(id)||edit.kind==='reeds'&&!nearRiverBank(edit.x,edit.y))continue;
     if((waterAt(edit.x,edit.y)&&!art.water&&!isTreeKind(edit.kind))||blocked.has(key(edit.x,edit.y))||buildingTiles.has(key(edit.x,edit.y))||occupiedResources.has(key(edit.x,edit.y)))continue;
     let x=edit.x,y=edit.y;
     if(isTreeKind(edit.kind)&&!dryTreeCell(x,y)){const land=shoreTreePosition(x,y);if(!land)continue;x=land.x;y=land.y;}
     const image=scene.add.image(x*TILE+16,y*TILE+25,art.texture).setOrigin(.5,art.pivot).setDisplaySize(art.width,art.height).setDepth(y*TILE+25);
     editorObjects.push({id,x,y,kind:edit.kind,texture:art.texture});
-    if(collectible){image.setData('resource-id',id);resources.push({id,x,y,kind:collectible,...(isFiberPlant(edit.kind)?{plant:edit.kind}:{})});resourceImages.set(id,image);occupiedResources.add(key(x,y));if(art.solid)resourceBlocked.add(key(x,y));}
+    if(collectible){image.setData('resource-id',id);resources.push({id,x,y,kind:collectible,...(collectible==='standingTree'?{treeSpecies:edit.kind.startsWith('pine')?'pine' as const:'oak' as const}:{}),...(isFiberPlant(edit.kind)?{plant:edit.kind}:{})});resourceImages.set(id,image);occupiedResources.add(key(x,y));if(art.solid)resourceBlocked.add(key(x,y));}
     else if(art.solid)blocked.add(key(x,y));
     if(edit.kind.startsWith('oak')||edit.kind.startsWith('pine')){
       forestTiles.add(key(x,y));
@@ -444,14 +455,14 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
       if (index < 0) return;
       const [node] = resources.splice(index, 1);
       resourceImages.get(id)?.destroy();
-      resourceImages.delete(id);
+      resourceImages.delete(id);treeSoils.get(id)?.destroy();treeSoils.delete(id);
       occupiedResources.delete(key(node.x,node.y));
       canopies.delete(key(node.x, node.y));
       fadedTrees.delete(key(node.x, node.y));
       if (node.kind === 'standingTree' || node.kind === 'vein'||node.kind==='fallenLog'||node.kind==='stump') resourceBlocked.delete(key(node.x, node.y));
       const editorIndex = editorObjects.findIndex(object => object.id === id);
-      if (node.kind === 'standingTree') {
-        scene.add.image(node.x * TILE + 16, node.y * TILE + 29, 'tree-stump').setOrigin(0.5, 1).setDepth(node.y * TILE + 24);
+      if(node.kind==='standingTree')forestTiles.delete(key(node.x,node.y));
+      if (node.kind === 'standingTree'&&!id.startsWith('growth-')) {
         if (editorIndex >= 0) Object.assign(editorObjects[editorIndex], { texture: 'tree-stump', depleted: true });
       } else if (editorIndex >= 0) editorObjects.splice(editorIndex, 1);
   };
@@ -477,8 +488,8 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     editorObjects,
     setNaturalResources:(nodes,preserve=[])=>{
       const keep=new Set([...preserve,...Object.keys(mapEdits?.objects??{})]),next=new Set(nodes.map(n=>n.id));
-      for(const n of [...resources])if(n.id.startsWith('spawn-')?!next.has(n.id):n.kind!=='standingTree'&&!n.id.startsWith('editor-')&&!n.id.startsWith('shoreStones-')&&!keep.has(n.id))eraseResource(n.id);
-      for(const node of nodes)if(!resources.some(n=>n.id===node.id)&&!solidTile(node.x,node.y)&&!wellSiteTile(node.x,node.y)&&!homesteadResourceReserved(node.x,node.y)&&!(seamLayout&&seamPassage(node.x,node.y,'property'))&&!(villageGate&&isPropertyVillagePassage(node.x,node.y))&&!waterAt(node.x,node.y)&&!((node.kind==='fiber'||node.kind==='seeds')&&!naturalPlantGround(mapEdits?.terrain[key(node.x,node.y)])))addLooseResource(node);
+      for(const n of [...resources])if(n.id.startsWith('spawn-')||n.id.startsWith('growth-')?!next.has(n.id):n.kind!=='standingTree'&&!n.id.startsWith('editor-')&&!n.id.startsWith('shoreStones-')&&!keep.has(n.id))eraseResource(n.id);
+      for(const node of nodes)if(!resources.some(n=>n.id===node.id)&&!solidTile(node.x,node.y)&&!wellSiteTile(node.x,node.y)&&!homesteadResourceReserved(node.x,node.y)&&!(seamLayout&&seamPassage(node.x,node.y,'property'))&&!(villageGate&&isPropertyVillagePassage(node.x,node.y))&&!waterAt(node.x,node.y)&&!((node.kind==='fiber'||node.kind==='seeds'||node.kind==='herb'||node.kind==='mushroom')&&!naturalPlantGround(mapEdits?.terrain[key(node.x,node.y)])))addLooseResource(node);
     },
     isBlocked,
     isBlockedPoint,

@@ -26,7 +26,7 @@ export interface CharacterProfile {
 }
 export type ItemId = 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 'plank' | 'scrap' | 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw'
   | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer'
-  | 'herb' | 'rareHerb' | 'bandage' | 'herbalTonic' | 'fertilizer' | 'fishingRod' | 'bait' | 'net' | 'fish' | 'rareFish' | 'meal'
+  | 'herb' | 'rareHerb' | 'bandage' | 'herbalTonic' | 'fungalInfusion' | 'oakSeed' | 'pineSeed' | 'fertilizer' | 'fishingRod' | 'bait' | 'net' | 'fish' | 'rareFish' | 'meal'
   | 'ironShard' | 'ironOre' | 'ironIngot' | 'goldShard' | 'goldOre' | 'goldIngot' | 'blackMetalShard' | 'blackMetalOre' | 'blackMetalIngot' | 'sickle' | 'shovel' | 'furniture' | 'doorKit' | 'windowKit' | 'fenceKit' | 'forge' | 'mushroom'
   | 'lantern' | 'oldMap' | 'metalPart' | 'electronicPart' | 'waterPump' | 'lamp' | 'backpack' | 'boots' | 'cloth' | 'clothing' | 'accessory';
 export type InventoryData = Record<ItemId, number>;
@@ -37,8 +37,8 @@ export interface TilePoint { x: number; y: number }
 export interface CropData extends TilePoint { growth: number; watered: boolean }
 export interface FarmingProgress { prepared: boolean; planted: boolean; watered: boolean; harvested: boolean }
 export interface BuildingData extends TilePoint { kind: 'gate' | 'fence' | 'bench' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof'; open?: boolean; rotation?: 0 | 1 | 2 | 3; gateFlip?: boolean; fenceBuiltDay?: number }
-export type ResourceKind = 'tree' | 'stone' | 'seeds' | 'scrap' | 'standingTree' | 'vein' | 'fiber' | 'fallenLog' | 'stump';
-export interface ResourceNode extends TilePoint { id: string; kind: ResourceKind; metal?:import('./data/economy-balance').Metal; plant?: FiberPlant }
+export type ResourceKind = 'tree' | 'stone' | 'seeds' | 'scrap' | 'standingTree' | 'vein' | 'fiber' | 'fallenLog' | 'stump' | 'herb' | 'mushroom';
+export interface ResourceNode extends TilePoint { id: string; kind: ResourceKind; metal?:import('./data/economy-balance').Metal; plant?: FiberPlant; treeSpecies?:'oak'|'pine';treeStage?:0|1|2|3;treePlanted?:boolean;treePlantingSoil?:boolean }
 export interface ResourceProgressData { id: string; hits: number }
 export interface ProgressData {
   collected: boolean;
@@ -56,6 +56,7 @@ export interface VillageEconomy {
   stock?:Partial<Record<ItemId,StockRecord>>;
 }
 export interface SaveData {
+  treeGrowth?:import('./systems/tree-growth').TreeGrowthData;
   economy6?:EconomyState;
   resourceFields?:{property:ResourceField;forest:ResourceField};
   resourceMilestones?:{felled:boolean;mined:boolean};

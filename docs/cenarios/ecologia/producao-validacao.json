@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "checks": [
+    "Novo jogo carrega o build de produção e o mapa",
+    "Inventário abre no build empacotado",
+    "Salvar e continuar após recarregar mantém a partida",
+    "Sem erros JavaScript ou assets ausentes"
+  ],
+  "errors": []
+}

@@ -5,6 +5,7 @@ import {Inventory} from './inventory';
 import {createVillageProgress} from '../data/village-progress';
 import {createVillageEconomy,MAX_COINS} from '../data/village-commerce';
 import {FOREST_ANIMALS} from '../data/ancient-forest';
+import {ECOLOGY_BALANCE as ECOLOGY} from '../data/ecology-balance';
 export interface VillageServiceOffer{id:string;label:string;description:string}
 type Service={npc:string;label:string;description:string;run:(s:SaveData,i:Inventory)=>void};
 const services:Record<string,Service>={};
@@ -13,6 +14,8 @@ const requireThat=(ok:unknown,message:string)=>{if(!ok)throw Error(message);};
 function pay(s:SaveData,i:Inventory,coins:number,items:Partial<Record<ItemId,number>>={}){requireThat(s.villageEconomy!.coins>=coins,'Coroas insuficientes.');requireThat(i.spend(items),'Faltam os materiais pedidos.');s.villageEconomy!.coins-=coins;}
 function reward(s:SaveData,coins:number){requireThat(s.villageEconomy!.coins<=MAX_COINS-coins,'Sua carteira está cheia.');s.villageEconomy!.coins+=coins;}
 add('learn-medicine','amelia','Aprender preparados medicinais','Entregue 1 erva rara para aprender curativos e tônicos.',(s,i)=>{const p=s.villageProgress!;requireThat(!p.recipes.includes('herbalTonic'),'Você já conhece estas receitas.');pay(s,i,0,{rareHerb:1});p.recipes.push('bandage','herbalTonic');});
+add('learn-infusion','amelia','Aprender infusão de cogumelos','Entregue 3 ervas e 2 cogumelos para aprender uma infusão que recupera 50 de vigor.',(s,i)=>{requireThat(!s.villageProgress!.recipes.includes('fungalInfusion'),'Você já conhece esta receita.');pay(s,i,0,ECOLOGY.infusion.learnCost);s.villageProgress!.recipes.push('fungalInfusion');});
+add('brew-infusion','amelia','Encomendar infusão','Traga 3 ervas e 2 cogumelos e pague 8 Coroas pelo preparo de uma infusão.',(s,i)=>{pay(s,i,ECOLOGY.infusion.serviceFee,ECOLOGY.infusion.cost);requireThat(i.transact({},ECOLOGY.infusion.output),'A mochila está cheia. Libere espaço antes de encomendar.');});
 for(const plan of ['home','workshop','survivor'] as const)add(`plan-${plan}`,'tobias',`Projeto: ${plan==='home'?'casa':plan==='workshop'?'oficina':'base de sobreviventes'}`,'50 Coroas, 8 madeiras e 4 pedras. Libera um kit de materiais na fabricação.',(s,i)=>{const p=s.villageProgress!;requireThat(!p.plans.includes(plan),'Este projeto já foi aprendido.');pay(s,i,50,{wood:8,stone:4});p.plans.push(plan);p.recipes.push(`${plan}Kit`);});
 add('learn-fertilizer','rosa','Aprender adubo','20 Coroas e 4 fibras. Libera a receita de fertilizante.',(s,i)=>{requireThat(!s.villageProgress!.recipes.includes('fertilizer'),'Receita já conhecida.');pay(s,i,20,{fiber:4});s.villageProgress!.recipes.push('fertilizer');});
 add('contract-accept','rosa','Aceitar contrato de colheita','Entregue 10 nabos em até 3 dias e receba 220 Coroas. Um contrato por dia.',(s)=>{const p=s.villageProgress!,c=p.contract;requireThat(!c||c.day<s.day&&(c.completed||s.day>c.dueDay),'Conclua o contrato atual ou volte em outro dia.');requireThat(s.day<=999996,'O calendário atingiu o limite.');p.contract={day:s.day,dueDay:s.day+3,delivered:0,completed:false};});

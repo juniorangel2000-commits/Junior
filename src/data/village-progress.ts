@@ -1,6 +1,6 @@
 /** Progress is separate from stock so services, contracts and learned recipes
  * cannot be duplicated by moving an item into or out of the quickbar. */
-export const VILLAGE_RECIPE_IDS=['bandage','herbalTonic','fertilizer','backpack','boots','accessory','lamp','waterPump','homeKit','workshopKit','survivorKit'] as const;
+export const VILLAGE_RECIPE_IDS=['bandage','herbalTonic','fungalInfusion','fertilizer','backpack','boots','accessory','lamp','waterPump','homeKit','workshopKit','survivorKit'] as const;
 export const VILLAGE_PLAN_IDS=['home','workshop','survivor'] as const;
 export const VILLAGE_RUMOR_IDS=['forest-lake','old-ruins','survivor-camp'] as const;
 export const VILLAGE_SURVIVOR_IDS=['marina','rui'] as const;

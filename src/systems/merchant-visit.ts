@@ -17,7 +17,7 @@ export function validShopResidents(value:unknown):value is ShopResident[]{
 /** Opt-in guidance. The player keeps control; the guide waits if left behind. */
 export class MerchantGuide {
  readonly walker:VillageWalk;waiting=false;private pausedForPlayer=false;
- constructor(readonly owner:ResidentId){const p=merchantOutside(owner);this.walker=new VillageWalk([{x:Math.floor(p.x/32),y:Math.floor(p.y/32)}],34,0,0);}
+ constructor(readonly owner:ResidentId,walkFrames=6){const p=merchantOutside(owner);this.walker=new VillageWalk([{x:Math.floor(p.x/32),y:Math.floor(p.y/32)}],34,0,0,32,walkFrames);}
  static canStart(id:ResidentId,position:{x:number;y:number},blocked=villageBlockedAt){const end=merchantOutside(id),start={x:position.x/32,y:position.y/32},goal={x:Math.floor(end.x/32),y:Math.floor(end.y/32)};return !blocked(goal.x,goal.y)&&(Math.floor(start.x)===goal.x&&Math.floor(start.y)===goal.y||villageRoute(start,goal,blocked).length>0);}
  step(seconds:number,position:{x:number;y:number},player:{x:number;y:number},blocked=villageBlockedAt){
   const distance=Math.hypot(player.x-position.x,player.y-position.y);

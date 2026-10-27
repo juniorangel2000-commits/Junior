@@ -1,4 +1,5 @@
 import {ECONOMY_BALANCE as B,NON_COMMERCIAL} from './economy-balance';
+import {ECOLOGY_BALANCE as ECOLOGY} from './ecology-balance';
 import type {ItemId,VillageEconomy} from '../types';
 
 export type {VillageEconomy} from '../types';
@@ -97,6 +98,8 @@ MERCHANTS.traveler.buy={oldMap:80};MERCHANTS.traveler.sell={oldMap:20};
 MERCHANTS.traveler.description='Compra e vende antiguidades encontradas na região.';
 MERCHANTS.herbalist.description='Ervas, cogumelos, plantas medicinais e preparados para exploração.';
 Object.assign(MERCHANTS.herbalist.sell,{mushroom:4});
+Object.assign(MERCHANTS.herbalist.buy,{fungalInfusion:ECOLOGY.infusion.buy});
+Object.assign(MERCHANTS.herbalist.sell,{fungalInfusion:ECOLOGY.infusion.sell});
 Object.assign(MERCHANTS.carpenter.buy,{furniture:180,doorKit:90,windowKit:70,fenceKit:25});
 Object.assign(MERCHANTS.carpenter.sell,{furniture:100,doorKit:40,windowKit:30,fenceKit:10});
 MERCHANTS.general.buy.plank=18;

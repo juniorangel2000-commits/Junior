@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "version": "0.10.0-preview.8",
+  "file": "After-Rain-0.10.0-preview.8-Windows-x64.exe",
+  "bytes": 256791557,
+  "sha256": "84a38b9ead681bf82f74c1013440c039828981374b776c0f2d899b392be1860c",
+  "filesVerified": 1143,
+  "visualAssetsVerified": 723,
+  "machine": "AMD64 (0x8664)",
+  "asarIntegrity": true,
+  "automatedTests": 791,
+  "browserChecks": 34,
+  "nativeWindowsRun": false,
+  "published": false
+}

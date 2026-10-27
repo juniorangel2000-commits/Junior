@@ -1,5 +1,6 @@
 import type { ItemCost } from '../systems/inventory';
 import type { OwnedTool } from '../types';
+import {ECOLOGY_BALANCE as ECOLOGY} from './ecology-balance';
 
 export interface CraftingRecipe {
   id: string;
@@ -87,6 +88,7 @@ for(const [id,name,cost,output] of [
 ] as const)RECIPES.push({id,name,description:'Receita aprendida com os moradores da vila.',cost,output,unlock:id});
 
 RECIPES.push(
+ {id:'fungalInfusion',name:'Infusão de cogumelos',description:'Receita da Amélia. Combine ervas e cogumelos para recuperar 50 de vigor.',cost:ECOLOGY.infusion.cost,output:ECOLOGY.infusion.output,unlock:'fungalInfusion',durationSeconds:3},
  {id:'sickle',name:'Foice de Pedra',description:'Ferramenta básica de coleta vegetal.',cost:{flakedStone:1,handle:1,cord:1},output:{sickle:1}},
  {id:'shovel',name:'Pá de Pedra',description:'Ferramenta básica para preparar o chão.',cost:{flakedStone:2,handle:1,cord:1},output:{shovel:1}},
  {id:'forge',name:'Forja própria',description:'Instale na propriedade para fundir sem pagar mão de obra. Este sistema não exige combustível.',cost:{stone:15,wood:8,scrap:6},output:{forge:1},requiresWorkbench:true},

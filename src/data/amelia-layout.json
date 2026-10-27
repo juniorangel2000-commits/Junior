@@ -1,0 +1,191 @@
+{
+  "version": 1,
+  "pieces": [
+    {
+      "id": "structure",
+      "asset": "structure",
+      "x": 0,
+      "y": 0,
+      "sx": 1,
+      "sy": 1,
+      "visible": true,
+      "wallShade": 1
+    },
+    {
+      "id": "floor",
+      "asset": "floor-wood",
+      "x": 33,
+      "y": 116,
+      "sx": 510,
+      "sy": 234,
+      "visible": true
+    },
+    {
+      "id": "amelia-counter",
+      "asset": "amelia-counter",
+      "x": 288,
+      "y": 210,
+      "sx": 0.3595505617977528,
+      "sy": 0.3595505617977528,
+      "visible": true
+    },
+    {
+      "id": "amelia-apothecary",
+      "asset": "amelia-apothecary",
+      "x": 423,
+      "y": 149,
+      "sx": 0.3079584775086505,
+      "sy": 0.3079584775086505,
+      "visible": true
+    },
+    {
+      "id": "amelia-cabinet",
+      "asset": "amelia-cabinet",
+      "x": 102,
+      "y": 176,
+      "sx": 0.3567567567567568,
+      "sy": 0.3567567567567568,
+      "visible": true
+    },
+    {
+      "id": "amelia-workbench",
+      "asset": "amelia-workbench",
+      "x": 459,
+      "y": 246,
+      "sx": 0.3054054054054054,
+      "sy": 0.3054054054054054,
+      "visible": true
+    },
+    {
+      "id": "amelia-drying-herbs",
+      "asset": "amelia-drying-herbs",
+      "x": 165,
+      "y": 102,
+      "sx": 0.29064039408866993,
+      "sy": 0.29064039408866993,
+      "visible": true
+    },
+    {
+      "id": "amelia-water-basin",
+      "asset": "amelia-water-basin",
+      "x": 92,
+      "y": 292,
+      "sx": 0.20152091254752852,
+      "sy": 0.20152091254752852,
+      "visible": true
+    },
+    {
+      "id": "amelia-plant-stand",
+      "asset": "amelia-plant-stand",
+      "x": 457,
+      "y": 329,
+      "sx": 0.25290697674418605,
+      "sy": 0.25290697674418605,
+      "visible": true
+    },
+    {
+      "id": "amelia-mushrooms",
+      "asset": "amelia-mushrooms",
+      "x": 146,
+      "y": 245,
+      "sx": 0.14285714285714285,
+      "sy": 0.14285714285714285,
+      "visible": true
+    },
+    {
+      "id": "amelia-mortar",
+      "asset": "amelia-mortar",
+      "x": 252,
+      "y": 164,
+      "sx": 0.10576923076923077,
+      "sy": 0.10576923076923077,
+      "visible": true,
+      "parent": "amelia-counter"
+    },
+    {
+      "id": "amelia-scale",
+      "asset": "amelia-scale",
+      "x": 326,
+      "y": 164,
+      "sx": 0.13063063063063063,
+      "sy": 0.13063063063063063,
+      "visible": true,
+      "parent": "amelia-counter"
+    },
+    {
+      "id": "amelia-bandages",
+      "asset": "amelia-bandages",
+      "x": 433,
+      "y": 198,
+      "sx": 0.11890243902439024,
+      "sy": 0.11890243902439024,
+      "visible": true,
+      "parent": "amelia-workbench"
+    },
+    {
+      "id": "amelia-recipe-book",
+      "asset": "amelia-recipe-book",
+      "x": 289,
+      "y": 166,
+      "sx": 0.10059171597633136,
+      "sy": 0.10059171597633136,
+      "visible": true,
+      "parent": "amelia-counter"
+    },
+    {
+      "id": "amelia-lantern",
+      "asset": "amelia-lantern",
+      "x": 57,
+      "y": 77,
+      "sx": 0.11428571428571428,
+      "sy": 0.11428571428571428,
+      "visible": true
+    },
+    {
+      "id": "amelia-stool",
+      "asset": "amelia-stool",
+      "x": 360,
+      "y": 285,
+      "sx": 0.1414141414141414,
+      "sy": 0.1414141414141414,
+      "visible": true
+    },
+    {
+      "id": "amelia-rug",
+      "asset": "amelia-rug",
+      "x": 288,
+      "y": 302,
+      "sx": 0.30632911392405066,
+      "sy": 0.30632911392405066,
+      "visible": true
+    },
+    {
+      "id": "amelia-tea",
+      "asset": "amelia-tea",
+      "x": 484,
+      "y": 196,
+      "sx": 0.1245674740484429,
+      "sy": 0.1245674740484429,
+      "visible": true,
+      "parent": "amelia-workbench"
+    },
+    {
+      "id": "amelia-lantern-right",
+      "asset": "amelia-lantern",
+      "x": 520,
+      "y": 77,
+      "sx": 0.11428571428571428,
+      "sy": 0.11428571428571428,
+      "visible": true
+    },
+    {
+      "id": "amelia-window",
+      "asset": "amelia-window",
+      "x": 288,
+      "y": 107,
+      "sx": 0.09350935093509351,
+      "sy": 0.09350935093509351,
+      "visible": true
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import catalog from '../public/assets/visual/village/tobias/manifest.json';
 import authored from '../src/data/tobias-layout.json';
+import previousTobias from '../src/data/tobias-layout-v1.json';
 import {createMerchantLayout,validMerchantLayout,merchantRoomConnected,merchantRoomFits,merchantRoomNavigation,merchantRoomPieces,resolveMerchantLayout} from '../src/data/merchant-rooms';
 import {TOBIAS_SHOP,tobiasShopBlockedPoint,tobiasSourceSolid} from '../src/data/tobias-shop';
 import {MerchantDailyRoutine,validMerchantRoutines,merchantPeriod} from '../src/systems/merchant-routine';
@@ -10,9 +11,20 @@ import {freeArrival} from '../src/systems/actor-arrival';
 import {createNewSave,validateSave} from '../src/systems/save';
 import type {SmithLayout} from '../src/systems/smith-layout';
 describe('Tobias carpentry',()=>{
- it('uses seventeen original objects and a connected 20-piece retail/workshop interior',()=>{
-  expect(catalog.createdFromScratch).toBe(17);expect(catalog.referenceCrops).toBe(0);const layout=createMerchantLayout('tobias');expect(layout).toEqual(authored);expect(layout.pieces).toHaveLength(20);expect(layout.pieces.some(p=>p.asset==='floor-stone')).toBe(false);expect(layout.pieces.find(p=>p.id==='floor')?.asset).toBe('floor-wood');expect(validMerchantLayout(layout)).toBe(true);expect(merchantRoomConnected('tobias',layout)).toBe(true);
+ it('uses seventeen original objects and the connected 22-piece authored retail/workshop interior',()=>{
+  expect(catalog.createdFromScratch).toBe(17);expect(catalog.referenceCrops).toBe(0);const layout=createMerchantLayout('tobias');expect(layout).toEqual(authored);expect(layout.pieces).toHaveLength(22);expect(layout.pieces.some(p=>p.asset==='floor-stone')).toBe(false);expect(layout.pieces.find(p=>p.id==='floor')?.asset).toBe('floor-wood');expect(validMerchantLayout(layout)).toBe(true);expect(merchantRoomConnected('tobias',layout)).toBe(true);
   for(const p of [{x:288,y:335},{x:288,y:225},{x:288,y:151}])expect(merchantRoomFits('tobias',p.x,p.y,layout)).toBe(true);
+ });
+ it('updates the previous published default, preserving other edits and surviving save/load',()=>{
+  const old=structuredClone(previousTobias) as SmithLayout;
+  expect(resolveMerchantLayout('tobias',old)).toEqual(authored);
+  const normalized=structuredClone(old);for(const p of normalized.pieces)p.effects=true;
+  expect(resolveMerchantLayout('tobias',normalized)).toEqual(authored);
+  old.pieces.find(p=>p.id==='tobias-mat')!.x+=4;
+  expect(resolveMerchantLayout('tobias',old)).toEqual(old);
+  const save=createNewSave({name:'Tobias',skin:'#d9a276',hairStyle:'preso',hairColor:'#754323',outfit:'#638a9d'});
+  save.merchantScenes={tobias:createMerchantLayout('tobias')};const loaded=JSON.parse(JSON.stringify(save));
+  expect(validateSave(loaded)).toBe(true);expect(resolveMerchantLayout('tobias',loaded.merchantScenes.tobias)).toEqual(authored);
  });
  it('replaces only the untouched provisional carpentry, preserving custom arrangements',()=>{
   const old:SmithLayout={version:1,pieces:[{id:'structure',asset:'structure',x:0,y:0,sx:1,sy:1,visible:true,wallShade:1},{id:'floor',asset:'floor-wood',x:33,y:116,sx:510,sy:234,visible:true},...merchantRoomPieces('tobias').map(a=>({id:a.id,asset:a.id,x:a.recommendedPosition.x*.6,y:a.recommendedPosition.y*.6,sx:a.scale*.6,sy:a.scale*.6,visible:true,...a.supportId?{parent:a.supportId}:{}}))]};

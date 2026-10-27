@@ -5,6 +5,7 @@ import type {SaveData} from '../types';
 import type { ResourceKind, ResourceNode, ResourceProgressData, Tool } from '../types';
 import type { ActionResult } from './farming';
 import { Inventory, ITEM_NAMES, type ItemCost } from './inventory';
+import {ECOLOGY_BALANCE as ECOLOGY} from '../data/ecology-balance';
 
 export interface ResourceDefinition {
   label: string;
@@ -14,6 +15,8 @@ export interface ResourceDefinition {
 }
 
 export const RESOURCE_DEFINITIONS: Record<ResourceKind, ResourceDefinition> = {
+  herb:{label:'Ervas medicinais',tool:'hand',hits:1,drops:{herb:ECOLOGY.herbYield}},
+  mushroom:{label:'Cogumelos',tool:'hand',hits:1,drops:{mushroom:ECOLOGY.mushroomYield}},
   fallenLog: {label:'Tronco caído',tool:'hatchet',hits:3,drops:{wood:6,log:2,branch:2}},
   stump: {label:'Toco',tool:'hatchet',hits:3,drops:{wood:4,log:1,branch:1}},
   tree: { label: 'Galhos caídos', tool: 'hand', hits: 1, drops: { wood: 4, branch: 3 } },
@@ -43,7 +46,9 @@ export class Resources {
   }
 
   hit(node: ResourceNode, tool: Tool, inventory: Inventory,context:number|SaveData=0): ResourceActionResult {
-    const definition = RESOURCE_DEFINITIONS[node.kind];
+    const seed=node.treeSpecies==='pine'?'pineSeed':'oakSeed';
+    const young=node.kind==='standingTree'&&(node.treeStage??3)<3;
+    const definition = young?{...RESOURCE_DEFINITIONS.standingTree,label:'Muda',hits:1,drops:{[seed]:1}}:RESOURCE_DEFINITIONS[node.kind];
     const state=typeof context==='object'?context:undefined;
     const metal=depositMetal(node);
     const economicTool=tool==='pickaxe'||tool==='hatchet'?tool:undefined;
@@ -72,6 +77,7 @@ export class Resources {
       return { ok: false, message: 'O progresso deste recurso é inválido.' };
     }
     const hits = (savedProgress?.hits ?? 0) + damage;
+    if(state&&node.kind==='standingTree'&&!young&&((state.treeGrowth?.sequence??0)>=1e9||!state.treeGrowth?.[state.activeArea==='forest'?'forest':'property'].some(t=>t.id===node.id)&&(state.treeGrowth?.[state.activeArea==='forest'?'forest':'property'].length??0)>=ECOLOGY.treeLimit))return{ok:false,message:'Recolha alguns tocos antes de cortar mais árvores.'};
     if (hits < definition.hits) {
       if (savedProgress) savedProgress.hits = hits;
       else this.progress.push({ id: node.id, hits });
@@ -80,6 +86,8 @@ export class Resources {
 
     // O golpe final e todos os drops são uma única operação: uma mochila cheia não perde o recurso.
     const drops=metal?metalDrop(metal,node.id):{...definition.drops};
+    if(node.kind==='standingTree'&&!young)drops[seed]=1;
+    if(node.kind==='herb'&&(node.id.startsWith('f-')||node.id.startsWith('spawn-f-'))){let h=0;for(const c of node.id)h=(Math.imul(h,31)+c.charCodeAt(0))>>>0;if(h%ECOLOGY.rareHerbForestDenominator===0)drops.rareHerb=1;}
     if(node.kind==='fiber'&&node.plant){drops.herb=1;let h=0;for(const c of node.id)h=(Math.imul(h,31)+c.charCodeAt(0))>>>0;if((node.id.startsWith('f-')||node.id.startsWith('spawn-f-'))&&h%7===0)drops.rareHerb=1;}
     if (!inventory.transact({}, drops)) {
       return { ok: false, message: 'A mochila está cheia. Libere espaço antes de recolher este recurso.' };

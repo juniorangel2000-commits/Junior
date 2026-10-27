@@ -1,0 +1,453 @@
+{
+  "npc": "amelia",
+  "createdFromScratch": 17,
+  "referenceCrops": 0,
+  "assets": [
+    {
+      "id": "amelia-counter",
+      "name": "Balcão de remédios",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-counter",
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 436,
+        "height": 300
+      },
+      "w": 436,
+      "h": 300,
+      "ox": 0.5091743119266054,
+      "oy": 0.9366666666666666,
+      "bounds": [
+        28,
+        103,
+        416,
+        281
+      ],
+      "collision": {
+        "x": 55.160000000000004,
+        "y": 224.04000000000002,
+        "width": 333.68,
+        "height": 55.18
+      },
+      "layer": "object"
+    },
+    {
+      "id": "amelia-apothecary",
+      "name": "Estante de ervas e frascos",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-apothecary",
+      "crop": {
+        "x": 436,
+        "y": 0,
+        "width": 364,
+        "height": 300
+      },
+      "w": 364,
+      "h": 300,
+      "ox": 0.46016483516483514,
+      "oy": 0.9433333333333334,
+      "bounds": [
+        23,
+        12,
+        312,
+        283
+      ],
+      "collision": {
+        "x": 43.230000000000004,
+        "y": 196.28,
+        "width": 248.54,
+        "height": 84.01
+      },
+      "layer": "object"
+    },
+    {
+      "id": "amelia-cabinet",
+      "name": "Armário de medicamentos",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-cabinet",
+      "crop": {
+        "x": 800,
+        "y": 0,
+        "width": 320,
+        "height": 300
+      },
+      "w": 320,
+      "h": 300,
+      "ox": 0.5078125,
+      "oy": 0.9566666666666667,
+      "bounds": [
+        70,
+        9,
+        255,
+        287
+      ],
+      "collision": {
+        "x": 82.95,
+        "y": 198.04000000000002,
+        "width": 159.1,
+        "height": 86.17999999999999
+      },
+      "layer": "object"
+    },
+    {
+      "id": "amelia-workbench",
+      "name": "Bancada de preparo",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-workbench",
+      "crop": {
+        "x": 1120,
+        "y": 0,
+        "width": 416,
+        "height": 300
+      },
+      "w": 416,
+      "h": 300,
+      "ox": 0.49759615384615385,
+      "oy": 0.97,
+      "bounds": [
+        22,
+        36,
+        392,
+        291
+      ],
+      "collision": {
+        "x": 47.900000000000006,
+        "y": 209.4,
+        "width": 318.2,
+        "height": 79.05
+      },
+      "layer": "object"
+    },
+    {
+      "id": "amelia-drying-herbs",
+      "name": "Ervas em secagem",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-drying-herbs",
+      "crop": {
+        "x": 0,
+        "y": 300,
+        "width": 430,
+        "height": 242
+      },
+      "w": 430,
+      "h": 242,
+      "ox": 0.5104651162790698,
+      "oy": 0.9256198347107438,
+      "bounds": [
+        55,
+        21,
+        384,
+        224
+      ],
+      "collision": null,
+      "layer": "wall"
+    },
+    {
+      "id": "amelia-water-basin",
+      "name": "Barril de água",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-water-basin",
+      "crop": {
+        "x": 430,
+        "y": 300,
+        "width": 335,
+        "height": 242
+      },
+      "w": 335,
+      "h": 242,
+      "ox": 0.5029850746268657,
+      "oy": 0.9545454545454546,
+      "bounds": [
+        37,
+        12,
+        300,
+        231
+      ],
+      "collision": {
+        "x": 55.41,
+        "y": 160.92000000000002,
+        "width": 226.18,
+        "height": 67.89
+      },
+      "layer": "object"
+    },
+    {
+      "id": "amelia-plant-stand",
+      "name": "Vasos de plantas medicinais",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-plant-stand",
+      "crop": {
+        "x": 765,
+        "y": 300,
+        "width": 402,
+        "height": 242
+      },
+      "w": 402,
+      "h": 242,
+      "ox": 0.48507462686567165,
+      "oy": 0.9049586776859504,
+      "bounds": [
+        23,
+        23,
+        367,
+        219
+      ],
+      "collision": {
+        "x": 47.08,
+        "y": 156.28,
+        "width": 295.84,
+        "height": 60.76
+      },
+      "layer": "object"
+    },
+    {
+      "id": "amelia-mushrooms",
+      "name": "Cesta de cogumelos",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-mushrooms",
+      "crop": {
+        "x": 1167,
+        "y": 300,
+        "width": 369,
+        "height": 242
+      },
+      "w": 369,
+      "h": 242,
+      "ox": 0.46476964769647694,
+      "oy": 0.9256198347107438,
+      "bounds": [
+        35,
+        20,
+        308,
+        224
+      ],
+      "collision": {
+        "x": 54.11,
+        "y": 158.72,
+        "width": 234.78,
+        "height": 63.24
+      },
+      "layer": "object"
+    },
+    {
+      "id": "amelia-mortar",
+      "name": "Almofariz e pilão",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-mortar",
+      "crop": {
+        "x": 0,
+        "y": 542,
+        "width": 384,
+        "height": 230
+      },
+      "w": 384,
+      "h": 230,
+      "ox": 0.4947916666666667,
+      "oy": 0.9521739130434783,
+      "bounds": [
+        88,
+        11,
+        292,
+        219
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "amelia-scale",
+      "name": "Balança da herbalista",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-scale",
+      "crop": {
+        "x": 384,
+        "y": 542,
+        "width": 384,
+        "height": 230
+      },
+      "w": 384,
+      "h": 230,
+      "ox": 0.4114583333333333,
+      "oy": 0.9826086956521739,
+      "bounds": [
+        33,
+        4,
+        283,
+        226
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "amelia-bandages",
+      "name": "Bandeja de curativos",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-bandages",
+      "crop": {
+        "x": 768,
+        "y": 542,
+        "width": 384,
+        "height": 230
+      },
+      "w": 384,
+      "h": 230,
+      "ox": 0.4973958333333333,
+      "oy": 0.9608695652173913,
+      "bounds": [
+        27,
+        30,
+        355,
+        221
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "amelia-recipe-book",
+      "name": "Livro de plantas",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-recipe-book",
+      "crop": {
+        "x": 1152,
+        "y": 542,
+        "width": 384,
+        "height": 230
+      },
+      "w": 384,
+      "h": 230,
+      "ox": 0.4895833333333333,
+      "oy": 0.9304347826086956,
+      "bounds": [
+        19,
+        13,
+        357,
+        214
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "amelia-lantern",
+      "name": "Lanterna da herbalista",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-lantern",
+      "crop": {
+        "x": 0,
+        "y": 772,
+        "width": 384,
+        "height": 252
+      },
+      "w": 384,
+      "h": 252,
+      "ox": 0.5065104166666666,
+      "oy": 0.9285714285714286,
+      "bounds": [
+        107,
+        2,
+        282,
+        234
+      ],
+      "collision": null,
+      "layer": "wall"
+    },
+    {
+      "id": "amelia-stool",
+      "name": "Banco de atendimento",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-stool",
+      "crop": {
+        "x": 384,
+        "y": 772,
+        "width": 362,
+        "height": 252
+      },
+      "w": 362,
+      "h": 252,
+      "ox": 0.4558011049723757,
+      "oy": 0.9285714285714286,
+      "bounds": [
+        66,
+        21,
+        264,
+        234
+      ],
+      "collision": {
+        "x": 79.86,
+        "y": 165.84,
+        "width": 170.28,
+        "height": 66.03
+      },
+      "layer": "object"
+    },
+    {
+      "id": "amelia-rug",
+      "name": "Tapete da herbalista",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-rug",
+      "crop": {
+        "x": 746,
+        "y": 772,
+        "width": 424,
+        "height": 252
+      },
+      "w": 424,
+      "h": 252,
+      "ox": 0.47759433962264153,
+      "oy": 0.8611111111111112,
+      "bounds": [
+        5,
+        41,
+        400,
+        217
+      ],
+      "collision": null,
+      "layer": "floor"
+    },
+    {
+      "id": "amelia-tea",
+      "name": "Chaleira e chá de ervas",
+      "file": "assets/visual/village/amelia/objetos.png",
+      "frame": "amelia-tea",
+      "crop": {
+        "x": 1170,
+        "y": 772,
+        "width": 366,
+        "height": 252
+      },
+      "w": 366,
+      "h": 252,
+      "ox": 0.4713114754098361,
+      "oy": 0.9007936507936508,
+      "bounds": [
+        28,
+        2,
+        317,
+        227
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "amelia-window",
+      "name": "Janela da herbalista",
+      "file": "assets/visual/village/amelia/janela.png",
+      "w": 1254,
+      "h": 1254,
+      "ox": 0.5003987240829346,
+      "oy": 0.7695374800637959,
+      "bounds": [
+        173,
+        278,
+        1082,
+        965
+      ],
+      "collision": null,
+      "layer": "wall"
+    }
+  ],
+  "sourceHashes": {
+    "fachada.png": "16f31317ab0d2eadd6df462d0e951bf2b6e8b1d786bed53a42915dc23323c65b",
+    "objetos.png": "b83b58c88372678d3053d9f33b818391af2fd39dfa27932cf11a67112867e90e",
+    "janela.png": "0e0ad7c4574f18e20a0b651f0cf67f1b5f79b0ab9ad432d6ec1bbecff952ac24"
+  }
+}

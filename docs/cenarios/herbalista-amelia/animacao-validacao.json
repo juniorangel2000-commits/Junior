@@ -1,0 +1,136 @@
+{
+  "checks": [
+    {
+      "name": "Amélia usa oito direções e oito quadros de caminhada, mais a pose parada",
+      "passed": true,
+      "details": {
+        "frames": 8,
+        "width": 2304,
+        "height": 2048,
+        "frameTotal": 73,
+        "displayHeight": 64,
+        "originY": 0.953125,
+        "tops": [
+          24,
+          24,
+          24,
+          23,
+          23,
+          23,
+          22,
+          22,
+          22
+        ],
+        "feet": [
+          243,
+          244,
+          246,
+          245,
+          244,
+          242,
+          243,
+          244,
+          242
+        ],
+        "distinct": 8,
+        "sourcesLeft": []
+      }
+    },
+    {
+      "name": "Frente mantém escala e linha de apoio consistentes, com a oscilação dos passos",
+      "passed": true,
+      "details": {
+        "frames": 8,
+        "width": 2304,
+        "height": 2048,
+        "frameTotal": 73,
+        "displayHeight": 64,
+        "originY": 0.953125,
+        "tops": [
+          24,
+          24,
+          24,
+          23,
+          23,
+          23,
+          22,
+          22,
+          22
+        ],
+        "feet": [
+          243,
+          244,
+          246,
+          245,
+          244,
+          242,
+          243,
+          244,
+          242
+        ],
+        "distinct": 8,
+        "sourcesLeft": []
+      }
+    },
+    {
+      "name": "Texturas intermediárias são descartadas após montar o atlas",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "As outras 63 poses permanecem pixel a pixel iguais às enviadas",
+      "passed": true,
+      "details": {
+        "different": 0,
+        "poses": 63
+      }
+    },
+    {
+      "name": "Condução até a loja utiliza os oito quadros e espera o jogador",
+      "passed": true,
+      "details": {
+        "active": true,
+        "arrived": true,
+        "seen": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "stoppedForPlayer": true
+      }
+    },
+    {
+      "name": "Retrato e comércio continuam funcionando com o novo atlas",
+      "passed": true,
+      "details": {
+        "trade": true,
+        "portrait": true
+      }
+    },
+    {
+      "name": "Save mantém Amélia no interior correto",
+      "passed": true,
+      "details": {
+        "owner": "amelia",
+        "resident": {
+          "id": "amelia",
+          "x": 288,
+          "y": 151,
+          "direction": "down",
+          "shop": true
+        }
+      }
+    },
+    {
+      "name": "Sem erros WebGL, JavaScript ou arquivos ausentes",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

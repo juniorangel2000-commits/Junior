@@ -1,3 +1,5 @@
+import {drawTreePlantingSoil} from './tree-planting-soil';
+import {styleGrowingTree} from './tree-growth-art';
 import {isFiberPlant,fiberPlantFor,fiberPlantArt} from './data/fiber-plants';
 import {naturalPlantGround} from './systems/tree-avoidance';
 import {FOREST_GLADE_DETAILS,FOREST_GLADE_RESOURCE_IDS,gladeObjectId} from './data/forest-glade';
@@ -26,19 +28,23 @@ export class ForestWorld {
   private seamLayout=false;
   resources:ResourceNode[]=[];
   depleted=new Set<string>();
+  private treeSoils=new Map<string,Phaser.GameObjects.Image>();
   private images=new Map<string,Phaser.GameObjects.Image>();
   resourceAt=(x:number,y:number):ResourceNode|undefined=>this.resources.find(n=>n.x===x&&n.y===y);
-  removeResource(id:string):void {const n=this.resources.find(n=>n.id===id);if(!n)return;this.resources=this.resources.filter(r=>r.id!==id);this.images.get(id)?.destroy();this.images.delete(id);this.solid.delete(`${n.x},${n.y}`);this.trees=this.trees.filter(t=>t.active);}
+  removeResource(id:string):void {const n=this.resources.find(n=>n.id===id);if(!n)return;this.resources=this.resources.filter(r=>r.id!==id);this.images.get(id)?.destroy();this.images.delete(id);this.treeSoils.get(id)?.destroy();this.treeSoils.delete(id);this.solid.delete(`${n.x},${n.y}`);this.trees=this.trees.filter(t=>t.active);}
   setNaturalResources(nodes:readonly ResourceNode[]):void {
-    const next=new Set(nodes.map(n=>n.id));for(const n of [...this.resources])if(n.id.startsWith('spawn-')?!next.has(n.id):(n.kind==='fiber'||n.kind==='fallenLog'||n.kind==='stump')&&!FOREST_GLADE_RESOURCE_IDS.has(n.id)&&!Object.hasOwn(this.edits?.objects??{},n.id.replace(/^f-/,'')))this.removeResource(n.id);
-    for(const n of nodes)if(!this.resources.some(r=>r.id===n.id)&&!this.isBlocked(n.x,n.y)&&!(this.seamLayout&&seamPassage(n.x,n.y,'forest'))&&!((n.kind==='fiber'||n.kind==='seeds')&&!naturalPlantGround(this.edits?.terrain[`${n.x},${n.y}`]))){
+    const next=new Set(nodes.map(n=>n.id));for(const n of [...this.resources])if(n.id.startsWith('spawn-')||n.id.startsWith('growth-')?!next.has(n.id):(n.kind==='fiber'||n.kind==='fallenLog'||n.kind==='stump')&&!FOREST_GLADE_RESOURCE_IDS.has(n.id)&&!Object.hasOwn(this.edits?.objects??{},n.id.replace(/^f-/,'')))this.removeResource(n.id);
+    for(const n of nodes)if(!this.resources.some(r=>r.id===n.id)&&!this.isBlocked(n.x,n.y)&&!(this.seamLayout&&seamPassage(n.x,n.y,'forest'))&&!((n.kind==='fiber'||n.kind==='seeds'||n.kind==='herb'||n.kind==='mushroom')&&!naturalPlantGround(this.edits?.terrain[`${n.x},${n.y}`]))){
       const plant=n.kind==='fiber'?fiberPlantArt(fiberPlantFor(n)):undefined;
+      const soil=drawTreePlantingSoil(this.scene,n);if(soil){this.treeSoils.set(n.id,soil);this.environment.push(soil);}
       const image=this.scene.add.image(n.x*32+16,n.y*32+29,plant?.texture??naturalResourceTexture(n.kind)).setOrigin(.5,plant?.pivot??1).setDepth(n.y*32+29);
       if(n.kind==='tree')image.setDisplaySize(36,27);if(n.kind==='stone')image.setDisplaySize(32,24);
-      if(plant)image.setDisplaySize(plant.size,plant.size);if(n.kind==='seeds')image.setDisplaySize(44,44);if(n.kind==='vein')image.setDisplaySize(52,52).setOrigin(.5,124/128);if(n.kind==='fallenLog'||n.kind==='stump')image.setDisplaySize(n.kind==='fallenLog'?68:38,n.kind==='fallenLog'?68:38).setOrigin(.5,124/128);image.setData('resource-id',n.id);this.images.set(n.id,image);this.resources.push({...n});this.environment.push(image);if(n.kind==='vein'||n.kind==='fallenLog'||n.kind==='stump')this.solid.add(`${n.x},${n.y}`);
+      if(n.kind==='herb')image.setDisplaySize(34,38).setOrigin(.5,124/128);if(n.kind==='mushroom')image.setDisplaySize(26,26).setOrigin(.5,124/128);styleGrowingTree(image,n);if(n.kind==='standingTree')this.trees.push(image);
+      if(plant)image.setDisplaySize(plant.size,plant.size);if(n.kind==='seeds')image.setDisplaySize(44,44);if(n.kind==='vein')image.setDisplaySize(52,52).setOrigin(.5,124/128);if(n.kind==='fallenLog'||n.kind==='stump')image.setDisplaySize(n.kind==='fallenLog'?68:38,n.kind==='fallenLog'?68:38).setOrigin(.5,124/128);if(n.kind==='stump')styleGrowingTree(image,n);image.setData('resource-id',n.id);this.images.set(n.id,image);this.resources.push({...n});this.environment.push(image);if(n.kind==='standingTree'||n.kind==='vein'||n.kind==='fallenLog'||n.kind==='stump')this.solid.add(`${n.x},${n.y}`);
     }
   }
   constructor(private readonly scene:Phaser.Scene,edits?:MapEditData,private readonly textureNamespace='forest'){this.rebuildEnvironment(edits);}
+  canPlantTree=(x:number,y:number):boolean=>treeGroundClear(x,y,this.waterPointAt);
   waterAt=(x:number,y:number):boolean=>{const t=this.edits?.terrain[`${x},${y}`];return t?t==='water':forestWater(x,y);};
   waterPointAt=(x:number,y:number):boolean=>paintedWaterPoint(this.edits?.terrain,x,y,(px,py)=>forestWaterDistanceAt(px,py)<0);
   isBlocked=(x:number,y:number):boolean=>x<1||y<1||x>=95||y>=71||this.waterAt(x,y)||this.solid.has(`${x},${y}`);
@@ -46,7 +52,7 @@ export class ForestWorld {
   exit(){return this.edits?.points?.exit??{x:48,y:69};}
   private addEnvironmentObject(id:string,kind:EditorObjectKind,x:number,y:number,texture:string,width:number,height:number,pivot:number,solid:boolean,flip=false):void {
     const edit=this.edits?.objects[id];if(edit?.removed||kind==='reeds')return;
-    const collectible=collectibleKind(kind),resourceID=`f-${id}`;if(collectible&&this.depleted.has(resourceID))return;
+    const collectible=collectibleKind(kind),resourceID=`f-${id}`;if((collectible==='herb'||collectible==='mushroom')&&!naturalPlantGround(this.edits?.terrain[`${edit?.x??x},${edit?.y??y}`]))return;if(collectible&&this.depleted.has(resourceID)){if(collectible==='standingTree')this.editorObjects.push({id,x:edit?.x??x,y:edit?.y??y,kind,texture:'forest-detail-stump',depleted:true});return;}
     x=edit?.x??x;y=edit?.y??y;
     if(this.seamLayout&&!edit&&seamPassage(x,y,'forest'))return;
     if(this.seamLayout&&!edit&&isTreeKind(kind)&&(seamBand(x,y,'forest')||seamPassage(x,y,'forest')))return;
@@ -61,12 +67,12 @@ export class ForestWorld {
     }
     if(this.editorObjects.some(o=>o.x===x&&o.y===y)||this.waterAt(x,y)&&!natureArt(kind)?.water)return;
     const sprite=this.scene.add.image(x*32+16,y*32+25,texture).setOrigin(.5,pivot).setDisplaySize(width,height).setFlipX(flip).setDepth(y*32+25);
-    this.editorObjects.push({id,kind,x,y,texture});if(collectible){sprite.setData('resource-id',resourceID);this.resources.push({id:resourceID,kind:collectible,x,y,...(isFiberPlant(kind)?{plant:kind}:{})});this.images.set(resourceID,sprite);}
+    this.editorObjects.push({id,kind,x,y,texture});if(collectible){sprite.setData('resource-id',resourceID);this.resources.push({id:resourceID,kind:collectible,x,y,...(collectible==='standingTree'?{treeSpecies:kind.startsWith('pine')?'pine' as const:'oak' as const}:{}),...(isFiberPlant(kind)?{plant:kind}:{})});this.images.set(resourceID,sprite);}
     if(solid||collectible==='vein'||collectible==='fallenLog'||collectible==='stump')this.solid.add(`${x},${y}`);
     if(kind==='standingTree'||kind==='pine'||kind.startsWith('oak')||kind.startsWith('pine'))this.trees.push(sprite);
   }
   rebuildEnvironment(edits?:MapEditData):void {
-    this.environment.forEach(o=>o.destroy());this.environment=[];this.editorObjects=[];this.trees=[];this.solid.clear();this.resources=[];this.images.clear();this.edits=edits;this.seamLayout=hasMapSeam(edits);
+    this.environment.forEach(o=>o.destroy());this.environment=[];this.editorObjects=[];this.trees=[];this.solid.clear();this.resources=[];this.images.clear();this.treeSoils.clear();this.edits=edits;this.seamLayout=hasMapSeam(edits);
     const before=new Set(this.scene.children.list);
     this.drawGround();
     if(edits)drawMapTerrainEdits(this.scene,edits.terrain,`${this.textureNamespace}-map-edits`,forestWater,'forest',this.seamLayout);
@@ -142,7 +148,7 @@ export class ForestWorld {
   }
   private drawWoodlandDetails():void {
     const detail=(kind:string,x:number,y:number,size:number)=>{
-      const kinds:Record<string,EditorObjectKind>={boulder:'mossBoulder',log:'fallenLog',stump:'stump',fern:'fern',flowers:'whiteFlowers',bush:'bush',shore:'shoreStones',reeds:'reeds',mushrooms:'mushrooms'};
+      const kinds:Record<string,EditorObjectKind>={boulder:'mossBoulder',log:'fallenLog',stump:'stump',fern:'fern',flowers:'whiteFlowers',bush:'bush',shore:'shoreStones',reeds:'reeds',mushrooms:'mushrooms',herbs:'herbs'};
       const k=kinds[kind];x=Math.floor(x);y=Math.floor(y);
       if(FOREST_TREES.some(t=>t.x===x&&t.y===y)||FOREST_ROCKS.some(r=>r.x===x&&r.y===y))return;
       this.addEnvironmentObject(`${k}-${x}-${y}`,k,x,y,natureArt(k)?.texture??`forest-detail-${kind}`,size,size,124/128,false);
@@ -155,7 +161,7 @@ export class ForestWorld {
       if(shore){detail(seed%3?'shore':'reeds',x,y,seed%3?38:46);continue;}
       if(seed%7===0)detail('fern',x,y,36);
       else if(seed%11===0)detail('flowers',x,y,30);
-      else if(seed%23===0)detail('mushrooms',x,y,26);
+      else if(seed%23===0){const preserved=Object.hasOwn(this.edits?.objects??{},`mushrooms-${x}-${y}`);detail(!preserved&&seed%2===0?'herbs':'mushrooms',x,y,!preserved&&seed%2===0?34:26);}
     }
     FOREST_TREES.forEach((t,i)=>{
       if(t.ancient)return;

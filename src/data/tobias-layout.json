@@ -23,8 +23,8 @@
     {
       "id": "tobias-counter",
       "asset": "tobias-counter",
-      "x": 270,
-      "y": 218,
+      "x": 293.97621479850943,
+      "y": 185.14370564648704,
       "sx": 0.3225806451612903,
       "sy": 0.3225806451612903,
       "visible": true
@@ -32,8 +32,8 @@
     {
       "id": "tobias-timber-rack",
       "asset": "tobias-timber-rack",
-      "x": 482,
-      "y": 157,
+      "x": 117.02873028935659,
+      "y": 121.47968177998601,
       "sx": 0.3029045643153527,
       "sy": 0.3029045643153527,
       "visible": true
@@ -41,8 +41,8 @@
     {
       "id": "tobias-tool-rack",
       "asset": "tobias-tool-rack",
-      "x": 398,
-      "y": 108,
+      "x": 446.8404375525192,
+      "y": 101.33994033374739,
       "sx": 0.3282208588957055,
       "sy": 0.3282208588957055,
       "visible": true
@@ -50,8 +50,8 @@
     {
       "id": "tobias-workbench",
       "asset": "tobias-workbench",
-      "x": 447,
-      "y": 246,
+      "x": 448.33201193325056,
+      "y": 188.7234868702275,
       "sx": 0.3074866310160428,
       "sy": 0.3074866310160428,
       "visible": true
@@ -59,8 +59,8 @@
     {
       "id": "tobias-cabinet",
       "asset": "tobias-cabinet",
-      "x": 92,
-      "y": 182,
+      "x": 114.20019888750869,
+      "y": 181.55599602224981,
       "sx": 0.24126984126984127,
       "sy": 0.24126984126984127,
       "visible": true
@@ -68,8 +68,8 @@
     {
       "id": "tobias-planks",
       "asset": "tobias-planks",
-      "x": 465,
-      "y": 309,
+      "x": 496.0802784425122,
+      "y": 343.6323102645136,
       "sx": 0.2832764505119454,
       "sy": 0.2832764505119454,
       "visible": true
@@ -77,8 +77,8 @@
     {
       "id": "tobias-chair",
       "asset": "tobias-chair",
-      "x": 140,
-      "y": 276,
+      "x": 490.76314242263777,
+      "y": 165.44300954020662,
       "sx": 0.23595505617977527,
       "sy": 0.23595505617977527,
       "visible": true
@@ -86,8 +86,8 @@
     {
       "id": "tobias-offcuts",
       "asset": "tobias-offcuts",
-      "x": 490,
-      "y": 208,
+      "x": 63.31217738208244,
+      "y": 343.4212132138032,
       "sx": 0.22929936305732485,
       "sy": 0.22929936305732485,
       "visible": true
@@ -95,17 +95,19 @@
     {
       "id": "tobias-sawhorses",
       "asset": "tobias-sawhorses",
-      "x": 113,
-      "y": 330,
-      "sx": 0.25396825396825395,
-      "sy": 0.25396825396825395,
-      "visible": true
+      "x": 509.49605568850245,
+      "y": 129.31400397775016,
+      "sx": 0.19710144927536233,
+      "sy": 0.21693121693121692,
+      "visible": true,
+      "effects": true,
+      "solid": true
     },
     {
       "id": "tobias-clamps",
       "asset": "tobias-clamps",
-      "x": 133,
-      "y": 106,
+      "x": 198.26858472927566,
+      "y": 97.56392442274671,
       "sx": 0.29432624113475175,
       "sy": 0.29432624113475175,
       "visible": true
@@ -113,38 +115,44 @@
     {
       "id": "tobias-blueprint",
       "asset": "tobias-blueprint",
-      "x": 243,
-      "y": 182,
-      "sx": 0.13087248322147652,
-      "sy": 0.13087248322147652,
+      "x": 331.79846539677055,
+      "y": 141.15599602224978,
+      "sx": 0.11073825503355705,
+      "sy": 0.11834319526627218,
       "visible": true,
-      "parent": "tobias-counter"
+      "parent": "tobias-counter",
+      "effects": true,
+      "solid": false
     },
     {
       "id": "tobias-ledger",
       "asset": "tobias-ledger",
-      "x": 294,
-      "y": 183,
-      "sx": 0.09627329192546584,
-      "sy": 0.09627329192546584,
+      "x": 132.38400397775024,
+      "y": 137.70798806674944,
+      "sx": 0.07453416149068323,
+      "sy": 0.07228915662650602,
       "visible": true,
-      "parent": "tobias-counter"
+      "parent": "tobias-counter",
+      "effects": true,
+      "solid": false
     },
     {
       "id": "tobias-hand-tools",
       "asset": "tobias-hand-tools",
-      "x": 436,
-      "y": 201,
-      "sx": 0.11021505376344086,
-      "sy": 0.11021505376344086,
+      "x": 477.73529674655686,
+      "y": 143.27800795550039,
+      "sx": 0.09408602150537634,
+      "sy": 0.1102020202020202,
       "visible": true,
-      "parent": "tobias-workbench"
+      "parent": "tobias-workbench",
+      "effects": true,
+      "solid": false
     },
     {
       "id": "tobias-lantern",
       "asset": "tobias-lantern",
-      "x": 204,
-      "y": 89,
+      "x": 60.586715186693624,
+      "y": 72.57185282324355,
       "sx": 0.14893617021276595,
       "sy": 0.14893617021276595,
       "visible": true
@@ -152,8 +160,8 @@
     {
       "id": "tobias-stool",
       "asset": "tobias-stool",
-      "x": 368,
-      "y": 281,
+      "x": 365.33597613349895,
+      "y": 126.48661574293925,
       "sx": 0.1534090909090909,
       "sy": 0.1534090909090909,
       "visible": true
@@ -170,8 +178,8 @@
     {
       "id": "tobias-lantern-right",
       "asset": "tobias-lantern",
-      "x": 535,
-      "y": 92,
+      "x": 528.7839443114975,
+      "y": 72.01982100124215,
       "sx": 0.14893617021276595,
       "sy": 0.14893617021276595,
       "visible": true
@@ -179,11 +187,32 @@
     {
       "id": "tobias-window",
       "asset": "tobias-window",
-      "x": 288,
-      "y": 109,
+      "x": 292.884043755252,
+      "y": 103.67195226699789,
       "sx": 0.09490740740740741,
       "sy": 0.09490740740740741,
       "visible": true
+    },
+    {
+      "id": "livro_caixa-1",
+      "asset": "livro_caixa",
+      "x": 253.28047733002091,
+      "y": 261.96828639801254,
+      "sx": 0.5,
+      "sy": 0.5,
+      "visible": false
+    },
+    {
+      "id": "tobias-ledger-1",
+      "asset": "tobias-ledger",
+      "x": 292.7946833646923,
+      "y": 139.42784884549337,
+      "sx": 0.07453416149068323,
+      "sy": 0.07228915662650602,
+      "visible": true,
+      "parent": "tobias-counter",
+      "effects": true,
+      "solid": false
     }
   ]
 }

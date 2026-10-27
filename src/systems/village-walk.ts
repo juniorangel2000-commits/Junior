@@ -40,7 +40,7 @@ export class VillageWalk {
  private wait:number;
  private distance=0;
  private direction:CharacterDirection='down';
- constructor(private readonly stops:readonly Point[],private readonly speed=34,initialWait=8,private readonly stopWait=12,private readonly tile=TILE){this.wait=initialWait;}
+ constructor(private readonly stops:readonly Point[],private readonly speed=34,initialWait=8,private readonly stopWait=12,private readonly tile=TILE,private readonly walkFrames=6){this.wait=initialWait;}
  step(seconds:number,position:Point,blocked:Blocked,cost:Cost=()=>1,paused=false){
   let moved=0,x=position.x,y=position.y,arrived=false;
   if(!paused&&seconds>0&&Number.isFinite(seconds)&&this.stops.length){
@@ -65,6 +65,6 @@ export class VillageWalk {
    }
   }
   this.distance+=moved;
-  return{x,y,direction:this.direction,phase:moved>0?1+Math.floor(this.distance/5.3)%6:0,moving:moved>0,arrived};
+  return{x,y,direction:this.direction,phase:moved>0?1+Math.floor(this.distance/5.3)%this.walkFrames:0,moving:moved>0,arrived};
  }
 }

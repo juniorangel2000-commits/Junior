@@ -1,6 +1,7 @@
 import {validSmithLayout,smithFits,smithNavigation} from './smith-layout';
 import {validateEconomyState,newEconomyState} from './economy';
 import {validateResourceField} from './resource-spawns';
+import {validTreeGrowth,growingTreeResources} from './tree-growth';
 import {repairPropertyShore,PROPERTY_SHORE_REVISION} from '../data/property-shore-repair';
 import {collectibleKind} from '../data/nature-catalog';
 import {editorObjectKind} from './map-editor';
@@ -59,6 +60,7 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.propertyShoreRevision!==undefined&&value.propertyShoreRevision!==PROPERTY_SHORE_REVISION)return false;
   if(value.homesteadRevision!==undefined&&value.homesteadRevision!==1)return false;
   if(value.resourceFields!==undefined&&(!isRecord(value.resourceFields)||!validateResourceField(value.resourceFields.property,'property')||!validateResourceField(value.resourceFields.forest,'forest')))return false;
+  if(value.treeGrowth!==undefined&&!validTreeGrowth(value.treeGrowth))return false;
   if(value.resourceMilestones!==undefined&&(!isRecord(value.resourceMilestones)||typeof value.resourceMilestones.felled!=='boolean'||typeof value.resourceMilestones.mined!=='boolean'))return false;
   if (value.quickbar !== undefined && !validQuickbar(value.quickbar)) return false;
   if (value.activeArea !== undefined && value.activeArea !== 'property' && value.activeArea !== 'forest' && value.activeArea !== 'village') return false;
@@ -182,6 +184,7 @@ export function validateSave(value: unknown): value is SaveData {
     const forest:boolean=resource.id.startsWith('f-');const id:string=forest?resource.id.slice(2):resource.id;
     let kind=collectibleKind(editorObjectKind(id)??undefined);
     if(resource.id.startsWith('spawn-'))kind=(value.resourceFields as SaveData['resourceFields'])?.[resource.id.startsWith('spawn-f-')?'forest':'property'].nodes.find(n=>n.id===resource.id)?.kind;
+    else if(resource.id.startsWith('growth-'))kind=growingTreeResources(value as unknown as SaveData,resource.id.startsWith('growth-f-')?'forest':'property').find(n=>n.id===resource.id)?.kind;
     else if(id.startsWith('editor-')){
       const object=(forest?value.forestMapEdits:value.mapEdits as SaveData['mapEdits']) as SaveData['mapEdits'];
       kind=collectibleKind(object?.objects[id]?.kind);

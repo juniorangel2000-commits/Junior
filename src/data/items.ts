@@ -19,7 +19,10 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   windowKit: {name:'Janela pronta',description:'Produzido ou coletado na região.',iconFallback:'board'},
   fenceKit: {name:'Cerca pronta',description:'Produzido ou coletado na região.',iconFallback:'board'},
   forge: {name:'Forja própria',description:'Produzido ou coletado na região.',iconFallback:'workbench'},
-  mushroom: {name:'Cogumelos',description:'Produzido ou coletado na região.',iconFallback:'board'},
+  mushroom: {name:'Cogumelos',description:'Recolha sem ferramentas na propriedade e na floresta. Ingrediente dos preparados da Amélia.',iconFallback:'board'},
+  fungalInfusion:{name:'Infusão de cogumelos',description:'Preparado de ervas e cogumelos de Amélia. Recupera 50 de vigor.',iconFallback:'water'},
+  oakSeed:{name:'Bolotas de frondosa',description:'Plante em terra livre. A árvore cresce em sete dias e deixa um toco coletável ao ser cortada.',iconFallback:'seeds'},
+  pineSeed:{name:'Sementes de pinheiro',description:'Plante em terra livre. O pinheiro cresce em sete dias e fornece novas sementes ao ser cortado.',iconFallback:'seeds'},
   wood: { name: 'Madeira', description: 'Lenha e madeira reaproveitada, usada nas cercas e nos bancos.' },
   stone: { name: 'Pedra', description: 'Pedras pequenas para ferramentas e construção.' },
   seeds: { name: 'Sementes', description: 'Sementes de nabo para a horta.' },
@@ -66,7 +69,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
 
 /** Only these stock fields may be absent in a save from before the village
  * services update. Missing any older field still indicates a corrupt save. */
-export const VILLAGE_ITEM_IDS=[...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory'] as const satisfies readonly ItemId[];
+export const VILLAGE_ITEM_IDS=[...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory'] as const satisfies readonly ItemId[];
 
 export const ITEM_IDS = Object.keys(ITEMS) as ItemId[];
 export const ITEM_NAMES = Object.fromEntries(ITEM_IDS.map(id => [id, ITEMS[id].name])) as Record<ItemId, string>;

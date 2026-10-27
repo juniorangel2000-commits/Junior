@@ -1,0 +1,191 @@
+{
+  "checks": [
+    {
+      "name": "Ervas e cogumelos são coletados à mão, somem e aguardam três dias",
+      "passed": true,
+      "details": [
+        {
+          "kind": "herb",
+          "gain": 2,
+          "removed": true,
+          "delay": 4320
+        },
+        {
+          "kind": "mushroom",
+          "gain": 2,
+          "removed": true,
+          "delay": 4320
+        }
+      ]
+    },
+    {
+      "name": "Árvore cortada fornece a semente da espécie e deixa um toco real",
+      "passed": true,
+      "details": {
+        "seed": "oakSeed",
+        "gain": 1,
+        "stump": {
+          "id": "growth-p-1",
+          "kind": "stump"
+        },
+        "record": "stump",
+        "depleted": true
+      }
+    },
+    {
+      "name": "Toco exige machado, dá madeira e libera o terreno",
+      "passed": true,
+      "details": {
+        "handBlocked": true,
+        "wood": 4,
+        "cleared": true,
+        "recordGone": true
+      }
+    },
+    {
+      "name": "Usar a semente planta a espécie correta em terra livre",
+      "passed": true,
+      "details": {
+        "target": {
+          "x": 28,
+          "y": 10
+        },
+        "spent": 1,
+        "node": {
+          "id": "growth-p-2",
+          "stage": 0,
+          "species": "oak"
+        },
+        "blocked": true
+      }
+    },
+    {
+      "name": "Cada árvore plantada ganha uma base própria sem alterar o piso nem a horta",
+      "passed": true,
+      "details": {
+        "count": 1,
+        "terrain": true,
+        "farming": true
+      }
+    },
+    {
+      "name": "A base desaparece na virada do dia, mesmo antes de completar 24 horas",
+      "passed": true,
+      "details": {
+        "count": 0,
+        "stage": 0
+      }
+    },
+    {
+      "name": "A terra aparece só no primeiro dia; os quatro estágios preservam colisão e piso",
+      "passed": true,
+      "details": [
+        {
+          "day": 0,
+          "stage": 0,
+          "texture": "ecology-oak-sprout",
+          "height": 42,
+          "solid": true,
+          "soil": 1
+        },
+        {
+          "day": 1,
+          "stage": 1,
+          "texture": "ecology-oak-seedling",
+          "height": 65,
+          "solid": true,
+          "soil": 0
+        },
+        {
+          "day": 3,
+          "stage": 2,
+          "texture": "ecology-oak-young",
+          "height": 135,
+          "solid": true,
+          "soil": 0
+        },
+        {
+          "day": 7,
+          "stage": 3,
+          "texture": "asset-tree-0",
+          "height": 211,
+          "solid": true,
+          "soil": 0
+        }
+      ]
+    },
+    {
+      "name": "Árvore adulta balança suavemente sem deslocar a raiz ou a colisão",
+      "passed": true,
+      "details": {
+        "fixed": true,
+        "movement": 0.0038844624659155613,
+        "max": 0.0038844624659155613
+      }
+    },
+    {
+      "name": "Save/load preserva estágio, dano parcial e toco já recolhido",
+      "passed": true,
+      "details": {
+        "valid": true,
+        "persisted": true,
+        "stage": 3,
+        "hits": 1,
+        "oldStumpGone": true
+      }
+    },
+    {
+      "name": "Tentativa de plantio bloqueado não consome semente nem altera o save",
+      "passed": true,
+      "details": {
+        "refused": true,
+        "unchanged": true
+      }
+    },
+    {
+      "name": "Amélia ensina, prepara e cobra corretamente a infusão; ambos os ingredientes são consumidos",
+      "passed": true,
+      "details": {
+        "learned": true,
+        "crafted": true,
+        "brewed": true,
+        "fee": 8,
+        "used": true,
+        "vigor": 70,
+        "herb": 3,
+        "mushroom": 2
+      }
+    },
+    {
+      "name": "Floresta também tem ervas e cogumelos coletáveis",
+      "passed": true,
+      "details": {
+        "herbs": 32,
+        "mushrooms": 4,
+        "before": {
+          "herb": 2,
+          "mushroom": 2
+        }
+      }
+    },
+    {
+      "name": "Na floresta, a semente de pinheiro cresce e deixa o toco da espécie corretamente",
+      "passed": true,
+      "details": {
+        "species": "pine",
+        "firstStage": 0,
+        "soil": 1,
+        "adult": 3,
+        "stump": "stump",
+        "texture": "ecology-pine-stump",
+        "persisted": true
+      }
+    },
+    {
+      "name": "Sem erros JavaScript ou arquivos ausentes",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

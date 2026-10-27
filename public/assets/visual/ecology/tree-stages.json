@@ -1,0 +1,62 @@
+{
+  "source": "tree-stages-refined.png",
+  "sha256": "07e46479ab28c64fd9095cc9f438016e263d0ed2fe19ff763b6e312a29360acb",
+  "frames": [
+    {
+      "id": "oak-sprout",
+      "x": 189,
+      "y": 358,
+      "width": 112,
+      "height": 138
+    },
+    {
+      "id": "oak-seedling",
+      "x": 468,
+      "y": 230,
+      "width": 194,
+      "height": 272
+    },
+    {
+      "id": "oak-young",
+      "x": 760,
+      "y": 71,
+      "width": 349,
+      "height": 431
+    },
+    {
+      "id": "oak-stump",
+      "x": 1204,
+      "y": 335,
+      "width": 270,
+      "height": 173
+    },
+    {
+      "id": "pine-sprout",
+      "x": 211,
+      "y": 777,
+      "width": 83,
+      "height": 140
+    },
+    {
+      "id": "pine-seedling",
+      "x": 506,
+      "y": 690,
+      "width": 147,
+      "height": 232
+    },
+    {
+      "id": "pine-young",
+      "x": 774,
+      "y": 537,
+      "width": 311,
+      "height": 390
+    },
+    {
+      "id": "pine-stump",
+      "x": 1221,
+      "y": 751,
+      "width": 245,
+      "height": 176
+    }
+  ]
+}

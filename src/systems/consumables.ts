@@ -1,11 +1,14 @@
 import type {SaveData,ItemId,TilePoint} from '../types';
 import {Inventory} from './inventory';
 import {createVillageProgress} from '../data/village-progress';
-export const USABLE_VILLAGE_ITEMS:ItemId[]=['furniture','doorKit','windowKit','fenceKit','sickle','shovel','forge','herb','bandage','herbalTonic','meal','oldMap','fertilizer','lamp','waterPump','fishingRod','net'];
+import {plantTree} from './tree-growth';
+import {ECOLOGY_BALANCE as B} from '../data/ecology-balance';
+export const USABLE_VILLAGE_ITEMS:ItemId[]=['furniture','doorKit','windowKit','fenceKit','sickle','shovel','forge','herb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','meal','oldMap','fertilizer','lamp','waterPump','fishingRod','net'];
 export function useConsumable(s:SaveData,item:ItemId,point?:TilePoint,blocked?: (x:number,y:number)=>boolean):{ok:boolean;message:string}{
+ if(item==='oakSeed'||item==='pineSeed')return point?plantTree(s,item,point,blocked??(()=>true)):{ok:false,message:'Escolha terra livre para plantar.'};
  const p=s.villageProgress??createVillageProgress(),i=new Inventory(s.inventory);
  if(!i.has(item))return{ok:false,message:'Você não possui este item.'};
- const healing:Partial<Record<ItemId,number>>={herb:10,bandage:30,herbalTonic:70,meal:50};
+ const healing:Partial<Record<ItemId,number>>={herb:10,bandage:30,herbalTonic:70,fungalInfusion:B.infusion.vigor,meal:50};
  if(healing[item]){if(p.vigor>=100)return{ok:false,message:'Seu vigor já está completo.'};i.spend({[item]:1});p.vigor=Math.min(100,p.vigor+healing[item]!);}
  else if(item==='oldMap'){if(p.rumors.includes('old-ruins'))return{ok:false,message:'Você já conhece estas anotações.'};i.spend({oldMap:1});p.rumors.push('old-ruins');}
  else if(item==='fertilizer') {const crop=point&&s.crops.find(c=>c.x===point.x&&c.y===point.y);if(!crop||crop.growth>=1)return{ok:false,message:'Fique ao lado de um canteiro plantado em crescimento.'};i.spend({fertilizer:1});crop.growth=Math.min(1,crop.growth+.2);crop.watered=true;}

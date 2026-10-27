@@ -1,0 +1,69 @@
+{
+  "source": "herbal-trees.png",
+  "sha256": "08800681454403db48080f1fe2abad6e7b980c3ae6d83fd9fbb4ba0913c0410b",
+  "frames": [
+    {
+      "id": "herbs",
+      "x": 43,
+      "y": 38,
+      "width": 364,
+      "height": 387
+    },
+    {
+      "id": "oakSeed",
+      "x": 497,
+      "y": 149,
+      "width": 300,
+      "height": 266
+    },
+    {
+      "id": "pineSeed",
+      "x": 877,
+      "y": 148,
+      "width": 332,
+      "height": 260
+    },
+    {
+      "id": "oak-seedling",
+      "x": 86,
+      "y": 476,
+      "width": 269,
+      "height": 347
+    },
+    {
+      "id": "pine-seedling",
+      "x": 509,
+      "y": 499,
+      "width": 240,
+      "height": 324
+    },
+    {
+      "id": "oak-young",
+      "x": 868,
+      "y": 473,
+      "width": 330,
+      "height": 351
+    },
+    {
+      "id": "pine-young",
+      "x": 70,
+      "y": 854,
+      "width": 300,
+      "height": 372
+    },
+    {
+      "id": "herbalTonic",
+      "x": 499,
+      "y": 894,
+      "width": 268,
+      "height": 314
+    },
+    {
+      "id": "fungalInfusion",
+      "x": 913,
+      "y": 892,
+      "width": 274,
+      "height": 313
+    }
+  ]
+}

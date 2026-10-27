@@ -1,3 +1,4 @@
+import {naturalPlantGround} from '../systems/tree-avoidance';
 import {VillageNpcOverlays} from '../village-npc-overlays';
 import {notifyReadyOrders} from '../systems/economy';
 import {markMinerals} from '../economy-visuals';
@@ -532,6 +533,7 @@ export class ValleyScene extends Phaser.Scene {
     if(!this.canPlay()||this.player.isSwimming||this.toolUse.active||this.time.now<this.nextInteractionAt)return;
     if((item==='sickle'||item==='shovel')&&!this.inventory.has(item))return;
     this.state.inventory={...this.inventory.data};this.state.crops=this.farming.crops.map(c=>({...c}));
+    const planting=item==='oakSeed'||item==='pineSeed';if(planting&&this.inHome){this.ui.toast('Plante a semente fora da casa.');return;}
     const point={x:Math.floor(this.player.x/32+this.player.facing.x),y:Math.floor(this.player.y/32+this.player.facing.y)};
     const water=(x:number,y:number)=>this.world.isSwimmingPoint(x,y);
     const components={furniture:'bench',doorKit:'door',windowKit:'window',fenceKit:'fence'} as const;
@@ -552,7 +554,7 @@ export class ValleyScene extends Phaser.Scene {
     if(item==='fishingRod'||item==='net'){
       if(this.player.isSwimming||!near){this.ui.toast('Fique em terra firme, perto da água, para pescar.');return;}
       this.setPaused(true);const message=await fishAtBank(this.state,item==='net',()=>{Object.assign(this.inventory.data,this.state.inventory);this.persist();});this.setPaused(false);this.ui.toast(message);
-    }else{const result=useConsumable(this.state,item,point,(x,y)=>this.world.isBlocked(x,y)||this.building.isBlocked(x,y));if(result.ok){Object.assign(this.inventory.data,this.state.inventory);this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);this.persist();}this.ui.toast(result.message);}
+    }else{const result=useConsumable(this.state,item,point,(x,y)=>this.world.isBlocked(x,y)||this.building.isBlocked(x,y)||planting&&(!this.world.canPlantTree(x,y)||!naturalPlantGround(this.state.mapEdits?.terrain[`${x},${y}`])||this.farming.isPrepared(x,y)||!!this.world.resourceAt(x,y)||this.world.resources.some(n=>n.kind==='standingTree'&&Math.hypot(n.x-x,n.y-y)<2)));if(result.ok){Object.assign(this.inventory.data,this.state.inventory);if(planting)this.resourceLifecycle?.tick(true);this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);this.persist();}this.ui.toast(result.message);}
     this.updateHUD();
   }
 

@@ -5,19 +5,19 @@ import {villageGround} from '../data/village';
 import type {BentoRoomNavigation} from './bento-routine';
 import type {GameClock} from './clock';
 
-export type RoutineId='augusto'|'bento'|'rosa'|'tobias';
+export type RoutineId='augusto'|'bento'|'rosa'|'tobias'|'amelia';
 export type RoutineArea='village'|'shop';
 export interface MerchantRoutineState {
  area:RoutineArea;x:number;y:number;direction:CharacterDirection;stop:number;wait:number;
  serviceUntil:number;socialUntil:number;socialDay:number;
 }
 export const MERCHANT_DAILY_PLAN={
- opening:8*60,lunch:12*60,return:13*60+30,closing:{augusto:20*60,bento:19*60,rosa:18*60,tobias:18*60},
+ opening:8*60,lunch:12*60,return:13*60+30,closing:{augusto:20*60,bento:19*60,rosa:18*60,tobias:18*60,amelia:18*60},
  speed:34,stopSeconds:6,guideMinutes:45,socialMinutes:12,
- plaza:{augusto:{x:50,y:41},bento:{x:49,y:41},rosa:{x:48,y:43},tobias:{x:45,y:43}},
+ plaza:{augusto:{x:50,y:41},bento:{x:49,y:41},rosa:{x:48,y:43},tobias:{x:45,y:43},amelia:{x:43,y:41}},
 } as const;
 const absolute=(c:GameClock)=>c.day*1440+c.time;
-export const dailyMerchant=(id:ResidentId):id is RoutineId=>id==='augusto'||id==='bento'||id==='rosa'||id==='tobias';
+export const dailyMerchant=(id:ResidentId):id is RoutineId=>id==='augusto'||id==='bento'||id==='rosa'||id==='tobias'||id==='amelia';
 export function merchantPeriod(id:RoutineId,time:number):'work'|'break'|'closed'{
  const p=MERCHANT_DAILY_PLAN;
  return time<p.opening||time>=p.closing[id]?'closed':time>=p.lunch&&time<p.return?'break':'work';
@@ -47,7 +47,7 @@ export class MerchantDailyRoutine {
  readonly state:MerchantRoutineState;
  private walker?:VillageWalk;
  private target='';
- constructor(readonly owner:RoutineId,position:{x:number;y:number;direction:CharacterDirection;shop:boolean},private room:BentoRoomNavigation,saved?:MerchantRoutineState){
+ constructor(readonly owner:RoutineId,position:{x:number;y:number;direction:CharacterDirection;shop:boolean},private room:BentoRoomNavigation,saved?:MerchantRoutineState,private readonly walkFrames=6){
   this.state=structuredClone(validMerchantRoutine(saved)?saved:{area:position.shop?'shop':'village',x:position.x,y:position.y,direction:position.direction,stop:0,wait:0,serviceUntil:0,socialUntil:0,socialDay:0});
  }
  setRoom(room:BentoRoomNavigation):void{this.room=room;this.resetPath();}
@@ -78,7 +78,7 @@ export class MerchantDailyRoutine {
  private move(point:{x:number;y:number},key:string,seconds:number,env:RoutineEnvironment){
   const s=this.state,tile=s.area==='shop'?(this.room.tileSize??32):32;
   if(this.target!==key){this.resetPath();this.target=key;}
-  if(!this.walker){const goal=this.goal(point,tile,env);if(!goal)return{moving:false,phase:0,arrived:false};this.walker=new VillageWalk([goal],MERCHANT_DAILY_PLAN.speed,0,0,tile);}
+  if(!this.walker){const goal=this.goal(point,tile,env);if(!goal)return{moving:false,phase:0,arrived:false};this.walker=new VillageWalk([goal],MERCHANT_DAILY_PLAN.speed,0,0,tile,this.walkFrames);}
   const step=this.walker.step(seconds,s,(x,y)=>this.blocked(s.area,x,y,env),s.area==='village'?(x,y)=>['path','paving'].includes(villageGround(x,y))?1:2.4:()=>1);
   if(step.moving&&!env.fits(s.area,step.x,step.y)){this.resetPath();s.wait=.3;return{moving:false,phase:0,arrived:false};}
   s.x=step.x;s.y=step.y;if(step.moving)s.direction=step.direction;

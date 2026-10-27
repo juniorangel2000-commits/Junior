@@ -1,3 +1,5 @@
+import {naturalPlantGround} from '../systems/tree-avoidance';
+import {treeGroundClear} from '../systems/tree-ground';
 import {toolCondition,spendDurability,toolWork,notifyReadyOrders} from '../systems/economy';
 import {markMinerals} from '../economy-visuals';
 import {useConsumable} from '../systems/consumables';
@@ -30,7 +32,7 @@ import { advanceClock, GAME_MINUTES_PER_SECOND } from '../systems/clock';
 import { Farming } from '../systems/farming';
 import { directionFromVector, directionVector } from '../character-directions';
 import { setupAnimalArt } from '../forest-art';
-import { FOREST_ANIMALS, FOREST_ENTRY, ANIMAL_NAMES } from '../data/ancient-forest';
+import { FOREST_ANIMALS, FOREST_ENTRY, ANIMAL_NAMES,forestPathDistance } from '../data/ancient-forest';
 import { gameAudio } from '../audio';
 import { loadCameraZoom, saveCameraZoom, stepCameraZoom } from '../camera-zoom';
 
@@ -149,6 +151,7 @@ export class ForestScene extends Phaser.Scene {
       if(done){spendDurability(this.state,'sickle');this.toolVisual?.playGather('sickle',directionFromVector(this.player.facing.x,this.player.facing.y),this.player,toolCondition(this.state,'sickle').tier);this.state.resourceProgress=this.resources.progress;this.save();}this.ui.toast(done?'Vegetação recolhida.':'Aproxime-se de uma planta coletável.');this.updateHUD();return;
     }
     this.state.inventory={...this.state.inventory};this.state.crops=this.farming.crops.map(c=>({...c}));
+    const planting=item==='oakSeed'||item==='pineSeed';
     const point={x:Math.floor(this.player.x/32+this.player.facing.x),y:Math.floor(this.player.y/32+this.player.facing.y)};
     const water=(x:number,y:number)=>this.world.waterPointAt(x,y);
     const near=Array.from({length:7},(_,a)=>a-3).some(dx=>Array.from({length:7},(_,a)=>a-3).some(dy=>water(this.player.x+dx*16,this.player.y+dy*16)));
@@ -156,7 +159,7 @@ export class ForestScene extends Phaser.Scene {
     if(item==='fishingRod'||item==='net'){
       if(this.player.isSwimming||!near){this.ui.toast('Fique em terra firme, perto da água, para pescar.');return;}
       this.setPaused(true);const message=await fishAtBank(this.state,item==='net',()=>{;this.persist();});this.setPaused(false);this.ui.toast(message);
-    }else{const result=useConsumable(this.state,item,point,(x,y)=>this.world.isBlocked(x,y));if(result.ok){;this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);this.persist();}this.ui.toast(result.message);}
+    }else{const result=useConsumable(this.state,item,point,(x,y)=>this.world.isBlocked(x,y)||planting&&(!treeGroundClear(x,y,this.world.waterPointAt)||!naturalPlantGround(this.state.forestMapEdits?.terrain[`${x},${y}`])||forestPathDistance(x,y)<2||!!this.world.resourceAt(x,y)||this.world.resources.some(n=>n.kind==='standingTree'&&Math.hypot(n.x-x,n.y-y)<2)));if(result.ok){if(planting)this.resourceLifecycle?.tick(true);this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);this.persist();}this.ui.toast(result.message);}
     this.updateHUD();
   }
 

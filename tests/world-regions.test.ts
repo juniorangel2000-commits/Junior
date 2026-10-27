@@ -127,7 +127,7 @@ describe('expansão da região inicial', () => {
   });
 
   it('mantém os sprites inteiros das rochas e arbustos longe das bordas das trilhas', () => {
-    const sizes = { fallenLog:[68,68],stump:[38,38],stone: [30, 20], vein: [48, 54], seeds: [36, 36], fiber: [32, 38], tree: [36, 24], scrap: [30, 28] } as const;
+    const sizes = { herb:[34,38],mushroom:[26,26],fallenLog:[68,68],stump:[38,38],stone: [30, 20], vein: [48, 54], seeds: [36, 36], fiber: [32, 38], tree: [36, 24], scrap: [30, 28] } as const;
     for (const node of world.resources) {
       if (node.kind === 'standingTree') continue;
       const [width,height]=node.id.startsWith('shoreStones-')?[30,18]:sizes[node.kind];
