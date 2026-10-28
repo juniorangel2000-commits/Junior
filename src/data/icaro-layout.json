@@ -1,0 +1,182 @@
+{
+  "version": 1,
+  "pieces": [
+    {
+      "id": "structure",
+      "asset": "structure",
+      "x": 0,
+      "y": 0,
+      "sx": 1,
+      "sy": 1,
+      "visible": true,
+      "wallShade": 1
+    },
+    {
+      "id": "floor",
+      "asset": "floor-wood",
+      "x": 33,
+      "y": 116,
+      "sx": 510,
+      "sy": 234,
+      "visible": true
+    },
+    {
+      "id": "icaro-counter",
+      "asset": "icaro-counter",
+      "x": 288,
+      "y": 205,
+      "sx": 0.3564356435643564,
+      "sy": 0.3564356435643564,
+      "visible": true
+    },
+    {
+      "id": "icaro-parts",
+      "asset": "icaro-parts",
+      "x": 104,
+      "y": 183,
+      "sx": 0.3125,
+      "sy": 0.3125,
+      "visible": true
+    },
+    {
+      "id": "icaro-workbench",
+      "asset": "icaro-workbench",
+      "x": 445,
+      "y": 213,
+      "sx": 0.2982005141388175,
+      "sy": 0.2982005141388175,
+      "visible": true
+    },
+    {
+      "id": "icaro-table",
+      "asset": "icaro-table",
+      "x": 445,
+      "y": 316,
+      "sx": 0.3333333333333333,
+      "sy": 0.3333333333333333,
+      "visible": true
+    },
+    {
+      "id": "icaro-compressor",
+      "asset": "icaro-compressor",
+      "x": 105,
+      "y": 295,
+      "sx": 0.26586102719033233,
+      "sy": 0.26586102719033233,
+      "visible": true
+    },
+    {
+      "id": "icaro-tools",
+      "asset": "icaro-tools",
+      "x": 182,
+      "y": 103,
+      "sx": 0.22018348623853212,
+      "sy": 0.22018348623853212,
+      "visible": true
+    },
+    {
+      "id": "icaro-crate",
+      "asset": "icaro-crate",
+      "x": 182,
+      "y": 328,
+      "sx": 0.18118466898954705,
+      "sy": 0.18118466898954705,
+      "visible": true
+    },
+    {
+      "id": "icaro-engine",
+      "asset": "icaro-engine",
+      "x": 449,
+      "y": 274,
+      "sx": 0.13538461538461538,
+      "sy": 0.13538461538461538,
+      "visible": true,
+      "parent": "icaro-table"
+    },
+    {
+      "id": "icaro-oil",
+      "asset": "icaro-oil",
+      "x": 413,
+      "y": 277,
+      "sx": 0.08360128617363344,
+      "sy": 0.08360128617363344,
+      "visible": true,
+      "parent": "icaro-table"
+    },
+    {
+      "id": "icaro-register",
+      "asset": "icaro-register",
+      "x": 313,
+      "y": 160,
+      "sx": 0.09844559585492228,
+      "sy": 0.09844559585492228,
+      "visible": true,
+      "parent": "icaro-counter"
+    },
+    {
+      "id": "icaro-toolbox",
+      "asset": "icaro-toolbox",
+      "x": 477,
+      "y": 282,
+      "sx": 0.08970099667774087,
+      "sy": 0.08970099667774087,
+      "visible": true,
+      "parent": "icaro-table"
+    },
+    {
+      "id": "icaro-gears",
+      "asset": "icaro-gears",
+      "x": 263,
+      "y": 159,
+      "sx": 0.07936507936507936,
+      "sy": 0.07936507936507936,
+      "visible": true,
+      "parent": "icaro-counter"
+    },
+    {
+      "id": "icaro-lantern",
+      "asset": "icaro-lantern",
+      "x": 58,
+      "y": 79,
+      "sx": 0.12307692307692308,
+      "sy": 0.12307692307692308,
+      "visible": true
+    },
+    {
+      "id": "icaro-stool",
+      "asset": "icaro-stool",
+      "x": 365,
+      "y": 283,
+      "sx": 0.14285714285714285,
+      "sy": 0.14285714285714285,
+      "visible": true
+    },
+    {
+      "id": "icaro-rug",
+      "asset": "icaro-rug",
+      "x": 288,
+      "y": 302,
+      "sx": 0.20918367346938777,
+      "sy": 0.20918367346938777,
+      "visible": true
+    },
+    {
+      "id": "icaro-window",
+      "asset": "icaro-window",
+      "x": 330,
+      "y": 105,
+      "sx": 0.2655172413793103,
+      "sy": 0.2655172413793103,
+      "visible": true
+    },
+    {
+      "id": "icaro-lantern-right",
+      "asset": "icaro-lantern",
+      "x": 520,
+      "y": 79,
+      "sx": 0.12307692307692308,
+      "sy": 0.12307692307692308,
+      "visible": true
+    }
+  ]
+}

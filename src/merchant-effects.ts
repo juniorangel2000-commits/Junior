@@ -4,6 +4,7 @@ import type {SmithLayout} from './systems/smith-layout';
 import {animateInteriorProps,type InteriorEffectProfile} from './interior-effects';
 
 const profiles:Readonly<Record<string,InteriorEffectProfile>>={
+ 'icaro-lantern':{kind:'lamp',center:[.6,.65],radius:60},
  lamparina_parede:{kind:'lamp',center:[.5,.65],radius:60},
  'rosa-lantern':{kind:'lamp',center:[.52,.68],radius:60},
  'tobias-lantern':{kind:'lamp',center:[.55,.69],radius:60},

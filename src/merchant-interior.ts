@@ -13,6 +13,7 @@ export function preloadMerchantRooms(scene:Phaser.Scene){
  scene.load.image('nilo-room-atlas','assets/visual/village/nilo/objetos.png');
  scene.load.image('celina-room-atlas','assets/visual/village/celina/objetos.png');
  scene.load.image('damiao-room-atlas','assets/visual/village/damiao/objetos.png');
+ scene.load.image('icaro-room-atlas','assets/visual/village/icaro/objetos.png');
  scene.load.image('helena-room-atlas','assets/visual/village/helena/objetos.png');
 }
 export function drawMerchantInterior(scene:Phaser.Scene,id:ResidentId,data:SmithLayout=createMerchantLayout(id)):SmithView{
@@ -21,7 +22,7 @@ export function drawMerchantInterior(scene:Phaser.Scene,id:ResidentId,data:Smith
  if(!scene.textures.exists(key)){const texture=scene.textures.createCanvas(key,576,384)!,c=texture.getContext();c.fillStyle='#3a291d';c.fillRect(24,23,528,341);c.clearRect(33,116,510,234);c.clearRect(257,350,62,18);
   c.fillStyle=`rgb(${SMITH_WALL_COLOR.map((n,i)=>Math.round([183,163,123][i]*(1-shade)+n*shade)).join(',')})`;c.fillRect(33,32,510,84);c.fillStyle='#6a492a';c.fillRect(33,108,510,10);c.fillRect(33,32,510,8);for(const x of [33,166,407,535])c.fillRect(x,32,7,84);texture.refresh();texture.setFilter(0);}
  for(const p of data.pieces){const a=MERCHANT_ROOM_ASSETS.find(a=>a.id===p.asset)!;
-  const atlas=a.id.startsWith('helena-')?'helena-room-atlas':a.id.startsWith('damiao-')?'damiao-room-atlas':a.id.startsWith('celina-')?'celina-room-atlas':a.id.startsWith('nilo-')?'nilo-room-atlas':a.id.startsWith('tobias-')?'tobias-room-atlas':a.id.startsWith('amelia-')?'amelia-room-atlas':'rosa-room-atlas';
+  const atlas=a.id.startsWith('icaro-')?'icaro-room-atlas':a.id.startsWith('helena-')?'helena-room-atlas':a.id.startsWith('damiao-')?'damiao-room-atlas':a.id.startsWith('celina-')?'celina-room-atlas':a.id.startsWith('nilo-')?'nilo-room-atlas':a.id.startsWith('tobias-')?'tobias-room-atlas':a.id.startsWith('amelia-')?'amelia-room-atlas':'rosa-room-atlas';
   if(a.frame&&a.crop){const t=scene.textures.get(atlas),r=a.crop;if(!t.has(a.frame))t.add(a.frame,0,r.x,r.y,r.width,r.height);t.setFilter(0);}
   const image=a.tile?scene.add.tileSprite(p.x,p.y,p.sx,p.sy,'merchant-room-'+a.id).setOrigin(0).setTileScale(96/1254):scene.add.image(p.x,p.y,a.id==='structure'?key:a.frame?atlas:'merchant-room-'+a.id,a.frame).setOrigin(a.ox,a.oy).setScale(p.sx,p.sy);
   add(image);sprites.set(p.id,image);image.setVisible(merchantPieceVisible(data,p.id)).setData('smithLayoutId',p.id);

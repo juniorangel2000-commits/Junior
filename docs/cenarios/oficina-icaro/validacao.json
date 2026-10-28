@@ -1,0 +1,166 @@
+{
+  "checks": [
+    {
+      "name": "Animação recebida possui oito direções e seis passos",
+      "passed": true
+    },
+    {
+      "name": "South refinado mantém escala, cabeça e apoio estáveis nos sete quadros",
+      "passed": true,
+      "details": {
+        "tops": [
+          24,
+          24,
+          24,
+          24,
+          24,
+          24,
+          24
+        ],
+        "feet": [
+          241,
+          243,
+          243,
+          243,
+          243,
+          243,
+          241
+        ],
+        "distinct": 7
+      }
+    },
+    {
+      "name": "Outras sete direções preservam os 49 PNGs pixel a pixel",
+      "passed": true,
+      "details": {
+        "different": 0,
+        "poses": 49
+      }
+    },
+    {
+      "name": "Condução até a loja utiliza os seis passos enviados e espera o jogador",
+      "passed": true,
+      "details": {
+        "active": true,
+        "arrived": true,
+        "seen": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "stoppedForPlayer": true
+      }
+    },
+    {
+      "name": "Retrato e comércio continuam funcionando com as poses originais",
+      "passed": true,
+      "details": {
+        "trade": true,
+        "portrait": true
+      }
+    },
+    {
+      "name": "Oficina possui dezenove peças editáveis, parede escura, madeira e lanternas",
+      "passed": true,
+      "details": {
+        "pieces": 19,
+        "wood": "floor-wood",
+        "shade": 1,
+        "objects": 19,
+        "effects": [
+          "lamp",
+          "lamp"
+        ]
+      }
+    },
+    {
+      "name": "H abre o editor de desenvolvimento do oficina",
+      "passed": true
+    },
+    {
+      "name": "Editor move objetos e conserva a circulação",
+      "passed": true
+    },
+    {
+      "name": "Editor exporta JSON próprio do oficina",
+      "passed": true
+    },
+    {
+      "name": "Save mantém Ícaro no interior correto",
+      "passed": true,
+      "details": {
+        "owner": "icaro",
+        "resident": {
+          "id": "icaro",
+          "x": 288,
+          "y": 151,
+          "direction": "down",
+          "shop": true
+        }
+      }
+    },
+    {
+      "name": "Fachada própria substitui a casa genérica e tem escala compatível",
+      "passed": true,
+      "details": {
+        "texture": "village-icaro-shop",
+        "width": 391.68,
+        "duplicate": false
+      }
+    },
+    {
+      "name": "Janelas recebem iluminação à noite",
+      "passed": true,
+      "details": [
+        {
+          "visible": true,
+          "alpha": 0.88
+        }
+      ]
+    },
+    {
+      "name": "Entrada e saída pela porta funcionam caminhando sem apertar E",
+      "passed": true,
+      "details": {
+        "entered": true,
+        "exited": true,
+        "x": 2192,
+        "y": 1911,
+        "door": {
+          "x": 2192,
+          "y": 1885,
+          "halfWidth": 16,
+          "depth": 12,
+          "direction": "up"
+        }
+      }
+    },
+    {
+      "name": "Rotina do Ícaro abre, sai para a praça, retorna e encerra às 18h",
+      "passed": true,
+      "details": {
+        "morning": true,
+        "lunch": true,
+        "returned": true,
+        "closed": true,
+        "routines": 10
+      }
+    },
+    {
+      "name": "Rotina utiliza somente quadros do atlas recebido",
+      "passed": true
+    },
+    {
+      "name": "Sem erros WebGL, JavaScript ou arquivos ausentes",
+      "passed": true,
+      "details": {
+        "glError": 0,
+        "errors": []
+      }
+    }
+  ],
+  "errors": []
+}
