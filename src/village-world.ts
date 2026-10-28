@@ -7,14 +7,14 @@ import {TOBIAS_SHOP} from './data/tobias-shop';
 import {setupTobiasShop} from './tobias-shop';
 import {BLACKSMITH_HOUSE,setupBlacksmithHouse,blacksmithPoint} from './blacksmith-house';
 import {villageWater,villageLakeDistance,villagePointBlocked,villageDoorApproach,villagePathEdge,VILLAGE_LAKE,VILLAGE_GARDENS,VILLAGE_FENCES,VILLAGE_SHORE_DETAILS} from './data/village';
-import {villageGroundWeights,villageSmooth as smooth} from './data/village-ground';
+import {villageGroundWeights,VILLAGE_GROUND_MATERIALS,villageSmooth as smooth} from './data/village-ground';
 import {readVillagePaving,VILLAGE_LAMP} from './village-scenery-art';
 import {drawConnectedFence} from './fence-art';
 import {addWaterMotion} from './water-motion';
 import Phaser from 'phaser';
 import {readTerrainSprites} from './terrain-sprites';
 import {TILE,WORLD_WIDTH,WORLD_HEIGHT} from './data/world-size';
-import {VILLAGE_BUILDINGS,VILLAGE_ENTRY,VILLAGE_EXIT,VILLAGE_PROPS,VILLAGE_TREES,villageBlockedAt,villagePlazaDistance} from './data/village';
+import {VILLAGE_BUILDINGS,VILLAGE_ENTRY,VILLAGE_EXIT,VILLAGE_PLAZA,VILLAGE_PROPS,VILLAGE_TREES,villageBlockedAt,villagePlazaDistance} from './data/village';
 import {natureArt} from './data/nature-catalog';
 import {drawExitSign} from './exit-signs';
 import {drawHouseSmoke} from './house-smoke';
@@ -39,25 +39,39 @@ function drawGround(scene:Phaser.Scene,edits?:MapEditData,namespace='village'):v
   const canvas=document.createElement('canvas');canvas.width=MAP_WIDTH;canvas.height=MAP_HEIGHT;
   const c=canvas.getContext('2d')!,sprites=readTerrainSprites(scene);c.imageSmoothingEnabled=false;
   if(sprites){
-   const step=8,columns=MAP_WIDTH/step+1,rows=MAP_HEIGHT/step+1;
-   const fields=new Float32Array(columns*rows*6);
+   const step=8,columns=MAP_WIDTH/step+1,rows=MAP_HEIGHT/step+1,count=VILLAGE_GROUND_MATERIALS;
+   const fields=new Float32Array(columns*rows*count);
    for(let gy=0;gy<rows;gy++)for(let gx=0;gx<columns;gx++){
-    const weights=villageGroundWeights(gx*step/TILE-.5,gy*step/TILE-.5),at=(gy*columns+gx)*6;
+    const weights=villageGroundWeights(gx*step/TILE-.5,gy*step/TILE-.5),at=(gy*columns+gx)*count;
     weights.forEach((weight,index)=>{fields[at+index]=weight;});
    }
-   const pixels=c.createImageData(MAP_WIDTH,MAP_HEIGHT),materials=[sprites.grass,sprites.forest,sprites.meadow,sprites['path-dry'],readVillagePaving(scene)??sprites.paving,sprites.soil];
+   const paving=readVillagePaving(scene)??sprites.paving;
+   const pixels=c.createImageData(MAP_WIDTH,MAP_HEIGHT),materials=[sprites.grass,sprites.forest,sprites.meadow,sprites['path-dry'],paving,sprites.soil,sprites['path-dry'],paving];
    const sources=materials.map(m=>({pixels:m.pixels,rows:Int32Array.from({length:MAP_HEIGHT},(_,y)=>(y%m.size)*m.size*4),cols:Int32Array.from({length:MAP_WIDTH},(_,x)=>(x%m.size)*4)}));
-   const mixed=new Float32Array(6);
+   const mixed=new Float32Array(count),plazaX=(VILLAGE_PLAZA.x+.5)*TILE,plazaY=(VILLAGE_PLAZA.y+.5)*TILE,plazaRX=VILLAGE_PLAZA.rx*TILE,plazaRY=VILLAGE_PLAZA.ry*TILE;
    for(let y=0;y<MAP_HEIGHT;y++){
     const gy=Math.floor(y/step),fy=(y%step)/step;
     for(let x=0;x<MAP_WIDTH;x++){
-     const gx=Math.floor(x/step),fx=(x%step)/step,a=(gy*columns+gx)*6,b=a+6,d=a+columns*6,e=d+6;
+     const gx=Math.floor(x/step),fx=(x%step)/step,a=(gy*columns+gx)*count,b=a+count,d=a+columns*count,e=d+count;
      let red=0,green=0,blue=0;
-     for(let m=0;m<6;m++){
+     for(let m=0;m<count;m++){
       mixed[m]=(fields[a+m]*(1-fx)+fields[b+m]*fx)*(1-fy)+(fields[d+m]*(1-fx)+fields[e+m]*fx)*fy;
       if(mixed[m]<.0001)continue;
       const source=sources[m],at=source.rows[y]+source.cols[x];
-      red+=source.pixels[at]*mixed[m];green+=source.pixels[at+1]*mixed[m];blue+=source.pixels[at+2]*mixed[m];
+      if(m===6){
+       // Retain the dirt grain, with a warmer, darker edge against the grass.
+       red+=source.pixels[at]*.7*mixed[m];green+=source.pixels[at+1]*.63*mixed[m];blue+=source.pixels[at+2]*.55*mixed[m];
+      }else if(m===7){
+       // Bevel and joints follow the oval perimeter, rather than the square
+       // paving grid. This is baked once and adds no per-frame work.
+       const u=(x-plazaX)/plazaRX,v=(y-plazaY)/plazaRY,radius=Math.hypot(u,v);
+       const stone=(Math.atan2(v,u)/Math.PI/2+1)*80,phase=stone-Math.floor(stone);
+       const joint=phase<.055?.62:1,bevel=radius<.992?1.16:radius>1.023?.77:1;
+       const shade=joint*bevel*(.97+(Math.floor(stone)%3)*.025);
+       red+=(143*shade+source.pixels[at]*.09)*mixed[m];green+=(137*shade+source.pixels[at+1]*.09)*mixed[m];blue+=(120*shade+source.pixels[at+2]*.09)*mixed[m];
+      }else{
+       red+=source.pixels[at]*mixed[m];green+=source.pixels[at+1]*mixed[m];blue+=source.pixels[at+2]*mixed[m];
+      }
      }
      const kind=edits?.terrain[`${Math.floor(x/32)},${Math.floor(y/32)}`];
      if(kind){const names={grass:'grass',meadow:'meadow',forest:'forest',moss:'moss',forestPath:'forest',path:'path-dry',wetPath:'path-wet',water:'water',sand:'sand',soil:'soil',wood:'wood',paving:'paving'} as const;const source=sprites[names[kind]],at=((y%source.size)*source.size+x%source.size)*4,alpha=terrainPaintAlpha(edits!.terrain,x,y);red=red*(1-alpha)+source.pixels[at]*alpha;green=green*(1-alpha)+source.pixels[at+1]*alpha;blue=blue*(1-alpha)+source.pixels[at+2]*alpha;}
