@@ -42,7 +42,7 @@ describe('shared interior prop animation',()=>{
    const layout=createMerchantLayout(id),s=setup(layout),stop=animateMerchantProps(s.scene,layout,s.sprites);
    const effects=s.objects.filter(o=>o.getData('interior-effect'));
    expect(effects.length,id).toBeGreaterThan(0);
-   for(const e of effects){const p=layout.pieces.find(p=>p.id===e.getData('interior-effect-owner'))!;expect(p.asset).toMatch(/lantern|lamparina|amelia-water-basin|amelia-tea/);expect(merchantPieceVisible(layout,p.id)).toBe(true);}
+   for(const e of effects){const p=layout.pieces.find(p=>p.id===e.getData('interior-effect-owner'))!;expect(p.asset).toMatch(/lantern|lamparina|amelia-water-basin|amelia-tea|damiao-basin/);expect(merchantPieceVisible(layout,p.id)).toBe(true);}
    expect(s.events.listenerCount('update')).toBe(1);stop();expect(s.objects.every(o=>!o.active)).toBe(true);expect(s.events.listenerCount('update')).toBe(0);
   }
  });

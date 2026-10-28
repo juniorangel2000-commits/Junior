@@ -7,6 +7,8 @@ const profiles:Readonly<Record<string,InteriorEffectProfile>>={
  lamparina_parede:{kind:'lamp',center:[.5,.65],radius:60},
  'rosa-lantern':{kind:'lamp',center:[.52,.68],radius:60},
  'tobias-lantern':{kind:'lamp',center:[.55,.69],radius:60},
+ 'damiao-lantern':{kind:'lamp',center:[.6,.65],radius:60},
+ 'damiao-basin':{kind:'water',center:[.5,.35]},
  'celina-lantern':{kind:'lamp',center:[.56,.68],radius:60},
  'nilo-lantern':{kind:'lamp',center:[.58,.62],radius:60},
  'amelia-lantern':{kind:'lamp',center:[.68,.65],radius:60},

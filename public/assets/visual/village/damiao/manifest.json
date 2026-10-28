@@ -1,0 +1,440 @@
+{
+  "npc": "damiao",
+  "createdFromScratch": 16,
+  "referenceCrops": 0,
+  "assets": [
+    {
+      "id": "damiao-counter",
+      "name": "Balcão de pesca",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-counter",
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 432,
+        "height": 310
+      },
+      "w": 432,
+      "h": 310,
+      "ox": 0.5092592592592593,
+      "oy": 0.932258064516129,
+      "bounds": [
+        37,
+        77,
+        403,
+        289
+      ],
+      "collision": {
+        "x": 62.620000000000005,
+        "y": 221.16,
+        "width": 314.76,
+        "height": 65.72
+      },
+      "layer": "object"
+    },
+    {
+      "id": "damiao-rods",
+      "name": "Suporte de varas",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-rods",
+      "crop": {
+        "x": 432,
+        "y": 0,
+        "width": 336,
+        "height": 310
+      },
+      "w": 336,
+      "h": 310,
+      "ox": 0.4479166666666667,
+      "oy": 0.9483870967741935,
+      "bounds": [
+        34,
+        14,
+        267,
+        294
+      ],
+      "collision": {
+        "x": 50.31,
+        "y": 204.4,
+        "width": 200.38,
+        "height": 86.8
+      },
+      "layer": "object"
+    },
+    {
+      "id": "damiao-cabinet",
+      "name": "Armário de redes",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-cabinet",
+      "crop": {
+        "x": 768,
+        "y": 0,
+        "width": 356,
+        "height": 310
+      },
+      "w": 356,
+      "h": 310,
+      "ox": 0.48314606741573035,
+      "oy": 0.9483870967741935,
+      "bounds": [
+        17,
+        32,
+        327,
+        294
+      ],
+      "collision": {
+        "x": 38.7,
+        "y": 210.16000000000003,
+        "width": 266.6,
+        "height": 81.22
+      },
+      "layer": "object"
+    },
+    {
+      "id": "damiao-workbench",
+      "name": "Bancada de reparos",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-workbench",
+      "crop": {
+        "x": 1124,
+        "y": 0,
+        "width": 412,
+        "height": 310
+      },
+      "w": 412,
+      "h": 310,
+      "ox": 0.49393203883495146,
+      "oy": 0.9064516129032258,
+      "bounds": [
+        27,
+        83,
+        380,
+        281
+      ],
+      "collision": {
+        "x": 51.71,
+        "y": 217.64000000000001,
+        "width": 303.58,
+        "height": 61.38
+      },
+      "layer": "object"
+    },
+    {
+      "id": "damiao-basin",
+      "name": "Bacia de água",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-basin",
+      "crop": {
+        "x": 0,
+        "y": 310,
+        "width": 432,
+        "height": 255
+      },
+      "w": 432,
+      "h": 255,
+      "ox": 0.4988425925925926,
+      "oy": 0.9137254901960784,
+      "bounds": [
+        88,
+        37,
+        343,
+        233
+      ],
+      "collision": {
+        "x": 105.85,
+        "y": 170.28,
+        "width": 219.29999999999998,
+        "height": 60.76
+      },
+      "layer": "object"
+    },
+    {
+      "id": "damiao-barrel",
+      "name": "Barril de materiais",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-barrel",
+      "crop": {
+        "x": 432,
+        "y": 310,
+        "width": 336,
+        "height": 255
+      },
+      "w": 336,
+      "h": 255,
+      "ox": 0.44047619047619047,
+      "oy": 0.9490196078431372,
+      "bounds": [
+        64,
+        14,
+        232,
+        242
+      ],
+      "collision": {
+        "x": 75.76,
+        "y": 169.04000000000002,
+        "width": 144.48,
+        "height": 70.67999999999999
+      },
+      "layer": "object"
+    },
+    {
+      "id": "damiao-crates",
+      "name": "Caixas de equipamentos",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-crates",
+      "crop": {
+        "x": 768,
+        "y": 310,
+        "width": 356,
+        "height": 255
+      },
+      "w": 356,
+      "h": 255,
+      "ox": 0.4705056179775281,
+      "oy": 0.9607843137254902,
+      "bounds": [
+        54,
+        12,
+        281,
+        245
+      ],
+      "collision": {
+        "x": 69.89,
+        "y": 170.44,
+        "width": 195.22,
+        "height": 72.23
+      },
+      "layer": "object"
+    },
+    {
+      "id": "damiao-net",
+      "name": "Rede pendurada",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-net",
+      "crop": {
+        "x": 1124,
+        "y": 310,
+        "width": 412,
+        "height": 255
+      },
+      "w": 412,
+      "h": 255,
+      "ox": 0.5182038834951457,
+      "oy": 0.9529411764705882,
+      "bounds": [
+        83,
+        17,
+        344,
+        243
+      ],
+      "collision": null,
+      "layer": "wall"
+    },
+    {
+      "id": "damiao-tackle",
+      "name": "Caixa de anzóis e iscas",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-tackle",
+      "crop": {
+        "x": 0,
+        "y": 565,
+        "width": 384,
+        "height": 207
+      },
+      "w": 384,
+      "h": 207,
+      "ox": 0.5572916666666666,
+      "oy": 0.9371980676328503,
+      "bounds": [
+        95,
+        8,
+        333,
+        194
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "damiao-logbook",
+      "name": "Livro de pescarias",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-logbook",
+      "crop": {
+        "x": 384,
+        "y": 565,
+        "width": 384,
+        "height": 207
+      },
+      "w": 384,
+      "h": 207,
+      "ox": 0.50390625,
+      "oy": 0.9178743961352657,
+      "bounds": [
+        46,
+        27,
+        341,
+        190
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "damiao-floats",
+      "name": "Boias de pesca",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-floats",
+      "crop": {
+        "x": 768,
+        "y": 565,
+        "width": 356,
+        "height": 207
+      },
+      "w": 356,
+      "h": 207,
+      "ox": 0.5519662921348315,
+      "oy": 0.9516908212560387,
+      "bounds": [
+        114,
+        10,
+        279,
+        197
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "damiao-rope",
+      "name": "Corda enrolada",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-rope",
+      "crop": {
+        "x": 1124,
+        "y": 565,
+        "width": 412,
+        "height": 207
+      },
+      "w": 412,
+      "h": 207,
+      "ox": 0.508495145631068,
+      "oy": 0.9516908212560387,
+      "bounds": [
+        88,
+        24,
+        331,
+        197
+      ],
+      "collision": {
+        "x": 105.01,
+        "y": 141.64000000000001,
+        "width": 208.98,
+        "height": 53.63
+      },
+      "layer": "object"
+    },
+    {
+      "id": "damiao-lantern",
+      "name": "Lanterna da cabana",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-lantern",
+      "crop": {
+        "x": 0,
+        "y": 772,
+        "width": 432,
+        "height": 252
+      },
+      "w": 432,
+      "h": 252,
+      "ox": 0.44907407407407407,
+      "oy": 0.9007936507936508,
+      "bounds": [
+        115,
+        5,
+        273,
+        227
+      ],
+      "collision": null,
+      "layer": "wall"
+    },
+    {
+      "id": "damiao-stool",
+      "name": "Banco do pescador",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-stool",
+      "crop": {
+        "x": 432,
+        "y": 772,
+        "width": 336,
+        "height": 252
+      },
+      "w": 336,
+      "h": 252,
+      "ox": 0.44494047619047616,
+      "oy": 0.873015873015873,
+      "bounds": [
+        58,
+        19,
+        241,
+        220
+      ],
+      "collision": {
+        "x": 70.81,
+        "y": 155.68,
+        "width": 157.38,
+        "height": 62.31
+      },
+      "layer": "object"
+    },
+    {
+      "id": "damiao-rug",
+      "name": "Tapete da cabana",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-rug",
+      "crop": {
+        "x": 768,
+        "y": 772,
+        "width": 384,
+        "height": 252
+      },
+      "w": 384,
+      "h": 252,
+      "ox": 0.4973958333333333,
+      "oy": 0.7658730158730159,
+      "bounds": [
+        17,
+        39,
+        365,
+        193
+      ],
+      "collision": null,
+      "layer": "floor"
+    },
+    {
+      "id": "damiao-window",
+      "name": "Janela da cabana",
+      "file": "assets/visual/village/damiao/objetos.png",
+      "frame": "damiao-window",
+      "crop": {
+        "x": 1152,
+        "y": 772,
+        "width": 384,
+        "height": 252
+      },
+      "w": 384,
+      "h": 252,
+      "ox": 0.4817708333333333,
+      "oy": 0.8492063492063492,
+      "bounds": [
+        89,
+        8,
+        281,
+        214
+      ],
+      "collision": null,
+      "layer": "wall"
+    }
+  ],
+  "sourceHashes": {
+    "fachada.png": "803f3a05d41c20b058abfff193eae1524ae2c8962745451f90135e202c1f0134",
+    "objetos.png": "42e5106f1fc58c68ee0e5d9f72288dc0fe90dd34381c24a19b6caf8e0636bd28"
+  }
+}

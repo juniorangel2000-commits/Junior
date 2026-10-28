@@ -144,7 +144,7 @@ export class VillageScene extends Phaser.Scene {
  }
  private createDailyRoutines():void {
   this.routines=new Map();this.speech=undefined;
-  for(const id of ['augusto','bento','rosa','tobias','amelia','nilo','celina'] as const){
+  for(const id of ['augusto','bento','rosa','tobias','amelia','nilo','celina','damiao'] as const){
    const npc=this.villagers.find(n=>n.data.id===id)!;
    const shop=id==='bento'?this.bentoRoutine.state.area==='blacksmith-home':this.residents.get(id)!.shop;
    const nav=id==='bento'?smithNavigation(this.smithLayout):merchantRoomNavigation(id,this.merchantLayouts.get(id));
@@ -260,11 +260,11 @@ export class VillageScene extends Phaser.Scene {
   this.scene.launch('Editor',{save:original,area:'village',onClose:(updated:SaveData|undefined,_area:MapArea)=>{this.scene.resume();this.scene.setVisible(true);this.scene.restart({save:updated??original,ui:this.ui,onReturn:this.onReturn});}});
  }
  /** Only shops still being authored expose the development interior editor. */
- private get editableMerchant():boolean{return this.merchantRoom==='tobias'||this.merchantRoom==='amelia'||this.merchantRoom==='nilo'||this.merchantRoom==='celina';}
+ private get editableMerchant():boolean{return this.merchantRoom==='tobias'||this.merchantRoom==='amelia'||this.merchantRoom==='nilo'||this.merchantRoom==='celina'||this.merchantRoom==='damiao';}
  openHomeMenu():void {
   const id=this.merchantRoom;if(!DEVELOPMENT_TOOLS||!id||!this.editableMerchant||this.changingRoom||this.leaving||this.shop?.isOpen)return;
   if(this.editingRoom){this.ui.closeModal();return;}if(this.ui.isModalOpen())this.ui.closeModal();this.editingRoom=true;this.applyCamera();
-  const labels=id==='celina'?{title:'Editar ateliê da Celina',fileName:'After-Rain-Atelie-Editado.json'}:id==='nilo'?{title:'Editar antiquário do Nilo',fileName:'After-Rain-Antiquario-Editado.json'}:id==='amelia'?{title:'Editar herbalista da Amélia',fileName:'After-Rain-Herbalista-Editada.json'}:{title:'Editar carpintaria do Tobias',fileName:'After-Rain-Carpintaria-Editada.json'};
+  const labels=id==='damiao'?{title:'Editar cabana do Damião',fileName:'After-Rain-Cabana-Pesca-Editada.json'}:id==='celina'?{title:'Editar ateliê da Celina',fileName:'After-Rain-Atelie-Editado.json'}:id==='nilo'?{title:'Editar antiquário do Nilo',fileName:'After-Rain-Antiquario-Editado.json'}:id==='amelia'?{title:'Editar herbalista da Amélia',fileName:'After-Rain-Herbalista-Editada.json'}:{title:'Editar carpintaria do Tobias',fileName:'After-Rain-Carpintaria-Editada.json'};
   this.ui.showSceneEditor(host=>{const dispose=mountSmithEditor(host,()=>this.merchantLayouts.get(id)!,()=>this.merchantView,data=>this.editMerchantLayout(id,data),()=>this.ui.closeModal(),{...labels,assets:MERCHANT_ROOM_ASSETS});return()=>{dispose();this.editingRoom=false;this.applyCamera();};});
  }
  private editMerchantLayout(id:ResidentId,data:SmithLayout):string|null {
