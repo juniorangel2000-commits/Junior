@@ -1,0 +1,440 @@
+{
+  "npc": "celina",
+  "createdFromScratch": 16,
+  "referenceCrops": 0,
+  "assets": [
+    {
+      "id": "celina-counter",
+      "name": "Balcão do ateliê",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-counter",
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 400,
+        "height": 272
+      },
+      "w": 400,
+      "h": 272,
+      "ox": 0.49875,
+      "oy": 0.9632352941176471,
+      "bounds": [
+        27,
+        92,
+        372,
+        262
+      ],
+      "collision": {
+        "x": 51.150000000000006,
+        "y": 207.60000000000002,
+        "width": 296.7,
+        "height": 52.7
+      },
+      "layer": "object"
+    },
+    {
+      "id": "celina-cabinet",
+      "name": "Armário de tecidos",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-cabinet",
+      "crop": {
+        "x": 400,
+        "y": 0,
+        "width": 368,
+        "height": 280
+      },
+      "w": 368,
+      "h": 280,
+      "ox": 0.48233695652173914,
+      "oy": 0.9571428571428572,
+      "bounds": [
+        44,
+        9,
+        311,
+        268
+      ],
+      "collision": {
+        "x": 62.69,
+        "y": 185.12,
+        "width": 229.62,
+        "height": 80.29
+      },
+      "layer": "object"
+    },
+    {
+      "id": "celina-rack",
+      "name": "Arara de vestidos",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-rack",
+      "crop": {
+        "x": 768,
+        "y": 0,
+        "width": 384,
+        "height": 280
+      },
+      "w": 384,
+      "h": 280,
+      "ox": 0.4986979166666667,
+      "oy": 0.9678571428571429,
+      "bounds": [
+        47,
+        26,
+        336,
+        271
+      ],
+      "collision": {
+        "x": 67.23,
+        "y": 192.60000000000002,
+        "width": 248.54,
+        "height": 75.95
+      },
+      "layer": "object"
+    },
+    {
+      "id": "celina-workbench",
+      "name": "Mesa de corte",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-workbench",
+      "crop": {
+        "x": 1152,
+        "y": 0,
+        "width": 384,
+        "height": 280
+      },
+      "w": 384,
+      "h": 280,
+      "ox": 0.4921875,
+      "oy": 0.9142857142857143,
+      "bounds": [
+        14,
+        74,
+        364,
+        256
+      ],
+      "collision": {
+        "x": 38.5,
+        "y": 197.76,
+        "width": 301.0,
+        "height": 56.42
+      },
+      "layer": "object"
+    },
+    {
+      "id": "celina-mannequin",
+      "name": "Manequim de costura",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-mannequin",
+      "crop": {
+        "x": 0,
+        "y": 272,
+        "width": 400,
+        "height": 278
+      },
+      "w": 400,
+      "h": 278,
+      "ox": 0.4875,
+      "oy": 0.9856115107913669,
+      "bounds": [
+        128,
+        2,
+        262,
+        274
+      ],
+      "collision": {
+        "x": 137.38,
+        "y": 186.96,
+        "width": 115.24,
+        "height": 84.32
+      },
+      "layer": "object"
+    },
+    {
+      "id": "celina-threads",
+      "name": "Estante de linhas",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-threads",
+      "crop": {
+        "x": 400,
+        "y": 280,
+        "width": 368,
+        "height": 270
+      },
+      "w": 368,
+      "h": 270,
+      "ox": 0.48097826086956524,
+      "oy": 0.8925925925925926,
+      "bounds": [
+        48,
+        19,
+        306,
+        241
+      ],
+      "collision": {
+        "x": 66.06,
+        "y": 169.96,
+        "width": 221.88,
+        "height": 68.82
+      },
+      "layer": "object"
+    },
+    {
+      "id": "celina-basket",
+      "name": "Cesto de tecidos",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-basket",
+      "crop": {
+        "x": 768,
+        "y": 280,
+        "width": 384,
+        "height": 270
+      },
+      "w": 384,
+      "h": 270,
+      "ox": 0.5,
+      "oy": 0.9037037037037037,
+      "bounds": [
+        64,
+        61,
+        320,
+        244
+      ],
+      "collision": {
+        "x": 81.92,
+        "y": 185.44,
+        "width": 220.16,
+        "height": 56.73
+      },
+      "layer": "object"
+    },
+    {
+      "id": "celina-machine",
+      "name": "Máquina de costura",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-machine",
+      "crop": {
+        "x": 1152,
+        "y": 280,
+        "width": 384,
+        "height": 270
+      },
+      "w": 384,
+      "h": 270,
+      "ox": 0.5208333333333334,
+      "oy": 0.9185185185185185,
+      "bounds": [
+        53,
+        35,
+        347,
+        248
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "celina-scissors",
+      "name": "Tesoura e fita métrica",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-scissors",
+      "crop": {
+        "x": 0,
+        "y": 550,
+        "width": 400,
+        "height": 194
+      },
+      "w": 400,
+      "h": 194,
+      "ox": 0.4975,
+      "oy": 0.979381443298969,
+      "bounds": [
+        64,
+        24,
+        334,
+        190
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "celina-patterns",
+      "name": "Livro de moldes",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-patterns",
+      "crop": {
+        "x": 400,
+        "y": 550,
+        "width": 368,
+        "height": 215
+      },
+      "w": 368,
+      "h": 215,
+      "ox": 0.47690217391304346,
+      "oy": 0.9023255813953488,
+      "bounds": [
+        15,
+        9,
+        336,
+        194
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "celina-pincushion",
+      "name": "Alfineteiro",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-pincushion",
+      "crop": {
+        "x": 768,
+        "y": 550,
+        "width": 384,
+        "height": 215
+      },
+      "w": 384,
+      "h": 215,
+      "ox": 0.4986979166666667,
+      "oy": 0.9255813953488372,
+      "bounds": [
+        99,
+        13,
+        284,
+        199
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "celina-boots",
+      "name": "Botas prontas",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-boots",
+      "crop": {
+        "x": 1152,
+        "y": 550,
+        "width": 384,
+        "height": 215
+      },
+      "w": 384,
+      "h": 215,
+      "ox": 0.4635416666666667,
+      "oy": 0.9302325581395349,
+      "bounds": [
+        62,
+        14,
+        294,
+        200
+      ],
+      "collision": {
+        "x": 78.24000000000001,
+        "y": 140.48000000000002,
+        "width": 199.52,
+        "height": 57.66
+      },
+      "layer": "object"
+    },
+    {
+      "id": "celina-lantern",
+      "name": "Lanterna do ateliê",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-lantern",
+      "crop": {
+        "x": 0,
+        "y": 744,
+        "width": 400,
+        "height": 280
+      },
+      "w": 400,
+      "h": 280,
+      "ox": 0.51125,
+      "oy": 0.9392857142857143,
+      "bounds": [
+        126,
+        1,
+        283,
+        263
+      ],
+      "collision": null,
+      "layer": "wall"
+    },
+    {
+      "id": "celina-stool",
+      "name": "Banco de costura",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-stool",
+      "crop": {
+        "x": 400,
+        "y": 765,
+        "width": 368,
+        "height": 259
+      },
+      "w": 368,
+      "h": 259,
+      "ox": 0.4701086956521739,
+      "oy": 0.8648648648648649,
+      "bounds": [
+        89,
+        30,
+        257,
+        224
+      ],
+      "collision": {
+        "x": 100.76,
+        "y": 161.92000000000002,
+        "width": 144.48,
+        "height": 60.14
+      },
+      "layer": "object"
+    },
+    {
+      "id": "celina-rug",
+      "name": "Tapete do ateliê",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-rug",
+      "crop": {
+        "x": 768,
+        "y": 765,
+        "width": 384,
+        "height": 259
+      },
+      "w": 384,
+      "h": 259,
+      "ox": 0.5013020833333334,
+      "oy": 0.7644787644787645,
+      "bounds": [
+        5,
+        39,
+        380,
+        198
+      ],
+      "collision": null,
+      "layer": "floor"
+    },
+    {
+      "id": "celina-window",
+      "name": "Janela do ateliê",
+      "file": "assets/visual/village/celina/objetos.png",
+      "frame": "celina-window",
+      "crop": {
+        "x": 1152,
+        "y": 765,
+        "width": 384,
+        "height": 259
+      },
+      "w": 384,
+      "h": 259,
+      "ox": 0.4947916666666667,
+      "oy": 0.8223938223938224,
+      "bounds": [
+        98,
+        19,
+        282,
+        213
+      ],
+      "collision": null,
+      "layer": "wall"
+    }
+  ],
+  "sourceHashes": {
+    "fachada.png": "1335eeadc4baaf5e03df44aac3b8933f27346db6e1f32637344f113abe1414bc",
+    "objetos.png": "ad13f4e55f7ed6e40846041e7f74646b37e4a2d40097bbe6ed7af0b68f5f3e5b"
+  }
+}

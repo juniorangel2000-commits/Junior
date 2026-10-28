@@ -1,0 +1,181 @@
+{
+  "version": 1,
+  "pieces": [
+    {
+      "id": "structure",
+      "asset": "structure",
+      "x": 0,
+      "y": 0,
+      "sx": 1,
+      "sy": 1,
+      "visible": true,
+      "wallShade": 1
+    },
+    {
+      "id": "floor",
+      "asset": "floor-wood",
+      "x": 33,
+      "y": 116,
+      "sx": 510,
+      "sy": 234,
+      "visible": true
+    },
+    {
+      "id": "celina-counter",
+      "asset": "celina-counter",
+      "x": 288,
+      "y": 205,
+      "sx": 0.4235294117647059,
+      "sy": 0.4235294117647059,
+      "visible": true
+    },
+    {
+      "id": "celina-cabinet",
+      "asset": "celina-cabinet",
+      "x": 104,
+      "y": 183,
+      "sx": 0.27340823970037453,
+      "sy": 0.27340823970037453,
+      "visible": true
+    },
+    {
+      "id": "celina-rack",
+      "asset": "celina-rack",
+      "x": 445,
+      "y": 213,
+      "sx": 0.3877551020408163,
+      "sy": 0.3877551020408163,
+      "visible": true
+    },
+    {
+      "id": "celina-workbench",
+      "asset": "celina-workbench",
+      "x": 445,
+      "y": 316,
+      "sx": 0.30857142857142855,
+      "sy": 0.30857142857142855,
+      "visible": true
+    },
+    {
+      "id": "celina-mannequin",
+      "asset": "celina-mannequin",
+      "x": 105,
+      "y": 295,
+      "sx": 0.34328358208955223,
+      "sy": 0.34328358208955223,
+      "visible": true
+    },
+    {
+      "id": "celina-threads",
+      "asset": "celina-threads",
+      "x": 195,
+      "y": 158,
+      "sx": 0.2868217054263566,
+      "sy": 0.2868217054263566,
+      "visible": true
+    },
+    {
+      "id": "celina-basket",
+      "asset": "celina-basket",
+      "x": 182,
+      "y": 328,
+      "sx": 0.203125,
+      "sy": 0.203125,
+      "visible": true
+    },
+    {
+      "id": "celina-machine",
+      "asset": "celina-machine",
+      "x": 445,
+      "y": 268,
+      "sx": 0.19047619047619047,
+      "sy": 0.19047619047619047,
+      "visible": true,
+      "parent": "celina-workbench"
+    },
+    {
+      "id": "celina-scissors",
+      "asset": "celina-scissors",
+      "x": 413,
+      "y": 277,
+      "sx": 0.0962962962962963,
+      "sy": 0.0962962962962963,
+      "visible": true,
+      "parent": "celina-workbench"
+    },
+    {
+      "id": "celina-patterns",
+      "asset": "celina-patterns",
+      "x": 313,
+      "y": 160,
+      "sx": 0.09968847352024922,
+      "sy": 0.09968847352024922,
+      "visible": true,
+      "parent": "celina-counter"
+    },
+    {
+      "id": "celina-pincushion",
+      "asset": "celina-pincushion",
+      "x": 477,
+      "y": 276,
+      "sx": 0.10215053763440861,
+      "sy": 0.10215053763440861,
+      "visible": true,
+      "parent": "celina-workbench"
+    },
+    {
+      "id": "celina-boots",
+      "asset": "celina-boots",
+      "x": 470,
+      "y": 340,
+      "sx": 0.15086206896551724,
+      "sy": 0.15086206896551724,
+      "visible": true
+    },
+    {
+      "id": "celina-lantern",
+      "asset": "celina-lantern",
+      "x": 58,
+      "y": 79,
+      "sx": 0.15267175572519084,
+      "sy": 0.15267175572519084,
+      "visible": true
+    },
+    {
+      "id": "celina-stool",
+      "asset": "celina-stool",
+      "x": 365,
+      "y": 283,
+      "sx": 0.16666666666666666,
+      "sy": 0.16666666666666666,
+      "visible": true
+    },
+    {
+      "id": "celina-rug",
+      "asset": "celina-rug",
+      "x": 288,
+      "y": 302,
+      "sx": 0.2578616352201258,
+      "sy": 0.2578616352201258,
+      "visible": true
+    },
+    {
+      "id": "celina-window",
+      "asset": "celina-window",
+      "x": 330,
+      "y": 105,
+      "sx": 0.37628865979381443,
+      "sy": 0.37628865979381443,
+      "visible": true
+    },
+    {
+      "id": "celina-lantern-right",
+      "asset": "celina-lantern",
+      "x": 520,
+      "y": 79,
+      "sx": 0.15267175572519084,
+      "sy": 0.15267175572519084,
+      "visible": true
+    }
+  ]
+}

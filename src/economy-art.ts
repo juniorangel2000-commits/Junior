@@ -9,6 +9,7 @@ import {ROSA_SHOP} from './data/rosa-shop';
 import {TOBIAS_SHOP} from './data/tobias-shop';
 import {AMELIA_SHOP} from './data/amelia-shop';
 import {NILO_SHOP} from './data/nilo-shop';
+import {CELINA_SHOP} from './data/celina-shop';
 import oreFrames from '../public/assets/visual/economy/deposits/rochas-detalhadas.json';
 import {preloadMerchantRooms} from './merchant-interior';
 import type Phaser from 'phaser';
@@ -27,6 +28,7 @@ export function preloadEconomyArt(scene:Phaser.Scene):void{
  scene.load.image(TOBIAS_SHOP.texture,TOBIAS_SHOP.file);
  scene.load.image(AMELIA_SHOP.texture,AMELIA_SHOP.file);
  scene.load.image(NILO_SHOP.texture,NILO_SHOP.file);
+ scene.load.image(CELINA_SHOP.texture,CELINA_SHOP.file);
  scene.load.image('detailed-ore-atlas',`${ROOT}/deposits/rochas-detalhadas.png`);
  scene.load.image(AUGUSTO_SHOP.texture,AUGUSTO_SHOP.file);
  preloadMerchantRooms(scene);

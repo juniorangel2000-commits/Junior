@@ -5,19 +5,19 @@ import {villageGround} from '../data/village';
 import type {BentoRoomNavigation} from './bento-routine';
 import type {GameClock} from './clock';
 
-export type RoutineId='augusto'|'bento'|'rosa'|'tobias'|'amelia'|'nilo';
+export type RoutineId='augusto'|'bento'|'rosa'|'tobias'|'amelia'|'nilo'|'celina';
 export type RoutineArea='village'|'shop';
 export interface MerchantRoutineState {
  area:RoutineArea;x:number;y:number;direction:CharacterDirection;stop:number;wait:number;
  serviceUntil:number;socialUntil:number;socialDay:number;
 }
 export const MERCHANT_DAILY_PLAN={
- opening:8*60,lunch:12*60,return:13*60+30,closing:{augusto:20*60,bento:19*60,rosa:18*60,tobias:18*60,amelia:18*60,nilo:18*60},
+ opening:8*60,lunch:12*60,return:13*60+30,closing:{augusto:20*60,bento:19*60,rosa:18*60,tobias:18*60,amelia:18*60,nilo:18*60,celina:18*60},
  speed:34,stopSeconds:6,guideMinutes:45,socialMinutes:12,
- plaza:{augusto:{x:50,y:41},bento:{x:49,y:41},rosa:{x:48,y:43},tobias:{x:45,y:43},amelia:{x:43,y:41},nilo:{x:42,y:43}},
+ plaza:{augusto:{x:50,y:41},bento:{x:49,y:41},rosa:{x:48,y:43},tobias:{x:45,y:43},amelia:{x:43,y:41},nilo:{x:42,y:43},celina:{x:51,y:43}},
 } as const;
 const absolute=(c:GameClock)=>c.day*1440+c.time;
-export const dailyMerchant=(id:ResidentId):id is RoutineId=>id==='augusto'||id==='bento'||id==='rosa'||id==='tobias'||id==='amelia'||id==='nilo';
+export const dailyMerchant=(id:ResidentId):id is RoutineId=>id==='augusto'||id==='bento'||id==='rosa'||id==='tobias'||id==='amelia'||id==='nilo'||id==='celina';
 export function merchantPeriod(id:RoutineId,time:number):'work'|'break'|'closed'{
  const p=MERCHANT_DAILY_PLAN;
  return time<p.opening||time>=p.closing[id]?'closed':time>=p.lunch&&time<p.return?'break':'work';
@@ -64,6 +64,12 @@ export class MerchantDailyRoutine {
  }
  socialize(clock:GameClock):void{this.state.socialUntil=absolute(clock)+MERCHANT_DAILY_PLAN.socialMinutes;this.state.socialDay=clock.day;this.resetPath();}
  private blocked(area:RoutineArea,x:number,y:number,env:RoutineEnvironment):boolean {
+  if(area==='village'){
+   if((env.cellBlocked??env.blocked)(area,x,y))return true;
+   // A tile center can be clear while a facade edge crosses the actor's feet
+   // between centers. Reserve a small walk corridor around each route cell.
+   return [[-8,-8],[8,-8],[-8,8],[8,8]].some(([dx,dy])=>!env.fits(area,(x+.5)*32+dx,(y+.5)*32+dy));
+  }
   if(env.cellBlocked)return env.cellBlocked(area,x,y);
   if(env.blocked(area,x,y))return true;const tile=this.room.tileSize??32;
   return area==='shop'&&[[0,0],[tile,0],[0,tile],[tile,tile]].some(([dx,dy])=>!env.fits(area,x*tile+dx,y*tile+dy));
