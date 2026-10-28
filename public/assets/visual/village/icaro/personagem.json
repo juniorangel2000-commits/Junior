@@ -1,0 +1,438 @@
+{
+  "walkFrames": 6,
+  "frameSize": 256,
+  "originalPngs": [
+    {
+      "file": "Idle/animations/Walking/east/frame_000.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "1b9f7f8604382701d75dfbef15f66e121c0b4196a056d4fbdc9c4b45ed1a36fe"
+    },
+    {
+      "file": "Idle/animations/Walking/east/frame_001.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "0f07b59da4b0bf9a51703ba4973239f386ea78b93291ff3123db0edb353438b2"
+    },
+    {
+      "file": "Idle/animations/Walking/east/frame_002.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "17283ea5a57aa1eab12304eabc77b13a4efe8d3217f47f82de8070659eeb5d66"
+    },
+    {
+      "file": "Idle/animations/Walking/east/frame_003.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "8e85cf1b203584c8b11cc4295d71eac4feaac0f52300c0f28a5660ea49b1cb71"
+    },
+    {
+      "file": "Idle/animations/Walking/east/frame_004.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "4d747657fad709d808ec4731811add89d086d96beea7f369ff82e5f9a974a17c"
+    },
+    {
+      "file": "Idle/animations/Walking/east/frame_005.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "35ccdf769a86d9f58ddc995599d9d9a4bb527b91b8b78dbf486d98a7c42f4666"
+    },
+    {
+      "file": "Idle/animations/Walking/north-20508274/frame_000.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "33aeca3aef57776fd72969faafdd4efbaad128c7d64a9802c1be31e501493d38"
+    },
+    {
+      "file": "Idle/animations/Walking/north-20508274/frame_001.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "0fbed19bc9c59181ff18bf940cf8c84c53c2f266fccc4b3ab11422c634bdd259"
+    },
+    {
+      "file": "Idle/animations/Walking/north-20508274/frame_002.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "ab804daf11c5575b9f031351a1422ba07cbca8a926931d2e9df826b3472997b9"
+    },
+    {
+      "file": "Idle/animations/Walking/north-20508274/frame_003.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "acf86a3e9607f2a3d97bbaf21eb6b9001350cd28a7379cca8c166576ab354cee"
+    },
+    {
+      "file": "Idle/animations/Walking/north-20508274/frame_004.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "cff25fde27a634761c01960c817ddda45b608a9db8e04064365ce880543bdc21"
+    },
+    {
+      "file": "Idle/animations/Walking/north-20508274/frame_005.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "f5c086693cac8f4da754efc2693b52e9b971ec279a2d037a3cbe550949195fb1"
+    },
+    {
+      "file": "Idle/animations/Walking/north-2101ebd7/frame_000.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "8b467ef172562bc306d59499b3ba70cd2e8b476786547de9b2d2166f644dfd06"
+    },
+    {
+      "file": "Idle/animations/Walking/north-2101ebd7/frame_001.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "a3c79ae0ff8e2b2d9f6dfbd815551b192195b6ce5f354a29c8403ad2215c12f8"
+    },
+    {
+      "file": "Idle/animations/Walking/north-2101ebd7/frame_002.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "d1f42ae2f0c00d95d3bf6e5db773d9af85be80d4b8e6fda7fdc552bdfc8d8903"
+    },
+    {
+      "file": "Idle/animations/Walking/north-2101ebd7/frame_003.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "70567d99c09ae9b893b48220f21e5629c27d8ef455ad39d11344d7c6f05d0175"
+    },
+    {
+      "file": "Idle/animations/Walking/north-2101ebd7/frame_004.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "b0263360eb93132c31087c890aab0fe92fff980a69eafc9298e34551f89dea82"
+    },
+    {
+      "file": "Idle/animations/Walking/north-2101ebd7/frame_005.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "41d63f357dc4f77df0bf6df9f20807eba2f018097b9791a4fa31cd988442b4a5"
+    },
+    {
+      "file": "Idle/animations/Walking/north-east/frame_000.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "18483ab13280f47606600b9e351eea65a64c2d3dff52910efafd30c75935114c"
+    },
+    {
+      "file": "Idle/animations/Walking/north-east/frame_001.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "2817fc33e3e2ef908f2a9e6213d8de711ce28b7b9694106e4235b05a93d2078f"
+    },
+    {
+      "file": "Idle/animations/Walking/north-east/frame_002.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "89bd0bf1e1f7214e0abd54d2798ddbc2c67b5bd83a8937fb77d32bd3f69ae960"
+    },
+    {
+      "file": "Idle/animations/Walking/north-east/frame_003.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "be47a758fec9e4059b28461822a5d73b3348ce92feadd1e8b6e27309708f4dd9"
+    },
+    {
+      "file": "Idle/animations/Walking/north-east/frame_004.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "46c115c8c6292dea27e5918a5b47ecee3ec72e76f75e805420279153011a73bb"
+    },
+    {
+      "file": "Idle/animations/Walking/north-east/frame_005.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "77c6e2e014b75462f85fd1718a56ead0e62772fc3378aa2ef485fea27a86208d"
+    },
+    {
+      "file": "Idle/animations/Walking/north-west/frame_000.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "b94137ea81bd13c075805b20034566a34c7bf440c57fd06dcc73803e11cd7265"
+    },
+    {
+      "file": "Idle/animations/Walking/north-west/frame_001.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "ec07c171f074be2913567840c750c2186326f476c8ed023383f92b0cda3dd1be"
+    },
+    {
+      "file": "Idle/animations/Walking/north-west/frame_002.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "986f9834745c7be880d517ce8e5529b0805783acb901bf6cde83b22c52424c96"
+    },
+    {
+      "file": "Idle/animations/Walking/north-west/frame_003.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "56ed7bf4a88d5b10b8efe2673ce3fa9f9402c1dbe4324c1ff91401724163c695"
+    },
+    {
+      "file": "Idle/animations/Walking/north-west/frame_004.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "894d86b83ce3695fff37c9237040ee0cd3d677a90117c95d97fd95c349546c02"
+    },
+    {
+      "file": "Idle/animations/Walking/north-west/frame_005.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "1a0e9264c5422ebd419aaef2e2a9b41e0557a75fed421b5c126d41998202c842"
+    },
+    {
+      "file": "Idle/animations/Walking/south/frame_000.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "f60b4a5b83c6337faaf2b09bd81a235fa57fd60553ba387f3822f4459f33c164"
+    },
+    {
+      "file": "Idle/animations/Walking/south/frame_001.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "a230df19b578d8b3eda095ee8c4aef032e6543b4e65df0e957c79449e25bb5e6"
+    },
+    {
+      "file": "Idle/animations/Walking/south/frame_002.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "6c22a0b0df83f30bf1c1b31255c026a78302ff4ce6721bc91dff001963cdf34c"
+    },
+    {
+      "file": "Idle/animations/Walking/south/frame_003.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "a6797d241b1aac7705502bc39354ef9f1f4fd6a57436c9d82778d44c29484512"
+    },
+    {
+      "file": "Idle/animations/Walking/south/frame_004.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "69e0cb5da548a3a68aedb8700b6e9dd59d9473225feda9dc1d88719dc3b96990"
+    },
+    {
+      "file": "Idle/animations/Walking/south/frame_005.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "2272c951359094239bffbe494c483713fdc703bca5544aa076eb5142b34c3663"
+    },
+    {
+      "file": "Idle/animations/Walking/south-east/frame_000.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "b4e68aab43f1d8111ac0249adb24a32896e272ec9fd230db4503555a7731e8dd"
+    },
+    {
+      "file": "Idle/animations/Walking/south-east/frame_001.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "bec2a5cb1429a14e90a720cbaa404b30bf06941a98886ba6156c6fc5e797f29e"
+    },
+    {
+      "file": "Idle/animations/Walking/south-east/frame_002.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "b027d260467c7e9062d237f3138f53a069566538d1eae9fe51c2f27a0da8f247"
+    },
+    {
+      "file": "Idle/animations/Walking/south-east/frame_003.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "28d84ce69faa371afb1e9cbccbae9baa379411b05417222a8ac4f5ca084553c8"
+    },
+    {
+      "file": "Idle/animations/Walking/south-east/frame_004.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "0dbb23134756fb740ce4492cab48b3d9f7025708993b518eb26a6990d5871e57"
+    },
+    {
+      "file": "Idle/animations/Walking/south-east/frame_005.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "12193729811e24ea507dca0aeff33caaa9aedcba3d596098c662b06e44e1a44e"
+    },
+    {
+      "file": "Idle/animations/Walking/south-west/frame_000.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "f0842b56852c3f2062b6fd843bf6499781cdea9de4e64971f908b237f42da254"
+    },
+    {
+      "file": "Idle/animations/Walking/south-west/frame_001.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "5c253129c991f4f7bc80e4a3c37ff3e08fffd40afdab5c4319b81f11f1f1ae0f"
+    },
+    {
+      "file": "Idle/animations/Walking/south-west/frame_002.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "f7277ddbfbe29141dd1c12aac062b4fc1050cf0b538c7175210f7c4f6deda135"
+    },
+    {
+      "file": "Idle/animations/Walking/south-west/frame_003.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "a67c1e17c37fdb7c24626a651d769ca1b00c0c8c74f5c9407810956b64523134"
+    },
+    {
+      "file": "Idle/animations/Walking/south-west/frame_004.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "da2e9936578bf98650bcbf326e9da421fe8397cc00307796624ba824f5edd126"
+    },
+    {
+      "file": "Idle/animations/Walking/south-west/frame_005.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "89b85b0b0245a0637c34b9e35e8f3107b1ae54404dc4346af13681df7bb01f5a"
+    },
+    {
+      "file": "Idle/animations/Walking/west/frame_000.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "78b9a2938f16b9b1346b5213df68a314ed0bf94963a93a816fb069aa22532f97"
+    },
+    {
+      "file": "Idle/animations/Walking/west/frame_001.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "bca668327badb2dca401f72c67e21f0ef5238e44ae82f698d2a1fc3be7227f8c"
+    },
+    {
+      "file": "Idle/animations/Walking/west/frame_002.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "b8f47ad1dbf0b69592ed2ee1b114aa18ab4c5505910661f420d4208e14bc2d21"
+    },
+    {
+      "file": "Idle/animations/Walking/west/frame_003.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "8395521eadde7cda0e9944cd30610cbe620d950b91dda08374135087538d7881"
+    },
+    {
+      "file": "Idle/animations/Walking/west/frame_004.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "61df39ffd923e04242baad05587de21b4b4af14d623d7eac4270cd3adb590a22"
+    },
+    {
+      "file": "Idle/animations/Walking/west/frame_005.png",
+      "width": 256,
+      "height": 256,
+      "sha256": "32b955f850c9d33399aed15a955398fd47da8005bca860d405e2796e9437b243"
+    },
+    {
+      "file": "Idle/rotations/east.png",
+      "width": 192,
+      "height": 256,
+      "sha256": "3fd463a1fab05c471bfa290caf275a17411336cb60407dc9b77ef47063974931"
+    },
+    {
+      "file": "Idle/rotations/north-east.png",
+      "width": 192,
+      "height": 256,
+      "sha256": "a173737af8ca5752629a97e916b074220ceb09e8bd39d378ce3a3945360e6f2a"
+    },
+    {
+      "file": "Idle/rotations/north-west.png",
+      "width": 192,
+      "height": 256,
+      "sha256": "d132cc9d808bdba423aa5549268b8dbbb4048b14dbefdfdee9ad9ddcee267d5a"
+    },
+    {
+      "file": "Idle/rotations/north.png",
+      "width": 192,
+      "height": 256,
+      "sha256": "48f81a6f26595d2ae695f93ed1b8594000ddb9c8882e4cb5a1bf54dfb8bb56c1"
+    },
+    {
+      "file": "Idle/rotations/south-east.png",
+      "width": 192,
+      "height": 256,
+      "sha256": "7cdbf9fa2c70b5e336afb285ec8de510b28f6ed3759ac784701bff344f7755a2"
+    },
+    {
+      "file": "Idle/rotations/south-west.png",
+      "width": 192,
+      "height": 256,
+      "sha256": "a589af8cc2c8d4734c4810f2db6878d9a2b9c602188bd958d004fa32f3ae01ac"
+    },
+    {
+      "file": "Idle/rotations/south.png",
+      "width": 192,
+      "height": 256,
+      "sha256": "d0bc12f8914fb3b9b060dba7bd4136f05d58062b00154c147df0fd291e04b367"
+    },
+    {
+      "file": "Idle/rotations/west.png",
+      "width": 192,
+      "height": 256,
+      "sha256": "ee2b7301c615c614a172b07ff1cc256d9db0ca13545b4b9318594d31dcc55b6c"
+    }
+  ],
+  "southRepair": {
+    "file": "south-refinado.png",
+    "sha256": "fd87ddbd01079456a8a6f1c4d446f121c1faed40df4bd8a62b387e58cd17a5cd",
+    "scale": 0.41044776119402987,
+    "targetTop": 24,
+    "targetCenterX": 128,
+    "frames": [
+      {
+        "x": 0,
+        "y": 110,
+        "width": 314,
+        "height": 536,
+        "headCenterX": 156.0
+      },
+      {
+        "x": 314,
+        "y": 110,
+        "width": 301,
+        "height": 536,
+        "headCenterX": 147.5
+      },
+      {
+        "x": 615,
+        "y": 110,
+        "width": 295,
+        "height": 536,
+        "headCenterX": 150.0
+      },
+      {
+        "x": 910,
+        "y": 110,
+        "width": 291,
+        "height": 536,
+        "headCenterX": 145.0
+      },
+      {
+        "x": 1201,
+        "y": 110,
+        "width": 299,
+        "height": 536,
+        "headCenterX": 147.0
+      },
+      {
+        "x": 1500,
+        "y": 110,
+        "width": 301,
+        "height": 536,
+        "headCenterX": 155.5
+      },
+      {
+        "x": 1801,
+        "y": 110,
+        "width": 302,
+        "height": 536,
+        "headCenterX": 149.0
+      }
+    ]
+  },
+  "northWalkingFolder": "north-2101ebd7",
+  "northSelectionNote": "Both supplied variants face north; use the second exported variant, preserve both untouched."
+}

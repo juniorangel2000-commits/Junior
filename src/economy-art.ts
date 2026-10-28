@@ -1,3 +1,6 @@
+import {icaroTexture,preloadIcaroSprites} from './icaro-sprites';
+import {helenaTexture,preloadHelenaSprites} from './helena-sprites';
+import {damiaoTexture,preloadDamiaoSprites} from './damiao-sprites';
 import {celinaTexture,preloadCelinaSprites} from './celina-sprites';
 import {SHOP_FACADES} from './data/shop-facades';
 import {niloTexture,preloadNiloSprites} from './nilo-sprites';
@@ -22,6 +25,9 @@ export function preloadEconomyArt(scene:Phaser.Scene):void{
  preloadAmeliaSprites(scene);
  preloadNiloSprites(scene);
  preloadCelinaSprites(scene);
+ preloadDamiaoSprites(scene);
+ preloadIcaroSprites(scene);
+ preloadHelenaSprites(scene);
 
  scene.load.image(TOBIAS_SHOP.texture,TOBIAS_SHOP.file);
 
@@ -49,6 +55,9 @@ export function merchantTexture(scene:Phaser.Scene,id:string):string{
  if(id==='amelia')return ameliaTexture(scene);
  if(id==='nilo')return niloTexture(scene);
  if(id==='celina')return celinaTexture(scene);
+ if(id==='helena')return helenaTexture(scene);
+ if(id==='icaro')return icaroTexture(scene);
+ if(id==='damiao')return damiaoTexture(scene);
  const key=`village-npc-${id}`;
  if(scene.textures.exists(key))return key;
  const canvas=document.createElement('canvas');canvas.width=192*8;canvas.height=256;
