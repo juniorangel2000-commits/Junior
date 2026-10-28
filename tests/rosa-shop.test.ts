@@ -1,3 +1,5 @@
+import {MERCHANT_LUNCHES} from '../src/data/merchant-lunches';
+import {MERCHANT_DAILY_PLAN} from '../src/systems/merchant-routine';
 import {describe,it,expect} from 'vitest';
 import {readFileSync,readdirSync} from 'node:fs';
 import {resolve,relative} from 'node:path';
@@ -36,7 +38,7 @@ describe('Rosa agricultural shop',()=>{
   const scenery=(area:string,x:number,y:number)=>area==='shop'?!nav.validPosition!(x,y):[[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>villagePointBlocked(x+dx,y+dy));
   const env={cellBlocked:(area:string,x:number,y:number)=>area==='shop'?nav.cellBlocked!(x,y):villageBlockedAt(x,y),blocked:(area:string,x:number,y:number)=>area==='shop'?nav.isBlocked(x,y):villageBlockedAt(x,y),fits:(area:string,x:number,y:number)=>!scenery(area,x,y),arrival:(area:string,p:{x:number;y:number})=>freeArrival(p,(x,y)=>scenery(area,x,y),[])};
   for(let i=0;i<300;i++)r.step(.1,{day:1,time:540},env);expect(r.state.area).toBe('shop');expect(r.isServing({day:1,time:540})).toBe(true);
-  for(let i=0;i<1800;i++)r.step(.1,{day:1,time:735},env);expect(r.state.area).toBe('village');expect(Math.hypot(r.state.x-1552,r.state.y-1392)).toBeLessThan(50);
+  for(let i=0;i<1800;i++)r.step(.1,{day:1,time:MERCHANT_LUNCHES.rosa.start+5},env);expect(r.state.area).toBe('village');expect(Math.hypot(r.state.x-(MERCHANT_DAILY_PLAN.plaza.rosa.x+.5)*32,r.state.y-(MERCHANT_DAILY_PLAN.plaza.rosa.y+.5)*32)).toBeLessThan(50);
   for(let i=0;i<1800;i++)r.step(.1,{day:1,time:900},env);expect(r.state.area).toBe('shop');expect(r.isServing({day:1,time:900})).toBe(true);expect(merchantPeriod('rosa',1080)).toBe('closed');expect(r.isServing({day:1,time:1080})).toBe(false);
   expect(dailyMerchant('rosa')).toBe(true);expect(merchantCanTrade('rosa',undefined)).toBe(false);expect(merchantCanTrade('rosa','rosa')).toBe(true);
   const save=createNewSave({name:'Rosa',skin:'#d9a276',hairStyle:'preso',hairColor:'#754323',outfit:'#638a9d'});save.villageRoutines={rosa:structuredClone(r.state)};save.merchantScenes={rosa:createMerchantLayout('rosa')};expect(validMerchantRoutines(save.villageRoutines)).toBe(true);expect(validateSave(JSON.parse(JSON.stringify(save)))).toBe(true);

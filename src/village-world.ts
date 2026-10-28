@@ -1,4 +1,5 @@
 import {drawVillagePlaza} from './village-plaza';
+import {setupVillageGreenery,drawVillageTallGrass,VILLAGE_GREENERY} from './village-greenery';
 import {facadeForMerchant} from './data/shop-facades';
 import {villageLandmarkClearing} from './data/village-landmarks';
 import {drawVillageLandmarks} from './village-landmarks';
@@ -41,9 +42,12 @@ function drawGround(scene:Phaser.Scene,edits?:MapEditData,namespace='village'):v
   if(sprites){
    const step=8,columns=MAP_WIDTH/step+1,rows=MAP_HEIGHT/step+1,count=VILLAGE_GROUND_MATERIALS;
    const fields=new Float32Array(columns*rows*count);
+   const pathEdges=new Float32Array(columns*rows),pathLengths=new Float32Array(columns*rows);
    for(let gy=0;gy<rows;gy++)for(let gx=0;gx<columns;gx++){
     const weights=villageGroundWeights(gx*step/TILE-.5,gy*step/TILE-.5,false),at=(gy*columns+gx)*count;
     weights.forEach((weight,index)=>{fields[at+index]=weight;});
+    pathEdges[gy*columns+gx]=villagePathEdge(gx*step/TILE-.5,gy*step/TILE-.5);
+    pathLengths[gy*columns+gx]=villagePathAlignment(gx*step/TILE-.5,gy*step/TILE-.5);
    }
    const paving=readVillagePaving(scene)??sprites.paving,street=readVillagePaving(scene,'village-path-paving-source')??sprites['path-dry'];
    const pixels=c.createImageData(MAP_WIDTH,MAP_HEIGHT),materials=[sprites.grass,sprites.forest,sprites.meadow,street,paving,sprites.soil,sprites['path-dry'],paving];
@@ -58,17 +62,26 @@ function drawGround(scene:Phaser.Scene,edits?:MapEditData,namespace='village'):v
       mixed[m]=(fields[a+m]*(1-fx)+fields[b+m]*fx)*(1-fy)+(fields[d+m]*(1-fx)+fields[e+m]*fx)*fy;
       if(mixed[m]<.0001)continue;
       const source=sources[m],at=source.rows[y]+source.cols[x];
-      if(m===6){
-       const along=villagePathAlignment(x/TILE-.5,y/TILE-.5)/16,phase=along-Math.floor(along);
-       const shade=(phase<.07?.62:1)*(.97+(Math.floor(along)%3)*.025);
-       red+=(137*shade+source.pixels[at]*.07)*mixed[m];green+=(131*shade+source.pixels[at+1]*.07)*mixed[m];blue+=(115*shade+source.pixels[at+2]*.07)*mixed[m];
-      }else{
        red+=source.pixels[at]*mixed[m];green+=source.pixels[at+1]*mixed[m];blue+=source.pixels[at+2]*mixed[m];
-      }
      }
      // The thin curb needs pixel-level coverage: interpolating its weight on
      // the 8px terrain grid washes out the bevel and creates uneven widths.
      const u=(x-plazaX)/plazaRX,v=(y-plazaY)/plazaRY,radius=Math.hypot(u,v);
+     const pa=gy*columns+gx,pb=pa+1,pd=pa+columns,pe=pd+1;
+     const edge=(pathEdges[pa]*(1-fx)+pathEdges[pb]*fx)*(1-fy)+(pathEdges[pd]*(1-fx)+pathEdges[pe]*fx)*fy;
+     if(edge>-.04&&edge<.22&&radius>1.01){
+      const along=(pathLengths[pa]*(1-fx)+pathLengths[pb]*fx)*(1-fy)+(pathLengths[pd]*(1-fx)+pathLengths[pe]*fx)*fy;
+      // Small changes in the stone faces soften the outline, without changing
+      // road widths or painting random patches into the surrounding grass.
+      const offset=.012*Math.sin(along*.18)+.008*Math.sin(along*.43);
+      const distance=edge+offset;
+      const coverage=smooth((distance+.005)/.035)*(1-smooth((distance-.13)/.04))*smooth((radius-1.01)/.015);
+      const stone=along/15,phase=stone-Math.floor(stone);
+      const shade=(phase<.065?.64:1)*(distance<.035?1.14:distance>.12?.76:1)*(.97+(Math.floor(stone)%4)*.018);
+      red=red*(1-coverage)+164*shade*coverage;
+      green=green*(1-coverage)+156*shade*coverage;
+      blue=blue*(1-coverage)+136*shade*coverage;
+     }
      const curb=villagePlazaCurbWeight(radius);
      if(curb>0){
       const stone=(Math.atan2(v,u)/Math.PI/2+1)*160,phase=stone-Math.floor(stone);
@@ -108,7 +121,8 @@ export class VillageWorld {
  private readonly visibility=new Map<Phaser.GameObjects.GameObject,boolean>();
  constructor(private readonly scene:Phaser.Scene,private readonly edits?:MapEditData,private readonly namespace='village'){
   const before=new Set(scene.children.list);setupVillageArt(scene);drawGround(scene,edits,namespace);
-  this.drawLake();this.drawTrees();this.drawBuildings();this.landmarks=drawVillageLandmarks(scene);drawVillagePlaza(scene);this.drawGardens();this.drawProps();
+  setupVillageGreenery(scene);
+  this.drawLake();this.drawTrees();this.drawBuildings();this.landmarks=drawVillageLandmarks(scene);drawVillagePlaza(scene);this.drawGardens();this.drawProps();drawVillageTallGrass(scene,this.edits);
   drawExitSign(scene,this.exit(),this.entry());
   this.environment=scene.children.list.filter(object=>!before.has(object));
   for(let y=0;y<WORLD_HEIGHT;y++)for(let x=0;x<WORLD_WIDTH;x++)if(villageBlockedAt(x,y,edits))this.solid.add(`${x},${y}`);
@@ -222,6 +236,13 @@ export class VillageWorld {
     if(this.scene.textures.exists('property-well-idle'))this.scene.add.image(x,y,'property-well-idle').setOrigin(.5,1).setScale(.49).setDepth(y);
    }else if(prop.kind==='lantern'){
     this.scene.add.image(x,y,VILLAGE_LAMP.key).setOrigin(.5,1).setDepth(y).setData({'village-street-lamp':true,'fixture-light':{offsetY:VILLAGE_LAMP.lightY,radius:95}});
+   }else if(prop.kind==='bin'){
+    this.scene.add.image(x,y,VILLAGE_GREENERY,(prop.x+prop.y)%2?'bin-left':'bin-front')
+     .setOrigin(.5,1).setDisplaySize(24,34).setDepth(y).setData({'village-prop':'bin','shadow-foot':1});
+   }else if(prop.kind==='bench'&&prop.facing){
+    const side=prop.facing==='east'||prop.facing==='west';
+    this.scene.add.image(x,y,'village-plaza-furniture',prop.facing).setOrigin(.5,1)
+     .setDisplaySize(side?38:62,side?53:40).setDepth(y).setData({'village-prop':'bench','village-bench-facing':prop.facing});
    }else{
     const sizes={bench:[62,44],barrel:[28,38],flowerpot:[29,36],woodpile:[54,38],crates:[38,54],sacks:[41,42],basket:[34,30],planter:[64,40],anvil:[46,46]} as const;
     const [w,h]=sizes[prop.kind];

@@ -13,7 +13,8 @@ import {TOBIAS_WALK_FRAMES,TOBIAS_DISPLAY,TOBIAS_ORIGIN_Y} from '../tobias-sprit
 import {AMELIA_WALK_FRAMES,AMELIA_DISPLAY,AMELIA_ORIGIN_Y} from '../amelia-sprites';
 import {BentoRoutine} from '../systems/bento-routine';
 import {VillageNpcOverlays} from '../village-npc-overlays';
-import {MerchantDailyRoutine,dailyMerchant,merchantPeriod,merchantMayEnter,MERCHANT_SMALL_TALK,MERCHANT_DAILY_PLAN,type RoutineId,type RoutineArea,type RoutineEnvironment} from '../systems/merchant-routine';
+import {MerchantDailyRoutine,dailyMerchant,merchantMayEnter,type RoutineId,type RoutineArea,type RoutineEnvironment} from '../systems/merchant-routine';
+import {MerchantConversations} from '../systems/merchant-conversations';
 import {BLACKSMITH_DOOR,BLACKSMITH_OUTSIDE} from '../data/blacksmith-interior';
 import {notifyReadyOrders} from '../systems/economy';
 import {markMinerals} from '../economy-visuals';
@@ -83,6 +84,7 @@ export class VillageScene extends Phaser.Scene {
  private routines=new Map<RoutineId,MerchantDailyRoutine>();
  private npcOverlays?:VillageNpcOverlays;
  private speech?:{id:RoutineId;text:string};
+ private conversations=new MerchantConversations();
  private readonly merchantPassage=new DoorwayPassage();
  private get inShop():boolean{return this.inBlacksmith||!!this.merchantRoom;}
  private get roomOwner():ResidentId|undefined{return this.inBlacksmith?'bento':this.merchantRoom;}
@@ -147,6 +149,7 @@ export class VillageScene extends Phaser.Scene {
   return merchantCanTrade(id,this.roomOwner)&&(!dailyMerchant(id)||this.routines.get(id)?.isServing(this.state)===true);
  }
  private createDailyRoutines():void {
+  this.conversations.reset(this.routines);
   this.routines=new Map();this.speech=undefined;
   for(const id of ['augusto','bento','rosa','tobias','amelia','nilo','celina','damiao','helena','icaro'] as const){
    const npc=this.villagers.find(n=>n.data.id===id)!;
@@ -183,23 +186,14 @@ export class VillageScene extends Phaser.Scene {
   npc.sprite.setPosition(s.x,s.y).setDepth(s.y).setFrame(characterFrame(s.direction,npc.frames?phase:0,npc.frames));
  }
  private updateDailyRoutines(seconds:number):void {
+  this.speech=this.conversations.update(seconds,this.state,this.routines,this.roomOwner as RoutineId|undefined,this.guide?.owner as RoutineId|undefined);
   for(const [id,routine] of this.routines){if(this.guide?.owner===id)continue;const step=routine.step(seconds,this.state,this.routineEnvironment(id));this.syncRoutine(id,step.phase);}
-  const a=this.routines.get('augusto')!,b=this.routines.get('bento')!;
-  if(!this.guide&&merchantPeriod('augusto',this.state.time)==='break'&&a.state.area==='village'&&b.state.area==='village'&&a.state.socialDay!==this.state.day&&b.state.socialDay!==this.state.day&&a.activity==='plaza'&&b.activity==='plaza'&&Math.hypot(a.state.x-b.state.x,a.state.y-b.state.y)<70){a.socialize(this.state);b.socialize(this.state);}
-  const social=a.state.socialUntil>this.state.day*1440+this.state.time&&b.state.socialUntil>this.state.day*1440+this.state.time;
-  this.speech=undefined;
-  if(social){
-   const speaker=a.state.socialUntil-(this.state.day*1440+this.state.time)>MERCHANT_DAILY_PLAN.socialMinutes/2?'augusto':'bento';
-   this.speech={id:speaker,text:MERCHANT_SMALL_TALK[(this.state.day-1)%MERCHANT_SMALL_TALK.length][speaker==='augusto'?0:1]};
-   for(const id of ['augusto','bento'] as const){const npc=this.villagers.find(n=>n.data.id===id)!,peer=id==='augusto'?b.state:a.state,own=this.routines.get(id)!.state;own.direction=directionFromVector(peer.x-own.x,peer.y-own.y);npc.sprite.setFrame(characterFrame(own.direction,0,npc.frames));}
-  }
-  for(const [visitor,r] of this.routines){
-   const cue=r.conversation(this.state);if(!cue)continue;const host=this.routines.get(cue.host)!;
-   if(host.state.area!=='shop'||host.roomOwner!==cue.host)continue;
-   host.holdConversation(this.state);
-   if(Math.hypot(host.state.x-r.state.x,host.state.y-r.state.y)>135)continue;
-   for(const [id,peer] of [[visitor,host.state],[cue.host,r.state]] as const){const own=this.routines.get(id)!.state,npc=this.villagers.find(n=>n.data.id===id)!;own.direction=directionFromVector(peer.x-own.x,peer.y-own.y);npc.sprite.setFrame(characterFrame(own.direction,0,npc.frames));}
-   if(this.roomOwner===cue.host)this.speech={id:cue.id,text:cue.text};
+  const pair=this.conversations.participants;
+  if(pair.length===2){
+   for(const [index,id] of pair.entries()){
+    const own=this.routines.get(id)!.state,peer=this.routines.get(pair[1-index])!.state;
+    own.direction=directionFromVector(peer.x-own.x,peer.y-own.y);this.syncRoutine(id,0);
+   }
   }
  }
  private createVillagers():void {

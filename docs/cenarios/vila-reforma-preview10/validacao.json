@@ -1,0 +1,429 @@
+{
+  "checks": [
+    {
+      "name": "Grama alta em grupos, sem invadir caminhos ou água",
+      "passed": true,
+      "details": {
+        "grass": 130,
+        "grassClear": true,
+        "drawnGrass": 130,
+        "bins": 6,
+        "pots": 0,
+        "benches": [
+          {
+            "kind": "bench",
+            "x": 42,
+            "y": 29,
+            "facing": "north",
+            "roadDistance": 1.1,
+            "lakeDistance": 35.51047484514998
+          },
+          {
+            "kind": "bench",
+            "x": 57,
+            "y": 46,
+            "facing": "north",
+            "roadDistance": 1.4947002649145467,
+            "lakeDistance": 18.383395472095234
+          },
+          {
+            "kind": "bench",
+            "x": 70,
+            "y": 48,
+            "facing": "east",
+            "roadDistance": 2.6055512754639896,
+            "lakeDistance": 5.2595830908730585
+          },
+          {
+            "kind": "bench",
+            "x": 51,
+            "y": 61,
+            "facing": "north",
+            "roadDistance": 1.6432744018203587,
+            "lakeDistance": 26.479405905239137
+          },
+          {
+            "kind": "bench",
+            "x": 47,
+            "y": 14,
+            "facing": "west",
+            "roadDistance": 2.15,
+            "lakeDistance": 35.43304745703255
+          }
+        ],
+        "flooded": [],
+        "routes": [
+          {
+            "id": "armazem",
+            "length": 31
+          },
+          {
+            "id": "ferraria",
+            "length": 55
+          },
+          {
+            "id": "ervas",
+            "length": 31
+          },
+          {
+            "id": "carpintaria",
+            "length": 27
+          },
+          {
+            "id": "sementes",
+            "length": 36
+          },
+          {
+            "id": "antiquario",
+            "length": 22
+          },
+          {
+            "id": "costura",
+            "length": 63
+          },
+          {
+            "id": "pescador",
+            "length": 66
+          },
+          {
+            "id": "pousada",
+            "length": 44
+          },
+          {
+            "id": "oficina",
+            "length": 59
+          }
+        ],
+        "cottages": [
+          {
+            "id": "casa-leste",
+            "road": 0.15000000000000002,
+            "lake": 6.563028700981593
+          },
+          {
+            "id": "casa-sul",
+            "road": 0.15000000000000002,
+            "lake": 7.570082109294932
+          }
+        ]
+      }
+    },
+    {
+      "name": "Lixeiras presentes e vasos externos retirados",
+      "passed": true,
+      "details": {
+        "grass": 130,
+        "grassClear": true,
+        "drawnGrass": 130,
+        "bins": 6,
+        "pots": 0,
+        "benches": [
+          {
+            "kind": "bench",
+            "x": 42,
+            "y": 29,
+            "facing": "north",
+            "roadDistance": 1.1,
+            "lakeDistance": 35.51047484514998
+          },
+          {
+            "kind": "bench",
+            "x": 57,
+            "y": 46,
+            "facing": "north",
+            "roadDistance": 1.4947002649145467,
+            "lakeDistance": 18.383395472095234
+          },
+          {
+            "kind": "bench",
+            "x": 70,
+            "y": 48,
+            "facing": "east",
+            "roadDistance": 2.6055512754639896,
+            "lakeDistance": 5.2595830908730585
+          },
+          {
+            "kind": "bench",
+            "x": 51,
+            "y": 61,
+            "facing": "north",
+            "roadDistance": 1.6432744018203587,
+            "lakeDistance": 26.479405905239137
+          },
+          {
+            "kind": "bench",
+            "x": 47,
+            "y": 14,
+            "facing": "west",
+            "roadDistance": 2.15,
+            "lakeDistance": 35.43304745703255
+          }
+        ],
+        "flooded": [],
+        "routes": [
+          {
+            "id": "armazem",
+            "length": 31
+          },
+          {
+            "id": "ferraria",
+            "length": 55
+          },
+          {
+            "id": "ervas",
+            "length": 31
+          },
+          {
+            "id": "carpintaria",
+            "length": 27
+          },
+          {
+            "id": "sementes",
+            "length": 36
+          },
+          {
+            "id": "antiquario",
+            "length": 22
+          },
+          {
+            "id": "costura",
+            "length": 63
+          },
+          {
+            "id": "pescador",
+            "length": 66
+          },
+          {
+            "id": "pousada",
+            "length": 44
+          },
+          {
+            "id": "oficina",
+            "length": 59
+          }
+        ],
+        "cottages": [
+          {
+            "id": "casa-leste",
+            "road": 0.15000000000000002,
+            "lake": 6.563028700981593
+          },
+          {
+            "id": "casa-sul",
+            "road": 0.15000000000000002,
+            "lake": 7.570082109294932
+          }
+        ]
+      }
+    },
+    {
+      "name": "Bancos orientados, fora das vias e do lago",
+      "passed": true,
+      "details": [
+        {
+          "kind": "bench",
+          "x": 42,
+          "y": 29,
+          "facing": "north",
+          "roadDistance": 1.1,
+          "lakeDistance": 35.51047484514998
+        },
+        {
+          "kind": "bench",
+          "x": 57,
+          "y": 46,
+          "facing": "north",
+          "roadDistance": 1.4947002649145467,
+          "lakeDistance": 18.383395472095234
+        },
+        {
+          "kind": "bench",
+          "x": 70,
+          "y": 48,
+          "facing": "east",
+          "roadDistance": 2.6055512754639896,
+          "lakeDistance": 5.2595830908730585
+        },
+        {
+          "kind": "bench",
+          "x": 51,
+          "y": 61,
+          "facing": "north",
+          "roadDistance": 1.6432744018203587,
+          "lakeDistance": 26.479405905239137
+        },
+        {
+          "kind": "bench",
+          "x": 47,
+          "y": 14,
+          "facing": "west",
+          "roadDistance": 2.15,
+          "lakeDistance": 35.43304745703255
+        }
+      ]
+    },
+    {
+      "name": "Casas e comércios com bases fora do lago",
+      "passed": true,
+      "details": {
+        "grass": 130,
+        "grassClear": true,
+        "drawnGrass": 130,
+        "bins": 6,
+        "pots": 0,
+        "benches": [
+          {
+            "kind": "bench",
+            "x": 42,
+            "y": 29,
+            "facing": "north",
+            "roadDistance": 1.1,
+            "lakeDistance": 35.51047484514998
+          },
+          {
+            "kind": "bench",
+            "x": 57,
+            "y": 46,
+            "facing": "north",
+            "roadDistance": 1.4947002649145467,
+            "lakeDistance": 18.383395472095234
+          },
+          {
+            "kind": "bench",
+            "x": 70,
+            "y": 48,
+            "facing": "east",
+            "roadDistance": 2.6055512754639896,
+            "lakeDistance": 5.2595830908730585
+          },
+          {
+            "kind": "bench",
+            "x": 51,
+            "y": 61,
+            "facing": "north",
+            "roadDistance": 1.6432744018203587,
+            "lakeDistance": 26.479405905239137
+          },
+          {
+            "kind": "bench",
+            "x": 47,
+            "y": 14,
+            "facing": "west",
+            "roadDistance": 2.15,
+            "lakeDistance": 35.43304745703255
+          }
+        ],
+        "flooded": [],
+        "routes": [
+          {
+            "id": "armazem",
+            "length": 31
+          },
+          {
+            "id": "ferraria",
+            "length": 55
+          },
+          {
+            "id": "ervas",
+            "length": 31
+          },
+          {
+            "id": "carpintaria",
+            "length": 27
+          },
+          {
+            "id": "sementes",
+            "length": 36
+          },
+          {
+            "id": "antiquario",
+            "length": 22
+          },
+          {
+            "id": "costura",
+            "length": 63
+          },
+          {
+            "id": "pescador",
+            "length": 66
+          },
+          {
+            "id": "pousada",
+            "length": 44
+          },
+          {
+            "id": "oficina",
+            "length": 59
+          }
+        ],
+        "cottages": [
+          {
+            "id": "casa-leste",
+            "road": 0.15000000000000002,
+            "lake": 6.563028700981593
+          },
+          {
+            "id": "casa-sul",
+            "road": 0.15000000000000002,
+            "lake": 7.570082109294932
+          }
+        ]
+      }
+    },
+    {
+      "name": "Todos os dez comércios continuam acessíveis",
+      "passed": true,
+      "details": [
+        {
+          "id": "armazem",
+          "length": 31
+        },
+        {
+          "id": "ferraria",
+          "length": 55
+        },
+        {
+          "id": "ervas",
+          "length": 31
+        },
+        {
+          "id": "carpintaria",
+          "length": 27
+        },
+        {
+          "id": "sementes",
+          "length": 36
+        },
+        {
+          "id": "antiquario",
+          "length": 22
+        },
+        {
+          "id": "costura",
+          "length": 63
+        },
+        {
+          "id": "pescador",
+          "length": 66
+        },
+        {
+          "id": "pousada",
+          "length": 44
+        },
+        {
+          "id": "oficina",
+          "length": 59
+        }
+      ]
+    },
+    {
+      "name": "Sem erros de JavaScript, arquivos ou WebGL",
+      "passed": true,
+      "details": {
+        "errors": [],
+        "gl": 0
+      }
+    }
+  ],
+  "errors": []
+}

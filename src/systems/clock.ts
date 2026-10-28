@@ -1,5 +1,5 @@
-/** O relógio do vale avança dois minutos por segundo de simulação. */
-export const GAME_MINUTES_PER_SECOND = 2;
+/** Um minuto de jogo por segundo de simulação, em todos os mapas. */
+export const GAME_MINUTES_PER_SECOND = 1;
 export const MORNING_MINUTES = 8 * 60;
 export const NIGHT_START_MINUTES = 19 * 60;
 export const MAX_DAY = 999_999;

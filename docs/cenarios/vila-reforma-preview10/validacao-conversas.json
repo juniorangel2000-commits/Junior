@@ -1,0 +1,131 @@
+{
+  "checks": [
+    {
+      "name": "Balão da praça visível e legível",
+      "passed": true
+    },
+    {
+      "name": "Balão permanece dentro da tela com zoom 0.75",
+      "passed": true,
+      "details": {
+        "x": 570,
+        "y": 395,
+        "width": 300,
+        "height": 70.59375
+      }
+    },
+    {
+      "name": "Balão permanece dentro da tela com zoom 1",
+      "passed": true,
+      "details": {
+        "x": 570,
+        "y": 389,
+        "width": 300,
+        "height": 70.59375
+      }
+    },
+    {
+      "name": "Balão permanece dentro da tela com zoom 2.5",
+      "passed": true,
+      "details": {
+        "x": 570,
+        "y": 353,
+        "width": 300,
+        "height": 70.59375
+      }
+    },
+    {
+      "name": "As cinco duplas conversam e respondem na praça",
+      "passed": true,
+      "details": {
+        "seen": {
+          "augusto+bento": [
+            "augusto",
+            "bento"
+          ],
+          "amelia+rosa": [
+            "rosa",
+            "amelia"
+          ],
+          "celina+nilo": [
+            "celina",
+            "nilo"
+          ],
+          "icaro+tobias": [
+            "tobias",
+            "icaro"
+          ],
+          "damiao+helena": [
+            "damiao",
+            "helena"
+          ]
+        },
+        "motion": [],
+        "collisions": [],
+        "peak": 3
+      }
+    },
+    {
+      "name": "Nenhum participante anda enquanto fala ou escuta",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "A praça não recebe todos os comerciantes juntos",
+      "passed": true,
+      "details": 3
+    },
+    {
+      "name": "Rotinas não atravessam a fonte, canteiros ou fachadas",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "Conversa na loja tem pergunta, resposta e participantes parados",
+      "passed": true,
+      "details": {
+        "speakers": [
+          "augusto",
+          "rosa"
+        ],
+        "moving": [],
+        "finished": true,
+        "resumed": true,
+        "cue": {
+          "id": "rosa",
+          "text": "Separei as melhores para o armazém."
+        }
+      }
+    },
+    {
+      "name": "O dono retoma sua rotina após conversar",
+      "passed": true,
+      "details": {
+        "speakers": [
+          "augusto",
+          "rosa"
+        ],
+        "moving": [],
+        "finished": true,
+        "resumed": true,
+        "cue": {
+          "id": "rosa",
+          "text": "Separei as melhores para o armazém."
+        }
+      }
+    },
+    {
+      "name": "Save continua válido após conversas e novos intervalos",
+      "passed": true
+    },
+    {
+      "name": "Sem erros JavaScript, HTTP ou WebGL",
+      "passed": true,
+      "details": {
+        "errors": [],
+        "gl": 0
+      }
+    }
+  ],
+  "errors": []
+}

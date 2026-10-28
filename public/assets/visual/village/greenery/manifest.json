@@ -1,0 +1,43 @@
+{
+  "file": "assets/visual/village/greenery/gramas-lixeiras.png",
+  "sha256": "aff4d1beb58ddac3b1065b172bbf7edcb9895bd2fc2ff0473797a9107a16af80",
+  "alphaCutoff": 200,
+  "frames": {
+    "grass-a": {
+      "x": 24,
+      "y": 50,
+      "width": 470,
+      "height": 443
+    },
+    "grass-b": {
+      "x": 541,
+      "y": 52,
+      "width": 433,
+      "height": 446
+    },
+    "grass-c": {
+      "x": 1024,
+      "y": 111,
+      "width": 487,
+      "height": 398
+    },
+    "bin-front": {
+      "x": 125,
+      "y": 546,
+      "width": 264,
+      "height": 401
+    },
+    "bin-left": {
+      "x": 624,
+      "y": 541,
+      "width": 263,
+      "height": 428
+    },
+    "bin-right": {
+      "x": 1135,
+      "y": 541,
+      "width": 261,
+      "height": 426
+    }
+  }
+}

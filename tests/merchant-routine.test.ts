@@ -5,7 +5,7 @@ import {createSmithLayout,smithNavigation} from '../src/systems/smith-layout';
 import {villageBlockedAt,villagePointBlocked} from '../src/data/village';
 import {merchantOutside} from '../src/systems/merchant-visit';
 import {freeArrival,actorsOverlap} from '../src/systems/actor-arrival';
-import {advanceClock} from '../src/systems/clock';
+import {advanceClock,GAME_MINUTES_PER_SECOND} from '../src/systems/clock';
 import {createNewSave,validateSave} from '../src/systems/save';
 const navigation=(id:RoutineId)=>id==='bento'?smithNavigation(createSmithLayout()):merchantRoomNavigation(id,createMerchantLayout(id));
 function fixture(id:RoutineId){
@@ -18,13 +18,13 @@ function fixture(id:RoutineId){
 
 describe('daily merchants share routes, clock and persistent actors',()=>{
  it('uses game-clock opening, lunch, return and closing boundaries',()=>{
-  for(const id of ['augusto','bento'] as const){expect(merchantPeriod(id,479)).toBe('closed');expect(merchantPeriod(id,480)).toBe('work');expect(merchantPeriod(id,720)).toBe('break');expect(merchantPeriod(id,809.99)).toBe('break');expect(merchantPeriod(id,810)).toBe('work');}
+  for(const id of ['augusto','bento'] as const){expect(merchantPeriod(id,479)).toBe('closed');expect(merchantPeriod(id,480)).toBe('work');expect(merchantPeriod(id,720)).toBe('break');expect(merchantPeriod(id,769.99)).toBe('break');expect(merchantPeriod(id,770)).toBe('work');}
   expect(merchantPeriod('bento',1140)).toBe('closed');expect(merchantPeriod('augusto',1140)).toBe('work');expect(merchantPeriod('augusto',1200)).toBe('closed');expect(merchantPeriod('augusto',0)).toBe('closed');
  });
  it.each(['augusto','bento'] as const)('%s enters, walks around furniture, takes a plaza break and returns before resting',id=>{
   const {r,env,point}=fixture(id);let clock={day:1,time:480},walked=0,sawShop=false,sawPlaza=false,returned=false;
-  for(let i=0;i<4300;i++){const step=r.step(.1,clock,env);if(step.moving)walked++;sawShop ||= step.area==='shop';sawPlaza ||= r.activity==='plaza'&&Math.hypot(step.x-1600,step.y-1328)<70;returned ||= sawPlaza&&step.area==='shop'&&clock.time>=810;
-   if(point(step.area,step.x,step.y)||!validMerchantRoutine(r.state))throw new Error(id+' '+JSON.stringify({clock,step}));clock=advanceClock(clock,.2);
+  for(let i=0;i<8600;i++){const step=r.step(.1,clock,env);if(step.moving)walked++;sawShop ||= step.area==='shop';sawPlaza ||= r.activity==='plaza'&&Math.hypot(step.x-1600,step.y-1328)<70;returned ||= sawPlaza&&step.area==='shop'&&clock.time>=770;
+   if(point(step.area,step.x,step.y)||!validMerchantRoutine(r.state))throw new Error(id+' '+JSON.stringify({clock,step}));clock=advanceClock(clock,.1*GAME_MINUTES_PER_SECOND);
   }
   expect(walked).toBeGreaterThan(100);expect(sawShop).toBe(true);expect(sawPlaza).toBe(true);expect(returned).toBe(true);expect(r.state.area).toBe('shop');expect(r.isServing(clock)).toBe(false);
  },15000);
@@ -44,7 +44,7 @@ describe('daily merchants share routes, clock and persistent actors',()=>{
  it('honors guidance temporarily during lunch, then resumes its clock schedule',()=>{
   const {r,env}=fixture('augusto');r.guided({day:2,time:719},{x:288,y:151},true);
   expect(r.isServing({day:2,time:730})).toBe(true);expect(r.availability({day:2,time:730}).canGuide).toBe(false);
-  for(let i=0;i<500;i++)r.step(.1,{day:2,time:780},env);expect(r.state.area).toBe('village');expect(r.isServing({day:2,time:1201})).toBe(false);
+  for(let i=0;i<500;i++)r.step(.1,{day:2,time:765},env);expect(r.state.area).toBe('village');expect(r.isServing({day:2,time:1201})).toBe(false);
  });
  it('copies only coordinates from live sprite objects when guiding',()=>{
   const {r}=fixture('augusto'),sprite=Object.assign(Object.create({x:1072,y:1040}),{scene:{update:()=>undefined},texture:{}});

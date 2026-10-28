@@ -45,11 +45,17 @@ export class VillageNpcOverlays {
   }
   if(!named)this.name.hidden=true;
   const speaker=speech&&visible.find(a=>a.id===speech.id);if(!speaker||!speech){this.speech.hidden=true;return;}
+  if(this.name.dataset.npcHover===speaker.id)this.name.hidden=true;
   const point={x:rect.left-host.left+(camera.x+(speaker.sprite.x-camera.worldView.x)*camera.zoom)*scaleX,y:rect.top-host.top+(camera.y+(speaker.sprite.getBounds().top-camera.worldView.y)*camera.zoom)*scaleY};
   if(point.x<0||point.x>host.width||point.y<0||point.y>host.height){this.speech.hidden=true;return;}
   if(this.speech.textContent!==speech.text)this.speech.textContent=speech.text;this.speech.dataset.npcSpeaker=speaker.id;this.speech.setAttribute('aria-label','Fala de '+speaker.name);this.speech.hidden=false;
+  this.speech.style.maxWidth=Math.max(0,Math.min(host.width-16,window.innerWidth<=760?240:300))+'px';
   const width=this.speech.offsetWidth,height=this.speech.offsetHeight,left=Math.max(8,Math.min(host.width-width-8,point.x-width/2));
-  this.speech.style.left=left+'px';this.speech.style.top=Math.max(8,point.y-height-16)+'px';this.speech.style.setProperty('--speech-tail',Math.max(14,Math.min(width-14,point.x-left))+'px');
+  const below=point.y-height-16<8;
+  this.speech.dataset.placement=below?'below':'above';
+  this.speech.style.left=Math.round(left)+'px';
+  this.speech.style.top=Math.round(Math.max(8,Math.min(host.height-height-18,below?point.y+20:point.y-height-16)))+'px';
+  this.speech.style.setProperty('--speech-tail',Math.max(14,Math.min(width-14,point.x-left))+'px');
  };
  destroy():void{this.scene.game.events.off('postrender',this.draw);window.removeEventListener('pointermove',this.pointer,true);window.removeEventListener('blur',this.blur);window.removeEventListener('pointerout',this.leave,true);this.root.remove();}
 }

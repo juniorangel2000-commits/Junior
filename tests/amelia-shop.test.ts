@@ -1,3 +1,5 @@
+import {MERCHANT_LUNCHES} from '../src/data/merchant-lunches';
+import {MERCHANT_DAILY_PLAN} from '../src/systems/merchant-routine';
 import {VILLAGE_BUILDINGS} from '../src/data/village';
 import {describe,it,expect} from 'vitest';
 import catalog from '../public/assets/visual/village/amelia/manifest.json';
@@ -33,8 +35,8 @@ describe('Amelia herbalist shop',()=>{
   const env={cellBlocked:(a:string,x:number,y:number)=>a==='shop'?nav.cellBlocked!(x,y):villageBlockedAt(x,y),blocked:(a:string,x:number,y:number)=>a==='shop'?nav.isBlocked(x,y):villageBlockedAt(x,y),fits:(a:string,x:number,y:number)=>!scenery(a,x,y),arrival:(a:string,p:{x:number;y:number})=>freeArrival(p,(x,y)=>scenery(a,x,y),[])};
   const phases=new Set<number>(),walk=(time:number,count:number)=>{for(let i=0;i<count;i++){const step=r.step(.1,{day:2,time},env);if(step.moving)phases.add(step.phase);expect(scenery(r.state.area,r.state.x,r.state.y)).toBe(false);}};
   walk(540,500);expect(r.state.area).toBe('shop');expect(r.isServing({day:2,time:540})).toBe(true);
-  walk(735,3500);expect(r.state.area).toBe('village');expect(Math.hypot(r.state.x-1392,r.state.y-1328)).toBeLessThan(40);
-  walk(900,3500);expect(r.state.area).toBe('shop');expect(phases.size).toBe(8);expect(dailyMerchant('amelia')).toBe(true);expect(merchantPeriod('amelia',1080)).toBe('closed');
+  walk(MERCHANT_LUNCHES.amelia.start+5,3500);expect(r.state.area).toBe('village');expect(Math.hypot(r.state.x-(MERCHANT_DAILY_PLAN.plaza.amelia.x+.5)*32,r.state.y-(MERCHANT_DAILY_PLAN.plaza.amelia.y+.5)*32)).toBeLessThan(40);
+  walk(MERCHANT_LUNCHES.amelia.end+10,3500);expect(r.state.area).toBe('shop');expect(phases.size).toBe(8);expect(dailyMerchant('amelia')).toBe(true);expect(merchantPeriod('amelia',1080)).toBe('closed');
   const save=createNewSave({name:'Amélia',skin:'#d9a276',hairStyle:'preso',hairColor:'#754323',outfit:'#638a9d'});save.villageRoutines={amelia:structuredClone(r.state)};save.merchantScenes={amelia:createMerchantLayout('amelia')};expect(validateSave(JSON.parse(JSON.stringify(save)))).toBe(true);
  },15000);
 });

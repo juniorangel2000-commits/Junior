@@ -1,3 +1,5 @@
+import {MERCHANT_LUNCHES} from '../src/data/merchant-lunches';
+import {MERCHANT_DAILY_PLAN} from '../src/systems/merchant-routine';
 import {VILLAGE_BUILDINGS} from '../src/data/village';
 import {describe,it,expect} from 'vitest';
 import catalog from '../public/assets/visual/village/tobias/manifest.json';
@@ -42,8 +44,8 @@ describe('Tobias carpentry',()=>{
   const env={cellBlocked:(a:string,x:number,y:number)=>a==='shop'?nav.cellBlocked!(x,y):villageBlockedAt(x,y),blocked:(a:string,x:number,y:number)=>a==='shop'?nav.isBlocked(x,y):villageBlockedAt(x,y),fits:(a:string,x:number,y:number)=>!scenery(a,x,y),arrival:(a:string,p:{x:number;y:number})=>freeArrival(p,(x,y)=>scenery(a,x,y),[])};
   const walk=(time:number,count:number)=>{for(let i=0;i<count;i++){r.step(.1,{day:2,time},env);expect(scenery(r.state.area,r.state.x,r.state.y)).toBe(false);}};
   walk(540,400);expect(r.state.area).toBe('shop');expect(r.isServing({day:2,time:540})).toBe(true);
-  walk(735,2000);expect(r.state.area).toBe('village');expect(Math.hypot(r.state.x-1456,r.state.y-1392)).toBeLessThan(40);
-  walk(900,2000);expect(r.state.area).toBe('shop');expect(merchantPeriod('tobias',1080)).toBe('closed');expect(r.isServing({day:2,time:1080})).toBe(false);
+  walk(MERCHANT_LUNCHES.tobias.start+5,2000);expect(r.state.area).toBe('village');expect(Math.hypot(r.state.x-(MERCHANT_DAILY_PLAN.plaza.tobias.x+.5)*32,r.state.y-(MERCHANT_DAILY_PLAN.plaza.tobias.y+.5)*32)).toBeLessThan(40);
+  walk(MERCHANT_LUNCHES.tobias.end+10,2000);expect(r.state.area).toBe('shop');expect(merchantPeriod('tobias',1080)).toBe('closed');expect(r.isServing({day:2,time:1080})).toBe(false);
   const save=createNewSave({name:'Tobias',skin:'#d9a276',hairStyle:'preso',hairColor:'#754323',outfit:'#638a9d'});save.villageRoutines={tobias:structuredClone(r.state)};save.merchantScenes={tobias:createMerchantLayout('tobias')};expect(validMerchantRoutines(save.villageRoutines)).toBe(true);expect(validateSave(JSON.parse(JSON.stringify(save)))).toBe(true);
  },15000);
 });

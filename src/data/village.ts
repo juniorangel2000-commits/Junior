@@ -56,7 +56,7 @@ export const VILLAGE_NPCS:readonly VillageNPC[]=[
   'Eu sou a Celina. Um bom tecido começa com fibras bem escolhidas e um pouco de paciência.',
   'Compro tecidos e componentes de vestuário. Também vendo roupas, mochilas e acessórios.',
  ]},
- {id:'damiao',name:'Damião',role:'Pescador',merchantId:'fisher',x:72,y:44,direction:'down',dialogue:[
+ {id:'damiao',name:'Damião',role:'Pescador',merchantId:'fisher',x:68,y:42,direction:'down',dialogue:[
   'Meu nome é Damião. A água ensina a esperar e a prestar atenção nos detalhes.',
   'Se precisar de cordas ou materiais, dê uma olhada no meu balcão antes de ir aos lagos.',
  ]},
@@ -78,7 +78,7 @@ export const VILLAGE_BUILDINGS:readonly VillageBuilding[]=[
  {id:'sementes',x:38,y:55,shop:'seeds'},
  {id:'antiquario',x:24,y:57,shop:'traveler'},
  {id:'costura',x:65,y:24,shop:'tailor'},
- {id:'pescador',x:72,y:42,shop:'fisher',flip:true},
+ {id:'pescador',x:68,y:40,shop:'fisher',flip:true},
  {id:'pousada',x:44,y:22,shop:'inn'},
  {id:'oficina',x:61,y:54,shop:'mechanic'},
 ];
@@ -92,7 +92,7 @@ export const VILLAGE_WALKWAYS:readonly VillageWalkway[]=[
  {width:1.05,points:[[46,30],[46,27],[44,25],[44,23]]},
  {width:.9,points:[[29,25],[29,27],[37,27],[44,27]]},
  {width:.9,points:[[44,27],[51,27],[58,27],[65,27],[65,25]]},
- {width:1.0,points:[[55,43],[64,45],[72,45],[72,43]]},
+ {width:1.0,points:[[55,43],[64,45],[68,45],[68,41]]},
  {width:1.0,points:[[46,45],[46,53],[46,59]]},
  {width:1.0,points:[[24,58],[24,60],[38,60],[46,59],[61,57],[61,55]]},
  {width:.9,points:[[38,60],[38,56]]},
@@ -100,12 +100,12 @@ export const VILLAGE_WALKWAYS:readonly VillageWalkway[]=[
  {width:.75,points:[[57,33],[62,33]]},
  {width:.8,points:[[31,60],[31,59]]},
  {width:.9,points:[[20,49],[19,43],[18,39],[18,35],[19,30],[20,25],[20,23],[20,22]]},
- {width:.9,points:[[18,39],[22,39],[22,38]]},
+ {width:.9,points:[[18,39],[23,39],[23,37]]},
  {width:.8,points:[[26,26],[29,27],[29,25]]},
  {width:1.0,points:[[55,27],[57,23],[57,17]]},
  {width:.85,points:[[44,23],[39,24],[38,20],[38,15],[44,14],[44,13]]},
- {width:.85,points:[[65,27],[70,32],[75,32],[75,31]]},
- {width:.85,points:[[61,57],[68,60],[74,63],[74,62]]},
+ {width:.85,points:[[65,27],[70,32],[76,32],[76,30]]},
+ {width:.85,points:[[61,57],[68,60],[75,63],[77,63],[77,61]]},
 ];
 function walkwayDistance(x:number,y:number,edge:boolean):number {
  let nearest=Infinity;
@@ -167,33 +167,36 @@ export function villageBuildingAt(x:number,y:number):VillageBuilding|undefined {
 }
 const hash=(x:number,y:number):number=>(Math.imul(x+83,73856093)^Math.imul(y+37,19349663))>>>0;
 export interface VillageTree {x:number;y:number;kind:NatureKind}
-export const VILLAGE_PROPS:readonly {kind:'well'|'bench'|'lantern'|'barrel'|'flowerpot'|'woodpile'|'anvil'|'crates'|'sacks'|'basket'|'planter';x:number;y:number}[]=[
+export const VILLAGE_PROPS:readonly {kind:'well'|'bench'|'lantern'|'barrel'|'flowerpot'|'woodpile'|'anvil'|'crates'|'sacks'|'basket'|'planter'|'bin';x:number;y:number;facing?:'north'|'south'|'east'|'west'}[]=[
  {kind:'well',x:24,y:23},
- {kind:'bench',x:42,y:28},{kind:'bench',x:60,y:51},
+ {kind:'bench',x:42,y:29,facing:'north'},{kind:'bench',x:57,y:46,facing:'north'},
  {kind:'lantern',x:20,y:51},
  {kind:'lantern',x:44,y:28},
  {kind:'lantern',x:12,y:50},{kind:'lantern',x:35,y:50},
  {kind:'lantern',x:34,y:29},{kind:'lantern',x:60,y:30},
  {kind:'lantern',x:49,y:55},{kind:'lantern',x:58,y:61},
- {kind:'bench',x:70,y:48},{kind:'bench',x:50,y:60},
+ {kind:'bench',x:70,y:48,facing:'east'},{kind:'bench',x:51,y:61,facing:'north'},
  {kind:'crates',x:29,y:33},
  {kind:'barrel',x:66,y:32},
  {kind:'woodpile',x:25,y:47},{kind:'barrel',x:34,y:51},
- {kind:'flowerpot',x:40,y:24},{kind:'flowerpot',x:48,y:24},
- {kind:'flowerpot',x:61,y:26},{kind:'flowerpot',x:69,y:26},
- {kind:'flowerpot',x:35,y:58},{kind:'barrel',x:65,y:56},
- {kind:'crates',x:28,y:59},{kind:'flowerpot',x:25,y:26},
- {kind:'basket',x:43,y:56},{kind:'barrel',x:69,y:44},
- {kind:'planter',x:48,y:19},{kind:'planter',x:72,y:26},
+
+
+ {kind:'barrel',x:65,y:56},
+ {kind:'crates',x:28,y:59},
+ {kind:'basket',x:43,y:56},{kind:'barrel',x:66,y:43},
+
 
  {kind:'lantern',x:59,y:21},{kind:'lantern',x:37,y:18},
  {kind:'lantern',x:21,y:26},{kind:'lantern',x:27,y:41},
  {kind:'lantern',x:71,y:34},{kind:'lantern',x:69,y:62},
- {kind:'flowerpot',x:53,y:17},{kind:'flowerpot',x:61,y:17},
+
  {kind:'sacks',x:16,y:23},{kind:'barrel',x:20,y:38},
- {kind:'bench',x:47,y:14},{kind:'flowerpot',x:41,y:14},
- {kind:'basket',x:72,y:31},{kind:'flowerpot',x:77,y:31},
- {kind:'flowerpot',x:71,y:62},{kind:'barrel',x:77,y:62},
+ {kind:'bench',x:47,y:14,facing:'west'},
+ {kind:'basket',x:72,y:31},
+
+ {kind:'bin',x:38,y:40},{kind:'bin',x:54,y:40},
+ {kind:'bin',x:40,y:29},{kind:'bin',x:68,y:48},
+ {kind:'bin',x:55,y:46},{kind:'bin',x:49,y:61},
  ...PLAZA_LAMPS.map(p=>({kind:'lantern' as const,...p})),
 ];
 export const VILLAGE_TREES:readonly VillageTree[]=(()=>{
