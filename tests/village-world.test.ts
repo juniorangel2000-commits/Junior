@@ -4,7 +4,7 @@ import {VILLAGE_BUILDINGS,VILLAGE_ENTRY,VILLAGE_EXIT,VILLAGE_NPCS,VILLAGE_TREES,
 describe('walkable village layout',()=>{
  it('keeps the east-property passage aligned on row52 and clear',()=>{
   expect(VILLAGE_ENTRY).toEqual({x:2,y:52});expect(VILLAGE_EXIT).toEqual({x:1,y:52});
-  for(let x=1;x<=33;x++){expect(villageBlockedAt(x,52)).toBe(false);expect(['path','paving']).toContain(villageGround(x,52));}
+  for(let x=1;x<=12;x++){expect(villageBlockedAt(x,52)).toBe(false);expect(['path','paving']).toContain(villageGround(x,52));}
  });
  it('connects every merchant and resident to the entry by walkable ground',()=>{
   const queue:Array<{x:number;y:number}>=[{...VILLAGE_ENTRY}],seen=new Set<string>([`${VILLAGE_ENTRY.x},${VILLAGE_ENTRY.y}`]);

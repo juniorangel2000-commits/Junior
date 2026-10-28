@@ -1,3 +1,4 @@
+import {VILLAGE_BUILDINGS} from '../src/data/village';
 import {describe,it,expect} from 'vitest';
 import catalog from '../public/assets/visual/village/damiao/manifest.json';
 import authored from '../src/data/damiao-layout.json';
@@ -23,7 +24,7 @@ describe('Damiao fishing shop',()=>{
   const save=createNewSave({name:'Damião',skin:'#d9a276',hairStyle:'preso',hairColor:'#754323',outfit:'#638a9d'});save.merchantScenes={damiao:createMerchantLayout('damiao')};expect(validateSave(JSON.parse(JSON.stringify(save)))).toBe(true);
  });
  it('protects the walls and fishing equipment while preserving the door and roof overhang',()=>{
-  const d=merchantDoor('damiao'),b={x:78,y:42};for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]])expect(damiaoShopBlockedPoint(d.x+dx,d.y+dy,b)).toBe(false);
+  const d=merchantDoor('damiao'),b=VILLAGE_BUILDINGS.find(b=>b.shop==='fisher')!;for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]])expect(damiaoShopBlockedPoint(d.x+dx,d.y+dy,b)).toBe(false);
   expect(damiaoSourceSolid(360,700)).toBe(true);expect(damiaoSourceSolid(180,820)).toBe(true);expect(damiaoSourceSolid(1380,820)).toBe(true);expect(damiaoSourceSolid(620,803)).toBe(false);expect(damiaoSourceSolid(620,300)).toBe(false);
  });
  it('uses the existing daily routine, persisted calendar without requiring a village level',()=>{

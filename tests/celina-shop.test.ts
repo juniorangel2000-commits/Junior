@@ -1,3 +1,4 @@
+import {VILLAGE_BUILDINGS} from '../src/data/village';
 import {describe,it,expect} from 'vitest';
 import catalog from '../public/assets/visual/village/celina/manifest.json';
 import authored from '../src/data/celina-layout.json';
@@ -23,7 +24,7 @@ describe('Celina tailor shop',()=>{
   const save=createNewSave({name:'Celina',skin:'#d9a276',hairStyle:'preso',hairColor:'#754323',outfit:'#638a9d'});save.merchantScenes={celina:createMerchantLayout('celina')};expect(validateSave(JSON.parse(JSON.stringify(save)))).toBe(true);
  });
  it('protects the walls and planters while preserving the door and roof overhang',()=>{
-  const d=merchantDoor('celina'),b={x:70,y:22};for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]])expect(celinaShopBlockedPoint(d.x+dx,d.y+dy,b)).toBe(false);
+  const d=merchantDoor('celina'),b=VILLAGE_BUILDINGS.find(b=>b.shop==='tailor')!;for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]])expect(celinaShopBlockedPoint(d.x+dx,d.y+dy,b)).toBe(false);
   expect(celinaSourceSolid(400,800)).toBe(true);expect(celinaSourceSolid(1250,850)).toBe(true);expect(celinaSourceSolid(987,895)).toBe(false);expect(celinaSourceSolid(987,350)).toBe(false);
  });
  it('uses the existing daily routine, persisted calendar without requiring a village level',()=>{

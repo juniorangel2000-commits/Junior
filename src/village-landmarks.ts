@@ -5,9 +5,23 @@ import {VILLAGE_LANDMARKS} from './data/village-landmarks';
 export const LANDMARK_ATLAS='village-landmark-atlas';
 export function preloadVillageLandmarks(scene:Phaser.Scene):void {
  scene.load.image('village-landmark-source',manifest.file);
+ scene.load.image('village-granary-source',manifest.granaryOverride.file);
+ scene.load.image('village-vegetable-source',manifest.vegetableBed.file);
 }
 
 export function drawVillageLandmarks(scene:Phaser.Scene):{update(time:number):void} {
+ const customAssets={
+  granary:{key:'village-granary-v2',source:'village-granary-source',...manifest.granaryOverride},
+  vegetables:{key:'village-vegetable-bed',source:'village-vegetable-source',...manifest.vegetableBed},
+ };
+ for(const asset of Object.values(customAssets))if(!scene.textures.exists(asset.key)){
+  const source=scene.textures.get(asset.source).getSourceImage() as HTMLImageElement;
+  const r=asset.frame,canvas=document.createElement('canvas');canvas.width=r.width;canvas.height=r.height;
+  const c=canvas.getContext('2d')!;c.drawImage(source,r.x,r.y,r.width,r.height,0,0,r.width,r.height);
+  const pixels=c.getImageData(0,0,r.width,r.height);
+  for(let i=3;i<pixels.data.length;i+=4)pixels.data[i]=pixels.data[i]>=manifest.alphaCutoff?255:0;
+  c.putImageData(pixels,0,0);scene.textures.addCanvas(asset.key,canvas)!.setFilter(0);
+ }
  if(!scene.textures.exists(LANDMARK_ATLAS)){
   const source=scene.textures.get('village-landmark-source').getSourceImage() as HTMLImageElement;
   const canvas=document.createElement('canvas');canvas.width=source.width;canvas.height=source.height;
@@ -20,8 +34,9 @@ export function drawVillageLandmarks(scene:Phaser.Scene):{update(time:number):vo
  }
  let fountain:{x:number;y:number;width:number;height:number;depth:number}|undefined;
  for(const p of VILLAGE_LANDMARKS){
-  const x=(p.x+.5)*32,y=p.y*32+25,r=manifest.frames[p.kind],scale=Math.min(p.width/r.width,p.height/r.height);
-  const image=scene.add.image(x,y,LANDMARK_ATLAS,p.kind).setOrigin(.5,1).setScale(scale).setDepth(y)
+  const custom=p.kind==='granary'?customAssets.granary:p.kind==='vegetables'?customAssets.vegetables:undefined;
+  const x=(p.x+.5)*32,y=p.y*32+25,r=p.kind==='vegetables'?manifest.vegetableBed.frame:p.kind==='granary'?manifest.granaryOverride.frame:manifest.frames[p.kind],scale=Math.min(p.width/r.width,p.height/r.height);
+  const image=scene.add.image(x,y,custom?custom.key:LANDMARK_ATLAS,custom?undefined:p.kind).setOrigin(.5,1).setScale(scale).setDepth(y)
    .setData({'village-landmark':p.id,'village-landmark-kind':p.kind,'shadow-foot':1});
   if(p.kind==='fountain')fountain={x,y:y-image.displayHeight*.31,width:image.displayWidth*.66,height:image.displayHeight*.18,depth:y+.1};
   if(p.kind==='community'){

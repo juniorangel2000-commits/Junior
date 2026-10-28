@@ -1,3 +1,4 @@
+import {VILLAGE_BUILDINGS} from '../src/data/village';
 import {describe,it,expect} from 'vitest';
 import catalog from '../public/assets/visual/village/helena/manifest.json';
 import authored from '../src/data/helena-layout.json';
@@ -23,7 +24,7 @@ describe('Helena inn',()=>{
   const save=createNewSave({name:'Helena',skin:'#d9a276',hairStyle:'preso',hairColor:'#754323',outfit:'#638a9d'});save.merchantScenes={helena:createMerchantLayout('helena')};expect(validateSave(JSON.parse(JSON.stringify(save)))).toBe(true);
  });
  it('protects the walls and planters while preserving the door and roof overhang',()=>{
-  const d=merchantDoor('helena'),b={x:46,y:19};for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]])expect(helenaShopBlockedPoint(d.x+dx,d.y+dy,b)).toBe(false);
+  const d=merchantDoor('helena'),b=VILLAGE_BUILDINGS.find(b=>b.shop==='inn')!;for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]])expect(helenaShopBlockedPoint(d.x+dx,d.y+dy,b)).toBe(false);
   expect(helenaSourceSolid(600,800)).toBe(true);expect(helenaSourceSolid(1100,850)).toBe(true);expect(helenaSourceSolid(150,890)).toBe(true);expect(helenaSourceSolid(330,850)).toBe(false);expect(helenaSourceSolid(330,300)).toBe(false);expect(helenaSourceSolid(1330,870)).toBe(true);
  });
  it('uses the existing daily routine, persisted calendar without requiring a village level',()=>{

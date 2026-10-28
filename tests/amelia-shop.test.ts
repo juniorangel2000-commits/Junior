@@ -1,3 +1,4 @@
+import {VILLAGE_BUILDINGS} from '../src/data/village';
 import {describe,it,expect} from 'vitest';
 import catalog from '../public/assets/visual/village/amelia/manifest.json';
 import authored from '../src/data/amelia-layout.json';
@@ -23,7 +24,7 @@ describe('Amelia herbalist shop',()=>{
   const save=createNewSave({name:'Amélia',skin:'#d9a276',hairStyle:'preso',hairColor:'#754323',outfit:'#638a9d'});save.merchantScenes={amelia:createMerchantLayout('amelia')};expect(validateSave(JSON.parse(JSON.stringify(save)))).toBe(true);
  });
  it('protects the cottage, greenhouse and planters while preserving the door and roof overhang',()=>{
-  const d=merchantDoor('amelia'),b={x:22,y:22};for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]])expect(ameliaShopBlockedPoint(d.x+dx,d.y+dy,b)).toBe(false);
+  const d=merchantDoor('amelia'),b=VILLAGE_BUILDINGS.find(b=>b.shop==='herbalist')!;for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]])expect(ameliaShopBlockedPoint(d.x+dx,d.y+dy,b)).toBe(false);
   expect(ameliaSourceSolid(400,800)).toBe(true);expect(ameliaSourceSolid(1100,850)).toBe(true);expect(ameliaSourceSolid(476,896)).toBe(true);expect(ameliaSourceSolid(628,850)).toBe(false);expect(ameliaSourceSolid(628,300)).toBe(false);expect(AMELIA_SHOP.scale*230).toBeCloseTo(58.65);
  });
  it('uses the existing daily routine, eight walking frames and persisted calendar without requiring a village level',()=>{

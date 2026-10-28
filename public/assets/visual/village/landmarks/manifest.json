@@ -51,5 +51,25 @@
       "width": 357,
       "height": 237
     }
+  },
+  "granaryOverride": {
+    "file": "assets/visual/village/landmarks/celeiro-v2.png",
+    "sha256": "e365bdae8ac65f79ea5b81698da6747365ac7b204af4bd8b81b930aee0a37a8b",
+    "frame": {
+      "x": 142,
+      "y": 123,
+      "width": 1160,
+      "height": 802
+    }
+  },
+  "vegetableBed": {
+    "file": "assets/visual/village/landmarks/canteiro-legumes.png",
+    "sha256": "9f769bc3d3a9661e2c11a5eff0efceb8739fb8b6b64724401e76cc8ec3f58c0a",
+    "frame": {
+      "x": 58,
+      "y": 232,
+      "width": 1427,
+      "height": 571
+    }
   }
 }

@@ -8,7 +8,7 @@ import type {NatureKind} from './nature-catalog';
 import {natureArt} from './nature-catalog';
 import type {MapEditData} from '../systems/map-editor';
 
-export const VILLAGE_LAKE={x:87,y:44,rx:5.8,ry:7.5};
+export const VILLAGE_LAKE={x:81,y:44,rx:5.8,ry:7.5};
 export function villageLakeDistance(x:number,y:number):number {
  const u=(x-VILLAGE_LAKE.x)/VILLAGE_LAKE.rx,v=(y-VILLAGE_LAKE.y)/VILLAGE_LAKE.ry;
  const angle=Math.atan2(v,u),shore=.065*Math.sin(angle*3+.4)+.045*Math.cos(angle*5-.8)+.018*Math.sin(angle*9);
@@ -35,35 +35,35 @@ export const VILLAGE_NPCS:readonly VillageNPC[]=[
   'Meu nome é Bento. Com uma boa ferramenta, até aquela propriedade abandonada pode voltar a florescer.',
   'Traga os materiais para fundir lingotes e encomendar ferramentas. Você entrega os materiais e paga pela minha mão de obra.',
  ]},
- {id:'amelia',name:'Amélia',role:'Herbalista',merchantId:'herbalist',x:22,y:24,direction:'down',dialogue:[
+ {id:'amelia',name:'Amélia',role:'Herbalista',merchantId:'herbalist',x:29,y:26,direction:'down',dialogue:[
   'Eu sou a Amélia. Depois da chuva, gosto de observar o que volta a crescer entre as pedras e as raízes.',
   'Compro ervas, cogumelos e plantas medicinais. Guarde as fibras para seus próprios projetos.',
  ]},
- {id:'tobias',name:'Tobias',role:'Carpintaria',merchantId:'carpenter',x:25,y:51,direction:'down',dialogue:[
+ {id:'tobias',name:'Tobias',role:'Carpintaria',merchantId:'carpenter',x:29,y:49,direction:'down',dialogue:[
   'Sou o Tobias, carpinteiro da vila. Se está reconstruindo sua casa, estamos no mesmo caminho.',
   'Guarde fibras para fazer cordas e madeira para suas cercas. Um quintal bem cuidado recebe muitos companheiros.',
  ]},
- {id:'rosa',name:'Rosa',role:'Agricultora',merchantId:'seeds',x:37,y:62,direction:'down',dialogue:[
+ {id:'rosa',name:'Rosa',role:'Agricultora',merchantId:'seeds',x:38,y:57,direction:'down',dialogue:[
   'Sou a Rosa. Traga suas colheitas: sempre há alguém precisando de comida fresca.',
   'As sementes de nabo vão bem na propriedade. Prepare a terra, plante e lembre de regar todos os dias.',
  ]},
- {id:'nilo',name:'Nilo',role:'Negociante de antiguidades',merchantId:'traveler',x:17,y:63,direction:'down',dialogue:[
+ {id:'nilo',name:'Nilo',role:'Negociante de antiguidades',merchantId:'traveler',x:24,y:59,direction:'down',dialogue:[
   'Nilo, ao seu dispor! Estudo antiguidades e objetos especiais encontrados nesta região.',
   'Meu antiquário está aberto todos os dias. Traga os artefatos encontrados na exploração.',
  ]},
- {id:'celina',name:'Celina',role:'Costureira',merchantId:'tailor',x:70,y:24,direction:'down',dialogue:[
+ {id:'celina',name:'Celina',role:'Costureira',merchantId:'tailor',x:65,y:26,direction:'down',dialogue:[
   'Eu sou a Celina. Um bom tecido começa com fibras bem escolhidas e um pouco de paciência.',
   'Compro tecidos e componentes de vestuário. Também vendo roupas, mochilas e acessórios.',
  ]},
- {id:'damiao',name:'Damião',role:'Pescador',merchantId:'fisher',x:78,y:44,direction:'down',dialogue:[
+ {id:'damiao',name:'Damião',role:'Pescador',merchantId:'fisher',x:72,y:44,direction:'down',dialogue:[
   'Meu nome é Damião. A água ensina a esperar e a prestar atenção nos detalhes.',
   'Se precisar de cordas ou materiais, dê uma olhada no meu balcão antes de ir aos lagos.',
  ]},
- {id:'helena',name:'Helena',role:'Pousada',merchantId:'inn',x:46,y:21,direction:'down',dialogue:[
+ {id:'helena',name:'Helena',role:'Pousada',merchantId:'inn',x:44,y:24,direction:'down',dialogue:[
   'Bem-vindo! Sou a Helena. Na minha pousada sempre há uma conversa boa e um cantinho acolhedor.',
   'A vila fica mais bonita quando alguém volta para contar como foi o dia na propriedade.',
  ]},
- {id:'icaro',name:'Ícaro',role:'Mecânico',merchantId:'mechanic',x:68,y:60,direction:'down',dialogue:[
+ {id:'icaro',name:'Ícaro',role:'Mecânico',merchantId:'mechanic',x:61,y:56,direction:'down',dialogue:[
   'Ícaro. Gosto de descobrir como as coisas se encaixam, principalmente quando parecem ter perdido o jeito.',
   'Compro sucata e trabalho com ferramentas e materiais. Talvez alguma peça esquecida ainda tenha futuro.',
  ]},
@@ -72,40 +72,39 @@ export interface VillageBuilding {id:string;x:number;y:number;shop?:VillageMerch
 export const VILLAGE_BUILDINGS:readonly VillageBuilding[]=[
  {id:'armazem',x:33,y:31,shop:'general'},
  {id:'ferraria',x:57,y:31,shop:'blacksmith'},
- {id:'ervas',x:22,y:22,shop:'herbalist',flip:true},
- {id:'carpintaria',x:25,y:49,shop:'carpenter'},
- {id:'sementes',x:37,y:60,shop:'seeds'},
- {id:'antiquario',x:17,y:61,shop:'traveler'},
- {id:'costura',x:70,y:22,shop:'tailor'},
- {id:'pescador',x:78,y:42,shop:'fisher',flip:true},
- {id:'pousada',x:46,y:19,shop:'inn'},
- {id:'oficina',x:68,y:58,shop:'mechanic'},
+ {id:'ervas',x:29,y:24,shop:'herbalist',flip:true},
+ {id:'carpintaria',x:29,y:47,shop:'carpenter'},
+ {id:'sementes',x:38,y:55,shop:'seeds'},
+ {id:'antiquario',x:24,y:57,shop:'traveler'},
+ {id:'costura',x:65,y:24,shop:'tailor'},
+ {id:'pescador',x:72,y:42,shop:'fisher',flip:true},
+ {id:'pousada',x:44,y:22,shop:'inn'},
+ {id:'oficina',x:61,y:54,shop:'mechanic'},
 ];
 export interface VillageWalkway {width:number;points:readonly (readonly [number,number])[]}
 /** Half-widths in tiles. Main lanes allow two people to pass; side lanes have
  * softer bends, and each future front door keeps its own clear approach. */
 export const VILLAGE_WALKWAYS:readonly VillageWalkway[]=[
- {width:1.45,points:[[1,52],[19,52],[26,52.4],[33,53],[39,50],[46,46],[46,38]]},
- {width:1.05,points:[[33,32],[33,34],[37,36],[40,37.3],[46,38]]},
- {width:1.05,points:[[57,32],[57,34],[53,36],[49,37.5],[46,38]]},
- {width:1.2,points:[[46,38],[46,29],[46,20]]},
- {width:.95,points:[[22,23],[22,25],[29,25],[36,25.6],[46,26]]},
- {width:.95,points:[[46,26],[50,23],[53,21.5],[60,21.5],[65,25],[70,25],[70,23]]},
- {width:1.1,points:[[46,44],[55,44.5],[64,45.4],[72,45.1],[78,45],[78,43]]},
- {width:1.1,points:[[46,46],[46.4,53],[46,63]]},
- {width:1.05,points:[[37,61],[37,63],[41,63.4],[46,63],[55,63],[63,63.3],[68,63],[68,59]]},
- {width:.95,points:[[19,52],[13,54],[11,57],[11,61],[12,64],[17,64],[17,62]]},
- {width:.9,points:[[25,50],[25,52.3]]},
- {width:.7,points:[[19,24],[22,24]]},
- {width:.8,points:[[57,33],[62,33]]},
- {width:.7,points:[[30,64],[30,65.5],[37,65.5],[37,63]]},
- // Public buildings and residential lanes join the existing shop network.
- {width:1.05,points:[[19,52],[15,44],[15,34],[12,26],[12,18],[12,17]]},
- {width:.9,points:[[15,39],[10,38],[10,37]]},
- {width:1.1,points:[[60,21.5],[61,20],[62,16],[62,13]]},
- {width:.9,points:[[46,26],[40,24],[40,15],[41,11],[50,11],[50,10]]},
- {width:.9,points:[[70,25],[78,26],[84,25],[84,23]]},
- {width:.9,points:[[68,63],[75,65],[83,65],[83,64]]},
+ {width:1.15,points:[[1,52],[15,52],[20,49],[30,49],[38,46],[46,44]]},
+ {width:1.0,points:[[33,32],[33,34],[40,36]]},
+ {width:1.0,points:[[57,32],[57,34],[52,36]]},
+ {width:1.05,points:[[46,30],[46,27],[44,25],[44,23]]},
+ {width:.9,points:[[29,25],[29,27],[37,27],[44,27]]},
+ {width:.9,points:[[44,27],[51,27],[58,27],[65,27],[65,25]]},
+ {width:1.0,points:[[55,43],[64,45],[72,45],[72,43]]},
+ {width:1.0,points:[[46,45],[46,53],[46,59]]},
+ {width:1.0,points:[[24,58],[24,60],[38,60],[46,59],[61,57],[61,55]]},
+ {width:.9,points:[[38,60],[38,56]]},
+ {width:.9,points:[[29,48],[29,49]]},
+ {width:.75,points:[[57,33],[62,33]]},
+ {width:.8,points:[[31,60],[31,59]]},
+ {width:.9,points:[[20,49],[19,43],[18,39],[18,35],[19,30],[20,25],[20,23],[20,22]]},
+ {width:.9,points:[[18,39],[22,39],[22,38]]},
+ {width:.8,points:[[26,26],[29,27],[29,25]]},
+ {width:1.0,points:[[55,27],[57,23],[57,17]]},
+ {width:.85,points:[[44,23],[39,24],[38,20],[38,15],[44,14],[44,13]]},
+ {width:.85,points:[[65,27],[70,32],[75,32],[75,31]]},
+ {width:.85,points:[[61,57],[68,60],[74,63],[74,62]]},
 ];
 function walkwayDistance(x:number,y:number,edge:boolean):number {
  let nearest=Infinity;
@@ -127,14 +126,13 @@ export const villageLawnDistance=(x:number,y:number)=>Math.min(...VILLAGE_LAWNS.
 export const VILLAGE_DOOR_APPROACHES=VILLAGE_BUILDINGS.map(b=>({id:b.id,x:b.x,y:b.y+1}));
 export const villageDoorApproach=(x:number,y:number)=>VILLAGE_BUILDINGS.some(b=>Math.abs(x-b.x)<=1.5&&y>b.y&&y<=b.y+4);
 export const VILLAGE_GARDENS=[
- {id:'ervas',x:16.8,y:24,rx:2.7,ry:2.2,kind:'herbs'},
- {id:'rosa',x:30,y:61,rx:2.6,ry:2.4,kind:'crops'},
- {id:'pousada',x:54,y:17.8,rx:2.6,ry:1.9,kind:'flowers'},
- {id:'costura',x:77,y:23.6,rx:2.3,ry:1.9,kind:'flowers'},
- {id:'comunitaria',x:62,y:14.8,rx:4,ry:1.4,kind:'flowers'},
- {id:'coreto',x:53,y:12.5,rx:2,ry:1.2,kind:'flowers'},
- {id:'casa-leste',x:86.5,y:24.3,rx:1.8,ry:1.3,kind:'flowers'},
- {id:'casa-sul',x:85.5,y:65.3,rx:1.8,ry:1.3,kind:'flowers'},
+ {id:'horta-moinho',x:23,y:27,rx:1.8,ry:1.8,kind:'crops'},
+ {id:'pousada',x:52,y:20.8,rx:2.6,ry:1.9,kind:'flowers'},
+ {id:'costura',x:72,y:26.6,rx:2.3,ry:1.9,kind:'flowers'},
+ {id:'comunitaria',x:57,y:18.8,rx:4,ry:1.4,kind:'flowers'},
+ {id:'coreto',x:47,y:15.5,rx:2,ry:1.2,kind:'flowers'},
+ {id:'casa-leste',x:77.5,y:32.3,rx:1.8,ry:1.3,kind:'flowers'},
+ {id:'casa-sul',x:76.5,y:63.3,rx:1.8,ry:1.3,kind:'flowers'},
 ] as const;
 export const VILLAGE_GROVES=[
  {x:30,y:15,rx:7,ry:4},{x:63,y:11,rx:10,ry:5},
@@ -160,35 +158,35 @@ export function villageBuildingAt(x:number,y:number):VillageBuilding|undefined {
 const hash=(x:number,y:number):number=>(Math.imul(x+83,73856093)^Math.imul(y+37,19349663))>>>0;
 export interface VillageTree {x:number;y:number;kind:NatureKind}
 export const VILLAGE_PROPS:readonly {kind:'well'|'bench'|'lantern'|'barrel'|'flowerpot'|'woodpile'|'anvil'|'crates'|'sacks'|'basket'|'planter';x:number;y:number}[]=[
- {kind:'well',x:16,y:19},
+ {kind:'well',x:24,y:23},
  {kind:'bench',x:40,y:40},{kind:'bench',x:52,y:40},
  {kind:'bench',x:42,y:28},{kind:'bench',x:60,y:51},
  {kind:'lantern',x:20,y:51},{kind:'lantern',x:36,y:41},
  {kind:'lantern',x:55,y:39},{kind:'lantern',x:44,y:28},
  {kind:'lantern',x:12,y:50},{kind:'lantern',x:35,y:50},
- {kind:'lantern',x:27,y:27},{kind:'lantern',x:65,y:27},
+ {kind:'lantern',x:34,y:29},{kind:'lantern',x:60,y:30},
  {kind:'lantern',x:49,y:55},{kind:'lantern',x:58,y:61},
- {kind:'bench',x:76,y:48},{kind:'bench',x:50,y:60},
+ {kind:'bench',x:70,y:48},{kind:'bench',x:50,y:60},
  {kind:'crates',x:29,y:33},{kind:'sacks',x:37,y:32},
  {kind:'barrel',x:66,y:32},
- {kind:'woodpile',x:21,y:49},{kind:'barrel',x:34,y:51},
- {kind:'flowerpot',x:42,y:21},{kind:'flowerpot',x:50,y:21},
- {kind:'flowerpot',x:66,y:24},{kind:'flowerpot',x:74,y:24},
- {kind:'flowerpot',x:34,y:63},{kind:'barrel',x:72,y:60},
- {kind:'crates',x:21,y:63},{kind:'flowerpot',x:18,y:24},
- {kind:'basket',x:42,y:61},{kind:'barrel',x:75,y:44},
- {kind:'planter',x:54,y:16},{kind:'planter',x:77,y:23},
+ {kind:'woodpile',x:25,y:47},{kind:'barrel',x:34,y:51},
+ {kind:'flowerpot',x:40,y:24},{kind:'flowerpot',x:48,y:24},
+ {kind:'flowerpot',x:61,y:26},{kind:'flowerpot',x:69,y:26},
+ {kind:'flowerpot',x:35,y:58},{kind:'barrel',x:65,y:56},
+ {kind:'crates',x:28,y:59},{kind:'flowerpot',x:25,y:26},
+ {kind:'basket',x:43,y:56},{kind:'barrel',x:69,y:44},
+ {kind:'planter',x:48,y:19},{kind:'planter',x:72,y:26},
  {kind:'bench',x:43,y:34},{kind:'bench',x:49,y:34},
  {kind:'flowerpot',x:43,y:40},{kind:'flowerpot',x:49,y:40},
  {kind:'lantern',x:42,y:31},{kind:'lantern',x:50,y:31},
- {kind:'lantern',x:59,y:21},{kind:'lantern',x:39,y:15},
- {kind:'lantern',x:14,y:24},{kind:'lantern',x:15,y:40},
- {kind:'lantern',x:80,y:26},{kind:'lantern',x:78,y:64},
- {kind:'flowerpot',x:58,y:13},{kind:'flowerpot',x:66,y:13},
- {kind:'sacks',x:8,y:18},{kind:'barrel',x:8,y:37},
- {kind:'bench',x:53,y:11},{kind:'flowerpot',x:47,y:11},
- {kind:'basket',x:81,y:23},{kind:'flowerpot',x:86,y:23},
- {kind:'flowerpot',x:80,y:64},{kind:'barrel',x:86,y:64},
+ {kind:'lantern',x:59,y:21},{kind:'lantern',x:37,y:18},
+ {kind:'lantern',x:21,y:26},{kind:'lantern',x:27,y:41},
+ {kind:'lantern',x:71,y:34},{kind:'lantern',x:69,y:62},
+ {kind:'flowerpot',x:53,y:17},{kind:'flowerpot',x:61,y:17},
+ {kind:'sacks',x:16,y:23},{kind:'barrel',x:20,y:38},
+ {kind:'bench',x:47,y:14},{kind:'flowerpot',x:41,y:14},
+ {kind:'basket',x:72,y:31},{kind:'flowerpot',x:77,y:31},
+ {kind:'flowerpot',x:71,y:62},{kind:'barrel',x:77,y:62},
 ];
 export const VILLAGE_TREES:readonly VillageTree[]=(()=>{
  const trees:VillageTree[]=[],kinds=['oakA','oakB','oakC','pineA','pineB','pineC'] as const;
@@ -211,11 +209,12 @@ export const VILLAGE_TREES:readonly VillageTree[]=(()=>{
  * open so future residents can enter without scene-specific interaction hacks. */
 export const VILLAGE_FENCES:readonly {kind:'fence';x:number;y:number}[]=(()=>{
  const result:Array<{kind:'fence';x:number;y:number}>=[];
- for(const box of [{left:14,right:19,top:21,bottom:27},{left:27,right:33,top:58,bottom:64}]){
+ for(const box of [{left:14,right:26,top:21,bottom:30}]){
   for(let y=box.top;y<=box.bottom;y++)for(let x=box.left;x<=box.right;x++){
    if(x!==box.left&&x!==box.right&&y!==box.top&&y!==box.bottom)continue;
-   if(box.left===14&&x===box.right&&(y===24||y===25))continue;
-   if(box.left===27&&y===box.bottom&&(x===30||x===31))continue;
+   if(x===box.right&&(y===26||y===27))continue;
+   if(y===box.top&&(x===20||x===21))continue;
+   if(y===box.bottom&&x>=18&&x<=21)continue;
    result.push({kind:'fence',x,y});
   }
  }

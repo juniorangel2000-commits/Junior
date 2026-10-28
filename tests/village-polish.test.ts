@@ -13,7 +13,7 @@ describe('village scenery, approaches and future circulation',()=>{
  it('preserves the property passage and access to every front door through solid garden borders',()=>{
   for(const p of [...VILLAGE_DOOR_APPROACHES,VILLAGE_EXIT])expect(villageRoute(VILLAGE_ENTRY,p,villageBlockedAt),'id' in p?p.id:'exit').not.toHaveLength(0);
   expect(VILLAGE_FENCES.every(p=>villageBlockedAt(p.x,p.y))).toBe(true);
-  expect(villageBlockedAt(19,24)).toBe(false);expect(villageBlockedAt(30,64)).toBe(false);
+  expect(villageBlockedAt(26,26)).toBe(false);expect(villageBlockedAt(20,30)).toBe(false);
  });
  it('opens the workshop floor while retaining furnace, anvil and post collision',()=>{
   for(const p of [{x:61,y:32},{x:62,y:32},{x:63,y:32},{x:63,y:31}]){

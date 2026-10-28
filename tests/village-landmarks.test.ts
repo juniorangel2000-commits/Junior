@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import manifest from '../public/assets/visual/village/landmarks/manifest.json';
 import {VILLAGE_LANDMARKS,villageLandmarkBlockedPoint,villageLandmarkClearing} from '../src/data/village-landmarks';
-import {VILLAGE_ENTRY,VILLAGE_BUILDINGS,VILLAGE_PROPS,VILLAGE_TREES,villageBlockedAt,villagePointBlocked,villageWater} from '../src/data/village';
+import {VILLAGE_ENTRY,VILLAGE_BUILDINGS,VILLAGE_GARDENS,VILLAGE_PROPS,VILLAGE_TREES,villageBlockedAt,villagePointBlocked,villageWater} from '../src/data/village';
 import {villageRoute} from '../src/systems/village-walk';
 
 describe('public square and decorative village districts',()=>{
@@ -12,26 +12,31 @@ describe('public square and decorative village districts',()=>{
   expect(createHash('sha256').update(bytes).digest('hex')).toBe(manifest.sha256);
   const width=bytes.readUInt32BE(16),height=bytes.readUInt32BE(20);
   expect(Object.keys(manifest.frames)).toHaveLength(8);
+  for(const source of [manifest.granaryOverride,manifest.vegetableBed]){
+   const png=readFileSync('public/'+source.file);
+   expect(createHash('sha256').update(png).digest('hex')).toBe(source.sha256);
+  }
   for(const r of Object.values(manifest.frames)){
    expect(r.x).toBeGreaterThanOrEqual(0);expect(r.y).toBeGreaterThanOrEqual(0);
    expect(r.x+r.width).toBeLessThanOrEqual(width);expect(r.y+r.height).toBeLessThanOrEqual(height);
   }
  });
  it('moves the well to the windmill and makes the fountain solid without making it swimmable',()=>{
-  expect(VILLAGE_PROPS.find(p=>p.kind==='well')).toMatchObject({x:16,y:19});
+  expect(VILLAGE_PROPS.find(p=>p.kind==='well')).toMatchObject({x:24,y:23});
+  expect(VILLAGE_GARDENS.filter(g=>g.kind==='crops').map(g=>g.id)).toEqual(['horta-moinho']);
   expect(villageWater(46,37)).toBe(false);
   const p=VILLAGE_LANDMARKS.find(p=>p.kind==='fountain')!;
   const x=(p.x+.5)*32,y=p.y*32+4;
   expect(villageLandmarkBlockedPoint(x,y)).toBe(true);expect(villagePointBlocked(x,y)).toBe(true);
   // The pedestal and overhanging sails never create a rectangular invisible wall.
   expect(villageLandmarkBlockedPoint(x-55,y-28)).toBe(false);
-  expect(villageLandmarkBlockedPoint(12.5*32,10*32)).toBe(false);
+  expect(villageLandmarkBlockedPoint(20.5*32,15*32)).toBe(false);
  });
  it('keeps every shop approach and public building frontage reachable from the property',()=>{
   for(const b of VILLAGE_BUILDINGS)for(let y=b.y+1;y<=b.y+4;y++)for(let x=b.x-1;x<=b.x+1;x++){
    expect(villageBlockedAt(x,y),b.id+': '+x+','+y).toBe(false);
   }
-  for(const p of VILLAGE_LANDMARKS.filter(p=>!['wheat','cart','fountain'].includes(p.kind))){
+  for(const p of VILLAGE_LANDMARKS.filter(p=>!['wheat','vegetables','cart','fountain'].includes(p.kind))){
    const goal={x:p.x,y:p.y+2};
    expect(villageBlockedAt(goal.x,goal.y),p.id).toBe(false);
    expect(villageRoute(VILLAGE_ENTRY,goal,villageBlockedAt),p.id).not.toHaveLength(0);

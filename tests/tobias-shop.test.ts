@@ -1,3 +1,4 @@
+import {VILLAGE_BUILDINGS} from '../src/data/village';
 import {describe,it,expect} from 'vitest';
 import catalog from '../public/assets/visual/village/tobias/manifest.json';
 import authored from '../src/data/tobias-layout.json';
@@ -32,7 +33,7 @@ describe('Tobias carpentry',()=>{
  });
  it('keeps the doorway and open workshop apron walkable while walls, bench and grounded posts remain solid',()=>{
   expect((1374-206)*TOBIAS_SHOP.scale).toBeCloseTo(350.4);
-  const d=merchantDoor('tobias'),b={x:25,y:49};for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]])expect(tobiasShopBlockedPoint(d.x+dx,d.y+dy,b)).toBe(false);
+  const d=merchantDoor('tobias'),b=VILLAGE_BUILDINGS.find(b=>b.shop==='carpenter')!;for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]])expect(tobiasShopBlockedPoint(d.x+dx,d.y+dy,b)).toBe(false);
   expect(tobiasSourceSolid(450,640)).toBe(true);expect(tobiasSourceSolid(778,823)).toBe(true);expect(tobiasSourceSolid(1299,830)).toBe(true);expect(tobiasSourceSolid(970,770)).toBe(true);expect(tobiasSourceSolid(970,830)).toBe(false);expect(tobiasSourceSolid(970,450)).toBe(false);
  });
  it('walks into the shop, takes a plaza break, returns, closes and persists using the existing calendar',()=>{

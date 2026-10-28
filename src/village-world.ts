@@ -5,7 +5,7 @@ import {setupFacadeLight} from './shop-facade-light';
 import {TOBIAS_SHOP} from './data/tobias-shop';
 import {setupTobiasShop} from './tobias-shop';
 import {BLACKSMITH_HOUSE,setupBlacksmithHouse,blacksmithPoint} from './blacksmith-house';
-import {villageWater,villageLakeDistance,villagePointBlocked,villageDoorApproach,villagePathEdge,VILLAGE_LAWNS,VILLAGE_GARDENS,VILLAGE_FENCES,VILLAGE_SHORE_DETAILS} from './data/village';
+import {villageWater,villageLakeDistance,villagePointBlocked,villageDoorApproach,villagePathEdge,VILLAGE_LAKE,VILLAGE_LAWNS,VILLAGE_GARDENS,VILLAGE_FENCES,VILLAGE_SHORE_DETAILS} from './data/village';
 import {villageGroundWeights,villageSmooth as smooth} from './data/village-ground';
 import {readVillagePaving,VILLAGE_LAMP} from './village-scenery-art';
 import {drawConnectedFence} from './fence-art';
@@ -130,7 +130,7 @@ export class VillageWorld {
    const canvas=document.createElement('canvas');canvas.width=608;canvas.height=768;
    const c=canvas.getContext('2d')!,pixels=c.createImageData(608,768);
    for(let y=0;y<768;y++)for(let x=0;x<608;x++){
-    const wx=77*32+x,wy=32*32+y,d=villageLakeDistance(wx/32,wy/32),at=(y*608+x)*4;if(d>1.7)continue;
+    const wx=(VILLAGE_LAKE.x-10)*32+x,wy=32*32+y,d=villageLakeDistance(wx/32,wy/32),at=(y*608+x)*4;if(d>1.7)continue;
     const water=1-smooth((d+.16)/.32),wet=(1-smooth((d-.05)/.5))*(1-water);
     const a=sprites.water,b=sprites.sand,ai=((wy%a.size)*a.size+wx%a.size)*4,bi=((wy%b.size)*b.size+wx%b.size)*4;
     for(let channel=0;channel<3;channel++)pixels.data[at+channel]=a.pixels[ai+channel]*water+b.pixels[bi+channel]*(1-water-wet)+b.pixels[bi+channel]*.78*wet;
@@ -139,7 +139,7 @@ export class VillageWorld {
    }
    c.putImageData(pixels,0,0);this.scene.textures.addCanvas(key,canvas)?.setFilter(0);
   }
-  this.scene.add.image(77*32,32*32,key).setOrigin(0).setDepth(-94);
+  this.scene.add.image((VILLAGE_LAKE.x-10)*32,32*32,key).setOrigin(0).setDepth(-94);
   addWaterMotion(this.scene,this.waterAt,this.waterPointAt);
  }
  private drawTrees():void {
@@ -216,12 +216,11 @@ export class VillageWorld {
    this.scene.add.image(x*TILE+16,y*TILE+25,art.texture).setOrigin(.5,art.pivot).setDisplaySize(art.width*scale,art.height*scale).setDepth(y*TILE+25).setData('village-plant',true);
   };
   for(const fence of VILLAGE_FENCES)drawConnectedFence(this.scene,fence,VILLAGE_FENCES,1);
-  for(const garden of VILLAGE_GARDENS)for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+  for(const garden of VILLAGE_GARDENS.filter(g=>g.kind==='flowers'))for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
    const x=garden.x+dx*1.3,y=garden.y+dy*1.25;
    if(this.edits?.terrain[`${Math.floor(x+.5)},${Math.floor(y+.5)}`]!==undefined)continue;
    if(villageDoorApproach(x,y)||villageBlockedAt(x,y))continue;
-   if(garden.kind==='crops'&&this.scene.textures.exists('crop-2'))this.scene.add.image(x*TILE+16,y*TILE+25,'crop-2').setOrigin(.5,1).setDisplaySize(26,32).setDepth(y*TILE+25);
-   else place(garden.kind==='herbs'?(dx%2?'whiteFlowers':'fern'):'whiteFlowers',x,y,.85);
+   place('whiteFlowers',x,y,.85);
   }
   for(const lawn of VILLAGE_LAWNS){place('bush',lawn.x,lawn.y-1.2,.9);for(const [dx,dy]of [[-1,0],[0,.7],[1,.3]])place('whiteFlowers',lawn.x+dx,lawn.y+dy,.9);}
   for(const detail of VILLAGE_SHORE_DETAILS)place(detail.kind,detail.x,detail.y,detail.kind==='reeds'?.85:1);

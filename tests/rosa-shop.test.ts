@@ -55,7 +55,7 @@ describe('external ground collision',()=>{
   }
  });
  it('uses the new facade ground walls and leaves roofs and entry free',()=>{
-  const b={x:37,y:60},d=merchantDoor('rosa');expect(ROSA_SHOP.width*ROSA_SHOP.scale).toBeLessThan(360);expect(rosaShopBlockedPoint(d.x,d.y,b)).toBe(false);expect(rosaShopBlockedPoint(d.x-60,d.y-35,b)).toBe(true);expect(rosaShopBlockedPoint(d.x,d.y-200,b)).toBe(false);
+  const b=VILLAGE_BUILDINGS.find(b=>b.shop==='seeds')!,d=merchantDoor('rosa');expect(ROSA_SHOP.width*ROSA_SHOP.scale).toBeLessThan(360);expect(rosaShopBlockedPoint(d.x,d.y,b)).toBe(false);expect(rosaShopBlockedPoint(d.x-60,d.y-35,b)).toBe(true);expect(rosaShopBlockedPoint(d.x,d.y-200,b)).toBe(false);
   expect(cottageSolidPoint(0,-31,{x:0,y:0})).toBe(false);expect(cottageSolidPoint(45,-40,{x:0,y:0})).toBe(true);expect(cottageSolidPoint(0,-160,{x:0,y:0})).toBe(false);expect(cottageSolidPoint(80,-60,{x:0,y:0})).toBe(false);
  });
  it('protects the entire well opening and grounded posts at both used scales',()=>{
