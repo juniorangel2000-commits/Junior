@@ -699,10 +699,10 @@ export class ValleyScene extends Phaser.Scene {
   changeCameraZoom(direction: -1 | 0 | 1): void {
     if (!this.canPlay()) return;
     const next = stepCameraZoom(this.cameraZoomFactor, direction);
-    if (next === this.cameraZoomFactor) return;
+    if (next === this.cameraZoomFactor) { this.ui.updateCameraZoom(next,true,true); return; }
     this.cameraZoomFactor = next;
     saveCameraZoom(next);
-    this.updateZoom(true);
+    this.updateZoom(true,true);
   }
 
   private handleCameraWheel = (event: WheelEvent): void => {
@@ -722,7 +722,7 @@ export class ValleyScene extends Phaser.Scene {
 
   private handleCameraResize = (): void => { if (this.mapEditor) this.mapEditor.resize(); else this.updateZoom(); };
 
-  private updateZoom(animate = false): void {
+  private updateZoom(animate = false, reveal = false): void {
     if (this.titleBackgroundMode !== 'off') { this.updateTitleBackground(0); return; }
     const camera = this.cameras.main;
     const homeWidth = HOME_WIDTH * TILE, homeHeight = HOME_HEIGHT * TILE;
@@ -743,7 +743,7 @@ export class ValleyScene extends Phaser.Scene {
       camera.setBounds(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE).setBackgroundColor('#6b8053')
         .startFollow(this.player, false, .12, .12);
     }
-    this.ui.updateCameraZoom(this.cameraZoomFactor, this.canPlay());
+    this.ui.updateCameraZoom(this.cameraZoomFactor, this.canPlay(),reveal);
   }
 
   private feetTiles(x = this.player.x, y = this.player.y): TilePoint[] {

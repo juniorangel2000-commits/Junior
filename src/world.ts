@@ -11,7 +11,7 @@ import {HOMESTEAD_HOUSE,homesteadResourceReserved} from './data/property-homeste
 import {drawHouseSmoke} from './house-smoke';
 import {hasMapSeam,seamBand,seamPassage} from './data/map-seam';
 import {drawMapSeamGround} from './map-seam-ground';
-import {PROPERTY_VILLAGE_ENTRY,PROPERTY_VILLAGE_EXIT,isPropertyVillagePassage,isPropertyVillageCanopyClearance,propertyVillageGateActive} from './data/property-village-gate';
+import {PROPERTY_VILLAGE_ENTRY,PROPERTY_VILLAGE_EXIT,isPropertyVillagePassage,isPropertyVillageCanopyClearance,propertyVillageGateActive,clearPropertyVillagePaths} from './data/property-village-gate';
 import {drawExitSign} from './exit-signs';
 import {PROPERTY_FOREST_GATE} from './data/ancient-forest';
 import {isTreeKind,treeGroundClear} from './systems/tree-ground';
@@ -82,6 +82,7 @@ function randomSource(seed: number): () => number {
 export function createWorld(scene: Phaser.Scene, depletedResources: string[], buildings: readonly BuildingData[] = [], mapEdits?: MapEditData,textureNamespace='world', farmAt = isFarmTile): WorldView {
   const seamLayout=hasMapSeam(mapEdits);
   const villageGate=propertyVillageGateActive(mapEdits);
+  if(villageGate&&mapEdits)mapEdits={...mapEdits,terrain:clearPropertyVillagePaths(mapEdits.terrain)};
   const blocked = new Set<string>();
   // Resource collision is separate: felling a tree must never erase a ruin wall.
   const resourceBlocked = new Set<string>();

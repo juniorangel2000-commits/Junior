@@ -25,7 +25,7 @@ import {setupVillageArt} from './village-art';
 import type {ResourceNode} from './types';
 import type {WorldEditorObject} from './world';
 import type {MapEditData} from './systems/map-editor';
-import {villageTreeId} from './data/village';
+import {villageTreeId,villagePathAlignment} from './data/village';
 import {terrainPaintAlpha,paintedWaterPoint} from './data/terrain-paint';
 
 const MAP_WIDTH=WORLD_WIDTH*TILE,MAP_HEIGHT=WORLD_HEIGHT*TILE;
@@ -45,8 +45,8 @@ function drawGround(scene:Phaser.Scene,edits?:MapEditData,namespace='village'):v
     const weights=villageGroundWeights(gx*step/TILE-.5,gy*step/TILE-.5),at=(gy*columns+gx)*count;
     weights.forEach((weight,index)=>{fields[at+index]=weight;});
    }
-   const paving=readVillagePaving(scene)??sprites.paving;
-   const pixels=c.createImageData(MAP_WIDTH,MAP_HEIGHT),materials=[sprites.grass,sprites.forest,sprites.meadow,sprites['path-dry'],paving,sprites.soil,sprites['path-dry'],paving];
+   const paving=readVillagePaving(scene)??sprites.paving,street=readVillagePaving(scene,'village-path-paving-source')??sprites['path-dry'];
+   const pixels=c.createImageData(MAP_WIDTH,MAP_HEIGHT),materials=[sprites.grass,sprites.forest,sprites.meadow,street,paving,sprites.soil,sprites['path-dry'],paving];
    const sources=materials.map(m=>({pixels:m.pixels,rows:Int32Array.from({length:MAP_HEIGHT},(_,y)=>(y%m.size)*m.size*4),cols:Int32Array.from({length:MAP_WIDTH},(_,x)=>(x%m.size)*4)}));
    const mixed=new Float32Array(count),plazaX=(VILLAGE_PLAZA.x+.5)*TILE,plazaY=(VILLAGE_PLAZA.y+.5)*TILE,plazaRX=VILLAGE_PLAZA.rx*TILE,plazaRY=VILLAGE_PLAZA.ry*TILE;
    for(let y=0;y<MAP_HEIGHT;y++){
@@ -59,8 +59,9 @@ function drawGround(scene:Phaser.Scene,edits?:MapEditData,namespace='village'):v
       if(mixed[m]<.0001)continue;
       const source=sources[m],at=source.rows[y]+source.cols[x];
       if(m===6){
-       // Retain the dirt grain, with a warmer, darker edge against the grass.
-       red+=source.pixels[at]*.7*mixed[m];green+=source.pixels[at+1]*.63*mixed[m];blue+=source.pixels[at+2]*.55*mixed[m];
+       const along=villagePathAlignment(x/TILE-.5,y/TILE-.5)/16,phase=along-Math.floor(along);
+       const shade=(phase<.07?.62:1)*(.97+(Math.floor(along)%3)*.025);
+       red+=(137*shade+source.pixels[at]*.07)*mixed[m];green+=(131*shade+source.pixels[at+1]*.07)*mixed[m];blue+=(115*shade+source.pixels[at+2]*.07)*mixed[m];
       }else if(m===7){
        // Bevel and joints follow the oval perimeter, rather than the square
        // paving grid. This is baked once and adds no per-frame work.

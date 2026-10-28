@@ -8,11 +8,14 @@ import previousPropertyV3 from './maps/previous-property-v3.json';
 import previousForestV3 from './maps/previous-forest-v3.json';
 import type {MapEditData} from '../systems/map-editor';
 import {repairPropertyShore} from './property-shore-repair';
+import {clearPropertyVillagePaths} from './property-village-gate';
 export type MapArea='property'|'forest'|'village';
 export const MAP_BASE_REVISION=4;
 export function defaultMap(area:MapArea):MapEditData{
  if(area==='village')return{version:1,width:96,height:72,area:'village',terrain:{},objects:{},points:{entry:{x:2,y:52},exit:{x:1,y:52}}};
- return structuredClone((area==='forest'?forest:property) as MapEditData);
+ const data=structuredClone((area==='forest'?forest:property) as MapEditData);
+ if(area==='property')data.terrain=clearPropertyVillagePaths(data.terrain);
+ return data;
 }
 /** The exact author layout a save was based on, before its local edits. */
 export function previousDefaultMap(area:MapArea,revision:1|2|3=1):MapEditData {

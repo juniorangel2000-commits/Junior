@@ -11,9 +11,12 @@ const newAuthorObjects=(area:'property'|'forest')=>{
  return Object.entries(defaultMap(area).objects).filter(([id,object])=>!object.removed&&!old[id]);
 };
 describe('author supplied maps',()=>{
- it('uses the final author exports unchanged and returns independent copies',()=>{
-  expect(defaultMap('property')).toEqual(property);expect(defaultMap('forest')).toEqual(forest);
-  const copy=defaultMap('property');copy.terrain['10,10']='wood';expect(defaultMap('property')).toEqual(property);
+ it('preserves author geometry with only the requested grassy village approach and returns independent copies',()=>{
+  const baseline=defaultMap('property'),original=property.terrain as Record<string,string>;
+  expect(baseline.objects).toEqual(property.objects);expect(baseline.points).toEqual(property.points);expect(defaultMap('forest')).toEqual(forest);
+  const changed=Object.entries(baseline.terrain).filter(([key,value])=>value!==original[key]);expect(changed.length).toBeGreaterThan(0);
+  for(const [key,value]of changed){const [x,y]=key.split(',').map(Number);expect(value).toBe('grass');expect(x>=80&&x<=95&&y>=48&&y<=56).toBe(true);}
+  const copy=defaultMap('property');copy.terrain['10,10']='wood';expect(defaultMap('property')).toEqual(baseline);expect(property.terrain['90,52']).toBe('path');
  });
  it.each(['property','forest'] as const)('validates %s and preserves independent arrival and exit points',area=>{
   const data=defaultMap(area);expect(validateMapEdits(data)).toBe(true);

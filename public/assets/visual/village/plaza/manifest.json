@@ -40,7 +40,25 @@
     }
   },
   "floor": {
-    "file": "assets/visual/village/plaza/piso-pedras-pequenas.png",
-    "sha256": "3bb8d8ce2352f114d6934d24906e94df041aeeacf6743d8e67b2a18264cf8340"
+    "file": "assets/visual/village/plaza/piso-intertravado.png",
+    "sha256": "3c3f167f7148aa717e86da330ace7b8f3fbdf82e610246ff20bb7439014676b5",
+    "repeat": {
+      "x": 247,
+      "y": 267,
+      "width": 247,
+      "height": 267,
+      "worldSize": 32
+    }
+  },
+  "path": {
+    "file": "assets/visual/village/plaza/caminho-intertravado-usado.png",
+    "sha256": "273a322af81ab17aca2a97930d61fe469c3d4f6e067cf8953824f90df8833e90",
+    "repeat": {
+      "x": 247,
+      "y": 267,
+      "width": 247,
+      "height": 267,
+      "worldSize": 32
+    }
   }
 }

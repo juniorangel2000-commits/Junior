@@ -1,0 +1,434 @@
+{
+  "checks": [
+    {
+      "name": "Controle de zoom começa oculto",
+      "passed": true
+    },
+    {
+      "name": "Scroll revela zoom sem cobrir relógio, recursos ou barra de ferramentas",
+      "passed": true,
+      "details": {
+        "overlap": false,
+        "percent": "125%"
+      }
+    },
+    {
+      "name": "Zoom desaparece automaticamente após três segundos",
+      "passed": true
+    },
+    {
+      "name": "Fonte, casa comunitária, moinho, coreto, celeiro, casas, carroças e trigo carregados",
+      "passed": true,
+      "details": {
+        "landmarks": [
+          {
+            "id": "coreto",
+            "kind": "gazebo",
+            "frame": "gazebo",
+            "visible": true
+          },
+          {
+            "id": "casa-comunitaria",
+            "kind": "community",
+            "frame": "community",
+            "visible": true
+          },
+          {
+            "id": "moinho",
+            "kind": "windmill",
+            "frame": "windmill",
+            "visible": true
+          },
+          {
+            "id": "trigo-moinho-a",
+            "kind": "wheat",
+            "frame": "wheat",
+            "visible": true
+          },
+          {
+            "id": "trigo-moinho-b",
+            "kind": "wheat",
+            "frame": "wheat",
+            "visible": true
+          },
+          {
+            "id": "casa-leste",
+            "kind": "cottage",
+            "frame": "cottage",
+            "visible": true
+          },
+          {
+            "id": "carroca-armazem",
+            "kind": "cart",
+            "frame": "cart",
+            "visible": true
+          },
+          {
+            "id": "praca-fonte",
+            "kind": "fountain",
+            "frame": "fountain",
+            "visible": true
+          },
+          {
+            "id": "celeiro",
+            "kind": "granary",
+            "frame": "__BASE",
+            "visible": true
+          },
+          {
+            "id": "carroca-sementes",
+            "kind": "cart",
+            "frame": "cart",
+            "visible": true
+          },
+          {
+            "id": "casa-sul",
+            "kind": "cottage",
+            "frame": "cottage",
+            "visible": true
+          }
+        ],
+        "merchants": 10,
+        "routines": 10,
+        "entry": false,
+        "exit": false
+      }
+    },
+    {
+      "name": "Praça possui bancos nos quatro sentidos, quatro canteiros redondos, seis postes e nenhum canteiro de legumes",
+      "passed": true,
+      "details": {
+        "furniture": 10,
+        "views": [
+          "south",
+          "east",
+          "west",
+          "north"
+        ],
+        "beds": 4,
+        "lamps": true,
+        "removedVegetables": true
+      }
+    },
+    {
+      "name": "Dez comércios acessíveis e fonte sólida sem ativar natação",
+      "passed": true,
+      "details": {
+        "doors": [
+          {
+            "id": "armazem",
+            "route": 31
+          },
+          {
+            "id": "ferraria",
+            "route": 55
+          },
+          {
+            "id": "ervas",
+            "route": 30
+          },
+          {
+            "id": "carpintaria",
+            "route": 27
+          },
+          {
+            "id": "sementes",
+            "route": 36
+          },
+          {
+            "id": "antiquario",
+            "route": 22
+          },
+          {
+            "id": "costura",
+            "route": 63
+          },
+          {
+            "id": "pescador",
+            "route": 70
+          },
+          {
+            "id": "pousada",
+            "route": 43
+          },
+          {
+            "id": "oficina",
+            "route": 59
+          }
+        ],
+        "fountainBlocked": true,
+        "dry": true,
+        "clearSides": true
+      }
+    },
+    {
+      "name": "Água da fonte anima sem criar objetos a cada quadro",
+      "passed": true,
+      "details": {
+        "changes": true,
+        "objects": 1
+      }
+    },
+    {
+      "name": "Cenário e água ocultam no interior e retornam ao sair",
+      "passed": true,
+      "details": {
+        "hidden": true,
+        "shown": true
+      }
+    },
+    {
+      "name": "Dez NPCs trabalham, almoçam na praça e retornam sem atravessar cenário",
+      "passed": true,
+      "details": {
+        "morning": [
+          {
+            "id": "augusto",
+            "area": "shop",
+            "serving": true,
+            "x": 144.78322522693574,
+            "y": 239.21677477306426
+          },
+          {
+            "id": "bento",
+            "area": "shop",
+            "serving": true,
+            "x": 381.20000000000005,
+            "y": 196
+          },
+          {
+            "id": "rosa",
+            "area": "shop",
+            "serving": true,
+            "x": 372,
+            "y": 201.73708498984837
+          },
+          {
+            "id": "tobias",
+            "area": "shop",
+            "serving": true,
+            "x": 140,
+            "y": 244
+          },
+          {
+            "id": "amelia",
+            "area": "shop",
+            "serving": true,
+            "x": 311.9404112294604,
+            "y": 272.0595887705396
+          },
+          {
+            "id": "nilo",
+            "area": "shop",
+            "serving": true,
+            "x": 308.9999999999999,
+            "y": 148
+          },
+          {
+            "id": "celina",
+            "area": "shop",
+            "serving": true,
+            "x": 292,
+            "y": 308
+          },
+          {
+            "id": "damiao",
+            "area": "shop",
+            "serving": true,
+            "x": 292,
+            "y": 308
+          },
+          {
+            "id": "helena",
+            "area": "shop",
+            "serving": true,
+            "x": 292,
+            "y": 308
+          },
+          {
+            "id": "icaro",
+            "area": "shop",
+            "serving": true,
+            "x": 364,
+            "y": 212.45887450304548
+          }
+        ],
+        "lunch": [
+          {
+            "id": "augusto",
+            "area": "village",
+            "serving": false,
+            "x": 1537.4587011926883,
+            "y": 1281.4587011926883
+          },
+          {
+            "id": "bento",
+            "area": "village",
+            "serving": false,
+            "x": 1584,
+            "y": 1328
+          },
+          {
+            "id": "rosa",
+            "area": "village",
+            "serving": false,
+            "x": 1552,
+            "y": 1392
+          },
+          {
+            "id": "tobias",
+            "area": "village",
+            "serving": false,
+            "x": 1456,
+            "y": 1392
+          },
+          {
+            "id": "amelia",
+            "area": "village",
+            "serving": false,
+            "x": 1392,
+            "y": 1328
+          },
+          {
+            "id": "nilo",
+            "area": "village",
+            "serving": false,
+            "x": 1360,
+            "y": 1392
+          },
+          {
+            "id": "celina",
+            "area": "village",
+            "serving": false,
+            "x": 1648,
+            "y": 1392
+          },
+          {
+            "id": "damiao",
+            "area": "village",
+            "serving": false,
+            "x": 1680,
+            "y": 1392
+          },
+          {
+            "id": "helena",
+            "area": "village",
+            "serving": false,
+            "x": 1520,
+            "y": 1392
+          },
+          {
+            "id": "icaro",
+            "area": "village",
+            "serving": false,
+            "x": 1488,
+            "y": 1392
+          }
+        ],
+        "afternoon": [
+          {
+            "id": "augusto",
+            "area": "shop",
+            "serving": true,
+            "x": 372,
+            "y": 201.73708498984826
+          },
+          {
+            "id": "bento",
+            "area": "shop",
+            "serving": true,
+            "x": 359.03372285648436,
+            "y": 208.9662771435156
+          },
+          {
+            "id": "rosa",
+            "area": "shop",
+            "serving": true,
+            "x": 180.8707719525825,
+            "y": 203.1292280474175
+          },
+          {
+            "id": "tobias",
+            "area": "shop",
+            "serving": true,
+            "x": 292,
+            "y": 148
+          },
+          {
+            "id": "amelia",
+            "area": "shop",
+            "serving": true,
+            "x": 371.23187591328684,
+            "y": 180.7681240867132
+          },
+          {
+            "id": "nilo",
+            "area": "shop",
+            "serving": true,
+            "x": 156.76812408671321,
+            "y": 235.23187591328679
+          },
+          {
+            "id": "celina",
+            "area": "shop",
+            "serving": true,
+            "x": 359.82337649086344,
+            "y": 172
+          },
+          {
+            "id": "damiao",
+            "area": "shop",
+            "serving": true,
+            "x": 292,
+            "y": 308
+          },
+          {
+            "id": "helena",
+            "area": "shop",
+            "serving": true,
+            "x": 362.5247691321004,
+            "y": 157.47523086789963
+          },
+          {
+            "id": "icaro",
+            "area": "shop",
+            "serving": true,
+            "x": 389.20000000000005,
+            "y": 148
+          }
+        ],
+        "collisions": [],
+        "phases": {
+          "augusto": 6,
+          "bento": 6,
+          "rosa": 4,
+          "tobias": 6,
+          "amelia": 8,
+          "nilo": 6,
+          "celina": 8,
+          "damiao": 8,
+          "helena": 6,
+          "icaro": 6
+        }
+      }
+    },
+    {
+      "name": "Save mantém dez rotinas e não altera os mapas da propriedade ou floresta",
+      "passed": true,
+      "details": {
+        "valid": true,
+        "routines": 10,
+        "propertyUnchanged": true
+      }
+    },
+    {
+      "name": "Sem erros JavaScript, WebGL ou arquivos ausentes",
+      "passed": true,
+      "details": {
+        "gl": 0,
+        "errors": []
+      }
+    }
+  ],
+  "errors": []
+}

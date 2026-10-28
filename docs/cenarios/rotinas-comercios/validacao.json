@@ -1,0 +1,223 @@
+{
+  "checks": [
+    {
+      "name": "Visitante e dono aparecem no mesmo interior com conversa própria",
+      "passed": true,
+      "details": {
+        "speaking": {
+          "id": "icaro",
+          "text": "Deixei as peças ajustadas na bancada."
+        },
+        "visible": [
+          "bento",
+          "icaro"
+        ]
+      }
+    },
+    {
+      "name": "Todos os dez residentes visitam outros comércios e conversam com seus donos no relógio real",
+      "passed": true,
+      "details": {
+        "visited": [
+          "bento",
+          "augusto",
+          "celina",
+          "icaro",
+          "helena",
+          "rosa",
+          "amelia",
+          "nilo",
+          "tobias",
+          "damiao"
+        ],
+        "talked": [
+          "bento",
+          "augusto",
+          "celina",
+          "icaro",
+          "helena",
+          "rosa",
+          "amelia",
+          "nilo",
+          "tobias",
+          "damiao"
+        ],
+        "collisions": [],
+        "visitSaves": {
+          "bento": true,
+          "augusto": true,
+          "celina": true,
+          "icaro": true,
+          "helena": true,
+          "rosa": true,
+          "amelia": true,
+          "nilo": true,
+          "tobias": true,
+          "damiao": true
+        },
+        "state": [
+          {
+            "id": "augusto",
+            "room": "augusto",
+            "area": "shop",
+            "activity": ""
+          },
+          {
+            "id": "bento",
+            "room": "bento",
+            "area": "shop",
+            "activity": "rest"
+          },
+          {
+            "id": "rosa",
+            "room": "rosa",
+            "area": "shop",
+            "activity": "rest"
+          },
+          {
+            "id": "tobias",
+            "room": "tobias",
+            "area": "shop",
+            "activity": "rest"
+          },
+          {
+            "id": "amelia",
+            "room": "amelia",
+            "area": "shop",
+            "activity": "rest"
+          },
+          {
+            "id": "nilo",
+            "room": "nilo",
+            "area": "shop",
+            "activity": "rest"
+          },
+          {
+            "id": "celina",
+            "room": "celina",
+            "area": "shop",
+            "activity": "rest"
+          },
+          {
+            "id": "damiao",
+            "room": "damiao",
+            "area": "shop",
+            "activity": "rest"
+          },
+          {
+            "id": "helena",
+            "room": "helena",
+            "area": "shop",
+            "activity": ""
+          },
+          {
+            "id": "icaro",
+            "room": "icaro",
+            "area": "shop",
+            "activity": "rest"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Save aceita as dez rotinas com visitas",
+      "passed": true,
+      "details": {
+        "valid": true,
+        "routines": 10
+      }
+    },
+    {
+      "name": "Após o fechamento as dez portas bloqueiam o jogador e deixam o próprio dono entrar",
+      "passed": true,
+      "details": [
+        {
+          "id": "augusto",
+          "blocked": true,
+          "ownerEntered": true,
+          "y": 1097,
+          "door": 1021
+        },
+        {
+          "id": "bento",
+          "blocked": true,
+          "ownerEntered": true,
+          "y": 1097,
+          "door": 1021
+        },
+        {
+          "id": "rosa",
+          "blocked": true,
+          "ownerEntered": true,
+          "y": 1865,
+          "door": 1789
+        },
+        {
+          "id": "tobias",
+          "blocked": true,
+          "ownerEntered": true,
+          "y": 1609,
+          "door": 1533
+        },
+        {
+          "id": "amelia",
+          "blocked": true,
+          "ownerEntered": true,
+          "y": 873,
+          "door": 797
+        },
+        {
+          "id": "nilo",
+          "blocked": true,
+          "ownerEntered": true,
+          "y": 1929,
+          "door": 1853
+        },
+        {
+          "id": "celina",
+          "blocked": true,
+          "ownerEntered": true,
+          "y": 873,
+          "door": 797
+        },
+        {
+          "id": "damiao",
+          "blocked": true,
+          "ownerEntered": true,
+          "y": 1449,
+          "door": 1373
+        },
+        {
+          "id": "helena",
+          "blocked": true,
+          "ownerEntered": true,
+          "y": 809,
+          "door": 733
+        },
+        {
+          "id": "icaro",
+          "blocked": true,
+          "ownerEntered": true,
+          "y": 1833,
+          "door": 1757
+        }
+      ]
+    },
+    {
+      "name": "Quem já estava dentro consegue sair após fechar",
+      "passed": true,
+      "details": {
+        "exited": true
+      }
+    },
+    {
+      "name": "Sem erros de JavaScript, WebGL ou arquivos ausentes",
+      "passed": true,
+      "details": {
+        "gl": 0,
+        "errors": []
+      }
+    }
+  ],
+  "errors": []
+}

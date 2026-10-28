@@ -3,7 +3,7 @@ import type Phaser from 'phaser';
 import {createWorld} from '../src/world';
 import {defaultMap} from '../src/data/default-maps';
 import {emptyMapEdits,validateMapEdits} from '../src/systems/map-editor';
-import {PROPERTY_VILLAGE_ENTRY,PROPERTY_VILLAGE_EXIT,isPropertyVillagePassage,isPropertyVillageCanopyClearance,propertyVillageGateActive} from '../src/data/property-village-gate';
+import {PROPERTY_VILLAGE_ENTRY,PROPERTY_VILLAGE_EXIT,isPropertyVillagePassage,isPropertyVillageCanopyClearance,propertyVillageGateActive,clearPropertyVillagePaths} from '../src/data/property-village-gate';
 import {editorBaselineObjects} from '../src/map-editor-baseline';
 import {drawExitSign} from '../src/exit-signs';
 import {exitSignLayout} from '../src/data/exit-signs';
@@ -27,6 +27,11 @@ afterAll(()=>vi.unstubAllGlobals());
 beforeEach(()=>vi.clearAllMocks());
 
 describe('east property passage to the village',()=>{
+ it('replaces the authored path beside the sign with grass while preserving deliberate flooring',()=>{
+  expect(defaultMap('property').terrain['90,52']).toBe('grass');
+  const local=defaultMap('property');local.terrain['90,52']='wood';local.terrain['91,52']='water';local.terrain['80,49']='paving';
+  const result=clearPropertyVillagePaths(local.terrain);expect(result['90,52']).toBe('wood');expect(result['91,52']).toBe('water');expect(result['80,49']).toBe('paving');
+ });
  it('keeps the original western forest passage and adds one right-facing sign',()=>{
   const data=defaultMap('property');expect(validateMapEdits(data)).toBe(true);
   expect(data.points).toEqual(previousProperty.points);

@@ -120,6 +120,16 @@ export function villageRoadDistance(x:number,y:number):number {
  return walkwayDistance(x,y,false);
 }
 export const villagePathEdge=(x:number,y:number)=>walkwayDistance(x,y,true);
+/** Distance along the closest road segment, for joints in its stone edging. */
+export function villagePathAlignment(x:number,y:number):number {
+ let nearest=Infinity,along=0;
+ for(const road of VILLAGE_WALKWAYS){let offset=0;for(let i=1;i<road.points.length;i++){
+  const [ax,ay]=road.points[i-1],[bx,by]=road.points[i],dx=bx-ax,dy=by-ay,length=Math.hypot(dx,dy);
+  const t=Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/(length*length)));
+  const distance=Math.hypot(x-ax-dx*t,y-ay-dy*t)-road.width;
+  if(distance<nearest){nearest=distance;along=(offset+t*length)*32;}offset+=length;
+ }}return along;
+}
 export const VILLAGE_LAWNS=PLAZA_BEDS.map(p=>({x:p.x,y:p.y-.35,rx:1.1,ry:.75}));
 export const villageLawnDistance=(x:number,y:number)=>Math.min(...VILLAGE_LAWNS.map(p=>Math.hypot((x-p.x)/p.rx,(y-p.y)/p.ry)));
 /** Entrance coordinates are useful to future indoor scenes and NPC schedules.

@@ -140,7 +140,7 @@ export class ForestScene extends Phaser.Scene {
   mainMenu():void {this.ui.closeModal();this.leave(true);}
   changeCameraZoom(direction:-1|0|1):void {
     if(this.paused||this.mapEditor||this.leaving)return;
-    this.zoom=stepCameraZoom(this.zoom,direction);saveCameraZoom(this.zoom);this.applyCamera();this.ui.updateCameraZoom(this.zoom,true);
+    this.zoom=stepCameraZoom(this.zoom,direction);saveCameraZoom(this.zoom);this.applyCamera();this.ui.updateCameraZoom(this.zoom,true,true);
   }
   async useVillageItem(item:import('../types').ItemId):Promise<void>{
     if(this.paused||this.player.isSwimming||this.toolUse.active||this.toolVisual?.sprite.getData('gathering'))return;

@@ -153,6 +153,7 @@ export class GameUI {
   getQuickbar(): QuickSlot[] { return [...this.quickbar]; }
   private cameraZoomFactor = 1;
   private cameraZoomEnabled = false;
+  private cameraZoomTimer?: ReturnType<typeof setTimeout>;
   private activeSlot = -1;
   private draggedItem: Exclude<QuickSlot, null> | null = null;
   private selectedInventoryItem: Exclude<QuickSlot, null> | null = null;
@@ -280,6 +281,7 @@ export class GameUI {
   }
 
   showTitle(hasSave: boolean): void {
+    this.hideCameraZoom();
     const stored=inspectSave();
     if(stored.status==='invalid'||stored.status==='recovered'||stored.status==='future'||stored.status==='unavailable')this.toast(stored.status==='recovered'?'A partida principal não pôde ser lida. Continuar permite recuperar uma cópia de segurança.':'Não foi possível ler a partida salva. Os dados existentes foram preservados.');
     this.root.dataset.area='title';
@@ -330,6 +332,7 @@ export class GameUI {
   }
 
   showHUD(area: 'property'|'forest'|'village'='property'): void {
+    this.hideCameraZoom();
     this.root.dataset.area=area;
     this.base.style.display = '';
     this.journalCleanup?.();
@@ -349,7 +352,7 @@ export class GameUI {
     this.lastHudKey = '';
     this.base.innerHTML = `<div class="hud">
       <header class="hud-header hud-status" aria-label="Dia, hora e recursos"><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><strong id="hud-day">Dia 1</strong><span class="status-time"><b id="hud-time">08:00</b><small id="hud-day-phase">Manhã</small></span></div><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}<div class="resource" title="Coroas (C) para comprar nas lojas da vila">${icon('crown')}<strong id="hud-coins">0</strong></div><div class="resource" title="Vigor — refeições e preparados medicinais recuperam o vigor"><strong id="hud-vigor">100</strong><small>vigor</small></div></div></header>
-      <div class="camera-zoom" role="group" aria-label="Zoom da câmera">
+      <div class="camera-zoom" role="group" aria-label="Zoom da câmera" hidden>
         <button type="button" data-zoom="-1" aria-label="Diminuir zoom" title="Afastar a câmera · − ou roda do mouse">−</button>
         <button type="button" data-zoom="0" aria-label="Restaurar zoom padrão" title="Restaurar para 100% · Home"><span class="camera-zoom-value" aria-live="polite">100%</span></button>
         <button type="button" data-zoom="1" aria-label="Aumentar zoom" title="Aproximar a câmera · + ou roda do mouse">+</button>
@@ -390,7 +393,13 @@ export class GameUI {
     this.callbacks.onPause(false);
   }
 
-  updateCameraZoom(factor: number, enabled: boolean): void {
+  private hideCameraZoom(): void {
+    clearTimeout(this.cameraZoomTimer); this.cameraZoomTimer = undefined;
+    const control=this.base.querySelector<HTMLElement>('.camera-zoom');
+    if(control)control.hidden=true;
+  }
+
+  updateCameraZoom(factor: number, enabled: boolean, reveal = false): void {
     this.cameraZoomFactor = factor;
     this.cameraZoomEnabled = enabled;
     const value = this.base.querySelector('.camera-zoom-value');
@@ -399,6 +408,11 @@ export class GameUI {
       const direction = Number(button.dataset.zoom);
       button.disabled = !enabled || direction < 0 && factor <= CAMERA_ZOOM_MIN || direction > 0 && factor >= CAMERA_ZOOM_MAX;
     });
+    if(!enabled){this.hideCameraZoom();return;}
+    if(reveal){
+      const control=this.base.querySelector<HTMLElement>('.camera-zoom');
+      if(control){control.hidden=false;clearTimeout(this.cameraZoomTimer);this.cameraZoomTimer=setTimeout(()=>this.hideCameraZoom(),3000);}
+    }
   }
 
   toggleTopToolbar(): void {
@@ -813,7 +827,7 @@ export class GameUI {
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Gráficos do vale');
-    panel.innerHTML = `<div class="modal-heading"><div class="audio-title">${toolbarIcon('graphics')}<div><span class="eyebrow">LUZ PARA O SEU CAMINHO</span><h2>Gráficos do vale</h2></div></div><button class="icon-button" aria-label="Fechar configurações gráficas">${icon('close')}</button></div><p class="audio-intro">Ajuste a luz e as sombras do seu vale.</p><div class="graphics-controls"></div><p class="audio-note">Preferências salvas automaticamente para todos os cenários. O zoom continua disponível pelos botões da câmera, pela roda do mouse ou por + e −.</p><button class="button button-light" data-graphics-defaults>Restaurar padrão</button>`;
+    panel.innerHTML = `<div class="modal-heading"><div class="audio-title">${toolbarIcon('graphics')}<div><span class="eyebrow">LUZ PARA O SEU CAMINHO</span><h2>Gráficos do vale</h2></div></div><button class="icon-button" aria-label="Fechar configurações gráficas">${icon('close')}</button></div><p class="audio-intro">Ajuste a luz e as sombras do seu vale.</p><div class="graphics-controls"></div><p class="audio-note">Preferências salvas automaticamente para todos os cenários. Use a roda do mouse ou + e − para ajustar o zoom. Os botões aparecem por alguns segundos durante o ajuste.</p><button class="button button-light" data-graphics-defaults>Restaurar padrão</button>`;
     const visuals = getVisualSettings();
     const lighting = document.createElement('fieldset');
     lighting.className = 'daylight-settings';

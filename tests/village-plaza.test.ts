@@ -10,7 +10,7 @@ import {villageGroundWeights} from '../src/data/village-ground';
 
 describe('square stone plaza, directional seating and rounded shrub beds',()=>{
  it('keeps the original art intact and the six sprite crops separate',()=>{
-  for(const source of [manifest,manifest.floor])expect(createHash('sha256').update(readFileSync('public/'+source.file)).digest('hex')).toBe(source.sha256);
+  for(const source of [manifest,manifest.floor,manifest.path])expect(createHash('sha256').update(readFileSync('public/'+source.file)).digest('hex')).toBe(source.sha256);
   const png=readFileSync('public/'+manifest.file),width=png.readUInt32BE(16),height=png.readUInt32BE(20);
   for(const r of Object.values(manifest.frames)){
    expect(r.x+r.width).toBeLessThanOrEqual(width);expect(r.y+r.height).toBeLessThanOrEqual(height);
