@@ -4,6 +4,7 @@ import { Player, PLAYER_SPEED } from '../src/player';
 import { isBridgeTile, isWaterTile, TILE } from '../src/data/regions';
 import { isWaterPoint } from '../src/data/terrain-shape';
 
+vi.mock('../src/swimming', async importOriginal => ({...await importOriginal<typeof import('../src/swimming')>(), prepareSwimmingTextures: vi.fn()}));
 vi.mock('phaser', () => ({ default: {} }));
 vi.mock('../src/art', () => ({ createCharacterFrames: () => 'player', characterFrame: () => 0 }));
 

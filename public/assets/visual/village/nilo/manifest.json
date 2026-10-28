@@ -1,0 +1,440 @@
+{
+  "npc": "nilo",
+  "createdFromScratch": 16,
+  "referenceCrops": 0,
+  "assets": [
+    {
+      "id": "nilo-counter",
+      "name": "Balcão de antiguidades",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-counter",
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 466,
+        "height": 300
+      },
+      "w": 466,
+      "h": 300,
+      "ox": 0.5139484978540773,
+      "oy": 0.9866666666666667,
+      "bounds": [
+        31,
+        48,
+        448,
+        296
+      ],
+      "collision": {
+        "x": 60.19,
+        "y": 216.64000000000001,
+        "width": 358.62,
+        "height": 76.88
+      },
+      "layer": "object"
+    },
+    {
+      "id": "nilo-cabinet",
+      "name": "Armário de coleção",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-cabinet",
+      "crop": {
+        "x": 466,
+        "y": 0,
+        "width": 294,
+        "height": 312
+      },
+      "w": 294,
+      "h": 312,
+      "ox": 0.4914965986394558,
+      "oy": 0.9743589743589743,
+      "bounds": [
+        23,
+        12,
+        266,
+        304
+      ],
+      "collision": {
+        "x": 40.010000000000005,
+        "y": 210.56,
+        "width": 208.98,
+        "height": 90.52
+      },
+      "layer": "object"
+    },
+    {
+      "id": "nilo-display",
+      "name": "Vitrine de curiosidades",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-display",
+      "crop": {
+        "x": 760,
+        "y": 0,
+        "width": 360,
+        "height": 310
+      },
+      "w": 360,
+      "h": 310,
+      "ox": 0.5111111111111111,
+      "oy": 0.9741935483870968,
+      "bounds": [
+        25,
+        123,
+        343,
+        302
+      ],
+      "collision": {
+        "x": 47.260000000000005,
+        "y": 244.72000000000003,
+        "width": 273.48,
+        "height": 55.49
+      },
+      "layer": "object"
+    },
+    {
+      "id": "nilo-workbench",
+      "name": "Bancada de restauração",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-workbench",
+      "crop": {
+        "x": 1120,
+        "y": 0,
+        "width": 416,
+        "height": 305
+      },
+      "w": 416,
+      "h": 305,
+      "ox": 0.5,
+      "oy": 0.9967213114754099,
+      "bounds": [
+        26,
+        98,
+        390,
+        304
+      ],
+      "collision": {
+        "x": 51.480000000000004,
+        "y": 238.08,
+        "width": 313.04,
+        "height": 63.86
+      },
+      "layer": "object"
+    },
+    {
+      "id": "nilo-clock",
+      "name": "Relógio de pêndulo",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-clock",
+      "crop": {
+        "x": 0,
+        "y": 300,
+        "width": 416,
+        "height": 305
+      },
+      "w": 416,
+      "h": 305,
+      "ox": 0.546875,
+      "oy": 0.980327868852459,
+      "bounds": [
+        170,
+        6,
+        285,
+        299
+      ],
+      "collision": {
+        "x": 178.05,
+        "y": 205.24,
+        "width": 98.89999999999999,
+        "height": 90.83
+      },
+      "layer": "object"
+    },
+    {
+      "id": "nilo-globe",
+      "name": "Globo antigo",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-globe",
+      "crop": {
+        "x": 416,
+        "y": 312,
+        "width": 352,
+        "height": 298
+      },
+      "w": 352,
+      "h": 298,
+      "ox": 0.5014204545454546,
+      "oy": 0.9731543624161074,
+      "bounds": [
+        75,
+        17,
+        278,
+        290
+      ],
+      "collision": {
+        "x": 89.21000000000001,
+        "y": 202.64000000000001,
+        "width": 174.57999999999998,
+        "height": 84.63
+      },
+      "layer": "object"
+    },
+    {
+      "id": "nilo-chest",
+      "name": "Baú de viagem",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-chest",
+      "crop": {
+        "x": 768,
+        "y": 310,
+        "width": 384,
+        "height": 300
+      },
+      "w": 384,
+      "h": 300,
+      "ox": 0.484375,
+      "oy": 0.8833333333333333,
+      "bounds": [
+        74,
+        101,
+        298,
+        265
+      ],
+      "collision": {
+        "x": 89.68,
+        "y": 212.52,
+        "width": 192.64,
+        "height": 50.839999999999996
+      },
+      "layer": "object"
+    },
+    {
+      "id": "nilo-bookshelf",
+      "name": "Estante de livros antigos",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-bookshelf",
+      "crop": {
+        "x": 1152,
+        "y": 305,
+        "width": 384,
+        "height": 305
+      },
+      "w": 384,
+      "h": 305,
+      "ox": 0.4466145833333333,
+      "oy": 0.9770491803278688,
+      "bounds": [
+        47,
+        1,
+        296,
+        298
+      ],
+      "collision": {
+        "x": 64.43,
+        "y": 202.96,
+        "width": 214.14,
+        "height": 92.07
+      },
+      "layer": "object"
+    },
+    {
+      "id": "nilo-armillary",
+      "name": "Esfera armilar",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-armillary",
+      "crop": {
+        "x": 0,
+        "y": 605,
+        "width": 416,
+        "height": 203
+      },
+      "w": 416,
+      "h": 203,
+      "ox": 0.5096153846153846,
+      "oy": 0.9852216748768473,
+      "bounds": [
+        135,
+        7,
+        289,
+        200
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "nilo-ledger",
+      "name": "Livro de registros",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-ledger",
+      "crop": {
+        "x": 416,
+        "y": 610,
+        "width": 352,
+        "height": 190
+      },
+      "w": 352,
+      "h": 190,
+      "ox": 0.5511363636363636,
+      "oy": 0.9631578947368421,
+      "bounds": [
+        52,
+        22,
+        336,
+        183
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "nilo-vase",
+      "name": "Vaso de porcelana",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-vase",
+      "crop": {
+        "x": 768,
+        "y": 610,
+        "width": 384,
+        "height": 198
+      },
+      "w": 384,
+      "h": 198,
+      "ox": 0.5013020833333334,
+      "oy": 0.9393939393939394,
+      "bounds": [
+        137,
+        11,
+        248,
+        186
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "nilo-maps",
+      "name": "Mapas enrolados",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-maps",
+      "crop": {
+        "x": 1152,
+        "y": 610,
+        "width": 384,
+        "height": 200
+      },
+      "w": 384,
+      "h": 200,
+      "ox": 0.49609375,
+      "oy": 0.975,
+      "bounds": [
+        45,
+        23,
+        336,
+        195
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "nilo-lantern",
+      "name": "Lanterna do antiquário",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-lantern",
+      "crop": {
+        "x": 0,
+        "y": 808,
+        "width": 416,
+        "height": 216
+      },
+      "w": 416,
+      "h": 216,
+      "ox": 0.515625,
+      "oy": 0.9444444444444444,
+      "bounds": [
+        149,
+        8,
+        280,
+        204
+      ],
+      "collision": null,
+      "layer": "wall"
+    },
+    {
+      "id": "nilo-stool",
+      "name": "Banco de avaliação",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-stool",
+      "crop": {
+        "x": 416,
+        "y": 800,
+        "width": 322,
+        "height": 224
+      },
+      "w": 322,
+      "h": 224,
+      "ox": 0.5667701863354038,
+      "oy": 0.8928571428571429,
+      "bounds": [
+        97,
+        11,
+        268,
+        200
+      ],
+      "collision": {
+        "x": 108.97,
+        "y": 139.52,
+        "width": 147.06,
+        "height": 58.589999999999996
+      },
+      "layer": "object"
+    },
+    {
+      "id": "nilo-rug",
+      "name": "Tapete do antiquário",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-rug",
+      "crop": {
+        "x": 738,
+        "y": 808,
+        "width": 452,
+        "height": 216
+      },
+      "w": 452,
+      "h": 216,
+      "ox": 0.504424778761062,
+      "oy": 0.7777777777777778,
+      "bounds": [
+        17,
+        40,
+        439,
+        168
+      ],
+      "collision": null,
+      "layer": "floor"
+    },
+    {
+      "id": "nilo-window",
+      "name": "Janela do antiquário",
+      "file": "assets/visual/village/nilo/objetos.png",
+      "frame": "nilo-window",
+      "crop": {
+        "x": 1190,
+        "y": 810,
+        "width": 346,
+        "height": 214
+      },
+      "w": 346,
+      "h": 214,
+      "ox": 0.42052023121387283,
+      "oy": 0.9112149532710281,
+      "bounds": [
+        57,
+        3,
+        234,
+        195
+      ],
+      "collision": null,
+      "layer": "wall"
+    }
+  ],
+  "sourceHashes": {
+    "fachada.png": "eb5eba2a6cc8a447ff00268bdd5e4174a2e29c0a8bdd64036e331d4ad1f68c9e",
+    "objetos.png": "bade142069b07f537a9c1fda01ed570162a64623f3869a099a8d488793abca21"
+  }
+}

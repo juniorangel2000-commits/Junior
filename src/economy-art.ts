@@ -1,3 +1,4 @@
+import {niloTexture,preloadNiloSprites} from './nilo-sprites';
 import {AUGUSTO_SHOP} from './data/augusto-shop';
 import {bentoTexture,preloadBentoSprites} from './bento-sprites';
 import {augustoTexture,preloadAugustoSprites} from './augusto-sprites';
@@ -7,6 +8,7 @@ import {ameliaTexture,preloadAmeliaSprites} from './amelia-sprites';
 import {ROSA_SHOP} from './data/rosa-shop';
 import {TOBIAS_SHOP} from './data/tobias-shop';
 import {AMELIA_SHOP} from './data/amelia-shop';
+import {NILO_SHOP} from './data/nilo-shop';
 import oreFrames from '../public/assets/visual/economy/deposits/rochas-detalhadas.json';
 import {preloadMerchantRooms} from './merchant-interior';
 import type Phaser from 'phaser';
@@ -20,9 +22,11 @@ export function preloadEconomyArt(scene:Phaser.Scene):void{
  preloadRosaSprites(scene);
  preloadTobiasSprites(scene);
  preloadAmeliaSprites(scene);
+ preloadNiloSprites(scene);
  scene.load.image(ROSA_SHOP.texture,ROSA_SHOP.file);
  scene.load.image(TOBIAS_SHOP.texture,TOBIAS_SHOP.file);
  scene.load.image(AMELIA_SHOP.texture,AMELIA_SHOP.file);
+ scene.load.image(NILO_SHOP.texture,NILO_SHOP.file);
  scene.load.image('detailed-ore-atlas',`${ROOT}/deposits/rochas-detalhadas.png`);
  scene.load.image(AUGUSTO_SHOP.texture,AUGUSTO_SHOP.file);
  preloadMerchantRooms(scene);
@@ -41,6 +45,7 @@ export function merchantTexture(scene:Phaser.Scene,id:string):string{
  if(id==='rosa')return rosaTexture(scene);
  if(id==='tobias')return tobiasTexture(scene);
  if(id==='amelia')return ameliaTexture(scene);
+ if(id==='nilo')return niloTexture(scene);
  const key=`village-npc-${id}`;
  if(scene.textures.exists(key))return key;
  const canvas=document.createElement('canvas');canvas.width=192*8;canvas.height=256;

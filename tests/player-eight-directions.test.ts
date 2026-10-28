@@ -4,6 +4,7 @@ import { Player, PLAYER_SPEED, PLAYER_WALK_CYCLE_DISTANCE } from '../src/player'
 import { CHARACTER_DIRECTIONS, characterFrame as atlasFrame, type CharacterDirection } from '../src/character-directions';
 import { CHARACTERS, createCharacterProfile, type CharacterId, characterWalkFps } from '../src/data/characters';
 
+vi.mock('../src/swimming', async importOriginal => ({...await importOriginal<typeof import('../src/swimming')>(), prepareSwimmingTextures: vi.fn()}));
 vi.mock('phaser', () => ({ default: {} }));
 vi.mock('../src/art', () => ({ createCharacterFrames: () => 'player' }));
 

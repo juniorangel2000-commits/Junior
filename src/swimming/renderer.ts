@@ -17,32 +17,21 @@ export interface SwimmingAppearance {
   drawFrame(context: CanvasRenderingContext2D, direction: CharacterDirection, phase: number): void;
 }
 
-/** Original head and shallow poses, plus a separate sculling atlas for the submerged body. */
-export class SwimmingVisual {
-  readonly body: Phaser.GameObjects.Sprite;
-  readonly surface: Phaser.GameObjects.Sprite;
-  readonly hairShadow?: Phaser.GameObjects.Sprite;
-  readonly effects: WaterEffects;
-  readonly appearance: SwimmingAppearance;
-  private readonly surfaceKey: string;
-  private readonly bodyKey: string;
-  private readonly clock = new SwimBodyClock();
-  private bound = false;
-  private baseTexture = '';
-
-  constructor(scene: Phaser.Scene, profile: CharacterProfile, appearance?: SwimmingAppearance) {
+/** Bake and upload once per appearance while preparing the scene, never at the shoreline.
+ * TextureManager owns the cache, so maps share it and renderer teardown frees it. */
+export function prepareSwimmingTextures(scene: Phaser.Scene, profile: CharacterProfile, appearance?: SwimmingAppearance) {
     const character = resolveCharacter(profile);
-    this.appearance = appearance ?? {
+    const resolved: SwimmingAppearance = appearance ?? {
       cacheKey: character.id, walkFrames: character.walkFrames,
       width: CHARACTER_FRAME_WIDTH, height: CHARACTER_FRAME_HEIGHT, density: CHARACTER_TEXTURE_DENSITY,
       headBottom: HEAD_BOTTOM[character.id], submergedHair: character.id === 'farmer-female', drawFrame: (g, d, p) => {drawStyledCharacter(g, profile, d, p);},
     };
-    const a = this.appearance;
-    this.surfaceKey = `swim-surface-fade-3-${a.cacheKey}`;
-    this.bodyKey = `swim-body-fade-3-${a.cacheKey}`;
+    const a = resolved;
+    const surfaceKey = `swim-surface-fade-3-${a.cacheKey}`;
+    const bodyKey = `swim-body-fade-3-${a.cacheKey}`;
     const columns = a.walkFrames + 1 + SWIM_BODY_FRAMES;
     const hairKey = `swim-hair-shadow-${a.cacheKey}`;
-    if (!scene.textures.exists(this.surfaceKey) || !scene.textures.exists(this.bodyKey)) {
+    if (!scene.textures.exists(surfaceKey) || !scene.textures.exists(bodyKey)) {
       const make = (width: number, height: number) => {
         const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height; return canvas;
       };
@@ -79,7 +68,7 @@ export class SwimmingVisual {
           ink.fillRect(0, 0, a.width, a.height); bodyPaint.drawImage(original, phase * a.width, row * a.height);
         }
       }
-      for (const [key, canvas] of [[this.surfaceKey, atlas], [this.bodyKey, bodyAtlas]] as const) {
+      for (const [key, canvas] of [[surfaceKey, atlas], [bodyKey, bodyAtlas]] as const) {
         const texture = scene.textures.addCanvas(key, canvas)!;
         for (let row = 0; row < 8; row++) for (let phase = 0; phase < columns; phase++) {
           texture.add(row * columns + phase, 0, phase * a.width, row * a.height, a.width, a.height);
@@ -92,6 +81,28 @@ export class SwimmingVisual {
         texture.setFilter(0);
       }
     }
+    return {appearance: resolved, surfaceKey, bodyKey, hairKey};
+}
+
+/** Original head and shallow poses, plus a separate sculling atlas for the submerged body. */
+export class SwimmingVisual {
+  readonly body: Phaser.GameObjects.Sprite;
+  readonly surface: Phaser.GameObjects.Sprite;
+  readonly hairShadow?: Phaser.GameObjects.Sprite;
+  readonly effects: WaterEffects;
+  readonly appearance: SwimmingAppearance;
+  private readonly surfaceKey: string;
+  private readonly bodyKey: string;
+  private readonly clock = new SwimBodyClock();
+  private bound = false;
+  private baseTexture = '';
+
+  constructor(scene: Phaser.Scene, profile: CharacterProfile, appearance?: SwimmingAppearance) {
+    const prepared = prepareSwimmingTextures(scene, profile, appearance);
+    this.appearance = prepared.appearance;
+    this.surfaceKey = prepared.surfaceKey;
+    this.bodyKey = prepared.bodyKey;
+    const a = this.appearance, hairKey = prepared.hairKey;
     if (a.submergedHair) this.hairShadow = scene.add.sprite(0, 0, hairKey).setVisible(false);
     this.body = scene.add.sprite(0, 0, this.bodyKey).setVisible(false).setAlpha(SWIMMING_CONFIG.bodyOpacity);
     this.surface = scene.add.sprite(0, 0, this.surfaceKey).setVisible(false).setAlpha(SWIMMING_CONFIG.surfaceOpacity);

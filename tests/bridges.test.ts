@@ -7,7 +7,7 @@ import {isBridgeTile,TILE} from '../src/data/regions';
 import {isWaterPoint} from '../src/data/terrain-shape';
 vi.mock('phaser',()=>({default:{}}));
 vi.mock('../src/art',()=>({createCharacterFrames:()=> 'player'}));
-vi.mock('../src/swimming',()=>({SWIM_SPEED_FACTOR:.55,SwimmingVisual:class {update(){}setVisible(){}}}));
+vi.mock('../src/swimming',()=>({SWIM_SPEED_FACTOR:.55,prepareSwimmingTextures:vi.fn(),SwimmingVisual:class {update(){}setVisible(){}}}));
 function fixture(x:number,y:number){
  const keys=Object.fromEntries('W,A,S,D,UP,DOWN,LEFT,RIGHT'.split(',').map(k=>[k,{isDown:false}]));
  const sprite={setOrigin(){return this;},setCrop(){return this;},setDisplaySize(){return this;},setFrame(){return this;},setPosition(){return this;},setDepth(){return this;},setTexture(){return this;}};

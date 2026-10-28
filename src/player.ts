@@ -1,6 +1,6 @@
 import {SwimmingController} from './swimming/controller';
 import {SWIMMING_CONFIG} from './swimming/config';
-import { SwimmingVisual, SWIM_SPEED_FACTOR } from './swimming';
+import { SwimmingVisual, prepareSwimmingTextures, SWIM_SPEED_FACTOR } from './swimming';
 import Phaser from 'phaser';
 import type { CharacterProfile } from './types';
 import { createCharacterFrames } from './art';
@@ -41,6 +41,8 @@ export class Player {
     this.y = y;
     this.walkFrames = resolveCharacter(profile).walkFrames;
     const texture = createCharacterFrames(scene, profile, textureKey);
+    // Prepare the expensive body/surface atlases before the player can move.
+    prepareSwimmingTextures(scene, profile);
     this.sprite = scene.add.sprite(x, y, texture, characterFrame('down'))
       .setOrigin(0.5, 1).setDisplaySize(CHARACTER_WIDTH, CHARACTER_HEIGHT);
     this.keys = scene.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT', false) as MovementKeys;

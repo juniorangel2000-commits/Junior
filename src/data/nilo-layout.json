@@ -1,0 +1,181 @@
+{
+  "version": 1,
+  "pieces": [
+    {
+      "id": "structure",
+      "asset": "structure",
+      "x": 0,
+      "y": 0,
+      "sx": 1,
+      "sy": 1,
+      "visible": true,
+      "wallShade": 1
+    },
+    {
+      "id": "floor",
+      "asset": "floor-wood",
+      "x": 33,
+      "y": 116,
+      "sx": 510,
+      "sy": 234,
+      "visible": true
+    },
+    {
+      "id": "nilo-counter",
+      "asset": "nilo-counter",
+      "x": 288,
+      "y": 205,
+      "sx": 0.3346774193548387,
+      "sy": 0.3346774193548387,
+      "visible": true
+    },
+    {
+      "id": "nilo-cabinet",
+      "asset": "nilo-cabinet",
+      "x": 104,
+      "y": 183,
+      "sx": 0.3004115226337449,
+      "sy": 0.3004115226337449,
+      "visible": true
+    },
+    {
+      "id": "nilo-display",
+      "asset": "nilo-display",
+      "x": 445,
+      "y": 230,
+      "sx": 0.36477987421383645,
+      "sy": 0.36477987421383645,
+      "visible": true
+    },
+    {
+      "id": "nilo-workbench",
+      "asset": "nilo-workbench",
+      "x": 445,
+      "y": 316,
+      "sx": 0.2967032967032967,
+      "sy": 0.2967032967032967,
+      "visible": true
+    },
+    {
+      "id": "nilo-clock",
+      "asset": "nilo-clock",
+      "x": 480,
+      "y": 166,
+      "sx": 0.33043478260869563,
+      "sy": 0.33043478260869563,
+      "visible": true
+    },
+    {
+      "id": "nilo-globe",
+      "asset": "nilo-globe",
+      "x": 105,
+      "y": 280,
+      "sx": 0.2660098522167488,
+      "sy": 0.2660098522167488,
+      "visible": true
+    },
+    {
+      "id": "nilo-chest",
+      "asset": "nilo-chest",
+      "x": 182,
+      "y": 328,
+      "sx": 0.23214285714285715,
+      "sy": 0.23214285714285715,
+      "visible": true
+    },
+    {
+      "id": "nilo-bookshelf",
+      "asset": "nilo-bookshelf",
+      "x": 195,
+      "y": 158,
+      "sx": 0.2971887550200803,
+      "sy": 0.2971887550200803,
+      "visible": true
+    },
+    {
+      "id": "nilo-armillary",
+      "asset": "nilo-armillary",
+      "x": 420,
+      "y": 266,
+      "sx": 0.17532467532467533,
+      "sy": 0.17532467532467533,
+      "visible": true,
+      "parent": "nilo-workbench"
+    },
+    {
+      "id": "nilo-ledger",
+      "asset": "nilo-ledger",
+      "x": 313,
+      "y": 160,
+      "sx": 0.11267605633802817,
+      "sy": 0.11267605633802817,
+      "visible": true,
+      "parent": "nilo-counter"
+    },
+    {
+      "id": "nilo-vase",
+      "asset": "nilo-vase",
+      "x": 474,
+      "y": 266,
+      "sx": 0.17714285714285713,
+      "sy": 0.17714285714285713,
+      "visible": true,
+      "parent": "nilo-workbench"
+    },
+    {
+      "id": "nilo-maps",
+      "asset": "nilo-maps",
+      "x": 451,
+      "y": 275,
+      "sx": 0.10309278350515463,
+      "sy": 0.10309278350515463,
+      "visible": true,
+      "parent": "nilo-workbench"
+    },
+    {
+      "id": "nilo-lantern",
+      "asset": "nilo-lantern",
+      "x": 58,
+      "y": 79,
+      "sx": 0.183206106870229,
+      "sy": 0.183206106870229,
+      "visible": true
+    },
+    {
+      "id": "nilo-stool",
+      "asset": "nilo-stool",
+      "x": 365,
+      "y": 283,
+      "sx": 0.16374269005847952,
+      "sy": 0.16374269005847952,
+      "visible": true
+    },
+    {
+      "id": "nilo-rug",
+      "asset": "nilo-rug",
+      "x": 288,
+      "y": 302,
+      "sx": 0.2796208530805687,
+      "sy": 0.2796208530805687,
+      "visible": true
+    },
+    {
+      "id": "nilo-window",
+      "asset": "nilo-window",
+      "x": 330,
+      "y": 105,
+      "sx": 0.3802083333333333,
+      "sy": 0.3802083333333333,
+      "visible": true
+    },
+    {
+      "id": "nilo-lantern-right",
+      "asset": "nilo-lantern",
+      "x": 520,
+      "y": 79,
+      "sx": 0.183206106870229,
+      "sy": 0.183206106870229,
+      "visible": true
+    }
+  ]
+}

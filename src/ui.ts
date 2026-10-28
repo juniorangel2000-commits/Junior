@@ -1,3 +1,4 @@
+import {inspectSave} from './systems/save';
 import {inventoryCapacity} from './systems/inventory';
 import {USABLE_VILLAGE_ITEMS} from './systems/consumables';
 import { fencePreview, gatePreview } from './fence-art';
@@ -279,6 +280,8 @@ export class GameUI {
   }
 
   showTitle(hasSave: boolean): void {
+    const stored=inspectSave();
+    if(stored.status==='invalid'||stored.status==='recovered'||stored.status==='future'||stored.status==='unavailable')this.toast(stored.status==='recovered'?'A partida principal não pôde ser lida. Continuar permite recuperar uma cópia de segurança.':'Não foi possível ler a partida salva. Os dados existentes foram preservados.');
     this.root.dataset.area='title';
     this.base.style.display = '';
     this.journalCleanup?.();

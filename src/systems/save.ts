@@ -283,32 +283,67 @@ export function createNewSave(profile: CharacterProfile): SaveData {
   };
 }
 
-export function loadSave(): SaveData | null {
-  try {
-    const raw = localStorage.getItem(SAVE_KEY);
-    return raw ? migrateSave(JSON.parse(raw)) : null;
-  } catch { return null; }
+export const SAVE_RECENT_KEYS = [SAVE_KEY + '-recent-1', SAVE_KEY + '-recent-2'] as const;
+export const SAVE_DAMAGED_KEY = SAVE_KEY + '-preserved-invalid';
+export type SaveReadResult = {status:'missing'|'invalid'|'unavailable'|'future';data:null}|{status:'valid'|'recovered';data:SaveData};
+function parseStored(raw:string):SaveData|null {
+  try { return migrateSave(JSON.parse(raw)); } catch { return null; }
 }
-
-export function hasSave(): boolean { return loadSave() !== null; }
-
-export function saveGame(data: SaveData): boolean {
+function futureSave(raw:string):boolean {
+  try { const v=JSON.parse(raw)?.version;return typeof v==='number'&&v>SAVE_VERSION; } catch { return false; }
+}
+/** Reading never rewrites or repairs storage. Future saves are never downgraded. */
+export function inspectSave():SaveReadResult {
   try {
-    if (!validateSave(data)) return false;
-    const previous = localStorage.getItem(SAVE_KEY);
-    if (previous) {
-      let version: unknown;
-      try { version = (JSON.parse(previous) as { version?: unknown })?.version; } catch { version = undefined; }
-      // Uma versão anterior do aplicativo nunca substitui uma partida mais nova.
-      if (typeof version === 'number' && version > SAVE_VERSION) return false;
-      // Se o backup falhar, não substitua a partida antiga.
-      if (version !== SAVE_VERSION && !localStorage.getItem(SAVE_BACKUP_KEY)) localStorage.setItem(SAVE_BACKUP_KEY, previous);
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(raw!==null&&futureSave(raw))return {status:'future',data:null};
+    const data=raw===null?null:parseStored(raw);
+    if(data)return {status:'valid',data};
+    for(const key of [...SAVE_RECENT_KEYS,SAVE_BACKUP_KEY]){
+      const backup=localStorage.getItem(key),recovered=backup===null?null:parseStored(backup);
+      if(recovered)return {status:'recovered',data:recovered};
     }
-    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-    return true;
+    return {status:raw===null?'missing':'invalid',data:null};
+  } catch { return {status:'unavailable',data:null}; }
+}
+/** Call only after the player confirms recovery/replacement. Preserve exact bytes. */
+export function preserveInvalidSave():boolean {
+  try {
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(raw===null||parseStored(raw))return true;
+    if(futureSave(raw))return false;
+    const preserved=localStorage.getItem(SAVE_DAMAGED_KEY);
+    if(preserved!==null&&preserved!==raw)return false;
+    if(preserved===null)localStorage.setItem(SAVE_DAMAGED_KEY,raw);
+    return localStorage.getItem(SAVE_DAMAGED_KEY)===raw;
   } catch { return false; }
 }
-
-export function clearSave(): boolean {
-  try { localStorage.removeItem(SAVE_KEY); return true; } catch { return false; }
+export function loadSave():SaveData|null { return inspectSave().data; }
+export function hasSave():boolean { return loadSave()!==null; }
+export function saveGame(data:SaveData):boolean {
+  try {
+    if(!validateSave(data))return false;
+    const previous=localStorage.getItem(SAVE_KEY);
+    if(previous!==null){
+      if(futureSave(previous))return false;
+      const valid=parseStored(previous);
+      if(!valid&&localStorage.getItem(SAVE_DAMAGED_KEY)!==previous)return false;
+      if(valid&&previous!==JSON.stringify(data)){
+        const version=(JSON.parse(previous) as {version?:number}).version;
+        if(version!==SAVE_VERSION){
+          if(localStorage.getItem(SAVE_BACKUP_KEY)===null)localStorage.setItem(SAVE_BACKUP_KEY,previous);
+        }else{
+          const recent=localStorage.getItem(SAVE_RECENT_KEYS[0]);
+          if(recent!==previous){
+            if(recent!==null&&parseStored(recent))localStorage.setItem(SAVE_RECENT_KEYS[1],recent);
+            localStorage.setItem(SAVE_RECENT_KEYS[0],previous);
+          }
+        }
+      }
+    }
+    localStorage.setItem(SAVE_KEY,JSON.stringify(data));return true;
+  } catch { return false; }
+}
+export function clearSave():boolean {
+  try { localStorage.removeItem(SAVE_KEY);return true; } catch { return false; }
 }

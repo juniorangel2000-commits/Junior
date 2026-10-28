@@ -1,0 +1,36 @@
+[
+  {
+    "id": "farmer-male",
+    "prepareMs": 2568.7999999999884,
+    "prepareReads": 275,
+    "prepareTextures": 3,
+    "entryTextures": 0,
+    "samples": [
+      {
+        "ms": 1.6999999999825377,
+        "readbacks": 0
+      },
+      {
+        "ms": 0.10000000000582077,
+        "readbacks": 0
+      }
+    ]
+  },
+  {
+    "id": "farmer-female",
+    "prepareMs": 80.20000000001164,
+    "prepareReads": 1,
+    "prepareTextures": 1,
+    "entryTextures": 0,
+    "samples": [
+      {
+        "ms": 1.7000000000116415,
+        "readbacks": 0
+      },
+      {
+        "ms": 0.10000000000582077,
+        "readbacks": 0
+      }
+    ]
+  }
+]

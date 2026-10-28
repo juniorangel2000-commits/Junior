@@ -1,3 +1,4 @@
+import {NILO_WALK_FRAMES,NILO_DISPLAY,NILO_ORIGIN_Y} from '../nilo-sprites';
 import {createSmithLayout,resolveSmithLayout,smithFits,smithBlocked,smithNavigation,smithSpawn,smithDoor,type SmithLayout} from '../systems/smith-layout';
 import {drawSmithLayout,type SmithView} from '../smith-layout-art';
 import {mountSmithEditor} from '../smith-layout-editor';
@@ -143,7 +144,7 @@ export class VillageScene extends Phaser.Scene {
  }
  private createDailyRoutines():void {
   this.routines=new Map();this.speech=undefined;
-  for(const id of ['augusto','bento','rosa','tobias','amelia'] as const){
+  for(const id of ['augusto','bento','rosa','tobias','amelia','nilo'] as const){
    const npc=this.villagers.find(n=>n.data.id===id)!;
    const shop=id==='bento'?this.bentoRoutine.state.area==='blacksmith-home':this.residents.get(id)!.shop;
    const nav=id==='bento'?smithNavigation(this.smithLayout):merchantRoomNavigation(id,this.merchantLayouts.get(id));
@@ -174,7 +175,7 @@ export class VillageScene extends Phaser.Scene {
   const s=this.routines.get(id)!.state,npc=this.villagers.find(n=>n.data.id===id)!;
   if(id==='bento')Object.assign(this.bentoRoutine.state,{x:s.x,y:s.y,direction:s.direction,area:s.area==='shop'?'blacksmith-home':'village',stop:s.area==='shop'?4:0,wait:0,doorway:false});
   else Object.assign(this.residents.get(id)!,{x:s.x,y:s.y,direction:s.direction,shop:s.area==='shop'});
-  npc.sprite.setPosition(s.x,s.y).setDepth(s.y).setFrame(characterFrame(s.direction,phase,npc.frames));
+  npc.sprite.setPosition(s.x,s.y).setDepth(s.y).setFrame(characterFrame(s.direction,npc.frames?phase:0,npc.frames));
  }
  private updateDailyRoutines(seconds:number):void {
   for(const [id,routine] of this.routines){if(this.guide?.owner===id)continue;const step=routine.step(seconds,this.state,this.routineEnvironment(id));this.syncRoutine(id,step.phase);}
@@ -190,8 +191,8 @@ export class VillageScene extends Phaser.Scene {
  }
  private createVillagers():void {
   this.villagers=VILLAGE_NPCS.map(npc=>{
-   const frames=npc.id==='bento'?BENTO_WALK_FRAMES:npc.id==='augusto'?AUGUSTO_WALK_FRAMES:npc.id==='rosa'?ROSA_WALK_FRAMES:npc.id==='tobias'?TOBIAS_WALK_FRAMES:npc.id==='amelia'?AMELIA_WALK_FRAMES:0,key=merchantTexture(this,npc.id),p=villagePixelPoint(npc);
-   const sprite=this.add.sprite(p.x,p.y,key,characterFrame(npc.direction,0,frames)).setOrigin(.5,npc.id==='augusto'?AUGUSTO_ORIGIN_Y:npc.id==='rosa'?ROSA_ORIGIN_Y:npc.id==='tobias'?TOBIAS_ORIGIN_Y:npc.id==='amelia'?AMELIA_ORIGIN_Y:1).setDisplaySize(npc.id==='bento'?BENTO_DISPLAY:npc.id==='augusto'?AUGUSTO_DISPLAY:npc.id==='rosa'?ROSA_DISPLAY:npc.id==='tobias'?TOBIAS_DISPLAY:npc.id==='amelia'?AMELIA_DISPLAY:CHARACTER_WIDTH,npc.id==='augusto'?AUGUSTO_DISPLAY:npc.id==='rosa'?ROSA_DISPLAY:npc.id==='tobias'?TOBIAS_DISPLAY:npc.id==='amelia'?AMELIA_DISPLAY:CHARACTER_HEIGHT).setDepth(p.y);
+   const frames=npc.id==='bento'?BENTO_WALK_FRAMES:npc.id==='augusto'?AUGUSTO_WALK_FRAMES:npc.id==='rosa'?ROSA_WALK_FRAMES:npc.id==='tobias'?TOBIAS_WALK_FRAMES:npc.id==='amelia'?AMELIA_WALK_FRAMES:npc.id==='nilo'?NILO_WALK_FRAMES:0,key=merchantTexture(this,npc.id),p=villagePixelPoint(npc);
+   const sprite=this.add.sprite(p.x,p.y,key,characterFrame(npc.direction,0,frames)).setOrigin(.5,npc.id==='augusto'?AUGUSTO_ORIGIN_Y:npc.id==='rosa'?ROSA_ORIGIN_Y:npc.id==='tobias'?TOBIAS_ORIGIN_Y:npc.id==='amelia'?AMELIA_ORIGIN_Y:npc.id==='nilo'?NILO_ORIGIN_Y:1).setDisplaySize(npc.id==='bento'?BENTO_DISPLAY:npc.id==='augusto'?AUGUSTO_DISPLAY:npc.id==='rosa'?ROSA_DISPLAY:npc.id==='tobias'?TOBIAS_DISPLAY:npc.id==='amelia'?AMELIA_DISPLAY:npc.id==='nilo'?NILO_DISPLAY:CHARACTER_WIDTH,npc.id==='augusto'?AUGUSTO_DISPLAY:npc.id==='rosa'?ROSA_DISPLAY:npc.id==='tobias'?TOBIAS_DISPLAY:npc.id==='amelia'?AMELIA_DISPLAY:npc.id==='nilo'?NILO_DISPLAY:CHARACTER_HEIGHT).setDepth(p.y);
    if(npc.id==='bento'){const b=this.bentoRoutine.state;if(b.area==='village'){const free=freeArrival(b,this.world.isBlockedPoint,[]);if(free)Object.assign(b,free);}sprite.setPosition(b.x,b.y).setDepth(b.y).setFrame(characterFrame(b.direction,0,frames)).setVisible(b.area==='village');}
    else{const resident=this.residents.get(npc.id)??{id:npc.id,...p,direction:npc.direction,shop:false};if(!resident.shop){const free=freeArrival(resident,this.world.isBlockedPoint,[]);if(free)Object.assign(resident,free);}this.residents.set(npc.id,resident);sprite.setPosition(resident.x,resident.y).setDepth(resident.y).setFrame(characterFrame(resident.direction,0,frames)).setVisible(!resident.shop);}
    return {data:npc,sprite,frames};
@@ -259,11 +260,11 @@ export class VillageScene extends Phaser.Scene {
   this.scene.launch('Editor',{save:original,area:'village',onClose:(updated:SaveData|undefined,_area:MapArea)=>{this.scene.resume();this.scene.setVisible(true);this.scene.restart({save:updated??original,ui:this.ui,onReturn:this.onReturn});}});
  }
  /** Only shops still being authored expose the development interior editor. */
- private get editableMerchant():boolean{return this.merchantRoom==='tobias'||this.merchantRoom==='amelia';}
+ private get editableMerchant():boolean{return this.merchantRoom==='tobias'||this.merchantRoom==='amelia'||this.merchantRoom==='nilo';}
  openHomeMenu():void {
   const id=this.merchantRoom;if(!DEVELOPMENT_TOOLS||!id||!this.editableMerchant||this.changingRoom||this.leaving||this.shop?.isOpen)return;
   if(this.editingRoom){this.ui.closeModal();return;}if(this.ui.isModalOpen())this.ui.closeModal();this.editingRoom=true;this.applyCamera();
-  const labels=id==='amelia'?{title:'Editar herbalista da Amélia',fileName:'After-Rain-Herbalista-Editada.json'}:{title:'Editar carpintaria do Tobias',fileName:'After-Rain-Carpintaria-Editada.json'};
+  const labels=id==='nilo'?{title:'Editar antiquário do Nilo',fileName:'After-Rain-Antiquario-Editado.json'}:id==='amelia'?{title:'Editar herbalista da Amélia',fileName:'After-Rain-Herbalista-Editada.json'}:{title:'Editar carpintaria do Tobias',fileName:'After-Rain-Carpintaria-Editada.json'};
   this.ui.showSceneEditor(host=>{const dispose=mountSmithEditor(host,()=>this.merchantLayouts.get(id)!,()=>this.merchantView,data=>this.editMerchantLayout(id,data),()=>this.ui.closeModal(),{...labels,assets:MERCHANT_ROOM_ASSETS});return()=>{dispose();this.editingRoom=false;this.applyCamera();};});
  }
  private editMerchantLayout(id:ResidentId,data:SmithLayout):string|null {

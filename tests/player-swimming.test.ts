@@ -4,7 +4,7 @@ import {Player,PLAYER_SPEED} from '../src/player';
 import {createCharacterProfile} from '../src/data/characters';
 vi.mock('phaser',()=>({default:{}}));
 vi.mock('../src/art',()=>({createCharacterFrames:()=> 'player'}));
-vi.mock('../src/swimming',()=>({SWIM_SPEED_FACTOR:.55,SwimmingVisual:class {update(){}setVisible(){}}}));
+vi.mock('../src/swimming',()=>({SWIM_SPEED_FACTOR:.55,prepareSwimmingTextures:vi.fn(),SwimmingVisual:class {update(){}setVisible(){}}}));
 function fixture(){
  const keys=Object.fromEntries('W,A,S,D,UP,DOWN,LEFT,RIGHT'.split(',').map(k=>[k,{isDown:false}]));
  const sprite={setOrigin(){return this;},setCrop(){return this;},setDisplaySize(){return this;},setFrame(){return this;},setPosition(){return this;},setDepth(){return this;},setTexture:vi.fn().mockReturnThis()};

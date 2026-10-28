@@ -48,7 +48,7 @@ import type { ShelterInfo } from '../systems/shelter';
 import { getLiaDialogue } from '../systems/npc';
 import { HOME_SUPPLIES, collectHomeSupply } from '../systems/home-supplies';
 import { emptyQuickbar } from '../systems/quickbar';
-import { createNewSave, hasSave, loadSave, saveGame } from '../systems/save';
+import { createNewSave, hasSave, loadSave, saveGame, inspectSave, preserveInvalidSave } from '../systems/save';
 import type { BuildingData, CharacterProfile, SaveData, Tool, TilePoint } from '../types';
 import type { GameUI } from '../ui';
 import type { TitleBackgroundMode } from '../title-screen';
@@ -190,6 +190,14 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   startNew(profile: CharacterProfile): void {
+    const stored=inspectSave();
+    if(stored.status==='unavailable'||stored.status==='future'){
+      this.ui.toast('Não foi possível acessar a partida salva com segurança. Ela não será substituída.');return;
+    }
+    if(stored.status==='invalid'||stored.status==='recovered'){
+      if(!window.confirm('A partida principal não pôde ser lida. Começar uma nova partida? O arquivo original será preservado antes da substituição.'))return;
+      if(!preserveInvalidSave()){this.ui.toast('Não foi possível preservar a partida antiga. O novo jogo foi cancelado.');return;}
+    }
     gameAudio.setScene('game');
     this.adminMenu?.close();
     this.loadState(createNewSave(profile));
@@ -202,8 +210,12 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   continueGame(): void {
-    const saved = loadSave();
-    if (!saved) { this.ui.toast('Não foi possível ler o save. Você pode começar um novo jogo.'); return; }
+    const stored=inspectSave(),saved=stored.data;
+    if(!saved){this.ui.toast('Não foi possível ler a partida. Os dados existentes foram mantidos.');return;}
+    if(stored.status==='recovered'){
+      if(!window.confirm('A partida principal não pôde ser lida. Recuperar uma cópia de segurança? O progresso pode ser anterior ao último salvamento.'))return;
+      if(!preserveInvalidSave()){this.ui.toast('Não foi possível preservar o original. A recuperação foi cancelada.');return;}
+    }
     gameAudio.setScene('game');
     this.adminMenu?.close();
     this.loadState(saved);
