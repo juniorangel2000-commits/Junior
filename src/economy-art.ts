@@ -1,3 +1,4 @@
+import {celinaTexture,preloadCelinaSprites} from './celina-sprites';
 import {SHOP_FACADES} from './data/shop-facades';
 import {niloTexture,preloadNiloSprites} from './nilo-sprites';
 import {bentoTexture,preloadBentoSprites} from './bento-sprites';
@@ -20,6 +21,7 @@ export function preloadEconomyArt(scene:Phaser.Scene):void{
  preloadTobiasSprites(scene);
  preloadAmeliaSprites(scene);
  preloadNiloSprites(scene);
+ preloadCelinaSprites(scene);
 
  scene.load.image(TOBIAS_SHOP.texture,TOBIAS_SHOP.file);
 
@@ -46,6 +48,7 @@ export function merchantTexture(scene:Phaser.Scene,id:string):string{
  if(id==='tobias')return tobiasTexture(scene);
  if(id==='amelia')return ameliaTexture(scene);
  if(id==='nilo')return niloTexture(scene);
+ if(id==='celina')return celinaTexture(scene);
  const key=`village-npc-${id}`;
  if(scene.textures.exists(key))return key;
  const canvas=document.createElement('canvas');canvas.width=192*8;canvas.height=256;

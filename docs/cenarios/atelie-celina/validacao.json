@@ -1,19 +1,61 @@
 {
   "checks": [
     {
-      "name": "Poses atuais disponíveis enquanto a animação é preparada",
+      "name": "Animação recebida possui oito direções e oito passos",
       "passed": true
     },
     {
-      "name": "Condução até a loja mantém as poses existentes e espera o jogador",
+      "name": "South refinado mantém escala, cabeça e apoio estáveis nos nove quadros",
+      "passed": true,
+      "details": {
+        "tops": [
+          24,
+          24,
+          24,
+          24,
+          24,
+          24,
+          24,
+          24,
+          24
+        ],
+        "feet": [
+          239,
+          243,
+          243,
+          239,
+          243,
+          243,
+          239,
+          243,
+          243
+        ],
+        "distinct": 9
+      }
+    },
+    {
+      "name": "Outras sete direções preservam os 63 PNGs pixel a pixel",
+      "passed": true,
+      "details": {
+        "different": 0,
+        "poses": 63
+      }
+    },
+    {
+      "name": "Condução até a loja utiliza os oito passos enviados e espera o jogador",
       "passed": true,
       "details": {
         "active": true,
         "arrived": true,
         "seen": [
+          1,
           2,
+          3,
           4,
-          5
+          5,
+          6,
+          7,
+          8
         ],
         "stoppedForPlayer": true
       }
@@ -27,7 +69,7 @@
       }
     },
     {
-      "name": "Atelie possui dezenove peças editáveis, parede escura, madeira e lanternas",
+      "name": "Ateliê possui dezenove peças editáveis, parede escura, madeira e lanternas",
       "passed": true,
       "details": {
         "pieces": 19,
@@ -110,7 +152,7 @@
         "lunch": true,
         "returned": true,
         "closed": true,
-        "routines": 7
+        "routines": 9
       }
     },
     {

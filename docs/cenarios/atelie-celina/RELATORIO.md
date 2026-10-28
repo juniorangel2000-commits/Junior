@@ -7,7 +7,7 @@ Implementação local sobre o trabalho do Nilo, sem publicação.
 - Entrada, passagem central, iluminação, sombras e colisões próprias. Catálogo de costura existente preservado.
 - Rotina 08h–18h, intervalo 12h–13h30 na praça, atendimento dentro da loja, guia que espera o jogador. Editor de desenvolvimento com H e exportação After-Rain-Atelie-Editado.json.
 - Atualiza somente layouts provisórios intactos, preservando layouts personalizados e saves existentes.
-- Personagem mantém as quatro poses atuais até receber a animação do usuário. As novas referências frontais são entregues separadamente e não substituem automaticamente o atlas.
+- O usuário enviou celina.zip com 72 PNGs: oito direções e oito passos por direção, além das poses paradas. Arquivos originais e metadata.json preservados; SHA-256 e dimensões em personagem.json. A vista south recebeu fonte refinada separada em south-refinado.png, aplicada com escala única, alinhamento da cabeça e recortes no manifesto. As outras sete direções mantêm seus pixels e padding originais. O acompanhamento e a rotina usam os oito passos recebidos.
 
 ## Correção de navegação
 
@@ -22,3 +22,7 @@ O teste de retorno da Celina expôs uma borda de fachada que deixava o centro de
 - Evidências desta execução nesta pasta.
 
 Reproduzir: `python scripts/prepare-celina-assets.py` registra o atlas sem regravar um layout existente. `--write-layout` regenera deliberadamente o layout padrão. Executar Vite na porta 5177 e `node scripts/qa-celina-shop.cjs` com Playwright e Chromium disponíveis; saída padrão em /workspace/after-rain-celina (configurável por CELINA_QA_OUTPUT).
+
+## Animação e south refinado
+
+Suíte após integração: 824 testes passaram em 93 arquivos; TypeScript e build passaram. Chromium: 16 verificações, incluindo nove quadros distintos, cabeça na mesma altura (24 pixels no atlas), apoio dos pés entre 239 e 243 pixels, 63 poses nativas idênticas pixel a pixel e os oito passos exibidos durante acompanhamento. Contorno semitransparente residual é eliminado na montagem pela mesma quantização de alfa da frente usada nos NPCs anteriores.
