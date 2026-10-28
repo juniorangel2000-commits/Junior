@@ -40,7 +40,7 @@
     }
   },
   "floor": {
-    "file": "assets/visual/village/plaza/piso-quadrado.png",
-    "sha256": "1b312e225dbb96e22acf2efd7d95f6d16cbee2e976567c2f91346de883ae3ba1"
+    "file": "assets/visual/village/plaza/piso-pedras-pequenas.png",
+    "sha256": "3bb8d8ce2352f114d6934d24906e94df041aeeacf6743d8e67b2a18264cf8340"
   }
 }

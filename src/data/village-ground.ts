@@ -16,7 +16,7 @@ export function villageGroundWeights(x:number,y:number):readonly number[]{
  const pathDistance=villagePathEdge(x,y),plazaDistance=villagePlazaDistance(x,y);
  let path=1-villageSmooth((pathDistance+.08)/.42);
  const lawn=1-villageSmooth((villageLawnDistance(x,y)-.7)/.48);
- const plaza=1-villageSmooth((plazaDistance-.98)/.055);
+ const plaza=1-villageSmooth((plazaDistance-.985)/.025);
  const paving=plaza*(1-lawn);
  path*=1-plaza;
  let soil=0;
@@ -27,7 +27,7 @@ export function villageGroundWeights(x:number,y:number):readonly number[]{
  // Narrow, continuous finishes make the materials readable without adding
  // obstacles or changing the width available to actors. Authored terrain is
  // still applied over every material by the renderer.
- const curb=villageSmooth((plazaDistance-.965)/.018)*(1-villageSmooth((plazaDistance-1.025)/.025));
+ const curb=villageSmooth((plazaDistance-.985)/.01)*(1-villageSmooth((plazaDistance-1.012)/.015));
  const shoulder=villageSmooth((pathDistance+.15)/.22)*(1-villageSmooth((pathDistance-.2)/.3))*.8*(1-plaza)*(1-curb);
  const base=1-curb-shoulder;
  return [(rest-forest-meadow)*base,forest*base,meadow*base,path*base,paving*base,soil*base,shoulder,curb];

@@ -65,9 +65,9 @@ function drawGround(scene:Phaser.Scene,edits?:MapEditData,namespace='village'):v
        // Bevel and joints follow the oval perimeter, rather than the square
        // paving grid. This is baked once and adds no per-frame work.
        const u=(x-plazaX)/plazaRX,v=(y-plazaY)/plazaRY,radius=Math.hypot(u,v);
-       const stone=(Math.atan2(v,u)/Math.PI/2+1)*80,phase=stone-Math.floor(stone);
-       const joint=phase<.055?.62:1,bevel=radius<.992?1.16:radius>1.023?.77:1;
-       const shade=joint*bevel*(.97+(Math.floor(stone)%3)*.025);
+       const stone=(Math.atan2(v,u)/Math.PI/2+1)*160,phase=stone-Math.floor(stone);
+       const joint=phase<.045?.58:1,bevel=radius<.998?1.18:radius>1.016?.74:1;
+       const shade=joint*bevel*(.96+(Math.floor(stone)%5)*.018);
        red+=(143*shade+source.pixels[at]*.09)*mixed[m];green+=(137*shade+source.pixels[at+1]*.09)*mixed[m];blue+=(120*shade+source.pixels[at+2]*.09)*mixed[m];
       }else{
        red+=source.pixels[at]*mixed[m];green+=source.pixels[at+1]*mixed[m];blue+=source.pixels[at+2]*mixed[m];
