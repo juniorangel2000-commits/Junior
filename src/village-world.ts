@@ -1,4 +1,6 @@
 import {facadeForMerchant} from './data/shop-facades';
+import {villageLandmarkClearing} from './data/village-landmarks';
+import {drawVillageLandmarks} from './village-landmarks';
 import {setupFacadeLight} from './shop-facade-light';
 import {TOBIAS_SHOP} from './data/tobias-shop';
 import {setupTobiasShop} from './tobias-shop';
@@ -76,6 +78,7 @@ export class VillageWorld {
  readonly resources:ResourceNode[]=[];
  readonly solid=new Set<string>();
  private readonly environment:Phaser.GameObjects.GameObject[];
+ private readonly landmarks:{update(time:number):void};
  private readonly lamps:Phaser.GameObjects.Graphics[]=[];
  private readonly windows:Phaser.GameObjects.Image[]=[];
  private readonly smoke:Array<{destroy():void}>=[];
@@ -85,7 +88,7 @@ export class VillageWorld {
  private readonly visibility=new Map<Phaser.GameObjects.GameObject,boolean>();
  constructor(private readonly scene:Phaser.Scene,private readonly edits?:MapEditData,private readonly namespace='village'){
   const before=new Set(scene.children.list);setupVillageArt(scene);drawGround(scene,edits,namespace);
-  this.drawLake();this.drawTrees();this.drawBuildings();this.drawGardens();this.drawProps();
+  this.drawLake();this.drawTrees();this.drawBuildings();this.landmarks=drawVillageLandmarks(scene);this.drawGardens();this.drawProps();
   drawExitSign(scene,this.exit(),this.entry());
   this.environment=scene.children.list.filter(object=>!before.has(object));
   for(let y=0;y<WORLD_HEIGHT;y++)for(let x=0;x<WORLD_WIDTH;x++)if(villageBlockedAt(x,y,edits))this.solid.add(`${x},${y}`);
@@ -97,7 +100,7 @@ export class VillageWorld {
  waterAt=(x:number,y:number):boolean=>villageWater(x,y,this.edits);
  waterPointAt=(x:number,y:number):boolean=>paintedWaterPoint(this.edits?.terrain,x,y,(x,y)=>villageLakeDistance(x/32,y/32)<0);
  resourceAt=(_x:number,_y:number):ResourceNode|undefined=>undefined;
- update(timeMs:number):void {if(Number.isFinite(timeMs))this.elapsed=timeMs;}
+ update(timeMs:number):void {if(Number.isFinite(timeMs))this.elapsed=timeMs;if(this.shown)this.landmarks.update(this.elapsed);}
  setVisible(shown:boolean):void {
   if(shown===this.shown)return;this.shown=shown;
   for(const object of this.environment)if('setVisible'in object){
@@ -209,7 +212,7 @@ export class VillageWorld {
  private drawGardens():void {
   const place=(kind:string,x:number,y:number,scale=1)=>{
    if(this.edits?.terrain[`${Math.floor(x+.5)},${Math.floor(y+.5)}`]!==undefined)return;
-   const art=natureArt(kind);if(!art||villageDoorApproach(x,y)||VILLAGE_PROPS.some(p=>Math.hypot(x-p.x,y-p.y)<1.1)||villageBlockedAt(x,y)&&!art.water)return;
+   const art=natureArt(kind);if(!art||villagePathEdge(x,y)<.3||villageLandmarkClearing(x,y,8)||villageDoorApproach(x,y)||VILLAGE_PROPS.some(p=>Math.hypot(x-p.x,y-p.y)<1.1)||villageBlockedAt(x,y)&&!art.water)return;
    this.scene.add.image(x*TILE+16,y*TILE+25,art.texture).setOrigin(.5,art.pivot).setDisplaySize(art.width*scale,art.height*scale).setDepth(y*TILE+25).setData('village-plant',true);
   };
   for(const fence of VILLAGE_FENCES)drawConnectedFence(this.scene,fence,VILLAGE_FENCES,1);

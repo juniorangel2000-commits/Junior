@@ -1,0 +1,55 @@
+{
+  "file": "assets/visual/village/landmarks/objetos.png",
+  "sha256": "f8c35d6da363747c9114d9a671d65546b43741582990151a3ec4a38cfc7dca28",
+  "alphaCutoff": 160,
+  "frames": {
+    "fountain": {
+      "x": 28,
+      "y": 156,
+      "width": 353,
+      "height": 282
+    },
+    "community": {
+      "x": 410,
+      "y": 100,
+      "width": 593,
+      "height": 346
+    },
+    "windmill": {
+      "x": 1009,
+      "y": 8,
+      "width": 353,
+      "height": 450
+    },
+    "gazebo": {
+      "x": 1393,
+      "y": 66,
+      "width": 342,
+      "height": 396
+    },
+    "granary": {
+      "x": 54,
+      "y": 506,
+      "width": 330,
+      "height": 334
+    },
+    "cottage": {
+      "x": 451,
+      "y": 498,
+      "width": 461,
+      "height": 345
+    },
+    "cart": {
+      "x": 988,
+      "y": 583,
+      "width": 374,
+      "height": 256
+    },
+    "wheat": {
+      "x": 1384,
+      "y": 598,
+      "width": 357,
+      "height": 237
+    }
+  }
+}

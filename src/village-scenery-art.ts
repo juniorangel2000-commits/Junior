@@ -1,9 +1,11 @@
 import type Phaser from 'phaser';
+import {preloadVillageLandmarks} from './village-landmarks';
 import type {TerrainSprite} from './terrain-sprites';
 
 export const VILLAGE_SCENERY=['bench','flowerpot','planter','crates','barrel','sacks','woodpile','basket'] as const;
 export const VILLAGE_LAMP={key:'village-lantern',width:20,height:80,lightY:-66} as const;
 export function preloadVillageScenery(scene:Phaser.Scene):void{
+ preloadVillageLandmarks(scene);
  scene.load.image('source-village-blacksmith','assets/visual/village/blacksmith-house.png');
  for(const id of ['armor-stand','tool-rack','counter','parts-shelf'])scene.load.image(`blacksmith-${id}`,`assets/visual/village/blacksmith-${id}.png`);
  for(const id of ['weapon-rack','bellows','grindstone','coal-bin','iron-stock','counter-left','counter-middle','counter-right'])scene.load.image(`blacksmith-${id}`,`assets/visual/village/blacksmith-${id}.png`);
