@@ -4,9 +4,11 @@ import {villageLandmarkClearing} from './village-landmarks';
 
 export const villageSmooth=(n:number):number=>{const t=Math.max(0,Math.min(1,n));return t*t*(3-2*t);};
 export const VILLAGE_GROUND_MATERIALS=8;
+export const villagePlazaCurbWeight=(distance:number):number=>
+ villageSmooth((distance-.991)/.004)*(1-villageSmooth((distance-1.012)/.006));
 /** Grass, forest, meadow, path pavers, plaza pavers, soil and two stone curbs. Shared by the
  * renderer and layout checks; no random changes occur when revisiting town. */
-export function villageGroundWeights(x:number,y:number):readonly number[]{
+export function villageGroundWeights(x:number,y:number,includePlazaCurb=true):readonly number[]{
  const edge=Math.min(x+.5,y+.5,WORLD_WIDTH-.5-x,WORLD_HEIGHT-.5-y);
  let woodland=(1-villageSmooth((edge-2.5-Math.sin(x*.27+y*.13)*1.2)/8.5))*.82;
  for(const grove of VILLAGE_GROVES){const d=Math.hypot((x-grove.x)/grove.rx,(y-grove.y)/grove.ry);woodland=Math.max(woodland,(1-villageSmooth((d-.3)/.9))*.44);}
@@ -27,7 +29,7 @@ export function villageGroundWeights(x:number,y:number):readonly number[]{
  // Narrow, continuous finishes make the materials readable without adding
  // obstacles or changing the width available to actors. Authored terrain is
  // still applied over every material by the renderer.
- const curb=villageSmooth((plazaDistance-.985)/.01)*(1-villageSmooth((plazaDistance-1.012)/.015));
+ const curb=includePlazaCurb?villagePlazaCurbWeight(plazaDistance):0;
  const shoulder=villageSmooth((pathDistance+.02)/.08)*(1-villageSmooth((pathDistance-.14)/.1))*(1-plaza)*(1-curb);
  const base=1-curb-shoulder;
  return [(rest-forest-meadow)*base,forest*base,meadow*base,path*base,paving*base,soil*base,shoulder,curb];

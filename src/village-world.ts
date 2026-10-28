@@ -7,7 +7,7 @@ import {TOBIAS_SHOP} from './data/tobias-shop';
 import {setupTobiasShop} from './tobias-shop';
 import {BLACKSMITH_HOUSE,setupBlacksmithHouse,blacksmithPoint} from './blacksmith-house';
 import {villageWater,villageLakeDistance,villagePointBlocked,villageDoorApproach,villagePathEdge,VILLAGE_LAKE,VILLAGE_GARDENS,VILLAGE_FENCES,VILLAGE_SHORE_DETAILS} from './data/village';
-import {villageGroundWeights,VILLAGE_GROUND_MATERIALS,villageSmooth as smooth} from './data/village-ground';
+import {villageGroundWeights,villagePlazaCurbWeight,VILLAGE_GROUND_MATERIALS,villageSmooth as smooth} from './data/village-ground';
 import {readVillagePaving,VILLAGE_LAMP} from './village-scenery-art';
 import {drawConnectedFence} from './fence-art';
 import {addWaterMotion} from './water-motion';
@@ -42,7 +42,7 @@ function drawGround(scene:Phaser.Scene,edits?:MapEditData,namespace='village'):v
    const step=8,columns=MAP_WIDTH/step+1,rows=MAP_HEIGHT/step+1,count=VILLAGE_GROUND_MATERIALS;
    const fields=new Float32Array(columns*rows*count);
    for(let gy=0;gy<rows;gy++)for(let gx=0;gx<columns;gx++){
-    const weights=villageGroundWeights(gx*step/TILE-.5,gy*step/TILE-.5),at=(gy*columns+gx)*count;
+    const weights=villageGroundWeights(gx*step/TILE-.5,gy*step/TILE-.5,false),at=(gy*columns+gx)*count;
     weights.forEach((weight,index)=>{fields[at+index]=weight;});
    }
    const paving=readVillagePaving(scene)??sprites.paving,street=readVillagePaving(scene,'village-path-paving-source')??sprites['path-dry'];
@@ -62,17 +62,21 @@ function drawGround(scene:Phaser.Scene,edits?:MapEditData,namespace='village'):v
        const along=villagePathAlignment(x/TILE-.5,y/TILE-.5)/16,phase=along-Math.floor(along);
        const shade=(phase<.07?.62:1)*(.97+(Math.floor(along)%3)*.025);
        red+=(137*shade+source.pixels[at]*.07)*mixed[m];green+=(131*shade+source.pixels[at+1]*.07)*mixed[m];blue+=(115*shade+source.pixels[at+2]*.07)*mixed[m];
-      }else if(m===7){
-       // Bevel and joints follow the oval perimeter, rather than the square
-       // paving grid. This is baked once and adds no per-frame work.
-       const u=(x-plazaX)/plazaRX,v=(y-plazaY)/plazaRY,radius=Math.hypot(u,v);
-       const stone=(Math.atan2(v,u)/Math.PI/2+1)*160,phase=stone-Math.floor(stone);
-       const joint=phase<.045?.58:1,bevel=radius<.998?1.18:radius>1.016?.74:1;
-       const shade=joint*bevel*(.96+(Math.floor(stone)%5)*.018);
-       red+=(143*shade+source.pixels[at]*.09)*mixed[m];green+=(137*shade+source.pixels[at+1]*.09)*mixed[m];blue+=(120*shade+source.pixels[at+2]*.09)*mixed[m];
       }else{
        red+=source.pixels[at]*mixed[m];green+=source.pixels[at+1]*mixed[m];blue+=source.pixels[at+2]*mixed[m];
       }
+     }
+     // The thin curb needs pixel-level coverage: interpolating its weight on
+     // the 8px terrain grid washes out the bevel and creates uneven widths.
+     const u=(x-plazaX)/plazaRX,v=(y-plazaY)/plazaRY,radius=Math.hypot(u,v);
+     const curb=villagePlazaCurbWeight(radius);
+     if(curb>0){
+      const stone=(Math.atan2(v,u)/Math.PI/2+1)*160,phase=stone-Math.floor(stone);
+      const joint=phase<.065?.57:1,bevel=radius<.999?1.20:radius>1.011?.68:1;
+      const shade=joint*bevel*(.96+(Math.floor(stone)%5)*.018);
+      red=red*(1-curb)+164*shade*curb;
+      green=green*(1-curb)+156*shade*curb;
+      blue=blue*(1-curb)+136*shade*curb;
      }
      const kind=edits?.terrain[`${Math.floor(x/32)},${Math.floor(y/32)}`];
      if(kind){const names={grass:'grass',meadow:'meadow',forest:'forest',moss:'moss',forestPath:'forest',path:'path-dry',wetPath:'path-wet',water:'water',sand:'sand',soil:'soil',wood:'wood',paving:'paving'} as const;const source=sprites[names[kind]],at=((y%source.size)*source.size+x%source.size)*4,alpha=terrainPaintAlpha(edits!.terrain,x,y);red=red*(1-alpha)+source.pixels[at]*alpha;green=green*(1-alpha)+source.pixels[at+1]*alpha;blue=blue*(1-alpha)+source.pixels[at+2]*alpha;}

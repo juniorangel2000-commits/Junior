@@ -28,5 +28,18 @@ export function readVillagePaving(scene:Phaser.Scene,key='village-paving-source'
  c.drawImage(scene.textures.get(key).getSourceImage() as HTMLImageElement,r.x,r.y,r.width,r.height,0,0,size,size);
  // Repeat an exact two-by-two unit of the interlocking pattern. Mirroring or
  // feathering a whole source sheet creates broken brick joints at its edges.
- return {size,pixels:c.getImageData(0,0,size,size).data};
+ const pixels=c.getImageData(0,0,size,size).data;
+ if(key==='village-paving-source'){
+  const path=readVillagePaving(scene,'village-path-paving-source');
+  if(path){
+   // Share the street's warm stone colour while retaining the refined joints
+   // and bevels of the plaza. Read both materials only during terrain baking.
+   const plazaMean=[0,0,0],pathMean=[0,0,0];
+   for(let i=0;i<pixels.length;i+=4)for(let channel=0;channel<3;channel++)plazaMean[channel]+=pixels[i+channel];
+   for(let i=0;i<path.pixels.length;i+=4)for(let channel=0;channel<3;channel++)pathMean[channel]+=path.pixels[i+channel];
+   const shift=plazaMean.map((total,channel)=>pathMean[channel]/(path.pixels.length/4)-total/(pixels.length/4));
+   for(let i=0;i<pixels.length;i+=4)for(let channel=0;channel<3;channel++)pixels[i+channel]+=shift[channel];
+  }
+ }
+ return {size,pixels};
 }

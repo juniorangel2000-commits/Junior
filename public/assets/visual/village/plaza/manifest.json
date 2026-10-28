@@ -40,8 +40,8 @@
     }
   },
   "floor": {
-    "file": "assets/visual/village/plaza/piso-intertravado.png",
-    "sha256": "3c3f167f7148aa717e86da330ace7b8f3fbdf82e610246ff20bb7439014676b5",
+    "file": "assets/visual/village/plaza/piso-intertravado-refinado.png",
+    "sha256": "4843019c91ca886d60d767f451f99f35719e93f87155a53678a41ea4fcc563b1",
     "repeat": {
       "x": 247,
       "y": 267,
