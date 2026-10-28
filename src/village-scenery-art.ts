@@ -1,3 +1,5 @@
+import plazaManifest from '../public/assets/visual/village/plaza/manifest.json';
+import {preloadVillagePlaza} from './village-plaza';
 import type Phaser from 'phaser';
 import {preloadVillageLandmarks} from './village-landmarks';
 import type {TerrainSprite} from './terrain-sprites';
@@ -6,11 +8,12 @@ export const VILLAGE_SCENERY=['bench','flowerpot','planter','crates','barrel','s
 export const VILLAGE_LAMP={key:'village-lantern',width:20,height:80,lightY:-66} as const;
 export function preloadVillageScenery(scene:Phaser.Scene):void{
  preloadVillageLandmarks(scene);
+ preloadVillagePlaza(scene);
  scene.load.image('source-village-blacksmith','assets/visual/village/blacksmith-house.png');
  for(const id of ['armor-stand','tool-rack','counter','parts-shelf'])scene.load.image(`blacksmith-${id}`,`assets/visual/village/blacksmith-${id}.png`);
  for(const id of ['weapon-rack','bellows','grindstone','coal-bin','iron-stock','counter-left','counter-middle','counter-right'])scene.load.image(`blacksmith-${id}`,`assets/visual/village/blacksmith-${id}.png`);
  scene.load.image(VILLAGE_LAMP.key,'assets/visual/village/street-lamp.png');
- scene.load.image('village-paving-source','assets/visual/village/paving.png');
+ scene.load.image('village-paving-source',plazaManifest.floor.file);
  for(const id of VILLAGE_SCENERY)scene.load.image(`village-prop-${id}`,`assets/visual/village/${id}.png`);
 }
 

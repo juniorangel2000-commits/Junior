@@ -23,7 +23,8 @@ describe('public square and decorative village districts',()=>{
  });
  it('moves the well to the windmill and makes the fountain solid without making it swimmable',()=>{
   expect(VILLAGE_PROPS.find(p=>p.kind==='well')).toMatchObject({x:24,y:23});
-  expect(VILLAGE_GARDENS.filter(g=>g.kind==='crops').map(g=>g.id)).toEqual(['horta-moinho']);
+  expect(VILLAGE_GARDENS.every(g=>g.kind==='flowers')).toBe(true);
+  expect(VILLAGE_LANDMARKS.some(p=>p.id.startsWith('horta-legumes'))).toBe(false);
   expect(villageWater(46,37)).toBe(false);
   const p=VILLAGE_LANDMARKS.find(p=>p.kind==='fountain')!;
   const x=(p.x+.5)*32,y=p.y*32+4;

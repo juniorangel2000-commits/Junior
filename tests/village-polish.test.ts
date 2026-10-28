@@ -1,7 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {VILLAGE_BUILDINGS,VILLAGE_DOOR_APPROACHES,VILLAGE_TREES,VILLAGE_PROPS,VILLAGE_ENTRY,VILLAGE_EXIT,VILLAGE_FENCES,villageBlockedAt,villageWater,villageLakeDistance,villageGround,villagePointBlocked} from '../src/data/village';
+import {VILLAGE_BUILDINGS,VILLAGE_DOOR_APPROACHES,VILLAGE_TREES,VILLAGE_PROPS,VILLAGE_ENTRY,VILLAGE_EXIT,VILLAGE_FENCES,VILLAGE_LAWNS,villageBlockedAt,villageWater,villageLakeDistance,villageGround,villagePointBlocked} from '../src/data/village';
 import {villageGroundWeights} from '../src/data/village-ground';
 import {VillageWalk,villageRoute} from '../src/systems/village-walk';
 
@@ -31,7 +31,7 @@ describe('village scenery, approaches and future circulation',()=>{
  });
  it('normalizes organic ground blends, keeping planting islands grassy and streets readable',()=>{
   for(let y=0;y<72;y+=2)for(let x=0;x<96;x+=2){const w=villageGroundWeights(x,y);expect(w.every(n=>Number.isFinite(n)&&n>=0&&n<=1)).toBe(true);expect(w.reduce((a,b)=>a+b,0)).toBeCloseTo(1,5);}
-  expect(villageGroundWeights(39.8,36.6)[4]).toBeLessThan(.05);
+  for(const p of VILLAGE_LAWNS)expect(villageGroundWeights(p.x,p.y)[4]).toBeLessThan(.05);
   expect(villageGround(2,52)).toBe('path');
  });
  it('uses an irregular lake contour with different east/west shoulders',()=>{

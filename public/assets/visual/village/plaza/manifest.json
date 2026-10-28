@@ -1,0 +1,46 @@
+{
+  "file": "assets/visual/village/plaza/mobiliario.png",
+  "sha256": "365a72dc41894183c3a9a19bc89b917a0e459fc8392a16290acd3ffd0ed4a23a",
+  "frames": {
+    "south": {
+      "x": 48,
+      "y": 168,
+      "width": 444,
+      "height": 293
+    },
+    "north": {
+      "x": 574,
+      "y": 173,
+      "width": 437,
+      "height": 240
+    },
+    "east": {
+      "x": 1170,
+      "y": 88,
+      "width": 288,
+      "height": 373
+    },
+    "west": {
+      "x": 107,
+      "y": 549,
+      "width": 285,
+      "height": 360
+    },
+    "shrubs-white": {
+      "x": 529,
+      "y": 557,
+      "width": 466,
+      "height": 353
+    },
+    "shrubs-lilac": {
+      "x": 1044,
+      "y": 556,
+      "width": 464,
+      "height": 354
+    }
+  },
+  "floor": {
+    "file": "assets/visual/village/plaza/piso-quadrado.png",
+    "sha256": "1b312e225dbb96e22acf2efd7d95f6d16cbee2e976567c2f91346de883ae3ba1"
+  }
+}

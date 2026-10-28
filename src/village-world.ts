@@ -1,3 +1,4 @@
+import {drawVillagePlaza} from './village-plaza';
 import {facadeForMerchant} from './data/shop-facades';
 import {villageLandmarkClearing} from './data/village-landmarks';
 import {drawVillageLandmarks} from './village-landmarks';
@@ -5,7 +6,7 @@ import {setupFacadeLight} from './shop-facade-light';
 import {TOBIAS_SHOP} from './data/tobias-shop';
 import {setupTobiasShop} from './tobias-shop';
 import {BLACKSMITH_HOUSE,setupBlacksmithHouse,blacksmithPoint} from './blacksmith-house';
-import {villageWater,villageLakeDistance,villagePointBlocked,villageDoorApproach,villagePathEdge,VILLAGE_LAKE,VILLAGE_LAWNS,VILLAGE_GARDENS,VILLAGE_FENCES,VILLAGE_SHORE_DETAILS} from './data/village';
+import {villageWater,villageLakeDistance,villagePointBlocked,villageDoorApproach,villagePathEdge,VILLAGE_LAKE,VILLAGE_GARDENS,VILLAGE_FENCES,VILLAGE_SHORE_DETAILS} from './data/village';
 import {villageGroundWeights,villageSmooth as smooth} from './data/village-ground';
 import {readVillagePaving,VILLAGE_LAMP} from './village-scenery-art';
 import {drawConnectedFence} from './fence-art';
@@ -88,7 +89,7 @@ export class VillageWorld {
  private readonly visibility=new Map<Phaser.GameObjects.GameObject,boolean>();
  constructor(private readonly scene:Phaser.Scene,private readonly edits?:MapEditData,private readonly namespace='village'){
   const before=new Set(scene.children.list);setupVillageArt(scene);drawGround(scene,edits,namespace);
-  this.drawLake();this.drawTrees();this.drawBuildings();this.landmarks=drawVillageLandmarks(scene);this.drawGardens();this.drawProps();
+  this.drawLake();this.drawTrees();this.drawBuildings();this.landmarks=drawVillageLandmarks(scene);drawVillagePlaza(scene);this.drawGardens();this.drawProps();
   drawExitSign(scene,this.exit(),this.entry());
   this.environment=scene.children.list.filter(object=>!before.has(object));
   for(let y=0;y<WORLD_HEIGHT;y++)for(let x=0;x<WORLD_WIDTH;x++)if(villageBlockedAt(x,y,edits))this.solid.add(`${x},${y}`);
@@ -222,7 +223,6 @@ export class VillageWorld {
    if(villageDoorApproach(x,y)||villageBlockedAt(x,y))continue;
    place('whiteFlowers',x,y,.85);
   }
-  for(const lawn of VILLAGE_LAWNS){place('bush',lawn.x,lawn.y-1.2,.9);for(const [dx,dy]of [[-1,0],[0,.7],[1,.3]])place('whiteFlowers',lawn.x+dx,lawn.y+dy,.9);}
   for(const detail of VILLAGE_SHORE_DETAILS)place(detail.kind,detail.x,detail.y,detail.kind==='reeds'?.85:1);
   for(const [i,tree]of VILLAGE_TREES.entries()){
    place(i%3===0?'mushrooms':'fern',tree.x+.8,tree.y+.2,.8);

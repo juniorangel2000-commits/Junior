@@ -1,6 +1,6 @@
 /** Static public buildings share their ground footprint with NPC navigation.
  * Roofs and windmill sails overhang freely; no new indoor scene is implied. */
-export type LandmarkKind = 'fountain' | 'community' | 'windmill' | 'gazebo' | 'granary' | 'cottage' | 'cart' | 'wheat' | 'vegetables';
+export type LandmarkKind = 'fountain' | 'community' | 'windmill' | 'gazebo' | 'granary' | 'cottage' | 'cart' | 'wheat';
 export interface VillageLandmark {
  id: string;
  kind: LandmarkKind;
@@ -22,8 +22,6 @@ export const VILLAGE_LANDMARKS: readonly VillageLandmark[] = [
  {id:'carroca-armazem',kind:'cart',x:29,y:35,width:64,height:49,footprint:[-26,-20,52,20]},
  {id:'carroca-sementes',kind:'cart',x:43,y:58,width:64,height:49,footprint:[-26,-20,52,20]},
  {id:'trigo-moinho-a',kind:'wheat',x:16,y:25,width:94,height:65,footprint:[-42,-23,84,23]},
- {id:'horta-legumes-a',kind:'vegetables',x:23,y:26,width:98,height:50,footprint:[-44,-14,88,14]},
- {id:'horta-legumes-b',kind:'vegetables',x:23,y:28.5,width:98,height:50,footprint:[-44,-14,88,14]},
  {id:'trigo-moinho-b',kind:'wheat',x:16,y:28,width:94,height:65,footprint:[-42,-23,84,23]},
 ];
 

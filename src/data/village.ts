@@ -1,3 +1,4 @@
+import {PLAZA_BEDS,PLAZA_LAMPS,plazaFurnitureBlockedPoint,plazaFurnitureBlockedTile} from './village-plaza';
 import {villageLandmarkBlockedPoint,villageLandmarkBlockedTile,villageLandmarkClearing} from './village-landmarks';
 import {facadeForMerchant,facadeBlockedPoint} from './shop-facades';
 import {tobiasShopBlockedPoint} from './tobias-shop';
@@ -119,14 +120,13 @@ export function villageRoadDistance(x:number,y:number):number {
  return walkwayDistance(x,y,false);
 }
 export const villagePathEdge=(x:number,y:number)=>walkwayDistance(x,y,true);
-export const VILLAGE_LAWNS=[{x:39.8,y:36.6,rx:2.2,ry:2.9},{x:52.2,y:36.6,rx:2.2,ry:2.9}] as const;
+export const VILLAGE_LAWNS=PLAZA_BEDS.map(p=>({x:p.x,y:p.y-.35,rx:1.1,ry:.75}));
 export const villageLawnDistance=(x:number,y:number)=>Math.min(...VILLAGE_LAWNS.map(p=>Math.hypot((x-p.x)/p.rx,(y-p.y)/p.ry)));
 /** Entrance coordinates are useful to future indoor scenes and NPC schedules.
  * No interior or routine is enabled until its own artwork/gameplay is ready. */
 export const VILLAGE_DOOR_APPROACHES=VILLAGE_BUILDINGS.map(b=>({id:b.id,x:b.x,y:b.y+1}));
 export const villageDoorApproach=(x:number,y:number)=>VILLAGE_BUILDINGS.some(b=>Math.abs(x-b.x)<=1.5&&y>b.y&&y<=b.y+4);
 export const VILLAGE_GARDENS=[
- {id:'horta-moinho',x:23,y:27,rx:1.8,ry:1.8,kind:'crops'},
  {id:'pousada',x:52,y:20.8,rx:2.6,ry:1.9,kind:'flowers'},
  {id:'costura',x:72,y:26.6,rx:2.3,ry:1.9,kind:'flowers'},
  {id:'comunitaria',x:57,y:18.8,rx:4,ry:1.4,kind:'flowers'},
@@ -159,15 +159,14 @@ const hash=(x:number,y:number):number=>(Math.imul(x+83,73856093)^Math.imul(y+37,
 export interface VillageTree {x:number;y:number;kind:NatureKind}
 export const VILLAGE_PROPS:readonly {kind:'well'|'bench'|'lantern'|'barrel'|'flowerpot'|'woodpile'|'anvil'|'crates'|'sacks'|'basket'|'planter';x:number;y:number}[]=[
  {kind:'well',x:24,y:23},
- {kind:'bench',x:40,y:40},{kind:'bench',x:52,y:40},
  {kind:'bench',x:42,y:28},{kind:'bench',x:60,y:51},
- {kind:'lantern',x:20,y:51},{kind:'lantern',x:36,y:41},
- {kind:'lantern',x:55,y:39},{kind:'lantern',x:44,y:28},
+ {kind:'lantern',x:20,y:51},
+ {kind:'lantern',x:44,y:28},
  {kind:'lantern',x:12,y:50},{kind:'lantern',x:35,y:50},
  {kind:'lantern',x:34,y:29},{kind:'lantern',x:60,y:30},
  {kind:'lantern',x:49,y:55},{kind:'lantern',x:58,y:61},
  {kind:'bench',x:70,y:48},{kind:'bench',x:50,y:60},
- {kind:'crates',x:29,y:33},{kind:'sacks',x:37,y:32},
+ {kind:'crates',x:29,y:33},
  {kind:'barrel',x:66,y:32},
  {kind:'woodpile',x:25,y:47},{kind:'barrel',x:34,y:51},
  {kind:'flowerpot',x:40,y:24},{kind:'flowerpot',x:48,y:24},
@@ -176,9 +175,7 @@ export const VILLAGE_PROPS:readonly {kind:'well'|'bench'|'lantern'|'barrel'|'flo
  {kind:'crates',x:28,y:59},{kind:'flowerpot',x:25,y:26},
  {kind:'basket',x:43,y:56},{kind:'barrel',x:69,y:44},
  {kind:'planter',x:48,y:19},{kind:'planter',x:72,y:26},
- {kind:'bench',x:43,y:34},{kind:'bench',x:49,y:34},
- {kind:'flowerpot',x:43,y:40},{kind:'flowerpot',x:49,y:40},
- {kind:'lantern',x:42,y:31},{kind:'lantern',x:50,y:31},
+
  {kind:'lantern',x:59,y:21},{kind:'lantern',x:37,y:18},
  {kind:'lantern',x:21,y:26},{kind:'lantern',x:27,y:41},
  {kind:'lantern',x:71,y:34},{kind:'lantern',x:69,y:62},
@@ -187,6 +184,7 @@ export const VILLAGE_PROPS:readonly {kind:'well'|'bench'|'lantern'|'barrel'|'flo
  {kind:'bench',x:47,y:14},{kind:'flowerpot',x:41,y:14},
  {kind:'basket',x:72,y:31},{kind:'flowerpot',x:77,y:31},
  {kind:'flowerpot',x:71,y:62},{kind:'barrel',x:77,y:62},
+ ...PLAZA_LAMPS.map(p=>({kind:'lantern' as const,...p})),
 ];
 export const VILLAGE_TREES:readonly VillageTree[]=(()=>{
  const trees:VillageTree[]=[],kinds=['oakA','oakB','oakC','pineA','pineB','pineC'] as const;
@@ -242,12 +240,12 @@ export function villageSceneryBlockedAt(x:number,y:number,includeWell=true,edits
   ||Object.entries(edits?.objects??{}).some(([id,e])=>!e.removed&&e.x===x&&e.y===y&&natureArt(e.kind)?.solid&&!villageTreeIds.has(id))
   ||(includeWell?villagePropAt(x,y):VILLAGE_PROPS.some(p=>p.kind!=='well'&&p.y===y&&Math.abs(p.x-x)<=(p.kind==='bench'||p.kind==='woodpile'||p.kind==='planter'?1:0)))||VILLAGE_SHORE_DETAILS.some(p=>p.kind==='shoreStones'&&p.x===x&&p.y===y)||VILLAGE_FENCES.some(p=>p.x===x&&p.y===y);
 }
-export const villageBlockedAt=(x:number,y:number,edits?:MapEditData)=>villageSceneryBlockedAt(x,y,true,edits)||villageLandmarkBlockedTile(x,y)||!!villageBuildingAt(x,y);
+export const villageBlockedAt=(x:number,y:number,edits?:MapEditData)=>villageSceneryBlockedAt(x,y,true,edits)||villageLandmarkBlockedTile(x,y)||plazaFurnitureBlockedTile(x,y)||!!villageBuildingAt(x,y);
 export function villagePointBlocked(x:number,y:number,edits?:MapEditData):boolean{
  const tx=Math.floor(x/32),ty=Math.floor(y/32);
  const scenery=villageSceneryBlockedAt(tx,ty,false,edits);
  const well=VILLAGE_PROPS.find(p=>p.kind==='well'&&Math.abs(p.x-tx)<=2&&Math.abs(p.y-ty)<=3);
- return scenery||villageLandmarkBlockedPoint(x,y)||(!!well&&wellFootprint(x,y,{x:(well.x+.5)*32,y:well.y*32+25},.49))||VILLAGE_BUILDINGS.some(b=>{
+ return scenery||plazaFurnitureBlockedPoint(x,y)||villageLandmarkBlockedPoint(x,y)||(!!well&&wellFootprint(x,y,{x:(well.x+.5)*32,y:well.y*32+25},.49))||VILLAGE_BUILDINGS.some(b=>{
   const facade=facadeForMerchant(b.shop);
   return b.shop==='blacksmith'?blacksmithBlockedPoint(x,y,b):b.shop==='carpenter'?tobiasShopBlockedPoint(x,y,b):facade?facadeBlockedPoint(facade,x,y,b):cottageSolidPoint(x,y,{x:(b.x+.5)*32,y:b.y*32+25});
  });
