@@ -24,7 +24,7 @@ describe('Celina tailor shop',()=>{
  });
  it('protects the walls and planters while preserving the door and roof overhang',()=>{
   const d=merchantDoor('celina'),b={x:70,y:22};for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]])expect(celinaShopBlockedPoint(d.x+dx,d.y+dy,b)).toBe(false);
-  expect(celinaSourceSolid(400,800)).toBe(true);expect(celinaSourceSolid(1100,850)).toBe(true);expect(celinaSourceSolid(800,850)).toBe(false);expect(celinaSourceSolid(800,300)).toBe(false);
+  expect(celinaSourceSolid(400,800)).toBe(true);expect(celinaSourceSolid(1250,850)).toBe(true);expect(celinaSourceSolid(987,895)).toBe(false);expect(celinaSourceSolid(987,350)).toBe(false);
  });
  it('uses the existing daily routine, persisted calendar without requiring a village level',()=>{
   const nav=merchantRoomNavigation('celina'),r=new MerchantDailyRoutine('celina',{...merchantOutside('celina'),direction:'down',shop:false},nav,undefined,6);

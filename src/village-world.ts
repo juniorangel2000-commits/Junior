@@ -1,16 +1,7 @@
-import {AUGUSTO_SHOP,setupAugustoShop} from './augusto-shop';
-import {ROSA_SHOP} from './data/rosa-shop';
-import {setupRosaShop} from './rosa-shop';
+import {facadeForMerchant} from './data/shop-facades';
+import {setupFacadeLight} from './shop-facade-light';
 import {TOBIAS_SHOP} from './data/tobias-shop';
 import {setupTobiasShop} from './tobias-shop';
-import {AMELIA_SHOP} from './data/amelia-shop';
-import {setupAmeliaShop} from './amelia-shop';
-import {NILO_SHOP} from './data/nilo-shop';
-import {setupNiloShop} from './nilo-shop';
-import {CELINA_SHOP} from './data/celina-shop';
-import {setupCelinaShop} from './celina-shop';
-import {DAMIAO_SHOP} from './data/damiao-shop';
-import {setupDamiaoShop} from './damiao-shop';
 import {BLACKSMITH_HOUSE,setupBlacksmithHouse,blacksmithPoint} from './blacksmith-house';
 import {villageWater,villageLakeDistance,villagePointBlocked,villageDoorApproach,villagePathEdge,VILLAGE_LAWNS,VILLAGE_GARDENS,VILLAGE_FENCES,VILLAGE_SHORE_DETAILS} from './data/village';
 import {villageGroundWeights,villageSmooth as smooth} from './data/village-ground';
@@ -182,12 +173,14 @@ export class VillageWorld {
     for(const p of b.lamps)this.scene.add.zone(x+(p.x-b.door.x)*b.scale,y+(p.y-b.door.y)*b.scale,1,1).setData('fixture-light',{radius:65});
     this.smoke.push(drawHouseSmoke(this.scene,house,b.chimney,1/b.scale));continue;
    }
-   if(building.shop==='general'||building.shop==='seeds'||building.shop==='herbalist'||building.shop==='traveler'||building.shop==='tailor'||building.shop==='fisher'){
-    const b=building.shop==='fisher'?DAMIAO_SHOP:building.shop==='tailor'?CELINA_SHOP:building.shop==='traveler'?NILO_SHOP:building.shop==='herbalist'?AMELIA_SHOP:building.shop==='seeds'?ROSA_SHOP:AUGUSTO_SHOP;if(building.shop==='fisher')setupDamiaoShop(this.scene);else if(building.shop==='tailor')setupCelinaShop(this.scene);else if(building.shop==='traveler')setupNiloShop(this.scene);else if(building.shop==='herbalist')setupAmeliaShop(this.scene);else if(building.shop==='seeds')setupRosaShop(this.scene);else setupAugustoShop(this.scene);
+   const facade=facadeForMerchant(building.shop);
+   if(facade){
+    const b=facade;setupFacadeLight(this.scene,b);
     const house=this.scene.add.image(x,y,b.texture).setOrigin(b.door.x/b.width,b.door.y/b.height).setScale(b.scale).setDepth(y).setData({'village-building':building.id,'shadow-foot':b.foot});
     this.windows.push(this.scene.add.image(x,y,b.texture+'-windows').setOrigin(house.originX,house.originY).setScale(b.scale).setDepth(y+.1).setVisible(false));
     for(const p of b.lamps)this.scene.add.zone(x+(p.x-b.door.x)*b.scale,y+(p.y-b.door.y)*b.scale,1,1).setData('fixture-light',{radius:65});
-    this.smoke.push(drawHouseSmoke(this.scene,house,b.chimney,1/b.scale));continue;
+    if(b.chimney)this.smoke.push(drawHouseSmoke(this.scene,house,b.chimney,1/b.scale));
+    continue;
    }
    const house=this.scene.add.image(x,y,'asset-house').setOrigin(.5,HOUSE_FOOT.y/HOUSE_SPRITE_SIZE.height)
     .setDepth(y).setFlipX(!!building.flip).setData('village-building',building.id);

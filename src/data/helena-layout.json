@@ -1,0 +1,182 @@
+{
+  "version": 1,
+  "pieces": [
+    {
+      "id": "structure",
+      "asset": "structure",
+      "x": 0,
+      "y": 0,
+      "sx": 1,
+      "sy": 1,
+      "visible": true,
+      "wallShade": 1
+    },
+    {
+      "id": "floor",
+      "asset": "floor-wood",
+      "x": 33,
+      "y": 116,
+      "sx": 510,
+      "sy": 234,
+      "visible": true
+    },
+    {
+      "id": "helena-counter",
+      "asset": "helena-counter",
+      "x": 288,
+      "y": 205,
+      "sx": 0.375,
+      "sy": 0.375,
+      "visible": true
+    },
+    {
+      "id": "helena-linen",
+      "asset": "helena-linen",
+      "x": 104,
+      "y": 183,
+      "sx": 0.2823920265780731,
+      "sy": 0.2823920265780731,
+      "visible": true
+    },
+    {
+      "id": "helena-hearth",
+      "asset": "helena-hearth",
+      "x": 445,
+      "y": 213,
+      "sx": 0.31986531986531985,
+      "sy": 0.31986531986531985,
+      "visible": true
+    },
+    {
+      "id": "helena-table",
+      "asset": "helena-table",
+      "x": 445,
+      "y": 316,
+      "sx": 0.30697674418604654,
+      "sy": 0.30697674418604654,
+      "visible": true
+    },
+    {
+      "id": "helena-bed",
+      "asset": "helena-bed",
+      "x": 105,
+      "y": 295,
+      "sx": 0.321285140562249,
+      "sy": 0.321285140562249,
+      "visible": true
+    },
+    {
+      "id": "helena-bench",
+      "asset": "helena-bench",
+      "x": 195,
+      "y": 158,
+      "sx": 0.19230769230769232,
+      "sy": 0.19230769230769232,
+      "visible": true
+    },
+    {
+      "id": "helena-chest",
+      "asset": "helena-chest",
+      "x": 182,
+      "y": 328,
+      "sx": 0.19771863117870722,
+      "sy": 0.19771863117870722,
+      "visible": true
+    },
+    {
+      "id": "helena-meal",
+      "asset": "helena-meal",
+      "x": 449,
+      "y": 274,
+      "sx": 0.12658227848101267,
+      "sy": 0.12658227848101267,
+      "visible": true,
+      "parent": "helena-table"
+    },
+    {
+      "id": "helena-tea",
+      "asset": "helena-tea",
+      "x": 413,
+      "y": 277,
+      "sx": 0.1111111111111111,
+      "sy": 0.1111111111111111,
+      "visible": true,
+      "parent": "helena-table"
+    },
+    {
+      "id": "helena-register",
+      "asset": "helena-register",
+      "x": 313,
+      "y": 160,
+      "sx": 0.10810810810810811,
+      "sy": 0.10810810810810811,
+      "visible": true,
+      "parent": "helena-counter"
+    },
+    {
+      "id": "helena-bread",
+      "asset": "helena-bread",
+      "x": 477,
+      "y": 282,
+      "sx": 0.08264462809917356,
+      "sy": 0.08264462809917356,
+      "visible": true,
+      "parent": "helena-table"
+    },
+    {
+      "id": "helena-pitcher",
+      "asset": "helena-pitcher",
+      "x": 263,
+      "y": 159,
+      "sx": 0.13071895424836602,
+      "sy": 0.13071895424836602,
+      "visible": true,
+      "parent": "helena-counter"
+    },
+    {
+      "id": "helena-lantern",
+      "asset": "helena-lantern",
+      "x": 58,
+      "y": 79,
+      "sx": 0.17777777777777778,
+      "sy": 0.17777777777777778,
+      "visible": true
+    },
+    {
+      "id": "helena-chair",
+      "asset": "helena-chair",
+      "x": 365,
+      "y": 283,
+      "sx": 0.15813953488372093,
+      "sy": 0.15813953488372093,
+      "visible": true
+    },
+    {
+      "id": "helena-rug",
+      "asset": "helena-rug",
+      "x": 288,
+      "y": 302,
+      "sx": 0.25153374233128833,
+      "sy": 0.25153374233128833,
+      "visible": true
+    },
+    {
+      "id": "helena-window",
+      "asset": "helena-window",
+      "x": 330,
+      "y": 105,
+      "sx": 0.29056603773584905,
+      "sy": 0.29056603773584905,
+      "visible": true
+    },
+    {
+      "id": "helena-lantern-right",
+      "asset": "helena-lantern",
+      "x": 520,
+      "y": 79,
+      "sx": 0.17777777777777778,
+      "sy": 0.17777777777777778,
+      "visible": true
+    }
+  ]
+}

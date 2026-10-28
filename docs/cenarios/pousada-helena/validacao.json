@@ -1,0 +1,132 @@
+{
+  "checks": [
+    {
+      "name": "Poses atuais disponíveis enquanto a animação é preparada",
+      "passed": true
+    },
+    {
+      "name": "Condução até a loja mantém as poses existentes e espera o jogador",
+      "passed": true,
+      "details": {
+        "active": true,
+        "arrived": true,
+        "seen": [
+          2,
+          4,
+          5
+        ],
+        "stoppedForPlayer": true
+      }
+    },
+    {
+      "name": "Retrato e comércio continuam funcionando com as poses originais",
+      "passed": true,
+      "details": {
+        "trade": true,
+        "portrait": true
+      }
+    },
+    {
+      "name": "Cabana de pesca possui dezenove peças editáveis, parede escura, madeira e lanternas",
+      "passed": true,
+      "details": {
+        "pieces": 19,
+        "wood": "floor-wood",
+        "shade": 1,
+        "objects": 19,
+        "effects": [
+          "lamp",
+          "lamp",
+          "hearth",
+          "steam"
+        ]
+      }
+    },
+    {
+      "name": "H abre o editor de desenvolvimento da pousada",
+      "passed": true
+    },
+    {
+      "name": "Editor move objetos e conserva a circulação",
+      "passed": true
+    },
+    {
+      "name": "Editor exporta JSON próprio da pousada",
+      "passed": true
+    },
+    {
+      "name": "Save mantém Helena no interior correto",
+      "passed": true,
+      "details": {
+        "owner": "helena",
+        "resident": {
+          "id": "helena",
+          "x": 288,
+          "y": 151,
+          "direction": "down",
+          "shop": true
+        }
+      }
+    },
+    {
+      "name": "Fachada própria substitui a casa genérica e tem escala compatível",
+      "passed": true,
+      "details": {
+        "texture": "village-helena-shop",
+        "width": 391.68,
+        "duplicate": false
+      }
+    },
+    {
+      "name": "Janelas recebem iluminação à noite",
+      "passed": true,
+      "details": [
+        {
+          "visible": true,
+          "alpha": 0.88
+        }
+      ]
+    },
+    {
+      "name": "Entrada e saída pela porta funcionam caminhando sem apertar E",
+      "passed": true,
+      "details": {
+        "entered": true,
+        "exited": true,
+        "x": 1488,
+        "y": 663,
+        "door": {
+          "x": 1488,
+          "y": 637,
+          "halfWidth": 16,
+          "depth": 12,
+          "direction": "up"
+        }
+      }
+    },
+    {
+      "name": "Rotina da Helena abre, sai para a praça, retorna e encerra às 22h",
+      "passed": true,
+      "details": {
+        "morning": true,
+        "lunch": true,
+        "returned": true,
+        "closed": true,
+        "routines": 9
+      }
+    },
+    {
+      "name": "Rotina utiliza somente quadros do atlas recebido",
+      "passed": true
+    },
+    {
+      "name": "Sem erros WebGL, JavaScript ou arquivos ausentes",
+      "passed": true,
+      "details": {
+        "glError": 0,
+        "errors": []
+      }
+    }
+  ],
+  "errors": []
+}

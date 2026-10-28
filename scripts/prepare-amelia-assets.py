@@ -7,7 +7,7 @@ ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'public/assets/visual/village/amelia';OUT.mkdir(parents=True,exist_ok=True)
 for source,dest in [('exec-4ae6c580-fdfc-4f43-af4e-b9aa42a60468.png','fachada.png'),('exec-1c437d8e-8c7a-45aa-9cba-657db8a6331d.png','objetos.png'),('exec-8a19a5be-b51a-498f-944d-652dac0b91d7.png','janela.png')]:
  p=Path('/workspace/generated_images')/source
- if p.exists():shutil.copy2(p,OUT/dest)
+ if p.exists() and (dest!='fachada.png' or not (OUT/dest).exists()):shutil.copy2(p,OUT/dest)
 plan=[
  ('counter','Balcão de remédios',288,210,150,64,'object',None),
  ('apothecary','Estante de ervas e frascos',423,149,89,109,'object',None),

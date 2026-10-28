@@ -1,0 +1,435 @@
+{
+  "npc": "helena",
+  "createdFromScratch": 16,
+  "referenceCrops": 0,
+  "assets": [
+    {
+      "id": "helena-counter",
+      "name": "Recepção da pousada",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-counter",
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 432,
+        "height": 314
+      },
+      "w": 432,
+      "h": 314,
+      "ox": 0.5335648148148148,
+      "oy": 0.9012738853503185,
+      "bounds": [
+        43,
+        91,
+        418,
+        283
+      ],
+      "collision": {
+        "x": 69.25,
+        "y": 221.56,
+        "width": 322.5,
+        "height": 59.519999999999996
+      },
+      "layer": "object"
+    },
+    {
+      "id": "helena-linen",
+      "name": "Armário de roupas de cama",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-linen",
+      "crop": {
+        "x": 432,
+        "y": 0,
+        "width": 336,
+        "height": 314
+      },
+      "w": 336,
+      "h": 314,
+      "ox": 0.4270833333333333,
+      "oy": 0.9968152866242038,
+      "bounds": [
+        49,
+        12,
+        238,
+        313
+      ],
+      "collision": {
+        "x": 62.230000000000004,
+        "y": 216.68,
+        "width": 162.54,
+        "height": 93.31
+      },
+      "layer": "object"
+    },
+    {
+      "id": "helena-hearth",
+      "name": "Lareira da pousada",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-hearth",
+      "crop": {
+        "x": 768,
+        "y": 0,
+        "width": 356,
+        "height": 314
+      },
+      "w": 356,
+      "h": 314,
+      "ox": 0.4845505617977528,
+      "oy": 0.9808917197452229,
+      "bounds": [
+        19,
+        11,
+        326,
+        308
+      ],
+      "collision": {
+        "x": 40.49,
+        "y": 212.96,
+        "width": 264.02,
+        "height": 92.07
+      },
+      "layer": "object"
+    },
+    {
+      "id": "helena-table",
+      "name": "Mesa de refeições",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-table",
+      "crop": {
+        "x": 1124,
+        "y": 0,
+        "width": 412,
+        "height": 314
+      },
+      "w": 412,
+      "h": 314,
+      "ox": 0.4975728155339806,
+      "oy": 0.9235668789808917,
+      "bounds": [
+        66,
+        75,
+        344,
+        290
+      ],
+      "collision": {
+        "x": 85.46000000000001,
+        "y": 221.20000000000002,
+        "width": 239.07999999999998,
+        "height": 66.65
+      },
+      "layer": "object"
+    },
+    {
+      "id": "helena-bed",
+      "name": "Cama de hóspedes",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-bed",
+      "crop": {
+        "x": 0,
+        "y": 314,
+        "width": 384,
+        "height": 263
+      },
+      "w": 384,
+      "h": 263,
+      "ox": 0.5299479166666666,
+      "oy": 0.973384030418251,
+      "bounds": [
+        79,
+        1,
+        328,
+        256
+      ],
+      "collision": {
+        "x": 96.43,
+        "y": 174.4,
+        "width": 214.14,
+        "height": 79.05
+      },
+      "layer": "object"
+    },
+    {
+      "id": "helena-bench",
+      "name": "Banco de espera",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-bench",
+      "crop": {
+        "x": 384,
+        "y": 314,
+        "width": 384,
+        "height": 263
+      },
+      "w": 384,
+      "h": 263,
+      "ox": 0.5,
+      "oy": 0.9125475285171103,
+      "bounds": [
+        36,
+        31,
+        348,
+        240
+      ],
+      "collision": {
+        "x": 57.84,
+        "y": 173.12,
+        "width": 268.32,
+        "height": 64.79
+      },
+      "layer": "object"
+    },
+    {
+      "id": "helena-chest",
+      "name": "Baú de viagem",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-chest",
+      "crop": {
+        "x": 768,
+        "y": 314,
+        "width": 356,
+        "height": 263
+      },
+      "w": 356,
+      "h": 263,
+      "ox": 0.4957865168539326,
+      "oy": 0.8326996197718631,
+      "bounds": [
+        45,
+        61,
+        308,
+        219
+      ],
+      "collision": {
+        "x": 63.41,
+        "y": 168.44,
+        "width": 226.18,
+        "height": 48.98
+      },
+      "layer": "object"
+    },
+    {
+      "id": "helena-meal",
+      "name": "Bandeja de refeição",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-meal",
+      "crop": {
+        "x": 1124,
+        "y": 314,
+        "width": 412,
+        "height": 263
+      },
+      "w": 412,
+      "h": 263,
+      "ox": 0.5169902912621359,
+      "oy": 0.7452471482889734,
+      "bounds": [
+        55,
+        68,
+        371,
+        196
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "helena-tea",
+      "name": "Chaleira e chá",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-tea",
+      "crop": {
+        "x": 0,
+        "y": 577,
+        "width": 384,
+        "height": 198
+      },
+      "w": 384,
+      "h": 198,
+      "ox": 0.5442708333333334,
+      "oy": 0.9444444444444444,
+      "bounds": [
+        92,
+        7,
+        326,
+        187
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "helena-register",
+      "name": "Livro de hóspedes",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-register",
+      "crop": {
+        "x": 384,
+        "y": 577,
+        "width": 384,
+        "height": 198
+      },
+      "w": 384,
+      "h": 198,
+      "ox": 0.5104166666666666,
+      "oy": 0.9191919191919192,
+      "bounds": [
+        48,
+        23,
+        344,
+        182
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "helena-bread",
+      "name": "Cesta de pães",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-bread",
+      "crop": {
+        "x": 768,
+        "y": 577,
+        "width": 356,
+        "height": 198
+      },
+      "w": 356,
+      "h": 198,
+      "ox": 0.5028089887640449,
+      "oy": 0.898989898989899,
+      "bounds": [
+        58,
+        23,
+        300,
+        178
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "helena-pitcher",
+      "name": "Jarra de água",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-pitcher",
+      "crop": {
+        "x": 1124,
+        "y": 577,
+        "width": 412,
+        "height": 198
+      },
+      "w": 412,
+      "h": 198,
+      "ox": 0.5424757281553398,
+      "oy": 0.9191919191919192,
+      "bounds": [
+        147,
+        3,
+        300,
+        182
+      ],
+      "collision": null,
+      "layer": "object"
+    },
+    {
+      "id": "helena-lantern",
+      "name": "Lanterna da pousada",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-lantern",
+      "crop": {
+        "x": 0,
+        "y": 775,
+        "width": 432,
+        "height": 249
+      },
+      "w": 432,
+      "h": 249,
+      "ox": 0.4849537037037037,
+      "oy": 0.9317269076305221,
+      "bounds": [
+        142,
+        10,
+        277,
+        232
+      ],
+      "collision": null,
+      "layer": "wall"
+    },
+    {
+      "id": "helena-chair",
+      "name": "Cadeira de hóspedes",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-chair",
+      "crop": {
+        "x": 432,
+        "y": 775,
+        "width": 312,
+        "height": 249
+      },
+      "w": 312,
+      "h": 249,
+      "ox": 0.453525641025641,
+      "oy": 0.927710843373494,
+      "bounds": [
+        65,
+        16,
+        218,
+        231
+      ],
+      "collision": {
+        "x": 75.71000000000001,
+        "y": 162.20000000000002,
+        "width": 131.57999999999998,
+        "height": 66.65
+      },
+      "layer": "object"
+    },
+    {
+      "id": "helena-rug",
+      "name": "Tapete da pousada",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-rug",
+      "crop": {
+        "x": 744,
+        "y": 775,
+        "width": 408,
+        "height": 249
+      },
+      "w": 408,
+      "h": 249,
+      "ox": 0.5,
+      "oy": 0.8192771084337349,
+      "bounds": [
+        14,
+        41,
+        394,
+        204
+      ],
+      "collision": null,
+      "layer": "floor"
+    },
+    {
+      "id": "helena-window",
+      "name": "Janela da pousada",
+      "file": "assets/visual/village/helena/objetos.png",
+      "frame": "helena-window",
+      "crop": {
+        "x": 1152,
+        "y": 775,
+        "width": 384,
+        "height": 249
+      },
+      "w": 384,
+      "h": 249,
+      "ox": 0.4830729166666667,
+      "oy": 0.9156626506024096,
+      "bounds": [
+        53,
+        13,
+        318,
+        228
+      ],
+      "collision": null,
+      "layer": "wall"
+    }
+  ],
+  "sourceHashes": {
+    "fachada.png": "b89c98baf629cffaba37f0d728841a1ad0447d0aa2016eb933b4ef752da4cc96",
+    "objetos.png": "234f844642d93d187f2264383b535d5f70732a33bb8b230fcf3557928b9056d6"
+  }
+}

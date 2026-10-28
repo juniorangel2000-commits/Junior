@@ -687,5 +687,8 @@
     "y": 0.85
   },
   "displaySize": 72,
-  "pixelsChanged": 0
+  "pixelsChanged": 0,
+  "sourceHashes": {
+    "fachada.png": "94de2a251d0a7064e5a7f33d987c47d36b6296d373292ec4feee2f6570a106c6"
+  }
 }

@@ -10,7 +10,7 @@ OUT.mkdir(parents=True,exist_ok=True)
 shutil.copytree('/workspace/after-rain-rosa/recebido/Idle',OUT/'Idle',dirs_exist_ok=True)
 (OUT/'personagem-sha256.json').write_text(json.dumps({str(p.relative_to(OUT/'Idle')):hashlib.sha256(p.read_bytes()).hexdigest() for p in (OUT/'Idle').rglob('*.png')},indent=2)+'\n')
 shutil.copy2('/workspace/generated_images/exec-4fa19895-7ef1-4280-a83e-c4b4b6584f4b.png',OUT/'objetos.png')
-shutil.copy2('/workspace/generated_images/exec-ca970d45-1857-4d59-bac9-a6626aad9afc.png',OUT/'fachada.png')
+if not (OUT/'fachada.png').exists():shutil.copy2('/workspace/generated_images/exec-ca970d45-1857-4d59-bac9-a6626aad9afc.png',OUT/'fachada.png')
 spec=[
  ('counter','Balcão agrícola',288,218,158,64,'object',None),
  ('seeds','Estante de sementes',288,143,118,106,'object',None),

@@ -24,7 +24,7 @@ describe('Damiao fishing shop',()=>{
  });
  it('protects the walls and fishing equipment while preserving the door and roof overhang',()=>{
   const d=merchantDoor('damiao'),b={x:78,y:42};for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]])expect(damiaoShopBlockedPoint(d.x+dx,d.y+dy,b)).toBe(false);
-  expect(damiaoSourceSolid(400,800)).toBe(true);expect(damiaoSourceSolid(315,900)).toBe(true);expect(damiaoSourceSolid(1300,900)).toBe(true);expect(damiaoSourceSolid(1100,850)).toBe(true);expect(damiaoSourceSolid(800,850)).toBe(false);expect(damiaoSourceSolid(800,300)).toBe(false);
+  expect(damiaoSourceSolid(360,700)).toBe(true);expect(damiaoSourceSolid(180,820)).toBe(true);expect(damiaoSourceSolid(1380,820)).toBe(true);expect(damiaoSourceSolid(620,803)).toBe(false);expect(damiaoSourceSolid(620,300)).toBe(false);
  });
  it('uses the existing daily routine, persisted calendar without requiring a village level',()=>{
   const nav=merchantRoomNavigation('damiao'),r=new MerchantDailyRoutine('damiao',{...merchantOutside('damiao'),direction:'down',shop:false},nav,undefined,6);

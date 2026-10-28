@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "checks": [
+    "augusto: entrada e saída caminhando",
+    "augusto: fachada própria",
+    "augusto: máscara de iluminação não vazia",
+    "rosa: entrada e saída caminhando",
+    "rosa: fachada própria",
+    "rosa: máscara de iluminação não vazia",
+    "amelia: entrada e saída caminhando",
+    "amelia: fachada própria",
+    "amelia: máscara de iluminação não vazia",
+    "nilo: entrada e saída caminhando",
+    "nilo: fachada própria",
+    "nilo: máscara de iluminação não vazia",
+    "celina: entrada e saída caminhando",
+    "celina: fachada própria",
+    "celina: máscara de iluminação não vazia",
+    "damiao: entrada e saída caminhando",
+    "damiao: fachada própria",
+    "damiao: máscara de iluminação não vazia",
+    "helena: entrada e saída caminhando",
+    "helena: fachada própria",
+    "helena: máscara de iluminação não vazia",
+    "icaro: entrada e saída caminhando",
+    "icaro: fachada própria",
+    "icaro: máscara de iluminação não vazia"
+  ],
+  "errors": []
+}

@@ -15,6 +15,8 @@ import celinaCatalog from '../../public/assets/visual/village/celina/manifest.js
 import authoredCelina from './celina-layout.json';
 import damiaoCatalog from '../../public/assets/visual/village/damiao/manifest.json';
 import authoredDamiao from './damiao-layout.json';
+import helenaCatalog from '../../public/assets/visual/village/helena/manifest.json';
+import authoredHelena from './helena-layout.json';
 import type {ResidentId} from '../systems/merchant-visit';
 import type {SmithAsset,SmithLayout} from '../systems/smith-layout';
 export const MERCHANT_ROOM_SIZE={width:576,height:384};
@@ -41,18 +43,19 @@ export const MERCHANT_ROOM_ASSETS:readonly SmithAsset[]=[...merchantAssets.map(a
  ...niloCatalog.assets as SmithAsset[],
  ...celinaCatalog.assets as SmithAsset[],
  ...damiaoCatalog.assets as SmithAsset[],
+ ...helenaCatalog.assets as SmithAsset[],
  {id:'structure',name:'Paredes e estrutura',file:'',w:576,h:384,ox:0,oy:0,bounds:[0,0,576,384],collision:null,layer:'wall'},
  {id:'floor-wood',name:'Piso de madeira',file:'materiais/piso-madeira.png',w:1,h:1,ox:0,oy:0,bounds:[0,0,1,1],collision:null,layer:'floor',tile:true},
  {id:'floor-stone',name:'Piso de pedra',file:'../vila-v31/bento/interior-novo/piso-lajes.png',w:1,h:1,ox:0,oy:0,bounds:[0,0,1,1],collision:null,layer:'floor',tile:true},
 ];
 const cached=new Map<ResidentId,SmithLayout>();
 function previousRoomDefault(id:ResidentId):SmithLayout{let data=cached.get(id);if(!data){data={version:1,pieces:[{id:'structure',asset:'structure',x:0,y:0,sx:1,sy:1,visible:true,wallShade:1},{id:'floor',asset:'floor-wood',x:33,y:116,sx:510,sy:234,visible:true},...merchantRoomPieces(id).map(a=>({id:a.id,asset:a.id,x:a.recommendedPosition.x*.6,y:a.recommendedPosition.y*.6,sx:a.scale*.6,sy:a.scale*.6,visible:true,...a.supportId?{parent:a.supportId}:{}}))]};cached.set(id,data);}return data;}
-const roomDefault=(id:ResidentId):SmithLayout=>id==='augusto'?authoredAugusto as SmithLayout:id==='rosa'?authoredRosa as SmithLayout:id==='tobias'?authoredTobias as SmithLayout:id==='amelia'?authoredAmelia as SmithLayout:id==='nilo'?authoredNilo as SmithLayout:id==='celina'?authoredCelina as SmithLayout:id==='damiao'?authoredDamiao as SmithLayout:previousRoomDefault(id);
+const roomDefault=(id:ResidentId):SmithLayout=>id==='augusto'?authoredAugusto as SmithLayout:id==='rosa'?authoredRosa as SmithLayout:id==='tobias'?authoredTobias as SmithLayout:id==='amelia'?authoredAmelia as SmithLayout:id==='nilo'?authoredNilo as SmithLayout:id==='celina'?authoredCelina as SmithLayout:id==='damiao'?authoredDamiao as SmithLayout:id==='helena'?authoredHelena as SmithLayout:previousRoomDefault(id);
 export const createMerchantLayout=(id:ResidentId)=>structuredClone(roomDefault(id));
 const roomSignature=(layout:SmithLayout)=>JSON.stringify([...layout.pieces].sort((a,b)=>a.id.localeCompare(b.id)).map(p=>({id:p.id,asset:p.asset,x:p.x,y:p.y,sx:p.sx,sy:p.sy,visible:p.visible,parent:p.parent??null,solid:p.solid??!!MERCHANT_ROOM_ASSETS.find(a=>a.id===p.asset)?.collision,effects:p.effects!==false,wallShade:p.wallShade??(p.id==='structure'?1:0)})));
 /** Upgrade only the untouched original room; preserve any player-authored edits. */
 export function resolveMerchantLayout(id:ResidentId,saved?:SmithLayout):SmithLayout{
- const upgrade=!saved||(id==='augusto'||id==='rosa'||id==='tobias'||id==='amelia'||id==='nilo'||id==='celina'||id==='damiao')&&roomSignature(saved)===roomSignature(previousRoomDefault(id))||id==='rosa'&&!!saved&&roomSignature(saved)===roomSignature(previousRosa as SmithLayout)||id==='tobias'&&!!saved&&roomSignature(saved)===roomSignature(previousTobias as SmithLayout);
+ const upgrade=!saved||(id==='augusto'||id==='rosa'||id==='tobias'||id==='amelia'||id==='nilo'||id==='celina'||id==='damiao'||id==='helena')&&roomSignature(saved)===roomSignature(previousRoomDefault(id))||id==='rosa'&&!!saved&&roomSignature(saved)===roomSignature(previousRosa as SmithLayout)||id==='tobias'&&!!saved&&roomSignature(saved)===roomSignature(previousTobias as SmithLayout);
  return structuredClone(upgrade?roomDefault(id):saved!);
 }
 export function validMerchantLayout(value:unknown):value is SmithLayout{

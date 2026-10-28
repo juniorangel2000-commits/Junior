@@ -1,10 +1,5 @@
-import {augustoShopBlockedPoint} from './augusto-shop';
-import {rosaShopBlockedPoint} from './rosa-shop';
+import {facadeForMerchant,facadeBlockedPoint} from './shop-facades';
 import {tobiasShopBlockedPoint} from './tobias-shop';
-import {ameliaShopBlockedPoint} from './amelia-shop';
-import {niloShopBlockedPoint} from './nilo-shop';
-import {celinaShopBlockedPoint} from './celina-shop';
-import {damiaoShopBlockedPoint} from './damiao-shop';
 import {cottageSolidPoint,cottageSolidTile,wellFootprint} from './architecture-collision';
 import {blacksmithBlockedPoint} from './blacksmith-house';
 import {TILE,WORLD_WIDTH,WORLD_HEIGHT} from './world-size';
@@ -145,9 +140,10 @@ export function villageGround(x:number,y:number):'grass'|'forest'|'path'|'paving
  return edge<8+Math.sin(x*.27+y*.13)*1.4?'forest':'grass';
 }
 export function villageBuildingAt(x:number,y:number):VillageBuilding|undefined {
- return VILLAGE_BUILDINGS.find(b=>b.shop==='blacksmith'
-  ? blacksmithBlockedPoint((x+.5)*32,(y+.5)*32,b)
-  :b.shop==='general'?augustoShopBlockedPoint((x+.5)*32,(y+.5)*32,b):b.shop==='seeds'?rosaShopBlockedPoint((x+.5)*32,(y+.5)*32,b):b.shop==='carpenter'?tobiasShopBlockedPoint((x+.5)*32,(y+.5)*32,b):b.shop==='herbalist'?ameliaShopBlockedPoint((x+.5)*32,(y+.5)*32,b):b.shop==='traveler'?niloShopBlockedPoint((x+.5)*32,(y+.5)*32,b):b.shop==='tailor'?celinaShopBlockedPoint((x+.5)*32,(y+.5)*32,b):b.shop==='fisher'?damiaoShopBlockedPoint((x+.5)*32,(y+.5)*32,b):cottageSolidTile(x,y,{x:(b.x+.5)*32,y:b.y*32+25}));
+ return VILLAGE_BUILDINGS.find(b=>{
+  const px=(x+.5)*32,py=(y+.5)*32,facade=facadeForMerchant(b.shop);
+  return b.shop==='blacksmith'?blacksmithBlockedPoint(px,py,b):b.shop==='carpenter'?tobiasShopBlockedPoint(px,py,b):facade?facadeBlockedPoint(facade,px,py,b):cottageSolidTile(x,y,{x:(b.x+.5)*32,y:b.y*32+25});
+ });
 }
 const hash=(x:number,y:number):number=>(Math.imul(x+83,73856093)^Math.imul(y+37,19349663))>>>0;
 export interface VillageTree {x:number;y:number;kind:NatureKind}
@@ -228,6 +224,9 @@ export function villagePointBlocked(x:number,y:number,edits?:MapEditData):boolea
  const tx=Math.floor(x/32),ty=Math.floor(y/32);
  const scenery=villageSceneryBlockedAt(tx,ty,false,edits);
  const well=VILLAGE_PROPS.find(p=>p.kind==='well'&&Math.abs(p.x-tx)<=2&&Math.abs(p.y-ty)<=3);
- return scenery||(!!well&&wellFootprint(x,y,{x:(well.x+.5)*32,y:well.y*32+25},.49))||VILLAGE_BUILDINGS.some(b=>b.shop==='blacksmith'?blacksmithBlockedPoint(x,y,b):b.shop==='general'?augustoShopBlockedPoint(x,y,b):b.shop==='seeds'?rosaShopBlockedPoint(x,y,b):b.shop==='carpenter'?tobiasShopBlockedPoint(x,y,b):b.shop==='herbalist'?ameliaShopBlockedPoint(x,y,b):b.shop==='traveler'?niloShopBlockedPoint(x,y,b):b.shop==='tailor'?celinaShopBlockedPoint(x,y,b):b.shop==='fisher'?damiaoShopBlockedPoint(x,y,b):cottageSolidPoint(x,y,{x:(b.x+.5)*32,y:b.y*32+25}));
+ return scenery||(!!well&&wellFootprint(x,y,{x:(well.x+.5)*32,y:well.y*32+25},.49))||VILLAGE_BUILDINGS.some(b=>{
+  const facade=facadeForMerchant(b.shop);
+  return b.shop==='blacksmith'?blacksmithBlockedPoint(x,y,b):b.shop==='carpenter'?tobiasShopBlockedPoint(x,y,b):facade?facadeBlockedPoint(facade,x,y,b):cottageSolidPoint(x,y,{x:(b.x+.5)*32,y:b.y*32+25});
+ });
 }
 export const villagePixelPoint=(point:{x:number;y:number})=>({x:(point.x+.5)*TILE,y:(point.y+.5)*TILE});

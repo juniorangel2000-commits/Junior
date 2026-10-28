@@ -437,5 +437,8 @@
       "collision": null,
       "layer": "floor"
     }
-  ]
+  ],
+  "sourceHashes": {
+    "fachada.png": "f50118c8c85f54ff3c8646bd3e2a7df18e2daf6fb7f44f5d9123aeb611e5ea38"
+  }
 }

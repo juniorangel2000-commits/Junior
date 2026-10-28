@@ -1,16 +1,11 @@
+import {SHOP_FACADES} from './data/shop-facades';
 import {niloTexture,preloadNiloSprites} from './nilo-sprites';
-import {AUGUSTO_SHOP} from './data/augusto-shop';
 import {bentoTexture,preloadBentoSprites} from './bento-sprites';
 import {augustoTexture,preloadAugustoSprites} from './augusto-sprites';
 import {rosaTexture,preloadRosaSprites} from './rosa-sprites';
 import {tobiasTexture,preloadTobiasSprites} from './tobias-sprites';
 import {ameliaTexture,preloadAmeliaSprites} from './amelia-sprites';
-import {ROSA_SHOP} from './data/rosa-shop';
 import {TOBIAS_SHOP} from './data/tobias-shop';
-import {AMELIA_SHOP} from './data/amelia-shop';
-import {NILO_SHOP} from './data/nilo-shop';
-import {CELINA_SHOP} from './data/celina-shop';
-import {DAMIAO_SHOP} from './data/damiao-shop';
 import oreFrames from '../public/assets/visual/economy/deposits/rochas-detalhadas.json';
 import {preloadMerchantRooms} from './merchant-interior';
 import type Phaser from 'phaser';
@@ -25,14 +20,15 @@ export function preloadEconomyArt(scene:Phaser.Scene):void{
  preloadTobiasSprites(scene);
  preloadAmeliaSprites(scene);
  preloadNiloSprites(scene);
- scene.load.image(ROSA_SHOP.texture,ROSA_SHOP.file);
+
  scene.load.image(TOBIAS_SHOP.texture,TOBIAS_SHOP.file);
- scene.load.image(AMELIA_SHOP.texture,AMELIA_SHOP.file);
- scene.load.image(NILO_SHOP.texture,NILO_SHOP.file);
- scene.load.image(CELINA_SHOP.texture,CELINA_SHOP.file);
- scene.load.image(DAMIAO_SHOP.texture,DAMIAO_SHOP.file);
+
+
+
+
  scene.load.image('detailed-ore-atlas',`${ROOT}/deposits/rochas-detalhadas.png`);
- scene.load.image(AUGUSTO_SHOP.texture,AUGUSTO_SHOP.file);
+
+ for(const b of Object.values(SHOP_FACADES))scene.load.image(b.texture,b.file);
  preloadMerchantRooms(scene);
  for(const metal of ['iron','gold','blackMetal'] as const)scene.load.image(mineralTexture(metal),`${ROOT}/deposits/${metal}.png`);
  for(const tool of ART_TOOL_IDS)for(const [tier,material]of TOOL_MATERIALS.entries())scene.load.image(`economy-tool-${material}-${tool}`,tierToolIcon(tool,tier));

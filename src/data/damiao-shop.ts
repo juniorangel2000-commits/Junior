@@ -1,13 +1,4 @@
-import {pointInPolygon} from './architecture-collision';
-export const DAMIAO_SHOP={texture:'village-damiao-shop',file:'assets/visual/village/damiao/fachada.png',width:1536,height:1024,scale:.255,
- door:{x:800,y:866},foot:958/1024,chimney:{x:570,y:38},lamps:[{x:654,y:646},{x:955,y:645}],
- glass:[{x:759,y:308,width:109,height:92},{x:445,y:351,width:52,height:70},{x:1082,y:350,width:44,height:70},{x:344,y:579,width:262,height:250},{x:1025,y:579,width:238,height:250}],
-} as const;
-// The roof overhang is not a ground obstacle; the doorway remains walkable.
-const walls=[[245,535],[1345,535],[1345,870],[885,870],[885,831],[716,831],[716,870],[245,870]] as const;
-const leftGear=[[208,735],[440,735],[440,932],[208,932]] as const;
-const rightGear=[[1163,792],[1403,792],[1403,937],[1163,937]] as const;
-export const damiaoSourceSolid=(x:number,y:number):boolean=>pointInPolygon(x,y,walls)||pointInPolygon(x,y,leftGear)||pointInPolygon(x,y,rightGear);
-export function damiaoShopBlockedPoint(x:number,y:number,b:{x:number;y:number}):boolean{
- return damiaoSourceSolid(DAMIAO_SHOP.door.x+(x-(b.x+.5)*32)/DAMIAO_SHOP.scale,DAMIAO_SHOP.door.y+(y-(b.y*32+25))/DAMIAO_SHOP.scale);
-}
+import {SHOP_FACADES,facadeBlockedPoint,facadeSourceSolid} from './shop-facades';
+export const DAMIAO_SHOP = SHOP_FACADES.damiao;
+export const damiaoSourceSolid = (x:number,y:number):boolean => facadeSourceSolid(DAMIAO_SHOP,x,y);
+export const damiaoShopBlockedPoint = (x:number,y:number,b:{x:number;y:number}):boolean => facadeBlockedPoint(DAMIAO_SHOP,x,y,b);

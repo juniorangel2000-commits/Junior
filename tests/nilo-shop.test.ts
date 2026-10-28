@@ -24,7 +24,7 @@ describe('Nilo antique shop',()=>{
  });
  it('protects the walls and planters while preserving the door and roof overhang',()=>{
   const d=merchantDoor('nilo'),b={x:17,y:61};for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]])expect(niloShopBlockedPoint(d.x+dx,d.y+dy,b)).toBe(false);
-  expect(niloSourceSolid(400,800)).toBe(true);expect(niloSourceSolid(1100,850)).toBe(true);expect(niloSourceSolid(660,903)).toBe(true);expect(niloSourceSolid(800,850)).toBe(false);expect(niloSourceSolid(800,300)).toBe(false);
+  expect(niloSourceSolid(540,800)).toBe(true);expect(niloSourceSolid(995,800)).toBe(true);expect(niloSourceSolid(768,895)).toBe(false);expect(niloSourceSolid(768,400)).toBe(false);
  });
  it('uses the existing daily routine, persisted calendar without requiring a village level',()=>{
   const nav=merchantRoomNavigation('nilo'),r=new MerchantDailyRoutine('nilo',{...merchantOutside('nilo'),direction:'down',shop:false},nav,undefined,6);
