@@ -1,0 +1,918 @@
+{
+  "checks": [
+    {
+      "name": "Viagem chuvosa leva ao menu com duas opções",
+      "passed": true,
+      "details": {
+        "duration": 5.718
+      }
+    },
+    {
+      "name": "Menu continua legível em viewport estreito",
+      "passed": true,
+      "details": 680
+    },
+    {
+      "name": "Combate automático elimina inimigos e oferece três cartas sem comando de ataque",
+      "passed": true,
+      "details": {
+        "phase": "choice",
+        "kills": 6,
+        "elapsed": 17.90000000000005,
+        "cards": 3,
+        "level": 2
+      }
+    },
+    {
+      "name": "Arsenal limita a quatro armas e continua oferecendo melhorias",
+      "passed": true,
+      "details": {
+        "weapons": [
+          "sword",
+          "orbiting-shield",
+          "rotating-blade",
+          "hammer"
+        ],
+        "cards": []
+      }
+    },
+    {
+      "name": "Pausa congela combate e cronômetro",
+      "passed": true,
+      "details": {
+        "phase": "paused",
+        "frozen": true
+      }
+    },
+    {
+      "name": "Praça sem árvores ou construções, com bancos verticais voltados para a fonte",
+      "passed": true,
+      "details": {
+        "unwanted": 0,
+        "vertical": [
+          {
+            "x": 1300,
+            "flipped": false
+          },
+          {
+            "x": 1770,
+            "flipped": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "Save guarda a partida temporária e progresso permanente em campos separados",
+      "passed": true,
+      "details": true
+    },
+    {
+      "name": "Continuar retoma a expedição pausada com o mesmo Arsenal e tempo",
+      "passed": true,
+      "details": {
+        "weapons": [
+          "sword",
+          "orbiting-shield",
+          "rotating-blade",
+          "hammer"
+        ],
+        "elapsed": 20.533333333333513,
+        "phase": "paused"
+      }
+    },
+    {
+      "name": "Abandono encerra temporários e preserva o retorno exato na estrada",
+      "passed": true,
+      "details": {
+        "settled": true,
+        "x": 720,
+        "y": 80
+      }
+    },
+    {
+      "name": "Saída não transporta para a cabana",
+      "passed": true,
+      "details": {
+        "x": 720,
+        "y": 80
+      }
+    },
+    {
+      "name": "Estacionamento inicia em rodada um com um pet separado da espada",
+      "passed": true,
+      "details": {
+        "mode": "mall-parking",
+        "round": 1,
+        "pet": "qa-dog",
+        "weapons": [
+          "sword"
+        ]
+      }
+    },
+    {
+      "name": "Estacionamento sem árvores ou construções",
+      "passed": true,
+      "details": {
+        "unwanted": 0
+      }
+    },
+    {
+      "name": "Resgate usa sprite do animal e mantém somente o companheiro escolhido ativo",
+      "passed": true,
+      "details": {
+        "visible": true,
+        "found": "cat",
+        "active": "qa-dog"
+      }
+    },
+    {
+      "name": "Carga de 240 inimigos mantém pools e efeitos limitados",
+      "passed": true,
+      "details": {
+        "averageUpdateMs": 2.297500000024835,
+        "images": 240,
+        "enemies": 240,
+        "projectiles": 0,
+        "effects": 1
+      }
+    },
+    {
+      "name": "Acertos exibem dano, lampejo e fase da horda com pools limitados e pausa estável",
+      "passed": true,
+      "details": {
+        "impacts": 1,
+        "visibleNumbers": 1,
+        "pooledNumbers": 3,
+        "flashed": true,
+        "phaseLabel": "Primeiros sinaisGato resgatado",
+        "frozen": true
+      }
+    },
+    {
+      "name": "Evoluções mostram três flechas próprias, dois bumerangues e corte alternado",
+      "passed": true,
+      "details": {
+        "arrows": 3,
+        "boomerangs": 2,
+        "goldenSlots": 3,
+        "names": [
+          "Espadas Duplas",
+          "Disparo Triplo",
+          "Trajetória Cruzada"
+        ],
+        "slots": 3,
+        "secondCut": true
+      }
+    },
+    {
+      "name": "Arsenal identifica as três evoluções sem ocupar espaços extras",
+      "passed": true,
+      "details": {
+        "arrows": 3,
+        "boomerangs": 2,
+        "goldenSlots": 3,
+        "names": [
+          "Espadas Duplas",
+          "Disparo Triplo",
+          "Trajetória Cruzada"
+        ],
+        "slots": 3,
+        "secondCut": true
+      }
+    },
+    {
+      "name": "Lança em leque, área real do martelo e duas lâminas aparecem juntas em quatro espaços",
+      "passed": true,
+      "details": {
+        "fan": 3,
+        "hammerRadius": 54.72842040475862,
+        "blades": 2,
+        "gold": 3,
+        "slots": 4
+      }
+    },
+    {
+      "name": "Escudo absorve contato, emite onda, mostra cargas e recarga sem girar",
+      "passed": true,
+      "details": {
+        "hp": 100,
+        "stalePetVisible": false,
+        "charges": 1,
+        "recharge": 4.9,
+        "pushed": true,
+        "wave": true,
+        "hud": "Primeiros sinaisEscudo 1/2 cargas · recarga 5sGato resgatado",
+        "icons": 2
+      }
+    },
+    {
+      "name": "Barreira absorve dois golpes e permite dano quando as cargas acabam",
+      "passed": true,
+      "details": {
+        "hp": 90,
+        "charges": 0
+      }
+    },
+    {
+      "name": "Nível 10 oferece três armas aleatórias distintas, sem melhorias misturadas",
+      "passed": true,
+      "details": {
+        "level": 10,
+        "kinds": [
+          "arsenal",
+          "arsenal",
+          "arsenal"
+        ],
+        "ids": [
+          "orbiting-shield",
+          "bow",
+          "boomerang"
+        ]
+      }
+    },
+    {
+      "name": "Três novas cartas mostram raridade super-rara e quatro melhorias",
+      "passed": true,
+      "details": [
+        {
+          "id": "advanced-xp",
+          "rarity": "super-rare",
+          "max": 4
+        },
+        {
+          "id": "advanced-attack",
+          "rarity": "super-rare",
+          "max": 4
+        },
+        {
+          "id": "boss-damage",
+          "rarity": "super-rare",
+          "max": 4
+        }
+      ]
+    },
+    {
+      "name": "Escolher experiência super-rara aplica somente um nível",
+      "passed": true
+    },
+    {
+      "name": "Bônus de crítico e ímã são coletados, identificados e salvos",
+      "passed": true,
+      "details": {
+        "critical": true,
+        "hit": true,
+        "magnet": true,
+        "hud": "Primeiros sinaisCrítico 20% 12sÍmã atraindo experiênciaGato resgatado",
+        "saved": true
+      }
+    },
+    {
+      "name": "Chefes aparecem uma vez nas rodadas 10/20/30/40/50 com força crescente",
+      "passed": true,
+      "details": {
+        "rows": [
+          {
+            "round": 10,
+            "hp": 816.3265306122448,
+            "damage": 17.293877551020408,
+            "count": 1
+          },
+          {
+            "round": 20,
+            "hp": 1391.8367346938776,
+            "damage": 20.653061224489797,
+            "count": 1
+          },
+          {
+            "round": 30,
+            "hp": 2114.285714285714,
+            "damage": 24.257142857142856,
+            "count": 1
+          },
+          {
+            "round": 40,
+            "hp": 2983.673469387755,
+            "damage": 28.106122448979594,
+            "count": 1
+          },
+          {
+            "round": 50,
+            "hp": 6000,
+            "damage": 56,
+            "count": 1
+          }
+        ],
+        "label": "O Devorador6000 / 6000"
+      }
+    },
+    {
+      "name": "Chefe final tem salto de vida e dano e barra identificada",
+      "passed": true,
+      "details": [
+        {
+          "round": 10,
+          "hp": 816.3265306122448,
+          "damage": 17.293877551020408,
+          "count": 1
+        },
+        {
+          "round": 20,
+          "hp": 1391.8367346938776,
+          "damage": 20.653061224489797,
+          "count": 1
+        },
+        {
+          "round": 30,
+          "hp": 2114.285714285714,
+          "damage": 24.257142857142856,
+          "count": 1
+        },
+        {
+          "round": 40,
+          "hp": 2983.673469387755,
+          "damage": 28.106122448979594,
+          "count": 1
+        },
+        {
+          "round": 50,
+          "hp": 6000,
+          "damage": 56,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Salvar e retomar preserva o chefe da rodada 50 sem duplicação",
+      "passed": true,
+      "details": {
+        "saved": true,
+        "count": 1,
+        "hp": 6000,
+        "before": 6000,
+        "round": 50
+      }
+    },
+    {
+      "name": "Chefe 10 usa arte própria, caminhada e aviso inofensivo",
+      "passed": true,
+      "details": {
+        "texture": "dungeon-boss-demolisher",
+        "frames": 20,
+        "frame": "idle-south",
+        "action": {
+          "kind": "slam",
+          "stage": "warning",
+          "remaining": 1.6,
+          "x": 1536,
+          "y": 1152,
+          "angle": 1.5707963267948966,
+          "distance": 260,
+          "hit": false
+        },
+        "hp": 100,
+        "label": "O Demolidor3000 / 3000Impacto no chão · saia do círculo",
+        "valid": true
+      }
+    },
+    {
+      "name": "Golpe ativo do chefe 10 preserva estado ao retomar",
+      "passed": true,
+      "details": {
+        "stage": "active",
+        "preserved": true,
+        "valid": true
+      }
+    },
+    {
+      "name": "Demolidor usa quatro lados, quatro frames e escala fixa na caminhada",
+      "passed": true,
+      "details": [
+        {
+          "direction": "south",
+          "frames": [
+            {
+              "frame": "south-0",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.91796875
+            },
+            {
+              "frame": "south-1",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.91796875
+            },
+            {
+              "frame": "south-2",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.91796875
+            },
+            {
+              "frame": "south-3",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.91796875
+            }
+          ]
+        },
+        {
+          "direction": "west",
+          "frames": [
+            {
+              "frame": "west-0",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.9140625
+            },
+            {
+              "frame": "west-1",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.9140625
+            },
+            {
+              "frame": "west-2",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.9140625
+            },
+            {
+              "frame": "west-3",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.9140625
+            }
+          ]
+        },
+        {
+          "direction": "east",
+          "frames": [
+            {
+              "frame": "east-0",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.91015625
+            },
+            {
+              "frame": "east-1",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.91015625
+            },
+            {
+              "frame": "east-2",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.91015625
+            },
+            {
+              "frame": "east-3",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.91015625
+            }
+          ]
+        },
+        {
+          "direction": "north",
+          "frames": [
+            {
+              "frame": "north-0",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.8984375
+            },
+            {
+              "frame": "north-1",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.8984375
+            },
+            {
+              "frame": "north-2",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.8984375
+            },
+            {
+              "frame": "north-3",
+              "scale": 0.5108695652173914,
+              "originX": 0.5,
+              "originY": 0.8984375
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Chefe 20 usa arte própria, caminhada e aviso inofensivo",
+      "passed": true,
+      "details": {
+        "texture": "dungeon-boss-sentinel",
+        "frames": 16,
+        "frame": "south-0",
+        "action": {
+          "kind": "charge",
+          "stage": "warning",
+          "remaining": 1.6,
+          "x": 1536,
+          "y": 1152,
+          "angle": 1.5707963267948966,
+          "distance": 260,
+          "hit": false
+        },
+        "hp": 100,
+        "label": "A Sentinela3000 / 3000Investida · desvie da faixa",
+        "valid": true
+      }
+    },
+    {
+      "name": "Golpe ativo do chefe 20 preserva estado ao retomar",
+      "passed": true,
+      "details": {
+        "stage": "active",
+        "preserved": true,
+        "valid": true
+      }
+    },
+    {
+      "name": "Chefe 30 usa arte própria, caminhada e aviso inofensivo",
+      "passed": true,
+      "details": {
+        "texture": "dungeon-boss-chained",
+        "frames": 16,
+        "frame": "south-0",
+        "action": {
+          "kind": "chains",
+          "stage": "warning",
+          "remaining": 1.6,
+          "x": 1536,
+          "y": 1152,
+          "angle": 1.5707963267948966,
+          "distance": 260,
+          "hit": false
+        },
+        "hp": 100,
+        "label": "O Acorrentado3000 / 3000Varredura de correntes · saia do arco",
+        "valid": true
+      }
+    },
+    {
+      "name": "Golpe ativo do chefe 30 preserva estado ao retomar",
+      "passed": true,
+      "details": {
+        "stage": "active",
+        "preserved": true,
+        "valid": true
+      }
+    },
+    {
+      "name": "Chefe 40 usa arte própria, caminhada e aviso inofensivo",
+      "passed": true,
+      "details": {
+        "texture": "dungeon-boss-contaminated",
+        "frames": 16,
+        "frame": "south-0",
+        "action": {
+          "kind": "plague",
+          "stage": "warning",
+          "remaining": 1.6,
+          "x": 1536,
+          "y": 1240,
+          "angle": 1.5707963267948966,
+          "distance": 260,
+          "hit": false
+        },
+        "hp": 100,
+        "label": "O Contaminado3000 / 3000Contaminação · afaste-se da área",
+        "valid": true
+      }
+    },
+    {
+      "name": "Golpe ativo do chefe 40 preserva estado ao retomar",
+      "passed": true,
+      "details": {
+        "stage": "active",
+        "preserved": true,
+        "valid": true
+      }
+    },
+    {
+      "name": "Chefe 50 usa arte própria, caminhada e aviso inofensivo",
+      "passed": true,
+      "details": {
+        "texture": "dungeon-boss-devourer",
+        "frames": 16,
+        "frame": "south-0",
+        "action": {
+          "kind": "charge",
+          "stage": "warning",
+          "remaining": 1.4,
+          "x": 1536,
+          "y": 1152,
+          "angle": 1.5707963267948966,
+          "distance": 260,
+          "hit": false
+        },
+        "hp": 100,
+        "label": "O Devorador3000 / 3000Investida · desvie da faixa",
+        "valid": true
+      }
+    },
+    {
+      "name": "Golpe ativo do chefe 50 preserva estado ao retomar",
+      "passed": true,
+      "details": {
+        "stage": "active",
+        "preserved": true,
+        "valid": true
+      }
+    },
+    {
+      "name": "HUD mantém experiência, relógio, vida, Arsenal e pet nas bordas sem bloquear o centro",
+      "passed": true,
+      "details": {
+        "nodes": [
+          {
+            "selector": ".hud-experience",
+            "x": 190,
+            "y": 1134,
+            "w": 166,
+            "h": 52
+          },
+          {
+            "selector": ".hud-clock",
+            "x": 754.578125,
+            "y": 23,
+            "w": 90.84375,
+            "h": 53.390625
+          },
+          {
+            "selector": ".hud-health",
+            "x": 16,
+            "y": 1125,
+            "w": 166,
+            "h": 61
+          },
+          {
+            "selector": ".hud-arsenal",
+            "x": 779.5,
+            "y": 1124,
+            "w": 201,
+            "h": 62
+          },
+          {
+            "selector": ".hud-pet",
+            "x": 1404,
+            "y": 1109,
+            "w": 180,
+            "h": 77
+          }
+        ],
+        "centerClear": true,
+        "viewport": {
+          "w": 1600,
+          "h": 1200
+        }
+      }
+    },
+    {
+      "name": "Experiência e nível ao lado da vida na parte inferior",
+      "passed": true,
+      "details": {
+        "beside": true,
+        "bottom": true,
+        "level": true
+      }
+    },
+    {
+      "name": "HUD cabe na tela de 680 pixels",
+      "passed": true,
+      "details": [
+        {
+          "selector": ".hud-health",
+          "x": 10,
+          "y": 885,
+          "right": 156,
+          "bottom": 936,
+          "w": 680,
+          "h": 950
+        },
+        {
+          "selector": ".hud-experience",
+          "x": 164,
+          "y": 890,
+          "right": 310,
+          "bottom": 936,
+          "w": 680,
+          "h": 950
+        },
+        {
+          "selector": ".hud-arsenal",
+          "x": 332,
+          "y": 883,
+          "right": 488,
+          "bottom": 936,
+          "w": 680,
+          "h": 950
+        },
+        {
+          "selector": ".hud-pet",
+          "x": 510,
+          "y": 869,
+          "right": 670,
+          "bottom": 936,
+          "w": 680,
+          "h": 950
+        },
+        {
+          "selector": ".hud-clock",
+          "x": 294.578125,
+          "y": 23,
+          "right": 385.421875,
+          "bottom": 69.5,
+          "w": 680,
+          "h": 950
+        },
+        {
+          "selector": ".hud-pause",
+          "x": 626,
+          "y": 26,
+          "right": 664,
+          "bottom": 64,
+          "w": 680,
+          "h": 950
+        }
+      ]
+    },
+    {
+      "name": "HUD cabe na tela de 521 pixels",
+      "passed": true,
+      "details": [
+        {
+          "selector": ".hud-health",
+          "x": 10,
+          "y": 835,
+          "right": 256.5,
+          "bottom": 886,
+          "w": 521,
+          "h": 900
+        },
+        {
+          "selector": ".hud-experience",
+          "x": 264.5,
+          "y": 840,
+          "right": 511,
+          "bottom": 886,
+          "w": 521,
+          "h": 900
+        },
+        {
+          "selector": ".hud-arsenal",
+          "x": 55.25,
+          "y": 774,
+          "right": 211.25,
+          "bottom": 827,
+          "w": 521,
+          "h": 900
+        },
+        {
+          "selector": ".hud-pet",
+          "x": 264.5,
+          "y": 760,
+          "right": 511,
+          "bottom": 827,
+          "w": 521,
+          "h": 900
+        },
+        {
+          "selector": ".hud-clock",
+          "x": 215.078125,
+          "y": 30,
+          "right": 305.921875,
+          "bottom": 76.5,
+          "w": 521,
+          "h": 900
+        },
+        {
+          "selector": ".hud-pause",
+          "x": 481,
+          "y": 26,
+          "right": 511,
+          "bottom": 56,
+          "w": 521,
+          "h": 900
+        }
+      ]
+    },
+    {
+      "name": "HUD cabe na tela de 390 pixels",
+      "passed": true,
+      "details": [
+        {
+          "selector": ".hud-health",
+          "x": 10,
+          "y": 779,
+          "right": 191,
+          "bottom": 830,
+          "w": 390,
+          "h": 844
+        },
+        {
+          "selector": ".hud-experience",
+          "x": 199,
+          "y": 784,
+          "right": 380,
+          "bottom": 830,
+          "w": 390,
+          "h": 844
+        },
+        {
+          "selector": ".hud-arsenal",
+          "x": 22.5,
+          "y": 718,
+          "right": 178.5,
+          "bottom": 771,
+          "w": 390,
+          "h": 844
+        },
+        {
+          "selector": ".hud-pet",
+          "x": 199,
+          "y": 704,
+          "right": 380,
+          "bottom": 771,
+          "w": 390,
+          "h": 844
+        },
+        {
+          "selector": ".hud-clock",
+          "x": 149.578125,
+          "y": 30,
+          "right": 240.421875,
+          "bottom": 76.5,
+          "w": 390,
+          "h": 844
+        },
+        {
+          "selector": ".hud-pause",
+          "x": 350,
+          "y": 26,
+          "right": 380,
+          "bottom": 56,
+          "w": 390,
+          "h": 844
+        }
+      ]
+    },
+    {
+      "name": "Falha de armazenamento mantém o resultado disponível para tentar novamente",
+      "passed": true,
+      "details": {
+        "phase": "victory",
+        "settled": false
+      }
+    },
+    {
+      "name": "Repetir o salvamento entrega o resultado uma vez",
+      "passed": true
+    },
+    {
+      "name": "Pet segue para a floresta e auxilia na coleta uma vez por dia",
+      "passed": true,
+      "details": {
+        "companion": true,
+        "gained": 1,
+        "once": true,
+        "day": true
+      }
+    },
+    {
+      "name": "Árvores permanentes do personagem e pet são salvas pela interface",
+      "passed": true,
+      "details": {
+        "strength": 1,
+        "petSpeed": 1
+      }
+    },
+    {
+      "name": "Derrota encerra o combate e registra o resultado",
+      "passed": true,
+      "details": {
+        "phase": "defeat",
+        "settled": true
+      }
+    },
+    {
+      "name": "Retorno após derrota preserva a posição da estrada",
+      "passed": true
+    },
+    {
+      "name": "Sem erros JavaScript, HTTP ou WebGL",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

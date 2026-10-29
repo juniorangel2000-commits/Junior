@@ -1,6 +1,7 @@
 # Dungeons e sobrevivência — primeira versão jogável
 
-> Etapa mais recente: [identidade dos chefes, balanceamento e frentes para animação](chefes-e-balanceamento/RELATORIO.md).
+> Etapa mais recente: [animações recebidas do Demolidor, em quatro direções](animacoes-demolidor/RELATORIO.md).
+> Etapa anterior: [identidade dos chefes, balanceamento e frentes para animação](chefes-e-balanceamento/RELATORIO.md).
 > Etapa anterior: [mapas abertos, banco vertical e experiência junto da vida](mapas-abertos/RELATORIO.md).
 > Revisão de base: [mapas e HUD](mapas-e-hud/RELATORIO.md).
 > Etapa anterior: [sessões completas, cartas, bônus de mapa e chefes](estabilizacao-e-cartas/RELATORIO.md).

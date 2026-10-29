@@ -22,6 +22,7 @@ import { DungeonWorld, dungeonPreview } from "../dungeons/world";
 import { dungeonBlocked } from "../dungeons/maps";
 import { setupWeaponEffects } from "../dungeons/weapon-effects";
 import { bossProfile } from "../dungeons/bosses";
+import { bossSpritePose } from "../dungeons/boss-sprites";
 import { drawBossAttacks } from "../dungeons/boss-render";
 import {
   swordHalfArc,
@@ -344,15 +345,19 @@ export class DungeonScene extends Phaser.Scene {
             : dy < 0
               ? "north"
               : "south";
+      const resting = action?.stage === "warning" || action?.stage === "recovery";
+      const pose = e.kind === "boss"
+        ? bossSpritePose(bossProfile(s.round).art, direction, s.elapsed, resting)
+        : undefined;
       image
         .setTexture(
           e.kind === "boss" ? "dungeon-boss-" + bossProfile(s.round).art : "dungeon-zombie",
-          direction +
+          pose?.frame ?? direction +
             "-" +
             (action?.stage === "warning" || action?.stage === "recovery"
               ? 0 : Math.floor(s.elapsed * (e.kind === "runner" ? 9 : 5)) % 4),
         )
-        .setOrigin(0.5, 1)
+        .setOrigin(pose?.originX ?? 0.5, pose?.originY ?? 1)
         .setScale(
           e.kind === "boss" ? 1 : e.special
               ? 0.25
@@ -362,7 +367,8 @@ export class DungeonScene extends Phaser.Scene {
         .setDepth(e.y);
       if (e.kind === "boss") {
         const height = s.round === 50 ? 112 : 94;
-        image.setDisplaySize(image.frame.width / image.frame.height * height, height);
+        if (pose?.referenceHeight) image.setScale(height / pose.referenceHeight);
+        else image.setDisplaySize(image.frame.width / image.frame.height * height, height);
       }
       if (flashed.has(e.id)) image.setTintFill(0xffebc2);
       else if (e.kind === "boss") image.clearTint();

@@ -1023,11 +1023,12 @@ fs.mkdirSync(out, { recursive: true });
         d.cameras.main.stopFollow().setZoom(2.2).centerOn(1536, 1180);
         return { texture: d.enemyImages.get(999999).texture.key,
           frames: game.textures.get("dungeon-boss-" + art).getFrameNames().length,
+          frame: d.enemyImages.get(999999).frame.name,
           action: s.enemies[0].boss.action, hp: s.player.hp,
           label: document.querySelector(".dungeon-boss").textContent,
           valid: validDungeonSnapshot(d.run.snapshot()) };
       }, {round, art});
-      check("Chefe " + round + " usa arte própria, caminhada e aviso inofensivo", identity.texture === "dungeon-boss-" + art && identity.frames === 16 && identity.action.kind === kind && identity.action.stage === "warning" && identity.hp === 100 && identity.valid, identity);
+      check("Chefe " + round + " usa arte própria, caminhada e aviso inofensivo", identity.texture === "dungeon-boss-" + art && identity.frames === (round === 10 ? 20 : 16) && (round !== 10 || identity.frame === "idle-south") && identity.action.kind === kind && identity.action.stage === "warning" && identity.hp === 100 && identity.valid, identity);
       await render();
       await page.screenshot({path: out + "/chefe-" + round + "-aviso.png"});
       const active = await page.evaluate(async () => {
@@ -1043,6 +1044,24 @@ fs.mkdirSync(out, { recursive: true });
       check("Golpe ativo do chefe " + round + " preserva estado ao retomar", active.stage === "active" && active.preserved && active.valid, active);
       await render();
       await page.screenshot({path: out + "/chefe-" + round + "-ativo.png"});
+      if (round === 10) {
+        const directions = await page.evaluate(() => {
+          const s = d.run.state, e = s.enemies[0], elapsed = s.elapsed;
+          e.boss = {cooldown: 10, sequence: 0};
+          return [["south",0,160],["west",-160,0],["east",160,0],["north",0,-160]].map(([direction,dx,dy]) => {
+            s.player.x = e.x + dx; s.player.y = e.y + dy;
+            const frames = [];
+            for (let i = 0; i < 4; i++) {
+              s.elapsed = i / 5; d.renderRun();
+              const image = d.enemyImages.get(e.id);
+              frames.push({frame:image.frame.name, scale:image.scaleY, originX:image.originX, originY:image.originY});
+            }
+            s.elapsed = elapsed;
+            return {direction,frames};
+          });
+        });
+        check("Demolidor usa quatro lados, quatro frames e escala fixa na caminhada", directions.every(d => new Set(d.frames.map(f => f.frame)).size === 4 && d.frames.every(f => f.frame.startsWith(d.direction + "-") && Math.abs(f.scale - 94/184) < 0.0001 && f.originX === 0.5 && f.originY > 0.85) && new Set(d.frames.map(f => f.originY)).size === 1), directions);
+      }
     }
     await page.evaluate(() => {
       d.run.restore(window.bossArtRestore); d.syncPlayer();
