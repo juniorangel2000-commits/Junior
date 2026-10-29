@@ -56,7 +56,7 @@ describe("complete builds and scheduled weapon choices", () => {
     waves.state.level = 100;
     expect(waves.xpNeeded).toBe(r.xpNeeded);
   });
-  it("counts all compatible ranks and stops useless level-ups after completion", () => {
+  it("continues levels after completion without empty choices or healing", () => {
     const r = make();
     r.state.weapons = ["sword", "bow", "hammer", "spear"];
     for (const u of UPGRADES)
@@ -64,9 +64,15 @@ describe("complete builds and scheduled weapon choices", () => {
         r.state.levels[u.id] = u.max;
     expect(r.buildComplete).toBe(true);
     r.state.player.hp = 50;
+    r.state.level = 500;
     const before = r.snapshot();
-    r.grantXP(99999);
-    expect(r.snapshot()).toEqual(before);
+    r.grantXP(r.xpNeeded * 4 + 5);
+    expect(r.state.level).toBeGreaterThan(500);
+    expect(r.state.player.hp).toBe(50);
+    expect(r.state.levels).toEqual(before.levels);
+    expect(r.state.cards).toEqual([]);
+    expect(r.state.phase).toBe("fighting");
+    expect(r.state.xp).toBeLessThan(r.xpNeeded);
     expect(validDungeonSnapshot(r.snapshot())).toBe(true);
     r.state.levels["sword-range"]--;
     expect(r.buildComplete).toBe(false);

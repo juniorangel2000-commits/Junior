@@ -36,7 +36,7 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
     !count(value.waveRemaining, 1000) ||
     !finite(value.intermission, 0, 10) ||
     !count(value.kills, 1e6) ||
-    !count(value.level, 500) ||
+    !count(value.level, 1e9) ||
     Number(value.level) < 1 ||
     !finite(value.xp, 0) ||
     !point(value.player) ||
@@ -92,6 +92,7 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
         !finite(e.speed, 1, 1000) ||
         !finite(e.damage, 0, 1000) ||
         !["walker", "runner", "brute", "boss"].includes(e.kind as string) ||
+        (e.bossTier !== undefined && (e.kind !== "boss" || ![10,20,30,40,50].includes(Number(e.bossTier)) || typeof e.bossTier !== "number")) ||
         typeof e.special !== "boolean" ||
         !count(e.streak, 1e6) ||
         !finite(e.lastHit, 0, 1e9) ||
@@ -142,9 +143,12 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
           "invulnerable",
           "critical",
           "magnet",
+          "level",
           "pet",
         ].includes(p.kind as string) ||
         !finite(p.amount, 0, 100000) ||
+        (p.kind === "level" && p.amount !== 1) ||
+        (p.xpTier !== undefined && (p.kind !== "xp" || !["normal","elite","boss"].includes(p.xpTier as string))) ||
         (p.attracted !== undefined && typeof p.attracted !== "boolean") ||
         (p.species !== undefined &&
           !["dog", "cat"].includes(p.species as string)),
@@ -209,6 +213,13 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
     Object.values(value.orbitalHits).some((n) => !finite(n, 0, 1e9 + 10))
   )
     return false;
+  if (
+    value.lastHealthDropAt !== undefined &&
+    (!finite(value.lastHealthDropAt, 0, 1e9) || Number(value.lastHealthDropAt) > Number(value.elapsed))
+  ) return false;
+  if (
+    value.timedBossCount !== undefined && !count(value.timedBossCount, 5)
+  ) return false;
   if (
     value.bossRound !== undefined &&
     (!count(value.bossRound, 50) ||

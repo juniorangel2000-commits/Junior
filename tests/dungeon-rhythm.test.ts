@@ -124,3 +124,13 @@ it("rewards the growing timed horde with up to 25% more XP without changing wave
   expect(hordeProfile("abandoned-central-square", 900, 1).experience).toBe(1.25);
   expect(hordeProfile("mall-parking", 1800, 50).experience).toBe(1);
 });
+
+it("increases new enemy stats with player level while bounding the speed bonus", () => {
+ const profiles=[1,100,200,500].map(level=>hordeProfile("mall-parking",300,20,level));
+ for(let i=1;i<profiles.length;i++){
+ expect(profiles[i].health).toBeGreaterThan(profiles[i-1].health);
+ expect(profiles[i].damage).toBeGreaterThan(profiles[i-1].damage);
+ expect(profiles[i].speed).toBeGreaterThan(profiles[i-1].speed);
+ }
+ expect(hordeProfile("mall-parking",300,20,100000).speed / profiles[0].speed).toBeCloseTo(1.2);
+});

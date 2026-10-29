@@ -1,6 +1,9 @@
 # Dungeons e sobrevivência — primeira versão jogável
 
-> Etapa mais recente: [animações recebidas do Devorador](animacoes-devorador/RELATORIO.md), com seis frames por lado.
+> Etapa mais recente: [recompensas por categoria, item de nível e coleta ampliada](recompensas-e-cartas/RELATORIO.md).
+> Encontros: [chefes por minuto na praça](chefes-por-minuto/RELATORIO.md).
+> Sistemas revisados: [níveis contínuos, dificuldade e cura](niveis-e-cura/RELATORIO.md).
+> Integração anterior: [animações recebidas do Devorador](animacoes-devorador/RELATORIO.md).
 > Integração anterior: [Acorrentado](animacoes-acorrentado/RELATORIO.md) e [Contaminado](animacoes-contaminado/RELATORIO.md).
 > Integração anterior: [Sentinela](animacoes-sentinela/RELATORIO.md).
 > Integração anterior: [animações do Demolidor](animacoes-demolidor/RELATORIO.md).

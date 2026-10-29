@@ -13,8 +13,8 @@ export function drawBossAttacks(
     const a = e.boss?.action;
     if (!a || a.stage === "recovery" || e.hp <= 0) continue;
     const warning = a.stage === "warning";
-    const color = bossProfile(round).color;
-    const progress = warning ? 1 - a.remaining / bossWindup(round) : 1;
+    const color = bossProfile(e.bossTier ?? round).color;
+    const progress = warning ? 1 - a.remaining / bossWindup(e.bossTier ?? round) : 1;
     ink.lineStyle(warning ? 3 : 4, warning ? 0xffdfad : color, 0.95);
     ink.fillStyle(color, warning ? 0.12 : 0.25);
     if (a.kind === "charge") {

@@ -347,11 +347,11 @@ export class DungeonScene extends Phaser.Scene {
               : "south";
       const resting = action?.stage === "warning" || action?.stage === "recovery";
       const pose = e.kind === "boss"
-        ? bossSpritePose(bossProfile(s.round).art, direction, s.elapsed, resting)
+        ? bossSpritePose(bossProfile(e.bossTier ?? s.round).art, direction, s.elapsed, resting)
         : undefined;
       image
         .setTexture(
-          e.kind === "boss" ? "dungeon-boss-" + bossProfile(s.round).art : "dungeon-zombie",
+          e.kind === "boss" ? "dungeon-boss-" + bossProfile(e.bossTier ?? s.round).art : "dungeon-zombie",
           pose?.frame ?? direction +
             "-" +
             (action?.stage === "warning" || action?.stage === "recovery"
@@ -366,7 +366,7 @@ export class DungeonScene extends Phaser.Scene {
         .setPosition(e.x, e.y)
         .setDepth(e.y);
       if (e.kind === "boss") {
-        const height = s.round === 50 ? 112 : 94;
+        const height = (e.bossTier ?? s.round) === 50 ? 112 : 94;
         if (pose?.referenceHeight) image.setScale(height / pose.referenceHeight);
         else image.setDisplaySize(image.frame.width / image.frame.height * height, height);
       }
@@ -418,7 +418,7 @@ export class DungeonScene extends Phaser.Scene {
     for (const e of s.enemies)
       if (e.kind === "boss")
         ink
-          .lineStyle(3, bossProfile(s.round).color, 0.8)
+          .lineStyle(3, bossProfile(e.bossTier ?? s.round).color, 0.8)
           .strokeEllipse(e.x, e.y - 3, 60, 24);
     this.damageNumbers.forEach((text) => text.setVisible(false));
     for (const [i, hit] of run.impacts.entries()) {
@@ -669,6 +669,13 @@ export class DungeonScene extends Phaser.Scene {
     this.pickups!.clear();
     for (const q of s.pickups) {
       if (q.kind === "pet") continue;
+      if (q.kind === "level") {
+        this.pickups!.lineStyle(3,0xffdd7c,1).strokeCircle(q.x,q.y-4,10)
+          .lineBetween(q.x-5,q.y-4,q.x,q.y-10)
+          .lineBetween(q.x,q.y-10,q.x+5,q.y-4)
+          .lineBetween(q.x,q.y-10,q.x,q.y+3);
+        continue;
+      }
       if (q.kind === "critical") {
         this.pickups!.lineStyle(2, 0xffb48e, 0.95)
           .strokeCircle(q.x, q.y - 3, 10)
@@ -686,9 +693,9 @@ export class DungeonScene extends Phaser.Scene {
         continue;
       }
       this.pickups!.fillStyle(
-        q.kind === "xp" ? 0xb6c99a : q.kind === "health" ? 0xd9a392 : 0x97b8bd,
+        q.kind === "xp" ? q.xpTier === "boss" ? 0xf4ce72 : q.xpTier === "elite" ? 0x97cce8 : 0xb6c99a : q.kind === "health" ? 0xd9a392 : 0x97b8bd,
         0.9,
-      ).fillCircle(q.x, q.y - 3, q.kind === "xp" ? 3 : 7);
+      ).fillCircle(q.x, q.y - 3, q.kind === "xp" ? q.xpTier === "boss" ? 6 : q.xpTier === "elite" ? 4 : 3 : 7);
     }
     const rescue = s.pickups.find((q) => q.kind === "pet");
     if (rescue?.species) {

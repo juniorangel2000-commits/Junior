@@ -95,6 +95,7 @@ describe("gradual zombie strength", () => {
     for (const time of [0, 450, 899]) {
       const r = make();
       r.state.elapsed = time;
+      r.state.timedBossCount = [180,360,540,720,840].filter(at => at <= time).length;
       r.random = () => 0.5;
       r.step(1 / 30);
       const e = r.state.enemies[0],

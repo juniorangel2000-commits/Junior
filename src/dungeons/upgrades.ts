@@ -1,4 +1,5 @@
 import { DUNGEON_BALANCE, WEAPONS, type WeaponId, type Rarity } from "./config";
+import { WEAPON_DESCRIPTIONS } from "./weapon-identity";
 export interface Upgrade {
   id: string;
   name: string;
@@ -56,9 +57,9 @@ export const UPGRADES: readonly Upgrade[] = [
     "pickup",
     "Coleta Ampliada",
     "common",
-    5,
-    0.1,
-    "+10% de alcance de coleta",
+    10,
+    0.15,
+    "+15% de alcance para atrair experiência; até +150%",
   ),
   upgrade(
     "movement",
@@ -374,7 +375,7 @@ export function rollUpgradeCards(
             rarity: "arsenal",
             level: 0,
             max: 1,
-            effect: "Desbloqueia uma arma automática em um espaço livre",
+            effect: WEAPON_DESCRIPTIONS[id],
           },
           weight: DUNGEON_BALANCE.arsenalWeight,
         });

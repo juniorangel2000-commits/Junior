@@ -9,9 +9,9 @@ import {
 } from "./config";
 import { UPGRADES, rollUpgradeCards, type UpgradeCard } from "./upgrades";
 import { hordeProfile, experienceForLevel } from "./director";
-import { insideSwordArc } from "./weapon-identity";
+import { insideSwordArc, WEAPON_DESCRIPTIONS } from "./weapon-identity";
 import { dungeonWaypoint, dungeonSegmentClear } from "./navigation";
-import { bossProfile, isBossRound } from "./bosses";
+import { bossProfile, isBossRound, TIMED_BOSS_SCHEDULE } from "./bosses";
 import { advanceBossCombat, type BossCombatState } from "./boss-combat";
 import { EnemySpatialIndex } from "./spatial";
 import { DUNGEON_ENTRY, dungeonBlocked, safeDungeonPoint } from "./maps";
@@ -26,6 +26,7 @@ export interface Enemy {
   damage: number;
   special: boolean;
   kind: "walker" | "runner" | "brute" | "boss";
+  bossTier?: number;
   streak: number;
   lastHit: number;
   detour?: { x: number; y: number };
@@ -58,9 +59,11 @@ export interface Pickup {
     | "invulnerable"
     | "critical"
     | "magnet"
+    | "level"
     | "pet";
   amount: number;
   attracted?: boolean;
+  xpTier?: "normal" | "elite" | "boss";
   species?: PetSpecies;
 }
 export interface AttackEffect {
@@ -96,6 +99,7 @@ export interface DungeonSnapshot {
   elapsed: number;
   round: number;
   bossRound?: number;
+  timedBossCount?: number;
   waveRemaining: number;
   intermission: number;
   kills: number;
@@ -116,6 +120,7 @@ export interface DungeonSnapshot {
   sequence: number;
   spawnClock: number;
   eventClock: number;
+  lastHealthDropAt?: number;
   buffs: Record<string, number>;
   lastStandUsed: boolean;
   permanent: DungeonProgress["attributes"];
@@ -170,6 +175,7 @@ export class DungeonRun {
       phase: "fighting",
       elapsed: 0,
       round: 1,
+      timedBossCount: 0,
       waveRemaining: 7,
       intermission: 0,
       kills: 0,
@@ -300,8 +306,7 @@ export class DungeonRun {
     if (
       !Number.isFinite(amount) ||
       amount < 0 ||
-      terminal(this.state.phase) ||
-      this.buildComplete
+      terminal(this.state.phase)
     )
       return;
     this.state.xp +=
@@ -310,14 +315,27 @@ export class DungeonRun {
   }
   private checkLevel(): void {
     const s = this.state;
-    if (s.phase !== "fighting" || s.xp < this.xpNeeded || this.buildComplete)
+    if (s.phase !== "fighting" || s.xp < this.xpNeeded)
       return;
+    if (this.buildComplete) {
+      // Keep leveling without empty card dialogs or automatic healing.
+      while (s.xp >= this.xpNeeded) {
+        if (this.xpNeeded === B.xpLevelCostCap) {
+          const levels = Math.floor(s.xp / this.xpNeeded);
+          s.xp -= levels * this.xpNeeded;
+          s.level += levels;
+          break;
+        }
+        s.xp -= this.xpNeeded;
+        s.level++;
+      }
+      return;
+    }
     s.xp -= this.xpNeeded;
     s.level++;
     s.cards = rollUpgradeCards(s, this.random);
     if (s.cards.length) s.phase = "choice";
     else {
-      s.player.hp = Math.min(this.maxHealth, s.player.hp + 10);
       this.checkLevel();
     }
   }
@@ -339,9 +357,10 @@ export class DungeonRun {
       this.state.dungeon,
       this.state.elapsed,
       this.state.round,
+      this.state.level,
     );
   }
-  private spawn(member = 0): boolean {
+  private spawn(member = 0, timedTier?: number): boolean {
     const s = this.state;
     if (s.enemies.length >= B.maxEnemies) return false;
     const profile = this.horde;
@@ -369,7 +388,7 @@ export class DungeonRun {
       }
     }
     if (!found) return false;
-    const boss =
+    const boss = timedTier !== undefined ||
         DUNGEONS[s.dungeon].mode === "waves" &&
         isBossRound(s.round) &&
         s.bossRound !== s.round,
@@ -381,12 +400,12 @@ export class DungeonRun {
           : this.random() < profile.runnerChance
             ? "runner"
             : "walker",
-      stats = bossProfile(s.round),
+      stats = bossProfile(timedTier ?? s.round),
       health =
         B.enemyHealth *
         profile.health *
         (boss ? stats.health : special ? 3 : 1);
-    if (boss) s.bossRound = s.round;
+    if (boss && timedTier === undefined) s.bossRound = s.round;
     s.enemies.push({
       id: this.nextId(),
       x,
@@ -403,6 +422,7 @@ export class DungeonRun {
         (boss ? stats.damage : special ? 1.5 : 1),
       special,
       kind,
+      ...(timedTier !== undefined ? { bossTier: timedTier } : {}),
       streak: 0,
       lastHit: 0,
     });
@@ -457,6 +477,11 @@ export class DungeonRun {
       s.phase = "victory";
       return;
     }
+    if (mode === "timed") {
+      const next = TIMED_BOSS_SCHEDULE[s.timedBossCount ?? 0];
+      if (next && s.elapsed >= next.at && this.spawn(0, next.tier))
+        s.timedBossCount = (s.timedBossCount ?? 0) + 1;
+    }
     if (
       mode === "waves" &&
       isBossRound(s.round) &&
@@ -484,6 +509,11 @@ export class DungeonRun {
       }
       if (mode === "waves" && s.waveRemaining === 0 && s.enemies.length === 0) {
         if (s.round >= DUNGEONS[s.dungeon].rounds) {
+          // Collect earned XP and level tokens before closing the final wave.
+          for (const p of s.pickups)
+            if (p.kind === "xp" || p.kind === "level") p.attracted = true;
+          this.collect(dt);
+          if (s.phase === "choice" || s.pickups.some(p => p.kind === "xp" || p.kind === "level")) return;
           s.phase = "victory";
           return;
         }
@@ -496,7 +526,7 @@ export class DungeonRun {
       if (e.hp <= 0) continue;
       if (e.kind === "boss") {
         const pursue = advanceBossCombat(
-          e, s.player, s.round, s.dungeon, dt,
+          e, s.player, e.bossTier ?? s.round, s.dungeon, dt,
           (damage) => this.hurtPlayer(damage),
         );
         if (s.phase === "defeat") return;
@@ -677,12 +707,8 @@ export class DungeonRun {
     });
     if (e.hp > 0) return;
     s.kills++;
-    const rewardXP =
-      e.kind === "boss"
-        ? bossProfile(s.round).xp
-        : (DUNGEONS[s.dungeon].mode === "timed" ? B.timedEnemyXP : B.enemyXP) *
-          this.horde.experience *
-          (e.special ? 4 : 1);
+    const rewardXP = (DUNGEONS[s.dungeon].mode === "timed" ? B.timedEnemyXP : B.enemyXP) *
+      this.horde.experience * (e.kind === "boss" ? 2 : e.special ? 1.5 : 1);
     if (s.pickups.length < 1000)
       s.pickups.push({
         id: this.nextId(),
@@ -690,21 +716,25 @@ export class DungeonRun {
         y: e.y,
         kind: "xp",
         amount: rewardXP,
+        xpTier: e.kind === "boss" ? "boss" : e.special ? "elite" : "normal",
       });
     else this.grantXP(rewardXP);
-    if (
-      e.special &&
-      this.level("survival-instinct") &&
-      this.random() < 0.6 &&
-      s.pickups.length < 1000
-    )
-      s.pickups.push({
-        id: this.nextId(),
-        x: e.x + 10,
-        y: e.y,
-        kind: "health",
-        amount: 20,
-      });
+    if (e.kind === "boss" && s.pickups.length < 1100)
+      s.pickups.push({id:this.nextId(),x:e.x,y:e.y,kind:"level",amount:1});
+    const healingChance = e.kind === "boss" ? 1 : e.special
+      ? this.level("survival-instinct") ? B.instinctHealingChance : B.specialHealingChance
+      : B.ordinaryHealingChance;
+    if (this.random() < healingChance)
+      this.dropHealing(e.x, e.y, e.kind === "boss" ? 25 : e.special ? 15 : 10);
+  }
+  private dropHealing(x: number, y: number, amount: number): void {
+    const s = this.state;
+    if (s.pickups.length >= 1000 ||
+        s.pickups.filter(p => p.kind === "health").length >= B.maxGroundHealing ||
+        s.elapsed - (s.lastHealthDropAt ?? -B.healingDropCooldown) < B.healingDropCooldown ||
+        dungeonBlocked(s.dungeon, x, y)) return;
+    s.pickups.push({id: this.nextId(), x, y, kind: "health", amount});
+    s.lastHealthDropAt = s.elapsed;
   }
   private area(
     weapon: WeaponId,
@@ -1119,14 +1149,21 @@ export class DungeonRun {
     for (let i = s.pickups.length - 1; i >= 0; i--) {
       const p = s.pickups[i],
         d = Math.hypot(p.x - s.player.x, p.y - s.player.y);
-      if (p.kind === "xp" && (d < r || p.attracted)) {
+      if ((p.kind === "xp" || p.kind === "level" && p.attracted) && (d < r || p.attracted)) {
         const speed = Math.min(d, (p.attracted ? B.magnetSpeed : 240) * dt);
         p.x += ((s.player.x - p.x) / (d || 1)) * speed;
         p.y += ((s.player.y - p.y) / (d || 1)) * speed;
       }
       if (d > 20) continue;
+      if (p.kind === "level" && s.phase !== "fighting") continue;
+      if (p.kind === "health" && s.player.hp >= this.maxHealth) continue;
       s.pickups.splice(i, 1);
       if (p.kind === "xp") this.grantXP(p.amount);
+      else if (p.kind === "level") {
+        s.level++;
+        s.cards = this.buildComplete ? [] : rollUpgradeCards(s, this.random);
+        if (s.cards.length) s.phase = "choice";
+      }
       else if (p.kind === "health")
         s.player.hp = Math.min(this.maxHealth, s.player.hp + p.amount);
       else if (p.kind === "pet") {
@@ -1153,12 +1190,14 @@ export class DungeonRun {
       angle = this.random() * Math.PI * 2,
       x = clamp(s.player.x + Math.cos(angle) * 130, 64, 3000),
       y = clamp(s.player.y + Math.sin(angle) * 130, 64, 2200);
-    if (!dungeonBlocked(s.dungeon, x, y) && s.pickups.length < 1000)
+    const kind = kinds[Math.floor(this.random() * kinds.length)];
+    if (kind === "health") this.dropHealing(x, y, 20);
+    else if (!dungeonBlocked(s.dungeon, x, y) && s.pickups.length < 1000)
       s.pickups.push({
         id: this.nextId(),
         x,
         y,
-        kind: kinds[Math.floor(this.random() * kinds.length)],
+        kind,
         amount: 25,
       });
     if (
@@ -1182,6 +1221,8 @@ export class DungeonRun {
   }
   restore(snapshot: DungeonSnapshot): void {
     this.state = structuredClone(snapshot);
+    if (this.state.timedBossCount === undefined && DUNGEONS[this.state.dungeon].mode === "timed")
+      this.state.timedBossCount = TIMED_BOSS_SCHEDULE.filter(b => b.at < this.state.elapsed).length;
     Object.assign(
       this.state.player,
       safeDungeonPoint(
@@ -1220,7 +1261,7 @@ export class DungeonRun {
         return {
           ...card,
           name: WEAPONS[card.id].name,
-          effect: "Desbloqueia uma arma automática em um espaço livre",
+          effect: WEAPON_DESCRIPTIONS[card.id],
           rarity: "arsenal",
           level: 0,
           max: 1,

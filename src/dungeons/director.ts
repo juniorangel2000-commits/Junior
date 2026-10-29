@@ -5,7 +5,9 @@ export function hordeProfile(
   dungeon: DungeonId,
   elapsed: number,
   round: number,
+  level = 1,
 ) {
+  const extraLevels = Math.max(0, level - 1);
   const timed = DUNGEONS[dungeon].mode === "timed";
   const stage = Math.min(
     5,
@@ -50,9 +52,9 @@ export function hordeProfile(
       : timed
         ? [1.5, 1.25, 1, 0.85, 0.75, 0.65][stage]
         : Math.max(0.3, 0.65 - stage * 0.06),
-    health: 1 + progress * 1.5,
-    damage: 1 + progress * 0.75,
-    speed: 1 + progress * 0.3,
+    health: (1 + progress * 1.5) * (1 + extraLevels * 0.002),
+    damage: (1 + progress * 0.75) * (1 + extraLevels * 0.0006),
+    speed: (1 + progress * 0.3) * (1 + Math.min(0.2, extraLevels * 0.0002)),
     experience: timed ? 1 + progress * 0.25 : 1,
     specialChance: 0.02 + stage * 0.025,
     runnerChance: stage === 0 ? 0 : 0.1 + stage * 0.025,

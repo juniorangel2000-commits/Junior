@@ -1,4 +1,13 @@
 import { WEAPONS, type WeaponId } from "./config";
+export const WEAPON_DESCRIPTIONS: Record<WeaponId, string> = {
+  sword: "Corta inimigos próximos em um arco frontal, mirando o alvo mais perto.",
+  bow: "Dispara flechas contra inimigos à distância. Melhorias aumentam a precisão e permitem atingir mais alvos.",
+  spear: "Ataca em linha reta e perfura inimigos alinhados à frente do personagem.",
+  boomerang: "Lança um bumerangue que atravessa grupos e retorna, causando dano na ida e na volta.",
+  hammer: "Golpeia uma área e empurra os inimigos atingidos. Os impactos são fortes, mas mais lentos.",
+  "rotating-blade": "Uma lâmina gira ao redor do personagem e causa dano aos inimigos que encostar.",
+  "orbiting-shield": "Absorve um golpe e repele inimigos próximos. Recarrega após o uso; não causa dano.",
+};
 export const WEAPON_EVOLUTIONS = {
   sword: {
     id: "sword-dual",

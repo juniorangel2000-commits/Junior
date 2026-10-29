@@ -786,6 +786,8 @@ fs.mkdirSync(out, { recursive: true });
       weaponChoice,
     );
     await page.screenshot({ path: out + "/armas-nivel-10.png" });
+    const descriptions = await page.locator(".dungeon-cards button p").allTextContents();
+    check("Cartas de armas mostram três descrições próprias de funcionamento", descriptions.length === 3 && new Set(descriptions).size === 3 && descriptions.every(t => t.length > 30 && !t.includes("Desbloqueia uma arma")), descriptions);
     const newCards = await page.evaluate(async () => {
       const { UPGRADES } = await import("/src/dungeons/upgrades.ts");
       const s = d.run.state;
@@ -1069,6 +1071,49 @@ fs.mkdirSync(out, { recursive: true });
       d.run.restore(window.bossArtRestore); d.syncPlayer();
       d.lastPhase = ""; d.update(459000, 0);
     });
+    const xpDrops = await page.evaluate(() => {
+      window.xpDropRestore=d.run.snapshot();const s=d.run.state,p=s.player;
+      s.pickups=[{id:900001,x:p.x-90,y:p.y-50,kind:"xp",amount:4,xpTier:"normal"},
+       {id:900002,x:p.x-30,y:p.y-50,kind:"xp",amount:6,xpTier:"elite"},
+       {id:900003,x:p.x+30,y:p.y-50,kind:"xp",amount:8,xpTier:"boss"},
+       {id:900004,x:p.x+90,y:p.y-50,kind:"level",amount:1}];
+      d.renderRun();d.cameras.main.stopFollow().setZoom(2).centerOn(p.x,p.y);
+      return s.pickups.map(q=>({kind:q.kind,tier:q.xpTier,amount:q.amount}));
+    });
+    check("Drops de XP por categoria e item de um nível renderizam",xpDrops.length===4 && xpDrops[3].kind==="level" && xpDrops[3].amount===1,xpDrops);
+    await page.evaluate(()=>d.ui.resume());
+    await render();await page.screenshot({path:out+"/drops-xp-e-nivel.png"});
+    await page.evaluate(()=>{d.run.restore(window.xpDropRestore);d.renderRun();});
+    const timedBosses = await page.evaluate(async () => {
+      const {TIMED_BOSS_SCHEDULE} = await import("/src/dungeons/bosses.ts");
+      const {validDungeonSnapshot} = await import("/src/dungeons/snapshot.ts");
+      const before=d.run.snapshot(), rows=[];
+      for(const [i,b] of TIMED_BOSS_SCHEDULE.entries()) {
+        d.run.restore(before); const s=d.run.state;
+        s.dungeon="abandoned-central-square";s.phase="fighting";s.elapsed=b.at;
+        s.timedBossCount=i;s.enemies=[];s.spawnClock=20;
+        d.run.step(1/30);d.run.pause();d.renderRun();d.ui.update(d.run);
+        const boss=s.enemies.find(e=>e.kind==="boss");
+        rows.push({tier:boss?.bossTier,count:s.timedBossCount,valid:validDungeonSnapshot(d.run.snapshot()),
+          texture:boss?d.enemyImages.get(boss.id).texture.key:null,label:document.querySelector(".dungeon-boss")?.textContent});
+      }
+      d.run.restore(before);d.renderRun();d.ui.update(d.run);return rows;
+    });
+    check("Chefes distintos aparecem aos 3/6/9/12/14 minutos com identidade e checkpoint",timedBosses.every((r,i)=>r.tier===(i+1)*10 && r.count===i+1 && r.valid && r.texture?.startsWith("dungeon-boss-") && r.label?.length>0),timedBosses);
+    const postCards = await page.evaluate(async () => {
+      const {UPGRADES} = await import("/src/dungeons/upgrades.ts");
+      const {validDungeonSnapshot} = await import("/src/dungeons/snapshot.ts");
+      const before = d.run.snapshot(), s = d.run.state;
+      s.weapons=["sword","bow","hammer","spear"]; s.pet=undefined; s.levels={};
+      for(const u of UPGRADES) if(!u.pet && (!u.weapon || s.weapons.includes(u.weapon))) s.levels[u.id]=u.max;
+      s.level=500; s.xp=0; s.player.hp=50; s.phase="fighting";s.cards=[];
+      d.run.grantXP(d.run.xpNeeded*3+7);
+      d.ui.update(d.run);
+      const result={level:s.level,hp:s.player.hp,cards:s.cards.length,phase:s.phase,xp:s.xp,
+        valid:validDungeonSnapshot(d.run.snapshot()),hud:document.querySelector(".hud-experience").textContent};
+      d.run.restore(before);d.ui.update(d.run);return result;
+    });
+    check("Níveis continuam após concluir as cartas, sem cura ou escolhas vazias",postCards.level>500 && postCards.hp===50 && postCards.cards===0 && postCards.phase==="fighting" && postCards.valid && postCards.hud.includes(String(postCards.level)),postCards);
     const hudLayout = await page.evaluate(() => {
       window.hudLayoutRestore = d.run.snapshot();
       d.run.state.phase = "paused";
@@ -1173,6 +1218,7 @@ fs.mkdirSync(out, { recursive: true });
       d.run.state.waveRemaining = 0;
       d.run.state.enemies = [];
       d.run.state.intermission = 0;
+      d.run.state.pickups = []; // Isolate result-storage failure from final loot collection.
       d.run.step(1 / 30);
       d.lastPhase = "";
       d.update(320000, 0);

@@ -1,4 +1,8 @@
 import { DUNGEON_BALANCE as B } from "./config";
+export const TIMED_BOSS_SCHEDULE = [
+  { at: 180, tier: 10 }, { at: 360, tier: 20 }, { at: 540, tier: 30 },
+  { at: 720, tier: 40 }, { at: 840, tier: 50 },
+] as const;
 export const isBossRound = (round: number) =>
   B.bossRounds.some((value) => value === round);
 export function bossProfile(round: number) {
