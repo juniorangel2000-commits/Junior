@@ -1,6 +1,6 @@
 import {VILLAGE_GARDENS,VILLAGE_GROVES,villagePathEdge,villagePlazaDistance,villageLawnDistance} from './village';
 import {WORLD_WIDTH,WORLD_HEIGHT} from './world-size';
-import {villageLandmarkClearing} from './village-landmarks';
+import {villageLandmarkGroundClearing} from './village-landmarks';
 
 export const villageSmooth=(n:number):number=>{const t=Math.max(0,Math.min(1,n));return t*t*(3-2*t);};
 export const VILLAGE_GROUND_MATERIALS=8;
@@ -12,7 +12,7 @@ export function villageGroundWeights(x:number,y:number,includeCurbs=true):readon
  const edge=Math.min(x+.5,y+.5,WORLD_WIDTH-.5-x,WORLD_HEIGHT-.5-y);
  let woodland=(1-villageSmooth((edge-2.5-Math.sin(x*.27+y*.13)*1.2)/8.5))*.82;
  for(const grove of VILLAGE_GROVES){const d=Math.hypot((x-grove.x)/grove.rx,(y-grove.y)/grove.ry);woodland=Math.max(woodland,(1-villageSmooth((d-.3)/.9))*.44);}
- if(villageLandmarkClearing(x,y,48))woodland*=.15;
+ woodland*=1-.85*villageLandmarkGroundClearing(x,y);
  // One continuous dirt network and one stone square. No disconnected aprons,
  // dirt leaking through the plaza, or road material crossing its garden islands.
  const pathDistance=villagePathEdge(x,y),plazaDistance=villagePlazaDistance(x,y);

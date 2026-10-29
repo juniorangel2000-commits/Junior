@@ -48,8 +48,8 @@ describe('public square and decorative village districts',()=>{
   for(const t of VILLAGE_TREES)expect(villageLandmarkClearing(t.x,t.y,90)).toBe(false);
   for(const p of VILLAGE_LANDMARKS){
    const [l,t,w,h]=p.footprint,x=(p.x+.5)*32+l+w/2,y=p.y*32+25+t+h/2;
-   expect(villageLandmarkBlockedPoint(x,y),p.id).toBe(true);
-   expect(villagePointBlocked(x,y),p.id).toBe(true);
+   expect(villageLandmarkBlockedPoint(x,y),p.id).toBe(p.kind!=='gazebo');
+   expect(villagePointBlocked(x,y),p.id).toBe(p.kind!=='gazebo');
   }
  });
 });

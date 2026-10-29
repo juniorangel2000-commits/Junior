@@ -1,14 +1,19 @@
 import type Phaser from 'phaser';
 import manifest from '../public/assets/visual/village/landmarks/manifest.json';
-import {VILLAGE_LANDMARKS} from './data/village-landmarks';
+import {VILLAGE_LANDMARKS,villageGazeboContains} from './data/village-landmarks';
+import wheat from '../public/assets/visual/village/wheat/manifest.json';
+import {setupVillagePropAtlas} from './village-prop-atlas';
+import {drawVillageGazebo} from './village-gazebo';
 
 export const LANDMARK_ATLAS='village-landmark-atlas';
 export function preloadVillageLandmarks(scene:Phaser.Scene):void {
  scene.load.image('village-landmark-source',manifest.file);
  scene.load.image('village-granary-source',manifest.granaryOverride.file);
+ scene.load.image('village-wheat-source',wheat.file);
 }
 
-export function drawVillageLandmarks(scene:Phaser.Scene):{update(time:number):void} {
+export function drawVillageLandmarks(scene:Phaser.Scene):{update(time:number,occupant?:{x:number;y:number}):void} {
+ setupVillagePropAtlas(scene,'village-wheat','village-wheat-source',wheat);
  const customAssets={
   granary:{key:'village-granary-v2',source:'village-granary-source',...manifest.granaryOverride},
  };
@@ -31,7 +36,14 @@ export function drawVillageLandmarks(scene:Phaser.Scene):{update(time:number):vo
   for(const [id,r] of Object.entries(manifest.frames))texture.add(id,0,r.x,r.y,r.width,r.height);
  }
  let fountain:{x:number;y:number;width:number;height:number;depth:number}|undefined;
+ let gazeboRoof:Phaser.GameObjects.Image|undefined;
  for(const p of VILLAGE_LANDMARKS){
+  if(p.kind==='gazebo'){gazeboRoof=drawVillageGazebo(scene,p);continue;}
+  if(p.kind==='wheat'){
+   const frame=p.id.endsWith('-a')?'wheat-a':'wheat-b',r=wheat.frames[frame],y=p.y*32+25;
+   scene.add.image((p.x+.5)*32,y,'village-wheat',frame).setOrigin(.5,1).setScale(Math.min(p.width/r.width,p.height/r.height))
+    .setDepth(y).setData({'village-landmark':p.id,'village-landmark-kind':p.kind,'shadow-foot':1});continue;
+  }
   const custom=p.kind==='granary'?customAssets.granary:undefined;
   const x=(p.x+.5)*32,y=p.y*32+25,r=p.kind==='granary'?manifest.granaryOverride.frame:manifest.frames[p.kind],scale=Math.min(p.width/r.width,p.height/r.height);
   const image=scene.add.image(x,y,custom?custom.key:LANDMARK_ATLAS,custom?undefined:p.kind).setOrigin(.5,1).setScale(scale).setDepth(y)
@@ -44,7 +56,8 @@ export function drawVillageLandmarks(scene:Phaser.Scene):{update(time:number):vo
  }
  const ripple=scene.add.graphics().setData('village-fountain-water',true);
  if(fountain)ripple.setDepth(fountain.depth);
- return {update(time:number){
+ return {update(time:number,occupant?:{x:number;y:number}){
+  gazeboRoof?.setAlpha(occupant&&villageGazeboContains(occupant.x,occupant.y) ? .3 : 1);
   if(!fountain||!ripple.active)return;
   ripple.clear();
   for(let i=0;i<3;i++){

@@ -1,0 +1,103 @@
+{
+  "file": "assets/visual/village/defences/barricadas.png",
+  "sha256": "e0b53b79801210ff1406567f255a62bf8ec6c89cc25069f453eae21d1814ac74",
+  "alphaCutoff": 200,
+  "frames": {
+    "north": {
+      "x": 33,
+      "y": 33,
+      "width": 351,
+      "height": 209
+    },
+    "northeast": {
+      "x": 384,
+      "y": 13,
+      "width": 359,
+      "height": 234
+    },
+    "east": {
+      "x": 862,
+      "y": 17,
+      "width": 161,
+      "height": 231
+    },
+    "southeast": {
+      "x": 1181,
+      "y": 16,
+      "width": 308,
+      "height": 240
+    },
+    "south": {
+      "x": 33,
+      "y": 286,
+      "width": 335,
+      "height": 212
+    },
+    "southwest": {
+      "x": 446,
+      "y": 279,
+      "width": 288,
+      "height": 219
+    },
+    "west": {
+      "x": 847,
+      "y": 268,
+      "width": 170,
+      "height": 230
+    },
+    "northwest": {
+      "x": 1181,
+      "y": 256,
+      "width": 292,
+      "height": 242
+    },
+    "blood-north": {
+      "x": 33,
+      "y": 541,
+      "width": 351,
+      "height": 210
+    },
+    "blood-northeast": {
+      "x": 384,
+      "y": 520,
+      "width": 359,
+      "height": 233
+    },
+    "blood-east": {
+      "x": 862,
+      "y": 522,
+      "width": 162,
+      "height": 230
+    },
+    "blood-southeast": {
+      "x": 1181,
+      "y": 521,
+      "width": 309,
+      "height": 242
+    },
+    "blood-south": {
+      "x": 33,
+      "y": 789,
+      "width": 335,
+      "height": 215
+    },
+    "blood-southwest": {
+      "x": 446,
+      "y": 785,
+      "width": 288,
+      "height": 218
+    },
+    "blood-west": {
+      "x": 846,
+      "y": 774,
+      "width": 171,
+      "height": 230
+    },
+    "blood-northwest": {
+      "x": 1181,
+      "y": 775,
+      "width": 292,
+      "height": 229
+    }
+  }
+}

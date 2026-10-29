@@ -1,4 +1,4 @@
-# After Rain 0.10.0-preview.10 — vila harmonizada e encontros
+# After Rain 0.10.0-preview.10 — vila, píer e encontros
 
 - Blocos intertravados pequenos com juntas mais definidas e chanfros visíveis na escala do jogo.
 - Piso da praça com a mesma cor quente dos caminhos da vila, mantendo os detalhes refinados.
@@ -16,4 +16,14 @@
 - Conversas em outros comércios esperam o visitante e o dono pararem. O dono retoma sua rotina depois da resposta.
 - Balões com posição limitada à tela, ajuste junto à borda superior e verificação em diferentes níveis de zoom.
 
-Versão em preparação; ainda não publicada. Capturas e validação ficam em `docs/cenarios/praca-refino-preview10`.
+- Transições de grama e floresta graduais em toda a vila, substituindo as manchas retangulares ao redor das construções, sem trocar a arte original da grama.
+- Píer curto e caminhável em frente ao comércio do Damião, alinhado ao acesso. Varas, rede, âncora, cordas e cesta de peixes com escala proporcional aos bancos.
+- Dezoito barricadas distribuídas no perímetro; sprites em oito direções, incluindo variantes com pontas manchadas de sangue. A entrada da propriedade permanece aberta.
+- Floresta de contorno adensada: 371 árvores de seis variedades, preservando portas e caminhos.
+- Armazém ampliado em aproximadamente 11%. Carpintaria recuada e deslocada para a esquerda, com entrada própria e caminho principal afastado da varanda.
+- Trigos do moinho substituídos por canteiros verticais, posicionados dentro do cercado.
+- Coreto acessível pelo centro, com pilares e guarda-corpo sólidos e telhado que permite ver o jogador ao entrar.
+
+- Chegadas dos caminhos retas nas 16 frentes de construções, mantendo a largura anterior e sem patamares alargados.
+
+Versão em preparação; ainda não publicada. Capturas finais e validação ficam em `docs/cenarios/acabamento-vila-preview10`.

@@ -1,0 +1,25 @@
+{
+  "file": "assets/visual/village/wheat/trigo-vertical.png",
+  "sha256": "140b45bb42fbf58ee128233896da4babd6642865b605a189b70a811e65ac531d",
+  "alphaCutoff": 200,
+  "frames": {
+    "wheat-a": {
+      "x": 91,
+      "y": 54,
+      "width": 335,
+      "height": 911
+    },
+    "wheat-b": {
+      "x": 607,
+      "y": 54,
+      "width": 322,
+      "height": 911
+    },
+    "wheat-c": {
+      "x": 1127,
+      "y": 50,
+      "width": 327,
+      "height": 915
+    }
+  }
+}

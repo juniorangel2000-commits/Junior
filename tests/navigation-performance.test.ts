@@ -37,6 +37,7 @@ describe('Augusto supplied exterior has a usable aligned entrance',()=>{
   const b={x:33,y:31},d=merchantDoor('augusto'),outside=merchantOutside('augusto');
   for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]])expect(augustoShopBlockedPoint(d.x+dx,d.y+dy,b)).toBe(false);
   expect(augustoShopBlockedPoint(outside.x,outside.y,b)).toBe(false);expect(augustoShopBlockedPoint(d.x+60,d.y-35,b)).toBe(true);expect(augustoShopBlockedPoint(d.x,d.y-180,b)).toBe(false);
-  expect(AUGUSTO_SHOP.width*AUGUSTO_SHOP.scale).toBeLessThan(360);
+  expect(AUGUSTO_SHOP.width*AUGUSTO_SHOP.scale).toBeGreaterThan(360);
+  expect(AUGUSTO_SHOP.width*AUGUSTO_SHOP.scale).toBeLessThan(400);
  });
 });

@@ -405,7 +405,7 @@ export class VillageScene extends Phaser.Scene {
   this.time.delayedCall(SCENE_FADE_MS,()=>{const state=structuredClone(this.state);this.scene.stop();this.onReturn(state,title);});
  }
  update(time:number,ms:number):void {
-  if(!this.player)return;this.daylight.update(this.state.time,this.inShop);this.world.update(time);this.world.updateLighting(this.state.time);
+  if(!this.player)return;this.daylight.update(this.state.time,this.inShop);this.world.update(time,this.inShop?undefined:this.player);this.world.updateLighting(this.state.time);
   if(this.paused||this.leaving||this.changingRoom||this.shop?.isOpen||this.ui.isModalOpen()||document.hidden)return;
   const delta=Math.min(ms/1000,.1),previous={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta,this.blocked,this.blockedPoint);
   if(this.inShop)this.centerInteriorCamera();

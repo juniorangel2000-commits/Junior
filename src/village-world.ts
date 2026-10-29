@@ -1,5 +1,7 @@
 import {drawVillagePlaza} from './village-plaza';
 import {setupVillageGreenery,drawVillageTallGrass,VILLAGE_GREENERY} from './village-greenery';
+import {drawVillagePier} from './village-pier';
+import {drawVillageDefences} from './village-defences';
 import {facadeForMerchant} from './data/shop-facades';
 import {villageLandmarkClearing} from './data/village-landmarks';
 import {drawVillageLandmarks} from './village-landmarks';
@@ -7,7 +9,7 @@ import {setupFacadeLight} from './shop-facade-light';
 import {TOBIAS_SHOP} from './data/tobias-shop';
 import {setupTobiasShop} from './tobias-shop';
 import {BLACKSMITH_HOUSE,setupBlacksmithHouse,blacksmithPoint} from './blacksmith-house';
-import {villageWater,villageLakeDistance,villagePointBlocked,villageDoorApproach,villagePathEdge,VILLAGE_LAKE,VILLAGE_GARDENS,VILLAGE_FENCES,VILLAGE_SHORE_DETAILS} from './data/village';
+import {villageWater,villageWaterPoint,villageLakeDistance,villagePointBlocked,villageDoorApproach,villagePathEdge,VILLAGE_LAKE,VILLAGE_GARDENS,VILLAGE_FENCES,VILLAGE_SHORE_DETAILS} from './data/village';
 import {villageGroundWeights,villagePlazaCurbWeight,VILLAGE_GROUND_MATERIALS,villageSmooth as smooth} from './data/village-ground';
 import {readVillagePaving,VILLAGE_LAMP} from './village-scenery-art';
 import {drawConnectedFence} from './fence-art';
@@ -27,7 +29,7 @@ import type {ResourceNode} from './types';
 import type {WorldEditorObject} from './world';
 import type {MapEditData} from './systems/map-editor';
 import {villageTreeId,villagePathAlignment} from './data/village';
-import {terrainPaintAlpha,paintedWaterPoint} from './data/terrain-paint';
+import {terrainPaintAlpha} from './data/terrain-paint';
 
 const MAP_WIDTH=WORLD_WIDTH*TILE,MAP_HEIGHT=WORLD_HEIGHT*TILE;
 
@@ -111,7 +113,7 @@ export class VillageWorld {
  readonly resources:ResourceNode[]=[];
  readonly solid=new Set<string>();
  private readonly environment:Phaser.GameObjects.GameObject[];
- private readonly landmarks:{update(time:number):void};
+ private readonly landmarks:{update(time:number,occupant?:{x:number;y:number}):void};
  private readonly lamps:Phaser.GameObjects.Graphics[]=[];
  private readonly windows:Phaser.GameObjects.Image[]=[];
  private readonly smoke:Array<{destroy():void}>=[];
@@ -122,7 +124,7 @@ export class VillageWorld {
  constructor(private readonly scene:Phaser.Scene,private readonly edits?:MapEditData,private readonly namespace='village'){
   const before=new Set(scene.children.list);setupVillageArt(scene);drawGround(scene,edits,namespace);
   setupVillageGreenery(scene);
-  this.drawLake();this.drawTrees();this.drawBuildings();this.landmarks=drawVillageLandmarks(scene);drawVillagePlaza(scene);this.drawGardens();this.drawProps();drawVillageTallGrass(scene,this.edits);
+  this.drawLake();drawVillagePier(scene);this.drawTrees();drawVillageDefences(scene);this.drawBuildings();this.landmarks=drawVillageLandmarks(scene);drawVillagePlaza(scene);this.drawGardens();this.drawProps();drawVillageTallGrass(scene,this.edits);
   drawExitSign(scene,this.exit(),this.entry());
   this.environment=scene.children.list.filter(object=>!before.has(object));
   for(let y=0;y<WORLD_HEIGHT;y++)for(let x=0;x<WORLD_WIDTH;x++)if(villageBlockedAt(x,y,edits))this.solid.add(`${x},${y}`);
@@ -132,9 +134,9 @@ export class VillageWorld {
  isBlocked=(x:number,y:number):boolean=>x<1||y<1||x>=WORLD_WIDTH-1||y>=WORLD_HEIGHT-1||this.solid.has(`${x},${y}`);
  isBlockedPoint=(x:number,y:number)=>villagePointBlocked(x,y,this.edits);
  waterAt=(x:number,y:number):boolean=>villageWater(x,y,this.edits);
- waterPointAt=(x:number,y:number):boolean=>paintedWaterPoint(this.edits?.terrain,x,y,(x,y)=>villageLakeDistance(x/32,y/32)<0);
+ waterPointAt=(x:number,y:number):boolean=>villageWaterPoint(x,y,this.edits);
  resourceAt=(_x:number,_y:number):ResourceNode|undefined=>undefined;
- update(timeMs:number):void {if(Number.isFinite(timeMs))this.elapsed=timeMs;if(this.shown)this.landmarks.update(this.elapsed);}
+ update(timeMs:number,occupant?:{x:number;y:number}):void {if(Number.isFinite(timeMs))this.elapsed=timeMs;if(this.shown)this.landmarks.update(this.elapsed,occupant);}
  setVisible(shown:boolean):void {
   if(shown===this.shown)return;this.shown=shown;
   for(const object of this.environment)if('setVisible'in object){

@@ -1,0 +1,43 @@
+{
+  "file": "assets/visual/village/pier/pier-curto-e-pesca.png",
+  "sha256": "79a4e1004cce5c102be34bdfa2f37ea1c753ba4c7868f5cfabf496cf8c030765",
+  "alphaCutoff": 180,
+  "frames": {
+    "pier": {
+      "x": 353,
+      "y": 59,
+      "width": 1068,
+      "height": 397
+    },
+    "crate": {
+      "x": 40,
+      "y": 552,
+      "width": 376,
+      "height": 279
+    },
+    "rods": {
+      "x": 515,
+      "y": 469,
+      "width": 308,
+      "height": 369
+    },
+    "fish": {
+      "x": 922,
+      "y": 556,
+      "width": 350,
+      "height": 275
+    },
+    "anchor": {
+      "x": 1348,
+      "y": 484,
+      "width": 395,
+      "height": 354
+    },
+    "pier-front": {
+      "x": 353,
+      "y": 310,
+      "width": 1068,
+      "height": 146
+    }
+  }
+}

@@ -3,6 +3,9 @@ import manifest from '../public/assets/visual/village/greenery/manifest.json';
 import {VILLAGE_BUILDINGS,VILLAGE_PROPS,villageBlockedAt,villageDoorApproach,villageLakeDistance,villagePathEdge,villagePlazaDistance} from './data/village';
 import {villageLandmarkClearing} from './data/village-landmarks';
 import type {MapEditData} from './systems/map-editor';
+import {TOBIAS_SHOP} from './data/tobias-shop';
+import {BLACKSMITH_HOUSE} from './data/blacksmith-house';
+import {facadeForMerchant} from './data/shop-facades';
 
 export const VILLAGE_GREENERY='village-greenery';
 export function preloadVillageGreenery(scene:Phaser.Scene):void{
@@ -30,6 +33,19 @@ const MEADOW_PATCHES=[
  [24,49],[22,54],[22,57],[34,62],[40,63],[52,63],[57,63],
 ] as const;
 
+const BUILDING_ART_BOUNDS=VILLAGE_BUILDINGS.flatMap(b=>{
+ const art=b.shop==='carpenter'?TOBIAS_SHOP:b.shop==='blacksmith'
+  ?{...BLACKSMITH_HOUSE,width:BLACKSMITH_HOUSE.size,height:BLACKSMITH_HOUSE.size}:facadeForMerchant(b.shop);
+ if(!art)return[];
+ const left=(b.x+.5)*32-art.door.x*art.scale,top=b.y*32+25-art.door.y*art.scale;
+ return [{left,top,right:left+art.width*art.scale,bottom:top+art.height*art.scale}];
+});
+
+export function villageBuildingGrassClearing(x:number,y:number):boolean{
+ const px=(x+.5)*32,py=y*32+25;
+ return BUILDING_ART_BOUNDS.some(b=>px>b.left-24&&px<b.right+24&&py>b.top-8&&py<b.bottom+42);
+}
+
 /** Crossable foliage belongs to small planted groups, not a uniform scatter.
  * Reserve entire building silhouettes so blades never poke through a roof. */
 export function villageTallGrassPositions():{x:number;y:number;variant:number}[]{
@@ -40,7 +56,7 @@ export function villageTallGrassPositions():{x:number;y:number;variant:number}[]
   if(villagePathEdge(x,y)<.85||villagePlazaDistance(x,y)<1.12||villageLakeDistance(x,y)<1)continue;
   if(villageDoorApproach(x,y)||villageLandmarkClearing(x,y,18)||villageBlockedAt(Math.floor(x+.5),Math.floor(y+.5)))continue;
   if(VILLAGE_PROPS.some(p=>Math.hypot(p.x-x,p.y-y)<1.25))continue;
-  if(VILLAGE_BUILDINGS.some(b=>x>b.x-6&&x<b.x+7&&y>b.y-7&&y<b.y+1.2))continue;
+  if(villageBuildingGrassClearing(x,y))continue;
   result.push({x,y,variant:(index+i)%3});
  }
  return result;
