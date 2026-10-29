@@ -51,3 +51,7 @@ Os cinco chefes foram exportados em PNG RGBA de 256 × 256 pixels, com o mesmo a
 ### Revisão da frente do Demolidor
 
 A pedido do usuário, a frente de referência foi redesenhada sem equipamento, com mãos vazias e os pés apoiados, para simplificar a geração da caminhada. O PNG continua em 256 × 256. O atlas de caminhada do jogo permanece provisório até a integração das animações definitivas. [Prompt atualizado](frentes-256/PROMPT-DEMOLIDOR.md).
+
+### Referências em pose neutra
+
+As frentes da Sentinela, do Acorrentado, do Contaminado e do Devorador foram redesenhadas com os dois pés apoiados, pernas em repouso e braços relaxados. O Demolidor sem equipamento e os dois zumbis já estavam neutros e foram preservados. Os sete PNGs foram conferidos em 256 × 256, com transparência e a mesma referência de origem (128, 235). Esta revisão se limita às fontes de animação.

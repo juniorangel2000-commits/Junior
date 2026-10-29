@@ -1,18 +1,23 @@
-# Chefes — frentes de 256 × 256 pixels
+# Monstros — referências frontais em pose neutra
 
-Todos os arquivos são PNG RGBA transparentes de exatamente 256 × 256 pixels.
-As artes mantêm as proporções originais, sem esticar ou cortar os personagens.
+Sete PNGs RGBA transparentes, cada um com exatamente 256 × 256 pixels:
 
-Para as animações:
-- Mantenha a tela de 256 × 256 em todos os frames e direções.
-- Centro horizontal x = 128; referência de apoio dos pés y = 235.
-- Use os mesmos pontos de alinhamento para evitar saltos.
-- Sugestão: south, west, east, north; quatro frames de caminhada por direção.
-- Não amplie o Devorador no arquivo: a diferença de tamanho é aplicada pelo jogo.
+- 10-demolidor-south.png — operário sem martelete, mãos vazias.
+- 20-sentinela-south.png — agente de choque com escudo apoiado ao lado.
+- 30-acorrentado-south.png — roupas vinho e correntes em repouso.
+- 40-contaminado-south.png — traje oliva e máscara de gás.
+- 50-devorador-south.png — corpo largo e avental vinho.
+- zumbi-entregador-south.png — jaqueta vermelha e mochila.
+- zumbi-moradora-south.png — casaco verde azulado e saia escura.
 
-10 Demolidor; 20 Sentinela; 30 Acorrentado; 40 Contaminado; 50 Devorador.
+Todos estão de frente, com os dois pés apoiados na mesma linha e os braços em repouso. O Demolidor e os dois zumbis já estavam neutros; as outras quatro frentes foram redesenhadas para retirar a passada avançada.
 
-Zumbis comuns adicionais: entregador e moradora.
-A referência de origem é (128, 235); a arte opaca termina dois pixels acima desse ponto.
+Para animar:
+- Preserve a tela de 256 × 256 em todos os frames.
+- Referência de origem: (128, 235); a arte opaca termina dois pixels acima.
+- Preserve as proporções e o enquadramento da referência.
+- Sugestão: quatro frames de caminhada por direção, na ordem south, west, east, north.
+- Em spritesheet: quatro colunas e quatro linhas; 1024 × 1024 no total.
+- A escala maior do Devorador será aplicada pelo jogo, sem ampliar a tela do PNG.
 
-Revisão do Demolidor: a frente foi redesenhada sem o martelete, com mãos vazias e postura neutra para facilitar a animação. Use esta versão como referência.
+Estas são fontes para produzir as animações definitivas. Os atlas de caminhada do jogo permanecem provisórios até a integração das animações.
