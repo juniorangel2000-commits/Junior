@@ -1,6 +1,11 @@
 import demolisher from "../../public/assets/visual/dungeons/boss-demolisher.json";
+import sentinel from "../../public/assets/visual/dungeons/boss-sentinel.json";
 
 export type BossDirection = "south" | "west" | "east" | "north";
+const suppliedAnimations: Record<string, typeof demolisher.animation> = {
+  demolisher: demolisher.animation,
+  sentinel: sentinel.animation,
+};
 
 /** Full-canvas animations retain their author's spacing and a fixed body scale. */
 export function bossSpritePose(
@@ -9,8 +14,8 @@ export function bossSpritePose(
   elapsed: number,
   resting: boolean,
 ) {
-  if (art === "demolisher") {
-    const animation = demolisher.animation;
+  const animation = suppliedAnimations[art];
+  if (animation) {
     const pivot = animation.pivots[direction];
     return {
       frame: resting ? "idle-" + direction

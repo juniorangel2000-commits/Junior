@@ -1,103 +1,237 @@
 {
   "file": "assets/visual/dungeons/boss-sentinel.png",
-  "sha256": "e6cd783e338fce782010b156fc4b933e1435d0321a85f619d1d0ebc6e70431c4",
+  "sha256": "9eb89015b5fe7c35030244c7e7f3988fec3535fa4f94040f9c6fbbc401ea200c",
   "alphaCutoff": 160,
   "frames": {
     "south-0": {
-      "x": 59,
-      "y": 30,
-      "width": 216,
-      "height": 276
+      "x": 0,
+      "y": 0,
+      "width": 256,
+      "height": 256
     },
     "south-1": {
-      "x": 373,
-      "y": 30,
-      "width": 213,
-      "height": 273
+      "x": 256,
+      "y": 0,
+      "width": 256,
+      "height": 256
     },
     "south-2": {
-      "x": 684,
-      "y": 30,
-      "width": 213,
-      "height": 276
+      "x": 512,
+      "y": 0,
+      "width": 256,
+      "height": 256
     },
     "south-3": {
-      "x": 999,
-      "y": 30,
-      "width": 213,
-      "height": 277
+      "x": 768,
+      "y": 0,
+      "width": 256,
+      "height": 256
     },
     "west-0": {
-      "x": 66,
-      "y": 325,
-      "width": 201,
-      "height": 278
+      "x": 0,
+      "y": 256,
+      "width": 256,
+      "height": 256
     },
     "west-1": {
-      "x": 379,
-      "y": 325,
-      "width": 197,
-      "height": 276
+      "x": 256,
+      "y": 256,
+      "width": 256,
+      "height": 256
     },
     "west-2": {
-      "x": 691,
-      "y": 325,
-      "width": 205,
-      "height": 278
+      "x": 512,
+      "y": 256,
+      "width": 256,
+      "height": 256
     },
     "west-3": {
-      "x": 1006,
-      "y": 326,
-      "width": 199,
-      "height": 275
+      "x": 768,
+      "y": 256,
+      "width": 256,
+      "height": 256
     },
     "east-0": {
-      "x": 63,
-      "y": 629,
-      "width": 188,
-      "height": 278
+      "x": 0,
+      "y": 512,
+      "width": 256,
+      "height": 256
     },
     "east-1": {
-      "x": 378,
-      "y": 629,
-      "width": 186,
-      "height": 277
+      "x": 256,
+      "y": 512,
+      "width": 256,
+      "height": 256
     },
     "east-2": {
-      "x": 688,
-      "y": 629,
-      "width": 190,
-      "height": 278
+      "x": 512,
+      "y": 512,
+      "width": 256,
+      "height": 256
     },
     "east-3": {
-      "x": 1006,
-      "y": 629,
-      "width": 187,
-      "height": 277
+      "x": 768,
+      "y": 512,
+      "width": 256,
+      "height": 256
     },
     "north-0": {
-      "x": 47,
-      "y": 916,
-      "width": 222,
-      "height": 289
+      "x": 0,
+      "y": 768,
+      "width": 256,
+      "height": 256
     },
     "north-1": {
-      "x": 359,
-      "y": 915,
-      "width": 218,
-      "height": 293
+      "x": 256,
+      "y": 768,
+      "width": 256,
+      "height": 256
     },
     "north-2": {
-      "x": 673,
-      "y": 915,
-      "width": 223,
-      "height": 291
+      "x": 512,
+      "y": 768,
+      "width": 256,
+      "height": 256
     },
     "north-3": {
-      "x": 987,
-      "y": 915,
-      "width": 214,
-      "height": 293
+      "x": 768,
+      "y": 768,
+      "width": 256,
+      "height": 256
+    },
+    "idle-south": {
+      "x": 0,
+      "y": 1024,
+      "width": 256,
+      "height": 256
+    },
+    "idle-west": {
+      "x": 256,
+      "y": 1024,
+      "width": 256,
+      "height": 256
+    },
+    "idle-east": {
+      "x": 512,
+      "y": 1024,
+      "width": 256,
+      "height": 256
+    },
+    "idle-north": {
+      "x": 768,
+      "y": 1024,
+      "width": 256,
+      "height": 256
+    }
+  },
+  "animation": {
+    "walkFrames": 4,
+    "frameRate": 5,
+    "referenceHeight": 184,
+    "canvasSize": 256,
+    "pivots": {
+      "south": {
+        "x": 128,
+        "y": 235
+      },
+      "west": {
+        "x": 128,
+        "y": 235
+      },
+      "east": {
+        "x": 128,
+        "y": 238
+      },
+      "north": {
+        "x": 128,
+        "y": 234
+      }
+    }
+  },
+  "sourceArchive": {
+    "file": "docs/dungeons/animacoes-sentinela/sentinela-original.zip",
+    "sha256": "92f28e4a6180babcb8d20ca48767ce92df88aae28750c3ced225caa48570ca89"
+  },
+  "sources": {
+    "south-0": {
+      "file": "Idle/animations/Walking/south/frame_000.png",
+      "sha256": "7811d621a81bc18b4b6a8ec215f4652c981c26a503dd562ff765b73ae6bf3ba7"
+    },
+    "south-1": {
+      "file": "Idle/animations/Walking/south/frame_001.png",
+      "sha256": "791a2350b87615ff030465f7416136f71bbf7b68d97a3b4afa44c3cd62ed4f63"
+    },
+    "south-2": {
+      "file": "Idle/animations/Walking/south/frame_002.png",
+      "sha256": "5f597a3d24140227b3c2afb50ed3754b591ca1f809f5d79c961cf6415f5bec58"
+    },
+    "south-3": {
+      "file": "Idle/animations/Walking/south/frame_003.png",
+      "sha256": "6502657e853c370f72e664999fc9f338dda71f370d2220cff3f2942945bbc297"
+    },
+    "west-0": {
+      "file": "Idle/animations/Walking/west/frame_000.png",
+      "sha256": "71a08db291c8d7f5959c1f412a049f844d1f57be6f2efa5431b9775e2ae460f4"
+    },
+    "west-1": {
+      "file": "Idle/animations/Walking/west/frame_001.png",
+      "sha256": "b1826bef5222dce40644d9ee4bacb825cff18dd7738b413e88ef4edcd5750030"
+    },
+    "west-2": {
+      "file": "Idle/animations/Walking/west/frame_002.png",
+      "sha256": "d89ba1d06a89203ab1ddea84987edf7b78891e8745cd9e4572a09f35b7d8804e"
+    },
+    "west-3": {
+      "file": "Idle/animations/Walking/west/frame_003.png",
+      "sha256": "5a2d8819bf12502b2acf9b8be064762b0c8f2516db8619ccd88d5967636f82a0"
+    },
+    "east-0": {
+      "file": "Idle/animations/Walking/east/frame_000.png",
+      "sha256": "1a6e3d0e392232260be2327942d5f0254ce9ec1c56ed0f90172f4221a7f943db"
+    },
+    "east-1": {
+      "file": "Idle/animations/Walking/east/frame_001.png",
+      "sha256": "6e604d78970806b84a2f244bc957a9d10e060c42b12d56e047f97ae959a60763"
+    },
+    "east-2": {
+      "file": "Idle/animations/Walking/east/frame_002.png",
+      "sha256": "75082a0c4ad7f96bbeb0592e7a0767e3b38f60bd03faa0f1676795c7068fb2a3"
+    },
+    "east-3": {
+      "file": "Idle/animations/Walking/east/frame_003.png",
+      "sha256": "b0e26e52719273dd8b03d9960f50a119d638e7aa9fe0b880c15c652eb1ea5bd1"
+    },
+    "north-0": {
+      "file": "Idle/animations/Walking/north/frame_000.png",
+      "sha256": "7eef3eb651b41c3060a66139d7dc254cad1708d99c6b97b563e4e56aaa8e6335"
+    },
+    "north-1": {
+      "file": "Idle/animations/Walking/north/frame_001.png",
+      "sha256": "c236330574a81f3b718a3111a288f8d5fd5e256ee223e600c47ea1030c94fdc1"
+    },
+    "north-2": {
+      "file": "Idle/animations/Walking/north/frame_002.png",
+      "sha256": "83d2e328fa53747d01ac25d35cd10a8d4c72bf9e1dce1ae933f780c0707e7342"
+    },
+    "north-3": {
+      "file": "Idle/animations/Walking/north/frame_003.png",
+      "sha256": "f6bad727e69ad3208149d81c7acedddc003cf45bc4549c73cf04ab331b422a09"
+    },
+    "idle-south": {
+      "file": "Idle/rotations/south.png",
+      "sha256": "d2771c856ecb5dfc391bcb92e7ef96bdba4f838fa1b1aa79d42f01e3a1b99c26"
+    },
+    "idle-west": {
+      "file": "Idle/rotations/west.png",
+      "sha256": "58a68103481f028f330385e847ec63f56fb6e0fbee02e72420fe35116e98ccc5"
+    },
+    "idle-east": {
+      "file": "Idle/rotations/east.png",
+      "sha256": "a49d8e03db3898fe60fe17c723a2b6aaed2377b2a6f9ea7e8f75874e8d9b889a"
+    },
+    "idle-north": {
+      "file": "Idle/rotations/north.png",
+      "sha256": "2c35bd9c45f91120cb5dd6d150d6b08c6d8fc70f720b1d738c59f7a84c3b1a07"
     }
   }
 }
