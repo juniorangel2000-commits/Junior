@@ -832,6 +832,11 @@ export class DungeonScene extends Phaser.Scene {
         false,
       );
     this.renderRun();
+    this.ui.updateRescue(
+      run,
+      this.cameras.main.worldView,
+      this.game.canvas.getBoundingClientRect(),
+    );
     this.elapsedHUD += dt;
     if (this.elapsedHUD > 0.1 || s.phase !== this.lastPhase) {
       this.ui.update(run);

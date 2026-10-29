@@ -666,3 +666,24 @@
 .permanent-shortfall { font-size:10px; color:#b8c2a9; margin-top:8px; min-height:30px; }
 @media(max-width:850px) { .permanent-grid {grid-template-columns:repeat(2,minmax(0,1fr));} .permanent-wallet {min-width:140px;padding:14px;} }
 @media(max-width:520px) { .permanent-header {flex-direction:column;gap:10px;} .permanent-wallet {box-sizing:border-box;width:100%;text-align:left;} .permanent-wallet strong {font-size:26px;} .permanent-grid {grid-template-columns:1fr;} .permanent-target {align-items:start;flex-direction:column;} .permanent-target select {box-sizing:border-box;width:100%;min-width:0;} .permanent-menu {padding:16px;} }
+
+.dungeon-rescue-marker {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  transform: translate(-50%, -50%);
+  padding: 9px 12px;
+  border: 1px solid #dfc47c;
+  border-radius: 12px;
+  background: #172b25f2;
+  box-shadow: 0 3px 14px #0008;
+  color: #f4e3b8;
+  pointer-events: none;
+  white-space: nowrap;
+  font-size: 12px;
+}
+.dungeon-rescue-marker[hidden] { display: none; }
+.dungeon-rescue-marker strong, .dungeon-rescue-marker small { display: block; }
+.dungeon-rescue-marker small { margin-top: 3px; color: #e4e8dc; font-size: 10px; }
+.rescue-direction { display: block; font-size: 23px; line-height: 1; color: #f2d17a; }

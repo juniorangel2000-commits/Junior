@@ -1,3 +1,4 @@
+import { petRescueMarker } from "./pet-rescue-marker";
 import { permanentEvolutionHTML } from "./permanent-ui";
 import { dungeonHUD } from "./hud";
 import { WEAPON_EVOLUTIONS, type WeaponIcons } from "./weapon-identity";
@@ -56,6 +57,7 @@ export class DungeonUI {
   private readonly hud = document.createElement("div");
   private readonly panel = document.createElement("div");
   private lastHUD = "";
+  private readonly rescueMarker = document.createElement("div");
   constructor(
     private readonly callbacks: Callbacks,
     private readonly icons: WeaponIcons,
@@ -63,10 +65,16 @@ export class DungeonUI {
     this.root.id = "dungeon-ui";
     this.hud.className = "dungeon-hud";
     this.panel.className = "dungeon-overlay";
-    this.root.append(this.hud, this.panel);
+    this.rescueMarker.className = "dungeon-rescue-marker";
+    this.rescueMarker.hidden = true;
+    this.rescueMarker.setAttribute("role", "status");
+    this.rescueMarker.innerHTML =
+      '<span class="rescue-direction" aria-hidden="true">➤</span><span><strong>Pet encontrado</strong><small></small></span>';
+    this.root.append(this.hud, this.rescueMarker, this.panel);
     document.body.append(this.root);
   }
   private show(html: string): void {
+    this.rescueMarker.hidden = true;
     this.panel.innerHTML = html;
     this.panel.hidden = false;
     this.panel.querySelector<HTMLButtonElement>("button")?.focus();
@@ -189,6 +197,38 @@ export class DungeonUI {
           this.pause(run);
         };
     }
+  }
+  updateRescue(
+    run: DungeonRun,
+    view: { x: number; y: number; width: number; height: number },
+    screen: DOMRect,
+  ): void {
+    const pet = run.state.pickups.find((p) => p.kind === "pet" && p.species);
+    const visible =
+      !!pet &&
+      run.state.phase === "fighting" &&
+      this.panel.hidden &&
+      view.width > 0 &&
+      view.height > 0;
+    this.rescueMarker.hidden = !visible;
+    if (!visible || !pet?.species) return;
+    const marker = petRescueMarker(run.state.player, pet, view, {
+      x: screen.left,
+      y: screen.top,
+      width: screen.width,
+      height: screen.height,
+    });
+    // The canvas can briefly retain its old size during a window resize.
+    const marginX = Math.min(90, innerWidth / 2),
+      marginY = Math.min(150, innerHeight / 2);
+    this.rescueMarker.style.left = `${Math.max(marginX, Math.min(innerWidth - marginX, marker.x))}px`;
+    this.rescueMarker.style.top = `${Math.max(marginY, Math.min(innerHeight - marginY, marker.y))}px`;
+    this.rescueMarker.querySelector<HTMLElement>(
+      ".rescue-direction",
+    )!.style.transform = `rotate(${marker.angle}deg)`;
+    const label = `${PETS[pet.species].name} · ${marker.near ? "aproxime-se" : "siga a seta"}`;
+    const text = this.rescueMarker.querySelector("small")!;
+    if (text.textContent !== label) text.textContent = label;
   }
   private cardIcon(card: UpgradeCard): string {
     const weapon =

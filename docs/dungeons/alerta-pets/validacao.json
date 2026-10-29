@@ -1,0 +1,122 @@
+{
+  "checks": [
+    {
+      "name": "Viagem chuvosa leva ao menu com duas opções",
+      "passed": true,
+      "details": {
+        "duration": 5.155
+      }
+    },
+    {
+      "name": "Menu continua legível em viewport estreito",
+      "passed": true,
+      "details": 680
+    },
+    {
+      "name": "Sem alerta quando nenhum pet apareceu",
+      "passed": true
+    },
+    {
+      "name": "Pet no chão exibe alerta com espécie e seta",
+      "passed": true,
+      "details": {
+        "visible": true,
+        "text": "➤Pet encontradoGato · siga a seta",
+        "arrow": "rotate(0deg)",
+        "x": 962.2421875,
+        "y": 517.09375,
+        "right": 1103.8828125,
+        "bottom": 565.09375,
+        "count": 1
+      }
+    },
+    {
+      "name": "Seta muda de sentido conforme o jogador passa pelo pet",
+      "passed": true,
+      "details": {
+        "visible": true,
+        "text": "➤Pet encontradoGato · siga a seta",
+        "arrow": "rotate(180deg)",
+        "x": 962.2421875,
+        "y": 517.09375,
+        "right": 1103.8828125,
+        "bottom": 565.09375,
+        "count": 1
+      }
+    },
+    {
+      "name": "Pet fora da câmera mantém alerta dentro da tela",
+      "passed": true,
+      "details": {
+        "visible": true,
+        "text": "➤Pet encontradoGato · siga a seta",
+        "arrow": "rotate(-56.3099deg)",
+        "x": 1439.1796875,
+        "y": 126,
+        "right": 1580.8203125,
+        "bottom": 174,
+        "count": 1
+      }
+    },
+    {
+      "name": "Alerta fica oculto no menu de pausa",
+      "passed": true
+    },
+    {
+      "name": "Alerta retorna ao retomar combate",
+      "passed": true
+    },
+    {
+      "name": "Alerta cabe na tela estreita",
+      "passed": true,
+      "details": {
+        "visible": true,
+        "text": "➤Pet encontradoGato · siga a seta",
+        "arrow": "rotate(-56.3099deg)",
+        "x": 199.1796875,
+        "y": 126,
+        "right": 340.8203125,
+        "bottom": 174,
+        "count": 1
+      }
+    },
+    {
+      "name": "Pet pendente continua sinalizado após restaurar partida",
+      "passed": true,
+      "details": {
+        "visible": true,
+        "text": "➤Pet encontradoGato · siga a seta",
+        "arrow": "rotate(-56.3099deg)",
+        "x": 1439.1796875,
+        "y": 126,
+        "right": 1580.8203125,
+        "bottom": 174,
+        "count": 1
+      }
+    },
+    {
+      "name": "Alerta orienta aproximação quando o jogador está perto",
+      "passed": true
+    },
+    {
+      "name": "Resgatar o pet remove o alerta imediatamente",
+      "passed": true,
+      "details": {
+        "visible": false,
+        "text": "➤Pet encontradoGato · aproxime-se",
+        "arrow": "rotate(0deg)",
+        "x": 0,
+        "y": 0,
+        "right": 0,
+        "bottom": 0,
+        "count": 1
+      }
+    },
+    {
+      "name": "Sem erros JavaScript ou requisições falhas",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}
