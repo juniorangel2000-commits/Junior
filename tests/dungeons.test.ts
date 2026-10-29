@@ -488,7 +488,7 @@ describe("snapshots, rewards, maps and hordes", () => {
       expect(dungeonBlocked(id, DUNGEON_ENTRY.x, DUNGEON_ENTRY.y)).toBe(false);
       const car = MAP_OBSTACLES[id].find((p) => p.kind === "sedan")!;
       expect(dungeonBlocked(id, car.x, car.y - 35)).toBe(true);
-      expect(MAP_OBSTACLES[id].length).toBeGreaterThan(25);
+      expect(MAP_OBSTACLES[id].length).toBeGreaterThan(20);
     }
   });
   it("indexes large hordes locally and caps active enemies, projectiles and effects", () => {

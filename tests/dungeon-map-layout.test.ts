@@ -20,6 +20,28 @@ describe("open dungeon layouts and existing saves", () => {
           ).toBe(false);
     },
   );
+  it("opens the former building footprints without ghost collisions", () => {
+    for (const [id, x, y] of [
+      ["abandoned-central-square", 320, 320],
+      ["abandoned-central-square", 1240, 230],
+      ["abandoned-central-square", 2640, 360],
+      ["abandoned-central-square", 2800, 1300],
+      ["abandoned-central-square", 260, 1380],
+      ["mall-parking", 1536, 240],
+      ["mall-parking", 420, 1920],
+      ["mall-parking", 2630, 1920],
+    ] as const) expect(dungeonBlocked(id, x, y)).toBe(false);
+  });
+  it("covers the long seat of each vertical bench with its collider", () => {
+    const id = "abandoned-central-square";
+    const benches = MAP_OBSTACLES[id].filter(p => p.kind === "bench-vertical");
+    expect(benches).toHaveLength(2);
+    for (const bench of benches) {
+      expect(dungeonBlocked(id, bench.x, bench.y - 65)).toBe(true);
+      expect(dungeonBlocked(id, bench.x, bench.y - 6)).toBe(true);
+      expect(dungeonBlocked(id, bench.x + 20, bench.y - 40)).toBe(false);
+    }
+  });
   it("keeps the parking center open for kiting and boss fights", () => {
     for (let x = 1180; x <= 1900; x += 64)
       for (let y = 600; y <= 1820; y += 64)

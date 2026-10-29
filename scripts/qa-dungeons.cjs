@@ -164,6 +164,15 @@ fs.mkdirSync(out, { recursive: true });
       () => (document.querySelector("#dungeon-ui").style.visibility = "hidden"),
     );
     await page.screenshot({ path: out + "/praca-completa.png" });
+    const squareProps = await page.evaluate(() => {
+      const images = d.world.objects.filter(o => o.texture);
+      return {
+        unwanted: images.filter(o => o.texture.key.startsWith("asset-tree-") || ["apartment", "mall", "booth", "shop"].includes(o.frame?.name)).length,
+        vertical: images.filter(o => o.frame?.name === "bench-vertical").map(o => ({ x: o.x, flipped: o.flipX })),
+      };
+    });
+    check("Praça sem árvores ou construções, com bancos verticais voltados para a fonte", squareProps.unwanted === 0 && squareProps.vertical.length === 2 && squareProps.vertical.every(p => p.flipped === (p.x > 1536)), squareProps);
+
     await page.evaluate(
       () => (document.querySelector("#dungeon-ui").style.visibility = ""),
     );
@@ -296,6 +305,9 @@ fs.mkdirSync(out, { recursive: true });
       () => (document.querySelector("#dungeon-ui").style.visibility = "hidden"),
     );
     await page.screenshot({ path: out + "/estacionamento-completo.png" });
+    const parkingProps = await page.evaluate(() => d.world.objects.filter(o => o.texture && (o.texture.key.startsWith("asset-tree-") || ["apartment", "mall", "booth", "shop"].includes(o.frame?.name))).length);
+    check("Estacionamento sem árvores ou construções", parkingProps === 0, { unwanted: parkingProps });
+
     await page.evaluate(
       () => (document.querySelector("#dungeon-ui").style.visibility = ""),
     );
@@ -1025,14 +1037,23 @@ fs.mkdirSync(out, { recursive: true });
     );
     await render();
     await page.screenshot({ path: out + "/hud-ampla.png" });
+    const xpBesideHealth = await page.evaluate(() => {
+      const xp = document.querySelector(".hud-experience").getBoundingClientRect();
+      const hp = document.querySelector(".hud-health").getBoundingClientRect();
+      return { beside: xp.x >= hp.right && Math.abs(xp.bottom - hp.bottom) < 1, bottom: xp.y > innerHeight / 2, level: document.querySelector(".hud-experience").textContent.includes("NÍVEL") };
+    });
+    check("Experiência e nível ao lado da vida na parte inferior", xpBesideHealth.beside && xpBesideHealth.bottom && xpBesideHealth.level, xpBesideHealth);
+
     for (const [width, height] of [
       [680, 950],
+      [521, 900],
       [390, 844],
     ]) {
       await page.setViewportSize({ width, height });
       const narrow = await page.evaluate(() => {
         const selectors = [
           ".hud-health",
+          ".hud-experience",
           ".hud-arsenal",
           ".hud-pet",
           ".hud-clock",

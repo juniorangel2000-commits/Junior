@@ -1,17 +1,15 @@
+import benches from "../../public/assets/visual/dungeons/benches.json";
 import urban from "../../public/assets/visual/dungeons/urban.json";
 import type { DungeonId } from "./config";
 export interface DungeonObstacle {
   id: string;
   kind:
-    | "apartment"
-    | "mall"
-    | "booth"
-    | "shop"
     | "sedan"
     | "hatchback"
     | "van"
     | "suv"
     | "fountain"
+    | "bench-vertical"
     | "bench"
     | "lamp"
     | "barrier"
@@ -56,14 +54,6 @@ export function dungeonObstacles(id: DungeonId): DungeonObstacle[] {
       solid,
     });
   if (id === "abandoned-central-square") {
-    for (const [x, y, kind, w, h] of [
-      [320, 330, "apartment", 320, 240],
-      [1240, 245, "shop", 330, 220],
-      [2640, 380, "apartment", 340, 250],
-      [2800, 1320, "shop", 270, 200],
-      [260, 1400, "shop", 280, 200],
-    ] as const)
-      add(kind, x, y, w, h);
     add("fountain", 1536, 1152, 170, 145);
     for (const [x, y] of [
       [1300, 1160],
@@ -71,7 +61,13 @@ export function dungeonObstacles(id: DungeonId): DungeonObstacle[] {
       [1536, 1390],
       [1536, 925],
     ])
-      add("bench", x, y, 80, 45);
+      add(
+        x === 1536 ? "bench" : "bench-vertical",
+        x,
+        y,
+        x === 1536 ? 80 : 30,
+        x === 1536 ? 45 : 80,
+      );
     for (const [x, y, kind] of [
       [390, 700, "sedan"],
       [2750, 730, "van"],
@@ -105,9 +101,6 @@ export function dungeonObstacles(id: DungeonId): DungeonObstacle[] {
     ] as const)
       add(kind, x, y, 55, 55);
   } else {
-    add("mall", 1536, 260, 650, 260);
-    add("booth", 420, 1940, 120, 130);
-    add("booth", 2630, 1940, 120, 130);
     for (const [i, bay] of PARKING_BAYS.entries())
       if (i % 3 !== 0) {
         add(
@@ -158,26 +151,21 @@ function collisionIndex(id: DungeonId): Map<string, Collider[]> {
   const cached = collisionCells.get(id);
   if (cached) return cached;
   const cells = new Map<string, Collider[]>();
-  const boxes: Collider[] = DUNGEON_TREES[id].map((t) => ({
-    x: t.x,
-    halfWidth: 18,
-    top: t.y - 12,
-    bottom: t.y + 12,
-  }));
+  const boxes: Collider[] = [];
   for (const p of MAP_OBSTACLES[id]) {
     if (!p.solid) continue;
     if (p.kind === "lamp") {
       boxes.push({ x: p.x, halfWidth: 9, top: p.y - 9, bottom: p.y + 4 });
       continue;
     }
-    const frame = urban.frames[p.kind],
+    const frame = urbanFrame(p.kind),
       scale = Math.min(p.width / frame.width, p.height / frame.height),
       width = frame.width * scale,
       height = frame.height * scale,
       depth = ["sedan", "hatchback", "van", "suv"].includes(p.kind)
         ? height * 0.85
-        : ["apartment", "mall", "booth", "shop"].includes(p.kind)
-          ? 45
+        : p.kind === "bench-vertical"
+          ? height * 0.9
           : height * 0.6;
     boxes.push({
       x: p.x,
@@ -220,56 +208,6 @@ export const MAP_OBSTACLES = {
   "mall-parking": dungeonObstacles("mall-parking"),
 };
 
-export const DUNGEON_TREES = Object.fromEntries(
-  (["abandoned-central-square", "mall-parking"] as const).map((id) => {
-    const trees: { x: number; y: number; variant: number }[] = [];
-    const clusters =
-      id === "abandoned-central-square"
-        ? [
-            [170, 620],
-            [220, 1800],
-            [2830, 550],
-            [2850, 1780],
-            [800, 2080],
-            [2250, 2120],
-            [950, 790],
-            [2070, 1640],
-          ]
-        : [
-            [140, 700],
-            [160, 1380],
-            [2880, 650],
-            [2890, 1370],
-            [630, 2140],
-            [2380, 2160],
-          ];
-    for (const [cluster, center] of clusters.entries())
-      for (let n = 0; n < (cluster < 6 ? 5 : 3); n++) {
-        const a = n * 2.399963 + cluster * 0.7,
-          r = 30 + ((n * 43) % 140),
-          x = Math.round(center[0] + Math.cos(a) * r),
-          y = Math.round(center[1] + Math.sin(a) * r);
-        if (
-          x < 90 ||
-          x > 2980 ||
-          y < 140 ||
-          y > 2210 ||
-          Math.hypot(x - DUNGEON_ENTRY.x, y - DUNGEON_ENTRY.y) < 210
-        )
-          continue;
-        if (
-          MAP_OBSTACLES[id].some(
-            (p) => p.solid && Math.hypot(p.x - x, p.y - y) < 130,
-          )
-        )
-          continue;
-        if (trees.some((t) => Math.hypot(t.x - x, t.y - y) < 70)) continue;
-        trees.push({ x, y, variant: (cluster + n) % 3 });
-      }
-    return [id, trees];
-  }),
-) as Record<DungeonId, { x: number; y: number; variant: number }[]>;
-
 /** Layout updates keep old runs playable by moving only actors inside a new obstacle. */
 export function safeDungeonPoint(
   id: DungeonId,
@@ -289,3 +227,10 @@ export function safeDungeonPoint(
 
 export const urbanOriginX = (kind: DungeonObstacle["kind"]): number =>
   kind === "lamp" ? 0.33 : 0.5;
+
+export function urbanFrame(kind: DungeonObstacle["kind"]) {
+  return kind === "bench-vertical" ? benches.frames[kind] : urban.frames[kind];
+}
+export function urbanTexture(kind: DungeonObstacle["kind"]) {
+  return kind === "bench-vertical" ? "dungeon-benches" : "dungeon-urban";
+}

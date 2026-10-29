@@ -43,7 +43,7 @@ export function dungeonHUD(
     ? `<span>Escudo <b>${s.shield?.charges ?? run.shieldCapacity}/${run.shieldCapacity} cargas</b>${s.shield?.recharge ? ` · recarga ${Math.ceil(s.shield.recharge)}s` : ""}</span>`
     : "";
   return `<section class="hud-layout">
- <div class="hud-experience"><meter aria-label="Experiência" min="0" max="${run.xpNeeded}" value="${run.buildComplete ? run.xpNeeded : s.xp}"></meter><span>${run.buildComplete ? "Combinação completa" : `NÍVEL ${s.level}`} <small>${run.buildComplete ? "Todas as melhorias concluídas" : `${Math.floor(s.xp)} / ${run.xpNeeded} XP`}</small></span></div>
+
  <div class="hud-location"><span>EXPEDIÇÃO À CIDADE</span><strong>${d.name}</strong></div>
  <div class="hud-clock"><strong>${clock}</strong><span>${d.mode === "timed" ? "SOBREVIVA" : `RODADA ${s.round} / 50`}</span></div>
  <div class="hud-score"><strong>${s.kills.toLocaleString("pt-BR")}</strong><span>ELIMINADOS</span><small>${d.mode === "waves" ? `${s.waveRemaining + s.enemies.length} restantes` : `${s.enemies.length} na horda`}</small></div>
@@ -51,7 +51,8 @@ export function dungeonHUD(
  ${boss ? `<div class="dungeon-boss"><strong>${bossProfile(s.round).name}</strong><meter aria-label="Vida do chefe" min="0" max="${boss.maxHp}" value="${boss.hp}"></meter><span>${Math.ceil(boss.hp)} / ${Math.ceil(boss.maxHp)}</span></div>` : ""}
  <div class="dungeon-buffs"><span class="hud-stage">${run.horde.name}</span>${buffs}${shield}${s.pickups.some((p) => p.kind === "xp" && p.attracted) ? "<span>Ímã atraindo experiência</span>" : ""}${s.foundPet ? `<span>${PETS[s.foundPet].name}${s.foundPetRare ? " raro" : ""} resgatado</span>` : ""}</div>
  <div class="hud-bottom">
- <div class="hud-health ${s.player.hp / run.maxHealth < 0.25 ? "low" : ""}"><div><span>VIDA</span><strong>${Math.ceil(s.player.hp)} <small>/ ${Math.round(run.maxHealth)}</small></strong></div><meter aria-label="Vida do personagem" min="0" max="${run.maxHealth}" value="${s.player.hp}"></meter></div>
+ <div class="hud-vitals"><div class="hud-health ${s.player.hp / run.maxHealth < 0.25 ? "low" : ""}"><div><span>VIDA</span><strong>${Math.ceil(s.player.hp)} <small>/ ${Math.round(run.maxHealth)}</small></strong></div><meter aria-label="Vida do personagem" min="0" max="${run.maxHealth}" value="${s.player.hp}"></meter></div>
+ <div class="hud-experience"><span>NÍVEL ${s.level} <small>${run.buildComplete ? "Combinação completa" : `${Math.floor(s.xp)} / ${run.xpNeeded} XP`}</small></span><meter aria-label="Experiência" min="0" max="${run.xpNeeded}" value="${run.buildComplete ? run.xpNeeded : s.xp}"></meter></div></div>
  <div class="hud-arsenal"><div class="dungeon-loadout">${weapons}</div><small>${s.weapons.length < 4 ? `Nova arma no nível ${nextWeaponOfferLevel(s.level)}` : `${Object.keys(s.levels).length} melhorias · ESC para pausar`}</small></div>
  <div class="hud-pet"><div><span>COMPANHEIRO</span><strong>${pet ? PETS[pet.species].name : "Sem pet"}</strong></div>${pet ? `<meter aria-label="Vida do pet" min="0" max="${pet.maxHp}" value="${pet.hp}"></meter><small>${pet.hp <= 0 ? "Recuperando forças" : `${Math.ceil(pet.hp)} / ${Math.round(pet.maxHp)} de vida`}</small>` : "<small>Escolha no menu da cidade</small>"}</div>
  </div></section>`;

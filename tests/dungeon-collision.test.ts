@@ -1,9 +1,6 @@
 import { describe, it, expect } from "vitest";
-import {
-  dungeonBlocked,
-  MAP_OBSTACLES,
-  DUNGEON_TREES,
-} from "../src/dungeons/maps";
+import { dungeonBlocked, MAP_OBSTACLES } from "../src/dungeons/maps";
+import benches from "../public/assets/visual/dungeons/benches.json";
 import urban from "../public/assets/visual/dungeons/urban.json";
 import type { DungeonId } from "../src/dungeons/config";
 // Original exact geometry, deliberately independent of the optimized cell index.
@@ -13,20 +10,20 @@ function reference(id: DungeonId, x: number, y: number) {
     y < 48 ||
     x > 3040 ||
     y > 2260 ||
-    DUNGEON_TREES[id].some(
-      (t) => Math.abs(x - t.x) < 18 && Math.abs(y - t.y) < 12,
-    ) ||
     MAP_OBSTACLES[id].some((p) => {
       if (p.kind === "lamp")
         return p.solid && Math.abs(x - p.x) < 9 && y > p.y - 9 && y < p.y + 4;
-      const r = urban.frames[p.kind],
+      const r =
+          p.kind === "bench-vertical"
+            ? benches.frames[p.kind]
+            : urban.frames[p.kind],
         scale = Math.min(p.width / r.width, p.height / r.height),
         w = r.width * scale,
         h = r.height * scale,
         depth = ["sedan", "hatchback", "van", "suv"].includes(p.kind)
           ? h * 0.85
-          : ["apartment", "mall", "booth", "shop"].includes(p.kind)
-            ? 45
+          : p.kind === "bench-vertical"
+            ? h * 0.9
             : h * 0.6;
       return (
         p.solid &&

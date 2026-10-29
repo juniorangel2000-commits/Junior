@@ -1,13 +1,13 @@
 import type Phaser from "phaser";
 import {
   MAP_OBSTACLES,
-  DUNGEON_TREES,
   PARKING_BAYS,
   PARK_LAWNS,
   urbanOriginX,
+  urbanFrame,
+  urbanTexture,
 } from "./maps";
 import type { DungeonId } from "./config";
-import { DUNGEON_ART } from "./art";
 
 export function dungeonMapCanvas(
   scene: Phaser.Scene,
@@ -226,35 +226,19 @@ export function dungeonPreview(scene: Phaser.Scene, id: DungeonId): string {
   const canvas = dungeonMapCanvas(scene, id, 0.25),
     c = canvas.getContext("2d")!;
   c.setTransform(0.25, 0, 0, 0.25, 0, 0);
-  const source = scene.textures
-    .get("dungeon-urban")
-    .getSourceImage() as HTMLImageElement;
-  const entries = [
-    ...MAP_OBSTACLES[id].map((p) => ({
-      y: p.y,
-      prop: p,
-      tree: undefined as (typeof DUNGEON_TREES)[DungeonId][number] | undefined,
-    })),
-    ...DUNGEON_TREES[id].map((t) => ({
-      y: t.y,
-      prop: undefined as (typeof MAP_OBSTACLES)[DungeonId][number] | undefined,
-      tree: t,
-    })),
-  ].sort((a, b) => a.y - b.y);
-  for (const entry of entries) {
-    if (entry.tree) {
-      const t = entry.tree,
-        image = scene.textures
-          .get("asset-tree-" + t.variant)
-          .getSourceImage() as HTMLImageElement;
-      c.drawImage(image, t.x - 72, t.y - 188 * (256 / 264), 144, 188);
-      continue;
-    }
-    const p = entry.prop!,
-      r = DUNGEON_ART.urban.frames[p.kind],
+  for (const p of [...MAP_OBSTACLES[id]].sort((a, b) => a.y - b.y)) {
+    const source = scene.textures
+      .get(urbanTexture(p.kind))
+      .getSourceImage() as HTMLImageElement,
+      r = urbanFrame(p.kind),
       scale = Math.min(p.width / r.width, p.height / r.height),
       w = r.width * scale,
       h = r.height * scale;
+    c.save();
+    if (p.kind === "bench-vertical" && p.x > 1536) {
+      c.translate(p.x * 2, 0);
+      c.scale(-1, 1);
+    }
     c.drawImage(
       source,
       r.x,
@@ -266,6 +250,7 @@ export function dungeonPreview(scene: Phaser.Scene, id: DungeonId): string {
       w,
       h,
     );
+    c.restore();
   }
   return canvas.toDataURL();
 }
@@ -278,20 +263,15 @@ export class DungeonWorld {
       scene.textures.addCanvas(key, dungeonMapCanvas(scene, id))!.setFilter(0);
     scene.add.image(0, 0, key).setOrigin(0).setDepth(-100);
     for (const p of MAP_OBSTACLES[id]) {
-      const r = DUNGEON_ART.urban.frames[p.kind];
+      const r = urbanFrame(p.kind);
       scene.add
-        .image(p.x, p.y, "dungeon-urban", p.kind)
+        .image(p.x, p.y, urbanTexture(p.kind), p.kind)
         .setOrigin(urbanOriginX(p.kind), 1)
+        .setFlipX(p.kind === "bench-vertical" && p.x > 1536)
         .setScale(Math.min(p.width / r.width, p.height / r.height))
         .setDepth(p.y)
         .setData("dungeon-obstacle", p.id);
     }
-    for (const t of DUNGEON_TREES[id])
-      scene.add
-        .image(t.x, t.y, "asset-tree-" + t.variant)
-        .setOrigin(0.5, 256 / 264)
-        .setDisplaySize(144, 188)
-        .setDepth(t.y);
     this.objects = scene.children.list.filter((o) => !before.has(o));
   }
   destroy(): void {

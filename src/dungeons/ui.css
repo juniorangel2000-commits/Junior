@@ -244,16 +244,23 @@
 .dungeon-hud meter::-moz-meter-bar {
   background: #bb6353;
 }
+.hud-vitals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  min-width: 0;
+  align-items: end;
+}
 .hud-experience {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  border: 1px solid #8dbab04a;
+  background: #15231ce8;
+  border-radius: 5px;
+  padding: 10px 12px;
+  min-width: 0;
 }
 .hud-experience meter {
   display: block;
-  height: 7px;
-  border-radius: 0;
+  height: 9px;
 }
 .hud-experience meter::-webkit-meter-optimum-value {
   background: #8dbab0;
@@ -262,16 +269,19 @@
   background: #8dbab0;
 }
 .hud-experience > span {
-  display: block;
-  margin: 7px 16px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  min-height: 15px;
+  margin-bottom: 6px;
   color: #b8d4c9;
-  font-size: 11px;
-  letter-spacing: 0.1em;
+  font-size: 10px;
 }
 .hud-experience small {
-  margin-left: 8px;
   color: #a8b6ac;
-  letter-spacing: normal;
+  font-size: 10px;
 }
 .hud-location {
   position: absolute;
@@ -408,7 +418,7 @@
   right: 16px;
   bottom: 14px;
   display: grid;
-  grid-template-columns: minmax(140px, 200px) auto minmax(140px, 200px);
+  grid-template-columns: minmax(240px, 340px) auto minmax(115px, 180px);
   justify-content: space-between;
   align-items: end;
   gap: 16px;
@@ -517,7 +527,7 @@
   font-size: 10px;
   color: #e4bf64;
 }
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .hud-location {
     max-width: 27vw;
   }
@@ -535,7 +545,7 @@
   }
   .hud-bottom {
     gap: 8px;
-    grid-template-columns: minmax(115px, 160px) auto minmax(115px, 160px);
+    grid-template-columns: minmax(220px, 300px) auto minmax(115px, 160px);
     left: 10px;
     right: 10px;
   }
@@ -551,6 +561,7 @@
     gap: 4px;
   }
   .hud-health,
+  .hud-experience,
   .hud-pet {
     padding: 7px 8px;
   }
@@ -563,25 +574,25 @@
     font-size: 10px;
   }
 }
-@media (max-width: 520px) {
+@media (max-width: 560px) {
   .hud-bottom {
     grid-template-columns: 1fr 1fr;
   }
   .hud-arsenal {
-    grid-column: 1/-1;
+    grid-column: 1;
     grid-row: 1;
     justify-self: center;
   }
-  .hud-health {
-    grid-column: 1;
+  .hud-vitals {
+    grid-column: 1/-1;
     grid-row: 2;
   }
   .hud-pet {
     grid-column: 2;
-    grid-row: 2;
+    grid-row: 1;
   }
   .dungeon-buffs {
-    bottom: 163px;
+    bottom: 188px;
     max-width: calc(100vw - 20px);
   }
   .hud-location {
@@ -607,7 +618,6 @@
   }
   .hud-experience > span {
     font-size: 10px;
-    margin-left: 10px;
   }
   .hud-experience small {
     font-size: 9px;

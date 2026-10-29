@@ -1,0 +1,13 @@
+{
+  "file": "assets/visual/dungeons/bench-vertical.png",
+  "sha256": "fa0bad1cb7b3e59b4e9ffe395d5dcfeda5dce69aef6b8aa52d6b736919d7229f",
+  "alphaCutoff": 160,
+  "frames": {
+    "bench-vertical": {
+      "x": 168,
+      "y": 205,
+      "width": 500,
+      "height": 1510
+    }
+  }
+}
