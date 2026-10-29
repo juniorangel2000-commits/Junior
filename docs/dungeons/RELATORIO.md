@@ -1,6 +1,7 @@
 # Dungeons e sobrevivência — primeira versão jogável
 
-> Etapa mais recente: [entregador e moradora nas hordas](zumbis-variados/RELATORIO.md).
+> Etapa mais recente: [interface e custos da evolução permanente](evolucao-permanente/RELATORIO.md).
+> Artes: [entregador e moradora nas hordas](zumbis-variados/RELATORIO.md).
 > Sistemas: [recompensas, níveis e coleta ampliada](recompensas-e-cartas/RELATORIO.md).
 > Encontros: [chefes por minuto na praça](chefes-por-minuto/RELATORIO.md).
 > Sistemas revisados: [níveis contínuos, dificuldade e cura](niveis-e-cura/RELATORIO.md).

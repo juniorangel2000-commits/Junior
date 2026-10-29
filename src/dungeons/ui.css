@@ -629,3 +629,40 @@
     font-size: 9px;
   }
 }
+.permanent-menu { max-width:1080px; padding:28px; }
+.permanent-header { display:flex; justify-content:space-between; gap:24px; align-items:start; }
+.permanent-header .dungeon-eyebrow { margin:0 0 8px; font-size:10px; }
+.permanent-header h1 { margin:0 0 10px; }
+.permanent-header p { max-width:570px; color:#c0caba; font-size:13px; }
+.permanent-wallet { background:#14271f; border:1px solid #b5a27066; border-radius:10px; padding:15px 22px; min-width:180px; display:grid; gap:5px; text-align:right; }
+.permanent-wallet strong { font-size:32px; color:#e5c987; font-variant-numeric:tabular-nums; }
+.permanent-wallet small { font-size:12px; color:#c9d0bd; }
+.permanent-wallet span { font-size:8px; letter-spacing:.12em; color:#b0b99f; }
+.permanent-target { display:flex; gap:12px; align-items:center; margin:18px 0; font-size:13px; }
+.permanent-target select { max-width:100%; min-width:210px; }
+.permanent-summary { padding:14px 16px; background:#1b3028; border-radius:8px; }
+.permanent-summary strong { font-size:13px; }
+.permanent-summary p { font-size:12px; color:#b9c6b2; margin:8px 0 0; }
+.permanent-menu meter { appearance:none; display:block; width:100%; height:6px; border:0; margin-top:10px; }
+.permanent-menu meter::-webkit-meter-bar { background:#0f211a; border:0; border-radius:3px; }
+.permanent-menu meter::-webkit-meter-optimum-value { background:#b7a067; border-radius:3px; }
+.permanent-menu meter::-moz-meter-bar { background:#b7a067; }
+.permanent-feedback { min-height:18px; margin:12px 0; color:#e1c78b; font-size:12px; }
+.permanent-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.permanent-card { padding:17px; border:1px solid #8a96734d; border-radius:10px; background:linear-gradient(145deg,#2b4437,#1a2e25); display:flex; flex-direction:column; }
+.permanent-card.available { border-color:#c4ae75; }
+.permanent-card.complete { border-color:#91b794; }
+.permanent-card-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.permanent-card-heading h2 { font-size:17px; margin:0; }
+.permanent-card-heading > span { font-size:20px; color:#dfc488; white-space:nowrap; }
+.permanent-card-heading small { font-size:11px; color:#b4c1ac; }
+.permanent-card dl { font-size:12px; margin:16px 0; flex:1; }
+.permanent-card dl > div { margin-bottom:12px; }
+.permanent-card dt { color:#9fac98; font-size:10px; margin-bottom:4px; text-transform:uppercase; letter-spacing:.08em; }
+.permanent-card dd { margin:0; line-height:1.5; color:#e0e7d5; }
+.permanent-card dl > div:last-child dd { color:#e0c995; }
+#dungeon-ui .permanent-card button { width:100%; font-size:12px; background:#476047; }
+#dungeon-ui .permanent-card button:disabled { opacity:1; background:#23382c; color:#a4b09b; border-color:#64745a66; }
+.permanent-shortfall { font-size:10px; color:#b8c2a9; margin-top:8px; min-height:30px; }
+@media(max-width:850px) { .permanent-grid {grid-template-columns:repeat(2,minmax(0,1fr));} .permanent-wallet {min-width:140px;padding:14px;} }
+@media(max-width:520px) { .permanent-header {flex-direction:column;gap:10px;} .permanent-wallet {box-sizing:border-box;width:100%;text-align:left;} .permanent-wallet strong {font-size:26px;} .permanent-grid {grid-template-columns:1fr;} .permanent-target {align-items:start;flex-direction:column;} .permanent-target select {box-sizing:border-box;width:100%;min-width:0;} .permanent-menu {padding:16px;} }

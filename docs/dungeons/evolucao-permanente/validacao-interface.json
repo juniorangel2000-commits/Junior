@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "checks": [
+    "Keyboard focus preserves selected attribute",
+    "Pet selector hides internal identifiers",
+    "Pet purchase uses its own balance",
+    "Failed purchase reports rollback",
+    "390px layout has no horizontal overflow",
+    "No JavaScript errors"
+  ],
+  "errors": []
+}

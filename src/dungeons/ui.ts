@@ -1,3 +1,4 @@
+import { permanentEvolutionHTML } from "./permanent-ui";
 import { dungeonHUD } from "./hud";
 import { UPGRADES } from "./upgrades";
 import type { UpgradeCard } from "./upgrades";
@@ -6,8 +7,6 @@ import type { ItemId } from "../types";
 import type { DungeonId, WeaponId } from "./config";
 import { DUNGEONS, WEAPONS, PETS } from "./config";
 import {
-  CHARACTER_ATTRIBUTES,
-  PET_ATTRIBUTES,
   type DungeonProgress,
   type Attribute,
   type PetAttribute,
@@ -32,21 +31,6 @@ const labels: Record<string, string> = {
   perception: "Percepção",
   protection: "Proteção",
   efficiency: "Eficiência",
-};
-const attributeHelp: Record<string, string> = {
-  strength: "+2% de dano corpo a corpo",
-  resistance: "+2% de redução de dano",
-  agility: "+2% de velocidade",
-  vitality: "+3% de vida máxima",
-  precision: "+1% de precisão",
-  survival: "+0,02 de vida por segundo",
-};
-const petHelp: Record<string, string> = {
-  speed: "+3% de velocidade",
-  resistance: "+5% de resistência e vida",
-  perception: "+3% de alcance de coleta",
-  protection: "+1% de proteção ao personagem",
-  efficiency: "Melhora ataques e habilidade da espécie",
 };
 const escape = (s: string) =>
   s.replace(
@@ -125,15 +109,24 @@ export class DungeonUI {
     this.panel.querySelector<HTMLButtonElement>("[data-back]")!.onclick =
       this.callbacks.back;
   }
-  private evolution(progress: DungeonProgress, back: () => void): void {
-    this.show(
-      `<section class="dungeon-menu"><h1>Evolução permanente</h1><p>Experiência do personagem: ${progress.xp}</p><div class="dungeon-attributes">${CHARACTER_ATTRIBUTES.map((a) => `<button data-attribute="${a}" ${progress.attributes[a] >= 20 || progress.xp < 25 * (progress.attributes[a] + 1) ? "disabled" : ""}>${labels[a]} · ${progress.attributes[a]}/20 <small>${attributeHelp[a]}</small><small>${25 * (progress.attributes[a] + 1)} XP</small></button>`).join("")}</div>${progress.pets.map((p) => `<h2>${PETS[p.species].name}${p.rare ? " · raro" : ""} · ${p.xp} XP</h2><div class="dungeon-attributes">${PET_ATTRIBUTES.map((a) => `<button data-pet-id="${escape(p.id)}" data-pet-attribute="${a}" ${p.attributes[a] >= 20 || p.xp < 20 * (p.attributes[a] + 1) ? "disabled" : ""}>${labels[a]} · ${p.attributes[a]}/20 <small>${petHelp[a]}</small><small>${20 * (p.attributes[a] + 1)} XP</small></button>`).join("")}</div>`).join("")}<footer><button data-back>Voltar às expedições</button></footer></section>`,
-    );
+  private focusEvolutionButton(selector: string): void {
+    const button = this.panel.querySelector<HTMLButtonElement>(selector);
+    if (button && !button.disabled) button.focus({preventScroll:true});
+    else this.panel.querySelector<HTMLElement>(".permanent-menu h1")?.focus({preventScroll:true});
+  }
+  private evolution(progress: DungeonProgress, back: () => void, target = "character", message = ""): void {
+    const scrollTop = this.panel.querySelector(".permanent-menu")?.scrollTop ?? 0;
+    this.show(permanentEvolutionHTML(progress, target, message));
+    this.panel.querySelector(".permanent-menu")!.scrollTop = scrollTop;
+    this.panel.querySelector<HTMLSelectElement>("[data-evolution-target]")!.onchange = e =>
+      this.evolution(progress, back, (e.target as HTMLSelectElement).value);
     this.panel.querySelectorAll<HTMLButtonElement>("[data-attribute]").forEach(
       (b) =>
         (b.onclick = () => {
-          this.callbacks.evolve(b.dataset.attribute as Attribute);
-          this.evolution(progress, back);
+          const key = b.dataset.attribute as Attribute, before = progress.attributes[key];
+          this.callbacks.evolve(key);
+          this.evolution(progress, back, target, progress.attributes[key] > before ? `${labels[key]} evoluiu para o nível ${progress.attributes[key]}.` : "A melhoria não foi aplicada. Confira o saldo e tente novamente.");
+          this.focusEvolutionButton(`[data-attribute="${key}"]`);
         }),
     );
     this.panel
@@ -141,12 +134,15 @@ export class DungeonUI {
       .forEach(
         (b) =>
           (b.onclick = () => {
+            const before = progress.pets.find(p => p.id === b.dataset.petId)!.attributes[b.dataset.petAttribute as PetAttribute];
             this.callbacks.evolve(
               "strength",
               b.dataset.petId,
               b.dataset.petAttribute as PetAttribute,
             );
-            this.evolution(progress, back);
+            const after = progress.pets.find(p => p.id === b.dataset.petId)!.attributes[b.dataset.petAttribute as PetAttribute];
+            this.evolution(progress, back, target, after > before ? `${labels[b.dataset.petAttribute!]} evoluiu para o nível ${after}.` : "A melhoria não foi aplicada. Confira o saldo e tente novamente.");
+            this.focusEvolutionButton(`[data-pet-attribute="${b.dataset.petAttribute}"]`);
           }),
       );
     this.panel.querySelector<HTMLButtonElement>("[data-back]")!.onclick = back;

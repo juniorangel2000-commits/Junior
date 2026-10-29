@@ -112,6 +112,11 @@ export function validDungeonProgress(value: unknown): value is DungeonProgress {
     (typeof value.selectedPet === "string" && ids.has(value.selectedPet))
   );
 }
+export function permanentUpgradeCost(rank: number, pet = false): number {
+  if (!Number.isSafeInteger(rank) || rank < 0 || rank >= 20) return 0;
+  return pet ? 120 + rank * 50 + rank * rank * 8
+    : 150 + rank * 60 + rank * rank * 10;
+}
 export function buyPermanentAttribute(
   progress: DungeonProgress,
   key: Attribute,
@@ -122,15 +127,15 @@ export function buyPermanentAttribute(
   if (petId && !pet) return false;
   if (pet) {
     if (!petKey || !PET_ATTRIBUTES.includes(petKey)) return false;
-    const cost = 20 * (pet.attributes[petKey] + 1);
-    if (pet.attributes[petKey] >= 20 || pet.xp < cost) return false;
+    const cost = permanentUpgradeCost(pet.attributes[petKey], true);
+    if (cost <= 0 || pet.attributes[petKey] >= 20 || pet.xp < cost) return false;
     pet.xp -= cost;
     pet.attributes[petKey]++;
     return true;
   }
   if (!CHARACTER_ATTRIBUTES.includes(key)) return false;
-  const cost = 25 * (progress.attributes[key] + 1);
-  if (progress.attributes[key] >= 20 || progress.xp < cost) return false;
+  const cost = permanentUpgradeCost(progress.attributes[key]);
+  if (cost <= 0 || progress.attributes[key] >= 20 || progress.xp < cost) return false;
   progress.xp -= cost;
   progress.attributes[key]++;
   return true;

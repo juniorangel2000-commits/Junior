@@ -1327,8 +1327,26 @@ fs.mkdirSync(out, { recursive: true });
     });
     await page.keyboard.press("e");
     await page.waitForSelector("[data-evolution]");
+    await page.evaluate(()=>{
+      window.d=game.scene.getScene("Dungeons");
+      d.state.dungeons.xp=1000;d.state.dungeons.pets.find(p=>p.id==="qa-dog").xp=600;
+      d.ui.menu(d.state.dungeons,d.previews);d.persist();
+    });
     await page.locator("[data-evolution]").click();
+    const evolutionUI = await page.evaluate(()=>({
+      cards:document.querySelectorAll(".permanent-card").length,
+      labels:document.querySelector(".permanent-menu").textContent,
+      cost:document.querySelector('[data-attribute="strength"]').textContent,
+    }));
+    check("Evolução mostra seis atributos, bônus atual/próximo e novo custo",evolutionUI.cards===6 && evolutionUI.labels.includes("Próximo nível") && evolutionUI.labels.includes("nas dungeons") && evolutionUI.cost.includes("150"),evolutionUI);
+    await page.screenshot({path:out+"/evolucao-personagem.png"});
+    await page.setViewportSize({width:390,height:844});
+    const evolutionMobile=await page.evaluate(()=>{const m=document.querySelector(".permanent-menu");const r=m.getBoundingClientRect();return {fits:m.scrollWidth<=m.clientWidth+1 && r.left>=0 && r.right<=innerWidth+1,columns:getComputedStyle(document.querySelector(".permanent-grid")).gridTemplateColumns};});
+    check("Evolução permanente cabe em tela de 390 pixels",evolutionMobile.fits,evolutionMobile);
+    await page.screenshot({path:out+"/evolucao-390.png"});
+    await page.setViewportSize({width:1600,height:1200});
     await page.locator('[data-attribute="strength"]').click();
+    await page.locator("[data-evolution-target]").selectOption("qa-dog");
     await page
       .locator('[data-pet-id="qa-dog"][data-pet-attribute="speed"]')
       .click();
@@ -1336,6 +1354,8 @@ fs.mkdirSync(out, { recursive: true });
       const { loadSave } = await import("/src/systems/save.ts");
       const s = loadSave();
       return {
+        xp: s.dungeons.xp,
+        petXP: s.dungeons.pets.find(p=>p.id==="qa-dog").xp,
         strength: s.dungeons.attributes.strength,
         petSpeed: s.dungeons.pets.find((p) => p.id === "qa-dog").attributes
           .speed,
@@ -1343,7 +1363,7 @@ fs.mkdirSync(out, { recursive: true });
     });
     check(
       "Árvores permanentes do personagem e pet são salvas pela interface",
-      permanent.strength === 1 && permanent.petSpeed === 1,
+      permanent.strength === 1 && permanent.petSpeed === 1 && permanent.xp === 850 && permanent.petXP === 480,
       permanent,
     );
     await page.screenshot({ path: out + "/evolucao-permanente.png" });

@@ -139,7 +139,7 @@ describe("dungeon progression and arsenal", () => {
   });
   it("spends permanent experience only on an eligible attribute and preserves pet progress", () => {
     const p = createDungeonProgress();
-    p.xp = 25;
+    p.xp = 150;
     expect(buyPermanentAttribute(p, "strength")).toBe(true);
     expect(p.xp).toBe(0);
     expect(p.attributes.strength).toBe(1);
