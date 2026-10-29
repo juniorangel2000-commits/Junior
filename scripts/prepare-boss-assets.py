@@ -9,10 +9,11 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("boss", choices=["demolisher", "sentinel", "chained", "contaminated", "devourer"])
+parser.add_argument("boss", choices=["demolisher", "sentinel", "chained", "contaminated", "devourer", "courier", "resident"])
 args = parser.parse_args()
-name = {"demolisher": "demolidor", "sentinel": "sentinela", "chained": "acorrentado", "contaminated": "contaminado", "devourer": "devorador"}[args.boss]
+name = {"demolisher": "demolidor", "sentinel": "sentinela", "chained": "acorrentado", "contaminated": "contaminado", "devourer": "devorador", "courier": "entregador", "resident": "moradora"}[args.boss]
 SOURCE = ROOT / f"docs/dungeons/animacoes-{name}/{name}-original.zip"
+prefix = "zombie" if args.boss in ["courier", "resident"] else "boss"
 OUT = ROOT / "public/assets/visual/dungeons"
 DIRECTIONS = ["south", "west", "east", "north"]
 
@@ -50,10 +51,10 @@ with ZipFile(SOURCE) as archive:
     for key, r in rectangles.items():
         region = atlas.crop((r["x"], r["y"], r["x"] + 256, r["y"] + 256))
         assert region.tobytes() == originals[key], key
-    file = OUT / f"boss-{args.boss}.png"
+    file = OUT / f"{prefix}-{args.boss}.png"
     atlas.save(file)
     manifest = dict(
-        file=f"assets/visual/dungeons/boss-{args.boss}.png",
+        file=f"assets/visual/dungeons/{prefix}-{args.boss}.png",
         sha256=sha256(file.read_bytes()).hexdigest(),
         alphaCutoff=160,
         frames=rectangles,
@@ -63,5 +64,5 @@ with ZipFile(SOURCE) as archive:
                            sha256=sha256(SOURCE.read_bytes()).hexdigest()),
         sources=sources,
     )
-    (OUT / f"boss-{args.boss}.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    (OUT / f"{prefix}-{args.boss}.json").write_text(json.dumps(manifest, indent=2) + "\n")
     print(f"{len(entries)} frames packed; original RGBA pixels preserved; four walk directions and four idle views.")

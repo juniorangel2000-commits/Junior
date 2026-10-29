@@ -1084,6 +1084,24 @@ fs.mkdirSync(out, { recursive: true });
     await page.evaluate(()=>d.ui.resume());
     await render();await page.screenshot({path:out+"/drops-xp-e-nivel.png"});
     await page.evaluate(()=>{d.run.restore(window.xpDropRestore);d.renderRun();});
+    const zombieArt = await page.evaluate(() => {
+      window.zombieArtRestore=d.run.snapshot();const s=d.run.state;
+      s.enemies=[0,1,2].map(i=>({id:120003+i,x:1456+i*80,y:1152,hp:100,maxHp:100,speed:30,damage:8,kind:"walker",special:false,streak:0,lastHit:0}));
+      s.pickups=[];s.projectiles=[];s.player.x=1536;s.player.y=1320;
+      const rows=[];
+      for(const e of s.enemies) {
+        for(const [direction,dx,dy] of [["south",0,160],["west",-160,0],["east",160,0],["north",0,-160]]) {
+          s.player.x=e.x+dx;s.player.y=e.y+dy;const frames=[];
+          for(let i=0;i<4;i++){s.elapsed=i/5;d.renderRun();const img=d.enemyImages.get(e.id);frames.push({frame:img.frame.name,scale:img.scaleY,origin:img.originY,texture:img.texture.key});}
+          rows.push({id:e.id,direction,frames});
+        }
+      }
+      s.player.x=1536;s.player.y=1320;s.elapsed=0;d.renderRun();d.ui.resume();d.ui.update(d.run);
+      d.cameras.main.stopFollow().setZoom(2.2).centerOn(1536,1200);return rows;
+    });
+    check("Três aparências de zumbi caminham nos quatro lados com escala e âncora estáveis",zombieArt.every(r=>new Set(r.frames.map(f=>f.frame)).size===4 && r.frames.every(f=>f.frame.startsWith(r.direction+"-")) && new Set(r.frames.map(f=>f.scale)).size===1 && new Set(r.frames.map(f=>f.origin)).size===1) && new Set(zombieArt.flatMap(r=>r.frames.map(f=>f.texture))).size===3,zombieArt);
+    await render();await page.screenshot({path:out+"/zumbis-variados.png"});
+    await page.evaluate(()=>{d.run.restore(window.zombieArtRestore);d.renderRun();d.ui.update(d.run);});
     const timedBosses = await page.evaluate(async () => {
       const {TIMED_BOSS_SCHEDULE} = await import("/src/dungeons/bosses.ts");
       const {validDungeonSnapshot} = await import("/src/dungeons/snapshot.ts");

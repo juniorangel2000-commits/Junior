@@ -1,0 +1,237 @@
+{
+  "file": "assets/visual/dungeons/zombie-resident.png",
+  "sha256": "7c966de94841fcb4cca98f4a030376758b9058966742f207e9608f60b025e62c",
+  "alphaCutoff": 160,
+  "frames": {
+    "south-0": {
+      "x": 0,
+      "y": 0,
+      "width": 256,
+      "height": 256
+    },
+    "south-1": {
+      "x": 256,
+      "y": 0,
+      "width": 256,
+      "height": 256
+    },
+    "south-2": {
+      "x": 512,
+      "y": 0,
+      "width": 256,
+      "height": 256
+    },
+    "south-3": {
+      "x": 768,
+      "y": 0,
+      "width": 256,
+      "height": 256
+    },
+    "west-0": {
+      "x": 0,
+      "y": 256,
+      "width": 256,
+      "height": 256
+    },
+    "west-1": {
+      "x": 256,
+      "y": 256,
+      "width": 256,
+      "height": 256
+    },
+    "west-2": {
+      "x": 512,
+      "y": 256,
+      "width": 256,
+      "height": 256
+    },
+    "west-3": {
+      "x": 768,
+      "y": 256,
+      "width": 256,
+      "height": 256
+    },
+    "east-0": {
+      "x": 0,
+      "y": 512,
+      "width": 256,
+      "height": 256
+    },
+    "east-1": {
+      "x": 256,
+      "y": 512,
+      "width": 256,
+      "height": 256
+    },
+    "east-2": {
+      "x": 512,
+      "y": 512,
+      "width": 256,
+      "height": 256
+    },
+    "east-3": {
+      "x": 768,
+      "y": 512,
+      "width": 256,
+      "height": 256
+    },
+    "north-0": {
+      "x": 0,
+      "y": 768,
+      "width": 256,
+      "height": 256
+    },
+    "north-1": {
+      "x": 256,
+      "y": 768,
+      "width": 256,
+      "height": 256
+    },
+    "north-2": {
+      "x": 512,
+      "y": 768,
+      "width": 256,
+      "height": 256
+    },
+    "north-3": {
+      "x": 768,
+      "y": 768,
+      "width": 256,
+      "height": 256
+    },
+    "idle-south": {
+      "x": 0,
+      "y": 1024,
+      "width": 256,
+      "height": 256
+    },
+    "idle-west": {
+      "x": 256,
+      "y": 1024,
+      "width": 256,
+      "height": 256
+    },
+    "idle-east": {
+      "x": 512,
+      "y": 1024,
+      "width": 256,
+      "height": 256
+    },
+    "idle-north": {
+      "x": 768,
+      "y": 1024,
+      "width": 256,
+      "height": 256
+    }
+  },
+  "animation": {
+    "walkFrames": 4,
+    "frameRate": 5,
+    "referenceHeight": 184,
+    "canvasSize": 256,
+    "pivots": {
+      "south": {
+        "x": 128,
+        "y": 235
+      },
+      "west": {
+        "x": 128,
+        "y": 235
+      },
+      "east": {
+        "x": 128,
+        "y": 235
+      },
+      "north": {
+        "x": 128,
+        "y": 228
+      }
+    }
+  },
+  "sourceArchive": {
+    "file": "docs/dungeons/animacoes-moradora/moradora-original.zip",
+    "sha256": "af7e3114da68f501cf18a206953818fa1ce54e4be46081b734bdf307c821a86f"
+  },
+  "sources": {
+    "south-0": {
+      "file": "Idle/animations/Walking/south/frame_000.png",
+      "sha256": "44df611429514bfdc1355d1ef81cf7c99acffe4eff2bfb5b26f1d01aa0ed8b86"
+    },
+    "south-1": {
+      "file": "Idle/animations/Walking/south/frame_001.png",
+      "sha256": "1bbb0467407e995ef487795766045226ba9e37a4b34d1f2a23386ed92ea081c8"
+    },
+    "south-2": {
+      "file": "Idle/animations/Walking/south/frame_002.png",
+      "sha256": "9f6b286e99e3442f06a8bf46c834136571adf79a482f0f73267baf8b3b73a797"
+    },
+    "south-3": {
+      "file": "Idle/animations/Walking/south/frame_003.png",
+      "sha256": "0ccb666dbaab23f838426bb894b201b7650e08f5691b9a4b6d0f98487a0a8b89"
+    },
+    "west-0": {
+      "file": "Idle/animations/Walking/west/frame_000.png",
+      "sha256": "beb961a80ca00f459151514d0ae85d1131a3cb5ba00b0a2ea612fa4e1fdbdcf1"
+    },
+    "west-1": {
+      "file": "Idle/animations/Walking/west/frame_001.png",
+      "sha256": "795ce903c3eadf816867d628ddd3ad1d75ed3f0117089593c0e5117346b888b7"
+    },
+    "west-2": {
+      "file": "Idle/animations/Walking/west/frame_002.png",
+      "sha256": "21bb3ac4855f2b3c08284c2168ae75349149d14171ea33d6f9c0b1b2b2d187c0"
+    },
+    "west-3": {
+      "file": "Idle/animations/Walking/west/frame_003.png",
+      "sha256": "09b7411b71c4cdb01b3b86e34bf48a24b98f13f7ade6f4ba3b41d83f53b14e16"
+    },
+    "east-0": {
+      "file": "Idle/animations/Walking/east/frame_000.png",
+      "sha256": "cd3f55966399237bc7800768bee7e1de97c32d7237a89b1bb38cdacf19f88011"
+    },
+    "east-1": {
+      "file": "Idle/animations/Walking/east/frame_001.png",
+      "sha256": "39b1ad43b9224613f6616ae799954b3061c94c7addaa2f0ece46a52b854fbe36"
+    },
+    "east-2": {
+      "file": "Idle/animations/Walking/east/frame_002.png",
+      "sha256": "cddea1bdfd2f9abb52b945d640942df233b584941c8aecc9f89ec2e9fa41edcb"
+    },
+    "east-3": {
+      "file": "Idle/animations/Walking/east/frame_003.png",
+      "sha256": "8c50fad2bdc53f97608af12d5c49c873d0cc78cdff5c7388f7f9a15edb4a3ea4"
+    },
+    "north-0": {
+      "file": "Idle/animations/Walking/north/frame_000.png",
+      "sha256": "457342ca1aaa108a2c20818cd35a904fc81c214aeda8ae0456417681ef086241"
+    },
+    "north-1": {
+      "file": "Idle/animations/Walking/north/frame_001.png",
+      "sha256": "70e6ee0a7609992cfe7d11bf04fe5fe05ce4fa55dc0f5950480e7a7f95ab7046"
+    },
+    "north-2": {
+      "file": "Idle/animations/Walking/north/frame_002.png",
+      "sha256": "179fcf0a634c322c1b0ce1da4d32a2bd50a682e397374a3e2d765075c81bfe04"
+    },
+    "north-3": {
+      "file": "Idle/animations/Walking/north/frame_003.png",
+      "sha256": "61ff646cf6e2ab454ff35c404464142614e2d4ecba4b435ce463c97f632d1786"
+    },
+    "idle-south": {
+      "file": "Idle/rotations/south.png",
+      "sha256": "7dcfee2449089301b78b180d4e7e2e3ea686a75d7fcd9cf3eea0536c8b3db90d"
+    },
+    "idle-west": {
+      "file": "Idle/rotations/west.png",
+      "sha256": "509ccb74a020746555efc839848c5bf9e167aef260babebe795dcb985b04f1b2"
+    },
+    "idle-east": {
+      "file": "Idle/rotations/east.png",
+      "sha256": "7ae877a1934104b665684f81afec274fed2a08351e6f973c7273b5e60a0b685e"
+    },
+    "idle-north": {
+      "file": "Idle/rotations/north.png",
+      "sha256": "1d184e5a0a16084e373a3aa8d093112f6f2d976c64b667775dc3a08f87953a45"
+    }
+  }
+}
