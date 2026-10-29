@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>After Rain — comparação da vila</title>
+<style>
+body{margin:0;background:#17251e;color:#efe7d2;font:16px system-ui,sans-serif}main{max-width:1500px;margin:auto;padding:24px}h1{font-size:24px;margin:0 0 8px}p{line-height:1.5;color:#d6d4bd}figure{position:relative;margin:20px 0 12px;aspect-ratio:4/3;overflow:hidden;background:#526b3e;border:1px solid #84916d}figure img{position:absolute;width:100%;height:100%;object-fit:contain}#after{clip-path:inset(0 0 0 50%)}#divider{position:absolute;left:50%;top:0;bottom:0;border-left:2px solid #fff8d6;pointer-events:none}.tag{position:absolute;top:12px;padding:6px 10px;background:#17251ee8;border-radius:5px}.old{left:12px}.new{right:12px}label{display:block}input{width:100%;accent-color:#d5b57d;cursor:ew-resize}a{color:#e5cc92}nav{display:flex;gap:20px;flex-wrap:wrap}
+</style>
+<main>
+<h1>Vila: antes e depois</h1>
+<p>Arraste a divisão para comparar a preview.10 publicada com a reformulação local. As duas capturas usam o mesmo enquadramento.</p>
+<figure>
+<img src="../acabamento-vila-preview10/vila-completa.png" alt="Vila na preview.10 publicada">
+<img id="after" src="vila-completa.png" alt="Vila com novos bosques e detalhes dos comércios">
+<div id="divider"></div><span class="tag old">Preview.10</span><span class="tag new">Reformulação local</span>
+</figure>
+<label for="slider">Posição da comparação</label>
+<input id="slider" type="range" min="0" max="100" value="50">
+<nav><a href="moinho-animado.png">Moinho e herbalista</a><a href="pousada-e-avisos.png">Pousada e avisos</a><a href="costura-e-varal.png">Costura e varal</a><a href="oficina-e-pecas.png">Oficina e peças</a><a href="lago-sem-grama.png">Lago</a></nav>
+<p>Nova composição ainda sem publicação. O movimento do moinho, da fonte e os olhares dos moradores são visíveis no jogo.</p>
+</main>
+<script>
+const slider=document.querySelector('#slider');
+slider.addEventListener('input',()=>{document.querySelector('#after').style.clipPath=`inset(0 0 0 ${slider.value}%)`;document.querySelector('#divider').style.left=slider.value+'%';});
+</script>
+</html>

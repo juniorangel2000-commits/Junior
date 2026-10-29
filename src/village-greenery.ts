@@ -1,6 +1,7 @@
+import {VILLAGE_DRESSING,villageDressingBounds} from './data/village-dressing';
 import type Phaser from 'phaser';
 import manifest from '../public/assets/visual/village/greenery/manifest.json';
-import {VILLAGE_BUILDINGS,VILLAGE_PROPS,VILLAGE_WALKWAYS,villageBlockedAt,villageDoorApproach,villageLakeDistance,villagePathEdge,villagePlazaDistance,villageWaterPoint} from './data/village';
+import {VILLAGE_BUILDINGS,VILLAGE_PROPS,villageBlockedAt,villageDoorApproach,villageLakeDistance,villagePathEdge,villagePlazaDistance,villageWaterPoint} from './data/village';
 import {villageLandmarkClearing} from './data/village-landmarks';
 import type {MapEditData} from './systems/map-editor';
 import {villageBuildingArtBands,villageArtRectsOverlap} from './data/village-building-art';
@@ -37,7 +38,7 @@ const BUILDING_ART_BANDS=VILLAGE_BUILDINGS.flatMap(villageBuildingArtBands);
 export function villageBuildingGrassClearing(x:number,y:number):boolean{
  const px=(x+.5)*32,py=y*32+25;
  const grass={left:px-28,top:py-46,right:px+28,bottom:py+4};
- return BUILDING_ART_BANDS.some(b=>villageArtRectsOverlap(grass,b));
+ return BUILDING_ART_BANDS.some(b=>villageArtRectsOverlap(grass,b))||VILLAGE_DRESSING.some(p=>villageArtRectsOverlap(grass,villageDressingBounds(p)));
 }
 
 const grassBoundsPoints=(x:number,y:number)=>[-24,0,24].flatMap(dx=>[-42,-21,0].map(dy=>({x:(x+.5)*32+dx,y:y*32+25+dy})));
@@ -49,33 +50,14 @@ export const villageGrassClearOfPaths=(x:number,y:number,edits?:MapEditData):boo
 export const villageGrassClearOfWater=(x:number,y:number,edits?:MapEditData):boolean=>
  grassBoundsPoints(x,y).every(p=>villageLakeDistance(p.x/32,p.y/32)>.35&&!villageWaterPoint(p.x,p.y,edits)&&!villagePierNear(p.x,p.y));
 
-function roadsidePockets():readonly (readonly [number,number])[]{
- const pockets:Array<readonly [number,number]>=[];
- for(const [ri,road] of VILLAGE_WALKWAYS.entries()){
-  if(road.pier)continue;
-  for(let i=1;i<road.points.length;i++){
-   const [ax,ay]=road.points[i-1],[bx,by]=road.points[i],dx=bx-ax,dy=by-ay,length=Math.hypot(dx,dy);
-   for(let at=1.8;at<length;at+=3.8){
-    for(const side of [-1,1]){
-     const seed=Math.floor(at*10)+ri*37+i*19+(side+1)*11;
-     if(seed%3===0)continue;
-     const offset=road.width+1.45+(seed%4)*.17,t=at/length;
-     pockets.push([ax+dx*t-side*dy/length*offset,ay+dy*t+side*dx/length*offset]);
-    }
-   }
-  }
- }
- return pockets;
-}
-
 /** Crossable foliage belongs to small planted groups, not a uniform scatter.
  * Reserve entire building silhouettes so blades never poke through a roof. */
 export function villageTallGrassPositions():{x:number;y:number;variant:number}[]{
  const result:{x:number;y:number;variant:number}[]=[];
- const pockets=[...MEADOW_PATCHES,...roadsidePockets()];
- for(const [index,center] of pockets.entries())for(let i=0;i<(index<MEADOW_PATCHES.length?5+index%3:3);i++){
-  const angle=i*2.4+index*.7,radius=i===0?0:.7+(i%2)*.45;
-  const x=center[0]+Math.cos(angle)*radius,y=center[1]+Math.sin(angle)*radius*.6;
+ const pockets=MEADOW_PATCHES.filter((_,index)=>index%3!==1);
+ for(const [index,center] of pockets.entries())for(let i=0;i<24+index%5;i++){
+  const angle=i*2.4+index*.7,radius=i===0?0:Math.sqrt(i/28)*2.3;
+  const x=center[0]+Math.cos(angle)*radius,y=center[1]+Math.sin(angle)*radius*.72;
   if(villagePlazaDistance(x,y)<1.12||!villageGrassClearOfPaths(x,y)||!villageGrassClearOfWater(x,y))continue;
   if(villageDoorApproach(x,y)||villageLandmarkClearing(x,y,18)||villageBlockedAt(Math.floor(x+.5),Math.floor(y+.5)))continue;
   if(VILLAGE_PROPS.some(p=>Math.hypot(p.x-x,p.y-y)<1.25))continue;

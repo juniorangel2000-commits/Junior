@@ -1,3 +1,4 @@
+import {villageIdleDirection} from '../data/village-ambient';
 import {ICARO_WALK_FRAMES,ICARO_DISPLAY,ICARO_ORIGIN_Y} from '../icaro-sprites';
 import {HELENA_WALK_FRAMES,HELENA_DISPLAY,HELENA_ORIGIN_Y} from '../helena-sprites';
 import {DAMIAO_WALK_FRAMES,DAMIAO_DISPLAY,DAMIAO_ORIGIN_Y} from '../damiao-sprites';
@@ -185,9 +186,18 @@ export class VillageScene extends Phaser.Scene {
   else Object.assign(this.residents.get(id)!,{x:s.x,y:s.y,direction:s.direction,shop:s.area==='shop'});
   npc.sprite.setPosition(s.x,s.y).setDepth(s.y).setFrame(characterFrame(s.direction,npc.frames?phase:0,npc.frames));
  }
+ private readonly idleSeconds=new Map<RoutineId,number>();
  private updateDailyRoutines(seconds:number):void {
   this.speech=this.conversations.update(seconds,this.state,this.routines,this.roomOwner as RoutineId|undefined,this.guide?.owner as RoutineId|undefined);
-  for(const [id,routine] of this.routines){if(this.guide?.owner===id)continue;const step=routine.step(seconds,this.state,this.routineEnvironment(id));this.syncRoutine(id,step.phase);}
+  for(const [id,routine] of this.routines){
+   if(this.guide?.owner===id){this.idleSeconds.set(id,0);continue;}
+   const step=routine.step(seconds,this.state,this.routineEnvironment(id));this.syncRoutine(id,step.phase);
+   const still=step.moving?0:(this.idleSeconds.get(id)??0)+seconds;this.idleSeconds.set(id,still);
+   const npc=this.villagers.find(n=>n.data.id===id)!;
+   const blocked=step.moving||this.conversations.participants.includes(id)||!!this.speech||Math.hypot(npc.sprite.x-this.player.x,npc.sprite.y-this.player.y)<100;
+   const direction=villageIdleDirection(step.direction,still,VILLAGE_NPCS.findIndex(n=>n.id===id),blocked);
+   if(direction!==step.direction)npc.sprite.setFrame(characterFrame(direction,0,npc.frames));
+  }
   const pair=this.conversations.participants;
   if(pair.length===2){
    for(const [index,id] of pair.entries()){

@@ -1,3 +1,4 @@
+import {VILLAGE_DRESSING,villageDressingBounds,villageDressingBlockedPoint} from './village-dressing';
 import {PLAZA_BEDS,PLAZA_LAMPS,plazaFurnitureBlockedPoint,plazaFurnitureBlockedTile} from './village-plaza';
 import {VILLAGE_LANDMARKS,villageLandmarkBlockedPoint,villageLandmarkBlockedTile,villageLandmarkClearing} from './village-landmarks';
 import {facadeForMerchant,facadeBlockedPoint} from './shop-facades';
@@ -218,7 +219,6 @@ export const VILLAGE_PROPS:readonly {kind:'well'|'bench'|'lantern'|'barrel'|'flo
  {kind:'lantern',x:34,y:29},{kind:'lantern',x:60,y:30},
  {kind:'lantern',x:49,y:55},{kind:'lantern',x:58,y:61},
  {kind:'bench',x:70,y:48,facing:'east'},{kind:'bench',x:51,y:61,facing:'north'},
- {kind:'crates',x:29,y:33},
  {kind:'barrel',x:66,y:32},
  {kind:'woodpile',x:25,y:47},{kind:'barrel',x:34,y:51},
 
@@ -252,28 +252,27 @@ export const VILLAGE_TREES:readonly VillageTree[]=(()=>{
   if(VILLAGE_PROPS.some(p=>Math.hypot(tx-p.x,ty-p.y)<2.6))return;
   if(VILLAGE_GARDENS.some(p=>Math.hypot((tx-p.x)/p.rx,(ty-p.y)/p.ry)<1.7))return;
   const cx=(tx+.5)*32,cy=ty*32+25,canopy={left:cx-88,right:cx+88,top:cy-211,bottom:cy+6};
-  if(buildings.some(b=>villageArtRectsOverlap(canopy,b))||landmarks.some(b=>villageArtRectsOverlap(canopy,b)))return;
-  if(trees.some(t=>Math.hypot(tx-t.x,ty-t.y)<1.7+(seed%3)*.15))return;
+  if(buildings.some(b=>villageArtRectsOverlap(canopy,b))||landmarks.some(b=>villageArtRectsOverlap(canopy,b))||VILLAGE_DRESSING.some(p=>villageArtRectsOverlap(canopy,villageDressingBounds(p))))return;
+  if(trees.some(t=>Math.hypot(tx-t.x,ty-t.y)<2.1+(seed%3)*.2))return;
   trees.push({x:tx,y:ty,kind:kinds[(seed>>>12)%kinds.length]});
  };
- for(let y=3;y<70;y+=4)for(let x=3;x<94;x+=4){
-  const seed=hash(x,y),tx=x+(seed>>>4)%2,ty=y+(seed>>>7)%2;
-  const grove=VILLAGE_GROVES.some(p=>Math.hypot((tx-p.x)/p.rx,(ty-p.y)/p.ry)<1);
-  if(seed%7===0||tx>11&&tx<86&&ty>10&&ty<67&&!grove&&seed%17!==0)continue;
+ // Groves overlap unevenly; candidates come from polar clusters rather than
+ // parallel rows along the four map edges. Gaps open into smaller clearings.
+ const forestGroups=[
+  [5,7,9,8],[16,3,10,6],[34,4,12,6],[54,3,10,7],[76,5,13,8],[91,7,8,10],
+  [4,23,7,12],[7,39,8,10],[4,63,10,10],
+  [92,25,7,12],[91,43,9,11],[91,62,9,11],
+  [20,67,12,7],[41,68,14,6],[65,67,12,8],[80,68,11,7],
+  [29,12,5,4],[71,13,6,5],[82,24,4,6],[15,38,4,5],
+  [53,53,4,4],[20,61,4,5],
+ ];
+ const glades=[[24,3,3.6,3],[48,5,4,3.4],[92,35,3.2,4],[8,29,3.2,4],[49,68,3.5,3]];
+ for(const [group,[x,y,rx,ry]] of forestGroups.entries())for(let i=0;i<Math.ceil(rx*ry*2.2);i++){
+  const seed=hash(group*53+i*7,i*19+group*11),angle=(seed%65536)/65536*Math.PI*2;
+  const radius=Math.sqrt(((seed>>>16)%65536)/65536);
+  const tx=Math.round(x+Math.cos(angle)*rx*radius),ty=Math.round(y+Math.sin(angle)*ry*radius);
+  if(glades.some(([gx,gy,grx,gry])=>Math.hypot((tx-gx)/grx,(ty-gy)/gry)<1))continue;
   plant(tx,ty,seed);
- }
- // Uneven spacing and a wavy inner edge break the old straight rows.
- for(let y=2;y<71;y+=2)for(let x=2;x<95;x+=2){
-  const seed=hash(x*7,y*11),tx=Math.max(2,Math.min(94,x+(seed%3)-1)),ty=Math.max(2,Math.min(70,y+((seed>>>4)%3)-1));
-  const edge=Math.min(tx,ty,95-tx,71-ty),band=7+Math.sin(tx*.35+ty*.13)*1.5+Math.cos(ty*.43)*.8;
-  if(edge>band||seed%11===0)continue;
-  plant(tx,ty,seed);
- }
- // Small irregular groves occupy open pockets rather than surrounding houses.
- const groves=[[28,12],[32,14],[70,14],[80,21],[84,29],[14,37],[12,44],[18,63],[37,65],[53,54],[68,51],[87,57]];
- for(const [index,[x,y]] of groves.entries())for(let i=0;i<13;i++){
-  const seed=hash(index+31,i+47),angle=i*2.4+index*.6,radius=1+(seed%35)/10;
-  plant(Math.round(x+Math.cos(angle)*radius),Math.round(y+Math.sin(angle)*radius*.8),seed);
  }
  return trees;
 })();
@@ -311,7 +310,7 @@ export const VILLAGE_SHORE_DETAILS:readonly {kind:'shoreStones';x:number;y:numbe
 export const villageTreeId=(t:VillageTree)=>`editor-${t.kind}-village-${t.x}-${t.y}`;
 const villageTreeIds=new Set(VILLAGE_TREES.map(villageTreeId));
 export function villageSceneryBlockedAt(x:number,y:number,includeWell=true,edits?:MapEditData,includeWater=true):boolean {
- return includeWater&&villageWater(x,y,edits)||x<1||y<1||x>=WORLD_WIDTH-1||y>=WORLD_HEIGHT-1
+ return villageDressingBlockedPoint((x+.5)*32,(y+.5)*32)||includeWater&&villageWater(x,y,edits)||x<1||y<1||x>=WORLD_WIDTH-1||y>=WORLD_HEIGHT-1
   ||VILLAGE_TREES.some(t=>{const e=edits?.objects[villageTreeId(t)];return !e?.removed&&(e?.x??t.x)===x&&(e?.y??t.y)===y;})
   ||Object.entries(edits?.objects??{}).some(([id,e])=>!e.removed&&e.x===x&&e.y===y&&natureArt(e.kind)?.solid&&!villageTreeIds.has(id))
   ||(includeWell?villagePropAt(x,y):VILLAGE_PROPS.some(p=>p.kind!=='well'&&p.y===y&&Math.abs(p.x-x)<=(p.kind==='bench'||p.kind==='woodpile'||p.kind==='planter'?1:0)))||VILLAGE_SHORE_DETAILS.some(p=>p.kind==='shoreStones'&&p.x===x&&p.y===y)||VILLAGE_FENCES.some(p=>p.x===x&&p.y===y);
@@ -322,7 +321,7 @@ export function villagePointBlocked(x:number,y:number,edits?:MapEditData):boolea
  const nearPier=villagePierNear(x,y);
  const scenery=villageSceneryBlockedAt(tx,ty,false,edits,!nearPier);
  const well=VILLAGE_PROPS.find(p=>p.kind==='well'&&Math.abs(p.x-tx)<=2&&Math.abs(p.y-ty)<=3);
- return scenery||nearPier&&villageWaterPoint(x,y,edits)||villagePierRailAtPoint(x,y)||villageFishingPropAtPoint(x,y)||villageBarricadeBlockedPoint(x,y)||plazaFurnitureBlockedPoint(x,y)||villageLandmarkBlockedPoint(x,y)||(!!well&&wellFootprint(x,y,{x:(well.x+.5)*32,y:well.y*32+25},.49))||VILLAGE_BUILDINGS.some(b=>{
+ return villageDressingBlockedPoint(x,y)||scenery||nearPier&&villageWaterPoint(x,y,edits)||villagePierRailAtPoint(x,y)||villageFishingPropAtPoint(x,y)||villageBarricadeBlockedPoint(x,y)||plazaFurnitureBlockedPoint(x,y)||villageLandmarkBlockedPoint(x,y)||(!!well&&wellFootprint(x,y,{x:(well.x+.5)*32,y:well.y*32+25},.49))||VILLAGE_BUILDINGS.some(b=>{
   const facade=facadeForMerchant(b.shop);
   return b.shop==='blacksmith'?blacksmithBlockedPoint(x,y,b):b.shop==='carpenter'?tobiasShopBlockedPoint(x,y,b):facade?facadeBlockedPoint(facade,x,y,b):cottageSolidPoint(x,y,{x:(b.x+.5)*32,y:b.y*32+25});
  });

@@ -1,0 +1,509 @@
+{
+  "checks": [
+    {
+      "name": "Píer e quatro enfeites de pesca carregados",
+      "passed": true,
+      "details": {
+        "pier": 2,
+        "pierBounds": {
+          "x": 2336,
+          "y": 1416.5,
+          "width": 224,
+          "height": 83.3,
+          "deckLeft": 5,
+          "deckRight": 219,
+          "deckTop": 24,
+          "deckBottom": 55
+        },
+        "fishing": 4,
+        "grass": 195,
+        "grassSafe": true,
+        "dressing": 12,
+        "dressingOwners": 12,
+        "dressingSafe": true,
+        "reeds": 0,
+        "barricades": 18,
+        "bloody": 5,
+        "views": 16,
+        "trees": 234,
+        "species": 6,
+        "wheat": [
+          {
+            "texture": "village-wheat",
+            "width": 44.12733260153677,
+            "height": 120
+          },
+          {
+            "texture": "village-wheat",
+            "width": 42.414928649835346,
+            "height": 120
+          }
+        ],
+        "routes": [
+          {
+            "id": "armazem",
+            "length": 31
+          },
+          {
+            "id": "ferraria",
+            "length": 55
+          },
+          {
+            "id": "ervas",
+            "length": 34
+          },
+          {
+            "id": "carpintaria",
+            "length": 26
+          },
+          {
+            "id": "sementes",
+            "length": 36
+          },
+          {
+            "id": "antiquario",
+            "length": 22
+          },
+          {
+            "id": "costura",
+            "length": 63
+          },
+          {
+            "id": "pescador",
+            "length": 66
+          },
+          {
+            "id": "pousada",
+            "length": 49
+          },
+          {
+            "id": "oficina",
+            "length": 59
+          }
+        ]
+      }
+    },
+    {
+      "name": "Mais grama alta, sem nenhuma parte sobre caminhos ou água",
+      "passed": true,
+      "details": {
+        "pier": 2,
+        "pierBounds": {
+          "x": 2336,
+          "y": 1416.5,
+          "width": 224,
+          "height": 83.3,
+          "deckLeft": 5,
+          "deckRight": 219,
+          "deckTop": 24,
+          "deckBottom": 55
+        },
+        "fishing": 4,
+        "grass": 195,
+        "grassSafe": true,
+        "dressing": 12,
+        "dressingOwners": 12,
+        "dressingSafe": true,
+        "reeds": 0,
+        "barricades": 18,
+        "bloody": 5,
+        "views": 16,
+        "trees": 234,
+        "species": 6,
+        "wheat": [
+          {
+            "texture": "village-wheat",
+            "width": 44.12733260153677,
+            "height": 120
+          },
+          {
+            "texture": "village-wheat",
+            "width": 42.414928649835346,
+            "height": 120
+          }
+        ],
+        "routes": [
+          {
+            "id": "armazem",
+            "length": 31
+          },
+          {
+            "id": "ferraria",
+            "length": 55
+          },
+          {
+            "id": "ervas",
+            "length": 34
+          },
+          {
+            "id": "carpintaria",
+            "length": 26
+          },
+          {
+            "id": "sementes",
+            "length": 36
+          },
+          {
+            "id": "antiquario",
+            "length": 22
+          },
+          {
+            "id": "costura",
+            "length": 63
+          },
+          {
+            "id": "pescador",
+            "length": 66
+          },
+          {
+            "id": "pousada",
+            "length": 49
+          },
+          {
+            "id": "oficina",
+            "length": 59
+          }
+        ]
+      }
+    },
+    {
+      "name": "Barricadas em oito direções com variantes manchadas",
+      "passed": true,
+      "details": {
+        "pier": 2,
+        "pierBounds": {
+          "x": 2336,
+          "y": 1416.5,
+          "width": 224,
+          "height": 83.3,
+          "deckLeft": 5,
+          "deckRight": 219,
+          "deckTop": 24,
+          "deckBottom": 55
+        },
+        "fishing": 4,
+        "grass": 195,
+        "grassSafe": true,
+        "dressing": 12,
+        "dressingOwners": 12,
+        "dressingSafe": true,
+        "reeds": 0,
+        "barricades": 18,
+        "bloody": 5,
+        "views": 16,
+        "trees": 234,
+        "species": 6,
+        "wheat": [
+          {
+            "texture": "village-wheat",
+            "width": 44.12733260153677,
+            "height": 120
+          },
+          {
+            "texture": "village-wheat",
+            "width": 42.414928649835346,
+            "height": 120
+          }
+        ],
+        "routes": [
+          {
+            "id": "armazem",
+            "length": 31
+          },
+          {
+            "id": "ferraria",
+            "length": 55
+          },
+          {
+            "id": "ervas",
+            "length": 34
+          },
+          {
+            "id": "carpintaria",
+            "length": 26
+          },
+          {
+            "id": "sementes",
+            "length": 36
+          },
+          {
+            "id": "antiquario",
+            "length": 22
+          },
+          {
+            "id": "costura",
+            "length": 63
+          },
+          {
+            "id": "pescador",
+            "length": 66
+          },
+          {
+            "id": "pousada",
+            "length": 49
+          },
+          {
+            "id": "oficina",
+            "length": 59
+          }
+        ]
+      }
+    },
+    {
+      "name": "Floresta densa de seis espécies e acesso às dez lojas",
+      "passed": true,
+      "details": {
+        "pier": 2,
+        "pierBounds": {
+          "x": 2336,
+          "y": 1416.5,
+          "width": 224,
+          "height": 83.3,
+          "deckLeft": 5,
+          "deckRight": 219,
+          "deckTop": 24,
+          "deckBottom": 55
+        },
+        "fishing": 4,
+        "grass": 195,
+        "grassSafe": true,
+        "dressing": 12,
+        "dressingOwners": 12,
+        "dressingSafe": true,
+        "reeds": 0,
+        "barricades": 18,
+        "bloody": 5,
+        "views": 16,
+        "trees": 234,
+        "species": 6,
+        "wheat": [
+          {
+            "texture": "village-wheat",
+            "width": 44.12733260153677,
+            "height": 120
+          },
+          {
+            "texture": "village-wheat",
+            "width": 42.414928649835346,
+            "height": 120
+          }
+        ],
+        "routes": [
+          {
+            "id": "armazem",
+            "length": 31
+          },
+          {
+            "id": "ferraria",
+            "length": 55
+          },
+          {
+            "id": "ervas",
+            "length": 34
+          },
+          {
+            "id": "carpintaria",
+            "length": 26
+          },
+          {
+            "id": "sementes",
+            "length": 36
+          },
+          {
+            "id": "antiquario",
+            "length": 22
+          },
+          {
+            "id": "costura",
+            "length": 63
+          },
+          {
+            "id": "pescador",
+            "length": 66
+          },
+          {
+            "id": "pousada",
+            "length": 49
+          },
+          {
+            "id": "oficina",
+            "length": 59
+          }
+        ]
+      }
+    },
+    {
+      "name": "Trigos substituídos por canteiros verticais",
+      "passed": true,
+      "details": [
+        {
+          "texture": "village-wheat",
+          "width": 44.12733260153677,
+          "height": 120
+        },
+        {
+          "texture": "village-wheat",
+          "width": 42.414928649835346,
+          "height": 120
+        }
+      ]
+    },
+    {
+      "name": "Jogador percorre o píer com entrada seca e limite na ponta",
+      "passed": true,
+      "details": {
+        "x": 2547.99765624999,
+        "y": 1456,
+        "wet": false
+      }
+    },
+    {
+      "name": "Corda frontal impede atravessar a lateral do píer",
+      "passed": true,
+      "details": {
+        "x": 2547.99765624999,
+        "y": 1468.4974609375001,
+        "wet": false
+      }
+    },
+    {
+      "name": "É possível voltar do píer à margem",
+      "passed": true,
+      "details": {
+        "x": 2127.9976562500083,
+        "y": 1456,
+        "wet": false
+      }
+    },
+    {
+      "name": "Jogador entra no coreto e o telhado permite vê-lo",
+      "passed": true,
+      "details": {
+        "x": 1424,
+        "y": 371.00019531250024,
+        "wet": false
+      }
+    },
+    {
+      "name": "Pilares do coreto mantêm colisão",
+      "passed": true,
+      "details": {
+        "x": 1359,
+        "y": 414.00292968750006,
+        "wet": false
+      }
+    },
+    {
+      "name": "Doze conjuntos de trabalho e cotidiano, sem ocupar caminhos ou água",
+      "passed": true,
+      "details": {
+        "pier": 2,
+        "pierBounds": {
+          "x": 2336,
+          "y": 1416.5,
+          "width": 224,
+          "height": 83.3,
+          "deckLeft": 5,
+          "deckRight": 219,
+          "deckTop": 24,
+          "deckBottom": 55
+        },
+        "fishing": 4,
+        "grass": 195,
+        "grassSafe": true,
+        "dressing": 12,
+        "dressingOwners": 12,
+        "dressingSafe": true,
+        "reeds": 0,
+        "barricades": 18,
+        "bloody": 5,
+        "views": 16,
+        "trees": 234,
+        "species": 6,
+        "wheat": [
+          {
+            "texture": "village-wheat",
+            "width": 44.12733260153677,
+            "height": 120
+          },
+          {
+            "texture": "village-wheat",
+            "width": 42.414928649835346,
+            "height": 120
+          }
+        ],
+        "routes": [
+          {
+            "id": "armazem",
+            "length": 31
+          },
+          {
+            "id": "ferraria",
+            "length": 55
+          },
+          {
+            "id": "ervas",
+            "length": 34
+          },
+          {
+            "id": "carpintaria",
+            "length": 26
+          },
+          {
+            "id": "sementes",
+            "length": 36
+          },
+          {
+            "id": "antiquario",
+            "length": 22
+          },
+          {
+            "id": "costura",
+            "length": 63
+          },
+          {
+            "id": "pescador",
+            "length": 66
+          },
+          {
+            "id": "pousada",
+            "length": 49
+          },
+          {
+            "id": "oficina",
+            "length": 59
+          }
+        ]
+      }
+    },
+    {
+      "name": "Pás giram sem mover o eixo do moinho",
+      "passed": true,
+      "details": {
+        "a": 0,
+        "b": 1.5707963267948966,
+        "fixed": true
+      }
+    },
+    {
+      "name": "Lago sem juncos sobre a água",
+      "passed": true,
+      "details": {
+        "reeds": 0
+      }
+    },
+    {
+      "name": "Save continua válido após caminhar nas novas estruturas",
+      "passed": true
+    },
+    {
+      "name": "Sem erros JavaScript, HTTP ou WebGL",
+      "passed": true,
+      "details": {
+        "errors": [],
+        "gl": 0
+      }
+    }
+  ],
+  "errors": []
+}

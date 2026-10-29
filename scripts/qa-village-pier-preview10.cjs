@@ -39,6 +39,8 @@ fs.mkdirSync(out,{recursive:true});
    const {villageRoute}=await import('/src/systems/village-walk.ts');
    const {VILLAGE_PIER}=await import('/src/data/village-pier.ts');
    const {villagePathEdge}=await import('/src/data/village.ts');
+   const dressing=v.children.list.filter(o=>o.getData?.('village-dressing'));
+   const dressingSafe=dressing.every(o=>{const b=o.getBounds();return [b.left,b.centerX,b.right].every(x=>[b.top,b.centerY,b.bottom].every(y=>!v.world.waterPointAt(x,y)&&villagePathEdge(x/32-.5,y/32-.5)>.3));});
    const grass=v.children.list.filter(o=>o.getData?.('village-tall-grass'));
    const grassSafe=grass.every(o=>{
     const b=o.getBounds();return [b.left,b.centerX,b.right].every(x=>[b.top,b.centerY,b.bottom].every(y=>!v.world.waterPointAt(x,y)&&villagePathEdge(x/32-.5,y/32-.5)>.2));
@@ -48,6 +50,7 @@ fs.mkdirSync(out,{recursive:true});
     pierBounds:VILLAGE_PIER,
     fishing:v.children.list.filter(o=>o.getData?.('village-fishing-prop')).length,
     grass:grass.length,grassSafe,
+    dressing:dressing.length,dressingOwners:new Set(dressing.map(o=>o.getData('village-dressing-owner'))).size,dressingSafe,
     reeds:v.children.list.filter(o=>o.texture?.key==='forest-detail-reeds').length,
     barricades:barricades.length,bloody:barricades.filter(o=>o.getData('village-barricade-blood')).length,
     views:v.textures.get('village-barricades').getFrameNames().length,
@@ -82,12 +85,21 @@ fs.mkdirSync(out,{recursive:true});
   const pillar=await move('w',25);
   check('Pilares do coreto mantêm colisão',pillar.y>=414,pillar);
 
+  check('Doze conjuntos de trabalho e cotidiano, sem ocupar caminhos ou água',art.dressing===12&&art.dressingOwners===12&&art.dressingSafe,art);
+  const motion=await p.evaluate(()=>{
+   const rotor=v.children.list.find(o=>o.getData?.('village-windmill-rotor'));
+   v.world.update(0);const a=rotor.rotation,x=rotor.x,y=rotor.y;
+   v.world.update(30000);return {a,b:rotor.rotation,fixed:x===rotor.x&&y===rotor.y};
+  });
+  check('Pás giram sem mover o eixo do moinho',Math.abs(motion.b-motion.a)>1&&motion.fixed,motion);
   const views=[
    ['vila-completa',1536,1152,.48],['pier-e-pesca',2450,1400,2],
    ['trigo-e-moinho',640,800,1.7],['marcenaria-e-armazem',1150,1350,1.3],
    ['transicao-casa-comunitaria',1810,510,2],['barricadas-norte',1490,250,1.4],
    ['barricadas-leste',2800,1280,1.35],
    ['entradas-quadradas',2480,1940,2],
+   ['moinho-animado',660,615,2],['pousada-e-avisos',1580,700,2],
+   ['costura-e-varal',2180,810,2],['oficina-e-pecas',2040,1760,2],
    ['escala-armazem',1072,970,2],['moitas-entre-comercios',1750,1700,1.5],
   ];
   check('Lago sem juncos sobre a água',art.reeds===0,{reeds:art.reeds});

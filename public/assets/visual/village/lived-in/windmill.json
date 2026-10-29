@@ -1,0 +1,27 @@
+{
+  "file": "assets/visual/village/lived-in/moinho-camadas.png",
+  "sha256": "2021bf240756e492a0620f6ea484e156a693b7655415b8b6bb88b404cde210a2",
+  "alphaCutoff": 160,
+  "frames": {
+    "body": {
+      "x": 241,
+      "y": 38,
+      "width": 457,
+      "height": 804
+    },
+    "rotor": {
+      "x": 983,
+      "y": 168,
+      "width": 676,
+      "height": 643
+    }
+  },
+  "bodyHub": {
+    "x": 470,
+    "y": 364
+  },
+  "rotorHub": {
+    "x": 1321,
+    "y": 490
+  }
+}

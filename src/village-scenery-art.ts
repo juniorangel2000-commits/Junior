@@ -1,3 +1,4 @@
+import {preloadVillageDressing} from './village-dressing';
 import plazaManifest from '../public/assets/visual/village/plaza/manifest.json';
 import {preloadVillagePlaza} from './village-plaza';
 import type Phaser from 'phaser';
@@ -10,7 +11,7 @@ import {preloadVillageDefences} from './village-defences';
 export const VILLAGE_SCENERY=['bench','flowerpot','planter','crates','barrel','sacks','woodpile','basket'] as const;
 export const VILLAGE_LAMP={key:'village-lantern',width:20,height:80,lightY:-66} as const;
 export function preloadVillageScenery(scene:Phaser.Scene):void{
- preloadVillageLandmarks(scene);
+ preloadVillageLandmarks(scene);preloadVillageDressing(scene);
  preloadVillagePlaza(scene);
  preloadVillageGreenery(scene);
  preloadVillagePier(scene);preloadVillageDefences(scene);

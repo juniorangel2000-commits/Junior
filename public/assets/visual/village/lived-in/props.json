@@ -1,0 +1,79 @@
+{
+  "file": "assets/visual/village/lived-in/comercio-e-cotidiano.png",
+  "sha256": "d33d163632dcab94237b3d2d5c56de2efdeecb1ed528879513404de31e114ebd",
+  "alphaCutoff": 160,
+  "frames": {
+    "timber": {
+      "x": 19,
+      "y": 121,
+      "width": 358,
+      "height": 253
+    },
+    "delivery": {
+      "x": 408,
+      "y": 103,
+      "width": 312,
+      "height": 277
+    },
+    "iron": {
+      "x": 751,
+      "y": 91,
+      "width": 292,
+      "height": 290
+    },
+    "herbs": {
+      "x": 1090,
+      "y": 132,
+      "width": 341,
+      "height": 240
+    },
+    "seeds": {
+      "x": 31,
+      "y": 459,
+      "width": 329,
+      "height": 243
+    },
+    "trunks": {
+      "x": 398,
+      "y": 447,
+      "width": 311,
+      "height": 254
+    },
+    "laundry": {
+      "x": 748,
+      "y": 441,
+      "width": 294,
+      "height": 258
+    },
+    "tub": {
+      "x": 1094,
+      "y": 471,
+      "width": 333,
+      "height": 225
+    },
+    "table": {
+      "x": 27,
+      "y": 785,
+      "width": 336,
+      "height": 236
+    },
+    "gears": {
+      "x": 397,
+      "y": 775,
+      "width": 321,
+      "height": 247
+    },
+    "notice": {
+      "x": 742,
+      "y": 728,
+      "width": 313,
+      "height": 304
+    },
+    "firewood": {
+      "x": 1081,
+      "y": 810,
+      "width": 348,
+      "height": 222
+    }
+  }
+}

@@ -1,3 +1,5 @@
+import windmill from '../public/assets/visual/village/lived-in/windmill.json';
+import {windmillAngle} from './data/village-ambient';
 import type Phaser from 'phaser';
 import manifest from '../public/assets/visual/village/landmarks/manifest.json';
 import {VILLAGE_LANDMARKS,villageGazeboContains} from './data/village-landmarks';
@@ -10,9 +12,11 @@ export function preloadVillageLandmarks(scene:Phaser.Scene):void {
  scene.load.image('village-landmark-source',manifest.file);
  scene.load.image('village-granary-source',manifest.granaryOverride.file);
  scene.load.image('village-wheat-source',wheat.file);
+ scene.load.image('village-windmill-source',windmill.file);
 }
 
 export function drawVillageLandmarks(scene:Phaser.Scene):{update(time:number,occupant?:{x:number;y:number}):void} {
+ setupVillagePropAtlas(scene,'village-windmill','village-windmill-source',windmill);
  setupVillagePropAtlas(scene,'village-wheat','village-wheat-source',wheat);
  const customAssets={
   granary:{key:'village-granary-v2',source:'village-granary-source',...manifest.granaryOverride},
@@ -37,7 +41,17 @@ export function drawVillageLandmarks(scene:Phaser.Scene):{update(time:number,occ
  }
  let fountain:{x:number;y:number;width:number;height:number;depth:number}|undefined;
  let gazeboRoof:Phaser.GameObjects.Image|undefined;
+ let rotor:Phaser.GameObjects.Image|undefined;
  for(const p of VILLAGE_LANDMARKS){
+  if(p.kind==='windmill'){
+   const x=(p.x+.5)*32,y=p.y*32+25,b=windmill.frames.body,r=windmill.frames.rotor,scale=270/b.height;
+   scene.add.image(x,y,'village-windmill','body').setOrigin(.5,1).setScale(scale).setDepth(y)
+    .setData({'village-landmark':p.id,'village-landmark-kind':p.kind,'shadow-foot':1});
+   rotor=scene.add.image(x+(windmill.bodyHub.x-b.x-b.width/2)*scale,y-(b.y+b.height-windmill.bodyHub.y)*scale,'village-windmill','rotor')
+    .setOrigin((windmill.rotorHub.x-r.x)/r.width,(windmill.rotorHub.y-r.y)/r.height).setScale(.34).setDepth(y+.1)
+    .setData('village-windmill-rotor',true);
+   continue;
+  }
   if(p.kind==='gazebo'){gazeboRoof=drawVillageGazebo(scene,p);continue;}
   if(p.kind==='wheat'){
    const frame=p.id.endsWith('-a')?'wheat-a':'wheat-b',r=wheat.frames[frame],y=p.y*32+25;
@@ -57,9 +71,16 @@ export function drawVillageLandmarks(scene:Phaser.Scene):{update(time:number,occ
  const ripple=scene.add.graphics().setData('village-fountain-water',true);
  if(fountain)ripple.setDepth(fountain.depth);
  return {update(time:number,occupant?:{x:number;y:number}){
+  rotor?.setRotation(windmillAngle(time));
   gazeboRoof?.setAlpha(occupant&&villageGazeboContains(occupant.x,occupant.y) ? .3 : 1);
   if(!fountain||!ripple.active)return;
   ripple.clear();
+  // Fine falling drops complement the existing basin ripples.
+  for(let i=0;i<7;i++){
+   const q=(time*.00065+i/7)%1,side=i%2?1:-1;
+   const dx=side*(4+i%3*3)*Math.sin(q*Math.PI/2);
+   ripple.fillStyle(0xbce9e7,.25+.3*(1-q)).fillRect(Math.round(fountain.x+dx),Math.round(fountain.y-14+q*15),1,2);
+  }
   for(let i=0;i<3;i++){
    const q=(time*.0002+i/3)%1;
    ripple.lineStyle(.7,0xb6f0ef,(1-q)*.34).strokeEllipse(fountain.x,fountain.y,fountain.width*q,fountain.height*q);

@@ -1,5 +1,6 @@
+import {drawVillageDressing} from './village-dressing';
 import {drawVillagePlaza} from './village-plaza';
-import {setupVillageGreenery,drawVillageTallGrass,VILLAGE_GREENERY} from './village-greenery';
+import {setupVillageGreenery,drawVillageTallGrass,VILLAGE_GREENERY,villageBuildingGrassClearing,villageGrassClearOfWater,villageGrassClearOfPaths} from './village-greenery';
 import {drawVillagePier} from './village-pier';
 import {drawVillageDefences} from './village-defences';
 import {facadeForMerchant} from './data/shop-facades';
@@ -124,7 +125,7 @@ export class VillageWorld {
  constructor(private readonly scene:Phaser.Scene,private readonly edits?:MapEditData,private readonly namespace='village'){
   const before=new Set(scene.children.list);setupVillageArt(scene);drawGround(scene,edits,namespace);
   setupVillageGreenery(scene);
-  this.drawLake();drawVillagePier(scene);this.drawTrees();drawVillageDefences(scene);this.drawBuildings();this.landmarks=drawVillageLandmarks(scene);drawVillagePlaza(scene);this.drawGardens();this.drawProps();drawVillageTallGrass(scene,this.edits);
+  this.drawLake();drawVillagePier(scene);this.drawTrees();drawVillageDefences(scene);this.drawBuildings();this.landmarks=drawVillageLandmarks(scene);drawVillagePlaza(scene);this.drawGardens();this.drawProps();drawVillageDressing(scene,this.edits);drawVillageTallGrass(scene,this.edits);
   drawExitSign(scene,this.exit(),this.entry());
   this.environment=scene.children.list.filter(object=>!before.has(object));
   for(let y=0;y<WORLD_HEIGHT;y++)for(let x=0;x<WORLD_WIDTH;x++)if(villageBlockedAt(x,y,edits))this.solid.add(`${x},${y}`);
@@ -255,7 +256,7 @@ export class VillageWorld {
  private drawGardens():void {
   const place=(kind:string,x:number,y:number,scale=1)=>{
    if(this.edits?.terrain[`${Math.floor(x+.5)},${Math.floor(y+.5)}`]!==undefined)return;
-   const art=natureArt(kind);if(!art||villagePathEdge(x,y)<.3||villageLandmarkClearing(x,y,8)||villageDoorApproach(x,y)||VILLAGE_PROPS.some(p=>Math.hypot(x-p.x,y-p.y)<1.1)||villageBlockedAt(x,y)&&!art.water)return;
+   const art=natureArt(kind);if(!art||!art.water&&(villageBuildingGrassClearing(x,y)||!villageGrassClearOfWater(x,y,this.edits)||!villageGrassClearOfPaths(x,y,this.edits))||villagePathEdge(x,y)<.3||villageLandmarkClearing(x,y,8)||villageDoorApproach(x,y)||VILLAGE_PROPS.some(p=>Math.hypot(x-p.x,y-p.y)<1.1)||villageBlockedAt(x,y)&&!art.water)return;
    this.scene.add.image(x*TILE+16,y*TILE+25,art.texture).setOrigin(.5,art.pivot).setDisplaySize(art.width*scale,art.height*scale).setDepth(y*TILE+25).setData('village-plant',true);
   };
   for(const fence of VILLAGE_FENCES)drawConnectedFence(this.scene,fence,VILLAGE_FENCES,1);
@@ -270,11 +271,14 @@ export class VillageWorld {
    place(i%3===0?'mushrooms':'fern',tree.x+.8,tree.y+.2,.8);
    if(i%3===0)place('whiteFlowers',tree.x-.8,tree.y+.4,.8);
   }
-  for(let y=12;y<68;y+=3)for(let x=9;x<90;x+=3){
-   const seed=(Math.imul(x+13,73856093)^Math.imul(y+19,19349663))>>>0;
-   if(seed%7||villagePathEdge(x,y)<.9||villagePlazaDistance(x,y)<1.12||villageLakeDistance(x,y)<1.4)continue;
+  // Deliberate mixed beds replace the evenly scattered individual bushes.
+  const beds=[[26,39],[35,44],[40,48],[52,53],[58,60],[67,50],[70,36],[77,55],[29,19],[52,20],[74,32],[22,56]];
+  for(const [index,[cx,cy]] of beds.entries())for(let i=0;i<7;i++){
+   const angle=i*2.4+index*.73,radius=Math.sqrt(i/7)*2;
+   const x=cx+Math.cos(angle)*radius,y=cy+Math.sin(angle)*radius*.65;
+   if(villagePathEdge(x,y)<.9||villagePlazaDistance(x,y)<1.12||villageLakeDistance(x,y)<1.4)continue;
    if(VILLAGE_GARDENS.some(p=>Math.hypot((x-p.x)/p.rx,(y-p.y)/p.ry)<1.5))continue;
-   place(seed%3===0?'berryBush':seed%3===1?'bush':'whiteFlowers',x,y,seed%3===0?.8:1);
+   place(i===0?'berryBush':i%3===1?'bush':'whiteFlowers',x,y,i===0?.8:i%3===1?.85:.75);
   }
  }
 }
