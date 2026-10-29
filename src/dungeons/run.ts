@@ -1,4 +1,11 @@
 import {
+  petDirection,
+  petActionDuration,
+  PET_ATTACK_HIT_AT,
+  type PetDirection,
+} from "./pet-sprites";
+import type { PetAttackAction } from "./pet-combat";
+import {
   DUNGEONS,
   DUNGEON_BALANCE as B,
   WEAPONS,
@@ -79,6 +86,9 @@ export interface AttackEffect {
 export type RunPhase =
   "fighting" | "choice" | "paused" | "victory" | "defeat" | "abandoned";
 export interface RunPet {
+  action?: PetAttackAction;
+  direction?: PetDirection;
+  walking?: boolean;
   id: string;
   species: PetSpecies;
   rare: boolean;
@@ -303,11 +313,7 @@ export class DungeonRun {
     return true;
   }
   grantXP(amount: number): void {
-    if (
-      !Number.isFinite(amount) ||
-      amount < 0 ||
-      terminal(this.state.phase)
-    )
+    if (!Number.isFinite(amount) || amount < 0 || terminal(this.state.phase))
       return;
     this.state.xp +=
       amount * (1 + this.bonus("xp") + this.bonus("advanced-xp"));
@@ -315,8 +321,7 @@ export class DungeonRun {
   }
   private checkLevel(): void {
     const s = this.state;
-    if (s.phase !== "fighting" || s.xp < this.xpNeeded)
-      return;
+    if (s.phase !== "fighting" || s.xp < this.xpNeeded) return;
     if (this.buildComplete) {
       // Keep leveling without empty card dialogs or automatic healing.
       while (s.xp >= this.xpNeeded) {
@@ -388,10 +393,11 @@ export class DungeonRun {
       }
     }
     if (!found) return false;
-    const boss = timedTier !== undefined ||
-        DUNGEONS[s.dungeon].mode === "waves" &&
-        isBossRound(s.round) &&
-        s.bossRound !== s.round,
+    const boss =
+        timedTier !== undefined ||
+        (DUNGEONS[s.dungeon].mode === "waves" &&
+          isBossRound(s.round) &&
+          s.bossRound !== s.round),
       special = boss || this.random() < profile.specialChance,
       kind = boss
         ? "boss"
@@ -513,7 +519,11 @@ export class DungeonRun {
           for (const p of s.pickups)
             if (p.kind === "xp" || p.kind === "level") p.attracted = true;
           this.collect(dt);
-          if (s.phase === "choice" || s.pickups.some(p => p.kind === "xp" || p.kind === "level")) return;
+          if (
+            s.phase === "choice" ||
+            s.pickups.some((p) => p.kind === "xp" || p.kind === "level")
+          )
+            return;
           s.phase = "victory";
           return;
         }
@@ -526,7 +536,11 @@ export class DungeonRun {
       if (e.hp <= 0) continue;
       if (e.kind === "boss") {
         const pursue = advanceBossCombat(
-          e, s.player, e.bossTier ?? s.round, s.dungeon, dt,
+          e,
+          s.player,
+          e.bossTier ?? s.round,
+          s.dungeon,
+          dt,
           (damage) => this.hurtPlayer(damage),
         );
         if (s.phase === "defeat") return;
@@ -594,7 +608,9 @@ export class DungeonRun {
         if (until < s.elapsed) delete s.orbitalHits[key];
   }
   private moveEnemy(
-    e: { x: number; y: number; boss?: BossCombatState }, dx: number, dy: number,
+    e: { x: number; y: number; boss?: BossCombatState },
+    dx: number,
+    dy: number,
   ): void {
     // A committed charge keeps its warned lane even when struck by knockback.
     if (e.boss?.action?.kind === "charge") return;
@@ -707,8 +723,10 @@ export class DungeonRun {
     });
     if (e.hp > 0) return;
     s.kills++;
-    const rewardXP = (DUNGEONS[s.dungeon].mode === "timed" ? B.timedEnemyXP : B.enemyXP) *
-      this.horde.experience * (e.kind === "boss" ? 2 : e.special ? 1.5 : 1);
+    const rewardXP =
+      (DUNGEONS[s.dungeon].mode === "timed" ? B.timedEnemyXP : B.enemyXP) *
+      this.horde.experience *
+      (e.kind === "boss" ? 2 : e.special ? 1.5 : 1);
     if (s.pickups.length < 1000)
       s.pickups.push({
         id: this.nextId(),
@@ -720,20 +738,36 @@ export class DungeonRun {
       });
     else this.grantXP(rewardXP);
     if (e.kind === "boss" && s.pickups.length < 1100)
-      s.pickups.push({id:this.nextId(),x:e.x,y:e.y,kind:"level",amount:1});
-    const healingChance = e.kind === "boss" ? 1 : e.special
-      ? this.level("survival-instinct") ? B.instinctHealingChance : B.specialHealingChance
-      : B.ordinaryHealingChance;
+      s.pickups.push({
+        id: this.nextId(),
+        x: e.x,
+        y: e.y,
+        kind: "level",
+        amount: 1,
+      });
+    const healingChance =
+      e.kind === "boss"
+        ? 1
+        : e.special
+          ? this.level("survival-instinct")
+            ? B.instinctHealingChance
+            : B.specialHealingChance
+          : B.ordinaryHealingChance;
     if (this.random() < healingChance)
       this.dropHealing(e.x, e.y, e.kind === "boss" ? 25 : e.special ? 15 : 10);
   }
   private dropHealing(x: number, y: number, amount: number): void {
     const s = this.state;
-    if (s.pickups.length >= 1000 ||
-        s.pickups.filter(p => p.kind === "health").length >= B.maxGroundHealing ||
-        s.elapsed - (s.lastHealthDropAt ?? -B.healingDropCooldown) < B.healingDropCooldown ||
-        dungeonBlocked(s.dungeon, x, y)) return;
-    s.pickups.push({id: this.nextId(), x, y, kind: "health", amount});
+    if (
+      s.pickups.length >= 1000 ||
+      s.pickups.filter((p) => p.kind === "health").length >=
+        B.maxGroundHealing ||
+      s.elapsed - (s.lastHealthDropAt ?? -B.healingDropCooldown) <
+        B.healingDropCooldown ||
+      dungeonBlocked(s.dungeon, x, y)
+    )
+      return;
+    s.pickups.push({ id: this.nextId(), x, y, kind: "health", amount });
     s.lastHealthDropAt = s.elapsed;
   }
   private area(
@@ -828,13 +862,18 @@ export class DungeonRun {
     if (this.blockWithShield()) return;
     const reduction = Math.min(
       0.75,
-      this.bonus("defense") + s.permanent.resistance * 0.02 +
+      this.bonus("defense") +
+        s.permanent.resistance * 0.02 +
         (s.pet && s.pet.hp > 0
-          ? PETS[s.pet.species].protection + s.pet.attributes.protection * 0.01 +
+          ? PETS[s.pet.species].protection +
+            s.pet.attributes.protection * 0.01 +
             this.bonus("pet-protection")
           : 0),
     );
-    s.player.hp = Math.max(0, s.player.hp - Math.max(1, damage * (1 - reduction)));
+    s.player.hp = Math.max(
+      0,
+      s.player.hp - Math.max(1, damage * (1 - reduction)),
+    );
     s.player.invulnerable = B.contactGrace;
     if (s.player.hp === 0) s.phase = "defeat";
   }
@@ -1087,6 +1126,8 @@ export class DungeonRun {
     if (!p) return;
     const c = PETS[p.species];
     if (p.hp <= 0) {
+      delete p.action;
+      p.walking = false;
       p.rest += dt;
       if (p.rest > 8) {
         p.hp = p.maxHp * 0.5;
@@ -1094,42 +1135,107 @@ export class DungeonRun {
       }
       return;
     }
-    const dx = s.player.x - 35 - p.x,
-      dy = s.player.y + 20 - p.y,
-      d = Math.hypot(dx, dy) || 1,
-      move = Math.min(d, c.speed * (1 + p.attributes.speed * 0.03) * dt);
-    this.moveEnemy(p, (dx / d) * move, (dy / d) * move);
     p.attack = Math.max(0, p.attack - dt);
     p.special = Math.max(0, p.special - dt);
-    const targets = this.spatial.query(p.x, p.y, 100).filter((e) => e.hp > 0);
-    if (!targets.length) return;
-    if (p.attack === 0) {
-      this.hit(
-        targets[0],
-        c.damage *
-          (1 + this.bonus("pet-damage") + p.attributes.efficiency * 0.03),
-        false,
-      );
-      p.attack = c.cooldown / (1 + this.bonus("pet-speed"));
+    const before = { x: p.x, y: p.y };
+    if (!p.action) {
+      const dx = s.player.x - 35 - p.x,
+        dy = s.player.y + 20 - p.y,
+        d = Math.hypot(dx, dy) || 1;
+      const move = Math.min(d, c.speed * (1 + p.attributes.speed * 0.03) * dt);
+      this.moveEnemy(p, (dx / d) * move, (dy / d) * move);
+      const targets = this.spatial
+        .query(p.x, p.y, 100)
+        .filter(
+          (e) => e.hp > 0 && dungeonSegmentClear(s.dungeon, p.x, p.y, e.x, e.y),
+        );
+      if (targets.length && (p.special === 0 || p.attack === 0)) {
+        const target = targets.reduce((best, e) =>
+          Math.hypot(e.x - p.x, e.y - p.y) <
+          Math.hypot(best.x - p.x, best.y - p.y)
+            ? e
+            : best,
+        );
+        const dx = target.x - p.x,
+          dy = target.y - p.y,
+          d = Math.hypot(dx, dy) || 1,
+          reach = Math.max(0, Math.min(70, d - 18));
+        const kind = p.special === 0 ? "special" : "basic";
+        p.action = {
+          kind,
+          age: 0,
+          direction: petDirection(dx, dy),
+          targetId: target.id,
+          originX: p.x,
+          originY: p.y,
+          targetX: p.x + (dx / d) * reach,
+          targetY: p.y + (dy / d) * reach,
+          hit: false,
+        };
+        if (kind === "special")
+          p.special = c.specialCooldown / (1 + this.bonus("pet-cooldown"));
+        else p.attack = c.cooldown / (1 + this.bonus("pet-speed"));
+      }
     }
-    if (p.special === 0) {
-      const n = this.level("relentless-companion") ? 2 : 1;
-      for (let i = 0; i < n; i++)
-        for (const e of targets) {
-          this.hit(
-            e,
-            c.damage * 1.5 * (1 + p.attributes.efficiency * 0.05),
-            false,
+    const action = p.action;
+    if (action) {
+      action.age = Math.min(
+        petActionDuration(p.species, "attack"),
+        action.age + dt,
+      );
+      const phase = action.age / petActionDuration(p.species, "attack"),
+        travel = Math.sin(Math.PI * phase);
+      const x = action.originX + (action.targetX - action.originX) * travel,
+        y = action.originY + (action.targetY - action.originY) * travel;
+      this.moveEnemy(p, x - p.x, y - p.y);
+      p.direction = action.direction;
+      if (!action.hit && action.age + 1e-9 >= PET_ATTACK_HIT_AT) {
+        action.hit = true;
+        const targets = this.spatial
+          .query(p.x, p.y, 100)
+          .filter(
+            (e) =>
+              e.hp > 0 && dungeonSegmentClear(s.dungeon, p.x, p.y, e.x, e.y),
           );
-          if (p.species === "dog") {
-            const d = Math.hypot(e.x - p.x, e.y - p.y) || 1;
-            this.moveEnemy(e, ((e.x - p.x) / d) * 22, ((e.y - p.y) / d) * 22);
+        if (action.kind === "basic") {
+          const target = targets.find((e) => e.id === action.targetId);
+          if (target)
+            this.hit(
+              target,
+              c.damage *
+                (1 + this.bonus("pet-damage") + p.attributes.efficiency * 0.03),
+              false,
+            );
+        } else {
+          const multiplier = this.level("relentless-companion") ? 2 : 1;
+          for (const e of targets) {
+            this.hit(
+              e,
+              c.damage *
+                1.5 *
+                (1 + p.attributes.efficiency * 0.05) *
+                multiplier,
+              false,
+            );
+            if (p.species === "dog") {
+              const d = Math.hypot(e.x - p.x, e.y - p.y) || 1;
+              this.moveEnemy(
+                e,
+                ((e.x - p.x) / d) * 22 * multiplier,
+                ((e.y - p.y) / d) * 22 * multiplier,
+              );
+            }
           }
         }
-      p.special = c.specialCooldown / (1 + this.bonus("pet-cooldown"));
+      }
+      if (action.age + 1e-9 >= petActionDuration(p.species, "attack"))
+        delete p.action;
     }
-    for (const e of targets)
-      if (Math.hypot(e.x - p.x, e.y - p.y) < 18)
+    p.walking = Math.hypot(p.x - before.x, p.y - before.y) > 0.01;
+    if (!action && p.walking)
+      p.direction = petDirection(p.x - before.x, p.y - before.y);
+    for (const e of this.spatial.query(p.x, p.y, 18))
+      if (e.hp > 0 && Math.hypot(e.x - p.x, e.y - p.y) < 18)
         p.hp = Math.max(
           0,
           p.hp -
@@ -1149,7 +1255,10 @@ export class DungeonRun {
     for (let i = s.pickups.length - 1; i >= 0; i--) {
       const p = s.pickups[i],
         d = Math.hypot(p.x - s.player.x, p.y - s.player.y);
-      if ((p.kind === "xp" || p.kind === "level" && p.attracted) && (d < r || p.attracted)) {
+      if (
+        (p.kind === "xp" || (p.kind === "level" && p.attracted)) &&
+        (d < r || p.attracted)
+      ) {
         const speed = Math.min(d, (p.attracted ? B.magnetSpeed : 240) * dt);
         p.x += ((s.player.x - p.x) / (d || 1)) * speed;
         p.y += ((s.player.y - p.y) / (d || 1)) * speed;
@@ -1163,8 +1272,7 @@ export class DungeonRun {
         s.level++;
         s.cards = this.buildComplete ? [] : rollUpgradeCards(s, this.random);
         if (s.cards.length) s.phase = "choice";
-      }
-      else if (p.kind === "health")
+      } else if (p.kind === "health")
         s.player.hp = Math.min(this.maxHealth, s.player.hp + p.amount);
       else if (p.kind === "pet") {
         s.foundPet = p.species;
@@ -1221,8 +1329,13 @@ export class DungeonRun {
   }
   restore(snapshot: DungeonSnapshot): void {
     this.state = structuredClone(snapshot);
-    if (this.state.timedBossCount === undefined && DUNGEONS[this.state.dungeon].mode === "timed")
-      this.state.timedBossCount = TIMED_BOSS_SCHEDULE.filter(b => b.at < this.state.elapsed).length;
+    if (
+      this.state.timedBossCount === undefined &&
+      DUNGEONS[this.state.dungeon].mode === "timed"
+    )
+      this.state.timedBossCount = TIMED_BOSS_SCHEDULE.filter(
+        (b) => b.at < this.state.elapsed,
+      ).length;
     Object.assign(
       this.state.player,
       safeDungeonPoint(

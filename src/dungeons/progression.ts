@@ -1,3 +1,4 @@
+import { validWorldPetState, type WorldPetState } from "./world-pet-state";
 import { Inventory } from "../systems/inventory";
 import { ITEM_IDS } from "../data/items";
 import type { ItemId } from "../types";
@@ -22,6 +23,7 @@ export const PET_ATTRIBUTES = [
 ] as const;
 export type PetAttribute = (typeof PET_ATTRIBUTES)[number];
 export interface OwnedPet {
+  world?: WorldPetState;
   id: string;
   species: PetSpecies;
   rare: boolean;
@@ -99,6 +101,7 @@ export function validDungeonProgress(value: unknown): value is DungeonProgress {
       !["dog", "cat"].includes(p.species as string) ||
       typeof p.rare !== "boolean" ||
       !count(p.xp) ||
+      (p.world !== undefined && !validWorldPetState(p.world)) ||
       !record(p.attributes) ||
       !PET_ATTRIBUTES.every((a) =>
         count((p.attributes as Record<string, unknown>)[a], 20),
@@ -114,7 +117,8 @@ export function validDungeonProgress(value: unknown): value is DungeonProgress {
 }
 export function permanentUpgradeCost(rank: number, pet = false): number {
   if (!Number.isSafeInteger(rank) || rank < 0 || rank >= 20) return 0;
-  return pet ? 120 + rank * 50 + rank * rank * 8
+  return pet
+    ? 120 + rank * 50 + rank * rank * 8
     : 150 + rank * 60 + rank * rank * 10;
 }
 export function buyPermanentAttribute(
@@ -128,14 +132,16 @@ export function buyPermanentAttribute(
   if (pet) {
     if (!petKey || !PET_ATTRIBUTES.includes(petKey)) return false;
     const cost = permanentUpgradeCost(pet.attributes[petKey], true);
-    if (cost <= 0 || pet.attributes[petKey] >= 20 || pet.xp < cost) return false;
+    if (cost <= 0 || pet.attributes[petKey] >= 20 || pet.xp < cost)
+      return false;
     pet.xp -= cost;
     pet.attributes[petKey]++;
     return true;
   }
   if (!CHARACTER_ATTRIBUTES.includes(key)) return false;
   const cost = permanentUpgradeCost(progress.attributes[key]);
-  if (cost <= 0 || progress.attributes[key] >= 20 || progress.xp < cost) return false;
+  if (cost <= 0 || progress.attributes[key] >= 20 || progress.xp < cost)
+    return false;
   progress.xp -= cost;
   progress.attributes[key]++;
   return true;

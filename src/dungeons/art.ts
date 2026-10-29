@@ -2,7 +2,8 @@ import type Phaser from "phaser";
 import benches from "../../public/assets/visual/dungeons/benches.json";
 import urban from "../../public/assets/visual/dungeons/urban.json";
 import weapons from "../../public/assets/visual/dungeons/weapons-remake.json";
-import pets from "../../public/assets/visual/dungeons/pets.json";
+import petCat from "../../public/assets/visual/dungeons/pet-cat.json";
+import petDog from "../../public/assets/visual/dungeons/pet-dog.json";
 import courier from "../../public/assets/visual/dungeons/zombie-courier.json";
 import resident from "../../public/assets/visual/dungeons/zombie-resident.json";
 import demolisher from "../../public/assets/visual/dungeons/boss-demolisher.json";
@@ -12,7 +13,7 @@ import contaminated from "../../public/assets/visual/dungeons/boss-contaminated.
 import devourer from "../../public/assets/visual/dungeons/boss-devourer.json";
 import { setupVillagePropAtlas } from "../village-prop-atlas";
 export const DUNGEON_ART = {
-  urban, weapons, pets, benches,
+  urban, weapons, benches, "pet-cat": petCat, "pet-dog": petDog,
   "zombie-courier": courier, "zombie-resident": resident,
   "boss-demolisher": demolisher, "boss-sentinel": sentinel,
   "boss-chained": chained, "boss-contaminated": contaminated,
@@ -20,7 +21,7 @@ export const DUNGEON_ART = {
 };
 export function preloadDungeonArt(scene: Phaser.Scene): void {
   for (const [id, m] of Object.entries(DUNGEON_ART))
-    if (!scene.textures.exists("dungeon-" + id))
+    if (!scene.textures.exists("dungeon-" + id) && !scene.textures.exists("dungeon-" + id + "-source"))
       scene.load.image("dungeon-" + id + "-source", m.file);
 }
 export function setupDungeonArt(scene: Phaser.Scene): void {

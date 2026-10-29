@@ -1,3 +1,4 @@
+import {drawVillageNorthRoad} from "./village-north-road";
 import {VILLAGE_NORTH_GATE,VILLAGE_NORTH_ARRIVAL,villageNorthConnectionDistance} from './data/city-forest';
 import {drawVillageDressing} from './village-dressing';
 import {drawVillagePlaza} from './village-plaza';
@@ -126,12 +127,7 @@ export class VillageWorld {
  constructor(private readonly scene:Phaser.Scene,private readonly edits?:MapEditData,private readonly namespace='village'){
   const before=new Set(scene.children.list);setupVillageArt(scene);drawGround(scene,edits,namespace);
   setupVillageGreenery(scene);
-  // Only the short northern connection is added to the approved village.
-  const north=document.createElement('canvas');north.width=3072;north.height=520;const nc=north.getContext('2d')!;
-  const material=scene.textures.get('asset-ground-path-dry').getSourceImage() as HTMLCanvasElement;
-  nc.strokeStyle=nc.createPattern(material,'repeat')!;nc.lineWidth=48;nc.lineJoin='round';nc.beginPath();nc.moveTo(50.5*32,0);nc.lineTo(50.5*32,15.5*32);nc.lineTo(44.5*32,15.5*32);nc.lineTo(44.5*32,14.5*32);nc.stroke();
-  if(!scene.textures.exists('village-north-connection'))scene.textures.addCanvas('village-north-connection',north)?.setFilter(0);
-  scene.add.image(0,0,'village-north-connection').setOrigin(0).setDepth(-99);
+  drawVillageNorthRoad(scene,edits,namespace);
   drawExitSign(scene,VILLAGE_NORTH_GATE,VILLAGE_NORTH_ARRIVAL);
   this.drawLake();drawVillagePier(scene);this.drawTrees();drawVillageDefences(scene);this.drawBuildings();this.landmarks=drawVillageLandmarks(scene);drawVillagePlaza(scene);this.drawGardens();this.drawProps();drawVillageDressing(scene,this.edits);drawVillageTallGrass(scene,this.edits);
   drawExitSign(scene,this.exit(),this.entry());

@@ -1,0 +1,305 @@
+{
+  "group_id": "945bb8c9-16ae-4986-9ff2-40ed86a5ab23",
+  "states": [
+    {
+      "character": {
+        "id": "b809f1c4-47d5-4610-8419-1b401fb83ad4",
+        "name": "Idle",
+        "prompt": "make a siamese cat",
+        "size": {
+          "width": 80,
+          "height": 80
+        },
+        "template_id": "cat",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-10-29T18:28:05.067823+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {
+          "Seated_on_Belly_Idle": {
+            "north": [
+              "Idle/animations/Seated_on_Belly_Idle/north/frame_000.png",
+              "Idle/animations/Seated_on_Belly_Idle/north/frame_001.png",
+              "Idle/animations/Seated_on_Belly_Idle/north/frame_002.png",
+              "Idle/animations/Seated_on_Belly_Idle/north/frame_003.png",
+              "Idle/animations/Seated_on_Belly_Idle/north/frame_004.png",
+              "Idle/animations/Seated_on_Belly_Idle/north/frame_005.png",
+              "Idle/animations/Seated_on_Belly_Idle/north/frame_006.png",
+              "Idle/animations/Seated_on_Belly_Idle/north/frame_007.png",
+              "Idle/animations/Seated_on_Belly_Idle/north/frame_008.png",
+              "Idle/animations/Seated_on_Belly_Idle/north/frame_009.png"
+            ],
+            "west": [
+              "Idle/animations/Seated_on_Belly_Idle/west/frame_000.png",
+              "Idle/animations/Seated_on_Belly_Idle/west/frame_001.png",
+              "Idle/animations/Seated_on_Belly_Idle/west/frame_002.png",
+              "Idle/animations/Seated_on_Belly_Idle/west/frame_003.png",
+              "Idle/animations/Seated_on_Belly_Idle/west/frame_004.png",
+              "Idle/animations/Seated_on_Belly_Idle/west/frame_005.png",
+              "Idle/animations/Seated_on_Belly_Idle/west/frame_006.png",
+              "Idle/animations/Seated_on_Belly_Idle/west/frame_007.png",
+              "Idle/animations/Seated_on_Belly_Idle/west/frame_008.png",
+              "Idle/animations/Seated_on_Belly_Idle/west/frame_009.png"
+            ],
+            "east": [
+              "Idle/animations/Seated_on_Belly_Idle/east/frame_000.png",
+              "Idle/animations/Seated_on_Belly_Idle/east/frame_001.png",
+              "Idle/animations/Seated_on_Belly_Idle/east/frame_002.png",
+              "Idle/animations/Seated_on_Belly_Idle/east/frame_003.png",
+              "Idle/animations/Seated_on_Belly_Idle/east/frame_004.png",
+              "Idle/animations/Seated_on_Belly_Idle/east/frame_005.png",
+              "Idle/animations/Seated_on_Belly_Idle/east/frame_006.png",
+              "Idle/animations/Seated_on_Belly_Idle/east/frame_007.png",
+              "Idle/animations/Seated_on_Belly_Idle/east/frame_008.png",
+              "Idle/animations/Seated_on_Belly_Idle/east/frame_009.png"
+            ],
+            "south": [
+              "Idle/animations/Seated_on_Belly_Idle/south/frame_000.png",
+              "Idle/animations/Seated_on_Belly_Idle/south/frame_001.png",
+              "Idle/animations/Seated_on_Belly_Idle/south/frame_002.png",
+              "Idle/animations/Seated_on_Belly_Idle/south/frame_003.png",
+              "Idle/animations/Seated_on_Belly_Idle/south/frame_004.png",
+              "Idle/animations/Seated_on_Belly_Idle/south/frame_005.png",
+              "Idle/animations/Seated_on_Belly_Idle/south/frame_006.png",
+              "Idle/animations/Seated_on_Belly_Idle/south/frame_007.png",
+              "Idle/animations/Seated_on_Belly_Idle/south/frame_008.png",
+              "Idle/animations/Seated_on_Belly_Idle/south/frame_009.png"
+            ]
+          },
+          "Standing_from_Belly": {
+            "east": [
+              "Idle/animations/Standing_from_Belly/east/frame_000.png",
+              "Idle/animations/Standing_from_Belly/east/frame_001.png",
+              "Idle/animations/Standing_from_Belly/east/frame_002.png",
+              "Idle/animations/Standing_from_Belly/east/frame_003.png",
+              "Idle/animations/Standing_from_Belly/east/frame_004.png",
+              "Idle/animations/Standing_from_Belly/east/frame_005.png",
+              "Idle/animations/Standing_from_Belly/east/frame_006.png",
+              "Idle/animations/Standing_from_Belly/east/frame_007.png"
+            ],
+            "west": [
+              "Idle/animations/Standing_from_Belly/west/frame_000.png",
+              "Idle/animations/Standing_from_Belly/west/frame_001.png",
+              "Idle/animations/Standing_from_Belly/west/frame_002.png",
+              "Idle/animations/Standing_from_Belly/west/frame_003.png",
+              "Idle/animations/Standing_from_Belly/west/frame_004.png",
+              "Idle/animations/Standing_from_Belly/west/frame_005.png",
+              "Idle/animations/Standing_from_Belly/west/frame_006.png",
+              "Idle/animations/Standing_from_Belly/west/frame_007.png"
+            ],
+            "south": [
+              "Idle/animations/Standing_from_Belly/south/frame_000.png",
+              "Idle/animations/Standing_from_Belly/south/frame_001.png",
+              "Idle/animations/Standing_from_Belly/south/frame_002.png",
+              "Idle/animations/Standing_from_Belly/south/frame_003.png",
+              "Idle/animations/Standing_from_Belly/south/frame_004.png",
+              "Idle/animations/Standing_from_Belly/south/frame_005.png",
+              "Idle/animations/Standing_from_Belly/south/frame_006.png",
+              "Idle/animations/Standing_from_Belly/south/frame_007.png"
+            ],
+            "north": [
+              "Idle/animations/Standing_from_Belly/north/frame_000.png",
+              "Idle/animations/Standing_from_Belly/north/frame_001.png",
+              "Idle/animations/Standing_from_Belly/north/frame_002.png",
+              "Idle/animations/Standing_from_Belly/north/frame_003.png",
+              "Idle/animations/Standing_from_Belly/north/frame_004.png",
+              "Idle/animations/Standing_from_Belly/north/frame_005.png",
+              "Idle/animations/Standing_from_Belly/north/frame_006.png",
+              "Idle/animations/Standing_from_Belly/north/frame_007.png"
+            ]
+          },
+          "Run": {
+            "west": [
+              "Idle/animations/Run/west/frame_000.png",
+              "Idle/animations/Run/west/frame_001.png",
+              "Idle/animations/Run/west/frame_002.png",
+              "Idle/animations/Run/west/frame_003.png",
+              "Idle/animations/Run/west/frame_004.png",
+              "Idle/animations/Run/west/frame_005.png",
+              "Idle/animations/Run/west/frame_006.png",
+              "Idle/animations/Run/west/frame_007.png"
+            ],
+            "north": [
+              "Idle/animations/Run/north/frame_000.png",
+              "Idle/animations/Run/north/frame_001.png",
+              "Idle/animations/Run/north/frame_002.png",
+              "Idle/animations/Run/north/frame_003.png",
+              "Idle/animations/Run/north/frame_004.png",
+              "Idle/animations/Run/north/frame_005.png",
+              "Idle/animations/Run/north/frame_006.png",
+              "Idle/animations/Run/north/frame_007.png"
+            ],
+            "east": [
+              "Idle/animations/Run/east/frame_000.png",
+              "Idle/animations/Run/east/frame_001.png",
+              "Idle/animations/Run/east/frame_002.png",
+              "Idle/animations/Run/east/frame_003.png",
+              "Idle/animations/Run/east/frame_004.png",
+              "Idle/animations/Run/east/frame_005.png",
+              "Idle/animations/Run/east/frame_006.png",
+              "Idle/animations/Run/east/frame_007.png"
+            ],
+            "south": [
+              "Idle/animations/Run/south/frame_000.png",
+              "Idle/animations/Run/south/frame_001.png",
+              "Idle/animations/Run/south/frame_002.png",
+              "Idle/animations/Run/south/frame_003.png",
+              "Idle/animations/Run/south/frame_004.png",
+              "Idle/animations/Run/south/frame_005.png",
+              "Idle/animations/Run/south/frame_006.png",
+              "Idle/animations/Run/south/frame_007.png"
+            ]
+          },
+          "Sitting_on_Belly": {
+            "west": [
+              "Idle/animations/Sitting_on_Belly/west/frame_000.png",
+              "Idle/animations/Sitting_on_Belly/west/frame_001.png",
+              "Idle/animations/Sitting_on_Belly/west/frame_002.png",
+              "Idle/animations/Sitting_on_Belly/west/frame_003.png",
+              "Idle/animations/Sitting_on_Belly/west/frame_004.png",
+              "Idle/animations/Sitting_on_Belly/west/frame_005.png",
+              "Idle/animations/Sitting_on_Belly/west/frame_006.png",
+              "Idle/animations/Sitting_on_Belly/west/frame_007.png",
+              "Idle/animations/Sitting_on_Belly/west/frame_008.png",
+              "Idle/animations/Sitting_on_Belly/west/frame_009.png"
+            ],
+            "east": [
+              "Idle/animations/Sitting_on_Belly/east/frame_000.png",
+              "Idle/animations/Sitting_on_Belly/east/frame_001.png",
+              "Idle/animations/Sitting_on_Belly/east/frame_002.png",
+              "Idle/animations/Sitting_on_Belly/east/frame_003.png",
+              "Idle/animations/Sitting_on_Belly/east/frame_004.png",
+              "Idle/animations/Sitting_on_Belly/east/frame_005.png",
+              "Idle/animations/Sitting_on_Belly/east/frame_006.png",
+              "Idle/animations/Sitting_on_Belly/east/frame_007.png",
+              "Idle/animations/Sitting_on_Belly/east/frame_008.png",
+              "Idle/animations/Sitting_on_Belly/east/frame_009.png"
+            ],
+            "south": [
+              "Idle/animations/Sitting_on_Belly/south/frame_000.png",
+              "Idle/animations/Sitting_on_Belly/south/frame_001.png",
+              "Idle/animations/Sitting_on_Belly/south/frame_002.png",
+              "Idle/animations/Sitting_on_Belly/south/frame_003.png",
+              "Idle/animations/Sitting_on_Belly/south/frame_004.png",
+              "Idle/animations/Sitting_on_Belly/south/frame_005.png",
+              "Idle/animations/Sitting_on_Belly/south/frame_006.png",
+              "Idle/animations/Sitting_on_Belly/south/frame_007.png",
+              "Idle/animations/Sitting_on_Belly/south/frame_008.png",
+              "Idle/animations/Sitting_on_Belly/south/frame_009.png"
+            ],
+            "north": [
+              "Idle/animations/Sitting_on_Belly/north/frame_000.png",
+              "Idle/animations/Sitting_on_Belly/north/frame_001.png",
+              "Idle/animations/Sitting_on_Belly/north/frame_002.png",
+              "Idle/animations/Sitting_on_Belly/north/frame_003.png",
+              "Idle/animations/Sitting_on_Belly/north/frame_004.png",
+              "Idle/animations/Sitting_on_Belly/north/frame_005.png",
+              "Idle/animations/Sitting_on_Belly/north/frame_006.png",
+              "Idle/animations/Sitting_on_Belly/north/frame_007.png",
+              "Idle/animations/Sitting_on_Belly/north/frame_008.png",
+              "Idle/animations/Sitting_on_Belly/north/frame_009.png"
+            ]
+          },
+          "Jump": {
+            "east": [
+              "Idle/animations/Jump/east/frame_000.png",
+              "Idle/animations/Jump/east/frame_001.png",
+              "Idle/animations/Jump/east/frame_002.png",
+              "Idle/animations/Jump/east/frame_003.png",
+              "Idle/animations/Jump/east/frame_004.png",
+              "Idle/animations/Jump/east/frame_005.png",
+              "Idle/animations/Jump/east/frame_006.png",
+              "Idle/animations/Jump/east/frame_007.png"
+            ],
+            "south": [
+              "Idle/animations/Jump/south/frame_000.png",
+              "Idle/animations/Jump/south/frame_001.png",
+              "Idle/animations/Jump/south/frame_002.png",
+              "Idle/animations/Jump/south/frame_003.png",
+              "Idle/animations/Jump/south/frame_004.png",
+              "Idle/animations/Jump/south/frame_005.png",
+              "Idle/animations/Jump/south/frame_006.png",
+              "Idle/animations/Jump/south/frame_007.png"
+            ],
+            "west": [
+              "Idle/animations/Jump/west/frame_000.png",
+              "Idle/animations/Jump/west/frame_001.png",
+              "Idle/animations/Jump/west/frame_002.png",
+              "Idle/animations/Jump/west/frame_003.png",
+              "Idle/animations/Jump/west/frame_004.png",
+              "Idle/animations/Jump/west/frame_005.png",
+              "Idle/animations/Jump/west/frame_006.png",
+              "Idle/animations/Jump/west/frame_007.png"
+            ],
+            "north": [
+              "Idle/animations/Jump/north/frame_000.png",
+              "Idle/animations/Jump/north/frame_001.png",
+              "Idle/animations/Jump/north/frame_002.png",
+              "Idle/animations/Jump/north/frame_003.png",
+              "Idle/animations/Jump/north/frame_004.png",
+              "Idle/animations/Jump/north/frame_005.png",
+              "Idle/animations/Jump/north/frame_006.png",
+              "Idle/animations/Jump/north/frame_007.png"
+            ]
+          },
+          "Walk": {
+            "east": [
+              "Idle/animations/Walk/east/frame_000.png",
+              "Idle/animations/Walk/east/frame_001.png",
+              "Idle/animations/Walk/east/frame_002.png",
+              "Idle/animations/Walk/east/frame_003.png",
+              "Idle/animations/Walk/east/frame_004.png",
+              "Idle/animations/Walk/east/frame_005.png",
+              "Idle/animations/Walk/east/frame_006.png",
+              "Idle/animations/Walk/east/frame_007.png"
+            ],
+            "north": [
+              "Idle/animations/Walk/north/frame_000.png",
+              "Idle/animations/Walk/north/frame_001.png",
+              "Idle/animations/Walk/north/frame_002.png",
+              "Idle/animations/Walk/north/frame_003.png",
+              "Idle/animations/Walk/north/frame_004.png",
+              "Idle/animations/Walk/north/frame_005.png",
+              "Idle/animations/Walk/north/frame_006.png",
+              "Idle/animations/Walk/north/frame_007.png"
+            ],
+            "south": [
+              "Idle/animations/Walk/south/frame_000.png",
+              "Idle/animations/Walk/south/frame_001.png",
+              "Idle/animations/Walk/south/frame_002.png",
+              "Idle/animations/Walk/south/frame_003.png",
+              "Idle/animations/Walk/south/frame_004.png",
+              "Idle/animations/Walk/south/frame_005.png",
+              "Idle/animations/Walk/south/frame_006.png",
+              "Idle/animations/Walk/south/frame_007.png"
+            ],
+            "west": [
+              "Idle/animations/Walk/west/frame_000.png",
+              "Idle/animations/Walk/west/frame_001.png",
+              "Idle/animations/Walk/west/frame_002.png",
+              "Idle/animations/Walk/west/frame_003.png",
+              "Idle/animations/Walk/west/frame_004.png",
+              "Idle/animations/Walk/west/frame_005.png",
+              "Idle/animations/Walk/west/frame_006.png",
+              "Idle/animations/Walk/west/frame_007.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-29T23:06:01.745772"
+}

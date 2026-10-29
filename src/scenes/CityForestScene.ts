@@ -1,5 +1,5 @@
-import {WorldCompanion} from '../dungeons/world-companion';
-import {DUNGEON_ART} from '../dungeons/art';
+import {preloadPetArt} from "../dungeons/pet-sprites";
+import {installWorldCompanion,getWorldPetController} from "../dungeons/world-pet-controller";
 import {Farming} from '../systems/farming';
 import {gameAudio} from '../audio';
 import {emptyQuickbar} from '../systems/quickbar';
@@ -22,7 +22,7 @@ export class CityForestScene extends Phaser.Scene{
  private ui!:GameUI;
  private onReturn!:CityForestStart['onReturn'];
  private player!:Player;
- private companion?:WorldCompanion;
+ get companion(){return getWorldPetController(this)?.companion;}
  private world!:CityForestWorld;
  private farming!:Farming;
  private daylight!:Daylight;
@@ -34,7 +34,7 @@ export class CityForestScene extends Phaser.Scene{
  private lastWheelZoomAt=0;
  private readonly passage=new MapExitPassage();
  constructor(){super('AcessoCidade');}
- preload():void{preloadCityForest(this);const data=this.sys.settings.data as CityForestStart;if(data.save?.dungeons?.selectedPet&&!this.textures.exists('dungeon-pets'))this.load.image('dungeon-pets-source',DUNGEON_ART.pets.file);}
+ preload():void{preloadCityForest(this);preloadPetArt(this);}
  create(data:CityForestStart):void{
   this.state=structuredClone(data.save);this.state.activeArea='cityForest';delete this.state.homePosition;delete this.state.merchantInterior;delete this.state.blacksmithInterior;
   this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
@@ -43,8 +43,6 @@ export class CityForestScene extends Phaser.Scene{
   const p=this.state.cityForestPosition,valid=p&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!cityForestBlockedPoint(p.x+dx,p.y+dy));
   this.player=new Player(this,this.state.profile,valid?p.x:(CITY_FOREST_ENTRY.x+.5)*32,valid?p.y:(CITY_FOREST_ENTRY.y+.5)*32,'city-forest-player');
   this.player.facing=directionVector(valid?p.direction??'up':'up');this.player.update(0,cityForestBlockedTile,cityForestBlockedPoint,false);
-  this.companion?.destroy();this.companion=undefined;
-  if(this.state.dungeons?.pets.some(p=>p.id===this.state.dungeons?.selectedPet))this.companion=new WorldCompanion(this,this.state,this.player,text=>this.ui.toast(text));
   this.zoom=loadCameraZoom();this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time);
   this.cameras.main.setBounds(0,0,3072,2304);this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
   document.querySelector<HTMLElement>('#ui')!.style.display='';this.ui.showHUD('cityForest');this.ui.setQuickbar(this.state.quickbar??emptyQuickbar());this.updateHUD();
@@ -52,7 +50,26 @@ export class CityForestScene extends Phaser.Scene{
   if(mouse)mouse.preventDefaultWheel=false;
   this.input.keyboard!.on('keydown',this.key,this);this.game.canvas.addEventListener('wheel',this.wheel,{passive:false});this.scale.on('resize',this.applyCamera,this);
   window.addEventListener('pagehide',this.save);window.addEventListener('beforeunload',this.save);window.addEventListener('blur',this.blur);document.addEventListener('visibilitychange',this.visibility);
-  this.events.once('shutdown',()=>{if(mouse&&previousWheelDefault!==undefined)mouse.preventDefaultWheel=previousWheelDefault;this.companion?.destroy();this.companion=undefined;this.daylight.destroy();this.world.destroy();this.input.keyboard?.off('keydown',this.key,this);this.game.canvas.removeEventListener('wheel',this.wheel);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
+  this.events.once('shutdown',()=>{if(mouse&&previousWheelDefault!==undefined)mouse.preventDefaultWheel=previousWheelDefault;this.daylight.destroy();this.world.destroy();this.input.keyboard?.off('keydown',this.key,this);this.game.canvas.removeEventListener('wheel',this.wheel);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
+  installWorldCompanion(
+    this,
+    () => ({
+      save: this.state,
+      player: this.player,
+      area: "cityForest",
+      space: "outdoors",
+      blockedPoint: cityForestBlockedPoint,
+      forage: true,
+      enabled: true,
+      canMove:
+        !this.paused &&
+        !this.leaving &&
+        !this.ui.isModalOpen() &&
+        !document.hidden,
+    }),
+    this.ui,
+    () => this.persist(),
+  );
   if(this.state.dungeonRun)this.enterDungeons();else this.persist();
  }
  private nearCity():boolean{return Math.hypot(this.player.x/32-CITY_ACCESS.x,this.player.y/32-CITY_ACCESS.y)<3;}
@@ -118,7 +135,6 @@ export class CityForestScene extends Phaser.Scene{
   const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.update(dt,cityForestBlockedTile,cityForestBlockedPoint);
   if(this.passage.update(before,this.player,CITY_FOREST_EXIT,CITY_FOREST_ENTRY)){this.leave();return;}
   if(Math.hypot(this.player.x-before.x,this.player.y-before.y)>.1)gameAudio.play('step');
-  this.companion?.update(dt,this.player);
   this.farming.update(dt);
   Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));
   for(const tree of this.world.trees)tree.setAlpha(this.player.y<tree.y&&Math.abs(this.player.x-tree.x)<65&&this.player.y>tree.y-170?.45:1);

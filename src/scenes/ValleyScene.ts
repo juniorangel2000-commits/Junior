@@ -1,3 +1,5 @@
+import {preloadPetArt} from "../dungeons/pet-sprites";
+import {installWorldCompanion} from "../dungeons/world-pet-controller";
 import {naturalPlantGround} from '../systems/tree-avoidance';
 import {VillageNpcOverlays} from '../village-npc-overlays';
 import {notifyReadyOrders} from '../systems/economy';
@@ -137,7 +139,7 @@ export class ValleyScene extends Phaser.Scene {
 
   constructor() { super('Vale'); }
 
-  preload(): void { preloadVisualAssets(this); }
+  preload(): void { preloadVisualAssets(this); preloadPetArt(this); }
 
   create(): void {
     createArt(this);
@@ -156,6 +158,21 @@ export class ValleyScene extends Phaser.Scene {
     });
     this.loadState(createNewSave(DEFAULT_PROFILE));
     this.ui.showTitle(hasSave());
+    installWorldCompanion(
+      this,
+      () => ({
+        save: this.state,
+        player: this.player,
+        area: "property",
+        space: this.inHome ? "home" : "outdoors",
+        blockedPoint: (x, y) =>
+          this.movementBlockedPoint(x, y) || this.swimmingPoint(x, y) > 0,
+        enabled: this.running && !this.forestActive && !this.villageActive,
+        canMove: this.canPlay(),
+      }),
+      this.ui,
+      () => this.persist(),
+    );
     window.addEventListener('keydown', this.handleKey);
     window.addEventListener('keyup', this.handleKeyUp);
     window.addEventListener('pagehide', this.handlePageHide);

@@ -1,3 +1,4 @@
+import { validPetAttack } from "./pet-combat";
 import type { DungeonSnapshot } from "./run";
 import { UPGRADES } from "./upgrades";
 import { DUNGEON_BALANCE as B, WEAPONS } from "./config";
@@ -92,7 +93,10 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
         !finite(e.speed, 1, 1000) ||
         !finite(e.damage, 0, 1000) ||
         !["walker", "runner", "brute", "boss"].includes(e.kind as string) ||
-        (e.bossTier !== undefined && (e.kind !== "boss" || ![10,20,30,40,50].includes(Number(e.bossTier)) || typeof e.bossTier !== "number")) ||
+        (e.bossTier !== undefined &&
+          (e.kind !== "boss" ||
+            ![10, 20, 30, 40, 50].includes(Number(e.bossTier)) ||
+            typeof e.bossTier !== "number")) ||
         typeof e.special !== "boolean" ||
         !count(e.streak, 1e6) ||
         !finite(e.lastHit, 0, 1e9) ||
@@ -148,7 +152,9 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
         ].includes(p.kind as string) ||
         !finite(p.amount, 0, 100000) ||
         (p.kind === "level" && p.amount !== 1) ||
-        (p.xpTier !== undefined && (p.kind !== "xp" || !["normal","elite","boss"].includes(p.xpTier as string))) ||
+        (p.xpTier !== undefined &&
+          (p.kind !== "xp" ||
+            !["normal", "elite", "boss"].includes(p.xpTier as string))) ||
         (p.attracted !== undefined && typeof p.attracted !== "boolean") ||
         (p.species !== undefined &&
           !["dog", "cat"].includes(p.species as string)),
@@ -172,6 +178,10 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
       !rec(p) ||
       typeof p.id !== "string" ||
       typeof p.rare !== "boolean" ||
+      (p.action !== undefined && !validPetAttack(p.action)) ||
+      (p.direction !== undefined &&
+        !["south", "west", "east", "north"].includes(String(p.direction))) ||
+      (p.walking !== undefined && typeof p.walking !== "boolean") ||
       !["dog", "cat"].includes(p.species as string) ||
       !["hp", "maxHp", "attack", "special", "rest"].every((k) =>
         finite(p[k], 0, 10000),
@@ -215,11 +225,12 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
     return false;
   if (
     value.lastHealthDropAt !== undefined &&
-    (!finite(value.lastHealthDropAt, 0, 1e9) || Number(value.lastHealthDropAt) > Number(value.elapsed))
-  ) return false;
-  if (
-    value.timedBossCount !== undefined && !count(value.timedBossCount, 5)
-  ) return false;
+    (!finite(value.lastHealthDropAt, 0, 1e9) ||
+      Number(value.lastHealthDropAt) > Number(value.elapsed))
+  )
+    return false;
+  if (value.timedBossCount !== undefined && !count(value.timedBossCount, 5))
+    return false;
   if (
     value.bossRound !== undefined &&
     (!count(value.bossRound, 50) ||
@@ -266,9 +277,14 @@ function validBossCombat(value: unknown): boolean {
     return false;
   if (value.action === undefined) return true;
   const a = value.action;
-  return rec(a) && point(a) &&
+  return (
+    rec(a) &&
+    point(a) &&
     ["slam", "charge", "chains", "plague"].includes(a.kind as string) &&
     ["warning", "active", "recovery"].includes(a.stage as string) &&
-    finite(a.remaining, 0, 4) && finite(a.angle, -Math.PI, Math.PI) &&
-    finite(a.distance, 0, 260) && typeof a.hit === "boolean";
+    finite(a.remaining, 0, 4) &&
+    finite(a.angle, -Math.PI, Math.PI) &&
+    finite(a.distance, 0, 260) &&
+    typeof a.hit === "boolean"
+  );
 }

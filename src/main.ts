@@ -1,3 +1,4 @@
+import {getWorldPetController} from "./dungeons/world-pet-controller";
 import {DungeonScene} from './scenes/DungeonScene';
 import {CityForestScene} from './scenes/CityForestScene';
 import {MapEditorScene} from './scenes/MapEditorScene';
@@ -31,6 +32,7 @@ const ui = new GameUI({
   onMainMenu: () => {const forest=activeForest();if(forest)forest.mainMenu();else scene.mainMenu();},
   onAdminMenu: () => {if(activeForest())ui.toast('A administração fica disponível na propriedade.');else scene.openAdminMenu();},
   onMapEditor: () => {const forest=activeForest();if(forest)forest.openMapEditor();else scene.openMapEditor();},
+  onCompanions: () => { const current=activeForest()??scene;getWorldPetController(current)?.openMenu(); },
   onZoom: direction => {const forest=activeForest();if(forest)forest.changeCameraZoom(direction);else scene.changeCameraZoom(direction);},
 });
 scene.ui = ui;

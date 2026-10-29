@@ -1,3 +1,4 @@
+import { petMenuHTML, type PetMenuView, type PetCommand } from "./dungeons/pet-menu";
 import {inspectSave} from './systems/save';
 import {inventoryCapacity} from './systems/inventory';
 import {USABLE_VILLAGE_ITEMS} from './systems/consumables';
@@ -48,6 +49,7 @@ interface UICallbacks {
   onTitleBackground(mode: TitleBackgroundMode): void;
   onAdminMenu(): void;
   onMapEditor(): void;
+  onCompanions?(): void;
   onZoom(direction: -1 | 0 | 1): void;
 }
 
@@ -131,7 +133,7 @@ export class GameUI {
   private overlay = document.createElement('div');
   private notifications = document.createElement('div');
   private mode: 'title' | 'creation' | 'hud' = 'title';
-  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | null = null;
+  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'pets' | null = null;
   private focusBeforeModal?: HTMLElement;
   private onModalClose?: () => void;
   private existingSave = false;
@@ -422,6 +424,49 @@ export class GameUI {
 
   dismissTopToolbar(): boolean { return this.topToolbar?.dismiss() ?? false; }
 
+  showCompanions(
+    view: () => PetMenuView,
+    command: (command: PetCommand) => boolean,
+  ): void {
+    this.openModal("pets");
+    const render = () => {
+      const focused =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement.dataset.petCommand
+          : undefined;
+      this.overlay.innerHTML = petMenuHTML(view());
+      this.overlay.querySelector<HTMLButtonElement>(
+        "[data-pet-close]",
+      )!.onclick = () => this.closeModal();
+      this.overlay
+        .querySelectorAll<HTMLButtonElement>("[data-pet-select]")
+        .forEach((button) => {
+          button.onclick = () => {
+            command({
+              kind: "select",
+              id: button.dataset.petSelect || undefined,
+            });
+            render();
+          };
+        });
+      this.overlay
+        .querySelectorAll<HTMLButtonElement>("[data-pet-command]")
+        .forEach((button) => {
+          button.onclick = () => {
+            command({
+              kind: button.dataset.petCommand as "follow" | "stay" | "recall",
+            });
+            render();
+          };
+        });
+      if (focused)
+        this.overlay
+          .querySelector<HTMLButtonElement>(`[data-pet-command="${focused}"]`)
+          ?.focus();
+    };
+    render();
+    this.overlay.querySelector<HTMLButtonElement>("[data-pet-close]")?.focus();
+  }
   private handleToolbarAction(action: ToolbarAction): void {
     if (this.mode !== 'hud' || this.modal) return;
     if (action === 'save') {
@@ -435,6 +480,7 @@ export class GameUI {
       this.overlay.querySelector('button')!.onclick = () => this.closeModal();
       this.overlay.querySelector('button')!.focus();
     }
+    else if (action === 'pets') this.callbacks.onCompanions?.();
     else if (action === 'audio') this.toggleAudio();
     else if (action === 'graphics') this.toggleGraphics();
     else if (action === 'options') this.togglePause();
@@ -962,7 +1008,7 @@ export class GameUI {
     callback?.();
   }
 
-  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics'): void {
+  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'pets'): void {
     this.topToolbar?.setOpen(false, false);
     this.topToolbar?.setEnabled(false);
     this.focusBeforeModal = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;

@@ -1,3 +1,4 @@
+import { petSpritePose } from "../dungeons/pet-sprites";
 import Phaser from "phaser";
 import type { SaveData, Tool, ItemId } from "../types";
 import type { GameUI } from "../ui";
@@ -642,46 +643,44 @@ export class DungeonScene extends Phaser.Scene {
     }
     const rescue = s.pickups.find((q) => q.kind === "pet");
     if (rescue?.species) {
+      const pose = petSpritePose(rescue.species, "idle", "south", s.elapsed);
       this.rescueImage ??= this.add
-        .image(rescue.x, rescue.y, "dungeon-pets", rescue.species + "-south-0")
-        .setOrigin(0.5, 1)
+        .image(rescue.x, rescue.y, pose.texture, pose.frame)
         .setData("dungeon-rescue-pet", true);
       this.rescueImage
         .setVisible(true)
-        .setTexture("dungeon-pets", rescue.species + "-south-0")
+        .setTexture(pose.texture, pose.frame)
+        .setOrigin(pose.originX, pose.originY)
+        .setScale(pose.scale)
         .setPosition(rescue.x, rescue.y)
-        .setScale(rescue.species === "dog" ? 0.12 : 0.09)
         .setDepth(rescue.y);
     } else this.rescueImage?.setVisible(false);
     this.petImage?.setVisible(!!s.pet);
     if (s.pet) {
-      this.petImage ??= this.add.image(
-        s.pet.x,
-        s.pet.y,
-        "dungeon-pets",
-        "dog-south-0",
-      );
-      const dx = p.x - s.pet.x,
-        dy = p.y - s.pet.y,
-        dir =
-          Math.abs(dx) > Math.abs(dy)
-            ? dx < 0
-              ? "west"
-              : "east"
-            : dy < 0
-              ? "north"
-              : "south";
+      const pet = s.pet,
+        pose = petSpritePose(
+          pet.species,
+          pet.action
+            ? "attack"
+            : pet.hp <= 0
+              ? "rest"
+              : pet.walking
+                ? "run"
+                : "idle",
+          pet.action?.direction ?? pet.direction ?? "south",
+          pet.action?.age ?? s.elapsed,
+          !pet.action,
+        );
+      this.petImage ??= this.add.image(pet.x, pet.y, pose.texture, pose.frame);
       this.petImage
-        .setTexture(
-          "dungeon-pets",
-          `${s.pet.species}-${dir}-${Math.floor(s.elapsed * 5) % 2}`,
-        )
-        .setScale(s.pet.species === "dog" ? 0.12 : 0.09)
-        .setOrigin(0.5, 1)
-        .setPosition(s.pet.x, s.pet.y)
-        .setDepth(s.pet.y)
-        .setAlpha(s.pet.hp > 0 ? 1 : 0.45);
-      if (s.pet.rare) this.petImage.setTint(0xc5ba9b);
+        .setVisible(true)
+        .setTexture(pose.texture, pose.frame)
+        .setOrigin(pose.originX, pose.originY)
+        .setScale(pose.scale)
+        .setPosition(pet.x, pet.y)
+        .setDepth(pet.y)
+        .setAlpha(pet.hp > 0 ? 1 : 0.45);
+      if (pet.rare) this.petImage.setTint(0xc5ba9b);
       else this.petImage.clearTint();
     }
     this.player!.sprite.setAlpha(s.player.invulnerable > 0 ? 0.65 : 1);

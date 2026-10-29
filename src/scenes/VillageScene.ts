@@ -1,3 +1,5 @@
+import {preloadPetArt} from "../dungeons/pet-sprites";
+import {installWorldCompanion} from "../dungeons/world-pet-controller";
 import {VILLAGE_NORTH_GATE,VILLAGE_NORTH_ARRIVAL} from '../data/city-forest';
 import {villageIdleDirection} from '../data/village-ambient';
 import {ICARO_WALK_FRAMES,ICARO_DISPLAY,ICARO_ORIGIN_Y} from '../icaro-sprites';
@@ -97,6 +99,7 @@ export class VillageScene extends Phaser.Scene {
  private readonly exitPassage=new MapExitPassage();
  private readonly northPassage=new MapExitPassage();
  constructor(){super('Vila');}
+ preload():void{preloadPetArt(this);}
 
  create(data:VillageStart):void {
   this.state=structuredClone(data.save);this.state.activeArea='village';delete this.state.homePosition;
@@ -146,6 +149,33 @@ export class VillageScene extends Phaser.Scene {
    this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);
    window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);
   });
+
+  installWorldCompanion(
+    this,
+    () => ({
+      save: this.state,
+      player: this.player,
+      area: "village",
+      space: this.inBlacksmith
+        ? "blacksmith"
+        : this.merchantRoom
+          ? "shop:" + this.merchantRoom
+          : "outdoors",
+      blockedPoint: (x, y) =>
+        this.blockedPoint(x, y) ||
+        (!this.inShop && this.world.waterPointAt(x, y)),
+      enabled: true,
+      canMove:
+        !this.paused &&
+        !this.leaving &&
+        !this.changingRoom &&
+        !this.shop?.isOpen &&
+        !this.ui.isModalOpen() &&
+        !document.hidden,
+    }),
+    this.ui,
+    () => this.persist(),
+  );
   if(data.resumeCityForest)this.enterCityForest(true);else this.persist();
  }
  private canTrade(id:ResidentId):boolean {

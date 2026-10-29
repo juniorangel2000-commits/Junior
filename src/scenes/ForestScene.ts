@@ -1,3 +1,5 @@
+import {preloadPetArt} from "../dungeons/pet-sprites";
+import {installWorldCompanion} from "../dungeons/world-pet-controller";
 import {naturalPlantGround} from '../systems/tree-avoidance';
 import {treeGroundClear} from '../systems/tree-ground';
 import {toolCondition,spendDurability,toolWork,notifyReadyOrders} from '../systems/economy';
@@ -68,6 +70,7 @@ export class ForestScene extends Phaser.Scene {
   private entry(){return this.edits?.points?.entry??FOREST_ENTRY;}
   private exit(){return this.edits?.points?.exit??{x:48,y:69};}
   constructor(){super('Floresta');}
+  preload():void{preloadPetArt(this);}
 
   create(data:ForestStart):void {
     this.exitPassage.reset();this.exitWarningShown=false;
@@ -91,6 +94,27 @@ export class ForestScene extends Phaser.Scene {
     window.addEventListener('pagehide',this.save);window.addEventListener('beforeunload',this.save);window.addEventListener('blur',this.blur);
     document.addEventListener('visibilitychange',this.visibility);
     this.events.once('shutdown',()=>{this.daylight?.destroy();this.wildlife?.destroy();this.wildlife=undefined;this.input.keyboard?.off('keydown',this.key,this);this.input.off('wheel',this.wheel,this);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
+    installWorldCompanion(
+      this,
+      () => ({
+        save: this.state,
+        player: this.player,
+        area: "forest",
+        space: "outdoors",
+        blockedPoint: (x, y) =>
+          this.movementBlockedAt(Math.floor(x / 32), Math.floor(y / 32)) ||
+          this.world.waterPointAt(x, y),
+        enabled: true,
+        canMove:
+          !this.paused &&
+          !this.leaving &&
+          !this.mapEditor &&
+          !this.ui.isModalOpen() &&
+          !document.hidden,
+      }),
+      this.ui,
+      () => this.persist(),
+    );
     this.save();
   }
   openMapEditor():void {
