@@ -3,8 +3,11 @@ import { bossSpritePose, type BossDirection } from "../src/dungeons/boss-sprites
 import demolisher from "../public/assets/visual/dungeons/boss-demolisher.json";
 import sentinel from "../public/assets/visual/dungeons/boss-sentinel.json";
 
+import chained from "../public/assets/visual/dungeons/boss-chained.json";
+import contaminated from "../public/assets/visual/dungeons/boss-contaminated.json";
+
 const directions: BossDirection[] = ["south", "west", "east", "north"];
-describe.each([["demolisher", demolisher], ["sentinel", sentinel]] as const)("supplied %s animation", (art, manifest) => {
+describe.each([["demolisher", demolisher], ["sentinel", sentinel], ["chained", chained], ["contaminated", contaminated]] as const)("supplied %s animation", (art, manifest) => {
   it.each(directions)("plays four walk frames and a separate stationary pose facing %s", direction => {
     const walking = [0, 0.2, 0.4, 0.6].map(t => bossSpritePose(art, direction, t, false));
     expect(new Set(walking.map(p => p.frame)).size).toBe(4);
@@ -31,7 +34,7 @@ describe.each([["demolisher", demolisher], ["sentinel", sentinel]] as const)("su
   });
 });
 it("keeps the other bosses' existing sprite presentation", () => {
-    for (const art of ["chained", "contaminated", "devourer"]) {
+    for (const art of ["devourer"]) {
       expect(bossSpritePose(art, "west", 0.4, false)).toEqual({frame: "west-2", originX: 0.5, originY: 1, referenceHeight: undefined});
     }
   });

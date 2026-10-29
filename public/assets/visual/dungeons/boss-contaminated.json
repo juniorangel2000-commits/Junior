@@ -1,103 +1,237 @@
 {
   "file": "assets/visual/dungeons/boss-contaminated.png",
-  "sha256": "3cfc7d614a08ad444aa955b8065d8acdff8742ad33471bb3a6f1ceb9c2382479",
+  "sha256": "c482c1b6ded21f7b8649c94a55f509e15c35ac71ee6893792f78774d1ed0b10d",
   "alphaCutoff": 160,
   "frames": {
     "south-0": {
-      "x": 60,
-      "y": 34,
-      "width": 215,
-      "height": 272
+      "x": 0,
+      "y": 0,
+      "width": 256,
+      "height": 256
     },
     "south-1": {
-      "x": 371,
-      "y": 34,
-      "width": 209,
-      "height": 272
+      "x": 256,
+      "y": 0,
+      "width": 256,
+      "height": 256
     },
     "south-2": {
-      "x": 685,
-      "y": 33,
-      "width": 214,
-      "height": 273
+      "x": 512,
+      "y": 0,
+      "width": 256,
+      "height": 256
     },
     "south-3": {
-      "x": 998,
-      "y": 34,
-      "width": 209,
-      "height": 272
+      "x": 768,
+      "y": 0,
+      "width": 256,
+      "height": 256
     },
     "west-0": {
-      "x": 67,
-      "y": 336,
-      "width": 213,
-      "height": 276
+      "x": 0,
+      "y": 256,
+      "width": 256,
+      "height": 256
     },
     "west-1": {
-      "x": 382,
-      "y": 336,
-      "width": 210,
-      "height": 276
+      "x": 256,
+      "y": 256,
+      "width": 256,
+      "height": 256
     },
     "west-2": {
-      "x": 695,
-      "y": 336,
-      "width": 217,
-      "height": 276
+      "x": 512,
+      "y": 256,
+      "width": 256,
+      "height": 256
     },
     "west-3": {
-      "x": 1011,
-      "y": 338,
-      "width": 211,
-      "height": 274
+      "x": 768,
+      "y": 256,
+      "width": 256,
+      "height": 256
     },
     "east-0": {
-      "x": 40,
-      "y": 640,
-      "width": 217,
-      "height": 278
+      "x": 0,
+      "y": 512,
+      "width": 256,
+      "height": 256
     },
     "east-1": {
-      "x": 355,
-      "y": 644,
-      "width": 216,
-      "height": 274
+      "x": 256,
+      "y": 512,
+      "width": 256,
+      "height": 256
     },
     "east-2": {
-      "x": 660,
-      "y": 642,
-      "width": 224,
-      "height": 281
+      "x": 512,
+      "y": 512,
+      "width": 256,
+      "height": 256
     },
     "east-3": {
-      "x": 982,
-      "y": 644,
-      "width": 216,
-      "height": 274
+      "x": 768,
+      "y": 512,
+      "width": 256,
+      "height": 256
     },
     "north-0": {
-      "x": 50,
-      "y": 941,
-      "width": 217,
-      "height": 276
+      "x": 0,
+      "y": 768,
+      "width": 256,
+      "height": 256
     },
     "north-1": {
-      "x": 362,
-      "y": 941,
-      "width": 218,
-      "height": 276
+      "x": 256,
+      "y": 768,
+      "width": 256,
+      "height": 256
     },
     "north-2": {
-      "x": 681,
-      "y": 941,
-      "width": 214,
-      "height": 276
+      "x": 512,
+      "y": 768,
+      "width": 256,
+      "height": 256
     },
     "north-3": {
-      "x": 989,
-      "y": 941,
-      "width": 218,
-      "height": 276
+      "x": 768,
+      "y": 768,
+      "width": 256,
+      "height": 256
+    },
+    "idle-south": {
+      "x": 0,
+      "y": 1024,
+      "width": 256,
+      "height": 256
+    },
+    "idle-west": {
+      "x": 256,
+      "y": 1024,
+      "width": 256,
+      "height": 256
+    },
+    "idle-east": {
+      "x": 512,
+      "y": 1024,
+      "width": 256,
+      "height": 256
+    },
+    "idle-north": {
+      "x": 768,
+      "y": 1024,
+      "width": 256,
+      "height": 256
+    }
+  },
+  "animation": {
+    "walkFrames": 4,
+    "frameRate": 5,
+    "referenceHeight": 184,
+    "canvasSize": 256,
+    "pivots": {
+      "south": {
+        "x": 128,
+        "y": 235
+      },
+      "west": {
+        "x": 128,
+        "y": 238
+      },
+      "east": {
+        "x": 128,
+        "y": 238
+      },
+      "north": {
+        "x": 128,
+        "y": 231
+      }
+    }
+  },
+  "sourceArchive": {
+    "file": "docs/dungeons/animacoes-contaminado/contaminado-original.zip",
+    "sha256": "18033c042b64f908cd0e53992d2b591e10238a4b7f7eeaaae85134d2235d6980"
+  },
+  "sources": {
+    "south-0": {
+      "file": "Idle/animations/Walking/south/frame_000.png",
+      "sha256": "d0a265bc5e29284b4996e876a366af40be11d2d54db979ccf5f5184f14661169"
+    },
+    "south-1": {
+      "file": "Idle/animations/Walking/south/frame_001.png",
+      "sha256": "2b1cfe8d911d0b48f70e2e31284500962ac6d4efb3af140c317eccd27d368f06"
+    },
+    "south-2": {
+      "file": "Idle/animations/Walking/south/frame_002.png",
+      "sha256": "e8ec4ccca7f865b09411b2acb297c457168e590fd0fb70bf5faa42bf15386bf3"
+    },
+    "south-3": {
+      "file": "Idle/animations/Walking/south/frame_003.png",
+      "sha256": "f909fbe4014964b4480e357deb3430d1de7b4ebd0b82cd3d1efa9d8587798234"
+    },
+    "west-0": {
+      "file": "Idle/animations/Walking/west/frame_000.png",
+      "sha256": "d8276146f92e3f42f1dea1dbd6da04f4954d186428ead0063fa4b6b54e5072e6"
+    },
+    "west-1": {
+      "file": "Idle/animations/Walking/west/frame_001.png",
+      "sha256": "d0d2f2b52db507ddd9a8b0585a944be25d6c76e273bf5db6e27319403cc70d27"
+    },
+    "west-2": {
+      "file": "Idle/animations/Walking/west/frame_002.png",
+      "sha256": "ee509be836fc7f45643fe68ccf3b935be9699020a4d06e264ccb4952c93c9cd9"
+    },
+    "west-3": {
+      "file": "Idle/animations/Walking/west/frame_003.png",
+      "sha256": "03beaf5c99c6c3507ba9b001965c027dd7eab114da76cec578eff99095f716a4"
+    },
+    "east-0": {
+      "file": "Idle/animations/Walking/east/frame_000.png",
+      "sha256": "ea7b3e9e2029da38ef918ab54b2efd04b0a7ff5dcd59903f5539e7ed02d7b08b"
+    },
+    "east-1": {
+      "file": "Idle/animations/Walking/east/frame_001.png",
+      "sha256": "07dbe6a0447a2fe90ed02f70b61dadf436632bad67c163d0b2f94a5e9cfb9447"
+    },
+    "east-2": {
+      "file": "Idle/animations/Walking/east/frame_002.png",
+      "sha256": "c0088bee7c45bba5991013427908009372358b43a8b70f8815ed1dd261c59eeb"
+    },
+    "east-3": {
+      "file": "Idle/animations/Walking/east/frame_003.png",
+      "sha256": "0414fcfd4fd72d859a6c8d661047e7b3092ea4744569269f678d4cda58e18693"
+    },
+    "north-0": {
+      "file": "Idle/animations/Walking/north/frame_000.png",
+      "sha256": "ec4bde3baf6eafebf8a7e9c2f862461724c9456003c42a0775e305d8ebaf1212"
+    },
+    "north-1": {
+      "file": "Idle/animations/Walking/north/frame_001.png",
+      "sha256": "ca9fb2b7bda0e3a8411994b7f249e54c40a9b0bf1b001c7d9fc230b87415e6d3"
+    },
+    "north-2": {
+      "file": "Idle/animations/Walking/north/frame_002.png",
+      "sha256": "7a0cfee207d3fe9fda63130ceee85e31cb97885a511febb54811567db24b95fb"
+    },
+    "north-3": {
+      "file": "Idle/animations/Walking/north/frame_003.png",
+      "sha256": "f08c38b6ab2bcb890d0403dbe0c4ea4509eb27bc428456d2a891f2f9d13059a5"
+    },
+    "idle-south": {
+      "file": "Idle/rotations/south.png",
+      "sha256": "e90f96b9a6a2c09b5f5b508e9bd5565edc5aef748a7aa5c2d6bc8a39e641d432"
+    },
+    "idle-west": {
+      "file": "Idle/rotations/west.png",
+      "sha256": "dadcdd2d876acc9d120a5d88a20d7ca51ad2f08094e047f6d47b1a67584fbaca"
+    },
+    "idle-east": {
+      "file": "Idle/rotations/east.png",
+      "sha256": "6418ccac8d788055d3f6a07080f03e1d3868a85a5ef2c5382cfe151758bf18a0"
+    },
+    "idle-north": {
+      "file": "Idle/rotations/north.png",
+      "sha256": "fe6ef4e87218be995972f2e9d1cd921bef6922e813aed1aa9e2c866a5a5e188b"
     }
   }
 }

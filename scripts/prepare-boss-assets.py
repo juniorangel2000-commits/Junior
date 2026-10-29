@@ -9,9 +9,9 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("boss", choices=["demolisher", "sentinel"])
+parser.add_argument("boss", choices=["demolisher", "sentinel", "chained", "contaminated"])
 args = parser.parse_args()
-name = {"demolisher": "demolidor", "sentinel": "sentinela"}[args.boss]
+name = {"demolisher": "demolidor", "sentinel": "sentinela", "chained": "acorrentado", "contaminated": "contaminado"}[args.boss]
 SOURCE = ROOT / f"docs/dungeons/animacoes-{name}/{name}-original.zip"
 OUT = ROOT / "public/assets/visual/dungeons"
 DIRECTIONS = ["south", "west", "east", "north"]

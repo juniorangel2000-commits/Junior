@@ -1,6 +1,7 @@
 # Dungeons e sobrevivência — primeira versão jogável
 
-> Etapa mais recente: [animações recebidas da Sentinela, em quatro direções](animacoes-sentinela/RELATORIO.md).
+> Etapa mais recente: animações recebidas do [Acorrentado](animacoes-acorrentado/RELATORIO.md) e do [Contaminado](animacoes-contaminado/RELATORIO.md), em quatro direções.
+> Integração anterior: [Sentinela](animacoes-sentinela/RELATORIO.md).
 > Integração anterior: [animações do Demolidor](animacoes-demolidor/RELATORIO.md).
 > Etapa anterior: [identidade dos chefes, balanceamento e frentes para animação](chefes-e-balanceamento/RELATORIO.md).
 > Etapa anterior: [mapas abertos, banco vertical e experiência junto da vida](mapas-abertos/RELATORIO.md).

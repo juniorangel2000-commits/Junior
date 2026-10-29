@@ -1028,7 +1028,7 @@ fs.mkdirSync(out, { recursive: true });
           label: document.querySelector(".dungeon-boss").textContent,
           valid: validDungeonSnapshot(d.run.snapshot()) };
       }, {round, art});
-      check("Chefe " + round + " usa arte própria, caminhada e aviso inofensivo", identity.texture === "dungeon-boss-" + art && identity.frames === (round <= 20 ? 20 : 16) && (round > 20 || identity.frame === "idle-south") && identity.action.kind === kind && identity.action.stage === "warning" && identity.hp === 100 && identity.valid, identity);
+      check("Chefe " + round + " usa arte própria, caminhada e aviso inofensivo", identity.texture === "dungeon-boss-" + art && identity.frames === (round <= 40 ? 20 : 16) && (round > 40 || identity.frame === "idle-south") && identity.action.kind === kind && identity.action.stage === "warning" && identity.hp === 100 && identity.valid, identity);
       await render();
       await page.screenshot({path: out + "/chefe-" + round + "-aviso.png"});
       const active = await page.evaluate(async () => {
@@ -1044,7 +1044,7 @@ fs.mkdirSync(out, { recursive: true });
       check("Golpe ativo do chefe " + round + " preserva estado ao retomar", active.stage === "active" && active.preserved && active.valid, active);
       await render();
       await page.screenshot({path: out + "/chefe-" + round + "-ativo.png"});
-      if (round === 10 || round === 20) {
+      if (round <= 40) {
         const directions = await page.evaluate(() => {
           const s = d.run.state, e = s.enemies[0], elapsed = s.elapsed;
           e.boss = {cooldown: 10, sequence: 0};
@@ -1060,7 +1060,7 @@ fs.mkdirSync(out, { recursive: true });
             return {direction,frames};
           });
         });
-        check((round === 10 ? "Demolidor" : "Sentinela") + " usa quatro lados, quatro frames e escala fixa na caminhada", directions.every(d => new Set(d.frames.map(f => f.frame)).size === 4 && d.frames.every(f => f.frame.startsWith(d.direction + "-") && Math.abs(f.scale - 94/184) < 0.0001 && f.originX === 0.5 && f.originY > 0.85) && new Set(d.frames.map(f => f.originY)).size === 1), directions);
+        check(({10:"Demolidor",20:"Sentinela",30:"Acorrentado",40:"Contaminado"}[round]) + " usa quatro lados, quatro frames e escala fixa na caminhada", directions.every(d => new Set(d.frames.map(f => f.frame)).size === 4 && d.frames.every(f => f.frame.startsWith(d.direction + "-") && Math.abs(f.scale - 94/184) < 0.0001 && f.originX === 0.5 && f.originY > 0.85) && new Set(d.frames.map(f => f.originY)).size === 1), directions);
       }
     }
     await page.evaluate(() => {

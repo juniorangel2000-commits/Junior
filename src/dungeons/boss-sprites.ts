@@ -1,10 +1,15 @@
 import demolisher from "../../public/assets/visual/dungeons/boss-demolisher.json";
 import sentinel from "../../public/assets/visual/dungeons/boss-sentinel.json";
 
+import chained from "../../public/assets/visual/dungeons/boss-chained.json";
+import contaminated from "../../public/assets/visual/dungeons/boss-contaminated.json";
+
 export type BossDirection = "south" | "west" | "east" | "north";
 const suppliedAnimations: Record<string, typeof demolisher.animation> = {
   demolisher: demolisher.animation,
   sentinel: sentinel.animation,
+  chained: chained.animation,
+  contaminated: contaminated.animation,
 };
 
 /** Full-canvas animations retain their author's spacing and a fixed body scale. */
