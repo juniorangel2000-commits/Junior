@@ -113,8 +113,10 @@ fs.mkdirSync(out, { recursive: true });
     await page.screenshot({ path: out + "/cartas.png" });
     await page.locator("[data-card]").first().click();
     const arsenal = await page.evaluate(() => {
+      // Reproducible fixture: do not depend on the randomly seeded new game.
+      d.run.state.seed = 1234567;
       let tries = 0;
-      while (d.run.state.weapons.length < 4 && tries++ < 30) {
+      while (d.run.state.weapons.length < 4 && tries++ < 120) {
         if (d.run.state.phase === "fighting") d.run.grantXP(d.run.xpNeeded);
         const card =
           d.run.state.cards.find((c) => c.kind === "arsenal") ??
@@ -422,6 +424,91 @@ fs.mkdirSync(out, { recursive: true });
       d.syncPlayer();
       d.lastPhase = "";
       d.update(417000, 0);
+    });
+    const evolvedWeapons = await page.evaluate(() => {
+      window.weaponRestore = d.run.snapshot();
+      const s = d.run.state,
+        p = s.player;
+      s.phase = "fighting";
+      s.spawnClock = 10;
+      s.waveRemaining = 0;
+      s.weapons = ["sword", "bow", "boomerang"];
+      s.levels = {
+        "sword-speed": 2,
+        "sword-wide": 2,
+        "sword-dual": 1,
+        "bow-double": 1,
+        "bow-triple": 1,
+        // Piercing keeps all three arrows visible after the prepared close target.
+        "bow-piercing": 2,
+        "boomerang-double": 1,
+        "boomerang-cross": 1,
+      };
+      s.cooldowns = {};
+      s.projectiles = [];
+      s.pendingAttacks = [];
+      s.enemies = [
+        [40, 0],
+        [190, 50],
+        [210, -80],
+        [-180, 0],
+      ].map(([dx, dy], i) => ({
+        id: 87000 + i,
+        x: p.x + dx,
+        y: p.y + dy,
+        hp: 1000,
+        maxHp: 1000,
+        speed: 1,
+        damage: 0,
+        special: false,
+        kind: "walker",
+        streak: 0,
+        lastHit: 0,
+      }));
+      for (let i = 0; i < 8; i++) d.run.step(1 / 30);
+      d.syncPlayer();
+      d.run.pause();
+      d.lastPhase = "";
+      d.update(418000, 0);
+      d.ui.resume();
+      return {
+        arrows: [...d.projectileImages.values()].filter(
+          (img) => img.visible && img.texture.key === "dungeon-arrow-evolved",
+        ).length,
+        boomerangs: s.projectiles.filter((p) => p.weapon === "boomerang")
+          .length,
+        goldenSlots: document.querySelectorAll(".dungeon-loadout .evolved")
+          .length,
+        names: [...document.querySelectorAll(".dungeon-loadout img")].map(
+          (img) => img.alt,
+        ),
+        slots: s.weapons.length,
+        secondCut: d.run.effects.some(
+          (e) => e.weapon === "sword" && e.variant === 1,
+        ),
+      };
+    });
+    check(
+      "Evoluções mostram três flechas próprias, dois bumerangues e corte alternado",
+      evolvedWeapons.arrows === 3 &&
+        evolvedWeapons.boomerangs === 2 &&
+        evolvedWeapons.secondCut,
+      evolvedWeapons,
+    );
+    check(
+      "Arsenal identifica as três evoluções sem ocupar espaços extras",
+      evolvedWeapons.goldenSlots === 3 &&
+        evolvedWeapons.slots === 3 &&
+        evolvedWeapons.names.includes("Disparo Triplo"),
+      evolvedWeapons,
+    );
+    await render();
+    await page.screenshot({ path: out + "/armas-evoluidas.png" });
+    await page.evaluate(() => {
+      d.run.restore(window.weaponRestore);
+      d.syncPlayer();
+      d.lastPhase = "";
+      d.update(419000, 0);
     });
     const victory = await page.evaluate(() => {
       window.realSetItem = Storage.prototype.setItem;

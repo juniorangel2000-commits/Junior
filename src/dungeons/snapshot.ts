@@ -208,7 +208,8 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
         !Object.hasOwn(WEAPONS, a.weapon as string) ||
         !finite(a.at, 0, 1e9 + 10) ||
         !finite(a.damage, 0, 100000) ||
-        !finite(a.radius, 0, 1000),
+        !finite(a.radius, 0, 1000) ||
+        (a.angle !== undefined && !finite(a.angle, -Math.PI, Math.PI)),
     )
   )
     return false;

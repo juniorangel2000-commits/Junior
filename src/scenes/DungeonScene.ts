@@ -20,6 +20,12 @@ import {
 import { preloadDungeonArt, setupDungeonArt } from "../dungeons/art";
 import { DungeonWorld, dungeonPreview } from "../dungeons/world";
 import { dungeonBlocked } from "../dungeons/maps";
+import { setupWeaponEffects } from "../dungeons/weapon-effects";
+import {
+  swordHalfArc,
+  weaponIdentity,
+  WEAPON_EVOLUTIONS,
+} from "../dungeons/weapon-identity";
 import { DungeonUI } from "../dungeons/ui";
 interface DungeonStart {
   save: SaveData;
@@ -52,6 +58,7 @@ export class DungeonScene extends Phaser.Scene {
   private impactGraphics?: Phaser.GameObjects.Graphics;
   private damageNumbers: Phaser.GameObjects.Text[] = [];
   private lastImpactAt = -1;
+  private lastAttackEffect = 0;
   private orbitals: Phaser.GameObjects.Image[] = [];
   private petImage?: Phaser.GameObjects.Image;
   private rescueImage?: Phaser.GameObjects.Image;
@@ -91,10 +98,12 @@ export class DungeonScene extends Phaser.Scene {
     this.damageNumbers = [];
     this.impactGraphics = undefined;
     this.lastImpactAt = -1;
+    this.lastAttackEffect = 0;
     this.orbitals = [];
     this.petImage = undefined;
     this.rescueImage = undefined;
     setupDungeonArt(this);
+    setupWeaponEffects(this);
     this.cameras.main.setBounds(0, 0, 3072, 2304);
     document.querySelector<HTMLElement>("#ui")!.style.display = "none";
     const icons = Object.fromEntries(
@@ -116,6 +125,8 @@ export class DungeonScene extends Phaser.Scene {
         back: () => this.back(),
         choose: (id) => {
           if (this.run?.choose(id)) {
+            if (Object.values(WEAPON_EVOLUTIONS).some((e) => e.id === id))
+              gameAudio.play("weapon-evolution");
             this.lastPhase = "";
             this.persist();
           }
@@ -357,9 +368,14 @@ export class DungeonScene extends Phaser.Scene {
       img
         .setVisible(true)
         .setTexture(
-          "dungeon-weapons",
-          q.weapon === "bow" ? "spear" : "boomerang",
+          q.weapon === "bow"
+            ? run.level("bow-triple")
+              ? "dungeon-arrow-evolved"
+              : "dungeon-arrow"
+            : "dungeon-weapons",
+          q.weapon === "bow" ? undefined : "boomerang",
         )
+        .clearTint()
         .setPosition(q.x, q.y - 18)
         .setDisplaySize(
           q.weapon === "bow" ? 30 : 29,
@@ -369,6 +385,8 @@ export class DungeonScene extends Phaser.Scene {
           q.weapon === "boomerang" ? s.elapsed * 12 : Math.atan2(q.vy, q.vx),
         )
         .setDepth(q.y + 1);
+      if (q.weapon === "boomerang" && run.level("boomerang-cross"))
+        img.setTint(0xf1cd80);
     }
     const ink = this.impactGraphics!;
     ink.clear();
@@ -407,11 +425,50 @@ export class DungeonScene extends Phaser.Scene {
       gameAudio.play("combat-hit");
       this.lastImpactAt = latest.at;
     }
+    for (const q of s.projectiles) {
+      const evolved = weaponIdentity(q.weapon, s.levels).evolved;
+      ink.lineStyle(
+        evolved ? 2 : 1,
+        evolved ? 0xefc76e : q.weapon === "bow" ? 0xd8e3d8 : 0x91c8bd,
+        0.55,
+      );
+      const speed = Math.hypot(q.vx, q.vy) || 1,
+        length = q.weapon === "bow" ? 22 : q.returning ? 28 : 16;
+      ink.lineBetween(
+        q.x - (q.vx / speed) * length,
+        q.y - 18 - (q.vy / speed) * length,
+        q.x,
+        q.y - 18,
+      );
+    }
+    const attackEffect = [...run.effects]
+      .reverse()
+      .find(
+        (e) =>
+          ["sword", "bow", "boomerang"].includes(e.weapon) &&
+          e.id > this.lastAttackEffect,
+      );
+    if (attackEffect) {
+      gameAudio.play(
+        attackEffect.weapon === "sword"
+          ? "sword-swing"
+          : attackEffect.weapon === "bow"
+            ? "bow-shot"
+            : "boomerang-throw",
+      );
+      this.lastAttackEffect = attackEffect.id;
+    }
     for (const effect of run.effects) {
       if (effect.weapon !== "sword" && effect.weapon !== "hammer") continue;
       const age = 0.22 - effect.ttl,
         alpha = effect.ttl / 0.22;
-      ink.lineStyle(effect.weapon === "hammer" ? 3 : 2, 0xe4d6af, alpha);
+      ink.lineStyle(
+        effect.weapon === "hammer" ? 3 : 2,
+        effect.weapon === "sword" && run.level("sword-dual")
+          ? 0xefc76e
+          : 0xe4d6af,
+        alpha,
+      );
       if (effect.weapon === "hammer")
         ink.strokeCircle(effect.x, effect.y - 12, 12 + age * 140);
       else
@@ -420,9 +477,13 @@ export class DungeonScene extends Phaser.Scene {
           .arc(
             effect.x,
             effect.y - 20,
-            run.weaponStats("sword").range * 0.8,
-            effect.angle - 0.75 + age * 3,
-            effect.angle + 0.75 + age * 3,
+            run.weaponStats("sword").range,
+            effect.angle - swordHalfArc(run.level("sword-wide")),
+            effect.angle -
+              swordHalfArc(run.level("sword-wide")) +
+              2 *
+                swordHalfArc(run.level("sword-wide")) *
+                (effect.variant ? 1 - age / 0.22 : age / 0.22),
             false,
           )
           .strokePath();
@@ -448,9 +509,11 @@ export class DungeonScene extends Phaser.Scene {
           e.weapon === "spear" ? 85 : 54,
           e.weapon === "spear" ? 16 : 45,
         )
-        .setRotation(e.angle + (0.22 - e.ttl) * 3)
+        .setRotation(e.angle + (e.variant ? -1 : 1) * (0.22 - e.ttl) * 3)
+        .clearTint()
         .setAlpha(Math.min(1, e.ttl * 8))
         .setDepth(e.y + 2);
+      if (weaponIdentity(e.weapon, s.levels).evolved) image.setTint(0xf1cd80);
     }
     this.orbitals.forEach((img) => img.setVisible(false));
     let oi = 0;

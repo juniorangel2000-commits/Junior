@@ -9,6 +9,7 @@ import {
 } from "./config";
 import { UPGRADES, rollUpgradeCards, type UpgradeCard } from "./upgrades";
 import { hordeProfile, experienceForLevel } from "./director";
+import { insideSwordArc } from "./weapon-identity";
 import { EnemySpatialIndex } from "./spatial";
 import { DUNGEON_ENTRY, dungeonBlocked } from "./maps";
 import type { DungeonProgress, OwnedPet, RunResult } from "./progression";
@@ -110,6 +111,7 @@ export interface DungeonSnapshot {
     y: number;
     damage: number;
     radius: number;
+    angle?: number;
   }[];
 }
 const upgradeAmounts = new Map(UPGRADES.map((u) => [u.id, u.perLevel]));
@@ -453,7 +455,9 @@ export class DungeonRun {
     for (let i = this.delayed.length - 1; i >= 0; i--) {
       const a = this.delayed[i];
       if (a.at <= s.elapsed) {
-        this.area(a.weapon, a.x, a.y, a.radius, a.damage);
+        if (a.weapon === "sword" && a.angle !== undefined)
+          this.swordStrike(a.x, a.y, a.radius, a.damage, a.angle, 1);
+        else this.area(a.weapon, a.x, a.y, a.radius, a.damage);
         this.delayed.splice(i, 1);
       }
     }
@@ -600,6 +604,38 @@ export class DungeonRun {
       this.hit(e, damage);
     this.effect(weapon, x, y);
   }
+  private swordStrike(
+    x: number,
+    y: number,
+    radius: number,
+    damage: number,
+    angle: number,
+    variant = 0,
+  ): void {
+    const wide = this.level("sword-wide");
+    const targets = this.spatial
+      .query(x, y, radius)
+      .filter((e) => e.hp > 0 && insideSwordArc(e.x - x, e.y - y, angle, wide))
+      .sort(
+        (a, b) => Math.hypot(a.x - x, a.y - y) - Math.hypot(b.x - x, b.y - y),
+      )
+      .slice(0, 1 + wide);
+    for (const e of targets) {
+      this.hit(e, damage);
+      if (e.hp > 0) {
+        const d = Math.hypot(e.x - x, e.y - y) || 1,
+          force = 6 + wide * 3;
+        // Small steps preserve wall collision even with widened cuts.
+        for (let i = 0; i < 3; i++)
+          this.moveEnemy(
+            e,
+            (((e.x - x) / d) * force) / 3,
+            (((e.y - y) / d) * force) / 3,
+          );
+      }
+    }
+    this.effect("sword", x, y, angle, variant);
+  }
   private attack(id: WeaponId): void {
     const s = this.state,
       p = s.player,
@@ -622,9 +658,7 @@ export class DungeonRun {
     s.cooldowns[id] =
       id === "rotating-blade" || id === "orbiting-shield" ? 0 : w.cooldown;
     if (id === "sword") {
-      const count = 1 + this.level("sword-wide");
-      for (const e of targets.slice(0, count)) this.hit(e, w.damage);
-      this.effect(id, p.x, p.y, angle);
+      this.swordStrike(p.x, p.y, w.range, w.damage, angle);
       if (this.level("sword-dual"))
         this.delayed.push({
           at: s.elapsed + 0.18,
@@ -633,6 +667,7 @@ export class DungeonRun {
           y: p.y,
           damage: w.damage * 0.6,
           radius: w.range,
+          angle,
         });
     } else if (id === "bow" || id === "boomerang") {
       const count =
@@ -645,15 +680,25 @@ export class DungeonRun {
           : this.level("boomerang-cross") || this.level("boomerang-double")
             ? 2
             : 1;
+      this.effect(
+        id,
+        p.x,
+        p.y,
+        angle,
+        this.level(id === "bow" ? "bow-triple" : "boomerang-cross") ? 1 : 0,
+      );
       for (
         let i = 0;
         i < count && s.projectiles.length < B.maxProjectiles;
         i++
       ) {
-        const offset =
-            (i - (count - 1) / 2) *
-            (id === "bow" ? 0.12 : this.level("boomerang-cross") ? 0.6 : 0.2),
-          a = angle + offset,
+        const aim = targets[Math.min(i, targets.length - 1)],
+          a =
+            id === "bow"
+              ? Math.atan2(aim.y - p.y, aim.x - p.x)
+              : this.level("boomerang-cross")
+                ? angle + i * Math.PI
+                : angle + i * 0.18,
           speed =
             w.speed *
             (1 + (id === "boomerang" ? this.bonus("boomerang-speed") : 0));
@@ -778,7 +823,7 @@ export class DungeonRun {
             }
           }
       }
-      if (p.distance >= p.range) {
+      if (p.distance >= p.range * (p.returning ? 3 : 1)) {
         if (p.weapon === "boomerang" && !p.returning) {
           p.returning = true;
           p.hits = [];

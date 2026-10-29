@@ -219,7 +219,7 @@ export const UPGRADES: readonly Upgrade[] = [
     "legendary",
     1,
     0.6,
-    "Segunda espada alternada com 60% do dano, no mesmo espaço",
+    "Segundo corte frontal alternado, com 60% do dano, no mesmo espaço",
     { weapon: "sword", requires: { "sword-speed": 2, "sword-wide": 1 } },
   ),
   upgrade(
@@ -228,7 +228,7 @@ export const UPGRADES: readonly Upgrade[] = [
     "legendary",
     1,
     3,
-    "Três flechas; substitui o disparo duplo",
+    "Três flechas direcionadas, priorizando alvos diferentes; substitui o disparo duplo",
     { weapon: "bow", requires: { "bow-double": 1 } },
   ),
   upgrade(
@@ -246,7 +246,7 @@ export const UPGRADES: readonly Upgrade[] = [
     "legendary",
     1,
     1,
-    "Bumerangues em trajetórias cruzadas",
+    "Dois bumerangues em sentidos opostos; atingem grupos na ida e na volta",
     { weapon: "boomerang" },
   ),
   upgrade(

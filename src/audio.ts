@@ -6,7 +6,7 @@ export function audioSettings(value: unknown): AudioSettings {
   const volume = (n: unknown, fallback: number): number => typeof n === 'number' && Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : fallback;
   return { music: volume(v.music, .45), effects: volume(v.effects, .65), muted: v.muted === true };
 }
-export type Sound = 'step' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit';
+export type Sound = 'step' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit' | 'sword-swing' | 'bow-shot' | 'boomerang-throw' | 'weapon-evolution';
 type AudioScene = 'title' | 'game';
 const BEAT = 60 / 76;
 export const MUSIC_DURATION = 64 * BEAT;
@@ -269,6 +269,10 @@ export function synthesizeEffect(ctx: BaseAudioContext, out: AudioNode, sound: S
   const now = ctx.currentTime;
   const note = (midi: number, delay = 0, duration = .15, gain = .12): void => tone(ctx, out, hz(midi), now + delay, duration, gain);
   switch (sound) {
+    case 'sword-swing': noise(ctx, out, .1, 2600, .07); note(55, 0, .06, .025); break;
+    case 'bow-shot': noise(ctx, out, .045, 3400, .07); note(76, 0, .07, .045); break;
+    case 'boomerang-throw': noise(ctx, out, .18, 750, .07); note(57, 0, .12, .025); break;
+    case 'weapon-evolution': note(60, 0, .18, .08); note(67, .1, .22, .08); note(76, .2, .4, .08); break;
     case 'combat-hit': noise(ctx, out, .055, 1400, .11); note(48, 0, .06, .045); break;
     case 'ui': note(79, 0, .065, .055); break;
     case 'pickup': note(72); note(79, .1, .3); break;
