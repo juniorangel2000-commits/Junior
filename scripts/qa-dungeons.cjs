@@ -510,6 +510,164 @@ fs.mkdirSync(out, { recursive: true });
       d.lastPhase = "";
       d.update(419000, 0);
     });
+    const remaining = await page.evaluate(() => {
+      window.remainingRestore = d.run.snapshot();
+      const s = d.run.state,
+        p = s.player;
+      s.phase = "fighting";
+      s.spawnClock = 10;
+      s.weapons = ["sword", "spear", "hammer", "rotating-blade"];
+      s.levels = {
+        "spear-fan": 1,
+        "spear-range": 4,
+        "spear-piercing": 2,
+        "hammer-double": 1,
+        "hammer-area": 3,
+        "blade-double": 1,
+        "blade-speed": 3,
+      };
+      s.cooldowns = { sword: 20 };
+      s.projectiles = [];
+      s.pendingAttacks = [];
+      s.buffs.invulnerable = s.elapsed + 10;
+      s.enemies = [
+        [60, 0],
+        [100, 25],
+        [100, -25],
+        [-75, 0],
+      ].map(([dx, dy], i) => ({
+        id: 86000 + i,
+        x: p.x + dx,
+        y: p.y + dy,
+        hp: 1000,
+        maxHp: 1000,
+        speed: 1,
+        damage: 10,
+        special: false,
+        kind: "walker",
+        streak: 0,
+        lastHit: 0,
+      }));
+      for (let i = 0; i < 3; i++) d.run.step(1 / 30);
+      d.syncPlayer();
+      d.run.pause();
+      d.lastPhase = "";
+      d.update(420000, 0);
+      d.ui.resume();
+      return {
+        fan: d.run.effects.filter((e) => e.weapon === "spear").length,
+        hammerRadius: d.run.effects.find((e) => e.weapon === "hammer")?.radius,
+        blades: d.orbitals.filter(
+          (img) => img.visible && img.frame.name === "rotating-blade",
+        ).length,
+        gold: document.querySelectorAll(".dungeon-loadout .evolved").length,
+        slots: s.weapons.length,
+      };
+    });
+    check(
+      "Lança em leque, área real do martelo e duas lâminas aparecem juntas em quatro espaços",
+      remaining.fan === 3 &&
+        remaining.hammerRadius > 48 &&
+        remaining.blades === 2 &&
+        remaining.gold === 3 &&
+        remaining.slots === 4,
+      remaining,
+    );
+    await render();
+    await page.screenshot({ path: out + "/lanca-martelo-laminas.png" });
+    const shield = await page.evaluate(() => {
+      const s = d.run.state,
+        p = s.player;
+      s.phase = "fighting";
+      s.weapons = ["sword", "orbiting-shield"];
+      s.shield = undefined;
+      s.pet = undefined;
+      d.run.impacts.length = 0;
+      s.levels = {
+        "shield-double": 1,
+        "shield-protection": 3,
+        "shield-speed": 4,
+      };
+      s.cooldowns = { sword: 20 };
+      s.pendingAttacks = [];
+      s.enemies = [];
+      s.player.hp = 100;
+      s.player.invulnerable = 0;
+      s.buffs = {};
+      d.run.effects.length = 0;
+      s.enemies = [
+        {
+          id: 85000,
+          x: p.x + 10,
+          y: p.y,
+          hp: 1000,
+          maxHp: 1000,
+          speed: 1,
+          damage: 10,
+          special: false,
+          kind: "walker",
+          streak: 0,
+          lastHit: 0,
+        },
+      ];
+      for (let i = 0; i < 4; i++) d.run.step(1 / 30);
+      d.syncPlayer();
+      d.run.pause();
+      d.lastPhase = "";
+      d.update(421000, 0);
+      d.ui.resume();
+      return {
+        hp: s.player.hp,
+        stalePetVisible: d.petImage?.visible ?? false,
+        charges: s.shield.charges,
+        recharge: s.shield.recharge,
+        pushed: s.enemies[0].x > p.x + 25,
+        wave: d.run.effects.some(
+          (e) => e.weapon === "orbiting-shield" && e.radius > 90,
+        ),
+        hud: document.querySelector(".dungeon-buffs")?.textContent,
+        icons: d.orbitals.filter(
+          (img) => img.visible && img.frame.name === "orbiting-shield",
+        ).length,
+      };
+    });
+    check(
+      "Escudo absorve contato, emite onda, mostra cargas e recarga sem girar",
+      !shield.stalePetVisible &&
+        shield.hp === 100 &&
+        shield.charges === 1 &&
+        shield.recharge > 0 &&
+        shield.pushed &&
+        shield.wave &&
+        shield.icons === 2 &&
+        shield.hud.includes("1/2 cargas"),
+      shield,
+    );
+    await render();
+    await page.screenshot({ path: out + "/escudo-choque.png" });
+    const exhausted = await page.evaluate(() => {
+      d.run.resume();
+      const s = d.run.state,
+        p = s.player;
+      for (let i = 0; i < 2; i++) {
+        s.player.invulnerable = 0;
+        s.enemies[0].x = p.x + 10;
+        s.enemies[0].y = p.y;
+        d.run.step(1 / 30);
+      }
+      return { hp: s.player.hp, charges: s.shield.charges };
+    });
+    check(
+      "Barreira absorve dois golpes e permite dano quando as cargas acabam",
+      exhausted.hp < 100 && exhausted.hp >= 90 && exhausted.charges === 0,
+      exhausted,
+    );
+    await page.evaluate(() => {
+      d.run.restore(window.remainingRestore);
+      d.syncPlayer();
+      d.lastPhase = "";
+      d.update(422000, 0);
+    });
     const victory = await page.evaluate(() => {
       window.realSetItem = Storage.prototype.setItem;
       Storage.prototype.setItem = function () {

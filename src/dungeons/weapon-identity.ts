@@ -15,6 +15,26 @@ export const WEAPON_EVOLUTIONS = {
     name: "Trajetória Cruzada",
     role: "Dois lados cobertos, com dano na ida e na volta",
   },
+  spear: {
+    id: "spear-fan",
+    name: "Estocada em Leque",
+    role: "Três linhas de perfuração, sem repetir o mesmo alvo",
+  },
+  hammer: {
+    id: "hammer-double",
+    name: "Martelada Dupla",
+    role: "Dois impactos de área com recuo do grupo",
+  },
+  "rotating-blade": {
+    id: "blade-double",
+    name: "Lâminas Duplas",
+    role: "Duas lâminas opostas controlam a área próxima",
+  },
+  "orbiting-shield": {
+    id: "shield-double",
+    name: "Barreira de Impacto",
+    role: "Duas cargas de bloqueio e onda de repulsão maior",
+  },
 } as const;
 export function weaponIdentity(
   id: WeaponId,
@@ -31,6 +51,10 @@ export function weaponIdentity(
               sword: "Corte frontal que abre espaço",
               bow: "Disparo preciso à distância",
               boomerang: "Atravessa grupos e retorna",
+              spear: "Perfura inimigos alinhados",
+              hammer: "Impacto de área com recuo",
+              "rotating-blade": "Controla a área ao redor",
+              "orbiting-shield": "Absorve um golpe, repele o cerco e recarrega",
             } as Partial<Record<WeaponId, string>>
           )[id] ?? WEAPONS[id].name,
         evolved: false,

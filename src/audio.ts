@@ -6,7 +6,7 @@ export function audioSettings(value: unknown): AudioSettings {
   const volume = (n: unknown, fallback: number): number => typeof n === 'number' && Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : fallback;
   return { music: volume(v.music, .45), effects: volume(v.effects, .65), muted: v.muted === true };
 }
-export type Sound = 'step' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit' | 'sword-swing' | 'bow-shot' | 'boomerang-throw' | 'weapon-evolution';
+export type Sound = 'step' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit' | 'sword-swing' | 'bow-shot' | 'boomerang-throw' | 'weapon-evolution' | 'spear-thrust' | 'hammer-impact' | 'shield-burst';
 type AudioScene = 'title' | 'game';
 const BEAT = 60 / 76;
 export const MUSIC_DURATION = 64 * BEAT;
@@ -269,6 +269,9 @@ export function synthesizeEffect(ctx: BaseAudioContext, out: AudioNode, sound: S
   const now = ctx.currentTime;
   const note = (midi: number, delay = 0, duration = .15, gain = .12): void => tone(ctx, out, hz(midi), now + delay, duration, gain);
   switch (sound) {
+    case 'shield-burst': noise(ctx, out, .18, 1600, .09); note(52, 0, .16, .05); note(64, .04, .13, .03); break;
+    case 'spear-thrust': noise(ctx, out, .07, 3000, .06); note(64, 0, .07, .03); break;
+    case 'hammer-impact': noise(ctx, out, .16, 500, .13); note(36, 0, .17, .08); break;
     case 'sword-swing': noise(ctx, out, .1, 2600, .07); note(55, 0, .06, .025); break;
     case 'bow-shot': noise(ctx, out, .045, 3400, .07); note(76, 0, .07, .045); break;
     case 'boomerang-throw': noise(ctx, out, .18, 750, .07); note(57, 0, .12, .025); break;

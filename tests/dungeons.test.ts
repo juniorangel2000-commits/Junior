@@ -148,47 +148,33 @@ describe("dungeon progression and arsenal", () => {
   });
 });
 describe("automatic weapons and modes", () => {
-  it.each(Object.keys(WEAPONS) as WeaponId[])(
-    "automatically attacks with %s without an attack command",
-    (weapon) => {
-      const r = make();
-      r.random = () => 0.2;
-      r.state.weapons = weapon === "sword" ? ["sword"] : ["sword", weapon];
-      r.state.cooldowns.sword = 20;
-      const p = r.state.player,
-        angle =
-          weapon === "orbiting-shield"
-            ? 1
-            : weapon === "rotating-blade"
-              ? 1.5
-              : 0;
-      const e = enemy(
-        900,
-        p.x +
-          Math.cos(angle) *
-            (weapon === "bow"
-              ? 180
-              : weapon === "spear"
-                ? 110
-                : weapon === "orbiting-shield"
-                  ? 62
-                  : weapon === "rotating-blade"
-                    ? 82
-                    : 50),
-        p.y +
-          Math.sin(angle) *
-            (weapon === "orbiting-shield"
-              ? 62
+  it.each(
+    (Object.keys(WEAPONS) as WeaponId[]).filter((w) => w !== "orbiting-shield"),
+  )("automatically attacks with %s without an attack command", (weapon) => {
+    const r = make();
+    r.random = () => 0.2;
+    r.state.weapons = weapon === "sword" ? ["sword"] : ["sword", weapon];
+    r.state.cooldowns.sword = 20;
+    const p = r.state.player,
+      angle = weapon === "rotating-blade" ? 1.5 : 0;
+    const e = enemy(
+      900,
+      p.x +
+        Math.cos(angle) *
+          (weapon === "bow"
+            ? 180
+            : weapon === "spear"
+              ? 110
               : weapon === "rotating-blade"
                 ? 82
-                : 0),
-      );
-      r.state.enemies = [e];
-      if (weapon === "sword") r.state.cooldowns.sword = 0;
-      simulate(r, 2.5);
-      expect(e.hp).toBeLessThan(1000);
-    },
-  );
+                : 50),
+      p.y + Math.sin(angle) * (weapon === "rotating-blade" ? 82 : 0),
+    );
+    r.state.enemies = [e];
+    if (weapon === "sword") r.state.cooldowns.sword = 0;
+    simulate(r, 2.5);
+    expect(e.hp).toBeLessThan(1000);
+  });
   it("uses accuracy for misses and precision upgrades improve it", () => {
     const r = make();
     r.random = () => 0.99;

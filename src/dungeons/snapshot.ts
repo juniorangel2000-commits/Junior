@@ -199,6 +199,22 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
   )
     return false;
   if (
+    value.shield !== undefined &&
+    (!rec(value.shield) ||
+      !count(value.shield.charges, 2) ||
+      !finite(value.shield.recharge, 0, B.shieldRecharge))
+  )
+    return false;
+  if (
+    value.orbitalAngles !== undefined &&
+    (!rec(value.orbitalAngles) ||
+      Object.entries(value.orbitalAngles).some(
+        ([id, angle]) =>
+          id !== "rotating-blade" || !finite(angle, 0, Math.PI * 2),
+      ))
+  )
+    return false;
+  if (
     !Array.isArray(value.pendingAttacks) ||
     value.pendingAttacks.length > 100 ||
     value.pendingAttacks.some(

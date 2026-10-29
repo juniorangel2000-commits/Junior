@@ -57,6 +57,7 @@ export interface AttackEffect {
   angle: number;
   ttl: number;
   variant: number;
+  radius?: number;
 }
 export type RunPhase =
   "fighting" | "choice" | "paused" | "victory" | "defeat" | "abandoned";
@@ -104,6 +105,8 @@ export interface DungeonSnapshot {
   lastStandUsed: boolean;
   permanent: DungeonProgress["attributes"];
   orbitalHits: Record<string, number>;
+  orbitalAngles?: Partial<Record<"rotating-blade", number>>;
+  shield?: { charges: number; recharge: number };
   pendingAttacks: {
     at: number;
     weapon: WeaponId;
@@ -172,6 +175,7 @@ export class DungeonRun {
       lastStandUsed: false,
       permanent: { ...progress.attributes },
       orbitalHits: {},
+      orbitalAngles: {},
       pendingAttacks: [],
     };
     if (owned) {
@@ -252,6 +256,8 @@ export class DungeonRun {
       const u = UPGRADES.find((u) => u.id === id);
       if (!u || (s.levels[id] ?? 0) >= u.max) return false;
       s.levels[id] = (s.levels[id] ?? 0) + 1;
+      if (id === "shield-double" && s.shield)
+        s.shield.charges = Math.min(2, s.shield.charges + 1);
       if (id === "health")
         s.player.hp = Math.min(
           this.maxHealth,
@@ -358,6 +364,18 @@ export class DungeonRun {
   private tick(dt: number): void {
     const s = this.state;
     s.elapsed += dt;
+    s.orbitalAngles ??= {};
+    s.orbitalAngles["rotating-blade"] =
+      ((s.orbitalAngles["rotating-blade"] ?? (s.elapsed - dt) * 3) +
+        dt * 3 * (1 + this.bonus("blade-speed"))) %
+      (Math.PI * 2);
+    if (s.weapons.includes("orbiting-shield")) {
+      s.shield ??= { charges: this.shieldCapacity, recharge: 0 };
+      if (s.shield.recharge > 0) {
+        s.shield.recharge = Math.max(0, s.shield.recharge - dt);
+        if (s.shield.recharge === 0) s.shield.charges = this.shieldCapacity;
+      }
+    }
     for (let i = this.impacts.length - 1; i >= 0; i--)
       if (s.elapsed - this.impacts[i].at > 0.42) this.impacts.splice(i, 1);
     s.player.invulnerable = Math.max(0, s.player.invulnerable - dt);
@@ -425,13 +443,11 @@ export class DungeonRun {
         s.player.invulnerable === 0 &&
         !this.active("invulnerable")
       ) {
+        if (this.blockWithShield()) continue;
         const reduction = Math.min(
           0.75,
           this.bonus("defense") +
             s.permanent.resistance * 0.02 +
-            (s.weapons.includes("orbiting-shield")
-              ? this.bonus("shield-protection")
-              : 0) +
             (s.pet && s.pet.hp > 0
               ? PETS[s.pet.species].protection +
                 s.pet.attributes.protection * 0.01 +
@@ -457,7 +473,7 @@ export class DungeonRun {
       if (a.at <= s.elapsed) {
         if (a.weapon === "sword" && a.angle !== undefined)
           this.swordStrike(a.x, a.y, a.radius, a.damage, a.angle, 1);
-        else this.area(a.weapon, a.x, a.y, a.radius, a.damage);
+        else this.area(a.weapon, a.x, a.y, a.radius, a.damage, 1);
         this.delayed.splice(i, 1);
       }
     }
@@ -540,6 +556,7 @@ export class DungeonRun {
     y: number,
     angle = 0,
     variant = 0,
+    radius?: number,
   ): void {
     if (this.effects.length >= B.maxEffects) this.effects.shift();
     this.effects.push({
@@ -550,6 +567,7 @@ export class DungeonRun {
       angle,
       ttl: 0.22,
       variant,
+      radius,
     });
   }
   private hit(e: Enemy, damage: number): void {
@@ -596,13 +614,49 @@ export class DungeonRun {
     y: number,
     radius: number,
     damage: number,
+    variant = 0,
   ): void {
     for (const e of this.spatial
       .query(x, y, radius)
       .filter((e) => e.hp > 0)
-      .slice(0, weapon === "sword" ? 1 + this.level("sword-wide") : undefined))
+      .slice(
+        0,
+        weapon === "sword" ? 1 + this.level("sword-wide") : undefined,
+      )) {
       this.hit(e, damage);
-    this.effect(weapon, x, y);
+      if (weapon === "hammer" && e.hp > 0) this.pushEnemy(e, x, y, 14);
+    }
+    this.effect(weapon, x, y, 0, variant, radius);
+  }
+  private pushEnemy(e: Enemy, x: number, y: number, force: number): void {
+    const dx = e.x - x,
+      dy = e.y - y,
+      distance = Math.hypot(dx, dy);
+    const nx = distance ? dx / distance : Math.cos(this.state.elapsed),
+      ny = distance ? dy / distance : Math.sin(this.state.elapsed);
+    for (let step = 0; step < 4; step++)
+      this.moveEnemy(e, (nx * force) / 4, (ny * force) / 4);
+  }
+  orbitalAngle(id: "rotating-blade"): number {
+    return (
+      this.state.orbitalAngles?.[id] ?? (this.state.elapsed * 3) % (Math.PI * 2)
+    );
+  }
+  orbitalRadius(id: "rotating-blade"): number {
+    return this.weaponStats(id).range;
+  }
+  private clearThrust(x: number, y: number, tx: number, ty: number): boolean {
+    const steps = Math.ceil(Math.hypot(tx - x, ty - y) / 8);
+    for (let i = 1; i <= steps; i++)
+      if (
+        dungeonBlocked(
+          this.state.dungeon,
+          x + ((tx - x) * i) / steps,
+          y + ((ty - y) * i) / steps,
+        )
+      )
+        return false;
+    return true;
   }
   private swordStrike(
     x: number,
@@ -636,17 +690,60 @@ export class DungeonRun {
     }
     this.effect("sword", x, y, angle, variant);
   }
+  get shieldCapacity(): number {
+    return this.level("shield-double") ? 2 : 1;
+  }
+  get shieldRadius(): number {
+    return (
+      B.shieldPulseRadius *
+      (1 +
+        this.bonus("shield-protection") +
+        (this.level("shield-double") ? 0.25 : 0))
+    );
+  }
+  get shieldRecharge(): number {
+    return (
+      B.shieldRecharge /
+      (1 + this.bonus("shield-speed") + this.bonus("special-cooldown"))
+    );
+  }
+  private blockWithShield(): boolean {
+    const s = this.state;
+    if (!s.weapons.includes("orbiting-shield") || !s.shield?.charges)
+      return false;
+    s.shield.charges--;
+    // Start the shared recharge with the first consumed charge, retaining the spare.
+    if (s.shield.recharge === 0) s.shield.recharge = this.shieldRecharge;
+    s.player.invulnerable = B.contactGrace;
+    this.spatial.rebuild(s.enemies.filter((e) => e.hp > 0));
+    for (const e of this.spatial.query(
+      s.player.x,
+      s.player.y,
+      this.shieldRadius,
+    ))
+      this.pushEnemy(
+        e,
+        s.player.x,
+        s.player.y,
+        B.shieldPush * (1 + this.bonus("shield-push")),
+      );
+    this.effect(
+      "orbiting-shield",
+      s.player.x,
+      s.player.y,
+      0,
+      this.level("shield-double") ? 1 : 0,
+      this.shieldRadius,
+    );
+    return true;
+  }
   private attack(id: WeaponId): void {
+    if (id === "orbiting-shield") return;
     const s = this.state,
       p = s.player,
       w = this.weaponStats(id),
       targets = this.spatial
-        .query(
-          p.x,
-          p.y,
-          w.range +
-            (id === "rotating-blade" || id === "orbiting-shield" ? 30 : 0),
-        )
+        .query(p.x, p.y, w.range + (id === "rotating-blade" ? 30 : 0))
         .filter((e) => e.hp > 0)
         .sort(
           (a, b) =>
@@ -655,8 +752,7 @@ export class DungeonRun {
     if (!targets.length) return;
     const target = targets[0],
       angle = Math.atan2(target.y - p.y, target.x - p.x);
-    s.cooldowns[id] =
-      id === "rotating-blade" || id === "orbiting-shield" ? 0 : w.cooldown;
+    s.cooldowns[id] = id === "rotating-blade" ? 0 : w.cooldown;
     if (id === "sword") {
       this.swordStrike(p.x, p.y, w.range, w.damage, angle);
       if (this.level("sword-dual"))
@@ -730,6 +826,7 @@ export class DungeonRun {
         s.projectiles.push(projectile);
       }
     } else if (id === "spear") {
+      const struck = new Set<number>();
       for (const offset of this.level("spear-fan") ? [-0.3, 0, 0.3] : [0]) {
         const a = angle + offset,
           hits = targets.filter((e) => {
@@ -737,14 +834,22 @@ export class DungeonRun {
               dy = e.y - p.y,
               along = dx * Math.cos(a) + dy * Math.sin(a),
               across = Math.abs(-dx * Math.sin(a) + dy * Math.cos(a));
-            return along >= 0 && along <= w.range && across < 18;
+            return (
+              !struck.has(e.id) &&
+              along >= 0 &&
+              along <= w.range &&
+              across < 18 &&
+              this.clearThrust(p.x, p.y, e.x, e.y)
+            );
           });
         for (const e of hits.slice(
           0,
           1 + this.level("spear-piercing") + this.level("piercing"),
-        ))
+        )) {
           this.hit(e, w.damage);
-        this.effect(id, p.x, p.y, a);
+          struck.add(e.id);
+        }
+        this.effect(id, p.x, p.y, a, this.level("spear-fan") ? 1 : 0, w.range);
       }
     } else if (id === "hammer") {
       const radius = 48 * Math.sqrt(1 + this.bonus("hammer-area"));
@@ -762,28 +867,22 @@ export class DungeonRun {
       const double = this.level(
           id === "rotating-blade" ? "blade-double" : "shield-double",
         ),
-        a = s.elapsed * (id === "rotating-blade" ? 3 : 2),
+        a = this.orbitalAngle(id),
         n = double ? 2 : 1;
       for (let i = 0; i < n; i++) {
         const q = a + i * Math.PI,
-          x = p.x + Math.cos(q) * w.range,
-          y = p.y + Math.sin(q) * w.range;
+          x = p.x + Math.cos(q) * this.orbitalRadius(id),
+          y = p.y + Math.sin(q) * this.orbitalRadius(id);
+        let connected = false;
         for (const e of this.spatial.query(x, y, 30)) {
+          if (e.hp <= 0) continue;
           const key = id + "-" + e.id;
           if ((s.orbitalHits[key] ?? 0) > s.elapsed) continue;
           s.orbitalHits[key] = s.elapsed + w.cooldown;
           this.hit(e, w.damage);
-          if (id === "orbiting-shield") {
-            const d = Math.hypot(e.x - p.x, e.y - p.y) || 1,
-              force = 16 * (1 + this.bonus("shield-push"));
-            this.moveEnemy(
-              e,
-              ((e.x - p.x) / d) * force,
-              ((e.y - p.y) / d) * force,
-            );
-          }
+          connected = true;
         }
-        this.effect(id, x, y, q, i);
+        if (connected) this.effect(id, x, y, q, i, 30);
       }
     }
   }

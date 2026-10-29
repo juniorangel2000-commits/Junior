@@ -444,9 +444,7 @@ export class DungeonScene extends Phaser.Scene {
     const attackEffect = [...run.effects]
       .reverse()
       .find(
-        (e) =>
-          ["sword", "bow", "boomerang"].includes(e.weapon) &&
-          e.id > this.lastAttackEffect,
+        (e) => e.weapon !== "rotating-blade" && e.id > this.lastAttackEffect,
       );
     if (attackEffect) {
       gameAudio.play(
@@ -454,24 +452,72 @@ export class DungeonScene extends Phaser.Scene {
           ? "sword-swing"
           : attackEffect.weapon === "bow"
             ? "bow-shot"
-            : "boomerang-throw",
+            : attackEffect.weapon === "boomerang"
+              ? "boomerang-throw"
+              : attackEffect.weapon === "spear"
+                ? "spear-thrust"
+                : attackEffect.weapon === "orbiting-shield"
+                  ? "shield-burst"
+                  : "hammer-impact",
       );
       this.lastAttackEffect = attackEffect.id;
     }
     for (const effect of run.effects) {
+      if (effect.weapon === "spear") {
+        const length =
+          (effect.radius ?? run.weaponStats("spear").range) *
+          Math.min(1, (0.22 - effect.ttl) / 0.07);
+        ink.lineStyle(
+          effect.variant ? 3 : 2,
+          effect.variant ? 0xefc76e : 0xc3ddd8,
+          effect.ttl / 0.22,
+        );
+        ink.lineBetween(
+          effect.x,
+          effect.y - 20,
+          effect.x + Math.cos(effect.angle) * length,
+          effect.y - 20 + Math.sin(effect.angle) * length,
+        );
+        continue;
+      }
+      if (effect.weapon === "orbiting-shield") {
+        const age = 0.22 - effect.ttl,
+          radius = effect.radius ?? run.shieldRadius;
+        ink.lineStyle(
+          effect.variant ? 4 : 3,
+          effect.variant ? 0xefc76e : 0x9fbfda,
+          effect.ttl / 0.22,
+        );
+        ink.strokeCircle(
+          effect.x,
+          effect.y - 20,
+          radius * Math.min(1, age / 0.16),
+        );
+        continue;
+      }
+      if (effect.weapon === "rotating-blade") {
+        ink.lineStyle(2, 0xc5dace, effect.ttl / 0.22);
+        ink.strokeCircle(effect.x, effect.y - 20, 8 + (0.22 - effect.ttl) * 45);
+        continue;
+      }
       if (effect.weapon !== "sword" && effect.weapon !== "hammer") continue;
       const age = 0.22 - effect.ttl,
         alpha = effect.ttl / 0.22;
       ink.lineStyle(
         effect.weapon === "hammer" ? 3 : 2,
-        effect.weapon === "sword" && run.level("sword-dual")
-          ? 0xefc76e
-          : 0xe4d6af,
+        weaponIdentity(effect.weapon, s.levels).evolved ? 0xefc76e : 0xe4d6af,
         alpha,
       );
-      if (effect.weapon === "hammer")
-        ink.strokeCircle(effect.x, effect.y - 12, 12 + age * 140);
-      else
+      if (effect.weapon === "hammer") {
+        const radius = effect.radius ?? 48;
+        ink.strokeCircle(
+          effect.x,
+          effect.y - 12,
+          radius * Math.min(1, age / 0.12),
+        );
+        ink.lineStyle(1, effect.variant ? 0xefc76e : 0x9d8c73, alpha * 0.5);
+        ink.strokeCircle(effect.x, effect.y - 12, radius);
+      } else
         ink
           .beginPath()
           .arc(
@@ -489,7 +535,11 @@ export class DungeonScene extends Phaser.Scene {
           .strokePath();
     }
     this.effects.forEach((img) => img.setVisible(false));
-    for (const [i, e] of run.effects.entries()) {
+    for (const [i, e] of run.effects
+      .filter(
+        (e) => e.weapon !== "rotating-blade" && e.weapon !== "orbiting-shield",
+      )
+      .entries()) {
       const image =
         this.effects[i] ??
         (this.effects[i] = this.add.image(
@@ -502,14 +552,31 @@ export class DungeonScene extends Phaser.Scene {
         .setVisible(true)
         .setTexture("dungeon-weapons", e.weapon)
         .setPosition(
-          e.x + Math.cos(e.angle) * 24,
-          e.y - 23 + Math.sin(e.angle) * 24,
+          e.x +
+            Math.cos(e.angle) *
+              (e.weapon === "spear"
+                ? (e.radius ?? 85) * 0.5
+                : e.weapon === "hammer"
+                  ? 0
+                  : 24),
+          e.y -
+            23 +
+            Math.sin(e.angle) *
+              (e.weapon === "spear"
+                ? (e.radius ?? 85) * 0.5
+                : e.weapon === "hammer"
+                  ? 0
+                  : 24),
         )
         .setDisplaySize(
-          e.weapon === "spear" ? 85 : 54,
+          e.weapon === "spear" ? (e.radius ?? 85) : 54,
           e.weapon === "spear" ? 16 : 45,
         )
-        .setRotation(e.angle + (e.variant ? -1 : 1) * (0.22 - e.ttl) * 3)
+        .setRotation(
+          e.weapon === "spear"
+            ? e.angle
+            : e.angle + (e.variant ? -1 : 1) * (0.22 - e.ttl) * 3,
+        )
         .clearTint()
         .setAlpha(Math.min(1, e.ttl * 8))
         .setDepth(e.y + 2);
@@ -517,26 +584,58 @@ export class DungeonScene extends Phaser.Scene {
     }
     this.orbitals.forEach((img) => img.setVisible(false));
     let oi = 0;
-    for (const id of ["rotating-blade", "orbiting-shield"] as const)
+    for (const id of ["rotating-blade"] as const)
       if (s.weapons.includes(id)) {
-        const prefix = id === "rotating-blade" ? "blade" : "shield",
+        const prefix = "blade",
           count = run.level(prefix + "-double") ? 2 : 1;
         for (let i = 0; i < count; i++) {
-          const a = s.elapsed * (id === "rotating-blade" ? 3 : 2) + i * Math.PI,
-            r = run.weaponStats(id).range,
+          const a = run.orbitalAngle(id) + i * Math.PI,
+            r = run.orbitalRadius(id),
             img =
               this.orbitals[oi] ??
               (this.orbitals[oi] = this.add.image(0, 0, "dungeon-weapons", id));
           oi++;
+          const evolved = weaponIdentity(id, s.levels).evolved;
+          ink.lineStyle(2, evolved ? 0xefc76e : 0xb4d1bd, 0.45);
+          ink
+            .beginPath()
+            .arc(p.x, p.y - 20, r, a - 0.5, a, false)
+            .strokePath();
           img
             .setVisible(true)
+            .setAlpha(1)
             .setTexture("dungeon-weapons", id)
             .setPosition(p.x + Math.cos(a) * r, p.y - 20 + Math.sin(a) * r)
             .setDisplaySize(36, 36)
-            .setRotation(a)
+            .setRotation(a * 3)
+            .clearTint()
             .setDepth(p.y + Math.sin(a) * r);
+          if (evolved) img.setTint(0xf1cd80);
         }
       }
+    if (s.weapons.includes("orbiting-shield")) {
+      for (let i = 0; i < run.shieldCapacity; i++) {
+        const img =
+          this.orbitals[oi] ??
+          (this.orbitals[oi] = this.add.image(
+            0,
+            0,
+            "dungeon-weapons",
+            "orbiting-shield",
+          ));
+        oi++;
+        img
+          .setVisible(true)
+          .setTexture("dungeon-weapons", "orbiting-shield")
+          .setDisplaySize(26, 26)
+          .setPosition(p.x + (i ? -24 : 24), p.y - 18)
+          .setRotation(0)
+          .clearTint()
+          .setAlpha((s.shield?.charges ?? run.shieldCapacity) > i ? 0.9 : 0.2)
+          .setDepth(p.y + 2);
+        if (run.shieldCapacity === 2) img.setTint(0xf1cd80);
+      }
+    }
     this.pickups!.clear();
     for (const q of s.pickups) {
       if (q.kind === "pet") continue;
@@ -558,6 +657,7 @@ export class DungeonScene extends Phaser.Scene {
         .setScale(rescue.species === "dog" ? 0.12 : 0.09)
         .setDepth(rescue.y);
     } else this.rescueImage?.setVisible(false);
+    this.petImage?.setVisible(!!s.pet);
     if (s.pet) {
       this.petImage ??= this.add.image(
         s.pet.x,

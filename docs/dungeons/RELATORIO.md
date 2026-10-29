@@ -1,6 +1,6 @@
 # Dungeons e sobrevivência — primeira versão jogável
 
-> Revisões posteriores: [ritmo de sobrevivência, etapa 1](ritmo-sobrevivencia/RELATORIO.md) e [identidade das primeiras três armas](identidade-armas/RELATORIO.md).
+> Revisões posteriores: [ritmo de sobrevivência, etapa 1](ritmo-sobrevivencia/RELATORIO.md), [identidade das primeiras três armas](identidade-armas/RELATORIO.md) e [quatro armas restantes e Escudo de Choque](armas-defesa/RELATORIO.md).
 
 Implementação local posterior à preview.11. Não houve push, tag, release ou geração de executável Windows. A especificação recebida está em [ESPECIFICACAO-1.0.txt](ESPECIFICACAO-1.0.txt).
 
