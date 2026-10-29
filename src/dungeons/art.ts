@@ -3,7 +3,6 @@ import benches from "../../public/assets/visual/dungeons/benches.json";
 import urban from "../../public/assets/visual/dungeons/urban.json";
 import weapons from "../../public/assets/visual/dungeons/weapons.json";
 import pets from "../../public/assets/visual/dungeons/pets.json";
-import zombie from "../../public/assets/visual/dungeons/zombie.json";
 import courier from "../../public/assets/visual/dungeons/zombie-courier.json";
 import resident from "../../public/assets/visual/dungeons/zombie-resident.json";
 import demolisher from "../../public/assets/visual/dungeons/boss-demolisher.json";
@@ -13,7 +12,7 @@ import contaminated from "../../public/assets/visual/dungeons/boss-contaminated.
 import devourer from "../../public/assets/visual/dungeons/boss-devourer.json";
 import { setupVillagePropAtlas } from "../village-prop-atlas";
 export const DUNGEON_ART = {
-  urban, weapons, pets, zombie, benches,
+  urban, weapons, pets, benches,
   "zombie-courier": courier, "zombie-resident": resident,
   "boss-demolisher": demolisher, "boss-sentinel": sentinel,
   "boss-chained": chained, "boss-contaminated": contaminated,

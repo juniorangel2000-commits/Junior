@@ -1086,7 +1086,7 @@ fs.mkdirSync(out, { recursive: true });
     await page.evaluate(()=>{d.run.restore(window.xpDropRestore);d.renderRun();});
     const zombieArt = await page.evaluate(() => {
       window.zombieArtRestore=d.run.snapshot();const s=d.run.state;
-      s.enemies=[0,1,2].map(i=>({id:120003+i,x:1456+i*80,y:1152,hp:100,maxHp:100,speed:30,damage:8,kind:"walker",special:false,streak:0,lastHit:0}));
+      s.enemies=[0,1].map(i=>({id:120003+i,x:1496+i*80,y:1152,hp:100,maxHp:100,speed:30,damage:8,kind:"walker",special:false,streak:0,lastHit:0}));
       s.pickups=[];s.projectiles=[];s.player.x=1536;s.player.y=1320;
       const rows=[];
       for(const e of s.enemies) {
@@ -1099,7 +1099,7 @@ fs.mkdirSync(out, { recursive: true });
       s.player.x=1536;s.player.y=1320;s.elapsed=0;d.renderRun();d.ui.resume();d.ui.update(d.run);
       d.cameras.main.stopFollow().setZoom(2.2).centerOn(1536,1200);return rows;
     });
-    check("Três aparências de zumbi caminham nos quatro lados com escala e âncora estáveis",zombieArt.every(r=>new Set(r.frames.map(f=>f.frame)).size===4 && r.frames.every(f=>f.frame.startsWith(r.direction+"-")) && new Set(r.frames.map(f=>f.scale)).size===1 && new Set(r.frames.map(f=>f.origin)).size===1) && new Set(zombieArt.flatMap(r=>r.frames.map(f=>f.texture))).size===3,zombieArt);
+    check("Duas aparências de zumbi caminham nos quatro lados com escala e âncora estáveis",zombieArt.every(r=>new Set(r.frames.map(f=>f.frame)).size===4 && r.frames.every(f=>f.frame.startsWith(r.direction+"-")) && new Set(r.frames.map(f=>f.scale)).size===1 && new Set(r.frames.map(f=>f.origin)).size===1) && new Set(zombieArt.flatMap(r=>r.frames.map(f=>f.texture))).size===2,zombieArt);
     await render();await page.screenshot({path:out+"/zumbis-variados.png"});
     await page.evaluate(()=>{d.run.restore(window.zombieArtRestore);d.renderRun();d.ui.update(d.run);});
     const timedBosses = await page.evaluate(async () => {

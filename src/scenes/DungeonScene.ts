@@ -330,7 +330,7 @@ export class DungeonScene extends Phaser.Scene {
       if (!image) {
         image =
           this.enemyPool.pop() ??
-          this.add.image(e.x, e.y, "dungeon-zombie", "south-0");
+          this.add.image(e.x, e.y, "dungeon-zombie-courier", "south-0");
         image.clearTint().setVisible(true);
         this.enemyImages.set(e.id, image);
       }

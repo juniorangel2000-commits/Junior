@@ -3,8 +3,8 @@ import {enemySpritePose} from '../src/dungeons/enemy-sprites';
 import courier from '../public/assets/visual/dungeons/zombie-courier.json';
 import resident from '../public/assets/visual/dungeons/zombie-resident.json';
 import type {BossDirection} from '../src/dungeons/boss-sprites';
-it('keeps the original zombie and mixes both supplied appearances deterministically',()=>{
- expect(enemySpritePose(3,'south',0,false).texture).toBe('dungeon-zombie');
+it('uses only the two supplied appearances deterministically',()=>{
+ expect(enemySpritePose(3,'south',0,false).texture).toBe('dungeon-zombie-courier');
  expect(enemySpritePose(1,'south',0,false).texture).toBe('dungeon-zombie-courier');
  expect(enemySpritePose(2,'south',0,false).texture).toBe('dungeon-zombie-resident');
  expect(enemySpritePose(1,'south',0,false)).toEqual(enemySpritePose(1,'south',0,false));
@@ -21,4 +21,9 @@ it.each(['south','west','east','north'] as BossDirection[])('retains four walk f
 it('animates runners faster without changing their sprite scale',()=>{
  const walker=enemySpritePose(1,'south',.4,false),runner=enemySpritePose(1,'south',.4,true);
  expect(walker.frame).not.toBe(runner.frame);expect(walker.referenceHeight).toBe(runner.referenceHeight);
+});
+
+it('does not return the retired zombie for any enemy category',()=>{
+ for(let id=0;id<100;id++)for(const runner of [true,false])
+ expect(['dungeon-zombie-courier','dungeon-zombie-resident']).toContain(enemySpritePose(id,'south',2,runner).texture);
 });
