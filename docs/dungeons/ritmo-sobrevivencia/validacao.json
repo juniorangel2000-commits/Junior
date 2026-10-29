@@ -1,0 +1,176 @@
+{
+  "checks": [
+    {
+      "name": "Viagem chuvosa leva ao menu com duas opções",
+      "passed": true,
+      "details": {
+        "duration": 5.48
+      }
+    },
+    {
+      "name": "Menu continua legível em viewport estreito",
+      "passed": true,
+      "details": 680
+    },
+    {
+      "name": "Combate automático elimina inimigos e oferece três cartas sem comando de ataque",
+      "passed": true,
+      "details": {
+        "phase": "choice",
+        "kills": 10,
+        "elapsed": 21.266666666666882,
+        "cards": 3,
+        "level": 2
+      }
+    },
+    {
+      "name": "Arsenal limita a quatro armas e continua oferecendo melhorias",
+      "passed": true,
+      "details": {
+        "weapons": [
+          "sword",
+          "rotating-blade",
+          "orbiting-shield",
+          "bow"
+        ],
+        "cards": []
+      }
+    },
+    {
+      "name": "Pausa congela combate e cronômetro",
+      "passed": true,
+      "details": {
+        "phase": "paused",
+        "frozen": true
+      }
+    },
+    {
+      "name": "Save guarda a partida temporária e progresso permanente em campos separados",
+      "passed": true,
+      "details": true
+    },
+    {
+      "name": "Continuar retoma a expedição pausada com o mesmo Arsenal e tempo",
+      "passed": true,
+      "details": {
+        "weapons": [
+          "sword",
+          "rotating-blade",
+          "orbiting-shield",
+          "bow"
+        ],
+        "elapsed": 24.3333333333337,
+        "phase": "paused"
+      }
+    },
+    {
+      "name": "Abandono encerra temporários e preserva o retorno exato na estrada",
+      "passed": true,
+      "details": {
+        "settled": true,
+        "x": 720,
+        "y": 80
+      }
+    },
+    {
+      "name": "Saída não transporta para a cabana",
+      "passed": true,
+      "details": {
+        "x": 720,
+        "y": 80
+      }
+    },
+    {
+      "name": "Estacionamento inicia em rodada um com um pet separado da espada",
+      "passed": true,
+      "details": {
+        "mode": "mall-parking",
+        "round": 1,
+        "pet": "qa-dog",
+        "weapons": [
+          "sword"
+        ]
+      }
+    },
+    {
+      "name": "Resgate usa sprite do animal e mantém somente o companheiro escolhido ativo",
+      "passed": true,
+      "details": {
+        "visible": true,
+        "found": "cat",
+        "active": "qa-dog"
+      }
+    },
+    {
+      "name": "Carga de 240 inimigos mantém pools e efeitos limitados",
+      "passed": true,
+      "details": {
+        "averageUpdateMs": 1.7858333333084981,
+        "images": 240,
+        "enemies": 240,
+        "projectiles": 0,
+        "effects": 7
+      }
+    },
+    {
+      "name": "Acertos exibem dano, lampejo e fase da horda com pools limitados e pausa estável",
+      "passed": true,
+      "details": {
+        "impacts": 1,
+        "visibleNumbers": 1,
+        "pooledNumbers": 4,
+        "flashed": true,
+        "phaseLabel": "Primeiros sinaisResgatado: Gato · entra na coleção ao encerrar",
+        "frozen": true
+      }
+    },
+    {
+      "name": "Falha de armazenamento mantém o resultado disponível para tentar novamente",
+      "passed": true,
+      "details": {
+        "phase": "victory",
+        "settled": false
+      }
+    },
+    {
+      "name": "Repetir o salvamento entrega o resultado uma vez",
+      "passed": true
+    },
+    {
+      "name": "Pet segue para a floresta e auxilia na coleta uma vez por dia",
+      "passed": true,
+      "details": {
+        "companion": true,
+        "gained": 1,
+        "once": true,
+        "day": true
+      }
+    },
+    {
+      "name": "Árvores permanentes do personagem e pet são salvas pela interface",
+      "passed": true,
+      "details": {
+        "strength": 1,
+        "petSpeed": 1
+      }
+    },
+    {
+      "name": "Derrota encerra o combate e registra o resultado",
+      "passed": true,
+      "details": {
+        "phase": "defeat",
+        "settled": true
+      }
+    },
+    {
+      "name": "Retorno após derrota preserva a posição da estrada",
+      "passed": true
+    },
+    {
+      "name": "Sem erros JavaScript, HTTP ou WebGL",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

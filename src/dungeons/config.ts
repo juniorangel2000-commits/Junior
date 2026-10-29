@@ -45,8 +45,6 @@ export const DUNGEON_BALANCE = {
   playerSpeed: 84,
   enemyXP: 3,
   pickupRadius: 70,
-  xpBase: 12,
-  xpGrowth: 1.28,
   regenerationPerLevel: 0.12,
   rareRegenPerLevel: 0.35,
   petFindChance: 0.02,
@@ -93,8 +91,8 @@ export const WEAPONS: Record<
 > = {
   sword: {
     name: "Espada",
-    damage: 15,
-    cooldown: 1.1,
+    damage: 22,
+    cooldown: 0.85,
     range: 74,
     kind: "melee",
     speed: 0,

@@ -8,6 +8,7 @@ import {
   type PetSpecies,
 } from "./config";
 import { UPGRADES, rollUpgradeCards, type UpgradeCard } from "./upgrades";
+import { hordeProfile, experienceForLevel } from "./director";
 import { EnemySpatialIndex } from "./spatial";
 import { DUNGEON_ENTRY, dungeonBlocked } from "./maps";
 import type { DungeonProgress, OwnedPet, RunResult } from "./progression";
@@ -118,6 +119,14 @@ const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 export class DungeonRun {
   state: DungeonSnapshot;
   readonly effects: AttackEffect[] = [];
+  readonly impacts: {
+    enemyId: number;
+    x: number;
+    y: number;
+    damage: number;
+    at: number;
+    killed: boolean;
+  }[] = [];
   readonly spatial = new EnemySpatialIndex<Enemy>();
   private accumulator = 0;
   private get delayed() {
@@ -212,7 +221,7 @@ export class DungeonRun {
     );
   }
   get xpNeeded(): number {
-    return Math.floor(B.xpBase * B.xpGrowth ** (this.state.level - 1));
+    return experienceForLevel(this.state.level);
   }
   private active(id: string): boolean {
     return (this.state.buffs[id] ?? 0) > this.state.elapsed;
@@ -283,14 +292,29 @@ export class DungeonRun {
       this.tick(B.fixedStep);
     }
   }
-  private spawn(): boolean {
+  get horde() {
+    return hordeProfile(
+      this.state.dungeon,
+      this.state.elapsed,
+      this.state.round,
+    );
+  }
+  private spawn(member = 0): boolean {
     const s = this.state;
     if (s.enemies.length >= B.maxEnemies) return false;
+    const profile = this.horde;
     let x = 0,
       y = 0,
       found = false;
     for (let i = 0; i < 18; i++) {
-      const angle = this.random() * Math.PI * 2,
+      const spread = this.random();
+      // After several failed placements, use the full circle to escape blocked sectors.
+      const angle =
+          i >= 8 || profile.pattern === "surround"
+            ? spread * Math.PI * 2
+            : profile.sector +
+              (profile.pattern === "pincer" ? (member % 2) * Math.PI : 0) +
+              (spread - 0.5) * 1.1,
         dist = 420 + this.random() * 140;
       x = clamp(s.player.x + Math.cos(angle) * dist, 64, 3000);
       y = clamp(s.player.y + Math.sin(angle) * dist, 64, 2200);
@@ -303,15 +327,14 @@ export class DungeonRun {
       }
     }
     if (!found) return false;
-    const pressure =
-        DUNGEONS[s.dungeon].mode === "timed" ? s.elapsed / 180 : s.round / 8,
-      special = this.random() < Math.min(0.22, 0.03 + pressure * 0.02),
+    const pressure = profile.stage,
+      special = this.random() < profile.specialChance,
       kind = special
         ? "brute"
-        : pressure > 1 && this.random() < 0.22
+        : this.random() < profile.runnerChance
           ? "runner"
           : "walker";
-    const health = B.enemyHealth * (1 + pressure * 0.32) * (special ? 3 : 1);
+    const health = B.enemyHealth * profile.health * (special ? 3 : 1);
     s.enemies.push({
       id: this.nextId(),
       x,
@@ -333,6 +356,8 @@ export class DungeonRun {
   private tick(dt: number): void {
     const s = this.state;
     s.elapsed += dt;
+    for (let i = this.impacts.length - 1; i >= 0; i--)
+      if (s.elapsed - this.impacts[i].at > 0.42) this.impacts.splice(i, 1);
     s.player.invulnerable = Math.max(0, s.player.invulnerable - dt);
     for (const effect of this.effects) effect.ttl -= dt;
     for (let i = this.effects.length - 1; i >= 0; i--)
@@ -363,10 +388,8 @@ export class DungeonRun {
     else {
       s.spawnClock -= dt;
       if (s.spawnClock <= 0 && (mode === "timed" || s.waveRemaining > 0)) {
-        const n =
-          mode === "timed"
-            ? 1 + Math.floor(s.elapsed / 120)
-            : Math.min(4, 1 + Math.floor(s.round / 12));
+        const profile = this.horde,
+          n = profile.batch;
         for (
           let i = 0;
           i < n &&
@@ -374,13 +397,10 @@ export class DungeonRun {
           (mode === "timed" || s.waveRemaining > 0);
           i++
         ) {
-          const spawned = this.spawn();
+          const spawned = this.spawn(i);
           if (spawned && mode === "waves") s.waveRemaining--;
         }
-        s.spawnClock =
-          mode === "timed"
-            ? Math.max(0.3, B.spawnInterval - s.elapsed / 600)
-            : 0.55;
+        s.spawnClock = profile.interval;
       }
       if (mode === "waves" && s.waveRemaining === 0 && s.enemies.length === 0) {
         if (s.round >= DUNGEONS[s.dungeon].rounds) {
@@ -537,6 +557,15 @@ export class DungeonRun {
       damage *= 1 + Math.min(0.5, e.streak * 0.04);
     }
     e.hp -= damage;
+    if (this.impacts.length >= B.maxEffects) this.impacts.shift();
+    this.impacts.push({
+      enemyId: e.id,
+      x: e.x,
+      y: e.y,
+      damage,
+      at: s.elapsed,
+      killed: e.hp <= 0,
+    });
     if (e.hp > 0) return;
     s.kills++;
     if (s.pickups.length < 1000)
@@ -901,6 +930,7 @@ export class DungeonRun {
       };
     });
     this.effects.length = 0;
+    this.impacts.length = 0;
     this.accumulator = 0;
     this.spatial.rebuild(this.state.enemies);
   }

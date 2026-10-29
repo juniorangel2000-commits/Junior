@@ -6,7 +6,7 @@ export function audioSettings(value: unknown): AudioSettings {
   const volume = (n: unknown, fallback: number): number => typeof n === 'number' && Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : fallback;
   return { music: volume(v.music, .45), effects: volume(v.effects, .65), muted: v.muted === true };
 }
-export type Sound = 'step' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'craft' | 'door' | 'build' | 'thunder';
+export type Sound = 'step' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit';
 type AudioScene = 'title' | 'game';
 const BEAT = 60 / 76;
 export const MUSIC_DURATION = 64 * BEAT;
@@ -269,6 +269,7 @@ export function synthesizeEffect(ctx: BaseAudioContext, out: AudioNode, sound: S
   const now = ctx.currentTime;
   const note = (midi: number, delay = 0, duration = .15, gain = .12): void => tone(ctx, out, hz(midi), now + delay, duration, gain);
   switch (sound) {
+    case 'combat-hit': noise(ctx, out, .055, 1400, .11); note(48, 0, .06, .045); break;
     case 'ui': note(79, 0, .065, .055); break;
     case 'pickup': note(72); note(79, .1, .3); break;
     case 'craft': note(72); note(76, .1); note(79, .2, .4); break;

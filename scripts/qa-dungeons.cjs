@@ -362,6 +362,67 @@ fs.mkdirSync(out, { recursive: true });
         stress.effects <= 48,
       stress,
     );
+    const feedback = await page.evaluate(() => {
+      const before = d.run.snapshot();
+      d.run.state.phase = "fighting";
+      d.run.state.spawnClock = 10;
+      d.run.state.weapons = ["sword"];
+      d.run.state.cooldowns.sword = 0;
+      const p = d.run.state.player;
+      d.run.state.enemies = [
+        {
+          id: 88000,
+          x: p.x + 38,
+          y: p.y,
+          hp: 1000,
+          maxHp: 1000,
+          speed: 1,
+          damage: 0,
+          special: false,
+          kind: "walker",
+          streak: 0,
+          lastHit: 0,
+        },
+      ];
+      d.run.step(1 / 30);
+      d.run.pause();
+      d.lastPhase = "";
+      d.update(415000, 0);
+      const result = {
+        impacts: d.run.impacts.length,
+        visibleNumbers: d.damageNumbers.filter((t) => t.visible).length,
+        pooledNumbers: d.damageNumbers.length,
+        flashed: d.enemyImages.get(88000)?.tintFill === true,
+        phaseLabel: document.querySelector(".dungeon-buffs")?.textContent,
+      };
+      const time = d.run.state.elapsed;
+      d.update(416000, 200);
+      result.frozen = time === d.run.state.elapsed;
+      window.feedbackRestore = before;
+      return result;
+    });
+    check(
+      "Acertos exibem dano, lampejo e fase da horda com pools limitados e pausa estável",
+      feedback.impacts > 0 &&
+        feedback.visibleNumbers > 0 &&
+        feedback.pooledNumbers <= 48 &&
+        feedback.flashed &&
+        feedback.frozen &&
+        !!feedback.phaseLabel,
+      feedback,
+    );
+    await page.evaluate(() => {
+      d.ui.resume();
+      d.cameras.main.stopFollow().setZoom(1.8).centerOn(d.player.x, d.player.y);
+    });
+    await render();
+    await page.screenshot({ path: out + "/impacto-combate.png" });
+    await page.evaluate(() => {
+      d.run.restore(window.feedbackRestore);
+      d.syncPlayer();
+      d.lastPhase = "";
+      d.update(417000, 0);
+    });
     const victory = await page.evaluate(() => {
       window.realSetItem = Storage.prototype.setItem;
       Storage.prototype.setItem = function () {

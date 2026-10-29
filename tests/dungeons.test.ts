@@ -264,7 +264,9 @@ describe("automatic weapons and modes", () => {
     expect(r.state.pendingAttacks).toHaveLength(1);
     simulate(r, 0.25);
     expect(r.state.weapons).toHaveLength(1);
-    expect(r.state.enemies[0].hp).toBeCloseTo(1000 - 15 - 9);
+    expect(r.state.enemies[0].hp).toBeCloseTo(
+      1000 - WEAPONS.sword.damage * 1.6,
+    );
   });
   it("never spawns enemies on top of the player near a map edge", () => {
     for (let seed = 1; seed <= 30; seed++) {

@@ -49,6 +49,9 @@ export class DungeonScene extends Phaser.Scene {
   private enemyPool: Phaser.GameObjects.Image[] = [];
   private projectilePool: Phaser.GameObjects.Image[] = [];
   private effects: Phaser.GameObjects.Image[] = [];
+  private impactGraphics?: Phaser.GameObjects.Graphics;
+  private damageNumbers: Phaser.GameObjects.Text[] = [];
+  private lastImpactAt = -1;
   private orbitals: Phaser.GameObjects.Image[] = [];
   private petImage?: Phaser.GameObjects.Image;
   private rescueImage?: Phaser.GameObjects.Image;
@@ -85,6 +88,9 @@ export class DungeonScene extends Phaser.Scene {
     this.enemyPool = [];
     this.projectilePool = [];
     this.effects = [];
+    this.damageNumbers = [];
+    this.impactGraphics = undefined;
+    this.lastImpactAt = -1;
     this.orbitals = [];
     this.petImage = undefined;
     this.rescueImage = undefined;
@@ -233,6 +239,7 @@ export class DungeonScene extends Phaser.Scene {
       .setZoom(this.scale.width < 1000 ? 1.3 : 1.8)
       .startFollow(this.player.sprite, true, 0.16, 0.16);
     this.pickups = this.add.graphics().setDepth(5);
+    this.impactGraphics = this.add.graphics().setDepth(5000);
     this.lastPhase = "";
     this.syncPlayer();
     if (!resume) this.persist();
@@ -297,6 +304,9 @@ export class DungeonScene extends Phaser.Scene {
       this.enemyPool,
       new Set(s.enemies.map((e) => e.id)),
     );
+    const flashed = new Set(
+      run.impacts.filter((h) => s.elapsed - h.at < 0.09).map((h) => h.enemyId),
+    );
     for (const e of s.enemies) {
       let image = this.enemyImages.get(e.id);
       if (!image) {
@@ -327,7 +337,8 @@ export class DungeonScene extends Phaser.Scene {
         .setScale(e.special ? 0.25 : 0.2)
         .setPosition(e.x, e.y)
         .setDepth(e.y);
-      if (e.special) image.setTint(0xb59e8b);
+      if (flashed.has(e.id)) image.setTintFill(0xffebc2);
+      else if (e.special) image.setTint(0xb59e8b);
       else image.clearTint();
     }
     this.imagePool(
@@ -358,6 +369,63 @@ export class DungeonScene extends Phaser.Scene {
           q.weapon === "boomerang" ? s.elapsed * 12 : Math.atan2(q.vy, q.vx),
         )
         .setDepth(q.y + 1);
+    }
+    const ink = this.impactGraphics!;
+    ink.clear();
+    this.damageNumbers.forEach((text) => text.setVisible(false));
+    for (const [i, hit] of run.impacts.entries()) {
+      const age = s.elapsed - hit.at,
+        alpha = Math.max(0, 1 - age / 0.42);
+      const text =
+        this.damageNumbers[i] ??
+        (this.damageNumbers[i] = this.add
+          .text(0, 0, "", {
+            fontFamily: "monospace",
+            fontSize: "12px",
+            fontStyle: "bold",
+            stroke: "#1c231e",
+            strokeThickness: 3,
+          })
+          .setOrigin(0.5)
+          .setDepth(5001));
+      text
+        .setVisible(true)
+        .setText(String(Math.round(hit.damage)))
+        .setColor(hit.killed ? "#ffe3a0" : "#f0eee0")
+        .setPosition(hit.x, hit.y - 42 - age * 32)
+        .setAlpha(alpha);
+      ink.lineStyle(1.5, hit.killed ? 0xe6c17c : 0xf5ecd1, alpha);
+      if (age < 0.14) {
+        const r = 4 + age * 50;
+        ink.lineBetween(hit.x - r, hit.y - 24 - r, hit.x + r, hit.y - 24 + r);
+        ink.lineBetween(hit.x + r, hit.y - 24 - r, hit.x - r, hit.y - 24 + r);
+      }
+    }
+    // Sound follows simulation time; repeated renders while paused never replay a hit.
+    const latest = run.impacts.at(-1);
+    if (latest && latest.at - this.lastImpactAt >= 0.1) {
+      gameAudio.play("combat-hit");
+      this.lastImpactAt = latest.at;
+    }
+    for (const effect of run.effects) {
+      if (effect.weapon !== "sword" && effect.weapon !== "hammer") continue;
+      const age = 0.22 - effect.ttl,
+        alpha = effect.ttl / 0.22;
+      ink.lineStyle(effect.weapon === "hammer" ? 3 : 2, 0xe4d6af, alpha);
+      if (effect.weapon === "hammer")
+        ink.strokeCircle(effect.x, effect.y - 12, 12 + age * 140);
+      else
+        ink
+          .beginPath()
+          .arc(
+            effect.x,
+            effect.y - 20,
+            run.weaponStats("sword").range * 0.8,
+            effect.angle - 0.75 + age * 3,
+            effect.angle + 0.75 + age * 3,
+            false,
+          )
+          .strokePath();
     }
     this.effects.forEach((img) => img.setVisible(false));
     for (const [i, e] of run.effects.entries()) {
@@ -410,11 +478,7 @@ export class DungeonScene extends Phaser.Scene {
     for (const q of s.pickups) {
       if (q.kind === "pet") continue;
       this.pickups!.fillStyle(
-        q.kind === "xp"
-          ? 0xb6c99a
-          : q.kind === "health"
-            ? 0xd9a392
-            : 0x97b8bd,
+        q.kind === "xp" ? 0xb6c99a : q.kind === "health" ? 0xd9a392 : 0x97b8bd,
         0.9,
       ).fillCircle(q.x, q.y - 3, q.kind === "xp" ? 3 : 7);
     }
