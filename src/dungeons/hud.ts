@@ -2,6 +2,7 @@ import { DUNGEONS, PETS, type WeaponId } from "./config";
 import { weaponIdentity } from "./weapon-identity";
 import { nextWeaponOfferLevel } from "./upgrades";
 import { bossProfile } from "./bosses";
+import { BOSS_ATTACK_LABELS } from "./boss-combat";
 import type { DungeonRun } from "./run";
 const buffNames: Record<string, string> = {
   critical: "Crítico 20%",
@@ -48,7 +49,7 @@ export function dungeonHUD(
  <div class="hud-clock"><strong>${clock}</strong><span>${d.mode === "timed" ? "SOBREVIVA" : `RODADA ${s.round} / 50`}</span></div>
  <div class="hud-score"><strong>${s.kills.toLocaleString("pt-BR")}</strong><span>ELIMINADOS</span><small>${d.mode === "waves" ? `${s.waveRemaining + s.enemies.length} restantes` : `${s.enemies.length} na horda`}</small></div>
  <button class="hud-pause" data-pause aria-label="Pausar expedição" title="Pausar · ESC"><svg width="12" height="14" viewBox="0 0 12 14" fill="currentColor" aria-hidden="true"><rect x="1" y="1" width="3" height="12"/><rect x="8" y="1" width="3" height="12"/></svg></button>
- ${boss ? `<div class="dungeon-boss"><strong>${bossProfile(s.round).name}</strong><meter aria-label="Vida do chefe" min="0" max="${boss.maxHp}" value="${boss.hp}"></meter><span>${Math.ceil(boss.hp)} / ${Math.ceil(boss.maxHp)}</span></div>` : ""}
+ ${boss ? `<div class="dungeon-boss"><strong>${bossProfile(s.round).name}${s.round === 50 && boss.hp <= boss.maxHp / 2 ? " · Enfurecido" : ""}</strong><meter aria-label="Vida do chefe" min="0" max="${boss.maxHp}" value="${boss.hp}"></meter><span>${Math.ceil(boss.hp)} / ${Math.ceil(boss.maxHp)}</span>${boss.boss?.action && boss.boss.action.stage !== "recovery" ? `<small class="boss-skill">${BOSS_ATTACK_LABELS[boss.boss.action.kind]}</small>` : ""}</div>` : ""}
  <div class="dungeon-buffs"><span class="hud-stage">${run.horde.name}</span>${buffs}${shield}${s.pickups.some((p) => p.kind === "xp" && p.attracted) ? "<span>Ímã atraindo experiência</span>" : ""}${s.foundPet ? `<span>${PETS[s.foundPet].name}${s.foundPetRare ? " raro" : ""} resgatado</span>` : ""}</div>
  <div class="hud-bottom">
  <div class="hud-vitals"><div class="hud-health ${s.player.hp / run.maxHealth < 0.25 ? "low" : ""}"><div><span>VIDA</span><strong>${Math.ceil(s.player.hp)} <small>/ ${Math.round(run.maxHealth)}</small></strong></div><meter aria-label="Vida do personagem" min="0" max="${run.maxHealth}" value="${s.player.hp}"></meter></div>

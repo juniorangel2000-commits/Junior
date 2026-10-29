@@ -53,6 +53,7 @@ export function hordeProfile(
     health: 1 + progress * 1.5,
     damage: 1 + progress * 0.75,
     speed: 1 + progress * 0.3,
+    experience: timed ? 1 + progress * 0.25 : 1,
     specialChance: 0.02 + stage * 0.025,
     runnerChance: stage === 0 ? 0 : 0.1 + stage * 0.025,
   };

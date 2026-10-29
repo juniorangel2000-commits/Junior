@@ -1,0 +1,103 @@
+{
+  "file": "assets/visual/dungeons/boss-demolisher.png",
+  "sha256": "4bb816189901b612f3f83c882473d20d836ee3ec38249745ea8903d316f8329f",
+  "alphaCutoff": 160,
+  "frames": {
+    "south-0": {
+      "x": 61,
+      "y": 34,
+      "width": 222,
+      "height": 277
+    },
+    "south-1": {
+      "x": 369,
+      "y": 37,
+      "width": 217,
+      "height": 271
+    },
+    "south-2": {
+      "x": 680,
+      "y": 34,
+      "width": 223,
+      "height": 277
+    },
+    "south-3": {
+      "x": 986,
+      "y": 37,
+      "width": 217,
+      "height": 271
+    },
+    "west-0": {
+      "x": 48,
+      "y": 335,
+      "width": 240,
+      "height": 282
+    },
+    "west-1": {
+      "x": 363,
+      "y": 335,
+      "width": 241,
+      "height": 280
+    },
+    "west-2": {
+      "x": 669,
+      "y": 335,
+      "width": 251,
+      "height": 282
+    },
+    "west-3": {
+      "x": 989,
+      "y": 338,
+      "width": 236,
+      "height": 279
+    },
+    "east-0": {
+      "x": 39,
+      "y": 639,
+      "width": 246,
+      "height": 272
+    },
+    "east-1": {
+      "x": 354,
+      "y": 641,
+      "width": 242,
+      "height": 273
+    },
+    "east-2": {
+      "x": 665,
+      "y": 639,
+      "width": 243,
+      "height": 274
+    },
+    "east-3": {
+      "x": 972,
+      "y": 642,
+      "width": 248,
+      "height": 269
+    },
+    "north-0": {
+      "x": 44,
+      "y": 922,
+      "width": 235,
+      "height": 290
+    },
+    "north-1": {
+      "x": 358,
+      "y": 923,
+      "width": 233,
+      "height": 289
+    },
+    "north-2": {
+      "x": 666,
+      "y": 922,
+      "width": 236,
+      "height": 290
+    },
+    "north-3": {
+      "x": 981,
+      "y": 922,
+      "width": 233,
+      "height": 290
+    }
+  }
+}

@@ -119,3 +119,8 @@ describe("survival rhythm", () => {
     expect(r.impacts).toHaveLength(0);
   });
 });
+it("rewards the growing timed horde with up to 25% more XP without changing wave rewards", () => {
+  expect(hordeProfile("abandoned-central-square", 0, 1).experience).toBe(1);
+  expect(hordeProfile("abandoned-central-square", 900, 1).experience).toBe(1.25);
+  expect(hordeProfile("mall-parking", 1800, 50).experience).toBe(1);
+});

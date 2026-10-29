@@ -1,0 +1,103 @@
+{
+  "file": "assets/visual/dungeons/boss-devourer.png",
+  "sha256": "ca1b4887cb8450aaa28b920c4a6711b282df944f7f3fd8538c700f8534bf4b6f",
+  "alphaCutoff": 160,
+  "frames": {
+    "south-0": {
+      "x": 42,
+      "y": 20,
+      "width": 255,
+      "height": 288
+    },
+    "south-1": {
+      "x": 352,
+      "y": 20,
+      "width": 246,
+      "height": 288
+    },
+    "south-2": {
+      "x": 664,
+      "y": 21,
+      "width": 252,
+      "height": 287
+    },
+    "south-3": {
+      "x": 974,
+      "y": 20,
+      "width": 245,
+      "height": 288
+    },
+    "west-0": {
+      "x": 63,
+      "y": 326,
+      "width": 230,
+      "height": 283
+    },
+    "west-1": {
+      "x": 381,
+      "y": 326,
+      "width": 233,
+      "height": 284
+    },
+    "west-2": {
+      "x": 695,
+      "y": 326,
+      "width": 222,
+      "height": 285
+    },
+    "west-3": {
+      "x": 1004,
+      "y": 326,
+      "width": 221,
+      "height": 283
+    },
+    "east-0": {
+      "x": 37,
+      "y": 631,
+      "width": 236,
+      "height": 285
+    },
+    "east-1": {
+      "x": 345,
+      "y": 632,
+      "width": 233,
+      "height": 286
+    },
+    "east-2": {
+      "x": 658,
+      "y": 631,
+      "width": 230,
+      "height": 287
+    },
+    "east-3": {
+      "x": 970,
+      "y": 631,
+      "width": 237,
+      "height": 287
+    },
+    "north-0": {
+      "x": 34,
+      "y": 932,
+      "width": 252,
+      "height": 291
+    },
+    "north-1": {
+      "x": 342,
+      "y": 930,
+      "width": 257,
+      "height": 294
+    },
+    "north-2": {
+      "x": 652,
+      "y": 933,
+      "width": 261,
+      "height": 291
+    },
+    "north-3": {
+      "x": 966,
+      "y": 932,
+      "width": 253,
+      "height": 291
+    }
+  }
+}

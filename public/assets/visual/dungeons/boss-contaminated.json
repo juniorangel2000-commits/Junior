@@ -1,0 +1,103 @@
+{
+  "file": "assets/visual/dungeons/boss-contaminated.png",
+  "sha256": "3cfc7d614a08ad444aa955b8065d8acdff8742ad33471bb3a6f1ceb9c2382479",
+  "alphaCutoff": 160,
+  "frames": {
+    "south-0": {
+      "x": 60,
+      "y": 34,
+      "width": 215,
+      "height": 272
+    },
+    "south-1": {
+      "x": 371,
+      "y": 34,
+      "width": 209,
+      "height": 272
+    },
+    "south-2": {
+      "x": 685,
+      "y": 33,
+      "width": 214,
+      "height": 273
+    },
+    "south-3": {
+      "x": 998,
+      "y": 34,
+      "width": 209,
+      "height": 272
+    },
+    "west-0": {
+      "x": 67,
+      "y": 336,
+      "width": 213,
+      "height": 276
+    },
+    "west-1": {
+      "x": 382,
+      "y": 336,
+      "width": 210,
+      "height": 276
+    },
+    "west-2": {
+      "x": 695,
+      "y": 336,
+      "width": 217,
+      "height": 276
+    },
+    "west-3": {
+      "x": 1011,
+      "y": 338,
+      "width": 211,
+      "height": 274
+    },
+    "east-0": {
+      "x": 40,
+      "y": 640,
+      "width": 217,
+      "height": 278
+    },
+    "east-1": {
+      "x": 355,
+      "y": 644,
+      "width": 216,
+      "height": 274
+    },
+    "east-2": {
+      "x": 660,
+      "y": 642,
+      "width": 224,
+      "height": 281
+    },
+    "east-3": {
+      "x": 982,
+      "y": 644,
+      "width": 216,
+      "height": 274
+    },
+    "north-0": {
+      "x": 50,
+      "y": 941,
+      "width": 217,
+      "height": 276
+    },
+    "north-1": {
+      "x": 362,
+      "y": 941,
+      "width": 218,
+      "height": 276
+    },
+    "north-2": {
+      "x": 681,
+      "y": 941,
+      "width": 214,
+      "height": 276
+    },
+    "north-3": {
+      "x": 989,
+      "y": 941,
+      "width": 218,
+      "height": 276
+    }
+  }
+}

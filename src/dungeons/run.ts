@@ -12,6 +12,7 @@ import { hordeProfile, experienceForLevel } from "./director";
 import { insideSwordArc } from "./weapon-identity";
 import { dungeonWaypoint, dungeonSegmentClear } from "./navigation";
 import { bossProfile, isBossRound } from "./bosses";
+import { advanceBossCombat, type BossCombatState } from "./boss-combat";
 import { EnemySpatialIndex } from "./spatial";
 import { DUNGEON_ENTRY, dungeonBlocked, safeDungeonPoint } from "./maps";
 import type { DungeonProgress, OwnedPet, RunResult } from "./progression";
@@ -28,6 +29,7 @@ export interface Enemy {
   streak: number;
   lastHit: number;
   detour?: { x: number; y: number };
+  boss?: BossCombatState;
 }
 export interface Projectile {
   id: number;
@@ -491,6 +493,15 @@ export class DungeonRun {
       }
     }
     for (const e of s.enemies) {
+      if (e.hp <= 0) continue;
+      if (e.kind === "boss") {
+        const pursue = advanceBossCombat(
+          e, s.player, s.round, s.dungeon, dt,
+          (damage) => this.hurtPlayer(damage),
+        );
+        if (s.phase === "defeat") return;
+        if (!pursue) continue;
+      }
       const dx = s.player.x - e.x,
         dy = s.player.y - e.y,
         d = Math.hypot(dx, dy) || 1,
@@ -499,7 +510,8 @@ export class DungeonRun {
         my = (dy / d) * speed;
       if (
         e.detour &&
-        Math.hypot(e.detour.x - e.x, e.detour.y - e.y) < speed * 2
+        (Math.hypot(e.detour.x - e.x, e.detour.y - e.y) < speed * 2 ||
+          !dungeonSegmentClear(s.dungeon, e.x, e.y, e.detour.x, e.detour.y))
       ) {
         delete e.detour;
         // Finish routing around the obstacle rather than cutting back into it
@@ -525,30 +537,8 @@ export class DungeonRun {
         my = ((e.detour.y - e.y) / distance) * speed;
       }
       this.moveEnemy(e, mx, my);
-      if (
-        d < 22 &&
-        s.player.invulnerable === 0 &&
-        !this.active("invulnerable")
-      ) {
-        if (this.blockWithShield()) continue;
-        const reduction = Math.min(
-          0.75,
-          this.bonus("defense") +
-            s.permanent.resistance * 0.02 +
-            (s.pet && s.pet.hp > 0
-              ? PETS[s.pet.species].protection +
-                s.pet.attributes.protection * 0.01 +
-                this.bonus("pet-protection")
-              : 0),
-        );
-        s.player.hp -= Math.max(1, e.damage * (1 - reduction));
-        s.player.invulnerable = B.contactGrace;
-        if (s.player.hp <= 0) {
-          s.player.hp = 0;
-          s.phase = "defeat";
-          return;
-        }
-      }
+      if (d < 22) this.hurtPlayer(e.damage);
+      if (s.phase === "defeat") return;
     }
     this.spatial.rebuild(s.enemies.filter((e) => e.hp > 0));
     for (const weapon of s.weapons) {
@@ -573,7 +563,11 @@ export class DungeonRun {
       for (const [key, until] of Object.entries(s.orbitalHits))
         if (until < s.elapsed) delete s.orbitalHits[key];
   }
-  private moveEnemy(e: { x: number; y: number }, dx: number, dy: number): void {
+  private moveEnemy(
+    e: { x: number; y: number; boss?: BossCombatState }, dx: number, dy: number,
+  ): void {
+    // A committed charge keeps its warned lane even when struck by knockback.
+    if (e.boss?.action?.kind === "charge") return;
     const id = this.state.dungeon;
     if (!dungeonBlocked(id, e.x + dx, e.y)) e.x += dx;
     if (!dungeonBlocked(id, e.x, e.y + dy)) e.y += dy;
@@ -687,6 +681,7 @@ export class DungeonRun {
       e.kind === "boss"
         ? bossProfile(s.round).xp
         : (DUNGEONS[s.dungeon].mode === "timed" ? B.timedEnemyXP : B.enemyXP) *
+          this.horde.experience *
           (e.special ? 4 : 1);
     if (s.pickups.length < 1000)
       s.pickups.push({
@@ -795,6 +790,23 @@ export class DungeonRun {
   }
   get shieldCapacity(): number {
     return this.level("shield-double") ? 2 : 1;
+  }
+  /** Contact and boss skills share defense, shield charges and the same hit grace. */
+  private hurtPlayer(damage: number): void {
+    const s = this.state;
+    if (s.player.invulnerable > 0 || this.active("invulnerable")) return;
+    if (this.blockWithShield()) return;
+    const reduction = Math.min(
+      0.75,
+      this.bonus("defense") + s.permanent.resistance * 0.02 +
+        (s.pet && s.pet.hp > 0
+          ? PETS[s.pet.species].protection + s.pet.attributes.protection * 0.01 +
+            this.bonus("pet-protection")
+          : 0),
+    );
+    s.player.hp = Math.max(0, s.player.hp - Math.max(1, damage * (1 - reduction)));
+    s.player.invulnerable = B.contactGrace;
+    if (s.player.hp === 0) s.phase = "defeat";
   }
   get shieldRadius(): number {
     return (
@@ -1180,7 +1192,13 @@ export class DungeonRun {
     );
     for (const enemy of this.state.enemies) {
       const free = safeDungeonPoint(this.state.dungeon, enemy.x, enemy.y);
-      if (free.x !== enemy.x || free.y !== enemy.y) delete enemy.detour;
+      if (free.x !== enemy.x || free.y !== enemy.y) {
+        delete enemy.detour;
+        if (enemy.boss) {
+          delete enemy.boss.action;
+          enemy.boss.cooldown = 5;
+        }
+      }
       Object.assign(enemy, free);
       if (
         enemy.detour &&

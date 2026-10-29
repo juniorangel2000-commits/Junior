@@ -67,7 +67,7 @@ export const DUNGEON_BALANCE = {
   arsenalWeight: 16,
   arsenalFirstOfferLevel: 10,
   arsenalOfferEveryLevels: 20,
-  xpLevelCostCap: 90,
+  xpLevelCostCap: 89,
   timedEnemyXP: 4,
   spawnInterval: 2.2,
   eventInterval: 45,

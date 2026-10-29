@@ -7,6 +7,7 @@ import { dungeonBlocked } from "../src/dungeons/maps";
 import { UPGRADES, type UpgradeCard } from "../src/dungeons/upgrades";
 import { validDungeonSnapshot } from "../src/dungeons/snapshot";
 import { DUNGEON_BALANCE } from "../src/dungeons/config";
+import { bossPointInAttack } from "../src/dungeons/boss-combat";
 import type { DungeonId, WeaponId } from "../src/dungeons/config";
 
 // This is a reproducible bot, not a human playtest or a claim about enjoyment.
@@ -148,6 +149,14 @@ function simulate(
         const px = s.player.x + x * 80,
           py = s.player.y + y * 80;
         let value = (dx * x + dy * y) * 8;
+        // React only to the same visible warnings/active zones shown to the player.
+        for (const boss of s.enemies) {
+          const a = boss.boss?.action;
+          if (!a || a.stage === "recovery") continue;
+          if (bossPointInAttack(a, px, py)) value -= 500;
+          if (bossPointInAttack(a, s.player.x + x * 40, s.player.y + y * 40))
+            value -= 150;
+        }
         for (const e of enemies) {
           const distance = Math.hypot(e.x - px, e.y - py);
           const safety =
@@ -220,6 +229,8 @@ function simulate(
         weapons: [...s.weapons],
         runners: s.enemies.filter((e) => e.kind === "runner").length,
         brutes: s.enemies.filter((e) => e.kind === "brute").length,
+        bossHP: s.enemies.find(e => e.kind === "boss")?.hp,
+        bossSkill: s.enemies.find(e => e.kind === "boss")?.boss?.action?.kind,
       });
       lastRound = s.round;
     }
@@ -327,6 +338,9 @@ for (const dungeon of [
     !process.argv.includes("--timed-only") ||
     dungeon === "abandoned-central-square"
   )
+  if (
+    !process.argv.includes("--waves-only") || dungeon === "mall-parking"
+  )
     for (const build of Object.keys(builds))
       for (const seed of process.argv.includes("--quick")
         ? [1234567]
@@ -340,6 +354,9 @@ if (!process.argv.includes("--quick"))
     if (
       !process.argv.includes("--timed-only") ||
       dungeon === "abandoned-central-square"
+    )
+    if (
+      !process.argv.includes("--waves-only") || dungeon === "mall-parking"
     )
       results.push(simulate(dungeon, "control", 1234567, true));
 writeFileSync(

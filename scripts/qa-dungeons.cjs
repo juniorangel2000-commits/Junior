@@ -964,7 +964,7 @@ fs.mkdirSync(out, { recursive: true });
       "Chefe final tem salto de vida e dano e barra identificada",
       bosses.rows[4].hp > bosses.rows[3].hp * 1.9 &&
         bosses.rows[4].damage > bosses.rows[3].damage * 1.9 &&
-        bosses.label.includes("Chefe final"),
+        bosses.label.includes("O Devorador"),
       bosses.rows,
     );
     await render();
@@ -999,6 +999,54 @@ fs.mkdirSync(out, { recursive: true });
       d.syncPlayer();
       d.lastPhase = "";
       d.update(451000, 0);
+    });
+    await page.evaluate(() => { window.bossArtRestore = d.run.snapshot(); });
+    for (const [round, art, kind] of [
+      [10, "demolisher", "slam"], [20, "sentinel", "charge"],
+      [30, "chained", "chains"], [40, "contaminated", "plague"],
+      [50, "devourer", "charge"],
+    ]) {
+      const identity = await page.evaluate(async ({round, art}) => {
+        const { validDungeonSnapshot } = await import("/src/dungeons/snapshot.ts");
+        d.run.restore(window.bossArtRestore);
+        const s = d.run.state;
+        s.round = round; s.bossRound = round; s.waveRemaining = 0;
+        s.weapons = ["sword"]; s.levels = {}; s.cooldowns = { sword: 30 };
+        s.player = {x: 1536, y: 1240, hp: 100, invulnerable: 0};
+        s.pet = undefined; s.buffs = {}; s.pickups = []; s.projectiles = [];
+        s.phase = "fighting"; s.cards = []; s.pendingAttacks = [];
+        s.enemies = [{id: 999999, x: 1536, y: 1152, hp: 3000, maxHp: 3000,
+          speed: 30, damage: 20, kind: "boss", special: true, streak: 0,
+          lastHit: 0, boss: {cooldown: 0, sequence: 0}}];
+        d.run.step(1 / 30); d.run.pause(); d.lastPhase = "paused";
+        d.syncPlayer(); d.renderRun(); d.ui.resume(); d.ui.update(d.run);
+        d.cameras.main.stopFollow().setZoom(2.2).centerOn(1536, 1180);
+        return { texture: d.enemyImages.get(999999).texture.key,
+          frames: game.textures.get("dungeon-boss-" + art).getFrameNames().length,
+          action: s.enemies[0].boss.action, hp: s.player.hp,
+          label: document.querySelector(".dungeon-boss").textContent,
+          valid: validDungeonSnapshot(d.run.snapshot()) };
+      }, {round, art});
+      check("Chefe " + round + " usa arte própria, caminhada e aviso inofensivo", identity.texture === "dungeon-boss-" + art && identity.frames === 16 && identity.action.kind === kind && identity.action.stage === "warning" && identity.hp === 100 && identity.valid, identity);
+      await render();
+      await page.screenshot({path: out + "/chefe-" + round + "-aviso.png"});
+      const active = await page.evaluate(async () => {
+        const { validDungeonSnapshot } = await import("/src/dungeons/snapshot.ts");
+        d.run.resume();
+        for (let i = 0; i < 70 && d.run.state.enemies[0].boss.action.stage === "warning"; i++) d.run.step(1 / 30);
+        d.run.pause();
+        const before = d.run.snapshot(); d.run.restore(before);
+        const preserved = JSON.stringify(d.run.snapshot()) === JSON.stringify(before);
+        d.syncPlayer(); d.renderRun(); d.ui.update(d.run);
+        return {stage: d.run.state.enemies[0].boss.action.stage, preserved, valid: validDungeonSnapshot(d.run.snapshot())};
+      });
+      check("Golpe ativo do chefe " + round + " preserva estado ao retomar", active.stage === "active" && active.preserved && active.valid, active);
+      await render();
+      await page.screenshot({path: out + "/chefe-" + round + "-ativo.png"});
+    }
+    await page.evaluate(() => {
+      d.run.restore(window.bossArtRestore); d.syncPlayer();
+      d.lastPhase = ""; d.update(459000, 0);
     });
     const hudLayout = await page.evaluate(() => {
       window.hudLayoutRestore = d.run.snapshot();

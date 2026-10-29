@@ -1,0 +1,103 @@
+{
+  "file": "assets/visual/dungeons/boss-chained.png",
+  "sha256": "4d3a2fc725cf947f211570a46b627d15574b0114573742d7417666b890257ec3",
+  "alphaCutoff": 160,
+  "frames": {
+    "south-0": {
+      "x": 60,
+      "y": 25,
+      "width": 220,
+      "height": 289
+    },
+    "south-1": {
+      "x": 365,
+      "y": 24,
+      "width": 216,
+      "height": 289
+    },
+    "south-2": {
+      "x": 677,
+      "y": 24,
+      "width": 218,
+      "height": 290
+    },
+    "south-3": {
+      "x": 990,
+      "y": 25,
+      "width": 217,
+      "height": 289
+    },
+    "west-0": {
+      "x": 69,
+      "y": 329,
+      "width": 202,
+      "height": 289
+    },
+    "west-1": {
+      "x": 383,
+      "y": 330,
+      "width": 213,
+      "height": 284
+    },
+    "west-2": {
+      "x": 696,
+      "y": 328,
+      "width": 210,
+      "height": 292
+    },
+    "west-3": {
+      "x": 1007,
+      "y": 329,
+      "width": 209,
+      "height": 285
+    },
+    "east-0": {
+      "x": 56,
+      "y": 632,
+      "width": 207,
+      "height": 290
+    },
+    "east-1": {
+      "x": 362,
+      "y": 631,
+      "width": 220,
+      "height": 291
+    },
+    "east-2": {
+      "x": 667,
+      "y": 632,
+      "width": 221,
+      "height": 290
+    },
+    "east-3": {
+      "x": 983,
+      "y": 632,
+      "width": 212,
+      "height": 291
+    },
+    "north-0": {
+      "x": 47,
+      "y": 928,
+      "width": 224,
+      "height": 290
+    },
+    "north-1": {
+      "x": 358,
+      "y": 928,
+      "width": 222,
+      "height": 290
+    },
+    "north-2": {
+      "x": 667,
+      "y": 928,
+      "width": 227,
+      "height": 290
+    },
+    "north-3": {
+      "x": 986,
+      "y": 928,
+      "width": 221,
+      "height": 290
+    }
+  }
+}

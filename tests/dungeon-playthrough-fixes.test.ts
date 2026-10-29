@@ -62,6 +62,7 @@ describe("long session regressions", () => {
     [2584, 1784, 2737, 1938],
     [996, 1508, 818, 1331],
     [1380, 200, 1427, 479],
+    [898.5334356561904, 997.1172192265615, 1321.1784854038667, 921.3575944351776],
   ])(
     "routes a stranded pursuer around parked obstacles from %s,%s",
     (x, y, tx, ty) => {
@@ -84,6 +85,8 @@ describe("long session regressions", () => {
         lastHit: 0,
       };
       r.state.enemies = [e];
+      if (x < 900 && y > 990 && y < 1000)
+        e.detour = { x: 992, y: 1008 }; // Save captured from a stalled round 46.
       let closest = Infinity;
       for (let i = 0; i < 900; i++) {
         r.step(1 / 30);

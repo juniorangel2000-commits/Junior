@@ -21,6 +21,8 @@ import { preloadDungeonArt, setupDungeonArt } from "../dungeons/art";
 import { DungeonWorld, dungeonPreview } from "../dungeons/world";
 import { dungeonBlocked } from "../dungeons/maps";
 import { setupWeaponEffects } from "../dungeons/weapon-effects";
+import { bossProfile } from "../dungeons/bosses";
+import { drawBossAttacks } from "../dungeons/boss-render";
 import {
   swordHalfArc,
   weaponIdentity,
@@ -56,6 +58,7 @@ export class DungeonScene extends Phaser.Scene {
   private projectilePool: Phaser.GameObjects.Image[] = [];
   private effects: Phaser.GameObjects.Image[] = [];
   private impactGraphics?: Phaser.GameObjects.Graphics;
+  private bossGraphics?: Phaser.GameObjects.Graphics;
   private damageNumbers: Phaser.GameObjects.Text[] = [];
   private lastImpactAt = -1;
   private lastAttackEffect = 0;
@@ -97,6 +100,7 @@ export class DungeonScene extends Phaser.Scene {
     this.effects = [];
     this.damageNumbers = [];
     this.impactGraphics = undefined;
+    this.bossGraphics = undefined;
     this.lastImpactAt = -1;
     this.lastAttackEffect = 0;
     this.orbitals = [];
@@ -251,6 +255,7 @@ export class DungeonScene extends Phaser.Scene {
       .startFollow(this.player.sprite, true, 0.16, 0.16);
     this.pickups = this.add.graphics().setDepth(5);
     this.impactGraphics = this.add.graphics().setDepth(5000);
+    this.bossGraphics = this.add.graphics().setDepth(6);
     this.lastPhase = "";
     this.syncPlayer();
     if (!resume) this.persist();
@@ -327,8 +332,10 @@ export class DungeonScene extends Phaser.Scene {
         image.clearTint().setVisible(true);
         this.enemyImages.set(e.id, image);
       }
-      const dx = p.x - e.x,
-        dy = p.y - e.y,
+      const action = e.boss?.action;
+      const locked = action && (action.stage === "warning" || action.kind === "charge" && action.stage === "active");
+      const dx = locked ? Math.cos(action.angle) : p.x - e.x,
+        dy = locked ? Math.sin(action.angle) : p.y - e.y,
         direction =
           Math.abs(dx) > Math.abs(dy)
             ? dx < 0
@@ -339,26 +346,26 @@ export class DungeonScene extends Phaser.Scene {
               : "south";
       image
         .setTexture(
-          "dungeon-zombie",
+          e.kind === "boss" ? "dungeon-boss-" + bossProfile(s.round).art : "dungeon-zombie",
           direction +
             "-" +
-            (Math.floor(s.elapsed * (e.kind === "runner" ? 9 : 5)) % 4),
+            (action?.stage === "warning" || action?.stage === "recovery"
+              ? 0 : Math.floor(s.elapsed * (e.kind === "runner" ? 9 : 5)) % 4),
         )
         .setOrigin(0.5, 1)
         .setScale(
-          e.kind === "boss"
-            ? s.round === 50
-              ? 0.42
-              : 0.36
-            : e.special
+          e.kind === "boss" ? 1 : e.special
               ? 0.25
               : 0.2,
         )
         .setPosition(e.x, e.y)
         .setDepth(e.y);
+      if (e.kind === "boss") {
+        const height = s.round === 50 ? 112 : 94;
+        image.setDisplaySize(image.frame.width / image.frame.height * height, height);
+      }
       if (flashed.has(e.id)) image.setTintFill(0xffebc2);
-      else if (e.kind === "boss")
-        image.setTint(s.round === 50 ? 0xe39e88 : 0xc8b48e);
+      else if (e.kind === "boss") image.clearTint();
       else if (e.special) image.setTint(0xb59e8b);
       else image.clearTint();
     }
@@ -400,10 +407,12 @@ export class DungeonScene extends Phaser.Scene {
     }
     const ink = this.impactGraphics!;
     ink.clear();
+    this.bossGraphics!.clear();
+    drawBossAttacks(this.bossGraphics!, s.enemies, s.round);
     for (const e of s.enemies)
       if (e.kind === "boss")
         ink
-          .lineStyle(3, s.round === 50 ? 0xe58575 : 0xe1bd76, 0.8)
+          .lineStyle(3, bossProfile(s.round).color, 0.8)
           .strokeEllipse(e.x, e.y - 3, 60, 24);
     this.damageNumbers.forEach((text) => text.setVisible(false));
     for (const [i, hit] of run.impacts.entries()) {

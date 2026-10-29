@@ -1,6 +1,7 @@
 # Dungeons e sobrevivência — primeira versão jogável
 
-> Etapa mais recente: [mapas abertos, banco vertical e experiência junto da vida](mapas-abertos/RELATORIO.md).
+> Etapa mais recente: [identidade dos chefes, balanceamento e frentes para animação](chefes-e-balanceamento/RELATORIO.md).
+> Etapa anterior: [mapas abertos, banco vertical e experiência junto da vida](mapas-abertos/RELATORIO.md).
 > Revisão de base: [mapas e HUD](mapas-e-hud/RELATORIO.md).
 > Etapa anterior: [sessões completas, cartas, bônus de mapa e chefes](estabilizacao-e-cartas/RELATORIO.md).
 > Revisões posteriores: [ritmo de sobrevivência, etapa 1](ritmo-sobrevivencia/RELATORIO.md), [identidade das primeiras três armas](identidade-armas/RELATORIO.md) e [quatro armas restantes e Escudo de Choque](armas-defesa/RELATORIO.md).

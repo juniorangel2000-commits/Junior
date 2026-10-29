@@ -95,7 +95,9 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
         typeof e.special !== "boolean" ||
         !count(e.streak, 1e6) ||
         !finite(e.lastHit, 0, 1e9) ||
-        (e.detour !== undefined && !point(e.detour)),
+        (e.detour !== undefined && !point(e.detour)) ||
+        (e.boss !== undefined &&
+          (e.kind !== "boss" || !validBossCombat(e.boss))),
     )
   )
     return false;
@@ -246,4 +248,16 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
   )
     return false;
   return true;
+}
+
+function validBossCombat(value: unknown): boolean {
+  if (!rec(value) || !finite(value.cooldown, 0, 10) || !count(value.sequence))
+    return false;
+  if (value.action === undefined) return true;
+  const a = value.action;
+  return rec(a) && point(a) &&
+    ["slam", "charge", "chains", "plague"].includes(a.kind as string) &&
+    ["warning", "active", "recovery"].includes(a.stage as string) &&
+    finite(a.remaining, 0, 4) && finite(a.angle, -Math.PI, Math.PI) &&
+    finite(a.distance, 0, 260) && typeof a.hit === "boolean";
 }
