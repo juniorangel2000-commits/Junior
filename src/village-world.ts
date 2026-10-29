@@ -265,7 +265,7 @@ export class VillageWorld {
    if(villageDoorApproach(x,y)||villageBlockedAt(x,y))continue;
    place('whiteFlowers',x,y,.85);
   }
-  for(const detail of VILLAGE_SHORE_DETAILS)place(detail.kind,detail.x,detail.y,detail.kind==='reeds'?.85:1);
+  for(const detail of VILLAGE_SHORE_DETAILS)place(detail.kind,detail.x,detail.y);
   for(const [i,tree]of VILLAGE_TREES.entries()){
    place(i%3===0?'mushrooms':'fern',tree.x+.8,tree.y+.2,.8);
    if(i%3===0)place('whiteFlowers',tree.x-.8,tree.y+.4,.8);

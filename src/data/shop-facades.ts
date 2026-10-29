@@ -22,7 +22,7 @@ function facade(id: FacadeId, data: Omit<ShopFacade, 'texture' | 'file' | 'width
 }
 export const SHOP_FACADES: Readonly<Record<FacadeId, ShopFacade>> = {
   augusto: facade('augusto', {
-    scale: .255, door: { x: 822, y: 762 }, entranceHalfWidth: 95, foot: 827 / 1024,
+    scale: .32, door: { x: 822, y: 762 }, entranceHalfWidth: 95, foot: 827 / 1024,
     chimney: { x: 1240, y: 280 }, lamps: [{ x: 692, y: 607 }, { x: 956, y: 606 }],
     glass: [pane(434, 603, 155, 90), pane(1055, 602, 132, 84)],
     solids: [[160, 535, 1290, 238], [182, 700, 165, 92], [1280, 690, 145, 119]],

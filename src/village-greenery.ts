@@ -1,11 +1,10 @@
 import type Phaser from 'phaser';
 import manifest from '../public/assets/visual/village/greenery/manifest.json';
-import {VILLAGE_BUILDINGS,VILLAGE_PROPS,villageBlockedAt,villageDoorApproach,villageLakeDistance,villagePathEdge,villagePlazaDistance} from './data/village';
+import {VILLAGE_BUILDINGS,VILLAGE_PROPS,VILLAGE_WALKWAYS,villageBlockedAt,villageDoorApproach,villageLakeDistance,villagePathEdge,villagePlazaDistance,villageWaterPoint} from './data/village';
 import {villageLandmarkClearing} from './data/village-landmarks';
 import type {MapEditData} from './systems/map-editor';
-import {TOBIAS_SHOP} from './data/tobias-shop';
-import {BLACKSMITH_HOUSE} from './data/blacksmith-house';
-import {facadeForMerchant} from './data/shop-facades';
+import {villageBuildingArtBands,villageArtRectsOverlap} from './data/village-building-art';
+import {villagePierNear} from './data/village-pier';
 
 export const VILLAGE_GREENERY='village-greenery';
 export function preloadVillageGreenery(scene:Phaser.Scene):void{
@@ -33,30 +32,55 @@ const MEADOW_PATCHES=[
  [24,49],[22,54],[22,57],[34,62],[40,63],[52,63],[57,63],
 ] as const;
 
-const BUILDING_ART_BOUNDS=VILLAGE_BUILDINGS.flatMap(b=>{
- const art=b.shop==='carpenter'?TOBIAS_SHOP:b.shop==='blacksmith'
-  ?{...BLACKSMITH_HOUSE,width:BLACKSMITH_HOUSE.size,height:BLACKSMITH_HOUSE.size}:facadeForMerchant(b.shop);
- if(!art)return[];
- const left=(b.x+.5)*32-art.door.x*art.scale,top=b.y*32+25-art.door.y*art.scale;
- return [{left,top,right:left+art.width*art.scale,bottom:top+art.height*art.scale}];
-});
+const BUILDING_ART_BANDS=VILLAGE_BUILDINGS.flatMap(villageBuildingArtBands);
 
 export function villageBuildingGrassClearing(x:number,y:number):boolean{
  const px=(x+.5)*32,py=y*32+25;
- return BUILDING_ART_BOUNDS.some(b=>px>b.left-24&&px<b.right+24&&py>b.top-8&&py<b.bottom+42);
+ const grass={left:px-28,top:py-46,right:px+28,bottom:py+4};
+ return BUILDING_ART_BANDS.some(b=>villageArtRectsOverlap(grass,b));
+}
+
+const grassBoundsPoints=(x:number,y:number)=>[-24,0,24].flatMap(dx=>[-42,-21,0].map(dy=>({x:(x+.5)*32+dx,y:y*32+25+dy})));
+export const villageGrassClearOfPaths=(x:number,y:number,edits?:MapEditData):boolean=>
+ grassBoundsPoints(x,y).every(p=>{
+  const kind=edits?.terrain[`${Math.floor(p.x/32)},${Math.floor(p.y/32)}`];
+  return (!kind||['grass','meadow','forest','moss'].includes(kind))&&villagePathEdge(p.x/32-.5,p.y/32-.5)>.2;
+ });
+export const villageGrassClearOfWater=(x:number,y:number,edits?:MapEditData):boolean=>
+ grassBoundsPoints(x,y).every(p=>villageLakeDistance(p.x/32,p.y/32)>.35&&!villageWaterPoint(p.x,p.y,edits)&&!villagePierNear(p.x,p.y));
+
+function roadsidePockets():readonly (readonly [number,number])[]{
+ const pockets:Array<readonly [number,number]>=[];
+ for(const [ri,road] of VILLAGE_WALKWAYS.entries()){
+  if(road.pier)continue;
+  for(let i=1;i<road.points.length;i++){
+   const [ax,ay]=road.points[i-1],[bx,by]=road.points[i],dx=bx-ax,dy=by-ay,length=Math.hypot(dx,dy);
+   for(let at=1.8;at<length;at+=3.8){
+    for(const side of [-1,1]){
+     const seed=Math.floor(at*10)+ri*37+i*19+(side+1)*11;
+     if(seed%3===0)continue;
+     const offset=road.width+1.45+(seed%4)*.17,t=at/length;
+     pockets.push([ax+dx*t-side*dy/length*offset,ay+dy*t+side*dx/length*offset]);
+    }
+   }
+  }
+ }
+ return pockets;
 }
 
 /** Crossable foliage belongs to small planted groups, not a uniform scatter.
  * Reserve entire building silhouettes so blades never poke through a roof. */
 export function villageTallGrassPositions():{x:number;y:number;variant:number}[]{
  const result:{x:number;y:number;variant:number}[]=[];
- for(const [index,center] of MEADOW_PATCHES.entries())for(let i=0;i<5+index%3;i++){
+ const pockets=[...MEADOW_PATCHES,...roadsidePockets()];
+ for(const [index,center] of pockets.entries())for(let i=0;i<(index<MEADOW_PATCHES.length?5+index%3:3);i++){
   const angle=i*2.4+index*.7,radius=i===0?0:.7+(i%2)*.45;
   const x=center[0]+Math.cos(angle)*radius,y=center[1]+Math.sin(angle)*radius*.6;
-  if(villagePathEdge(x,y)<.85||villagePlazaDistance(x,y)<1.12||villageLakeDistance(x,y)<1)continue;
+  if(villagePlazaDistance(x,y)<1.12||!villageGrassClearOfPaths(x,y)||!villageGrassClearOfWater(x,y))continue;
   if(villageDoorApproach(x,y)||villageLandmarkClearing(x,y,18)||villageBlockedAt(Math.floor(x+.5),Math.floor(y+.5)))continue;
   if(VILLAGE_PROPS.some(p=>Math.hypot(p.x-x,p.y-y)<1.25))continue;
   if(villageBuildingGrassClearing(x,y))continue;
+  if(result.some(p=>Math.hypot(p.x-x,p.y-y)<.65))continue;
   result.push({x,y,variant:(index+i)%3});
  }
  return result;
@@ -64,7 +88,7 @@ export function villageTallGrassPositions():{x:number;y:number;variant:number}[]
 
 export function drawVillageTallGrass(scene:Phaser.Scene,edits?:MapEditData):void{
  for(const p of villageTallGrassPositions()){
-  if(edits?.terrain[`${Math.floor(p.x+.5)},${Math.floor(p.y+.5)}`]!==undefined)continue;
+  if(!villageGrassClearOfPaths(p.x,p.y,edits)||!villageGrassClearOfWater(p.x,p.y,edits))continue;
   const frame=['grass-a','grass-b','grass-c'][p.variant],r=manifest.frames[frame as keyof typeof manifest.frames];
   const scale=Math.min(48/r.width,42/r.height),y=p.y*32+25;
   scene.add.image((p.x+.5)*32,y,VILLAGE_GREENERY,frame).setOrigin(.5,1).setScale(scale).setDepth(y)

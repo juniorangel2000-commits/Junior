@@ -10,4 +10,6 @@ O relógio passa à metade da velocidade anterior. Os comerciantes almoçam em d
 
 As partidas da preview.9 continuam compatíveis. Construções e caminhos padrão da vila são atualizados automaticamente; pinturas manuais do editor continuam preservadas. Conversas em andamento não bloqueiam uma partida recarregada.
 
-Preparação local: não há nova publicação nesta etapa. As notas completas estão em `NOTAS-0.10.0-preview.10.md`.
+Os juncos sobre a água do lago foram retirados. A grama alta decorativa fica apenas em terra firme, fora dos caminhos.
+
+As notas completas estão em `NOTAS-0.10.0-preview.10.md`.

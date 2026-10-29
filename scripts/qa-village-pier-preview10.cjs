@@ -38,10 +38,17 @@ fs.mkdirSync(out,{recursive:true});
    const {VILLAGE_TREES,VILLAGE_ENTRY,VILLAGE_BUILDINGS}=await import('/src/data/village.ts');
    const {villageRoute}=await import('/src/systems/village-walk.ts');
    const {VILLAGE_PIER}=await import('/src/data/village-pier.ts');
+   const {villagePathEdge}=await import('/src/data/village.ts');
+   const grass=v.children.list.filter(o=>o.getData?.('village-tall-grass'));
+   const grassSafe=grass.every(o=>{
+    const b=o.getBounds();return [b.left,b.centerX,b.right].every(x=>[b.top,b.centerY,b.bottom].every(y=>!v.world.waterPointAt(x,y)&&villagePathEdge(x/32-.5,y/32-.5)>.2));
+   });
    return {
     pier:v.children.list.filter(o=>o.getData?.('village-pier')).length,
     pierBounds:VILLAGE_PIER,
     fishing:v.children.list.filter(o=>o.getData?.('village-fishing-prop')).length,
+    grass:grass.length,grassSafe,
+    reeds:v.children.list.filter(o=>o.texture?.key==='forest-detail-reeds').length,
     barricades:barricades.length,bloody:barricades.filter(o=>o.getData('village-barricade-blood')).length,
     views:v.textures.get('village-barricades').getFrameNames().length,
     trees:VILLAGE_TREES.length,species:new Set(VILLAGE_TREES.map(t=>t.kind)).size,
@@ -50,6 +57,7 @@ fs.mkdirSync(out,{recursive:true});
    };
   });
   check('Píer e quatro enfeites de pesca carregados',art.pier===2&&art.fishing===4,art);
+  check('Mais grama alta, sem nenhuma parte sobre caminhos ou água',art.grass>=150&&art.grassSafe,art);
   check('Barricadas em oito direções com variantes manchadas',art.barricades===18&&art.bloody===5&&art.views===16,art);
   check('Floresta densa de seis espécies e acesso às dez lojas',art.trees>=200&&art.species===6&&art.routes.every(r=>r.length>0),art);
   check('Trigos substituídos por canteiros verticais',art.wheat.length===2&&art.wheat.every(o=>o.texture==='village-wheat'&&o.height>o.width*1.8),art.wheat);
@@ -80,7 +88,10 @@ fs.mkdirSync(out,{recursive:true});
    ['transicao-casa-comunitaria',1810,510,2],['barricadas-norte',1490,250,1.4],
    ['barricadas-leste',2800,1280,1.35],
    ['entradas-quadradas',2480,1940,2],
+   ['escala-armazem',1072,970,2],['moitas-entre-comercios',1750,1700,1.5],
   ];
+  check('Lago sem juncos sobre a água',art.reeds===0,{reeds:art.reeds});
+  views.push(['lago-sem-grama',2650,1530,1.5]);
   for(const [name,x,y,zoom] of views){
    await p.evaluate(({x,y,zoom})=>{v.player.setVisible(false);v.world.update(12346);v.cameras.main.removeBounds().stopFollow().setZoom(zoom).centerOn(x,y);},{x,y,zoom});
    await render();await p.screenshot({path:out+'/'+name+'.png'});

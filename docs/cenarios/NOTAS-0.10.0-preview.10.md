@@ -19,11 +19,15 @@
 - Transições de grama e floresta graduais em toda a vila, substituindo as manchas retangulares ao redor das construções, sem trocar a arte original da grama.
 - Píer curto e caminhável em frente ao comércio do Damião, alinhado ao acesso. Varas, rede, âncora, cordas e cesta de peixes com escala proporcional aos bancos.
 - Dezoito barricadas distribuídas no perímetro; sprites em oito direções, incluindo variantes com pontas manchadas de sangue. A entrada da propriedade permanece aberta.
-- Floresta de contorno adensada: 371 árvores de seis variedades, preservando portas e caminhos.
-- Armazém ampliado em aproximadamente 11%. Carpintaria recuada e deslocada para a esquerda, com entrada própria e caminho principal afastado da varanda.
+- Árvores em grupos e contornos irregulares: 265 árvores de seis variedades, com as copas fora das construções e acessos livres.
+- Armazém ampliado com porta em escala aos personagens. Carpintaria recuada e deslocada para a esquerda, com entrada própria e caminho principal afastado da varanda.
 - Trigos do moinho substituídos por canteiros verticais, posicionados dentro do cercado.
 - Coreto acessível pelo centro, com pilares e guarda-corpo sólidos e telhado que permite ver o jogador ao entrar.
 
 - Chegadas dos caminhos retas nas 16 frentes de construções, mantendo a largura anterior e sem patamares alargados.
 
-Versão em preparação; ainda não publicada. Capturas finais e validação ficam em `docs/cenarios/acabamento-vila-preview10`.
+- Juncos antigos removidos da superfície do lago; a grama alta permanece em terra firme.
+- Mais moitas entre caminhos e comércios, totalizando 169; verificação de toda a área de cada sprite para não avançar sobre água, pedra ou construções.
+- Encaixe do acesso de pedra com o píer revisto, com afunilamento suave e bordas entre os postes.
+
+Prévia para Windows x64. Capturas finais e validação ficam em `docs/cenarios/acabamento-vila-preview10`.

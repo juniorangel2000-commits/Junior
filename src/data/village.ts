@@ -9,7 +9,8 @@ import type {NatureKind} from './nature-catalog';
 import {natureArt} from './nature-catalog';
 import type {MapEditData} from '../systems/map-editor';
 import {paintedWaterPoint} from './terrain-paint';
-import {villagePierDeckContains,villagePierNear,villagePierRailAtPoint,villageFishingPropAtPoint} from './village-pier';
+import {VILLAGE_PIER_ACCESS,villagePierAccessDistance,villagePierDeckContains,villagePierNear,villagePierRailAtPoint,villageFishingPropAtPoint} from './village-pier';
+import {villageBuildingArtBands,villageArtRectsOverlap} from './village-building-art';
 import {VILLAGE_BARRICADES,villageBarricadeBlockedPoint} from './village-defences';
 
 export const VILLAGE_LAKE={x:81,y:44,rx:5.8,ry:7.5};
@@ -87,7 +88,7 @@ export const VILLAGE_BUILDINGS:readonly VillageBuilding[]=[
  {id:'pousada',x:44,y:22,shop:'inn'},
  {id:'oficina',x:61,y:54,shop:'mechanic'},
 ];
-export interface VillageWalkway {width:number;points:readonly (readonly [number,number])[]}
+export interface VillageWalkway {width:number;points:readonly (readonly [number,number])[];pier?:boolean}
 /** Half-widths in tiles. Main lanes allow two people to pass; side lanes have
  * softer bends, and each future front door keeps its own clear approach. */
 export const VILLAGE_WALKWAYS:readonly VillageWalkway[]=[
@@ -102,7 +103,7 @@ export const VILLAGE_WALKWAYS:readonly VillageWalkway[]=[
  {width:1.0,points:[[24,58],[24,60],[38,60],[46,59],[61,57],[61,55]]},
  {width:.9,points:[[38,60],[38,56]]},
  {width:.9,points:[[28,45],[28,49]]},
- {width:.65,points:[[68,45],[73,45]]},
+ {width:.65,points:[[68,45],[VILLAGE_PIER_ACCESS.endX/32-.5,45]],pier:true},
  {width:.75,points:[[57,33],[62,33]]},
  {width:.8,points:[[31,60],[31,59]]},
  {width:.9,points:[[20,49],[19,43],[18,39],[18,35],[19,30],[20,25],[20,23],[20,22]]},
@@ -143,6 +144,7 @@ function apronSurface(x:number,y:number,p:typeof VILLAGE_ENTRANCE_APRONS[number]
 function walkwayDistance(x:number,y:number,edge:boolean):number {
  let nearest=Infinity;
  for(const road of VILLAGE_WALKWAYS)for(let i=1;i<road.points.length;i++){
+  if(edge&&road.pier){nearest=Math.min(nearest,villagePierAccessDistance((x+.5)*32,(y+.5)*32)/32);continue;}
   const [ax,ay]=road.points[i-1],[bx,by]=road.points[i];
   const dx=bx-ax,dy=by-ay,t=Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/(dx*dx+dy*dy)));
   nearest=Math.min(nearest,Math.hypot(x-ax-dx*t,y-ay-dy*t)-(edge?road.width:0));
@@ -161,6 +163,7 @@ export const villagePathEdge=(x:number,y:number)=>{
 export function villagePathAlignment(x:number,y:number):number {
  let nearest=Infinity,along=0;
  for(const road of VILLAGE_WALKWAYS){let offset=0;for(let i=1;i<road.points.length;i++){
+  if(road.pier){const distance=villagePierAccessDistance((x+.5)*32,(y+.5)*32)/32;if(distance<nearest){nearest=distance;along=Math.max(0,(x+.5)*32-VILLAGE_PIER_ACCESS.startX);}continue;}
   const [ax,ay]=road.points[i-1],[bx,by]=road.points[i],dx=bx-ax,dy=by-ay,length=Math.hypot(dx,dy);
   const t=Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/(length*length)));
   const distance=Math.hypot(x-ax-dx*t,y-ay-dy*t)-road.width;
@@ -240,28 +243,37 @@ export const VILLAGE_PROPS:readonly {kind:'well'|'bench'|'lantern'|'barrel'|'flo
 ];
 export const VILLAGE_TREES:readonly VillageTree[]=(()=>{
  const trees:VillageTree[]=[],kinds=['oakA','oakB','oakC','pineA','pineB','pineC'] as const;
+ const buildings=VILLAGE_BUILDINGS.flatMap(villageBuildingArtBands);
+ const landmarks=VILLAGE_LANDMARKS.map(p=>({left:(p.x+.5)*32-p.width/2,right:(p.x+.5)*32+p.width/2,top:p.y*32+25-p.height,bottom:p.y*32+31}));
+ const plant=(tx:number,ty:number,seed:number)=>{
+  if(tx<2||ty<2||tx>94||ty>70||tx<14&&ty>=48&&ty<=59)return;
+  if(villageLandmarkClearing(tx,ty,90)||villageLakeDistance(tx,ty)<2||villageRoadDistance(tx,ty)<4.2||villagePlazaDistance(tx,ty)<1.3)return;
+  if(VILLAGE_BARRICADES.some(p=>Math.hypot(tx-p.x,ty-p.y)<2.6))return;
+  if(VILLAGE_PROPS.some(p=>Math.hypot(tx-p.x,ty-p.y)<2.6))return;
+  if(VILLAGE_GARDENS.some(p=>Math.hypot((tx-p.x)/p.rx,(ty-p.y)/p.ry)<1.7))return;
+  const cx=(tx+.5)*32,cy=ty*32+25,canopy={left:cx-88,right:cx+88,top:cy-211,bottom:cy+6};
+  if(buildings.some(b=>villageArtRectsOverlap(canopy,b))||landmarks.some(b=>villageArtRectsOverlap(canopy,b)))return;
+  if(trees.some(t=>Math.hypot(tx-t.x,ty-t.y)<1.7+(seed%3)*.15))return;
+  trees.push({x:tx,y:ty,kind:kinds[(seed>>>12)%kinds.length]});
+ };
  for(let y=3;y<70;y+=4)for(let x=3;x<94;x+=4){
   const seed=hash(x,y),tx=x+(seed>>>4)%2,ty=y+(seed>>>7)%2;
-  if(villageLandmarkClearing(tx,ty,90))continue;
-  if(VILLAGE_BARRICADES.some(p=>Math.hypot(tx-p.x,ty-p.y)<2.6))continue;
-  if(villageLakeDistance(tx,ty)<2||seed%7===0||villageRoadDistance(tx,ty)<4.2||villagePlazaDistance(tx,ty)<1.3)continue;
-  // Roofs and storefronts stay readable; keep the complete canopy away from doors.
-  if(VILLAGE_BUILDINGS.some(b=>Math.abs(b.x-tx)<7&&ty>b.y-8&&ty<b.y+8))continue;
-  if(VILLAGE_PROPS.some(p=>Math.hypot(tx-p.x,ty-p.y)<2.6))continue;
-  if(VILLAGE_GARDENS.some(p=>Math.hypot((tx-p.x)/p.rx,(ty-p.y)/p.ry)<1.7))continue;
   const grove=VILLAGE_GROVES.some(p=>Math.hypot((tx-p.x)/p.rx,(ty-p.y)/p.ry)<1);
-  if(tx>11&&tx<86&&ty>10&&ty<67&&!grove&&seed%17!==0)continue;
-  if(tx<9&&ty>=49&&ty<=59)continue;
-  trees.push({x:tx,y:ty,kind:kinds[(seed>>>12)%kinds.length]});
+  if(seed%7===0||tx>11&&tx<86&&ty>10&&ty<67&&!grove&&seed%17!==0)continue;
+  plant(tx,ty,seed);
  }
- // A second mixed ring closes the forest silhouette without sealing the gate.
+ // Uneven spacing and a wavy inner edge break the old straight rows.
  for(let y=2;y<71;y+=2)for(let x=2;x<95;x+=2){
-  const edge=Math.min(x,y,95-x,71-y);
-  if(edge>7||x<14&&y>=48&&y<=59)continue;
-  if(villageLandmarkClearing(x,y,90)||villageLakeDistance(x,y)<2||villageRoadDistance(x,y)<4.2)continue;
-  if(VILLAGE_BARRICADES.some(p=>Math.hypot(x-p.x,y-p.y)<2.6)||trees.some(t=>Math.hypot(x-t.x,y-t.y)<1.8))continue;
-  if(VILLAGE_BUILDINGS.some(b=>Math.abs(b.x-x)<7&&y>b.y-8&&y<b.y+8))continue;
-  trees.push({x,y,kind:kinds[(hash(x,y)>>>10)%kinds.length]});
+  const seed=hash(x*7,y*11),tx=Math.max(2,Math.min(94,x+(seed%3)-1)),ty=Math.max(2,Math.min(70,y+((seed>>>4)%3)-1));
+  const edge=Math.min(tx,ty,95-tx,71-ty),band=7+Math.sin(tx*.35+ty*.13)*1.5+Math.cos(ty*.43)*.8;
+  if(edge>band||seed%11===0)continue;
+  plant(tx,ty,seed);
+ }
+ // Small irregular groves occupy open pockets rather than surrounding houses.
+ const groves=[[28,12],[32,14],[70,14],[80,21],[84,29],[14,37],[12,44],[18,63],[37,65],[53,54],[68,51],[87,57]];
+ for(const [index,[x,y]] of groves.entries())for(let i=0;i<13;i++){
+  const seed=hash(index+31,i+47),angle=i*2.4+index*.6,radius=1+(seed%35)/10;
+  plant(Math.round(x+Math.cos(angle)*radius),Math.round(y+Math.sin(angle)*radius*.8),seed);
  }
  return trees;
 })();
@@ -284,13 +296,15 @@ export const villageWellTile=(x:number,y:number)=>VILLAGE_PROPS.filter(p=>p.kind
 export function villagePropAt(x:number,y:number):boolean {
  return villageWellTile(x,y)||VILLAGE_PROPS.some(p=>p.kind!=='well'&&p.y===y&&Math.abs(p.x-x)<=(p.kind==='bench'||p.kind==='woodpile'||p.kind==='planter'?1:0));
 }
-export const VILLAGE_SHORE_DETAILS:readonly {kind:'reeds'|'shoreStones';x:number;y:number}[]=(()=>{
- const result:Array<{kind:'reeds'|'shoreStones';x:number;y:number}>=[],seen=new Set<string>();
+export const VILLAGE_SHORE_DETAILS:readonly {kind:'shoreStones';x:number;y:number}[]=(()=>{
+ const result:Array<{kind:'shoreStones';x:number;y:number}>=[],seen=new Set<string>();
  for(let i=0;i<22;i++){
+  // Keep the existing rocks, removing all reeds from the lake surface.
+  if(i%5!==0)continue;
   const a=i/22*Math.PI*2,r=1+.065*Math.sin(a*3+.4)+.045*Math.cos(a*5-.8)+.018*Math.sin(a*9);
   const x=Math.round(VILLAGE_LAKE.x+Math.cos(a)*VILLAGE_LAKE.rx*(r+.04)),y=Math.round(VILLAGE_LAKE.y+Math.sin(a)*VILLAGE_LAKE.ry*(r+.04)),key=`${x},${y}`;
   if(seen.has(key)||villagePierNear((x+.5)*32,(y+.5)*32)||villageRoadDistance(x,y)<1.9||VILLAGE_BUILDINGS.some(b=>Math.abs(b.x-x)<5&&Math.abs(b.y-y)<4))continue;
-  seen.add(key);result.push({x,y,kind:i%5===0?'shoreStones':'reeds'});
+  seen.add(key);result.push({x,y,kind:'shoreStones'});
  }
  return result;
 })();

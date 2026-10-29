@@ -16,10 +16,13 @@
           "deckBottom": 55
         },
         "fishing": 4,
+        "grass": 169,
+        "grassSafe": true,
+        "reeds": 0,
         "barricades": 18,
         "bloody": 5,
         "views": 16,
-        "trees": 371,
+        "trees": 265,
         "species": 6,
         "wheat": [
           {
@@ -44,7 +47,7 @@
           },
           {
             "id": "ervas",
-            "length": 31
+            "length": 34
           },
           {
             "id": "carpintaria",
@@ -68,7 +71,87 @@
           },
           {
             "id": "pousada",
-            "length": 45
+            "length": 49
+          },
+          {
+            "id": "oficina",
+            "length": 59
+          }
+        ]
+      }
+    },
+    {
+      "name": "Mais grama alta, sem nenhuma parte sobre caminhos ou água",
+      "passed": true,
+      "details": {
+        "pier": 2,
+        "pierBounds": {
+          "x": 2336,
+          "y": 1416.5,
+          "width": 224,
+          "height": 83.3,
+          "deckLeft": 5,
+          "deckRight": 219,
+          "deckTop": 24,
+          "deckBottom": 55
+        },
+        "fishing": 4,
+        "grass": 169,
+        "grassSafe": true,
+        "reeds": 0,
+        "barricades": 18,
+        "bloody": 5,
+        "views": 16,
+        "trees": 265,
+        "species": 6,
+        "wheat": [
+          {
+            "texture": "village-wheat",
+            "width": 44.12733260153677,
+            "height": 120
+          },
+          {
+            "texture": "village-wheat",
+            "width": 42.414928649835346,
+            "height": 120
+          }
+        ],
+        "routes": [
+          {
+            "id": "armazem",
+            "length": 31
+          },
+          {
+            "id": "ferraria",
+            "length": 55
+          },
+          {
+            "id": "ervas",
+            "length": 34
+          },
+          {
+            "id": "carpintaria",
+            "length": 26
+          },
+          {
+            "id": "sementes",
+            "length": 36
+          },
+          {
+            "id": "antiquario",
+            "length": 22
+          },
+          {
+            "id": "costura",
+            "length": 63
+          },
+          {
+            "id": "pescador",
+            "length": 66
+          },
+          {
+            "id": "pousada",
+            "length": 49
           },
           {
             "id": "oficina",
@@ -93,10 +176,13 @@
           "deckBottom": 55
         },
         "fishing": 4,
+        "grass": 169,
+        "grassSafe": true,
+        "reeds": 0,
         "barricades": 18,
         "bloody": 5,
         "views": 16,
-        "trees": 371,
+        "trees": 265,
         "species": 6,
         "wheat": [
           {
@@ -121,7 +207,7 @@
           },
           {
             "id": "ervas",
-            "length": 31
+            "length": 34
           },
           {
             "id": "carpintaria",
@@ -145,7 +231,7 @@
           },
           {
             "id": "pousada",
-            "length": 45
+            "length": 49
           },
           {
             "id": "oficina",
@@ -170,10 +256,13 @@
           "deckBottom": 55
         },
         "fishing": 4,
+        "grass": 169,
+        "grassSafe": true,
+        "reeds": 0,
         "barricades": 18,
         "bloody": 5,
         "views": 16,
-        "trees": 371,
+        "trees": 265,
         "species": 6,
         "wheat": [
           {
@@ -198,7 +287,7 @@
           },
           {
             "id": "ervas",
-            "length": 31
+            "length": 34
           },
           {
             "id": "carpintaria",
@@ -222,7 +311,7 @@
           },
           {
             "id": "pousada",
-            "length": 45
+            "length": 49
           },
           {
             "id": "oficina",
@@ -290,6 +379,13 @@
         "x": 1359,
         "y": 414.00292968750006,
         "wet": false
+      }
+    },
+    {
+      "name": "Lago sem juncos sobre a água",
+      "passed": true,
+      "details": {
+        "reeds": 0
       }
     },
     {
