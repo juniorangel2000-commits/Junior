@@ -1,0 +1,128 @@
+{
+  "checks": [
+    {
+      "name": "Entrada norte da vila abre o cenário independente caminhando",
+      "passed": true
+    },
+    {
+      "name": "Floresta densa, duas cercas, placa exata e neblina carregadas",
+      "passed": true,
+      "details": {
+        "trees": 422,
+        "fences": 80,
+        "sign": "↑ City",
+        "fog": 1,
+        "onlyForest": true
+      }
+    },
+    {
+      "name": "Percurso principal completo e primeira passagem atravessável",
+      "passed": true,
+      "details": {
+        "x": 1536,
+        "y": 464,
+        "steps": 444
+      }
+    },
+    {
+      "name": "Asfalto em L permite chegar ao acesso futuro",
+      "passed": true,
+      "details": {
+        "x": 720,
+        "y": 96,
+        "steps": 296
+      }
+    },
+    {
+      "name": "Interação futura disponível, sem dungeons antecipadas",
+      "passed": true
+    },
+    {
+      "name": "Trecho intacto da cerca impede atravessar os fios",
+      "passed": true
+    },
+    {
+      "name": "Mapa da região gera captura real",
+      "passed": true
+    },
+    {
+      "name": "Save registra a nova área e posição",
+      "passed": true,
+      "details": {
+        "valid": true,
+        "area": "cityForest",
+        "x": 720
+      }
+    },
+    {
+      "name": "Continuar reabre a floresta no ponto salvo",
+      "passed": true,
+      "details": {
+        "x": 720,
+        "y": 80,
+        "area": "cityForest"
+      }
+    },
+    {
+      "name": "Segunda passagem liga a estrada à floresta",
+      "passed": true,
+      "details": {
+        "x": 2432,
+        "y": 496,
+        "steps": 532
+      }
+    },
+    {
+      "name": "Clareira explorável {\"x\":2272,\"y\":864}",
+      "passed": true,
+      "details": {
+        "x": 2272,
+        "y": 848,
+        "steps": 128
+      }
+    },
+    {
+      "name": "Clareira explorável {\"x\":1984,\"y\":1472}",
+      "passed": true,
+      "details": {
+        "x": 1984,
+        "y": 1456,
+        "steps": 224
+      }
+    },
+    {
+      "name": "Clareira explorável {\"x\":896,\"y\":1792}",
+      "passed": true,
+      "details": {
+        "x": 896,
+        "y": 1776,
+        "steps": 352
+      }
+    },
+    {
+      "name": "Clareira explorável {\"x\":1024,\"y\":864}",
+      "passed": true,
+      "details": {
+        "x": 1024,
+        "y": 880,
+        "steps": 256
+      }
+    },
+    {
+      "name": "Retorno à vila mantém os dez NPCs e não leva a neblina",
+      "passed": true,
+      "details": {
+        "x": 1616,
+        "y": 144,
+        "merchants": 10,
+        "fog": false
+      }
+    },
+    {
+      "name": "Sem erros JavaScript ou assets ausentes",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

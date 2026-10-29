@@ -1,3 +1,4 @@
+import {villageNorthConnectionDistance} from './city-forest';
 import {VILLAGE_DRESSING,villageDressingBounds,villageDressingBlockedPoint} from './village-dressing';
 import {PLAZA_BEDS,PLAZA_LAMPS,plazaFurnitureBlockedPoint,plazaFurnitureBlockedTile} from './village-plaza';
 import {VILLAGE_LANDMARKS,villageLandmarkBlockedPoint,villageLandmarkBlockedTile,villageLandmarkClearing} from './village-landmarks';
@@ -246,6 +247,7 @@ export const VILLAGE_TREES:readonly VillageTree[]=(()=>{
  const buildings=VILLAGE_BUILDINGS.flatMap(villageBuildingArtBands);
  const landmarks=VILLAGE_LANDMARKS.map(p=>({left:(p.x+.5)*32-p.width/2,right:(p.x+.5)*32+p.width/2,top:p.y*32+25-p.height,bottom:p.y*32+31}));
  const plant=(tx:number,ty:number,seed:number)=>{
+  if(villageNorthConnectionDistance(tx+.5,ty+.5)<3.4)return;
   if(tx<2||ty<2||tx>94||ty>70||tx<14&&ty>=48&&ty<=59)return;
   if(villageLandmarkClearing(tx,ty,90)||villageLakeDistance(tx,ty)<2||villageRoadDistance(tx,ty)<4.2||villagePlazaDistance(tx,ty)<1.3)return;
   if(VILLAGE_BARRICADES.some(p=>Math.hypot(tx-p.x,ty-p.y)<2.6))return;

@@ -63,8 +63,8 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.treeGrowth!==undefined&&!validTreeGrowth(value.treeGrowth))return false;
   if(value.resourceMilestones!==undefined&&(!isRecord(value.resourceMilestones)||typeof value.resourceMilestones.felled!=='boolean'||typeof value.resourceMilestones.mined!=='boolean'))return false;
   if (value.quickbar !== undefined && !validQuickbar(value.quickbar)) return false;
-  if (value.activeArea !== undefined && value.activeArea !== 'property' && value.activeArea !== 'forest' && value.activeArea !== 'village') return false;
-  if(value.activeArea==='village'&&(value.homePosition!==undefined||value.animalEscort!==undefined))return false;
+  if (value.activeArea !== undefined && value.activeArea !== 'property' && value.activeArea !== 'forest' && value.activeArea !== 'village' && value.activeArea !== 'cityForest') return false;
+  if((value.activeArea==='village'||value.activeArea==='cityForest')&&(value.homePosition!==undefined||value.animalEscort!==undefined))return false;
   if(value.blacksmithScene!==undefined&&!validSmithLayout(value.blacksmithScene))return false;
   if(value.blacksmithHome!==undefined&&!validateBlacksmithHome(value.blacksmithHome))return false;
   if(value.shopResidents!==undefined&&!validShopResidents(value.shopResidents))return false;
@@ -102,6 +102,8 @@ export function validateSave(value: unknown): value is SaveData {
     }
     if(isRecord(value.animalEscort)&&!(value.animalPositions[value.animalEscort.area as string] as Array<{id:string}>).some(p=>p.id===(value.animalEscort as Record<string,unknown>).id))return false;
   }else if(value.animalEscort!==undefined)return false;
+  if(value.activeArea==='cityForest'&&(value.merchantInterior!==undefined||value.blacksmithInterior!==undefined))return false;
+  if(value.cityForestPosition!==undefined&&(!isRecord(value.cityForestPosition)||!finite(value.cityForestPosition.x,32,3040)||!finite(value.cityForestPosition.y,32,2272)||(value.cityForestPosition.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(value.cityForestPosition.direction as CharacterDirection))))return false;
   if (value.forestPosition !== undefined && (!isRecord(value.forestPosition) || !finite(value.forestPosition.x, 32, 3040) || !finite(value.forestPosition.y, 32, 2272) || (value.forestPosition.direction !== undefined && !CHARACTER_DIRECTIONS.includes(value.forestPosition.direction as CharacterDirection)))) return false;
   if (value.villagePosition !== undefined && (!isRecord(value.villagePosition) || !finite(value.villagePosition.x, 32, 3040) || !finite(value.villagePosition.y, 32, 2272) || (value.villagePosition.direction !== undefined && !CHARACTER_DIRECTIONS.includes(value.villagePosition.direction as CharacterDirection)))) return false;
   if (value.wateringCanWater !== undefined && (!Number.isInteger(value.wateringCanWater) || !finite(value.wateringCanWater, 0, 8))) return false;

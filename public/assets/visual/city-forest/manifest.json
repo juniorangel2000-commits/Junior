@@ -1,0 +1,46 @@
+{
+  "file": "assets/visual/city-forest/estrada-cercas-placa.png",
+  "sha256": "420918d185a8077610622d9688da46cce66d37027d97021c0f1db4f2649c6bd0",
+  "alphaCutoff": 160,
+  "frames": {
+    "asphalt": {
+      "x": 178,
+      "y": 43,
+      "width": 412,
+      "height": 412
+    },
+    "fence-ew": {
+      "x": 865,
+      "y": 182,
+      "width": 559,
+      "height": 208
+    },
+    "fence-ns": {
+      "x": 337,
+      "y": 506,
+      "width": 97,
+      "height": 477
+    },
+    "city": {
+      "x": 1006,
+      "y": 607,
+      "width": 292,
+      "height": 324
+    }
+  },
+  "fenceSpan": {
+    "ew": 462,
+    "ns": 368
+  },
+  "fenceOrigin": {
+    "ew": {
+      "x": 0.5044722719141324,
+      "y": 0.8557692307692307
+    },
+    "ns": {
+      "x": 0.4845360824742268,
+      "y": 0.5283018867924528
+    }
+  },
+  "northSouthView": "three wires tightly overlapping"
+}

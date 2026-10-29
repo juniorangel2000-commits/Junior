@@ -223,7 +223,7 @@ export class ValleyScene extends Phaser.Scene {
     this.paused = false;
     this.ui.showHUD();
     if (saved.activeArea === 'forest') { this.enterForest(saved); return; }
-    if (saved.activeArea === 'village') { this.enterVillage(saved); return; }
+    if (saved.activeArea === 'village'||saved.activeArea==='cityForest') { this.enterVillage(saved); return; }
     this.ui.toast(`Que bom ter você de volta, ${saved.profile.name}.`);
     this.updateHUD();
   }
@@ -307,12 +307,12 @@ export class ValleyScene extends Phaser.Scene {
     if(this.forestActive||this.villageActive)return;
     if(!saved&&this.state.animalEscort){this.ui.toast('Deixe o animal na propriedade ou solte a corda com G antes de visitar a vila.');return;}
     this.world.well?.cancel();this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
-    const data=saved??this.snapshotState();data.activeArea='village';delete data.homePosition;
+    const data=saved??this.snapshotState(),resumeCityForest=data.activeArea==='cityForest';data.activeArea='village';delete data.homePosition;
     this.villageActive=true;this.paused=true;this.input.keyboard?.resetKeys();
     const root=document.querySelector<HTMLElement>('#ui')!;root.style.display='none';
     this.cameras.main.fadeOut(SCENE_FADE_MS);
     this.time.delayedCall(SCENE_FADE_MS,()=>{
-      this.scene.sleep();this.scene.launch('Vila',{save:data,ui:this.ui,onReturn:(updated:SaveData,title=false)=>{
+      this.scene.sleep();this.scene.launch('Vila',{save:data,ui:this.ui,resumeCityForest,onReturn:(updated:SaveData,title=false)=>{
         if(!title)updated.player={...updated.player,x:(PROPERTY_VILLAGE_ENTRY.x+.5)*TILE,y:(PROPERTY_VILLAGE_ENTRY.y+.5)*TILE,direction:'left'};
         this.scene.wake();this.villageActive=false;this.loadState(updated);this.running=true;this.paused=false;
         root.style.display='';this.ui.showHUD();this.updateHUD();this.cameras.main.fadeIn(SCENE_FADE_MS);

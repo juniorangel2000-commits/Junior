@@ -1,3 +1,4 @@
+import {VILLAGE_NORTH_GATE,VILLAGE_NORTH_ARRIVAL} from '../data/city-forest';
 import {villageIdleDirection} from '../data/village-ambient';
 import {ICARO_WALK_FRAMES,ICARO_DISPLAY,ICARO_ORIGIN_Y} from '../icaro-sprites';
 import {HELENA_WALK_FRAMES,HELENA_DISPLAY,HELENA_ORIGIN_Y} from '../helena-sprites';
@@ -53,7 +54,7 @@ import {freeArrival,actorsOverlap} from '../systems/actor-arrival';
 import {DEVELOPMENT_TOOLS} from '../development-tools';
 import type {MapArea} from '../data/default-maps';
 
-export interface VillageStart {save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
+export interface VillageStart {resumeCityForest?:boolean;save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 type Villager={data:VillageNPC;sprite:Phaser.GameObjects.Sprite;frames:number};
 
 /** Town state travels through the same save as the farm, without replacing its
@@ -94,6 +95,7 @@ export class VillageScene extends Phaser.Scene {
  private elapsed=0;
  private hudElapsed=0;
  private readonly exitPassage=new MapExitPassage();
+ private readonly northPassage=new MapExitPassage();
  constructor(){super('Vila');}
 
  create(data:VillageStart):void {
@@ -103,7 +105,7 @@ export class VillageScene extends Phaser.Scene {
   this.bentoRoutine=new BentoRoutine(this.state.blacksmithScene?this.state.bentoRoutine:undefined,smithNavigation(this.smithLayout));this.inBlacksmith=false;this.changingRoom=false;this.homePassage.reset();
   this.merchantRoom=undefined;this.merchantView=undefined;this.guide=undefined;this.merchantPassage.reset();this.residents=new Map((this.state.shopResidents??[]).map(p=>[p.id,structuredClone(p)]));
   this.merchantLayouts=new Map(VILLAGE_NPCS.filter(n=>n.id!=='bento').map(n=>[n.id,resolveMerchantLayout(n.id,this.state.merchantScenes?.[n.id])]));
-  this.paused=false;this.leaving=false;this.elapsed=0;this.hudElapsed=0;this.exitPassage.reset();
+  this.paused=false;this.leaving=false;this.elapsed=0;this.hudElapsed=0;this.exitPassage.reset();this.northPassage.reset();
   this.zoom=loadCameraZoom();this.inventory=new Inventory(this.state.inventory);
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
   this.world=new VillageWorld(this,this.state.villageMapEdits);this.createVillagers();this.createDailyRoutines();
@@ -144,7 +146,7 @@ export class VillageScene extends Phaser.Scene {
    this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);
    window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);
   });
-  this.persist();
+  if(data.resumeCityForest)this.enterCityForest(true);else this.persist();
  }
  private canTrade(id:ResidentId):boolean {
   return merchantCanTrade(id,this.roomOwner)&&(!dailyMerchant(id)||this.routines.get(id)?.isServing(this.state)===true);
@@ -408,6 +410,15 @@ export class VillageScene extends Phaser.Scene {
   else if(e.key>='1'&&e.key<='9')this.ui.activateSlot(Number(e.key)-1);
  }
  private wheel=(_p:unknown,_objects:unknown,_dx:number,dy:number):void=>{if(!this.paused&&!this.shop?.isOpen)this.changeCameraZoom(dy<0?1:-1);};
+ private enterCityForest(resume=false):void{
+  if(this.leaving||this.inShop)return;
+  if(!resume&&!this.persist())return;
+  this.leaving=true;const updated=structuredClone(this.state),ui=this.ui,onReturn=this.onReturn;
+  this.input.keyboard?.resetKeys();this.cameras.main.fadeOut(SCENE_FADE_MS);
+  this.time.delayedCall(SCENE_FADE_MS,()=>this.scene.start('AcessoCidade',{save:updated,ui,onReturn:(save:SaveData,title=false)=>{
+   if(title)onReturn(save,true);else this.scene.start('Vila',{save,ui,onReturn});
+  }}));
+ }
  private leave(title=false):void {
   if(this.leaving)return;this.persist();this.leaving=true;
   if(!title){this.state.activeArea='property';delete this.state.villagePosition;delete this.state.blacksmithInterior;delete this.state.merchantInterior;}
@@ -422,6 +433,7 @@ export class VillageScene extends Phaser.Scene {
   if(!this.merchantRoom&&this.homePassage.update(previous,this.player,this.inBlacksmith?smithDoor(this.smithLayout):BLACKSMITH_DOOR)){this.changeBlacksmithRoom();return;}
   if(this.merchantRoom){if(this.merchantPassage.update(previous,this.player,MERCHANT_ROOM_EXIT)){this.changeMerchantRoom();return;}}
   else if(!this.inShop){const near=VILLAGE_NPCS.find(n=>n.id!=='bento'&&Math.hypot(this.player.x-merchantDoor(n.id).x,this.player.y-merchantDoor(n.id).y)<80);if(near){if(this.merchantPassage.update(previous,this.player,merchantDoor(near.id))){this.changeMerchantRoom(near.id);return;}}else this.merchantPassage.reset();}
+  if(!this.inShop&&this.northPassage.update(previous,this.player,VILLAGE_NORTH_GATE,VILLAGE_NORTH_ARRIVAL)){this.enterCityForest();return;}
   if(!this.inShop&&this.exitPassage.update(previous,this.player,this.world.exit(),this.world.entry())){this.leave();return;}
   if(Math.hypot(this.player.x-previous.x,this.player.y-previous.y)>.1)gameAudio.play('step');
   this.farming.update(delta);Object.assign(this.state,advanceClock(this.state,delta*GAME_MINUTES_PER_SECOND));

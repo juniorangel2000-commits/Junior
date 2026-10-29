@@ -14,7 +14,7 @@ export function growingTreeResources(s:SaveData,area:TreeArea):ResourceNode[]{
  return(s.treeGrowth?.[area]??[]).map(t=>({id:t.id,x:t.x,y:t.y,kind:t.phase==='stump'?'stump':'standingTree',treeSpecies:t.species,treePlanted:t.planted??t.phase==='growing',treePlantingSoil:(t.planted??t.phase==='growing')&&t.phase==='growing'&&Math.floor(t.plantedAt/1440)===s.day-1,...t.phase==='growing'?{treeStage:treeStage(t,treeClock(s))}:{}}));
 }
 export function plantTree(s:SaveData,item:ItemId,point:TilePoint,blocked:(x:number,y:number)=>boolean):{ok:boolean;message:string}{
- const area=s.activeArea??'property';if((item!=='oakSeed'&&item!=='pineSeed')||area==='village')return{ok:false,message:'Plante na propriedade ou na floresta.'};
+ const area=s.activeArea??'property';if((item!=='oakSeed'&&item!=='pineSeed')||(area==='village'||area==='cityForest'))return{ok:false,message:'Plante na propriedade ou na floresta.'};
  if(!Number.isInteger(point.x)||!Number.isInteger(point.y)||point.x<2||point.x>93||point.y<2||point.y>69||blocked(point.x,point.y))return{ok:false,message:'Escolha terra livre, longe da água e das construções.'};
  const data=s.treeGrowth,trees=data?.[area]??[];
  if((data?.sequence??0)>=1e9||trees.length>=B.treeLimit||trees.some(t=>Math.hypot(t.x-point.x,t.y-point.y)<B.seedSpacing))return{ok:false,message:'Deixe espaço entre as árvores ou recolha os tocos existentes.'};

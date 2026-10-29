@@ -1,3 +1,4 @@
+import {villageNorthConnectionDistance} from './data/city-forest';
 import {VILLAGE_DRESSING,villageDressingBounds} from './data/village-dressing';
 import type Phaser from 'phaser';
 import manifest from '../public/assets/visual/village/greenery/manifest.json';
@@ -45,7 +46,7 @@ const grassBoundsPoints=(x:number,y:number)=>[-24,0,24].flatMap(dx=>[-42,-21,0].
 export const villageGrassClearOfPaths=(x:number,y:number,edits?:MapEditData):boolean=>
  grassBoundsPoints(x,y).every(p=>{
   const kind=edits?.terrain[`${Math.floor(p.x/32)},${Math.floor(p.y/32)}`];
-  return (!kind||['grass','meadow','forest','moss'].includes(kind))&&villagePathEdge(p.x/32-.5,p.y/32-.5)>.2;
+  return villageNorthConnectionDistance(p.x/32,p.y/32)>1.2&&(!kind||['grass','meadow','forest','moss'].includes(kind))&&villagePathEdge(p.x/32-.5,p.y/32-.5)>.2;
  });
 export const villageGrassClearOfWater=(x:number,y:number,edits?:MapEditData):boolean=>
  grassBoundsPoints(x,y).every(p=>villageLakeDistance(p.x/32,p.y/32)>.35&&!villageWaterPoint(p.x,p.y,edits)&&!villagePierNear(p.x,p.y));
