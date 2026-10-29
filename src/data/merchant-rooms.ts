@@ -17,6 +17,7 @@ import celinaCatalog from '../../public/assets/visual/village/celina/manifest.js
 import authoredCelina from './celina-layout.json';
 import damiaoCatalog from '../../public/assets/visual/village/damiao/manifest.json';
 import authoredDamiao from './damiao-layout.json';
+import previousDamiao from './damiao-layout-v1.json';
 import helenaCatalog from '../../public/assets/visual/village/helena/manifest.json';
 import authoredHelena from './helena-layout.json';
 import type {ResidentId} from '../systems/merchant-visit';
@@ -58,7 +59,7 @@ export const createMerchantLayout=(id:ResidentId)=>structuredClone(roomDefault(i
 const roomSignature=(layout:SmithLayout)=>JSON.stringify([...layout.pieces].sort((a,b)=>a.id.localeCompare(b.id)).map(p=>({id:p.id,asset:p.asset,x:p.x,y:p.y,sx:p.sx,sy:p.sy,visible:p.visible,parent:p.parent??null,solid:p.solid??!!MERCHANT_ROOM_ASSETS.find(a=>a.id===p.asset)?.collision,effects:p.effects!==false,wallShade:p.wallShade??(p.id==='structure'?1:0)})));
 /** Upgrade only the untouched original room; preserve any player-authored edits. */
 export function resolveMerchantLayout(id:ResidentId,saved?:SmithLayout):SmithLayout{
- const upgrade=!saved||(id==='augusto'||id==='rosa'||id==='tobias'||id==='amelia'||id==='nilo'||id==='celina'||id==='damiao'||id==='helena'||id==='icaro')&&roomSignature(saved)===roomSignature(previousRoomDefault(id))||id==='rosa'&&!!saved&&roomSignature(saved)===roomSignature(previousRosa as SmithLayout)||id==='tobias'&&!!saved&&roomSignature(saved)===roomSignature(previousTobias as SmithLayout);
+ const upgrade=!saved||(id==='augusto'||id==='rosa'||id==='tobias'||id==='amelia'||id==='nilo'||id==='celina'||id==='damiao'||id==='helena'||id==='icaro')&&roomSignature(saved)===roomSignature(previousRoomDefault(id))||id==='damiao'&&!!saved&&roomSignature(saved)===roomSignature(previousDamiao as SmithLayout)||id==='rosa'&&!!saved&&roomSignature(saved)===roomSignature(previousRosa as SmithLayout)||id==='tobias'&&!!saved&&roomSignature(saved)===roomSignature(previousTobias as SmithLayout);
  return structuredClone(upgrade?roomDefault(id):saved!);
 }
 export function validMerchantLayout(value:unknown):value is SmithLayout{

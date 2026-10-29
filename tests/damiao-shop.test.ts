@@ -4,6 +4,7 @@ import {VILLAGE_BUILDINGS} from '../src/data/village';
 import {describe,it,expect} from 'vitest';
 import catalog from '../public/assets/visual/village/damiao/manifest.json';
 import authored from '../src/data/damiao-layout.json';
+import previous from '../src/data/damiao-layout-v1.json';
 import {createMerchantLayout,validMerchantLayout,merchantRoomConnected,merchantRoomFits,merchantRoomNavigation,merchantRoomPieces,resolveMerchantLayout} from '../src/data/merchant-rooms';
 import {damiaoSourceSolid,damiaoShopBlockedPoint} from '../src/data/damiao-shop';
 import {MerchantDailyRoutine,dailyMerchant,merchantPeriod} from '../src/systems/merchant-routine';
@@ -22,6 +23,9 @@ describe('Damiao fishing shop',()=>{
  });
  it('migrates only untouched provisional interiors and preserves customized saves',()=>{
   const old:SmithLayout={version:1,pieces:[{id:'structure',asset:'structure',x:0,y:0,sx:1,sy:1,visible:true,wallShade:1},{id:'floor',asset:'floor-wood',x:33,y:116,sx:510,sy:234,visible:true},...merchantRoomPieces('damiao').map(a=>({id:a.id,asset:a.id,x:a.recommendedPosition.x*.6,y:a.recommendedPosition.y*.6,sx:a.scale*.6,sy:a.scale*.6,visible:true,...a.supportId?{parent:a.supportId}:{}}))]};
+  expect(resolveMerchantLayout('damiao',structuredClone(previous) as SmithLayout)).toEqual(authored);
+  const customized=structuredClone(previous) as SmithLayout;customized.pieces.find(p=>p.id==='damiao-stool')!.x+=10;
+  expect(resolveMerchantLayout('damiao',customized)).toEqual(customized);
   expect(resolveMerchantLayout('damiao',old)).toEqual(authored);old.pieces[2].x+=5;expect(resolveMerchantLayout('damiao',old)).toEqual(old);
   const save=createNewSave({name:'Damião',skin:'#d9a276',hairStyle:'preso',hairColor:'#754323',outfit:'#638a9d'});save.merchantScenes={damiao:createMerchantLayout('damiao')};expect(validateSave(JSON.parse(JSON.stringify(save)))).toBe(true);
  });

@@ -1,0 +1,29 @@
+{
+  "stool": {
+    "id": "damiao-stool",
+    "asset": "damiao-stool",
+    "x": 498.91,
+    "y": 234.34,
+    "sx": 0.15300546448087432,
+    "sy": 0.15298507462686567,
+    "visible": true,
+    "effects": true,
+    "solid": true
+  },
+  "book": {
+    "id": "damiao-logbook",
+    "asset": "damiao-logbook",
+    "x": 310.5135778298829,
+    "y": 149.34390498521236,
+    "sx": 0.10847457627118644,
+    "sy": 0.10847457627118644,
+    "visible": true,
+    "parent": "damiao-counter"
+  },
+  "connected": true,
+  "entry": true,
+  "owner": true,
+  "save": true,
+  "gl": 0,
+  "errors": []
+}

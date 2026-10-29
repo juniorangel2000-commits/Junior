@@ -1,0 +1,180 @@
+{
+  "version": 1,
+  "pieces": [
+    {
+      "id": "structure",
+      "asset": "structure",
+      "x": 0,
+      "y": 0,
+      "sx": 1,
+      "sy": 1,
+      "visible": true,
+      "wallShade": 1
+    },
+    {
+      "id": "floor",
+      "asset": "floor-wood",
+      "x": 33,
+      "y": 116,
+      "sx": 510,
+      "sy": 234,
+      "visible": true
+    },
+    {
+      "id": "damiao-counter",
+      "asset": "damiao-counter",
+      "x": 288,
+      "y": 205,
+      "sx": 0.33962264150943394,
+      "sy": 0.33962264150943394,
+      "visible": true
+    },
+    {
+      "id": "damiao-rods",
+      "asset": "damiao-rods",
+      "x": 104,
+      "y": 183,
+      "sx": 0.3133047210300429,
+      "sy": 0.3133047210300429,
+      "visible": true
+    },
+    {
+      "id": "damiao-cabinet",
+      "asset": "damiao-cabinet",
+      "x": 445,
+      "y": 213,
+      "sx": 0.36259541984732824,
+      "sy": 0.36259541984732824,
+      "visible": true
+    },
+    {
+      "id": "damiao-workbench",
+      "asset": "damiao-workbench",
+      "x": 445,
+      "y": 316,
+      "sx": 0.3059490084985836,
+      "sy": 0.3059490084985836,
+      "visible": true
+    },
+    {
+      "id": "damiao-basin",
+      "asset": "damiao-basin",
+      "x": 105,
+      "y": 295,
+      "sx": 0.24313725490196078,
+      "sy": 0.24313725490196078,
+      "visible": true
+    },
+    {
+      "id": "damiao-barrel",
+      "asset": "damiao-barrel",
+      "x": 195,
+      "y": 158,
+      "sx": 0.2976190476190476,
+      "sy": 0.2976190476190476,
+      "visible": true
+    },
+    {
+      "id": "damiao-crates",
+      "asset": "damiao-crates",
+      "x": 182,
+      "y": 328,
+      "sx": 0.1759656652360515,
+      "sy": 0.1759656652360515,
+      "visible": true
+    },
+    {
+      "id": "damiao-net",
+      "asset": "damiao-net",
+      "x": 480,
+      "y": 110,
+      "sx": 0.22988505747126436,
+      "sy": 0.22988505747126436,
+      "visible": true
+    },
+    {
+      "id": "damiao-tackle",
+      "asset": "damiao-tackle",
+      "x": 413,
+      "y": 277,
+      "sx": 0.10752688172043011,
+      "sy": 0.10752688172043011,
+      "visible": true,
+      "parent": "damiao-workbench"
+    },
+    {
+      "id": "damiao-logbook",
+      "asset": "damiao-logbook",
+      "x": 313,
+      "y": 160,
+      "sx": 0.10847457627118644,
+      "sy": 0.10847457627118644,
+      "visible": true,
+      "parent": "damiao-counter"
+    },
+    {
+      "id": "damiao-floats",
+      "asset": "damiao-floats",
+      "x": 477,
+      "y": 276,
+      "sx": 0.12121212121212122,
+      "sy": 0.12121212121212122,
+      "visible": true,
+      "parent": "damiao-workbench"
+    },
+    {
+      "id": "damiao-rope",
+      "asset": "damiao-rope",
+      "x": 470,
+      "y": 340,
+      "sx": 0.1440329218106996,
+      "sy": 0.1440329218106996,
+      "visible": true
+    },
+    {
+      "id": "damiao-lantern",
+      "asset": "damiao-lantern",
+      "x": 58,
+      "y": 79,
+      "sx": 0.1518987341772152,
+      "sy": 0.1518987341772152,
+      "visible": true
+    },
+    {
+      "id": "damiao-stool",
+      "asset": "damiao-stool",
+      "x": 365,
+      "y": 283,
+      "sx": 0.15300546448087432,
+      "sy": 0.15300546448087432,
+      "visible": true
+    },
+    {
+      "id": "damiao-rug",
+      "asset": "damiao-rug",
+      "x": 288,
+      "y": 302,
+      "sx": 0.2662337662337662,
+      "sy": 0.2662337662337662,
+      "visible": true
+    },
+    {
+      "id": "damiao-window",
+      "asset": "damiao-window",
+      "x": 330,
+      "y": 105,
+      "sx": 0.35436893203883496,
+      "sy": 0.35436893203883496,
+      "visible": true
+    },
+    {
+      "id": "damiao-lantern-right",
+      "asset": "damiao-lantern",
+      "x": 520,
+      "y": 79,
+      "sx": 0.1518987341772152,
+      "sy": 0.1518987341772152,
+      "visible": true
+    }
+  ]
+}

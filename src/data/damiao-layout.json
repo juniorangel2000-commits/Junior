@@ -42,7 +42,7 @@
       "id": "damiao-cabinet",
       "asset": "damiao-cabinet",
       "x": 445,
-      "y": 213,
+      "y": 212.6447968328404,
       "sx": 0.36259541984732824,
       "sy": 0.36259541984732824,
       "visible": true
@@ -105,8 +105,8 @@
     {
       "id": "damiao-logbook",
       "asset": "damiao-logbook",
-      "x": 313,
-      "y": 160,
+      "x": 310.5135778298829,
+      "y": 149.34390498521236,
       "sx": 0.10847457627118644,
       "sy": 0.10847457627118644,
       "visible": true,
@@ -143,11 +143,13 @@
     {
       "id": "damiao-stool",
       "asset": "damiao-stool",
-      "x": 365,
-      "y": 283,
+      "x": 498.91,
+      "y": 234.34,
       "sx": 0.15300546448087432,
-      "sy": 0.15300546448087432,
-      "visible": true
+      "sy": 0.15298507462686567,
+      "visible": true,
+      "effects": true,
+      "solid": true
     },
     {
       "id": "damiao-rug",
