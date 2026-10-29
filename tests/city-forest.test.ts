@@ -32,7 +32,7 @@ describe('independent northern city approach',()=>{
   expect(new Set(CITY_FOREST_TREES.map(t=>`${t.x},${t.y}`)).size).toBe(CITY_FOREST_TREES.length);
   expect(new Set(CITY_FOREST_TREES.map(t=>t.variant)).size).toBe(3);
   for(const t of CITY_FOREST_TREES)expect(cityRoadDistance(t.x+.5,t.y+.5)).toBeGreaterThan(5.7);
-  expect(CITY_SIGN_TEXT).toBe('↑ City');expect(CITY_ACCESS.enabled).toBe(false);expect(CITY_ACCESS.travelDurationMs).toBe(5000);
+  expect(CITY_SIGN_TEXT).toBe('↑ City');expect(CITY_ACCESS.enabled).toBe(true);expect(CITY_ACCESS.travelDurationMs).toBe(5000);
  });
  it('clears only the short new village approach',()=>{
   for(let y=40;y<497;y+=8)for(const dx of [-7,7])expect(villagePointBlocked(50.5*32+dx,y)).toBe(false);

@@ -1,0 +1,103 @@
+{
+  "file": "assets/visual/dungeons/zombie.png",
+  "sha256": "3af5e5a179e0dc804f1de50e29b7a9eebfc2ab09eba5d9ca9fc970f663ea136d",
+  "alphaCutoff": 160,
+  "frames": {
+    "south-0": {
+      "x": 86,
+      "y": 37,
+      "width": 154,
+      "height": 262
+    },
+    "south-1": {
+      "x": 408,
+      "y": 37,
+      "width": 143,
+      "height": 262
+    },
+    "south-2": {
+      "x": 724,
+      "y": 37,
+      "width": 148,
+      "height": 262
+    },
+    "south-3": {
+      "x": 1032,
+      "y": 37,
+      "width": 157,
+      "height": 263
+    },
+    "west-0": {
+      "x": 78,
+      "y": 335,
+      "width": 174,
+      "height": 267
+    },
+    "west-1": {
+      "x": 387,
+      "y": 334,
+      "width": 182,
+      "height": 269
+    },
+    "west-2": {
+      "x": 707,
+      "y": 335,
+      "width": 182,
+      "height": 268
+    },
+    "west-3": {
+      "x": 1031,
+      "y": 335,
+      "width": 172,
+      "height": 268
+    },
+    "east-0": {
+      "x": 67,
+      "y": 631,
+      "width": 179,
+      "height": 269
+    },
+    "east-1": {
+      "x": 371,
+      "y": 631,
+      "width": 197,
+      "height": 268
+    },
+    "east-2": {
+      "x": 698,
+      "y": 631,
+      "width": 194,
+      "height": 269
+    },
+    "east-3": {
+      "x": 1022,
+      "y": 631,
+      "width": 175,
+      "height": 266
+    },
+    "north-0": {
+      "x": 79,
+      "y": 920,
+      "width": 159,
+      "height": 264
+    },
+    "north-1": {
+      "x": 404,
+      "y": 922,
+      "width": 153,
+      "height": 265
+    },
+    "north-2": {
+      "x": 722,
+      "y": 922,
+      "width": 148,
+      "height": 265
+    },
+    "north-3": {
+      "x": 1034,
+      "y": 922,
+      "width": 161,
+      "height": 262
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import {DungeonScene} from './scenes/DungeonScene';
 import {CityForestScene} from './scenes/CityForestScene';
 import {MapEditorScene} from './scenes/MapEditorScene';
 import Phaser from 'phaser';
@@ -14,7 +15,7 @@ import './character-studio.css';
 
 gameAudio.init();
 const scene = new ValleyScene();
-const activeForest=():ForestScene|VillageScene|CityForestScene|undefined=>scene.scene?.isActive('AcessoCidade')?scene.scene.get('AcessoCidade') as CityForestScene:scene.scene?.isActive('Vila')?scene.scene.get('Vila') as VillageScene:scene.scene?.isActive('Floresta')?scene.scene.get('Floresta') as ForestScene:undefined;
+const activeForest=():ForestScene|VillageScene|CityForestScene|DungeonScene|undefined=>scene.scene?.isActive('Dungeons')?scene.scene.get('Dungeons') as DungeonScene:scene.scene?.isActive('AcessoCidade')?scene.scene.get('AcessoCidade') as CityForestScene:scene.scene?.isActive('Vila')?scene.scene.get('Vila') as VillageScene:scene.scene?.isActive('Floresta')?scene.scene.get('Floresta') as ForestScene:undefined;
 const ui = new GameUI({
   onUseItem: item => {void (activeForest()??scene).useVillageItem(item);},
   onNewGame: profile => scene.startNew(profile),
@@ -43,7 +44,7 @@ export const game = new Phaser.Game({
   roundPixels: true,
   render: { antialias: false, powerPreference: 'high-performance' },
   scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight },
-  scene: [scene, new ForestScene(),new VillageScene(),new CityForestScene(),new MapEditorScene()],
+  scene: [scene, new ForestScene(),new VillageScene(),new CityForestScene(),new DungeonScene(),new MapEditorScene()],
   audio: { noAudio: true },
   banner: false,
 });

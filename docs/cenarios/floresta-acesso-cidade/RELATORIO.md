@@ -1,5 +1,7 @@
 # Cenário 4 — Floresta de Acesso à Cidade
 
+> Registro da etapa inicial. O acesso à cidade agora está habilitado na [implementação de dungeons](../../dungeons/RELATORIO.md).
+
 Implementação local posterior à preview.11, sem publicação ou alterações remotas.
 
 ## Resultado

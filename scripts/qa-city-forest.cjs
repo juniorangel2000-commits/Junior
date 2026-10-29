@@ -47,7 +47,7 @@ const out=process.env.CITY_FOREST_QA_OUTPUT||'/workspace/after-rain-city-forest'
   },target);
   const primary=await walk({x:48*32,y:14*32});check('Percurso principal completo e primeira passagem atravessável',Math.hypot(primary.x-1536,primary.y-448)<20,primary);
   const city=await walk({x:22.5*32,y:2.5*32});check('Asfalto em L permite chegar ao acesso futuro',Math.hypot(city.x-720,city.y-80)<20,city);
-  const future=await page.evaluate(()=>{f.player.update(0,()=>false,()=>false,false);return f.nearCity();});check('Interação futura disponível, sem dungeons antecipadas',future);
+  const future=await page.evaluate(()=>{f.player.update(0,()=>false,()=>false,false);return f.nearCity();});check('Acesso à cidade alcançável na estrada',future);
   const fence=await page.evaluate(async()=>{const {cityForestBlockedPoint}=await import('/src/data/city-forest.ts');f.player.x=36*32;f.player.y=14*32+25;f.player.keys.W.isDown=true;for(let i=0;i<30;i++)f.player.update(.05,()=>false,cityForestBlockedPoint);f.player.keys.W.isDown=false;const stopped=f.player.y>14*32;f.player.x=720;f.player.y=80;f.player.update(0,()=>false,cityForestBlockedPoint,false);return stopped;});check('Trecho intacto da cerca impede atravessar os fios',fence);
   const map=await page.evaluate(async()=>{const url=await f.captureMap();return url.startsWith('data:image/png')&&url.length>10000;});check('Mapa da região gera captura real',map);
   const saved=await page.evaluate(async()=>{const {loadSave,validateSave}=await import('/src/systems/save.ts');f.persist();const s=loadSave();return{valid:validateSave(s),area:s?.activeArea,x:s?.cityForestPosition?.x};});check('Save registra a nova área e posição',saved.valid&&saved.area==='cityForest'&&saved.x===720,saved);

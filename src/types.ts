@@ -56,6 +56,8 @@ export interface VillageEconomy {
   stock?:Partial<Record<ItemId,StockRecord>>;
 }
 export interface SaveData {
+  dungeons?:import('./dungeons/progression').DungeonProgress;
+  dungeonRun?:import('./dungeons/run').DungeonSnapshot;
   treeGrowth?:import('./systems/tree-growth').TreeGrowthData;
   economy6?:EconomyState;
   resourceFields?:{property:ResourceField;forest:ResourceField};

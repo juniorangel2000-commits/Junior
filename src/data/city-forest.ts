@@ -4,7 +4,7 @@ export const CITY_FOREST_ENTRY={x:48,y:68};
 export const CITY_FOREST_EXIT={x:48,y:70};
 export const VILLAGE_NORTH_GATE={x:50,y:1};
 export const VILLAGE_NORTH_ARRIVAL={x:50,y:4};
-export const CITY_ACCESS={id:'city-dungeons-access',x:22,y:2,direction:'up',travelDurationMs:5000,destinations:['abandoned-central-square','mall-parking'],enabled:false} as const;
+export const CITY_ACCESS={id:'city-dungeons-access',x:22,y:2,direction:'up',travelDurationMs:5000,destinations:['abandoned-central-square','mall-parking'],enabled:true} as const;
 export const CITY_SIGN_TEXT='↑ City';
 export const CITY_FOREST_TRAILS:readonly (readonly (readonly [number,number])[])[]=[
  [[48,71],[48,64],[43,56],[46,47],[40,38],[46,28],[48,14],[48,10]],

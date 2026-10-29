@@ -1,0 +1,55 @@
+{
+  "file": "assets/visual/dungeons/weapons.png",
+  "sha256": "04663de454799bbf315309f2da62d1a986559361f559bc3d009b059dd0f3eac2",
+  "alphaCutoff": 160,
+  "frames": {
+    "sword": {
+      "x": 15,
+      "y": 176,
+      "width": 456,
+      "height": 126
+    },
+    "bow": {
+      "x": 574,
+      "y": 14,
+      "width": 184,
+      "height": 423
+    },
+    "spear": {
+      "x": 907,
+      "y": 206,
+      "width": 522,
+      "height": 80
+    },
+    "boomerang": {
+      "x": 1480,
+      "y": 111,
+      "width": 272,
+      "height": 298
+    },
+    "hammer": {
+      "x": 45,
+      "y": 583,
+      "width": 465,
+      "height": 221
+    },
+    "rotating-blade": {
+      "x": 555,
+      "y": 505,
+      "width": 329,
+      "height": 330
+    },
+    "orbiting-shield": {
+      "x": 947,
+      "y": 492,
+      "width": 343,
+      "height": 351
+    },
+    "health": {
+      "x": 1395,
+      "y": 555,
+      "width": 333,
+      "height": 271
+    }
+  }
+}

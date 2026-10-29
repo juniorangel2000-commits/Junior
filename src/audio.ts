@@ -122,6 +122,7 @@ class GameAudio {
   private rainEnvelope?: GainNode;
   private fadingRain?: AudioBufferSourceNode;
   private rainBuffer?: AudioBuffer;
+  private rainAtmosphere=false;
   private buffers = new Map<AudioScene, AudioBuffer>();
   private rendering?: Promise<void>;
   private installed = false;
@@ -199,11 +200,13 @@ class GameAudio {
     });
   }
 
+  setRainAtmosphere(enabled:boolean):void{this.rainAtmosphere=enabled;this.syncRain();}
+
   private syncRain(): void {
     const ctx = this.context;
     if (!ctx) return;
     const now = ctx.currentTime;
-    if (this.scene === 'title' && !this.rain) {
+    if ((this.scene === 'title'||this.rainAtmosphere) && !this.rain) {
       this.fadingRain?.stop();
       this.rainBuffer ??= renderRain(ctx);
       const source = ctx.createBufferSource(), envelope = ctx.createGain();
@@ -212,7 +215,7 @@ class GameAudio {
       source.connect(envelope).connect(this.effectsGain!);
       source.onended = () => { source.disconnect(); envelope.disconnect(); if (this.fadingRain === source) this.fadingRain = undefined; };
       source.start(); this.rain = source; this.rainEnvelope = envelope;
-    } else if (this.scene !== 'title' && this.rain) {
+    } else if (this.scene !== 'title' && !this.rainAtmosphere && this.rain) {
       this.rainEnvelope!.gain.cancelAndHoldAtTime(now);
       this.rainEnvelope!.gain.linearRampToValueAtTime(0, now + .65);
       this.rain.stop(now + .7); this.fadingRain = this.rain;

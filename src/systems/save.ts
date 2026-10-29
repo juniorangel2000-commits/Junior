@@ -1,3 +1,5 @@
+import {validDungeonProgress} from '../dungeons/progression';
+import {validDungeonSnapshot} from '../dungeons/snapshot';
 import {validSmithLayout,smithFits,smithNavigation} from './smith-layout';
 import {validateEconomyState,newEconomyState} from './economy';
 import {validateResourceField} from './resource-spawns';
@@ -63,6 +65,8 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.treeGrowth!==undefined&&!validTreeGrowth(value.treeGrowth))return false;
   if(value.resourceMilestones!==undefined&&(!isRecord(value.resourceMilestones)||typeof value.resourceMilestones.felled!=='boolean'||typeof value.resourceMilestones.mined!=='boolean'))return false;
   if (value.quickbar !== undefined && !validQuickbar(value.quickbar)) return false;
+  if(value.dungeons!==undefined&&!validDungeonProgress(value.dungeons))return false;
+  if(value.dungeonRun!==undefined&&(value.activeArea!=='cityForest'||!validDungeonSnapshot(value.dungeonRun)))return false;
   if (value.activeArea !== undefined && value.activeArea !== 'property' && value.activeArea !== 'forest' && value.activeArea !== 'village' && value.activeArea !== 'cityForest') return false;
   if((value.activeArea==='village'||value.activeArea==='cityForest')&&(value.homePosition!==undefined||value.animalEscort!==undefined))return false;
   if(value.blacksmithScene!==undefined&&!validSmithLayout(value.blacksmithScene))return false;

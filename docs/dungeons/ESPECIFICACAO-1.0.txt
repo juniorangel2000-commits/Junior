@@ -1,0 +1,1008 @@
+PROJETO: JARDIM DEPOIS DA CHUVA
+SISTEMA: DUNGEONS E SOBREVIVÊNCIA
+VERSÃO: 1.0
+
+PAPEL:
+Você é o programador principal e arquiteto de sistemas do jogo
+Jardim Depois da Chuva.
+
+Sua missão é implementar um sistema completo de dungeons,
+integrado ao jogo existente, preservando sua identidade visual,
+mecânicas, cenários, NPCs, animações e funcionalidades.
+
+IMPORTANTE:
+Não estamos criando outro jogo.
+
+Estamos adicionando uma modalidade especial de sobrevivência
+dentro do universo de Jardim Depois da Chuva.
+
+O jogo é um mundo aberto de sobrevivência em pixel art,
+com visão top-down, ambientado nos dias atuais.
+
+Uma chuva misteriosa provocou uma transformação que
+transformou pessoas em zumbis.
+
+O jogador começa sua jornada após sofrer um acidente
+de carro, atravessar uma floresta e encontrar uma cabana.
+
+As dungeons devem respeitar integralmente essa ambientação.
+
+==================================================
+1. REGRAS GERAIS DE DESENVOLVIMENTO
+==================================================
+
+Antes de implementar:
+
+1. Identifique a linguagem, engine e arquitetura existentes.
+2. Localize os sistemas de movimentação, combate, inventário,
+   mapas, personagens, NPCs, salvamento e interface.
+3. Reutilize componentes existentes sempre que possível.
+4. Não reescreva sistemas funcionais sem necessidade.
+5. Preserve todos os sprites e animações já aprovados.
+6. Não altere os cenários existentes desnecessariamente.
+7. Não modifique a identidade visual oficial do projeto.
+8. Não publique alterações em repositórios remotos.
+9. Evite dependências externas desnecessárias.
+10. Não execute verificações completas do jogo após
+    cada pequena modificação.
+
+Implemente o sistema de maneira modular.
+
+Realize testes específicos para cada módulo.
+
+Execute uma verificação integrada mais abrangente
+somente após concluir etapas importantes.
+
+Priorize desempenho, organização e manutenção futura.
+
+Não utilize soluções provisórias que comprometam
+o funcionamento dos sistemas existentes.
+
+Caso faltem sprites, prepare a estrutura de integração
+e identifique claramente os arquivos necessários.
+
+Não substitua artes oficiais por imagens genéricas.
+
+Não invente que uma funcionalidade foi implementada
+quando ela ainda estiver incompleta.
+
+==================================================
+2. SISTEMA DE ACESSO ÀS DUNGEONS
+==================================================
+
+Adicionar uma nova área de acesso ao mapa principal.
+
+NOME PROVISÓRIO:
+Área de Acesso.
+
+O nome definitivo será estabelecido posteriormente.
+
+Essa área terá uma estrada na parte superior do cenário.
+
+Na estrada, haverá uma placa indicando o caminho
+para a cidade.
+
+O nome da cidade também será definido futuramente.
+
+Quando o jogador interagir com esse acesso:
+
+1. Iniciar uma animação de transição.
+2. Duração aproximada de cinco segundos.
+3. Mostrar uma estrada molhada.
+4. Apresentar chuva e construções abandonadas.
+5. Utilizar efeitos sonoros ambientais.
+6. Fazer a câmera avançar pela estrada.
+7. Encerrar mostrando a chegada à cidade.
+8. Abrir automaticamente o menu das dungeons.
+
+A transição deve respeitar o estilo visual do jogo.
+
+Não utilizar elementos fantasiosos ou portais mágicos.
+
+O jogador deverá ter acesso a duas opções principais.
+
+OPÇÃO 1:
+Praça Central Abandonada.
+
+Modo de sobrevivência por 15 minutos.
+
+OPÇÃO 2:
+Estacionamento de Shopping.
+
+Modo de sobrevivência por 50 rodadas.
+
+Cada opção deverá apresentar:
+
+- Nome do cenário.
+- Prévia visual.
+- Tipo de desafio.
+- Duração ou quantidade de rodadas.
+- Informações básicas de dificuldade.
+- Botão de iniciar.
+- Botão de voltar.
+
+Ao finalizar ou abandonar uma dungeon:
+
+O jogador retorna exatamente ao ponto de acesso
+da estrada onde iniciou a viagem.
+
+Não transportar automaticamente o personagem
+para sua cabana.
+
+==================================================
+3. MAPAS DAS DUNGEONS
+==================================================
+
+Criar dois cenários amplos.
+
+Os mapas deverão possuir escala semelhante
+à dos cenários já existentes no jogo.
+
+Não criar arenas pequenas ou telas fixas.
+
+A câmera deverá acompanhar o personagem.
+
+O jogador poderá explorar livremente o cenário
+durante o combate.
+
+MAPA 1:
+PRAÇA CENTRAL ABANDONADA
+
+Elementos visuais:
+
+- Praça urbana ampla.
+- Caminhos de concreto.
+- Árvores.
+- Bancos.
+- Fonte desativada.
+- Veículos abandonados.
+- Ruas laterais.
+- Construções ao redor.
+- Vegetação crescendo em áreas abandonadas.
+- Marcas do período de colapso.
+- Iluminação coerente com o ambiente.
+
+MAPA 2:
+ESTACIONAMENTO DE SHOPPING
+
+Elementos visuais:
+
+- Estacionamento externo de grandes dimensões.
+- Veículos abandonados.
+- Vagas demarcadas.
+- Guaritas.
+- Pequenos obstáculos.
+- Entradas e saídas.
+- Postes de iluminação.
+- Trechos de asfalto danificado.
+- Vegetação espontânea.
+- Estruturas urbanas abandonadas.
+
+IMPORTANTE:
+
+Os elementos decorativos não devem bloquear
+excessivamente a movimentação.
+
+O jogador precisa conseguir circular e escapar
+das hordas.
+
+Implementar colisões consistentes.
+
+Utilizar carregamento e renderização eficientes.
+
+==================================================
+4. MODOS DE SOBREVIVÊNCIA
+==================================================
+
+MODO A:
+SOBREVIVÊNCIA DE 15 MINUTOS
+
+Objetivo:
+
+Permanecer vivo durante 15 minutos.
+
+Características:
+
+- Inimigos surgem progressivamente.
+- A dificuldade aumenta com o tempo.
+- A quantidade de inimigos aumenta gradualmente.
+- O jogador recebe experiência ao derrotar inimigos.
+- Eventos especiais podem ocorrer durante a partida.
+- O desafio termina quando o tempo acaba
+  ou quando o personagem é derrotado.
+
+MODO B:
+SOBREVIVÊNCIA DE 50 RODADAS
+
+Objetivo:
+
+Completar 50 rodadas de sobrevivência.
+
+Características:
+
+- Cada rodada possui uma quantidade de inimigos.
+- A dificuldade cresce progressivamente.
+- Novos tipos de inimigos podem surgir.
+- Inimigos especiais aparecem em determinados momentos.
+- O sistema deve suportar chefes futuramente.
+- O jogador recebe experiência durante o combate.
+- Eventos especiais podem ocorrer entre rodadas
+  ou durante os confrontos.
+
+Não definir recompensas exclusivas definitivas
+para cada modo sem necessidade.
+
+O sistema de recompensas deverá ser configurável.
+
+==================================================
+5. COMBATE AUTOMÁTICO
+==================================================
+
+REGRA FUNDAMENTAL:
+
+TODOS OS ATAQUES DAS DUNGEONS SÃO AUTOMÁTICOS.
+
+O jogador controla somente:
+
+- Movimentação.
+- Escolhas de melhorias.
+- Interações com interfaces.
+- Pausa e gerenciamento da partida.
+
+O personagem não precisa receber comandos manuais
+para realizar ataques.
+
+Cada arma possui sua própria lógica automática.
+
+As armas devem:
+
+- Detectar inimigos dentro do alcance.
+- Selecionar alvos adequados.
+- Executar ataques automaticamente.
+- Respeitar o tempo entre ataques.
+- Aplicar dano e efeitos.
+- Utilizar animações apropriadas.
+- Funcionar simultaneamente com outras armas.
+
+O sistema precisa permitir quatro armas ativas
+ao mesmo tempo.
+
+Evitar que cálculos de combate prejudiquem
+o desempenho quando houver muitos inimigos.
+
+==================================================
+6. CATEGORIA ESPECIAL: ARSENAL
+==================================================
+
+Criar uma categoria exclusiva de desbloqueio de armas.
+
+NOME:
+ARSENAL.
+
+Essa categoria é separada das raridades normais.
+
+O personagem inicia cada dungeon com uma espada.
+
+LIMITE:
+
+Quatro armas simultâneas.
+
+A espada ocupa o primeiro espaço.
+
+O jogador pode desbloquear outras três armas.
+
+O pet não ocupa espaço de arma.
+
+Melhorias de armas existentes também não ocupam
+novos espaços.
+
+Quando os quatro espaços estiverem preenchidos,
+novas armas não deverão aparecer nas escolhas.
+
+Continuar oferecendo melhorias das armas existentes.
+
+ARMAS DISPONÍVEIS:
+
+1. Espada.
+2. Arco.
+3. Lança.
+4. Bumerangue.
+5. Martelo.
+6. Arma Rotativa.
+7. Escudo Giratório.
+
+==================================================
+7. ESPADA
+==================================================
+
+ARMA INICIAL.
+
+Ataque automático contra inimigos próximos.
+
+MELHORIAS:
+
+RARA:
+Corte Poderoso.
++5% de dano por nível.
+Máximo de 5 níveis.
+
+RARA:
+Golpes Rápidos.
++5% de velocidade de ataque por nível.
+Máximo de 5 níveis.
+
+RARA:
+Alcance Aprimorado.
++8% de alcance por nível.
+Máximo de 4 níveis.
+
+SUPER-RARA:
+Corte Amplo.
+Permite atingir mais um inimigo por nível.
+Máximo de 2 níveis.
+
+LENDÁRIA:
+Espadas Duplas.
+
+O personagem passa a utilizar duas espadas.
+
+A segunda espada causa inicialmente 60%
+do dano da primeira.
+
+As duas espadas ocupam apenas um espaço.
+
+Implementar animações automáticas alternadas.
+
+REQUISITOS SUGERIDOS:
+
+Golpes Rápidos nível 2.
+Corte Amplo nível 1.
+
+==================================================
+8. ARCO
+==================================================
+
+Arma automática de longo alcance.
+
+MELHORIAS:
+
+RARA:
+Disparo Rápido.
++5% de frequência de disparo.
+Máximo de 4 níveis.
+
+RARA:
+Perfuração.
+Permite atravessar mais um inimigo por nível.
+Máximo de 2 níveis.
+
+RARA:
+Precisão Aprimorada.
++5% de precisão.
+Máximo de 5 níveis.
+
+SUPER-RARA:
+Flecha Adicional.
+
+O arco passa a disparar duas flechas simultâneas.
+
+LENDÁRIA:
+Disparo Triplo.
+
+O arco passa a disparar três flechas simultâneas.
+
+O disparo triplo substitui o disparo duplo.
+
+Não acumular cinco flechas.
+
+REQUISITO:
+Flecha Adicional.
+
+==================================================
+9. LANÇA
+==================================================
+
+Ataques automáticos em linha reta.
+
+MELHORIAS:
+
+RARA:
+Lança Alongada.
++8% de alcance.
+Máximo de 4 níveis.
+
+RARA:
+Perfuração Aprimorada.
+Atinge mais um inimigo alinhado por nível.
+Máximo de 2 níveis.
+
+SUPER-RARA:
+Estocada Rápida.
++10% de frequência de ataque.
+Máximo de 3 níveis.
+
+LENDÁRIA:
+Estocada em Leque.
+
+Realiza três estocadas automáticas
+em direções próximas.
+
+==================================================
+10. BUMERANGUE
+==================================================
+
+Arma de lançamento automático.
+
+O projétil vai em direção aos inimigos
+e retorna ao personagem.
+
+MELHORIAS:
+
+RARA:
+Voo Rápido.
++8% de velocidade.
+Máximo de 4 níveis.
+
+RARA:
+Alcance Estendido.
++10% de distância.
+Máximo de 4 níveis.
+
+SUPER-RARA:
+Lançamento Duplo.
+
+Permite lançar dois bumerangues.
+
+LENDÁRIA:
+Trajetória Cruzada.
+
+Os bumerangues realizam trajetórias cruzadas,
+atingindo diferentes grupos de inimigos.
+
+==================================================
+11. MARTELO
+==================================================
+
+Arma automática de impacto em área.
+
+MELHORIAS:
+
+RARA:
+Impacto Poderoso.
++5% de dano.
+Máximo de 5 níveis.
+
+RARA:
+Golpe Rápido.
++5% de frequência de ataque.
+Máximo de 4 níveis.
+
+SUPER-RARA:
+Impacto Ampliado.
++10% de área atingida.
+Máximo de 3 níveis.
+
+LENDÁRIA:
+Martelada Dupla.
+
+Executa dois impactos consecutivos.
+
+==================================================
+12. ARMA ROTATIVA
+==================================================
+
+Arma mecânica com lâminas que giram
+automaticamente ao redor do personagem.
+
+MELHORIAS:
+
+RARA:
+Raio Ampliado.
++10% de alcance.
+Máximo de 5 níveis.
+
+RARA:
+Lâmina Reforçada.
++5% de dano.
+Máximo de 5 níveis.
+
+SUPER-RARA:
+Rotação Acelerada.
++8% de frequência de ataque.
+Máximo de 3 níveis.
+
+LENDÁRIA:
+Lâminas Duplas.
+
+Adiciona uma segunda lâmina giratória
+em posição oposta à primeira.
+
+==================================================
+13. ESCUDO GIRATÓRIO
+==================================================
+
+Arma defensiva automática.
+
+MELHORIAS:
+
+RARA:
+Impacto Defensivo.
++5% de força de empurrão.
+Máximo de 4 níveis.
+
+RARA:
+Rotação Rápida.
++5% de frequência dos contatos.
+Máximo de 4 níveis.
+
+SUPER-RARA:
+Proteção Reforçada.
+Reduz em 5% o dano recebido enquanto
+a proteção estiver ativa.
+Máximo de 3 níveis.
+
+LENDÁRIA:
+Barreira Dupla.
+
+Adiciona um segundo escudo giratório.
+
+==================================================
+14. EXPERIÊNCIA TEMPORÁRIA
+==================================================
+
+Criar um sistema de experiência exclusivo
+para cada partida de dungeon.
+
+Esse sistema NÃO altera o nível permanente
+do personagem.
+
+Ao entrar na dungeon:
+
+O nível temporário começa em 1.
+
+Ao derrotar inimigos:
+
+O jogador recebe experiência temporária.
+
+Ao subir de nível:
+
+Pausar temporariamente o combate.
+
+Exibir três cartas aleatórias de melhoria.
+
+O jogador escolhe uma carta.
+
+Aplicar o efeito imediatamente.
+
+Retomar o combate.
+
+As melhorias podem ser escolhidas repetidamente
+até alcançar seu nível máximo.
+
+Melhorias no nível máximo deixam de aparecer.
+
+A experiência temporária e suas melhorias
+são reiniciadas ao encerrar a dungeon.
+
+==================================================
+15. RARIDADES
+==================================================
+
+Implementar quatro raridades:
+
+COMUM.
+RARA.
+SUPER-RARA.
+LENDÁRIA.
+
+Cada melhoria possui uma raridade fixa.
+
+Uma melhoria comum não se transforma
+automaticamente em rara.
+
+A raridade define a categoria da melhoria.
+
+As probabilidades de aparecimento deverão
+ser configuráveis.
+
+Não fixar probabilidades definitivamente
+nesta primeira implementação.
+
+Criar uma configuração central para
+ajustar pesos e regras posteriormente.
+
+==================================================
+16. MELHORIAS COMUNS
+==================================================
+
+EXPERIÊNCIA ACELERADA:
+
++5% de experiência por escolha.
+
+Máximo de 10 níveis.
+
+Bônus máximo:
++50%.
+
+COLETA AMPLIADA:
+
++10% de alcance de coleta de experiência.
+Máximo sugerido de 5 níveis.
+
+VELOCIDADE DE MOVIMENTO:
+
++3% de velocidade por escolha.
+Máximo sugerido de 5 níveis.
+
+VIDA MÁXIMA:
+
++5% de vida máxima por escolha.
+Máximo sugerido de 5 níveis.
+
+RECUPERAÇÃO DE VIDA:
+
+Melhora gradualmente a recuperação de vida
+durante a dungeon.
+
+O valor exato deverá ficar configurável.
+
+IMPORTANTE:
+
+Não implementar barra de vigor ou stamina
+nas dungeons.
+
+O jogador deve conseguir movimentar-se
+continuamente sem gastar energia de corrida.
+
+==================================================
+17. MELHORIAS RARAS
+==================================================
+
+Implementar melhorias de:
+
+- Defesa.
+- Ataque corpo a corpo.
+- Ataque à distância.
+- Precisão.
+- Velocidade de ataque.
+- Velocidade de recarga.
+- Perfuração.
+- Alcance de ataques.
+
+Separar o dano corpo a corpo do dano à distância.
+
+Não utilizar uma única melhoria universal
+para aumentar todos os tipos de dano.
+
+Os valores e limites devem ser configuráveis.
+
+==================================================
+18. MELHORIAS SUPER-RARAS
+==================================================
+
+Implementar melhorias de:
+
+- Redução do tempo de recarga de ataques especiais.
+- Recuperação acelerada de vida.
+- Eficiência dos ataques especiais.
+- Velocidade de ataque do pet.
+- Dano do pet.
+- Resistência do pet.
+- Proteção oferecida pelo pet.
+- Recarga das habilidades especiais do pet.
+
+Essas melhorias devem ser mais significativas
+que as melhorias raras.
+
+As melhorias específicas de pets somente aparecem
+quando existir um pet compatível na partida.
+
+==================================================
+19. MELHORIAS LENDÁRIAS GERAIS
+==================================================
+
+Implementar as seguintes possibilidades:
+
+ÚLTIMA RESISTÊNCIA:
+
+Quando a vida estiver abaixo de 20%,
+conceder temporariamente velocidade adicional
+e recuperação de vida.
+
+Ativação limitada a uma vez por partida.
+
+PRECISÃO MORTAL:
+
+Acertos sucessivos contra o mesmo inimigo
+aumentam temporariamente a eficiência
+dos ataques contra aquele alvo.
+
+COMPANHEIRO IMPLACÁVEL:
+
+O pet pode executar sua habilidade especial
+duas vezes consecutivas antes da recarga.
+
+INSTINTO DE SOBREVIVÊNCIA:
+
+Inimigos especiais podem conceder
+suprimentos adicionais de recuperação.
+
+ARSENAL ESPECIALIZADO:
+
+Permite aprimoramentos especiais
+conforme as armas equipadas.
+
+As evoluções lendárias exclusivas de cada arma
+já foram definidas anteriormente.
+
+As regras deverão impedir efeitos duplicados
+ou incompatíveis.
+
+==================================================
+20. SISTEMA DE PETS
+==================================================
+
+Permitir somente um pet ativo por dungeon.
+
+O pet é escolhido antes da partida.
+
+O pet acompanha o jogador desde o início.
+
+O pet não desaparece automaticamente
+ao terminar uma rodada.
+
+Os pets conquistados pertencem à coleção
+permanente do jogador.
+
+Criar suporte para:
+
+- Espécies diferentes.
+- Habilidades próprias.
+- Atributos individuais.
+- Progressão permanente.
+- Melhorias temporárias durante a dungeon.
+- Comportamento automático.
+- Animações próprias.
+- Variantes raras.
+
+Cada espécie poderá possuir uma árvore
+de evolução permanente exclusiva.
+
+Os pets também podem ajudar o personagem
+durante a exploração do mundo aberto.
+
+Não implementar magia ou poderes sobrenaturais
+sem aprovação específica.
+
+As habilidades devem ser coerentes
+com as características do animal
+e com o universo do jogo.
+
+==================================================
+21. EVOLUÇÃO PERMANENTE
+==================================================
+
+Criar ou integrar árvores de atributos
+permanentes para personagens e pets.
+
+PERSONAGEM:
+
+Categorias iniciais:
+
+- Força.
+- Resistência.
+- Agilidade.
+- Vitalidade.
+- Precisão.
+- Sobrevivência.
+
+PETS:
+
+Atributos específicos conforme a espécie.
+
+Exemplos:
+
+- Velocidade.
+- Resistência.
+- Percepção.
+- Proteção.
+- Eficiência de habilidades.
+
+IMPORTANTE:
+
+O progresso permanente não deve ser apagado
+ao sair de uma dungeon.
+
+As melhorias temporárias não podem alterar
+permanentemente esses atributos.
+
+Integrar a evolução ao sistema de salvamento
+já existente.
+
+==================================================
+22. EVENTOS DINÂMICOS
+==================================================
+
+Adicionar suporte para eventos durante as dungeons.
+
+EXEMPLOS:
+
+- Suprimentos espalhados pelo mapa.
+- Recuperação de vida.
+- Bônus temporários de velocidade.
+- Bônus temporários de ataque.
+- Invulnerabilidade temporária.
+- Veículos com recursos.
+- Eventos ambientais.
+- Aparições especiais de inimigos.
+- Oportunidades de encontrar pets raros.
+
+Os eventos são importantes para variar
+a experiência entre partidas.
+
+Devem acontecer sem interromper
+desnecessariamente a movimentação.
+
+A duração e a intensidade dos efeitos
+devem ser configuráveis.
+
+==================================================
+23. RECOMPENSAS
+==================================================
+
+Criar suporte para recompensas variadas.
+
+Possibilidades:
+
+- Materiais.
+- Componentes de equipamentos.
+- Peças de armas.
+- Receitas de fabricação.
+- Recursos especiais.
+- Desbloqueios progressivos.
+- Oportunidades de encontrar novos pets.
+- Variantes raras de pets.
+
+As recompensas não devem desequilibrar
+o início do jogo principal.
+
+Evitar conceder equipamentos excessivamente
+poderosos logo nas primeiras partidas.
+
+Permitir expansão futura.
+
+Não estabelecer recompensas exclusivas
+definitivas sem necessidade.
+
+==================================================
+24. INTERFACE DAS DUNGEONS
+==================================================
+
+Criar interface consistente com o visual
+de Jardim Depois da Chuva.
+
+ELEMENTOS:
+
+- Barra de vida.
+- Barra de experiência temporária.
+- Nível atual da dungeon.
+- Cronômetro ou contador de rodadas.
+- Ícones das quatro armas.
+- Indicação do pet ativo.
+- Indicadores de melhorias.
+- Menu de escolha entre três cartas.
+- Tela de pausa.
+- Tela de conclusão.
+- Tela de derrota.
+- Resumo de recompensas.
+
+As cartas deverão mostrar:
+
+- Nome da melhoria.
+- Raridade.
+- Efeito.
+- Nível atual.
+- Limite máximo.
+- Ícone correspondente.
+
+As informações devem ser legíveis
+sem prejudicar a visualização do combate.
+
+==================================================
+25. DESEMPENHO
+==================================================
+
+O sistema deverá suportar muitas entidades
+simultaneamente.
+
+Priorizar:
+
+- Reutilização de objetos quando apropriado.
+- Verificações de colisão eficientes.
+- Busca de inimigos por proximidade.
+- Atualizações otimizadas.
+- Renderização eficiente.
+- Limitação de efeitos visuais simultâneos.
+- Remoção correta de entidades inativas.
+- Controle de consumo de memória.
+
+Não criar um sistema de combate que dependa
+de verificar todos os inimigos contra todas
+as armas a cada quadro quando houver
+uma alternativa mais eficiente.
+
+Preservar fluidez mesmo durante hordas grandes.
+
+==================================================
+26. TESTES E PREVENÇÃO DE BUGS
+==================================================
+
+Criar testes específicos para:
+
+1. Entrada e saída das dungeons.
+2. Retorno ao ponto correto do mapa.
+3. Temporizador de 15 minutos.
+4. Progressão das 50 rodadas.
+5. Experiência temporária.
+6. Sorteio das três cartas.
+7. Limites de melhorias.
+8. Compatibilidade entre raridades.
+9. Limite de quatro armas.
+10. Funcionamento simultâneo das armas.
+11. Ataques automáticos.
+12. Animações e colisões.
+13. Funcionamento dos pets.
+14. Persistência das melhorias permanentes.
+15. Reinicialização dos bônus temporários.
+16. Entrega de recompensas.
+17. Desempenho com muitos inimigos.
+18. Salvamento e carregamento.
+
+Não executar uma auditoria completa
+do jogo inteiro após cada alteração.
+
+Utilizar testes direcionados.
+
+Realizar uma verificação integrada
+ao concluir cada módulo relevante.
+
+Ao final, executar os testes necessários
+para verificar a integração dos sistemas.
+
+==================================================
+27. ORGANIZAÇÃO DA IMPLEMENTAÇÃO
+==================================================
+
+Dividir a implementação nas seguintes etapas:
+
+ETAPA 1:
+Inspeção direcionada da arquitetura existente.
+
+ETAPA 2:
+Área de acesso, transição e menu da cidade.
+
+ETAPA 3:
+Criação dos dois mapas das dungeons.
+
+ETAPA 4:
+Sistema de inimigos e combate automático.
+
+ETAPA 5:
+Experiência temporária, cartas e raridades.
+
+ETAPA 6:
+Sistema Arsenal e integração das sete armas.
+
+ETAPA 7:
+Melhorias, progressões e evoluções lendárias.
+
+ETAPA 8:
+Integração dos pets e evolução permanente.
+
+ETAPA 9:
+Eventos dinâmicos e recompensas.
+
+ETAPA 10:
+Interface, otimização e testes finais.
+
+Trabalhe em etapas pequenas e verificáveis
