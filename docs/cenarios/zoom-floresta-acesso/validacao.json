@@ -1,0 +1,195 @@
+{
+  "checks": [
+    {
+      "name": "Enquadramento padrão igual à propriedade e à vila",
+      "passed": true,
+      "details": {
+        "property": 2,
+        "village": 2,
+        "forest": 2
+      }
+    },
+    {
+      "name": "Controle de zoom começa oculto",
+      "passed": true
+    },
+    {
+      "name": "Scroll aproxima, salva a preferência e revela o controle",
+      "passed": true,
+      "details": {
+        "factor": 1.25,
+        "camera": 2.5,
+        "saved": "1.25",
+        "visible": true,
+        "label": "125%",
+        "x": 720,
+        "y": 80
+      }
+    },
+    {
+      "name": "Trackpad acumula movimentos pequenos sem saltos",
+      "passed": true,
+      "details": {
+        "factor": 1.25,
+        "camera": 2.5,
+        "saved": "1.25",
+        "visible": true,
+        "label": "125%",
+        "x": 720,
+        "y": 80
+      }
+    },
+    {
+      "name": "Trackpad faz um passo ao atingir o limiar",
+      "passed": true,
+      "details": {
+        "factor": 1.5,
+        "camera": 3,
+        "saved": "1.5",
+        "visible": true,
+        "label": "150%",
+        "x": 720,
+        "y": 80
+      }
+    },
+    {
+      "name": "Atalhos do navegador não são capturados",
+      "passed": true,
+      "details": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "Scroll sem deslocamento não afasta a câmera",
+      "passed": true
+    },
+    {
+      "name": "Home restaura 100% e enquadramento padrão",
+      "passed": true,
+      "details": {
+        "factor": 1,
+        "camera": 2,
+        "saved": "1",
+        "visible": true,
+        "label": "100%",
+        "x": 720,
+        "y": 80
+      }
+    },
+    {
+      "name": "Atalho _ afasta a câmera",
+      "passed": true
+    },
+    {
+      "name": "Atalho = aproxima a câmera",
+      "passed": true
+    },
+    {
+      "name": "Pausa bloqueia mudanças e oculta o controle",
+      "passed": true,
+      "details": {
+        "factor": 1,
+        "camera": 2,
+        "saved": "1",
+        "visible": false,
+        "label": "100%",
+        "x": 720,
+        "y": 80
+      }
+    },
+    {
+      "name": "Painéis mantêm a própria rolagem sem alterar o zoom",
+      "passed": true
+    },
+    {
+      "name": "Limite máximo 200% com botão de aproximação desativado",
+      "passed": true,
+      "details": {
+        "factor": 2,
+        "camera": 4,
+        "saved": "2",
+        "visible": true,
+        "label": "200%",
+        "x": 720,
+        "y": 80
+      }
+    },
+    {
+      "name": "Limite mínimo 50% com botão de afastamento desativado",
+      "passed": true,
+      "details": {
+        "factor": 0.5,
+        "camera": 1,
+        "saved": "0.5",
+        "visible": true,
+        "label": "50%",
+        "x": 720,
+        "y": 80
+      }
+    },
+    {
+      "name": "Botão restaura o zoom padrão",
+      "passed": true,
+      "details": {
+        "factor": 1,
+        "camera": 2,
+        "saved": "1",
+        "visible": true,
+        "label": "100%",
+        "x": 720,
+        "y": 80
+      }
+    },
+    {
+      "name": "Controle desaparece após alguns segundos",
+      "passed": true
+    },
+    {
+      "name": "Alterar zoom mantém a posição do jogador",
+      "passed": true,
+      "details": {
+        "factor": 1.25,
+        "camera": 2.5,
+        "saved": "1.25",
+        "visible": true,
+        "label": "125%",
+        "x": 720,
+        "y": 80
+      }
+    },
+    {
+      "name": "Redimensionamento preserva zoom escolhido",
+      "passed": true
+    },
+    {
+      "name": "Preferência acompanha o jogador ao voltar à vila",
+      "passed": true,
+      "details": {
+        "factor": 1.25,
+        "camera": 2.5,
+        "wheelDefault": true
+      }
+    },
+    {
+      "name": "Reentrar na floresta mantém preferência e não duplica o scroll",
+      "passed": true,
+      "details": {
+        "factor": 1.5,
+        "camera": 3,
+        "saved": "1.5",
+        "visible": true,
+        "label": "150%",
+        "x": 1552,
+        "y": 2192
+      }
+    },
+    {
+      "name": "Sem erros JavaScript ou requisições falhas",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

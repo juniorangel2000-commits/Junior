@@ -30,12 +30,14 @@ export class CityForestScene extends Phaser.Scene{
  private leaving=false;
  private elapsed=0;
  private zoom=1;
+ private wheelZoomDistance=0;
+ private lastWheelZoomAt=0;
  private readonly passage=new MapExitPassage();
  constructor(){super('AcessoCidade');}
  preload():void{preloadCityForest(this);const data=this.sys.settings.data as CityForestStart;if(data.save?.dungeons?.selectedPet&&!this.textures.exists('dungeon-pets'))this.load.image('dungeon-pets-source',DUNGEON_ART.pets.file);}
  create(data:CityForestStart):void{
   this.state=structuredClone(data.save);this.state.activeArea='cityForest';delete this.state.homePosition;delete this.state.merchantInterior;delete this.state.blacksmithInterior;
-  this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.leaving=false;this.elapsed=0;this.passage.reset();
+  this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
   this.world=new CityForestWorld(this);
   const p=this.state.cityForestPosition,valid=p&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!cityForestBlockedPoint(p.x+dx,p.y+dy));
@@ -46,9 +48,11 @@ export class CityForestScene extends Phaser.Scene{
   this.zoom=loadCameraZoom();this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time);
   this.cameras.main.setBounds(0,0,3072,2304);this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
   document.querySelector<HTMLElement>('#ui')!.style.display='';this.ui.showHUD('cityForest');this.ui.setQuickbar(this.state.quickbar??emptyQuickbar());this.updateHUD();
-  this.input.keyboard!.on('keydown',this.key,this);this.input.on('wheel',this.wheel,this);this.scale.on('resize',this.applyCamera,this);
+  const mouse=this.input.mouse,previousWheelDefault=mouse?.preventDefaultWheel;
+  if(mouse)mouse.preventDefaultWheel=false;
+  this.input.keyboard!.on('keydown',this.key,this);this.game.canvas.addEventListener('wheel',this.wheel,{passive:false});this.scale.on('resize',this.applyCamera,this);
   window.addEventListener('pagehide',this.save);window.addEventListener('beforeunload',this.save);window.addEventListener('blur',this.blur);document.addEventListener('visibilitychange',this.visibility);
-  this.events.once('shutdown',()=>{this.companion?.destroy();this.companion=undefined;this.daylight.destroy();this.world.destroy();this.input.keyboard?.off('keydown',this.key,this);this.input.off('wheel',this.wheel,this);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
+  this.events.once('shutdown',()=>{if(mouse&&previousWheelDefault!==undefined)mouse.preventDefaultWheel=previousWheelDefault;this.companion?.destroy();this.companion=undefined;this.daylight.destroy();this.world.destroy();this.input.keyboard?.off('keydown',this.key,this);this.game.canvas.removeEventListener('wheel',this.wheel);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
   if(this.state.dungeonRun)this.enterDungeons();else this.persist();
  }
  private nearCity():boolean{return Math.hypot(this.player.x/32-CITY_ACCESS.x,this.player.y/32-CITY_ACCESS.y)<3;}
@@ -63,11 +67,28 @@ export class CityForestScene extends Phaser.Scene{
   if(this.paused)return;
   if(key==='e'&&this.nearCity())this.enterDungeons();
   if(key==='m')this.ui.toggleMap();
-  if(e.key==='+'||e.key==='=')this.changeCameraZoom(1);if(e.key==='-')this.changeCameraZoom(-1);
+  if(['+','=','-','_','Home'].includes(e.key)&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();this.changeCameraZoom(e.key==='Home'?0:e.key==='-'||e.key==='_'?-1:1);}
  }
- private applyCamera=():void=>{this.cameras.main.setZoom(this.zoom).startFollow(this.player.sprite,true,.16,.16);};
- private wheel=(_p:unknown,_o:unknown,_x:number,y:number):void=>{if(!this.paused)this.changeCameraZoom(y<0?1:-1);};
- changeCameraZoom(direction:-1|0|1):void{this.zoom=stepCameraZoom(this.zoom,direction);saveCameraZoom(this.zoom);this.applyCamera();this.ui.updateCameraZoom(this.zoom,!this.paused);}
+ private applyCamera=():void=>{
+  if(!this.player)return;
+  this.cameras.main.setBounds(0,0,3072,2304).setZoom(2*this.zoom).startFollow(this.player,false,1,1).centerOn(this.player.x,this.player.y);
+ };
+ private wheel=(event:WheelEvent):void=>{
+  if(this.paused||this.leaving||this.ui.isModalOpen()||event.ctrlKey||event.metaKey||event.altKey||!event.deltaY)return;
+  event.preventDefault();
+  if(event.timeStamp-this.lastWheelZoomAt>250)this.wheelZoomDistance=0;
+  this.lastWheelZoomAt=event.timeStamp;
+  const pixels=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?this.scale.height:1);
+  if(Math.sign(pixels)!==Math.sign(this.wheelZoomDistance))this.wheelZoomDistance=0;
+  this.wheelZoomDistance+=pixels;
+  if(Math.abs(this.wheelZoomDistance)<40)return;
+  this.changeCameraZoom(this.wheelZoomDistance<0?1:-1);
+  this.wheelZoomDistance=0;
+ };
+ changeCameraZoom(direction:-1|0|1):void{
+  if(this.paused||this.leaving||this.ui.isModalOpen())return;
+  this.zoom=stepCameraZoom(this.zoom,direction);saveCameraZoom(this.zoom);this.applyCamera();this.ui.updateCameraZoom(this.zoom,true,true);
+ }
  setPaused(value:boolean):void{this.paused=value;this.input.keyboard?.resetKeys();if(value)this.persist();this.ui.updateCameraZoom(this.zoom,!value);}
  selectTool(_tool:Tool):void{this.ui.toast('Explore a floresta a pé. A coleta continua disponível nos mapas anteriores.');}
  craftRecipe(_id:string):void{this.ui.toast('Use a bancada na propriedade.');}
