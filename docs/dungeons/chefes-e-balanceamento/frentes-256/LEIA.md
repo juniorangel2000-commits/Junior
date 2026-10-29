@@ -14,3 +14,5 @@ Para as animações:
 
 Zumbis comuns adicionais: entregador e moradora.
 A referência de origem é (128, 235); a arte opaca termina dois pixels acima desse ponto.
+
+Revisão do Demolidor: a frente foi redesenhada sem o martelete, com mãos vazias e postura neutra para facilitar a animação. Use esta versão como referência.

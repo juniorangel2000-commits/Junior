@@ -47,3 +47,7 @@ A suíte completa passou em 1.080 testes, em 117 arquivos. TypeScript e build de
 ## Frentes para animação
 
 Os cinco chefes foram exportados em PNG RGBA de 256 × 256 pixels, com o mesmo alinhamento. Os arquivos estão em [frentes-256](frentes-256/LEIA.md). Também foram criados um zumbi entregador e uma zumbi moradora, ambos frontais, em PNG RGBA de 256 × 256. São fontes para o usuário animar; a caminhada dos inimigos no jogo permanece com os atlas existentes até a integração das animações definitivas.
+
+### Revisão da frente do Demolidor
+
+A pedido do usuário, a frente de referência foi redesenhada sem equipamento, com mãos vazias e os pés apoiados, para simplificar a geração da caminhada. O PNG continua em 256 × 256. O atlas de caminhada do jogo permanece provisório até a integração das animações definitivas. [Prompt atualizado](frentes-256/PROMPT-DEMOLIDOR.md).
