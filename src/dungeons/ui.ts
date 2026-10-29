@@ -1,5 +1,6 @@
+import { bossProfile } from "./bosses";
 import { weaponIdentity } from "./weapon-identity";
-import { UPGRADES } from "./upgrades";
+import { UPGRADES, nextWeaponOfferLevel } from "./upgrades";
 import type { UpgradeCard } from "./upgrades";
 import { ITEM_NAMES } from "../data/items";
 import type { ItemId } from "../types";
@@ -161,6 +162,7 @@ export class DungeonUI {
       minutes = Math.floor(time / 60),
       seconds = Math.floor(time % 60);
     const buffNames: Record<string, string> = {
+      critical: "Crítico 20%",
       speed: "Velocidade",
       attack: "Ataque",
       invulnerable: "Proteção temporária",
@@ -179,7 +181,8 @@ export class DungeonUI {
     const rescue = s.foundPet
       ? `<span>Resgatado: ${PETS[s.foundPet].name}${s.foundPetRare ? " · raro" : ""} · entra na coleção ao encerrar</span>`
       : "";
-    const html = `<section><strong>${d.name}</strong><div class="dungeon-meters"><label>Vida <meter min="0" max="${run.maxHealth}" value="${s.player.hp}"></meter> ${Math.ceil(s.player.hp)}/${Math.round(run.maxHealth)}</label><label>Nível ${s.level} <meter min="0" max="${run.xpNeeded}" value="${s.xp}"></meter></label></div><div class="dungeon-counters"><span>${d.mode === "timed" ? `${minutes}:${String(seconds).padStart(2, "0")}` : `Rodada ${s.round}/50`}</span><span>${s.kills} eliminados</span><span>${d.mode === "waves" ? s.waveRemaining + s.enemies.length + " inimigos na rodada" : s.enemies.length + " inimigos próximos"}</span></div><div class="dungeon-buffs"><span>${run.horde.name}</span>${buffs}${rescue}${shieldStatus}</div><div class="dungeon-loadout">${s.weapons.map((w) => `<span class="${weaponIdentity(w, s.levels).evolved ? "evolved" : ""}" title="${weaponIdentity(w, s.levels).name} · ${weaponIdentity(w, s.levels).role}"><img src="${this.icons[w]}" alt="${weaponIdentity(w, s.levels).name}">${weaponIdentity(w, s.levels).evolved ? "<b>★</b>" : ""}</span>`).join("")}${Array.from({ length: 4 - s.weapons.length }, () => '<span class="empty">+</span>').join("")}<b>Pet: ${s.pet ? PETS[s.pet.species].name + (s.pet.hp <= 0 ? " · recuperando" : "") : "nenhum"}</b></div><small>${Object.keys(s.levels).length} melhorias · WASD / setas para mover · ESC para pausar</small><button data-pause>Pausar</button></section>`;
+    const boss = s.enemies.find((e) => e.kind === "boss" && e.hp > 0);
+    const html = `<section><strong>${d.name}</strong>${boss ? `<div class="dungeon-boss"><strong>${bossProfile(s.round).name}</strong><meter min="0" max="${boss.maxHp}" value="${boss.hp}"></meter><span>${Math.ceil(boss.hp)}/${Math.ceil(boss.maxHp)}</span></div>` : ""}<div class="dungeon-meters"><label>Vida <meter min="0" max="${run.maxHealth}" value="${s.player.hp}"></meter> ${Math.ceil(s.player.hp)}/${Math.round(run.maxHealth)}</label><label>${run.buildComplete ? "Combinação completa" : `Nível ${s.level}`} <meter min="0" max="${run.xpNeeded}" value="${run.buildComplete ? run.xpNeeded : s.xp}"></meter></label></div><div class="dungeon-counters"><span>${d.mode === "timed" ? `${minutes}:${String(seconds).padStart(2, "0")}` : `Rodada ${s.round}/50`}</span><span>${s.kills} eliminados</span><span>${d.mode === "waves" ? s.waveRemaining + s.enemies.length + " inimigos na rodada" : s.enemies.length + " inimigos próximos"}</span></div><div class="dungeon-buffs"><span>${run.horde.name}</span>${s.pickups.some((p) => p.kind === "xp" && p.attracted) ? "<span>Ímã atraindo experiência</span>" : ""}${buffs}${rescue}${shieldStatus}${s.weapons.length < 4 ? `<span>Próxima escolha de arma: nível ${nextWeaponOfferLevel(s.level)}</span>` : ""}</div><div class="dungeon-loadout">${s.weapons.map((w) => `<span class="${weaponIdentity(w, s.levels).evolved ? "evolved" : ""}" title="${weaponIdentity(w, s.levels).name} · ${weaponIdentity(w, s.levels).role}"><img src="${this.icons[w]}" alt="${weaponIdentity(w, s.levels).name}">${weaponIdentity(w, s.levels).evolved ? "<b>★</b>" : ""}</span>`).join("")}${Array.from({ length: 4 - s.weapons.length }, () => '<span class="empty">+</span>').join("")}<b>Pet: ${s.pet ? PETS[s.pet.species].name + (s.pet.hp <= 0 ? " · recuperando" : "") : "nenhum"}</b></div><small>${Object.keys(s.levels).length} melhorias · WASD / setas para mover · ESC para pausar</small><button data-pause>Pausar</button></section>`;
     if (html !== this.lastHUD) {
       this.lastHUD = html;
       this.hud.innerHTML = html;
@@ -217,7 +220,7 @@ export class DungeonUI {
   cards(run: DungeonRun): void {
     const cards = run.state.cards;
     this.show(
-      `<section class="dungeon-menu"><h1>Nível ${run.state.level}</h1><p>Escolha uma melhoria. O combate está pausado.</p><div class="dungeon-cards">${cards.map((c) => `<button class="rarity-${c.rarity}" data-card="${c.id}">${this.cardIcon(c)}<small>${rarityNames[c.rarity]}</small><h2>${c.name}</h2><p>${c.effect}</p><strong>Nível ${c.level} → ${c.level + 1} · máximo ${c.max}</strong></button>`).join("")}</div><button data-abandon>Abandonar partida</button></section>`,
+      `<section class="dungeon-menu"><h1>Nível ${run.state.level}</h1><p>${cards.every((c) => c.kind === "arsenal") ? "Escolha uma das três armas." : "Escolha uma melhoria."} O combate está pausado.</p><div class="dungeon-cards">${cards.map((c) => `<button class="rarity-${c.rarity}" data-card="${c.id}">${this.cardIcon(c)}<small>${rarityNames[c.rarity]}</small><h2>${c.name}</h2><p>${c.effect}</p><strong>Nível ${c.level} → ${c.level + 1} · máximo ${c.max}</strong></button>`).join("")}</div><button data-abandon>Abandonar partida</button></section>`,
     );
     this.panel.querySelectorAll<HTMLButtonElement>("[data-card]").forEach(
       (b) =>

@@ -1,4 +1,4 @@
-import { DUNGEONS, type DungeonId } from "./config";
+import { DUNGEONS, DUNGEON_BALANCE, type DungeonId } from "./config";
 
 /** Derived from the saved clock/round: pausing and loading cannot reroll a phase. */
 export function hordeProfile(
@@ -12,6 +12,15 @@ export function hordeProfile(
     timed
       ? [60, 180, 360, 600, 780].filter((t) => elapsed >= t).length
       : Math.floor((round - 1) / 10),
+  );
+  const progress = Math.max(
+    0,
+    Math.min(
+      1,
+      timed
+        ? elapsed / DUNGEONS[dungeon].duration
+        : (round - 1) / (DUNGEONS[dungeon].rounds - 1),
+    ),
   );
   // Brief breathing windows reduce arrivals; enemies already present keep pursuing.
   const respite = timed && elapsed >= 80 && elapsed % 90 >= 80;
@@ -41,14 +50,19 @@ export function hordeProfile(
       : timed
         ? [1.5, 1.25, 1, 0.85, 0.75, 0.65][stage]
         : Math.max(0.3, 0.65 - stage * 0.06),
-    health: 1 + stage * 0.22 + (timed ? 0 : (round - 1) * 0.012),
+    health: 1 + progress * 1.5,
+    damage: 1 + progress * 0.75,
+    speed: 1 + progress * 0.3,
     specialChance: 0.02 + stage * 0.025,
     runnerChance: stage === 0 ? 0 : 0.1 + stage * 0.025,
   };
 }
 
-/** Gradual cost growth keeps later choices attainable within a fifteen-minute run. */
+/** A bounded cost lets a surviving, actively collecting build finish its ranks. */
 export function experienceForLevel(level: number): number {
   const n = Math.max(0, level - 1);
-  return Math.floor(12 + n * 6 + n * n * 0.35);
+  return Math.min(
+    DUNGEON_BALANCE.xpLevelCostCap,
+    Math.floor(12 + n * 3 + n * n * 0.15),
+  );
 }

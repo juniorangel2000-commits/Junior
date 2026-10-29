@@ -10,6 +10,8 @@ import {
 import { UPGRADES, rollUpgradeCards, type UpgradeCard } from "./upgrades";
 import { hordeProfile, experienceForLevel } from "./director";
 import { insideSwordArc } from "./weapon-identity";
+import { dungeonWaypoint, dungeonSegmentClear } from "./navigation";
+import { bossProfile, isBossRound } from "./bosses";
 import { EnemySpatialIndex } from "./spatial";
 import { DUNGEON_ENTRY, dungeonBlocked } from "./maps";
 import type { DungeonProgress, OwnedPet, RunResult } from "./progression";
@@ -25,6 +27,7 @@ export interface Enemy {
   kind: "walker" | "runner" | "brute" | "boss";
   streak: number;
   lastHit: number;
+  detour?: { x: number; y: number };
 }
 export interface Projectile {
   id: number;
@@ -45,8 +48,17 @@ export interface Pickup {
   id: number;
   x: number;
   y: number;
-  kind: "xp" | "health" | "speed" | "attack" | "invulnerable" | "pet";
+  kind:
+    | "xp"
+    | "health"
+    | "speed"
+    | "attack"
+    | "invulnerable"
+    | "critical"
+    | "magnet"
+    | "pet";
   amount: number;
+  attracted?: boolean;
   species?: PetSpecies;
 }
 export interface AttackEffect {
@@ -81,6 +93,7 @@ export interface DungeonSnapshot {
   phase: RunPhase;
   elapsed: number;
   round: number;
+  bossRound?: number;
   waveRemaining: number;
   intermission: number;
   kills: number;
@@ -131,6 +144,7 @@ export class DungeonRun {
     damage: number;
     at: number;
     killed: boolean;
+    critical: boolean;
   }[] = [];
   readonly spatial = new EnemySpatialIndex<Enemy>();
   private accumulator = 0;
@@ -229,6 +243,17 @@ export class DungeonRun {
   get xpNeeded(): number {
     return experienceForLevel(this.state.level);
   }
+  get buildComplete(): boolean {
+    return (
+      this.state.weapons.length === B.maxWeapons &&
+      UPGRADES.every(
+        (u) =>
+          (u.weapon && !this.state.weapons.includes(u.weapon)) ||
+          (u.pet && !this.state.pet) ||
+          this.level(u.id) >= u.max,
+      )
+    );
+  }
   private active(id: string): boolean {
     return (this.state.buffs[id] ?? 0) > this.state.elapsed;
   }
@@ -270,14 +295,21 @@ export class DungeonRun {
     return true;
   }
   grantXP(amount: number): void {
-    if (!Number.isFinite(amount) || amount < 0 || terminal(this.state.phase))
+    if (
+      !Number.isFinite(amount) ||
+      amount < 0 ||
+      terminal(this.state.phase) ||
+      this.buildComplete
+    )
       return;
-    this.state.xp += amount * (1 + this.bonus("xp"));
+    this.state.xp +=
+      amount * (1 + this.bonus("xp") + this.bonus("advanced-xp"));
     this.checkLevel();
   }
   private checkLevel(): void {
     const s = this.state;
-    if (s.phase !== "fighting" || s.xp < this.xpNeeded) return;
+    if (s.phase !== "fighting" || s.xp < this.xpNeeded || this.buildComplete)
+      return;
     s.xp -= this.xpNeeded;
     s.level++;
     s.cards = rollUpgradeCards(s, this.random);
@@ -335,14 +367,24 @@ export class DungeonRun {
       }
     }
     if (!found) return false;
-    const pressure = profile.stage,
-      special = this.random() < profile.specialChance,
-      kind = special
-        ? "brute"
-        : this.random() < profile.runnerChance
-          ? "runner"
-          : "walker";
-    const health = B.enemyHealth * profile.health * (special ? 3 : 1);
+    const boss =
+        DUNGEONS[s.dungeon].mode === "waves" &&
+        isBossRound(s.round) &&
+        s.bossRound !== s.round,
+      special = boss || this.random() < profile.specialChance,
+      kind = boss
+        ? "boss"
+        : special
+          ? "brute"
+          : this.random() < profile.runnerChance
+            ? "runner"
+            : "walker",
+      stats = bossProfile(s.round),
+      health =
+        B.enemyHealth *
+        profile.health *
+        (boss ? stats.health : special ? 3 : 1);
+    if (boss) s.bossRound = s.round;
     s.enemies.push({
       id: this.nextId(),
       x,
@@ -351,9 +393,12 @@ export class DungeonRun {
       maxHp: health,
       speed:
         B.enemySpeed *
-        (kind === "runner" ? 1.6 : special ? 0.7 : 1) *
-        (1 + Math.min(0.5, pressure * 0.05)),
-      damage: B.enemyDamage * (1 + pressure * 0.12) * (special ? 1.5 : 1),
+        (boss ? stats.speed : kind === "runner" ? 1.6 : special ? 0.7 : 1) *
+        profile.speed,
+      damage:
+        B.enemyDamage *
+        profile.damage *
+        (boss ? stats.damage : special ? 1.5 : 1),
       special,
       kind,
       streak: 0,
@@ -400,13 +445,26 @@ export class DungeonRun {
       s.buffs["last-stand"] = s.elapsed + B.lastStandDuration;
     }
     const mode = DUNGEONS[s.dungeon].mode;
+    if (
+      mode === "waves" &&
+      isBossRound(s.round) &&
+      s.enemies.some((e) => e.kind === "boss")
+    )
+      s.bossRound = s.round;
     if (mode === "timed" && s.elapsed >= DUNGEONS[s.dungeon].duration) {
       s.phase = "victory";
       return;
     }
+    if (
+      mode === "waves" &&
+      isBossRound(s.round) &&
+      s.bossRound !== s.round &&
+      s.waveRemaining === 0
+    )
+      s.waveRemaining = 1;
     if (s.intermission > 0) s.intermission = Math.max(0, s.intermission - dt);
     else {
-      s.spawnClock -= dt;
+      s.spawnClock = Math.max(0, s.spawnClock - dt);
       if (s.spawnClock <= 0 && (mode === "timed" || s.waveRemaining > 0)) {
         const profile = this.horde,
           n = profile.batch;
@@ -437,7 +495,36 @@ export class DungeonRun {
         dy = s.player.y - e.y,
         d = Math.hypot(dx, dy) || 1,
         speed = e.speed * dt;
-      this.moveEnemy(e, (dx / d) * speed, (dy / d) * speed);
+      let mx = (dx / d) * speed,
+        my = (dy / d) * speed;
+      if (
+        e.detour &&
+        Math.hypot(e.detour.x - e.x, e.detour.y - e.y) < speed * 2
+      ) {
+        delete e.detour;
+        // Finish routing around the obstacle rather than cutting back into it
+        // as soon as one intermediate waypoint has been reached.
+        if (!dungeonSegmentClear(s.dungeon, e.x, e.y, s.player.x, s.player.y))
+          e.detour = dungeonWaypoint(
+            s.dungeon,
+            e.x,
+            e.y,
+            s.player.x,
+            s.player.y,
+          );
+      }
+      if (
+        !e.detour &&
+        (dungeonBlocked(s.dungeon, e.x + mx, e.y) ||
+          dungeonBlocked(s.dungeon, e.x, e.y + my))
+      )
+        e.detour = dungeonWaypoint(s.dungeon, e.x, e.y, s.player.x, s.player.y);
+      if (e.detour) {
+        const distance = Math.hypot(e.detour.x - e.x, e.detour.y - e.y) || 1;
+        mx = ((e.detour.x - e.x) / distance) * speed;
+        my = ((e.detour.y - e.y) / distance) * speed;
+      }
+      this.moveEnemy(e, mx, my);
       if (
         d < 22 &&
         s.player.invulnerable === 0 &&
@@ -532,6 +619,7 @@ export class DungeonRun {
         w.damage *
         (1 +
           this.bonus(w.kind) +
+          this.bonus("advanced-attack") +
           this.bonus(prefix + "-damage") +
           (w.kind === "melee" ? this.state.permanent.strength * 0.02 : 0) +
           (this.active("attack") ? B.eventAttackBonus : 0) +
@@ -570,9 +658,13 @@ export class DungeonRun {
       radius,
     });
   }
-  private hit(e: Enemy, damage: number): void {
+  private hit(e: Enemy, damage: number, weaponHit = true): void {
     if (e.hp <= 0) return;
     const s = this.state;
+    const critical =
+      weaponHit && this.active("critical") && this.random() < B.criticalChance;
+    if (critical) damage *= B.criticalMultiplier;
+    if (weaponHit && e.kind === "boss") damage *= 1 + this.bonus("boss-damage");
     if (this.level("deadly-precision")) {
       e.streak = s.elapsed - e.lastHit < 3 ? e.streak + 1 : 1;
       e.lastHit = s.elapsed;
@@ -587,19 +679,30 @@ export class DungeonRun {
       damage,
       at: s.elapsed,
       killed: e.hp <= 0,
+      critical,
     });
     if (e.hp > 0) return;
     s.kills++;
+    const rewardXP =
+      e.kind === "boss"
+        ? bossProfile(s.round).xp
+        : (DUNGEONS[s.dungeon].mode === "timed" ? B.timedEnemyXP : B.enemyXP) *
+          (e.special ? 4 : 1);
     if (s.pickups.length < 1000)
       s.pickups.push({
         id: this.nextId(),
         x: e.x,
         y: e.y,
         kind: "xp",
-        amount: B.enemyXP * (e.special ? 4 : 1),
+        amount: rewardXP,
       });
-    else this.grantXP(B.enemyXP * (e.special ? 4 : 1));
-    if (e.special && this.level("survival-instinct") && this.random() < 0.6)
+    else this.grantXP(rewardXP);
+    if (
+      e.special &&
+      this.level("survival-instinct") &&
+      this.random() < 0.6 &&
+      s.pickups.length < 1000
+    )
       s.pickups.push({
         id: this.nextId(),
         x: e.x + 10,
@@ -963,6 +1066,7 @@ export class DungeonRun {
         targets[0],
         c.damage *
           (1 + this.bonus("pet-damage") + p.attributes.efficiency * 0.03),
+        false,
       );
       p.attack = c.cooldown / (1 + this.bonus("pet-speed"));
     }
@@ -970,7 +1074,11 @@ export class DungeonRun {
       const n = this.level("relentless-companion") ? 2 : 1;
       for (let i = 0; i < n; i++)
         for (const e of targets) {
-          this.hit(e, c.damage * 1.5 * (1 + p.attributes.efficiency * 0.05));
+          this.hit(
+            e,
+            c.damage * 1.5 * (1 + p.attributes.efficiency * 0.05),
+            false,
+          );
           if (p.species === "dog") {
             const d = Math.hypot(e.x - p.x, e.y - p.y) || 1;
             this.moveEnemy(e, ((e.x - p.x) / d) * 22, ((e.y - p.y) / d) * 22);
@@ -999,8 +1107,8 @@ export class DungeonRun {
     for (let i = s.pickups.length - 1; i >= 0; i--) {
       const p = s.pickups[i],
         d = Math.hypot(p.x - s.player.x, p.y - s.player.y);
-      if (p.kind === "xp" && d < r) {
-        const speed = Math.min(d, 240 * dt);
+      if (p.kind === "xp" && (d < r || p.attracted)) {
+        const speed = Math.min(d, (p.attracted ? B.magnetSpeed : 240) * dt);
         p.x += ((s.player.x - p.x) / (d || 1)) * speed;
         p.y += ((s.player.y - p.y) / (d || 1)) * speed;
       }
@@ -1012,6 +1120,9 @@ export class DungeonRun {
       else if (p.kind === "pet") {
         s.foundPet = p.species;
         s.foundPetRare = this.random() < B.rarePetChance;
+      } else if (p.kind === "magnet") {
+        for (const crystal of s.pickups)
+          if (crystal.kind === "xp") crystal.attracted = true;
       } else s.buffs[p.kind] = s.elapsed + B.eventDuration;
     }
   }
@@ -1019,7 +1130,14 @@ export class DungeonRun {
     const s = this.state;
     if (s.elapsed < s.eventClock + B.eventInterval) return;
     s.eventClock = s.elapsed;
-    const kinds = ["health", "speed", "attack", "invulnerable"] as const,
+    const kinds = [
+        "health",
+        "speed",
+        "attack",
+        "invulnerable",
+        "critical",
+        "magnet",
+      ] as const,
       angle = this.random() * Math.PI * 2,
       x = clamp(s.player.x + Math.cos(angle) * 130, 64, 3000),
       y = clamp(s.player.y + Math.sin(angle) * 130, 64, 2200);

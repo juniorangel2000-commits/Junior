@@ -99,35 +99,72 @@ export function dungeonObstacles(id: DungeonId): DungeonObstacle[] {
   }
   return result;
 }
+interface Collider {
+  x: number;
+  halfWidth: number;
+  top: number;
+  bottom: number;
+}
+const collisionCells = new Map<DungeonId, Map<string, Collider[]>>();
+function collisionIndex(id: DungeonId): Map<string, Collider[]> {
+  const cached = collisionCells.get(id);
+  if (cached) return cached;
+  const cells = new Map<string, Collider[]>();
+  const boxes: Collider[] = DUNGEON_TREES[id].map((t) => ({
+    x: t.x,
+    halfWidth: 18,
+    top: t.y - 12,
+    bottom: t.y + 12,
+  }));
+  for (const p of MAP_OBSTACLES[id]) {
+    if (!p.solid) continue;
+    if (p.kind === "lamp") {
+      boxes.push({ x: p.x, halfWidth: 9, top: p.y - 9, bottom: p.y + 4 });
+      continue;
+    }
+    const frame = urban.frames[p.kind],
+      scale = Math.min(p.width / frame.width, p.height / frame.height),
+      width = frame.width * scale,
+      height = frame.height * scale,
+      depth = ["sedan", "hatchback", "van", "suv"].includes(p.kind)
+        ? height * 0.85
+        : ["apartment", "mall", "booth", "shop"].includes(p.kind)
+          ? 45
+          : height * 0.6;
+    boxes.push({
+      x: p.x,
+      halfWidth: width * 0.36,
+      top: p.y - depth,
+      bottom: p.y + 6,
+    });
+  }
+  for (const box of boxes)
+    for (
+      let cy = Math.floor(box.top / 128);
+      cy <= Math.floor(box.bottom / 128);
+      cy++
+    )
+      for (
+        let cx = Math.floor((box.x - box.halfWidth) / 128);
+        cx <= Math.floor((box.x + box.halfWidth) / 128);
+        cx++
+      ) {
+        const key = cx + "," + cy,
+          items = cells.get(key) ?? [];
+        items.push(box);
+        cells.set(key, items);
+      }
+  collisionCells.set(id, cells);
+  return cells;
+}
 export function dungeonBlocked(id: DungeonId, x: number, y: number): boolean {
+  if (x < 32 || y < 48 || x > 3040 || y > 2260) return true;
   return (
-    x < 32 ||
-    y < 48 ||
-    x > 3040 ||
-    y > 2260 ||
-    DUNGEON_TREES[id].some(
-      (t) => Math.abs(x - t.x) < 18 && Math.abs(y - t.y) < 12,
-    ) ||
-    MAP_OBSTACLES[id].some((p) => {
-      if (p.kind === "lamp")
-        return p.solid && Math.abs(x - p.x) < 9 && y > p.y - 9 && y < p.y + 4;
-      const r = urban.frames[p.kind],
-        scale = Math.min(p.width / r.width, p.height / r.height),
-        width = r.width * scale,
-        height = r.height * scale,
-        car = ["sedan", "hatchback", "van", "suv"].includes(p.kind),
-        depth = car
-          ? height * 0.85
-          : ["apartment", "mall", "booth", "shop"].includes(p.kind)
-            ? 45
-            : height * 0.6;
-      return (
-        p.solid &&
-        Math.abs(x - p.x) < width * 0.36 &&
-        y > p.y - depth &&
-        y < p.y + 6
-      );
-    })
+    collisionIndex(id)
+      .get(Math.floor(x / 128) + "," + Math.floor(y / 128))
+      ?.some(
+        (b) => Math.abs(x - b.x) < b.halfWidth && y > b.top && y < b.bottom,
+      ) ?? false
   );
 }
 export const MAP_OBSTACLES = {

@@ -94,7 +94,8 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
         !["walker", "runner", "brute", "boss"].includes(e.kind as string) ||
         typeof e.special !== "boolean" ||
         !count(e.streak, 1e6) ||
-        !finite(e.lastHit, 0, 1e9),
+        !finite(e.lastHit, 0, 1e9) ||
+        (e.detour !== undefined && !point(e.detour)),
     )
   )
     return false;
@@ -131,10 +132,18 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
         !point(p) ||
         !rec(p) ||
         !count(p.id) ||
-        !["xp", "health", "speed", "attack", "invulnerable", "pet"].includes(
-          p.kind as string,
-        ) ||
+        ![
+          "xp",
+          "health",
+          "speed",
+          "attack",
+          "invulnerable",
+          "critical",
+          "magnet",
+          "pet",
+        ].includes(p.kind as string) ||
         !finite(p.amount, 0, 100000) ||
+        (p.attracted !== undefined && typeof p.attracted !== "boolean") ||
         (p.species !== undefined &&
           !["dog", "cat"].includes(p.species as string)),
     )
@@ -196,6 +205,13 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
     !rec(value.orbitalHits) ||
     Object.keys(value.orbitalHits).length > 1100 ||
     Object.values(value.orbitalHits).some((n) => !finite(n, 0, 1e9 + 10))
+  )
+    return false;
+  if (
+    value.bossRound !== undefined &&
+    (!count(value.bossRound, 50) ||
+      ![10, 20, 30, 40, 50].includes(Number(value.bossRound)) ||
+      Number(value.bossRound) > Number(value.round))
   )
     return false;
   if (

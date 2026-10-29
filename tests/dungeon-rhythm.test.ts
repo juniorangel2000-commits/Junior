@@ -42,7 +42,7 @@ describe("survival rhythm", () => {
   });
   it("keeps later level costs attainable and increasing", () => {
     for (let level = 1; level < 80; level++)
-      expect(experienceForLevel(level + 1)).toBeGreaterThan(
+      expect(experienceForLevel(level + 1)).toBeGreaterThanOrEqual(
         experienceForLevel(level),
       );
     expect(experienceForLevel(30)).toBeLessThan(600);

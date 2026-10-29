@@ -285,6 +285,7 @@ describe("automatic weapons and modes", () => {
     expect(r.state.round).toBe(2);
     expect(r.state.intermission).toBe(3);
     r.state.round = 50;
+    r.state.bossRound = 50;
     r.state.intermission = 0;
     r.state.waveRemaining = 0;
     r.state.enemies = [enemy(900, 1400, 1800)];
@@ -424,6 +425,7 @@ describe("snapshots, rewards, maps and hordes", () => {
     r.state.levels.melee = 2;
     for (let round = 1; round <= 50; round++) {
       expect(r.state.round).toBe(round);
+      if ([10, 20, 30, 40, 50].includes(round)) r.state.bossRound = round;
       r.state.intermission = 0;
       r.state.waveRemaining = 0;
       r.state.enemies = [];

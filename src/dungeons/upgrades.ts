@@ -29,6 +29,30 @@ export const UPGRADES: readonly Upgrade[] = [
     "+5% de experiência por nível",
   ),
   upgrade(
+    "advanced-xp",
+    "Aprendizado Intensivo",
+    "super-rare",
+    4,
+    0.15,
+    "+15% de experiência por melhoria; até +60%",
+  ),
+  upgrade(
+    "advanced-attack",
+    "Potência de Combate",
+    "super-rare",
+    4,
+    0.15,
+    "+15% de dano das armas por melhoria; até +60%",
+  ),
+  upgrade(
+    "boss-damage",
+    "Dano contra Chefes",
+    "super-rare",
+    4,
+    0.2,
+    "+20% de dano das armas contra chefes por melhoria; até +80%",
+  ),
+  upgrade(
     "pickup",
     "Coleta Ampliada",
     "common",
@@ -157,7 +181,7 @@ export const UPGRADES: readonly Upgrade[] = [
     "Arsenal Especializado",
     "legendary",
     1,
-    1,
+    0.15,
     "+15% de eficiência das evoluções das armas equipadas",
   ),
   ...(
@@ -297,6 +321,7 @@ export type UpgradeCard =
       effect: string;
     };
 export interface UpgradeBuild {
+  level?: number;
   weapons: WeaponId[];
   levels: Record<string, number>;
   pet?: unknown;
@@ -331,7 +356,14 @@ export function rollUpgradeCards(
     },
     weight: weights[u.rarity],
   }));
-  if (build.weapons.length < DUNGEON_BALANCE.maxWeapons)
+  const scheduledOffer =
+    build.level !== undefined &&
+    build.level >= DUNGEON_BALANCE.arsenalFirstOfferLevel &&
+    (build.level - DUNGEON_BALANCE.arsenalFirstOfferLevel) %
+      DUNGEON_BALANCE.arsenalOfferEveryLevels ===
+      0;
+  const weaponOffer = build.level === undefined || scheduledOffer;
+  if (weaponOffer && build.weapons.length < DUNGEON_BALANCE.maxWeapons)
     for (const id of Object.keys(WEAPONS) as WeaponId[])
       if (!build.weapons.includes(id))
         pool.push({
@@ -349,6 +381,16 @@ export function rollUpgradeCards(
   for (let i = pool.length - 1; i >= 0; i--)
     if (pool[i].weight <= 0) pool.splice(i, 1);
   const chosen: UpgradeCard[] = [];
+  if (scheduledOffer && build.weapons.length < DUNGEON_BALANCE.maxWeapons) {
+    const arsenal = pool.filter((p) => p.card.kind === "arsenal");
+    while (chosen.length < 3 && arsenal.length) {
+      const index = Math.floor(
+        Math.max(0, Math.min(0.999999, random())) * arsenal.length,
+      );
+      chosen.push(arsenal.splice(index, 1)[0].card);
+    }
+    return chosen;
+  }
   while (chosen.length < 3 && pool.length) {
     const total = pool.reduce((n, p) => n + Math.max(0, p.weight), 0);
     let ticket = Math.max(0, Math.min(0.999999, random())) * total,
@@ -360,4 +402,12 @@ export function rollUpgradeCards(
     chosen.push(pool.splice(index, 1)[0].card);
   }
   return chosen;
+}
+
+export function nextWeaponOfferLevel(level: number): number {
+  const first = DUNGEON_BALANCE.arsenalFirstOfferLevel,
+    interval = DUNGEON_BALANCE.arsenalOfferEveryLevels;
+  return level < first
+    ? first
+    : first + (Math.floor((level - first) / interval) + 1) * interval;
 }

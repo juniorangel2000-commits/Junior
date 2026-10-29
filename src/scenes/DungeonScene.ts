@@ -345,10 +345,20 @@ export class DungeonScene extends Phaser.Scene {
             (Math.floor(s.elapsed * (e.kind === "runner" ? 9 : 5)) % 4),
         )
         .setOrigin(0.5, 1)
-        .setScale(e.special ? 0.25 : 0.2)
+        .setScale(
+          e.kind === "boss"
+            ? s.round === 50
+              ? 0.42
+              : 0.36
+            : e.special
+              ? 0.25
+              : 0.2,
+        )
         .setPosition(e.x, e.y)
         .setDepth(e.y);
       if (flashed.has(e.id)) image.setTintFill(0xffebc2);
+      else if (e.kind === "boss")
+        image.setTint(s.round === 50 ? 0xe39e88 : 0xc8b48e);
       else if (e.special) image.setTint(0xb59e8b);
       else image.clearTint();
     }
@@ -390,6 +400,11 @@ export class DungeonScene extends Phaser.Scene {
     }
     const ink = this.impactGraphics!;
     ink.clear();
+    for (const e of s.enemies)
+      if (e.kind === "boss")
+        ink
+          .lineStyle(3, s.round === 50 ? 0xe58575 : 0xe1bd76, 0.8)
+          .strokeEllipse(e.x, e.y - 3, 60, 24);
     this.damageNumbers.forEach((text) => text.setVisible(false));
     for (const [i, hit] of run.impacts.entries()) {
       const age = s.elapsed - hit.at,
@@ -408,8 +423,8 @@ export class DungeonScene extends Phaser.Scene {
           .setDepth(5001));
       text
         .setVisible(true)
-        .setText(String(Math.round(hit.damage)))
-        .setColor(hit.killed ? "#ffe3a0" : "#f0eee0")
+        .setText(String(Math.round(hit.damage)) + (hit.critical ? "!" : ""))
+        .setColor(hit.critical ? "#ffb48e" : hit.killed ? "#ffe3a0" : "#f0eee0")
         .setPosition(hit.x, hit.y - 42 - age * 32)
         .setAlpha(alpha);
       ink.lineStyle(1.5, hit.killed ? 0xe6c17c : 0xf5ecd1, alpha);
@@ -639,6 +654,22 @@ export class DungeonScene extends Phaser.Scene {
     this.pickups!.clear();
     for (const q of s.pickups) {
       if (q.kind === "pet") continue;
+      if (q.kind === "critical") {
+        this.pickups!.lineStyle(2, 0xffb48e, 0.95)
+          .strokeCircle(q.x, q.y - 3, 10)
+          .lineBetween(q.x - 6, q.y - 3, q.x + 6, q.y - 3)
+          .lineBetween(q.x, q.y - 9, q.x, q.y + 3);
+        continue;
+      }
+      if (q.kind === "magnet") {
+        this.pickups!.lineStyle(4, 0x94d4dc, 0.95)
+          .beginPath()
+          .arc(q.x, q.y - 3, 7, 0, Math.PI, false)
+          .strokePath()
+          .lineBetween(q.x - 7, q.y - 3, q.x - 7, q.y - 11)
+          .lineBetween(q.x + 7, q.y - 3, q.x + 7, q.y - 11);
+        continue;
+      }
       this.pickups!.fillStyle(
         q.kind === "xp" ? 0xb6c99a : q.kind === "health" ? 0xd9a392 : 0x97b8bd,
         0.9,

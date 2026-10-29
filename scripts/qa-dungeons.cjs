@@ -668,6 +668,318 @@ fs.mkdirSync(out, { recursive: true });
       d.lastPhase = "";
       d.update(422000, 0);
     });
+    if (process.env.DUNGEON_PLAYTHROUGH_DIR) {
+      await page.evaluate(() => {
+        window.longSessionRestore = d.run.snapshot();
+      });
+      for (const name of [
+        "abandoned-central-square-assault-1234567",
+        "mall-parking-assault-1234567",
+      ]) {
+        const snapshot = JSON.parse(
+          fs.readFileSync(
+            process.env.DUNGEON_PLAYTHROUGH_DIR +
+              "/" +
+              name +
+              "-late-save.json",
+            "utf8",
+          ),
+        );
+        const observed = await page.evaluate(async (snapshot) => {
+          const { DungeonWorld } = await import("/src/dungeons/world.ts");
+          const { loadSave } = await import("/src/systems/save.ts");
+          d.world.destroy();
+          d.world = new DungeonWorld(d, snapshot.dungeon);
+          d.run.restore(snapshot);
+          d.run.pause();
+          d.syncPlayer();
+          d.lastPhase = "";
+          d.update(430000, 0);
+          d.ui.resume();
+          d.cameras.main
+            .stopFollow()
+            .setZoom(1.3)
+            .centerOn(d.player.x, d.player.y);
+          const frozen = d.run.state.elapsed;
+          d.update(431000, 200);
+          const saved = d.persist(),
+            loaded = loadSave();
+          return {
+            elapsed: d.run.state.elapsed,
+            round: d.run.state.round,
+            level: d.run.state.level,
+            enemies: d.run.state.enemies.length,
+            weapons: d.run.state.weapons,
+            paused: d.run.state.elapsed === frozen,
+            saved,
+            restored:
+              loaded?.dungeonRun?.elapsed === frozen &&
+              loaded?.dungeonRun?.id === snapshot.id,
+          };
+        }, snapshot);
+        check(
+          "Estado avançado real renderiza, pausa e salva: " + name,
+          observed.paused &&
+            observed.saved &&
+            observed.restored &&
+            observed.level > 20,
+          observed,
+        );
+        await render();
+        await page.screenshot({ path: out + "/" + name + "-real.png" });
+      }
+      await page.evaluate(async () => {
+        const { DungeonWorld } = await import("/src/dungeons/world.ts");
+        d.world.destroy();
+        d.world = new DungeonWorld(d, window.longSessionRestore.dungeon);
+        d.run.restore(window.longSessionRestore);
+        d.syncPlayer();
+        d.lastPhase = "";
+        d.update(432000, 0);
+      });
+    }
+    const weaponChoice = await page.evaluate(() => {
+      window.cardFeatureRestore = d.run.snapshot();
+      window.originalRunRandom = d.run.random;
+      const s = d.run.state;
+      s.phase = "fighting";
+      s.level = 9;
+      s.xp = 0;
+      s.weapons = ["sword"];
+      s.levels = {};
+      s.cards = [];
+      d.run.grantXP(d.run.xpNeeded);
+      d.lastPhase = "";
+      d.update(440000, 0);
+      return {
+        level: s.level,
+        kinds: s.cards.map((c) => c.kind),
+        ids: s.cards.map((c) => c.id),
+      };
+    });
+    check(
+      "Nível 10 oferece três armas aleatórias distintas, sem melhorias misturadas",
+      weaponChoice.level === 10 &&
+        weaponChoice.kinds.every((k) => k === "arsenal") &&
+        new Set(weaponChoice.ids).size === 3 &&
+        !weaponChoice.ids.includes("sword"),
+      weaponChoice,
+    );
+    await page.screenshot({ path: out + "/armas-nivel-10.png" });
+    const newCards = await page.evaluate(async () => {
+      const { UPGRADES } = await import("/src/dungeons/upgrades.ts");
+      const s = d.run.state;
+      s.phase = "choice";
+      s.cards = ["advanced-xp", "advanced-attack", "boss-damage"].map((id) => {
+        const u = UPGRADES.find((u) => u.id === id);
+        return {
+          kind: "upgrade",
+          id,
+          name: u.name,
+          effect: u.effect,
+          rarity: u.rarity,
+          level: 0,
+          max: u.max,
+        };
+      });
+      d.lastPhase = "";
+      d.update(441000, 0);
+      return s.cards.map((c) => ({ id: c.id, rarity: c.rarity, max: c.max }));
+    });
+    check(
+      "Três novas cartas mostram raridade super-rara e quatro melhorias",
+      newCards.length === 3 &&
+        newCards.every((c) => c.rarity === "super-rare" && c.max === 4),
+      newCards,
+    );
+    await page.screenshot({ path: out + "/novas-cartas-super-raras.png" });
+    await page.locator('[data-card="advanced-xp"]').click();
+    check(
+      "Escolher experiência super-rara aplica somente um nível",
+      await page.evaluate(() => d.run.level("advanced-xp") === 1),
+    );
+    await page.evaluate(() => {
+      d.ui.resume();
+      const s = d.run.state,
+        p = s.player;
+      s.phase = "paused";
+      s.cards = [];
+      s.weapons = ["sword"];
+      s.levels = { "advanced-attack": 4 };
+      s.enemies = [];
+      s.pet = undefined;
+      s.projectiles = [];
+      s.pendingAttacks = [];
+      s.buffs = {};
+      d.run.impacts.length = 0;
+      d.run.effects.length = 0;
+      s.pickups = [
+        { id: 81000, x: p.x + 90, y: p.y - 30, kind: "critical", amount: 0 },
+        { id: 81001, x: p.x + 140, y: p.y + 30, kind: "magnet", amount: 0 },
+        { id: 81002, x: p.x + 500, y: p.y, kind: "xp", amount: 4 },
+      ];
+      d.syncPlayer();
+      d.lastPhase = "";
+      d.update(442000, 0);
+      d.ui.resume();
+    });
+    await render();
+    await page.screenshot({ path: out + "/bonus-no-mapa.png" });
+    const bonuses = await page.evaluate(async () => {
+      const s = d.run.state,
+        p = s.player;
+      for (const pickup of s.pickups)
+        if (pickup.kind !== "xp") {
+          pickup.x = p.x;
+          pickup.y = p.y;
+        }
+      s.cooldowns.sword = 1;
+      d.run.resume();
+      d.run.step(1 / 30);
+      s.cooldowns.sword = 0;
+      s.enemies = [
+        {
+          id: 82000,
+          x: p.x + 30,
+          y: p.y,
+          hp: 1000,
+          maxHp: 1000,
+          speed: 1,
+          damage: 0,
+          special: false,
+          kind: "walker",
+          streak: 0,
+          lastHit: 0,
+        },
+      ];
+      d.run.random = () => 0.1;
+      d.run.step(1 / 30);
+      d.run.pause();
+      d.syncPlayer();
+      d.lastPhase = "";
+      d.update(443000, 0);
+      d.ui.resume();
+      const { loadSave } = await import("/src/systems/save.ts");
+      const saved = d.persist(),
+        loaded = loadSave();
+      return {
+        critical: s.buffs.critical > s.elapsed,
+        hit: d.run.impacts.some((h) => h.critical),
+        magnet: s.pickups.some((p) => p.kind === "xp" && p.attracted),
+        hud: document.querySelector(".dungeon-buffs")?.textContent,
+        saved:
+          saved &&
+          loaded?.dungeonRun?.buffs.critical === s.buffs.critical &&
+          loaded.dungeonRun.pickups.some((p) => p.attracted),
+      };
+    });
+    check(
+      "Bônus de crítico e ímã são coletados, identificados e salvos",
+      bonuses.critical &&
+        bonuses.hit &&
+        bonuses.magnet &&
+        bonuses.saved &&
+        bonuses.hud.includes("Crítico 20%"),
+      bonuses,
+    );
+    await render();
+    await page.screenshot({ path: out + "/bonus-ativos.png" });
+    await page.evaluate(() => {
+      d.run.restore(window.cardFeatureRestore);
+      d.run.random = window.originalRunRandom;
+      d.syncPlayer();
+      d.lastPhase = "";
+      d.update(444000, 0);
+    });
+    const bosses = await page.evaluate(() => {
+      window.bossFixtureRestore = d.run.snapshot();
+      const rows = [];
+      for (const round of [10, 20, 30, 40, 50]) {
+        const s = d.run.state;
+        s.phase = "fighting";
+        s.round = round;
+        s.bossRound = undefined;
+        s.waveRemaining = 5 + round * 2;
+        s.spawnClock = 0;
+        s.intermission = 0;
+        s.enemies = [];
+        s.player.invulnerable = 1;
+        d.run.step(1 / 30);
+        const boss = s.enemies.find((e) => e.kind === "boss");
+        rows.push({
+          round,
+          hp: boss?.maxHp,
+          damage: boss?.damage,
+          count: s.enemies.filter((e) => e.kind === "boss").length,
+        });
+      }
+      d.run.pause();
+      d.syncPlayer();
+      d.lastPhase = "";
+      d.update(450000, 0);
+      d.ui.resume();
+      const p = d.run.state.player,
+        b = d.run.state.enemies.find((e) => e.kind === "boss");
+      d.cameras.main
+        .stopFollow()
+        .setZoom(1.1)
+        .centerOn((p.x + b.x) / 2, (p.y + b.y) / 2);
+      return {
+        rows,
+        label: document.querySelector(".dungeon-boss")?.textContent,
+      };
+    });
+    check(
+      "Chefes aparecem uma vez nas rodadas 10/20/30/40/50 com força crescente",
+      bosses.rows.every(
+        (r, i) =>
+          r.count === 1 &&
+          (!i ||
+            (r.hp > bosses.rows[i - 1].hp &&
+              r.damage > bosses.rows[i - 1].damage)),
+      ),
+      bosses,
+    );
+    check(
+      "Chefe final tem salto de vida e dano e barra identificada",
+      bosses.rows[4].hp > bosses.rows[3].hp * 1.9 &&
+        bosses.rows[4].damage > bosses.rows[3].damage * 1.9 &&
+        bosses.label.includes("Chefe final"),
+      bosses.rows,
+    );
+    await render();
+    await page.screenshot({ path: out + "/chefe-final-rodada-50.png" });
+    const bossSaved = await page.evaluate(async () => {
+      const { loadSave } = await import("/src/systems/save.ts");
+      const saved = d.persist(),
+        loaded = loadSave();
+      const before = d.run.state.enemies.find((e) => e.kind === "boss").hp;
+      d.run.restore(loaded.dungeonRun);
+      d.run.resume();
+      d.run.step(1 / 30);
+      d.run.pause();
+      return {
+        saved,
+        count: d.run.state.enemies.filter((e) => e.kind === "boss").length,
+        hp: d.run.state.enemies.find((e) => e.kind === "boss").hp,
+        before,
+        round: d.run.state.bossRound,
+      };
+    });
+    check(
+      "Salvar e retomar preserva o chefe da rodada 50 sem duplicação",
+      bossSaved.saved &&
+        bossSaved.count === 1 &&
+        bossSaved.round === 50 &&
+        bossSaved.hp === bossSaved.before,
+      bossSaved,
+    );
+    await page.evaluate(() => {
+      d.run.restore(window.bossFixtureRestore);
+      d.syncPlayer();
+      d.lastPhase = "";
+      d.update(451000, 0);
+    });
     const victory = await page.evaluate(() => {
       window.realSetItem = Storage.prototype.setItem;
       Storage.prototype.setItem = function () {
@@ -675,6 +987,7 @@ fs.mkdirSync(out, { recursive: true });
       };
       d.run.resume();
       d.run.state.round = 50;
+      d.run.state.bossRound = 50; // Cleared-boss fixture; boss lifecycle is checked separately.
       d.run.state.waveRemaining = 0;
       d.run.state.enemies = [];
       d.run.state.intermission = 0;
