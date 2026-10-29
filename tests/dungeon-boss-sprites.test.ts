@@ -6,11 +6,13 @@ import sentinel from "../public/assets/visual/dungeons/boss-sentinel.json";
 import chained from "../public/assets/visual/dungeons/boss-chained.json";
 import contaminated from "../public/assets/visual/dungeons/boss-contaminated.json";
 
+import devourer from "../public/assets/visual/dungeons/boss-devourer.json";
+
 const directions: BossDirection[] = ["south", "west", "east", "north"];
-describe.each([["demolisher", demolisher], ["sentinel", sentinel], ["chained", chained], ["contaminated", contaminated]] as const)("supplied %s animation", (art, manifest) => {
-  it.each(directions)("plays four walk frames and a separate stationary pose facing %s", direction => {
-    const walking = [0, 0.2, 0.4, 0.6].map(t => bossSpritePose(art, direction, t, false));
-    expect(new Set(walking.map(p => p.frame)).size).toBe(4);
+describe.each([["demolisher", demolisher], ["sentinel", sentinel], ["chained", chained], ["contaminated", contaminated], ["devourer", devourer]] as const)("supplied %s animation", (art, manifest) => {
+  it.each(directions)("plays supplied walk frames and a separate stationary pose facing %s", direction => {
+    const walking = Array.from({length: manifest.animation.walkFrames}, (_, i) => i / manifest.animation.frameRate).map(t => bossSpritePose(art, direction, t, false));
+    expect(new Set(walking.map(p => p.frame)).size).toBe(manifest.animation.walkFrames);
     const idle = bossSpritePose(art, direction, 3.7, true);
     expect(idle.frame).toBe("idle-" + direction);
     expect(walking.some(p => p.frame === idle.frame)).toBe(false);
@@ -24,17 +26,17 @@ describe.each([["demolisher", demolisher], ["sentinel", sentinel], ["chained", c
     expect(new Set([...walking, idle].map(p => p.originY)).size).toBe(1);
   });
   it("uses only four cardinal directions and retains every supplied frame's full 256px canvas", () => {
-    expect(Object.keys(manifest.frames)).toHaveLength(20);
+    expect(Object.keys(manifest.frames)).toHaveLength(manifest.animation.walkFrames * 4 + 4);
     expect(Object.keys(manifest.animation.pivots).sort()).toEqual([...directions].sort());
     for (const [key, frame] of Object.entries(manifest.frames)) {
-      expect(key).toMatch(/^(south|west|east|north)-[0-3]$|^idle-(south|west|east|north)$/);
+      expect(key).toMatch(/^(south|west|east|north)-[0-9]+$|^idle-(south|west|east|north)$/);
       expect(frame.width).toBe(256);
       expect(frame.height).toBe(256);
     }
   });
 });
 it("keeps the other bosses' existing sprite presentation", () => {
-    for (const art of ["devourer"]) {
+    for (const art of ["not-imported"]) {
       expect(bossSpritePose(art, "west", 0.4, false)).toEqual({frame: "west-2", originX: 0.5, originY: 1, referenceHeight: undefined});
     }
   });

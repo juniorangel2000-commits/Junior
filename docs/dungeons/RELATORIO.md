@@ -1,6 +1,7 @@
 # Dungeons e sobrevivência — primeira versão jogável
 
-> Etapa mais recente: animações recebidas do [Acorrentado](animacoes-acorrentado/RELATORIO.md) e do [Contaminado](animacoes-contaminado/RELATORIO.md), em quatro direções.
+> Etapa mais recente: [animações recebidas do Devorador](animacoes-devorador/RELATORIO.md), com seis frames por lado.
+> Integração anterior: [Acorrentado](animacoes-acorrentado/RELATORIO.md) e [Contaminado](animacoes-contaminado/RELATORIO.md).
 > Integração anterior: [Sentinela](animacoes-sentinela/RELATORIO.md).
 > Integração anterior: [animações do Demolidor](animacoes-demolidor/RELATORIO.md).
 > Etapa anterior: [identidade dos chefes, balanceamento e frentes para animação](chefes-e-balanceamento/RELATORIO.md).

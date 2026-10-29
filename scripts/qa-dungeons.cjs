@@ -1028,7 +1028,7 @@ fs.mkdirSync(out, { recursive: true });
           label: document.querySelector(".dungeon-boss").textContent,
           valid: validDungeonSnapshot(d.run.snapshot()) };
       }, {round, art});
-      check("Chefe " + round + " usa arte própria, caminhada e aviso inofensivo", identity.texture === "dungeon-boss-" + art && identity.frames === (round <= 40 ? 20 : 16) && (round > 40 || identity.frame === "idle-south") && identity.action.kind === kind && identity.action.stage === "warning" && identity.hp === 100 && identity.valid, identity);
+      check("Chefe " + round + " usa arte própria, caminhada e aviso inofensivo", identity.texture === "dungeon-boss-" + art && identity.frames === (round === 50 ? 28 : 20) && identity.frame === "idle-south" && identity.action.kind === kind && identity.action.stage === "warning" && identity.hp === 100 && identity.valid, identity);
       await render();
       await page.screenshot({path: out + "/chefe-" + round + "-aviso.png"});
       const active = await page.evaluate(async () => {
@@ -1044,23 +1044,25 @@ fs.mkdirSync(out, { recursive: true });
       check("Golpe ativo do chefe " + round + " preserva estado ao retomar", active.stage === "active" && active.preserved && active.valid, active);
       await render();
       await page.screenshot({path: out + "/chefe-" + round + "-ativo.png"});
-      if (round <= 40) {
-        const directions = await page.evaluate(() => {
+      if (round <= 50) {
+        const directions = await page.evaluate(async (art) => {
+          const {DUNGEON_ART} = await import("/src/dungeons/art.ts");
+          const animation = DUNGEON_ART["boss-" + art].animation;
           const s = d.run.state, e = s.enemies[0], elapsed = s.elapsed;
           e.boss = {cooldown: 10, sequence: 0};
           return [["south",0,160],["west",-160,0],["east",160,0],["north",0,-160]].map(([direction,dx,dy]) => {
             s.player.x = e.x + dx; s.player.y = e.y + dy;
             const frames = [];
-            for (let i = 0; i < 4; i++) {
-              s.elapsed = i / 5; d.renderRun();
+            for (let i = 0; i < animation.walkFrames; i++) {
+              s.elapsed = i / animation.frameRate; d.renderRun();
               const image = d.enemyImages.get(e.id);
               frames.push({frame:image.frame.name, scale:image.scaleY, originX:image.originX, originY:image.originY});
             }
             s.elapsed = elapsed;
-            return {direction,frames};
+            return {direction,frames,count:animation.walkFrames};
           });
-        });
-        check(({10:"Demolidor",20:"Sentinela",30:"Acorrentado",40:"Contaminado"}[round]) + " usa quatro lados, quatro frames e escala fixa na caminhada", directions.every(d => new Set(d.frames.map(f => f.frame)).size === 4 && d.frames.every(f => f.frame.startsWith(d.direction + "-") && Math.abs(f.scale - 94/184) < 0.0001 && f.originX === 0.5 && f.originY > 0.85) && new Set(d.frames.map(f => f.originY)).size === 1), directions);
+        }, art);
+        check(({10:"Demolidor",20:"Sentinela",30:"Acorrentado",40:"Contaminado",50:"Devorador"}[round]) + " usa quatro lados, os frames recebidos e escala fixa na caminhada", directions.every(d => new Set(d.frames.map(f => f.frame)).size === d.count && d.frames.every(f => f.frame.startsWith(d.direction + "-") && Math.abs(f.scale - (round === 50 ? 112 : 94)/184) < 0.0001 && f.originX === 0.5 && f.originY > 0.85) && new Set(d.frames.map(f => f.originY)).size === 1), directions);
       }
     }
     await page.evaluate(() => {

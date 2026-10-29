@@ -9,9 +9,9 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("boss", choices=["demolisher", "sentinel", "chained", "contaminated"])
+parser.add_argument("boss", choices=["demolisher", "sentinel", "chained", "contaminated", "devourer"])
 args = parser.parse_args()
-name = {"demolisher": "demolidor", "sentinel": "sentinela", "chained": "acorrentado", "contaminated": "contaminado"}[args.boss]
+name = {"demolisher": "demolidor", "sentinel": "sentinela", "chained": "acorrentado", "contaminated": "contaminado", "devourer": "devorador"}[args.boss]
 SOURCE = ROOT / f"docs/dungeons/animacoes-{name}/{name}-original.zip"
 OUT = ROOT / "public/assets/visual/dungeons"
 DIRECTIONS = ["south", "west", "east", "north"]
@@ -19,14 +19,16 @@ DIRECTIONS = ["south", "west", "east", "north"]
 with ZipFile(SOURCE) as archive:
     metadata = json.loads(archive.read("metadata.json"))
     supplied = metadata["states"][0]["frames"]
+    walk_count = len(supplied["animations"]["Walking"]["south"])
+    assert 1 <= walk_count <= 16
     entries = []
     pivots = {}
     for direction in DIRECTIONS:
         frames = supplied["animations"]["Walking"][direction]
-        assert len(frames) == 4, (direction, len(frames))
+        assert len(frames) == walk_count, (direction, len(frames))
         entries.extend((f"{direction}-{i}", name) for i, name in enumerate(frames))
     entries.extend((f"idle-{direction}", supplied["rotations"][direction]) for direction in DIRECTIONS)
-    atlas = Image.new("RGBA", (1024, 1280))
+    atlas = Image.new("RGBA", (1024, (walk_count + 1) * 256))
     rectangles = {}
     sources = {}
     originals = {}
@@ -43,7 +45,7 @@ with ZipFile(SOURCE) as archive:
             bounds = image.getchannel("A").point(lambda a: 255 if a >= 160 else 0).getbbox()
             assert bounds is not None
             pivots[key[5:]] = dict(x=128, y=bounds[3] + 2)
-    assert len(entries) == 20
+    assert len(entries) == walk_count * 4 + 4
     # Check exact RGBA parity before encoding the combined atlas.
     for key, r in rectangles.items():
         region = atlas.crop((r["x"], r["y"], r["x"] + 256, r["y"] + 256))
@@ -55,11 +57,11 @@ with ZipFile(SOURCE) as archive:
         sha256=sha256(file.read_bytes()).hexdigest(),
         alphaCutoff=160,
         frames=rectangles,
-        animation=dict(walkFrames=4, frameRate=5, referenceHeight=184,
+        animation=dict(walkFrames=walk_count, frameRate=5, referenceHeight=184,
                        canvasSize=256, pivots=pivots),
         sourceArchive=dict(file=str(SOURCE.relative_to(ROOT)),
                            sha256=sha256(SOURCE.read_bytes()).hexdigest()),
         sources=sources,
     )
     (OUT / f"boss-{args.boss}.json").write_text(json.dumps(manifest, indent=2) + "\n")
-    print("20 frames packed; original RGBA pixels preserved; four walk directions and four idle views.")
+    print(f"{len(entries)} frames packed; original RGBA pixels preserved; four walk directions and four idle views.")
