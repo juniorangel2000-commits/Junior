@@ -53,7 +53,7 @@ export class CityForestScene extends Phaser.Scene{
  }
  private nearCity():boolean{return Math.hypot(this.player.x/32-CITY_ACCESS.x,this.player.y/32-CITY_ACCESS.y)<3;}
  private updateHUD():void{
-  this.ui.updateHUD({area:'cityForest',inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:this.nearCity()?'E':null,prompt:this.nearCity()?'E · Viajar para a cidade':'Explore as trilhas · caminho ao sul retorna à vila',location:'Floresta de Acesso à Cidade',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
+  this.ui.updateHUD({area:'cityForest',coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:this.nearCity()?'E':null,prompt:this.nearCity()?'E · Viajar para a cidade':'Explore as trilhas · caminho ao sul retorna à vila',location:'Floresta de Acesso à Cidade',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
   this.ui.updateCameraZoom(this.zoom,!this.paused);
  }
  private key(e:KeyboardEvent):void{

@@ -1,0 +1,337 @@
+{
+  "checks": [
+    {
+      "name": "Viagem chuvosa leva ao menu com duas opções",
+      "passed": true,
+      "details": {
+        "duration": 5.285
+      }
+    },
+    {
+      "name": "Menu continua legível em viewport estreito",
+      "passed": true,
+      "details": 680
+    },
+    {
+      "name": "victory: resultado salvo antes de sair",
+      "passed": true,
+      "details": {
+        "phase": "victory",
+        "settled": true,
+        "reward": {
+          "coins": 30,
+          "xp": 550,
+          "materials": {
+            "scrap": 3,
+            "cloth": 2,
+            "metalPart": 1
+          },
+          "waiting": false
+        }
+      }
+    },
+    {
+      "name": "victory: volta à floresta no ponto da estrada",
+      "passed": true,
+      "details": {
+        "hudCoins": "130 C",
+        "normalMap": true,
+        "x": 720,
+        "y": 80,
+        "state": {
+          "xp": 550,
+          "coins": 130,
+          "scrap": 3,
+          "cloth": 2,
+          "metal": 1,
+          "pets": 1,
+          "run": false,
+          "area": "cityForest",
+          "resultCount": 1
+        },
+        "stored": {
+          "xp": 550,
+          "coins": 130,
+          "scrap": 3,
+          "cloth": 2,
+          "metal": 1,
+          "pets": 1,
+          "run": false,
+          "area": "cityForest",
+          "resultCount": 1
+        }
+      }
+    },
+    {
+      "name": "victory: HUD do mapa normal exibe o saldo salvo",
+      "passed": true,
+      "details": "130 C"
+    },
+    {
+      "name": "victory: XP, moedas, materiais e pet chegam ao mapa normal",
+      "passed": true,
+      "details": {
+        "before": {
+          "xp": 0,
+          "coins": 100,
+          "scrap": 0,
+          "cloth": 0,
+          "metal": 0,
+          "pets": 0
+        },
+        "reward": {
+          "coins": 30,
+          "xp": 550,
+          "materials": {
+            "scrap": 3,
+            "cloth": 2,
+            "metalPart": 1
+          },
+          "waiting": false
+        },
+        "after": {
+          "xp": 550,
+          "coins": 130,
+          "scrap": 3,
+          "cloth": 2,
+          "metal": 1,
+          "pets": 1,
+          "run": false,
+          "area": "cityForest",
+          "resultCount": 1
+        }
+      }
+    },
+    {
+      "name": "victory: recompensas persistem no save reaberto",
+      "passed": true,
+      "details": {
+        "xp": 550,
+        "coins": 130,
+        "scrap": 3,
+        "cloth": 2,
+        "metal": 1,
+        "pets": 1,
+        "run": false,
+        "area": "cityForest",
+        "resultCount": 1
+      }
+    },
+    {
+      "name": "defeat: resultado salvo antes de sair",
+      "passed": true,
+      "details": {
+        "phase": "defeat",
+        "settled": true,
+        "reward": {
+          "coins": 20,
+          "xp": 500,
+          "materials": {
+            "scrap": 3,
+            "cloth": 2
+          },
+          "waiting": false
+        }
+      }
+    },
+    {
+      "name": "defeat: volta à floresta no ponto da estrada",
+      "passed": true,
+      "details": {
+        "hudCoins": "150 C",
+        "normalMap": true,
+        "x": 720,
+        "y": 80,
+        "state": {
+          "xp": 1050,
+          "coins": 150,
+          "scrap": 6,
+          "cloth": 4,
+          "metal": 1,
+          "pets": 2,
+          "run": false,
+          "area": "cityForest",
+          "resultCount": 1
+        },
+        "stored": {
+          "xp": 1050,
+          "coins": 150,
+          "scrap": 6,
+          "cloth": 4,
+          "metal": 1,
+          "pets": 2,
+          "run": false,
+          "area": "cityForest",
+          "resultCount": 1
+        }
+      }
+    },
+    {
+      "name": "defeat: HUD do mapa normal exibe o saldo salvo",
+      "passed": true,
+      "details": "150 C"
+    },
+    {
+      "name": "defeat: XP, moedas, materiais e pet chegam ao mapa normal",
+      "passed": true,
+      "details": {
+        "before": {
+          "xp": 550,
+          "coins": 130,
+          "scrap": 3,
+          "cloth": 2,
+          "metal": 1,
+          "pets": 1
+        },
+        "reward": {
+          "coins": 20,
+          "xp": 500,
+          "materials": {
+            "scrap": 3,
+            "cloth": 2
+          },
+          "waiting": false
+        },
+        "after": {
+          "xp": 1050,
+          "coins": 150,
+          "scrap": 6,
+          "cloth": 4,
+          "metal": 1,
+          "pets": 2,
+          "run": false,
+          "area": "cityForest",
+          "resultCount": 1
+        }
+      }
+    },
+    {
+      "name": "defeat: recompensas persistem no save reaberto",
+      "passed": true,
+      "details": {
+        "xp": 1050,
+        "coins": 150,
+        "scrap": 6,
+        "cloth": 4,
+        "metal": 1,
+        "pets": 2,
+        "run": false,
+        "area": "cityForest",
+        "resultCount": 1
+      }
+    },
+    {
+      "name": "abandoned: resultado salvo antes de sair",
+      "passed": true,
+      "details": {
+        "phase": "abandoned",
+        "settled": true,
+        "reward": {
+          "coins": 0,
+          "xp": 500,
+          "materials": {},
+          "waiting": false
+        }
+      }
+    },
+    {
+      "name": "abandoned: volta à floresta no ponto da estrada",
+      "passed": true,
+      "details": {
+        "hudCoins": "150 C",
+        "normalMap": true,
+        "x": 720,
+        "y": 80,
+        "state": {
+          "xp": 1550,
+          "coins": 150,
+          "scrap": 6,
+          "cloth": 4,
+          "metal": 1,
+          "pets": 3,
+          "run": false,
+          "area": "cityForest",
+          "resultCount": 1
+        },
+        "stored": {
+          "xp": 1550,
+          "coins": 150,
+          "scrap": 6,
+          "cloth": 4,
+          "metal": 1,
+          "pets": 3,
+          "run": false,
+          "area": "cityForest",
+          "resultCount": 1
+        }
+      }
+    },
+    {
+      "name": "abandoned: HUD do mapa normal exibe o saldo salvo",
+      "passed": true,
+      "details": "150 C"
+    },
+    {
+      "name": "abandoned: XP, moedas, materiais e pet chegam ao mapa normal",
+      "passed": true,
+      "details": {
+        "before": {
+          "xp": 1050,
+          "coins": 150,
+          "scrap": 6,
+          "cloth": 4,
+          "metal": 1,
+          "pets": 2
+        },
+        "reward": {
+          "coins": 0,
+          "xp": 500,
+          "materials": {},
+          "waiting": false
+        },
+        "after": {
+          "xp": 1550,
+          "coins": 150,
+          "scrap": 6,
+          "cloth": 4,
+          "metal": 1,
+          "pets": 3,
+          "run": false,
+          "area": "cityForest",
+          "resultCount": 1
+        }
+      }
+    },
+    {
+      "name": "abandoned: recompensas persistem no save reaberto",
+      "passed": true,
+      "details": {
+        "xp": 1550,
+        "coins": 150,
+        "scrap": 6,
+        "cloth": 4,
+        "metal": 1,
+        "pets": 3,
+        "run": false,
+        "area": "cityForest",
+        "resultCount": 1
+      }
+    },
+    {
+      "name": "Abandono preserva XP e pet, sem moedas nem materiais",
+      "passed": true,
+      "details": {
+        "coins": 0,
+        "xp": 500,
+        "materials": {},
+        "waiting": false
+      }
+    },
+    {
+      "name": "Sem erros JavaScript ou requisições falhas",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}
