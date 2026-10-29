@@ -1,6 +1,5 @@
-import { bossProfile } from "./bosses";
-import { weaponIdentity } from "./weapon-identity";
-import { UPGRADES, nextWeaponOfferLevel } from "./upgrades";
+import { dungeonHUD } from "./hud";
+import { UPGRADES } from "./upgrades";
 import type { UpgradeCard } from "./upgrades";
 import { ITEM_NAMES } from "../data/items";
 import type { ItemId } from "../types";
@@ -153,36 +152,7 @@ export class DungeonUI {
     this.panel.querySelector<HTMLButtonElement>("[data-back]")!.onclick = back;
   }
   update(run: DungeonRun): void {
-    const s = run.state,
-      d = DUNGEONS[s.dungeon],
-      time = Math.max(
-        0,
-        d.mode === "timed" ? d.duration - s.elapsed : s.elapsed,
-      ),
-      minutes = Math.floor(time / 60),
-      seconds = Math.floor(time % 60);
-    const buffNames: Record<string, string> = {
-      critical: "Crítico 20%",
-      speed: "Velocidade",
-      attack: "Ataque",
-      invulnerable: "Proteção temporária",
-      "last-stand": "Última resistência",
-    };
-    const buffs = Object.entries(s.buffs)
-      .filter(([, until]) => until > s.elapsed)
-      .map(
-        ([id, until]) =>
-          `<span>${buffNames[id] ?? id} · ${Math.ceil(until - s.elapsed)}s</span>`,
-      )
-      .join("");
-    const shieldStatus = s.weapons.includes("orbiting-shield")
-      ? `<span>Escudo: ${s.shield?.charges ?? run.shieldCapacity}/${run.shieldCapacity} cargas${s.shield?.recharge ? ` · recarga ${Math.ceil(s.shield.recharge)}s` : " · pronto"}</span>`
-      : "";
-    const rescue = s.foundPet
-      ? `<span>Resgatado: ${PETS[s.foundPet].name}${s.foundPetRare ? " · raro" : ""} · entra na coleção ao encerrar</span>`
-      : "";
-    const boss = s.enemies.find((e) => e.kind === "boss" && e.hp > 0);
-    const html = `<section><strong>${d.name}</strong>${boss ? `<div class="dungeon-boss"><strong>${bossProfile(s.round).name}</strong><meter min="0" max="${boss.maxHp}" value="${boss.hp}"></meter><span>${Math.ceil(boss.hp)}/${Math.ceil(boss.maxHp)}</span></div>` : ""}<div class="dungeon-meters"><label>Vida <meter min="0" max="${run.maxHealth}" value="${s.player.hp}"></meter> ${Math.ceil(s.player.hp)}/${Math.round(run.maxHealth)}</label><label>${run.buildComplete ? "Combinação completa" : `Nível ${s.level}`} <meter min="0" max="${run.xpNeeded}" value="${run.buildComplete ? run.xpNeeded : s.xp}"></meter></label></div><div class="dungeon-counters"><span>${d.mode === "timed" ? `${minutes}:${String(seconds).padStart(2, "0")}` : `Rodada ${s.round}/50`}</span><span>${s.kills} eliminados</span><span>${d.mode === "waves" ? s.waveRemaining + s.enemies.length + " inimigos na rodada" : s.enemies.length + " inimigos próximos"}</span></div><div class="dungeon-buffs"><span>${run.horde.name}</span>${s.pickups.some((p) => p.kind === "xp" && p.attracted) ? "<span>Ímã atraindo experiência</span>" : ""}${buffs}${rescue}${shieldStatus}${s.weapons.length < 4 ? `<span>Próxima escolha de arma: nível ${nextWeaponOfferLevel(s.level)}</span>` : ""}</div><div class="dungeon-loadout">${s.weapons.map((w) => `<span class="${weaponIdentity(w, s.levels).evolved ? "evolved" : ""}" title="${weaponIdentity(w, s.levels).name} · ${weaponIdentity(w, s.levels).role}"><img src="${this.icons[w]}" alt="${weaponIdentity(w, s.levels).name}">${weaponIdentity(w, s.levels).evolved ? "<b>★</b>" : ""}</span>`).join("")}${Array.from({ length: 4 - s.weapons.length }, () => '<span class="empty">+</span>').join("")}<b>Pet: ${s.pet ? PETS[s.pet.species].name + (s.pet.hp <= 0 ? " · recuperando" : "") : "nenhum"}</b></div><small>${Object.keys(s.levels).length} melhorias · WASD / setas para mover · ESC para pausar</small><button data-pause>Pausar</button></section>`;
+    const html = dungeonHUD(run, this.icons);
     if (html !== this.lastHUD) {
       this.lastHUD = html;
       this.hud.innerHTML = html;

@@ -115,49 +115,6 @@
 .dungeon-cards .rarity-arsenal {
   border: 2px solid #db9972 !important;
 }
-.dungeon-hud {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  max-width: min(650px, calc(100vw - 24px));
-  pointer-events: auto;
-  background: #172a24eb;
-  border: 1px solid #9b926d;
-  border-radius: 12px;
-  padding: 12px;
-}
-.dungeon-hud section {
-  position: relative;
-}
-.dungeon-hud meter {
-  width: 140px;
-  accent-color: #9db37a;
-}
-.dungeon-meters,
-.dungeon-counters,
-.dungeon-loadout {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin: 8px 0;
-}
-.dungeon-loadout span {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid #777855;
-  border-radius: 6px;
-}
-.dungeon-loadout img {
-  max-width: 38px;
-  max-height: 38px;
-  image-rendering: pixelated;
-}
-.dungeon-loadout b {
-  align-self: center;
-  font-size: 13px;
-}
 .dungeon-attributes {
   display: flex;
   gap: 10px;
@@ -256,40 +213,403 @@
   margin: 8px 0;
 }
 
-.dungeon-buffs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  font-size: 12px;
+/* The HUD occupies edge bands; the center remains available for combat. */
+.dungeon-hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  text-shadow: 0 1px 3px #000c;
 }
-.dungeon-buffs span {
-  padding: 4px 8px;
-  background: #57603b;
+.hud-layout {
+  position: absolute;
+  inset: 0;
+}
+.dungeon-hud meter {
+  appearance: none;
+  border: 0;
+  height: 9px;
+  width: 100%;
+  background: #131c1ddd;
+  border-radius: 2px;
+}
+.dungeon-hud meter::-webkit-meter-bar {
+  background: #131c1ddd;
+  border: 1px solid #ffffff22;
+  border-radius: 2px;
+}
+.dungeon-hud meter::-webkit-meter-optimum-value {
+  background: #bb6353;
+  border-radius: 1px;
+}
+.dungeon-hud meter::-moz-meter-bar {
+  background: #bb6353;
+}
+.hud-experience {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+.hud-experience meter {
+  display: block;
+  height: 7px;
+  border-radius: 0;
+}
+.hud-experience meter::-webkit-meter-optimum-value {
+  background: #8dbab0;
+}
+.hud-experience meter::-moz-meter-bar {
+  background: #8dbab0;
+}
+.hud-experience > span {
+  display: block;
+  margin: 7px 16px;
+  color: #b8d4c9;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+.hud-experience small {
+  margin-left: 8px;
+  color: #a8b6ac;
+  letter-spacing: normal;
+}
+.hud-location {
+  position: absolute;
+  left: 16px;
+  top: 42px;
+  display: grid;
+  gap: 5px;
+  max-width: 30vw;
+}
+.hud-location > span {
+  color: #aba892;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+}
+.hud-location strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+.hud-clock {
+  position: absolute;
+  top: 23px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  display: grid;
+  gap: 1px;
+}
+.hud-clock strong {
+  font-size: 36px;
+  line-height: 1.15;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+.hud-clock > span {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: #d7c9a0;
+}
+.hud-score {
+  position: absolute;
+  right: 72px;
+  top: 26px;
+  text-align: right;
+  display: grid;
+  gap: 2px;
+}
+.hud-score strong {
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.hud-score > span {
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  color: #c1b99c;
+}
+.hud-score small {
+  color: #b2b9ad;
+  font-size: 10px;
+}
+#dungeon-ui .hud-pause {
+  position: absolute;
+  right: 16px;
+  top: 26px;
+  pointer-events: auto;
+  background: #15221cd9;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-color: #b8ac795e;
   border-radius: 5px;
 }
-
-.dungeon-loadout .evolved {
+.dungeon-boss {
+  position: absolute;
+  top: 112px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(460px, 65vw);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 10px;
+  color: #e2a98f;
+}
+.dungeon-boss strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+.dungeon-boss span {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.dungeon-boss meter {
+  grid-row: 2;
+  grid-column: 1/-1;
+  height: 8px;
+}
+.dungeon-boss meter::-webkit-meter-optimum-value {
+  background: #be5f4d;
+}
+.dungeon-buffs {
+  position: absolute;
+  left: 16px;
+  bottom: 112px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  max-width: min(600px, 80vw);
+  font-size: 11px;
+}
+.dungeon-buffs > span:not(.hud-stage) {
+  border: 1px solid #b7b18d44;
+  background: #18251edf;
+  padding: 5px 8px;
+  border-radius: 4px;
+  color: #d7ddc9;
+}
+.dungeon-buffs b {
+  color: #e7ce8e;
+  font-weight: 500;
+}
+.dungeon-buffs .hud-stage {
+  position: fixed;
+  top: 82px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #b9bca9;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.hud-bottom {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 14px;
+  display: grid;
+  grid-template-columns: minmax(140px, 200px) auto minmax(140px, 200px);
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+}
+.hud-health,
+.hud-pet {
+  border: 1px solid #acaa7e4a;
+  background: #15231ce8;
+  border-radius: 5px;
+  padding: 10px 12px;
+  min-width: 0;
+}
+.hud-health > div,
+.hud-pet > div {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.hud-health span,
+.hud-pet span {
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  color: #bebca3;
+}
+.hud-health strong,
+.hud-pet strong {
+  font-size: 13px;
+}
+.hud-health small {
+  font-size: 10px;
+  color: #a5ad9c;
+  font-weight: 400;
+}
+.hud-health.low {
+  border-color: #d47c63;
+}
+.hud-health.low meter::-webkit-meter-optimum-value {
+  background: #e6654d;
+}
+.hud-pet {
+  text-align: right;
+}
+.hud-pet > small {
+  display: block;
+  font-size: 10px;
+  color: #aab5a4;
+  margin-top: 5px;
+}
+.hud-pet meter::-webkit-meter-optimum-value {
+  background: #9cae79;
+}
+.hud-pet meter::-moz-meter-bar {
+  background: #9cae79;
+}
+.hud-arsenal {
+  text-align: center;
+}
+.dungeon-loadout {
+  display: flex;
+  gap: 7px;
+  justify-content: center;
+}
+.dungeon-loadout .hud-weapon {
   position: relative;
-  border-color: #e9c46a;
-  box-shadow: inset 0 0 8px #e9c46344;
+  width: 45px;
+  height: 45px;
+  display: grid;
+  place-items: center;
+  background: #16241ee8;
+  border: 1px solid #999a755e;
+  border-radius: 5px;
+  pointer-events: auto;
+}
+.dungeon-loadout img {
+  max-width: 35px;
+  max-height: 35px;
+  image-rendering: pixelated;
+}
+.dungeon-loadout small {
+  position: absolute;
+  left: 4px;
+  top: 2px;
+  font-size: 8px;
+  color: #b3b09a;
+}
+.dungeon-loadout .empty {
+  color: #a19f7b66;
+  font-size: 22px;
+}
+.hud-arsenal > small {
+  display: block;
+  margin-top: 6px;
+  font-size: 10px;
+  color: #b5b99e;
+}
+.dungeon-loadout .evolved {
+  border-color: #d9b967;
+  box-shadow: inset 0 0 10px #d9b96722;
 }
 .dungeon-loadout .evolved > b {
   position: absolute;
-  right: 2px;
-  top: 0;
-  font-size: 12px;
-  color: #e9c46a;
+  right: 3px;
+  top: 1px;
+  font-size: 10px;
+  color: #e4bf64;
 }
-
-.dungeon-boss {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin: 8px 0;
-  color: #efb698;
+@media (max-width: 700px) {
+  .hud-location {
+    max-width: 27vw;
+  }
+  .hud-location strong {
+    font-size: 11px;
+  }
+  .hud-location > span {
+    display: none;
+  }
+  .hud-score strong {
+    font-size: 17px;
+  }
+  .hud-clock strong {
+    font-size: 30px;
+  }
+  .hud-bottom {
+    gap: 8px;
+    grid-template-columns: minmax(115px, 160px) auto minmax(115px, 160px);
+    left: 10px;
+    right: 10px;
+  }
+  .dungeon-loadout .hud-weapon {
+    width: 36px;
+    height: 36px;
+  }
+  .dungeon-loadout img {
+    max-width: 29px;
+    max-height: 29px;
+  }
+  .dungeon-loadout {
+    gap: 4px;
+  }
+  .hud-health,
+  .hud-pet {
+    padding: 7px 8px;
+  }
+  .hud-health > div,
+  .hud-pet > div {
+    gap: 4px;
+  }
+  .dungeon-buffs {
+    left: 10px;
+    font-size: 10px;
+  }
 }
-.dungeon-boss meter {
-  flex: 1;
-  min-width: 100px;
+@media (max-width: 520px) {
+  .hud-bottom {
+    grid-template-columns: 1fr 1fr;
+  }
+  .hud-arsenal {
+    grid-column: 1/-1;
+    grid-row: 1;
+    justify-self: center;
+  }
+  .hud-health {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .hud-pet {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .dungeon-buffs {
+    bottom: 163px;
+    max-width: calc(100vw - 20px);
+  }
+  .hud-location {
+    top: 43px;
+    max-width: 26vw;
+  }
+  .hud-location strong {
+    font-size: 10px;
+  }
+  .hud-score {
+    right: 54px;
+  }
+  #dungeon-ui .hud-pause {
+    right: 10px;
+    width: 30px;
+    height: 30px;
+  }
+  .hud-clock {
+    top: 30px;
+  }
+  .hud-score > span {
+    font-size: 8px;
+  }
+  .hud-experience > span {
+    font-size: 10px;
+    margin-left: 10px;
+  }
+  .hud-experience small {
+    font-size: 9px;
+  }
 }

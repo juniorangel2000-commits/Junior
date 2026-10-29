@@ -149,10 +149,15 @@ fs.mkdirSync(out, { recursive: true });
     await page.getByRole("button", { name: "Retomar", exact: true }).click();
     await page.evaluate(() => {
       for (let i = 0; i < 30; i++) d.update(220000 + i * 100, 100);
+      while (d.run.state.phase === "choice")
+        d.run.choose(d.run.state.cards[0].id);
       d.run.pause();
       d.lastPhase = "";
       d.update(230000, 0);
-      d.cameras.main.stopFollow().setZoom(0.49).centerOn(1536, 1152);
+      d.cameras.main
+        .stopFollow()
+        .setZoom(1600 / 3072)
+        .centerOn(1536, 1152);
     });
     await render();
     await page.evaluate(
@@ -267,7 +272,10 @@ fs.mkdirSync(out, { recursive: true });
       d.run.pause();
       d.lastPhase = "";
       d.update(310000, 0);
-      d.cameras.main.stopFollow().setZoom(0.49).centerOn(1536, 1152);
+      d.cameras.main
+        .stopFollow()
+        .setZoom(1600 / 3072)
+        .centerOn(1536, 1152);
       return {
         mode: d.run.state.dungeon,
         round: d.run.state.round,
@@ -979,6 +987,90 @@ fs.mkdirSync(out, { recursive: true });
       d.syncPlayer();
       d.lastPhase = "";
       d.update(451000, 0);
+    });
+    const hudLayout = await page.evaluate(() => {
+      window.hudLayoutRestore = d.run.snapshot();
+      d.run.state.phase = "paused";
+      d.lastPhase = "";
+      d.update(460000, 0);
+      d.ui.resume();
+      const nodes = [
+        ".hud-experience",
+        ".hud-clock",
+        ".hud-health",
+        ".hud-arsenal",
+        ".hud-pet",
+      ].map((selector) => {
+        const r = document.querySelector(selector).getBoundingClientRect();
+        return { selector, x: r.x, y: r.y, w: r.width, h: r.height };
+      });
+      const center = document.elementFromPoint(innerWidth / 2, innerHeight / 2);
+      return {
+        nodes,
+        centerClear: !center?.closest(".dungeon-hud"),
+        viewport: { w: innerWidth, h: innerHeight },
+      };
+    });
+    check(
+      "HUD mantém experiência, relógio, vida, Arsenal e pet nas bordas sem bloquear o centro",
+      hudLayout.centerClear &&
+        hudLayout.nodes.every(
+          (r) =>
+            r.x >= 0 &&
+            r.y >= 0 &&
+            r.x + r.w <= hudLayout.viewport.w &&
+            r.y + r.h <= hudLayout.viewport.h,
+        ),
+      hudLayout,
+    );
+    await render();
+    await page.screenshot({ path: out + "/hud-ampla.png" });
+    for (const [width, height] of [
+      [680, 950],
+      [390, 844],
+    ]) {
+      await page.setViewportSize({ width, height });
+      const narrow = await page.evaluate(() => {
+        const selectors = [
+          ".hud-health",
+          ".hud-arsenal",
+          ".hud-pet",
+          ".hud-clock",
+          ".hud-pause",
+        ];
+        return selectors.map((selector) => {
+          const r = document.querySelector(selector).getBoundingClientRect();
+          return {
+            selector,
+            x: r.x,
+            y: r.y,
+            right: r.right,
+            bottom: r.bottom,
+            w: innerWidth,
+            h: innerHeight,
+          };
+        });
+      });
+      check(
+        "HUD cabe na tela de " + width + " pixels",
+        narrow.every(
+          (r) =>
+            r.x >= 0 &&
+            r.y >= 0 &&
+            r.right <= r.w + 0.5 &&
+            r.bottom <= r.h + 0.5,
+        ),
+        narrow,
+      );
+      await render();
+      await page.screenshot({ path: out + "/hud-" + width + ".png" });
+    }
+    await page.setViewportSize({ width: 1600, height: 1200 });
+    await page.evaluate(() => {
+      d.run.restore(window.hudLayoutRestore);
+      d.syncPlayer();
+      d.lastPhase = "";
+      d.update(461000, 0);
     });
     const victory = await page.evaluate(() => {
       window.realSetItem = Storage.prototype.setItem;

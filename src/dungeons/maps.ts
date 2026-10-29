@@ -25,6 +25,16 @@ export interface DungeonObstacle {
   height: number;
   solid: boolean;
 }
+export const PARKING_BAYS = Array.from({ length: 24 }, (_, i) => ({
+  x: 440 + [0, 1, 2, 7, 8, 9][i % 6] * 245,
+  y: 540 + Math.floor(i / 6) * 320,
+}));
+export const PARK_LAWNS = [
+  { x: 780, y: 630, w: 420, h: 270 },
+  { x: 1850, y: 620, w: 430, h: 280 },
+  { x: 790, y: 1480, w: 410, h: 250 },
+  { x: 1860, y: 1480, w: 420, h: 250 },
+];
 export const DUNGEON_ENTRY = { x: 1536, y: 1856 };
 export function dungeonObstacles(id: DungeonId): DungeonObstacle[] {
   const result: DungeonObstacle[] = [];
@@ -46,56 +56,94 @@ export function dungeonObstacles(id: DungeonId): DungeonObstacle[] {
       solid,
     });
   if (id === "abandoned-central-square") {
-    for (const [x, y, kind] of [
-      [300, 330, "apartment"],
-      [1250, 270, "shop"],
-      [2390, 310, "apartment"],
-      [2700, 900, "shop"],
-      [260, 1200, "shop"],
+    for (const [x, y, kind, w, h] of [
+      [320, 330, "apartment", 320, 240],
+      [1240, 245, "shop", 330, 220],
+      [2640, 380, "apartment", 340, 250],
+      [2800, 1320, "shop", 270, 200],
+      [260, 1400, "shop", 280, 200],
     ] as const)
-      add(kind, x, y, 300, 220);
-    add("fountain", 1536, 1080, 150, 130);
+      add(kind, x, y, w, h);
+    add("fountain", 1536, 1152, 170, 145);
     for (const [x, y] of [
-      [1230, 1080],
-      [1850, 1080],
+      [1300, 1160],
+      [1770, 1160],
       [1536, 1390],
-      [1536, 780],
+      [1536, 925],
     ])
       add("bench", x, y, 80, 45);
-    for (let i = 0; i < 12; i++)
-      add(
-        i % 3 ? "sedan" : "van",
-        420 + (i % 6) * 420,
-        520 + Math.floor(i / 6) * 1280,
-        70,
-        110,
-      );
+    for (const [x, y, kind] of [
+      [390, 700, "sedan"],
+      [2750, 730, "van"],
+      [390, 1860, "hatchback"],
+      [2670, 1940, "suv"],
+      [610, 350, "van"],
+      [2250, 2160, "sedan"],
+    ] as const)
+      add(kind, x, y, 76, 116);
+    for (const [x, y] of [
+      [560, 980],
+      [2440, 970],
+      [580, 1620],
+      [2460, 1630],
+      [1020, 470],
+      [2060, 1940],
+    ])
+      add("lamp", x, y, 70, 140);
+    for (const [x, y] of [
+      [780, 700],
+      [2180, 700],
+      [780, 1650],
+      [2180, 1650],
+    ])
+      add("bush", x, y, 76, 48, false);
+    for (const [x, y, kind] of [
+      [500, 1450, "bin"],
+      [2480, 1860, "drum"],
+      [1140, 325, "supply"],
+      [2690, 1260, "barrier"],
+    ] as const)
+      add(kind, x, y, 55, 55);
   } else {
     add("mall", 1536, 260, 650, 260);
-    add("booth", 420, 1830, 120, 130);
-    add("booth", 2600, 1830, 120, 130);
-    for (let row = 0; row < 4; row++)
-      for (let col = 0; col < 9; col++)
-        if ((row * 7 + col) % 3 !== 0)
-          add(
-            (["sedan", "hatchback", "van", "suv"] as const)[(row + col) % 4],
-            440 + col * 265,
-            650 + row * 300,
-            70,
-            110,
-          );
-  }
-  for (let i = 0; i < 14; i++) {
-    add("lamp", 220 + (i % 7) * 430, 510 + Math.floor(i / 7) * 1350, 70, 140);
-    if (i % 3 === 0)
-      add(
-        "bush",
-        250 + (i % 7) * 420,
-        470 + Math.floor(i / 7) * 1370,
-        70,
-        45,
-        false,
-      );
+    add("booth", 420, 1940, 120, 130);
+    add("booth", 2630, 1940, 120, 130);
+    for (const [i, bay] of PARKING_BAYS.entries())
+      if (i % 3 !== 0) {
+        add(
+          (["sedan", "hatchback", "van", "suv"] as const)[(i * 7) % 4],
+          bay.x + (i % 2 ? 4 : -4),
+          bay.y + 140,
+          76,
+          116,
+        );
+      }
+    for (const [x, y] of [
+      [260, 520],
+      [1050, 650],
+      [2050, 650],
+      [2800, 560],
+      [1040, 1750],
+      [2050, 1750],
+      [2800, 1740],
+      [260, 1740],
+    ])
+      add("lamp", x, y, 70, 140);
+    for (const [x, y, kind] of [
+      [500, 410, "barrier"],
+      [2490, 410, "barrier"],
+      [330, 1120, "drum"],
+      [2780, 1050, "bin"],
+      [2460, 2040, "supply"],
+    ] as const)
+      add(kind, x, y, 64, 55);
+    for (const [x, y] of [
+      [300, 800],
+      [2840, 800],
+      [310, 1460],
+      [2820, 1450],
+    ])
+      add("bush", x, y, 80, 50, false);
   }
   return result;
 }
@@ -174,31 +222,70 @@ export const MAP_OBSTACLES = {
 
 export const DUNGEON_TREES = Object.fromEntries(
   (["abandoned-central-square", "mall-parking"] as const).map((id) => {
-    const trees: { x: number; y: number; variant: number }[] =
+    const trees: { x: number; y: number; variant: number }[] = [];
+    const clusters =
       id === "abandoned-central-square"
         ? [
-            { x: 1030, y: 810, variant: 0 },
-            { x: 2080, y: 810, variant: 1 },
-            { x: 1040, y: 1580, variant: 2 },
-            { x: 2080, y: 1580, variant: 0 },
+            [170, 620],
+            [220, 1800],
+            [2830, 550],
+            [2850, 1780],
+            [800, 2080],
+            [2250, 2120],
+            [950, 790],
+            [2070, 1640],
           ]
-        : [];
-    for (let i = 0; i < 48; i++) {
-      const x = 130 + ((i * 659) % 2800),
-        y = 150 + ((i * 397) % 2000);
-      if (
-        id === "abandoned-central-square"
-          ? x > 650 && x < 2420 && y > 550 && y < 1810
-          : x > 250 && x < 2800 && y > 300 && y < 2050
-      )
-        continue;
-      if (MAP_OBSTACLES[id].some((p) => Math.hypot(p.x - x, p.y - y) < 145))
-        continue;
-      trees.push({ x, y, variant: i % 3 });
-    }
+        : [
+            [140, 700],
+            [160, 1380],
+            [2880, 650],
+            [2890, 1370],
+            [630, 2140],
+            [2380, 2160],
+          ];
+    for (const [cluster, center] of clusters.entries())
+      for (let n = 0; n < (cluster < 6 ? 5 : 3); n++) {
+        const a = n * 2.399963 + cluster * 0.7,
+          r = 30 + ((n * 43) % 140),
+          x = Math.round(center[0] + Math.cos(a) * r),
+          y = Math.round(center[1] + Math.sin(a) * r);
+        if (
+          x < 90 ||
+          x > 2980 ||
+          y < 140 ||
+          y > 2210 ||
+          Math.hypot(x - DUNGEON_ENTRY.x, y - DUNGEON_ENTRY.y) < 210
+        )
+          continue;
+        if (
+          MAP_OBSTACLES[id].some(
+            (p) => p.solid && Math.hypot(p.x - x, p.y - y) < 130,
+          )
+        )
+          continue;
+        if (trees.some((t) => Math.hypot(t.x - x, t.y - y) < 70)) continue;
+        trees.push({ x, y, variant: (cluster + n) % 3 });
+      }
     return [id, trees];
   }),
 ) as Record<DungeonId, { x: number; y: number; variant: number }[]>;
+
+/** Layout updates keep old runs playable by moving only actors inside a new obstacle. */
+export function safeDungeonPoint(
+  id: DungeonId,
+  x: number,
+  y: number,
+): { x: number; y: number } {
+  if (!dungeonBlocked(id, x, y)) return { x, y };
+  for (let radius = 8; radius <= 384; radius += 8)
+    for (let n = 0; n < 32; n++) {
+      const a = (n * Math.PI) / 16,
+        px = x + Math.cos(a) * radius,
+        py = y + Math.sin(a) * radius;
+      if (!dungeonBlocked(id, px, py)) return { x: px, y: py };
+    }
+  return { ...DUNGEON_ENTRY };
+}
 
 export const urbanOriginX = (kind: DungeonObstacle["kind"]): number =>
   kind === "lamp" ? 0.33 : 0.5;

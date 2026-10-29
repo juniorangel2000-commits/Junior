@@ -13,7 +13,7 @@ import { insideSwordArc } from "./weapon-identity";
 import { dungeonWaypoint, dungeonSegmentClear } from "./navigation";
 import { bossProfile, isBossRound } from "./bosses";
 import { EnemySpatialIndex } from "./spatial";
-import { DUNGEON_ENTRY, dungeonBlocked } from "./maps";
+import { DUNGEON_ENTRY, dungeonBlocked, safeDungeonPoint } from "./maps";
 import type { DungeonProgress, OwnedPet, RunResult } from "./progression";
 export interface Enemy {
   id: number;
@@ -1170,6 +1170,33 @@ export class DungeonRun {
   }
   restore(snapshot: DungeonSnapshot): void {
     this.state = structuredClone(snapshot);
+    Object.assign(
+      this.state.player,
+      safeDungeonPoint(
+        this.state.dungeon,
+        this.state.player.x,
+        this.state.player.y,
+      ),
+    );
+    for (const enemy of this.state.enemies) {
+      const free = safeDungeonPoint(this.state.dungeon, enemy.x, enemy.y);
+      if (free.x !== enemy.x || free.y !== enemy.y) delete enemy.detour;
+      Object.assign(enemy, free);
+      if (
+        enemy.detour &&
+        dungeonBlocked(this.state.dungeon, enemy.detour.x, enemy.detour.y)
+      )
+        delete enemy.detour;
+    }
+    if (this.state.pet)
+      Object.assign(
+        this.state.pet,
+        safeDungeonPoint(
+          this.state.dungeon,
+          this.state.pet.x,
+          this.state.pet.y,
+        ),
+      );
     this.state.cards = this.state.cards.map((card) => {
       if (card.kind === "arsenal")
         return {
