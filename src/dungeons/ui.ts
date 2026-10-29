@@ -1,10 +1,11 @@
 import { permanentEvolutionHTML } from "./permanent-ui";
 import { dungeonHUD } from "./hud";
+import { WEAPON_EVOLUTIONS, type WeaponIcons } from "./weapon-identity";
 import { UPGRADES } from "./upgrades";
 import type { UpgradeCard } from "./upgrades";
 import { ITEM_NAMES } from "../data/items";
 import type { ItemId } from "../types";
-import type { DungeonId, WeaponId } from "./config";
+import type { DungeonId } from "./config";
 import { DUNGEONS, WEAPONS, PETS } from "./config";
 import {
   type DungeonProgress,
@@ -57,7 +58,7 @@ export class DungeonUI {
   private lastHUD = "";
   constructor(
     private readonly callbacks: Callbacks,
-    private readonly icons: Record<WeaponId, string>,
+    private readonly icons: WeaponIcons,
   ) {
     this.root.id = "dungeon-ui";
     this.hud.className = "dungeon-hud";
@@ -111,21 +112,40 @@ export class DungeonUI {
   }
   private focusEvolutionButton(selector: string): void {
     const button = this.panel.querySelector<HTMLButtonElement>(selector);
-    if (button && !button.disabled) button.focus({preventScroll:true});
-    else this.panel.querySelector<HTMLElement>(".permanent-menu h1")?.focus({preventScroll:true});
+    if (button && !button.disabled) button.focus({ preventScroll: true });
+    else
+      this.panel
+        .querySelector<HTMLElement>(".permanent-menu h1")
+        ?.focus({ preventScroll: true });
   }
-  private evolution(progress: DungeonProgress, back: () => void, target = "character", message = ""): void {
-    const scrollTop = this.panel.querySelector(".permanent-menu")?.scrollTop ?? 0;
+  private evolution(
+    progress: DungeonProgress,
+    back: () => void,
+    target = "character",
+    message = "",
+  ): void {
+    const scrollTop =
+      this.panel.querySelector(".permanent-menu")?.scrollTop ?? 0;
     this.show(permanentEvolutionHTML(progress, target, message));
     this.panel.querySelector(".permanent-menu")!.scrollTop = scrollTop;
-    this.panel.querySelector<HTMLSelectElement>("[data-evolution-target]")!.onchange = e =>
+    this.panel.querySelector<HTMLSelectElement>(
+      "[data-evolution-target]",
+    )!.onchange = (e) =>
       this.evolution(progress, back, (e.target as HTMLSelectElement).value);
     this.panel.querySelectorAll<HTMLButtonElement>("[data-attribute]").forEach(
       (b) =>
         (b.onclick = () => {
-          const key = b.dataset.attribute as Attribute, before = progress.attributes[key];
+          const key = b.dataset.attribute as Attribute,
+            before = progress.attributes[key];
           this.callbacks.evolve(key);
-          this.evolution(progress, back, target, progress.attributes[key] > before ? `${labels[key]} evoluiu para o nível ${progress.attributes[key]}.` : "A melhoria não foi aplicada. Confira o saldo e tente novamente.");
+          this.evolution(
+            progress,
+            back,
+            target,
+            progress.attributes[key] > before
+              ? `${labels[key]} evoluiu para o nível ${progress.attributes[key]}.`
+              : "A melhoria não foi aplicada. Confira o saldo e tente novamente.",
+          );
           this.focusEvolutionButton(`[data-attribute="${key}"]`);
         }),
     );
@@ -134,15 +154,26 @@ export class DungeonUI {
       .forEach(
         (b) =>
           (b.onclick = () => {
-            const before = progress.pets.find(p => p.id === b.dataset.petId)!.attributes[b.dataset.petAttribute as PetAttribute];
+            const before = progress.pets.find((p) => p.id === b.dataset.petId)!
+              .attributes[b.dataset.petAttribute as PetAttribute];
             this.callbacks.evolve(
               "strength",
               b.dataset.petId,
               b.dataset.petAttribute as PetAttribute,
             );
-            const after = progress.pets.find(p => p.id === b.dataset.petId)!.attributes[b.dataset.petAttribute as PetAttribute];
-            this.evolution(progress, back, target, after > before ? `${labels[b.dataset.petAttribute!]} evoluiu para o nível ${after}.` : "A melhoria não foi aplicada. Confira o saldo e tente novamente.");
-            this.focusEvolutionButton(`[data-pet-attribute="${b.dataset.petAttribute}"]`);
+            const after = progress.pets.find((p) => p.id === b.dataset.petId)!
+              .attributes[b.dataset.petAttribute as PetAttribute];
+            this.evolution(
+              progress,
+              back,
+              target,
+              after > before
+                ? `${labels[b.dataset.petAttribute!]} evoluiu para o nível ${after}.`
+                : "A melhoria não foi aplicada. Confira o saldo e tente novamente.",
+            );
+            this.focusEvolutionButton(
+              `[data-pet-attribute="${b.dataset.petAttribute}"]`,
+            );
           }),
       );
     this.panel.querySelector<HTMLButtonElement>("[data-back]")!.onclick = back;
@@ -165,7 +196,7 @@ export class DungeonUI {
         ? card.id
         : UPGRADES.find((u) => u.id === card.id)?.weapon;
     if (weapon)
-      return `<img class="dungeon-card-icon" src="${this.icons[weapon]}" alt="">`;
+      return `<img class="dungeon-card-icon" src="${card.id === WEAPON_EVOLUTIONS[weapon].id ? (this.icons[`${weapon}-evolved`] ?? this.icons[weapon]) : this.icons[weapon]}" alt="">`;
     const pet =
       card.id.startsWith("pet-") || card.id === "relentless-companion";
     const path = pet

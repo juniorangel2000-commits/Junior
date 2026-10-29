@@ -1,17 +1,28 @@
 import type Phaser from "phaser";
-/** Small projectile/effect textures generated in memory; official PNGs stay intact. */
+/** Projectile aliases use the new arrow art. Original PNGs remain untouched. */
 export function setupWeaponEffects(scene: Phaser.Scene): void {
-  for (const [key, color] of [
-    ["dungeon-arrow", 0xd9ddd3],
-    ["dungeon-arrow-evolved", 0xf0c66d],
+  for (const [key, frame] of [
+    ["dungeon-arrow", "arrow"],
+    ["dungeon-arrow-evolved", "arrow-evolved"],
   ] as const) {
     if (scene.textures.exists(key)) continue;
-    const ink = scene.add.graphics();
-    ink.fillStyle(0x393a30).fillRect(2, 3, 27, 4);
-    ink.fillStyle(0xa08255).fillRect(4, 4, 23, 2);
-    ink.fillStyle(color).fillTriangle(24, 1, 32, 5, 24, 9);
-    ink.fillStyle(color).fillRect(2, 2, 5, 2).fillRect(2, 6, 5, 2);
-    ink.generateTexture(key, 33, 10);
-    ink.destroy();
+    const source = scene.textures.get("dungeon-weapons").get(frame);
+    const canvas = document.createElement("canvas");
+    canvas.width = source.cutWidth;
+    canvas.height = source.cutHeight;
+    canvas
+      .getContext("2d")!
+      .drawImage(
+        source.source.image as HTMLImageElement,
+        source.cutX,
+        source.cutY,
+        source.cutWidth,
+        source.cutHeight,
+        0,
+        0,
+        canvas.width,
+        canvas.height,
+      );
+    scene.textures.addCanvas(key, canvas)!.setFilter(0);
   }
 }

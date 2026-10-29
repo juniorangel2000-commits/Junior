@@ -1,0 +1,103 @@
+{
+  "file": "assets/visual/dungeons/weapons-remake.png",
+  "sha256": "c01e029ee257529274d209afc4f0708955f31293ea893dc1c7ad4fc767276c8c",
+  "alphaCutoff": 160,
+  "frames": {
+    "sword": {
+      "x": 23,
+      "y": 140,
+      "width": 333,
+      "height": 99
+    },
+    "bow": {
+      "x": 418,
+      "y": 13,
+      "width": 134,
+      "height": 313
+    },
+    "spear": {
+      "x": 645,
+      "y": 154,
+      "width": 353,
+      "height": 68
+    },
+    "boomerang": {
+      "x": 1044,
+      "y": 70,
+      "width": 188,
+      "height": 240
+    },
+    "hammer": {
+      "x": 23,
+      "y": 410,
+      "width": 306,
+      "height": 165
+    },
+    "rotating-blade": {
+      "x": 374,
+      "y": 359,
+      "width": 255,
+      "height": 252
+    },
+    "orbiting-shield": {
+      "x": 664,
+      "y": 355,
+      "width": 256,
+      "height": 258
+    },
+    "arrow": {
+      "x": 959,
+      "y": 451,
+      "width": 281,
+      "height": 77
+    },
+    "sword-evolved": {
+      "x": 12,
+      "y": 754,
+      "width": 382,
+      "height": 123
+    },
+    "bow-evolved": {
+      "x": 413,
+      "y": 624,
+      "width": 151,
+      "height": 330
+    },
+    "spear-evolved": {
+      "x": 638,
+      "y": 769,
+      "width": 431,
+      "height": 91
+    },
+    "boomerang-evolved": {
+      "x": 1030,
+      "y": 688,
+      "width": 210,
+      "height": 249
+    },
+    "hammer-evolved": {
+      "x": 13,
+      "y": 1013,
+      "width": 339,
+      "height": 157
+    },
+    "rotating-blade-evolved": {
+      "x": 375,
+      "y": 952,
+      "width": 264,
+      "height": 269
+    },
+    "orbiting-shield-evolved": {
+      "x": 676,
+      "y": 953,
+      "width": 258,
+      "height": 268
+    },
+    "arrow-evolved": {
+      "x": 961,
+      "y": 1048,
+      "width": 282,
+      "height": 87
+    }
+  }
+}

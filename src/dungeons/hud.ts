@@ -1,5 +1,9 @@
-import { DUNGEONS, PETS, type WeaponId } from "./config";
-import { weaponIdentity } from "./weapon-identity";
+import { DUNGEONS, PETS } from "./config";
+import {
+  weaponIdentity,
+  weaponSpriteFrame,
+  type WeaponIcons,
+} from "./weapon-identity";
 import { nextWeaponOfferLevel } from "./upgrades";
 import { bossProfile } from "./bosses";
 import { BOSS_ATTACK_LABELS } from "./boss-combat";
@@ -11,10 +15,7 @@ const buffNames: Record<string, string> = {
   invulnerable: "Proteção",
   "last-stand": "Última resistência",
 };
-export function dungeonHUD(
-  run: DungeonRun,
-  icons: Record<WeaponId, string>,
-): string {
+export function dungeonHUD(run: DungeonRun, icons: WeaponIcons): string {
   const s = run.state,
     d = DUNGEONS[s.dungeon],
     time = Math.max(0, d.mode === "timed" ? d.duration - s.elapsed : s.elapsed),
@@ -32,7 +33,7 @@ export function dungeonHUD(
     s.weapons
       .map((w, i) => {
         const info = weaponIdentity(w, s.levels);
-        return `<span class="hud-weapon ${info.evolved ? "evolved" : ""}" title="${info.name} · ${info.role}"><small>${i + 1}</small><img src="${icons[w]}" alt="${info.name}">${info.evolved ? "<b>★</b>" : ""}</span>`;
+        return `<span class="hud-weapon ${info.evolved ? "evolved" : ""}" title="${info.name} · ${info.role}"><small>${i + 1}</small><img src="${icons[weaponSpriteFrame(w, s.levels)] ?? icons[w]}" alt="${info.name}">${info.evolved ? "<b>★</b>" : ""}</span>`;
       })
       .join("") +
     Array.from(

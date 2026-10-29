@@ -578,7 +578,7 @@ fs.mkdirSync(out, { recursive: true });
         fan: d.run.effects.filter((e) => e.weapon === "spear").length,
         hammerRadius: d.run.effects.find((e) => e.weapon === "hammer")?.radius,
         blades: d.orbitals.filter(
-          (img) => img.visible && img.frame.name === "rotating-blade",
+          (img) => img.visible && String(img.frame.name).startsWith("rotating-blade"),
         ).length,
         gold: document.querySelectorAll(".dungeon-loadout .evolved").length,
         slots: s.weapons.length,
@@ -647,7 +647,7 @@ fs.mkdirSync(out, { recursive: true });
         ),
         hud: document.querySelector(".dungeon-buffs")?.textContent,
         icons: d.orbitals.filter(
-          (img) => img.visible && img.frame.name === "orbiting-shield",
+          (img) => img.visible && String(img.frame.name).startsWith("orbiting-shield"),
         ).length,
       };
     });

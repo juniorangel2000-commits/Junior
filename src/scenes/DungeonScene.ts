@@ -20,13 +20,16 @@ import {
 import { preloadDungeonArt, setupDungeonArt } from "../dungeons/art";
 import { DungeonWorld, dungeonPreview } from "../dungeons/world";
 import { dungeonBlocked } from "../dungeons/maps";
+import { attackSpritePose } from "../dungeons/weapon-presentation";
+import { drawWeaponEffects } from "../dungeons/weapon-render";
 import { setupWeaponEffects } from "../dungeons/weapon-effects";
 import { bossProfile } from "../dungeons/bosses";
 import { bossSpritePose } from "../dungeons/boss-sprites";
 import { enemySpritePose } from "../dungeons/enemy-sprites";
 import { drawBossAttacks } from "../dungeons/boss-render";
 import {
-  swordHalfArc,
+  weaponSpriteFrame,
+  type WeaponIcons,
   weaponIdentity,
   WEAPON_EVOLUTIONS,
 } from "../dungeons/weapon-identity";
@@ -113,11 +116,13 @@ export class DungeonScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, 3072, 2304);
     document.querySelector<HTMLElement>("#ui")!.style.display = "none";
     const icons = Object.fromEntries(
-      (Object.keys(WEAPONS) as WeaponId[]).map((id) => [
-        id,
-        this.textures.getBase64("dungeon-weapons", id),
-      ]),
-    ) as Record<WeaponId, string>;
+      (Object.keys(WEAPONS) as WeaponId[]).flatMap((id) =>
+        [id, `${id}-evolved`].map((frame) => [
+          frame,
+          this.textures.getBase64("dungeon-weapons", frame),
+        ]),
+      ),
+    ) as WeaponIcons;
     this.previews = {
       "abandoned-central-square": dungeonPreview(
         this,
@@ -335,7 +340,10 @@ export class DungeonScene extends Phaser.Scene {
         this.enemyImages.set(e.id, image);
       }
       const action = e.boss?.action;
-      const locked = action && (action.stage === "warning" || action.kind === "charge" && action.stage === "active");
+      const locked =
+        action &&
+        (action.stage === "warning" ||
+          (action.kind === "charge" && action.stage === "active"));
       const dx = locked ? Math.cos(action.angle) : p.x - e.x,
         dy = locked ? Math.sin(action.angle) : p.y - e.y,
         direction =
@@ -346,33 +354,48 @@ export class DungeonScene extends Phaser.Scene {
             : dy < 0
               ? "north"
               : "south";
-      const resting = action?.stage === "warning" || action?.stage === "recovery";
-      const ordinaryPose = e.kind === "boss" ? undefined : enemySpritePose(e.id, direction, s.elapsed, e.kind === "runner");
-      const pose = e.kind === "boss"
-        ? bossSpritePose(bossProfile(e.bossTier ?? s.round).art, direction, s.elapsed, resting)
-        : ordinaryPose;
+      const resting =
+        action?.stage === "warning" || action?.stage === "recovery";
+      const ordinaryPose =
+        e.kind === "boss"
+          ? undefined
+          : enemySpritePose(e.id, direction, s.elapsed, e.kind === "runner");
+      const pose =
+        e.kind === "boss"
+          ? bossSpritePose(
+              bossProfile(e.bossTier ?? s.round).art,
+              direction,
+              s.elapsed,
+              resting,
+            )
+          : ordinaryPose;
       image
         .setTexture(
-          e.kind === "boss" ? "dungeon-boss-" + bossProfile(e.bossTier ?? s.round).art : ordinaryPose!.texture,
-          pose?.frame ?? direction +
-            "-" +
-            (action?.stage === "warning" || action?.stage === "recovery"
-              ? 0 : Math.floor(s.elapsed * (e.kind === "runner" ? 9 : 5)) % 4),
+          e.kind === "boss"
+            ? "dungeon-boss-" + bossProfile(e.bossTier ?? s.round).art
+            : ordinaryPose!.texture,
+          pose?.frame ??
+            direction +
+              "-" +
+              (action?.stage === "warning" || action?.stage === "recovery"
+                ? 0
+                : Math.floor(s.elapsed * (e.kind === "runner" ? 9 : 5)) % 4),
         )
         .setOrigin(pose?.originX ?? 0.5, pose?.originY ?? 1)
-        .setScale(
-          e.kind === "boss" ? 1 : e.special
-              ? 0.25
-              : 0.2,
-        )
+        .setScale(e.kind === "boss" ? 1 : e.special ? 0.25 : 0.2)
         .setPosition(e.x, e.y)
         .setDepth(e.y);
       if (e.kind === "boss") {
         const height = (e.bossTier ?? s.round) === 50 ? 112 : 94;
-        if (pose?.referenceHeight) image.setScale(height / pose.referenceHeight);
-        else image.setDisplaySize(image.frame.width / image.frame.height * height, height);
-      }
-      else if (pose?.referenceHeight) image.setScale((e.special ? 65 : 52) / pose.referenceHeight);
+        if (pose?.referenceHeight)
+          image.setScale(height / pose.referenceHeight);
+        else
+          image.setDisplaySize(
+            (image.frame.width / image.frame.height) * height,
+            height,
+          );
+      } else if (pose?.referenceHeight)
+        image.setScale((e.special ? 65 : 52) / pose.referenceHeight);
       if (flashed.has(e.id)) image.setTintFill(0xffebc2);
       else if (e.kind === "boss") image.clearTint();
       else if (e.special) image.setTint(0xb59e8b);
@@ -399,20 +422,20 @@ export class DungeonScene extends Phaser.Scene {
               ? "dungeon-arrow-evolved"
               : "dungeon-arrow"
             : "dungeon-weapons",
-          q.weapon === "bow" ? undefined : "boomerang",
+          q.weapon === "bow"
+            ? undefined
+            : weaponSpriteFrame("boomerang", s.levels),
         )
         .clearTint()
         .setPosition(q.x, q.y - 18)
         .setDisplaySize(
-          q.weapon === "bow" ? 30 : 29,
-          q.weapon === "bow" ? 7 : 24,
+          q.weapon === "bow" ? 34 : 36,
+          q.weapon === "bow" ? 9 : 32,
         )
         .setRotation(
           q.weapon === "boomerang" ? s.elapsed * 12 : Math.atan2(q.vy, q.vx),
         )
         .setDepth(q.y + 1);
-      if (q.weapon === "boomerang" && run.level("boomerang-cross"))
-        img.setTint(0xf1cd80);
     }
     const ink = this.impactGraphics!;
     ink.clear();
@@ -458,22 +481,6 @@ export class DungeonScene extends Phaser.Scene {
       gameAudio.play("combat-hit");
       this.lastImpactAt = latest.at;
     }
-    for (const q of s.projectiles) {
-      const evolved = weaponIdentity(q.weapon, s.levels).evolved;
-      ink.lineStyle(
-        evolved ? 2 : 1,
-        evolved ? 0xefc76e : q.weapon === "bow" ? 0xd8e3d8 : 0x91c8bd,
-        0.55,
-      );
-      const speed = Math.hypot(q.vx, q.vy) || 1,
-        length = q.weapon === "bow" ? 22 : q.returning ? 28 : 16;
-      ink.lineBetween(
-        q.x - (q.vx / speed) * length,
-        q.y - 18 - (q.vy / speed) * length,
-        q.x,
-        q.y - 18,
-      );
-    }
     const attackEffect = [...run.effects]
       .reverse()
       .find(
@@ -495,82 +502,14 @@ export class DungeonScene extends Phaser.Scene {
       );
       this.lastAttackEffect = attackEffect.id;
     }
-    for (const effect of run.effects) {
-      if (effect.weapon === "spear") {
-        const length =
-          (effect.radius ?? run.weaponStats("spear").range) *
-          Math.min(1, (0.22 - effect.ttl) / 0.07);
-        ink.lineStyle(
-          effect.variant ? 3 : 2,
-          effect.variant ? 0xefc76e : 0xc3ddd8,
-          effect.ttl / 0.22,
-        );
-        ink.lineBetween(
-          effect.x,
-          effect.y - 20,
-          effect.x + Math.cos(effect.angle) * length,
-          effect.y - 20 + Math.sin(effect.angle) * length,
-        );
-        continue;
-      }
-      if (effect.weapon === "orbiting-shield") {
-        const age = 0.22 - effect.ttl,
-          radius = effect.radius ?? run.shieldRadius;
-        ink.lineStyle(
-          effect.variant ? 4 : 3,
-          effect.variant ? 0xefc76e : 0x9fbfda,
-          effect.ttl / 0.22,
-        );
-        ink.strokeCircle(
-          effect.x,
-          effect.y - 20,
-          radius * Math.min(1, age / 0.16),
-        );
-        continue;
-      }
-      if (effect.weapon === "rotating-blade") {
-        ink.lineStyle(2, 0xc5dace, effect.ttl / 0.22);
-        ink.strokeCircle(effect.x, effect.y - 20, 8 + (0.22 - effect.ttl) * 45);
-        continue;
-      }
-      if (effect.weapon !== "sword" && effect.weapon !== "hammer") continue;
-      const age = 0.22 - effect.ttl,
-        alpha = effect.ttl / 0.22;
-      ink.lineStyle(
-        effect.weapon === "hammer" ? 3 : 2,
-        weaponIdentity(effect.weapon, s.levels).evolved ? 0xefc76e : 0xe4d6af,
-        alpha,
-      );
-      if (effect.weapon === "hammer") {
-        const radius = effect.radius ?? 48;
-        ink.strokeCircle(
-          effect.x,
-          effect.y - 12,
-          radius * Math.min(1, age / 0.12),
-        );
-        ink.lineStyle(1, effect.variant ? 0xefc76e : 0x9d8c73, alpha * 0.5);
-        ink.strokeCircle(effect.x, effect.y - 12, radius);
-      } else
-        ink
-          .beginPath()
-          .arc(
-            effect.x,
-            effect.y - 20,
-            run.weaponStats("sword").range,
-            effect.angle - swordHalfArc(run.level("sword-wide")),
-            effect.angle -
-              swordHalfArc(run.level("sword-wide")) +
-              2 *
-                swordHalfArc(run.level("sword-wide")) *
-                (effect.variant ? 1 - age / 0.22 : age / 0.22),
-            false,
-          )
-          .strokePath();
-    }
+    drawWeaponEffects(ink, run);
     this.effects.forEach((img) => img.setVisible(false));
     for (const [i, e] of run.effects
       .filter(
-        (e) => e.weapon !== "rotating-blade" && e.weapon !== "orbiting-shield",
+        (e) =>
+          e.weapon !== "rotating-blade" &&
+          e.weapon !== "orbiting-shield" &&
+          e.weapon !== "boomerang",
       )
       .entries()) {
       const image =
@@ -581,39 +520,20 @@ export class DungeonScene extends Phaser.Scene {
           "dungeon-weapons",
           e.weapon,
         ));
+      const pose = attackSpritePose(
+        e,
+        e.radius ?? run.weaponStats(e.weapon).range,
+        run.level("sword-wide"),
+      );
       image
         .setVisible(true)
-        .setTexture("dungeon-weapons", e.weapon)
-        .setPosition(
-          e.x +
-            Math.cos(e.angle) *
-              (e.weapon === "spear"
-                ? (e.radius ?? 85) * 0.5
-                : e.weapon === "hammer"
-                  ? 0
-                  : 24),
-          e.y -
-            23 +
-            Math.sin(e.angle) *
-              (e.weapon === "spear"
-                ? (e.radius ?? 85) * 0.5
-                : e.weapon === "hammer"
-                  ? 0
-                  : 24),
-        )
-        .setDisplaySize(
-          e.weapon === "spear" ? (e.radius ?? 85) : 54,
-          e.weapon === "spear" ? 16 : 45,
-        )
-        .setRotation(
-          e.weapon === "spear"
-            ? e.angle
-            : e.angle + (e.variant ? -1 : 1) * (0.22 - e.ttl) * 3,
-        )
+        .setTexture("dungeon-weapons", weaponSpriteFrame(e.weapon, s.levels))
+        .setPosition(pose.x, pose.y)
+        .setDisplaySize(pose.width, pose.height)
+        .setRotation(pose.angle)
         .clearTint()
-        .setAlpha(Math.min(1, e.ttl * 8))
+        .setAlpha(pose.alpha)
         .setDepth(e.y + 2);
-      if (weaponIdentity(e.weapon, s.levels).evolved) image.setTint(0xf1cd80);
     }
     this.orbitals.forEach((img) => img.setVisible(false));
     let oi = 0;
@@ -637,13 +557,12 @@ export class DungeonScene extends Phaser.Scene {
           img
             .setVisible(true)
             .setAlpha(1)
-            .setTexture("dungeon-weapons", id)
+            .setTexture("dungeon-weapons", weaponSpriteFrame(id, s.levels))
             .setPosition(p.x + Math.cos(a) * r, p.y - 20 + Math.sin(a) * r)
             .setDisplaySize(36, 36)
             .setRotation(a * 3)
             .clearTint()
             .setDepth(p.y + Math.sin(a) * r);
-          if (evolved) img.setTint(0xf1cd80);
         }
       }
     if (s.weapons.includes("orbiting-shield")) {
@@ -659,24 +578,27 @@ export class DungeonScene extends Phaser.Scene {
         oi++;
         img
           .setVisible(true)
-          .setTexture("dungeon-weapons", "orbiting-shield")
+          .setTexture(
+            "dungeon-weapons",
+            weaponSpriteFrame("orbiting-shield", s.levels),
+          )
           .setDisplaySize(26, 26)
           .setPosition(p.x + (i ? -24 : 24), p.y - 18)
           .setRotation(0)
           .clearTint()
           .setAlpha((s.shield?.charges ?? run.shieldCapacity) > i ? 0.9 : 0.2)
           .setDepth(p.y + 2);
-        if (run.shieldCapacity === 2) img.setTint(0xf1cd80);
       }
     }
     this.pickups!.clear();
     for (const q of s.pickups) {
       if (q.kind === "pet") continue;
       if (q.kind === "level") {
-        this.pickups!.lineStyle(3,0xffdd7c,1).strokeCircle(q.x,q.y-4,10)
-          .lineBetween(q.x-5,q.y-4,q.x,q.y-10)
-          .lineBetween(q.x,q.y-10,q.x+5,q.y-4)
-          .lineBetween(q.x,q.y-10,q.x,q.y+3);
+        this.pickups!.lineStyle(3, 0xffdd7c, 1)
+          .strokeCircle(q.x, q.y - 4, 10)
+          .lineBetween(q.x - 5, q.y - 4, q.x, q.y - 10)
+          .lineBetween(q.x, q.y - 10, q.x + 5, q.y - 4)
+          .lineBetween(q.x, q.y - 10, q.x, q.y + 3);
         continue;
       }
       if (q.kind === "critical") {
@@ -696,9 +618,27 @@ export class DungeonScene extends Phaser.Scene {
         continue;
       }
       this.pickups!.fillStyle(
-        q.kind === "xp" ? q.xpTier === "boss" ? 0xf4ce72 : q.xpTier === "elite" ? 0x97cce8 : 0xb6c99a : q.kind === "health" ? 0xd9a392 : 0x97b8bd,
+        q.kind === "xp"
+          ? q.xpTier === "boss"
+            ? 0xf4ce72
+            : q.xpTier === "elite"
+              ? 0x97cce8
+              : 0xb6c99a
+          : q.kind === "health"
+            ? 0xd9a392
+            : 0x97b8bd,
         0.9,
-      ).fillCircle(q.x, q.y - 3, q.kind === "xp" ? q.xpTier === "boss" ? 6 : q.xpTier === "elite" ? 4 : 3 : 7);
+      ).fillCircle(
+        q.x,
+        q.y - 3,
+        q.kind === "xp"
+          ? q.xpTier === "boss"
+            ? 6
+            : q.xpTier === "elite"
+              ? 4
+              : 3
+          : 7,
+      );
     }
     const rescue = s.pickups.find((q) => q.kind === "pet");
     if (rescue?.species) {

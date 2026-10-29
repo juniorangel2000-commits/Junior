@@ -1,7 +1,7 @@
 import type Phaser from "phaser";
 import benches from "../../public/assets/visual/dungeons/benches.json";
 import urban from "../../public/assets/visual/dungeons/urban.json";
-import weapons from "../../public/assets/visual/dungeons/weapons.json";
+import weapons from "../../public/assets/visual/dungeons/weapons-remake.json";
 import pets from "../../public/assets/visual/dungeons/pets.json";
 import courier from "../../public/assets/visual/dungeons/zombie-courier.json";
 import resident from "../../public/assets/visual/dungeons/zombie-resident.json";
