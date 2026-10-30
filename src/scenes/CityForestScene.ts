@@ -16,7 +16,7 @@ import {loadCameraZoom,saveCameraZoom,stepCameraZoom} from '../camera-zoom';
 import {CITY_ACCESS,CITY_FOREST_ENTRY,CITY_FOREST_EXIT,VILLAGE_NORTH_ARRIVAL,cityForestBlockedPoint,cityForestBlockedTile} from '../data/city-forest';
 import {CityForestWorld,preloadCityForest} from '../city-forest-world';
 
-interface CityForestStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
+interface CityForestStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void;fromCity?:boolean}
 export class CityForestScene extends Phaser.Scene{
  private state!:SaveData;
  private ui!:GameUI;
@@ -28,6 +28,7 @@ export class CityForestScene extends Phaser.Scene{
  private daylight!:Daylight;
  private paused=false;
  private leaving=false;
+ private cityPromptArmed=true;
  private elapsed=0;
  private zoom=1;
  private wheelZoomDistance=0;
@@ -70,11 +71,12 @@ export class CityForestScene extends Phaser.Scene{
     this.ui,
     () => this.persist(),
   );
+  this.cityPromptArmed=!data.fromCity;
   if(this.state.dungeonRun)this.enterDungeons();else this.persist();
  }
  private nearCity():boolean{return Math.hypot(this.player.x/32-CITY_ACCESS.x,this.player.y/32-CITY_ACCESS.y)<3;}
  private updateHUD():void{
-  this.ui.updateHUD({area:'cityForest',coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:this.nearCity()?'E':null,prompt:this.nearCity()?'E · Viajar para a cidade':'Explore as trilhas · caminho ao sul retorna à vila',location:'Floresta de Acesso à Cidade',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
+  this.ui.updateHUD({area:'cityForest',coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:null,prompt:this.nearCity()?'Siga pela estrada para viajar à cidade':'Explore as trilhas · caminho ao sul retorna à vila',location:'Floresta de Acesso à Cidade',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
   this.ui.updateCameraZoom(this.zoom,!this.paused);
  }
  private key(e:KeyboardEvent):void{
@@ -82,7 +84,7 @@ export class CityForestScene extends Phaser.Scene{
   const key=e.key.toLowerCase();
   if(key==='escape'){e.preventDefault();this.ui.togglePause();return;}
   if(this.paused)return;
-  if(key==='e'&&this.nearCity())this.enterDungeons();
+  if(key==='e'&&this.nearCity()&&!this.ui.isModalOpen())this.askCityTravel();
   if(key==='m')this.ui.toggleMap();
   if(['+','=','-','_','Home'].includes(e.key)&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();this.changeCameraZoom(e.key==='Home'?0:e.key==='-'||e.key==='_'?-1:1);}
  }
@@ -122,7 +124,13 @@ export class CityForestScene extends Phaser.Scene{
  private visibility=():void=>{if(document.hidden)this.blur();};
  private enterDungeons():void{
   if(this.leaving||!this.persist())return;this.leaving=true;const ui=this.ui,onReturn=this.onReturn;
-  this.scene.start('Dungeons',{save:structuredClone(this.state),ui,onReturn:(save:SaveData,title=false)=>{if(title)onReturn(save,true);else this.scene.start('AcessoCidade',{save,ui,onReturn});}});
+  this.scene.start('Dungeons',{save:structuredClone(this.state),ui,onReturn:(save:SaveData,title=false)=>{if(title)onReturn(save,true);else this.scene.start('AcessoCidade',{save,ui,onReturn,fromCity:true});}});
+ }
+ private askCityTravel():void{
+  if(this.leaving||this.ui.isModalOpen())return;
+  this.cityPromptArmed=false;
+  this.input.keyboard?.resetKeys();
+  this.ui.confirmCityTravel(()=>this.enterDungeons());
  }
  private leave(title=false):void{
   if(this.leaving)return;this.persist();this.leaving=true;
@@ -133,6 +141,9 @@ export class CityForestScene extends Phaser.Scene{
   if(!this.player)return;this.daylight.update(this.state.time);this.world.update(time);
   if(this.paused||this.leaving||this.ui.isModalOpen()||document.hidden)return;
   const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.update(dt,cityForestBlockedTile,cityForestBlockedPoint);
+  const distance=Math.hypot(this.player.x/32-CITY_ACCESS.x,this.player.y/32-CITY_ACCESS.y);
+  if(distance>4)this.cityPromptArmed=true;
+  if(this.cityPromptArmed&&distance<3){this.askCityTravel();return;}
   if(this.passage.update(before,this.player,CITY_FOREST_EXIT,CITY_FOREST_ENTRY)){this.leave();return;}
   if(Math.hypot(this.player.x-before.x,this.player.y-before.y)>.1)gameAudio.play('step');
   this.farming.update(dt);

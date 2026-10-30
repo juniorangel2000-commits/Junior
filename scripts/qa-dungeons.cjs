@@ -64,6 +64,7 @@ fs.mkdirSync(out, { recursive: true });
         document.querySelector("#ui")?.dataset.area === "cityForest",
     );
     await page.keyboard.press("e");
+    await page.locator("[data-city-confirm]").click();
     await page.waitForFunction(() => game.scene.isActive("Dungeons"));
     const began = Date.now();
     await page.waitForSelector(".dungeon-travel");
@@ -272,6 +273,7 @@ fs.mkdirSync(out, { recursive: true });
       f.persist();
     });
     await page.keyboard.press("e");
+    await page.locator("[data-city-confirm]").click();
     await page.waitForSelector("[data-pet]");
     await page.locator("[data-pet]").selectOption("qa-dog");
     await page.locator('[data-start="mall-parking"]').click();
@@ -1328,6 +1330,7 @@ fs.mkdirSync(out, { recursive: true });
       game.loop.wake();
     });
     await page.keyboard.press("e");
+    await page.locator("[data-city-confirm]").click();
     await page.waitForSelector("[data-evolution]");
     await page.evaluate(()=>{
       window.d=game.scene.getScene("Dungeons");

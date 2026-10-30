@@ -1,0 +1,113 @@
+{
+  "checks": [
+    {
+      "name": "Vídeo masculino real decodifica em 1080p, sem trilha nativa duplicada",
+      "passed": true,
+      "details": {
+        "hidden": true,
+        "disabled": true,
+        "completed": 0,
+        "source": "http://127.0.0.1:5187/assets/video/expedition/road-male.mp4",
+        "duration": 9.963,
+        "muted": true
+      }
+    },
+    {
+      "name": "Pular oculto e bloqueado antes de preparar recursos",
+      "passed": true,
+      "details": {
+        "hidden": true,
+        "disabled": true,
+        "completed": 0,
+        "source": "http://127.0.0.1:5187/assets/video/expedition/road-male.mp4",
+        "duration": 9.963,
+        "muted": true
+      }
+    },
+    {
+      "name": "Fim do vídeo aguarda os recursos antes de abrir menu",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Conclusão após carregar remove vídeo e abre uma única vez",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Vídeo feminino reproduz de verdade",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Perda de foco pausa o vídeo",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Atualização tardia de mídia não rearma timeout fora de foco",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Carregamento libera Pular",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Pular conclui uma vez e limpa o elemento",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Falha de vídeo não contorna o bloqueio de carregamento",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Falha de vídeo permite menu depois dos recursos prontos",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Trilha original renderiza sem clipping ou valores inválidos",
+      "passed": true,
+      "details": {
+        "peak": 0.11201188713312149,
+        "rms": 0.014702985465076462,
+        "duration": 48
+      }
+    },
+    {
+      "name": "Trilha fica em 25% do volume musical escolhido",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Vídeo e menu usam a mesma fonte sem reiniciar a trilha",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Efeito curto de suspense tem áudio válido",
+      "passed": true,
+      "details": 0.08658801019191742
+    },
+    {
+      "name": "Combate encerra a música e deixa os efeitos ativos",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Silêncio geral continua respeitado",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Sem erros JavaScript",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

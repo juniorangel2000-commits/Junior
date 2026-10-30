@@ -1,0 +1,174 @@
+
+> depois-da-chuva@0.10.0-preview.18 test
+> vitest run --maxWorkers=2
+
+
+ RUN  v3.2.7 /workspace/AfterRain-preview8
+
+ ✓ tests/property-village-gate.test.ts (7 tests) 4235ms
+   ✓ east property passage to the village > keeps the original western forest passage and adds one right-facing sign  575ms
+   ✓ east property passage to the village > leaves the approach, arrival and transition squares free in the authored map  723ms
+   ✓ east property passage to the village > preserves deliberate floor paint and explicitly placed or moved objects  746ms
+   ✓ east property passage to the village > prevents saved natural resources reappearing in the passage  718ms
+   ✓ east property passage to the village > leaves sparse legacy drafts and the original baseline unchanged  1456ms
+ ✓ tests/map-editor-world.test.ts (5 tests) 4857ms
+   ✓ mapa editado no mundo e na partida > mover uma árvore preserva todos os outros recursos, suas posições e IDs  1551ms
+   ✓ mapa editado no mundo e na partida > água e terra pintadas mudam a colisão por pixel e a construção no mesmo ponto  789ms
+   ✓ mapa editado no mundo e na partida > recarrega recurso novo com golpes parciais e sem repetir uma recompensa já coletada  1037ms
+   ✓ mapa editado no mundo e na partida > remover um recurso oculta somente aquele ID sem fingir uma coleta  940ms
+ ✓ tests/world-regions.test.ts (13 tests) 3596ms
+   ✓ expansão da região inicial > recupera recursos esgotados nas áreas novas sem recriar colisão ou recompensa  717ms
+   ✓ expansão da região inicial > não muda vagas nem recria recompensas ao carregar IDs antigos esgotados  707ms
+   ✓ expansão da região inicial > dá prioridade à construção salva na vaga nova, preservando IDs e disponibilidade  1481ms
+ ✓ tests/gates-enclosures.test.ts (12 tests) 4875ms
+   ✓ porteiras, cercados e reparos > mantém cow andando no cercado fechado e deixa sair pela porteira aberta  1852ms
+   ✓ porteiras, cercados e reparos > mantém chicken andando no cercado fechado e deixa sair pela porteira aberta  2837ms
+ ✓ tests/smith-layout.test.ts (15 tests) 574ms
+   ✓ editable faithful smith room > routes Bento through the real narrow passages and doorway with an 8px navigation grid  487ms
+ ✓ tests/village-pier-defences.test.ts (6 tests) 612ms
+   ✓ organic village clearings, fishing pier and perimeter > replaces sharp rectangular grass cutoffs with continuous blends across the whole map  564ms
+ ✓ tests/merchant-visits.test.ts (23 tests) 2301ms
+ ✓ tests/merchant-visit.test.ts (8 tests) 616ms
+   ✓ optional merchant guidance and interior trading > keeps entrances, counter access and owner positions usable in all nine new rooms  538ms
+ ✓ tests/celina-shop.test.ts (4 tests) 448ms
+   ✓ Celina tailor shop > uses the existing daily routine, persisted calendar without requiring a village level  370ms
+ ✓ tests/helena-shop.test.ts (4 tests) 375ms
+ ✓ tests/merchant-routine.test.ts (8 tests) 347ms
+ ✓ tests/amelia-shop.test.ts (4 tests) 390ms
+   ✓ Amelia herbalist shop > uses the existing daily routine, eight walking frames and persisted calendar without requiring a village level  314ms
+ ✓ tests/nilo-shop.test.ts (4 tests) 462ms
+   ✓ Nilo antique shop > uses the existing daily routine, persisted calendar without requiring a village level  397ms
+ ✓ tests/map-update.test.ts (15 tests) 520ms
+ ✓ tests/icaro-shop.test.ts (3 tests) 482ms
+   ✓ Icaro workshop > uses the existing daily routine, persisted calendar without requiring a village level  347ms
+ ✓ tests/blacksmith-interior.test.ts (10 tests) 480ms
+   ✓ Bento commercial interior and shared village circulation > walks between workshop, village, furnished home and back without duplicating the actor  371ms
+ ✓ tests/damiao-shop.test.ts (4 tests) 394ms
+   ✓ Damiao fishing shop > uses the existing daily routine, persisted calendar without requiring a village level  308ms
+ ✓ tests/dungeon-collision.test.ts (3 tests) 374ms
+ ✓ tests/tobias-shop.test.ts (5 tests) 317ms
+ ✓ tests/terrain-shape.test.ts (11 tests) 374ms
+ ✓ tests/rosa-shop.test.ts (8 tests) 226ms
+ ✓ tests/tree-growth.test.ts (8 tests) 328ms
+ ✓ tests/economy6.test.ts (49 tests) 251ms
+ ✓ tests/save-migration.test.ts (26 tests) 234ms
+ ✓ tests/village-save.test.ts (14 tests) 251ms
+ ✓ tests/village-landmarks.test.ts (4 tests) 67ms
+ ✓ tests/save-directions.test.ts (10 tests) 235ms
+ ✓ tests/farming-soil.test.ts (12 tests) 199ms
+ ✓ tests/home-save.test.ts (5 tests) 158ms
+ ✓ tests/ancient-forest.test.ts (6 tests) 79ms
+ ✓ tests/village-landscaping.test.ts (6 tests) 192ms
+ ✓ tests/village-world.test.ts (3 tests) 81ms
+ ✓ tests/animals.test.ts (17 tests) 168ms
+ ✓ tests/city-forest.test.ts (6 tests) 161ms
+ ✓ tests/save-recovery.test.ts (10 tests) 143ms
+ ✓ tests/water-animation.test.ts (4 tests) 160ms
+ ✓ tests/village-polish.test.ts (11 tests) 131ms
+ ✓ tests/dungeons.test.ts (35 tests) 142ms
+ ✓ tests/blacksmith-editor.test.ts (6 tests) 175ms
+ ✓ tests/renewable-collection.test.ts (13 tests) 126ms
+ ✓ tests/foraging-ecology.test.ts (8 tests) 134ms
+ ✓ tests/character-profile.test.ts (20 tests) 171ms
+ ✓ tests/navigation-performance.test.ts (5 tests) 123ms
+ ✓ tests/home-supplies.test.ts (5 tests) 128ms
+ ✓ tests/herbalism.test.ts (6 tests) 111ms
+ ✓ tests/property-homestead.test.ts (7 tests) 99ms
+ ✓ tests/dungeon-mode-rewards.test.ts (14 tests) 105ms
+ ✓ tests/dungeon-xp-curve.test.ts (7 tests) 91ms
+ ✓ tests/augusto-authored-layout.test.ts (3 tests) 87ms
+ ✓ tests/systems.test.ts (17 tests) 92ms
+ ✓ tests/map-seam-ground.test.ts (3 tests) 40ms
+ ✓ tests/dungeon-new-cards.test.ts (14 tests) 37ms
+ ✓ tests/dungeon-playthrough-fixes.test.ts (12 tests) 43ms
+ ✓ tests/village-dressing.test.ts (7 tests) 96ms
+ ✓ tests/dungeon-rhythm.test.ts (9 tests) 26ms
+ ✓ tests/resource-spawns.test.ts (6 tests) 70ms
+ ✓ tests/village-plaza.test.ts (2 tests) 74ms
+ ✓ tests/dungeon-pet-passives.test.ts (14 tests) 25ms
+ ✓ tests/map-editor.test.ts (47 tests) 19ms
+ ✓ tests/daylight.test.ts (12 tests) 51ms
+ ✓ tests/dungeon-boss-skills.test.ts (27 tests) 25ms
+ ✓ tests/swimming-body.test.ts (11 tests) 29ms
+ ✓ tests/tobias-sprites.test.ts (3 tests) 28ms
+ ✓ tests/dungeon-bosses.test.ts (18 tests) 34ms
+ ✓ tests/vila-library.test.ts (16 tests) 58ms
+ ✓ tests/fences.test.ts (6 tests) 64ms
+ ✓ tests/bridges.test.ts (8 tests) 75ms
+ ✓ tests/property-shore-repair.test.ts (3 tests) 41ms
+ ✓ tests/nilo-sprites.test.ts (2 tests) 12ms
+ ✓ tests/village-services.test.ts (5 tests) 74ms
+ ✓ tests/quickbar.test.ts (5 tests) 34ms
+ ✓ tests/amelia-sprites.test.ts (4 tests) 29ms
+ ✓ tests/merchant-conversations.test.ts (10 tests) 48ms
+ ✓ tests/forest-ground.test.ts (5 tests) 57ms
+ ✓ tests/building-shelter.test.ts (28 tests) 27ms
+ ✓ tests/map-seam-data.test.ts (7 tests) 51ms
+ ✓ tests/map-editor-layout.test.ts (8 tests) 15ms
+ ✓ tests/tree-ground.test.ts (3 tests) 33ms
+ ✓ tests/augusto-sprites.test.ts (3 tests) 19ms
+ ✓ tests/dungeon-opening-rewards.test.ts (5 tests) 59ms
+ ✓ tests/dungeon-pet-attacks.test.ts (10 tests) 32ms
+ ✓ tests/commerce.test.ts (18 tests) 14ms
+ ✓ tests/interior-effects.test.ts (5 tests) 18ms
+ ✓ tests/animal-art.test.ts (5 tests) 29ms
+ ✓ tests/player-eight-directions.test.ts (44 tests) 23ms
+ ✓ tests/dungeon-boss-sprites.test.ts (26 tests) 26ms
+ ✓ tests/dungeon-map-bonuses.test.ts (12 tests) 9ms
+ ✓ tests/title-weather.test.ts (3 tests) 25ms
+ ✓ tests/solar-light.test.ts (11 tests) 29ms
+ ✓ tests/forest-editor.test.ts (5 tests) 17ms
+ ✓ tests/damiao-sprites.test.ts (2 tests) 24ms
+ ✓ tests/dungeon-weapon-presentation.test.ts (6 tests) 13ms
+ ✓ tests/dungeon-permanent-effects.test.ts (4 tests) 24ms
+ ✓ tests/dungeon-defense.test.ts (14 tests) 14ms
+ ✓ tests/admin.test.ts (7 tests) 16ms
+ ✓ tests/dungeon-completion.test.ts (20 tests) 18ms
+ ✓ tests/helena-sprites.test.ts (2 tests) 22ms
+ ✓ tests/character-attachments.test.ts (5 tests) 15ms
+ ✓ tests/celina-sprites.test.ts (2 tests) 15ms
+ ✓ tests/home.test.ts (9 tests) 13ms
+ ✓ tests/dungeon-permanent.test.ts (4 tests) 24ms
+ ✓ tests/icaro-sprites.test.ts (2 tests) 15ms
+ ✓ tests/shop-facades.test.ts (3 tests) 18ms
+ ✓ tests/world-pets.test.ts (11 tests) 15ms
+ ✓ tests/dungeon-timed-bosses.test.ts (4 tests) 8ms
+ ✓ tests/dungeon-healing.test.ts (3 tests) 6ms
+ ✓ tests/crafting.test.ts (14 tests) 10ms
+ ✓ tests/animal-animation.test.ts (7 tests) 7ms
+ ✓ tests/player-shore.test.ts (5 tests) 15ms
+ ✓ tests/dungeon-enemy-sprites.test.ts (7 tests) 9ms
+ ✓ tests/tool-use.test.ts (17 tests) 9ms
+ ✓ tests/dungeon-pet-evasion.test.ts (6 tests) 9ms
+ ✓ tests/dungeon-map-layout.test.ts (9 tests) 9ms
+ ✓ tests/dungeon-xp-drops.test.ts (6 tests) 9ms
+ ✓ tests/dungeon-weapons.test.ts (10 tests) 12ms
+ ✓ tests/pet-directions.test.ts (3 tests) 7ms
+ ✓ tests/player-swimming.test.ts (6 tests) 7ms
+ ✓ tests/terrain-paint.test.ts (4 tests) 7ms
+ ✓ tests/pet-collection.test.ts (4 tests) 8ms
+ ✓ tests/mineral-visuals.test.ts (1 test) 4ms
+ ✓ tests/swimming-controller.test.ts (5 tests) 4ms
+ ✓ tests/resources.test.ts (12 tests) 8ms
+ ✓ tests/camera-zoom.test.ts (6 tests) 4ms
+ ✓ tests/grass-blend.test.ts (4 tests) 6ms
+ ✓ tests/dungeon-lighting.test.ts (3 tests) 6ms
+ ✓ tests/property-collision.test.ts (4 tests) 5ms
+ ✓ tests/swimming-appearance.test.ts (3 tests) 3ms
+ ✓ tests/map-transition.test.ts (9 tests) 8ms
+ ✓ tests/property-well.test.ts (4 tests) 4ms
+ ✓ tests/village-north-road.test.ts (3 tests) 6ms
+ ✓ tests/exit-signs.test.ts (2 tests) 4ms
+ ✓ tests/clock.test.ts (7 tests) 4ms
+ ✓ tests/fullscreen.test.ts (3 tests) 3ms
+ ✓ tests/editor-resource-visibility.test.ts (3 tests) 4ms
+ ✓ tests/audio.test.ts (3 tests) 3ms
+ ✓ tests/tree-wind.test.ts (2 tests) 4ms
+ ✓ tests/dungeon-pet-rescue-marker.test.ts (4 tests) 3ms
+ ✓ tests/expedition-intro.test.ts (2 tests) 2ms
+
+ Test Files  138 passed (138)
+      Tests  1227 passed (1227)
+   Start at  04:36:43
+   Duration  35.44s (transform 2.34s, setup 0ms, collect 15.71s, tests 33.26s, environment 19ms, prepare 6.71s)
+

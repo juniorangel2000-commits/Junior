@@ -978,6 +978,21 @@ export class GameUI {
     if (this.modal === 'home') this.homeEditor?.refresh(home, message);
   }
 
+  confirmCityTravel(onTravel: () => void): void {
+    if (this.mode !== 'hud' || this.modal) return;
+    this.openModal('dialogue');
+    const panel = document.createElement('section');
+    panel.className = 'sleep-card panel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    panel.setAttribute('aria-label', 'Ir até a cidade?');
+    panel.innerHTML = '<span class="eyebrow">A ESTRADA SEGUE ADIANTE</span><h2>Ir até a cidade?</h2><p>Prepare uma expedição e explore a cidade abandonada.</p><div class="pause-actions"><button class="button button-primary" data-city-confirm>Ir até a cidade</button><button class="button button-light" data-city-cancel>Agora não</button></div><small>ESC PARA VOLTAR</small>';
+    panel.querySelector('[data-city-confirm]')!.addEventListener('click', () => { this.closeModal(); onTravel(); });
+    panel.querySelector('[data-city-cancel]')!.addEventListener('click', () => this.closeModal());
+    this.overlay.append(panel);
+    panel.querySelector<HTMLButtonElement>('[data-city-cancel]')!.focus();
+  }
+
   showSleep(onSleep: () => void): void {
     if (this.mode !== 'hud' || this.modal) return;
     this.openModal('sleep');

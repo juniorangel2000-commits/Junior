@@ -4,7 +4,7 @@ const assert=require('node:assert/strict');
 (async()=>{
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox','--disable-dev-shm-usage']});
  try {
-  const page=await browser.newPage({viewport:{width:1280,height:800}}),errors=[];
+  const page=await browser.newPage({viewport:{width:1280,height:800}}),errors=[];page.setDefaultTimeout(120000);
   page.on('pageerror',e=>errors.push(e.message));
   const attach=async()=>{await page.waitForTimeout(1800);await page.waitForFunction(async()=>{const module=await import(document.querySelector('script[src*="main.ts"]').src);window.scene=module.game.scene.scenes[0];window.sound=module.gameAudio;return !!scene?.player});};
   await page.goto(process.env.QA_URL||'http://127.0.0.1:5173');await attach();
@@ -40,10 +40,23 @@ const assert=require('node:assert/strict');
   await page.waitForTimeout(500);await page.keyboard.down('s');await page.waitForTimeout(200);await page.keyboard.up('s');assert.ok(await page.evaluate(()=>events.includes('step')));
   await page.evaluate(()=>{events=[];scene.enterHome();scene.player.x=7.5*32;scene.player.y=7.5*32;scene.nextInteractionAt=0;scene.interactHome({x:7,y:7})});
   assert.deepEqual(await page.evaluate(()=>events),['door','pickup']);
-  await page.evaluate(()=>{scene.leaveHome();scene.player.x=25.5*32;scene.player.y=21.5*32;scene.state.homeSupplies.wateringCan=true;scene.selectTool('plant');scene.nextInteractionAt=0;events=[];scene.interact({x:25,y:22})});
+  await page.evaluate(()=>{
+    scene.leaveHome();scene.state.homeSupplies.wateringCan=true;scene.state.wateringCanWater=8;
+    scene.inventory.data.seeds=2;scene.inventory.data.hoe=1;
+    for(let y=20;y<=24;y++)for(let x=21;x<=29;x++){
+      if(scene.world.isBlocked(x-1,y)||scene.building.isBlocked(x-1,y))continue;
+      const result=scene.farming.prepare(x,y,scene.inventory,scene.soilGround());
+      if(!result.ok)continue;
+      window.audioCrop={x,y};scene.player.x=(x-.5)*32;scene.player.y=(y+.5)*32;
+      scene.selectTool('plant');scene.nextInteractionAt=0;events=[];scene.interact(audioCrop);return;
+    }
+    throw Error('No free prepared garden tile for audio fixture');
+  });
   assert.ok(await page.evaluate(()=>events.includes('plant')),'plant sound after successful planting');
-  await page.evaluate(()=>{scene.selectTool('water');scene.nextInteractionAt=0;events=[];scene.interact({x:25,y:22})});assert.ok(await page.evaluate(()=>events.includes('water')));
-  await page.evaluate(()=>{scene.nextInteractionAt=0;events=[];scene.interact({x:25,y:22})});assert.ok(await page.evaluate(()=>!events.includes('water')),'failed action is silent');
+  await page.evaluate(()=>{scene.selectTool('water');scene.nextInteractionAt=0;events=[];scene.interact(audioCrop)});
+  await page.waitForFunction(()=>events.includes('water'));
+  await page.waitForFunction(()=>!scene.toolUse.active);
+  await page.evaluate(()=>{scene.nextInteractionAt=0;events=[];scene.interact(audioCrop)});assert.ok(await page.evaluate(()=>!events.includes('water')),'failed action is silent');
   await page.evaluate(()=>scene.ui.toggleTopToolbar());await page.getByRole('button',{name:'Música',exact:true}).click();
   await page.getByRole('slider',{name:'Volume da música'}).fill('23');await page.getByRole('slider',{name:'Volume dos efeitos'}).fill('76');await page.getByRole('checkbox',{name:'Silenciar todos os sons'}).check();
   assert.deepEqual(await page.evaluate(()=>sound.settings),{music:.23,effects:.76,muted:true});

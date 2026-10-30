@@ -927,3 +927,23 @@
 .expedition-header { align-items:flex-start; }
 .expedition-header>div { flex:1; min-width:0; }
 #dungeon-ui .expedition-close { flex-shrink:0; width:36px; height:36px; padding:2px; font-size:24px; line-height:1; }
+
+#dungeon-ui .expedition-intro {
+  position: fixed; inset: 0; background: #080e0e; padding: 0;
+  display: flex; align-items: center; justify-content: center; pointer-events: auto;
+}
+.expedition-intro video { width: 100%; height: 100%; object-fit: contain; }
+.expedition-intro-controls {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: flex-end; gap: 16px;
+  padding: 32px; padding-bottom: max(24px, env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, #080e0ed9); color: #eee9d8;
+}
+.expedition-intro-controls [role=status] { margin-right: auto; text-shadow: 0 1px 4px #000; }
+.expedition-intro-controls [hidden] { display: none !important; }
+@keyframes expedition-menu-in { from { opacity: 0; } to { opacity: 1; } }
+.expedition-menu { animation: expedition-menu-in .45s ease-out; }
+@media(prefers-reduced-motion: reduce) { .expedition-menu { animation: none; } }
+@media(max-width: 600px) {
+  .expedition-intro-controls { padding: 16px; gap: 10px; font-size: 12px; }
+}

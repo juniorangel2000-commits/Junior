@@ -1,0 +1,13 @@
+PASS rainy title music waveform / loop: {
+  peak: 0.16258642077445984,
+  rms: 0.02142648769643348,
+  duration: 64,
+  seam: 0.00008920114487409592
+}
+PASS stereo rain ambience: {
+  channels: 2,
+  peak: 0.12195515632629395,
+  rms: 0.02826921409330775,
+  seam: 0
+}
+PASS both original scores and stereo rain, all 11 effects including thunder, gameplay hooks, mute, independent volumes, reload, menu crossfades and rapid transitions without leaked loops, background suspension, no JS errors

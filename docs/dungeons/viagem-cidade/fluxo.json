@@ -1,0 +1,72 @@
+{
+  "checks": [
+    {
+      "name": "Caminhar até a estrada abre confirmação sem apertar E",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Cancelar mantém o mundo e não reabre o aviso no mesmo local",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Afastar-se e retornar permite perguntar novamente",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Escape cancela a confirmação",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Confirmação inicia o vídeo da fazendeira",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Pular abre menu com a mesma música sem reinício",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Começar partida toca suspense e encerra a música",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Recompensas voltam ao menu com trilha e sem repetir vídeo",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Sair restaura áudio do mundo sem perguntar novamente ao chegar",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Próxima viagem seleciona o vídeo masculino",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Final natural do vídeo abre menu sem interação",
+      "passed": true,
+      "details": {
+        "waitMs": 9928
+      }
+    },
+    {
+      "name": "Vídeo finalizado não fica reproduzindo fora da tela",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Sem erros JavaScript ou arquivos ausentes",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

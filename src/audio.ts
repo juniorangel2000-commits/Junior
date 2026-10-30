@@ -6,8 +6,8 @@ export function audioSettings(value: unknown): AudioSettings {
   const volume = (n: unknown, fallback: number): number => typeof n === 'number' && Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : fallback;
   return { music: volume(v.music, .45), effects: volume(v.effects, .65), muted: v.muted === true };
 }
-export type Sound = 'step' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit' | 'sword-swing' | 'bow-shot' | 'boomerang-throw' | 'weapon-evolution' | 'spear-thrust' | 'hammer-impact' | 'shield-burst';
-type AudioScene = 'title' | 'game';
+export type Sound = 'step' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit' | 'sword-swing' | 'bow-shot' | 'boomerang-throw' | 'weapon-evolution' | 'spear-thrust' | 'hammer-impact' | 'shield-burst' | 'dungeon-start';
+type AudioScene = 'title' | 'game' | 'expedition' | 'combat';
 const BEAT = 60 / 76;
 export const MUSIC_DURATION = 64 * BEAT;
 const hz = (midi: number): number => 440 * 2 ** ((midi - 69) / 12);
@@ -82,6 +82,30 @@ export async function renderTitleMusic(): Promise<AudioBuffer> {
       tone(ctx, dry, hz(chord[[0,2,1,3][beat]] + 12), start + beat * 2 + .3, 3.5, .042);
     }
     melody[bar % 4].forEach((note, beat) => tone(ctx, dry, hz(note), start + beat * 2.5 + .8, 3.5, .055));
+  }
+  const rendered = await ctx.startRendering();
+  const loop = new AudioBuffer({ numberOfChannels: 1, length, sampleRate: rate });
+  const target = loop.getChannelData(0), source = rendered.getChannelData(0);
+  target.set(source.subarray(0, length));
+  for (let i = length; i < source.length; i++) target[i - length] += source[i];
+  return loop;
+}
+
+/** Quiet original minor-key motif shared by the road video and expedition menu. */
+export async function renderExpeditionMusic(): Promise<AudioBuffer> {
+  const rate = 22050, length = rate * 48;
+  const ctx = new OfflineAudioContext(1, length + rate * 6, rate);
+  const dry = ctx.createGain(); dry.gain.value = .7; dry.connect(ctx.destination);
+  const delay = ctx.createDelay(2), wet = ctx.createGain();
+  delay.delayTime.value = .8; wet.gain.value = .2;
+  dry.connect(delay).connect(wet).connect(ctx.destination);
+  const chords = [[45,52,57,60],[41,48,53,57],[48,55,60,64],[43,50,55,59]];
+  for (let bar = 0; bar < 8; bar++) {
+    const start = bar * 6, chord = chords[bar % 4];
+    chord.forEach(note => tone(ctx, dry, hz(note), start, 7, .028, true));
+    tone(ctx, dry, hz(chord[0] - 12), start, 5, .035, true);
+    for (let beat = 0; beat < 3; beat++)
+      tone(ctx, dry, hz(chord[[2,1,3][beat]] + 12), start + beat * 2 + .2, 2.8, .045);
   }
   const rendered = await ctx.startRendering();
   const loop = new AudioBuffer({ numberOfChannels: 1, length, sampleRate: rate });
@@ -170,13 +194,26 @@ class GameAudio {
   setScene(scene: AudioScene): void {
     if (this.scene === scene) return;
     this.scene = scene;
+    this.applySettings();
     this.syncMusic(); this.syncRain();
   }
 
   private syncMusic(): void {
     if (!this.context || this.musicMode === this.scene || this.rendering) return;
     const mode = this.scene, cached = this.buffers.get(mode);
-    this.rendering = (cached ? Promise.resolve(cached) : mode === 'title' ? renderTitleMusic() : renderMusic()).then(buffer => {
+    if (mode === 'combat') {
+      const now = this.context.currentTime;
+      this.fadingMusic?.stop();
+      if (this.music) {
+        this.musicEnvelope!.gain.cancelAndHoldAtTime(now);
+        this.musicEnvelope!.gain.linearRampToValueAtTime(0, now + .65);
+        this.music.stop(now + .7); this.fadingMusic = this.music;
+        this.music = undefined; this.musicEnvelope = undefined;
+      }
+      this.musicMode = mode;
+      return;
+    }
+    this.rendering = (cached ? Promise.resolve(cached) : mode === 'title' ? renderTitleMusic() : mode === 'expedition' ? renderExpeditionMusic() : renderMusic()).then(buffer => {
       this.buffers.set(mode, buffer);
       if (this.scene !== mode) return;
       const ctx = this.context!, now = ctx.currentTime;
@@ -240,7 +277,7 @@ class GameAudio {
     if (!this.context) return;
     const time = this.context.currentTime;
     this.master!.gain.setTargetAtTime(this.settings.muted ? 0 : 1, time, .025);
-    this.musicGain!.gain.setTargetAtTime(this.settings.music, time, .025);
+    this.musicGain!.gain.setTargetAtTime(this.settings.music * (this.scene === 'expedition' || this.scene === 'combat' ? .25 : 1), time, .025);
     this.effectsGain!.gain.setTargetAtTime(this.settings.effects, time, .025);
   }
 
@@ -269,6 +306,7 @@ export function synthesizeEffect(ctx: BaseAudioContext, out: AudioNode, sound: S
   const now = ctx.currentTime;
   const note = (midi: number, delay = 0, duration = .15, gain = .12): void => tone(ctx, out, hz(midi), now + delay, duration, gain);
   switch (sound) {
+    case 'dungeon-start': noise(ctx, out, .85, 420, .09); note(33, 0, .9, .07); note(40, .12, .75, .045); note(46, .28, .55, .035); break;
     case 'shield-burst': noise(ctx, out, .18, 1600, .09); note(52, 0, .16, .05); note(64, .04, .13, .03); break;
     case 'spear-thrust': noise(ctx, out, .07, 3000, .06); note(64, 0, .07, .03); break;
     case 'hammer-impact': noise(ctx, out, .16, 500, .13); note(36, 0, .17, .08); break;

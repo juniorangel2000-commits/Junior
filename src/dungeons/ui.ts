@@ -17,6 +17,8 @@ import {
 } from "./progression";
 import type { DungeonRun } from "./run";
 import "./ui.css";
+import { ExpeditionIntro } from "./expedition-intro";
+import type { CharacterProfile } from "../types";
 const rarityNames = {
   common: "Comum",
   rare: "Rara",
@@ -60,6 +62,7 @@ export class DungeonUI {
   private readonly hud = document.createElement("div");
   private readonly panel = document.createElement("div");
   private lastHUD = "";
+  private intro?: ExpeditionIntro;
   private readonly rescueMarker = document.createElement("div");
   constructor(
     private readonly callbacks: Callbacks,
@@ -369,13 +372,14 @@ export class DungeonUI {
       this.panel.querySelector<HTMLButtonElement>("[data-retry]")!.onclick =
         this.callbacks.retry;
   }
-  travel(): void {
+  travel(profile: CharacterProfile, resources: Promise<unknown>, complete: () => void): void {
     this.hud.hidden = true;
-    this.show(
-      '<div class="dungeon-travel"><p>A estrada para a cidade</p><span>Chuva sobre um lugar esquecido…</span></div>',
-    );
+    this.show("");
+    this.intro?.destroy();
+    this.intro = new ExpeditionIntro(this.panel, profile, resources, complete, this.callbacks.back);
   }
   destroy(): void {
+    this.intro?.destroy();
     this.root.remove();
   }
 }

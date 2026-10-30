@@ -9,7 +9,6 @@ import { Player } from "../player";
 import { gameAudio } from "../audio";
 import { saveGame } from "../systems/save";
 import {
-  DUNGEON_BALANCE as B,
   WEAPONS,
   type DungeonId,
   type WeaponId,
@@ -41,6 +40,7 @@ import {
   WEAPON_EVOLUTIONS,
 } from "../dungeons/weapon-identity";
 import { DungeonUI } from "../dungeons/ui";
+import { decodeExpeditionPreviews } from "../dungeons/expedition-intro";
 interface DungeonStart {
   save: SaveData;
   ui: GameUI;
@@ -55,9 +55,6 @@ export class DungeonScene extends Phaser.Scene {
   private run?: DungeonRun;
   private player?: Player;
   private world?: DungeonWorld;
-  private travelObjects: Phaser.GameObjects.GameObject[] = [];
-  private travelElapsed = 0;
-  private rain?: Phaser.GameObjects.Graphics;
   private elapsedSave = 0;
   private elapsedHUD = 0;
   private lastPhase = "";
@@ -98,7 +95,6 @@ export class DungeonScene extends Phaser.Scene {
     this.settled = false;
     this.run = undefined;
     this.mode = "travel";
-    this.travelElapsed = 0;
     this.elapsedSave = 0;
     this.elapsedHUD = 0;
     this.lastPhase = "";
@@ -182,6 +178,7 @@ export class DungeonScene extends Phaser.Scene {
     document.addEventListener("visibilitychange", this.visibility);
     this.events.once("shutdown", () => {
       this.ui.destroy();
+      gameAudio.setScene("game");
       gameAudio.setRainAtmosphere(false);
       this.world?.destroy();
       this.world = undefined;
@@ -201,36 +198,13 @@ export class DungeonScene extends Phaser.Scene {
     } else this.startTravel();
   }
   private startTravel(): void {
-    const before = new Set(this.children.list),
-      asphalt = this.textures.get("city-forest-art").get("asphalt");
-    this.add.rectangle(0, 0, 3072, 2304, 0x303f3b).setOrigin(0).setDepth(-100);
-    this.add
-      .tileSprite(1536, 1152, 360, 2304, "city-forest-art", asphalt.name)
-      .setDepth(-99);
-    const g = this.add.graphics().setDepth(-98);
-    g.lineStyle(3, 0xaaa68b, 0.7);
-    for (let y = 0; y < 2304; y += 70) g.lineBetween(1536, y, 1536, y + 35);
-    for (let i = 0; i < 8; i++)
-      this.add
-        .image(
-          i % 2 ? 1880 : 1190,
-          300 + i * 240,
-          "dungeon-urban",
-          i % 3 ? "apartment" : "shop",
-        )
-        .setOrigin(0.5, 1)
-        .setDisplaySize(260, 280)
-        .setDepth(300 + i * 240);
-    this.add
-      .rectangle(0, 0, 3072, 2304, 0x263c48, 0.22)
-      .setOrigin(0)
-      .setDepth(4000);
-    this.rain = this.add.graphics().setScrollFactor(0).setDepth(4100);
-    this.travelObjects = this.children.list.filter((o) => !before.has(o));
-    this.cameras.main.stopFollow().setZoom(1.3).centerOn(1536, 1850);
-    this.ui.travel();
+    this.cameras.main.setBackgroundColor("#101c1a");
+    gameAudio.setScene("expedition");
     gameAudio.setRainAtmosphere(true);
-    gameAudio.play("thunder");
+    // create() only runs after Phaser preload; previews are decoded before skip/menu.
+    this.ui.travel(this.state.profile, decodeExpeditionPreviews(this.previews), () => {
+      if (this.mode === "travel" && !this.returning) this.menu();
+    });
   }
   private clearExpedition(): void {
     this.cameras.main.stopFollow();
@@ -238,8 +212,6 @@ export class DungeonScene extends Phaser.Scene {
     this.world = undefined;
     this.children.removeAll(true);
     this.player = undefined;
-    this.travelObjects = [];
-    this.rain = undefined;
     this.enemyImages.clear();
     this.projectileImages.clear();
     this.enemyPool = [];
@@ -272,6 +244,7 @@ export class DungeonScene extends Phaser.Scene {
       .setZoom(1)
       .centerOn(1536, 1152);
     gameAudio.setRainAtmosphere(false);
+    gameAudio.setScene("expedition");
     this.ui.menu(this.state.dungeons!, this.previews);
   }
   private startRun(id: DungeonId, pet?: string, resume = false): void {
@@ -280,9 +253,6 @@ export class DungeonScene extends Phaser.Scene {
     this.mode = "run";
     this.settled = false;
     this.reward = { coins: 0, xp: 0 };
-    this.travelObjects.forEach((o) => o.destroy());
-    this.travelObjects = [];
-    this.rain = undefined;
     gameAudio.setRainAtmosphere(false);
     this.run = new DungeonRun(
       "run-" + crypto.randomUUID(),
@@ -312,7 +282,11 @@ export class DungeonScene extends Phaser.Scene {
     this.bossGraphics = this.add.graphics().setDepth(6);
     this.lastPhase = "";
     this.syncPlayer();
-    if (!resume) this.persist();
+    gameAudio.setScene("combat");
+    if (!resume) {
+      gameAudio.play("dungeon-start");
+      this.persist();
+    }
   }
   private syncPlayer(): void {
     const p = this.run!.state.player;
@@ -881,24 +855,10 @@ export class DungeonScene extends Phaser.Scene {
     }
     if (!this.run || this.settled) this.back(true);
   }
-  update(time: number, ms: number): void {
+  update(_time: number, ms: number): void {
     if (this.returning || document.hidden) return;
     const dt = Math.min(ms / 1000, 0.1);
-    if (this.mode === "travel") {
-      this.travelElapsed += dt;
-      this.cameras.main.centerOn(
-        1536,
-        1850 - Math.min(1, this.travelElapsed / B.transitionSeconds) * 1000,
-      );
-      this.rain?.clear().lineStyle(1, 0xb8cbd1, 0.32);
-      for (let i = 0; i < 110; i++) {
-        const x = (i * 127 + time * 0.025) % this.scale.width,
-          y = (i * 239 + time * 0.5) % this.scale.height;
-        this.rain?.lineBetween(x, y, x - 5, y + 17);
-      }
-      if (this.travelElapsed >= B.transitionSeconds) this.menu();
-      return;
-    }
+    if (this.mode === "travel") return;
     if (this.mode !== "run" || !this.run || !this.player) return;
     const run = this.run,
       s = run.state;

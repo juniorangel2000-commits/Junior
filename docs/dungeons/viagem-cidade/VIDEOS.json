@@ -1,0 +1,52 @@
+[
+  {
+    "characterId": "farmer-female",
+    "originalFile": "Character_walking_on_wet_road_040db9e9_1080p.mp4",
+    "runtimeFile": "public/assets/video/expedition/road-female.mp4",
+    "sha256": "4084f4956e56335a578592901b55998779c3988eea1e8c13bac3f56823d98783",
+    "bytes": 13823739,
+    "media": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "codec_name": "aac"
+        }
+      ],
+      "format": {
+        "duration": "9.963000"
+      }
+    },
+    "runtimeAudio": "muted; original soundtrack retained in the supplied file, GameAudio mixes runtime music and ambience"
+  },
+  {
+    "characterId": "farmer-male",
+    "originalFile": "Character_walking_down_wet_road_9ede3934_1080p.mp4",
+    "runtimeFile": "public/assets/video/expedition/road-male.mp4",
+    "sha256": "978b4dc949000113769037db4cb2bf5c66385b898da2f345dc7e9aaf9f49c6da",
+    "bytes": 16441309,
+    "media": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "codec_name": "aac"
+        }
+      ],
+      "format": {
+        "duration": "9.963000"
+      }
+    },
+    "runtimeAudio": "muted; original soundtrack retained in the supplied file, GameAudio mixes runtime music and ambience"
+  }
+]
