@@ -10,6 +10,12 @@ O vídeo usa duas faixas separadas, música original e efeitos, para preservar a
 
 O movimento foi reforçado após o relato de que parecia uma imagem parada: ciclo de câmera reduzido de 28 para 12 segundos, maior variação de enquadramento, chuva com mais contraste, névoa com deslocamento mais perceptível e folhas ao vento. A preferência por movimento reduzido continua desativando o movimento da imagem, as folhas e os flashes. A chuva permanece ativa. O teste no navegador agora confere a mudança da transformação CSS da imagem, além dos quadros da chuva.
 
+## Chuva mais limpa
+
+A ambiência agora usa dois filtros suaves em 1.700 Hz e remoção dos graves abaixo de 140 Hz. O nível RMS foi reduzido de aproximadamente 0,0283 para 0,012 (cerca de 7,5 dB), preservando o estéreo, o controle independente dos efeitos e a emenda sem estalo. A verificação no Chromium confere o volume e a redução das variações rápidas associadas ao chiado.
+
+O movimento da imagem respeita `prefers-reduced-motion`, inclusive a regra global de acessibilidade. Isso pode explicar uma imagem sem movimento no Windows; não foi reproduzida uma falha de ativação com a preferência normal. Chuva e movimento não dependem do botão de som.
+
 ## Validação
 
 - TypeScript e build de produção.

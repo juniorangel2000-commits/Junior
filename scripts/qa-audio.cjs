@@ -18,7 +18,9 @@ const assert=require('node:assert/strict');
   await page.getByRole('button',{name:'Silenciar',exact:true}).click();assert.equal(await page.evaluate(()=>sound.settings.muted),true);
   await page.getByRole('button',{name:'Ativar som',exact:true}).click();assert.equal(await page.evaluate(()=>sound.settings.muted),false);
   const rain=await page.evaluate(()=>{const buffer=sound.rain.buffer;let peak=0,squares=0;const samples=buffer.getChannelData(0);for(const v of samples){if(!Number.isFinite(v))throw Error('nonfinite rain');peak=Math.max(peak,Math.abs(v));squares+=v*v;}return {channels:buffer.numberOfChannels,peak,rms:Math.sqrt(squares/samples.length),seam:Math.abs(samples[0]-samples[samples.length-1])}});
-  assert.ok(rain.channels===2&&rain.peak<.3&&rain.rms>.005&&rain.seam<.001,JSON.stringify(rain));console.log('PASS stereo rain ambience:',rain);
+  assert.ok(rain.channels===2&&rain.peak<.1&&rain.rms>.005&&rain.rms<.016&&rain.seam<.001,JSON.stringify(rain));console.log('PASS stereo rain ambience:',rain);
+  const rainTexture=await page.evaluate(()=>{const s=sound.rain.buffer.getChannelData(0);let energy=0,changes=0;for(let i=1;i<s.length;i++){energy+=s[i]*s[i];changes+=(s[i]-s[i-1])**2;}return Math.sqrt(changes/energy)});
+  assert.ok(rainTexture<.35,'rain suppresses sharp high-frequency hiss: '+rainTexture);
   const loops=await page.evaluate(async()=>{const music=sound.music,rain=sound.rain;for(let i=0;i<6;i++)await sound.unlock();return music===sound.music&&rain===sound.rain});assert.ok(loops,'repeated gestures keep one title music/rain source');
   await page.evaluate(()=>sound.setSettings({effects:0}));await page.waitForTimeout(400);assert.ok(await page.evaluate(()=>sound.effectsGain.gain.value)<.00001,'rain obeys effects volume');await page.evaluate(()=>sound.setSettings({effects:.65}));
   for(const name of ['step','ui','pickup','wood','stone','plant','water','craft','door','build','thunder']){

@@ -115,18 +115,26 @@ export async function renderExpeditionMusic(): Promise<AudioBuffer> {
   return loop;
 }
 
-/** A soft stereo rain bed, separate from music so the effects slider controls it. */
+/** A quiet, band-limited stereo wash without sharp hiss or bass rumble. */
 export function renderRain(ctx: BaseAudioContext): AudioBuffer {
   const length = Math.round(ctx.sampleRate * 12), buffer = ctx.createBuffer(2, length, ctx.sampleRate);
+  const smoothing = 1 - Math.exp(-2 * Math.PI * 1700 / ctx.sampleRate);
+  const bass = 1 - Math.exp(-2 * Math.PI * 140 / ctx.sampleRate);
   for (let channel = 0; channel < 2; channel++) {
     const samples = buffer.getChannelData(channel);
-    let smoothed = 0;
+    let low = 0, soft = 0, rumble = 0, squares = 0;
     for (let i = 0; i < length; i++) {
-      smoothed += .25 * (Math.random() * 2 - 1 - smoothed);
-      const drift = .8 + .2 * Math.sin(2 * Math.PI * i / length + channel);
-      const edge = Math.min(1, i / (ctx.sampleRate * .04), (length - 1 - i) / (ctx.sampleRate * .04));
-      samples[i] = smoothed * .16 * drift * edge;
+      low += smoothing * (Math.random() * 2 - 1 - low);
+      soft += smoothing * (low - soft);
+      rumble += bass * (soft - rumble);
+      const drift = .92 + .08 * Math.sin(2 * Math.PI * i / length + channel);
+      const edge = Math.min(1, i / (ctx.sampleRate * .12), (length - 1 - i) / (ctx.sampleRate * .12));
+      samples[i] = (soft - rumble) * drift * edge;
+      squares += samples[i] * samples[i];
     }
+    // Stable quiet level: about 7 dB below the previous rain, independent of rate.
+    const gain = .012 / Math.max(.0001, Math.sqrt(squares / length));
+    for (let i = 0; i < length; i++) samples[i] *= gain;
   }
   return buffer;
 }
