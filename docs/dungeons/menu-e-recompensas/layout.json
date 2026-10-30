@@ -1,0 +1,27 @@
+{
+  "checks": [
+    {
+      "name": "Saída visível sem rolar em 1280px e foco seguro no título",
+      "passed": true,
+      "details": {
+        "visible": true,
+        "focused": true,
+        "fits": true
+      }
+    },
+    {
+      "name": "Saída visível sem rolar em 390px e foco seguro no título",
+      "passed": true,
+      "details": {
+        "visible": true,
+        "focused": true,
+        "fits": true
+      }
+    },
+    {
+      "name": "Fechar no cabeçalho chama a mesma saída explícita do menu",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

@@ -219,7 +219,7 @@ fs.mkdirSync(out, { recursive: true });
     );
     await page.locator("[data-abandon]").click();
     await page.getByRole("button", { name: "Confirmar abandono" }).click();
-    await page.waitForSelector("[data-back]");
+    await page.waitForSelector("[data-results-menu]");
     const result = await page.evaluate(async () => {
       const { loadSave } = await import("/src/systems/save.ts");
       return {
@@ -235,8 +235,9 @@ fs.mkdirSync(out, { recursive: true });
       result,
     );
     await page
-      .getByRole("button", { name: "Voltar ao ponto de acesso" })
+      .getByRole("button", { name: "Voltar ao menu de expedições" })
       .click();
+    await page.locator("[data-exit-menu]").click();
     await page.evaluate(() => game.loop.wake());
     await page.waitForFunction(
       () =>
@@ -1262,8 +1263,9 @@ fs.mkdirSync(out, { recursive: true });
     );
     await page.screenshot({ path: out + "/resultado.png" });
     await page
-      .getByRole("button", { name: "Voltar ao ponto de acesso" })
+      .getByRole("button", { name: "Voltar ao menu de expedições" })
       .click();
+    await page.locator("[data-exit-menu]").click();
     await page.evaluate(() => game.loop.wake());
     await page.waitForFunction(
       () =>
@@ -1399,8 +1401,9 @@ fs.mkdirSync(out, { recursive: true });
     );
     await page.screenshot({ path: out + "/derrota.png" });
     await page
-      .getByRole("button", { name: "Voltar ao ponto de acesso" })
+      .getByRole("button", { name: "Voltar ao menu de expedições" })
       .click();
+    await page.locator("[data-exit-menu]").click();
     await page.evaluate(() => game.loop.wake());
     await page.waitForFunction(
       () =>

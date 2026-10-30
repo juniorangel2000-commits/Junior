@@ -47,6 +47,7 @@ const escape = (s: string) =>
 interface Callbacks {
   start: (id: DungeonId, pet?: string) => void;
   back: () => void;
+  menu: () => void;
   choose: (id: string) => void;
   resume: () => void;
   abandon: () => void;
@@ -90,17 +91,20 @@ export class DungeonUI {
   }
   menu(progress: DungeonProgress, previews: Record<DungeonId, string>): void {
     this.hud.hidden = true;
+    this.lastHUD = "";
+    this.hud.replaceChildren();
     this.show(
-      `<section class="dungeon-menu"><p class="dungeon-eyebrow">JARDIM DEPOIS DA CHUVA</p><h1>Expedições à cidade</h1><p>Escolha um desafio de sobrevivência. Seus ataques são automáticos.</p><div class="dungeon-destinations">${(
-        Object.keys(DUNGEONS) as DungeonId[]
-      )
+      `<section class="dungeon-menu expedition-menu" aria-labelledby="expedition-title"><header class="expedition-header"><div><p class="dungeon-eyebrow">PREPARE SUA PRÓXIMA TENTATIVA</p><h1 id="expedition-title" tabindex="-1">Expedições à cidade</h1><p>Escolha seu destino, melhore seus atributos e leve um companheiro.</p></div><button class="expedition-close" data-exit-top aria-label="Sair do menu" title="Voltar ao mundo normal">×</button></header>
+      <div class="expedition-overview"><div><span>XP disponível</span><strong>${progress.xp.toLocaleString("pt-BR")}</strong></div><div><span>Melhorias permanentes</span><strong>${Object.values(progress.attributes).reduce((sum, n) => sum + n, 0)}</strong></div><div><span>Expedições vencidas</span><strong>${Object.values(progress.completed).reduce((sum, n) => sum + n, 0)}</strong></div></div>
+      <div class="dungeon-destinations">${(Object.keys(DUNGEONS) as DungeonId[])
         .map((id) => {
           const d = DUNGEONS[id];
-          return `<article><img src="${previews[id]}" alt="Prévia de ${d.name}"><h2>${d.name}</h2><p>${d.mode === "timed" ? "Sobrevivência · 15 minutos" : "Sobrevivência · 50 rodadas"}</p><small>${d.difficulty}</small><button data-start="${id}">Iniciar expedição</button></article>`;
+          return `<article><img src="${previews[id]}" alt="Prévia de ${d.name}"><div class="destination-copy"><span class="destination-badge">${d.mode === "timed" ? "15 MINUTOS" : "50 RODADAS"}</span><h2>${d.name}</h2><p>${d.mode === "timed" ? "Resista à horda até o tempo acabar." : "Supere cada rodada e enfrente o chefe final."}</p><small>Recompensas por ${d.mode === "timed" ? "tempo sobrevivido" : "rodadas concluídas"} + nível alcançado.</small><div class="destination-footer"><span>${progress.completed[id]} ${progress.completed[id] === 1 ? "vitória" : "vitórias"}</span><button data-start="${id}" aria-label="Iniciar expedição: ${d.name}">Iniciar expedição</button></div></div></article>`;
         })
-        .join(
-          "",
-        )}</div><label>Companheiro <select data-pet><option value="">Sem pet</option>${progress.pets.map((p) => `<option value="${escape(p.id)}" ${p.id === progress.selectedPet ? "selected" : ""}>${PETS[p.species].name}${p.rare ? " ✦" : ""}</option>`).join("")}</select></label><p class="dungeon-note" data-pet-bonuses></p><p class="dungeon-note">A espada ocupa o primeiro dos quatro espaços. O pet tem seu próprio espaço. A partida é salva durante a exploração.</p><footer><button data-evolution>Evolução permanente</button><button data-back>Voltar ao acesso</button></footer></section>`,
+        .join("")}</div>
+      <div class="expedition-companion"><label>Companheiro <select data-pet><option value="">Sem pet</option>${progress.pets.map((p) => `<option value="${escape(p.id)}" ${p.id === progress.selectedPet ? "selected" : ""}>${PETS[p.species].name}${p.rare ? " ✦" : ""}</option>`).join("")}</select></label><p class="dungeon-note" data-pet-bonuses></p></div>
+      <p class="dungeon-note">Os ataques são automáticos. As cartas valem para uma partida; suas melhorias permanentes e recompensas ficam salvas.</p>
+      <footer><button class="expedition-upgrade" data-evolution>Evolução permanente</button><button data-back data-exit-menu title="Voltar à floresta de acesso">Sair do menu</button><small>Ao sair, você volta ao mundo normal.</small></footer></section>`,
     );
     this.panel.querySelectorAll<HTMLButtonElement>("[data-start]").forEach(
       (b) =>
@@ -132,6 +136,9 @@ export class DungeonUI {
       () => this.evolution(progress, () => this.menu(progress, previews));
     this.panel.querySelector<HTMLButtonElement>("[data-back]")!.onclick =
       this.callbacks.back;
+    this.panel.querySelector<HTMLButtonElement>("[data-exit-top]")!.onclick =
+      this.callbacks.back;
+    this.panel.querySelector<HTMLElement>("#expedition-title")?.focus();
   }
   private focusEvolutionButton(selector: string): void {
     const button = this.panel.querySelector<HTMLButtonElement>(selector);
@@ -297,7 +304,7 @@ export class DungeonUI {
       ? `<div class="dungeon-build"><strong>Arsenal</strong><p>${run.state.weapons.map((w) => WEAPONS[w].name).join(" · ")}</p><strong>Melhorias atuais</strong><ul>${upgrades || "<li>Nenhuma melhoria escolhida ainda.</li>"}</ul></div>`
       : "";
     this.show(
-      `<section class="dungeon-menu compact"><h1>Expedição pausada</h1><p>O tempo, os inimigos e os ataques estão parados.</p>${build}<button data-resume>Retomar</button><button data-abandon>Abandonar e voltar ao acesso</button></section>`,
+      `<section class="dungeon-menu compact"><h1>Expedição pausada</h1><p>O tempo, os inimigos e os ataques estão parados.</p>${build}<button data-resume>Retomar</button><button data-abandon>Abandonar expedição</button></section>`,
     );
     this.panel.querySelector<HTMLButtonElement>("[data-resume]")!.onclick =
       () => {
@@ -327,18 +334,37 @@ export class DungeonUI {
           : s.phase === "defeat"
             ? "Você foi derrotado"
             : "Expedição encerrada";
-    this.show(
-      `<section class="dungeon-menu compact"><h1>${title}</h1><p>${DUNGEONS[s.dungeon].mode === "waves" ? `Rodada ${s.round} · ${reward.completedRounds ?? 0} concluídas · ` : ""}${s.kills} inimigos · nível temporário ${s.level} · ${Math.floor(s.elapsed / 60)} min ${Math.floor(s.elapsed % 60)} s</p><p>${reward.xp} XP permanente · ${reward.coins} moedas${s.foundPet ? " · novo pet encontrado" : ""}</p>${reward.progressXP !== undefined ? `<p>${reward.progressXP} XP por ${DUNGEONS[s.dungeon].mode === "timed" ? "tempo sobrevivido" : "rodadas concluídas"} · ${reward.levelXP ?? 0} XP pelo nível alcançado${reward.victoryXP ? ` · ${reward.victoryXP} XP pela vitória` : ""}${reward.learningXP ? ` · ${reward.learningXP} XP de apoio inicial` : ""}.</p>` : ""}<p>${Object.entries(
-        reward.materials ?? {},
+    this.hud.hidden = true;
+    const totals = [
+      [
+        reward.progressXP ?? 0,
+        DUNGEONS[s.dungeon].mode === "timed"
+          ? "por tempo sobrevivido"
+          : "por rodadas concluídas",
+      ],
+      [reward.levelXP ?? 0, "pelo nível alcançado"],
+      ...(reward.victoryXP ? [[reward.victoryXP, "pela vitória"]] : []),
+      ...(reward.learningXP ? [[reward.learningXP, "de apoio inicial"]] : []),
+    ];
+    const loot = Object.entries(reward.materials ?? {})
+      .map(
+        ([item, n]) =>
+          `<li><strong>${n} ×</strong> ${ITEM_NAMES[item as ItemId]}</li>`,
       )
-        .map(([item, n]) => `${n} × ${ITEM_NAMES[item as ItemId]}`)
-        .join(
-          " · ",
-        )}${reward.waiting ? " · Materiais guardados até haver espaço no inventário." : ""}</p><p>As melhorias temporárias serão reiniciadas na próxima expedição.</p>${saved ? "<button data-back>Voltar ao ponto de acesso</button>" : '<p role="alert">Não foi possível salvar o resultado. Tente novamente.</p><button data-retry>Tentar salvar novamente</button>'}</section>`,
+      .join("");
+    this.show(
+      `<section class="dungeon-menu reward-screen" role="dialog" aria-modal="true" aria-labelledby="dungeon-reward-title"><header><p class="dungeon-eyebrow">${title}</p><h1 id="dungeon-reward-title">Recompensas da expedição</h1><p>${DUNGEONS[s.dungeon].name}</p></header>
+      <div class="result-stats"><div><span>Tempo sobrevivido</span><strong>${Math.floor(s.elapsed / 60)}min ${Math.floor(s.elapsed % 60)}s</strong></div><div><span>Nível alcançado</span><strong>${s.level}</strong></div>${DUNGEONS[s.dungeon].mode === "waves" ? `<div><span>Rodadas concluídas</span><strong>${reward.completedRounds ?? 0} / 50</strong></div>` : ""}<div><span>Inimigos eliminados</span><strong>${s.kills}</strong></div></div>
+      <div class="reward-totals"><article><span>XP permanente</span><strong>${reward.xp.toLocaleString("pt-BR")}</strong></article><article><span>Moedas</span><strong>${reward.coins.toLocaleString("pt-BR")}</strong></article></div>
+      <div class="reward-breakdown"><h2>Como você ganhou XP</h2>${totals.map(([value, label]) => `<p><span>${label}</span><strong>${value} XP</strong></p>`).join("")}</div>
+      <div class="reward-items"><h2>Itens e companheiros</h2>${loot ? `<ul>${loot}</ul>` : "<p>Nenhum material nesta expedição.</p>"}${s.foundPet ? `<p class="reward-pet">Novo companheiro: <strong>${PETS[s.foundPet].name}${s.foundPetRare ? " ✦" : ""}</strong></p>` : ""}${reward.waiting ? "<p>Seus materiais estão guardados até haver espaço no inventário.</p>" : ""}</div>
+      <p class="dungeon-note">As cartas temporárias terminam aqui. Seu progresso permanente continua na próxima tentativa.</p>
+      ${saved ? '<p class="reward-saved" role="status">Recompensas salvas.</p><footer><button data-results-menu>Voltar ao menu de expedições</button></footer>' : '<p class="reward-save-error" role="alert">Não foi possível salvar suas recompensas. Tente novamente antes de continuar.</p><button data-retry>Tentar salvar novamente</button>'}</section>`,
     );
     if (saved)
-      this.panel.querySelector<HTMLButtonElement>("[data-back]")!.onclick =
-        this.callbacks.back;
+      this.panel.querySelector<HTMLButtonElement>(
+        "[data-results-menu]",
+      )!.onclick = this.callbacks.menu;
     else
       this.panel.querySelector<HTMLButtonElement>("[data-retry]")!.onclick =
         this.callbacks.retry;

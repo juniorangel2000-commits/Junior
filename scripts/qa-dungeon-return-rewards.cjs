@@ -179,7 +179,7 @@ fs.mkdirSync(out, { recursive: true });
         if (outcome === "abandoned") {
           await page.locator("[data-pause]").click();
           await page
-            .getByRole("button", { name: "Abandonar e voltar ao acesso" })
+            .getByRole("button", { name: "Abandonar expedição" })
             .click();
           await page
             .getByRole("button", { name: "Confirmar abandono" })
@@ -220,8 +220,30 @@ fs.mkdirSync(out, { recursive: true });
           ended.reward,
         );
         await page
-          .getByRole("button", { name: "Voltar ao ponto de acesso" })
+          .getByRole("button", { name: "Voltar ao menu de expedições" })
           .click();
+        const hub = await page.evaluate(() => ({
+          active: game.scene.isActive("Dungeons"),
+          world: game.scene.isActive("AcessoCidade"),
+          mode: d.mode,
+          run: !!d.run,
+          objects: d.children.list.length,
+          saved: !d.state.dungeonRun,
+        }));
+        check(
+          dungeon +
+            " · " +
+            outcome +
+            ": resultado volta ao menu sem mapa ou partida residual",
+          hub.active &&
+            !hub.world &&
+            hub.mode === "menu" &&
+            !hub.run &&
+            hub.objects === 0 &&
+            hub.saved,
+          hub,
+        );
+        await page.locator("[data-exit-menu]").click();
         await page.evaluate(() => game.loop.wake());
         await page.waitForFunction(
           () =>

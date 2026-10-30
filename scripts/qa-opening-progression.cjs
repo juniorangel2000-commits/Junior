@@ -71,7 +71,7 @@ fs.mkdirSync(out, { recursive: true });
     assert.deepEqual(result, { xp: 100, survival: 80, learning: 20 });
     assert.match(
       await page.locator(".dungeon-menu").innerText(),
-      /20 XP de apoio/,
+      /de apoio inicial\s*20 XP/,
     );
     checks.push("Resultado explica os 100 XP e o apoio à primeira derrota");
     await page.screenshot({ path: out + "/primeira-derrota.png" });
@@ -150,13 +150,13 @@ fs.mkdirSync(out, { recursive: true });
       return reward;
     });
     assert.equal(waveReward.xp, 2744);
-    const receipt = await page.locator(".dungeon-menu.compact").innerText();
-    assert.match(receipt, /2000 XP por rodadas concluídas/);
-    assert.match(receipt, /594 XP pelo nível alcançado/);
-    assert.match(receipt, /150 XP pela vitória/);
+    const receipt = await page.locator(".reward-screen").innerText();
+    assert.match(receipt, /por rodadas concluídas\s*2000 XP/);
+    assert.match(receipt, /pelo nível alcançado\s*594 XP/);
+    assert.match(receipt, /pela vitória\s*150 XP/);
     assert.ok(
       await page
-        .locator(".dungeon-menu.compact")
+        .locator(".reward-screen")
         .evaluate((el) => el.scrollWidth <= el.clientWidth + 1),
     );
     checks.push(

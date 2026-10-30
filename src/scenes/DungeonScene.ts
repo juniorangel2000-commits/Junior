@@ -141,6 +141,7 @@ export class DungeonScene extends Phaser.Scene {
       {
         start: (id, pet) => this.startRun(id, pet),
         back: () => this.back(),
+        menu: () => this.menu(),
         choose: (id) => {
           if (this.run?.choose(id)) {
             if (Object.values(WEAPON_EVOLUTIONS).some((e) => e.id === id))
@@ -231,16 +232,51 @@ export class DungeonScene extends Phaser.Scene {
     gameAudio.setRainAtmosphere(true);
     gameAudio.play("thunder");
   }
-  private menu(): void {
-    this.mode = "menu";
-    this.travelObjects.forEach((o) => o.destroy());
+  private clearExpedition(): void {
+    this.cameras.main.stopFollow();
+    this.world?.destroy();
+    this.world = undefined;
+    this.children.removeAll(true);
+    this.player = undefined;
     this.travelObjects = [];
     this.rain = undefined;
+    this.enemyImages.clear();
+    this.projectileImages.clear();
+    this.enemyPool = [];
+    this.projectilePool = [];
+    this.effects = [];
+    this.damageNumbers = [];
+    this.orbitals = [];
+    this.actorShadows = undefined;
+    this.impactGraphics = undefined;
+    this.bossGraphics = undefined;
+    this.pickups = undefined;
+    this.petImage = undefined;
+    this.petDodgeText = undefined;
+    this.rescueImage = undefined;
+    this.lastImpactAt = -1;
+    this.lastAttackEffect = 0;
+    this.elapsedHUD = 0;
+    this.elapsedSave = 0;
+    this.lastPhase = "";
+  }
+  private menu(): void {
+    // Only a successfully saved result can leave the reward screen.
+    if (this.run && !this.settled) return;
+    this.clearExpedition();
+    this.run = undefined;
+    this.settled = false;
+    this.mode = "menu";
+    this.cameras.main
+      .setBackgroundColor("#101c1a")
+      .setZoom(1)
+      .centerOn(1536, 1152);
     gameAudio.setRainAtmosphere(false);
     this.ui.menu(this.state.dungeons!, this.previews);
   }
   private startRun(id: DungeonId, pet?: string, resume = false): void {
     if (!resume && this.state.dungeonRun) return;
+    this.clearExpedition();
     this.mode = "run";
     this.settled = false;
     this.reward = { coins: 0, xp: 0 };
@@ -267,6 +303,7 @@ export class DungeonScene extends Phaser.Scene {
     this.cameras.main
       .setBackgroundColor("#18262d")
       .setZoom(this.scale.width < 1000 ? 1.3 : 1.8)
+      .centerOn(this.player.x, this.player.y)
       .startFollow(this.player.sprite, true, 0.16, 0.16);
     this.actorShadows?.destroy();
     this.actorShadows = this.add.graphics().setDepth(4);
@@ -759,7 +796,7 @@ export class DungeonScene extends Phaser.Scene {
       this.ui.result(this.run, this.reward, true);
     } else {
       this.state = before;
-      this.ui.result(this.run, { coins: 0, xp: 0 }, false);
+      this.ui.result(this.run, result, false);
     }
   }
   private back(title = false): void {
@@ -800,6 +837,12 @@ export class DungeonScene extends Phaser.Scene {
     if (document.hidden) this.blur();
   };
   setPaused(paused: boolean): void {
+    if (
+      this.mode !== "run" ||
+      !this.run ||
+      !["fighting", "paused"].includes(this.run.state.phase)
+    )
+      return;
     if (paused) this.run?.pause();
     else {
       this.run?.resume();

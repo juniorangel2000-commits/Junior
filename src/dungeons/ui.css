@@ -687,3 +687,243 @@
 .dungeon-rescue-marker strong, .dungeon-rescue-marker small { display: block; }
 .dungeon-rescue-marker small { margin-top: 3px; color: #e4e8dc; font-size: 10px; }
 .rescue-direction { display: block; font-size: 23px; line-height: 1; color: #f2d17a; }
+
+/* Expedition hub and saved reward receipt. */
+.dungeon-overlay:has(.expedition-menu),
+.dungeon-overlay:has(.reward-screen) {
+  background: radial-gradient(ellipse at top, #345348f5, #0d1918fa 75%);
+}
+.expedition-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+}
+.expedition-emblem {
+  font-size: 64px;
+  color: #d3bc80;
+  opacity: 0.8;
+}
+.expedition-overview,
+.result-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+.expedition-overview > div,
+.result-stats > div {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #6f80675c;
+  border-radius: 10px;
+  background: #172b26;
+}
+.expedition-overview span,
+.result-stats span,
+.reward-totals span {
+  display: block;
+  font-size: 12px;
+  color: #bccbbd;
+  line-height: 1.4;
+}
+.expedition-overview strong,
+.result-stats strong {
+  display: block;
+  font-size: 23px;
+  color: #f4e7bf;
+  margin-top: 5px;
+}
+.expedition-menu .dungeon-destinations article {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.expedition-menu .dungeon-destinations img {
+  aspect-ratio: 16/9;
+  border-radius: 0;
+}
+.destination-copy {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.destination-badge {
+  align-self: flex-start;
+  padding: 5px 9px;
+  border: 1px solid #ad9c6a;
+  border-radius: 5px;
+  color: #e9d6a3;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.destination-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+}
+.destination-footer > span {
+  color: #b5c7b7;
+  font-size: 12px;
+}
+#dungeon-ui .destination-footer button,
+#dungeon-ui .expedition-upgrade,
+#dungeon-ui [data-results-menu] {
+  background: #bda569;
+  border-color: #e3cc90;
+  color: #1b2b24;
+  font-weight: 700;
+}
+#dungeon-ui .destination-footer button:hover,
+#dungeon-ui .expedition-upgrade:hover,
+#dungeon-ui [data-results-menu]:hover {
+  background: #d2bd86;
+}
+.expedition-companion {
+  border: 1px solid #617565;
+  border-radius: 10px;
+  padding: 16px;
+  background: #182d27;
+}
+.expedition-companion label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.expedition-companion select {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+}
+.expedition-menu footer {
+  align-items: center;
+}
+.expedition-menu footer small {
+  flex: 1 1 180px;
+  color: #b6c6b7;
+}
+.expedition-menu h1:focus {
+  outline: none;
+}
+.reward-screen {
+  max-width: 760px;
+}
+.reward-screen header {
+  border-bottom: 1px solid #ad9d6d66;
+  margin-bottom: 18px;
+}
+.reward-screen .result-stats {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+.reward-totals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+.reward-totals article {
+  border: 1px solid #b7a16b;
+  border-radius: 12px;
+  padding: 18px;
+  background: linear-gradient(135deg, #3b5141, #20382e);
+}
+.reward-totals strong {
+  display: block;
+  font-size: clamp(25px, 4vw, 38px);
+  color: #f3d990;
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+.reward-breakdown {
+  padding: 14px 18px;
+  background: #152b25;
+  border: 1px solid #60766466;
+  border-radius: 10px;
+}
+.reward-breakdown h2,
+.reward-items h2 {
+  font-size: 17px;
+  margin: 0 0 12px;
+}
+.reward-breakdown p {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  border-top: 1px solid #61736340;
+  padding-top: 8px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+.reward-breakdown strong {
+  white-space: nowrap;
+  color: #e7d9b0;
+}
+.reward-items {
+  margin: 20px 0;
+}
+.reward-items ul {
+  padding: 0;
+  list-style: none;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.reward-items li {
+  padding: 9px 12px;
+  border: 1px solid #6f806766;
+  border-radius: 7px;
+  background: #172c25;
+}
+.reward-pet {
+  padding: 12px;
+  border: 1px solid #bfa974;
+  border-radius: 7px;
+  color: #efd79e;
+}
+.reward-saved {
+  color: #badbb7;
+}
+.reward-save-error {
+  color: #ffd2bc;
+  border: 1px solid #b07358;
+  border-radius: 8px;
+  padding: 12px;
+}
+@media (max-width: 600px) {
+  .expedition-emblem {
+    display: none;
+  }
+  .expedition-overview {
+    gap: 6px;
+  }
+  .expedition-overview > div {
+    padding: 10px;
+  }
+  .expedition-overview span {
+    font-size: 10px;
+  }
+  .expedition-overview strong {
+    font-size: 20px;
+  }
+  .expedition-menu footer button,
+  .reward-screen footer button {
+    width: 100%;
+  }
+  .destination-footer button {
+    flex: 1;
+  }
+  .reward-totals article {
+    padding: 12px;
+  }
+}
+
+.expedition-header { align-items:flex-start; }
+.expedition-header>div { flex:1; min-width:0; }
+#dungeon-ui .expedition-close { flex-shrink:0; width:36px; height:36px; padding:2px; font-size:24px; line-height:1; }
