@@ -1,3 +1,5 @@
+import { pauseScreen } from './pause-screen';
+import './pause-screen.css';
 import type { DungeonReward } from "./progression";
 import { petBonusDescription } from "./pet-passives";
 import { petRescueMarker } from "./pet-rescue-marker";
@@ -9,7 +11,7 @@ import type { UpgradeCard } from "./upgrades";
 import { ITEM_NAMES } from "../data/items";
 import type { ItemId } from "../types";
 import type { DungeonId } from "./config";
-import { DUNGEONS, WEAPONS, PETS } from "./config";
+import { DUNGEONS, PETS } from "./config";
 import {
   type DungeonProgress,
   type Attribute,
@@ -295,27 +297,20 @@ export class DungeonUI {
       () => this.confirmAbandon(() => this.cards(run));
   }
   pause(run?: DungeonRun): void {
-    const upgrades = run
-      ? Object.entries(run.state.levels)
-          .map(([id, n]) => {
-            const u = UPGRADES.find((u) => u.id === id);
-            return `<li>${u?.name ?? id} · ${n}/${u?.max ?? n}</li>`;
-          })
-          .join("")
-      : "";
-    const build = run
-      ? `<div class="dungeon-build"><strong>Arsenal</strong><p>${run.state.weapons.map((w) => WEAPONS[w].name).join(" · ")}</p><strong>Melhorias atuais</strong><ul>${upgrades || "<li>Nenhuma melhoria escolhida ainda.</li>"}</ul></div>`
-      : "";
-    this.show(
-      `<section class="dungeon-menu compact"><h1>Expedição pausada</h1><p>O tempo, os inimigos e os ataques estão parados.</p>${build}<button data-resume>Retomar</button><button data-abandon>Abandonar expedição</button></section>`,
-    );
-    this.panel.querySelector<HTMLButtonElement>("[data-resume]")!.onclick =
-      () => {
-        this.close();
-        this.callbacks.resume();
-      };
-    this.panel.querySelector<HTMLButtonElement>("[data-abandon]")!.onclick =
+    this.show(pauseScreen(run, this.icons));
+    const resume = (): void => { this.close(); this.callbacks.resume(); };
+    this.panel.querySelector<HTMLButtonElement>('[data-resume]')!.onclick = resume;
+    this.panel.querySelector<HTMLButtonElement>('[data-resume-top]')!.onclick = resume;
+    this.panel.querySelector<HTMLButtonElement>('[data-abandon]')!.onclick =
       () => this.confirmAbandon(() => this.pause(run));
+    this.panel.querySelector<HTMLElement>('.pause-screen')!.onkeydown = event => {
+      if (event.key !== 'Tab') return;
+      const buttons = [...this.panel.querySelectorAll<HTMLButtonElement>('.pause-screen button:not(:disabled)')];
+      const first = buttons[0], last = buttons[buttons.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    };
+    this.panel.querySelector<HTMLButtonElement>('[data-resume]')!.focus();
   }
   private confirmAbandon(back: () => void): void {
     this.show(
