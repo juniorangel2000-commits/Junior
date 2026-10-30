@@ -1,3 +1,4 @@
+import { isPetDirection } from "./pet-directions";
 import type { PetDirection } from "./pet-sprites";
 export interface PetAttackAction {
   kind: "basic" | "special";
@@ -19,7 +20,7 @@ export function validPetAttack(value: unknown): value is PetAttackAction {
     Number.isFinite(v.age) &&
     v.age >= 0 &&
     v.age <= 0.8 &&
-    ["south", "west", "east", "north"].includes(String(v.direction)) &&
+    isPetDirection(v.direction) &&
     Number.isSafeInteger(v.targetId) &&
     Number(v.targetId) >= 0 &&
     typeof v.hit === "boolean" &&

@@ -1,6 +1,28 @@
 {
   "checks": [
     {
+      "name": "Cachorro visivelmente maior que o gato, com a mesma escala nas variantes",
+      "passed": true,
+      "details": [
+        {
+          "width": 33,
+          "height": 74
+        },
+        {
+          "width": 33,
+          "height": 74
+        },
+        {
+          "width": 32,
+          "height": 53
+        },
+        {
+          "width": 32,
+          "height": 53
+        }
+      ]
+    },
+    {
       "name": "Coleção 1000px: título acima das missões, quatro retratos e largura correta",
       "passed": true,
       "details": {
@@ -19,6 +41,10 @@
         "specials": 3,
         "portraits": 4
       }
+    },
+    {
+      "name": "Oito direções de caminhada nas quatro variações",
+      "passed": true
     }
   ]
 }

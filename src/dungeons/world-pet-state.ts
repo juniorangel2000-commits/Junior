@@ -1,3 +1,4 @@
+import { isPetDirection } from "./pet-directions";
 import type { PetDirection } from "./pet-sprites";
 export type PetWorldArea = "property" | "forest" | "village" | "cityForest";
 export interface WorldPetState {
@@ -30,7 +31,7 @@ export function validWorldPetState(value: unknown): value is WorldPetState {
     Number.isFinite(v.y) &&
     v.y >= 0 &&
     v.y <= 2304 &&
-    ["south", "north", "east", "west"].includes(String(v.direction))
+    isPetDirection(v.direction)
   );
 }
 export function worldPetLocation(state: WorldPetState): string {

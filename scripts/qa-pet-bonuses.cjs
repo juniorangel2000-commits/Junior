@@ -286,7 +286,7 @@ fs.mkdirSync(out, { recursive: true });
     await page.screenshot({ path: out + "/cachorro-shiny-hud.png" });
 
     const art = await page.evaluate(async () => {
-      const { petSpritePose } = await import("/src/dungeons/pet-sprites.ts");
+      const { petPortrait } = await import("/src/dungeons/pet-sprites.ts");
       const { WorldCompanion } =
         await import("/src/dungeons/world-companion.ts");
       const result = [];
@@ -337,10 +337,10 @@ fs.mkdirSync(out, { recursive: true });
       const icons = {};
       for (const species of ["dog", "cat"])
         for (const rare of [false, true]) {
-          const pose = petSpritePose(species, "idle", "south", 0, true, rare);
-          icons[species + (rare ? "-rare" : "")] = d.textures.getBase64(
-            pose.texture,
-            pose.frame,
+          icons[species + (rare ? "-rare" : "")] = petPortrait(
+            d,
+            species,
+            rare,
           );
         }
       window.collectionView = {

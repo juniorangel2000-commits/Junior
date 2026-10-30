@@ -4,18 +4,11 @@ import cat from "../../public/assets/visual/dungeons/pet-cat.json";
 import dog from "../../public/assets/visual/dungeons/pet-dog.json";
 import type { PetSpecies } from "./config";
 import { setupVillagePropAtlas } from "../village-prop-atlas";
-export type PetDirection = "south" | "west" | "east" | "north";
+import type { PetDirection } from "./pet-directions";
+export { petDirection, type PetDirection } from "./pet-directions";
 export type PetAction =
   "idle" | "walk" | "run" | "attack" | "sit" | "stand" | "rest";
 export const PET_ART = { cat, dog };
-export const petDirection = (dx: number, dy: number): PetDirection =>
-  Math.abs(dx) > Math.abs(dy)
-    ? dx < 0
-      ? "west"
-      : "east"
-    : dy < 0
-      ? "north"
-      : "south";
 export function preloadPetArt(scene: Phaser.Scene): void {
   for (const species of ["cat", "dog"] as const)
     if (
@@ -65,9 +58,19 @@ export function petSpritePose(
 ) {
   const atlas = PET_ART[species];
   const animations = atlas.animations as Partial<
-    Record<PetAction, Record<PetDirection, string[]>>
+    Record<PetAction, Partial<Record<PetDirection, string[]>>>
   >;
-  const list = (animations[action] ?? animations.idle!)[direction];
+  const clips = animations[action] ?? animations.idle!;
+  const cardinal = direction.endsWith("east")
+    ? "east"
+    : direction.endsWith("west")
+      ? "west"
+      : direction;
+  const list =
+    clips[direction] ??
+    clips[cardinal] ??
+    animations.idle![direction] ??
+    animations.idle![cardinal]!;
   const rate = petFrameRate(action);
   let playback = Math.max(0, time);
   // Dogs stay quiet between occasional idle sequences, including wait mode.
@@ -98,11 +101,46 @@ export function petActionDuration(
 ): number {
   const atlas = PET_ART[species],
     animations = atlas.animations as Partial<
-      Record<PetAction, Record<PetDirection, string[]>>
+      Record<PetAction, Partial<Record<PetDirection, string[]>>>
     >;
   return (
-    (animations[action] ?? animations.idle!).south.length / petFrameRate(action)
+    (animations[action] ?? animations.idle!).south!.length /
+    petFrameRate(action)
   );
 }
 export const PET_ATTACK_HIT_AT =
   cat.animation.attackHitFrame / cat.animation.frameRate;
+
+/** Shared framing uses world proportions rather than the source frame's padding. */
+export function petPortrait(
+  scene: Phaser.Scene,
+  species: PetSpecies,
+  rare = false,
+): string {
+  const pose = petSpritePose(species, "idle", "south", 0, true, rare);
+  if (!scene.textures.exists(pose.texture)) return "";
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = 96;
+  const context = canvas.getContext("2d")!;
+  context.imageSmoothingEnabled = false;
+  const atlas = PET_ART[species];
+  const frame = (
+    atlas.frames as Record<
+      string,
+      { x: number; y: number; width: number; height: number }
+    >
+  )[pose.frame];
+  const scale = pose.scale * 2.4;
+  context.drawImage(
+    scene.textures.get(pose.texture).getSourceImage() as HTMLCanvasElement,
+    frame.x,
+    frame.y,
+    frame.width,
+    frame.height,
+    48 - pose.originX * frame.width * scale,
+    90 - pose.originY * frame.height * scale,
+    frame.width * scale,
+    frame.height * scale,
+  );
+  return canvas.toDataURL();
+}

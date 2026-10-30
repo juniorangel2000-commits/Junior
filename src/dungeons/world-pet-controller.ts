@@ -3,7 +3,7 @@ import type { SaveData } from "../types";
 import type { GameUI } from "../ui";
 import { WorldCompanion, type CompanionMap } from "./world-companion";
 import { petFreePoint, type PetPoint } from "./world-pet-state";
-import { petSpritePose, setupPetArt } from "./pet-sprites";
+import { petPortrait, setupPetArt } from "./pet-sprites";
 import type { PetCommand, PetMenuView } from "./pet-menu";
 export interface WorldPetContext extends CompanionMap {
   save: SaveData;
@@ -80,10 +80,11 @@ export class WorldPetController {
     setupPetArt(this.scene);
     for (const species of ["cat", "dog"] as const) {
       for (const rare of [false, true]) {
-        const pose = petSpritePose(species, "idle", "south", 0, true, rare);
-        if (this.scene.textures.exists(pose.texture))
-          icons[`${species}${rare ? "-rare" : ""}`] =
-            this.scene.textures.getBase64(pose.texture, pose.frame);
+        icons[`${species}${rare ? "-rare" : ""}`] = petPortrait(
+          this.scene,
+          species,
+          rare,
+        );
       }
     }
     return {

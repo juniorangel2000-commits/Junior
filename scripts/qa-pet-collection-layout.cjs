@@ -28,7 +28,7 @@ fs.mkdirSync(out, { recursive: true });
         document.querySelector('script[src*="main.ts"]').src
       );
       const { petCollectionHTML } = await import("/src/dungeons/pet-menu.ts");
-      const { petSpritePose, preloadPetArt, setupPetArt } =
+      const { petPortrait, preloadPetArt, setupPetArt } =
         await import("/src/dungeons/pet-sprites.ts");
       const scene = game.scene.getScenes(true)[0];
       preloadPetArt(scene);
@@ -56,10 +56,10 @@ fs.mkdirSync(out, { recursive: true });
               efficiency: 0,
             },
           });
-          const pose = petSpritePose(species, "idle", "south", 0, true, rare);
-          icons[species + (rare ? "-rare" : "")] = scene.textures.getBase64(
-            pose.texture,
-            pose.frame,
+          icons[species + (rare ? "-rare" : "")] = petPortrait(
+            scene,
+            species,
+            rare,
           );
         }
       document.querySelector("#ui").innerHTML =
@@ -67,6 +67,42 @@ fs.mkdirSync(out, { recursive: true });
         petCollectionHTML({ pets, icons, selected: "dog-true", nearby: true }) +
         "</div>";
     });
+    const sizes = await page.evaluate(async () => {
+      const sizes = [];
+      for (const img of document.querySelectorAll(".pet-collection img")) {
+        await img.decode();
+        const canvas = document.createElement("canvas");
+        canvas.width = canvas.height = 96;
+        const context = canvas.getContext("2d");
+        context.drawImage(img, 0, 0);
+        const pixels = context.getImageData(0, 0, 96, 96).data;
+        let left = 96,
+          top = 96,
+          right = 0,
+          bottom = 0;
+        for (let y = 0; y < 96; y++)
+          for (let x = 0; x < 96; x++)
+            if (pixels[(y * 96 + x) * 4 + 3]) {
+              left = Math.min(left, x);
+              right = Math.max(right, x);
+              top = Math.min(top, y);
+              bottom = Math.max(bottom, y);
+            }
+        sizes.push({ width: right - left + 1, height: bottom - top + 1 });
+      }
+      return sizes;
+    });
+    checks.push({
+      name: "Cachorro visivelmente maior que o gato, com a mesma escala nas variantes",
+      passed:
+        sizes[0].height > sizes[2].height * 1.25 &&
+        sizes[0].height < sizes[2].height * 1.6 &&
+        sizes[0].width >= sizes[2].width &&
+        JSON.stringify(sizes[0]) === JSON.stringify(sizes[1]) &&
+        JSON.stringify(sizes[2]) === JSON.stringify(sizes[3]),
+      details: sizes,
+    });
+    assert.ok(checks.at(-1).passed, JSON.stringify(sizes));
     for (const width of [1000, 420]) {
       await page.setViewportSize({ width, height: 1100 });
       const result = await page.locator(".pet-collection").evaluate((el) => {
@@ -92,6 +128,68 @@ fs.mkdirSync(out, { recursive: true });
       assert.ok(checks.at(-1).passed, JSON.stringify(result));
       await page.screenshot({ path: out + `/colecao-${width}.png` });
     }
+    await page.setViewportSize({ width: 1000, height: 750 });
+    const directions = await page.evaluate(async () => {
+      const { game } = await import(
+        document.querySelector('script[src*="main.ts"]').src
+      );
+      const { petSpritePose, PET_ART } =
+        await import("/src/dungeons/pet-sprites.ts");
+      const { PET_DIRECTIONS } =
+        await import("/src/dungeons/pet-directions.ts");
+      const scene = game.scene.getScenes(true)[0];
+      const canvas = document.createElement("canvas");
+      canvas.id = "pet-walk-review";
+      canvas.width = 1000;
+      canvas.height = 700;
+      canvas.style.cssText = "position:fixed;inset:0;z-index:99999";
+      document.body.append(canvas);
+      const c = canvas.getContext("2d");
+      c.imageSmoothingEnabled = false;
+      c.fillStyle = "#f2e3c7";
+      c.fillRect(0, 0, 1000, 700);
+      c.fillStyle = "#5b432a";
+      c.font = "14px Arial";
+      PET_DIRECTIONS.forEach((dir, col) => c.fillText(dir, 80 + col * 112, 30));
+      let valid = true,
+        row = 0;
+      for (const species of ["dog", "cat"])
+        for (const rare of [false, true]) {
+          c.fillStyle = "#5b432a";
+          c.fillText(species + (rare ? " ✦" : ""), 10, 90 + row * 155);
+          PET_DIRECTIONS.forEach((dir, col) => {
+            const pose = petSpritePose(species, "walk", dir, 0.3, true, rare);
+            const texture = scene.textures.get(pose.texture),
+              r = PET_ART[species].frames[pose.frame];
+            valid =
+              valid &&
+              texture.has(pose.frame) &&
+              pose.frame.startsWith("walk-" + dir + "-");
+            const scale = pose.scale * 3;
+            c.drawImage(
+              texture.getSourceImage(),
+              r.x,
+              r.y,
+              r.width,
+              r.height,
+              125 + col * 112 - pose.originX * r.width * scale,
+              160 + row * 155 - pose.originY * r.height * scale,
+              r.width * scale,
+              r.height * scale,
+            );
+          });
+          row++;
+        }
+      return valid;
+    });
+    checks.push({
+      name: "Oito direções de caminhada nas quatro variações",
+      passed: directions,
+    });
+    assert.ok(directions);
+    await page
+      .locator("#pet-walk-review")
+      .screenshot({ path: out + "/caminhada-oito-direcoes.png" });
   } catch (e) {
     checks.push({ name: e.message, passed: false });
     process.exitCode = 1;

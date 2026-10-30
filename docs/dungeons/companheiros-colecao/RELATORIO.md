@@ -43,4 +43,16 @@ Resultados: compilação de produção aprovada; suíte completa com 1.189 teste
 - [Validação de layout](validacao-layout.json)
 - [Validação das armas](validacao-armas.json)
 
-As quatro direções adicionais de caminhada ainda aguardam os arquivos do usuário. As paletas especiais reutilizam os mesmos quadros, portanto a ampliação das animações também será aplicada às variantes.
+## Escala e caminhada em oito direções
+
+Os novos ZIPs foram integrados. A caminhada usa oito direções nos dois animais e nas variantes especiais. Poses estáticas nas diagonais usam as rotações fornecidas. Corrida, salto e outras ações que têm somente quatro direções usam uma direção cardinal disponível; a duração e o instante de dano permanecem iguais. A validação do save aceita orientações diagonais, preservando os saves antigos.
+
+O cão passou de 30 para 34 unidades de altura de referência, mantendo o gato em 22. Os retratos agora usam a escala do mundo e um enquadramento compartilhado de 96×96, evitando que a margem transparente das artes deixe o cão menor no menu. Na vista frontal, os retratos têm 74 px de altura visível no cão e 53 px no gato, iguais entre comuns e variantes.
+
+Foram adicionados 36 quadros por espécie (total atual: 192 no cão e 248 no gato). Os 368 quadros anteriores foram comparados pixel a pixel e continuam idênticos. Os ZIPs anteriores estão preservados como `original-preview15.zip`; `original.zip` contém a entrega mais recente.
+
+Após a integração, a suíte completa passou com **1.195 testes em 133 arquivos**, e a compilação de produção foi aprovada.
+
+
+- [Caminhada nas oito direções, comuns e variantes](caminhada-oito-direcoes.png)
+- Validação final no Chromium: proporções, enquadramento responsivo e texturas de caminhada nas oito direções aprovadas.

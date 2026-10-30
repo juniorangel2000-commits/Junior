@@ -1,3 +1,4 @@
+import { isPetDirection } from "./pet-directions";
 import { validPetAttack } from "./pet-combat";
 import type { DungeonSnapshot } from "./run";
 import { UPGRADES } from "./upgrades";
@@ -184,8 +185,7 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
         (!rec(p.evade) ||
           !finite(p.evade.remaining, 0, 0.24) ||
           !finite(p.evade.angle))) ||
-      (p.direction !== undefined &&
-        !["south", "west", "east", "north"].includes(String(p.direction))) ||
+      (p.direction !== undefined && !isPetDirection(p.direction)) ||
       (p.walking !== undefined && typeof p.walking !== "boolean") ||
       (p.running !== undefined && typeof p.running !== "boolean") ||
       !["dog", "cat"].includes(p.species as string) ||
