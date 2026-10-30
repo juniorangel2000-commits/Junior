@@ -33,7 +33,7 @@ export const DUNGEONS = {
 export const DUNGEON_BALANCE = {
   transitionSeconds: 5,
   maxWeapons: 4,
-  maxEnemies: 240,
+  maxEnemies: 480,
   bossRounds: [10, 20, 30, 40, 50],
   maxProjectiles: 160,
   maxEffects: 48,

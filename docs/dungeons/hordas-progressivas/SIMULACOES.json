@@ -1,6 +1,7 @@
 {
   "method": "Fixed-step deterministic bot, legal random cards, no granted XP or pre-equipped arsenal. CPU timings exclude steering, rendering and GPU.",
   "permanentRank": 5,
+  "maxEnemies": 480,
   "results": [
     {
       "dungeon": "abandoned-central-square",
@@ -8,20 +9,49 @@
       "seed": 1234567,
       "pet": false,
       "rare": false,
-      "status": "victory",
-      "elapsed": 900,
+      "status": "defeat",
+      "elapsed": 891,
       "round": 1,
-      "kills": 6236,
-      "level": 278,
+      "kills": 7274,
+      "level": 320,
       "weapons": [
         "sword",
         "orbiting-shield",
-        "rotating-blade",
+        "boomerang",
+        "rotating-blade"
+      ],
+      "peakEnemies": 480,
+      "blocks": 45,
+      "wallSeconds": 17.085505093,
+      "tickMs": {
+        "median": 0.2779729999997471,
+        "p95": 0.807039999999688
+      }
+    },
+    {
+      "dungeon": "mall-parking",
+      "build": "control",
+      "seed": 1234567,
+      "pet": false,
+      "rare": false,
+      "status": "victory",
+      "elapsed": 2696,
+      "round": 50,
+      "kills": 8163,
+      "level": 230,
+      "weapons": [
+        "sword",
+        "orbiting-shield",
+        "hammer",
         "boomerang"
       ],
-      "peakEnemies": 240,
-      "blocks": 48,
-      "wallSeconds": 13.232409382
+      "peakEnemies": 247,
+      "blocks": 101,
+      "wallSeconds": 10.496084592999999,
+      "tickMs": {
+        "median": 0.031456999997317325,
+        "p95": 0.17189499999949476
+      }
     },
     {
       "dungeon": "abandoned-central-square",
@@ -32,17 +62,21 @@
       "status": "victory",
       "elapsed": 900,
       "round": 1,
-      "kills": 6253,
-      "level": 256,
+      "kills": 7871,
+      "level": 299,
       "weapons": [
         "sword",
         "rotating-blade",
         "boomerang",
         "orbiting-shield"
       ],
-      "peakEnemies": 240,
-      "blocks": 14,
-      "wallSeconds": 13.326984897000003
+      "peakEnemies": 465,
+      "blocks": 40,
+      "wallSeconds": 14.446270593999998,
+      "tickMs": {
+        "median": 0.20239099999889731,
+        "p95": 0.6289450000040233
+      }
     },
     {
       "dungeon": "abandoned-central-square",
@@ -61,7 +95,11 @@
       ],
       "peakEnemies": 145,
       "blocks": 0,
-      "wallSeconds": 0.42188248999999634
+      "wallSeconds": 0.4354038419999997,
+      "tickMs": {
+        "median": 0.03825700000015786,
+        "p95": 0.10895199999504257
+      }
     },
     {
       "dungeon": "abandoned-central-square",
@@ -72,38 +110,21 @@
       "status": "victory",
       "elapsed": 900,
       "round": 1,
-      "kills": 7486,
-      "level": 306,
+      "kills": 7730,
+      "level": 313,
       "weapons": [
         "sword",
         "rotating-blade",
-        "orbiting-shield",
-        "boomerang"
+        "boomerang",
+        "orbiting-shield"
       ],
-      "peakEnemies": 240,
-      "blocks": 30,
-      "wallSeconds": 8.481162284999998
-    },
-    {
-      "dungeon": "mall-parking",
-      "build": "control",
-      "seed": 1234567,
-      "pet": false,
-      "rare": false,
-      "status": "victory",
-      "elapsed": 2685,
-      "round": 50,
-      "kills": 8163,
-      "level": 230,
-      "weapons": [
-        "sword",
-        "orbiting-shield",
-        "hammer",
-        "boomerang"
-      ],
-      "peakEnemies": 240,
-      "blocks": 99,
-      "wallSeconds": 11.407636094999999
+      "peakEnemies": 480,
+      "blocks": 23,
+      "wallSeconds": 9.888138464999995,
+      "tickMs": {
+        "median": 0.13687300000310643,
+        "p95": 0.4934530000027735
+      }
     }
   ]
 }

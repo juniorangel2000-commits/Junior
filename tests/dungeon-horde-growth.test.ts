@@ -1,3 +1,4 @@
+import { validDungeonSnapshot } from '../src/dungeons/snapshot';
 import { expect, it } from 'vitest';
 import { hordeProfile, waveEnemyCount } from '../src/dungeons/director';
 import { DungeonRun } from '../src/dungeons/run';
@@ -54,4 +55,15 @@ it('matches timed combat pressure at equivalent wave progress, including player 
   if(!timed.respite){expect(waves.batch).toBe(timed.batch);expect(waves.interval).toBeCloseTo(timed.interval);}
   expect(hordeProfile('mall-parking',time+5000,round,level)).toEqual(waves);
  }
+});
+
+it.each(['mall-parking','abandoned-central-square'] as const)('supports and restores 480 live enemies without allowing overflow in %s',map=>{
+ const run=new DungeonRun('crowd-limit',map,createDungeonProgress());
+ const spawn=(run as unknown as {spawn():boolean}).spawn.bind(run);
+ for(let attempt=0;attempt<1000&&run.state.enemies.length<B.maxEnemies;attempt++)spawn();
+ expect(run.state.enemies.length).toBe(480);expect(spawn()).toBe(false);
+ const saved=run.snapshot();expect(validDungeonSnapshot(saved)).toBe(true);
+ const restored=new DungeonRun('restore-crowd',map,createDungeonProgress());
+ restored.restore(saved);expect(restored.state.enemies.length).toBe(480);
+ expect(validDungeonSnapshot(restored.snapshot())).toBe(true);
 });
