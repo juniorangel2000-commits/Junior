@@ -56,6 +56,13 @@ fs.mkdirSync(out, { recursive: true });
     const b=await page.locator(selector).boundingBox();
     assert.ok(b.x>=0 && b.x+b.width<=width+1 && b.y>=0 && b.y+b.height<=height+1, selector+' fits '+width);
    }
+   const overflow=await page.locator('.after-rain-title').evaluate(root=>{
+    const img=root.querySelector('.title-illustration');
+    const motion=img.getAnimations()[0];
+    if(motion)motion.currentTime=12000;
+    return {width:root.clientWidth,scroll:root.scrollWidth};
+   });
+   assert.ok(overflow.scroll<=overflow.width+1,'no horizontal scroll at maximum background scale '+JSON.stringify(overflow));
    await page.screenshot({path:`${out}/title-${width}.png`});
   }
   await page.setViewportSize({width:1280,height:800});

@@ -120,18 +120,24 @@ export function renderRain(ctx: BaseAudioContext): AudioBuffer {
   const length = Math.round(ctx.sampleRate * 12), buffer = ctx.createBuffer(2, length, ctx.sampleRate);
   const smoothing = 1 - Math.exp(-2 * Math.PI * 1700 / ctx.sampleRate);
   const bass = 1 - Math.exp(-2 * Math.PI * 140 / ctx.sampleRate);
+  const overlap = Math.round(ctx.sampleRate * .25);
   for (let channel = 0; channel < 2; channel++) {
-    const samples = buffer.getChannelData(channel);
+    const samples = buffer.getChannelData(channel), source = new Float32Array(length + overlap);
     let low = 0, soft = 0, rumble = 0, squares = 0;
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; i < source.length; i++) {
       low += smoothing * (Math.random() * 2 - 1 - low);
       soft += smoothing * (low - soft);
       rumble += bass * (soft - rumble);
       const drift = .92 + .08 * Math.sin(2 * Math.PI * i / length + channel);
-      const edge = Math.min(1, i / (ctx.sampleRate * .12), (length - 1 - i) / (ctx.sampleRate * .12));
-      samples[i] = (soft - rumble) * drift * edge;
-      squares += samples[i] * samples[i];
+      source[i] = (soft - rumble) * drift;
     }
+    samples.set(source.subarray(0, length));
+    // Continue the tail into the start, then crossfade without fading to silence.
+    for (let i = 0; i < overlap; i++) {
+      const angle = i / (overlap - 1) * Math.PI / 2;
+      samples[i] = source[length + i] * Math.cos(angle) + source[i] * Math.sin(angle);
+    }
+    for (const sample of samples) squares += sample * sample;
     // Stable quiet level: about 7 dB below the previous rain, independent of rate.
     const gain = .012 / Math.max(.0001, Math.sqrt(squares / length));
     for (let i = 0; i < length; i++) samples[i] *= gain;

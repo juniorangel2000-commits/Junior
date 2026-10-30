@@ -44,7 +44,10 @@ export function createTitleScreen(holder: HTMLElement, options: TitleScreenOptio
   art.alt = '';
   art.setAttribute('aria-hidden', 'true');
   art.decoding = 'async';
-  screen.prepend(art);
+  const artViewport = document.createElement('div');
+  artViewport.className = 'title-art-viewport';
+  artViewport.setAttribute('aria-hidden', 'true');
+  artViewport.append(art); screen.prepend(artViewport);
   let active = true;
   art.onload = () => { if (active) screen.classList.add('has-title-art'); };
   art.onerror = () => { if (active) { art.hidden = true; screen.classList.remove('has-title-art'); } };
