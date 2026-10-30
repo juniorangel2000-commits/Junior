@@ -1,0 +1,2525 @@
+{
+  "experienceCurve": {
+    "linearStartLevel": 16,
+    "linearStartCost": 89
+  },
+  "method": "Fixed-step deterministic bot, legal random cards, no granted XP or pre-equipped arsenal. CPU timings exclude steering, rendering and GPU.",
+  "results": [
+    {
+      "dungeon": "mall-parking",
+      "build": "control",
+      "seed": 7654321,
+      "pet": false,
+      "rare": false,
+      "permanentRank": 5,
+      "resumeChecks": 186,
+      "maxHealing": 3,
+      "petRecoveries": 0,
+      "bossesEncountered": 5,
+      "status": "victory",
+      "elapsed": 2300,
+      "round": 50,
+      "kills": 2800,
+      "level": 102,
+      "hp": 145,
+      "weapons": [
+        "sword",
+        "boomerang",
+        "rotating-blade",
+        "orbiting-shield"
+      ],
+      "levels": {
+        "pickup": 10,
+        "sword-damage": 5,
+        "xp": 3,
+        "sword-range": 4,
+        "sword-speed": 5,
+        "health": 5,
+        "movement": 5,
+        "regeneration": 5,
+        "boomerang-range": 4,
+        "defense": 4,
+        "advanced-xp": 1,
+        "melee": 5,
+        "boomerang-speed": 4,
+        "piercing": 2,
+        "sword-wide": 2,
+        "blade-damage": 5,
+        "attack-speed": 4,
+        "blade-range": 5,
+        "shield-protection": 1,
+        "blade-speed": 2,
+        "shield-push": 4,
+        "shield-speed": 4,
+        "shield-double": 1,
+        "range": 3,
+        "boomerang-double": 1,
+        "reload": 1,
+        "advanced-attack": 1,
+        "fast-recovery": 1,
+        "special-cooldown": 1
+      },
+      "remainingRanks": 51,
+      "damageTaken": 315,
+      "blocks": 13,
+      "peakEnemies": 103,
+      "peakProjectiles": 6,
+      "peakPickups": 38,
+      "choices": [
+        {
+          "at": 7.633333333333316,
+          "id": "pickup"
+        },
+        {
+          "at": 22.133333333333592,
+          "id": "sword-damage"
+        },
+        {
+          "at": 27.40000000000052,
+          "id": "xp"
+        },
+        {
+          "at": 41.40000000000021,
+          "id": "xp"
+        },
+        {
+          "at": 57.06666666666599,
+          "id": "sword-range"
+        },
+        {
+          "at": 69.29999999999863,
+          "id": "sword-speed"
+        },
+        {
+          "at": 84.26666666666445,
+          "id": "health"
+        },
+        {
+          "at": 106.56666666666318,
+          "id": "movement"
+        },
+        {
+          "at": 138.0666666666614,
+          "id": "boomerang"
+        },
+        {
+          "at": 159.53333333332685,
+          "id": "xp"
+        },
+        {
+          "at": 182.66666666665887,
+          "id": "regeneration"
+        },
+        {
+          "at": 214.5999999999904,
+          "id": "regeneration"
+        },
+        {
+          "at": 245.43333333332197,
+          "id": "boomerang-range"
+        },
+        {
+          "at": 294.73333333335216,
+          "id": "sword-range"
+        },
+        {
+          "at": 311.60000000003225,
+          "id": "defense"
+        },
+        {
+          "at": 349.9333333333961,
+          "id": "advanced-xp"
+        },
+        {
+          "at": 375.36666666674967,
+          "id": "movement"
+        },
+        {
+          "at": 402.9000000001049,
+          "id": "melee"
+        },
+        {
+          "at": 428.2333333334584,
+          "id": "movement"
+        },
+        {
+          "at": 451.20000000014335,
+          "id": "boomerang-speed"
+        },
+        {
+          "at": 469.2000000001577,
+          "id": "piercing"
+        },
+        {
+          "at": 510.56666666685726,
+          "id": "movement"
+        },
+        {
+          "at": 530.2000000001751,
+          "id": "sword-wide"
+        },
+        {
+          "at": 550.4000000001568,
+          "id": "health"
+        },
+        {
+          "at": 578.1666666667982,
+          "id": "health"
+        },
+        {
+          "at": 595.3000000001159,
+          "id": "movement"
+        },
+        {
+          "at": 631.3000000000832,
+          "id": "regeneration"
+        },
+        {
+          "at": 661.8000000000554,
+          "id": "regeneration"
+        },
+        {
+          "at": 685.733333333367,
+          "id": "rotating-blade"
+        },
+        {
+          "at": 776.7666666666175,
+          "id": "regeneration"
+        },
+        {
+          "at": 785.9999999999425,
+          "id": "boomerang-speed"
+        },
+        {
+          "at": 793.1666666666026,
+          "id": "blade-damage"
+        },
+        {
+          "at": 824.3999999999075,
+          "id": "sword-speed"
+        },
+        {
+          "at": 833.8666666665656,
+          "id": "sword-speed"
+        },
+        {
+          "at": 863.5333333332053,
+          "id": "defense"
+        },
+        {
+          "at": 870.433333333199,
+          "id": "attack-speed"
+        },
+        {
+          "at": 905.7666666665002,
+          "id": "pickup"
+        },
+        {
+          "at": 910.5999999998292,
+          "id": "pickup"
+        },
+        {
+          "at": 947.0666666664627,
+          "id": "sword-damage"
+        },
+        {
+          "at": 974.3999999997711,
+          "id": "blade-range"
+        },
+        {
+          "at": 986.3666666664269,
+          "id": "blade-range"
+        },
+        {
+          "at": 1007.3666666664078,
+          "id": "blade-damage"
+        },
+        {
+          "at": 1016.5999999997327,
+          "id": "boomerang-speed"
+        },
+        {
+          "at": 1035.6333333330488,
+          "id": "sword-range"
+        },
+        {
+          "at": 1064.5666666663558,
+          "id": "boomerang-range"
+        },
+        {
+          "at": 1078.8666666663428,
+          "id": "pickup"
+        },
+        {
+          "at": 1105.9999999996514,
+          "id": "sword-wide"
+        },
+        {
+          "at": 1115.5999999996427,
+          "id": "boomerang-speed"
+        },
+        {
+          "at": 1141.4333333329525,
+          "id": "orbiting-shield"
+        },
+        {
+          "at": 1154.899999999607,
+          "id": "melee"
+        },
+        {
+          "at": 1249.7666666661873,
+          "id": "shield-protection"
+        },
+        {
+          "at": 1262.6666666661756,
+          "id": "blade-speed"
+        },
+        {
+          "at": 1295.0666666661461,
+          "id": "shield-push"
+        },
+        {
+          "at": 1297.5666666661439,
+          "id": "shield-speed"
+        },
+        {
+          "at": 1304.1999999994712,
+          "id": "piercing"
+        },
+        {
+          "at": 1319.0666666661243,
+          "id": "pickup"
+        },
+        {
+          "at": 1351.3999999994282,
+          "id": "boomerang-range"
+        },
+        {
+          "at": 1360.7999999994197,
+          "id": "shield-push"
+        },
+        {
+          "at": 1390.633333332726,
+          "id": "sword-speed"
+        },
+        {
+          "at": 1403.0333333327146,
+          "id": "shield-speed"
+        },
+        {
+          "at": 1430.13333333269,
+          "id": "shield-speed"
+        },
+        {
+          "at": 1437.9666666660162,
+          "id": "shield-double"
+        },
+        {
+          "at": 1461.5333333326614,
+          "id": "shield-push"
+        },
+        {
+          "at": 1479.8333333326448,
+          "id": "shield-speed"
+        },
+        {
+          "at": 1489.6333333326359,
+          "id": "blade-damage"
+        },
+        {
+          "at": 1525.9666666659361,
+          "id": "melee"
+        },
+        {
+          "at": 1531.7333333325976,
+          "id": "blade-damage"
+        },
+        {
+          "at": 1559.5333333325723,
+          "id": "sword-damage"
+        },
+        {
+          "at": 1564.4666666659011,
+          "id": "sword-range"
+        },
+        {
+          "at": 1590.199999999211,
+          "id": "blade-damage"
+        },
+        {
+          "at": 1603.066666665866,
+          "id": "blade-range"
+        },
+        {
+          "at": 1617.3333333325197,
+          "id": "pickup"
+        },
+        {
+          "at": 1643.1999999991629,
+          "id": "range"
+        },
+        {
+          "at": 1654.333333332486,
+          "id": "pickup"
+        },
+        {
+          "at": 1751.133333332398,
+          "id": "sword-speed"
+        },
+        {
+          "at": 1759.7333333323902,
+          "id": "boomerang-range"
+        },
+        {
+          "at": 1776.6999999990414,
+          "id": "shield-push"
+        },
+        {
+          "at": 1796.899999999023,
+          "id": "attack-speed"
+        },
+        {
+          "at": 1808.1999999990128,
+          "id": "defense"
+        },
+        {
+          "at": 1837.1999999989864,
+          "id": "blade-speed"
+        },
+        {
+          "at": 1848.1333333323098,
+          "id": "health"
+        },
+        {
+          "at": 1884.9666666656096,
+          "id": "range"
+        },
+        {
+          "at": 1894.5333333322676,
+          "id": "sword-damage"
+        },
+        {
+          "at": 1904.6333333322584,
+          "id": "sword-damage"
+        },
+        {
+          "at": 1927.6333333322375,
+          "id": "blade-range"
+        },
+        {
+          "at": 1938.5999999988942,
+          "id": "health"
+        },
+        {
+          "at": 1962.9333333322054,
+          "id": "pickup"
+        },
+        {
+          "at": 1976.29999999886,
+          "id": "blade-range"
+        },
+        {
+          "at": 1984.4999999988524,
+          "id": "boomerang-double"
+        },
+        {
+          "at": 2017.8666666654888,
+          "id": "pickup"
+        },
+        {
+          "at": 2026.3333333321477,
+          "id": "pickup"
+        },
+        {
+          "at": 2050.3666666654594,
+          "id": "attack-speed"
+        },
+        {
+          "at": 2060.999999998783,
+          "id": "range"
+        },
+        {
+          "at": 2074.966666665437,
+          "id": "reload"
+        },
+        {
+          "at": 2104.7333333320767,
+          "id": "advanced-attack"
+        },
+        {
+          "at": 2115.233333332067,
+          "id": "melee"
+        },
+        {
+          "at": 2147.466666665371,
+          "id": "melee"
+        },
+        {
+          "at": 2154.733333332031,
+          "id": "attack-speed"
+        },
+        {
+          "at": 2166.6666666653537,
+          "id": "fast-recovery"
+        },
+        {
+          "at": 2298.8999999985667,
+          "id": "defense"
+        },
+        {
+          "at": 2300.0666666652323,
+          "id": "special-cooldown"
+        }
+      ],
+      "samples": [
+        {
+          "at": 0,
+          "round": 1,
+          "hp": 120,
+          "level": 1,
+          "kills": 0,
+          "enemies": 2,
+          "groundXP": 0,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 14,
+          "round": 2,
+          "hp": 120,
+          "level": 2,
+          "kills": 7,
+          "enemies": 0,
+          "groundXP": 3,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 28,
+          "round": 3,
+          "hp": 120,
+          "level": 4,
+          "kills": 16,
+          "enemies": 0,
+          "groundXP": 3,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 30,
+          "round": 3,
+          "hp": 120,
+          "level": 4,
+          "kills": 16,
+          "enemies": 0,
+          "groundXP": 0,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 49,
+          "round": 4,
+          "hp": 120,
+          "level": 5,
+          "kills": 27,
+          "enemies": 0,
+          "groundXP": 3,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 60,
+          "round": 4,
+          "hp": 120,
+          "level": 6,
+          "kills": 32,
+          "enemies": 8,
+          "groundXP": 0,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 70,
+          "round": 5,
+          "hp": 120,
+          "level": 7,
+          "kills": 40,
+          "enemies": 0,
+          "groundXP": 3,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 88,
+          "round": 6,
+          "hp": 101,
+          "level": 8,
+          "kills": 55,
+          "enemies": 0,
+          "groundXP": 0,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 90,
+          "round": 6,
+          "hp": 102,
+          "level": 8,
+          "kills": 55,
+          "enemies": 0,
+          "groundXP": 0,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 120,
+          "round": 6,
+          "hp": 41,
+          "level": 9,
+          "kills": 69,
+          "enemies": 3,
+          "groundXP": 3,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 123,
+          "round": 7,
+          "hp": 42,
+          "level": 9,
+          "kills": 72,
+          "enemies": 0,
+          "groundXP": 3,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 150,
+          "round": 7,
+          "hp": 41,
+          "level": 10,
+          "kills": 84,
+          "enemies": 7,
+          "groundXP": 3,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 159,
+          "round": 8,
+          "hp": 44,
+          "level": 10,
+          "kills": 91,
+          "enemies": 0,
+          "groundXP": 3,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 180,
+          "round": 8,
+          "hp": 50,
+          "level": 11,
+          "kills": 109,
+          "enemies": 3,
+          "groundXP": 15,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 183,
+          "round": 9,
+          "hp": 51,
+          "level": 12,
+          "kills": 112,
+          "enemies": 0,
+          "groundXP": 3,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 210,
+          "round": 9,
+          "hp": 62,
+          "level": 12,
+          "kills": 122,
+          "enemies": 13,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 222,
+          "round": 10,
+          "hp": 68,
+          "level": 13,
+          "kills": 135,
+          "enemies": 0,
+          "groundXP": 3,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 240,
+          "round": 10,
+          "hp": 78,
+          "level": 13,
+          "kills": 142,
+          "enemies": 18,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 1,
+          "bossHP": 985.7149387755102
+        },
+        {
+          "at": 270,
+          "round": 10,
+          "hp": 94,
+          "level": 14,
+          "kills": 159,
+          "enemies": 1,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0,
+          "bossHP": 680.3149387755105,
+          "bossSkill": "slam"
+        },
+        {
+          "at": 294,
+          "round": 11,
+          "hp": 107,
+          "level": 14,
+          "kills": 160,
+          "enemies": 0,
+          "groundXP": 6,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 300,
+          "round": 11,
+          "hp": 125,
+          "level": 15,
+          "kills": 160,
+          "enemies": 18,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 2,
+          "brutes": 0
+        },
+        {
+          "at": 317,
+          "round": 12,
+          "hp": 125,
+          "level": 16,
+          "kills": 187,
+          "enemies": 0,
+          "groundXP": 6,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 330,
+          "round": 12,
+          "hp": 125,
+          "level": 16,
+          "kills": 192,
+          "enemies": 24,
+          "groundXP": 15,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 2,
+          "brutes": 1
+        },
+        {
+          "at": 358,
+          "round": 13,
+          "hp": 125,
+          "level": 17,
+          "kills": 216,
+          "enemies": 0,
+          "groundXP": 19.5,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 360,
+          "round": 13,
+          "hp": 125,
+          "level": 17,
+          "kills": 216,
+          "enemies": 0,
+          "groundXP": 12,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 390,
+          "round": 13,
+          "hp": 125,
+          "level": 18,
+          "kills": 235,
+          "enemies": 12,
+          "groundXP": 33,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 2
+        },
+        {
+          "at": 403,
+          "round": 14,
+          "hp": 125,
+          "level": 19,
+          "kills": 247,
+          "enemies": 0,
+          "groundXP": 24,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 420,
+          "round": 14,
+          "hp": 125,
+          "level": 19,
+          "kills": 257,
+          "enemies": 23,
+          "groundXP": 9,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 2,
+          "brutes": 4
+        },
+        {
+          "at": 437,
+          "round": 15,
+          "hp": 125,
+          "level": 20,
+          "kills": 280,
+          "enemies": 0,
+          "groundXP": 7.5,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 450,
+          "round": 15,
+          "hp": 125,
+          "level": 20,
+          "kills": 287,
+          "enemies": 28,
+          "groundXP": 9,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 3,
+          "brutes": 1
+        },
+        {
+          "at": 471,
+          "round": 16,
+          "hp": 125,
+          "level": 22,
+          "kills": 315,
+          "enemies": 0,
+          "groundXP": 3,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 480,
+          "round": 16,
+          "hp": 125,
+          "level": 22,
+          "kills": 317,
+          "enemies": 31,
+          "groundXP": 6,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 1,
+          "brutes": 3
+        },
+        {
+          "at": 510,
+          "round": 16,
+          "hp": 125,
+          "level": 22,
+          "kills": 342,
+          "enemies": 10,
+          "groundXP": 37.5,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 3
+        },
+        {
+          "at": 516,
+          "round": 17,
+          "hp": 125,
+          "level": 23,
+          "kills": 352,
+          "enemies": 0,
+          "groundXP": 22.5,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 540,
+          "round": 17,
+          "hp": 125,
+          "level": 24,
+          "kills": 368,
+          "enemies": 23,
+          "groundXP": 21,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 1,
+          "brutes": 4
+        },
+        {
+          "at": 555,
+          "round": 18,
+          "hp": 130,
+          "level": 25,
+          "kills": 391,
+          "enemies": 0,
+          "groundXP": 9,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 570,
+          "round": 18,
+          "hp": 130,
+          "level": 25,
+          "kills": 398,
+          "enemies": 34,
+          "groundXP": 9,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 4,
+          "brutes": 2
+        },
+        {
+          "at": 596,
+          "round": 19,
+          "hp": 135,
+          "level": 27,
+          "kills": 432,
+          "enemies": 0,
+          "groundXP": 4.5,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 600,
+          "round": 19,
+          "hp": 135,
+          "level": 27,
+          "kills": 432,
+          "enemies": 6,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 2
+        },
+        {
+          "at": 630,
+          "round": 19,
+          "hp": 135,
+          "level": 27,
+          "kills": 457,
+          "enemies": 18,
+          "groundXP": 15,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 4
+        },
+        {
+          "at": 639,
+          "round": 20,
+          "hp": 135,
+          "level": 28,
+          "kills": 475,
+          "enemies": 0,
+          "groundXP": 13.5,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 660,
+          "round": 20,
+          "hp": 115,
+          "level": 28,
+          "kills": 477,
+          "enemies": 43,
+          "groundXP": 6,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 3,
+          "brutes": 3,
+          "bossHP": 1536.3033469387756
+        },
+        {
+          "at": 690,
+          "round": 20,
+          "hp": 135,
+          "level": 30,
+          "kills": 519,
+          "enemies": 1,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0,
+          "bossHP": 1387.8033469387758
+        },
+        {
+          "at": 720,
+          "round": 20,
+          "hp": 135,
+          "level": 30,
+          "kills": 519,
+          "enemies": 1,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0,
+          "bossHP": 827.3033469387767
+        },
+        {
+          "at": 750,
+          "round": 20,
+          "hp": 135,
+          "level": 30,
+          "kills": 519,
+          "enemies": 1,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0,
+          "bossHP": 129.25334693877699
+        },
+        {
+          "at": 753,
+          "round": 21,
+          "hp": 135,
+          "level": 30,
+          "kills": 520,
+          "enemies": 0,
+          "groundXP": 6,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 780,
+          "round": 21,
+          "hp": 135,
+          "level": 31,
+          "kills": 541,
+          "enemies": 26,
+          "groundXP": 39,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 4
+        },
+        {
+          "at": 798,
+          "round": 22,
+          "hp": 135,
+          "level": 33,
+          "kills": 567,
+          "enemies": 0,
+          "groundXP": 9,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 810,
+          "round": 22,
+          "hp": 135,
+          "level": 33,
+          "kills": 569,
+          "enemies": 47,
+          "groundXP": 6,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 4,
+          "brutes": 2
+        },
+        {
+          "at": 837,
+          "round": 23,
+          "hp": 135,
+          "level": 35,
+          "kills": 616,
+          "enemies": 0,
+          "groundXP": 4.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 840,
+          "round": 23,
+          "hp": 135,
+          "level": 35,
+          "kills": 616,
+          "enemies": 0,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 870,
+          "round": 24,
+          "hp": 135,
+          "level": 36,
+          "kills": 667,
+          "enemies": 0,
+          "groundXP": 54,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 870,
+          "round": 24,
+          "hp": 135,
+          "level": 36,
+          "kills": 667,
+          "enemies": 0,
+          "groundXP": 36,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 900,
+          "round": 24,
+          "hp": 135,
+          "level": 37,
+          "kills": 699,
+          "enemies": 21,
+          "groundXP": 48,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 3
+        },
+        {
+          "at": 914,
+          "round": 25,
+          "hp": 135,
+          "level": 39,
+          "kills": 720,
+          "enemies": 0,
+          "groundXP": 4.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 930,
+          "round": 25,
+          "hp": 127,
+          "level": 39,
+          "kills": 728,
+          "enemies": 47,
+          "groundXP": 3,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 5,
+          "brutes": 1
+        },
+        {
+          "at": 958,
+          "round": 26,
+          "hp": 135,
+          "level": 40,
+          "kills": 775,
+          "enemies": 0,
+          "groundXP": 75,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 960,
+          "round": 26,
+          "hp": 135,
+          "level": 40,
+          "kills": 775,
+          "enemies": 0,
+          "groundXP": 66,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 990,
+          "round": 26,
+          "hp": 135,
+          "level": 42,
+          "kills": 830,
+          "enemies": 2,
+          "groundXP": 45,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 2
+        },
+        {
+          "at": 991,
+          "round": 27,
+          "hp": 135,
+          "level": 42,
+          "kills": 832,
+          "enemies": 0,
+          "groundXP": 46.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1020,
+          "round": 27,
+          "hp": 135,
+          "level": 44,
+          "kills": 869,
+          "enemies": 22,
+          "groundXP": 15,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 4
+        },
+        {
+          "at": 1035,
+          "round": 28,
+          "hp": 135,
+          "level": 44,
+          "kills": 891,
+          "enemies": 0,
+          "groundXP": 16.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1050,
+          "round": 28,
+          "hp": 124,
+          "level": 45,
+          "kills": 897,
+          "enemies": 55,
+          "groundXP": 21,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 1,
+          "brutes": 5
+        },
+        {
+          "at": 1080,
+          "round": 28,
+          "hp": 135,
+          "level": 47,
+          "kills": 951,
+          "enemies": 1,
+          "groundXP": 12,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 1
+        },
+        {
+          "at": 1081,
+          "round": 29,
+          "hp": 135,
+          "level": 47,
+          "kills": 952,
+          "enemies": 0,
+          "groundXP": 16.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1110,
+          "round": 29,
+          "hp": 135,
+          "level": 48,
+          "kills": 995,
+          "enemies": 20,
+          "groundXP": 15,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 7
+        },
+        {
+          "at": 1117,
+          "round": 30,
+          "hp": 135,
+          "level": 49,
+          "kills": 1015,
+          "enemies": 0,
+          "groundXP": 25.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1140,
+          "round": 30,
+          "hp": 135,
+          "level": 49,
+          "kills": 1039,
+          "enemies": 41,
+          "groundXP": 21,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade"
+          ],
+          "runners": 1,
+          "brutes": 6,
+          "bossHP": 2948.5531428571435,
+          "bossSkill": "chains"
+        },
+        {
+          "at": 1170,
+          "round": 30,
+          "hp": 135,
+          "level": 51,
+          "kills": 1079,
+          "enemies": 1,
+          "groundXP": 12,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0,
+          "bossHP": 2811.303142857143
+        },
+        {
+          "at": 1200,
+          "round": 30,
+          "hp": 135,
+          "level": 51,
+          "kills": 1079,
+          "enemies": 1,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0,
+          "bossHP": 1394.928142857144
+        },
+        {
+          "at": 1229,
+          "round": 31,
+          "hp": 135,
+          "level": 51,
+          "kills": 1080,
+          "enemies": 0,
+          "groundXP": 6,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1230,
+          "round": 31,
+          "hp": 135,
+          "level": 51,
+          "kills": 1080,
+          "enemies": 0,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1260,
+          "round": 31,
+          "hp": 126,
+          "level": 52,
+          "kills": 1118,
+          "enemies": 29,
+          "groundXP": 9,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 7
+        },
+        {
+          "at": 1282,
+          "round": 32,
+          "hp": 135,
+          "level": 53,
+          "kills": 1147,
+          "enemies": 0,
+          "groundXP": 4.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1290,
+          "round": 32,
+          "hp": 135,
+          "level": 53,
+          "kills": 1147,
+          "enemies": 50,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 9,
+          "brutes": 8
+        },
+        {
+          "at": 1319,
+          "round": 33,
+          "hp": 135,
+          "level": 56,
+          "kills": 1216,
+          "enemies": 0,
+          "groundXP": 9,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1320,
+          "round": 33,
+          "hp": 135,
+          "level": 57,
+          "kills": 1216,
+          "enemies": 0,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1350,
+          "round": 33,
+          "hp": 135,
+          "level": 57,
+          "kills": 1251,
+          "enemies": 36,
+          "groundXP": 18,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 7
+        },
+        {
+          "at": 1365,
+          "round": 34,
+          "hp": 135,
+          "level": 59,
+          "kills": 1287,
+          "enemies": 0,
+          "groundXP": 4.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1380,
+          "round": 34,
+          "hp": 123,
+          "level": 59,
+          "kills": 1292,
+          "enemies": 68,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 8,
+          "brutes": 7
+        },
+        {
+          "at": 1410,
+          "round": 34,
+          "hp": 135,
+          "level": 61,
+          "kills": 1359,
+          "enemies": 1,
+          "groundXP": 9,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 1
+        },
+        {
+          "at": 1410,
+          "round": 35,
+          "hp": 135,
+          "level": 61,
+          "kills": 1360,
+          "enemies": 0,
+          "groundXP": 13.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1440,
+          "round": 35,
+          "hp": 135,
+          "level": 63,
+          "kills": 1426,
+          "enemies": 9,
+          "groundXP": 4.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 8
+        },
+        {
+          "at": 1446,
+          "round": 36,
+          "hp": 135,
+          "level": 63,
+          "kills": 1435,
+          "enemies": 0,
+          "groundXP": 4.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1470,
+          "round": 36,
+          "hp": 135,
+          "level": 64,
+          "kills": 1471,
+          "enemies": 41,
+          "groundXP": 30,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 1,
+          "brutes": 7
+        },
+        {
+          "at": 1489,
+          "round": 37,
+          "hp": 135,
+          "level": 65,
+          "kills": 1512,
+          "enemies": 0,
+          "groundXP": 13.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1500,
+          "round": 37,
+          "hp": 135,
+          "level": 66,
+          "kills": 1512,
+          "enemies": 75,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 9,
+          "brutes": 7
+        },
+        {
+          "at": 1530,
+          "round": 37,
+          "hp": 135,
+          "level": 67,
+          "kills": 1564,
+          "enemies": 27,
+          "groundXP": 18,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 3
+        },
+        {
+          "at": 1537,
+          "round": 38,
+          "hp": 135,
+          "level": 68,
+          "kills": 1591,
+          "enemies": 0,
+          "groundXP": 10.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1560,
+          "round": 38,
+          "hp": 135,
+          "level": 69,
+          "kills": 1615,
+          "enemies": 57,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 1,
+          "brutes": 11
+        },
+        {
+          "at": 1574,
+          "round": 39,
+          "hp": 135,
+          "level": 70,
+          "kills": 1672,
+          "enemies": 0,
+          "groundXP": 4.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1590,
+          "round": 39,
+          "hp": 135,
+          "level": 70,
+          "kills": 1681,
+          "enemies": 74,
+          "groundXP": 3,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 9,
+          "brutes": 12
+        },
+        {
+          "at": 1618,
+          "round": 40,
+          "hp": 135,
+          "level": 73,
+          "kills": 1755,
+          "enemies": 0,
+          "groundXP": 9,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1620,
+          "round": 40,
+          "hp": 135,
+          "level": 73,
+          "kills": 1755,
+          "enemies": 0,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1650,
+          "round": 40,
+          "hp": 115,
+          "level": 74,
+          "kills": 1816,
+          "enemies": 24,
+          "groundXP": 12,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 5,
+          "bossHP": 4197.281591836737
+        },
+        {
+          "at": 1680,
+          "round": 40,
+          "hp": 135,
+          "level": 75,
+          "kills": 1839,
+          "enemies": 1,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0,
+          "bossHP": 2920.881591836734,
+          "bossSkill": "plague"
+        },
+        {
+          "at": 1710,
+          "round": 40,
+          "hp": 135,
+          "level": 75,
+          "kills": 1839,
+          "enemies": 1,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0,
+          "bossHP": 1269.98159183673
+        },
+        {
+          "at": 1734,
+          "round": 41,
+          "hp": 135,
+          "level": 75,
+          "kills": 1840,
+          "enemies": 0,
+          "groundXP": 6,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1740,
+          "round": 41,
+          "hp": 135,
+          "level": 75,
+          "kills": 1840,
+          "enemies": 48,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 9,
+          "brutes": 9
+        },
+        {
+          "at": 1770,
+          "round": 41,
+          "hp": 135,
+          "level": 77,
+          "kills": 1926,
+          "enemies": 1,
+          "groundXP": 4.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 1
+        },
+        {
+          "at": 1771,
+          "round": 42,
+          "hp": 135,
+          "level": 77,
+          "kills": 1927,
+          "enemies": 0,
+          "groundXP": 4.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1800,
+          "round": 42,
+          "hp": 135,
+          "level": 79,
+          "kills": 1980,
+          "enemies": 36,
+          "groundXP": 6,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 13
+        },
+        {
+          "at": 1816,
+          "round": 43,
+          "hp": 135,
+          "level": 80,
+          "kills": 2016,
+          "enemies": 0,
+          "groundXP": 4.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1830,
+          "round": 43,
+          "hp": 135,
+          "level": 80,
+          "kills": 2022,
+          "enemies": 85,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 17,
+          "brutes": 13
+        },
+        {
+          "at": 1860,
+          "round": 43,
+          "hp": 140,
+          "level": 82,
+          "kills": 2102,
+          "enemies": 5,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 5
+        },
+        {
+          "at": 1872,
+          "round": 44,
+          "hp": 140,
+          "level": 82,
+          "kills": 2107,
+          "enemies": 0,
+          "groundXP": 18,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1890,
+          "round": 44,
+          "hp": 140,
+          "level": 83,
+          "kills": 2130,
+          "enemies": 70,
+          "groundXP": 15,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 12
+        },
+        {
+          "at": 1907,
+          "round": 45,
+          "hp": 140,
+          "level": 85,
+          "kills": 2200,
+          "enemies": 0,
+          "groundXP": 13.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1920,
+          "round": 45,
+          "hp": 140,
+          "level": 85,
+          "kills": 2206,
+          "enemies": 89,
+          "groundXP": 9,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 10,
+          "brutes": 9
+        },
+        {
+          "at": 1948,
+          "round": 46,
+          "hp": 145,
+          "level": 87,
+          "kills": 2295,
+          "enemies": 0,
+          "groundXP": 18,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1950,
+          "round": 46,
+          "hp": 145,
+          "level": 87,
+          "kills": 2295,
+          "enemies": 0,
+          "groundXP": 13.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 1980,
+          "round": 46,
+          "hp": 145,
+          "level": 89,
+          "kills": 2365,
+          "enemies": 27,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 9
+        },
+        {
+          "at": 2000,
+          "round": 47,
+          "hp": 145,
+          "level": 90,
+          "kills": 2392,
+          "enemies": 0,
+          "groundXP": 13.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 2010,
+          "round": 47,
+          "hp": 145,
+          "level": 90,
+          "kills": 2395,
+          "enemies": 96,
+          "groundXP": 12,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 18,
+          "brutes": 12
+        },
+        {
+          "at": 2035,
+          "round": 48,
+          "hp": 145,
+          "level": 92,
+          "kills": 2491,
+          "enemies": 0,
+          "groundXP": 4.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 2040,
+          "round": 48,
+          "hp": 145,
+          "level": 92,
+          "kills": 2491,
+          "enemies": 24,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 5,
+          "brutes": 3
+        },
+        {
+          "at": 2070,
+          "round": 48,
+          "hp": 145,
+          "level": 94,
+          "kills": 2579,
+          "enemies": 13,
+          "groundXP": 7.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 12
+        },
+        {
+          "at": 2082,
+          "round": 49,
+          "hp": 145,
+          "level": 95,
+          "kills": 2592,
+          "enemies": 0,
+          "groundXP": 13.5,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 2100,
+          "round": 49,
+          "hp": 145,
+          "level": 95,
+          "kills": 2606,
+          "enemies": 89,
+          "groundXP": 21,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 13,
+          "brutes": 23
+        },
+        {
+          "at": 2130,
+          "round": 49,
+          "hp": 145,
+          "level": 97,
+          "kills": 2689,
+          "enemies": 6,
+          "groundXP": 18,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 6
+        },
+        {
+          "at": 2134,
+          "round": 50,
+          "hp": 145,
+          "level": 97,
+          "kills": 2695,
+          "enemies": 0,
+          "groundXP": 18,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0
+        },
+        {
+          "at": 2160,
+          "round": 50,
+          "hp": 145,
+          "level": 99,
+          "kills": 2773,
+          "enemies": 27,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 17,
+          "bossHP": 8948.639999999994
+        },
+        {
+          "at": 2190,
+          "round": 50,
+          "hp": 145,
+          "level": 100,
+          "kills": 2799,
+          "enemies": 1,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0,
+          "bossHP": 7392.239999999977
+        },
+        {
+          "at": 2220,
+          "round": 50,
+          "hp": 145,
+          "level": 100,
+          "kills": 2799,
+          "enemies": 1,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0,
+          "bossHP": 5131.139999999952
+        },
+        {
+          "at": 2250,
+          "round": 50,
+          "hp": 145,
+          "level": 100,
+          "kills": 2799,
+          "enemies": 1,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0,
+          "bossHP": 3084.539999999944
+        },
+        {
+          "at": 2280,
+          "round": 50,
+          "hp": 145,
+          "level": 100,
+          "kills": 2799,
+          "enemies": 1,
+          "groundXP": 0,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "rotating-blade",
+            "orbiting-shield"
+          ],
+          "runners": 0,
+          "brutes": 0,
+          "bossHP": 1136.3399999999497,
+          "bossSkill": "plague"
+        }
+      ],
+      "wallSeconds": 4.680468551,
+      "tickMs": {
+        "median": 0.01697599999988597,
+        "p95": 0.07361199999968449
+      }
+    }
+  ]
+}

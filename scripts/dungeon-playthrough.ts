@@ -15,15 +15,6 @@ import type { DungeonId, WeaponId } from "../src/dungeons/config";
 const out =
   process.env.DUNGEON_SIM_OUTPUT || "/workspace/after-rain-playthroughs";
 mkdirSync(out, { recursive: true });
-const trialCap = process.argv.find((arg) => arg.startsWith("--xp-cap="));
-if (trialCap) {
-  const value = Number(trialCap.split("=")[1]);
-  if (!Number.isFinite(value) || value < 12)
-    throw Error("Invalid trial XP cap");
-  (DUNGEON_BALANCE as unknown as { xpLevelCostCap: number }).xpLevelCostCap =
-    value;
-}
-
 const builds: Record<string, WeaponId[]> = {
   assault: ["sword", "bow", "spear", "hammer"],
   control: ["sword", "boomerang", "rotating-blade", "orbiting-shield"],
@@ -123,6 +114,7 @@ function simulate(
     dy = 0,
     ticks = 0,
     latestKill = 0,
+    latestDamage = 0,
     oldKills = 0,
     peakEnemies = 0,
     peakProjectiles = 0,
@@ -261,6 +253,8 @@ function simulate(
     }
     const start = performance.now();
     run.step(dt);
+    if (run.impacts.some((hit) => hit.at === s.elapsed))
+      latestDamage = s.elapsed;
     const elapsedTick = performance.now() - start;
     maxHealing = Math.max(
       maxHealing,
@@ -316,7 +310,7 @@ function simulate(
       dungeon === "mall-parking" &&
       s.waveRemaining === 0 &&
       s.enemies.length &&
-      s.elapsed - latestKill > 120
+      s.elapsed - Math.max(latestKill, latestDamage) > 120
     ) {
       status = "stalled-wave";
       break;
@@ -423,10 +417,25 @@ if (!process.argv.includes("--pet-matrix-only")) {
       dungeon === "abandoned-central-square"
     )
       if (!process.argv.includes("--waves-only") || dungeon === "mall-parking")
-        for (const build of Object.keys(builds))
-          for (const seed of process.argv.includes("--quick")
-            ? [1234567]
-            : [1234567, 7654321])
+        for (const build of Object.keys(builds).filter((build) => {
+          const chosen = process.argv
+            .find((arg) => arg.startsWith("--build="))
+            ?.split("=")[1];
+          return !chosen || chosen === build;
+        }))
+          for (const seed of process.argv.some((arg) =>
+            arg.startsWith("--seed="),
+          )
+            ? [
+                Number(
+                  process.argv
+                    .find((arg) => arg.startsWith("--seed="))!
+                    .split("=")[1],
+                ),
+              ]
+            : process.argv.includes("--quick")
+              ? [1234567]
+              : [1234567, 7654321])
             results.push(simulate(dungeon, build, seed));
   if (!process.argv.includes("--quick"))
     for (const dungeon of [
@@ -463,7 +472,10 @@ writeFileSync(
   join(out, "summary.json"),
   JSON.stringify(
     {
-      xpLevelCostCap: DUNGEON_BALANCE.xpLevelCostCap,
+      experienceCurve: {
+        linearStartLevel: DUNGEON_BALANCE.xpLinearStartLevel,
+        linearStartCost: DUNGEON_BALANCE.xpLinearStartCost,
+      },
       method:
         "Fixed-step deterministic bot, legal random cards, no granted XP or pre-equipped arsenal. CPU timings exclude steering, rendering and GPU.",
       results,

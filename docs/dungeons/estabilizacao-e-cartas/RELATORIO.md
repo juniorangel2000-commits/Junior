@@ -72,7 +72,7 @@ DUNGEON_PLAYTHROUGH_DIR=/workspace/after-rain-validated-sessions node scripts/qa
 npm run build
 ```
 
-O simulador grava em `/workspace/after-rain-playthroughs` por padrão; use `DUNGEON_SIM_OUTPUT` para mudar a pasta. Passe essa mesma pasta para `DUNGEON_PLAYTHROUGH_DIR`. `--quick` reduz a matriz; `--timed-only` filtra a praça; `--xp-cap=N` é uma opção de experimento do simulador, não um ajuste do jogo publicado.
+O simulador grava em `/workspace/after-rain-playthroughs` por padrão; use `DUNGEON_SIM_OUTPUT` para mudar a pasta. Passe essa mesma pasta para `DUNGEON_PLAYTHROUGH_DIR`. `--quick` reduz a matriz; `--timed-only` filtra a praça; `--xp-cap=N` pertence aos experimentos históricos deste relatório; o simulador atual usa uma curva crescente sem teto e não oferece mais esse parâmetro.
 
 ## Capturas
 

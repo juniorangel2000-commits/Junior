@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import { DungeonRun } from "../src/dungeons/run";
 import { createDungeonProgress } from "../src/dungeons/progression";
 import { UPGRADES, rollUpgradeCards } from "../src/dungeons/upgrades";
-import { DUNGEON_BALANCE as B } from "../src/dungeons/config";
 import { validDungeonSnapshot } from "../src/dungeons/snapshot";
 const make = () =>
   new DungeonRun(
@@ -44,10 +43,10 @@ describe("complete builds and scheduled weapon choices", () => {
       rollUpgradeCards(r.state, () => 0.8).every((c) => c.kind === "upgrade"),
     ).toBe(true);
   });
-  it("limits later level costs consistently in both modes", () => {
+  it("increases later costs consistently in both modes", () => {
     const r = make();
     r.state.level = 100;
-    expect(r.xpNeeded).toBe(B.xpLevelCostCap);
+    expect(r.xpNeeded).toBe(173);
     const waves = new DungeonRun(
       "waves",
       "mall-parking",

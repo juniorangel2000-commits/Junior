@@ -339,9 +339,26 @@ export class DungeonRun {
     if (this.buildComplete) {
       // Keep leveling without empty card dialogs or automatic healing.
       while (s.xp >= this.xpNeeded) {
-        if (this.xpNeeded === B.xpLevelCostCap) {
-          const levels = Math.floor(s.xp / this.xpNeeded);
-          s.xp -= levels * this.xpNeeded;
+        if (s.level >= B.xpLinearStartLevel) {
+          const firstCost = this.xpNeeded;
+          const cost = (count: number) =>
+            (count * (2 * firstCost + count - 1)) / 2;
+          // Respect the existing checkpoint level bound, including huge XP grants.
+          const availableLevels = Math.max(0, 1e9 - s.level);
+          let levels = Math.min(
+            availableLevels,
+            Math.max(
+              1,
+              Math.floor(
+                (Math.sqrt((2 * firstCost - 1) ** 2 + 8 * s.xp) -
+                  (2 * firstCost - 1)) /
+                  2,
+              ),
+            ),
+          );
+          while (levels > 0 && cost(levels) > s.xp) levels--;
+          while (levels < availableLevels && cost(levels + 1) <= s.xp) levels++;
+          s.xp -= cost(levels);
           s.level += levels;
           break;
         }

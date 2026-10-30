@@ -61,11 +61,14 @@ export function hordeProfile(
   };
 }
 
-/** A bounded cost lets a surviving, actively collecting build finish its ranks. */
+/** Early onboarding is preserved; later levels keep getting more expensive. */
 export function experienceForLevel(level: number): number {
+  if (level >= DUNGEON_BALANCE.xpLinearStartLevel)
+    return (
+      DUNGEON_BALANCE.xpLinearStartCost +
+      level -
+      DUNGEON_BALANCE.xpLinearStartLevel
+    );
   const n = Math.max(0, level - 1);
-  return Math.min(
-    DUNGEON_BALANCE.xpLevelCostCap,
-    Math.floor(12 + n * 3 + n * n * 0.15),
-  );
+  return Math.floor(12 + n * 3 + n * n * 0.15);
 }
