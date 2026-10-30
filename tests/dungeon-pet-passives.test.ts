@@ -173,7 +173,7 @@ describe("equipped companion species bonuses", () => {
     const { run: r } = make("dog", true);
     r.state.permanent.vitality = 2;
     r.state.levels.health = 1;
-    expect(r.maxHealth).toBeCloseTo(B.playerHealth * (1 + 0.06 + 0.05 + 0.2));
+    expect(r.maxHealth).toBeCloseTo(B.playerHealth * (1 + 0.08 + 0.05 + 0.2));
     expect(r.state.pet!.maxHp).toBe(make("dog").run.state.pet!.maxHp);
     const restored = make().run;
     const snapshot = r.snapshot();

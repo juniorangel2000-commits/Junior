@@ -54,6 +54,20 @@ function simulate(
   rare = false,
 ) {
   const progress = createDungeonProgress();
+  const rankOption = process.argv.find((arg) =>
+    arg.startsWith("--permanent-rank="),
+  );
+  const permanentRank = rankOption ? Number(rankOption.split("=")[1]) : 0;
+  if (
+    !Number.isInteger(permanentRank) ||
+    permanentRank < 0 ||
+    permanentRank > 20
+  )
+    throw Error("Invalid permanent rank");
+  for (const key of Object.keys(
+    progress.attributes,
+  ) as (keyof typeof progress.attributes)[])
+    progress.attributes[key] = permanentRank;
   const species = pet === "cat" ? "cat" : "dog";
   const suffix = pet ? `-${species}${rare ? "-rare" : ""}` : "";
   if (pet)
@@ -70,6 +84,13 @@ function simulate(
         efficiency: 0,
       },
     });
+  if (pet) {
+    const companion = progress.pets[0];
+    for (const key of Object.keys(
+      companion.attributes,
+    ) as (keyof typeof companion.attributes)[])
+      companion.attributes[key] = permanentRank;
+  }
   const run = new DungeonRun(
     "sim-" + build + "-" + seed + suffix,
     dungeon,
@@ -312,6 +333,7 @@ function simulate(
     seed,
     pet,
     rare,
+    permanentRank,
     resumeChecks,
     maxHealing,
     petRecoveries,

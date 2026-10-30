@@ -1,3 +1,4 @@
+import { PERMANENT_EFFECTS as P } from "./permanent-effects";
 import { petPlayerBonuses } from "./pet-passives";
 import { petRoamGoal } from "./pet-roaming";
 import {
@@ -185,7 +186,7 @@ export class DungeonRun {
     const maxHp =
       B.playerHealth *
       (1 +
-        progress.attributes.vitality * 0.03 +
+        progress.attributes.vitality * P.vitality +
         petPlayerBonuses(owned).health);
     this.state = {
       version: 1,
@@ -221,7 +222,7 @@ export class DungeonRun {
     };
     if (owned) {
       const c = PETS[owned.species],
-        hp = c.health * (1 + owned.attributes.resistance * 0.05);
+        hp = c.health * (1 + owned.attributes.resistance * P.petResistance);
       this.state.pet = {
         id: owned.id,
         species: owned.species,
@@ -255,7 +256,7 @@ export class DungeonRun {
     return (
       B.playerHealth *
       (1 +
-        this.state.permanent.vitality * 0.03 +
+        this.state.permanent.vitality * P.vitality +
         this.bonus("health") +
         petPlayerBonuses(this.state.pet).health)
     );
@@ -264,7 +265,7 @@ export class DungeonRun {
     return (
       B.playerSpeed *
       (1 +
-        this.state.permanent.agility * 0.02 +
+        this.state.permanent.agility * P.agility +
         petPlayerBonuses(this.state.pet).movement +
         this.bonus("movement") +
         (this.active("speed") ? B.eventSpeedBonus : 0) +
@@ -469,7 +470,7 @@ export class DungeonRun {
     for (let i = this.effects.length - 1; i >= 0; i--)
       if (this.effects[i].ttl <= 0) this.effects.splice(i, 1);
     this.healPlayer(
-      (s.permanent.survival * 0.02 +
+      (s.permanent.survival * P.survival +
         this.level("regeneration") * B.regenerationPerLevel +
         this.level("fast-recovery") * B.rareRegenPerLevel +
         (this.active("last-stand") ? B.lastStandRegeneration : 0)) *
@@ -672,7 +673,7 @@ export class DungeonRun {
           this.bonus(w.kind) +
           this.bonus("advanced-attack") +
           this.bonus(prefix + "-damage") +
-          (w.kind === "melee" ? this.state.permanent.strength * 0.02 : 0) +
+          this.state.permanent.strength * P.strength +
           (this.active("attack") ? B.eventAttackBonus : 0) +
           (special
             ? this.bonus("special-efficiency") +
@@ -713,7 +714,14 @@ export class DungeonRun {
     if (e.hp <= 0) return;
     const s = this.state;
     const critical =
-      weaponHit && this.active("critical") && this.random() < B.criticalChance;
+      weaponHit &&
+      (s.permanent.precision > 0 || this.active("critical")) &&
+      this.random() <
+        Math.min(
+          1,
+          s.permanent.precision * P.precisionCritical +
+            (this.active("critical") ? B.criticalChance : 0),
+        );
     if (critical) damage *= B.criticalMultiplier;
     if (weaponHit && e.kind === "boss") damage *= 1 + this.bonus("boss-damage");
     if (this.level("deadly-precision")) {
@@ -882,7 +890,7 @@ export class DungeonRun {
       0.75,
       petPlayerBonuses(s.pet).protection +
         this.bonus("defense") +
-        s.permanent.resistance * 0.02 +
+        s.permanent.resistance * P.resistance +
         (s.pet && s.pet.hp > 0
           ? s.pet.attributes.protection * 0.01 + this.bonus("pet-protection")
           : 0),
@@ -1021,7 +1029,7 @@ export class DungeonRun {
             B.baseAccuracy +
               this.bonus("accuracy") +
               (id === "bow" ? this.bonus("bow-accuracy") : 0) +
-              s.permanent.precision * 0.01,
+              s.permanent.precision * P.precisionAccuracy,
           ),
         });
         s.projectiles.push(projectile);
@@ -1340,7 +1348,7 @@ export class DungeonRun {
               damage /
                 (1 +
                   this.bonus("pet-resistance") +
-                  p.attributes.resistance * 0.05),
+                  p.attributes.resistance * P.petResistance),
           );
           if (p.hp === 0) {
             delete p.action;
