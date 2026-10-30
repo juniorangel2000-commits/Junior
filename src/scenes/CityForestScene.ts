@@ -1,3 +1,4 @@
+import {CityTravelTransition} from '../dungeons/city-travel-transition';
 import {preloadPetArt} from "../dungeons/pet-sprites";
 import {installWorldCompanion,getWorldPetController} from "../dungeons/world-pet-controller";
 import {Farming} from '../systems/farming';
@@ -124,7 +125,18 @@ export class CityForestScene extends Phaser.Scene{
  private visibility=():void=>{if(document.hidden)this.blur();};
  private enterDungeons():void{
   if(this.leaving||!this.persist())return;this.leaving=true;const ui=this.ui,onReturn=this.onReturn;
-  this.scene.start('Dungeons',{save:structuredClone(this.state),ui,onReturn:(save:SaveData,title=false)=>{if(title)onReturn(save,true);else this.scene.start('AcessoCidade',{save,ui,onReturn,fromCity:true});}});
+  const save=structuredClone(this.state);
+  const start=(travel?:CityTravelTransition):void=>{
+   this.scene.start('Dungeons',{save,ui,travel,onReturn:(next:SaveData,title=false)=>{if(title)onReturn(next,true);else this.scene.start('AcessoCidade',{save:next,ui,onReturn,fromCity:true});}});
+  };
+  if(save.dungeonRun){start();return;}
+  const travel=new CityTravelTransition(save.profile,()=>{
+   // Let the first video frame paint before starting the scene loader.
+   requestAnimationFrame(()=>setTimeout(()=>start(travel),0));
+  },()=>{
+   travel.destroy();this.scene.stop('Dungeons');
+   this.scene.start('AcessoCidade',{save,ui,onReturn,fromCity:true});
+  });
  }
  private askCityTravel():void{
   if(this.leaving||this.ui.isModalOpen())return;

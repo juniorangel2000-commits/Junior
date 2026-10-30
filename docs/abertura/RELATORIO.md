@@ -43,3 +43,11 @@ O protocolo do aplicativo desktop foi configurado para mídia (`stream: true`) e
 O player compartilhado não considera mais um erro de mídia ou timeout como uma conclusão normal. Em falha, mantém a cena e oferece **Tentar novamente**, com **Pular** disponível apenas após preparar os recursos. A perda de foco não dispara tentativas automáticas em uma cena com falha. O carregamento concluído não encerra um vídeo que ainda está reproduzindo.
 
 Validação: 11 testes dos bytes servidos (arquivo completo, intervalos abertos, fechados, sufixos e inválidos) e 2 testes da seleção dos vídeos. Chromium reproduziu os dois vídeos da estrada até o fim, em velocidade normal, pelo mesmo handler de bytes usado no desktop: 9,963 segundos cada, com requisições 206 reais. O player foi testado com falha simulada e repetição bem-sucedida. Esses testes não reproduzem o Windows do jogador nem confirmam qual erro ocorreu naquela execução.
+
+## Barra de rolagem, emenda da chuva e início imediato da viagem
+
+O fundo animado agora fica em um contêiner recortado, para que o zoom não aumente a área rolável da tela inicial. A rolagem horizontal também fica oculta. O teste visual verifica a largura rolável em três tamanhos e no maior zoom da animação.
+
+A chuva já utilizava `loop`, mas o buffer tinha uma redução para silêncio nas pontas. Essa redução foi substituída por uma sobreposição de 250 ms com mistura de potência constante, preservando o filtro e o nível RMS de 0,012. O teste Web Audio renderiza 26 segundos e mede janelas antes, durante e depois das emendas em 12 e 24 segundos, além de conferir que a fonte ativa usa repetição.
+
+A confirmação da viagem agora cria o player imediatamente no DOM. Após o primeiro quadro, inicia o carregamento da cena Dungeons. O mesmo player permanece na tela enquanto os recursos e as prévias são preparados; não há segundo vídeo nem reinício. Pular continua bloqueado até concluir o carregamento. Retomar uma dungeon salva mantém o fluxo de retomada existente, sem inserir a viagem.

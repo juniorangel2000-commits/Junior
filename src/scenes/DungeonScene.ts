@@ -1,3 +1,4 @@
+import type {CityTravelTransition} from '../dungeons/city-travel-transition';
 import type { DungeonReward } from "../dungeons/progression";
 import { getVisualSettings } from "../visual-settings";
 import { dungeonLightingState } from "../dungeons/lighting";
@@ -42,6 +43,7 @@ import {
 import { DungeonUI } from "../dungeons/ui";
 import { decodeExpeditionPreviews } from "../dungeons/expedition-intro";
 interface DungeonStart {
+  travel?: CityTravelTransition;
   save: SaveData;
   ui: GameUI;
   onReturn: (save: SaveData, title?: boolean) => void;
@@ -51,6 +53,7 @@ export class DungeonScene extends Phaser.Scene {
   private gameUI!: GameUI;
   private onReturn!: DungeonStart["onReturn"];
   private ui!: DungeonUI;
+  private travel?: CityTravelTransition;
   private mode: "travel" | "menu" | "run" = "travel";
   private run?: DungeonRun;
   private player?: Player;
@@ -81,7 +84,13 @@ export class DungeonScene extends Phaser.Scene {
   constructor() {
     super("Dungeons");
   }
+  init(data: DungeonStart): void { this.travel = data.travel; }
   preload(): void {
+    if (this.travel) {
+      const failed = (file: { key: string }): void => { this.travel?.fail(Error(`Failed to load ${file.key}`)); };
+      this.load.once("loaderror", failed);
+      this.load.once("complete", () => this.load.off("loaderror", failed));
+    }
     preloadDungeonArt(this);
   }
   create(data: DungeonStart): void {
@@ -177,6 +186,7 @@ export class DungeonScene extends Phaser.Scene {
     window.addEventListener("blur", this.blur);
     document.addEventListener("visibilitychange", this.visibility);
     this.events.once("shutdown", () => {
+      this.travel?.destroy(); this.travel = undefined;
       this.ui.destroy();
       gameAudio.setScene("game");
       gameAudio.setRainAtmosphere(false);
@@ -201,10 +211,10 @@ export class DungeonScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor("#101c1a");
     gameAudio.setScene("expedition");
     gameAudio.setRainAtmosphere(true);
-    // create() only runs after Phaser preload; previews are decoded before skip/menu.
-    this.ui.travel(this.state.profile, decodeExpeditionPreviews(this.previews), () => {
-      if (this.mode === "travel" && !this.returning) this.menu();
-    });
+    const complete = (): void => { if (this.mode === "travel" && !this.returning) this.menu(); };
+    const resources = decodeExpeditionPreviews(this.previews);
+    if (this.travel) this.travel.ready(resources, complete);
+    else this.ui.travel(this.state.profile, resources, complete);
   }
   private clearExpedition(): void {
     this.cameras.main.stopFollow();

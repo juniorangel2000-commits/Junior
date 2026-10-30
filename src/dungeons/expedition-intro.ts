@@ -8,9 +8,9 @@ export function expeditionVideo(profile: Pick<CharacterProfile, "characterId">):
 
 /** City travel uses the shared player and the same resource gate. */
 export class ExpeditionIntro extends CinematicPlayer {
-  constructor(host: HTMLElement, profile: Pick<CharacterProfile, "characterId">, resources: Promise<unknown>, complete: () => void, back: () => void) {
+  constructor(host: HTMLElement, profile: Pick<CharacterProfile, "characterId">, resources: Promise<unknown>, complete: () => void, back: () => void, onStarted?: () => void) {
     const base = expeditionVideo(profile);
-    super(host, { src: `${base}.mp4`, poster: `${base}.jpg`, label: "Viagem até a cidade", description: "A estrada para a cidade", loading: "Preparando a cidade…", className: "dungeon-travel expedition-intro" }, resources, complete, back);
+    super(host, { src: `${base}.mp4`, poster: `${base}.jpg`, label: "Viagem até a cidade", description: "A estrada para a cidade", loading: "Preparando a cidade…", className: "dungeon-travel expedition-intro", onStarted }, resources, complete, back);
   }
 }
 
