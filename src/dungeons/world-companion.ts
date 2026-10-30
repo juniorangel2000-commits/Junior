@@ -1,3 +1,4 @@
+import { petRoamGoal } from "./pet-roaming";
 import type Phaser from "phaser";
 import type { SaveData } from "../types";
 import type { OwnedPet } from "./progression";
@@ -122,9 +123,15 @@ export class WorldCompanion {
     if (dt > 0 && state.mode === "follow" && !this.transition) {
       const blockedTile = (x: number, y: number) =>
         this.blocked((x + 0.5) * 32, (y + 0.5) * 32);
-      if (this.recalculate <= 0 && distance > 65) {
+      const roam = petRoamGoal(player, this.image, this.time, this.pet.id);
+      if (Math.hypot(roam.x - this.image.x, roam.y - this.image.y) < 8)
+        this.route = [];
+      if (
+        (this.recalculate <= 0 || distance < 55) &&
+        Math.hypot(roam.x - this.image.x, roam.y - this.image.y) > 12
+      ) {
         this.recalculate = 0.8;
-        const goal = petFreePoint(player, this.map.blockedPoint);
+        const goal = petFreePoint(roam, this.map.blockedPoint);
         this.route = goal
           ? villageRoute(
               { x: this.image.x / 32, y: this.image.y / 32 },
@@ -133,9 +140,9 @@ export class WorldCompanion {
             ).map((p) => ({ x: (p.x + 0.5) * 32, y: (p.y + 0.5) * 32 }))
           : [];
       }
-      const speed = distance > 160 ? 104 : 72;
+      const speed = distance > 190 ? 104 : 72;
       let remaining = speed * (1 + this.pet.attributes.speed * 0.03) * dt;
-      while (this.route.length && remaining > 0 && distance > 35) {
+      while (this.route.length && remaining > 0) {
         const next = this.route[0],
           dx = next.x - this.image.x,
           dy = next.y - this.image.y,
@@ -155,7 +162,6 @@ export class WorldCompanion {
         this.image.setPosition(x, y);
         remaining -= step;
         if (d <= step + 0.01) this.route.shift();
-        if (Math.hypot(player.x - x, player.y - y) <= 35) break;
       }
     }
     const dx = this.image.x - before.x,
@@ -169,7 +175,7 @@ export class WorldCompanion {
       (state.mode === "stay"
         ? "rest"
         : walking
-          ? distance > 160
+          ? distance > 190
             ? "run"
             : "walk"
           : "idle");

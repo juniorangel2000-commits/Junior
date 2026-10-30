@@ -123,3 +123,48 @@ describe("pet jump damage", () => {
     expect(validDungeonSnapshot(s)).toBe(false);
   });
 });
+
+describe("free dungeon companion movement", () => {
+  it("keeps space, explores nearby positions and resumes the same movement from a save", () => {
+    const r = make("cat", "basic");
+    r.state.enemies = [];
+    tick(r, 120);
+    const pet = r.state.pet!,
+      distance = Math.hypot(pet.x - r.state.player.x, pet.y - r.state.player.y);
+    expect(distance).toBeGreaterThan(55);
+    expect(distance).toBeLessThan(190);
+    const snapshot = r.snapshot(),
+      restored = make("cat", "basic");
+    restored.restore(snapshot);
+    tick(r, 30);
+    tick(restored, 30);
+    expect(restored.state.pet!.x).toBeCloseTo(r.state.pet!.x);
+    expect(restored.state.pet!.y).toBeCloseTo(r.state.pet!.y);
+    expect(validDungeonSnapshot(restored.snapshot())).toBe(true);
+  });
+  it("regroups when far away instead of wandering off", () => {
+    const r = make("dog", "basic");
+    r.state.enemies = [];
+    r.state.pet!.x -= 450;
+    const before = Math.hypot(
+      r.state.pet!.x - r.state.player.x,
+      r.state.pet!.y - r.state.player.y,
+    );
+    tick(r, 30);
+    expect(
+      Math.hypot(
+        r.state.pet!.x - r.state.player.x,
+        r.state.pet!.y - r.state.player.y,
+      ),
+    ).toBeLessThan(before - 50);
+    expect(r.state.pet!.running).toBe(true);
+  });
+  it("approaches an enemy independently and attacks without waiting for the player to move closer", () => {
+    const r = make("cat", "basic");
+    const start = r.state.pet!.x;
+    r.state.enemies[0].x = start - 150;
+    tick(r, 60);
+    expect(r.state.pet!.x).toBeLessThan(start - 10);
+    expect(r.state.enemies[0].hp).toBeLessThan(1000);
+  });
+});

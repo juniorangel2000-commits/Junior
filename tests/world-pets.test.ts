@@ -116,12 +116,13 @@ describe("world companions", () => {
       { area: "property", space: "outdoors", blockedPoint: blocked },
     );
     for (let i = 0; i < 100; i++) {
-      companion.update(0.1, { x: 240, y: 160 });
+      companion.update(0.1, { x: 400, y: 160 });
       expect(blocked(companion.image.x, companion.image.y)).toBe(false);
     }
     expect(
-      Math.hypot(companion.image.x - 240, companion.image.y - 160),
-    ).toBeLessThan(65);
+      Math.hypot(companion.image.x - 400, companion.image.y - 160),
+    ).toBeLessThan(160);
+    expect(companion.image.x).toBeGreaterThan(192);
   });
   it("keeps a waiting pet in place and does not move it to a different map", () => {
     const { save, scene } = fixture();

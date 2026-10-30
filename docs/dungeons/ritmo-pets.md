@@ -7,3 +7,9 @@ Caminhada, idle e transições usam 6 fps; corrida usa 8 fps. O repouso usa 4 fp
 Ataques mantêm os 10 fps anteriores, contato aos 0,6 segundo e duração de 0,8 segundo. O campo opcional `running` no snapshot preserva a apresentação de locomoção e aceita saves anteriores sem esse campo.
 
 Validação: 52 testes direcionados aprovados, incluindo repouso intermitente, navegação, comandos, snapshots e dano dos saltos; build de produção aprovado. Alterações locais, ainda não publicadas.
+
+## Movimentação livre
+
+Os pets deixam de buscar um ponto fixo colado ao jogador. Circulam numa faixa aproximada de 70–110 unidades, alternando deslocamentos curtos e pausas, e reagrupam quando a distância passa de 190. Nas dungeons podem alcançar inimigos próximos por conta própria, respeitando obstáculos e uma distância limitada do jogador. Os destinos são determinísticos e não consomem a aleatoriedade do combate; retomar um save mantém o movimento reproduzível. Esperar aqui continua impedindo deslocamento no mundo normal.
+
+Validação desta etapa: 1.162 testes completos aprovados, build aprovado e simulações do modo de 15 minutos sem saves inválidos. O caso com cachorro concluiu os 900 segundos, nível 647. Ainda sem publicação.

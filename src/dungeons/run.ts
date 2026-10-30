@@ -1,3 +1,4 @@
+import { petRoamGoal } from "./pet-roaming";
 import {
   petDirection,
   petActionDuration,
@@ -1142,15 +1143,49 @@ export class DungeonRun {
     const before = { x: p.x, y: p.y };
     p.running = false;
     if (!p.action) {
-      const dx = s.player.x - 35 - p.x,
-        dy = s.player.y + 20 - p.y,
-        d = Math.hypot(dx, dy) || 1;
-      p.running = d > 160;
-      const move = Math.min(
-        d,
-        c.speed * (p.running ? 1.45 : 1) * (1 + p.attributes.speed * 0.03) * dt,
-      );
-      this.moveEnemy(p, (dx / d) * move, (dy / d) * move);
+      const playerDistance = Math.hypot(s.player.x - p.x, s.player.y - p.y);
+      let goal = petRoamGoal(s.player, p, s.elapsed, p.id);
+      if (playerDistance <= 220 && (p.attack === 0 || p.special === 0)) {
+        const nearby = this.spatial
+          .query(p.x, p.y, 180)
+          .filter(
+            (e) =>
+              e.hp > 0 &&
+              Math.hypot(e.x - s.player.x, e.y - s.player.y) < 260 &&
+              dungeonSegmentClear(s.dungeon, p.x, p.y, e.x, e.y),
+          );
+        const enemy = nearby.sort(
+          (a, b) =>
+            Math.hypot(a.x - p.x, a.y - p.y) - Math.hypot(b.x - p.x, b.y - p.y),
+        )[0];
+        if (enemy) {
+          const dx = p.x - enemy.x,
+            dy = p.y - enemy.y,
+            d = Math.hypot(dx, dy) || 1;
+          goal =
+            d <= 100
+              ? { x: p.x, y: p.y }
+              : { x: enemy.x + (dx / d) * 70, y: enemy.y + (dy / d) * 70 };
+        }
+      }
+      goal = safeDungeonPoint(s.dungeon, goal.x, goal.y);
+      const waypoint = dungeonSegmentClear(s.dungeon, p.x, p.y, goal.x, goal.y)
+        ? goal
+        : dungeonWaypoint(s.dungeon, p.x, p.y, goal.x, goal.y);
+      if (waypoint) {
+        const dx = waypoint.x - p.x,
+          dy = waypoint.y - p.y,
+          d = Math.hypot(dx, dy) || 1;
+        p.running = playerDistance > 190;
+        const move = Math.min(
+          Math.max(0, d - 8),
+          c.speed *
+            (p.running ? 1.45 : 1) *
+            (1 + p.attributes.speed * 0.03) *
+            dt,
+        );
+        this.moveEnemy(p, (dx / d) * move, (dy / d) * move);
+      }
       const targets = this.spatial
         .query(p.x, p.y, 100)
         .filter(
