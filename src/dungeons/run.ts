@@ -1,3 +1,4 @@
+import { petPlayerBonuses } from "./pet-passives";
 import { petRoamGoal } from "./pet-roaming";
 import {
   petDirection,
@@ -87,6 +88,8 @@ export interface AttackEffect {
 export type RunPhase =
   "fighting" | "choice" | "paused" | "victory" | "defeat" | "abandoned";
 export interface RunPet {
+  hurtGrace?: number;
+  evade?: { remaining: number; angle: number };
   action?: PetAttackAction;
   direction?: PetDirection;
   walking?: boolean;
@@ -179,7 +182,11 @@ export class DungeonRun {
     seed = 1234567,
   ) {
     const owned = progress.pets.find((p) => p.id === petId);
-    const maxHp = B.playerHealth * (1 + progress.attributes.vitality * 0.03);
+    const maxHp =
+      B.playerHealth *
+      (1 +
+        progress.attributes.vitality * 0.03 +
+        petPlayerBonuses(owned).health);
     this.state = {
       version: 1,
       id,
@@ -247,7 +254,10 @@ export class DungeonRun {
   get maxHealth(): number {
     return (
       B.playerHealth *
-      (1 + this.state.permanent.vitality * 0.03 + this.bonus("health"))
+      (1 +
+        this.state.permanent.vitality * 0.03 +
+        this.bonus("health") +
+        petPlayerBonuses(this.state.pet).health)
     );
   }
   get moveSpeed(): number {
@@ -255,6 +265,7 @@ export class DungeonRun {
       B.playerSpeed *
       (1 +
         this.state.permanent.agility * 0.02 +
+        petPlayerBonuses(this.state.pet).movement +
         this.bonus("movement") +
         (this.active("speed") ? B.eventSpeedBonus : 0) +
         (this.active("last-stand") ? B.lastStandSpeedBonus : 0))
@@ -303,11 +314,7 @@ export class DungeonRun {
       s.levels[id] = (s.levels[id] ?? 0) + 1;
       if (id === "shield-double" && s.shield)
         s.shield.charges = Math.min(2, s.shield.charges + 1);
-      if (id === "health")
-        s.player.hp = Math.min(
-          this.maxHealth,
-          s.player.hp + B.playerHealth * 0.05,
-        );
+      if (id === "health") this.healPlayer(B.playerHealth * 0.05);
     }
     s.cards = [];
     s.phase = "fighting";
@@ -318,7 +325,11 @@ export class DungeonRun {
     if (!Number.isFinite(amount) || amount < 0 || terminal(this.state.phase))
       return;
     this.state.xp +=
-      amount * (1 + this.bonus("xp") + this.bonus("advanced-xp"));
+      amount *
+      (1 +
+        this.bonus("xp") +
+        this.bonus("advanced-xp") +
+        petPlayerBonuses(this.state.pet).experience);
     this.checkLevel();
   }
   private checkLevel(): void {
@@ -457,14 +468,12 @@ export class DungeonRun {
     for (const effect of this.effects) effect.ttl -= dt;
     for (let i = this.effects.length - 1; i >= 0; i--)
       if (this.effects[i].ttl <= 0) this.effects.splice(i, 1);
-    s.player.hp = Math.min(
-      this.maxHealth,
-      s.player.hp +
-        (s.permanent.survival * 0.02 +
-          this.level("regeneration") * B.regenerationPerLevel +
-          this.level("fast-recovery") * B.rareRegenPerLevel +
-          (this.active("last-stand") ? B.lastStandRegeneration : 0)) *
-          dt,
+    this.healPlayer(
+      (s.permanent.survival * 0.02 +
+        this.level("regeneration") * B.regenerationPerLevel +
+        this.level("fast-recovery") * B.rareRegenPerLevel +
+        (this.active("last-stand") ? B.lastStandRegeneration : 0)) *
+        dt,
     );
     if (
       this.level("last-stand") &&
@@ -857,6 +866,13 @@ export class DungeonRun {
   get shieldCapacity(): number {
     return this.level("shield-double") ? 2 : 1;
   }
+  private healPlayer(amount: number): void {
+    this.state.player.hp = Math.min(
+      this.maxHealth,
+      this.state.player.hp +
+        amount * (1 + petPlayerBonuses(this.state.pet).healing),
+    );
+  }
   /** Contact and boss skills share defense, shield charges and the same hit grace. */
   private hurtPlayer(damage: number): void {
     const s = this.state;
@@ -864,12 +880,11 @@ export class DungeonRun {
     if (this.blockWithShield()) return;
     const reduction = Math.min(
       0.75,
-      this.bonus("defense") +
+      petPlayerBonuses(s.pet).protection +
+        this.bonus("defense") +
         s.permanent.resistance * 0.02 +
         (s.pet && s.pet.hp > 0
-          ? PETS[s.pet.species].protection +
-            s.pet.attributes.protection * 0.01 +
-            this.bonus("pet-protection")
+          ? s.pet.attributes.protection * 0.01 + this.bonus("pet-protection")
           : 0),
     );
     s.player.hp = Math.max(
@@ -1127,8 +1142,14 @@ export class DungeonRun {
       p = s.pet;
     if (!p) return;
     const c = PETS[p.species];
+    p.hurtGrace = Math.max(0, (p.hurtGrace ?? 0) - dt);
+    if (p.evade) {
+      p.evade.remaining = Math.max(0, p.evade.remaining - dt);
+      if (p.evade.remaining === 0) delete p.evade;
+    }
     if (p.hp <= 0) {
       delete p.action;
+      delete p.evade;
       p.walking = false;
       p.running = false;
       p.rest += dt;
@@ -1142,7 +1163,15 @@ export class DungeonRun {
     p.special = Math.max(0, p.special - dt);
     const before = { x: p.x, y: p.y };
     p.running = false;
-    if (!p.action) {
+    if (p.evade && !p.action) {
+      this.moveEnemy(
+        p,
+        Math.cos(p.evade.angle) * 180 * dt,
+        Math.sin(p.evade.angle) * 180 * dt,
+      );
+      p.running = true;
+    }
+    if (!p.action && !p.evade) {
       const playerDistance = Math.hypot(s.player.x - p.x, s.player.y - p.y);
       let goal = petRoamGoal(s.player, p, s.elapsed, p.id);
       if (playerDistance <= 220 && (p.attack === 0 || p.special === 0)) {
@@ -1276,16 +1305,51 @@ export class DungeonRun {
     p.walking = Math.hypot(p.x - before.x, p.y - before.y) > 0.01;
     if (!action && p.walking)
       p.direction = petDirection(p.x - before.x, p.y - before.y);
-    for (const e of this.spatial.query(p.x, p.y, 18))
-      if (e.hp > 0 && Math.hypot(e.x - p.x, e.y - p.y) < 18)
-        p.hp = Math.max(
-          0,
-          p.hp -
-            (e.damage * dt) /
-              (1 +
-                this.bonus("pet-resistance") +
-                p.attributes.resistance * 0.05),
+    if ((p.hurtGrace ?? 0) === 0) {
+      const contacts = this.spatial
+        .query(p.x, p.y, 18)
+        .filter(
+          (e) =>
+            e.hp > 0 && e.damage > 0 && Math.hypot(e.x - p.x, e.y - p.y) < 18,
         );
+      if (contacts.length) {
+        p.hurtGrace = 0.9;
+        if (this.random() < c.evasion) {
+          let dx = 0,
+            dy = 0;
+          for (const e of contacts) {
+            const distance = Math.hypot(p.x - e.x, p.y - e.y) || 1;
+            dx += (p.x - e.x) / distance;
+            dy += (p.y - e.y) / distance;
+          }
+          p.evade = {
+            remaining: 0.24,
+            angle:
+              Math.hypot(dx, dy) > 0.01
+                ? Math.atan2(dy, dx)
+                : (s.elapsed * 0.7) % (Math.PI * 2),
+          };
+        } else {
+          const damage = Math.min(
+            Math.max(...contacts.map((e) => e.damage)) * 0.6,
+            p.maxHp * 0.35,
+          );
+          p.hp = Math.max(
+            0,
+            p.hp -
+              damage /
+                (1 +
+                  this.bonus("pet-resistance") +
+                  p.attributes.resistance * 0.05),
+          );
+          if (p.hp === 0) {
+            delete p.action;
+            delete p.evade;
+            p.walking = false;
+          }
+        }
+      }
+    }
   }
   private collect(dt: number): void {
     const s = this.state,
@@ -1293,6 +1357,7 @@ export class DungeonRun {
         B.pickupRadius *
         (1 +
           this.bonus("pickup") +
+          petPlayerBonuses(s.pet).pickup +
           (s.pet ? s.pet.attributes.perception * 0.03 : 0));
     for (let i = s.pickups.length - 1; i >= 0; i--) {
       const p = s.pickups[i],
@@ -1314,8 +1379,7 @@ export class DungeonRun {
         s.level++;
         s.cards = this.buildComplete ? [] : rollUpgradeCards(s, this.random);
         if (s.cards.length) s.phase = "choice";
-      } else if (p.kind === "health")
-        s.player.hp = Math.min(this.maxHealth, s.player.hp + p.amount);
+      } else if (p.kind === "health") this.healPlayer(p.amount);
       else if (p.kind === "pet") {
         s.foundPet = p.species;
         s.foundPetRare = this.random() < B.rarePetChance;

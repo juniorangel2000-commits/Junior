@@ -5,7 +5,10 @@ import {
   weaponSpriteFrame,
   swordHalfArc,
 } from "../src/dungeons/weapon-identity";
-import { attackSpritePose } from "../src/dungeons/weapon-presentation";
+import {
+  attackSpritePose,
+  weaponDisplaySize,
+} from "../src/dungeons/weapon-presentation";
 import { drawWeaponEffects } from "../src/dungeons/weapon-render";
 import { DungeonRun, type AttackEffect } from "../src/dungeons/run";
 import { createDungeonProgress } from "../src/dungeons/progression";
@@ -47,6 +50,27 @@ describe("weapon visual remake", () => {
         expect(pose.x - 300 + pose.width / 2).toBeLessThanOrEqual(
           range + 0.001,
         );
+      }
+  });
+  it("keeps upgraded sword art small instead of scaling it with combat reach", () => {
+    const basic = attackSpritePose(effect("sword", 0.11), 64, 0),
+      upgraded = attackSpritePose(effect("sword", 0.11), 180, 2, true);
+    expect(basic.width).toBeLessThanOrEqual(36);
+    expect(upgraded.width).toBeLessThanOrEqual(36);
+    expect(upgraded.width).toBe(basic.width);
+  });
+  it("preserves the source proportions of every base and evolved weapon", () => {
+    for (const id of [...ids, "arrow"] as const)
+      for (const evolved of [false, true]) {
+        const size = weaponDisplaySize(id, evolved),
+          frame =
+            atlas.frames[
+              `${id}${evolved ? "-evolved" : ""}` as keyof typeof atlas.frames
+            ];
+        expect(size.width / size.height).toBeCloseTo(
+          frame.width / frame.height,
+        );
+        expect(Math.max(size.width, size.height)).toBeLessThanOrEqual(60);
       }
   });
   it("draws all attack types without changing combat state or effect lifetimes", () => {

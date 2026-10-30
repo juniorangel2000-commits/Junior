@@ -1,3 +1,4 @@
+import { petBonusDescription } from "./pet-passives";
 import { petRescueMarker } from "./pet-rescue-marker";
 import { permanentEvolutionHTML } from "./permanent-ui";
 import { dungeonHUD } from "./hud";
@@ -98,7 +99,7 @@ export class DungeonUI {
         })
         .join(
           "",
-        )}</div><label>Companheiro <select data-pet><option value="">Sem pet</option>${progress.pets.map((p) => `<option value="${escape(p.id)}" ${p.id === progress.selectedPet ? "selected" : ""}>${PETS[p.species].name}${p.rare ? " · variante rara" : ""}</option>`).join("")}</select></label><p class="dungeon-note">A espada ocupa o primeiro dos quatro espaços. O pet tem seu próprio espaço. A partida é salva durante a exploração.</p><footer><button data-evolution>Evolução permanente</button><button data-back>Voltar ao acesso</button></footer></section>`,
+        )}</div><label>Companheiro <select data-pet><option value="">Sem pet</option>${progress.pets.map((p) => `<option value="${escape(p.id)}" ${p.id === progress.selectedPet ? "selected" : ""}>${PETS[p.species].name}${p.rare ? " ✦" : ""}</option>`).join("")}</select></label><p class="dungeon-note" data-pet-bonuses></p><p class="dungeon-note">A espada ocupa o primeiro dos quatro espaços. O pet tem seu próprio espaço. A partida é salva durante a exploração.</p><footer><button data-evolution>Evolução permanente</button><button data-back>Voltar ao acesso</button></footer></section>`,
     );
     this.panel.querySelectorAll<HTMLButtonElement>("[data-start]").forEach(
       (b) =>
@@ -111,8 +112,21 @@ export class DungeonUI {
           );
         }),
     );
-    this.panel.querySelector<HTMLSelectElement>("[data-pet]")!.onchange = (e) =>
+    const updateBonuses = () => {
+      const pet = progress.pets.find((p) => p.id === progress.selectedPet);
+      this.panel.querySelector<HTMLElement>("[data-pet-bonuses]")!.textContent =
+        pet
+          ? `Bônus ao jogador nas dungeons: ${petBonusDescription(pet)}. Ativos também durante a recuperação do pet.`
+          : "Sem bônus de companheiro.";
+    };
+    updateBonuses();
+    this.panel.querySelector<HTMLSelectElement>("[data-pet]")!.onchange = (
+      e,
+    ) => {
       this.callbacks.pet((e.target as HTMLSelectElement).value || undefined);
+      (e.target as HTMLSelectElement).value = progress.selectedPet ?? "";
+      updateBonuses();
+    };
     this.panel.querySelector<HTMLButtonElement>("[data-evolution]")!.onclick =
       () => this.evolution(progress, () => this.menu(progress, previews));
     this.panel.querySelector<HTMLButtonElement>("[data-back]")!.onclick =

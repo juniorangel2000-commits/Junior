@@ -1,3 +1,4 @@
+import { petTextureKey, recolorPetPixels } from "./pet-appearance";
 import type Phaser from "phaser";
 import cat from "../../public/assets/visual/dungeons/pet-cat.json";
 import dog from "../../public/assets/visual/dungeons/pet-dog.json";
@@ -30,6 +31,24 @@ export function setupPetArt(scene: Phaser.Scene): void {
       setupVillagePropAtlas(scene, key, key + "-source", PET_ART[species]);
       scene.textures.remove(key + "-source");
     }
+    const variantKey = petTextureKey(species, true);
+    if (scene.textures.exists(key) && !scene.textures.exists(variantKey)) {
+      const source = scene.textures
+        .get(key)
+        .getSourceImage() as HTMLCanvasElement;
+      const canvas = document.createElement("canvas");
+      canvas.width = source.width;
+      canvas.height = source.height;
+      const context = canvas.getContext("2d")!;
+      context.drawImage(source, 0, 0);
+      const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+      recolorPetPixels(pixels.data, species);
+      context.putImageData(pixels, 0, 0);
+      const texture = scene.textures.addCanvas(variantKey, canvas)!;
+      texture.setFilter(0);
+      for (const [id, frame] of Object.entries(PET_ART[species].frames))
+        texture.add(id, 0, frame.x, frame.y, frame.width, frame.height);
+    }
   }
 }
 /** Locomotion and quiet poses are slower; attack timing stays at 10 fps. */
@@ -42,6 +61,7 @@ export function petSpritePose(
   direction: PetDirection,
   time: number,
   loop = true,
+  rare = false,
 ) {
   const atlas = PET_ART[species];
   const animations = atlas.animations as Partial<
@@ -65,7 +85,7 @@ export function petSpritePose(
     atlas.sources as Record<string, { pivot: { x: number; y: number } }>
   )[frame].pivot;
   return {
-    texture: `dungeon-pet-${species}`,
+    texture: petTextureKey(species, rare),
     frame,
     scale: atlas.animation.bodyHeight / atlas.animation.referenceHeight,
     originX: pivot.x / rect.width,

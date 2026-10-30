@@ -57,7 +57,7 @@ export const DUNGEON_BALANCE = {
   regenerationPerLevel: 0.12,
   rareRegenPerLevel: 0.35,
   petFindChance: 0.02,
-  rarePetChance: 0.05,
+  rarePetChance: 0.01,
   materialRewards: [
     { item: "scrap", killsPerUnit: 80, max: 3 },
     { item: "cloth", killsPerUnit: 200, max: 2 },
@@ -165,20 +165,20 @@ export const WEAPONS: Record<
 export const PETS = {
   dog: {
     name: "Cão",
+    evasion: 0.7,
     damage: 8,
     health: 70,
     speed: 72,
     cooldown: 1.5,
     specialCooldown: 15,
-    protection: 0.05,
   },
   cat: {
     name: "Gato",
+    evasion: 0.8,
     damage: 6,
     health: 45,
     speed: 78,
     cooldown: 1.1,
     specialCooldown: 12,
-    protection: 0.02,
   },
 } as const;

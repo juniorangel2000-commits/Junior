@@ -1,0 +1,179 @@
+{
+  "checks": [
+    {
+      "name": "Viagem chuvosa leva ao menu com duas opções",
+      "passed": true,
+      "details": {
+        "duration": 4.971
+      }
+    },
+    {
+      "name": "Menu continua legível em viewport estreito",
+      "passed": true,
+      "details": 680
+    },
+    {
+      "name": "Seleção atualiza bônus de dog-false",
+      "passed": true,
+      "details": "Bônus ao jogador nas dungeons: +10% de vida máxima · +8% de redução de dano recebido. Ativos também durante a recuperação do pet."
+    },
+    {
+      "name": "Seleção atualiza bônus de dog-true",
+      "passed": true,
+      "details": "Bônus ao jogador nas dungeons: +20% de vida máxima · +16% de redução de dano recebido · +15% de cura recebida. Ativos também durante a recuperação do pet."
+    },
+    {
+      "name": "Seleção atualiza bônus de cat-false",
+      "passed": true,
+      "details": "Bônus ao jogador nas dungeons: +20% de alcance de coleta de experiência · +5% de velocidade de movimento. Ativos também durante a recuperação do pet."
+    },
+    {
+      "name": "Seleção atualiza bônus de cat-true",
+      "passed": true,
+      "details": "Bônus ao jogador nas dungeons: +40% de alcance de coleta de experiência · +10% de velocidade de movimento · +10% de experiência recebida. Ativos também durante a recuperação do pet."
+    },
+    {
+      "name": "Bônus shiny cabem no menu estreito",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Gato shiny inicia equipado com bônus na HUD",
+      "passed": true,
+      "details": {
+        "species": "cat",
+        "rare": true,
+        "texture": "dungeon-pet-cat-rare",
+        "speed": 92.4,
+        "text": "COMPANHEIROGato ✦45 / 45 de vida",
+        "title": "Bônus ao jogador: +40% de alcance de coleta de experiência · +10% de velocidade de movimento · +10% de experiência recebida. Ativos durante a recuperação."
+      }
+    },
+    {
+      "name": "Esquiva evita dano e mostra feedback",
+      "passed": true,
+      "details": {
+        "hp": 45,
+        "originalHp": 45,
+        "dodge": {
+          "remaining": 0.24,
+          "angle": 3.141592653589793
+        },
+        "label": "Esquiva",
+        "visible": true,
+        "alpha": 0.72,
+        "paused": true
+      }
+    },
+    {
+      "name": "Pausa congela a esquiva",
+      "passed": true,
+      "details": {
+        "hp": 45,
+        "originalHp": 45,
+        "dodge": {
+          "remaining": 0.24,
+          "angle": 3.141592653589793
+        },
+        "label": "Esquiva",
+        "visible": true,
+        "alpha": 0.72,
+        "paused": true
+      }
+    },
+    {
+      "name": "Recuperação e save mantêm bônus do gato shiny",
+      "passed": true,
+      "details": {
+        "sameSpeed": true,
+        "xp": 5.5,
+        "valid": true
+      }
+    },
+    {
+      "name": "Cachorro shiny aplica vida e cura durante recuperação",
+      "passed": true,
+      "details": {
+        "hp": 31.5,
+        "max": 120,
+        "expected": 120,
+        "title": "Bônus ao jogador: +20% de vida máxima · +16% de redução de dano recebido · +15% de cura recebida. Ativos durante a recuperação."
+      }
+    },
+    {
+      "name": "Variantes preservam transparência, tamanho e todos os quadros",
+      "passed": true,
+      "details": [
+        {
+          "species": "dog",
+          "alpha": true,
+          "changed": 557162,
+          "texture": "dungeon-pet-dog-rare",
+          "sameSize": true,
+          "sameFrames": true
+        },
+        {
+          "species": "cat",
+          "alpha": true,
+          "changed": 410311,
+          "texture": "dungeon-pet-cat-rare",
+          "sameSize": true,
+          "sameFrames": true
+        }
+      ]
+    },
+    {
+      "name": "Paletas especiais também aparecem no mundo normal",
+      "passed": true,
+      "details": [
+        {
+          "species": "dog",
+          "alpha": true,
+          "changed": 557162,
+          "texture": "dungeon-pet-dog-rare",
+          "sameSize": true,
+          "sameFrames": true
+        },
+        {
+          "species": "cat",
+          "alpha": true,
+          "changed": 410311,
+          "texture": "dungeon-pet-cat-rare",
+          "sameSize": true,
+          "sameFrames": true
+        }
+      ]
+    },
+    {
+      "name": "Coleção distingue desbloqueios e mantém bloqueados sem ação de equipar",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Nomes usam somente brilho, sem a palavra shiny",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Coleção permite escolher pet desbloqueado",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Coleção cabe em tela estreita",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Retorno preserva seleção e comandos",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Sem erros JavaScript ou requisições falhas",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

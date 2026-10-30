@@ -1,0 +1,24 @@
+{
+  "checks": [
+    {
+      "name": "Coleção 1000px: título acima das missões, quatro retratos e largura correta",
+      "passed": true,
+      "details": {
+        "fits": true,
+        "headingVisible": true,
+        "specials": 3,
+        "portraits": 4
+      }
+    },
+    {
+      "name": "Coleção 420px: título acima das missões, quatro retratos e largura correta",
+      "passed": true,
+      "details": {
+        "fits": true,
+        "headingVisible": true,
+        "specials": 3,
+        "portraits": 4
+      }
+    }
+  ]
+}

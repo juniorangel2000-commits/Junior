@@ -1,6 +1,6 @@
 import { getVisualSettings } from "../visual-settings";
 import { dungeonLightingState } from "../dungeons/lighting";
-import { petSpritePose } from "../dungeons/pet-sprites";
+import { petSpritePose, setupPetArt } from "../dungeons/pet-sprites";
 import Phaser from "phaser";
 import type { SaveData, Tool, ItemId } from "../types";
 import type { GameUI } from "../ui";
@@ -23,7 +23,10 @@ import {
 import { preloadDungeonArt, setupDungeonArt } from "../dungeons/art";
 import { DungeonWorld, dungeonPreview } from "../dungeons/world";
 import { dungeonBlocked } from "../dungeons/maps";
-import { attackSpritePose } from "../dungeons/weapon-presentation";
+import {
+  attackSpritePose,
+  weaponDisplaySize,
+} from "../dungeons/weapon-presentation";
 import { drawWeaponEffects } from "../dungeons/weapon-render";
 import { setupWeaponEffects } from "../dungeons/weapon-effects";
 import { bossProfile } from "../dungeons/bosses";
@@ -72,6 +75,7 @@ export class DungeonScene extends Phaser.Scene {
   private lastImpactAt = -1;
   private lastAttackEffect = 0;
   private orbitals: Phaser.GameObjects.Image[] = [];
+  private petDodgeText?: Phaser.GameObjects.Text;
   private petImage?: Phaser.GameObjects.Image;
   private rescueImage?: Phaser.GameObjects.Image;
   private pickups?: Phaser.GameObjects.Graphics;
@@ -115,8 +119,10 @@ export class DungeonScene extends Phaser.Scene {
     this.lastAttackEffect = 0;
     this.orbitals = [];
     this.petImage = undefined;
+    this.petDodgeText = undefined;
     this.rescueImage = undefined;
     setupDungeonArt(this);
+    setupPetArt(this);
     setupWeaponEffects(this);
     this.cameras.main.setBounds(0, 0, 3072, 2304);
     document.querySelector<HTMLElement>("#ui")!.style.display = "none";
@@ -439,6 +445,10 @@ export class DungeonScene extends Phaser.Scene {
           this.add.image(q.x, q.y, "dungeon-weapons", "spear");
         this.projectileImages.set(q.id, img);
       }
+      const display = weaponDisplaySize(
+        q.weapon === "bow" ? "arrow" : "boomerang",
+        weaponIdentity(q.weapon, s.levels).evolved,
+      );
       img
         .setVisible(true)
         .setTexture(
@@ -453,10 +463,7 @@ export class DungeonScene extends Phaser.Scene {
         )
         .clearTint()
         .setPosition(q.x, q.y - 18)
-        .setDisplaySize(
-          q.weapon === "bow" ? 34 : 36,
-          q.weapon === "bow" ? 9 : 32,
-        )
+        .setDisplaySize(display.width, display.height)
         .setRotation(
           q.weapon === "boomerang" ? s.elapsed * 12 : Math.atan2(q.vy, q.vx),
         )
@@ -549,6 +556,7 @@ export class DungeonScene extends Phaser.Scene {
         e,
         e.radius ?? run.weaponStats(e.weapon).range,
         run.level("sword-wide"),
+        weaponIdentity(e.weapon, s.levels).evolved,
       );
       image
         .setVisible(true)
@@ -574,6 +582,7 @@ export class DungeonScene extends Phaser.Scene {
               (this.orbitals[oi] = this.add.image(0, 0, "dungeon-weapons", id));
           oi++;
           const evolved = weaponIdentity(id, s.levels).evolved;
+          const display = weaponDisplaySize(id, evolved);
           ink.lineStyle(2, evolved ? 0xefc76e : 0xb4d1bd, 0.45);
           ink
             .beginPath()
@@ -584,13 +593,17 @@ export class DungeonScene extends Phaser.Scene {
             .setAlpha(1)
             .setTexture("dungeon-weapons", weaponSpriteFrame(id, s.levels))
             .setPosition(p.x + Math.cos(a) * r, p.y - 20 + Math.sin(a) * r)
-            .setDisplaySize(36, 36)
+            .setDisplaySize(display.width, display.height)
             .setRotation(a * 3)
             .clearTint()
             .setDepth(p.y + Math.sin(a) * r);
         }
       }
     if (s.weapons.includes("orbiting-shield")) {
+      const display = weaponDisplaySize(
+        "orbiting-shield",
+        weaponIdentity("orbiting-shield", s.levels).evolved,
+      );
       for (let i = 0; i < run.shieldCapacity; i++) {
         const img =
           this.orbitals[oi] ??
@@ -607,7 +620,7 @@ export class DungeonScene extends Phaser.Scene {
             "dungeon-weapons",
             weaponSpriteFrame("orbiting-shield", s.levels),
           )
-          .setDisplaySize(26, 26)
+          .setDisplaySize(display.width, display.height)
           .setPosition(p.x + (i ? -24 : 24), p.y - 18)
           .setRotation(0)
           .clearTint()
@@ -680,6 +693,7 @@ export class DungeonScene extends Phaser.Scene {
         .setDepth(rescue.y);
     } else this.rescueImage?.setVisible(false);
     this.petImage?.setVisible(!!s.pet);
+    this.petDodgeText?.setVisible(false);
     if (s.pet) {
       const pet = s.pet,
         pose = petSpritePose(
@@ -696,6 +710,7 @@ export class DungeonScene extends Phaser.Scene {
           pet.action?.direction ?? pet.direction ?? "south",
           pet.action?.age ?? s.elapsed,
           !pet.action,
+          pet.rare,
         );
       this.petImage ??= this.add.image(pet.x, pet.y, pose.texture, pose.frame);
       this.petImage
@@ -705,9 +720,27 @@ export class DungeonScene extends Phaser.Scene {
         .setScale(pose.scale)
         .setPosition(pet.x, pet.y)
         .setDepth(pet.y)
-        .setAlpha(pet.hp > 0 ? 1 : 0.45);
-      if (pet.rare) this.petImage.setTint(0xc5ba9b);
-      else this.petImage.clearTint();
+        .setAlpha(pet.hp > 0 ? (pet.evade ? 0.72 : 1) : 0.45);
+      if (pet.evade) {
+        this.petDodgeText ??= this.add
+          .text(0, 0, "Esquiva", {
+            fontFamily: "Arial",
+            fontSize: "12px",
+            color: "#dcf5da",
+            stroke: "#19372e",
+            strokeThickness: 3,
+          })
+          .setOrigin(0.5, 1)
+          .setDepth(5001);
+        this.petDodgeText
+          .setVisible(true)
+          .setPosition(
+            pet.x,
+            pet.y - 38 - (1 - pet.evade.remaining / 0.24) * 12,
+          )
+          .setAlpha(Math.min(1, pet.evade.remaining / 0.12));
+      }
+      this.petImage.clearTint();
     }
     this.player!.sprite.setAlpha(s.player.invulnerable > 0 ? 0.65 : 1);
   }

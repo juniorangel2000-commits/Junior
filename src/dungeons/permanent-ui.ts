@@ -1,3 +1,4 @@
+import { petBonusDescription } from "./pet-passives";
 import {CHARACTER_ATTRIBUTES,PET_ATTRIBUTES,permanentUpgradeCost,type DungeonProgress} from './progression';
 import {PETS} from './config';
 const escape=(s:string)=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
@@ -27,8 +28,9 @@ export function permanentEvolutionHTML(progress:DungeonProgress,target='characte
  const xp=pet?pet.xp:progress.xp;
  const total=Object.values(attributes).reduce((a,b)=>a+b,0),max=keys.length*20;
  return `<section class="dungeon-menu permanent-menu"><header class="permanent-header"><div><p class="dungeon-eyebrow">EXPEDIÇÕES À CIDADE</p><h1 tabindex="-1">Evolução permanente</h1><p>Invista a experiência das expedições em melhorias para as próximas partidas.</p></div><div class="permanent-wallet"><small>${pet?'XP deste companheiro':'XP do personagem'}</small><strong>${number(xp)}</strong><span>EXPERIÊNCIA DISPONÍVEL</span></div></header>
- <label class="permanent-target">Evoluir <select data-evolution-target><option value="character" ${!pet?'selected':''}>Personagem</option>${progress.pets.map((p,index)=>`<option value="${escape(p.id)}" ${p.id===pet?.id?'selected':''}>${PETS[p.species].name}${p.rare?' · raro':''} · Companheiro ${index+1}</option>`).join('')}</select></label>
+ <label class="permanent-target">Evoluir <select data-evolution-target><option value="character" ${!pet?'selected':''}>Personagem</option>${progress.pets.map((p,index)=>`<option value="${escape(p.id)}" ${p.id===pet?.id?'selected':''}>${PETS[p.species].name}${p.rare?' ✦':''} · Companheiro ${index+1}</option>`).join('')}</select></label>
  <div class="permanent-summary"><strong>${pet?PETS[pet.species].name:'Personagem'} · ${total} / ${max} melhorias</strong><meter aria-label="Progresso permanente" min="0" max="${max}" value="${total}"></meter><p>${pet?'Os atributos de combate atuam nas dungeons. Velocidade e percepção também ajudam na floresta de acesso.':'Os efeitos destes atributos são aplicados nas dungeons.'} As compras ficam salvas. Cada atributo tem custo crescente e limite de 20 níveis.</p></div>
+ ${pet?`<p class="dungeon-note">Bônus da espécie ao jogador nas dungeons: ${petBonusDescription(pet)}. Ativos durante a recuperação. As melhorias abaixo não são duplicadas nos especials.</p>`:''}
  <p class="permanent-feedback" role="status" aria-live="polite">${escape(message)}</p>
  <div class="permanent-grid">${keys.map(key=>{
  const rank=(attributes as Record<string,number>)[key],cost=permanentUpgradeCost(rank,isPet),complete=rank>=20,canBuy=!complete&&xp>=cost;

@@ -1,0 +1,204 @@
+{
+  "checks": [
+    {
+      "name": "Viagem chuvosa leva ao menu com duas opções",
+      "passed": true,
+      "details": {
+        "duration": 5.523
+      }
+    },
+    {
+      "name": "Menu continua legível em viewport estreito",
+      "passed": true,
+      "details": 680
+    },
+    {
+      "name": "sword base: sprite, HUD, cores e pausa",
+      "passed": true,
+      "details": {
+        "frame": "sword",
+        "exists": true,
+        "shown": true,
+        "untinted": true,
+        "frozen": true,
+        "icon": true,
+        "effect": true
+      }
+    },
+    {
+      "name": "bow base: sprite, HUD, cores e pausa",
+      "passed": true,
+      "details": {
+        "frame": "bow",
+        "exists": true,
+        "shown": true,
+        "untinted": true,
+        "frozen": true,
+        "icon": true,
+        "effect": true
+      }
+    },
+    {
+      "name": "spear base: sprite, HUD, cores e pausa",
+      "passed": true,
+      "details": {
+        "frame": "spear",
+        "exists": true,
+        "shown": true,
+        "untinted": true,
+        "frozen": true,
+        "icon": true,
+        "effect": true
+      }
+    },
+    {
+      "name": "boomerang base: sprite, HUD, cores e pausa",
+      "passed": true,
+      "details": {
+        "frame": "boomerang",
+        "exists": true,
+        "shown": true,
+        "untinted": true,
+        "frozen": true,
+        "icon": true,
+        "effect": true
+      }
+    },
+    {
+      "name": "hammer base: sprite, HUD, cores e pausa",
+      "passed": true,
+      "details": {
+        "frame": "hammer",
+        "exists": true,
+        "shown": true,
+        "untinted": true,
+        "frozen": true,
+        "icon": true,
+        "effect": true
+      }
+    },
+    {
+      "name": "rotating-blade base: sprite, HUD, cores e pausa",
+      "passed": true,
+      "details": {
+        "frame": "rotating-blade",
+        "exists": true,
+        "shown": true,
+        "untinted": true,
+        "frozen": true,
+        "icon": true,
+        "effect": false
+      }
+    },
+    {
+      "name": "orbiting-shield base: sprite, HUD, cores e pausa",
+      "passed": true,
+      "details": {
+        "frame": "orbiting-shield",
+        "exists": true,
+        "shown": true,
+        "untinted": true,
+        "frozen": true,
+        "icon": true,
+        "effect": true
+      }
+    },
+    {
+      "name": "sword evoluída: sprite, HUD, cores e pausa",
+      "passed": true,
+      "details": {
+        "frame": "sword-evolved",
+        "exists": true,
+        "shown": true,
+        "untinted": true,
+        "frozen": true,
+        "icon": true,
+        "effect": true
+      }
+    },
+    {
+      "name": "bow evoluída: sprite, HUD, cores e pausa",
+      "passed": true,
+      "details": {
+        "frame": "bow-evolved",
+        "exists": true,
+        "shown": true,
+        "untinted": true,
+        "frozen": true,
+        "icon": true,
+        "effect": true
+      }
+    },
+    {
+      "name": "spear evoluída: sprite, HUD, cores e pausa",
+      "passed": true,
+      "details": {
+        "frame": "spear-evolved",
+        "exists": true,
+        "shown": true,
+        "untinted": true,
+        "frozen": true,
+        "icon": true,
+        "effect": true
+      }
+    },
+    {
+      "name": "boomerang evoluída: sprite, HUD, cores e pausa",
+      "passed": true,
+      "details": {
+        "frame": "boomerang-evolved",
+        "exists": true,
+        "shown": true,
+        "untinted": true,
+        "frozen": true,
+        "icon": true,
+        "effect": true
+      }
+    },
+    {
+      "name": "hammer evoluída: sprite, HUD, cores e pausa",
+      "passed": true,
+      "details": {
+        "frame": "hammer-evolved",
+        "exists": true,
+        "shown": true,
+        "untinted": true,
+        "frozen": true,
+        "icon": true,
+        "effect": true
+      }
+    },
+    {
+      "name": "rotating-blade evoluída: sprite, HUD, cores e pausa",
+      "passed": true,
+      "details": {
+        "frame": "rotating-blade-evolved",
+        "exists": true,
+        "shown": true,
+        "untinted": true,
+        "frozen": true,
+        "icon": true,
+        "effect": false
+      }
+    },
+    {
+      "name": "orbiting-shield evoluída: sprite, HUD, cores e pausa",
+      "passed": true,
+      "details": {
+        "frame": "orbiting-shield-evolved",
+        "exists": true,
+        "shown": true,
+        "untinted": true,
+        "frozen": true,
+        "icon": true,
+        "effect": true
+      }
+    },
+    {
+      "name": "Sem erros JavaScript ou requisições falhas",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

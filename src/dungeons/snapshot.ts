@@ -179,6 +179,11 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
       typeof p.id !== "string" ||
       typeof p.rare !== "boolean" ||
       (p.action !== undefined && !validPetAttack(p.action)) ||
+      (p.hurtGrace !== undefined && !finite(p.hurtGrace, 0, 0.9)) ||
+      (p.evade !== undefined &&
+        (!rec(p.evade) ||
+          !finite(p.evade.remaining, 0, 0.24) ||
+          !finite(p.evade.angle))) ||
       (p.direction !== undefined &&
         !["south", "west", "east", "north"].includes(String(p.direction))) ||
       (p.walking !== undefined && typeof p.walking !== "boolean") ||

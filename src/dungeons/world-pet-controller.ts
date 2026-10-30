@@ -79,12 +79,12 @@ export class WorldPetController {
       icons: Record<string, string> = {};
     setupPetArt(this.scene);
     for (const species of ["cat", "dog"] as const) {
-      const pose = petSpritePose(species, "idle", "south", 0);
-      if (this.scene.textures.exists(pose.texture))
-        icons[species] = this.scene.textures.getBase64(
-          pose.texture,
-          pose.frame,
-        );
+      for (const rare of [false, true]) {
+        const pose = petSpritePose(species, "idle", "south", 0, true, rare);
+        if (this.scene.textures.exists(pose.texture))
+          icons[`${species}${rare ? "-rare" : ""}`] =
+            this.scene.textures.getBase64(pose.texture, pose.frame);
+      }
     }
     return {
       pets: p?.pets ?? [],

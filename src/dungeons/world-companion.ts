@@ -51,11 +51,17 @@ export class WorldCompanion {
       (p) => p.id === save.dungeons!.selectedPet,
     )!;
     setupPetArt(scene);
-    const pose = petSpritePose(this.pet.species, "idle", "south", 0);
+    const pose = petSpritePose(
+      this.pet.species,
+      "idle",
+      "south",
+      0,
+      true,
+      this.pet.rare,
+    );
     this.image = scene.add
       .image(player.x, player.y, pose.texture, pose.frame)
       .setData("world-companion", true);
-    if (this.pet.rare) this.image.setTint(0xc5ba9b);
     this.place(player);
     if (map.forage) claimDungeonMaterials(save);
     this.update(0, player);
@@ -198,6 +204,7 @@ export class WorldCompanion {
           ? restTime
           : this.time),
       !this.transition,
+      this.pet.rare,
     );
     this.image
       .setTexture(pose.texture, pose.frame)

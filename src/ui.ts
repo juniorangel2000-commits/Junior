@@ -1,4 +1,4 @@
-import { petMenuHTML, type PetMenuView, type PetCommand } from "./dungeons/pet-menu";
+import { petMenuHTML, petCollectionHTML, type PetMenuView, type PetCommand } from "./dungeons/pet-menu";
 import {inspectSave} from './systems/save';
 import {inventoryCapacity} from './systems/inventory';
 import {USABLE_VILLAGE_ITEMS} from './systems/consumables';
@@ -429,12 +429,27 @@ export class GameUI {
     command: (command: PetCommand) => boolean,
   ): void {
     this.openModal("pets");
+    let collection = false;
     const render = () => {
       const focused =
         document.activeElement instanceof HTMLElement
           ? document.activeElement.dataset.petCommand
           : undefined;
-      this.overlay.innerHTML = petMenuHTML(view());
+      this.overlay.innerHTML = collection
+        ? petCollectionHTML(view())
+        : petMenuHTML(view());
+      this.overlay.querySelector<HTMLButtonElement>("[data-pet-collection]")
+        ?.addEventListener("click", () => {
+          collection = true;
+          render();
+          this.overlay.querySelector<HTMLElement>("h2")?.focus();
+        });
+      this.overlay.querySelector<HTMLButtonElement>("[data-pet-collection-back]")
+        ?.addEventListener("click", () => {
+          collection = false;
+          render();
+          this.overlay.querySelector<HTMLButtonElement>("[data-pet-collection]")?.focus();
+        });
       this.overlay.querySelector<HTMLButtonElement>(
         "[data-pet-close]",
       )!.onclick = () => this.closeModal();
