@@ -18,7 +18,7 @@ import {
   type PetSpecies,
 } from "./config";
 import { UPGRADES, rollUpgradeCards, type UpgradeCard } from "./upgrades";
-import { hordeProfile, experienceForLevel } from "./director";
+import { hordeProfile, experienceForLevel, waveEnemyCount } from "./director";
 import { insideSwordArc, WEAPON_DESCRIPTIONS } from "./weapon-identity";
 import { dungeonWaypoint, dungeonSegmentClear } from "./navigation";
 import { bossProfile, isBossRound, TIMED_BOSS_SCHEDULE } from "./bosses";
@@ -557,7 +557,7 @@ export class DungeonRun {
           return;
         }
         s.round++;
-        s.waveRemaining = 5 + s.round * 2;
+        s.waveRemaining = waveEnemyCount(s.round);
         s.intermission = 3;
       }
     }

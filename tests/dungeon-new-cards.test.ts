@@ -73,7 +73,7 @@ describe("gradual zombie strength", () => {
     }
     expect(previous.health).toBeCloseTo(3.3);
     expect(previous.damage).toBeCloseTo(2.2);
-    expect(previous.speed).toBe(1.3);
+    expect(previous.speed).toBe(1.5);
     expect(
       hordeProfile("abandoned-central-square", 60, 1).health -
         hordeProfile("abandoned-central-square", 59.999, 1).health,

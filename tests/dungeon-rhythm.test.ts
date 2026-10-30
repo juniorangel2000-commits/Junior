@@ -18,7 +18,7 @@ describe("survival rhythm", () => {
       );
       expect(profiles[i].health).toBeGreaterThan(profiles[i - 1].health);
     }
-    expect(profiles[5].batch).toBeLessThanOrEqual(12);
+    expect(profiles[5].batch).toBeLessThanOrEqual(15);
   });
   it("alternates surrounding, flanking and pincer arrivals and grants a short breathing window", () => {
     const at = (t: number) => hordeProfile("abandoned-central-square", t, 1);

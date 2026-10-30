@@ -1,0 +1,109 @@
+{
+  "method": "Fixed-step deterministic bot, legal random cards, no granted XP or pre-equipped arsenal. CPU timings exclude steering, rendering and GPU.",
+  "permanentRank": 5,
+  "results": [
+    {
+      "dungeon": "abandoned-central-square",
+      "build": "control",
+      "seed": 1234567,
+      "pet": false,
+      "rare": false,
+      "status": "victory",
+      "elapsed": 900,
+      "round": 1,
+      "kills": 6236,
+      "level": 278,
+      "weapons": [
+        "sword",
+        "orbiting-shield",
+        "rotating-blade",
+        "boomerang"
+      ],
+      "peakEnemies": 240,
+      "blocks": 48,
+      "wallSeconds": 13.232409382
+    },
+    {
+      "dungeon": "mall-parking",
+      "build": "control",
+      "seed": 1234567,
+      "pet": false,
+      "rare": false,
+      "status": "victory",
+      "elapsed": 2230,
+      "round": 50,
+      "kills": 3700,
+      "level": 113,
+      "weapons": [
+        "sword",
+        "rotating-blade",
+        "boomerang",
+        "orbiting-shield"
+      ],
+      "peakEnemies": 140,
+      "blocks": 7,
+      "wallSeconds": 7.927517905999999
+    },
+    {
+      "dungeon": "abandoned-central-square",
+      "build": "control",
+      "seed": 1234567,
+      "pet": "dog",
+      "rare": true,
+      "status": "victory",
+      "elapsed": 900,
+      "round": 1,
+      "kills": 6253,
+      "level": 256,
+      "weapons": [
+        "sword",
+        "rotating-blade",
+        "boomerang",
+        "orbiting-shield"
+      ],
+      "peakEnemies": 240,
+      "blocks": 14,
+      "wallSeconds": 13.326984897000003
+    },
+    {
+      "dungeon": "abandoned-central-square",
+      "build": "control",
+      "seed": 1234567,
+      "pet": "cat",
+      "rare": false,
+      "status": "defeat",
+      "elapsed": 214,
+      "round": 1,
+      "kills": 375,
+      "level": 29,
+      "weapons": [
+        "sword",
+        "hammer"
+      ],
+      "peakEnemies": 145,
+      "blocks": 0,
+      "wallSeconds": 0.42188248999999634
+    },
+    {
+      "dungeon": "abandoned-central-square",
+      "build": "control",
+      "seed": 1234567,
+      "pet": "cat",
+      "rare": true,
+      "status": "victory",
+      "elapsed": 900,
+      "round": 1,
+      "kills": 7486,
+      "level": 306,
+      "weapons": [
+        "sword",
+        "rotating-blade",
+        "orbiting-shield",
+        "boomerang"
+      ],
+      "peakEnemies": 240,
+      "blocks": 30,
+      "wallSeconds": 8.481162284999998
+    }
+  ]
+}
