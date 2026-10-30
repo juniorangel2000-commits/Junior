@@ -89,6 +89,7 @@ export interface RunPet {
   action?: PetAttackAction;
   direction?: PetDirection;
   walking?: boolean;
+  running?: boolean;
   id: string;
   species: PetSpecies;
   rare: boolean;
@@ -1128,6 +1129,7 @@ export class DungeonRun {
     if (p.hp <= 0) {
       delete p.action;
       p.walking = false;
+      p.running = false;
       p.rest += dt;
       if (p.rest > 8) {
         p.hp = p.maxHp * 0.5;
@@ -1138,11 +1140,16 @@ export class DungeonRun {
     p.attack = Math.max(0, p.attack - dt);
     p.special = Math.max(0, p.special - dt);
     const before = { x: p.x, y: p.y };
+    p.running = false;
     if (!p.action) {
       const dx = s.player.x - 35 - p.x,
         dy = s.player.y + 20 - p.y,
         d = Math.hypot(dx, dy) || 1;
-      const move = Math.min(d, c.speed * (1 + p.attributes.speed * 0.03) * dt);
+      p.running = d > 160;
+      const move = Math.min(
+        d,
+        c.speed * (p.running ? 1.45 : 1) * (1 + p.attributes.speed * 0.03) * dt,
+      );
       this.moveEnemy(p, (dx / d) * move, (dy / d) * move);
       const targets = this.spatial
         .query(p.x, p.y, 100)

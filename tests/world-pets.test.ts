@@ -146,6 +146,29 @@ describe("world companions", () => {
     expect(next.image.visible).toBe(false);
     expect(save.dungeons!.pets[0].world!.area).toBe("property");
   });
+  it("keeps a waiting cat still and plays a slow idle only occasionally", () => {
+    const { save, scene } = fixture();
+    const c = new WorldCompanion(scene, save, { x: 120, y: 160 }, () => {}, {
+      area: "property",
+      space: "outdoors",
+      blockedPoint: () => false,
+    });
+    save.dungeons!.pets[0].world!.mode = "stay";
+    c.playTransition("sit");
+    const step = (n: number) => {
+      for (let i = 0; i < n; i++) c.update(0.1, { x: 400, y: 400 });
+    };
+    step(35);
+    const quiet = c.image.frame;
+    step(5);
+    expect(c.image.frame).toBe(quiet);
+    step(20);
+    expect(c.image.frame).not.toBe(quiet);
+    step(25);
+    expect(c.image.frame).toBe(quiet);
+    expect(c.image.x).toBe(120);
+    expect(c.image.y).toBe(160);
+  });
   it("recalls a pet from another map and rolls back failed commands", () => {
     const { save, scene } = fixture();
     save.dungeons!.pets[0].world = {

@@ -182,6 +182,7 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
       (p.direction !== undefined &&
         !["south", "west", "east", "north"].includes(String(p.direction))) ||
       (p.walking !== undefined && typeof p.walking !== "boolean") ||
+      (p.running !== undefined && typeof p.running !== "boolean") ||
       !["dog", "cat"].includes(p.species as string) ||
       !["hp", "maxHp", "attack", "special", "rest"].every((k) =>
         finite(p[k], 0, 10000),

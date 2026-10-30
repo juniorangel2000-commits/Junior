@@ -30,6 +30,7 @@ export class WorldCompanion {
   private route: PetPoint[] = [];
   private recalculate = 0;
   private time = 0;
+  private waitTime = 0;
   private transition?: { action: PetAction; age: number };
   private readonly pet: OwnedPet;
   private positioned = false;
@@ -132,7 +133,8 @@ export class WorldCompanion {
             ).map((p) => ({ x: (p.x + 0.5) * 32, y: (p.y + 0.5) * 32 }))
           : [];
       }
-      let remaining = 110 * (1 + this.pet.attributes.speed * 0.03) * dt;
+      const speed = distance > 160 ? 104 : 72;
+      let remaining = speed * (1 + this.pet.attributes.speed * 0.03) * dt;
       while (this.route.length && remaining > 0 && distance > 35) {
         const next = this.route[0],
           dx = next.x - this.image.x,
@@ -171,11 +173,24 @@ export class WorldCompanion {
             ? "run"
             : "walk"
           : "idle");
+    this.waitTime =
+      state.mode === "stay" && !this.transition
+        ? this.waitTime + Math.max(0, dt)
+        : 0;
+    const restPhase = this.waitTime % 10;
+    const restTime =
+      restPhase >= 4 &&
+      restPhase < 4 + petActionDuration(this.pet.species, "rest")
+        ? restPhase - 4
+        : 0;
     const pose = petSpritePose(
       this.pet.species,
       action,
       state.direction,
-      this.transition?.age ?? this.time,
+      this.transition?.age ??
+        (action === "rest" && this.pet.species === "cat"
+          ? restTime
+          : this.time),
       !this.transition,
     );
     this.image

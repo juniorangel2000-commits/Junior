@@ -32,6 +32,10 @@ export function setupPetArt(scene: Phaser.Scene): void {
     }
   }
 }
+/** Locomotion and quiet poses are slower; attack timing stays at 10 fps. */
+export const petFrameRate = (action: PetAction) =>
+  action === "attack" ? 10 : action === "run" ? 8 : action === "rest" ? 4 : 6;
+
 export function petSpritePose(
   species: PetSpecies,
   action: PetAction,
@@ -44,9 +48,7 @@ export function petSpritePose(
     Record<PetAction, Record<PetDirection, string[]>>
   >;
   const list = (animations[action] ?? animations.idle!)[direction];
-  const index = Math.floor(
-    (Math.max(0, time) + 1e-9) * atlas.animation.frameRate,
-  );
+  const index = Math.floor((Math.max(0, time) + 1e-9) * petFrameRate(action));
   const frame =
     list[loop ? index % list.length : Math.min(list.length - 1, index)];
   const rect = (
@@ -72,8 +74,7 @@ export function petActionDuration(
       Record<PetAction, Record<PetDirection, string[]>>
     >;
   return (
-    (animations[action] ?? animations.idle!).south.length /
-    atlas.animation.frameRate
+    (animations[action] ?? animations.idle!).south.length / petFrameRate(action)
   );
 }
 export const PET_ATTACK_HIT_AT =

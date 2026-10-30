@@ -665,7 +665,9 @@ export class DungeonScene extends Phaser.Scene {
             : pet.hp <= 0
               ? "rest"
               : pet.walking
-                ? "run"
+                ? pet.running
+                  ? "run"
+                  : "walk"
                 : "idle",
           pet.action?.direction ?? pet.direction ?? "south",
           pet.action?.age ?? s.elapsed,
