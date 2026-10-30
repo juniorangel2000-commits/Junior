@@ -3,11 +3,11 @@
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover; object-position: 55% center; z-index: -3;
   pointer-events: none; image-rendering: pixelated;
-  transform: scale(1.015); animation: property-title-drift 28s ease-in-out infinite alternate;
+  transform: scale(1.035); animation: property-title-drift 12s ease-in-out infinite alternate;
 }
 @keyframes property-title-drift {
-  from { transform: scale(1.015) translateX(-.15%); }
-  to { transform: scale(1.025) translateX(.15%); }
+  from { transform: scale(1.035) translate(-.6%, .2%); }
+  to { transform: scale(1.065) translate(.6%, -.35%); }
 }
 .after-rain-title.background-suspended .title-illustration { animation-play-state: paused; }
 #ui .after-rain-title.has-title-art .title-atmosphere {

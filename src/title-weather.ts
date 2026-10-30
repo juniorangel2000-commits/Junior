@@ -72,24 +72,35 @@ export function createTitleWeather(holder: HTMLElement): TitleWeather {
     }
     // Broad banks of mist drift slowly beneath the distant storm.
     for (let i = 0; i < 3; i++) {
-      const x = w * (.30 + i * .30) + Math.sin(elapsed * .09 + i * 2) * w * .06;
+      const x = w * (.30 + i * .30) + Math.sin(elapsed * .19 + i * 2) * w * .10;
       const y = h * (.67 + i * .06), radius = w * .48;
       const fog = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      fog.addColorStop(0, 'rgba(158,181,175,.11)');
-      fog.addColorStop(.55, 'rgba(122,150,149,.05)');
+      fog.addColorStop(0, 'rgba(158,181,175,.17)');
+      fog.addColorStop(.55, 'rgba(122,150,149,.08)');
       fog.addColorStop(1, 'rgba(112,144,142,0)');
       ctx.fillStyle = fog; ctx.fillRect(0, 0, w, h);
     }
     ctx.lineWidth = 1;
     const drops = Math.min(190, Math.max(55, Math.round(w * h / 1900)));
     for (let i = 0; i < drops; i++) {
-      const speed = 85 + noise(i + 5) * 95;
+      const speed = 100 + noise(i + 5) * 125;
       const y = (noise(i + 93) * (h + 40) + elapsed * speed) % (h + 40) - 20;
       const x = (noise(i + 717) * (w + 40) - y * .19 + w + 40) % (w + 40) - 20;
-      const length = 4 + noise(i + 43) * 7;
-      ctx.strokeStyle = i % 3 ? 'rgba(167,192,197,.26)' : 'rgba(206,221,218,.35)';
+      const length = 5 + noise(i + 43) * 10;
+      ctx.strokeStyle = i % 3 ? 'rgba(167,192,197,.43)' : 'rgba(206,221,218,.58)';
       ctx.beginPath(); ctx.moveTo(Math.round(x), Math.round(y));
       ctx.lineTo(Math.round(x - length * .19), Math.round(y + length)); ctx.stroke();
+    }
+    // Wind carries a few leaves across the clearing; keep motion out of the menu.
+    if (illustrated && !reducedMotion.matches) for (let i = 0; i < 9; i++) {
+      const travel = (elapsed * (10 + noise(i + 2200) * 9) + noise(i + 2300) * (w + 60)) % (w + 60);
+      const x = w + 30 - travel;
+      const y = h * (.18 + noise(i + 2400) * .65) + Math.sin(elapsed * 1.3 + i * 2) * 9;
+      const sway = Math.sin(elapsed * 2 + i);
+      ctx.save(); ctx.translate(Math.round(x), Math.round(y)); ctx.rotate(sway * .7);
+      ctx.fillStyle = i % 2 ? 'rgba(145,155,88,.65)' : 'rgba(161,130,74,.62)';
+      ctx.beginPath(); ctx.moveTo(-3, 0); ctx.lineTo(0, -1 - Math.abs(sway));
+      ctx.lineTo(3, 0); ctx.lineTo(0, 2); ctx.closePath(); ctx.fill(); ctx.restore();
     }
     // Fine rain rings on the wet approach, below the cottage.
     if (illustrated) for (let i = 0; i < 7; i++) {

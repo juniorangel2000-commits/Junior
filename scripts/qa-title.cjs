@@ -20,6 +20,12 @@ fs.mkdirSync(out, { recursive: true });
   assert.equal(await page.locator('[data-title-motion]').count(),0);
   const frame=()=>page.locator('.title-weather').evaluate(c=>c.toDataURL());
   const first=await frame(); await page.waitForTimeout(250); assert.notEqual(first,await frame());
+  const artTransform=()=>page.locator('.title-illustration').evaluate(img=>getComputedStyle(img).transform);
+  const initialTransform=await artTransform(); await page.waitForTimeout(2200);
+  assert.notEqual(initialTransform,await artTransform(),'illustration visibly moves while the title is open');
+  await page.emulateMedia({reducedMotion:'reduce'});
+  assert.equal(await page.locator('.title-illustration').evaluate(img=>getComputedStyle(img).animationName),'none');
+  await page.emulateMedia({reducedMotion:'no-preference'});
   for(const [width,height] of [[1280,800],[960,640],[390,844]]) {
    await page.setViewportSize({width,height}); await page.waitForTimeout(250);
    for(const selector of ['#new-game','[data-title-sound]']) {
