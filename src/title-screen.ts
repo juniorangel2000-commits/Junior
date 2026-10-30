@@ -49,6 +49,22 @@ export function createTitleScreen(holder: HTMLElement, options: TitleScreenOptio
   art.onload = () => { if (active) screen.classList.add('has-title-art'); };
   art.onerror = () => { if (active) { art.hidden = true; screen.classList.remove('has-title-art'); } };
   art.src = TITLE_BACKGROUND.image;
+  // Keep the system preference as the default, with an explicit local override.
+  const visual = document.createElement('details');
+  visual.className = 'title-visual-settings';
+  visual.innerHTML = `<summary>Efeitos visuais</summary><label>Animações e clarões<select aria-label="Animações e clarões"><option value="system">Seguir o sistema</option><option value="full">Ativos</option><option value="reduced">Reduzidos</option></select></label>`;
+  screen.querySelector('.title-footer-right')!.prepend(visual);
+  const motion = visual.querySelector('select')!;
+  try { const saved = localStorage.getItem('after-rain-title-motion'); if (saved === 'full' || saved === 'reduced') motion.value = saved; } catch { /* Session choice still works. */ }
+  const applyMotion = (): void => {
+    screen.classList.toggle('title-full-motion', motion.value === 'full');
+    screen.classList.toggle('title-reduced-motion', motion.value === 'reduced');
+  };
+  motion.addEventListener('change', () => {
+    applyMotion();
+    try { localStorage.setItem('after-rain-title-motion', motion.value); } catch { /* No persistent storage. */ }
+  });
+  applyMotion();
   const weather = createTitleWeather(screen);
   const soundButton = screen.querySelector<HTMLButtonElement>('[data-title-sound]')!;
   soundButton.setAttribute('data-audio-toggle', '');

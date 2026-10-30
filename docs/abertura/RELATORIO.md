@@ -16,6 +16,14 @@ A ambiência agora usa dois filtros suaves em 1.700 Hz e remoção dos graves ab
 
 O movimento da imagem respeita `prefers-reduced-motion`, inclusive a regra global de acessibilidade. Isso pode explicar uma imagem sem movimento no Windows; não foi reproduzida uma falha de ativação com a preferência normal. Chuva e movimento não dependem do botão de som.
 
+## Ativação dos efeitos visuais
+
+A preferência de movimento reduzido reproduz a combinação relatada: chuva ativa, imagem estática e ausência de clarões. O menu agora oferece **Efeitos visuais → Animações e clarões**, com **Seguir o sistema**, **Ativos** e **Reduzidos**. A escolha é persistida separadamente do save. A opção Ativos permite ativar os efeitos explicitamente mesmo com a preferência do sistema. Não há botão para pausar o fundo.
+
+O trovão acompanha o relógio da tempestade independentemente da preferência visual, respeitando volume e silenciamento. O relógio usa o tempo transcorrido entre quadros, sem o limite de 100 ms que atrasava os ciclos durante renderização lenta. Suspender a aba reinicia a referência de tempo para evitar acumular esse intervalo.
+
+O teste no Chromium verifica chuva ativa e imagem estática sob movimento reduzido, som de trovão nesse modo, ativação explícita da imagem, clarão real no canvas e persistência da preferência ao retornar ao menu. Isso reproduz um caminho possível; não confirma a configuração específica do computador do jogador.
+
 ## Validação
 
 - TypeScript e build de produção.

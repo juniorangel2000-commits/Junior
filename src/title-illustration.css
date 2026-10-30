@@ -28,3 +28,15 @@
   #ui .after-rain-title.has-title-art .title-atmosphere { background: linear-gradient(90deg,#09171de0,#10202799 58%,#16303830),linear-gradient(0deg,#06131b99,transparent); }
 }
 @media(prefers-reduced-motion: reduce) { .after-rain-title .title-illustration { animation: none; } }
+
+/* Only an explicit player choice overrides the system's reduced motion setting. */
+#ui .after-rain-title.title-full-motion .title-illustration {
+  animation: property-title-drift 12s ease-in-out infinite alternate !important;
+}
+#ui .after-rain-title.title-reduced-motion .title-illustration { animation: none !important; }
+#ui .after-rain-title.background-suspended .title-illustration { animation-play-state: paused !important; }
+.title-visual-settings { position: relative; color: #e9dfc8; font: 11px Georgia,serif; pointer-events: auto; }
+.title-visual-settings summary { cursor: pointer; padding: 10px 4px; }
+.title-visual-settings label { position: absolute; bottom: 44px; right: 0; width: 220px; padding: 16px; background: #172825f5; border: 1px solid #ae9567; border-radius: 4px; font-size: 13px; line-height: 1.5; }
+.title-visual-settings select { display: block; width: 100%; margin-top: 10px; padding: 8px; color: #eee5d4; background: #263e35; border: 1px solid #ae9567; font: inherit; }
+@media(max-width:700px) { #ui .after-rain-title .title-footer>span:first-child { display: none; } }

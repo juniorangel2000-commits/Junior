@@ -39,12 +39,16 @@ export function createTitleWeather(holder: HTMLElement): TitleWeather {
     sky.addColorStop(.6, 'rgba(45,64,66,.02)');
     sky.addColorStop(1, 'rgba(34,52,56,.24)');
     ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h);
-    const { strike, strength } = titleLightningAt(elapsed, reducedMotion.matches);
+    const reduce = holder.classList.contains('title-reduced-motion') ||
+      (reducedMotion.matches && !holder.classList.contains('title-full-motion'));
+    const storm = titleLightningAt(elapsed, false);
+    // Accessibility changes the visual flash, not the sound of the storm.
+    if (animated && elapsed >= 3.8 && storm.strike !== lastThunder && elapsed - 3.5 - storm.strike * 14 >= .3) {
+      lastThunder = storm.strike;
+      gameAudio.play('thunder');
+    }
+    const { strike, strength } = titleLightningAt(elapsed, reduce);
     if (strength > 0) {
-      if (animated && strike !== lastThunder && elapsed - 3.5 - strike * 14 >= .3) {
-        lastThunder = strike;
-        gameAudio.play('thunder');
-      }
       // Keep the bolt over the distant valley, behind the menu copy and buttons.
       const x = w * (illustrated ? .12 + noise(strike + 280) * .18 : .66 + noise(strike + 280) * .21);
       const glow = ctx.createRadialGradient(x, h * .12, 0, x, h * .12, w * .62);
@@ -92,7 +96,7 @@ export function createTitleWeather(holder: HTMLElement): TitleWeather {
       ctx.lineTo(Math.round(x - length * .19), Math.round(y + length)); ctx.stroke();
     }
     // Wind carries a few leaves across the clearing; keep motion out of the menu.
-    if (illustrated && !reducedMotion.matches) for (let i = 0; i < 9; i++) {
+    if (illustrated && !reduce) for (let i = 0; i < 9; i++) {
       const travel = (elapsed * (10 + noise(i + 2200) * 9) + noise(i + 2300) * (w + 60)) % (w + 60);
       const x = w + 30 - travel;
       const y = h * (.18 + noise(i + 2400) * .65) + Math.sin(elapsed * 1.3 + i * 2) * 9;
@@ -119,7 +123,8 @@ export function createTitleWeather(holder: HTMLElement): TitleWeather {
     if (!active || !animated) return;
     if (!previous) previous = now;
     if (now - previous >= 1000 / 30) {
-      elapsed += Math.min((now - previous) / 1000, .1);
+      // Visibility suspension resets previous; slow rendering must not slow the storm clock.
+      elapsed += (now - previous) / 1000;
       previous = now; draw();
     }
     frame = requestAnimationFrame(tick);

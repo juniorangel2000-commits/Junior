@@ -15,7 +15,7 @@ fs.mkdirSync(out, { recursive: true });
   await page.evaluate(async()=>{
    const {game}=await import(document.querySelector('script[src*="main.ts"]').src);
    window.game=game; window.scene=game.scene.scenes[0]; game.loop.sleep();
-   window.sound=(await import('/src/audio.ts')).gameAudio;
+   window.sound=(await import(document.querySelector('script[src*="main.ts"]').src)).gameAudio;
   });
   assert.equal(await page.locator('[data-title-motion]').count(),0);
   const frame=()=>page.locator('.title-weather').evaluate(c=>c.toDataURL());
@@ -25,6 +25,30 @@ fs.mkdirSync(out, { recursive: true });
   assert.notEqual(initialTransform,await artTransform(),'illustration visibly moves while the title is open');
   await page.emulateMedia({reducedMotion:'reduce'});
   assert.equal(await page.locator('.title-illustration').evaluate(img=>getComputedStyle(img).animationName),'none');
+  await page.evaluate(()=>{
+   window.thunderCalls=0; const play=sound.play.bind(sound);
+   sound.play=name=>{if(name==='thunder')thunderCalls++;play(name)};
+   scene.ui.showTitle(false);
+  });
+  await page.waitForFunction(()=>thunderCalls>=1,{},{timeout:12000});
+  assert.equal(await page.evaluate(()=>thunderCalls),1,'reduced visual motion must not disable thunder');
+  const reducedFrame=await frame(); await page.waitForTimeout(200); assert.notEqual(reducedFrame,await frame(),'rain continues with reduced motion');
+  await page.locator('.title-visual-settings summary').click();
+  await page.getByLabel('Animações e clarões',{exact:true}).selectOption('full');
+  assert.equal(await page.locator('.title-illustration').evaluate(img=>getComputedStyle(img).animationName),'property-title-drift','explicit choice enables motion under system reduction');
+  await page.evaluate(()=>{thunderCalls=0;scene.ui.showTitle(false)});
+  assert.equal(await page.getByLabel('Animações e clarões',{exact:true}).inputValue(),'full','visual choice survives returning to the menu');
+  let flash=false;
+  for(let attempt=0;attempt<65;attempt++) {
+   await page.waitForTimeout(100);
+   flash=await page.locator('.title-weather').evaluate(c=>{const p=c.getContext('2d').getImageData(0,0,c.width,c.height).data;for(let i=0;i<p.length;i+=4)if(p[i]>180&&p[i+1]>200&&p[i+2]>200)return true;return false});
+   if(flash)break;
+  }
+  assert.ok(flash,'explicit choice restores a real lightning flash under system reduction');
+  await page.waitForFunction(()=>thunderCalls===1);
+  await page.locator('.title-visual-settings summary').click();
+  await page.getByLabel('Animações e clarões',{exact:true}).selectOption('system');
+  await page.locator('.title-visual-settings summary').click();
   await page.emulateMedia({reducedMotion:'no-preference'});
   for(const [width,height] of [[1280,800],[960,640],[390,844]]) {
    await page.setViewportSize({width,height}); await page.waitForTimeout(250);
