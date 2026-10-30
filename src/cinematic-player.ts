@@ -20,6 +20,7 @@ export class CinematicPlayer {
   private disposed = false;
   private suspended = false;
   private prepared = false;
+  private playbackFailed = false;
   private cleanupAudio?: () => void;
   private playbackReady: boolean;
   private timer?: ReturnType<typeof setTimeout>;
@@ -53,7 +54,13 @@ export class CinematicPlayer {
     this.play.textContent = "Reproduzir vídeo";
     this.play.dataset.playIntro = "";
     this.play.hidden = true;
-    this.play.onclick = () => this.start();
+    this.play.onclick = () => {
+      if (this.playbackFailed) {
+        this.playbackFailed = false; this.video.load();
+        this.status.textContent = this.ready ? presentation.description : presentation.loading;
+      }
+      this.start();
+    };
     controls.append(this.status, this.play, this.skip);
     root.append(this.video, controls);
     host.append(root);
@@ -67,7 +74,7 @@ export class CinematicPlayer {
     void resources.then(() => {
       if (this.disposed) return;
       this.ready = true;
-      this.status.textContent = presentation.description;
+      this.status.textContent = this.playbackFailed ? "Não foi possível reproduzir o vídeo. Tente novamente ou pule." : presentation.description;
       this.skip.disabled = false;
       this.skip.hidden = false;
       if (this.finished) this.finish();
@@ -112,15 +119,18 @@ export class CinematicPlayer {
   private arm(): void {
     clearTimeout(this.timer);
     this.timer = undefined;
-    if (!this.disposed && !this.finished && !this.suspended && !document.hidden)
+    if (!this.disposed && !this.finished && !this.suspended && !this.playbackFailed && !document.hidden)
       this.timer = setTimeout(() => this.fail(), 15000);
   }
   private fail(): void {
     if (this.disposed || this.finished) return;
     this.prepare();
     this.video.pause();
-    this.status.textContent = this.presentation.loading;
-    this.finish();
+    clearTimeout(this.timer); this.timer = undefined;
+    this.playbackFailed = true;
+    this.status.textContent = this.ready ? "Não foi possível reproduzir o vídeo. Tente novamente ou pule." : "Não foi possível reproduzir o vídeo. Tente novamente ou aguarde para pular.";
+    this.play.textContent = "Tentar novamente";
+    this.play.hidden = false;
   }
   private finish(): void {
     if (this.disposed) return;
@@ -133,7 +143,7 @@ export class CinematicPlayer {
     }
   }
   private pause = (): void => { this.suspended = true; clearTimeout(this.timer); this.timer = undefined; this.video.pause(); };
-  private resume = (): void => { this.suspended = false; this.start(); };
+  private resume = (): void => { this.suspended = false; if (!this.playbackFailed) this.start(); };
   private visibility = (): void => { if (document.hidden) this.pause(); else this.resume(); };
   destroy(): void {
     if (this.disposed) return;

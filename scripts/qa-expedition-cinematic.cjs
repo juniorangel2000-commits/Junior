@@ -68,8 +68,14 @@ fs.mkdirSync(out, { recursive: true });
     });
     check("Falha de vídeo não contorna o bloqueio de carregamento", await page.evaluate(() => completed === 2), {});
     await page.evaluate(() => release());
+    await page.locator('[data-skip-intro]').waitFor({state:'visible'});
+    check("Falha de vídeo não fecha a cena silenciosamente", await page.evaluate(() => completed === 2 && !!host.querySelector('video')), {});
+    await page.getByRole('button',{name:'Tentar novamente',exact:true}).click();
+    await page.waitForFunction(()=>host.querySelector('video').currentTime > .2 && !host.querySelector('video').paused);
+    check("Tentar novamente recupera a reprodução real", await page.evaluate(()=>completed===2), {});
+    await page.locator('[data-skip-intro]').click();
     await page.waitForFunction(() => completed === 3);
-    check("Falha de vídeo permite menu depois dos recursos prontos", await page.evaluate(() => !host.querySelector("video")), {});
+    check("Pular após falha e carregamento permite continuar", await page.evaluate(() => !host.querySelector('video')), {});
 
     await page.evaluate(async () => {
       host.remove();

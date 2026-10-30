@@ -35,3 +35,11 @@ O teste no Chromium verifica chuva ativa e imagem estática sob movimento reduzi
 - Regressão de áudio: música, efeitos e silêncio geral.
 
 Metadados e hashes dos arquivos: ASSETS.json. Alterações locais, sem publicação de release.
+
+## Vídeo interrompido na viagem
+
+O protocolo do aplicativo desktop foi configurado para mídia (`stream: true`) e os MP4/WebM agora recebem respostas por intervalo de bytes: `Accept-Ranges`, `Content-Length`, `Content-Range` e status 206 para requisições válidas. Isso permite carregar o cabeçalho e outros trechos do arquivo sem tratar toda requisição como um arquivo genérico. Intervalos inválidos recebem 416.
+
+O player compartilhado não considera mais um erro de mídia ou timeout como uma conclusão normal. Em falha, mantém a cena e oferece **Tentar novamente**, com **Pular** disponível apenas após preparar os recursos. A perda de foco não dispara tentativas automáticas em uma cena com falha. O carregamento concluído não encerra um vídeo que ainda está reproduzindo.
+
+Validação: 11 testes dos bytes servidos (arquivo completo, intervalos abertos, fechados, sufixos e inválidos) e 2 testes da seleção dos vídeos. Chromium reproduziu os dois vídeos da estrada até o fim, em velocidade normal, pelo mesmo handler de bytes usado no desktop: 9,963 segundos cada, com requisições 206 reais. O player foi testado com falha simulada e repetição bem-sucedida. Esses testes não reproduzem o Windows do jogador nem confirmam qual erro ocorreu naquela execução.

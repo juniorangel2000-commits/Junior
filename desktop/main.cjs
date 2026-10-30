@@ -2,10 +2,11 @@ const { app, BrowserWindow, Menu, dialog, protocol, net } = require('electron');
 const path = require('node:path');
 const { installFullscreenShortcut } = require('./fullscreen.cjs');
 const { pathToFileURL } = require('node:url');
+const { videoResponse } = require('./video-response.cjs');
 
 // Origem fixa: o save não muda com a pasta temporária usada pelo .exe portátil.
 protocol.registerSchemesAsPrivileged([
-  { scheme: 'chuva', privileges: { standard: true, secure: true, supportFetchAPI: true } },
+  { scheme: 'chuva', privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true } },
 ]);
 
 app.setName('After Rain');
@@ -65,6 +66,7 @@ if (!app.requestSingleInstanceLock()) {
         const pathname = decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname);
         const file = path.resolve(root, `.${pathname}`);
         if (!file.startsWith(root + path.sep)) return new Response('Acesso não permitido.', { status: 403 });
+        if (/\.(mp4|webm)$/i.test(file)) return await videoResponse(file, request.headers.get('range'));
         // O await mantém falhas de leitura dentro do handler (inclusive assets ausentes).
         return await net.fetch(pathToFileURL(file).toString());
       } catch {
