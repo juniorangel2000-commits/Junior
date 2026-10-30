@@ -1,5 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { deepStrictEqual } from "node:assert";
 import { performance } from "node:perf_hooks";
 import { DungeonRun } from "../src/dungeons/run";
 import { createDungeonProgress } from "../src/dungeons/progression";
@@ -49,14 +50,17 @@ function simulate(
   dungeon: DungeonId,
   build: string,
   seed: number,
-  pet = false,
+  pet: boolean | "dog" | "cat" = false,
+  rare = false,
 ) {
   const progress = createDungeonProgress();
+  const species = pet === "cat" ? "cat" : "dog";
+  const suffix = pet ? `-${species}${rare ? "-rare" : ""}` : "";
   if (pet)
     progress.pets.push({
-      id: "sim-dog",
-      species: "dog",
-      rare: false,
+      id: "sim-pet",
+      species,
+      rare,
       xp: 0,
       attributes: {
         speed: 0,
@@ -67,10 +71,10 @@ function simulate(
       },
     });
   const run = new DungeonRun(
-    "sim-" + build + "-" + seed + (pet ? "-dog" : ""),
+    "sim-" + build + "-" + seed + suffix,
     dungeon,
     progress,
-    pet ? "sim-dog" : undefined,
+    pet ? "sim-pet" : undefined,
     seed,
   );
   let dx = 1,
@@ -93,6 +97,12 @@ function simulate(
     limit = dungeon === "abandoned-central-square" ? 901 : 3600;
   let lateSnapshot = run.snapshot();
   let completedAt: number | undefined;
+  let resumed: DungeonRun | undefined;
+  let resumeChecks = 0,
+    maxHealing = 0,
+    petRecoveries = 0,
+    wasRecovering = false;
+  const bosses = new Set<number>();
   const dt = 1 / 30;
   while (run.state.elapsed < limit) {
     const s = run.state;
@@ -103,6 +113,8 @@ function simulate(
       )[0];
       if (!card || !run.choose(card.id))
         throw Error("Bot cannot choose a legal card");
+      if (resumed && !resumed.choose(card.id))
+        throw Error("Resumed run rejects the same card");
       choices.push({ at: s.elapsed, id: card.id });
       continue;
     }
@@ -199,10 +211,32 @@ function simulate(
       p = s.player;
     if (!dungeonBlocked(dungeon, p.x + dx * speed, p.y)) p.x += dx * speed;
     if (!dungeonBlocked(dungeon, p.x, p.y + dy * speed)) p.y += dy * speed;
-    const hp = p.hp,
-      start = performance.now();
+    const hp = p.hp;
+    if (resumed) {
+      resumed.state.player.x = p.x;
+      resumed.state.player.y = p.y;
+      resumed.step(dt);
+    }
+    const start = performance.now();
     run.step(dt);
-    if (ticks % 30 === 0) timings.push(performance.now() - start);
+    const elapsedTick = performance.now() - start;
+    maxHealing = Math.max(
+      maxHealing,
+      s.pickups.filter((p) => p.kind === "health").length,
+    );
+    for (const e of s.enemies) if (e.kind === "boss") bosses.add(e.id);
+    const recovering = !!s.pet && s.pet.hp <= 0;
+    if (recovering && !wasRecovering) petRecoveries++;
+    wasRecovering = recovering;
+    if (resumed && ticks % 300 === 0) {
+      deepStrictEqual(resumed.snapshot(), run.snapshot());
+      resumeChecks++;
+    }
+    if (!resumed && s.elapsed >= 450 && s.phase === "fighting") {
+      resumed = new DungeonRun("restored", dungeon, progress);
+      resumed.restore(run.snapshot());
+    }
+    if (ticks % 30 === 0) timings.push(elapsedTick);
     damageTaken += Math.max(0, hp - p.hp);
     for (const effect of run.effects)
       if (effect.id > lastEffect && effect.weapon === "orbiting-shield")
@@ -229,8 +263,8 @@ function simulate(
         weapons: [...s.weapons],
         runners: s.enemies.filter((e) => e.kind === "runner").length,
         brutes: s.enemies.filter((e) => e.kind === "brute").length,
-        bossHP: s.enemies.find(e => e.kind === "boss")?.hp,
-        bossSkill: s.enemies.find(e => e.kind === "boss")?.boss?.action?.kind,
+        bossHP: s.enemies.find((e) => e.kind === "boss")?.hp,
+        bossSkill: s.enemies.find((e) => e.kind === "boss")?.boss?.action?.kind,
       });
       lastRound = s.round;
     }
@@ -277,6 +311,11 @@ function simulate(
     build,
     seed,
     pet,
+    rare,
+    resumeChecks,
+    maxHealing,
+    petRecoveries,
+    bossesEncountered: bosses.size,
     status,
     elapsed: Math.round(run.state.elapsed),
     round: run.state.round,
@@ -304,7 +343,7 @@ function simulate(
       p95: timings[Math.floor(timings.length * 0.95)],
     },
   };
-  const name = dungeon + "-" + build + "-" + seed + (pet ? "-dog" : "");
+  const name = dungeon + "-" + build + "-" + seed + suffix;
   writeFileSync(join(out, name + ".json"), JSON.stringify(result, null, 2));
   writeFileSync(
     join(out, name + "-late-save.json"),
@@ -330,23 +369,7 @@ function simulate(
   return result;
 }
 const results = [];
-for (const dungeon of [
-  "abandoned-central-square",
-  "mall-parking",
-] as DungeonId[])
-  if (
-    !process.argv.includes("--timed-only") ||
-    dungeon === "abandoned-central-square"
-  )
-  if (
-    !process.argv.includes("--waves-only") || dungeon === "mall-parking"
-  )
-    for (const build of Object.keys(builds))
-      for (const seed of process.argv.includes("--quick")
-        ? [1234567]
-        : [1234567, 7654321])
-        results.push(simulate(dungeon, build, seed));
-if (!process.argv.includes("--quick"))
+if (!process.argv.includes("--pet-matrix-only")) {
   for (const dungeon of [
     "abandoned-central-square",
     "mall-parking",
@@ -355,10 +378,43 @@ if (!process.argv.includes("--quick"))
       !process.argv.includes("--timed-only") ||
       dungeon === "abandoned-central-square"
     )
-    if (
-      !process.argv.includes("--waves-only") || dungeon === "mall-parking"
-    )
-      results.push(simulate(dungeon, "control", 1234567, true));
+      if (!process.argv.includes("--waves-only") || dungeon === "mall-parking")
+        for (const build of Object.keys(builds))
+          for (const seed of process.argv.includes("--quick")
+            ? [1234567]
+            : [1234567, 7654321])
+            results.push(simulate(dungeon, build, seed));
+  if (!process.argv.includes("--quick"))
+    for (const dungeon of [
+      "abandoned-central-square",
+      "mall-parking",
+    ] as DungeonId[])
+      if (
+        !process.argv.includes("--timed-only") ||
+        dungeon === "abandoned-central-square"
+      )
+        if (
+          !process.argv.includes("--waves-only") ||
+          dungeon === "mall-parking"
+        )
+          results.push(simulate(dungeon, "control", 1234567, true));
+  if (process.argv.includes("--all-pets"))
+    for (const [species, rare] of [
+      ["dog", true],
+      ["cat", false],
+      ["cat", true],
+    ] as const)
+      results.push(
+        simulate("abandoned-central-square", "control", 1234567, species, rare),
+      );
+} else {
+  for (const species of ["dog", "cat"] as const)
+    for (const rare of [false, true])
+      for (const build of Object.keys(builds))
+        results.push(
+          simulate("abandoned-central-square", build, 7654321, species, rare),
+        );
+}
 writeFileSync(
   join(out, "summary.json"),
   JSON.stringify(
