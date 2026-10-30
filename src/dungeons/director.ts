@@ -9,12 +9,6 @@ export function hordeProfile(
 ) {
   const extraLevels = Math.max(0, level - 1);
   const timed = DUNGEONS[dungeon].mode === "timed";
-  const stage = Math.min(
-    5,
-    timed
-      ? [60, 180, 360, 600, 780].filter((t) => elapsed >= t).length
-      : Math.floor((round - 1) / 10),
-  );
   const progress = Math.max(
     0,
     Math.min(
@@ -24,10 +18,13 @@ export function hordeProfile(
         : (round - 1) / (DUNGEONS[dungeon].rounds - 1),
     ),
   );
+  // Compare the two modes by completed progress, rather than real time spent on a wave.
+  const pressureTime = timed ? Math.max(0, elapsed) : progress * 900;
+  const stage = [60, 180, 360, 600, 780].filter(t => pressureTime >= t).length;
   const phaseTimes = [0, 60, 180, 360, 600, 780, 900];
   const intervals = [1.5, 1.25, 1, .85, .75, .65, .6];
-  const phaseProgress = Math.max(0, Math.min(1, (elapsed - phaseTimes[stage]) / (phaseTimes[stage + 1] - phaseTimes[stage])));
-  const timedInterval = intervals[stage] + (intervals[stage + 1] - intervals[stage]) * phaseProgress;
+  const phaseProgress = Math.max(0, Math.min(1, (pressureTime - phaseTimes[stage]) / (phaseTimes[stage + 1] - phaseTimes[stage])));
+  const arrivalInterval = intervals[stage] + (intervals[stage + 1] - intervals[stage]) * phaseProgress;
   // Brief breathing windows reduce arrivals; enemies already present keep pursuing.
   const respite = timed && elapsed >= 80 && elapsed % 90 >= 80;
   const pattern = timed ? Math.floor(elapsed / 30) % 3 : (round - 1) % 3;
@@ -46,16 +43,8 @@ export function hordeProfile(
         ][stage],
     pattern: (["surround", "flank", "pincer"] as const)[pattern],
     sector: (timed ? Math.floor(elapsed / 30) : round) * 2.399963,
-    batch: respite
-      ? 1
-      : timed
-        ? [2, 3, 5, 8, 11, 15][stage]
-        : Math.min(8, 2 + stage + Math.floor(progress * 2)),
-    interval: respite
-      ? 2.8
-      : timed
-        ? timedInterval
-        : 0.65 - progress * 0.24,
+    batch: respite ? 1 : [2, 3, 5, 8, 11, 15][stage],
+    interval: respite ? 2.8 : arrivalInterval,
     health: 1.1 * (1 + progress * 2) * (1 + extraLevels * 0.002),
     damage: 1.1 * (1 + progress) * (1 + extraLevels * 0.0006),
     speed: (1 + progress * 0.5) * (1 + Math.min(0.2, extraLevels * 0.0002)),
@@ -80,5 +69,6 @@ export function experienceForLevel(level: number): number {
 /** Existing waves retain their saved remainder; subsequent waves use this budget. */
 export function waveEnemyCount(round: number): number {
   const n = Math.max(1, Math.min(50, Math.floor(round)));
-  return 5 + n * 2 + Math.floor((n - 1) * .75);
+  const previousBudget = 5 + n * 2 + Math.floor((n - 1) * .75);
+  return Math.ceil(previousBudget * 2.2);
 }

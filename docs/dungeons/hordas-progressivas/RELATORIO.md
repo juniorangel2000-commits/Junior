@@ -1,26 +1,32 @@
 # Hordas progressivas
 
-O começo permanece com dois inimigos por grupo no modo de 15 minutos e sete inimigos na primeira rodada. A pressão aumenta pelos grupos, pela frequência de chegada e pela velocidade. Vida, dano e bônus de experiência mantêm as regras anteriores.
+A dificuldade dos dois modos usa o mesmo progresso relativo. A rodada 1 corresponde ao início do modo de 15 minutos, a rodada 25 a aproximadamente 49% e a rodada 50 à reta final. Vida, dano, velocidade, chance de especiais e corredores e ritmo de chegada usam os mesmos perfis no mesmo progresso e nível do jogador.
 
-| Medida | Antes | Agora |
+O modo de tempo mantém suas janelas breves de respiro. O modo de rodadas mantém os intervalos entre rodadas, sem inserir uma pausa no meio da horda por tempo transcorrido. Demorar na mesma rodada não aumenta seu perfil de dificuldade.
+
+## Quantidade no modo de rodadas
+
+Cada rodada usa 2,2 vezes o orçamento do primeiro ajuste de hordas, com arredondamento para cima. A primeira rodada também recebe a nova contagem; uma rodada já salva conserva o restante registrado até avançar para a próxima.
+
+| Rodada | Primeiro ajuste | Atual |
 | --- | --- | --- |
-| Grupo final no modo de 15 minutos | 12 | 15 |
-| Intervalo final, fora dos respiros | 0,65 s | 0,60 s |
-| Grupo final no modo de rodadas | 6 | 8 |
-| Inimigos previstos para a rodada 50 | 105 | 141 |
-| Velocidade ao fim, sem fator de nível | +30% | +50% |
-| Limite simultâneo | 240 | 240 |
+| 1 | 7 | 16 |
+| 10 | 31 | 69 |
+| 25 | 73 | 161 |
+| 50 | 141 | 311 |
 
-No modo de 15 minutos, os intervalos diminuem continuamente entre as fases e os grupos aumentam nas transições. As janelas breves de respiro continuam existindo. No modo de rodadas, cada rodada acrescenta dois ou três inimigos e o intervalo entre grupos diminui gradualmente. Uma rodada já salva mantém o restante registrado; a nova contagem vale ao começar a próxima.
+O limite de inimigos simultâneos continua em 240. Uma rodada pode ter mais inimigos no total: novos grupos entram conforme há espaço, sem ultrapassar o limite. Isso preserva a capacidade de renderização enquanto aumenta a horda total.
 
-A velocidade aumenta continuamente conforme o tempo ou a rodada e conserva o bônus limitado por nível. Novos inimigos recebem o perfil atual; os já existentes mantêm seus atributos. Zumbis comuns continuam mais lentos que a velocidade base do jogador, mesmo com o maior bônus de nível. Corredores continuam sendo a ameaça mais rápida.
+## Ritmo compartilhado
+
+No começo, são dois inimigos por grupo a cada 1,5 segundo. No fim, são quinze por grupo a cada 0,6 segundo, fora dos respiros. A velocidade base cresce continuamente em até 50%, mantendo o bônus limitado por nível. Novos inimigos recebem o perfil atual; os existentes conservam seus atributos. Zumbis comuns continuam mais lentos que a velocidade base do jogador, mesmo com o maior bônus de nível.
 
 ## Validação
 
-- 1.244 testes em 141 arquivos, incluindo pressão crescente, velocidade, limites e avanço real para a próxima rodada.
-- Build de produção.
-- Simulações determinísticas dos dois modos e de variações de pets, com os atributos permanentes no nível 5. São testes do motor e não uma taxa de vitória humana ou medição da renderização.
-- O fluxo da viagem foi testado com as imagens da dungeon bloqueadas: o vídeo entra imediatamente no DOM, começa a reproduzir antes da liberação dos recursos e mantém Pular bloqueado. Após carregar, o mesmo vídeo continua até a conclusão ou escolha de pular.
-- A tela inicial foi verificada em três tamanhos, inclusive no maior zoom, sem rolagem horizontal. Web Audio renderizou duas emendas da chuva sem redução perceptível de energia.
+A suíte verifica que todas as rodadas superam duas vezes a contagem do primeiro ajuste, que uma nova partida começa com 16 inimigos previstos, que o orçamento é aplicado ao avançar e que os atributos dos dois modos coincidem no mesmo progresso e nível. Também verifica que o tempo gasto na mesma rodada não aumenta a dificuldade.
 
-Nas cinco simulações com a mesma seed e atributos de nível 5, quatro concluíram o desafio e uma terminou em derrota (gato comum, 214 segundos). O pico foi de 240 inimigos no modo de tempo e 140 nas rodadas. As combinações alteram a sequência do combate; uma seed e um robô não estabelecem a dificuldade para jogadores. O resumo está em SIMULACOES.json.
+O resumo das simulações está em SIMULACOES.json. São simulações determinísticas do motor, com atributos permanentes no nível 5, e não uma taxa de vitória humana ou medição da renderização. Os resultados do modo de tempo incluem pets; a simulação atualizada das rodadas usa a combinação control sem pet.
+
+Na simulação atualizada das rodadas, o robô concluiu 50 rodadas com 8.163 eliminações, nível 230 e pico de 240 inimigos. O tempo foi de 2.685 segundos de jogo. O alinhamento é por progresso e pressão de combate; a duração real das rodadas depende da eliminação da horda.
+
+As outras correções desta revisão foram verificadas no Chromium: vídeo imediato na confirmação com imagens da dungeon bloqueadas, Pular bloqueado até preparar os recursos, retorno ao menu sem repetir a viagem, ausência de rolagem horizontal no maior zoom e chuva contínua nas emendas de 12 e 24 segundos.

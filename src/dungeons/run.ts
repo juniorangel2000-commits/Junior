@@ -196,7 +196,7 @@ export class DungeonRun {
       elapsed: 0,
       round: 1,
       timedBossCount: 0,
-      waveRemaining: 7,
+      waveRemaining: DUNGEONS[dungeon].mode === "waves" ? waveEnemyCount(1) : 7,
       intermission: 0,
       kills: 0,
       level: 1,

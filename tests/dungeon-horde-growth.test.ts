@@ -15,14 +15,20 @@ it('preserves initial pressure and increases arrivals through each timed phase',
  }
  expect(previous.batch/previous.interval).toBeGreaterThan(24);
 });
-it('adds wave enemies gradually, without changing the first wave or exceeding the crowd cap',()=>{
- expect(waveEnemyCount(1)).toBe(7);
- for(let round=2;round<=50;round++) {
-  expect(waveEnemyCount(round)-waveEnemyCount(round-1)).toBeGreaterThanOrEqual(2);
-  expect(waveEnemyCount(round)-waveEnemyCount(round-1)).toBeLessThanOrEqual(3);
-  expect(waveEnemyCount(round)).toBeLessThan(B.maxEnemies);
+it('more than doubles every wave while preserving gradual growth',()=>{
+ let previous=0;
+ for(let round=1;round<=50;round++) {
+  const old=5+round*2+Math.floor((round-1)*.75);
+  expect(waveEnemyCount(round)).toBeGreaterThan(old*2);
+  expect(waveEnemyCount(round)).toBeGreaterThan(previous);
+  previous=waveEnemyCount(round);
  }
- expect(waveEnemyCount(50)).toBeGreaterThan(105);expect(waveEnemyCount(999)).toBe(waveEnemyCount(50));
+ expect(waveEnemyCount(1)).toBe(16);expect(waveEnemyCount(50)).toBe(311);
+ expect(waveEnemyCount(999)).toBe(waveEnemyCount(50));
+});
+it('starts a fresh wave run with the increased budget',()=>{
+ const run=new DungeonRun('larger-first-wave','mall-parking',createDungeonProgress());
+ expect(run.state.waveRemaining).toBe(16);
 });
 it('applies the larger enemy budget when the real run advances to the next wave',()=>{
  const run=new DungeonRun('horde-growth','mall-parking',createDungeonProgress());
@@ -35,5 +41,17 @@ it('keeps ordinary enemies slower than the base player even at maximum level pre
   const last=hordeProfile(map,900,50,100000);
   expect(B.enemySpeed*last.speed).toBeLessThan(B.playerSpeed);
   expect(last.speed).toBeCloseTo(1.8);
+ }
+});
+
+it('matches timed combat pressure at equivalent wave progress, including player level',()=>{
+ for(const round of [1,5,10,20,25,40,50]) for(const level of [1,100,500]) {
+  const time=(round-1)/49*900;
+  const timed=hordeProfile('abandoned-central-square',time,1,level);
+  const waves=hordeProfile('mall-parking',0,round,level);
+  for(const key of ['health','damage','speed','specialChance','runnerChance','stage'] as const)
+   expect(waves[key]).toBeCloseTo(timed[key]);
+  if(!timed.respite){expect(waves.batch).toBe(timed.batch);expect(waves.interval).toBeCloseTo(timed.interval);}
+  expect(hordeProfile('mall-parking',time+5000,round,level)).toEqual(waves);
  }
 });

@@ -24,27 +24,6 @@
       "wallSeconds": 13.232409382
     },
     {
-      "dungeon": "mall-parking",
-      "build": "control",
-      "seed": 1234567,
-      "pet": false,
-      "rare": false,
-      "status": "victory",
-      "elapsed": 2230,
-      "round": 50,
-      "kills": 3700,
-      "level": 113,
-      "weapons": [
-        "sword",
-        "rotating-blade",
-        "boomerang",
-        "orbiting-shield"
-      ],
-      "peakEnemies": 140,
-      "blocks": 7,
-      "wallSeconds": 7.927517905999999
-    },
-    {
       "dungeon": "abandoned-central-square",
       "build": "control",
       "seed": 1234567,
@@ -104,6 +83,27 @@
       "peakEnemies": 240,
       "blocks": 30,
       "wallSeconds": 8.481162284999998
+    },
+    {
+      "dungeon": "mall-parking",
+      "build": "control",
+      "seed": 1234567,
+      "pet": false,
+      "rare": false,
+      "status": "victory",
+      "elapsed": 2685,
+      "round": 50,
+      "kills": 8163,
+      "level": 230,
+      "weapons": [
+        "sword",
+        "orbiting-shield",
+        "hammer",
+        "boomerang"
+      ],
+      "peakEnemies": 240,
+      "blocks": 99,
+      "wallSeconds": 11.407636094999999
     }
   ]
 }
