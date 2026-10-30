@@ -1,0 +1,127 @@
+{
+  "checks": [
+    {
+      "name": "Viagem chuvosa leva ao menu com duas opções",
+      "passed": true,
+      "details": {
+        "duration": 5.101
+      }
+    },
+    {
+      "name": "Menu continua legível em viewport estreito",
+      "passed": true,
+      "details": 680
+    },
+    {
+      "name": "abandoned-central-square: luzes nos postes, sombras sob os avisos e chefe legível",
+      "passed": true,
+      "details": {
+        "bulbs": 6,
+        "pools": true,
+        "shadowDepth": 4,
+        "warningDepth": 6,
+        "bossWarning": "warning",
+        "drawCommands": 321
+      }
+    },
+    {
+      "name": "abandoned-central-square: iluminação respeita pausa sem modificar combate",
+      "passed": true
+    },
+    {
+      "name": "abandoned-central-square: desligar iluminação remove luzes e sombras dinâmicas",
+      "passed": true,
+      "details": {
+        "pools": false,
+        "bulbs": false,
+        "commands": 0
+      }
+    },
+    {
+      "name": "abandoned-central-square: intensidade é respeitada",
+      "passed": true,
+      "details": {
+        "floor": 0.5,
+        "bulb": 0.18016248728617804
+      }
+    },
+    {
+      "name": "abandoned-central-square: cachorro parado alterna repouso com pausas",
+      "passed": true,
+      "details": [
+        "idle-south-0",
+        "idle-south-0",
+        "idle-south-6",
+        "idle-south-0"
+      ]
+    },
+    {
+      "name": "abandoned-central-square: sair do mapa limpa os objetos de luz",
+      "passed": true
+    },
+    {
+      "name": "mall-parking: luzes nos postes, sombras sob os avisos e chefe legível",
+      "passed": true,
+      "details": {
+        "bulbs": 8,
+        "pools": true,
+        "shadowDepth": 4,
+        "warningDepth": 6,
+        "bossWarning": "warning",
+        "drawCommands": 321
+      }
+    },
+    {
+      "name": "mall-parking: iluminação respeita pausa sem modificar combate",
+      "passed": true
+    },
+    {
+      "name": "mall-parking: desligar iluminação remove luzes e sombras dinâmicas",
+      "passed": true,
+      "details": {
+        "pools": false,
+        "bulbs": false,
+        "commands": 0
+      }
+    },
+    {
+      "name": "mall-parking: intensidade é respeitada",
+      "passed": true,
+      "details": {
+        "floor": 0.5,
+        "bulb": 0.18016248728617804
+      }
+    },
+    {
+      "name": "mall-parking: cachorro parado alterna repouso com pausas",
+      "passed": true,
+      "details": [
+        "idle-south-0",
+        "idle-south-0",
+        "idle-south-6",
+        "idle-south-0"
+      ]
+    },
+    {
+      "name": "mall-parking: sair do mapa limpa os objetos de luz",
+      "passed": true
+    },
+    {
+      "name": "Texturas compartilhadas permanecem limitadas entre os mapas",
+      "passed": true,
+      "details": [
+        "dungeon-shadow-abandoned-central-square",
+        "dungeon-light-abandoned-central-square",
+        "dungeon-lamp-halo",
+        "dungeon-shadow-mall-parking",
+        "dungeon-light-mall-parking"
+      ]
+    },
+    {
+      "name": "Sem erros JavaScript, requisições falhas ou WebGL",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

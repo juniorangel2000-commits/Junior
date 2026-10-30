@@ -1,0 +1,421 @@
+{
+  "checks": [
+    {
+      "name": "Menu explica como resgatar o primeiro pet",
+      "passed": true
+    },
+    {
+      "name": "Gato usa a nova sprite na propriedade",
+      "passed": true,
+      "details": {
+        "selected": "qa-cat",
+        "visible": true,
+        "texture": "dungeon-pet-cat",
+        "frame": "idle-south-0",
+        "alpha": 0,
+        "world": {
+          "mode": "follow",
+          "area": "property",
+          "space": "outdoors",
+          "x": 816,
+          "y": 592,
+          "direction": "south"
+        },
+        "count": 1
+      }
+    },
+    {
+      "name": "Selecionar cachorro troca o companheiro sem duplicar sprites",
+      "passed": true,
+      "details": {
+        "selected": "qa-dog",
+        "visible": true,
+        "texture": "dungeon-pet-dog",
+        "frame": "idle-south-0",
+        "alpha": 0,
+        "world": {
+          "mode": "follow",
+          "area": "property",
+          "space": "outdoors",
+          "x": 816,
+          "y": 592,
+          "direction": "south"
+        },
+        "count": 1
+      }
+    },
+    {
+      "name": "Pet circula perto do jogador respeitando o chão do mapa",
+      "passed": true,
+      "details": {
+        "moved": 62.46424557721338,
+        "distance": 49.572086483506574,
+        "collision": false
+      }
+    },
+    {
+      "name": "Esperar mantém a posição e salva o comando",
+      "passed": true,
+      "details": {
+        "same": true,
+        "mode": "stay",
+        "stored": "stay"
+      }
+    },
+    {
+      "name": "Pet esperando na propriedade não é transportado para a vila",
+      "passed": true,
+      "details": {
+        "selected": "qa-dog",
+        "visible": false,
+        "texture": "dungeon-pet-dog",
+        "frame": "idle-south-0",
+        "alpha": 0,
+        "world": {
+          "mode": "stay",
+          "area": "property",
+          "space": "outdoors",
+          "x": 878.4481706125097,
+          "y": 590.5829740011895,
+          "direction": "east"
+        },
+        "count": 0
+      }
+    },
+    {
+      "name": "Menu mostra onde o pet ficou e bloqueia espera remota",
+      "passed": true
+    },
+    {
+      "name": "Chamar traz o pet para perto na vila",
+      "passed": true,
+      "details": {
+        "selected": "qa-dog",
+        "visible": true,
+        "texture": "dungeon-pet-dog",
+        "frame": "idle-east-0",
+        "alpha": 0,
+        "world": {
+          "mode": "follow",
+          "area": "village",
+          "space": "outdoors",
+          "x": 80,
+          "y": 1680,
+          "direction": "east"
+        },
+        "count": 1
+      }
+    },
+    {
+      "name": "Pet acompanha em todos os nove comércios além da ferraria",
+      "passed": true,
+      "details": [
+        {
+          "id": "augusto",
+          "visible": true,
+          "space": "shop:augusto"
+        },
+        {
+          "id": "rosa",
+          "visible": true,
+          "space": "shop:rosa"
+        },
+        {
+          "id": "tobias",
+          "visible": true,
+          "space": "shop:tobias"
+        },
+        {
+          "id": "amelia",
+          "visible": true,
+          "space": "shop:amelia"
+        },
+        {
+          "id": "nilo",
+          "visible": true,
+          "space": "shop:nilo"
+        },
+        {
+          "id": "celina",
+          "visible": true,
+          "space": "shop:celina"
+        },
+        {
+          "id": "damiao",
+          "visible": true,
+          "space": "shop:damiao"
+        },
+        {
+          "id": "helena",
+          "visible": true,
+          "space": "shop:helena"
+        },
+        {
+          "id": "icaro",
+          "visible": true,
+          "space": "shop:icaro"
+        }
+      ]
+    },
+    {
+      "name": "Companheiro entra no interior de comércio",
+      "passed": true,
+      "details": {
+        "selected": "qa-dog",
+        "visible": true,
+        "texture": "dungeon-pet-dog",
+        "frame": "idle-east-0",
+        "alpha": 0,
+        "world": {
+          "mode": "follow",
+          "area": "village",
+          "space": "shop:helena",
+          "x": 288,
+          "y": 335,
+          "direction": "east"
+        },
+        "count": 1
+      }
+    },
+    {
+      "name": "Companheiro também aparece na ferraria",
+      "passed": true,
+      "details": {
+        "selected": "qa-dog",
+        "visible": true,
+        "texture": "dungeon-pet-dog",
+        "frame": "idle-east-0",
+        "alpha": 0,
+        "world": {
+          "mode": "follow",
+          "area": "village",
+          "space": "blacksmith",
+          "x": 245,
+          "y": 309,
+          "direction": "east"
+        },
+        "count": 1
+      }
+    },
+    {
+      "name": "Companheiro retorna para a propriedade sem duplicação",
+      "passed": true,
+      "details": {
+        "selected": "qa-dog",
+        "visible": true,
+        "texture": "dungeon-pet-dog",
+        "frame": "idle-north-0",
+        "alpha": 0,
+        "world": {
+          "mode": "follow",
+          "area": "property",
+          "space": "outdoors",
+          "x": 2992,
+          "y": 1676.0013311999571,
+          "direction": "north"
+        },
+        "count": 1
+      }
+    },
+    {
+      "name": "Companheiro acompanha o jogador dentro de casa",
+      "passed": true,
+      "details": {
+        "selected": "qa-dog",
+        "visible": true,
+        "texture": "dungeon-pet-dog",
+        "frame": "idle-north-0",
+        "alpha": 0,
+        "world": {
+          "mode": "follow",
+          "area": "property",
+          "space": "home",
+          "x": 176,
+          "y": 272,
+          "direction": "north"
+        },
+        "count": 1
+      }
+    },
+    {
+      "name": "Gato usa a animação sentada ao esperar",
+      "passed": true,
+      "details": {
+        "selected": "qa-cat",
+        "visible": true,
+        "texture": "dungeon-pet-cat",
+        "frame": "rest-south-0",
+        "alpha": 0,
+        "world": {
+          "mode": "stay",
+          "area": "property",
+          "space": "home",
+          "x": 176,
+          "y": 272,
+          "direction": "south"
+        },
+        "count": 1
+      }
+    },
+    {
+      "name": "Gato deixado em casa permanece lá ao sair",
+      "passed": true,
+      "details": {
+        "selected": "qa-cat",
+        "visible": false,
+        "texture": "dungeon-pet-cat",
+        "frame": "idle-south-0",
+        "alpha": 0,
+        "world": {
+          "mode": "stay",
+          "area": "property",
+          "space": "home",
+          "x": 176,
+          "y": 272,
+          "direction": "south"
+        },
+        "count": 0
+      }
+    },
+    {
+      "name": "Pet segue para a Floresta Antiga com a nova arte",
+      "passed": true,
+      "details": {
+        "selected": "qa-cat",
+        "visible": true,
+        "texture": "dungeon-pet-cat",
+        "frame": "idle-north-0",
+        "alpha": 0,
+        "world": {
+          "mode": "follow",
+          "area": "forest",
+          "space": "outdoors",
+          "x": 2988.2864132123914,
+          "y": 1676.2864132123914,
+          "direction": "north"
+        },
+        "count": 1
+      }
+    },
+    {
+      "name": "Pet acompanha na floresta de acesso",
+      "passed": true,
+      "details": {
+        "selected": "qa-cat",
+        "visible": true,
+        "texture": "dungeon-pet-cat",
+        "frame": "idle-west-0",
+        "alpha": 0,
+        "world": {
+          "mode": "follow",
+          "area": "cityForest",
+          "space": "outdoors",
+          "x": 716.6929824,
+          "y": 80,
+          "direction": "west"
+        },
+        "count": 1
+      }
+    },
+    {
+      "name": "Falha ao salvar desfaz o comando do pet",
+      "passed": true
+    },
+    {
+      "name": "Menu de companheiros cabe na tela estreita",
+      "passed": true,
+      "details": {
+        "left": 24,
+        "right": 336,
+        "width": 360,
+        "overflow": false
+      }
+    },
+    {
+      "name": "Ficar sem companheiro remove a sprite",
+      "passed": true,
+      "details": {
+        "visible": false,
+        "count": 0
+      }
+    },
+    {
+      "name": "cat basic: salto, dano no frame de contato, pausa e restauração",
+      "passed": true,
+      "details": {
+        "texture": "dungeon-pet-cat",
+        "frameBefore": "attack-east-5",
+        "frameAfter": "attack-east-6",
+        "hpBefore": 1000,
+        "hpAfter": 994,
+        "once": true,
+        "valid": true,
+        "frozen": true
+      }
+    },
+    {
+      "name": "cat special: salto, dano no frame de contato, pausa e restauração",
+      "passed": true,
+      "details": {
+        "texture": "dungeon-pet-cat",
+        "frameBefore": "attack-east-5",
+        "frameAfter": "attack-east-6",
+        "hpBefore": 1000,
+        "hpAfter": 991,
+        "once": true,
+        "valid": true,
+        "frozen": true
+      }
+    },
+    {
+      "name": "dog basic: salto, dano no frame de contato, pausa e restauração",
+      "passed": true,
+      "details": {
+        "texture": "dungeon-pet-dog",
+        "frameBefore": "attack-east-5",
+        "frameAfter": "attack-east-6",
+        "hpBefore": 1000,
+        "hpAfter": 992,
+        "once": true,
+        "valid": true,
+        "frozen": true
+      }
+    },
+    {
+      "name": "dog special: salto, dano no frame de contato, pausa e restauração",
+      "passed": true,
+      "details": {
+        "texture": "dungeon-pet-dog",
+        "frameBefore": "attack-east-5",
+        "frameAfter": "attack-east-6",
+        "hpBefore": 1000,
+        "hpAfter": 988,
+        "once": true,
+        "valid": true,
+        "frozen": true
+      }
+    },
+    {
+      "name": "cat: pet para resgatar usa a arte enviada",
+      "passed": true,
+      "details": {
+        "texture": "dungeon-pet-cat",
+        "visible": true
+      }
+    },
+    {
+      "name": "dog: pet para resgatar usa a arte enviada",
+      "passed": true,
+      "details": {
+        "texture": "dungeon-pet-dog",
+        "visible": true
+      }
+    },
+    {
+      "name": "Sem erros JavaScript ou requisições falhas",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

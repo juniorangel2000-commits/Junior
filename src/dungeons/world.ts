@@ -1,3 +1,9 @@
+import { getVisualSettings } from "../visual-settings";
+import {
+  DungeonLighting,
+  paintDungeonFloorLights,
+  paintDungeonFloorShadows,
+} from "./lighting";
 import type Phaser from "phaser";
 import {
   MAP_OBSTACLES,
@@ -40,7 +46,7 @@ export function dungeonMapCanvas(
   c.fillStyle = c.createPattern(tile, "repeat")!;
   c.fillRect(0, 0, 3072, 2304);
   // Quiet the ground texture so silhouettes and experience remain readable.
-  c.fillStyle = "#25303399";
+  c.fillStyle = "#25343c66";
   c.fillRect(0, 0, 3072, 2304);
   const grass = scene.textures
     .get("asset-ground-grass")
@@ -211,7 +217,7 @@ export function dungeonMapCanvas(
   }
   const shade = c.createRadialGradient(1536, 1152, 600, 1536, 1152, 1900);
   shade.addColorStop(0, "#0f211b00");
-  shade.addColorStop(1, "#10251e88");
+  shade.addColorStop(1, "#15283238");
   c.fillStyle = shade;
   c.fillRect(0, 0, 3072, 2304);
   c.fillStyle = "#263a3555";
@@ -226,10 +232,19 @@ export function dungeonPreview(scene: Phaser.Scene, id: DungeonId): string {
   const canvas = dungeonMapCanvas(scene, id, 0.25),
     c = canvas.getContext("2d")!;
   c.setTransform(0.25, 0, 0, 0.25, 0, 0);
+  const settings = getVisualSettings();
+  if (settings.dynamicLighting) {
+    c.save();
+    c.globalAlpha = settings.intensity;
+    paintDungeonFloorShadows(c, id);
+    c.globalCompositeOperation = "lighter";
+    paintDungeonFloorLights(c, id);
+    c.restore();
+  }
   for (const p of [...MAP_OBSTACLES[id]].sort((a, b) => a.y - b.y)) {
     const source = scene.textures
-      .get(urbanTexture(p.kind))
-      .getSourceImage() as HTMLImageElement,
+        .get(urbanTexture(p.kind))
+        .getSourceImage() as HTMLImageElement,
       r = urbanFrame(p.kind),
       scale = Math.min(p.width / r.width, p.height / r.height),
       w = r.width * scale,
@@ -255,6 +270,7 @@ export function dungeonPreview(scene: Phaser.Scene, id: DungeonId): string {
   return canvas.toDataURL();
 }
 export class DungeonWorld {
+  readonly lighting: DungeonLighting;
   readonly objects: Phaser.GameObjects.GameObject[];
   constructor(scene: Phaser.Scene, id: DungeonId) {
     const before = new Set(scene.children.list),
@@ -273,8 +289,13 @@ export class DungeonWorld {
         .setData("dungeon-obstacle", p.id);
     }
     this.objects = scene.children.list.filter((o) => !before.has(o));
+    this.lighting = new DungeonLighting(scene, id);
+  }
+  update(time: number): void {
+    this.lighting.update(time);
   }
   destroy(): void {
+    this.lighting.destroy();
     this.objects.forEach((o) => o.destroy());
   }
 }

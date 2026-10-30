@@ -1,3 +1,5 @@
+import { getVisualSettings } from "../visual-settings";
+import { dungeonLightingState } from "../dungeons/lighting";
 import { petSpritePose } from "../dungeons/pet-sprites";
 import Phaser from "phaser";
 import type { SaveData, Tool, ItemId } from "../types";
@@ -63,6 +65,7 @@ export class DungeonScene extends Phaser.Scene {
   private enemyPool: Phaser.GameObjects.Image[] = [];
   private projectilePool: Phaser.GameObjects.Image[] = [];
   private effects: Phaser.GameObjects.Image[] = [];
+  private actorShadows?: Phaser.GameObjects.Graphics;
   private impactGraphics?: Phaser.GameObjects.Graphics;
   private bossGraphics?: Phaser.GameObjects.Graphics;
   private damageNumbers: Phaser.GameObjects.Text[] = [];
@@ -105,6 +108,7 @@ export class DungeonScene extends Phaser.Scene {
     this.projectilePool = [];
     this.effects = [];
     this.damageNumbers = [];
+    this.actorShadows = undefined;
     this.impactGraphics = undefined;
     this.bossGraphics = undefined;
     this.lastImpactAt = -1;
@@ -259,8 +263,11 @@ export class DungeonScene extends Phaser.Scene {
       "dungeon-player",
     );
     this.cameras.main
+      .setBackgroundColor("#18262d")
       .setZoom(this.scale.width < 1000 ? 1.3 : 1.8)
       .startFollow(this.player.sprite, true, 0.16, 0.16);
+    this.actorShadows?.destroy();
+    this.actorShadows = this.add.graphics().setDepth(4);
     this.pickups = this.add.graphics().setDepth(5);
     this.impactGraphics = this.add.graphics().setDepth(5000);
     this.bossGraphics = this.add.graphics().setDepth(6);
@@ -323,6 +330,23 @@ export class DungeonScene extends Phaser.Scene {
     const run = this.run!,
       s = run.state,
       p = s.player;
+    this.world?.update(s.elapsed);
+    const shade = this.actorShadows!,
+      lighting = dungeonLightingState(getVisualSettings(), s.elapsed);
+    shade.clear();
+    if (lighting.visible) {
+      shade.fillStyle(0x07151d, lighting.shadowAlpha);
+      shade.fillEllipse(p.x, p.y + 2, 23, 8, 16);
+      for (const enemy of s.enemies)
+        shade.fillEllipse(
+          enemy.x,
+          enemy.y + 2,
+          enemy.kind === "boss" ? 44 : 22,
+          enemy.kind === "boss" ? 13 : 7,
+          16,
+        );
+      if (s.pet) shade.fillEllipse(s.pet.x, s.pet.y + 2, 19, 6, 16);
+    }
     this.imagePool(
       this.enemyImages,
       this.enemyPool,
