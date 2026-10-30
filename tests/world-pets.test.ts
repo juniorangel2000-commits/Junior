@@ -283,6 +283,16 @@ describe("world companions", () => {
     progress.pets[0].world.x = Infinity;
     expect(validDungeonProgress(progress)).toBe(false);
   });
+  it("keeps the dog quiet between occasional idle sequences in both idle and wait mode", () => {
+    for (const action of ["idle", "rest"] as const) {
+      const frame = (time: number) =>
+        petSpritePose("dog", action, "south", time).frame;
+      expect(frame(0)).toBe(frame(3));
+      expect(frame(5)).not.toBe(frame(0));
+      expect(frame(9)).toBe(frame(0));
+      expect(frame(13)).toBe(frame(0));
+    }
+  });
   it("has valid anchored frames for every supplied action and four directions", () => {
     for (const species of ["cat", "dog"] as const)
       for (const action of Object.keys(PET_ART[species].animations))

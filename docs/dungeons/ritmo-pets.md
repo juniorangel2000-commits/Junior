@@ -13,3 +13,7 @@ Validação: 52 testes direcionados aprovados, incluindo repouso intermitente, n
 Os pets deixam de buscar um ponto fixo colado ao jogador. Circulam numa faixa aproximada de 70–110 unidades, alternando deslocamentos curtos e pausas, e reagrupam quando a distância passa de 190. Nas dungeons podem alcançar inimigos próximos por conta própria, respeitando obstáculos e uma distância limitada do jogador. Os destinos são determinísticos e não consomem a aleatoriedade do combate; retomar um save mantém o movimento reproduzível. Esperar aqui continua impedindo deslocamento no mundo normal.
 
 Validação desta etapa: 1.162 testes completos aprovados, build aprovado e simulações do modo de 15 minutos sem saves inválidos. O caso com cachorro concluiu os 900 segundos, nível 647. Ainda sem publicação.
+
+## Cachorro parado
+
+O Idle Long do cachorro deixa de repetir continuamente. Em idle ou repouso, ele mantém a primeira pose entre sequências ocasionais, com ciclo de 12 segundos e uma espera inicial de quatro segundos. Caminhada e ataque não são afetados. A revisão no navegador confirmou o comportamento no mundo normal e nas duas dungeons.

@@ -48,7 +48,14 @@ export function petSpritePose(
     Record<PetAction, Record<PetDirection, string[]>>
   >;
   const list = (animations[action] ?? animations.idle!)[direction];
-  const index = Math.floor((Math.max(0, time) + 1e-9) * petFrameRate(action));
+  const rate = petFrameRate(action);
+  let playback = Math.max(0, time);
+  // Dogs stay quiet between occasional idle sequences, including wait mode.
+  if (species === "dog" && (action === "idle" || action === "rest")) {
+    const phase = playback % 12;
+    playback = phase >= 4 && phase < 4 + list.length / rate ? phase - 4 : 0;
+  }
+  const index = Math.floor((playback + 1e-9) * rate);
   const frame =
     list[loop ? index % list.length : Math.min(list.length - 1, index)];
   const rect = (

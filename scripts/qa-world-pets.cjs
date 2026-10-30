@@ -179,8 +179,8 @@ fs.mkdirSync(out, { recursive: true });
       };
     });
     check(
-      "Pet segue o jogador respeitando o chão do mapa",
-      followed.moved > 20 && followed.distance < 65 && !followed.collision,
+      "Pet circula perto do jogador respeitando o chão do mapa",
+      followed.moved > 20 && followed.distance < 160 && !followed.collision,
       followed,
     );
     await openMenu();
@@ -294,7 +294,7 @@ fs.mkdirSync(out, { recursive: true });
     await closeMenu();
     await page.evaluate(() => {
       const c = petAPI.getWorldPetController(active);
-      for (let i = 0; i < 15; i++) c.update(0.1);
+      for (let i = 0; i < 25; i++) c.update(0.1);
     });
     pet = await presence();
     check(
