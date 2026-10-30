@@ -1,4 +1,5 @@
-/** Local video supplied for the opening screen; null keeps the live scenery. */
+/** Approved illustration used by the main menu. */
 export const TITLE_BACKGROUND: {
+  image: string;
   video: { src: string; type: 'video/mp4' | 'video/webm' } | null;
-} = { video: null };
+} = { image: 'assets/visual/title/abandoned-property.png', video: null };

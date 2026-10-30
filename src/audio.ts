@@ -7,7 +7,7 @@ export function audioSettings(value: unknown): AudioSettings {
   return { music: volume(v.music, .45), effects: volume(v.effects, .65), muted: v.muted === true };
 }
 export type Sound = 'step' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit' | 'sword-swing' | 'bow-shot' | 'boomerang-throw' | 'weapon-evolution' | 'spear-thrust' | 'hammer-impact' | 'shield-burst' | 'dungeon-start';
-type AudioScene = 'title' | 'game' | 'expedition' | 'combat';
+type AudioScene = 'title' | 'game' | 'expedition' | 'combat' | 'cinematic';
 const BEAT = 60 / 76;
 export const MUSIC_DURATION = 64 * BEAT;
 const hz = (midi: number): number => 440 * 2 ** ((midi - 69) / 12);
@@ -152,6 +152,7 @@ class GameAudio {
   private installed = false;
   private focused = true;
   private lastSound = new Map<Sound, number>();
+  private cinematicBuffers = new Map<string, Promise<AudioBuffer | undefined>>();
 
   get isUnlocked(): boolean { return !!this.context; }
 
@@ -201,7 +202,7 @@ class GameAudio {
   private syncMusic(): void {
     if (!this.context || this.musicMode === this.scene || this.rendering) return;
     const mode = this.scene, cached = this.buffers.get(mode);
-    if (mode === 'combat') {
+    if (mode === 'combat' || mode === 'cinematic') {
       const now = this.context.currentTime;
       this.fadingMusic?.stop();
       if (this.music) {
@@ -238,6 +239,57 @@ class GameAudio {
   }
 
   setRainAtmosphere(enabled:boolean):void{this.rainAtmosphere=enabled;this.syncRain();}
+
+  /** Separate stems keep music/effects preferences intact and follow the video clock. */
+  async attachCinematic(video: HTMLVideoElement, musicURL: string, effectsURL: string): Promise<() => void> {
+    await this.unlock();
+    const ctx = this.context;
+    if (!ctx) return () => {};
+    const load = (url: string): Promise<AudioBuffer | undefined> => {
+      let pending = this.cinematicBuffers.get(url);
+      if (!pending) {
+        pending = fetch(url, { signal: AbortSignal.timeout(10000) })
+          .then(response => { if (!response.ok) throw Error('Missing cinematic audio'); return response.arrayBuffer(); })
+          .then(bytes => ctx.decodeAudioData(bytes)).catch(() => { this.cinematicBuffers.delete(url); return undefined; });
+        this.cinematicBuffers.set(url, pending);
+      }
+      return pending;
+    };
+    const buffers = await Promise.all([load(musicURL), load(effectsURL)]);
+    let active = true, sources: AudioBufferSourceNode[] = [], began = 0, offset = 0;
+    const stop = (): void => {
+      for (const source of sources) { try { source.stop(); } catch { /* Already ended. */ } source.disconnect(); }
+      sources = [];
+    };
+    const start = (): void => {
+      stop();
+      if (!active || video.paused || video.ended || ctx.state !== 'running') return;
+      began = ctx.currentTime; offset = video.currentTime;
+      buffers.forEach((buffer, i) => {
+        if (!buffer || offset >= buffer.duration) return;
+        const source = ctx.createBufferSource(); source.buffer = buffer;
+        source.connect(i === 0 ? this.musicGain! : this.effectsGain!);
+        source.onended = () => source.disconnect();
+        source.start(0, offset); sources.push(source);
+      });
+    };
+    const sync = (): void => {
+      if (sources.length && Math.abs(offset + ctx.currentTime - began - video.currentTime) > .15) start();
+    };
+    const contextChange = (): void => { if (ctx.state === 'running') start(); else stop(); };
+    video.addEventListener('playing', start); video.addEventListener('pause', stop);
+    video.addEventListener('waiting', stop); video.addEventListener('seeking', stop);
+    video.addEventListener('seeked', start); video.addEventListener('timeupdate', sync);
+    ctx.addEventListener('statechange', contextChange);
+    if (!video.paused) start();
+    return () => {
+      active = false; stop();
+      video.removeEventListener('playing', start); video.removeEventListener('pause', stop);
+      video.removeEventListener('waiting', stop); video.removeEventListener('seeking', stop);
+      video.removeEventListener('seeked', start); video.removeEventListener('timeupdate', sync);
+      ctx.removeEventListener('statechange', contextChange);
+    };
+  }
 
   private syncRain(): void {
     const ctx = this.context;

@@ -1,0 +1,12 @@
+.new-game-opening { position: fixed; inset: 0; z-index: 100; background: #000; pointer-events: auto; }
+.new-game-opening .cinematic-player { position: absolute; inset: 0; display: flex; background: #000; }
+.new-game-opening video { width: 100%; height: 100%; object-fit: contain; }
+.new-game-opening .expedition-intro-controls {
+  position: absolute; inset: auto 0 0; display: flex; align-items: center; justify-content: flex-end;
+  gap: 16px; padding: 20px 28px; color: #eee6d8;
+  background: linear-gradient(transparent,#000a); pointer-events: auto;
+}
+.new-game-opening [role=status] { margin-right: auto; font: 14px Georgia,serif; }
+.new-game-opening button { border: 1px solid #b4a880; border-radius: 4px; color: #eee6d8; background: #182822e8; padding: 10px 20px; font: inherit; cursor: pointer; }
+.new-game-opening [hidden] { display: none !important; }
+@media(max-width:600px) { .new-game-opening .expedition-intro-controls { padding: 12px; gap: 8px; } .new-game-opening [role=status] { font-size: 12px; } }

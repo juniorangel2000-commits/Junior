@@ -1,35 +1,58 @@
-const {chromium}=require('playwright');const assert=require('node:assert/strict');
-(async()=>{const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox','--disable-dev-shm-usage']});try{
- const page=await browser.newPage({viewport:{width:1280,height:800},reducedMotion:'reduce'});const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto(process.env.QA_URL||'http://127.0.0.1:5173');await page.waitForTimeout(1800);
- const attach=async()=>page.evaluate(async()=>{const {game}=await import(document.querySelector('script[src*="main.ts"]').src);window.scene=game.scene.scenes[0]});await attach();
- const frame=()=>page.locator('.title-weather').evaluate(canvas=>canvas.toDataURL());
- assert.equal(await page.getByRole('button',{name:'Pausar fundo'}).getAttribute('aria-pressed'),'true');
- const first=await frame();await page.waitForTimeout(200);assert.notEqual(await frame(),first,'rain actually animates');
- await page.getByRole('button',{name:'Pausar fundo'}).click();await page.getByRole('button',{name:'Silenciar',exact:true}).waitFor();const paused=await frame();await page.waitForTimeout(150);assert.equal(await frame(),paused);
- await page.locator('#new-game').click();assert.equal(await page.locator('.title-weather').count(),0);
- await page.evaluate(()=>scene.ui.showTitle(false));assert.equal(await page.getByRole('button',{name:'Pausar fundo'}).getAttribute('aria-pressed'),'true');
- await page.evaluate(()=>{scene.startNew({name:'Chuva',skin:'#e9bc98',hairColor:'#563b2c',outfit:'#457398',hairStyle:'preso'});scene.mainMenu()});
- assert.equal(await page.locator('.title-weather').count(),1);assert.equal(await page.evaluate(()=>scene.titleBackgroundMode),'animated');
- await page.getByRole('button',{name:'Pausar fundo'}).click();await page.reload();await page.waitForTimeout(1500);await attach();assert.equal(await page.evaluate(()=>scene.titleBackgroundMode),'animated');
- const brightPixels=()=>page.locator('.title-weather').evaluate(canvas=>{const {width:w,height:h}=canvas;const pixels=canvas.getContext('2d').getImageData(Math.floor(w/2),0,Math.floor(w/2),Math.floor(h*.48)).data;let count=0;for(let i=0;i<pixels.length;i+=4)if(pixels[i]>160&&pixels[i+1]>180&&pixels[i+2]>180)count++;return count});
- await page.waitForTimeout(4500);assert.equal(await brightPixels(),0,'reduced-motion suppresses bright lightning while rain continues');
- await page.emulateMedia({reducedMotion:'no-preference'});
- await page.evaluate(()=>scene.ui.showTitle(false));
- let lightning=false;for(let attempt=0;attempt<100;attempt++){await page.waitForTimeout(100);if(await brightPixels()>20){lightning=true;await page.screenshot({path:'/tmp/after-rain-title-lightning-0.7.1.png'});break}}
- assert.ok(lightning,'visible lightning reaches the real title canvas');
- await page.getByRole('button',{name:'Pausar fundo'}).click();const still=await frame();await page.waitForTimeout(300);assert.equal(await frame(),still,'pause also freezes lightning');
- await page.evaluate(()=>scene.ui.showTitle(true));
- assert.ok(await page.locator('.title-copy').evaluate(panel=>getComputedStyle(panel).borderImageSource.includes('cozy-frame.svg')),'title shares the HUD frame');
- for(const [width,height] of [[1280,800],[960,640],[390,844]]){
-  await page.setViewportSize({width,height});await page.waitForTimeout(200);
-  for(const selector of ['.title-copy','#new-game','#continue-game','[data-title-sound]','[data-title-motion]']){
-   const box=await page.locator(selector).boundingBox();assert.ok(box.x>=0&&box.x+box.width<=width,`${selector} fits width ${width}`);
-   if(width>650)assert.ok(box.y>=0&&box.y+box.height<=height,`${selector} fits height ${height}`);
+const { chromium } = require('playwright');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const out = process.env.TITLE_QA_OUTPUT || '/workspace/title-opening-qa';
+fs.mkdirSync(out, { recursive: true });
+(async () => {
+ const browser = await chromium.launch({ executablePath: '/usr/bin/chromium', args: ['--no-sandbox','--disable-dev-shm-usage','--use-angle=swiftshader','--enable-unsafe-swiftshader'] });
+ const page = await browser.newPage({ viewport: { width:1280,height:800 } });
+ page.setDefaultTimeout(120000);
+ const errors=[]; page.on('pageerror', e=>errors.push(e.message));
+ try {
+  await page.goto(process.env.QA_URL || 'http://127.0.0.1:5187');
+  await page.locator('#new-game').waitFor();
+  await page.waitForFunction(()=>document.querySelector('.title-illustration')?.naturalWidth > 0);
+  await page.evaluate(async()=>{
+   const {game}=await import(document.querySelector('script[src*="main.ts"]').src);
+   window.game=game; window.scene=game.scene.scenes[0]; game.loop.sleep();
+   window.sound=(await import('/src/audio.ts')).gameAudio;
+  });
+  assert.equal(await page.locator('[data-title-motion]').count(),0);
+  const frame=()=>page.locator('.title-weather').evaluate(c=>c.toDataURL());
+  const first=await frame(); await page.waitForTimeout(250); assert.notEqual(first,await frame());
+  for(const [width,height] of [[1280,800],[960,640],[390,844]]) {
+   await page.setViewportSize({width,height}); await page.waitForTimeout(250);
+   for(const selector of ['#new-game','[data-title-sound]']) {
+    const b=await page.locator(selector).boundingBox();
+    assert.ok(b.x>=0 && b.x+b.width<=width+1 && b.y>=0 && b.y+b.height<=height+1, selector+' fits '+width);
+   }
+   await page.screenshot({path:`${out}/title-${width}.png`});
   }
-  await page.screenshot({path:`/tmp/after-rain-title-cozy-${width}-0.7.1.png`});
- }
- await page.locator('#continue-game').click();await page.locator('.toolbelt').waitFor();
- assert.equal(await page.locator('.title-weather').count(),0);
- assert.deepEqual(errors,[]);console.log('PASS rain on every entry/reload, actual animation, reduced-motion excludes flashes, visible lightning, pause/cleanup, HUD art and three sizes, new game/continue controls');
-}finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});
+  await page.setViewportSize({width:1280,height:800});
+  await page.mouse.click(5,5);
+  await page.evaluate(()=>scene.startNew({name:'Abertura',characterId:'farmer-male',skin:'#e9bc98',hairColor:'#563b2c',outfit:'#457398',hairStyle:'curto'}));
+  await page.waitForFunction(()=>document.querySelector('.new-game-opening video')?.currentTime>.2);
+  await page.locator('[data-skip-intro]').waitFor({state:'visible'});
+  const playing=await page.evaluate(()=>({mode:scene.ui.mode,paused:scene.paused,source:document.querySelector('video').src,muted:document.querySelector('video').muted,duration:document.querySelector('video').duration,buffers:sound.cinematicBuffers.size,audio:sound.scene}));
+  assert.equal(playing.mode,'opening'); assert.equal(playing.paused,true); assert.equal(playing.muted,true);
+  assert.ok(playing.source.endsWith('/opening/male.mp4')); assert.ok(playing.duration>=25); assert.equal(playing.buffers,2); assert.equal(playing.audio,'cinematic');
+  const buffers=await page.evaluate(async()=>Promise.all([...sound.cinematicBuffers.values()].map(async p=>(await p)?.duration)));
+  assert.ok(buffers.every(d=>d>=25),JSON.stringify(buffers));
+  await page.screenshot({path:out+'/opening.png'});
+  await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
+  assert.equal(await page.locator('video').evaluate(v=>v.paused),true);
+  await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+  await page.waitForFunction(()=>!document.querySelector('video').paused);
+  await page.locator('[data-skip-intro]').click(); await page.locator('.toolbelt').waitFor();
+  assert.equal(await page.locator('video').count(),0);
+  assert.equal(await page.evaluate(()=>scene.paused),false);
+  assert.equal(await page.evaluate(()=>scene.state.profile.characterId),'farmer-male');
+  await page.evaluate(()=>{scene.mainMenu();scene.continueGame()});
+  assert.equal(await page.locator('video').count(),0);
+  await page.evaluate(()=>{scene.mainMenu();scene.startNew({name:'Ela',characterId:'farmer-female',skin:'#e9bc98',hairColor:'#563b2c',outfit:'#457398',hairStyle:'preso'})});
+  assert.equal(await page.locator('video').count(),0);
+  assert.equal(await page.evaluate(()=>scene.state.profile.characterId),'farmer-female');
+  assert.deepEqual(errors,[]);
+  console.log('PASS title art, animated rain, no pause control, 3 sizes; real opening video + two decoded audio stems; frozen game, focus, gated skip, cleanup, continue, character fidelity');
+ } finally { await browser.close(); }
+})().catch(e=>{ console.error(e);process.exit(1); });

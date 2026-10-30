@@ -1,0 +1,63 @@
+[
+  {
+    "file": "public/assets/visual/title/abandoned-property.png",
+    "bytes": 2952403,
+    "sha256": "5cec21dbf3c2c39dcbd6fc28ee873c747476a35f4120e25746d16e923ec58f3e"
+  },
+  {
+    "file": "public/assets/video/opening/male.mp4",
+    "bytes": 11509090,
+    "sha256": "d2ebd647cb9e17a9b1200a3ea12b62b9ec58f1c3f00c01357f7b45690288fe19",
+    "media": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "codec_name": "aac"
+        }
+      ],
+      "format": {
+        "duration": "25.002000"
+      }
+    }
+  },
+  {
+    "file": "public/assets/video/opening/music.ogg",
+    "bytes": 287519,
+    "sha256": "f47b8752bf043b474ab1bdd5e246748236d70f199f6c4a3b20bbe3bd8d438b11",
+    "media": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "vorbis"
+        }
+      ],
+      "format": {
+        "duration": "25.000000"
+      }
+    }
+  },
+  {
+    "file": "public/assets/video/opening/effects.ogg",
+    "bytes": 350695,
+    "sha256": "01ee7986b17635135e7e92b84b63585c0690bd19c0e9da52152f08dc59996f83",
+    "media": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "vorbis"
+        }
+      ],
+      "format": {
+        "duration": "25.000000"
+      }
+    }
+  }
+]

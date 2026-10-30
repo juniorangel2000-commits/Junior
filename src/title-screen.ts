@@ -13,7 +13,7 @@ interface TitleScreenOptions {
   onBackgroundMode(mode: TitleBackgroundMode): void;
 }
 
-/** The menu uses the live valley unless a local, playable video has been configured. */
+/** Approved property artwork, with live weather and the title score. */
 export function createTitleScreen(holder: HTMLElement, options: TitleScreenOptions): () => void {
   const { icon } = options;
   const screen = document.createElement('section');
@@ -29,7 +29,7 @@ export function createTitleScreen(holder: HTMLElement, options: TitleScreenOptio
       <div class="title-note">${icon('leaf')} Encontre abrigo. Cultive o que restou.</div>
     </div>
     <aside class="title-location"><span class="location-dot"></span><div>UM REFÚGIO ENTRE AS RUÍNAS<small>Enquanto a chuva cai, a vida resiste.</small></div></aside>
-    <footer class="title-footer"><span>EXPLORAR <i>·</i> CULTIVAR <i>·</i> RECONSTRUIR</span><div class="title-footer-right"><span class="title-save-note">TECLADO E MOUSE <i>·</i> SALVAMENTO LOCAL</span><button type="button" class="title-sound" data-title-sound aria-pressed="false">${toolbarIcon('audio')}<span class="sound-label">Ouvir a chuva</span></button><button type="button" class="title-motion" data-title-motion aria-pressed="true"><span class="motion-symbol" aria-hidden="true"></span><span class="motion-label">Pausar fundo</span></button></div></footer>`;
+    <footer class="title-footer"><span>EXPLORAR <i>·</i> CULTIVAR <i>·</i> RECONSTRUIR</span><div class="title-footer-right"><span class="title-save-note">TECLADO E MOUSE <i>·</i> SALVAMENTO LOCAL</span><button type="button" class="title-sound" data-title-sound aria-pressed="false">${toolbarIcon('audio')}<span class="sound-label">Ouvir a chuva</span></button></div></footer>`;
   holder.replaceChildren(screen);
   if (options.onMapEditor) {
     const edit = document.createElement('button');
@@ -39,20 +39,24 @@ export function createTitleScreen(holder: HTMLElement, options: TitleScreenOptio
     edit.addEventListener('click', options.onMapEditor);
     screen.querySelector('.title-actions')!.append(edit);
   }
-  // Every visit starts with rain; the pause button only affects this visit.
-  let animate = true;
-  const weather = createTitleWeather(screen);
+  const art = document.createElement('img');
+  art.className = 'title-illustration';
+  art.alt = '';
+  art.setAttribute('aria-hidden', 'true');
+  art.decoding = 'async';
+  screen.prepend(art);
   let active = true;
-  let video: HTMLVideoElement | undefined;
-  let videoReady = false;
-  let videoFailed = false;
-  const motionButton = screen.querySelector<HTMLButtonElement>('[data-title-motion]')!;
+  art.onload = () => { if (active) screen.classList.add('has-title-art'); };
+  art.onerror = () => { if (active) { art.hidden = true; screen.classList.remove('has-title-art'); } };
+  art.src = TITLE_BACKGROUND.image;
+  const weather = createTitleWeather(screen);
   const soundButton = screen.querySelector<HTMLButtonElement>('[data-title-sound]')!;
   soundButton.setAttribute('data-audio-toggle', '');
+  soundButton.title = 'Música, chuva e trovões';
   const updateSoundButton = (): void => {
     const soundRequested = gameAudio.isUnlocked && !gameAudio.settings.muted;
     soundButton.setAttribute('aria-pressed', String(soundRequested));
-    soundButton.querySelector('.sound-label')!.textContent = soundRequested ? 'Silenciar' : 'Ouvir a chuva';
+    soundButton.querySelector('.sound-label')!.textContent = soundRequested ? 'Silenciar' : 'Ativar som';
   };
   updateSoundButton();
   window.addEventListener('after-rain-audio-change', updateSoundButton);
@@ -62,86 +66,24 @@ export function createTitleScreen(holder: HTMLElement, options: TitleScreenOptio
     if (soundRequested) void gameAudio.unlock();
     updateSoundButton();
   });
-  const updateButton = (): void => {
-    motionButton.setAttribute('aria-pressed', String(animate));
-    motionButton.querySelector('.motion-label')!.textContent = animate ? 'Pausar fundo' : 'Animar fundo';
-  };
-  const fallbackMode = (): TitleBackgroundMode => animate && !document.hidden ? 'animated' : 'static';
-  const failVideo = (): void => {
-    if (!active || videoFailed) return;
-    videoFailed = true;
-    videoReady = false;
-    screen.classList.remove('has-video');
-    if (video) { video.pause(); video.hidden = true; video.removeAttribute('src'); video.load(); }
-    options.onBackgroundMode(fallbackMode());
-  };
   const updateBackground = (): void => {
     if (!active) return;
-    updateButton();
-    const shouldPlay = animate && !document.hidden;
-    weather.setAnimated(shouldPlay);
-    if (video && !videoFailed) {
-      video.autoplay = shouldPlay;
-      if (!shouldPlay) video.pause();
-      else {
-        const play = video.play();
-        if (play) void play.catch((error: unknown) => {
-          if (error instanceof DOMException && error.name === 'AbortError') return;
-          if (active && animate && !document.hidden) failVideo();
-        });
-      }
-      options.onBackgroundMode(videoReady ? 'video' : fallbackMode());
-    } else options.onBackgroundMode(fallbackMode());
+    const visible = !document.hidden;
+    weather.setAnimated(visible);
+    screen.classList.toggle('background-suspended', !visible);
+    options.onBackgroundMode(visible ? 'animated' : 'static');
   };
-  const onVideoReady = (): void => {
-    if (!active || videoFailed || !video || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
-    videoReady = true;
-    video.hidden = false;
-    screen.classList.add('has-video');
-    updateBackground();
-  };
-  const onVisibilityChange = (): void => updateBackground();
-  motionButton.addEventListener('click', () => { animate = !animate; updateBackground(); });
-  document.addEventListener('visibilitychange', onVisibilityChange);
+  document.addEventListener('visibilitychange', updateBackground);
   screen.querySelector('#new-game')!.addEventListener('click', options.onNewGame);
   screen.querySelector('#continue-game')?.addEventListener('click', options.onContinue);
-  const configuredVideo = TITLE_BACKGROUND.video;
-  // Only bundled relative paths are accepted; null creates no media element or request.
-  if (configuredVideo && /^(?:\.\/)?assets\/[a-zA-Z0-9_./-]+\.(?:mp4|webm)$/.test(configuredVideo.src)
-    && !configuredVideo.src.split('/').includes('..')) {
-    const candidate = document.createElement('video');
-    if (candidate.canPlayType(configuredVideo.type)) {
-      video = candidate;
-      video.className = 'title-video';
-      video.hidden = true;
-      video.muted = true;
-      video.defaultMuted = true;
-      video.loop = true;
-      video.playsInline = true;
-      video.preload = 'auto';
-      video.setAttribute('aria-hidden', 'true');
-      video.setAttribute('tabindex', '-1');
-      video.addEventListener('loadeddata', onVideoReady);
-      video.addEventListener('error', failVideo);
-      video.src = configuredVideo.src;
-      screen.prepend(video);
-    }
-  }
   updateBackground();
   return (): void => {
     if (!active) return;
     active = false;
+    art.onload = art.onerror = null;
     weather.destroy();
     window.removeEventListener('after-rain-audio-change', updateSoundButton);
-    document.removeEventListener('visibilitychange', onVisibilityChange);
-    if (video) {
-      video.removeEventListener('loadeddata', onVideoReady);
-      video.removeEventListener('error', failVideo);
-      video.pause();
-      video.removeAttribute('src');
-      video.load();
-      video.remove();
-    }
+    document.removeEventListener('visibilitychange', updateBackground);
     options.onBackgroundMode('off');
   };
 }

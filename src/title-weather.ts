@@ -31,7 +31,8 @@ export function createTitleWeather(holder: HTMLElement): TitleWeather {
   const draw = (): void => {
     const w = canvas.width, h = canvas.height;
     ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = 'rgba(13,29,38,.30)';
+    const illustrated = holder.classList.contains('has-title-art');
+    ctx.fillStyle = illustrated ? 'rgba(13,29,38,.12)' : 'rgba(13,29,38,.30)';
     ctx.fillRect(0, 0, w, h);
     const sky = ctx.createLinearGradient(0, 0, 0, h);
     sky.addColorStop(0, 'rgba(11,23,34,.36)');
@@ -45,7 +46,7 @@ export function createTitleWeather(holder: HTMLElement): TitleWeather {
         gameAudio.play('thunder');
       }
       // Keep the bolt over the distant valley, behind the menu copy and buttons.
-      const x = w * (.66 + noise(strike + 280) * .21);
+      const x = w * (illustrated ? .12 + noise(strike + 280) * .18 : .66 + noise(strike + 280) * .21);
       const glow = ctx.createRadialGradient(x, h * .12, 0, x, h * .12, w * .62);
       glow.addColorStop(0, `rgba(180,211,224,${strength * .17})`);
       glow.addColorStop(1, 'rgba(151,185,207,0)');
@@ -89,6 +90,13 @@ export function createTitleWeather(holder: HTMLElement): TitleWeather {
       ctx.strokeStyle = i % 3 ? 'rgba(167,192,197,.26)' : 'rgba(206,221,218,.35)';
       ctx.beginPath(); ctx.moveTo(Math.round(x), Math.round(y));
       ctx.lineTo(Math.round(x - length * .19), Math.round(y + length)); ctx.stroke();
+    }
+    // Fine rain rings on the wet approach, below the cottage.
+    if (illustrated) for (let i = 0; i < 7; i++) {
+      const age = (elapsed * .65 + noise(i + 1800)) % 1;
+      const x = w * (.36 + noise(i + 1900) * .20), y = h * (.85 + noise(i + 2000) * .12);
+      ctx.strokeStyle = `rgba(194,206,197,${(1 - age) * .18})`;
+      ctx.beginPath(); ctx.ellipse(x, y, 1 + age * 5, .5 + age * 1.4, 0, 0, Math.PI * 2); ctx.stroke();
     }
   };
   const resize = (): void => {

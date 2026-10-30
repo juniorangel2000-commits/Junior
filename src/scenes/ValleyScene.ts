@@ -1,4 +1,5 @@
 import {preloadPetArt} from "../dungeons/pet-sprites";
+import { hasNewGameOpening } from '../new-game-opening';
 import {installWorldCompanion} from "../dungeons/world-pet-controller";
 import {naturalPlantGround} from '../systems/tree-avoidance';
 import {VillageNpcOverlays} from '../village-npc-overlays';
@@ -109,6 +110,7 @@ export class ValleyScene extends Phaser.Scene {
   private currentRegion = '';
   private titleBackgroundMode: TitleBackgroundMode = 'off';
   private titleElapsed = 0;
+  private openingToken = 0;
   private titleLights?: Phaser.GameObjects.Graphics | Phaser.GameObjects.Image;
   private npcSprite?: Phaser.GameObjects.Sprite;
   private npcOverlays?: VillageNpcOverlays;
@@ -215,18 +217,33 @@ export class ValleyScene extends Phaser.Scene {
       if(!window.confirm('A partida principal não pôde ser lida. Começar uma nova partida? O arquivo original será preservado antes da substituição.'))return;
       if(!preserveInvalidSave()){this.ui.toast('Não foi possível preservar a partida antiga. O novo jogo foi cancelado.');return;}
     }
-    gameAudio.setScene('game');
     this.adminMenu?.close();
-    this.loadState(createNewSave(profile));
-    this.running = true;
-    this.paused = false;
-    this.ui.showHUD();
-    this.ui.toast('Recolha galhos, pedras e fibras perto da casa. Abra a fabricação com C.');
-    this.persist();
-    this.updateHUD();
+    const token = ++this.openingToken, draft = createNewSave(profile);
+    const begin = (): void => {
+      this.loadState(draft); this.running = true; this.paused = true; this.persist();
+    };
+    const finish = (): void => {
+      if (token !== this.openingToken) return;
+      gameAudio.setScene('game'); this.running = true; this.paused = false;
+      this.input.keyboard?.resetKeys(); this.ui.showHUD();
+      this.ui.toast('Recolha galhos, pedras e fibras perto da casa. Abra a fabricação com C.');
+      this.persist(); this.updateHUD();
+    };
+    if (!hasNewGameOpening(profile)) { begin(); finish(); return; }
+    this.running = false; this.paused = true;
+    let ready!: () => void, failed!: (reason: unknown) => void;
+    const preparation = new Promise<void>((resolve, reject) => { ready = resolve; failed = reject; });
+    this.ui.showNewGameOpening(preparation, () => {
+      // Paint/start the movie before rebuilding the world behind it.
+      requestAnimationFrame(() => setTimeout(() => {
+        if (token !== this.openingToken) { failed(Error('Opening cancelled')); return; }
+        try { begin(); ready(); } catch (error) { failed(error); }
+      }, 0));
+    }, finish);
   }
 
   continueGame(): void {
+    this.openingToken++;
     const stored=inspectSave(),saved=stored.data;
     if(!saved){this.ui.toast('Não foi possível ler a partida. Os dados existentes foram mantidos.');return;}
     if(stored.status==='recovered'){
@@ -546,6 +563,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   mainMenu(): void {
+    this.openingToken++;
     this.homeTransitionToken++;
     if(this.homeTransitionActive){this.homeTransitionActive=false;this.cameras.main.fadeIn(SCENE_FADE_MS);}
     this.world.well?.cancel();

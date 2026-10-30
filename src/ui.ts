@@ -16,6 +16,9 @@ import {DEVELOPMENT_TOOLS} from './development-tools';
 import { CHARACTER_WIDTH, drawLiaPortrait } from './character-sprites';
 import { createCharacterEditor } from './character-creator';
 import { createTitleScreen } from './title-screen';
+import { CinematicPlayer } from './cinematic-player';
+import { NEW_GAME_OPENING } from './new-game-opening';
+import './cinematic-player.css';
 import { TopToolbar } from './top-toolbar';
 import type { ToolbarAction } from './top-toolbar';
 import type { TitleBackgroundMode } from './title-screen';
@@ -132,13 +135,14 @@ export class GameUI {
   private base = document.createElement('div');
   private overlay = document.createElement('div');
   private notifications = document.createElement('div');
-  private mode: 'title' | 'creation' | 'hud' = 'title';
+  private mode: 'title' | 'creation' | 'opening' | 'hud' = 'title';
   private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'pets' | null = null;
   private focusBeforeModal?: HTMLElement;
   private onModalClose?: () => void;
   private existingSave = false;
   private cleanupCreation?: () => void;
   private cleanupTitle?: () => void;
+  private cleanupOpening?: () => void;
   private latest?: HudData;
   private lastHudKey = '';
   private craftingBusy = false;
@@ -283,6 +287,7 @@ export class GameUI {
   }
 
   showTitle(hasSave: boolean): void {
+    this.cleanupOpening?.(); this.cleanupOpening = undefined;
     this.hideCameraZoom();
     const stored=inspectSave();
     if(stored.status==='invalid'||stored.status==='recovered'||stored.status==='future'||stored.status==='unavailable')this.toast(stored.status==='recovered'?'A partida principal não pôde ser lida. Continuar permite recuperar uma cópia de segurança.':'Não foi possível ler a partida salva. Os dados existentes foram preservados.');
@@ -316,6 +321,7 @@ export class GameUI {
   }
 
   private showCreation(): void {
+    this.cleanupOpening?.(); this.cleanupOpening = undefined;
     this.topToolbar?.destroy();
     this.topToolbar = undefined;
     this.cleanupTitle?.();
@@ -333,7 +339,33 @@ export class GameUI {
     });
   }
 
+  showNewGameOpening(resources: Promise<unknown>, prepare: () => void, complete: () => void): void {
+    this.cleanupOpening?.();
+    this.cleanupTitle?.(); this.cleanupTitle = undefined;
+    this.cleanupCreation?.(); this.cleanupCreation = undefined;
+    this.hideCameraZoom();
+    this.topToolbar?.destroy(); this.topToolbar = undefined;
+    this.mode = 'opening'; this.modal = null;
+    this.root.dataset.area = 'opening';
+    this.overlay.replaceChildren(); this.overlay.classList.remove('active');
+    this.base.style.display = '';
+    const host = document.createElement('div'); host.className = 'new-game-opening';
+    this.base.replaceChildren(host);
+    this.callbacks.onTitleBackground('off');
+    this.callbacks.onPause(true);
+    gameAudio.setRainAtmosphere(false); gameAudio.setScene('cinematic');
+    const player = new CinematicPlayer(host, {
+      src: NEW_GAME_OPENING.src, poster: NEW_GAME_OPENING.poster,
+      label: 'A fuga da cidade e a chegada à propriedade',
+      loading: 'Preparando sua história…', description: 'Um novo começo',
+      onStarted: prepare,
+      attachAudio: video => gameAudio.attachCinematic(video, NEW_GAME_OPENING.music, NEW_GAME_OPENING.effects),
+    }, resources, complete, () => this.callbacks.onMainMenu());
+    this.cleanupOpening = () => player.destroy();
+  }
+
   showHUD(area: 'property'|'forest'|'village'|'cityForest'='property'): void {
+    this.cleanupOpening?.(); this.cleanupOpening = undefined;
     this.hideCameraZoom();
     this.root.dataset.area=area;
     this.base.style.display = '';
@@ -940,6 +972,7 @@ export class GameUI {
   }
 
   showMapEditorMode(): void {
+    this.cleanupOpening?.(); this.cleanupOpening = undefined;
     this.journalCleanup?.();
     this.journalCleanup = undefined;
     this.topToolbar?.destroy(); this.topToolbar = undefined;
