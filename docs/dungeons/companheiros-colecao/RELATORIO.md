@@ -19,7 +19,7 @@ Os saves existentes reutilizam o campo `rare`; não há perda de coleção ou ne
 
 ## Cores e coleção
 
-As variantes especiais usam paletas provisórias: cão azul-prateado e gato dourado. As texturas são criadas uma vez no cache do jogo a partir das animações originais. Todos os quadros, posições, escalas, pivôs e valores de transparência são preservados. Os PNGs e ZIPs originais não são alterados. As mesmas cores aparecem nas dungeons, no mundo normal e nos retratos dos menus.
+As variantes especiais usam paletas provisórias: cão creme/caramelo, com focinho e sombras em marrom, e gato dourado. As texturas são criadas uma vez no cache do jogo a partir das animações originais. Todos os quadros, posições, escalas, pivôs e valores de transparência são preservados. Os PNGs e ZIPs originais não são alterados. As mesmas cores aparecem nas dungeons, no mundo normal e nos retratos dos menus.
 
 Acesso: **Menu do jogo → Companheiros → Ver coleção de pets**. A coleção mostra as quatro variações, os bônus, o estado de desbloqueio e a quantidade resgatada. Só permite equipar animais já pertencentes ao jogador. A variação comum e a especial têm desbloqueios separados. Duplicatas não aumentam o contador de variações descobertas. A identificação usa apenas o ícone ✦ junto ao nome.
 
@@ -56,3 +56,6 @@ Após a integração, a suíte completa passou com **1.195 testes em 133 arquivo
 
 - [Caminhada nas oito direções, comuns e variantes](caminhada-oito-direcoes.png)
 - Validação final no Chromium: proporções, enquadramento responsivo e texturas de caminhada nas oito direções aprovadas.
+
+
+A pelagem azul do cão especial foi substituída por creme/caramelo a pedido do usuário. Apenas a paleta muda: escala, silhueta, quadros e transparência permanecem iguais.
