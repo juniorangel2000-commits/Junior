@@ -164,6 +164,8 @@ export function applyDungeonResult(
   applied: boolean;
   coins: number;
   xp: number;
+  survivalXP?: number;
+  learningXP?: number;
   materials?: Partial<Record<ItemId, number>>;
   waiting?: boolean;
 } {
@@ -183,10 +185,40 @@ export function applyDungeonResult(
   if (p.recentResults.includes(result.id))
     return { applied: false, coins: 0, xp: 0 };
   const b = DUNGEON_BALANCE.reward,
-    xp = Math.floor(
+    killXP = Math.floor(
       result.kills * b.permanentXPPerKill +
         (result.outcome === "victory" ? b.permanentXPOnWin : 0),
     );
+  // Kills gate survival rewards: waiting or immediately abandoning cannot farm them.
+  const survivalXP =
+    result.outcome === "abandoned"
+      ? 0
+      : Math.min(
+          b.maxSurvivalXP,
+          result.kills * 2,
+          Math.floor(result.elapsed / 60) * b.survivalXPPerMinute,
+        );
+  // Reconstruct earned character XP from wallet + purchases, so spending cannot
+  // reset the learning window. Existing saves need no extra counters or migration.
+  const careerXP =
+    p.xp +
+    Object.values(p.attributes).reduce((total, rank) => {
+      for (let i = 0; i < rank; i++) total += permanentUpgradeCost(i);
+      return total;
+    }, 0);
+  const learningXP =
+    result.outcome !== "abandoned" &&
+    result.elapsed >= 120 &&
+    result.kills >= 20
+      ? Math.max(
+          0,
+          Math.min(
+            b.learningMinimumXP - killXP - survivalXP,
+            b.learningCareerLimit - careerXP - killXP - survivalXP,
+          ),
+        )
+      : 0;
+  const xp = killXP + survivalXP + learningXP;
   const coins =
     result.outcome === "abandoned"
       ? 0
@@ -252,6 +284,8 @@ export function applyDungeonResult(
     applied: true,
     coins,
     xp,
+    survivalXP,
+    learningXP,
     materials,
     waiting: Object.keys(p.pendingMaterials ?? {}).length > 0,
   };

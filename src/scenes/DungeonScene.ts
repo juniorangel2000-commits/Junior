@@ -82,6 +82,8 @@ export class DungeonScene extends Phaser.Scene {
   private reward: {
     coins: number;
     xp: number;
+    survivalXP?: number;
+    learningXP?: number;
     materials?: Partial<Record<ItemId, number>>;
     waiting?: boolean;
   } = { coins: 0, xp: 0 };
@@ -761,6 +763,8 @@ export class DungeonScene extends Phaser.Scene {
       this.reward = {
         coins: result.coins,
         xp: result.xp,
+        survivalXP: result.survivalXP,
+        learningXP: result.learningXP,
         materials: result.materials,
         waiting: result.waiting,
       };

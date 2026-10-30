@@ -68,6 +68,27 @@ function simulate(
     progress.attributes,
   ) as (keyof typeof progress.attributes)[])
     progress.attributes[key] = permanentRank;
+  const opening = process.argv
+    .find((arg) => arg.startsWith("--opening="))
+    ?.split("=")[1];
+  if (opening) {
+    for (const key of Object.keys(
+      progress.attributes,
+    ) as (keyof typeof progress.attributes)[])
+      progress.attributes[key] = 0;
+    if (opening === "attack2") progress.attributes.strength = 2;
+    else if (opening === "attack3") {
+      progress.attributes.strength = 2;
+      progress.attributes.precision = 1;
+    } else if (opening === "survival2") {
+      progress.attributes.vitality = 1;
+      progress.attributes.resistance = 1;
+    } else if (opening === "survival3") {
+      progress.attributes.vitality = 1;
+      progress.attributes.resistance = 1;
+      progress.attributes.survival = 1;
+    } else throw Error("Invalid opening profile");
+  }
   const species = pet === "cat" ? "cat" : "dog";
   const suffix = pet ? `-${species}${rare ? "-rare" : ""}` : "";
   if (pet)
@@ -334,6 +355,7 @@ function simulate(
     pet,
     rare,
     permanentRank,
+    opening,
     resumeChecks,
     maxHealing,
     petRecoveries,

@@ -1,0 +1,2360 @@
+{
+  "xpLevelCostCap": 89,
+  "method": "Fixed-step deterministic bot, legal random cards, no granted XP or pre-equipped arsenal. CPU timings exclude steering, rendering and GPU.",
+  "results": [
+    {
+      "dungeon": "abandoned-central-square",
+      "build": "assault",
+      "seed": 1234567,
+      "pet": false,
+      "rare": false,
+      "permanentRank": 0,
+      "opening": "survival2",
+      "resumeChecks": 44,
+      "maxHealing": 3,
+      "petRecoveries": 0,
+      "bossesEncountered": 5,
+      "status": "defeat",
+      "elapsed": 888,
+      "round": 1,
+      "kills": 3482,
+      "level": 317,
+      "hp": 0,
+      "weapons": [
+        "sword",
+        "spear",
+        "hammer",
+        "bow"
+      ],
+      "levels": {
+        "sword-speed": 5,
+        "fast-recovery": 3,
+        "health": 5,
+        "regeneration": 5,
+        "range": 4,
+        "sword-damage": 5,
+        "advanced-attack": 4,
+        "melee": 5,
+        "xp": 10,
+        "spear-range": 4,
+        "sword-range": 4,
+        "spear-piercing": 2,
+        "sword-wide": 2,
+        "spear-speed": 3,
+        "movement": 5,
+        "hammer-damage": 5,
+        "attack-speed": 5,
+        "hammer-area": 3,
+        "advanced-xp": 4,
+        "hammer-speed": 4,
+        "pickup": 10,
+        "piercing": 2,
+        "ranged": 5,
+        "defense": 5,
+        "bow-accuracy": 5,
+        "bow-piercing": 2,
+        "hammer-double": 1,
+        "bow-speed": 4,
+        "last-stand": 1,
+        "special-efficiency": 3,
+        "specialized-arsenal": 1,
+        "bow-double": 1,
+        "accuracy": 5,
+        "reload": 5,
+        "bow-triple": 1,
+        "special-cooldown": 3,
+        "boss-damage": 4,
+        "survival-instinct": 1,
+        "spear-fan": 1,
+        "sword-dual": 1,
+        "deadly-precision": 1
+      },
+      "completedAt": 802.333333333261,
+      "remainingRanks": 0,
+      "damageTaken": 1321,
+      "blocks": 0,
+      "peakEnemies": 240,
+      "peakProjectiles": 8,
+      "peakPickups": 346,
+      "choices": [
+        {
+          "at": 9.33333333333331,
+          "id": "sword-speed"
+        },
+        {
+          "at": 18.333333333333403,
+          "id": "fast-recovery"
+        },
+        {
+          "at": 33.03333333333402,
+          "id": "health"
+        },
+        {
+          "at": 53.86666666666617,
+          "id": "regeneration"
+        },
+        {
+          "at": 68.1999999999987,
+          "id": "range"
+        },
+        {
+          "at": 77.63333333333149,
+          "id": "fast-recovery"
+        },
+        {
+          "at": 99.56666666666358,
+          "id": "sword-speed"
+        },
+        {
+          "at": 119.56666666666244,
+          "id": "sword-damage"
+        },
+        {
+          "at": 155.36666666666042,
+          "id": "spear"
+        },
+        {
+          "at": 180.66666666665898,
+          "id": "advanced-attack"
+        },
+        {
+          "at": 203.49999999999102,
+          "id": "regeneration"
+        },
+        {
+          "at": 209.833333333324,
+          "id": "melee"
+        },
+        {
+          "at": 234.7666666666559,
+          "id": "xp"
+        },
+        {
+          "at": 264.93333333332845,
+          "id": "spear-range"
+        },
+        {
+          "at": 290.0666666666818,
+          "id": "sword-damage"
+        },
+        {
+          "at": 314.2333333333677,
+          "id": "sword-damage"
+        },
+        {
+          "at": 351.1000000000637,
+          "id": "regeneration"
+        },
+        {
+          "at": 378.6666666667523,
+          "id": "sword-range"
+        },
+        {
+          "at": 402.8333333334382,
+          "id": "spear-piercing"
+        },
+        {
+          "at": 427.43333333345777,
+          "id": "regeneration"
+        },
+        {
+          "at": 441.06666666680195,
+          "id": "sword-speed"
+        },
+        {
+          "at": 446.4333333334729,
+          "id": "spear-piercing"
+        },
+        {
+          "at": 468.6000000001572,
+          "id": "fast-recovery"
+        },
+        {
+          "at": 489.16666666684023,
+          "id": "sword-wide"
+        },
+        {
+          "at": 497.9000000001805,
+          "id": "spear-speed"
+        },
+        {
+          "at": 508.73333333352247,
+          "id": "regeneration"
+        },
+        {
+          "at": 517.8333333335197,
+          "id": "health"
+        },
+        {
+          "at": 534.7666666668376,
+          "id": "movement"
+        },
+        {
+          "at": 550.0333333334904,
+          "id": "hammer"
+        },
+        {
+          "at": 578.8333333334642,
+          "id": "hammer-damage"
+        },
+        {
+          "at": 588.8333333334551,
+          "id": "attack-speed"
+        },
+        {
+          "at": 594.6333333334499,
+          "id": "hammer-area"
+        },
+        {
+          "at": 597.066666666781,
+          "id": "sword-speed"
+        },
+        {
+          "at": 598.0666666667801,
+          "id": "advanced-xp"
+        },
+        {
+          "at": 602.6666666667759,
+          "id": "hammer-damage"
+        },
+        {
+          "at": 607.0000000001053,
+          "id": "sword-damage"
+        },
+        {
+          "at": 614.9666666667647,
+          "id": "hammer-speed"
+        },
+        {
+          "at": 622.9666666667574,
+          "id": "pickup"
+        },
+        {
+          "at": 625.2666666667553,
+          "id": "sword-range"
+        },
+        {
+          "at": 627.0666666667537,
+          "id": "sword-speed"
+        },
+        {
+          "at": 632.4000000000822,
+          "id": "piercing"
+        },
+        {
+          "at": 636.1333333334121,
+          "id": "hammer-damage"
+        },
+        {
+          "at": 636.1666666667454,
+          "id": "spear-range"
+        },
+        {
+          "at": 638.866666666743,
+          "id": "sword-damage"
+        },
+        {
+          "at": 638.9000000000763,
+          "id": "spear-range"
+        },
+        {
+          "at": 639.0666666667428,
+          "id": "movement"
+        },
+        {
+          "at": 639.5000000000757,
+          "id": "ranged"
+        },
+        {
+          "at": 639.533333333409,
+          "id": "health"
+        },
+        {
+          "at": 639.6000000000756,
+          "id": "bow"
+        },
+        {
+          "at": 640.0333333334086,
+          "id": "defense"
+        },
+        {
+          "at": 640.9333333334077,
+          "id": "movement"
+        },
+        {
+          "at": 641.6666666667404,
+          "id": "piercing"
+        },
+        {
+          "at": 641.6666666667404,
+          "id": "bow-accuracy"
+        },
+        {
+          "at": 641.6666666667404,
+          "id": "sword-range"
+        },
+        {
+          "at": 641.6666666667404,
+          "id": "movement"
+        },
+        {
+          "at": 641.6666666667404,
+          "id": "spear-range"
+        },
+        {
+          "at": 641.6666666667404,
+          "id": "bow-piercing"
+        },
+        {
+          "at": 641.6666666667404,
+          "id": "melee"
+        },
+        {
+          "at": 641.6666666667404,
+          "id": "sword-range"
+        },
+        {
+          "at": 641.6666666667404,
+          "id": "health"
+        },
+        {
+          "at": 641.6666666667404,
+          "id": "movement"
+        },
+        {
+          "at": 641.733333333407,
+          "id": "hammer-area"
+        },
+        {
+          "at": 641.8666666667402,
+          "id": "pickup"
+        },
+        {
+          "at": 646.0000000000698,
+          "id": "pickup"
+        },
+        {
+          "at": 651.3333333333983,
+          "id": "health"
+        },
+        {
+          "at": 663.0000000000543,
+          "id": "attack-speed"
+        },
+        {
+          "at": 669.7000000000482,
+          "id": "hammer-double"
+        },
+        {
+          "at": 672.8000000000454,
+          "id": "bow-speed"
+        },
+        {
+          "at": 673.9333333333777,
+          "id": "hammer-damage"
+        },
+        {
+          "at": 673.966666666711,
+          "id": "defense"
+        },
+        {
+          "at": 675.5666666667096,
+          "id": "advanced-attack"
+        },
+        {
+          "at": 682.100000000037,
+          "id": "hammer-area"
+        },
+        {
+          "at": 690.0000000000298,
+          "id": "advanced-xp"
+        },
+        {
+          "at": 692.4000000000276,
+          "id": "bow-speed"
+        },
+        {
+          "at": 695.4333333333582,
+          "id": "pickup"
+        },
+        {
+          "at": 700.9333333333532,
+          "id": "hammer-speed"
+        },
+        {
+          "at": 706.8666666666811,
+          "id": "bow-accuracy"
+        },
+        {
+          "at": 710.7666666666776,
+          "id": "advanced-xp"
+        },
+        {
+          "at": 711.2333333333438,
+          "id": "hammer-speed"
+        },
+        {
+          "at": 714.5000000000075,
+          "id": "pickup"
+        },
+        {
+          "at": 716.7333333333388,
+          "id": "hammer-damage"
+        },
+        {
+          "at": 718.6000000000038,
+          "id": "bow-accuracy"
+        },
+        {
+          "at": 720.8000000000018,
+          "id": "hammer-speed"
+        },
+        {
+          "at": 723.1666666666663,
+          "id": "bow-piercing"
+        },
+        {
+          "at": 724.4999999999984,
+          "id": "melee"
+        },
+        {
+          "at": 724.5333333333317,
+          "id": "defense"
+        },
+        {
+          "at": 724.566666666665,
+          "id": "attack-speed"
+        },
+        {
+          "at": 724.7999999999981,
+          "id": "bow-accuracy"
+        },
+        {
+          "at": 724.7999999999981,
+          "id": "spear-speed"
+        },
+        {
+          "at": 726.2999999999968,
+          "id": "pickup"
+        },
+        {
+          "at": 730.7666666666594,
+          "id": "melee"
+        },
+        {
+          "at": 735.1666666666554,
+          "id": "bow-accuracy"
+        },
+        {
+          "at": 741.3333333333164,
+          "id": "bow-speed"
+        },
+        {
+          "at": 745.0333333333131,
+          "id": "spear-speed"
+        },
+        {
+          "at": 749.866666666642,
+          "id": "bow-speed"
+        },
+        {
+          "at": 752.0999999999733,
+          "id": "last-stand"
+        },
+        {
+          "at": 756.5333333333026,
+          "id": "defense"
+        },
+        {
+          "at": 759.2666666666335,
+          "id": "special-efficiency"
+        },
+        {
+          "at": 761.5999999999647,
+          "id": "specialized-arsenal"
+        },
+        {
+          "at": 761.9999999999643,
+          "id": "pickup"
+        },
+        {
+          "at": 762.5333333332972,
+          "id": "bow-double"
+        },
+        {
+          "at": 763.833333333296,
+          "id": "defense"
+        },
+        {
+          "at": 765.3666666666279,
+          "id": "advanced-attack"
+        },
+        {
+          "at": 765.5333333332944,
+          "id": "pickup"
+        },
+        {
+          "at": 765.8333333332941,
+          "id": "accuracy"
+        },
+        {
+          "at": 767.3333333332928,
+          "id": "range"
+        },
+        {
+          "at": 767.9666666666255,
+          "id": "pickup"
+        },
+        {
+          "at": 769.1666666666245,
+          "id": "melee"
+        },
+        {
+          "at": 769.8333333332905,
+          "id": "sword-wide"
+        },
+        {
+          "at": 770.9666666666228,
+          "id": "pickup"
+        },
+        {
+          "at": 771.5666666666223,
+          "id": "ranged"
+        },
+        {
+          "at": 772.6999999999546,
+          "id": "accuracy"
+        },
+        {
+          "at": 772.7666666666212,
+          "id": "attack-speed"
+        },
+        {
+          "at": 772.8333333332878,
+          "id": "attack-speed"
+        },
+        {
+          "at": 772.9999999999543,
+          "id": "accuracy"
+        },
+        {
+          "at": 773.0333333332876,
+          "id": "reload"
+        },
+        {
+          "at": 774.4333333332863,
+          "id": "bow-triple"
+        },
+        {
+          "at": 774.833333333286,
+          "id": "special-efficiency"
+        },
+        {
+          "at": 776.1999999999514,
+          "id": "range"
+        },
+        {
+          "at": 776.3999999999512,
+          "id": "accuracy"
+        },
+        {
+          "at": 777.1333333332839,
+          "id": "ranged"
+        },
+        {
+          "at": 777.8666666666165,
+          "id": "special-cooldown"
+        },
+        {
+          "at": 778.1999999999496,
+          "id": "advanced-attack"
+        },
+        {
+          "at": 781.5999999999465,
+          "id": "accuracy"
+        },
+        {
+          "at": 782.0666666666127,
+          "id": "range"
+        },
+        {
+          "at": 783.3999999999448,
+          "id": "boss-damage"
+        },
+        {
+          "at": 783.8333333332778,
+          "id": "reload"
+        },
+        {
+          "at": 784.0999999999442,
+          "id": "reload"
+        },
+        {
+          "at": 784.9666666666101,
+          "id": "advanced-xp"
+        },
+        {
+          "at": 785.5333333332762,
+          "id": "ranged"
+        },
+        {
+          "at": 785.733333333276,
+          "id": "reload"
+        },
+        {
+          "at": 787.0333333332749,
+          "id": "ranged"
+        },
+        {
+          "at": 788.4666666666069,
+          "id": "reload"
+        },
+        {
+          "at": 790.4666666666051,
+          "id": "survival-instinct"
+        },
+        {
+          "at": 791.666666666604,
+          "id": "special-efficiency"
+        },
+        {
+          "at": 792.0999999999369,
+          "id": "spear-fan"
+        },
+        {
+          "at": 793.433333333269,
+          "id": "special-cooldown"
+        },
+        {
+          "at": 794.4999999999347,
+          "id": "special-cooldown"
+        },
+        {
+          "at": 794.9333333332677,
+          "id": "sword-dual"
+        },
+        {
+          "at": 795.7999999999336,
+          "id": "deadly-precision"
+        },
+        {
+          "at": 796.4999999999329,
+          "id": "boss-damage"
+        },
+        {
+          "at": 797.1999999999323,
+          "id": "boss-damage"
+        },
+        {
+          "at": 797.8666666665983,
+          "id": "boss-damage"
+        },
+        {
+          "at": 798.0666666665982,
+          "id": "xp"
+        },
+        {
+          "at": 798.266666666598,
+          "id": "xp"
+        },
+        {
+          "at": 798.9666666665973,
+          "id": "xp"
+        },
+        {
+          "at": 799.69999999993,
+          "id": "xp"
+        },
+        {
+          "at": 800.4999999999293,
+          "id": "xp"
+        },
+        {
+          "at": 800.8666666665956,
+          "id": "xp"
+        },
+        {
+          "at": 801.6333333332616,
+          "id": "xp"
+        },
+        {
+          "at": 801.9666666665946,
+          "id": "xp"
+        },
+        {
+          "at": 802.333333333261,
+          "id": "xp"
+        }
+      ],
+      "samples": [
+        {
+          "at": 0,
+          "round": 1,
+          "hp": 104,
+          "level": 1,
+          "kills": 0,
+          "enemies": 2,
+          "groundXP": 0,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 1
+        },
+        {
+          "at": 30,
+          "round": 1,
+          "hp": 43,
+          "level": 3,
+          "kills": 10,
+          "enemies": 32,
+          "groundXP": 0,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 1
+        },
+        {
+          "at": 60,
+          "round": 1,
+          "hp": 41,
+          "level": 5,
+          "kills": 20,
+          "enemies": 63,
+          "groundXP": 4.065185185185184,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 4
+        },
+        {
+          "at": 90,
+          "round": 1,
+          "hp": 41,
+          "level": 7,
+          "kills": 35,
+          "enemies": 97,
+          "groundXP": 12.284333333333326,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 7,
+          "brutes": 5
+        },
+        {
+          "at": 120,
+          "round": 1,
+          "hp": 47,
+          "level": 9,
+          "kills": 51,
+          "enemies": 150,
+          "groundXP": 8.255851851851844,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 3,
+          "brutes": 7
+        },
+        {
+          "at": 150,
+          "round": 1,
+          "hp": 43,
+          "level": 9,
+          "kills": 60,
+          "enemies": 213,
+          "groundXP": 16.559370370370353,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 5,
+          "brutes": 11
+        },
+        {
+          "at": 180,
+          "round": 1,
+          "hp": 37,
+          "level": 10,
+          "kills": 82,
+          "enemies": 235,
+          "groundXP": 45.90274074074067,
+          "weapons": [
+            "sword",
+            "spear"
+          ],
+          "runners": 1,
+          "brutes": 13,
+          "bossHP": 1003.3938868148027
+        },
+        {
+          "at": 210,
+          "round": 1,
+          "hp": 38,
+          "level": 13,
+          "kills": 102,
+          "enemies": 238,
+          "groundXP": 8.303518518518509,
+          "weapons": [
+            "sword",
+            "spear"
+          ],
+          "runners": 2,
+          "brutes": 13,
+          "bossHP": 950.5938868148028
+        },
+        {
+          "at": 240,
+          "round": 1,
+          "hp": 36,
+          "level": 14,
+          "kills": 121,
+          "enemies": 240,
+          "groundXP": 12.538407407407387,
+          "weapons": [
+            "sword",
+            "spear"
+          ],
+          "runners": 1,
+          "brutes": 14,
+          "bossHP": 769.8938868148027
+        },
+        {
+          "at": 270,
+          "round": 1,
+          "hp": 42,
+          "level": 15,
+          "kills": 141,
+          "enemies": 237,
+          "groundXP": 21.18059259259256,
+          "weapons": [
+            "sword",
+            "spear"
+          ],
+          "runners": 1,
+          "brutes": 15,
+          "bossHP": 616.6938868148027,
+          "bossSkill": "slam"
+        },
+        {
+          "at": 300,
+          "round": 1,
+          "hp": 50,
+          "level": 16,
+          "kills": 163,
+          "enemies": 240,
+          "groundXP": 21.241074074074092,
+          "weapons": [
+            "sword",
+            "spear"
+          ],
+          "runners": 1,
+          "brutes": 17,
+          "bossHP": 540.0938868148027
+        },
+        {
+          "at": 330,
+          "round": 1,
+          "hp": 42,
+          "level": 17,
+          "kills": 182,
+          "enemies": 240,
+          "groundXP": 17.017185185185262,
+          "weapons": [
+            "sword",
+            "spear"
+          ],
+          "runners": 2,
+          "brutes": 19,
+          "bossHP": 350.5938868148026
+        },
+        {
+          "at": 360,
+          "round": 1,
+          "hp": 30,
+          "level": 18,
+          "kills": 197,
+          "enemies": 237,
+          "groundXP": 30.283407407407772,
+          "weapons": [
+            "sword",
+            "spear"
+          ],
+          "runners": 0,
+          "brutes": 17,
+          "bossHP": 188.5938868148026
+        },
+        {
+          "at": 390,
+          "round": 1,
+          "hp": 45,
+          "level": 19,
+          "kills": 221,
+          "enemies": 240,
+          "groundXP": 21.596333333333632,
+          "weapons": [
+            "sword",
+            "spear"
+          ],
+          "runners": 2,
+          "brutes": 17,
+          "bossHP": 56.29388681480262,
+          "bossSkill": "slam"
+        },
+        {
+          "at": 420,
+          "round": 1,
+          "hp": 39,
+          "level": 20,
+          "kills": 251,
+          "enemies": 240,
+          "groundXP": 43.87774074074166,
+          "weapons": [
+            "sword",
+            "spear"
+          ],
+          "runners": 1,
+          "brutes": 18,
+          "bossHP": 1661.2416000001574
+        },
+        {
+          "at": 450,
+          "round": 1,
+          "hp": 43,
+          "level": 23,
+          "kills": 274,
+          "enemies": 235,
+          "groundXP": 30.65270370370437,
+          "weapons": [
+            "sword",
+            "spear"
+          ],
+          "runners": 0,
+          "brutes": 20,
+          "bossHP": 1264.3416000001575
+        },
+        {
+          "at": 480,
+          "round": 1,
+          "hp": 56,
+          "level": 24,
+          "kills": 292,
+          "enemies": 240,
+          "groundXP": 12.8177407407409,
+          "weapons": [
+            "sword",
+            "spear"
+          ],
+          "runners": 2,
+          "brutes": 22,
+          "bossHP": 1021.3416000001574
+        },
+        {
+          "at": 510,
+          "round": 1,
+          "hp": 39,
+          "level": 27,
+          "kills": 343,
+          "enemies": 240,
+          "groundXP": 35.67470370370494,
+          "weapons": [
+            "sword",
+            "spear"
+          ],
+          "runners": 5,
+          "brutes": 25,
+          "bossHP": 991.6416000001574
+        },
+        {
+          "at": 540,
+          "round": 1,
+          "hp": 41,
+          "level": 29,
+          "kills": 400,
+          "enemies": 218,
+          "groundXP": 104.74600000000403,
+          "weapons": [
+            "sword",
+            "spear"
+          ],
+          "runners": 0,
+          "brutes": 29,
+          "bossHP": 829.6416000001572,
+          "bossSkill": "charge"
+        },
+        {
+          "at": 570,
+          "round": 1,
+          "hp": 17,
+          "level": 30,
+          "kills": 611,
+          "enemies": 208,
+          "groundXP": 953.3377037037418,
+          "weapons": [
+            "sword",
+            "spear",
+            "hammer"
+          ],
+          "runners": 18,
+          "brutes": 50,
+          "bossHP": 829.6416000001572,
+          "bossSkill": "charge"
+        },
+        {
+          "at": 600,
+          "round": 1,
+          "hp": 38,
+          "level": 35,
+          "kills": 729,
+          "enemies": 222,
+          "groundXP": 1081.272722222264,
+          "weapons": [
+            "sword",
+            "spear",
+            "hammer"
+          ],
+          "runners": 14,
+          "brutes": 69,
+          "bossHP": 829.6416000001572
+        },
+        {
+          "at": 630,
+          "round": 1,
+          "hp": 59,
+          "level": 41,
+          "kills": 900,
+          "enemies": 188,
+          "groundXP": 1455.4369814815295,
+          "weapons": [
+            "sword",
+            "spear",
+            "hammer"
+          ],
+          "runners": 3,
+          "brutes": 77,
+          "bossHP": 639.9416000001572
+        },
+        {
+          "at": 660,
+          "round": 1,
+          "hp": 22,
+          "level": 66,
+          "kills": 995,
+          "enemies": 239,
+          "groundXP": 37.771407407408,
+          "weapons": [
+            "sword",
+            "spear",
+            "hammer",
+            "bow"
+          ],
+          "runners": 10,
+          "brutes": 96,
+          "bossHP": 488.14160000015727,
+          "bossSkill": "charge"
+        },
+        {
+          "at": 690,
+          "round": 1,
+          "hp": 71,
+          "level": 74,
+          "kills": 1202,
+          "enemies": 233,
+          "groundXP": 487.1390370370419,
+          "weapons": [
+            "sword",
+            "spear",
+            "hammer",
+            "bow"
+          ],
+          "runners": 10,
+          "brutes": 120,
+          "bossHP": 295.9416000001573
+        },
+        {
+          "at": 720,
+          "round": 1,
+          "hp": 94,
+          "level": 83,
+          "kills": 1404,
+          "enemies": 143,
+          "groundXP": 893.6587962963036,
+          "weapons": [
+            "sword",
+            "spear",
+            "hammer",
+            "bow"
+          ],
+          "runners": 0,
+          "brutes": 121,
+          "bossHP": 2796.982400000481
+        },
+        {
+          "at": 750,
+          "round": 1,
+          "hp": 67,
+          "level": 96,
+          "kills": 1545,
+          "enemies": 239,
+          "groundXP": 989.7410925926004,
+          "weapons": [
+            "sword",
+            "spear",
+            "hammer",
+            "bow"
+          ],
+          "runners": 15,
+          "brutes": 88,
+          "bossHP": 2796.982400000481
+        },
+        {
+          "at": 780,
+          "round": 1,
+          "hp": 103,
+          "level": 124,
+          "kills": 1872,
+          "enemies": 188,
+          "groundXP": 1069.7085000000063,
+          "weapons": [
+            "sword",
+            "spear",
+            "hammer",
+            "bow"
+          ],
+          "runners": 12,
+          "brutes": 51,
+          "bossHP": 2561.482400000481,
+          "bossSkill": "chains"
+        },
+        {
+          "at": 810,
+          "round": 1,
+          "hp": 88,
+          "level": 166,
+          "kills": 2280,
+          "enemies": 86,
+          "groundXP": 1138.2528518518573,
+          "weapons": [
+            "sword",
+            "spear",
+            "hammer",
+            "bow"
+          ],
+          "runners": 0,
+          "brutes": 56,
+          "bossHP": 2179.822800000481
+        },
+        {
+          "at": 840,
+          "round": 1,
+          "hp": 115,
+          "level": 218,
+          "kills": 2685,
+          "enemies": 198,
+          "groundXP": 1165.3674259259308,
+          "weapons": [
+            "sword",
+            "spear",
+            "hammer",
+            "bow"
+          ],
+          "runners": 29,
+          "brutes": 55,
+          "bossHP": 10852.79242666577
+        },
+        {
+          "at": 870,
+          "round": 1,
+          "hp": 129,
+          "level": 281,
+          "kills": 3196,
+          "enemies": 226,
+          "groundXP": 1182.738518518523,
+          "weapons": [
+            "sword",
+            "spear",
+            "hammer",
+            "bow"
+          ],
+          "runners": 16,
+          "brutes": 84,
+          "bossHP": 6303.119626665778
+        }
+      ],
+      "wallSeconds": 10.014159995,
+      "tickMs": {
+        "median": 0.1485609999999724,
+        "p95": 0.33569900000020425
+      }
+    },
+    {
+      "dungeon": "abandoned-central-square",
+      "build": "control",
+      "seed": 1234567,
+      "pet": false,
+      "rare": false,
+      "permanentRank": 0,
+      "opening": "survival2",
+      "resumeChecks": 40,
+      "maxHealing": 3,
+      "petRecoveries": 0,
+      "bossesEncountered": 5,
+      "status": "defeat",
+      "elapsed": 846,
+      "round": 1,
+      "kills": 4687,
+      "level": 480,
+      "hp": 0,
+      "weapons": [
+        "sword",
+        "boomerang",
+        "hammer",
+        "rotating-blade"
+      ],
+      "levels": {
+        "sword-speed": 5,
+        "fast-recovery": 3,
+        "health": 5,
+        "regeneration": 5,
+        "range": 4,
+        "sword-damage": 5,
+        "advanced-xp": 4,
+        "boomerang-speed": 4,
+        "boomerang-double": 1,
+        "pickup": 10,
+        "sword-range": 4,
+        "boomerang-range": 4,
+        "boomerang-cross": 1,
+        "movement": 5,
+        "attack-speed": 5,
+        "survival-instinct": 1,
+        "hammer-damage": 5,
+        "advanced-attack": 4,
+        "blade-damage": 5,
+        "blade-speed": 3,
+        "hammer-speed": 4,
+        "deadly-precision": 1,
+        "sword-wide": 2,
+        "blade-range": 5,
+        "hammer-double": 1,
+        "hammer-area": 3,
+        "defense": 5,
+        "melee": 5,
+        "piercing": 2,
+        "boss-damage": 4,
+        "ranged": 5,
+        "special-cooldown": 3,
+        "special-efficiency": 3,
+        "accuracy": 5,
+        "reload": 5,
+        "blade-double": 1,
+        "specialized-arsenal": 1,
+        "last-stand": 1,
+        "sword-dual": 1,
+        "xp": 10
+      },
+      "completedAt": 600.1333333334449,
+      "remainingRanks": 0,
+      "damageTaken": 625,
+      "blocks": 0,
+      "peakEnemies": 240,
+      "peakProjectiles": 7,
+      "peakPickups": 717,
+      "choices": [
+        {
+          "at": 9.33333333333331,
+          "id": "sword-speed"
+        },
+        {
+          "at": 18.333333333333403,
+          "id": "fast-recovery"
+        },
+        {
+          "at": 33.03333333333402,
+          "id": "health"
+        },
+        {
+          "at": 53.86666666666617,
+          "id": "regeneration"
+        },
+        {
+          "at": 68.1999999999987,
+          "id": "range"
+        },
+        {
+          "at": 77.63333333333149,
+          "id": "fast-recovery"
+        },
+        {
+          "at": 99.56666666666358,
+          "id": "sword-speed"
+        },
+        {
+          "at": 119.56666666666244,
+          "id": "sword-damage"
+        },
+        {
+          "at": 155.36666666666042,
+          "id": "boomerang"
+        },
+        {
+          "at": 220.83333333332337,
+          "id": "advanced-xp"
+        },
+        {
+          "at": 245.63333333332196,
+          "id": "boomerang-speed"
+        },
+        {
+          "at": 267.8999999999975,
+          "id": "boomerang-speed"
+        },
+        {
+          "at": 304.86666666669356,
+          "id": "boomerang-double"
+        },
+        {
+          "at": 317.56666666670367,
+          "id": "pickup"
+        },
+        {
+          "at": 317.83333333337055,
+          "id": "regeneration"
+        },
+        {
+          "at": 321.00000000003973,
+          "id": "sword-range"
+        },
+        {
+          "at": 321.5333333333735,
+          "id": "boomerang-range"
+        },
+        {
+          "at": 323.40000000004164,
+          "id": "pickup"
+        },
+        {
+          "at": 323.433333333375,
+          "id": "boomerang-cross"
+        },
+        {
+          "at": 328.1666666667121,
+          "id": "sword-speed"
+        },
+        {
+          "at": 342.8666666667238,
+          "id": "sword-speed"
+        },
+        {
+          "at": 347.13333333339386,
+          "id": "movement"
+        },
+        {
+          "at": 363.7333333334071,
+          "id": "boomerang-speed"
+        },
+        {
+          "at": 369.66666666674513,
+          "id": "boomerang-range"
+        },
+        {
+          "at": 377.63333333341814,
+          "id": "boomerang-range"
+        },
+        {
+          "at": 403.26666666677187,
+          "id": "sword-range"
+        },
+        {
+          "at": 415.23333333344806,
+          "id": "sword-damage"
+        },
+        {
+          "at": 434.4666666667967,
+          "id": "boomerang-range"
+        },
+        {
+          "at": 446.2666666668061,
+          "id": "hammer"
+        },
+        {
+          "at": 447.3333333334736,
+          "id": "regeneration"
+        },
+        {
+          "at": 449.500000000142,
+          "id": "sword-damage"
+        },
+        {
+          "at": 452.26666666681086,
+          "id": "regeneration"
+        },
+        {
+          "at": 469.40000000015783,
+          "id": "regeneration"
+        },
+        {
+          "at": 484.2000000001696,
+          "id": "attack-speed"
+        },
+        {
+          "at": 499.333333333515,
+          "id": "pickup"
+        },
+        {
+          "at": 504.8666666668527,
+          "id": "movement"
+        },
+        {
+          "at": 507.73333333352167,
+          "id": "sword-speed"
+        },
+        {
+          "at": 507.8000000001884,
+          "id": "sword-range"
+        },
+        {
+          "at": 507.8000000001884,
+          "id": "pickup"
+        },
+        {
+          "at": 507.8000000001884,
+          "id": "survival-instinct"
+        },
+        {
+          "at": 507.83333333352175,
+          "id": "hammer-damage"
+        },
+        {
+          "at": 507.83333333352175,
+          "id": "boomerang-speed"
+        },
+        {
+          "at": 508.06666666685527,
+          "id": "sword-damage"
+        },
+        {
+          "at": 508.06666666685527,
+          "id": "sword-range"
+        },
+        {
+          "at": 508.40000000018887,
+          "id": "hammer-damage"
+        },
+        {
+          "at": 508.600000000189,
+          "id": "movement"
+        },
+        {
+          "at": 508.7000000001891,
+          "id": "advanced-attack"
+        },
+        {
+          "at": 508.83333333352255,
+          "id": "sword-damage"
+        },
+        {
+          "at": 508.90000000018927,
+          "id": "rotating-blade"
+        },
+        {
+          "at": 508.90000000018927,
+          "id": "advanced-xp"
+        },
+        {
+          "at": 509.0333333335227,
+          "id": "blade-damage"
+        },
+        {
+          "at": 509.1000000001894,
+          "id": "blade-speed"
+        },
+        {
+          "at": 509.1000000001894,
+          "id": "hammer-speed"
+        },
+        {
+          "at": 509.1333333335228,
+          "id": "advanced-xp"
+        },
+        {
+          "at": 509.1333333335228,
+          "id": "deadly-precision"
+        },
+        {
+          "at": 509.1333333335228,
+          "id": "advanced-xp"
+        },
+        {
+          "at": 509.16666666685614,
+          "id": "blade-damage"
+        },
+        {
+          "at": 509.2000000001895,
+          "id": "hammer-speed"
+        },
+        {
+          "at": 509.23333333352286,
+          "id": "sword-wide"
+        },
+        {
+          "at": 509.23333333352286,
+          "id": "blade-range"
+        },
+        {
+          "at": 509.23333333352286,
+          "id": "pickup"
+        },
+        {
+          "at": 509.2666666668562,
+          "id": "hammer-damage"
+        },
+        {
+          "at": 509.2666666668562,
+          "id": "blade-damage"
+        },
+        {
+          "at": 509.3000000001896,
+          "id": "hammer-double"
+        },
+        {
+          "at": 509.33333333352294,
+          "id": "hammer-area"
+        },
+        {
+          "at": 509.33333333352294,
+          "id": "blade-speed"
+        },
+        {
+          "at": 509.33333333352294,
+          "id": "movement"
+        },
+        {
+          "at": 509.33333333352294,
+          "id": "hammer-speed"
+        },
+        {
+          "at": 509.40000000018966,
+          "id": "blade-damage"
+        },
+        {
+          "at": 509.40000000018966,
+          "id": "blade-damage"
+        },
+        {
+          "at": 509.433333333523,
+          "id": "pickup"
+        },
+        {
+          "at": 509.50000000018974,
+          "id": "pickup"
+        },
+        {
+          "at": 509.5333333335231,
+          "id": "advanced-attack"
+        },
+        {
+          "at": 509.6333333335232,
+          "id": "attack-speed"
+        },
+        {
+          "at": 509.73333333352326,
+          "id": "sword-wide"
+        },
+        {
+          "at": 509.7666666668566,
+          "id": "blade-range"
+        },
+        {
+          "at": 509.80000000019,
+          "id": "blade-range"
+        },
+        {
+          "at": 509.83333333352334,
+          "id": "pickup"
+        },
+        {
+          "at": 509.8666666668567,
+          "id": "blade-range"
+        },
+        {
+          "at": 509.90000000019006,
+          "id": "defense"
+        },
+        {
+          "at": 509.90000000019006,
+          "id": "movement"
+        },
+        {
+          "at": 509.9666666668568,
+          "id": "pickup"
+        },
+        {
+          "at": 510.00000000019014,
+          "id": "melee"
+        },
+        {
+          "at": 510.0333333335235,
+          "id": "pickup"
+        },
+        {
+          "at": 510.06666666685686,
+          "id": "hammer-damage"
+        },
+        {
+          "at": 510.06666666685686,
+          "id": "defense"
+        },
+        {
+          "at": 510.06666666685686,
+          "id": "blade-speed"
+        },
+        {
+          "at": 512.6000000001911,
+          "id": "hammer-speed"
+        },
+        {
+          "at": 514.6666666668559,
+          "id": "piercing"
+        },
+        {
+          "at": 515.666666666855,
+          "id": "hammer-damage"
+        },
+        {
+          "at": 515.7666666668549,
+          "id": "health"
+        },
+        {
+          "at": 515.8000000001882,
+          "id": "blade-range"
+        },
+        {
+          "at": 516.0666666668546,
+          "id": "fast-recovery"
+        },
+        {
+          "at": 516.9333333335205,
+          "id": "attack-speed"
+        },
+        {
+          "at": 516.9666666668538,
+          "id": "health"
+        },
+        {
+          "at": 518.5000000001858,
+          "id": "melee"
+        },
+        {
+          "at": 518.5333333335191,
+          "id": "melee"
+        },
+        {
+          "at": 519.4333333335182,
+          "id": "attack-speed"
+        },
+        {
+          "at": 519.7666666668513,
+          "id": "melee"
+        },
+        {
+          "at": 520.1333333335176,
+          "id": "advanced-attack"
+        },
+        {
+          "at": 522.7666666668486,
+          "id": "defense"
+        },
+        {
+          "at": 526.1000000001789,
+          "id": "piercing"
+        },
+        {
+          "at": 530.2000000001751,
+          "id": "melee"
+        },
+        {
+          "at": 533.3333333335056,
+          "id": "attack-speed"
+        },
+        {
+          "at": 537.8666666668348,
+          "id": "advanced-attack"
+        },
+        {
+          "at": 539.9333333334996,
+          "id": "hammer-area"
+        },
+        {
+          "at": 540.5666666668324,
+          "id": "boss-damage"
+        },
+        {
+          "at": 541.9666666668311,
+          "id": "ranged"
+        },
+        {
+          "at": 542.5666666668305,
+          "id": "hammer-area"
+        },
+        {
+          "at": 544.2333333334957,
+          "id": "special-cooldown"
+        },
+        {
+          "at": 547.3000000001596,
+          "id": "special-cooldown"
+        },
+        {
+          "at": 548.6333333334917,
+          "id": "health"
+        },
+        {
+          "at": 548.9666666668247,
+          "id": "health"
+        },
+        {
+          "at": 550.100000000157,
+          "id": "defense"
+        },
+        {
+          "at": 550.2333333334902,
+          "id": "special-efficiency"
+        },
+        {
+          "at": 550.4000000001568,
+          "id": "accuracy"
+        },
+        {
+          "at": 550.5000000001567,
+          "id": "defense"
+        },
+        {
+          "at": 550.7000000001565,
+          "id": "range"
+        },
+        {
+          "at": 551.8333333334888,
+          "id": "range"
+        },
+        {
+          "at": 552.9000000001545,
+          "id": "range"
+        },
+        {
+          "at": 554.8666666668194,
+          "id": "ranged"
+        },
+        {
+          "at": 556.0666666668183,
+          "id": "accuracy"
+        },
+        {
+          "at": 557.5000000001503,
+          "id": "reload"
+        },
+        {
+          "at": 560.1333333334812,
+          "id": "accuracy"
+        },
+        {
+          "at": 561.1333333334803,
+          "id": "accuracy"
+        },
+        {
+          "at": 563.0333333334786,
+          "id": "special-cooldown"
+        },
+        {
+          "at": 565.0333333334768,
+          "id": "reload"
+        },
+        {
+          "at": 567.8000000001409,
+          "id": "boss-damage"
+        },
+        {
+          "at": 569.1000000001397,
+          "id": "boss-damage"
+        },
+        {
+          "at": 571.9666666668038,
+          "id": "special-efficiency"
+        },
+        {
+          "at": 573.9000000001354,
+          "id": "reload"
+        },
+        {
+          "at": 575.4666666668006,
+          "id": "ranged"
+        },
+        {
+          "at": 577.9000000001317,
+          "id": "ranged"
+        },
+        {
+          "at": 580.0000000001298,
+          "id": "special-efficiency"
+        },
+        {
+          "at": 580.6666666667959,
+          "id": "reload"
+        },
+        {
+          "at": 581.9666666667947,
+          "id": "reload"
+        },
+        {
+          "at": 582.2333333334611,
+          "id": "accuracy"
+        },
+        {
+          "at": 584.0000000001262,
+          "id": "blade-double"
+        },
+        {
+          "at": 584.8666666667921,
+          "id": "specialized-arsenal"
+        },
+        {
+          "at": 585.733333333458,
+          "id": "last-stand"
+        },
+        {
+          "at": 586.6666666667904,
+          "id": "ranged"
+        },
+        {
+          "at": 587.500000000123,
+          "id": "sword-dual"
+        },
+        {
+          "at": 588.6666666667886,
+          "id": "boss-damage"
+        },
+        {
+          "at": 589.3333333334547,
+          "id": "xp"
+        },
+        {
+          "at": 590.6333333334535,
+          "id": "xp"
+        },
+        {
+          "at": 590.9000000001199,
+          "id": "xp"
+        },
+        {
+          "at": 592.3666666667852,
+          "id": "xp"
+        },
+        {
+          "at": 593.9000000001172,
+          "id": "xp"
+        },
+        {
+          "at": 595.633333333449,
+          "id": "xp"
+        },
+        {
+          "at": 597.5666666667805,
+          "id": "xp"
+        },
+        {
+          "at": 598.1333333334467,
+          "id": "xp"
+        },
+        {
+          "at": 599.3333333334456,
+          "id": "xp"
+        },
+        {
+          "at": 600.1333333334449,
+          "id": "xp"
+        }
+      ],
+      "samples": [
+        {
+          "at": 0,
+          "round": 1,
+          "hp": 104,
+          "level": 1,
+          "kills": 0,
+          "enemies": 2,
+          "groundXP": 0,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 1
+        },
+        {
+          "at": 30,
+          "round": 1,
+          "hp": 43,
+          "level": 3,
+          "kills": 10,
+          "enemies": 32,
+          "groundXP": 0,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 1
+        },
+        {
+          "at": 60,
+          "round": 1,
+          "hp": 41,
+          "level": 5,
+          "kills": 20,
+          "enemies": 63,
+          "groundXP": 4.065185185185184,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 0,
+          "brutes": 4
+        },
+        {
+          "at": 90,
+          "round": 1,
+          "hp": 41,
+          "level": 7,
+          "kills": 35,
+          "enemies": 97,
+          "groundXP": 12.284333333333326,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 7,
+          "brutes": 5
+        },
+        {
+          "at": 120,
+          "round": 1,
+          "hp": 47,
+          "level": 9,
+          "kills": 51,
+          "enemies": 150,
+          "groundXP": 8.255851851851844,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 3,
+          "brutes": 7
+        },
+        {
+          "at": 150,
+          "round": 1,
+          "hp": 43,
+          "level": 9,
+          "kills": 60,
+          "enemies": 213,
+          "groundXP": 16.559370370370353,
+          "weapons": [
+            "sword"
+          ],
+          "runners": 5,
+          "brutes": 11
+        },
+        {
+          "at": 180,
+          "round": 1,
+          "hp": 67,
+          "level": 10,
+          "kills": 204,
+          "enemies": 119,
+          "groundXP": 598.2177407407395,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 0,
+          "brutes": 13,
+          "bossHP": 1003.3938868148027
+        },
+        {
+          "at": 210,
+          "round": 1,
+          "hp": 76,
+          "level": 10,
+          "kills": 303,
+          "enemies": 160,
+          "groundXP": 977.0724814814806,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 10,
+          "brutes": 29,
+          "bossHP": 1003.3938868148027
+        },
+        {
+          "at": 240,
+          "round": 1,
+          "hp": 101,
+          "level": 11,
+          "kills": 346,
+          "enemies": 239,
+          "groundXP": 1115.3333888888876,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 7,
+          "brutes": 38,
+          "bossHP": 1003.3938868148027
+        },
+        {
+          "at": 270,
+          "round": 1,
+          "hp": 109,
+          "level": 13,
+          "kills": 409,
+          "enemies": 209,
+          "groundXP": 1312.5916851851841,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 2,
+          "brutes": 41,
+          "bossHP": 1003.3938868148027
+        },
+        {
+          "at": 300,
+          "round": 1,
+          "hp": 87,
+          "level": 13,
+          "kills": 503,
+          "enemies": 240,
+          "groundXP": 1674.5324629629624,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 12,
+          "brutes": 50,
+          "bossHP": 1003.3938868148027
+        },
+        {
+          "at": 330,
+          "round": 1,
+          "hp": 67,
+          "level": 21,
+          "kills": 577,
+          "enemies": 231,
+          "groundXP": 1453.72438888889,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 2,
+          "brutes": 54,
+          "bossHP": 1003.3938868148027
+        },
+        {
+          "at": 360,
+          "round": 1,
+          "hp": 95,
+          "level": 23,
+          "kills": 761,
+          "enemies": 147,
+          "groundXP": 2097.6326296296393,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 1,
+          "brutes": 53,
+          "bossHP": 979.3938868148027
+        },
+        {
+          "at": 390,
+          "round": 1,
+          "hp": 26,
+          "level": 26,
+          "kills": 791,
+          "enemies": 240,
+          "groundXP": 2026.4738888888976,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 20,
+          "brutes": 63,
+          "bossHP": 979.3938868148027
+        },
+        {
+          "at": 420,
+          "round": 1,
+          "hp": 54,
+          "level": 28,
+          "kills": 923,
+          "enemies": 228,
+          "groundXP": 2476.5688888889067,
+          "weapons": [
+            "sword",
+            "boomerang"
+          ],
+          "runners": 11,
+          "brutes": 76,
+          "bossHP": 979.3938868148027,
+          "bossSkill": "slam"
+        },
+        {
+          "at": 450,
+          "round": 1,
+          "hp": 57,
+          "level": 32,
+          "kills": 1023,
+          "enemies": 219,
+          "groundXP": 2626.278314814848,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "hammer"
+          ],
+          "runners": 6,
+          "brutes": 70,
+          "bossHP": 967.3938868148027
+        },
+        {
+          "at": 480,
+          "round": 1,
+          "hp": 80,
+          "level": 34,
+          "kills": 1102,
+          "enemies": 230,
+          "groundXP": 2818.2152222222644,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "hammer"
+          ],
+          "runners": 4,
+          "brutes": 84,
+          "bossHP": 967.3938868148027
+        },
+        {
+          "at": 510,
+          "round": 1,
+          "hp": 86,
+          "level": 85,
+          "kills": 1225,
+          "enemies": 240,
+          "groundXP": 161.01092592593082,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "hammer",
+            "rotating-blade"
+          ],
+          "runners": 9,
+          "brutes": 73,
+          "bossHP": 867.7938868148028
+        },
+        {
+          "at": 540,
+          "round": 1,
+          "hp": 119,
+          "level": 107,
+          "kills": 1476,
+          "enemies": 136,
+          "groundXP": 167.57792592593307,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "hammer",
+            "rotating-blade"
+          ],
+          "runners": 4,
+          "brutes": 64,
+          "bossHP": 849.6978868148028
+        },
+        {
+          "at": 570,
+          "round": 1,
+          "hp": 129,
+          "level": 130,
+          "kills": 1712,
+          "enemies": 131,
+          "groundXP": 130.91107407407955,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "hammer",
+            "rotating-blade"
+          ],
+          "runners": 7,
+          "brutes": 29,
+          "bossHP": 175.12268681480265
+        },
+        {
+          "at": 600,
+          "round": 1,
+          "hp": 129,
+          "level": 153,
+          "kills": 1972,
+          "enemies": 116,
+          "groundXP": 189.17014814815522,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "hammer",
+            "rotating-blade"
+          ],
+          "runners": 16,
+          "brutes": 31
+        },
+        {
+          "at": 630,
+          "round": 1,
+          "hp": 129,
+          "level": 194,
+          "kills": 2314,
+          "enemies": 12,
+          "groundXP": 198.77905555556265,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "hammer",
+            "rotating-blade"
+          ],
+          "runners": 1,
+          "brutes": 5
+        },
+        {
+          "at": 660,
+          "round": 1,
+          "hp": 129,
+          "level": 221,
+          "kills": 2541,
+          "enemies": 118,
+          "groundXP": 159.07685185185792,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "hammer",
+            "rotating-blade"
+          ],
+          "runners": 14,
+          "brutes": 26
+        },
+        {
+          "at": 690,
+          "round": 1,
+          "hp": 129,
+          "level": 264,
+          "kills": 2916,
+          "enemies": 94,
+          "groundXP": 239.9544814814883,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "hammer",
+            "rotating-blade"
+          ],
+          "runners": 10,
+          "brutes": 20
+        },
+        {
+          "at": 720,
+          "round": 1,
+          "hp": 129,
+          "level": 302,
+          "kills": 3230,
+          "enemies": 19,
+          "groundXP": 278.5941481481548,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "hammer",
+            "rotating-blade"
+          ],
+          "runners": 1,
+          "brutes": 5,
+          "bossHP": 6231.139200000014
+        },
+        {
+          "at": 750,
+          "round": 1,
+          "hp": 129,
+          "level": 328,
+          "kills": 3446,
+          "enemies": 145,
+          "groundXP": 247.87294444445067,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "hammer",
+            "rotating-blade"
+          ],
+          "runners": 13,
+          "brutes": 35,
+          "bossHP": 1870.7644800000119,
+          "bossSkill": "plague"
+        },
+        {
+          "at": 780,
+          "round": 1,
+          "hp": 129,
+          "level": 376,
+          "kills": 3834,
+          "enemies": 108,
+          "groundXP": 272.6952037037091,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "hammer",
+            "rotating-blade"
+          ],
+          "runners": 9,
+          "brutes": 20
+        },
+        {
+          "at": 810,
+          "round": 1,
+          "hp": 129,
+          "level": 429,
+          "kills": 4255,
+          "enemies": 51,
+          "groundXP": 219.68040740740855,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "hammer",
+            "rotating-blade"
+          ],
+          "runners": 1,
+          "brutes": 35
+        },
+        {
+          "at": 840,
+          "round": 1,
+          "hp": 62,
+          "level": 467,
+          "kills": 4573,
+          "enemies": 230,
+          "groundXP": 269.1337037037036,
+          "weapons": [
+            "sword",
+            "boomerang",
+            "hammer",
+            "rotating-blade"
+          ],
+          "runners": 21,
+          "brutes": 56,
+          "bossHP": 14621.753813332125
+        }
+      ],
+      "wallSeconds": 6.418980496999999,
+      "tickMs": {
+        "median": 0.11796599999979662,
+        "p95": 0.2680479999999079
+      }
+    }
+  ]
+}

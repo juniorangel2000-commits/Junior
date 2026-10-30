@@ -319,6 +319,8 @@ export class DungeonUI {
     reward: {
       coins: number;
       xp: number;
+      survivalXP?: number;
+      learningXP?: number;
       materials?: Partial<Record<ItemId, number>>;
       waiting?: boolean;
     },
@@ -332,7 +334,7 @@ export class DungeonUI {
             ? "Você foi derrotado"
             : "Expedição encerrada";
     this.show(
-      `<section class="dungeon-menu compact"><h1>${title}</h1><p>${s.kills} inimigos · nível temporário ${s.level} · ${Math.floor(s.elapsed / 60)} min ${Math.floor(s.elapsed % 60)} s</p><p>${reward.xp} XP permanente · ${reward.coins} moedas${s.foundPet ? " · novo pet encontrado" : ""}</p><p>${Object.entries(
+      `<section class="dungeon-menu compact"><h1>${title}</h1><p>${s.kills} inimigos · nível temporário ${s.level} · ${Math.floor(s.elapsed / 60)} min ${Math.floor(s.elapsed % 60)} s</p><p>${reward.xp} XP permanente · ${reward.coins} moedas${s.foundPet ? " · novo pet encontrado" : ""}</p>${reward.survivalXP || reward.learningXP ? `<p>Inclui ${reward.survivalXP ?? 0} XP por sobrevivência${reward.learningXP ? ` e ${reward.learningXP} XP de apoio às primeiras tentativas` : ""}.</p>` : ""}<p>${Object.entries(
         reward.materials ?? {},
       )
         .map(([item, n]) => `${n} × ${ITEM_NAMES[item as ItemId]}`)

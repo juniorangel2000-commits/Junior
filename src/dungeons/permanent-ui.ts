@@ -74,6 +74,7 @@ export function permanentEvolutionHTML(
  <label class="permanent-target">Evoluir <select data-evolution-target><option value="character" ${!pet ? "selected" : ""}>Personagem</option>${progress.pets.map((p, index) => `<option value="${escape(p.id)}" ${p.id === pet?.id ? "selected" : ""}>${PETS[p.species].name}${p.rare ? " ✦" : ""} · Companheiro ${index + 1}</option>`).join("")}</select></label>
  <div class="permanent-summary"><strong>${pet ? PETS[pet.species].name : "Personagem"} · ${total} / ${max} melhorias</strong><meter aria-label="Progresso permanente" min="0" max="${max}" value="${total}"></meter><p>${pet ? "Os atributos de combate atuam nas dungeons. Velocidade e percepção também ajudam na floresta de acesso." : "Os efeitos destes atributos são aplicados nas dungeons."} As compras ficam salvas. Cada atributo tem custo crescente e limite de 20 níveis.</p></div>
  ${pet ? `<p class="dungeon-note">Bônus da espécie ao jogador nas dungeons: ${petBonusDescription(pet)}. Ativos durante a recuperação. As melhorias abaixo não são duplicadas nos especials.</p>` : ""}
+ ${!pet ? `<p class="dungeon-note">Para atacar melhor, invista em Força e Precisão. Para resistir mais, combine Vitalidade, Resistência e Sobrevivência. Você pode escolher seu caminho; não precisa evoluir tudo igualmente.</p>` : ""}
  <p class="permanent-feedback" role="status" aria-live="polite">${escape(message)}</p>
  <div class="permanent-grid">${keys
    .map((key) => {

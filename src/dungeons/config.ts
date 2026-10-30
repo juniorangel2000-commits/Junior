@@ -92,6 +92,10 @@ export const DUNGEON_BALANCE = {
     maxCoins: 30,
     permanentXPPerKill: 1,
     permanentXPOnWin: 50,
+    survivalXPPerMinute: 15,
+    maxSurvivalXP: 90,
+    learningMinimumXP: 100,
+    learningCareerLimit: 600,
   },
 } as const;
 export const WEAPONS: Record<
