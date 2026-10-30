@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "checks": [
+    "Cancelar novo jogo preserva o save ilegível",
+    "Confirmar novo jogo preserva os bytes do original antes de salvar",
+    "Leitura recupera backup válido sem substituir o arquivo corrompido"
+  ],
+  "errors": []
+}

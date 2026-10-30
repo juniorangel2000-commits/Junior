@@ -1,0 +1,694 @@
+{
+  "method": "Recompensas recalculadas a partir de partidas simuladas; conta além da janela de apoio inicial. Não altera os combates nem representa uma taxa de vitória humana.",
+  "results": [
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank5/summary.json",
+      "build": "assault",
+      "pet": false,
+      "rare": false,
+      "permanentRank": 5,
+      "result": {
+        "id": "analysis-0",
+        "dungeon": "abandoned-central-square",
+        "outcome": "victory",
+        "kills": 1506,
+        "elapsed": 900,
+        "level": 87,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 32,
+        "xp": 1266,
+        "progressXP": 600,
+        "levelXP": 516,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank5/summary.json",
+      "build": "assault",
+      "pet": false,
+      "rare": false,
+      "permanentRank": 5,
+      "result": {
+        "id": "analysis-1",
+        "dungeon": "abandoned-central-square",
+        "outcome": "victory",
+        "kills": 6232,
+        "elapsed": 900,
+        "level": 279,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 60,
+        "xp": 2418,
+        "progressXP": 600,
+        "levelXP": 1668,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank5/summary.json",
+      "build": "control",
+      "pet": false,
+      "rare": false,
+      "permanentRank": 5,
+      "result": {
+        "id": "analysis-2",
+        "dungeon": "abandoned-central-square",
+        "outcome": "defeat",
+        "kills": 1166,
+        "elapsed": 385,
+        "level": 58,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 14,
+        "xp": 598,
+        "progressXP": 256,
+        "levelXP": 342,
+        "victoryXP": 0,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 3,
+          "cloth": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank5/summary.json",
+      "build": "control",
+      "pet": false,
+      "rare": false,
+      "permanentRank": 5,
+      "result": {
+        "id": "analysis-3",
+        "dungeon": "abandoned-central-square",
+        "outcome": "victory",
+        "kills": 5447,
+        "elapsed": 900,
+        "level": 245,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 56,
+        "xp": 2214,
+        "progressXP": 600,
+        "levelXP": 1464,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank5/summary.json",
+      "build": "assault",
+      "pet": false,
+      "rare": false,
+      "permanentRank": 5,
+      "result": {
+        "id": "analysis-4",
+        "dungeon": "mall-parking",
+        "outcome": "victory",
+        "kills": 2800,
+        "elapsed": 1850,
+        "level": 98,
+        "round": 50,
+        "completedRounds": 50
+      },
+      "reward": {
+        "applied": true,
+        "coins": 49,
+        "xp": 2732,
+        "progressXP": 2000,
+        "levelXP": 582,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 50,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank5/summary.json",
+      "build": "assault",
+      "pet": false,
+      "rare": false,
+      "permanentRank": 5,
+      "result": {
+        "id": "analysis-5",
+        "dungeon": "mall-parking",
+        "outcome": "victory",
+        "kills": 2800,
+        "elapsed": 2160,
+        "level": 99,
+        "round": 50,
+        "completedRounds": 50
+      },
+      "reward": {
+        "applied": true,
+        "coins": 49,
+        "xp": 2738,
+        "progressXP": 2000,
+        "levelXP": 588,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 50,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank5/summary.json",
+      "build": "control",
+      "pet": false,
+      "rare": false,
+      "permanentRank": 5,
+      "result": {
+        "id": "analysis-6",
+        "dungeon": "mall-parking",
+        "outcome": "victory",
+        "kills": 2800,
+        "elapsed": 2246,
+        "level": 100,
+        "round": 50,
+        "completedRounds": 50
+      },
+      "reward": {
+        "applied": true,
+        "coins": 49,
+        "xp": 2744,
+        "progressXP": 2000,
+        "levelXP": 594,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 50,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank5/summary.json",
+      "build": "control",
+      "pet": false,
+      "rare": false,
+      "permanentRank": 5,
+      "result": {
+        "id": "analysis-7",
+        "dungeon": "mall-parking",
+        "outcome": "victory",
+        "kills": 2800,
+        "elapsed": 2300,
+        "level": 102,
+        "round": 50,
+        "completedRounds": 50
+      },
+      "reward": {
+        "applied": true,
+        "coins": 50,
+        "xp": 2756,
+        "progressXP": 2000,
+        "levelXP": 606,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 50,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank5/summary.json",
+      "build": "control",
+      "pet": true,
+      "rare": false,
+      "permanentRank": 5,
+      "result": {
+        "id": "analysis-8",
+        "dungeon": "abandoned-central-square",
+        "outcome": "defeat",
+        "kills": 881,
+        "elapsed": 320,
+        "level": 49,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 12,
+        "xp": 501,
+        "progressXP": 213,
+        "levelXP": 288,
+        "victoryXP": 0,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 2,
+          "cloth": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank5/summary.json",
+      "build": "control",
+      "pet": true,
+      "rare": false,
+      "permanentRank": 5,
+      "result": {
+        "id": "analysis-9",
+        "dungeon": "mall-parking",
+        "outcome": "victory",
+        "kills": 2800,
+        "elapsed": 2155,
+        "level": 100,
+        "round": 50,
+        "completedRounds": 50
+      },
+      "reward": {
+        "applied": true,
+        "coins": 49,
+        "xp": 2744,
+        "progressXP": 2000,
+        "levelXP": 594,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 50,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank5/summary.json",
+      "build": "control",
+      "pet": "dog",
+      "rare": true,
+      "permanentRank": 5,
+      "result": {
+        "id": "analysis-10",
+        "dungeon": "abandoned-central-square",
+        "outcome": "defeat",
+        "kills": 899,
+        "elapsed": 323,
+        "level": 50,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 12,
+        "xp": 509,
+        "progressXP": 215,
+        "levelXP": 294,
+        "victoryXP": 0,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 2,
+          "cloth": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank5/summary.json",
+      "build": "control",
+      "pet": "cat",
+      "rare": false,
+      "permanentRank": 5,
+      "result": {
+        "id": "analysis-11",
+        "dungeon": "abandoned-central-square",
+        "outcome": "defeat",
+        "kills": 998,
+        "elapsed": 381,
+        "level": 56,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 14,
+        "xp": 584,
+        "progressXP": 254,
+        "levelXP": 330,
+        "victoryXP": 0,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 3,
+          "cloth": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank5/summary.json",
+      "build": "control",
+      "pet": "cat",
+      "rare": true,
+      "permanentRank": 5,
+      "result": {
+        "id": "analysis-12",
+        "dungeon": "abandoned-central-square",
+        "outcome": "victory",
+        "kills": 5158,
+        "elapsed": 900,
+        "level": 244,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 56,
+        "xp": 2208,
+        "progressXP": 600,
+        "levelXP": 1458,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank10/summary.json",
+      "build": "assault",
+      "pet": "dog",
+      "rare": false,
+      "permanentRank": 10,
+      "result": {
+        "id": "analysis-13",
+        "dungeon": "abandoned-central-square",
+        "outcome": "victory",
+        "kills": 6307,
+        "elapsed": 900,
+        "level": 278,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 60,
+        "xp": 2412,
+        "progressXP": 600,
+        "levelXP": 1662,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank10/summary.json",
+      "build": "control",
+      "pet": "dog",
+      "rare": false,
+      "permanentRank": 10,
+      "result": {
+        "id": "analysis-14",
+        "dungeon": "abandoned-central-square",
+        "outcome": "victory",
+        "kills": 3705,
+        "elapsed": 900,
+        "level": 147,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 41,
+        "xp": 1626,
+        "progressXP": 600,
+        "levelXP": 876,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank10/summary.json",
+      "build": "assault",
+      "pet": "dog",
+      "rare": true,
+      "permanentRank": 10,
+      "result": {
+        "id": "analysis-15",
+        "dungeon": "abandoned-central-square",
+        "outcome": "victory",
+        "kills": 6307,
+        "elapsed": 900,
+        "level": 278,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 60,
+        "xp": 2412,
+        "progressXP": 600,
+        "levelXP": 1662,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank10/summary.json",
+      "build": "control",
+      "pet": "dog",
+      "rare": true,
+      "permanentRank": 10,
+      "result": {
+        "id": "analysis-16",
+        "dungeon": "abandoned-central-square",
+        "outcome": "victory",
+        "kills": 5806,
+        "elapsed": 900,
+        "level": 240,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 55,
+        "xp": 2184,
+        "progressXP": 600,
+        "levelXP": 1434,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank10/summary.json",
+      "build": "assault",
+      "pet": "cat",
+      "rare": false,
+      "permanentRank": 10,
+      "result": {
+        "id": "analysis-17",
+        "dungeon": "abandoned-central-square",
+        "outcome": "victory",
+        "kills": 4280,
+        "elapsed": 900,
+        "level": 191,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 48,
+        "xp": 1890,
+        "progressXP": 600,
+        "levelXP": 1140,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank10/summary.json",
+      "build": "control",
+      "pet": "cat",
+      "rare": false,
+      "permanentRank": 10,
+      "result": {
+        "id": "analysis-18",
+        "dungeon": "abandoned-central-square",
+        "outcome": "victory",
+        "kills": 5984,
+        "elapsed": 900,
+        "level": 259,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 58,
+        "xp": 2298,
+        "progressXP": 600,
+        "levelXP": 1548,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank10/summary.json",
+      "build": "assault",
+      "pet": "cat",
+      "rare": true,
+      "permanentRank": 10,
+      "result": {
+        "id": "analysis-19",
+        "dungeon": "abandoned-central-square",
+        "outcome": "victory",
+        "kills": 6277,
+        "elapsed": 900,
+        "level": 289,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 60,
+        "xp": 2478,
+        "progressXP": 600,
+        "levelXP": 1728,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    },
+    {
+      "source": "/workspace/preview18-qa/simulacao-rank10/summary.json",
+      "build": "control",
+      "pet": "cat",
+      "rare": true,
+      "permanentRank": 10,
+      "result": {
+        "id": "analysis-20",
+        "dungeon": "abandoned-central-square",
+        "outcome": "victory",
+        "kills": 6480,
+        "elapsed": 900,
+        "level": 287,
+        "round": 1,
+        "completedRounds": 0
+      },
+      "reward": {
+        "applied": true,
+        "coins": 60,
+        "xp": 2466,
+        "progressXP": 600,
+        "levelXP": 1716,
+        "victoryXP": 150,
+        "learningXP": 0,
+        "completedRounds": 0,
+        "materials": {
+          "scrap": 3,
+          "cloth": 2,
+          "metalPart": 1
+        },
+        "waiting": false
+      }
+    }
+  ]
+}

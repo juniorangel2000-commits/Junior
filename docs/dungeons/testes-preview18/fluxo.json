@@ -1,0 +1,237 @@
+{
+  "checks": [
+    {
+      "name": "Viagem chuvosa leva ao menu com duas opções",
+      "passed": true,
+      "details": {
+        "duration": 10.864
+      }
+    },
+    {
+      "name": "Menu continua legível em viewport estreito",
+      "passed": true,
+      "details": 680
+    },
+    {
+      "name": "Nova expedição começa limpa · 0",
+      "passed": true,
+      "details": {
+        "id": "run-7ff57fa5-88d9-44b4-8982-624566a78d8d",
+        "level": 1,
+        "xp": 0,
+        "phase": "fighting",
+        "weapons": [
+          "sword"
+        ],
+        "permanent": 0,
+        "expected": 0
+      }
+    },
+    {
+      "name": "Pausa atua na partida nova · 0",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Recompensas salvas uma única vez · victory",
+      "passed": true,
+      "details": {
+        "xp": 924,
+        "coins": 24,
+        "settled": true,
+        "stored": 1,
+        "wallet": 924
+      }
+    },
+    {
+      "name": "Tela de recompensas mostra ganhos e retorno ao menu",
+      "passed": true,
+      "details": {
+        "xp": 924,
+        "coins": 24,
+        "settled": true,
+        "stored": 1,
+        "wallet": 924
+      }
+    },
+    {
+      "name": "Recibo cabe em tela estreita · 0",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Retorno fica no menu, limpa o mapa e mantém os controles únicos · 0",
+      "passed": true,
+      "details": {
+        "mode": "menu",
+        "run": false,
+        "children": 0,
+        "active": true,
+        "outside": false,
+        "snapshot": false,
+        "listeners": 1
+      }
+    },
+    {
+      "name": "Menu cabe em tela estreita · 0",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Nova expedição começa limpa · 1",
+      "passed": true,
+      "details": {
+        "id": "run-df1e4485-29b5-4190-92ce-6ad599198be1",
+        "level": 1,
+        "xp": 0,
+        "phase": "fighting",
+        "weapons": [
+          "sword"
+        ],
+        "permanent": 1,
+        "expected": 1,
+        "pet": "pet-run-7ff57fa5-88d9-44b4-8982-624566a78d8d",
+        "selected": "pet-run-7ff57fa5-88d9-44b4-8982-624566a78d8d"
+      }
+    },
+    {
+      "name": "Pausa atua na partida nova · 1",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Falha de gravação mantém recibo e impede sair sem salvar",
+      "passed": true,
+      "details": {
+        "settled": false,
+        "mode": "run",
+        "xp": 774,
+        "menu": false,
+        "pending": "1.134"
+      }
+    },
+    {
+      "name": "Recompensas salvas uma única vez · defeat",
+      "passed": true,
+      "details": {
+        "xp": 1134,
+        "coins": 18,
+        "settled": true,
+        "stored": 1,
+        "wallet": 1908
+      }
+    },
+    {
+      "name": "Tela de recompensas mostra ganhos e retorno ao menu",
+      "passed": true,
+      "details": {
+        "xp": 1134,
+        "coins": 18,
+        "settled": true,
+        "stored": 1,
+        "wallet": 1908
+      }
+    },
+    {
+      "name": "Recibo cabe em tela estreita · 1",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Retorno fica no menu, limpa o mapa e mantém os controles únicos · 1",
+      "passed": true,
+      "details": {
+        "mode": "menu",
+        "run": false,
+        "children": 0,
+        "active": true,
+        "outside": false,
+        "snapshot": false,
+        "listeners": 1
+      }
+    },
+    {
+      "name": "Menu cabe em tela estreita · 1",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Nova expedição começa limpa · 2",
+      "passed": true,
+      "details": {
+        "id": "run-9c2b5237-0232-4398-acc2-61a2fd24178f",
+        "level": 1,
+        "xp": 0,
+        "phase": "fighting",
+        "weapons": [
+          "sword"
+        ],
+        "permanent": 1,
+        "expected": 1,
+        "pet": "pet-run-7ff57fa5-88d9-44b4-8982-624566a78d8d",
+        "selected": "pet-run-7ff57fa5-88d9-44b4-8982-624566a78d8d"
+      }
+    },
+    {
+      "name": "Pausa atua na partida nova · 2",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Recompensas salvas uma única vez · abandoned",
+      "passed": true,
+      "details": {
+        "xp": 374,
+        "coins": 0,
+        "settled": true,
+        "stored": 1,
+        "wallet": 2282
+      }
+    },
+    {
+      "name": "Tela de recompensas mostra ganhos e retorno ao menu",
+      "passed": true,
+      "details": {
+        "xp": 374,
+        "coins": 0,
+        "settled": true,
+        "stored": 1,
+        "wallet": 2282
+      }
+    },
+    {
+      "name": "Recibo cabe em tela estreita · 2",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Retorno fica no menu, limpa o mapa e mantém os controles únicos · 2",
+      "passed": true,
+      "details": {
+        "mode": "menu",
+        "run": false,
+        "children": 0,
+        "active": true,
+        "outside": false,
+        "snapshot": false,
+        "listeners": 1
+      }
+    },
+    {
+      "name": "Menu cabe em tela estreita · 2",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Sair do menu volta ao mundo normal por escolha do jogador",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "Sem erros JavaScript ou requisições falhas",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

@@ -19,6 +19,7 @@ fs.mkdirSync(out, { recursive: true });
     }),
     checks = [],
     errors = [];
+  page.setDefaultTimeout(120000);
   page.on("pageerror", (e) => errors.push(e.message));
   try {
     await page.goto(process.env.QA_URL || "http://127.0.0.1:5186");

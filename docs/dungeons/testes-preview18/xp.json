@@ -1,0 +1,69 @@
+{
+  "checks": [
+    {
+      "name": "HUD mostra custos crescentes com melhorias e pet ativos",
+      "passed": true,
+      "details": [
+        {
+          "level": 10,
+          "cost": 51,
+          "label": "NÍVEL 10 0 / 51 XP"
+        },
+        {
+          "level": 30,
+          "cost": 103,
+          "label": "NÍVEL 30 0 / 103 XP"
+        },
+        {
+          "level": 50,
+          "cost": 123,
+          "label": "NÍVEL 50 0 / 123 XP"
+        },
+        {
+          "level": 100,
+          "cost": 173,
+          "label": "NÍVEL 100 0 / 173 XP"
+        }
+      ]
+    },
+    {
+      "name": "Próximo nível cobra o custo novo e mantém XP excedente",
+      "passed": true,
+      "details": {
+        "rows": [
+          {
+            "level": 10,
+            "cost": 51,
+            "label": "NÍVEL 10 0 / 51 XP"
+          },
+          {
+            "level": 30,
+            "cost": 103,
+            "label": "NÍVEL 30 0 / 103 XP"
+          },
+          {
+            "level": 50,
+            "cost": 123,
+            "label": "NÍVEL 50 0 / 123 XP"
+          },
+          {
+            "level": 100,
+            "cost": 173,
+            "label": "NÍVEL 100 0 / 173 XP"
+          }
+        ],
+        "level": 101,
+        "cost": 174,
+        "xp": 2.1999999999999886,
+        "label": "NÍVEL 101 2 / 174 XP",
+        "pet": "dog",
+        "strength": 5
+      }
+    },
+    {
+      "name": "Sem erros JavaScript",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

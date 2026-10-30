@@ -1,0 +1,6 @@
+{
+  "checks": [],
+  "errors": [
+    "page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#new-game') to be visible\u001b[22m\n\n    at /workspace/AfterRain-preview8/scripts/qa-xp-curve.cjs:25:16"
+  ]
+}
