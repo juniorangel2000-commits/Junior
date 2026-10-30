@@ -20,6 +20,7 @@ fs.mkdirSync(out, { recursive: true });
     }),
     checks = [],
     errors = [];
+  page.setDefaultTimeout(120000);
   page.on("pageerror", (e) => errors.push(e.message));
   try {
     await page.goto(process.env.QA_URL || "http://127.0.0.1:5186");
@@ -63,14 +64,14 @@ fs.mkdirSync(out, { recursive: true });
       openingUI.result(run, reward, true);
       return {
         xp: reward.xp,
-        survival: reward.survivalXP,
+        survival: reward.progressXP,
         learning: reward.learningXP,
       };
     });
-    assert.deepEqual(result, { xp: 100, survival: 30, learning: 50 });
+    assert.deepEqual(result, { xp: 100, survival: 80, learning: 20 });
     assert.match(
       await page.locator(".dungeon-menu").innerText(),
-      /50 XP de apoio/,
+      /20 XP de apoio/,
     );
     checks.push("Resultado explica os 100 XP e o apoio à primeira derrota");
     await page.screenshot({ path: out + "/primeira-derrota.png" });
@@ -118,6 +119,50 @@ fs.mkdirSync(out, { recursive: true });
     );
     checks.push("Orientações de ataque e sobrevivência cabem em 390px");
     await page.screenshot({ path: out + "/primeira-melhoria.png" });
+    const waveReward = await page.evaluate(async () => {
+      const { DungeonRun } = await import("/src/dungeons/run.ts");
+      const { createNewSave } = await import("/src/systems/save.ts");
+      const { applyDungeonResult } =
+        await import("/src/dungeons/progression.ts");
+      const save = createNewSave({
+        name: "Teste",
+        skin: "#d9a276",
+        hairStyle: "curto",
+        hairColor: "#754323",
+        outfit: "#638a9d",
+      });
+      save.dungeons = openingProgress;
+      const run = new DungeonRun(
+        "wave-receipt",
+        "mall-parking",
+        openingProgress,
+      );
+      Object.assign(run.state, {
+        phase: "victory",
+        round: 50,
+        level: 100,
+        kills: 500,
+        elapsed: 2100,
+        waveRemaining: 0,
+      });
+      const reward = applyDungeonResult(save, run.result());
+      openingUI.result(run, reward, true);
+      return reward;
+    });
+    assert.equal(waveReward.xp, 2744);
+    const receipt = await page.locator(".dungeon-menu.compact").innerText();
+    assert.match(receipt, /2000 XP por rodadas concluídas/);
+    assert.match(receipt, /594 XP pelo nível alcançado/);
+    assert.match(receipt, /150 XP pela vitória/);
+    assert.ok(
+      await page
+        .locator(".dungeon-menu.compact")
+        .evaluate((el) => el.scrollWidth <= el.clientWidth + 1),
+    );
+    checks.push(
+      "Resultado de rodadas explica rodada, nível e vitória em tela estreita",
+    );
+    await page.screenshot({ path: out + "/recompensa-rodadas.png" });
     assert.deepEqual(errors, []);
     checks.push("Sem erros JavaScript");
   } catch (e) {

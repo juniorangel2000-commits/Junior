@@ -95,164 +95,212 @@ fs.mkdirSync(out, { recursive: true });
       window.d = game.scene.getScene("Dungeons");
       game.loop.sleep();
     });
-    for (const outcome of ["victory", "defeat", "abandoned"]) {
-      if (outcome !== "victory") {
-        await page.evaluate(() => {
-          game.scene.getScene("AcessoCidade").enterDungeons();
-          game.loop.wake();
-        });
-        await page.waitForSelector('[data-start="abandoned-central-square"]');
-        await page.locator('[data-start="abandoned-central-square"]').click();
-        await page.evaluate(() => {
-          window.d = game.scene.getScene("Dungeons");
-          game.loop.sleep();
-        });
-      }
-      const before = await page.evaluate(() => ({
-        xp: d.state.dungeons.xp,
-        coins: d.state.villageEconomy.coins,
-        scrap: d.state.inventory.scrap,
-        cloth: d.state.inventory.cloth,
-        metal: d.state.inventory.metalPart,
-        pets: d.state.dungeons.pets.length,
-      }));
-      await page.evaluate((outcome) => {
-        const s = d.run.state;
-        s.kills = 500;
-        s.foundPet = "cat";
-        s.foundPetRare = false;
-        s.pickups = [];
-        s.enemies = [];
-        s.elapsed = outcome === "victory" ? 899.99 : 300;
-        s.eventClock = s.elapsed;
-        s.spawnClock = s.elapsed;
-        s.timedBossCount = 5;
-        s.player.invulnerable = 0;
-        s.buffs = {};
-        s.phase = "fighting";
-        window.testResultId = s.id;
-        if (outcome === "defeat") {
-          s.player.hp = 1;
-          s.enemies = [
-            {
-              id: 999999,
-              x: s.player.x,
-              y: s.player.y,
-              hp: 1000,
-              maxHp: 1000,
-              speed: 1,
-              damage: 100,
-              special: false,
-              kind: "walker",
-              streak: 0,
-              lastHit: 0,
-            },
-          ];
+    for (const dungeon of ["abandoned-central-square", "mall-parking"])
+      for (const outcome of ["victory", "defeat", "abandoned"]) {
+        if (outcome !== "victory" || dungeon === "mall-parking") {
+          await page.evaluate(() => {
+            game.scene.getScene("AcessoCidade").enterDungeons();
+            game.loop.wake();
+          });
+          await page.waitForSelector('[data-start="abandoned-central-square"]');
+          await page.locator(`[data-start="${dungeon}"]`).click();
+          await page.evaluate(() => {
+            window.d = game.scene.getScene("Dungeons");
+            game.loop.sleep();
+          });
         }
-        d.ui.resume();
-        d.lastPhase = "";
-        if (outcome !== "abandoned") {
-          d.run.step(1 / 30);
-          d.update(950000, 0);
-        } else d.ui.update(d.run);
-      }, outcome);
-      if (outcome === "abandoned") {
-        await page.locator("[data-pause]").click();
-        await page
-          .getByRole("button", { name: "Abandonar e voltar ao acesso" })
-          .click();
-        await page.getByRole("button", { name: "Confirmar abandono" }).click();
-      }
-      const ended = await page.evaluate(() => ({
-        phase: d.run.state.phase,
-        settled: d.settled,
-        reward: d.reward,
-      }));
-      check(
-        outcome + ": resultado salvo antes de sair",
-        ended.phase === outcome && ended.settled,
-        ended,
-      );
-      await page
-        .getByRole("button", { name: "Voltar ao ponto de acesso" })
-        .click();
-      await page.evaluate(() => game.loop.wake());
-      await page.waitForFunction(
-        () =>
-          game.scene.isActive("AcessoCidade") &&
-          document.querySelector("#ui")?.dataset.area === "cityForest",
-      );
-      const returned = await page.evaluate(async () => {
-        const f = game.scene.getScene("AcessoCidade");
-        game.loop.sleep();
-        const { loadSave } = await import("/src/systems/save.ts");
-        const stored = loadSave();
-        const pack = (s) =>
-          s && {
-            xp: s.dungeons.xp,
-            coins: s.villageEconomy.coins,
-            scrap: s.inventory.scrap,
-            cloth: s.inventory.cloth,
-            metal: s.inventory.metalPart,
-            pets: s.dungeons.pets.length,
-            run: !!s.dungeonRun,
-            area: s.activeArea,
-            resultCount: s.dungeons.recentResults.filter(
-              (id) => id === window.testResultId,
-            ).length,
-          };
-        return {
-          hudCoins: document.querySelector("#hud-coins")?.textContent,
-          normalMap: !game.scene.isActive("Dungeons"),
-          x: f.player.x,
-          y: f.player.y,
-          state: pack(f.state),
-          stored: pack(stored),
-        };
-      });
-      check(
-        outcome + ": volta à floresta no ponto da estrada",
-        returned.normalMap &&
-          returned.x === 720 &&
-          returned.y === 80 &&
-          returned.state.area === "cityForest" &&
-          !returned.state.run,
-        returned,
-      );
-      check(
-        outcome + ": HUD do mapa normal exibe o saldo salvo",
-        returned.hudCoins === `${returned.state.coins} C`,
-        returned.hudCoins,
-      );
-      const a = returned.state,
-        r = ended.reward;
-      check(
-        outcome + ": XP, moedas, materiais e pet chegam ao mapa normal",
-        a.xp - before.xp === r.xp &&
-          a.coins - before.coins === r.coins &&
-          a.scrap - before.scrap === (r.materials?.scrap ?? 0) &&
-          a.cloth - before.cloth === (r.materials?.cloth ?? 0) &&
-          a.metal - before.metal === (r.materials?.metalPart ?? 0) &&
-          a.pets - before.pets === 1 &&
-          a.resultCount === 1,
-        { before, reward: r, after: a },
-      );
-      check(
-        outcome + ": recompensas persistem no save reaberto",
-        JSON.stringify(a) === JSON.stringify(returned.stored),
-        returned.stored,
-      );
-      if (outcome === "abandoned")
-        check(
-          "Abandono preserva XP e pet, sem moedas nem materiais",
-          r.xp === 500 &&
-            r.coins === 0 &&
-            !Object.keys(r.materials ?? {}).length,
-          r,
+        const before = await page.evaluate(() => ({
+          xp: d.state.dungeons.xp,
+          coins: d.state.villageEconomy.coins,
+          scrap: d.state.inventory.scrap,
+          cloth: d.state.inventory.cloth,
+          metal: d.state.inventory.metalPart,
+          pets: d.state.dungeons.pets.length,
+        }));
+        await page.evaluate(
+          ({ outcome, dungeon }) => {
+            const s = d.run.state;
+            s.kills = 500;
+            s.level =
+              outcome === "victory"
+                ? dungeon === "mall-parking"
+                  ? 100
+                  : 200
+                : 50;
+            s.round =
+              dungeon === "mall-parking"
+                ? outcome === "victory"
+                  ? 50
+                  : 25
+                : 1;
+            if (dungeon === "mall-parking") {
+              s.waveRemaining = outcome === "victory" ? 0 : 1;
+              s.bossRound = 50;
+            }
+            s.foundPet = "cat";
+            s.foundPetRare = false;
+            s.pickups = [];
+            s.enemies = [];
+            s.elapsed = outcome === "victory" ? 899.99 : 300;
+            s.eventClock = s.elapsed;
+            s.spawnClock = s.elapsed;
+            s.timedBossCount = 5;
+            s.player.invulnerable = 0;
+            s.buffs = {};
+            s.phase = "fighting";
+            window.testResultId = s.id;
+            if (outcome === "defeat") {
+              s.player.hp = 1;
+              s.enemies = [
+                {
+                  id: 999999,
+                  x: s.player.x,
+                  y: s.player.y,
+                  hp: 1000,
+                  maxHp: 1000,
+                  speed: 1,
+                  damage: 100,
+                  special: false,
+                  kind: "walker",
+                  streak: 0,
+                  lastHit: 0,
+                },
+              ];
+            }
+            d.ui.resume();
+            d.lastPhase = "";
+            if (outcome !== "abandoned") {
+              d.run.step(1 / 30);
+              d.update(950000, 0);
+            } else d.ui.update(d.run);
+          },
+          { outcome, dungeon },
         );
-      await render();
-      await page.screenshot({ path: out + "/retorno-" + outcome + ".png" });
-    }
+        if (outcome === "abandoned") {
+          await page.locator("[data-pause]").click();
+          await page
+            .getByRole("button", { name: "Abandonar e voltar ao acesso" })
+            .click();
+          await page
+            .getByRole("button", { name: "Confirmar abandono" })
+            .click();
+        }
+        const ended = await page.evaluate(() => ({
+          phase: d.run.state.phase,
+          settled: d.settled,
+          reward: d.reward,
+        }));
+        check(
+          dungeon + " · " + outcome + ": resultado salvo antes de sair",
+          ended.phase === outcome && ended.settled,
+          ended,
+        );
+        const expectedProgress =
+          dungeon === "mall-parking"
+            ? (outcome === "victory" ? 50 : 24) * 40
+            : outcome === "victory"
+              ? 600
+              : 200;
+        const expectedLevel =
+          ((outcome === "victory"
+            ? dungeon === "mall-parking"
+              ? 100
+              : 200
+            : 50) -
+            1) *
+          6;
+        check(
+          dungeon + " · " + outcome + ": progresso e nível determinam XP",
+          ended.reward.progressXP === expectedProgress &&
+            ended.reward.levelXP === expectedLevel &&
+            ended.reward.xp ===
+              expectedProgress +
+                expectedLevel +
+                (outcome === "victory" ? 150 : 0),
+          ended.reward,
+        );
+        await page
+          .getByRole("button", { name: "Voltar ao ponto de acesso" })
+          .click();
+        await page.evaluate(() => game.loop.wake());
+        await page.waitForFunction(
+          () =>
+            game.scene.isActive("AcessoCidade") &&
+            document.querySelector("#ui")?.dataset.area === "cityForest",
+        );
+        const returned = await page.evaluate(async () => {
+          const f = game.scene.getScene("AcessoCidade");
+          game.loop.sleep();
+          const { loadSave } = await import("/src/systems/save.ts");
+          const stored = loadSave();
+          const pack = (s) =>
+            s && {
+              xp: s.dungeons.xp,
+              coins: s.villageEconomy.coins,
+              scrap: s.inventory.scrap,
+              cloth: s.inventory.cloth,
+              metal: s.inventory.metalPart,
+              pets: s.dungeons.pets.length,
+              run: !!s.dungeonRun,
+              area: s.activeArea,
+              resultCount: s.dungeons.recentResults.filter(
+                (id) => id === window.testResultId,
+              ).length,
+            };
+          return {
+            hudCoins: document.querySelector("#hud-coins")?.textContent,
+            normalMap: !game.scene.isActive("Dungeons"),
+            x: f.player.x,
+            y: f.player.y,
+            state: pack(f.state),
+            stored: pack(stored),
+          };
+        });
+        check(
+          outcome + ": volta à floresta no ponto da estrada",
+          returned.normalMap &&
+            returned.x === 720 &&
+            returned.y === 80 &&
+            returned.state.area === "cityForest" &&
+            !returned.state.run,
+          returned,
+        );
+        check(
+          outcome + ": HUD do mapa normal exibe o saldo salvo",
+          returned.hudCoins === `${returned.state.coins} C`,
+          returned.hudCoins,
+        );
+        const a = returned.state,
+          r = ended.reward;
+        check(
+          outcome + ": XP, moedas, materiais e pet chegam ao mapa normal",
+          a.xp - before.xp === r.xp &&
+            a.coins - before.coins === r.coins &&
+            a.scrap - before.scrap === (r.materials?.scrap ?? 0) &&
+            a.cloth - before.cloth === (r.materials?.cloth ?? 0) &&
+            a.metal - before.metal === (r.materials?.metalPart ?? 0) &&
+            a.pets - before.pets === 1 &&
+            a.resultCount === 1,
+          { before, reward: r, after: a },
+        );
+        check(
+          outcome + ": recompensas persistem no save reaberto",
+          JSON.stringify(a) === JSON.stringify(returned.stored),
+          returned.stored,
+        );
+        if (outcome === "abandoned")
+          check(
+            "Abandono preserva XP e pet, sem moedas nem materiais",
+            r.xp === (r.progressXP ?? 0) + (r.levelXP ?? 0) &&
+              r.coins === 0 &&
+              !Object.keys(r.materials ?? {}).length,
+            r,
+          );
+        await render();
+        await page.screenshot({
+          path: out + "/retorno-" + dungeon + "-" + outcome + ".png",
+        });
+      }
     check(
       "Sem erros JavaScript ou requisições falhas",
       errors.length === 0,

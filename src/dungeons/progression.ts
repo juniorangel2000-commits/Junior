@@ -4,7 +4,7 @@ import { ITEM_IDS } from "../data/items";
 import type { ItemId } from "../types";
 import type { PetSpecies, DungeonId } from "./config";
 import type { SaveData } from "../types";
-import { DUNGEON_BALANCE } from "./config";
+import { DUNGEON_BALANCE, DUNGEONS } from "./config";
 export const CHARACTER_ATTRIBUTES = [
   "strength",
   "resistance",
@@ -152,24 +152,45 @@ export interface RunResult {
   outcome: "victory" | "defeat" | "abandoned";
   kills: number;
   elapsed: number;
+  level?: number;
+  round?: number;
+  completedRounds?: number;
   petId?: string;
   foundPet?: PetSpecies;
   foundPetRare?: boolean;
+}
+export interface DungeonReward {
+  applied: boolean;
+  coins: number;
+  xp: number;
+  progressXP?: number;
+  levelXP?: number;
+  victoryXP?: number;
+  learningXP?: number;
+  completedRounds?: number;
+  materials?: Partial<Record<ItemId, number>>;
+  waiting?: boolean;
 }
 /** Apply a completed run once; temporary levels/builds never enter SaveData. */
 export function applyDungeonResult(
   save: SaveData,
   result: RunResult,
-): {
-  applied: boolean;
-  coins: number;
-  xp: number;
-  survivalXP?: number;
-  learningXP?: number;
-  materials?: Partial<Record<ItemId, number>>;
-  waiting?: boolean;
-} {
+): DungeonReward {
   if (
+    (result.level !== undefined &&
+      (!Number.isSafeInteger(result.level) ||
+        result.level < 1 ||
+        result.level > 1e9)) ||
+    (result.round !== undefined &&
+      (!Number.isSafeInteger(result.round) ||
+        result.round < 1 ||
+        result.round > 50)) ||
+    (result.completedRounds !== undefined &&
+      (!Number.isSafeInteger(result.completedRounds) ||
+        result.completedRounds < 0 ||
+        result.completedRounds > 50 ||
+        (result.round !== undefined &&
+          result.completedRounds > result.round))) ||
     !/^[\w-]{1,90}$/.test(result.id) ||
     !Number.isSafeInteger(result.kills) ||
     result.kills < 0 ||
@@ -184,20 +205,28 @@ export function applyDungeonResult(
   const p = (save.dungeons ??= createDungeonProgress());
   if (p.recentResults.includes(result.id))
     return { applied: false, coins: 0, xp: 0 };
-  const b = DUNGEON_BALANCE.reward,
-    killXP = Math.floor(
-      result.kills * b.permanentXPPerKill +
-        (result.outcome === "victory" ? b.permanentXPOnWin : 0),
-    );
-  // Kills gate survival rewards: waiting or immediately abandoning cannot farm them.
-  const survivalXP =
-    result.outcome === "abandoned"
-      ? 0
-      : Math.min(
-          b.maxSurvivalXP,
-          result.kills * 2,
-          Math.floor(result.elapsed / 60) * b.survivalXPPerMinute,
-        );
+  const b = DUNGEON_BALANCE.reward;
+  const timed = DUNGEONS[result.dungeon].mode === "timed";
+  const seconds = Math.min(result.elapsed, 900);
+  const completedRounds = timed
+    ? 0
+    : (result.completedRounds ??
+      (result.outcome === "victory"
+        ? 50
+        : Math.max(0, (result.round ?? 1) - 1)));
+  const active = result.kills > 0;
+  const levelProgress = active
+    ? Math.min((result.level ?? 1) - 1, result.kills * 2)
+    : 0;
+  const progressXP = !active
+    ? 0
+    : Math.floor(
+        timed ? (seconds / 60) * b.xpPerMinute : completedRounds * b.xpPerRound,
+      );
+  const levelXP = levelProgress * b.xpPerLevel;
+  const victoryXP =
+    active && result.outcome === "victory" ? b.permanentXPOnWin : 0;
+  const baseXP = progressXP + levelXP + victoryXP;
   // Reconstruct earned character XP from wallet + purchases, so spending cannot
   // reset the learning window. Existing saves need no extra counters or migration.
   const careerXP =
@@ -208,27 +237,34 @@ export function applyDungeonResult(
     }, 0);
   const learningXP =
     result.outcome !== "abandoned" &&
-    result.elapsed >= 120 &&
+    (timed ? seconds >= 120 : completedRounds >= 2) &&
     result.kills >= 20
       ? Math.max(
           0,
           Math.min(
-            b.learningMinimumXP - killXP - survivalXP,
-            b.learningCareerLimit - careerXP - killXP - survivalXP,
+            b.learningMinimumXP - baseXP,
+            b.learningCareerLimit - careerXP - baseXP,
           ),
         )
       : 0;
-  const xp = killXP + survivalXP + learningXP;
+  const xp = baseXP + learningXP;
   const coins =
-    result.outcome === "abandoned"
+    result.outcome === "abandoned" || !active
       ? 0
       : Math.min(
           b.maxCoins,
           Math.floor(
-            result.kills * b.coinsPerKill +
-              (result.elapsed / 60) * b.coinsPerMinute,
+            (timed
+              ? (seconds / 60) * b.coinsPerMinute
+              : completedRounds * b.coinsPerRound) +
+              levelProgress * b.coinsPerLevel +
+              (result.outcome === "victory" ? b.coinsOnWin : 0),
           ),
         );
+  // Normalize a completed challenge to 15 progress points in either mode.
+  const materialProgress = !active
+    ? 0
+    : (timed ? seconds / 60 : completedRounds * 0.3) + levelProgress / 20;
   p.xp = Math.min(999999999, p.xp + xp);
   const pet = p.pets.find((p) => p.id === result.petId);
   if (pet) pet.xp = Math.min(999999999, pet.xp + xp);
@@ -263,9 +299,12 @@ export function applyDungeonResult(
   const materials: Partial<Record<ItemId, number>> = {};
   if (result.outcome !== "abandoned")
     for (const rule of DUNGEON_BALANCE.materialRewards) {
-      const quantity = rule.killsPerUnit
-        ? Math.min(rule.max, Math.floor(result.kills / rule.killsPerUnit))
-        : result.outcome === "victory"
+      const quantity = rule.progressPerUnit
+        ? Math.min(
+            rule.max,
+            Math.floor(materialProgress / rule.progressPerUnit),
+          )
+        : active && result.outcome === "victory"
           ? rule.max
           : 0;
       if (quantity) {
@@ -284,8 +323,11 @@ export function applyDungeonResult(
     applied: true,
     coins,
     xp,
-    survivalXP,
+    progressXP,
+    levelXP,
+    victoryXP,
     learningXP,
+    completedRounds,
     materials,
     waiting: Object.keys(p.pendingMaterials ?? {}).length > 0,
   };

@@ -1,3 +1,4 @@
+import type { DungeonReward } from "../dungeons/progression";
 import { getVisualSettings } from "../visual-settings";
 import { dungeonLightingState } from "../dungeons/lighting";
 import { petSpritePose, setupPetArt } from "../dungeons/pet-sprites";
@@ -79,14 +80,7 @@ export class DungeonScene extends Phaser.Scene {
   private petImage?: Phaser.GameObjects.Image;
   private rescueImage?: Phaser.GameObjects.Image;
   private pickups?: Phaser.GameObjects.Graphics;
-  private reward: {
-    coins: number;
-    xp: number;
-    survivalXP?: number;
-    learningXP?: number;
-    materials?: Partial<Record<ItemId, number>>;
-    waiting?: boolean;
-  } = { coins: 0, xp: 0 };
+  private reward: Omit<DungeonReward, "applied"> = { coins: 0, xp: 0 };
   constructor() {
     super("Dungeons");
   }
@@ -760,14 +754,7 @@ export class DungeonScene extends Phaser.Scene {
       result = applyDungeonResult(this.state, this.run.result());
     delete this.state.dungeonRun;
     if (saveGame(this.state)) {
-      this.reward = {
-        coins: result.coins,
-        xp: result.xp,
-        survivalXP: result.survivalXP,
-        learningXP: result.learningXP,
-        materials: result.materials,
-        waiting: result.waiting,
-      };
+      this.reward = result;
       this.settled = true;
       this.ui.result(this.run, this.reward, true);
     } else {

@@ -1535,6 +1535,18 @@ export class DungeonRun {
       outcome: s.phase as RunResult["outcome"],
       kills: s.kills,
       elapsed: s.elapsed,
+      level: s.level,
+      round: s.round,
+      completedRounds:
+        DUNGEONS[s.dungeon].mode === "waves"
+          ? Math.min(
+              50,
+              Math.max(0, s.round - 1) +
+                (s.waveRemaining === 0 && !s.enemies.some((e) => e.hp > 0)
+                  ? 1
+                  : 0),
+            )
+          : 0,
       petId: s.pet?.id,
       foundPet: s.foundPet,
       foundPetRare: s.foundPetRare,

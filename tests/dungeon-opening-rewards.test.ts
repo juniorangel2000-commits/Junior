@@ -35,8 +35,8 @@ it("lets two qualifying early defeats fund a first chosen improvement", () => {
   for (const id of ["first", "second"]) {
     const reward = applyDungeonResult(save, attempt(id));
     expect(reward.xp).toBe(100);
-    expect(reward.survivalXP).toBe(30);
-    expect(reward.learningXP).toBe(50);
+    expect(reward.progressXP).toBe(80);
+    expect(reward.learningXP).toBe(20);
   }
   expect(buyPermanentAttribute(save.dungeons!, "strength")).toBe(true);
   expect(save.dungeons!.attributes.strength).toBe(1);
@@ -49,7 +49,7 @@ it("does not reset learning support when XP is spent, and stops it after the ini
   save.dungeons!.attributes.strength = 1; // 150 XP already spent
   save.dungeons!.xp = 430; // career total 580
   const reward = applyDungeonResult(save, attempt("near-limit"));
-  expect(reward.xp).toBe(50); // ordinary rewards pass 600; no more support
+  expect(reward.xp).toBe(80); // ordinary rewards pass 600; no more support
   expect(reward.learningXP).toBe(0);
   expect(buyPermanentAttribute(save.dungeons!, "vitality")).toBe(true);
   expect(applyDungeonResult(save, attempt("after-spending")).learningXP).toBe(
@@ -59,10 +59,10 @@ it("does not reset learning support when XP is spent, and stops it after the ini
 
 it("caps the last learning award at the remaining budget", () => {
   const save = makeSave();
-  save.dungeons!.xp = 530;
+  save.dungeons!.xp = 500;
   const reward = applyDungeonResult(save, attempt("last-support"));
   expect(reward.learningXP).toBe(20);
-  expect(reward.xp).toBe(70);
+  expect(reward.xp).toBe(100);
   expect(save.dungeons!.xp).toBe(600);
 });
 
@@ -77,20 +77,20 @@ it("does not grant support for idling, short attempts or abandonment", () => {
     expect(reward.learningXP).toBe(0);
     if (result.kills === 0) expect(reward.xp).toBe(0);
     if (result.outcome === "abandoned") {
-      expect(reward.survivalXP).toBe(0);
-      expect(reward.xp).toBe(20);
+      expect(reward.progressXP).toBe(600);
+      expect(reward.xp).toBe(600);
       expect(reward.coins).toBe(0);
     }
   }
 });
 
-it("caps survival XP by time and activity and applies each result once", () => {
+it("caps time rewards at the challenge duration and applies each result once", () => {
   const save = makeSave();
   save.dungeons!.xp = 1000;
   const result = attempt("long", "defeat", 100, 900);
   const reward = applyDungeonResult(save, result);
-  expect(reward.survivalXP).toBe(90);
-  expect(reward.xp).toBe(190);
+  expect(reward.progressXP).toBe(600);
+  expect(reward.xp).toBe(600);
   const before = structuredClone(save);
   expect(applyDungeonResult(save, result).applied).toBe(false);
   expect(save).toEqual(before);

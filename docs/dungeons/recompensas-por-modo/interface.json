@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "checks": [
+    "Resultado explica os 100 XP e o apoio à primeira derrota",
+    "Duas tentativas permitem comprar uma melhoria escolhida, sem equipar uma rota automaticamente",
+    "Orientações de ataque e sobrevivência cabem em 390px",
+    "Resultado de rodadas explica rodada, nível e vitória em tela estreita",
+    "Sem erros JavaScript"
+  ],
+  "errors": []
+}
