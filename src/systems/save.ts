@@ -1,3 +1,4 @@
+import {validFishingHaul} from '../data/fishing-catches';
 import {activeSaveKey,saveKeys} from './save-slot-keys';
 import {validPetShelter} from './pet-shelter';
 import {validDungeonProgress} from '../dungeons/progression';
@@ -61,6 +62,7 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.damiaoIntroduction!==undefined&&typeof value.damiaoIntroduction!=='boolean')return false;
   if (value.petShelter !== undefined && !validPetShelter(value.petShelter)) return false;
   if (value.forestMapEdits !== undefined && (!validateMapEdits(value.forestMapEdits)||value.forestMapEdits.area!=='forest')) return false;
+  if(value.lastFishingHaul!==undefined&&!validFishingHaul(value.lastFishingHaul))return false;
   if(value.fishingLakeMapEdits!==undefined&&(!validateMapEdits(value.fishingLakeMapEdits)||value.fishingLakeMapEdits.area!=='fishingLake'))return false;
   if(value.fishingLakePosition!==undefined&&(!isRecord(value.fishingLakePosition)||!finite(value.fishingLakePosition.x,32,3040)||!finite(value.fishingLakePosition.y,32,2272)||(value.fishingLakePosition.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(value.fishingLakePosition.direction as CharacterDirection))))return false;
   if(value.cityForestMapEdits!==undefined&&(!validateMapEdits(value.cityForestMapEdits)||value.cityForestMapEdits.area!=='cityForest'))return false;
@@ -216,6 +218,10 @@ export function validateSave(value: unknown): value is SaveData {
 
 /** Converte em memória; a leitura nunca modifica nem substitui o slot original. */
 export function migrateSave(value: unknown): SaveData | null {
+  // Cosmetic catch details must never make an otherwise valid game unloadable.
+  if(isRecord(value)&&value.lastFishingHaul!==undefined&&!validFishingHaul(value.lastFishingHaul)){
+    value={...value};delete (value as Record<string,unknown>).lastFishingHaul;
+  }
   // Version 4 adds independent city/dungeon layouts and four bench views.
   // Older applications must treat these saves as future data rather than overwrite them.
   if (isRecord(value) && (value.version === 2 || value.version === 3)) value = { ...value, version: SAVE_VERSION };

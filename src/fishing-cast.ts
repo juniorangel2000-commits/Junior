@@ -1,5 +1,5 @@
 import {preloadFishingCharacters,createFishingCharacter,frameFishingCamera} from './fishing-character';
-import {FISHING_POSE_CELL,fishingDirection,fishingFacing} from './data/fishing-character-poses';
+import {FISHING_POSE_CELL,FISHING_CAST_TIMING,fishingDirection,fishingFacing} from './data/fishing-character-poses';
 import type Phaser from 'phaser';
 import type {Player} from './player';
 export const FISHING_ART={rod:'assets/visual/fishing/bamboo-rod-directions.png',worm:'assets/visual/fishing/basic-worm.png'} as const;
@@ -23,6 +23,7 @@ export function createFishingCast(scene:Phaser.Scene,player:Player,water:(x:numb
  let pose:typeof poses[keyof typeof poses]=poses.north;
  let restoreCamera:(()=>void)|undefined;
  let character:ReturnType<typeof createFishingCharacter>;
+ let launch:{x:number;y:number}|undefined;
  let rod:Phaser.GameObjects.Image|undefined,worm:Phaser.GameObjects.Image|undefined,graphics:Phaser.GameObjects.Graphics|undefined,resolve:((ok:boolean)=>void)|undefined,started=0,destroyed=false,landed=false;
  const target=fishingCastTarget(player,water,clear);
  const update=()=>{
@@ -33,7 +34,8 @@ export function createFishingCast(scene:Phaser.Scene,player:Player,water:(x:numb
   rod?.setPosition(hand.x,hand.y).setRotation(angle-pose.angle+swing).setDepth(player.y+(north?-1:2));
   const rotation=angle-pose.angle+swing,dx=(pose.tip[0]-pose.hand[0])*60/640,dy=(pose.tip[1]-pose.hand[1])*60/640;
   const tip=character?.update(elapsed)??{x:hand.x+dx*Math.cos(rotation)-dy*Math.sin(rotation),y:hand.y+dx*Math.sin(rotation)+dy*Math.cos(rotation)};
-  const t=Math.max(0,Math.min(1,(elapsed-.35)/.6)),bob={x:tip.x+(target.x-tip.x)*t,y:tip.y+(target.y-tip.y)*t-Math.sin(Math.PI*t)*48};
+  if(elapsed>=FISHING_CAST_TIMING.launch&&!launch)launch=character?.tipAt(FISHING_CAST_TIMING.launch)??tip;
+  const origin=launch??tip,t=Math.max(0,Math.min(1,(elapsed-FISHING_CAST_TIMING.launch)/(FISHING_CAST_TIMING.land-FISHING_CAST_TIMING.launch))),bob={x:origin.x+(target.x-origin.x)*t,y:origin.y+(target.y-origin.y)*t-Math.sin(Math.PI*t)*48};
   graphics.clear();graphics.setDepth(north?player.y-1:Math.max(player.y,target.y)+3);
   if(!net){graphics.lineStyle(.75,0xf0e1b5,.8);graphics.beginPath();graphics.moveTo(tip.x,tip.y);graphics.lineTo((tip.x+bob.x)/2,(tip.y+bob.y)/2+Math.sin(Math.PI*t)*8);graphics.lineTo(bob.x,bob.y);graphics.strokePath();}
   if(t<1){worm?.setVisible(!net).setPosition(bob.x,bob.y).setRotation(t*5);if(net){graphics.lineStyle(1,0xc8b785,.8);for(let i=-2;i<=2;i++){graphics.lineBetween(bob.x-9,bob.y+i*3,bob.x+9,bob.y+i*3);graphics.lineBetween(bob.x+i*4,bob.y-6,bob.x+i*4,bob.y+6);}}}

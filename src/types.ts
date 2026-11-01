@@ -56,6 +56,8 @@ export interface VillageEconomy {
   stock?:Partial<Record<ItemId,StockRecord>>;
 }
 export interface SaveData {
+  /** Most recent persisted catch; absent in older games. Fish stock remains compatible with village recipes/trades. */
+  lastFishingHaul?:import('./data/fishing-catches').FishingHaul;
   petShelter?: import('./systems/pet-shelter').PetShelterData;
   dungeons?:import('./dungeons/progression').DungeonProgress;
   dungeonRun?:import('./dungeons/run').DungeonSnapshot;

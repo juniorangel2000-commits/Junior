@@ -26,6 +26,8 @@ const BASE = 'assets/visual/';
 const ICON_IDS = new Set(['wood', 'stone', 'branch', 'log', 'plank', 'scrap', 'hatchet', 'pickaxe', 'handsaw', 'fiber', 'cord', 'flakedStone', 'handle', 'blade', 'board', 'hammer', 'water', 'workbench', 'seeds']);
 export function itemIconUrl(id: string, tier=0): string | undefined {
   if(id==='fishingRod')return 'assets/visual/fishing/fishing-rod.png';
+  if(id==='fish')return 'assets/visual/fishing/catches/fish.svg#tilapia';
+  if(id==='rareFish')return 'assets/visual/fishing/catches/fish.svg#dourado';
   if(id==='bait')return 'assets/visual/fishing/basic-worm.png';
   const natural=ecologyIcon(id);if(natural)return natural;
   const dedicated=economyIcon(id);if(dedicated)return dedicated;

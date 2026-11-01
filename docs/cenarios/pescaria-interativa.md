@@ -63,3 +63,19 @@ A altura visível e o contato dos pés foram calibrados para a respectiva pose o
 Nas telas largas, o painel aparece à direita e a câmera enquadra o personagem na área livre sem mudar o zoom. Fechar a pesca restaura o enquadramento anterior; telas estreitas mantêm o painel central.
 
 Validação: suíte completa com 1.450 testes aprovada antes do ajuste final de enquadramento; 67 testes focados aprovados após esse ajuste (incluindo 19 novos testes de poses/câmera). Build de produção aprovado. QA no navegador cobre as oito combinações, arremesso/espera/cancelamento dos dois personagens, rede, saída de cenário e ausência de duplicação. Duas pescarias completas gravadas confirmam captura persistida, uma isca por tentativa, restauração do personagem e do zoom/enquadramento. Continua sem nova publicação Windows.
+
+## Espécies, sucata e resultado da pescaria
+
+A pescaria sorteia lambari, tilápia, carpa e bagre no estoque comum; truta e dourado usam o estoque raro. As espécies têm pesos de sorteio, raridades, comprimentos e pesos próprios. O dourado é menos frequente que a truta. Uma tentativa não rara tem 12% de chance de recolher lixo: lata enferrujada, galho encharcado, bota velha ou corda embolada. Eles rendem sucata, galho, tecido e corda, respectivamente. A bota não concede equipamento nem bônus. A rede entrega duas unidades.
+
+As artes transparentes ficam em `public/assets/visual/fishing/catches/`. O script `scripts/build-fishing-icons.cjs` cria as vistas SVG de cada figura sem alterar os PNGs e limita cada recorte à própria célula para não mostrar partes da figura vizinha. Os ícones da mochila também usam as novas artes. Para manter receitas e comércio compatíveis, os peixes continuam agrupados nos itens `fish` e `rareFish`; a espécie, tamanho e peso da última captura são registrados no campo opcional `lastFishingHaul`. Partidas antigas continuam válidas. Um registro cosmético corrompido é descartado apenas em memória durante a leitura, preservando a partida.
+
+Durante a disputa, a interface exibe somente uma silhueta escura genérica. A espécie, a arte e a raridade são reveladas na pequena tela de resultado, junto com comprimento, peso e confirmação de armazenamento. Escapar mostra o motivo e não entrega itens. A captura é salva antes do resultado; falha de gravação permite tentar novamente sem entregar prêmio duplicado. Uma tecla mantida da disputa não fecha automaticamente essa tela.
+
+A boia tem flutuação suave, parte submersa translúcida, mergulho na mordida, ondulações móveis e linha ligada à antena. A tensão responde ao comando de recolher. Perder foco congela tanto a espera quanto a animação; a preferência por movimento reduzido diminui as oscilações.
+
+## Transição de arremesso e correções de direção
+
+Sul aponta a vara para a frente e para baixo; no norte, a vara permanece atrás do corpo e a ponta final curva para baixo. As poses de preparação e lançamento já criadas para os dois personagens foram integradas antes da espera. A isca parte da ponta da pose de lançamento e segue um arco até a água. Sua origem fica fixa durante o voo, mesmo quando o personagem assume a pose de espera. A linha continua presa à ponta visível da vara e os pés permanecem ancorados. Os atlas de arremesso têm recortes próprios para não cortar as varas horizontais.
+
+Validação: suíte completa com 1.480 testes aprovada; mais dois testes de isolamento dos recortes aprovados na rodada final de 25 testes de capturas; TypeScript e build de produção aprovados. QA no navegador cobre seis espécies, quatro lixos, rede, tela estreita, silhueta anônima, pausa da boia, motivos de fuga, falha de gravação e tentativa posterior, imagens distintas, oito poses, cancelamento e saída de cenário. Uma pescaria real no lago confirma o prêmio salvo, uma isca gasta e restauração do personagem, câmera e zoom. A prévia curta e a sessão completa foram gravadas no jogo. Sem nova publicação Windows.
