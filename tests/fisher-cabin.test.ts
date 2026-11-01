@@ -9,7 +9,7 @@ import {createVillageEconomy} from '../src/data/village-commerce';
 import {createVillageProgress} from '../src/data/village-progress';
 import {MerchantDailyRoutine} from '../src/systems/merchant-routine';
 import {merchantRoomNavigation,createMerchantLayout} from '../src/data/merchant-rooms';
-const save=()=>{const s=createNewSave({name:'Pesca',characterId:'farmer-male',skin:'#e9bc98',hairColor:'#563b2c',outfit:'#457398',hairStyle:'curto'});s.time=480;s.villageEconomy=createVillageEconomy();s.villageEconomy.coins=1000;s.villageProgress=createVillageProgress();return s;};
+const save=()=>{const s=createNewSave({name:'Pesca',characterId:'farmer-male',skin:'#e9bc98',hairColor:'#563b2c',outfit:'#457398',hairStyle:'curto'});s.time=480;s.damiaoIntroduction=true;s.villageEconomy=createVillageEconomy();s.villageEconomy.coins=1000;s.villageProgress=createVillageProgress();return s;};
 describe('fishing cabin and morning visit',()=>{
  it('keeps walls and rails solid but leaves the staircase and porch accessible',()=>{
   for(const [x,y]of[[650,765],[603,825],[530,1010]]){const p=cabinPoint(x,y);expect(cabinSolidPoint(p.x,p.y)).toBe(false);expect(cabinFloorPoint(p.x,p.y)).toBe(true);expect(lakeWaterDistance(p.x/32,p.y/32)).toBeGreaterThan(0);}

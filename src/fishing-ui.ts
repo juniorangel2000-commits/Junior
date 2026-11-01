@@ -4,7 +4,7 @@ import {createVillageProgress} from './data/village-progress';
 /** A cast spends bait before the timed catch, including when cancelled/reloaded. */
 export async function fishAtBank(save:SaveData,net:boolean,commit:()=>void):Promise<string>{
  const p=save.villageProgress??=createVillageProgress(),inventory=new Inventory(save.inventory);
- if(!p.fishingSkill)return 'Aprenda a pescar com Damião na vila.';
+ if(!p.fishingSkill)return 'Aprenda a pescar com Damião na cabana do lago ou na vila.';
  if(!inventory.has(net?'net':'fishingRod')||!inventory.spend({bait:1}))return 'Você precisa do equipamento e de uma isca.';
  save.inventory={...inventory.data};p.vigor=Math.max(0,p.vigor-3);commit();
  return new Promise(resolve=>{

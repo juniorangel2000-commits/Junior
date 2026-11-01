@@ -58,6 +58,7 @@ export function validateProfile(value: unknown): value is CharacterProfile {
 
 export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
+  if(value.damiaoIntroduction!==undefined&&typeof value.damiaoIntroduction!=='boolean')return false;
   if (value.petShelter !== undefined && !validPetShelter(value.petShelter)) return false;
   if (value.forestMapEdits !== undefined && (!validateMapEdits(value.forestMapEdits)||value.forestMapEdits.area!=='forest')) return false;
   if(value.fishingLakeMapEdits!==undefined&&(!validateMapEdits(value.fishingLakeMapEdits)||value.fishingLakeMapEdits.area!=='fishingLake'))return false;
@@ -298,7 +299,7 @@ export function createNewSave(profile: CharacterProfile): SaveData {
     player: { x: 25 * TILE + TILE / 2, y: 18 * TILE + TILE / 2 },
     inventory: { ...INITIAL_INVENTORY },
     crops: [], buildings: [], depletedResources: [], resourceProgress: [], equippedTool: 'hand', progress: emptyProgress(),
-    economy6:newEconomyState(),day: 1, time: 8 * 60, metLia: false, villageEconomy: createVillageEconomy(), villageProgress:createVillageProgress(),
+    damiaoIntroduction:false,economy6:newEconomyState(),day: 1, time: 8 * 60, metLia: false, villageEconomy: createVillageEconomy(), villageProgress:createVillageProgress(),
   };
 }
 

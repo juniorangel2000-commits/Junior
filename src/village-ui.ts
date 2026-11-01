@@ -12,6 +12,7 @@ import './village-ui.css';
 
 export interface VillageInteractionCallbacks {
   locationLabel?:string;
+  getDialogueAction?(npcId:string):{label:string;complete:()=>{ok:boolean;message:string}}|undefined;
   returnLabel?:string;
   canTrade?(npcId:VillageNPC['id']):boolean;
   isInside?(npcId:VillageNPC['id']):boolean;
@@ -222,9 +223,11 @@ export class VillageInteractionUI {
     progress.textContent = `${Math.min(this.dialogueIndex + 1, npc.dialogue.length)} de ${npc.dialogue.length}`;
     const next = document.createElement('button'); next.type = 'button'; next.className = 'village-primary'; next.dataset.villageDialogueNext = '';
     const remaining = this.dialogueIndex < npc.dialogue.length - 1;
-    next.textContent = remaining ? 'Continuar conversa →' : available&&trading ? 'Ver a loja →' : 'Até mais';
+    const completion=this.callbacks.getDialogueAction?.(npc.id);
+    next.textContent = remaining ? 'Continuar conversa →' : completion?completion.label:available&&trading ? 'Ver a loja →' : 'Até mais';
     next.addEventListener('click', () => {
       if (remaining) { this.dialogueIndex++; this.renderDialogue(); this.body.querySelector<HTMLButtonElement>('[data-village-dialogue-next]')?.focus(); }
+      else if(completion){const result=completion.complete();if(result.ok)this.render();this.report(result.message,result.ok);}
       else if (available&&trading) this.selectTab('buy');
       else this.close();
     });

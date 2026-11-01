@@ -1,4 +1,4 @@
-import {fisherAtLake} from '../data/fisher-schedule';
+import {damiaoAtLake} from '../data/fisher-schedule';
 import {sampleWaterDepth} from '../swimming';
 import {setupTreeWind} from '../tree-wind';
 import {preloadVillagePeople} from '../economy-art';
@@ -211,7 +211,7 @@ export class VillageScene extends Phaser.Scene {
   }
  }
  private spaceActors(id:RoutineId,area:RoutineArea,room:RoutineId):{x:number;y:number}[]{
-  const actors=[...this.routines].filter(([other,r])=>other!==id&&!(other==='damiao'&&fisherAtLake(this.state.time))&&r.state.area===area&&(area==='village'||r.roomOwner===room)).map(([,r])=>({x:r.state.x,y:r.state.y}));
+  const actors=[...this.routines].filter(([other,r])=>other!==id&&!(other==='damiao'&&damiaoAtLake(this.state))&&r.state.area===area&&(area==='village'||r.roomOwner===room)).map(([,r])=>({x:r.state.x,y:r.state.y}));
   if(this.player&&(area==='shop'?this.roomOwner===room:!this.inShop))actors.push({x:this.player.x,y:this.player.y});return actors;
  }
  private routineEnvironment(id:RoutineId):RoutineEnvironment {
@@ -375,7 +375,7 @@ export class VillageScene extends Phaser.Scene {
   c.centerOn(halfW*2>=w?w/2:Phaser.Math.Clamp(this.player.x,halfW,w-halfW),halfH*2>=h?h/2:Phaser.Math.Clamp(this.player.y,halfH,h-halfH));
  }
  private sameRoom(npc:Villager):boolean {
-  if(npc.data.id==='damiao'&&fisherAtLake(this.state.time))return false;
+  if(npc.data.id==='damiao'&&damiaoAtLake(this.state))return false;
   const routine=this.routines.get(npc.data.id);return !!routine&&(routine.state.area==='village'?!this.inShop:this.roomOwner===routine.roomOwner);
  }
  private closedDoorAt(x:number,y:number):boolean {

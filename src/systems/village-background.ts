@@ -1,4 +1,4 @@
-import {fisherAtLake} from '../data/fisher-schedule';
+import {damiaoAtLake} from '../data/fisher-schedule';
 import type { SaveData } from '../types';
 import { MerchantDailyRoutine, MERCHANT_DAILY_PLAN, merchantPeriod, merchantMayEnter, type RoutineId, type RoutineArea, type MerchantRoutineState, type RoutineEnvironment } from './merchant-routine';
 import { merchantRoomNavigation, resolveMerchantLayout } from '../data/merchant-rooms';
@@ -47,7 +47,7 @@ class BackgroundVillage {
   private environment(id:RoutineId):RoutineEnvironment{
     const routine=this.routines.get(id)!,current=routine.roomOwner;
     const navigation=(owner=current)=>this.rooms.get(owner)!;
-    const actors=(area:RoutineArea,owner=current)=>[...this.routines].filter(([other,r])=>other!==id&&!(other==='damiao'&&fisherAtLake(this.save.time))&&r.state.area===area&&(area==='village'||r.roomOwner===owner)).map(([,r])=>r.state);
+    const actors=(area:RoutineArea,owner=current)=>[...this.routines].filter(([other,r])=>other!==id&&!(other==='damiao'&&damiaoAtLake(this.save))&&r.state.area===area&&(area==='village'||r.roomOwner===owner)).map(([,r])=>r.state);
     const scenery=(area:RoutineArea,x:number,y:number,owner=current)=>area==='shop'?!navigation(owner).validPosition!(x,y):[[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>villagePointBlocked(x+dx,y+dy));
     return {
       blocked:(area,x,y,owner=current)=>area==='village'?villageBlockedAt(x,y,this.save.villageMapEdits)||actors(area).some(a=>Math.floor(a.x/32)===x&&Math.floor(a.y/32)===y):navigation(owner).isBlocked(x,y)||actors(area,owner).some(a=>actorsOverlap({x:(x+.5)*8,y:(y+.5)*8},a)),

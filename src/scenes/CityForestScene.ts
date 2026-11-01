@@ -1,3 +1,5 @@
+import {villageAccessUnlocked,invitationGateBlocked,VILLAGE_LOCK_MESSAGE} from '../systems/village-introduction';
+import {drawVillageInvitationGate} from '../village-invitation-gate';
 import {sampleWaterDepth} from '../swimming';
 import {paintedWaterPoint} from '../data/terrain-paint';
 import {CITY_LAKE_ENTRY,CITY_LAKE_EXIT,LAKE_CITY_ENTRY} from '../data/fishing-lake';
@@ -51,6 +53,7 @@ export class CityForestScene extends Phaser.Scene{
   this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.lakePassage.reset();this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
   this.world=new CityForestWorld(this,this.state.cityForestMapEdits);
+  drawVillageInvitationGate(this,this.state,'cityForest',this.state.cityForestMapEdits?.points?.exit);
   const p=this.state.cityForestPosition,valid=p&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!this.movementBlockedPoint(p.x+dx,p.y+dy));
   this.player=new Player(this,this.state.profile,valid?p.x:((this.state.cityForestMapEdits?.points?.entry??CITY_FOREST_ENTRY).x+.5)*32,valid?p.y:((this.state.cityForestMapEdits?.points?.entry??CITY_FOREST_ENTRY).y+.5)*32,'city-forest-player');
   this.player.facing=directionVector(valid?p.direction??'up':'up');this.player.update(0,this.movementBlockedTile,this.movementBlockedPoint,false,this.swimmingPoint);
@@ -93,11 +96,11 @@ export class CityForestScene extends Phaser.Scene{
  }
  private nearCity():boolean{return Math.hypot(this.player.x/32-CITY_ACCESS.x,this.player.y/32-CITY_ACCESS.y)<3;}
  private updateHUD():void{
-  this.ui.updateHUD({area:'cityForest',swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:null,prompt:this.nearCity()?'Siga pela estrada para viajar à cidade':'Lago a oeste · vila ao sul · cidade ao norte',location:'Floresta de Acesso à Cidade',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
+  this.ui.updateHUD({area:'cityForest',swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:null,prompt:!villageAccessUnlocked(this.state)&&this.player.y>67*32?VILLAGE_LOCK_MESSAGE:this.nearCity()?'Siga pela estrada para viajar à cidade':'Lago a oeste · vila ao sul · cidade ao norte',location:'Floresta de Acesso à Cidade',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
   this.ui.updateCameraZoom(this.zoom,!this.paused);
  }
  private blockedPoint=(x:number,y:number)=>cityForestBlockedPoint(x,y,this.state.cityForestMapEdits);
- private movementBlockedPoint=(x:number,y:number)=>cityForestBlockedPoint(x,y,this.state.cityForestMapEdits,true);
+ private movementBlockedPoint=(x:number,y:number)=>cityForestBlockedPoint(x,y,this.state.cityForestMapEdits,true)||invitationGateBlocked(this.state,'cityForest',x,y,this.state.cityForestMapEdits?.points?.exit);
  private movementBlockedTile=(x:number,y:number)=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
  private swimmingPoint=(x:number,y:number)=>sampleWaterDepth((px,py)=>paintedWaterPoint(this.state.cityForestMapEdits?.terrain,px,py,(x,y)=>cityForestWater(x/32,y/32)),x,y);
  private key(e:KeyboardEvent):void{
@@ -173,6 +176,7 @@ export class CityForestScene extends Phaser.Scene{
   this.ui.confirmCityTravel(()=>this.enterDungeons());
  }
  private leave(title=false):void{
+  if(!title&&!villageAccessUnlocked(this.state)){this.ui.toast(VILLAGE_LOCK_MESSAGE);return;}
   if(this.leaving)return;this.persist();this.leaving=true;
   if(!title){this.state.activeArea='village';this.state.villagePosition={x:(VILLAGE_NORTH_ARRIVAL.x+.5)*32,y:(VILLAGE_NORTH_ARRIVAL.y+.5)*32,direction:'down'};delete this.state.cityForestPosition;saveGame(this.state);}
   this.cameras.main.fadeOut(SCENE_FADE_MS);this.time.delayedCall(SCENE_FADE_MS,()=>{const state=structuredClone(this.state);this.scene.stop();this.onReturn(state,title);});

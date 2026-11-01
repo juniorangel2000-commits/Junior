@@ -1,3 +1,4 @@
+import {lakeSurfaceMotion,lakeCascadeMotion,lakeImpactMotion,LAKE_CASCADE} from './data/lake-water-motion';
 import {FISHER_CABIN} from './data/fisher-cabin';
 import {lakeFishShadows} from './data/lake-fish';
 import {waterFinishChannel} from './data/water-style';
@@ -10,7 +11,7 @@ import {drawMapTerrainEdits} from './map-editor-terrain';
 import {drawEditorProp} from './editor-prop-art';
 import {setupVillagePropAtlas} from './village-prop-atlas';
 import pierArt from '../public/assets/visual/village/pier/manifest.json';
-import {LAKE_RIDGE,LAKE_SIDE_RIDGES,LAKE_SIDE_CROP,LAKE_PIER,LAKE_BRIDGE,lakeObjects,lakeLowVegetationClear,lakeSandWeight,lakeStairPathBlend,lakeWater,lakeWaterDistance,lakeTrailDistance,lakeTrailHalfWidth,lakeBridge,LAKE_CITY_ENTRY,LAKE_CITY_EXIT,LAKE_PROPERTY_ENTRY,LAKE_PROPERTY_EXIT} from './data/fishing-lake';
+import {LAKE_RIDGE,LAKE_SIDE_RIDGES,LAKE_SIDE_CROP,LAKE_PIER,LAKE_BRIDGE,lakeObjects,lakeLowVegetationClear,lakeSandWeight,lakeStairPathBlend,lakeWater,lakeWaterDistance,lakeTrailDistance,lakeTrailHalfWidth,LAKE_CITY_ENTRY,LAKE_CITY_EXIT,LAKE_PROPERTY_ENTRY,LAKE_PROPERTY_EXIT} from './data/fishing-lake';
 import {drawExitSign} from './exit-signs';
 export function preloadFishingLake(scene:Phaser.Scene):void{
  if(!scene.textures.exists(FISHER_CABIN.texture))scene.load.image(FISHER_CABIN.texture,FISHER_CABIN.file);
@@ -104,13 +105,19 @@ export class FishingLakeWorld {
    fish.fillEllipse(0,0,15*s,5.5*s);fish.fillTriangle(-5*s,0,-12*s,-4*s,-12*s,4*s);fish.fillTriangle(0,0,1*s,-4*s,4*s,0);fish.restore();
   }
   const g=this.waterFX;g.clear();
-  // Sparse ripples keep deep water calm; animated falling streaks follow the drawn cascade.
-  for(let i=0;i<65;i++){
-   const x=(17+(i*17.31)%63)*32,y=(25+(i*9.17)%35)*32;
-   if(lakeWaterDistance(x/32,y/32)>-1.5||lakeBridge(x/32,y/32))continue;
-   const phase=(time*.0002+i*.17)%1;g.lineStyle(1,0xa3d3c9,Math.sin(phase*Math.PI)*.17);g.beginPath();g.arc(x,y,7+phase*14,.2,2.7);g.strokePath();
+  // Transparent flow, highlights and spray preserve every pixel of the approved base art.
+  for(const p of lakeSurfaceMotion(time,this.edits)){
+   g.lineStyle(1,0xb1ddd2,p.alpha);g.beginPath();
+   for(let j=0;j<=6;j++){const x=(j/6-.5)*p.radius*2,y=Math.sin(j/6*Math.PI)*2+x*p.lean;j?g.lineTo(p.x+x,p.y+y):g.moveTo(p.x+x,p.y+y);}g.strokePath();
+   g.lineStyle(1,0x123e46,p.alpha*.45);g.lineBetween(p.x-p.radius*.6,p.y+4,p.x+p.radius*.25,p.y+4.5);
   }
-  for(let i=0;i<18;i++){const x=(48.2+(i%5)*.27)*32,y=(5.8+((time*.009+i*1.7)%12))*32;g.lineStyle(1.2,0xe8ffff,.35);g.lineBetween(x,y,x,y+8);}
+  for(const p of lakeCascadeMotion(time)){g.lineStyle(p.width,0xe5ffff,p.alpha);g.lineBetween(p.x,p.y,p.x+Math.sin(p.y*.04)*1.5,Math.min(LAKE_CASCADE.bottom,p.y+p.length));}
+  for(let i=0;i<7;i++){
+   const phase=((time*.00055+i/7)%1),x=LAKE_CASCADE.x+Math.sin(i*2.4)*9,y=LAKE_CASCADE.bottom+14+phase*14;
+   g.lineStyle(1,0xd5f8ef,(1-phase)*.28);g.strokeEllipse(x,y,22+phase*115,5+phase*26);
+  }
+  for(const p of lakeImpactMotion(time)){g.fillStyle(0xeafff8,p.alpha);g.fillEllipse(p.x,p.y,p.radius*2,p.radius);}
+
  }
  destroy():void{this.objects.forEach(o=>o.destroy());}
 }

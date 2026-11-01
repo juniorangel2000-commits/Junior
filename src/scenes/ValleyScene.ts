@@ -1,3 +1,5 @@
+import {villageAccessUnlocked,invitationGateBlocked,VILLAGE_LOCK_MESSAGE} from '../systems/village-introduction';
+import {drawVillageInvitationGate} from '../village-invitation-gate';
 import {drawCraftedBench} from '../woodwork-art';
 import {prepareSceneAssets} from '../scene-asset-preparation';
 import {getAmbientBirds} from '../ambient-birds';
@@ -387,6 +389,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private enterVillage(saved?:SaveData):void {
+    if(saved?.activeArea!=='cityForest'&&!villageAccessUnlocked(saved??this.state)){this.ui.toast(VILLAGE_LOCK_MESSAGE);return;}
     if(this.forestActive||this.villageActive)return;
     if(!saved&&this.state.animalEscort){this.ui.toast('Deixe o animal na propriedade ou solte a corda com G antes de visitar a vila.');return;}
     this.world.well?.cancel();this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
@@ -733,6 +736,7 @@ export class ValleyScene extends Phaser.Scene {
     this.world = createWorld(this, data.depletedResources, data.buildings, data.mapEdits, 'world', (x,y)=>this.farming.isPrepared(x,y), this.state.petShelter);
     this.petShelterView = this.state.petShelter ? drawPetShelter(this, this.state.petShelter) : undefined;
     setupAnimalArt(this);
+    drawVillageInvitationGate(this,this.state,'property');
     // A warm refuge in the opening only; the facade and gameplay lighting stay intact.
     const house=this.children.list.find(object=>(object as Phaser.GameObjects.Image).texture?.key==='asset-house') as Phaser.GameObjects.Image|undefined;
     this.titleLights=(house?drawHouseWindowGlow(this,house):undefined)?.setVisible(false)??this.add.graphics().setVisible(false);
@@ -866,8 +870,8 @@ export class ValleyScene extends Phaser.Scene {
     if(!this.state.animalEscort)return;Object.assign(this.state.inventory,this.inventory.data);
     if(releaseAnimalEscort(this.state)){Object.assign(this.inventory.data,this.state.inventory);this.animals?.store();this.animals?.destroy();this.animals=new AnimalPopulation(this,this.state,'property',this.animalBlocked,PLAYER_SPEED,()=>treeTiles(this.world.resources));this.updateHUD();this.persist();this.ui.toast('Corda solta e guardada.');}
   }
-  private movementBlocked=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(x,y):this.world.isSolid(x,y)||this.building.isBlocked(x,y);
-  private movementBlockedPoint=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):this.world.isSolidPoint(x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE));
+  private movementBlocked=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(x,y):invitationGateBlocked(this.state,'property',(x+.5)*TILE,(y+.5)*TILE)||this.world.isSolid(x,y)||this.building.isBlocked(x,y);
+  private movementBlockedPoint=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):invitationGateBlocked(this.state,'property',x,y)||this.world.isSolidPoint(x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE));
   private swimmingPoint=(x:number,y:number):number=>this.inHome||bridgeAtPoint(x,y)?0:sampleWaterDepth((px,py)=>!this.building.at(Math.floor(px/TILE),Math.floor(py/TILE),'floor')&&this.world.isWaterGroundPoint(px,py),x,y);
 
   private blockedPoint = (x: number, y: number): boolean => {
@@ -1440,6 +1444,7 @@ export class ValleyScene extends Phaser.Scene {
     const nearPassage=[this.forestGate(),PROPERTY_VILLAGE_EXIT].some(point=>Math.abs(this.player.x-(point.x+.5)*TILE)<64&&Math.abs(this.player.y-(point.y+.5)*TILE)<TILE);
     if(this.tool==='hand'&&!this.player.isSwimming){const a=this.animals?.nearest(this.player);if(this.state.animalEscort)prompt='Conduzindo animal · G para soltar no cercado';else if(a)prompt='Prender animal com corda · E';}
     if(nearPassage&&!this.player.isSwimming)prompt=this.state.animalEscort?'Conclua a condução ou solte a corda antes de sair':'Siga a seta e ultrapasse a placa para continuar';
+    if(!villageAccessUnlocked(this.state)&&Math.abs(this.player.x-93.5*TILE)<96&&Math.abs(this.player.y-52.5*TILE)<64)prompt=VILLAGE_LOCK_MESSAGE;
     if(this.tool==='hand'&&this.state.petShelter&&Math.hypot(this.player.x-this.state.petShelter.x,this.player.y-this.state.petShelter.y)<90)prompt='Casinha dos companheiros · E';
     this.ui.updateHUD({toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100, coins:this.state.villageEconomy?.coins??0,farmingProgress: this.farming.progress, wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, swimming:this.player.isSwimming, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
       tool: this.tool, prompt, interactionKey:nearPassage||nearHouse?null:undefined, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),

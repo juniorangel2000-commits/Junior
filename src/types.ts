@@ -88,6 +88,8 @@ export interface SaveData {
   /** Absent in older saves; entering the village starts with zero coins. */
   villageEconomy?: VillageEconomy;
   villageProgress?: VillageProgress;
+  /** false only for new games until Damião gifts the first rod. Missing preserves legacy access. */
+  damiaoIntroduction?: boolean;
   villageInstallations?: VillageInstallation[];
   villageSurvivors?: string[];
   recruitedAnimals?: string[];
