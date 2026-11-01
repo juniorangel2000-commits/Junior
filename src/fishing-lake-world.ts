@@ -1,3 +1,4 @@
+import {lakeBoatMotion,lakeBankBlend} from './data/lake-island';
 import {rockWatermarkPixel,lakeRockWaterContacts,lakeImpactDisturbance} from './data/lake-rock-contacts';
 import {cascadePaintMask} from './cascade-flow';
 import {paintedWaterPoint} from './data/terrain-paint';
@@ -33,6 +34,8 @@ export class FishingLakeWorld {
  readonly trees:Phaser.GameObjects.Image[]=[];
  readonly objects:Phaser.GameObjects.GameObject[];
  private motion:LakeWaterAnimation;
+ private boat?:Phaser.GameObjects.Image;
+ private boatY=0;
  private waterFX:Phaser.GameObjects.Graphics;
  private fishFX:Phaser.GameObjects.Graphics;
  constructor(private scene:Phaser.Scene,private readonly edits?:MapEditData,namespace='fishing-lake'){
@@ -57,9 +60,10 @@ export class FishingLakeWorld {
   scene.add.image(LAKE_RIDGE.x,LAKE_RIDGE.y,'lake-ridge').setOrigin(0).setDisplaySize(LAKE_RIDGE.width,LAKE_RIDGE.height).setDepth(-5).setData('lake-landmark','ridge');
   setupVillagePropAtlas(scene,'lake-pier','village-pier-source',pierArt);
   const p=LAKE_PIER;
-  scene.add.image(p.x,p.y,'lake-pier-source').setOrigin(0).setDisplaySize(p.width,p.height).setDepth(-3).setData('lake-landmark','pier');
-  scene.add.image(p.x,p.y,'lake-pier-source').setOrigin(0).setDisplaySize(p.width,p.height).setCrop(500,480,1210,100).setDepth(47.5*32);
-  scene.add.image(p.x,p.y,'lake-pier-source').setOrigin(0).setDisplaySize(p.width,p.height).setCrop(70,670,480,130).setDepth(49.4*32);
+  this.drawBoat(p);
+  scene.add.image(p.x,p.y,'lake-pier-fixed').setOrigin(0).setDisplaySize(p.width,p.height).setDepth(-3).setData('lake-landmark','pier');
+  scene.add.image(p.x,p.y,'lake-pier-fixed').setOrigin(0).setDisplaySize(p.width,p.height).setCrop(500,480,1210,100).setDepth(47.5*32);
+  scene.add.image(p.x,p.y,'lake-pier-fixed').setOrigin(0).setDisplaySize(p.width,p.height).setCrop(70,670,480,130).setDepth(49.4*32);
   submergedWood(scene,'lake-pier-source','lake-pier-wet-posts',[[92,747,67,52],[296,740,54,49],[474,742,82,58],[507,565,67,48],[772,551,52,44],[992,554,56,45],[1215,554,55,45],[1437,560,65,50],[1652,558,64,49]],p.x,p.y,p.width,p.height,49.5*32,(x,y)=>paintedWaterPoint(edits?.terrain,x,y,(px,py)=>lakeWater(px/32,py/32)));
   this.drawCabin();
   const bridge=LAKE_BRIDGE;this.drawDeck(bridge.x*32,bridge.y*32,bridge.width*32,bridge.height*32);
@@ -74,8 +78,7 @@ export class FishingLakeWorld {
     if(p.kind.startsWith('tallGrass')||['fern','whiteFlowers','bush','mushrooms'].includes(p.kind)){const seed=(p.x*73+p.y*131)%101,factor=(.78+(seed%20)/100)*(p.scale??1);image.setScale(image.scaleX*factor,image.scaleY*factor).setPosition(image.x+(seed%9)-4,image.y+((seed*3)%9)-4).setDepth(image.y);}
     this.editorObjects.push({id:p.id,x:p.x,y:p.y,kind:p.kind,texture:image.texture.key,frame:image.frame.name});if(tree)this.trees.push(image);}
   }
-  scene.add.image(29*32,38*32,'lake-rock-0').setOrigin(.5,1).setDisplaySize(110,68).setDepth(38*32-2);
-  scene.add.image(29*32,38*32-12,'asset-pine-1').setOrigin(.5,256/264).setDisplaySize(90,120).setDepth(38*32);
+  const islandTree=scene.add.image(29*32,38*32,'asset-tree-1').setOrigin(.5,256/264).setDisplaySize(110,145).setDepth(38*32).setData('lake-tree',true).setData('lake-island-tree',true);this.trees.push(islandTree);
   drawExitSign(scene,edits?.points?.exit??LAKE_CITY_EXIT,edits?.points?.entry??LAKE_CITY_ENTRY);
   drawExitSign(scene,LAKE_PROPERTY_EXIT,LAKE_PROPERTY_ENTRY);
   this.motion=new LakeWaterAnimation(scene,edits);
@@ -83,12 +86,25 @@ export class FishingLakeWorld {
   this.waterFX=scene.add.graphics().setDepth(-4).setData('lake-water-animation',true);
   this.objects=scene.children.list.filter(o=>!before.has(o));this.update(0);
  }
+ private drawBoat(p:typeof LAKE_PIER):void {
+  const fixed='lake-pier-fixed',boat='lake-moored-boat';
+  if(!this.scene.textures.exists(fixed)){
+   const source=this.scene.textures.get('lake-pier-source').getSourceImage() as HTMLImageElement,polygon=[[598,595],[644,577],[721,583],[823,616],[922,662],[969,690],[968,731],[944,793],[902,822],[826,814],[745,795],[662,756],[617,714],[594,659]];
+   for(const key of [fixed,boat]){const canvas=document.createElement('canvas');canvas.width=key===fixed?source.width:390;canvas.height=key===fixed?source.height:260;const c=canvas.getContext('2d')!;if(key===boat)c.translate(-590,-570);
+    if(key===fixed)c.drawImage(source,0,0);c.beginPath();polygon.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();
+    if(key===fixed){c.globalCompositeOperation='destination-out';c.fill();}else{c.clip();c.drawImage(source,0,0);}this.scene.textures.addCanvas(key,canvas)!.setFilter(0);
+   }
+  }
+  const source=this.scene.textures.get(fixed).getSourceImage() as HTMLCanvasElement,sx=p.width/source.width,sy=p.height/source.height;
+  this.boatY=p.y+622*sy;this.boat=this.scene.add.image(p.x+635*sx,this.boatY,boat).setOrigin(45/390,52/260).setDisplaySize(390*sx,260*sy).setDepth(50*32).setData('lake-moored-boat',true);
+ }
  private drawCabin():void {
   const p=FISHER_CABIN;this.scene.add.image(p.x,p.y,p.texture).setOrigin(0).setScale(p.scale).setDepth(p.y+750*p.scale).setData('lake-landmark','fisher-cabin');
-  const key=p.texture+'-rails';
+  const key=p.texture+'-rails-refined';
   if(!this.scene.textures.exists(key)){
    const source=this.scene.textures.get(p.texture).getSourceImage() as HTMLImageElement,canvas=document.createElement('canvas');canvas.width=1448;canvas.height=1086;const c=canvas.getContext('2d')!;
-   for(const polygon of [[[135,565],[515,670],[515,835],[135,735]],[[690,735],[830,780],[1320,610],[1350,760],[835,922],[690,870]]]){c.save();c.beginPath();polygon.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.clip();c.drawImage(source,0,0);c.restore();}
+   const rails=[[[183,587],[492,675],[492,710],[183,624]],[[708,742],[836,781],[836,818],[708,779]],[[830,781],[1315,612],[1315,648],[830,817]],[[166,541],[211,541],[211,675],[166,675]],[[265,638],[296,647],[296,720],[265,711]],[[362,666],[393,675],[393,746],[362,737]],[[458,651],[516,651],[516,797],[458,797]],[[689,722],[736,722],[736,843],[689,843]],[[810,750],[860,750],[860,882],[810,882]],[[951,668],[997,668],[997,818],[951,818]],[[1285,570],[1337,570],[1337,729],[1285,729]]];
+   for(const polygon of rails){c.save();c.beginPath();polygon.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.clip();c.drawImage(source,0,0);c.restore();}
    this.scene.textures.addCanvas(key,canvas)!.setFilter(0);
   }
   this.scene.add.image(p.x,p.y,key).setOrigin(0).setScale(p.scale).setDepth(p.y+900*p.scale);
@@ -104,7 +120,7 @@ export class FishingLakeWorld {
    const materials=readTerrainSprites(this.scene);if(!materials)throw Error('Terreno do lago indisponível');
    const canvas=document.createElement('canvas');canvas.width=3072;canvas.height=2304;const c=canvas.getContext('2d')!,p=c.createImageData(3072,2304);
    for(let by=0;by<2304;by+=4)for(let bx=0;bx<3072;bx+=4){
-    const x=(bx+2)/32,y=(by+2)/32,d=lakeWaterDistance(x,y),trail=lakeTrailDistance(x,y),shore=Math.max(0,1-Math.abs(d)/(.78+.18*Math.sin(x*.31+y*.23)+.13*Math.sin(y*.6-x*.19))),grass=.45+.2*Math.sin(x*.2)*Math.cos(y*.19),path=d>=0?Math.max(0,Math.min(1,(lakeTrailHalfWidth(x,y,trail)-trail)/.48)):0;
+    const x=(bx+2)/32,y=(by+2)/32,d=lakeWaterDistance(x,y),trail=lakeTrailDistance(x,y),shore=lakeBankBlend(d,x,y),grass=.45+.2*Math.sin(x*.2)*Math.cos(y*.19),path=d>=0?Math.max(0,Math.min(1,(lakeTrailHalfWidth(x,y,trail)-trail)/.48)):0;
     const sand=lakeSandWeight(x,y),stair=lakeStairPathBlend(x,y);
     for(let dy=0;dy<4;dy++)for(let dx=0;dx<4;dx++){
      const px=bx+dx,py=by+dy,at=(py*3072+px)*4,src=((py%96)*96+px%96)*4,sd=Math.abs(d)<.3?lakeWaterDistance((px+.5)/32,(py+.5)/32):d,coverage=lakeShoreCoverage(sd);
@@ -122,7 +138,7 @@ export class FishingLakeWorld {
   }this.scene.add.image(0,0,key).setOrigin(0).setDepth(-100);
  }
  update(time:number):void {
-  this.motion.update(time);
+  this.motion.update(time);const boat=lakeBoatMotion(time);this.boat?.setY(this.boatY+boat.y).setRotation(boat.rotation);
   const fish=this.fishFX;fish.clear();
   for(const p of lakeFishShadows(time,this.edits)){
    const s=p.size;fish.save();fish.translateCanvas(p.x,p.y);fish.rotateCanvas(p.angle);fish.fillStyle(0x0a3034,p.alpha);

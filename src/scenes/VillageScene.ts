@@ -1,3 +1,5 @@
+import {villagePierAllowsStep,villagePierDeckContains} from '../data/village-pier';
+import {advanceFisherTravel} from '../systems/fisher-travel';
 import {createFishingCast} from '../fishing-cast';
 import {damiaoAtLake} from '../data/fisher-schedule';
 import {sampleWaterDepth} from '../swimming';
@@ -57,7 +59,7 @@ import {emptyQuickbar} from '../systems/quickbar';
 import type {SaveData,Tool} from '../types';
 import type {GameUI} from '../ui';
 import {MerchantGuide,merchantDoor,merchantOutside,merchantCanTrade,type ResidentId,type ShopResident} from '../systems/merchant-visit';
-import {merchantRoomBlocked,merchantRoomFits,resolveMerchantLayout,validMerchantLayout,merchantRoomConnected,MERCHANT_ROOM_ASSETS,MERCHANT_ROOM_ENTRY,MERCHANT_ROOM_OWNER,MERCHANT_ROOM_EXIT,MERCHANT_ROOM_SIZE,merchantRoomNavigation} from '../data/merchant-rooms';
+import {merchantRoomBlocked,merchantRoomFits,resolveMerchantLayout,validMerchantLayout,merchantRoomConnected,MERCHANT_ROOM_ASSETS,MERCHANT_ROOM_ENTRY,MERCHANT_ROOM_EXIT,MERCHANT_ROOM_SIZE,merchantRoomNavigation} from '../data/merchant-rooms';
 import {drawMerchantInterior} from '../merchant-interior';
 import {freeArrival,actorsOverlap} from '../systems/actor-arrival';
 import {DEVELOPMENT_TOOLS} from '../development-tools';
@@ -117,6 +119,7 @@ export class VillageScene extends Phaser.Scene {
  }
 
  create(data:VillageStart):void {
+  gameAudio.setScene('game');
   setupTreeWind(this);
   this.state=structuredClone(data.save);this.state.activeArea='village';delete this.state.homePosition;
   this.state.villageEconomy??=createVillageEconomy();this.ui=data.ui;this.onReturn=data.onReturn;
@@ -236,6 +239,7 @@ export class VillageScene extends Phaser.Scene {
  }
  private readonly idleSeconds=new Map<RoutineId,number>();
  private updateDailyRoutines(seconds:number):void {
+  this.state.villageRoutines=Object.fromEntries([...this.routines].map(([id,r])=>[id,r.state]));advanceFisherTravel(this.state,seconds);
   this.speech=this.conversations.update(seconds,this.state,this.routines,this.roomOwner as RoutineId|undefined,this.guide?.owner as RoutineId|undefined);
   for(const [id,routine] of this.routines){
    if(this.guide?.owner===id){this.idleSeconds.set(id,0);continue;}
@@ -266,7 +270,8 @@ export class VillageScene extends Phaser.Scene {
  private blockedPoint=(x:number,y:number):boolean=>this.closedDoorAt(x,y)||(this.inBlacksmith?smithBlocked(this.smithLayout,x,y):this.merchantRoom?merchantRoomBlocked(this.merchantRoom,x,y,this.merchantLayouts.get(this.merchantRoom)):this.world.isBlockedPoint(x,y))||this.villagers.some(n=>n.sprite.visible&&Math.abs(n.sprite.x-x)<10&&Math.abs(n.sprite.y-y)<6);
  private movementBlockedPoint=(x:number,y:number):boolean=>this.inShop?this.blockedPoint(x,y):this.closedDoorAt(x,y)||this.world.isSolidPoint(x,y)||this.villagers.some(n=>n.sprite.visible&&Math.abs(n.sprite.x-x)<10&&Math.abs(n.sprite.y-y)<6);
  private movementBlocked=(x:number,y:number):boolean=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
- private swimmingPoint=(x:number,y:number):number=>this.inShop?0:sampleWaterDepth(this.world.waterPointAt,x,y);
+ private allowPierStep=(x:number,y:number)=>this.inShop||villagePierAllowsStep(this.player,{x,y},this.world.waterPointAt);
+ private swimmingPoint=(x:number,y:number):number=>this.inShop||villagePierDeckContains(x,y)?0:sampleWaterDepth(this.world.waterPointAt,x,y);
  private nearest():Villager|undefined {
   return this.villagers.filter(n=>n.sprite.visible&&Math.hypot(n.sprite.x-this.player.x,n.sprite.y-this.player.y)<78)
    .sort((a,b)=>Math.hypot(a.sprite.x-this.player.x,a.sprite.y-this.player.y)-Math.hypot(b.sprite.x-this.player.x,b.sprite.y-this.player.y))[0];
@@ -280,11 +285,12 @@ export class VillageScene extends Phaser.Scene {
   routine?.guided(this.state,npc.sprite,false);this.guide=new MerchantGuide(id,npc.frames||6);this.setPaused(false);this.ui.toast(`${npc.data.name}: venha comigo até ${npc.data.role.toLowerCase()}. Vou esperar se você ficar para trás.`);
  }
  private completeGuide(id:ResidentId):void {
-  if(this.guide?.owner!==id)return;const npc=this.villagers.find(n=>n.data.id===id)!;
-  if(id==='bento'){const nav=smithNavigation(this.smithLayout),point=nav.stops.map(p=>({x:p.x*8+4,y:p.y*8+4})).find(p=>smithFits(this.smithLayout,p.x,p.y))??nav.entry;
-   Object.assign(this.bentoRoutine.state,{...point,area:'blacksmith-home',stop:4,wait:60,direction:'down',doorway:false});this.bentoRoutine.setRoom(nav);npc.sprite.setPosition(point.x,point.y).setDepth(point.y);
-  }else{const resident=this.residents.get(id)!;Object.assign(resident,MERCHANT_ROOM_OWNER,{shop:true,direction:'down'});npc.sprite.setPosition(resident.x,resident.y).setDepth(resident.y);}
-  if(dailyMerchant(id)){const routine=this.routines.get(id)!;const free=this.routineEnvironment(id).arrival('shop',npc.sprite);if(free)npc.sprite.setPosition(free.x,free.y);routine.guided(this.state,npc.sprite,true);this.syncRoutine(id,0);}
+  if(this.guide?.owner!==id||!this.guide.waiting)return;const npc=this.villagers.find(n=>n.data.id===id)!;
+  const routine=dailyMerchant(id)?this.routines.get(id):undefined,nav=routine?.homeNavigation;
+  const point=nav?this.routineEnvironment(id as RoutineId).arrival('shop',nav.entry??{x:288,y:335}):null;if(!point||Math.hypot(point.x-(nav!.entry?.x??288),point.y-(nav!.entry?.y??335))>24)return;
+  if(id==='bento'){Object.assign(this.bentoRoutine.state,{...point,area:'blacksmith-home',stop:0,wait:0,direction:'down',doorway:false});this.bentoRoutine.setRoom(nav!);}
+  else Object.assign(this.residents.get(id)!,point,{shop:true,direction:'down'});
+  npc.sprite.setPosition(point.x,point.y).setDepth(point.y);routine?.guided(this.state,point,true);if(dailyMerchant(id))this.syncRoutine(id,0);
   npc.sprite.setFrame(characterFrame('down',0,npc.frames));this.guide=undefined;
  }
  private setMerchantRoom(id?:ResidentId,position?:{x:number;y:number;direction?:import('../character-directions').CharacterDirection}):void {
@@ -494,14 +500,13 @@ export class VillageScene extends Phaser.Scene {
  update(time:number,ms:number):void {
   if(!this.player)return;this.daylight.update(this.state.time,this.inShop);this.world.update(time,this.inShop?undefined:this.player);this.world.updateLighting(this.state.time);
   if(this.paused||this.leaving||this.changingRoom||this.shop?.isOpen||this.ui.isModalOpen()||document.hidden)return;
-  const delta=Math.min(ms/1000,.1),previous={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta,this.movementBlocked,this.movementBlockedPoint,true,this.swimmingPoint);
+  const delta=Math.min(ms/1000,.1),previous={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta,this.movementBlocked,this.movementBlockedPoint,true,this.swimmingPoint,this.allowPierStep);
   if(this.inShop)this.centerInteriorCamera();
   if(!this.merchantRoom&&this.homePassage.update(previous,this.player,this.inBlacksmith?smithDoor(this.smithLayout):BLACKSMITH_DOOR)){this.changeBlacksmithRoom();return;}
   if(this.merchantRoom){if(this.merchantPassage.update(previous,this.player,MERCHANT_ROOM_EXIT)){this.changeMerchantRoom();return;}}
   else if(!this.inShop){const near=VILLAGE_NPCS.find(n=>n.id!=='bento'&&Math.hypot(this.player.x-merchantDoor(n.id).x,this.player.y-merchantDoor(n.id).y)<80);if(near){if(this.merchantPassage.update(previous,this.player,merchantDoor(near.id))){this.changeMerchantRoom(near.id);return;}}else this.merchantPassage.reset();}
   if(!this.inShop&&this.northPassage.update(previous,this.player,VILLAGE_NORTH_GATE,VILLAGE_NORTH_ARRIVAL)){this.enterCityForest();return;}
   if(!this.inShop&&this.exitPassage.update(previous,this.player,this.world.exit(),this.world.entry())){this.leave();return;}
-  if(Math.hypot(this.player.x-previous.x,this.player.y-previous.y)>.1)gameAudio.play('step');
   this.farming.update(delta);Object.assign(this.state,advanceClock(this.state,delta*GAME_MINUTES_PER_SECOND));
   for(const tree of this.world.trees)tree.setAlpha(this.player.y<tree.y&&Math.abs(this.player.x-tree.x)<tree.displayWidth*.4&&this.player.y>tree.y-tree.displayHeight*.85?.42:1);
   this.updateDailyRoutines(delta);
@@ -509,7 +514,7 @@ export class VillageScene extends Phaser.Scene {
    const blocked=(x:number,y:number)=>this.world.isBlocked(x,y)||this.villagers.some(n=>n!==npc&&n.sprite.visible&&Math.floor(n.sprite.x/32)===x&&Math.floor(n.sprite.y/32)===y);
    const step=guide.step(delta,npc.sprite,this.player,blocked);let x=step.x,y=step.y;
    if(actorsOverlap(step,this.player)){x=npc.sprite.x;y=npc.sprite.y;step.phase=0;}
-   if(step.arrived){const side=freeArrival({x:x+26,y},this.world.isBlockedPoint,[this.player,...this.villagers.filter(n=>n!==npc&&n.sprite.visible).map(n=>n.sprite)]);if(side&&Math.hypot(side.x-x,side.y-y)<64){x=side.x;y=side.y;}}
+
    npc.sprite.setPosition(x,y).setDepth(y).setFrame(characterFrame(step.waiting?directionFromVector(this.player.x-x,this.player.y-y):step.direction,npc.frames?step.phase:0,npc.frames));
    if(guide.owner==='bento')Object.assign(this.bentoRoutine.state,{x,y,direction:step.direction});else Object.assign(this.residents.get(guide.owner)!,{x,y,direction:step.direction});
    if(dailyMerchant(guide.owner))Object.assign(this.routines.get(guide.owner)!.state,{x,y,direction:step.direction});

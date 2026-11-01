@@ -1,3 +1,5 @@
+import {gameAudio} from '../audio';
+import {cabinActorDepth} from '../data/fisher-cabin';
 import {createFishingCast} from '../fishing-cast';
 import {craftInField,consumeInField} from '../systems/field-inventory';
 import {LakeFisherVisit} from '../lake-fisher-visit';
@@ -13,7 +15,6 @@ import {fishAtBank} from '../fishing-ui';
 import {preloadPetArt} from "../dungeons/pet-sprites";
 import {installWorldCompanion,getWorldPetController} from "../dungeons/world-pet-controller";
 import {Farming} from '../systems/farming';
-import {gameAudio} from '../audio';
 import {emptyQuickbar} from '../systems/quickbar';
 import Phaser from 'phaser';
 import type {SaveData,Tool,ItemId} from '../types';
@@ -25,7 +26,7 @@ import {advanceClock,GAME_MINUTES_PER_SECOND} from '../systems/clock';
 import {directionFromVector,directionVector} from '../character-directions';
 import {MapExitPassage,SCENE_FADE_MS} from '../systems/map-transition';
 import {loadCameraZoom,saveCameraZoom,stepCameraZoom} from '../camera-zoom';
-import {LAKE_CITY_ENTRY,LAKE_CITY_EXIT,LAKE_PROPERTY_ENTRY,LAKE_PROPERTY_EXIT,CITY_LAKE_ENTRY,PROPERTY_LAKE_ENTRY,lakeBlockedPoint,lakeWater,lakePier,lakeBridge,lakeDeckAllowsStep} from '../data/fishing-lake';
+import {LAKE_CITY_ENTRY,LAKE_CITY_EXIT,LAKE_PROPERTY_ENTRY,LAKE_PROPERTY_EXIT,CITY_LAKE_ENTRY,PROPERTY_LAKE_ENTRY,lakeBlockedPoint,lakeWater,lakePier,lakeBridge,lakeDeckAllowsStep,lakeElevationAllowsStep} from '../data/fishing-lake';
 import {FishingLakeWorld,preloadFishingLake} from '../fishing-lake-world';
 
 interface FishingLakeStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void;fromCity?:boolean}
@@ -51,6 +52,7 @@ export class FishingLakeScene extends Phaser.Scene{
  constructor(){super('Lago');}
  preload():void{preloadFishingLake(this);preloadPetArt(this);preloadDamiaoSprites(this);}
  create(data:FishingLakeStart):void{
+  gameAudio.setScene('game');
   setupTreeWind(this);
   this.state=structuredClone(data.save);this.state.activeArea='fishingLake';delete this.state.homePosition;delete this.state.merchantInterior;delete this.state.blacksmithInterior;
   this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.propertyPassage.reset();this.fishing=false;this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
@@ -97,9 +99,9 @@ export class FishingLakeScene extends Phaser.Scene{
  }
  private blockedPoint=(x:number,y:number)=>lakeBlockedPoint(x,y,this.state.fishingLakeMapEdits);
  private movementBlockedPoint=(x:number,y:number)=>lakeBlockedPoint(x,y,this.state.fishingLakeMapEdits,true)||!!this.fisher?.sprite.visible&&Math.abs(this.fisher.sprite.x-x)<9&&Math.abs(this.fisher.sprite.y-y)<5;
- private allowCabinStep=(x:number,y:number)=>cabinAllowsStep(this.player,{x,y})&&lakeDeckAllowsStep(this.player,{x,y});
+ private allowCabinStep=(x:number,y:number)=>cabinAllowsStep(this.player,{x,y})&&lakeDeckAllowsStep(this.player,{x,y},(px,py)=>paintedWaterPoint(this.state.fishingLakeMapEdits?.terrain,px,py,(a,b)=>lakeWater(a/32,b/32)))&&lakeElevationAllowsStep(this.player,{x,y});
  private movementBlockedTile=(x:number,y:number)=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
- private swimmingPoint=(x:number,y:number)=>sampleWaterDepth((px,py)=>!cabinFloorPoint(px,py)&&!lakePier(px/32,py/32)&&!lakeBridge(px/32,py/32)&&paintedWaterPoint(this.state.fishingLakeMapEdits?.terrain,px,py,(x,y)=>lakeWater(x/32,y/32)),x,y);
+ private swimmingPoint=(x:number,y:number)=>lakePier(x/32,y/32)||lakeBridge(x/32,y/32)||cabinFloorPoint(x,y)?0:sampleWaterDepth((px,py)=>!cabinFloorPoint(px,py)&&!lakePier(px/32,py/32)&&!lakeBridge(px/32,py/32)&&paintedWaterPoint(this.state.fishingLakeMapEdits?.terrain,px,py,(x,y)=>lakeWater(x/32,y/32)),x,y);
  private key(e:KeyboardEvent):void{
   if(e.repeat||this.leaving||e.target instanceof HTMLElement&&e.target.matches('input,textarea,select,[contenteditable="true"]'))return;
   if(DEVELOPMENT_TOOLS&&e.key==='F2'){e.preventDefault();this.openMapEditor();return;}
@@ -179,15 +181,14 @@ export class FishingLakeScene extends Phaser.Scene{
   });
  }
  update(time:number,ms:number):void{
-  if(!this.player)return;this.daylight.update(this.state.time);this.world.update(time);
+  if(!this.player)return;this.player.sprite.setDepth(cabinActorDepth(this.player.x,this.player.y));this.daylight.update(this.state.time);this.world.update(time);
   if(this.paused||this.leaving||this.ui.isModalOpen()||document.hidden)return;
-  const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(dt,this.movementBlockedTile,this.movementBlockedPoint,true,this.swimmingPoint,this.allowCabinStep);
+  const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(dt,this.movementBlockedTile,this.movementBlockedPoint,true,this.swimmingPoint,this.allowCabinStep);this.player.sprite.setDepth(cabinActorDepth(this.player.x,this.player.y));
   if(this.passage.update(before,this.player,this.state.fishingLakeMapEdits?.points?.exit??LAKE_CITY_EXIT,this.state.fishingLakeMapEdits?.points?.entry??LAKE_CITY_ENTRY)){this.leave();return;}
   if(this.propertyPassage.update(before,this.player,LAKE_PROPERTY_EXIT,LAKE_PROPERTY_ENTRY)){this.leave(false,true);return;}
-  if(Math.hypot(this.player.x-before.x,this.player.y-before.y)>.1)gameAudio.play('step');
   this.farming.update(dt);
   Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));
-  advanceBackgroundVillage(this.state,dt);this.fisher?.update(dt);
+  advanceBackgroundVillage(this.state,dt,this.player);this.fisher?.update(dt);
   for(const tree of this.world.trees)tree.setAlpha(this.player.y<tree.y&&Math.abs(this.player.x-tree.x)<65&&this.player.y>tree.y-170?.45:1);
   this.elapsed+=dt;this.updateHUD();if(this.elapsed>5){this.persist();this.elapsed=0;}
  }

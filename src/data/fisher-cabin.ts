@@ -40,3 +40,6 @@ export const CABIN_APPROACH=[cabinPoint(555,955),landing,{x:landing.x-12,y:landi
 export const CABIN_FISHER_STOP=cabinPoint(650,765);
 export const CABIN_FISHER_EXIT=[CABIN_FISHER_STOP,cabinPoint(603,825),...CABIN_APPROACH.slice(1)];
 export const CABIN_FISHER_ROUTE=[...CABIN_FISHER_EXIT,{x:84*32,y:39*32},{x:82*32,y:46.6*32},{x:79*32,y:46.6*32},{x:67.5*32,y:46.6*32}] as const;
+
+/** Raised porch actors must sort above the cabin's floor artwork, below its front rails. */
+export const cabinActorDepth=(x:number,y:number)=>cabinFloorPoint(x,y)?Math.max(y,FISHER_CABIN.y+760*FISHER_CABIN.scale):y;

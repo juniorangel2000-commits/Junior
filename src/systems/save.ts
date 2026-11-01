@@ -1,3 +1,4 @@
+import {validFisherTravel} from './fisher-travel';
 import {validFishingHaul} from '../data/fishing-catches';
 import {activeSaveKey,saveKeys} from './save-slot-keys';
 import {validPetShelter} from './pet-shelter';
@@ -62,6 +63,7 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.damiaoIntroduction!==undefined&&typeof value.damiaoIntroduction!=='boolean')return false;
   if (value.petShelter !== undefined && !validPetShelter(value.petShelter)) return false;
   if (value.forestMapEdits !== undefined && (!validateMapEdits(value.forestMapEdits)||value.forestMapEdits.area!=='forest')) return false;
+  if(value.fisherTravel!==undefined&&!validFisherTravel(value.fisherTravel))return false;
   if(value.lastFishingHaul!==undefined&&!validFishingHaul(value.lastFishingHaul))return false;
   if(value.fishingLakeMapEdits!==undefined&&(!validateMapEdits(value.fishingLakeMapEdits)||value.fishingLakeMapEdits.area!=='fishingLake'))return false;
   if(value.fishingLakePosition!==undefined&&(!isRecord(value.fishingLakePosition)||!finite(value.fishingLakePosition.x,32,3040)||!finite(value.fishingLakePosition.y,32,2272)||(value.fishingLakePosition.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(value.fishingLakePosition.direction as CharacterDirection))))return false;

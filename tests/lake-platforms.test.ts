@@ -1,7 +1,12 @@
 import {describe,it,expect} from 'vitest';
-import {cabinPoint,cabinAllowsStep,CABIN_FISHER_EXIT} from '../src/data/fisher-cabin';
-import {lakeDeckAllowsStep,LAKE_PIER_PROPS,lakePier,lakeStructureBlockedPoint,lakeShoreCoverage} from '../src/data/fishing-lake';
+import {FISHER_CABIN,cabinActorDepth,cabinPoint,cabinAllowsStep,CABIN_FISHER_EXIT} from '../src/data/fisher-cabin';
+import {lakeBlockedPoint,lakeElevationAllowsStep,lakeStairs,lakeCliff,lakeDeckAllowsStep,LAKE_PIER_PROPS,lakePier,lakeStructureBlockedPoint,lakeShoreCoverage} from '../src/data/fishing-lake';
 describe('raised lake platform boundaries',()=>{
+ it('restricts access to the mountain to the actual stone steps, excluding lateral moss',()=>{expect(lakeStairs(32.2,12)).toBe(false);expect(lakeCliff(32.2,12)).toBe(true);expect(lakeStairs(34.5,12)).toBe(true);for(const[a,b]of[[{x:32.8*32,y:12*32},{x:33.2*32,y:12*32}],[{x:36.5*32,y:12*32},{x:36.2*32,y:12*32}],[{x:24.1*32,y:5*32},{x:23.9*32,y:5*32}]]){expect(lakeElevationAllowsStep(a,b)).toBe(false);expect(lakeElevationAllowsStep(b,a)).toBe(false);}});
+ it('keeps a continuous climb between the bottom landing and the upper terrace',()=>{for(let y=5;y<22.4;y+=.1)for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]])expect(lakeBlockedPoint(34.5*32+dx,y*32+dy),String(y)).toBe(false);for(let y=5;y<21;y+=.05){const a={x:34.5*32,y:y*32},b={x:34.5*32,y:(y+.05)*32};expect(lakeElevationAllowsStep(a,b)).toBe(true);expect(lakeElevationAllowsStep(b,a)).toBe(true);}});
+
+ it('keeps actors above the cabin floor on the left porch, while staying below the front railing',()=>{const p=cabinPoint(300,665),depth=cabinActorDepth(p.x,p.y);expect(depth).toBeGreaterThan(FISHER_CABIN.y+750*FISHER_CABIN.scale);expect(depth).toBeLessThan(FISHER_CABIN.y+900*FISHER_CABIN.scale);});
+ it('keeps swimmers a full foot width away from the raised pier edges',()=>{const a={x:62.3*32,y:46*32},b={x:62.5*32,y:46*32};expect(lakeDeckAllowsStep(a,b)).toBe(false);});
  it('only crosses the porch boundary at the foot of the staircase',()=>{
   for(const[x,y,dx,dy]of[[158,690,-20,0],[835,879,0,20],[1310,718,25,0],[650,980,20,0]]){const from=cabinPoint(x,y),to=cabinPoint(x+dx,y+dy);expect(cabinAllowsStep(from,to)).toBe(false);expect(cabinAllowsStep(to,from)).toBe(false);}
  });

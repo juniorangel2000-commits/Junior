@@ -42,3 +42,12 @@ export function villageFishingPropAtPoint(x:number,y:number):boolean{
   return x>=px+left&&x<px+left+width&&y>=py+top&&y<py+top+height;
  });
 }
+
+/** Only the western stone approach is an entrance; swimming never bypasses ropes. */
+export function villagePierAllowsStep(from:{x:number;y:number},to:{x:number;y:number},water:(x:number,y:number)=>boolean):boolean {
+ const a=villagePierDeckContains(from.x,from.y),b=villagePierDeckContains(to.x,to.y),touches=[[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>villagePierDeckContains(to.x+dx,to.y+dy));
+ if(a===b&&(a||!touches))return true;
+ const entrance=VILLAGE_PIER.x+VILLAGE_PIER.deckLeft,top=VILLAGE_PIER.y+VILLAGE_PIER.deckTop,bottom=VILLAGE_PIER.y+VILLAGE_PIER.deckBottom;
+ if(Math.abs(from.x-entrance)>9||Math.abs(to.x-entrance)>9||from.y<top||from.y>=bottom||to.y<top||to.y>=bottom)return false;
+ const outside=a?to:from;return !water(outside.x,outside.y);
+}

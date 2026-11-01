@@ -6,7 +6,7 @@ export function audioSettings(value: unknown): AudioSettings {
   const volume = (n: unknown, fallback: number): number => typeof n === 'number' && Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : fallback;
   return { music: volume(v.music, .45), effects: volume(v.effects, .65), muted: v.muted === true };
 }
-export type Sound = 'step' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'fishing-cast' | 'fishing-splash' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit' | 'sword-swing' | 'bow-shot' | 'boomerang-throw' | 'weapon-evolution' | 'spear-thrust' | 'hammer-impact' | 'shield-burst' | 'dungeon-start';
+export type Sound = 'step' | 'swim' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'fishing-cast' | 'fishing-splash' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit' | 'sword-swing' | 'bow-shot' | 'boomerang-throw' | 'weapon-evolution' | 'spear-thrust' | 'hammer-impact' | 'shield-burst' | 'dungeon-start';
 type AudioScene = 'title' | 'game' | 'expedition' | 'combat' | 'cinematic';
 const BEAT = 60 / 76;
 export const MUSIC_DURATION = 64 * BEAT;
@@ -351,7 +351,7 @@ class GameAudio {
     const ctx = this.context;
     if (!ctx || ctx.state !== 'running' || document.hidden || !this.focused || this.settings.muted || !this.settings.effects) return;
     const now = ctx.currentTime;
-    if (now - (this.lastSound.get(sound) ?? -1) < (sound === 'step' ? .28 : .07)) return;
+    if (now - (this.lastSound.get(sound) ?? -1) < (sound === 'step' ? .28 : sound==='swim' ? .7 : .07)) return;
     this.lastSound.set(sound, now);
     synthesizeEffect(ctx, this.effectsGain!, sound);
   }
@@ -396,6 +396,11 @@ export function synthesizeEffect(ctx: BaseAudioContext, out: AudioNode, sound: S
     case 'craft': note(72); note(76, .1); note(79, .2, .4); break;
     case 'water': noise(ctx, out, .65, 2400, .22); note(83, .08, .12, .035); note(88, .23, .15, .025); break;
     case 'plant': noise(ctx, out, .16, 1100, .2); note(60, 0, .1, .055); break;
+    case 'swim': {
+      const duration=.52,buffer=ctx.createBuffer(1,Math.ceil(ctx.sampleRate*duration),ctx.sampleRate),samples=buffer.getChannelData(0);
+      for(let i=0;i<samples.length;i++){const t=i/samples.length;samples[i]=(Math.random()*2-1)*Math.sin(t*Math.PI)**2*(.8+.2*Math.sin(t*Math.PI*2));}
+      const source=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();source.buffer=buffer;filter.type='lowpass';filter.frequency.value=1250;gain.gain.value=.16;source.connect(filter).connect(gain).connect(out);source.start(now);source.onended=()=>{source.disconnect();filter.disconnect();gain.disconnect();};break;
+    }
     case 'step': noise(ctx, out, .09, 650, .14); break;
     case 'stone': noise(ctx, out, .09, 3800, .17); note(90, 0, .18, .08); note(97, 0, .12, .03); break;
     case 'wood': noise(ctx, out, .12, 900, .32); note(43, 0, .1, .2); break;

@@ -1,13 +1,13 @@
+import {ensureFisherTravel} from './systems/fisher-travel';
 import {villageAccessUnlocked,needsDamiaoIntroduction,receiveDamiaoIntroduction,DAMIAO_INTRODUCTION} from './systems/village-introduction';
 import type Phaser from 'phaser';
 import type {SaveData} from './types';
 import type {Player} from './player';
 import {VILLAGE_NPCS} from './data/village';
 import {damiaoAtLake,FISHER_LAKE_HOURS} from './data/fisher-schedule';
-import {CABIN_FISHER_STOP} from './data/fisher-cabin';
-import {lakeFisherPose} from './systems/lake-fisher';
 import {damiaoTexture,DAMIAO_DISPLAY,DAMIAO_ORIGIN_Y,DAMIAO_WALK_FRAMES} from './damiao-sprites';
 import {characterFrame,directionFromVector} from './character-directions';
+import {cabinActorDepth} from './data/fisher-cabin';
 import {VillageInteractionUI} from './village-ui';
 import {VillageNpcOverlays} from './village-npc-overlays';
 import {listVillageServices} from './systems/village-services';
@@ -23,12 +23,11 @@ export class LakeFisherVisit {
  readonly sprite:Phaser.GameObjects.Sprite;
  private panel:VillageInteractionUI;
  private overlays:VillageNpcOverlays;
- private routeTime:number;
- private moving=false;
+
  private speech?:{id:string;text:string};
- constructor(scene:Phaser.Scene,private state:()=>SaveData,private player:()=>Player,private blocked:(x:number,y:number)=>boolean,pause:(value:boolean)=>void,changed:()=>void){
-  this.routeTime=needsDamiaoIntroduction(state())?480:state().time;const pose=lakeFisherPose(this.routeTime),start=this.fits(pose)?pose:CABIN_FISHER_STOP;
-  this.sprite=scene.add.sprite(start.x,start.y,damiaoTexture(scene),characterFrame('down',0,DAMIAO_WALK_FRAMES)).setOrigin(.5,DAMIAO_ORIGIN_Y).setDisplaySize(DAMIAO_DISPLAY,DAMIAO_DISPLAY).setDepth(start.y).setVisible(damiaoAtLake(state()));
+ constructor(scene:Phaser.Scene,private state:()=>SaveData,private player:()=>Player,_blocked:(x:number,y:number)=>boolean,pause:(value:boolean)=>void,changed:()=>void){
+  const travel=ensureFisherTravel(state()),start=travel;
+  this.sprite=scene.add.sprite(start.x,start.y,damiaoTexture(scene),characterFrame(start.direction,0,DAMIAO_WALK_FRAMES)).setOrigin(.5,DAMIAO_ORIGIN_Y).setDisplaySize(DAMIAO_DISPLAY,DAMIAO_DISPLAY).setDepth(start.y).setVisible(start.area==='fishingLake');
   this.panel=new VillageInteractionUI({
    locationLabel:'CABANA DO LAGO',returnLabel:'voltar ao lago',
    getDialogueAction:()=>needsDamiaoIntroduction(state())?{label:'Receber vara de pesca',complete:()=>{const result=receiveDamiaoIntroduction(state(),saveGame);if(result.ok)changed();return result;}}:undefined,
@@ -42,20 +41,16 @@ export class LakeFisherVisit {
    onClose:()=>pause(false),
   });
   this.overlays=new VillageNpcOverlays(scene,()=>({actors:[{id:npc.id,name:npc.name,role:'Cabana de pesca',sprite:this.sprite}],blocked:this.panel.isOpen,speech:this.speech}));
-  this.open=()=>{if(!this.near())return false;pause(true);this.moving=false;this.speech=undefined;this.sprite.setFrame(characterFrame(directionFromVector(player().x-this.sprite.x,player().y-this.sprite.y),0,DAMIAO_WALK_FRAMES));this.panel.open(needsDamiaoIntroduction(state())?{...npc,dialogue:DAMIAO_INTRODUCTION}:npc);return true;};
+  this.open=()=>{if(!this.near())return false;pause(true);this.speech=undefined;this.sprite.setFrame(characterFrame(directionFromVector(player().x-this.sprite.x,player().y-this.sprite.y),0,DAMIAO_WALK_FRAMES));this.panel.open(needsDamiaoIntroduction(state())?{...npc,dialogue:DAMIAO_INTRODUCTION}:npc);return true;};
  }
  readonly open:()=>boolean;
  near():boolean{return this.sprite.visible&&!this.player().isSwimming&&Math.hypot(this.sprite.x-this.player().x,this.sprite.y-this.player().y)<76;}
- private fits(p:{x:number;y:number}):boolean{return [[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!this.blocked(p.x+dx,p.y+dy));}
- update(seconds:number):void{
-  this.sprite.setVisible(damiaoAtLake(this.state()));if(!this.sprite.visible||this.panel.isOpen)return;
-  if(needsDamiaoIntroduction(this.state())){this.sprite.setPosition(CABIN_FISHER_STOP.x,CABIN_FISHER_STOP.y).setDepth(CABIN_FISHER_STOP.y).setFrame(characterFrame('down',0,DAMIAO_WALK_FRAMES));this.moving=false;this.speech={id:'damiao',text:'Olá, viajante! Pode subir para conversar.'};return;}
-  const next=lakeFisherPose(this.routeTime+seconds);
-  const player=this.player(),overlap=Math.abs(next.x-player.x)<17&&Math.abs(next.y-player.y)<11;
-  if(this.fits(next)&&!overlap){this.routeTime+=seconds;this.sprite.setPosition(next.x,next.y).setDepth(next.y);this.moving=next.moving;this.sprite.setFrame(characterFrame(next.direction,next.phase,DAMIAO_WALK_FRAMES));}
-  else{this.moving=false;this.sprite.setFrame(characterFrame(next.direction,0,DAMIAO_WALK_FRAMES));}
-  const lines=['Vou preparar as linhas aqui na varanda.','Com calma dá para enxergar os peixes perto da margem.','Se trouxer peixe raro, passe para conversar comigo.'];
-  this.speech=!this.moving&&Math.floor(this.routeTime)%32<7?{id:'damiao',text:lines[Math.floor(this.routeTime/32)%lines.length]}:undefined;
+
+ update(_seconds:number):void{
+  const s=ensureFisherTravel(this.state());this.sprite.setVisible(s.area==='fishingLake');if(!this.sprite.visible||this.panel.isOpen)return;
+  this.sprite.setPosition(s.x,s.y).setDepth(cabinActorDepth(s.x,s.y)).setFrame(characterFrame(s.direction,s.moving?1+Math.floor(s.distance/5.3)%8:0,DAMIAO_WALK_FRAMES));
+  this.speech=needsDamiaoIntroduction(this.state())?{id:'damiao',text:'Olá, viajante! Pode subir para conversar.'}:undefined;
  }
+
  destroy():void{this.overlays.destroy();this.panel.destroy();this.sprite.destroy();}
 }

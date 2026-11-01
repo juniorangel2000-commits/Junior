@@ -1,4 +1,4 @@
-import {rollFishingReward,fishingRewardItems,validFishingReward,type FishingReward} from '../data/fishing-catches';
+import {FISHING_HABITATS,rollFishingReward,fishingRewardItems,validFishingReward,type FishingReward} from '../data/fishing-catches';
 import type {SaveData} from '../types';
 import {Inventory} from './inventory';
 import {createVillageProgress} from '../data/village-progress';
@@ -17,10 +17,10 @@ export class FishingSession {
  private target=.5;
  private turn=0;
  private swimAge=0;
- constructor(readonly skill:number,readonly net=false,accessory=false,private random:()=>number=Math.random){
+ constructor(readonly skill:number,readonly net=false,accessory=false,private random:()=>number=Math.random,habitat:keyof typeof FISHING_HABITATS='lake'){
   this.waitSeconds=FISHING_RULES.waitMin+clamp(random())*(FISHING_RULES.waitMax-FISHING_RULES.waitMin);
-  const rare=clamp(random())<.04+clamp(skill,0,2)*.04+(accessory?.03:0);
-  this.reward=rollFishingReward(rare,net,random);this.rare=this.reward.kind==='fish'&&rare;
+  const chance=clamp(random()),rules=FISHING_HABITATS[habitat],rare=rules.rare&&chance<.04+clamp(skill,0,2)*.04+(accessory?.03:0);
+  this.reward=rollFishingReward(rare,net,random,rules.trash);this.rare=this.reward.kind==='fish'&&rare;
   this.bandSize=.28+(clamp(skill,1,2)-1)*.08+(net?.05:0);
  }
  hook():boolean{if(this.phase!=='bite')return false;this.phase='fighting';return true;}

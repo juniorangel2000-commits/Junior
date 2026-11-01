@@ -1,8 +1,7 @@
 import {CascadeFlow} from './cascade-flow';
 import type Phaser from 'phaser';
 import type {MapEditData} from './systems/map-editor';
-import {readTerrainSprites} from './terrain-sprites';
-import {waterFinishChannel} from './data/water-style';
+import {setupWaterSurface} from './water-motion';
 import {LAKE_RIDGE,lakeWater,lakeWaterDistance,lakeShoreCoverage} from './data/fishing-lake';
 import {paintedWaterPoint} from './data/terrain-paint';
 let serial=0;
@@ -21,12 +20,7 @@ export class LakeWaterAnimation {
  private readonly sizeY:number;
  constructor(private scene:Phaser.Scene,edits?:MapEditData){
   this.maskKey=`lake-flow-mask-${++serial}`;this.fallKey=`lake-cascade-flow-${serial}`;
-  const tile='lake-flow-original-water';
-  if(!scene.textures.exists(tile)){
-   const material=readTerrainSprites(scene)!.water,canvas=document.createElement('canvas');canvas.width=canvas.height=material.size;const c=canvas.getContext('2d')!,data=c.createImageData(material.size,material.size);
-   for(let i=0;i<data.data.length;i+=4){for(let k=0;k<3;k++)data.data[i+k]=waterFinishChannel(material.pixels[i+k],k,-72);data.data[i+3]=255;}
-   c.putImageData(data,0,0);scene.textures.addCanvas(tile,canvas)!.setFilter(0);
-  }
+  const tile=setupWaterSurface(scene);
   const canvas=document.createElement('canvas');canvas.width=3072;canvas.height=2304;const context=canvas.getContext('2d')!,mask=context.createImageData(3072,2304),pixels=mask.data;
   for(let by=0;by<2304;by+=4)for(let bx=0;bx<3072;bx+=4){
    const d=lakeWaterDistance((bx+2)/32,(by+2)/32),kind=edits?.terrain[`${Math.floor(bx/32)},${Math.floor(by/32)}`];

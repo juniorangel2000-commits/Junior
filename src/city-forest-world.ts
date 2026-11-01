@@ -1,3 +1,5 @@
+import {addWaterMotion} from './water-motion';
+import {paintedWaterPoint} from './data/terrain-paint';
 import {waterFinishChannel} from './data/water-style';
 import {cityMapObjects} from './data/city-forest-layout';
 import {drawEditorProp} from './editor-prop-art';
@@ -24,6 +26,7 @@ export class CityForestWorld{
   const before=new Set(scene.children.list);setupCityForestArt(scene);setupDungeonScenery(scene);
   this.drawGround();this.drawFences();
   drawMapTerrainEdits(scene,edits?.terrain??{},namespace+'-edited-ground',cityForestWater,'forest')?.setDepth(-99);
+  const water=(x:number,y:number)=>paintedWaterPoint(edits?.terrain,x,y,(px,py)=>cityForestWater(px/32,py/32));addWaterMotion(scene,(x,y)=>water((x+.5)*32,(y+.5)*32),water);
   for(const p of cityMapObjects(edits)){
    const x=(p.x+.5)*32,y=p.y*32+25,tree=p.kind==='standingTree'||p.kind==='pine';
    const image=tree?scene.add.image(x,y,`asset-${p.kind==='pine'?'pine':'tree'}-${p.variant??0}`).setOrigin(.5,256/264).setDisplaySize(166*(p.scale??1),211*(p.scale??1)).setDepth(y).setData('city-forest-tree',true):drawEditorProp(scene,p.kind,x,y);

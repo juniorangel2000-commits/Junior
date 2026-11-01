@@ -1,3 +1,4 @@
+import {gameAudio} from './audio';
 import {SwimmingController} from './swimming/controller';
 import {SWIMMING_CONFIG} from './swimming/config';
 import { SwimmingVisual, prepareSwimmingTextures, SWIM_SPEED_FACTOR } from './swimming';
@@ -135,6 +136,7 @@ export class Player {
     const phase = Math.floor((this.walkDistance + 1e-7) / PLAYER_WALK_CYCLE_DISTANCE * this.walkFrames) % this.walkFrames + 1;
     const direction = directionFromVector(this.facing.x, this.facing.y);
     const wasWet=this.swimming.depth>0;this.swimming.update(depthAt(this.x,this.y),walked,direction,delta);this.isSwimming=this.swimming.isSwimming;
+    if(walked)gameAudio.play(this.isSwimming||depthAt(this.x,this.y)>.005?'swim':'step');
     if(this.swimming.depth>.005){
       this.swimmingVisual??=new SwimmingVisual(this.scene,this.profile);
       this.swimmingVisual.update(this.sprite,this.x,this.y,direction,walked,delta,this.swimming.depth,characterFrame(direction,walked?phase:0,this.walkFrames),speed/PLAYER_SPEED);return;

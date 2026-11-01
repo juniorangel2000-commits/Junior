@@ -1,0 +1,6 @@
+import {describe,it,expect} from 'vitest';
+import {FishingSession} from '../src/systems/fishing';
+describe('fishing habitats',()=>{
+ it('keeps rare fish exclusive to the lake even with maximum skill and accessory',()=>{for(let seed=0;seed<100;seed++){let state=seed+1;const rng=()=>{state=(1664525*state+1013904223)>>>0;return state/4294967296;};const river=new FishingSession(2,true,true,rng,'other');expect(river.rare).toBe(false);if(river.reward.kind==='fish')for(const f of river.reward.specimens)expect(['truta','dourado']).not.toContain(f.species);}const lake=new FishingSession(2,false,true,()=>0,'lake');expect(lake.rare).toBe(true);});
+ it('offers substantially less rubbish in the lake than in the other rivers and ponds',()=>{const count=(habitat:'lake'|'other')=>{let seed=1741,trash=0,rare=0;const rng=()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296;};for(let i=0;i<4000;i++){const s=new FishingSession(1,false,false,rng,habitat);if(s.reward.kind==='trash')trash++;if(s.rare)rare++;}return{trash,rare};};const lake=count('lake'),other=count('other');expect(other.rare).toBe(0);expect(lake.rare).toBeGreaterThan(200);expect(other.trash).toBeGreaterThan(lake.trash*2);expect(other.trash).toBeGreaterThan(800);expect(lake.trash).toBeLessThan(400);});
+});

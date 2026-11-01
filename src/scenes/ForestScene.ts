@@ -76,6 +76,7 @@ export class ForestScene extends Phaser.Scene {
   preload():void{preloadPetArt(this);}
 
   create(data:ForestStart):void {
+  gameAudio.setScene('game');
     setupTreeWind(this);
     this.exitPassage.reset();this.exitWarningShown=false;
     this.ui=data.ui;this.state=structuredClone(data.save);this.state.activeArea='forest';this.onReturn=data.onReturn;

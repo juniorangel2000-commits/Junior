@@ -13,7 +13,7 @@ const fishIcon='<svg viewBox="0 0 28 18" aria-hidden="true"><path d="M6 9 1 3v12
 /** A single paused-world session. The cast and the catch each save an atomic draft. */
 export function fishAtBank(save:SaveData,net:boolean,onChange:()=>void,visual?:{start:()=>Promise<boolean>;destroy:()=>void;signal?:AbortSignal}):Promise<string>{
  if(active)return active;
- const session=new FishingSession(save.villageProgress?.fishingSkill??0,net,save.inventory.accessory>0,random);
+ const session=new FishingSession(save.villageProgress?.fishingSkill??0,net,save.inventory.accessory>0,random,save.activeArea==='fishingLake'?'lake':'other');
  const cast=beginFishingCast(save,net,session.reward,saveGame);
  if(!cast.ok){visual?.destroy();return Promise.resolve(cast.message);}
  onChange();if(!visual)gameAudio.play('fishing-cast');

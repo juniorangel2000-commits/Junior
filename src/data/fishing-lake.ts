@@ -1,3 +1,5 @@
+import {lakeIslandLand} from './lake-island';
+import {pointInPolygon} from './architecture-collision';
 import {cabinSolidPoint,cabinFloorPoint,cabinClearing,CABIN_APPROACH} from './fisher-cabin';
 import westContour from './lake-west-contour.json';
 import ridgeContour from './lake-ridge-contour.json';
@@ -54,7 +56,7 @@ export function lakeWaterDistance(x:number,y:number):number {
  const stream=Math.max(Math.abs(x-inlet.center)-inlet.half,y-24);
  const basin=(Math.hypot((x-49)/4.6,(y-20.3)/4.3)-1)*4.3+.11*Math.sin(x*2.1+y*1.7);
  const source=mergeLakeRiver(stream,basin);
- const island=(1-Math.hypot((x-29)/2.7,(y-38)/1.8))*1.8;
+ const island=lakeIslandLand(x,y);
  return Math.max(mergeLakeRiver(joined,source),island);
 }
 export const lakeWater=(x:number,y:number)=>lakeWaterDistance(x,y)<0;
@@ -68,14 +70,17 @@ export const LAKE_PIER_PROPS=[
  {frame:'anchor',x:65.2,y:48.0,width:44,height:42},
 ] as const;
 /** Crossing a raised deck boundary is legal only at its landward entrance. */
-export function lakeDeckAllowsStep(from:{x:number;y:number},to:{x:number;y:number}):boolean{
+export function lakeDeckAllowsStep(from:{x:number;y:number},to:{x:number;y:number},water:(x:number,y:number)=>boolean=(x,y)=>lakeWater(x/32,y/32)):boolean{
  const ax=from.x/32,ay=from.y/32,bx=to.x/32,by=to.y/32;
- if(lakePier(ax,ay)!==lakePier(bx,by)){
+ const touches=(x:number,y:number,deck:(x:number,y:number)=>boolean)=>[[0,0],[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>deck(x+dx/32,y+dy/32));
+ if(lakePier(ax,ay)!==lakePier(bx,by)||!lakePier(ax,ay)&&touches(bx,by,lakePier)){
   const end=LAKE_PIER.x/32+18.5,low=LAKE_PIER.y/32+3.7,high=LAKE_PIER.y/32+5.2;
+  if(water(...(lakePier(ax,ay)?[to.x,to.y] as const:[from.x,from.y] as const)))return false;
   if(Math.abs(ax-end)>.26||Math.abs(bx-end)>.26||ay<low||ay>high||by<low||by>high)return false;
  }
- if(lakeBridge(ax,ay)!==lakeBridge(bx,by)){
+ if(lakeBridge(ax,ay)!==lakeBridge(bx,by)||!lakeBridge(ax,ay)&&touches(bx,by,lakeBridge)){
   const nearEnd=[LAKE_BRIDGE.x,LAKE_BRIDGE.x+LAKE_BRIDGE.width].some(x=>Math.abs(ax-x)<.26&&Math.abs(bx-x)<.26),low=LAKE_BRIDGE.y+LAKE_BRIDGE.height*.28,high=LAKE_BRIDGE.y+LAKE_BRIDGE.height*.73;
+  if(water(...(lakeBridge(ax,ay)?[to.x,to.y] as const:[from.x,from.y] as const)))return false;
   if(!nearEnd||ay<low||ay>high||by<low||by>high)return false;
  }
  return true;
@@ -151,7 +156,19 @@ export function lakeStairPathBlend(x:number,y:number):number {
 }
 /** Two walkable levels with a single staircase. Cliff faces cannot be crossed sideways. */
 export const lakeTerrace=(x:number,y:number)=>x>=24&&x<=42.5&&y>=2.2&&y<=7.6;
-export const lakeStairs=(x:number,y:number)=>x>=32.1&&x<=36.2&&y>=7.2&&y<=22.5;
+// The old rectangle also admitted the moss and boulders left of the real steps.
+const STAIR_FLOOR=[[465,457],[556,457],[556,825],[435,825],[445,680],[452,585]] as const;
+export const lakeStairs=(x:number,y:number)=>pointInPolygon(x*32-LAKE_RIDGE.x,y*32-LAKE_RIDGE.y,STAIR_FLOOR);
+/** The high terrace and the staircase have two portals, never lateral entrances. */
+export function lakeElevationAllowsStep(from:{x:number;y:number},to:{x:number;y:number}):boolean {
+ const ax=from.x/32,ay=from.y/32,bx=to.x/32,by=to.y/32,a=lakeTerrace(ax,ay),b=lakeTerrace(bx,by),sa=lakeStairs(ax,ay),sb=lakeStairs(bx,by);
+ if(a!==b&&!(sa&&sb))return false;
+ if(sa!==sb&&!(a&&b)){
+  const bottom=LAKE_RIDGE.y/32+825/32;
+  if(Math.abs(ay-bottom)>.26||Math.abs(by-bottom)>.26||ax<32.6||ax>36.4||bx<32.6||bx>36.4)return false;
+ }
+ return true;
+}
 export function lakeWestCliff(x:number,y:number):boolean {
  return LAKE_SIDE_RIDGES.some(p=>{
   const localY=(y*32-p.y)/p.scale,row=westContour.rows[Math.floor(localY/westContour.step)];
@@ -161,7 +178,7 @@ export function lakeWestCliff(x:number,y:number):boolean {
 }
 export function lakeCliff(x:number,y:number):boolean {
  if(lakeWestCliff(x,y))return true;
- if(lakeTerrace(x,y)||lakeStairs(x,y))return false;
+ if(lakeTerrace(x,y)||lakeStairs(x,y)||x>=32.3&&x<=37&&y>=18.7&&y<=23.2)return false;
  const local=(x*32-LAKE_RIDGE.x)/LAKE_RIDGE.width*ridgeContour.width;
  const front=local>=0&&local<ridgeContour.width?ridgeContour.front[Math.floor(local/ridgeContour.step)]:0;
  return !!front&&y*32<LAKE_RIDGE.y+front/ridgeContour.height*LAKE_RIDGE.height;
@@ -275,6 +292,7 @@ export function lakeObjects(edits?:MapEditData):LakeObject[]{
 const cellCache=new WeakMap<MapEditData,Set<string>>();let nativeCells:Set<string>|undefined;
 export function lakeBlockedPoint(px:number,py:number,edits?:MapEditData,allowWater=false):boolean {
  const x=px/32,y=py/32;
+ if(Math.hypot((x-29)/.28,(y-38)/.2)<1)return true;
  if(px<32||py<32||px>3040||py>2272||lakeCliff(x,y)||lakeStructureBlockedPoint(x,y)||cabinSolidPoint(px,py))return true;
  if(cabinFloorPoint(px,py))return false;
  if(!allowWater&&!lakePier(x,y)&&!lakeBridge(x,y)&&paintedWaterPoint(edits?.terrain,px,py,(a,b)=>lakeWater(a/32,b/32)))return true;

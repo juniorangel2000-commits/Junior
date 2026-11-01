@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { createNewSave, validateSave } from '../src/systems/save';
 import { prepareVillageRoutines, advanceBackgroundVillage } from '../src/systems/village-background';
-import { merchantPeriod } from '../src/systems/merchant-routine';
+import { merchantPeriod,type RoutineId } from '../src/systems/merchant-routine';
 const make=()=>createNewSave({name:'Rotinas',skin:'#e9bc98',hairColor:'#563b2c',outfit:'#457398',hairStyle:'preso'});
 it('places a first morning visit at the current schedule instead of all shop doorsteps',()=>{
  const save=make();save.time=600;save.activeArea='village';prepareVillageRoutines(save);
@@ -20,12 +20,14 @@ it('continues movement offscreen and preserves the exact saved positions when en
  expect(arrival.villageRoutines).toEqual(before);expect(validateSave(arrival)).toBe(true);
  const visible=structuredClone(arrival.villageRoutines);advanceBackgroundVillage(arrival,.1);expect(arrival.villageRoutines).toEqual(visible);
 });
-it('resynchronizes long clock jumps and legacy saves without replaying hours of walking',()=>{
+it('preserves NPC positions across clock jumps and legacy saves instead of placing them at new destinations',()=>{
  const save=make();save.time=600;save.activeArea='property';advanceBackgroundVillage(save,.1);
- save.day++;save.time=300;advanceBackgroundVillage(save,.1);
+ const positions=structuredClone(save.villageRoutines!);save.day++;save.time=300;advanceBackgroundVillage(save,.1);
+ for(const[id,p]of Object.entries(positions)){const next=save.villageRoutines![id as keyof typeof positions]!;expect(next.area).toBe(p!.area);expect(Math.hypot(next.x-p!.x,next.y-p!.y)).toBeLessThanOrEqual(4.801);}
  expect(Object.values(save.villageRoutines!).every(s=>s!.area==='shop')).toBe(true);
  expect(Object.values(save.villageRoutines!).every(s=>s!.updatedAt===save.day*1440+save.time)).toBe(true);
  for(const state of Object.values(save.villageRoutines!))delete state!.updatedAt;
- const legacy=structuredClone(save);legacy.time=600;prepareVillageRoutines(legacy);
+ const legacy=structuredClone(save);legacy.time=600;const before=structuredClone(legacy.villageRoutines);prepareVillageRoutines(legacy);
+ for(const[id,p]of Object.entries(before!)){const next=legacy.villageRoutines![id as RoutineId]!;expect(next.x).toBe(p!.x);expect(next.y).toBe(p!.y);expect(next.area).toBe(p!.area);}
  expect(Object.values(legacy.villageRoutines!).every(s=>s!.updatedAt===legacy.day*1440+legacy.time)).toBe(true);expect(validateSave(legacy)).toBe(true);
 });

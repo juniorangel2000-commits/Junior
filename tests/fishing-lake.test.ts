@@ -14,7 +14,7 @@ describe('Lago entre as Serras',()=>{
   expect(lakeWater(45.5,71.5)).toBe(true);expect(lakeWater(48,1)).toBe(true);
   expect(lakePier(67,46)).toBe(true);expect(lakeBlockedPoint(67*32,46*32)).toBe(false);
   expect(lakeBridge(32,60)).toBe(true);expect(lakeBlockedPoint(32*32,60*32)).toBe(false);
-  expect(lakeTerrace(28,5)).toBe(true);expect(lakeStairs(34,20)).toBe(true);
+  expect(lakeTerrace(28,5)).toBe(true);expect(lakeStairs(34,12)).toBe(true);expect(lakeStairs(34,20)).toBe(false);expect(lakeBlockedPoint(34*32,20*32)).toBe(false);
  });
  it('keeps the stair landing out of the water and aligns both ends of the bridge with the trail',()=>{
   expect(lakeTrailDistance(34,21.4)).toBeLessThan(.1);

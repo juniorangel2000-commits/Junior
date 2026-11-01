@@ -1,6 +1,7 @@
+import {ensureFisherTravel,advanceFisherTravel} from './fisher-travel';
 import {damiaoAtLake} from '../data/fisher-schedule';
 import type { SaveData } from '../types';
-import { MerchantDailyRoutine, MERCHANT_DAILY_PLAN, merchantPeriod, merchantMayEnter, type RoutineId, type RoutineArea, type MerchantRoutineState, type RoutineEnvironment } from './merchant-routine';
+import { MerchantDailyRoutine, MERCHANT_DAILY_PLAN, merchantPeriod, merchantMayEnter, validMerchantRoutine, type RoutineId, type RoutineArea, type MerchantRoutineState, type RoutineEnvironment } from './merchant-routine';
 import { merchantRoomNavigation, resolveMerchantLayout } from '../data/merchant-rooms';
 import { smithNavigation, resolveSmithLayout } from './smith-layout';
 import type { BentoRoomNavigation } from './bento-routine';
@@ -24,11 +25,12 @@ class BackgroundVillage {
   private readonly rooms=new Map<RoutineId,BentoRoomNavigation>();
   last:number;
   constructor(readonly save:SaveData){
-    this.last=clock(save);
+    this.last=clock(save);ensureFisherTravel(save);
     for(const id of IDS)this.rooms.set(id,villageRoutineNavigation(save,id));
     for(const [index,id] of IDS.entries()){
       const previous=save.villageRoutines?.[id];
-      const saved=previous?.updatedAt!==undefined&&Math.abs(clock(save)-previous.updatedAt)<=5?previous:this.initial(id,index);
+      const saved=validMerchantRoutine(previous)?previous:this.initial(id,index);
+      saved.updatedAt=clock(save);
       this.routines.set(id,new MerchantDailyRoutine(id,{x:saved.x,y:saved.y,direction:saved.direction,shop:saved.area==='shop'},this.rooms.get(id)!,saved,6,owner=>this.rooms.get(owner)!));
     }
     save.villageRoutines=Object.fromEntries([...this.routines].map(([id,r])=>[id,r.state]));
@@ -66,7 +68,8 @@ export function prepareVillageRoutines(save:SaveData):void{
   if(!models.has(save))models.set(save,new BackgroundVillage(save));
 }
 /** The village scene updates its visible actors; other world maps update them here. */
-export function advanceBackgroundVillage(save:SaveData,seconds:number):void{
+export function advanceBackgroundVillage(save:SaveData,seconds:number,player?:{x:number;y:number}):void{
+  advanceFisherTravel(save,seconds,player);
   if(save.activeArea==='village'||!Number.isFinite(seconds)||seconds<=0)return;
   let model=models.get(save);
   if(!model||Math.abs(clock(save)-model.last)>5){model=new BackgroundVillage(save);models.set(save,model);}

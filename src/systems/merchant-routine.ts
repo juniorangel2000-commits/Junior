@@ -1,3 +1,5 @@
+import {beginFisherLakeTrip} from './fisher-travel';
+import type {SaveData} from '../types';
 import {damiaoAtLake,FISHER_LAKE_HOURS} from '../data/fisher-schedule';
 import {CHARACTER_DIRECTIONS,type CharacterDirection} from '../character-directions';
 import {merchantOutside,type ResidentId} from './merchant-visit';
@@ -136,8 +138,10 @@ export class MerchantDailyRoutine {
    return{...s,phase,moving,transferred};
   }
   if(s.wait>0){s.wait=Math.max(0,s.wait-seconds);return{...s,phase,moving,transferred};}
-  const outside=period==='break'&&s.serviceUntil<=now;
-  const transfer=(area:RoutineArea,preferred:{x:number;y:number},owner:RoutineId=this.owner)=>{const free=env.arrival(area,preferred,owner);if(!free){s.wait=1;return;}Object.assign(s,free,{area,stop:0,wait:.3});if(area==='shop'&&owner!==this.owner)s.roomOwner=owner;else delete s.roomOwner;this.resetPath();transferred=true;};
+  const toLake=this.owner==='damiao'&&'profile' in clock&&(clock as SaveData).fisherTravel?.mode==='village'&&clock.time>=420&&clock.time<690;
+  if(toLake&&s.area==='village'){const step=this.move({x:50.5*32,y:2.5*32},'lake-departure',seconds,env);if(step.arrived)beginFisherLakeTrip(clock as SaveData);return{...s,phase:step.phase,moving:step.moving,transferred};}
+  const outside=toLake||period==='break'&&s.serviceUntil<=now;
+  const transfer=(area:RoutineArea,preferred:{x:number;y:number},owner:RoutineId=this.owner)=>{const free=env.arrival(area,preferred,owner);if(!free||Math.hypot(free.x-preferred.x,free.y-preferred.y)>24){s.wait=1;return;}Object.assign(s,free,{area,stop:0,wait:.3});if(area==='shop'&&owner!==this.owner)s.roomOwner=owner;else delete s.roomOwner;this.resetPath();transferred=true;};
   if(s.area==='shop'&&(outside||this.roomOwner!==destination)){
    const current=this.roomOwner,nav=this.navigation,door=nav.exit??nav.entry??{x:288,y:335};
    const result=this.move(door,'exit',seconds,env);phase=result.phase;moving=result.moving;

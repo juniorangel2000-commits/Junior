@@ -1496,7 +1496,6 @@ export class ValleyScene extends Phaser.Scene {
     const impact = this.toolUse.advance(delta);
     if (impact) this.applyToolImpact(impact);
     this.updateToolVisual();
-    if (!this.player.isSwimming&&Math.hypot(this.player.x - previousX, this.player.y - previousY) > .1) gameAudio.play('step');
     if (!this.inHome) this.world.updateOcclusion(this.player.x, this.player.y);
     this.farming.update(delta);
     const previousDay = this.state.day;
