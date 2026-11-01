@@ -1,3 +1,4 @@
+import {preloadFishingArt} from './fishing-cast';
 import {preloadEcologyArt,setupEcologyArt,ecologyIcon} from './ecology-art';
 import {setupTreeWind} from './tree-wind';
 import {preloadVillageScenery} from './village-scenery-art';
@@ -24,6 +25,8 @@ import { TOOL_ICON_URLS } from './data/tool-art';
 const BASE = 'assets/visual/';
 const ICON_IDS = new Set(['wood', 'stone', 'branch', 'log', 'plank', 'scrap', 'hatchet', 'pickaxe', 'handsaw', 'fiber', 'cord', 'flakedStone', 'handle', 'blade', 'board', 'hammer', 'water', 'workbench', 'seeds']);
 export function itemIconUrl(id: string, tier=0): string | undefined {
+  if(id==='fishingRod')return 'assets/visual/fishing/fishing-rod.png';
+  if(id==='bait')return 'assets/visual/fishing/basic-worm.png';
   const natural=ecologyIcon(id);if(natural)return natural;
   const dedicated=economyIcon(id);if(dedicated)return dedicated;
   if((ART_TOOL_IDS as readonly string[]).includes(id)&&(tier>0||id==='sickle'||id==='shovel'))return tierToolIcon(id as EconomicTool,tier);
@@ -44,6 +47,7 @@ const WORLD_SOURCES: Record<string, string> = {
 };
 const MODULES = ['parede_creme', 'parede_janela_floreira', 'parede_trepadeira', 'parede_porta', 'porta_madeira', 'janela_turquesa', 'telha_lisa', 'telha_variante', 'chamine', 'floreira', 'cerca_natural', 'banco_jardim', 'barril', 'vaso_flor', 'piso_tabuas', 'piso_pedra', 'terra', 'caminho', 'planta'];
 export function preloadVisualAssets(scene: Phaser.Scene): void {
+  preloadFishingArt(scene);
   preloadEcologyArt(scene);
   preloadEconomyArt(scene);
   preloadVillageScenery(scene);

@@ -1,3 +1,4 @@
+import {prepareCharacterPreviews} from './character-sprites';
 import { CHARACTER_HEIGHT, CHARACTER_WIDTH, drawCharacter } from './art';
 import { CHARACTER_DIRECTIONS, type CharacterDirection } from './character-directions';
 import type { CharacterProfile } from './types';
@@ -22,6 +23,7 @@ export function createCharacterEditor(
   let direction: CharacterDirection = 'down';
   let walking = false;
   let active = true;
+  let ready=false;
   let animationId = 0;
   let phase = 0;
   let previousPhase = -1;
@@ -47,9 +49,10 @@ export function createCharacterEditor(
       <div class="character-options">
         <section class="studio-section name-section"><label class="field-label" for="character-name">Seu nome</label><div class="name-field"><input id="character-name" name="name" type="text" maxlength="24" placeholder="Como podemos te chamar?" autocomplete="off" required aria-describedby="name-count" /><span id="name-count">0/24</span></div></section>
         <section class="studio-section"><span class="field-label">Personagem</span><div class="character-roster" role="group" aria-label="Personagens disponíveis">${CHARACTERS.map(character => `<button type="button" class="character-choice choice${character.id === profile.characterId ? ' selected' : ''}" data-character="${character.id}" aria-pressed="${character.id === profile.characterId}"><canvas aria-hidden="true"></canvas><span>${character.label}</span>${icon('check')}</button>`).join('')}</div></section>
+        <p data-character-load role="status">Carregando personagens…</p><button type="button" data-character-retry hidden>Tentar carregar novamente</button>
         <p class="character-preview-tip">Use as setas da prévia para ver todos os lados e experimentar a caminhada.</p>
         <p class="simple-movement-tip">${icon('arrow')} Caminhe com WASD ou as setas. Combine duas teclas para seguir na diagonal.</p>
-        <footer class="creation-submit">${options.hasSave ? '<p class="save-warning">Ao começar, sua história salva neste navegador será substituída.</p>' : '<p class="creation-tip">Uma nova partida será criada. Suas outras histórias serão preservadas.</p>'}<button class="button button-primary start-button" type="submit">Começar minha história ${icon('arrow')}</button></footer>
+        <footer class="creation-submit">${options.hasSave ? '<p class="save-warning">Ao começar, sua história salva neste navegador será substituída.</p>' : '<p class="creation-tip">Uma nova partida será criada. Suas outras histórias serão preservadas.</p>'}<button class="button button-primary start-button" type="submit" disabled>Começar minha história ${icon('arrow')}</button></footer>
       </div>
     </form>`;
   holder.replaceChildren(card);
@@ -109,6 +112,7 @@ export function createCharacterEditor(
   card.querySelector('.back-button')!.addEventListener('click', () => { cleanup(); options.onBack(); });
   card.querySelector('form')!.addEventListener('submit', event => {
     event.preventDefault();
+    if(!ready)return;
     if (!profile.name) { input.setCustomValidity('Escreva um nome para começar sua história.'); input.reportValidity(); input.focus(); return; }
     cleanup();
     options.onStart({ ...profile });
@@ -120,6 +124,16 @@ export function createCharacterEditor(
     previousPhase = phase;
     animationId = requestAnimationFrame(animate);
   };
+  const status=card.querySelector<HTMLElement>('[data-character-load]')!,retry=card.querySelector<HTMLButtonElement>('[data-character-retry]')!;
+  const load=async()=>{
+    ready=false;card.dataset.previewState='loading';retry.hidden=true;status.hidden=false;status.textContent='Carregando personagens…';
+    card.querySelectorAll<HTMLButtonElement>('[data-character],[data-direction],[data-preview-walk],.start-button').forEach(b=>b.disabled=true);
+    try{await prepareCharacterPreviews();if(!active||!card.isConnected)return;
+      card.querySelectorAll<HTMLButtonElement>('[data-character]').forEach(b=>{const id=b.dataset.character;if(isCharacterId(id))drawCharacter(b.querySelector('canvas')!,createCharacterProfile('',id));});
+      ready=true;card.dataset.previewState='ready';status.hidden=true;card.querySelectorAll<HTMLButtonElement>('[data-character],[data-direction],[data-preview-walk],.start-button').forEach(b=>b.disabled=false);draw();
+    }catch{if(active&&card.isConnected){card.dataset.previewState='error';status.textContent='Não foi possível carregar os personagens. Tente novamente.';retry.hidden=false;}}
+  };
+  retry.addEventListener('click',()=>{void load();});void load();
   draw();
   queueMicrotask(() => { if (active && card.isConnected) input.focus(); });
   return cleanup;

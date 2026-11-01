@@ -31,7 +31,7 @@ export class LakeFisherVisit {
   this.sprite=scene.add.sprite(start.x,start.y,damiaoTexture(scene),characterFrame('down',0,DAMIAO_WALK_FRAMES)).setOrigin(.5,DAMIAO_ORIGIN_Y).setDisplaySize(DAMIAO_DISPLAY,DAMIAO_DISPLAY).setDepth(start.y).setVisible(damiaoAtLake(state()));
   this.panel=new VillageInteractionUI({
    locationLabel:'CABANA DO LAGO',returnLabel:'voltar ao lago',
-   getDialogueAction:()=>needsDamiaoIntroduction(state())?{label:'Receber a vara e liberar a passagem',complete:()=>{const result=receiveDamiaoIntroduction(state(),saveGame);if(result.ok)changed();return result;}}:undefined,
+   getDialogueAction:()=>needsDamiaoIntroduction(state())?{label:'Receber vara de pesca',complete:()=>{const result=receiveDamiaoIntroduction(state(),saveGame);if(result.ok)changed();return result;}}:undefined,
    canTrade:()=>villageAccessUnlocked(state())&&damiaoAtLake(state()),isInside:()=>true,
    getAvailability:()=>({message:needsDamiaoIntroduction(state())?'Tenho um presente e uma indicação para você':'Cabana do lago · '+FISHER_LAKE_HOURS.label,canGuide:false}),
    getPortrait:()=>scene.textures.getBase64('village-npc-damiao',characterFrame('down',0,DAMIAO_WALK_FRAMES)),

@@ -49,3 +49,20 @@ export function drawStyledCharacter(ctx: CanvasRenderingContext2D, profile: Char
   ctx.drawImage(source, 0, 0);
   return true;
 }
+
+let previewLoading:Promise<void>|undefined;
+/** The creator opens before the world loader. Prepare only its idle/walk poses. */
+export function prepareCharacterPreviews():Promise<void>{
+ if(previewLoading)return previewLoading;
+ const pending=CHARACTERS.flatMap(character=>CHARACTER_DIRECTIONS.flatMap(direction=>characterSourcePaths(character.id,direction).map((path,phase)=>({character,direction,path,phase}))));
+ let cursor=0;
+ const worker=async()=>{while(cursor<pending.length){
+  const {character,direction,path,phase}=pending[cursor++],key=frameKey(character.id,direction,phase);
+  if(frames.has(key))continue;
+  const source=await new Promise<HTMLImageElement>((resolve,reject)=>{const image=new Image();image.decoding='async';image.onload=()=>resolve(image);image.onerror=()=>reject(Error('Não foi possível carregar os personagens.'));image.src=path;});
+  const canvas=document.createElement('canvas');canvas.width=CHARACTER_FRAME_WIDTH;canvas.height=CHARACTER_FRAME_HEIGHT;
+  const ctx=canvas.getContext('2d')!;ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(source,CHARACTER_FRAME_WIDTH/2-character.originX,CHARACTER_FRAME_HEIGHT-3*CHARACTER_TEXTURE_DENSITY-character.originY);frames.set(key,canvas);
+ }};
+ previewLoading=Promise.all(Array.from({length:8},()=>worker())).then(()=>{}).catch(error=>{previewLoading=undefined;throw error;});return previewLoading;
+}

@@ -1,3 +1,5 @@
+import {submergedWood} from './submerged-wood';
+import {LakeWaterAnimation} from './lake-water-animation';
 import {lakeSurfaceMotion,lakeCascadeMotion,lakeImpactMotion,LAKE_CASCADE} from './data/lake-water-motion';
 import {FISHER_CABIN} from './data/fisher-cabin';
 import {lakeFishShadows} from './data/lake-fish';
@@ -11,12 +13,12 @@ import {drawMapTerrainEdits} from './map-editor-terrain';
 import {drawEditorProp} from './editor-prop-art';
 import {setupVillagePropAtlas} from './village-prop-atlas';
 import pierArt from '../public/assets/visual/village/pier/manifest.json';
-import {LAKE_RIDGE,LAKE_SIDE_RIDGES,LAKE_SIDE_CROP,LAKE_PIER,LAKE_BRIDGE,lakeObjects,lakeLowVegetationClear,lakeSandWeight,lakeStairPathBlend,lakeWater,lakeWaterDistance,lakeTrailDistance,lakeTrailHalfWidth,LAKE_CITY_ENTRY,LAKE_CITY_EXIT,LAKE_PROPERTY_ENTRY,LAKE_PROPERTY_EXIT} from './data/fishing-lake';
+import {LAKE_RIDGE,LAKE_SIDE_RIDGES,LAKE_SIDE_CROP,LAKE_PIER,LAKE_BRIDGE,LAKE_PIER_PROPS,lakeShoreCoverage,lakeObjects,lakeLowVegetationClear,lakeSandWeight,lakeStairPathBlend,lakeWater,lakeWaterDistance,lakeTrailDistance,lakeTrailHalfWidth,LAKE_CITY_ENTRY,LAKE_CITY_EXIT,LAKE_PROPERTY_ENTRY,LAKE_PROPERTY_EXIT} from './data/fishing-lake';
 import {drawExitSign} from './exit-signs';
 export function preloadFishingLake(scene:Phaser.Scene):void{
  if(!scene.textures.exists(FISHER_CABIN.texture))scene.load.image(FISHER_CABIN.texture,FISHER_CABIN.file);
  if(!scene.textures.exists('lake-west-source'))scene.load.image('lake-west-source','assets/visual/fishing-lake/west-ridge.png');
- if(!scene.textures.exists('lake-pier-source'))scene.load.image('lake-pier-source','assets/visual/fishing-lake/fishing-pier.png');
+ if(!scene.textures.exists('lake-pier-source'))scene.load.image('lake-pier-source','assets/visual/fishing-lake/fishing-pier-relocated.png');
  if(!scene.textures.exists('lake-ridge-source'))scene.load.image('lake-ridge-source','assets/visual/fishing-lake/ridge-waterfall.png');
  if(!scene.textures.exists('village-pier-source'))scene.load.image('village-pier-source',pierArt.file);
 }
@@ -24,6 +26,7 @@ export class FishingLakeWorld {
  readonly editorObjects:WorldEditorObject[]=[];
  readonly trees:Phaser.GameObjects.Image[]=[];
  readonly objects:Phaser.GameObjects.GameObject[];
+ private motion:LakeWaterAnimation;
  private waterFX:Phaser.GameObjects.Graphics;
  private fishFX:Phaser.GameObjects.Graphics;
  constructor(private scene:Phaser.Scene,private readonly edits?:MapEditData,namespace='fishing-lake'){
@@ -40,9 +43,10 @@ export class FishingLakeWorld {
   scene.add.image(p.x,p.y,'lake-pier-source').setOrigin(0).setDisplaySize(p.width,p.height).setDepth(-3).setData('lake-landmark','pier');
   scene.add.image(p.x,p.y,'lake-pier-source').setOrigin(0).setDisplaySize(p.width,p.height).setCrop(500,480,1210,100).setDepth(47.5*32);
   scene.add.image(p.x,p.y,'lake-pier-source').setOrigin(0).setDisplaySize(p.width,p.height).setCrop(70,670,480,130).setDepth(49.4*32);
+  submergedWood(scene,'lake-pier-source','lake-pier-wet-posts',[[92,747,67,52],[296,740,54,49],[474,742,82,58],[507,565,67,48],[772,551,52,44],[992,554,56,45],[1215,554,55,45],[1437,560,65,50],[1652,558,64,49]],p.x,p.y,p.width,p.height,49.5*32);
   this.drawCabin();
   const bridge=LAKE_BRIDGE;this.drawDeck(bridge.x*32,bridge.y*32,bridge.width*32,bridge.height*32);
-  for(const [frame,x,y,w,h]of [['crate',79.5,44,44,34],['anchor',80.5,43.5,44,42]] as const)scene.add.image(x*32,y*32,'lake-pier',frame).setOrigin(.5,1).setDisplaySize(w,h).setDepth(y*32);
+  for(const p of LAKE_PIER_PROPS)scene.add.image(p.x*32,p.y*32,'lake-pier',p.frame).setOrigin(.5,1).setDisplaySize(p.width,p.height).setDepth(p.y*32).setData('lake-fishing-prop',p.frame);
   // Small lookout bench remains on the terrace, away from the stairs.
   scene.add.image(28*32,5*32,'woodwork-bench-0').setOrigin(.5,1).setScale(.4).setDepth(5*32);
   for(const p of lakeObjects(edits)){
@@ -57,6 +61,7 @@ export class FishingLakeWorld {
   scene.add.image(29*32,38*32-12,'asset-pine-1').setOrigin(.5,256/264).setDisplaySize(90,120).setDepth(38*32);
   drawExitSign(scene,edits?.points?.exit??LAKE_CITY_EXIT,edits?.points?.entry??LAKE_CITY_ENTRY);
   drawExitSign(scene,LAKE_PROPERTY_EXIT,LAKE_PROPERTY_ENTRY);
+  this.motion=new LakeWaterAnimation(scene,edits);
   this.fishFX=scene.add.graphics().setDepth(-8).setData('lake-fish-shadows',true);
   this.waterFX=scene.add.graphics().setDepth(-4).setData('lake-water-animation',true);
   this.objects=scene.children.list.filter(o=>!before.has(o));this.update(0);
@@ -74,23 +79,24 @@ export class FishingLakeWorld {
  private drawDeck(x:number,y:number,width:number,height:number):void {
   const r=pierArt.frames.pier,f=pierArt.frames['pier-front'];
   this.scene.add.image(x,y,'lake-pier','pier').setOrigin(0).setDisplaySize(width,height).setDepth(-3);
+  submergedWood(this.scene,'village-pier-source','lake-bridge-wet-posts',[[r.x,r.y+Math.round(r.height*.84),r.width,Math.floor(r.height*.16)]],x-r.x*width/r.width,y-r.y*height/r.height,(this.scene.textures.get('village-pier-source').getSourceImage() as HTMLImageElement).width*width/r.width,(this.scene.textures.get('village-pier-source').getSourceImage() as HTMLImageElement).height*height/r.height,y+height*.85);
   this.scene.add.image(x,y+(f.y-r.y)*height/r.height,'lake-pier','pier-front').setOrigin(0).setDisplaySize(width,f.height*height/r.height).setDepth(y+height*.84);
  }
  private drawGround():void {
-  const key='lake-natural-ground-v18';if(!this.scene.textures.exists(key)){
+  const key='lake-natural-ground-v19';if(!this.scene.textures.exists(key)){
    const materials=readTerrainSprites(this.scene);if(!materials)throw Error('Terreno do lago indisponível');
    const canvas=document.createElement('canvas');canvas.width=3072;canvas.height=2304;const c=canvas.getContext('2d')!,p=c.createImageData(3072,2304);
    for(let by=0;by<2304;by+=4)for(let bx=0;bx<3072;bx+=4){
     const x=(bx+2)/32,y=(by+2)/32,d=lakeWaterDistance(x,y),trail=lakeTrailDistance(x,y),shore=Math.max(0,1-Math.abs(d)/(.78+.18*Math.sin(x*.31+y*.23)+.13*Math.sin(y*.6-x*.19))),grass=.45+.2*Math.sin(x*.2)*Math.cos(y*.19),path=d>=0?Math.max(0,Math.min(1,(lakeTrailHalfWidth(x,y,trail)-trail)/.48)):0;
     const sand=lakeSandWeight(x,y),stair=lakeStairPathBlend(x,y);
     for(let dy=0;dy<4;dy++)for(let dx=0;dx<4;dx++){
-     const px=bx+dx,py=by+dy,at=(py*3072+px)*4,src=((py%96)*96+px%96)*4;
+     const px=bx+dx,py=by+dy,at=(py*3072+px)*4,src=((py%96)*96+px%96)*4,sd=Math.abs(d)<.3?lakeWaterDistance((px+.5)/32,(py+.5)/32):d,coverage=lakeShoreCoverage(sd);
      for(let k=0;k<3;k++){
       let value=materials.forest.pixels[src+k]*(1-grass)+materials.grass.pixels[src+k]*grass;
-      if(d<0){value=waterFinishChannel(materials.water.pixels[src+k],k,d*32);}
+      if(coverage>=1){value=waterFinishChannel(materials.water.pixels[src+k],k,sd*32);}
       else{const bank=Math.max(shore*.65,sand*.88);value=value*(1-bank)+materials.sand.pixels[src+k]*bank;
        const original=materials['path-dry'].pixels[src+k],matched=[166,144,88][k]+(original-[187,148,94][k])*.7,pathColour=original*(1-stair)+matched*stair;
-       value=value*(1-path)+pathColour*path;}
+       value=value*(1-path)+pathColour*path;if(coverage>0)value=value*(1-coverage)+waterFinishChannel(materials.water.pixels[src+k],k,sd*32)*coverage;}
       p.data[at+k]=value;
      }p.data[at+3]=255;
     }
@@ -99,6 +105,7 @@ export class FishingLakeWorld {
   }this.scene.add.image(0,0,key).setOrigin(0).setDepth(-100);
  }
  update(time:number):void {
+  this.motion.update(time);
   const fish=this.fishFX;fish.clear();
   for(const p of lakeFishShadows(time,this.edits)){
    const s=p.size;fish.save();fish.translateCanvas(p.x,p.y);fish.rotateCanvas(p.angle);fish.fillStyle(0x0a3034,p.alpha);
@@ -113,11 +120,12 @@ export class FishingLakeWorld {
   }
   for(const p of lakeCascadeMotion(time)){g.lineStyle(p.width,0xe5ffff,p.alpha);g.lineBetween(p.x,p.y,p.x+Math.sin(p.y*.04)*1.5,Math.min(LAKE_CASCADE.bottom,p.y+p.length));}
   for(let i=0;i<7;i++){
-   const phase=((time*.00055+i/7)%1),x=LAKE_CASCADE.x+Math.sin(i*2.4)*9,y=LAKE_CASCADE.bottom+14+phase*14;
-   g.lineStyle(1,0xd5f8ef,(1-phase)*.28);g.strokeEllipse(x,y,22+phase*115,5+phase*26);
+   const phase=(time*.0005+i/7)%1,x=LAKE_CASCADE.x+Math.sin(i*2.4)*14,y=LAKE_CASCADE.bottom+8+phase*20,r=20+phase*74;
+   g.lineStyle(1,0xd5f8ef,(1-phase)*.3);g.beginPath();
+   for(let j=0;j<=12;j++){const a=.15+j/12*2.65,px=x+Math.cos(a)*r,py=y+Math.sin(a)*r*.2;j?g.lineTo(px,py):g.moveTo(px,py);}g.strokePath();
   }
   for(const p of lakeImpactMotion(time)){g.fillStyle(0xeafff8,p.alpha);g.fillEllipse(p.x,p.y,p.radius*2,p.radius);}
 
  }
- destroy():void{this.objects.forEach(o=>o.destroy());}
+ destroy():void{this.objects.forEach(o=>o.destroy());this.motion.destroy();}
 }

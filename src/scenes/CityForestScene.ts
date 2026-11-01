@@ -1,3 +1,4 @@
+import {craftInField,consumeInField} from '../systems/field-inventory';
 import {villageAccessUnlocked,invitationGateBlocked,VILLAGE_LOCK_MESSAGE} from '../systems/village-introduction';
 import {drawVillageInvitationGate} from '../village-invitation-gate';
 import {sampleWaterDepth} from '../swimming';
@@ -96,7 +97,7 @@ export class CityForestScene extends Phaser.Scene{
  }
  private nearCity():boolean{return Math.hypot(this.player.x/32-CITY_ACCESS.x,this.player.y/32-CITY_ACCESS.y)<3;}
  private updateHUD():void{
-  this.ui.updateHUD({area:'cityForest',swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:null,prompt:!villageAccessUnlocked(this.state)&&this.player.y>67*32?VILLAGE_LOCK_MESSAGE:this.nearCity()?'Siga pela estrada para viajar à cidade':'Lago a oeste · vila ao sul · cidade ao norte',location:'Floresta de Acesso à Cidade',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
+  this.ui.updateHUD({toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,farmingProgress:this.state.farmingProgress,area:'cityForest',swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:null,prompt:!villageAccessUnlocked(this.state)&&this.player.y>67*32?VILLAGE_LOCK_MESSAGE:this.nearCity()?'Siga pela estrada para viajar à cidade':'Lago a oeste · vila ao sul · cidade ao norte',location:'Floresta de Acesso à Cidade',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
   this.ui.updateCameraZoom(this.zoom,!this.paused);
  }
  private blockedPoint=(x:number,y:number)=>cityForestBlockedPoint(x,y,this.state.cityForestMapEdits);
@@ -109,7 +110,11 @@ export class CityForestScene extends Phaser.Scene{
   const key=e.key.toLowerCase();
   if(key==='escape'){e.preventDefault();this.ui.togglePause();return;}
   if(key==='m'){e.preventDefault();this.updateHUD();this.ui.toggleMap();return;}
+  if(key==='i'){e.preventDefault();this.updateHUD();this.ui.toggleInventory(this.state.inventory);return;}
+  if(key==='c'){e.preventDefault();this.ui.toggleCrafting(this.state.inventory,false);return;}
+  if(key==='b'){e.preventDefault();this.ui.toast('Construa na propriedade.');return;}
   if(this.paused)return;
+  if(e.key>='1'&&e.key<='9'){this.ui.activateSlot(Number(e.key)-1);return;}
   if(key==='e'&&this.nearCity()&&!this.ui.isModalOpen())this.askCityTravel();
   if(['+','=','-','_','Home'].includes(e.key)&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();this.changeCameraZoom(e.key==='Home'?0:e.key==='-'||e.key==='_'?-1:1);}
  }
@@ -135,8 +140,8 @@ export class CityForestScene extends Phaser.Scene{
  }
  setPaused(value:boolean):void{this.paused=value;this.input.keyboard?.resetKeys();if(value)this.persist();this.ui.updateCameraZoom(this.zoom,!value);}
  selectTool(_tool:Tool):void{this.ui.toast('Explore a floresta a pé. A coleta continua disponível nos mapas anteriores.');}
- craftRecipe(_id:string):void{this.ui.toast('Use a bancada na propriedade.');}
- async useVillageItem(_item:ItemId):Promise<void>{this.ui.toast('Use esse item na propriedade ou nos comércios.');}
+ craftRecipe(id:string):void{const result=craftInField(this.state,id,saveGame);this.ui.toast(result.message);this.updateHUD();this.ui.refreshCrafting(this.state.inventory,false);}
+ async useVillageItem(item:ItemId):Promise<void>{if(this.leaving)return;const result=consumeInField(this.state,item,saveGame);this.ui.toast(result.message);this.updateHUD();}
  openMapEditor():void{
   if(!DEVELOPMENT_TOOLS||this.leaving)return;
   if(!this.persist())return;const original=structuredClone(this.state);this.setPaused(true);this.ui.showMapEditorMode();this.scene.setVisible(false);this.scene.pause();

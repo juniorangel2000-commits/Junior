@@ -49,7 +49,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   herbalTonic: {name:'Tônico de ervas',description:'Preparado de Amélia para recuperar o vigor.',iconFallback:'water'},
   fertilizer: {name:'Fertilizante',description:'Adubo preparado para cuidar dos canteiros da propriedade.',iconFallback:'fiber'},
   fishingRod: {name:'Vara de pesca',description:'Equipamento de Damião para pescar nas margens dos lagos.',iconFallback:'branch'},
-  bait: {name:'Iscas',description:'Iscas consumidas ao tentar pescar com a vara.',iconFallback:'seeds'},
+  bait: {name:'Minhoca',description:'Isca básica. Uma minhoca é utilizada por tentativa com vara ou rede.',iconFallback:'seeds'},
   net: {name:'Rede de pesca',description:'Equipamento de pesca vendido por Damião.',iconFallback:'cord'},
   fish: {name:'Peixes',description:'Pescado fresco para vender, cozinhar ou negociar na vila.',iconFallback:'seeds'},
   rareFish: {name:'Peixe raro',description:'Uma captura incomum procurada por Damião.',iconFallback:'seeds'},

@@ -12,8 +12,19 @@ function segmentDistance(x:number,y:number,a:readonly number[],b:readonly number
  const dx=b[0]-a[0],dy=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/(dx*dx+dy*dy)));
  return Math.hypot(x-a[0]-dx*t,y-a[1]-dy*t);
 }
+const raised=(x:number,y:number)=>pointInPolygon(x,y,deck)||pointInPolygon(x,y,stairs);
+const atLanding=(x:number,y:number)=>segmentDistance(x,y,stairs[3],stairs[2])<28&&x>stairs[3][0]-8&&x<stairs[2][0]+8;
+function edgeSolid(x:number,y:number):boolean{
+ if(raised(x,y)||atLanding(x,y))return false;
+ return [deck,stairs].some(polygon=>polygon.some((a,i)=>segmentDistance(x,y,a,polygon[(i+1)%polygon.length])<12));
+}
+/** A raised platform has one portal: the bottom of the staircase. */
+export function cabinAllowsStep(from:{x:number;y:number},to:{x:number;y:number}):boolean{
+ const a=local(from.x,from.y),b=local(to.x,to.y);
+ return raised(a.x,a.y)===raised(b.x,b.y)||atLanding(a.x,a.y)&&atLanding(b.x,b.y);
+}
 export function cabinSolidPoint(x:number,y:number):boolean{
- const p=local(x,y);return pointInPolygon(p.x,p.y,walls)||((p.x-860)/66)**2+((p.y-770)/32)**2<=1||((p.x-430)/65)**2+((p.y-635)/23)**2<=1||rails.some(([a,b])=>segmentDistance(p.x,p.y,a,b)<20);
+ const p=local(x,y);return edgeSolid(p.x,p.y)||pointInPolygon(p.x,p.y,walls)||((p.x-860)/66)**2+((p.y-770)/32)**2<=1||((p.x-430)/65)**2+((p.y-635)/23)**2<=1||rails.some(([a,b])=>segmentDistance(p.x,p.y,a,b)<20);
 }
 export function cabinFloorPoint(x:number,y:number):boolean{
  const p=local(x,y);return !cabinSolidPoint(x,y)&&(pointInPolygon(p.x,p.y,deck)||pointInPolygon(p.x,p.y,stairs));

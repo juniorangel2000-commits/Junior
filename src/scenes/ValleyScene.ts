@@ -1,3 +1,4 @@
+import {createFishingCast} from '../fishing-cast';
 import {villageAccessUnlocked,invitationGateBlocked,VILLAGE_LOCK_MESSAGE} from '../systems/village-introduction';
 import {drawVillageInvitationGate} from '../village-invitation-gate';
 import {drawCraftedBench} from '../woodwork-art';
@@ -653,7 +654,7 @@ export class ValleyScene extends Phaser.Scene {
     if(item==='waterPump'&&!near){this.ui.toast('Instale a bomba perto de um rio ou lago.');return;}
     if(item==='fishingRod'||item==='net'){
       if(this.player.isSwimming||!near){this.ui.toast('Fique em terra firme, perto da água, para pescar.');return;}
-      this.setPaused(true);const message=await fishAtBank(this.state,item==='net',()=>{Object.assign(this.inventory.data,this.state.inventory);this.persist();});this.setPaused(false);this.ui.toast(message);
+      this.setPaused(true);const message=await fishAtBank(this.state,item==='net',()=>{Object.assign(this.inventory.data,this.state.inventory);this.updateHUD();},createFishingCast(this,this.player,(x,y)=>this.swimmingPoint(x,y)>0,(x,y)=>!this.movementBlockedPoint(x,y),item==='net'));this.setPaused(false);this.ui.toast(message);
     }else{const result=useConsumable(this.state,item,point,(x,y)=>this.world.isBlocked(x,y)||this.building.isBlocked(x,y)||planting&&(!this.world.canPlantTree(x,y)||!naturalPlantGround(this.state.mapEdits?.terrain[`${x},${y}`])||this.farming.isPrepared(x,y)||!!this.world.resourceAt(x,y)||this.world.resources.some(n=>n.kind==='standingTree'&&Math.hypot(n.x-x,n.y-y)<2)));if(result.ok){Object.assign(this.inventory.data,this.state.inventory);if(planting)this.resourceLifecycle?.tick(true);this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);this.persist();}this.ui.toast(result.message);}
     this.updateHUD();
   }

@@ -1,0 +1,66 @@
+import type {SaveData} from '../types';
+import {Inventory} from './inventory';
+import {createVillageProgress} from '../data/village-progress';
+export type FishingPhase='waiting'|'bite'|'fighting'|'caught'|'escaped'|'cancelled';
+export const FISHING_RULES={waitMin:10,waitMax:20,hookSeconds:3,maxFightSeconds:45,vigorCost:3} as const;
+const clamp=(v:number,min=0,max=1)=>Math.max(min,Math.min(max,v));
+export class FishingSession {
+ phase:FishingPhase='waiting';
+ readonly waitSeconds:number;
+ readonly rare:boolean;
+ readonly bandSize:number;
+ fish=.5;band=.5;velocity=0;progress=.28;
+ elapsed=0;fightSeconds=0;biteRemaining:number=FISHING_RULES.hookSeconds;
+ private target=.5;
+ private turn=0;
+ private swimAge=0;
+ constructor(readonly skill:number,readonly net=false,accessory=false,private random:()=>number=Math.random){
+  this.waitSeconds=FISHING_RULES.waitMin+clamp(random())*(FISHING_RULES.waitMax-FISHING_RULES.waitMin);
+  this.rare=clamp(random())<.04+clamp(skill,0,2)*.04+(accessory?.03:0);
+  this.bandSize=.28+(clamp(skill,1,2)-1)*.08+(net?.05:0);
+ }
+ hook():boolean{if(this.phase!=='bite')return false;this.phase='fighting';return true;}
+ cancel():void{if(this.phase!=='caught'&&this.phase!=='escaped')this.phase='cancelled';}
+ step(seconds:number,held=false):void{
+  if(!Number.isFinite(seconds)||seconds<=0)return;
+  if(this.phase==='waiting'||this.phase==='bite'){
+   this.elapsed+=seconds;
+   if(this.elapsed>=this.waitSeconds){this.phase='bite';this.biteRemaining=Math.max(0,FISHING_RULES.hookSeconds-(this.elapsed-this.waitSeconds));if(!this.biteRemaining)this.phase='escaped';}
+   return;
+  }
+  if(this.phase!=='fighting')return;
+  let remaining=Math.min(seconds,1);
+  while(remaining>1e-8&&this.phase==='fighting'){
+   const dt=Math.min(remaining,1/120);remaining-=dt;this.fightSeconds+=dt;this.swimAge+=dt;this.turn-=dt;
+   if(this.turn<=0){this.target=.08+clamp(this.random())*.84;this.turn=(this.rare?.55:1.2)+clamp(this.random())*(this.rare?.8:1.2);}
+   const movement=(this.target-this.fish)*(this.rare?2.3:1.45)+Math.sin(this.swimAge*(this.rare?5.2:2.8))*(this.rare?.10:.045);
+   this.fish=clamp(this.fish+clamp(movement,-.5,.5)*dt,.045,.955);
+   this.velocity=clamp((this.velocity+(held?2.1:-1.65)*dt)*Math.exp(-1.6*dt),-.72,.72);
+   this.band+=this.velocity*dt;const half=this.bandSize/2;
+   if(this.band<half){this.band=half;this.velocity=Math.max(0,-this.velocity*.12);}
+   if(this.band>1-half){this.band=1-half;this.velocity=Math.min(0,-this.velocity*.12);}
+   const inside=Math.abs(this.fish-this.band)<=half;
+   this.progress=clamp(this.progress+dt*(inside?(this.rare?.115:.16)*(this.net?1.1:1):-.085));
+   if(this.progress>=1)this.phase='caught';else if(this.progress<=0||this.fightSeconds>=FISHING_RULES.maxFightSeconds)this.phase='escaped';
+  }
+ }
+}
+type Writer=(draft:SaveData)=>boolean;
+const persist=(draft:SaveData,write:Writer):boolean=>{try{return write(draft);}catch{return false;}};
+export function beginFishingCast(save:SaveData,net:boolean,rare:boolean,write:Writer):{ok:boolean;message:string}{
+ if(!save.villageProgress?.fishingSkill)return{ok:false,message:'Aprenda a pescar com Damião na cabana do lago ou na vila.'};
+ const draft=structuredClone(save),inventory=new Inventory(draft.inventory);
+ if(!inventory.has(net?'net':'fishingRod')||!inventory.has('bait'))return{ok:false,message:'Você precisa do equipamento e de uma isca.'};
+ const capacity=new Inventory(draft.inventory);
+ if(!capacity.transact({bait:1},{[rare?'rareFish':'fish']:net?2:1}))return{ok:false,message:'Libere espaço na mochila para a captura antes de lançar a linha.'};
+ inventory.spend({bait:1});draft.inventory={...inventory.data};
+ const p=draft.villageProgress??=createVillageProgress();p.vigor=Math.max(0,p.vigor-FISHING_RULES.vigorCost);
+ if(!persist(draft,write))return{ok:false,message:'Não foi possível salvar o lançamento. A isca e o vigor foram preservados.'};
+ save.inventory=draft.inventory;save.villageProgress=draft.villageProgress;return{ok:true,message:''};
+}
+export function collectFishingCatch(save:SaveData,net:boolean,rare:boolean,write:Writer):{ok:boolean;message:string}{
+ const draft=structuredClone(save),inventory=new Inventory(draft.inventory),amount=net?2:1;
+ if(!inventory.transact({},{[rare?'rareFish':'fish']:amount}))return{ok:false,message:'Sem espaço para guardar a captura. Libere espaço antes de tentar novamente.'};
+ draft.inventory={...inventory.data};if(!persist(draft,write))return{ok:false,message:'Não foi possível salvar a captura. Tente guardá-la novamente.'};
+ save.inventory=draft.inventory;return{ok:true,message:rare?(net?'Você capturou 2 peixes raros!':'Você capturou um peixe raro!'):(net?'Você capturou 2 peixes!':'Peixe capturado!')};
+}

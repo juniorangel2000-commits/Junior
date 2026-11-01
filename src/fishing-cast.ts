@@ -1,0 +1,46 @@
+import type Phaser from 'phaser';
+import type {Player} from './player';
+import {directionFromVector,directionVector} from './character-directions';
+export const FISHING_ART={rod:'assets/visual/fishing/fishing-rod.png',worm:'assets/visual/fishing/basic-worm.png'} as const;
+export function preloadFishingArt(scene:Phaser.Scene):void{
+ if(!scene.textures.exists('fishing-rod-world'))scene.load.image('fishing-rod-world',FISHING_ART.rod);
+ if(!scene.textures.exists('fishing-worm-world'))scene.load.image('fishing-worm-world',FISHING_ART.worm);
+}
+export function fishingCastTarget(player:{x:number;y:number;facing:{x:number;y:number}},water:(x:number,y:number)=>boolean,clear:(x:number,y:number)=>boolean=()=>true):{x:number;y:number}|undefined{
+ const angle=Math.atan2(player.facing.y,player.facing.x);
+ for(const distance of [48,64,88,112,144,176])for(const offset of [0,Math.PI/4,-Math.PI/4,Math.PI/2,-Math.PI/2,Math.PI*.75,-Math.PI*.75,Math.PI]){
+  const x=player.x+Math.cos(angle+offset)*distance,y=player.y+Math.sin(angle+offset)*distance;
+  if(water(x,y)&&clear(x,y))return{x,y};
+ }
+}
+/** A held rod, travelling line and landing float are world effects, not UI frames. */
+export function createFishingCast(scene:Phaser.Scene,player:Player,water:(x:number,y:number)=>boolean,clear:(x:number,y:number)=>boolean=()=>true,net=false):{start:()=>Promise<boolean>;destroy:()=>void}{
+ let rod:Phaser.GameObjects.Image|undefined,worm:Phaser.GameObjects.Image|undefined,graphics:Phaser.GameObjects.Graphics|undefined,resolve:((ok:boolean)=>void)|undefined,started=0,destroyed=false,landed=false;
+ const target=fishingCastTarget(player,water,clear);
+ const update=()=>{
+  if(destroyed||!target||!graphics)return;
+  const elapsed=Math.max(0,(scene.time.now-started)/1000),hand=player.leftHandPosition,angle=Math.atan2(target.y-hand.y,target.x-hand.x),load=Math.min(1,elapsed/.28),release=Math.max(0,Math.min(1,(elapsed-.28)/.6));
+  const swing=elapsed<.28?-.25-load*.95:-((1-release)**2)*1.2;
+  rod?.setPosition(hand.x,hand.y).setRotation(angle+.84+swing).setDepth(player.y+2);
+  const tip={x:hand.x+Math.cos(angle+swing)*46,y:hand.y+Math.sin(angle+swing)*46};
+  const t=Math.max(0,Math.min(1,(elapsed-.35)/.6)),bob={x:tip.x+(target.x-tip.x)*t,y:tip.y+(target.y-tip.y)*t-Math.sin(Math.PI*t)*48};
+  graphics.clear();graphics.setDepth(Math.max(player.y,target.y)+3);
+  if(!net){graphics.lineStyle(.75,0xf0e1b5,.8);graphics.beginPath();graphics.moveTo(tip.x,tip.y);graphics.lineTo((tip.x+bob.x)/2,(tip.y+bob.y)/2+Math.sin(Math.PI*t)*8);graphics.lineTo(bob.x,bob.y);graphics.strokePath();}
+  if(t<1){worm?.setVisible(!net).setPosition(bob.x,bob.y).setRotation(t*5);if(net){graphics.lineStyle(1,0xc8b785,.8);for(let i=-2;i<=2;i++){graphics.lineBetween(bob.x-9,bob.y+i*3,bob.x+9,bob.y+i*3);graphics.lineBetween(bob.x+i*4,bob.y-6,bob.x+i*4,bob.y+6);}}}
+  else{
+   worm?.setVisible(false);const lift=Math.sin(elapsed*3)*1.1;
+   graphics.lineStyle(.7,0x193f42,.9);graphics.fillStyle(0xe5e5c6,1);graphics.fillEllipse(target.x,target.y+lift,4,6);graphics.fillStyle(0xbe5443,1);graphics.fillEllipse(target.x,target.y+lift+2,4,3);
+   for(let i=0;i<2;i++){const phase=(Math.max(0,elapsed-.95)*.7+i*.5)%1;graphics.lineStyle(.8,0xc4e5d9,(1-phase)*.5);graphics.strokeEllipse(target.x,target.y+3,8+phase*24,3+phase*7);}
+   if(!landed){landed=true;resolve?.(true);resolve=undefined;}
+  }
+ };
+ const destroy=()=>{if(destroyed)return;destroyed=true;scene.events.off('update',update);scene.events.off('shutdown',destroy);rod?.destroy();worm?.destroy();graphics?.destroy();resolve?.(false);resolve=undefined;};
+ return{start:()=>new Promise<boolean>(done=>{
+  if(destroyed){done(false);return;}if(!target){done(true);return;}
+  const direction=directionFromVector(target.x-player.x,target.y-player.y);player.facing=directionVector(direction);player.update(0,()=>false,()=>false,false,()=>player.waterDepth);
+  resolve=done;started=scene.time.now;
+  if(!net&&scene.textures.exists('fishing-rod-world'))rod=scene.add.image(player.x,player.y,'fishing-rod-world').setOrigin(.26,.78).setDisplaySize(54,54).setData('fishing-cast-rod',true);
+  if(scene.textures.exists('fishing-worm-world'))worm=scene.add.image(player.x,player.y,'fishing-worm-world').setDisplaySize(12,12).setDepth(player.y+3);
+  graphics=scene.add.graphics().setData('fishing-cast-line',true);scene.events.on('update',update);scene.events.once('shutdown',destroy);update();
+ }),destroy};
+}

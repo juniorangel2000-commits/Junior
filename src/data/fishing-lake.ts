@@ -57,6 +57,24 @@ export function lakePier(x:number,y:number):boolean {
  const localX=x-LAKE_PIER.x/32,localY=y-LAKE_PIER.y/32;
  return(localX>=5.3&&localX<=18.5&&localY>=3.7&&localY<=5.2)||(localX>=1.6&&localX<=5.6&&localY>=1.6&&localY<=7.15);
 }
+export const LAKE_PIER_PROPS=[
+ {frame:'crate',x:63.6,y:48.35,width:44,height:34},
+ {frame:'anchor',x:65.2,y:48.0,width:44,height:42},
+] as const;
+/** Crossing a raised deck boundary is legal only at its landward entrance. */
+export function lakeDeckAllowsStep(from:{x:number;y:number},to:{x:number;y:number}):boolean{
+ const ax=from.x/32,ay=from.y/32,bx=to.x/32,by=to.y/32;
+ if(lakePier(ax,ay)!==lakePier(bx,by)){
+  const end=LAKE_PIER.x/32+18.5,low=LAKE_PIER.y/32+3.7,high=LAKE_PIER.y/32+5.2;
+  if(Math.abs(ax-end)>.26||Math.abs(bx-end)>.26||ay<low||ay>high||by<low||by>high)return false;
+ }
+ if(lakeBridge(ax,ay)!==lakeBridge(bx,by)){
+  const nearEnd=[LAKE_BRIDGE.x,LAKE_BRIDGE.x+LAKE_BRIDGE.width].some(x=>Math.abs(ax-x)<.26&&Math.abs(bx-x)<.26),low=LAKE_BRIDGE.y+LAKE_BRIDGE.height*.28,high=LAKE_BRIDGE.y+LAKE_BRIDGE.height*.73;
+  if(!nearEnd||ay<low||ay>high||by<low||by>high)return false;
+ }
+ return true;
+}
+export const lakeShoreCoverage=(distance:number)=>Math.max(0,Math.min(1,.5-distance*32/1.5));
 /** Physical ropes and the moored boat remain solid when the player can swim. */
 export function lakeStructureBlockedPoint(x:number,y:number):boolean {
  const px=x-LAKE_PIER.x/32,py=y-LAKE_PIER.y/32;
@@ -64,7 +82,7 @@ export function lakeStructureBlockedPoint(x:number,y:number):boolean {
  const headRail=((px>=.85&&px<=1.6)&&(py>=1.1&&py<=7.6))||(px>=.85&&px<=5.8&&((py>=1.1&&py<=1.6)||(py>=7.15&&py<=7.6)));
  const boat=px>=6.5&&px<=10.5&&py>=6.4&&py<=8.8;
  const bridge=x>=LAKE_BRIDGE.x&&x<=LAKE_BRIDGE.x+LAKE_BRIDGE.width&&((y>=LAKE_BRIDGE.y+LAKE_BRIDGE.height*.18&&y<=LAKE_BRIDGE.y+LAKE_BRIDGE.height*.28)||(y>=LAKE_BRIDGE.y+LAKE_BRIDGE.height*.73&&y<=LAKE_BRIDGE.y+LAKE_BRIDGE.height*.85));
- return mainRail||headRail||boat||bridge;
+ return mainRail||headRail||boat||bridge||Math.abs(x-63.8)<1.05&&y>43.9&&y<44.9||LAKE_PIER_PROPS.some(p=>Math.abs(x-p.x)<.45&&y>p.y-.45&&y<p.y+.12);
 }
 const lakesideTrail=[...Array.from({length:145},(_,i)=>{
  const a=-.33+i/144*(4+.33),wave=Math.sin(a*5+.4)*.9+Math.sin(a*9)*.5+Math.cos(a*13)*.18;

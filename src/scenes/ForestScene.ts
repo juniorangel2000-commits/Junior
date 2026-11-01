@@ -1,3 +1,4 @@
+import {createFishingCast} from '../fishing-cast';
 import {setupTreeWind} from '../tree-wind';
 import { advanceBackgroundVillage } from '../systems/village-background';
 import {preloadPetArt} from "../dungeons/pet-sprites";
@@ -185,7 +186,7 @@ export class ForestScene extends Phaser.Scene {
     if(item==='waterPump'&&!near){this.ui.toast('Instale a bomba perto de um rio ou lago.');return;}
     if(item==='fishingRod'||item==='net'){
       if(this.player.isSwimming||!near){this.ui.toast('Fique em terra firme, perto da água, para pescar.');return;}
-      this.setPaused(true);const message=await fishAtBank(this.state,item==='net',()=>{;this.persist();});this.setPaused(false);this.ui.toast(message);
+      this.setPaused(true);const message=await fishAtBank(this.state,item==='net',()=>this.updateHUD(),createFishingCast(this,this.player,(x,y)=>this.swimmingPoint(x,y)>0,(x,y)=>!this.movementBlockedAt(Math.floor(x/32),Math.floor(y/32)),item==='net'));this.setPaused(false);this.ui.toast(message);
     }else{const result=useConsumable(this.state,item,point,(x,y)=>this.world.isBlocked(x,y)||planting&&(!treeGroundClear(x,y,this.world.waterPointAt)||!naturalPlantGround(this.state.forestMapEdits?.terrain[`${x},${y}`])||forestPathDistance(x,y)<2||!!this.world.resourceAt(x,y)||this.world.resources.some(n=>n.kind==='standingTree'&&Math.hypot(n.x-x,n.y-y)<2)));if(result.ok){if(planting)this.resourceLifecycle?.tick(true);this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);this.persist();}this.ui.toast(result.message);}
     this.updateHUD();
   }

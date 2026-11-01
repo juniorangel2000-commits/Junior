@@ -7,15 +7,15 @@ export const VILLAGE_LOCK_MESSAGE='Passagem fechada · converse com Damião na c
 export const DAMIAO_INTRODUCTION=[
  'Olá, viajante. Sou Damião. Esta cabana é meu ponto de pesca. Veio da propriedade abandonada, ao sul do lago?',
  'Há uma vila à direita da sua propriedade, a leste. Siga por aquele caminho para encontrar os outros moradores e seus comércios.',
- 'Leve esta vara de pesca: é um presente para começar sua vida por aqui. Vou liberar a passagem para a vila. Quando quiser aprender a pescar, peça uma aula comigo.',
+ 'Leve esta vara de pesca: é um presente para começar sua vida por aqui. Quando quiser aprender a pescar, peça uma aula comigo.',
 ];
 export function receiveDamiaoIntroduction(save:SaveData,write:(draft:SaveData)=>boolean):{ok:boolean;message:string}{
  if(!needsDamiaoIntroduction(save)||save.activeArea!=='fishingLake')return{ok:false,message:'Este presente já foi recebido ou Damião não está por perto.'};
  const draft=structuredClone(save),inventory=new Inventory(draft.inventory);
- if(!inventory.transact({},{fishingRod:1}))return{ok:false,message:'Libere um espaço na mochila para receber a vara. A passagem será liberada junto com o presente.'};
+ if(!inventory.transact({},{fishingRod:1}))return{ok:false,message:'Libere um espaço na mochila para receber a vara.'};
  draft.inventory={...inventory.data};draft.damiaoIntroduction=true;
- if(!write(draft))return{ok:false,message:'Não foi possível salvar. A vara e a liberação da passagem foram canceladas; tente novamente.'};
- Object.assign(save,draft);return{ok:true,message:'Você recebeu uma vara de pesca! A vila, à direita da propriedade, está liberada.'};
+ if(!write(draft))return{ok:false,message:'Não foi possível salvar. O presente não foi entregue; tente novamente.'};
+ save.inventory=draft.inventory;save.damiaoIntroduction=true;return{ok:true,message:'Você recebeu uma vara de pesca! Siga à direita da propriedade para conhecer a vila.'};
 }
 export function invitationGate(area:'property'|'cityForest',exit?:TilePoint):{x:number;y:number;vertical:boolean}{
  const p=exit??(area==='property'?{x:94,y:52}:{x:48,y:70});
