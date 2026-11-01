@@ -1,0 +1,14 @@
+import {describe,it,expect} from 'vitest';
+import {lakeRockWaterContacts,lakeImpactDisturbance,lakeShoreRockBody,rockWatermarkPixel,LAKE_SHORE_ROCKS,ridgePoint} from '../src/data/lake-rock-contacts';
+import {lakeWater} from '../src/data/fishing-lake';
+import {paintedWaterPoint} from '../src/data/terrain-paint';
+const water=(x:number,y:number)=>lakeWater(x/32,y/32);
+const samples=(s:{x1:number;y1:number;x2:number;y2:number})=>[{x:s.x1,y:s.y1},{x:s.x2,y:s.y2},{x:(s.x1+s.x2)/2,y:(s.y1+s.y2)/2}];
+describe('rock contact with real lake water',()=>{
+ it('adds no water contact or impact disturbances on dry ground',()=>{expect(lakeRockWaterContacts(500,()=>false)).toEqual([]);expect(lakeImpactDisturbance(500,()=>false)).toEqual([]);});
+ it('gives submerged stones moving contacts while keeping the dry foreground stones dry',()=>{const a=lakeRockWaterContacts(0,water),b=lakeRockWaterContacts(500,water);expect(a.length).toBeGreaterThan(50);expect(b).not.toEqual(a);expect(a.some(p=>p.rock==='left-pebble')).toBe(true);expect(a.some(p=>p.rock==='right-pebble')).toBe(true);expect(a.some(p=>p.rock==='right-front')).toBe(false);for(const s of [...a,...b])for(const p of samples(s))expect(water(p.x,p.y)).toBe(true);});
+ it('does not give a dry stone a wake merely because there is water a little farther away',()=>{const rock=LAKE_SHORE_ROCKS.find(p=>p.id==='left-pebble')!,center=ridgePoint(rock.x,rock.y);const contacts=lakeRockWaterContacts(900,(x,y)=>{const d=Math.hypot(x-center.x,y-center.y);return d>23&&d<40;});expect(contacts.some(p=>p.rock===rock.id)).toBe(false);});
+ it('respects edited land rather than leaving waves around a formerly wet stone',()=>{const p=LAKE_SHORE_ROCKS.find(p=>p.id==='left-pebble')!,center=ridgePoint(p.x,p.y),edits:Record<string,'sand'>={};for(let y=-2;y<=2;y++)for(let x=-2;x<=2;x++)edits[`${Math.floor(center.x/32)+x},${Math.floor(center.y/32)+y}`]='sand';const contacts=lakeRockWaterContacts(500,(x,y)=>paintedWaterPoint(edits,x,y,water));expect(contacts.some(c=>c.rock===p.id)).toBe(false);expect(contacts.some(p=>p.rock==='right-pebble')).toBe(true);});
+ it('spreads impact waves and eddies over water without drawing across rock bodies',()=>{const a=lakeImpactDisturbance(0,water),b=lakeImpactDisturbance(800,water);expect(a.length).toBeGreaterThan(40);expect(b).not.toEqual(a);for(const s of [...a,...b])for(const p of samples(s)){expect(water(p.x,p.y)).toBe(true);expect(lakeShoreRockBody(p.x,p.y)).toBe(false);}});
+ it('cleans old pale watermarks without removing the brown stone or scenery outside the feet',()=>{expect(rockWatermarkPixel(867,814,220,242,240,255)).toBe(true);expect(rockWatermarkPixel(790,820,230,242,240,255)).toBe(true);expect(rockWatermarkPixel(1114,826,220,242,240,255)).toBe(true);expect(rockWatermarkPixel(867,814,160,130,80,255)).toBe(false);expect(rockWatermarkPixel(867,775,220,242,240,255)).toBe(false);expect(rockWatermarkPixel(400,850,220,242,240,255)).toBe(false);});
+});

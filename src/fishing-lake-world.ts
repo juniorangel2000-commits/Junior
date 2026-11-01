@@ -1,3 +1,4 @@
+import {rockWatermarkPixel,lakeRockWaterContacts,lakeImpactDisturbance} from './data/lake-rock-contacts';
 import {cascadePaintMask} from './cascade-flow';
 import {paintedWaterPoint} from './data/terrain-paint';
 import {submergedWood} from './submerged-wood';
@@ -22,6 +23,7 @@ export function preloadFishingLake(scene:Phaser.Scene):void{
  if(!scene.textures.exists('lake-west-source'))scene.load.image('lake-west-source','assets/visual/fishing-lake/west-ridge.png');
  if(!scene.textures.exists('lake-pier-source'))scene.load.image('lake-pier-source','assets/visual/fishing-lake/fishing-pier-relocated.png');
  if(!scene.textures.exists('lake-cascade-material-source'))scene.load.image('lake-cascade-material-source','assets/visual/fishing-lake/cascade-water-material.png');
+ if(!scene.textures.exists('lake-shore-rocks-clean-source'))scene.load.image('lake-shore-rocks-clean-source','assets/visual/fishing-lake/shore-rocks-clean.png');
  if(!scene.textures.exists('lake-cascade-bed-source'))scene.load.image('lake-cascade-bed-source','assets/visual/fishing-lake/cascade-dry-bed.png');
  if(!scene.textures.exists('lake-ridge-source'))scene.load.image('lake-ridge-source','assets/visual/fishing-lake/ridge-waterfall.png');
  if(!scene.textures.exists('village-pier-source'))scene.load.image('village-pier-source',pierArt.file);
@@ -39,8 +41,14 @@ export class FishingLakeWorld {
   for(const [key,sourceKey] of [['lake-ridge','lake-ridge-source'],['lake-west','lake-west-source']])if(!scene.textures.exists(key)){
    const source=scene.textures.get(sourceKey).getSourceImage() as HTMLImageElement,canvas=document.createElement('canvas');canvas.width=source.width;canvas.height=source.height;const c=canvas.getContext('2d')!;c.drawImage(source,0,0);const p=c.getImageData(0,0,canvas.width,canvas.height);
    if(key==='lake-ridge'){
+    const original=p.data.slice();
     const bed=scene.textures.get('lake-cascade-bed-source').getSourceImage() as HTMLImageElement;c.clearRect(0,0,canvas.width,canvas.height);c.drawImage(bed,0,0,canvas.width,canvas.height);const clean=c.getImageData(0,0,canvas.width,canvas.height);
     for(let i=0;i<p.data.length;i+=4){const pixel=i/4,x=pixel%canvas.width,y=Math.floor(pixel/canvas.width);if(cascadePaintMask(x,y,p.data[i],p.data[i+1],p.data[i+2],p.data[i+3]))for(let k=0;k<4;k++)p.data[i+k]=clean.data[i+k];}
+    c.clearRect(0,0,canvas.width,canvas.height);c.drawImage(scene.textures.get('lake-shore-rocks-clean-source').getSourceImage() as HTMLImageElement,0,0,canvas.width,canvas.height);const stones=c.getImageData(0,0,canvas.width,canvas.height).data;
+    for(let i=0;i<p.data.length;i+=4){const pixel=i/4,x=pixel%canvas.width,y=Math.floor(pixel/canvas.width);if(!rockWatermarkPixel(x,y,original[i],original[i+1],original[i+2],original[i+3]))continue;
+     // Retain the clean stone or a neutral contact shadow; avoid punching bright holes through the stone edge.
+     if(stones[i]>stones[i+2]*1.15&&stones[i+1]>stones[i+2]*1.05&&stones[i+3]>160)for(let k=0;k<4;k++)p.data[i+k]=stones[i+k];else{const shadow=(stones[i]+stones[i+1]+stones[i+2])*.26;p.data[i]=shadow;p.data[i+1]=shadow*.94;p.data[i+2]=shadow*.86;p.data[i+3]=stones[i+3];}
+    }
    }
    for(let i=3;i<p.data.length;i+=4)p.data[i]=p.data[i]>160?255:0;c.putImageData(p,0,0);const texture=scene.textures.addCanvas(key,canvas)!;texture.setFilter(0);
    if(key==='lake-west'){const r=LAKE_SIDE_CROP;texture.add('body',0,r.x,r.y,r.width,r.height);}
@@ -127,6 +135,11 @@ export class FishingLakeWorld {
    for(let j=0;j<=6;j++){const x=(j/6-.5)*p.radius*2,y=Math.sin(j/6*Math.PI)*2+x*p.lean;j?g.lineTo(p.x+x,p.y+y):g.moveTo(p.x+x,p.y+y);}g.strokePath();
    g.lineStyle(1,0x123e46,p.alpha*.45);g.lineBetween(p.x-p.radius*.6,p.y+4,p.x+p.radius*.25,p.y+4.5);
   }
+  const water=(x:number,y:number)=>paintedWaterPoint(this.edits?.terrain,x,y,(px,py)=>lakeWater(px/32,py/32));
+  for(const p of [...lakeImpactDisturbance(time,water),...lakeRockWaterContacts(time,water)]){
+   g.lineStyle(p.kind==='contact'?.9:.75,p.kind==='contact'?0x87b8af:0xb2d6cd,p.alpha);g.lineBetween(p.x1,p.y1,p.x2,p.y2);
+  }
+
 
 
  }

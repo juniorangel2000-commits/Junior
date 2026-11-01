@@ -45,3 +45,11 @@ A alteração ainda não foi publicada como nova versão Windows.
 A água e a espuma antigas da faixa central foram substituídas por um leito limpo. A composição usa somente a região de água identificada no sprite original; o restante da montanha, pedras, escada e vegetação é preservado. O novo material da queda é independente, com escoamento contínuo, velocidade crescente na descida, bordas levemente irregulares e espuma móvel concentrada no impacto. O riacho superior recebe o material de água do jogo em movimento e uma crista animada na passagem para a queda. Não usa os recortes de espuma da cachoeira anterior.
 
 Validação: testes da animação, margens e plataformas; build de produção; conferência no navegador da preservação dos pixels fora da região alterada, movimento no riacho, em toda a queda e no impacto, e limpeza ao trocar de cenário. Sem nova publicação Windows.
+
+## Pedras, margem e turbulência junto à queda
+
+As marcas claras de água pintadas nos pés das pedras foram substituídas por pedra/sombra neutra da arte limpa. O contato animado é calculado separadamente, apenas onde o pé da pedra toca água real. As ondas não surgem ao redor de uma pedra seca apenas porque existe água um pouco mais longe. Pintar chão no editor remove o contato correspondente.
+
+Novas ondas curtas, arcos quebrados e dois redemoinhos suaves se afastam do impacto da cachoeira. São recortados pela margem, pelo terreno editado e pelas silhuetas das pedras. A queda e o riacho aprovados continuam com a mesma animação.
+
+Validação adicional: 31 testes focados aprovados, build e QA no navegador. O QA verifica a limpeza das marcas antigas, preservação da arte fora das regiões de água e dos contatos alterados, pedras molhadas/secas, animação e saída do cenário.
