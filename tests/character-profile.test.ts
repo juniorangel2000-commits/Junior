@@ -1,3 +1,4 @@
+import {SAVE_VERSION} from '../src/systems/save';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_ACCESSORY, DEFAULT_SHIRT_COLOR, resolveCharacterAppearance } from '../src/data/character-options';
 import { createNewSave, loadSave, migrateSave, SAVE_KEY, saveGame, validateProfile, validateSave } from '../src/systems/save';
@@ -70,7 +71,7 @@ describe('compatibilidade dos dados antigos de aparência', () => {
     };
     const original = structuredClone(legacy);
     const migrated = migrateSave(legacy)!;
-    expect(migrated.version).toBe(3);
+    expect(migrated.version).toBe(SAVE_VERSION);
     expect(migrated.profile).toEqual(legacyProfile);
     expect(resolveCharacterAppearance(migrated.profile).shirtColor).toBe(DEFAULT_SHIRT_COLOR);
     expect(legacy).toEqual(original);

@@ -1,3 +1,4 @@
+import type {MapEditData} from '../systems/map-editor';
 import { dungeonBlocked } from "./maps";
 import type { DungeonId } from "./config";
 const SIZE = 64,
@@ -13,24 +14,32 @@ export function dungeonSegmentClear(
   y: number,
   tx: number,
   ty: number,
+  edits?:MapEditData,
 ): boolean {
   const steps = Math.max(1, Math.ceil(Math.hypot(tx - x, ty - y) / 8));
   for (let n = 1; n <= steps; n++)
     if (
-      dungeonBlocked(id, x + ((tx - x) * n) / steps, y + ((ty - y) * n) / steps)
+      dungeonBlocked(id, x + ((tx - x) * n) / steps, y + ((ty - y) * n) / steps,edits)
     )
       return false;
   return true;
 }
 const graphs = new Map<DungeonId, number[][]>();
 const fields = new Map<DungeonId, { root: number; distance: Int16Array }>();
-function graph(id: DungeonId) {
+const editedGraphs=new WeakMap<MapEditData,Map<DungeonId,number[][]>>();
+const editedFields=new WeakMap<MapEditData,Map<DungeonId,{root:number;distance:Int16Array}>>();
+function caches(edits?:MapEditData){
+ if(!edits)return {graphs,fields};let g=editedGraphs.get(edits),f=editedFields.get(edits);
+ if(!g){g=new Map();editedGraphs.set(edits,g);}if(!f){f=new Map();editedFields.set(edits,f);}return {graphs:g,fields:f};
+}
+function graph(id: DungeonId,edits?:MapEditData) {
+  const {graphs}=caches(edits);
   const cached = graphs.get(id);
   if (cached) return cached;
   const edges: number[][] = Array.from({ length: COLS * ROWS }, () => []);
   for (let i = 0; i < edges.length; i++) {
     const p = point(i);
-    if (dungeonBlocked(id, p.x, p.y)) continue;
+    if (dungeonBlocked(id, p.x, p.y,edits)) continue;
     for (const j of [
       i % COLS ? i - 1 : -1,
       i % COLS < COLS - 1 ? i + 1 : -1,
@@ -39,7 +48,7 @@ function graph(id: DungeonId) {
     ]) {
       if (j < 0 || j >= edges.length) continue;
       const q = point(j);
-      if (dungeonSegmentClear(id, p.x, p.y, q.x, q.y)) edges[i].push(j);
+      if (dungeonSegmentClear(id, p.x, p.y, q.x, q.y,edits)) edges[i].push(j);
     }
   }
   graphs.set(id, edges);
@@ -52,8 +61,10 @@ export function dungeonWaypoint(
   y: number,
   tx: number,
   ty: number,
+  edits?:MapEditData,
 ): { x: number; y: number } | undefined {
-  const edges = graph(id),
+  const {fields}=caches(edits);
+  const edges = graph(id,edits),
     near = (px: number, py: number) => {
       const result: number[] = [],
         cx = Math.round((px - 32) / SIZE),
@@ -70,7 +81,7 @@ export function dungeonWaypoint(
   const roots = near(tx, ty).filter(
     (i) =>
       edges[i].length &&
-      dungeonSegmentClear(id, tx, ty, point(i).x, point(i).y),
+      dungeonSegmentClear(id, tx, ty, point(i).x, point(i).y,edits),
   );
   roots.sort(
     (a, b) =>
@@ -101,7 +112,7 @@ export function dungeonWaypoint(
     if (
       d < 4 ||
       field.distance[i] < 0 ||
-      !dungeonSegmentClear(id, x, y, p.x, p.y)
+      !dungeonSegmentClear(id, x, y, p.x, p.y,edits)
     )
       continue;
     const score = field.distance[i] * 1.01 + d / SIZE;

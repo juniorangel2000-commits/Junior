@@ -1,3 +1,4 @@
+import {DEVELOPMENT_TOOLS} from '../development-tools';
 import { pauseScreen } from './pause-screen';
 import './pause-screen.css';
 import type { DungeonReward } from "./progression";
@@ -58,6 +59,7 @@ interface Callbacks {
   evolve: (key: Attribute, pet?: string, petKey?: PetAttribute) => void;
   pet: (id?: string) => void;
   retry: () => void;
+  editMap?:()=>void;
 }
 export class DungeonUI {
   private readonly root = document.createElement("div");
@@ -298,6 +300,10 @@ export class DungeonUI {
   }
   pause(run?: DungeonRun): void {
     this.show(pauseScreen(run, this.icons));
+    if(DEVELOPMENT_TOOLS&&this.callbacks.editMap){
+      const editor=document.createElement('button');editor.type='button';editor.className='pause-abandon';editor.dataset.editMap='';editor.textContent='Editar cenário · F2';editor.onclick=()=>this.callbacks.editMap?.();
+      this.panel.querySelector('.pause-actions')!.prepend(editor);
+    }
     const resume = (): void => { this.close(); this.callbacks.resume(); };
     this.panel.querySelector<HTMLButtonElement>('[data-resume]')!.onclick = resume;
     this.panel.querySelector<HTMLButtonElement>('[data-resume-top]')!.onclick = resume;
@@ -373,6 +379,7 @@ export class DungeonUI {
     this.intro?.destroy();
     this.intro = new ExpeditionIntro(this.panel, profile, resources, complete, this.callbacks.back);
   }
+  setVisible(visible:boolean):void{this.root.hidden=!visible;}
   destroy(): void {
     this.intro?.destroy();
     this.root.remove();

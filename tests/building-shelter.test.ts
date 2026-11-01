@@ -7,7 +7,7 @@ import { INITIAL_INVENTORY, Inventory, MAX_ITEM_COUNT } from '../src/systems/inv
 import { detectShelter, SHELTER_MAX_TILES } from '../src/systems/shelter';
 
 const stockedInventory = (): Inventory => new Inventory({
-  ...INITIAL_INVENTORY, wood: 20, stone: 10, plank: 100, peg: 100, fiber: 100, hammer: 1,
+  ...INITIAL_INVENTORY, wood: 20, stone: 10, plank: 100, peg: 100, fiber: 100, hammer: 1, furniture:10,fenceKit:10,
 });
 
 function room(interiorWidth = 2, interiorHeight = 2): BuildingData[] {
@@ -31,13 +31,13 @@ function room(interiorWidth = 2, interiorHeight = 2): BuildingData[] {
 }
 
 describe('construções e portas', () => {
-  it.each(['fence', 'bench'] as const)('preserva os custos e o reembolso de %s sem bancada ou ferramenta', (kind) => {
+  it.each(['fence', 'bench'] as const)('posiciona e recolhe a peça pronta de %s longe da bancada', (kind) => {
     const inventory = stockedInventory();
     inventory.data.hammer = 0;
     const before = { ...inventory.data };
     const building = new Building();
     expect(building.place(kind, 19, 18, inventory, true).ok).toBe(true);
-    expect(inventory.data.wood).toBe(before.wood - BUILD_COSTS[kind].wood!);
+    for(const [id,amount] of Object.entries(BUILD_COSTS[kind]))expect(inventory.data[id as keyof typeof inventory.data]).toBe(before[id as keyof typeof before]-amount!);
     expect(building.isBlocked(19, 18)).toBe(true);
     expect(building.remove(19, 18, inventory).ok).toBe(true);
     expect(inventory.data).toEqual(before);
@@ -84,7 +84,7 @@ describe('construções e portas', () => {
 
   it('mantém construção e todos os materiais se algum reembolso não cabe na mochila', () => {
     const inventory = stockedInventory();
-    inventory.data.stone = MAX_ITEM_COUNT;
+    inventory.data.furniture = MAX_ITEM_COUNT;
     const before = { ...inventory.data };
     const building = new Building([{ x: 19, y: 18, kind: 'bench' }]);
     expect(building.remove(19, 18, inventory).ok).toBe(false);

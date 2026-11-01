@@ -1,3 +1,5 @@
+import {DEVELOPMENT_TOOLS} from '../development-tools';
+import type {MapArea} from '../data/default-maps';
 import {setupTreeWind} from '../tree-wind';
 import {canAdoptPet} from '../systems/pet-shelter';
 import type {CityTravelTransition} from '../dungeons/city-travel-transition';
@@ -46,6 +48,7 @@ import { DungeonUI } from "../dungeons/ui";
 import { decodeExpeditionPreviews } from "../dungeons/expedition-intro";
 interface DungeonStart {
   travel?: CityTravelTransition;
+  skipTravel?:boolean;
   save: SaveData;
   ui: GameUI;
   onReturn: (save: SaveData, title?: boolean) => void;
@@ -141,9 +144,9 @@ export class DungeonScene extends Phaser.Scene {
     this.previews = {
       "abandoned-central-square": dungeonPreview(
         this,
-        "abandoned-central-square",
+        "abandoned-central-square",this.state.dungeonMapEdits?.['abandoned-central-square'],
       ),
-      "mall-parking": dungeonPreview(this, "mall-parking"),
+      "mall-parking": dungeonPreview(this, "mall-parking",this.state.dungeonMapEdits?.["mall-parking"]),
     };
     this.ui = new DungeonUI(
       {
@@ -168,6 +171,7 @@ export class DungeonScene extends Phaser.Scene {
           this.finish();
         },
         retry: () => this.finish(),
+        editMap:()=>this.openMapEditor(),
         pet: (id) => {
           const p = this.state.dungeons!,
             before = p.selectedPet;
@@ -208,7 +212,7 @@ export class DungeonScene extends Phaser.Scene {
       this.syncPlayer();
       if (snapshot.phase === "fighting") this.run!.pause();
       this.lastPhase = "";
-    } else this.startTravel();
+    } else if(data.skipTravel)this.menu();else this.startTravel();
   }
   private startTravel(): void {
     this.cameras.main.setBackgroundColor("#101c1a");
@@ -274,9 +278,10 @@ export class DungeonScene extends Phaser.Scene {
       pet,
       Math.floor(Math.random() * 4294967295),
       canAdoptPet(this.state),
+      this.state.dungeonMapEdits?.[id],
     );
     this.world?.destroy();
-    this.world = new DungeonWorld(this, id);
+    this.world = new DungeonWorld(this, id,this.run.state.mapEdits);
     this.player = new Player(
       this,
       this.state.profile,
@@ -321,6 +326,7 @@ export class DungeonScene extends Phaser.Scene {
         e.target.matches('input,select,textarea,[contenteditable="true"]'))
     )
       return;
+    if(DEVELOPMENT_TOOLS&&e.key==='F2'){e.preventDefault();this.openMapEditor();return;}
     if (e.key === "Escape") {
       e.preventDefault();
       if (this.mode === "travel") return;
@@ -835,7 +841,12 @@ export class DungeonScene extends Phaser.Scene {
     this.gameUI.toast("Use os suprimentos encontrados durante a expedição.");
   }
   openMapEditor(): void {
-    this.gameUI.toast("O editor não está disponível durante as expedições.");
+    if(!DEVELOPMENT_TOOLS||this.returning||this.mode==='travel')return;
+    if(!this.persist())return;const original=structuredClone(this.state);this.run?.pause();
+    this.ui.setVisible(false);this.gameUI.showMapEditorMode();this.scene.setVisible(false);this.scene.pause();
+    this.scene.launch('Editor',{save:original,area:this.run?.state.dungeon??'abandoned-central-square',onClose:(updated:SaveData|undefined,_area:MapArea)=>{
+      this.scene.resume();this.scene.setVisible(true);this.scene.restart({save:updated??original,ui:this.gameUI,onReturn:this.onReturn,skipTravel:true});
+    }});
   }
   changeCameraZoom(direction: -1 | 0 | 1): void {
     this.cameras.main.setZoom(
@@ -868,7 +879,7 @@ export class DungeonScene extends Phaser.Scene {
       this.player.update(
         dt,
         () => false,
-        (x, y) => dungeonBlocked(s.dungeon, x, y),
+        (x, y) => dungeonBlocked(s.dungeon, x, y,s.mapEdits),
       );
       s.player.x = this.player.x;
       s.player.y = this.player.y;

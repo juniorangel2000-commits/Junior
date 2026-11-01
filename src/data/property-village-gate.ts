@@ -22,7 +22,7 @@ export function clearPropertyVillagePaths(terrain:MapEditData['terrain']):MapEdi
  return clean;
 }
 
-/** Keep a generous walking approach, while the transition itself uses one tile. */
+/** Keep the walking approach clear around the three-tile-wide transition. */
 export function isPropertyVillagePassage(x:number,y:number):boolean {
  return x>=84&&x<=94&&y>=50&&y<=54;
 }

@@ -11,7 +11,7 @@ import {HELENA_WALK_FRAMES,HELENA_DISPLAY,HELENA_ORIGIN_Y} from '../helena-sprit
 import {DAMIAO_WALK_FRAMES,DAMIAO_DISPLAY,DAMIAO_ORIGIN_Y} from '../damiao-sprites';
 import {CELINA_WALK_FRAMES,CELINA_DISPLAY,CELINA_ORIGIN_Y} from '../celina-sprites';
 import {NILO_WALK_FRAMES,NILO_DISPLAY,NILO_ORIGIN_Y} from '../nilo-sprites';
-import {createSmithLayout,resolveSmithLayout,smithFits,smithBlocked,smithNavigation,smithSpawn,smithDoor,type SmithLayout} from '../systems/smith-layout';
+import {createSmithLayout,resolveSmithLayout,smithFits,smithBlocked,smithNavigation,smithSpawn,smithDoor,validSmithLayout,smithConnected,type SmithLayout} from '../systems/smith-layout';
 import {drawSmithLayout,type SmithView} from '../smith-layout-art';
 import {mountSmithEditor} from '../smith-layout-editor';
 import {BENTO_WALK_FRAMES,BENTO_DISPLAY,bentoSourceKey} from '../bento-sprites';
@@ -322,13 +322,30 @@ export class VillageScene extends Phaser.Scene {
   this.shop?.close();this.persist();const original=structuredClone(this.state);this.setPaused(true);this.ui.showMapEditorMode();this.scene.setVisible(false);this.scene.pause();
   this.scene.launch('Editor',{save:original,area:'village',onClose:(updated:SaveData|undefined,_area:MapArea)=>{this.scene.resume();this.scene.setVisible(true);this.scene.restart({save:updated??original,ui:this.ui,onReturn:this.onReturn});}});
  }
- /** Only shops still being authored expose the development interior editor. */
- private get editableMerchant():boolean{return this.merchantRoom==='tobias'||this.merchantRoom==='amelia'||this.merchantRoom==='nilo'||this.merchantRoom==='celina'||this.merchantRoom==='damiao'||this.merchantRoom==='helena'||this.merchantRoom==='icaro';}
+ /** Every merchant room uses the same development editor and layout validation. */
+ private get editableMerchant():boolean{return !!this.merchantRoom;}
  openHomeMenu():void {
+  if(this.inBlacksmith){this.openSmithEditor();return;}
   const id=this.merchantRoom;if(!DEVELOPMENT_TOOLS||!id||!this.editableMerchant||this.changingRoom||this.leaving||this.shop?.isOpen)return;
   if(this.editingRoom){this.ui.closeModal();return;}if(this.ui.isModalOpen())this.ui.closeModal();this.editingRoom=true;this.applyCamera();
-  const labels=id==='icaro'?{title:'Editar oficina do Ícaro',fileName:'After-Rain-Oficina-Editada.json'}:id==='helena'?{title:'Editar pousada da Helena',fileName:'After-Rain-Pousada-Editada.json'}:id==='damiao'?{title:'Editar cabana do Damião',fileName:'After-Rain-Cabana-Pesca-Editada.json'}:id==='celina'?{title:'Editar ateliê da Celina',fileName:'After-Rain-Atelie-Editado.json'}:id==='nilo'?{title:'Editar antiquário do Nilo',fileName:'After-Rain-Antiquario-Editado.json'}:id==='amelia'?{title:'Editar herbalista da Amélia',fileName:'After-Rain-Herbalista-Editada.json'}:{title:'Editar carpintaria do Tobias',fileName:'After-Rain-Carpintaria-Editada.json'};
+  const labels=id==='icaro'?{title:'Editar oficina do Ícaro',fileName:'After-Rain-Oficina-Editada.json'}:id==='helena'?{title:'Editar pousada da Helena',fileName:'After-Rain-Pousada-Editada.json'}:id==='damiao'?{title:'Editar cabana do Damião',fileName:'After-Rain-Cabana-Pesca-Editada.json'}:id==='celina'?{title:'Editar ateliê da Celina',fileName:'After-Rain-Atelie-Editado.json'}:id==='nilo'?{title:'Editar antiquário do Nilo',fileName:'After-Rain-Antiquario-Editado.json'}:id==='amelia'?{title:'Editar herbalista da Amélia',fileName:'After-Rain-Herbalista-Editada.json'}:{title:id==='tobias'?'Editar carpintaria do Tobias':`Editar interior de ${VILLAGE_NPCS.find(n=>n.id===id)!.name}`,fileName:`After-Rain-${id}-Interior-Editado.json`};
   this.ui.showSceneEditor(host=>{const dispose=mountSmithEditor(host,()=>this.merchantLayouts.get(id)!,()=>this.merchantView,data=>this.editMerchantLayout(id,data),()=>this.ui.closeModal(),{...labels,assets:MERCHANT_ROOM_ASSETS});return()=>{dispose();this.editingRoom=false;this.applyCamera();};});
+ }
+ private openSmithEditor():void {
+  if(!DEVELOPMENT_TOOLS||!this.inBlacksmith||this.changingRoom||this.leaving||this.shop?.isOpen)return;
+  if(this.editingRoom){this.ui.closeModal();return;}this.ui.closeModal();this.editingRoom=true;this.applyCamera();
+  this.ui.showSceneEditor(host=>{
+   const redraw=()=>{this.roomView?.destroy();this.roomView=drawSmithLayout(this,this.smithLayout);};
+   const dispose=mountSmithEditor(host,()=>this.smithLayout,()=>this.roomView,candidate=>{
+    if(!validSmithLayout(candidate)||!smithConnected(candidate)){redraw();return 'Mantenha a entrada e o atendimento livres.';}
+    if(!smithFits(candidate,this.player.x,this.player.y)||this.villagers.some(n=>n.sprite.visible&&!smithFits(candidate,n.sprite.x,n.sprite.y))){redraw();return 'Mova o personagem ou o morador antes de ocupar esse espaço.';}
+    const before=this.smithLayout,beforeSave=structuredClone(this.state);this.smithLayout=structuredClone(candidate);
+    if(!this.persist()){this.smithLayout=before;this.state=beforeSave;redraw();return 'Não foi possível salvar a edição.';}
+    this.bentoRoutine.setRoom(smithNavigation(this.smithLayout));this.routines.get('bento')?.setRoom(smithNavigation(this.smithLayout));
+    redraw();return null;
+   },()=>this.ui.closeModal());
+   return()=>{dispose();this.editingRoom=false;this.applyCamera();};
+  });
  }
  private editMerchantLayout(id:ResidentId,data:SmithLayout):string|null {
   if(this.merchantRoom!==id||!this.editableMerchant)return 'A edição deste comércio foi finalizada.';
@@ -410,7 +427,7 @@ export class VillageScene extends Phaser.Scene {
  private updateHUD():void {
   this.state.crops=this.farming.crops;updateVillageEquipment(this,this.state,this.player,this.inShop);notifyReadyOrders(this.state,m=>this.ui.toast(m));markMinerals(this,this.world.resources);
   const npc=this.nearest(),nearExit=!this.inShop&&Math.abs(this.player.x-64)<70&&Math.abs(this.player.y-1680)<32,location=this.inBlacksmith?'Ferraria de Bento':this.merchantRoom?`${VILLAGE_NPCS.find(n=>n.id===this.merchantRoom)!.role} · ${VILLAGE_NPCS.find(n=>n.id===this.merchantRoom)!.name}`:VILLAGE_NAME;
-  this.ui.updateHUD({toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'village',coins:this.state.villageEconomy!.coins,inHome:this.inShop,mapEditorAvailable:!this.inShop||this.editableMerchant,interiorEditor:this.editableMerchant,swimming:false,name:this.state.profile.name,
+  this.ui.updateHUD({toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'village',coins:this.state.villageEconomy!.coins,inHome:this.inShop,mapEditorAvailable:true,interiorEditor:this.inShop,swimming:false,name:this.state.profile.name,
    day:this.state.day,time:this.state.time,inventory:this.inventory.data,tool:'hand',wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,
    playerTile:{x:this.player.x/32,y:this.player.y/32},interiorMapSize:this.inShop?{width:18,height:this.merchantRoom?12:11}:undefined,interactionKey:npc?'E':null,prompt:this.closedDoorMessage()??(npc?`Conversar com ${npc.data.name}${this.canTrade(npc.data.id)?' · comprar e vender':' · conversa e serviços'}`:this.guide?`Siga ${VILLAGE_NPCS.find(n=>n.id===this.guide!.owner)!.name} até a loja`:this.inShop?'Caminhe pela porta ao sul para sair':nearExit?'Siga a seta para voltar à propriedade':'Explore a praça e converse com os moradores'),
    location,harvests:this.inventory.data.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:this.inShop,shelterReason:this.inShop?location:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});
@@ -440,7 +457,7 @@ export class VillageScene extends Phaser.Scene {
   const key=e.key.toLowerCase();
   if(DEVELOPMENT_TOOLS&&e.key==='F2'){e.preventDefault();this.openMapEditor();return;}
   if(key==='escape'){e.preventDefault();if(this.editingRoom){this.ui.closeModal();return;}if(!this.ui.dismissTopToolbar())this.ui.togglePause();return;}
-  if(key==='h'&&this.editableMerchant){e.preventDefault();this.openHomeMenu();return;}
+  if(key==='h'&&this.inShop){e.preventDefault();this.openHomeMenu();return;}
   if(key==='m'){e.preventDefault();this.updateHUD();this.ui.toggleMap();return;}
   if(key==='i'){this.ui.toggleInventory(this.inventory.data);return;}
   if(key==='c'){this.ui.toggleCrafting(this.inventory.data,false);return;}

@@ -39,7 +39,7 @@ class BackgroundVillage {
     const stop=nav.stops?.[period==='closed'?0:index%Math.max(1,nav.stops.length)]??{x:36,y:19};
     const point=period==='break'?MERCHANT_DAILY_PLAN.plaza[id]:stop;
     const preferred={x:(point.x+.5)*(period==='break'?32:tile),y:(point.y+.5)*(period==='break'?32:tile)};
-    const blocked=period==='break'?(x:number,y:number)=>villagePointBlocked(x,y):(x:number,y:number)=>!nav.validPosition!(x,y);
+    const blocked=period==='break'?(x:number,y:number)=>villagePointBlocked(x,y,this.save.villageMapEdits):(x:number,y:number)=>!nav.validPosition!(x,y);
     const free=freeArrival(preferred,blocked,[])??preferred;
     return {area:period==='break'?'village':'shop',...free,direction:'down',stop:index%4,wait:1+index*.4,serviceUntil:0,socialUntil:0,socialDay:0,updatedAt:clock(this.save),...(host!==id&&period!=='break'?{roomOwner:host}:{})};
   }
@@ -49,8 +49,8 @@ class BackgroundVillage {
     const actors=(area:RoutineArea,owner=current)=>[...this.routines].filter(([other,r])=>other!==id&&r.state.area===area&&(area==='village'||r.roomOwner===owner)).map(([,r])=>r.state);
     const scenery=(area:RoutineArea,x:number,y:number,owner=current)=>area==='shop'?!navigation(owner).validPosition!(x,y):[[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>villagePointBlocked(x+dx,y+dy));
     return {
-      blocked:(area,x,y,owner=current)=>area==='village'?villageBlockedAt(x,y)||actors(area).some(a=>Math.floor(a.x/32)===x&&Math.floor(a.y/32)===y):navigation(owner).isBlocked(x,y)||actors(area,owner).some(a=>actorsOverlap({x:(x+.5)*8,y:(y+.5)*8},a)),
-      cellBlocked:(area,x,y)=>area==='village'?villageBlockedAt(x,y):!!navigation().cellBlocked?.(x,y)||navigation().isBlocked(x,y)||actors(area).some(a=>a.x>x*8-20&&a.x<(x+1)*8+20&&a.y>y*8-12&&a.y<(y+1)*8+12),
+      blocked:(area,x,y,owner=current)=>area==='village'?villageBlockedAt(x,y,this.save.villageMapEdits)||actors(area).some(a=>Math.floor(a.x/32)===x&&Math.floor(a.y/32)===y):navigation(owner).isBlocked(x,y)||actors(area,owner).some(a=>actorsOverlap({x:(x+.5)*8,y:(y+.5)*8},a)),
+      cellBlocked:(area,x,y)=>area==='village'?villageBlockedAt(x,y,this.save.villageMapEdits):!!navigation().cellBlocked?.(x,y)||navigation().isBlocked(x,y)||actors(area).some(a=>a.x>x*8-20&&a.x<(x+1)*8+20&&a.y>y*8-12&&a.y<(y+1)*8+12),
       fits:(area,x,y,owner=current)=>!scenery(area,x,y,owner)&&!actors(area,owner).some(a=>actorsOverlap({x,y},a)),
       arrival:(area,p,owner=current)=>freeArrival(p,(x,y)=>scenery(area,x,y,owner),actors(area,owner)),
     };

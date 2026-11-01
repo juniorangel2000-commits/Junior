@@ -1,3 +1,4 @@
+import {validateMapEdits} from '../systems/map-editor';
 import { petActionDuration } from './pet-sprites';
 import { isPetSpecies } from './config';
 import { isPetDirection } from "./pet-directions";
@@ -237,6 +238,7 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
       Number(value.lastHealthDropAt) > Number(value.elapsed))
   )
     return false;
+  if(value.mapEdits!==undefined&&(!validateMapEdits(value.mapEdits)||value.mapEdits.area!==value.dungeon))return false;
   if (value.enemySpeedRevision !== undefined && value.enemySpeedRevision !== 1) return false;
   if (value.timedBossCount !== undefined && !count(value.timedBossCount, 5))
     return false;

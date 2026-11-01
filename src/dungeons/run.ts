@@ -1,3 +1,4 @@
+import type {MapEditData} from '../systems/map-editor';
 import { PET_SPECIES, isDogPet } from './config';
 import { petAttackHitAt, petAttackMoves } from './pet-sprites';
 import { PERMANENT_EFFECTS as P } from "./permanent-effects";
@@ -25,7 +26,7 @@ import { dungeonWaypoint, dungeonSegmentClear } from "./navigation";
 import { bossProfile, isBossRound, TIMED_BOSS_SCHEDULE } from "./bosses";
 import { advanceBossCombat, type BossCombatState } from "./boss-combat";
 import { EnemySpatialIndex } from "./spatial";
-import { DUNGEON_ENTRY, dungeonBlocked, safeDungeonPoint } from "./maps";
+import { dungeonEntry, dungeonBlocked, safeDungeonPoint } from "./maps";
 import type { DungeonProgress, OwnedPet, RunResult } from "./progression";
 export interface Enemy {
   id: number;
@@ -109,6 +110,7 @@ export interface RunPet {
   attributes: OwnedPet["attributes"];
 }
 export interface DungeonSnapshot {
+  mapEdits?:MapEditData;
   version: 1;
   id: string;
   dungeon: DungeonId;
@@ -173,6 +175,10 @@ export class DungeonRun {
   }[] = [];
   readonly spatial = new EnemySpatialIndex<Enemy>();
   private accumulator = 0;
+  private blocked=(id:DungeonId,x:number,y:number)=>dungeonBlocked(id,x,y,this.state.mapEdits);
+  private safePoint=(id:DungeonId,x:number,y:number)=>safeDungeonPoint(id,x,y,this.state.mapEdits);
+  private segmentClear=(id:DungeonId,x:number,y:number,tx:number,ty:number)=>dungeonSegmentClear(id,x,y,tx,ty,this.state.mapEdits);
+  private waypoint=(id:DungeonId,x:number,y:number,tx:number,ty:number)=>dungeonWaypoint(id,x,y,tx,ty,this.state.mapEdits);
   private get delayed() {
     return this.state.pendingAttacks;
   }
@@ -184,7 +190,9 @@ export class DungeonRun {
     petId?: string,
     seed = 1234567,
     private readonly petRescueAllowed = true,
+    mapEdits?:MapEditData,
   ) {
+    const entry=dungeonEntry(mapEdits);
     const owned = progress.pets.find((p) => p.id === petId);
     const maxHp =
       B.playerHealth *
@@ -192,6 +200,7 @@ export class DungeonRun {
         progress.attributes.vitality * P.vitality +
         petPlayerBonuses(owned).health);
     this.state = {
+      ...(mapEdits?{mapEdits:structuredClone(mapEdits)}:{}),
       version: 1,
       id,
       dungeon,
@@ -207,7 +216,7 @@ export class DungeonRun {
       xp: 0,
       weapons: ["sword"],
       levels: {},
-      player: { ...DUNGEON_ENTRY, hp: maxHp, invulnerable: 0 },
+      player: { ...entry, hp: maxHp, invulnerable: 0 },
       enemies: [],
       projectiles: [],
       pickups: [],
@@ -231,8 +240,8 @@ export class DungeonRun {
         id: owned.id,
         species: owned.species,
         rare: owned.rare,
-        x: DUNGEON_ENTRY.x - 40,
-        y: DUNGEON_ENTRY.y,
+        x: entry.x - 40,
+        y: entry.y,
         hp,
         maxHp: hp,
         attack: 0,
@@ -421,7 +430,7 @@ export class DungeonRun {
       y = clamp(s.player.y + Math.sin(angle) * dist, 64, 2200);
       if (
         Math.hypot(x - s.player.x, y - s.player.y) >= 260 &&
-        !dungeonBlocked(s.dungeon, x, y)
+        !this.blocked(s.dungeon, x, y)
       ) {
         found = true;
         break;
@@ -573,6 +582,7 @@ export class DungeonRun {
           s.dungeon,
           dt,
           (damage) => this.hurtPlayer(damage),
+          this.blocked,
         );
         if (s.phase === "defeat") return;
         if (!pursue) continue;
@@ -586,13 +596,13 @@ export class DungeonRun {
       if (
         e.detour &&
         (Math.hypot(e.detour.x - e.x, e.detour.y - e.y) < speed * 2 ||
-          !dungeonSegmentClear(s.dungeon, e.x, e.y, e.detour.x, e.detour.y))
+          !this.segmentClear(s.dungeon, e.x, e.y, e.detour.x, e.detour.y))
       ) {
         delete e.detour;
         // Finish routing around the obstacle rather than cutting back into it
         // as soon as one intermediate waypoint has been reached.
-        if (!dungeonSegmentClear(s.dungeon, e.x, e.y, s.player.x, s.player.y))
-          e.detour = dungeonWaypoint(
+        if (!this.segmentClear(s.dungeon, e.x, e.y, s.player.x, s.player.y))
+          e.detour = this.waypoint(
             s.dungeon,
             e.x,
             e.y,
@@ -602,10 +612,10 @@ export class DungeonRun {
       }
       if (
         !e.detour &&
-        (dungeonBlocked(s.dungeon, e.x + mx, e.y) ||
-          dungeonBlocked(s.dungeon, e.x, e.y + my))
+        (this.blocked(s.dungeon, e.x + mx, e.y) ||
+          this.blocked(s.dungeon, e.x, e.y + my))
       )
-        e.detour = dungeonWaypoint(s.dungeon, e.x, e.y, s.player.x, s.player.y);
+        e.detour = this.waypoint(s.dungeon, e.x, e.y, s.player.x, s.player.y);
       if (e.detour) {
         const distance = Math.hypot(e.detour.x - e.x, e.detour.y - e.y) || 1;
         mx = ((e.detour.x - e.x) / distance) * speed;
@@ -646,15 +656,15 @@ export class DungeonRun {
     // A committed charge keeps its warned lane even when struck by knockback.
     if (e.boss?.action?.kind === "charge") return;
     const id = this.state.dungeon;
-    if (!dungeonBlocked(id, e.x + dx, e.y)) e.x += dx;
-    if (!dungeonBlocked(id, e.x, e.y + dy)) e.y += dy;
+    if (!this.blocked(id, e.x + dx, e.y)) e.x += dx;
+    if (!this.blocked(id, e.x, e.y + dy)) e.y += dy;
     // Wall sliding chooses a free tangent instead of pushing through parked cars.
-    if (dungeonBlocked(id, e.x + dx, e.y + dy)) {
+    if (this.blocked(id, e.x + dx, e.y + dy)) {
       const step = Math.hypot(dx, dy);
-      if (!dungeonBlocked(id, e.x + dy, e.y - dx)) {
+      if (!this.blocked(id, e.x + dy, e.y - dx)) {
         e.x += dy;
         e.y -= dx;
-      } else if (!dungeonBlocked(id, e.x - dy, e.y + dx)) {
+      } else if (!this.blocked(id, e.x - dy, e.y + dx)) {
         e.x -= dy;
         e.y += dx;
       } else if (step > 0) {
@@ -802,7 +812,7 @@ export class DungeonRun {
         B.maxGroundHealing ||
       s.elapsed - (s.lastHealthDropAt ?? -B.healingDropCooldown) <
         B.healingDropCooldown ||
-      dungeonBlocked(s.dungeon, x, y)
+      this.blocked(s.dungeon, x, y)
     )
       return;
     s.pickups.push({ id: this.nextId(), x, y, kind: "health", amount });
@@ -849,7 +859,7 @@ export class DungeonRun {
     const steps = Math.ceil(Math.hypot(tx - x, ty - y) / 8);
     for (let i = 1; i <= steps; i++)
       if (
-        dungeonBlocked(
+        this.blocked(
           this.state.dungeon,
           x + ((tx - x) * i) / steps,
           y + ((ty - y) * i) / steps,
@@ -1133,7 +1143,7 @@ export class DungeonRun {
         p.x += (p.vx * dt) / slices;
         p.y += (p.vy * dt) / slices;
         p.distance += (speed * dt) / slices;
-        if (dungeonBlocked(s.dungeon, p.x, p.y)) {
+        if (this.blocked(s.dungeon, p.x, p.y)) {
           if (p.weapon === "boomerang" && !p.returning) {
             p.returning = true;
             p.hits = [];
@@ -1208,7 +1218,7 @@ export class DungeonRun {
             (e) =>
               e.hp > 0 &&
               Math.hypot(e.x - s.player.x, e.y - s.player.y) < 260 &&
-              dungeonSegmentClear(s.dungeon, p.x, p.y, e.x, e.y),
+              this.segmentClear(s.dungeon, p.x, p.y, e.x, e.y),
           );
         const enemy = nearby.sort(
           (a, b) =>
@@ -1224,10 +1234,10 @@ export class DungeonRun {
               : { x: enemy.x + (dx / d) * 70, y: enemy.y + (dy / d) * 70 };
         }
       }
-      goal = safeDungeonPoint(s.dungeon, goal.x, goal.y);
-      const waypoint = dungeonSegmentClear(s.dungeon, p.x, p.y, goal.x, goal.y)
+      goal = this.safePoint(s.dungeon, goal.x, goal.y);
+      const waypoint = this.segmentClear(s.dungeon, p.x, p.y, goal.x, goal.y)
         ? goal
-        : dungeonWaypoint(s.dungeon, p.x, p.y, goal.x, goal.y);
+        : this.waypoint(s.dungeon, p.x, p.y, goal.x, goal.y);
       if (waypoint) {
         const dx = waypoint.x - p.x,
           dy = waypoint.y - p.y,
@@ -1245,7 +1255,7 @@ export class DungeonRun {
       const targets = this.spatial
         .query(p.x, p.y, 100)
         .filter(
-          (e) => e.hp > 0 && dungeonSegmentClear(s.dungeon, p.x, p.y, e.x, e.y),
+          (e) => e.hp > 0 && this.segmentClear(s.dungeon, p.x, p.y, e.x, e.y),
         );
       if (targets.length && (p.special === 0 || p.attack === 0)) {
         const target = targets.reduce((best, e) =>
@@ -1293,7 +1303,7 @@ export class DungeonRun {
           .query(p.x, p.y, 100)
           .filter(
             (e) =>
-              e.hp > 0 && dungeonSegmentClear(s.dungeon, p.x, p.y, e.x, e.y),
+              e.hp > 0 && this.segmentClear(s.dungeon, p.x, p.y, e.x, e.y),
           );
         if (action.kind === "basic") {
           const target = targets.find((e) => e.id === action.targetId);
@@ -1434,7 +1444,7 @@ export class DungeonRun {
       y = clamp(s.player.y + Math.sin(angle) * 130, 64, 2200);
     const kind = kinds[Math.floor(this.random() * kinds.length)];
     if (kind === "health") this.dropHealing(x, y, 20);
-    else if (!dungeonBlocked(s.dungeon, x, y) && s.pickups.length < 1000)
+    else if (!this.blocked(s.dungeon, x, y) && s.pickups.length < 1000)
       s.pickups.push({
         id: this.nextId(),
         x,
@@ -1447,7 +1457,7 @@ export class DungeonRun {
       !s.foundPet &&
       !s.pickups.some((p) => p.kind === "pet") &&
       s.pickups.length < 1000 &&
-      !dungeonBlocked(s.dungeon, x, y) &&
+      !this.blocked(s.dungeon, x, y) &&
       this.random() < B.petFindChance
     )
       s.pickups.push({
@@ -1463,7 +1473,9 @@ export class DungeonRun {
     return structuredClone(this.state);
   }
   restore(snapshot: DungeonSnapshot): void {
+    const currentMap=this.state.mapEdits;
     this.state = structuredClone(snapshot);
+    if(!this.state.mapEdits&&currentMap)this.state.mapEdits=structuredClone(currentMap);
     if (
       this.state.timedBossCount === undefined &&
       DUNGEONS[this.state.dungeon].mode === "timed"
@@ -1473,7 +1485,7 @@ export class DungeonRun {
       ).length;
     Object.assign(
       this.state.player,
-      safeDungeonPoint(
+      this.safePoint(
         this.state.dungeon,
         this.state.player.x,
         this.state.player.y,
@@ -1484,7 +1496,7 @@ export class DungeonRun {
       if (this.state.enemySpeedRevision !== 1) enemy.speed = zombieSpeed(restoredProfile.speed,
         enemy.kind === "boss" ? bossProfile(enemy.bossTier ?? this.state.round).speed
           : enemy.kind === "runner" ? 1.6 : enemy.kind === "brute" ? 0.7 : 1);
-      const free = safeDungeonPoint(this.state.dungeon, enemy.x, enemy.y);
+      const free = this.safePoint(this.state.dungeon, enemy.x, enemy.y);
       if (free.x !== enemy.x || free.y !== enemy.y) {
         delete enemy.detour;
         if (enemy.boss) {
@@ -1495,7 +1507,7 @@ export class DungeonRun {
       Object.assign(enemy, free);
       if (
         enemy.detour &&
-        dungeonBlocked(this.state.dungeon, enemy.detour.x, enemy.detour.y)
+        this.blocked(this.state.dungeon, enemy.detour.x, enemy.detour.y)
       )
         delete enemy.detour;
     }
@@ -1503,7 +1515,7 @@ export class DungeonRun {
     if (this.state.pet)
       Object.assign(
         this.state.pet,
-        safeDungeonPoint(
+        this.safePoint(
           this.state.dungeon,
           this.state.pet.x,
           this.state.pet.y,

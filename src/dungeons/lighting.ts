@@ -1,9 +1,11 @@
+import type {MapEditData} from '../systems/map-editor';
+import {reusableTerrainTexture} from '../terrain-texture-cache';
 import type Phaser from "phaser";
 import type { DungeonId } from "./config";
-import { MAP_OBSTACLES, urbanFrame } from "./maps";
+import { editedDungeonObstacles, urbanFrame } from "./maps";
 import { getVisualSettings, type VisualSettings } from "../visual-settings";
-export function dungeonLightSources(id: DungeonId) {
-  return MAP_OBSTACLES[id]
+export function dungeonLightSources(id: DungeonId,edits?:MapEditData) {
+  return editedDungeonObstacles(id,edits)
     .filter((p) => p.kind === "lamp")
     .map((p) => {
       const frame = urbanFrame(p.kind),
@@ -47,8 +49,9 @@ function radial(
 export function paintDungeonFloorShadows(
   c: CanvasRenderingContext2D,
   id: DungeonId,
+  edits?:MapEditData,
 ): void {
-  for (const p of MAP_OBSTACLES[id]) {
+  for (const p of editedDungeonObstacles(id,edits)) {
     radial(
       c,
       p.x + 12,
@@ -70,8 +73,9 @@ export function paintDungeonFloorShadows(
 export function paintDungeonFloorLights(
   c: CanvasRenderingContext2D,
   id: DungeonId,
+  edits?:MapEditData,
 ): void {
-  for (const light of dungeonLightSources(id))
+  for (const light of dungeonLightSources(id,edits))
     radial(
       c,
       light.x,
@@ -80,17 +84,19 @@ export function paintDungeonFloorLights(
       light.radius * 0.64,
       "rgba(255,193,116,.17)",
     );
-  if (id === "abandoned-central-square")
-    radial(c, 1536, 1148, 170, 105, "rgba(102,175,189,.065)");
+  if (id === "abandoned-central-square") {
+    const fountain=editedDungeonObstacles(id,edits).find(p=>p.kind==='fountain');
+    if(fountain)radial(c,fountain.x,fountain.y-4,170,105,"rgba(102,175,189,.065)");
+  }
 }
-function layerCanvas(id: DungeonId, lights: boolean) {
+function layerCanvas(id: DungeonId, lights: boolean,edits?:MapEditData) {
   const canvas = document.createElement("canvas");
   canvas.width = 1536;
   canvas.height = 1152;
   const c = canvas.getContext("2d")!;
   c.scale(0.5, 0.5);
-  if (lights) paintDungeonFloorLights(c, id);
-  else paintDungeonFloorShadows(c, id);
+  if (lights) paintDungeonFloorLights(c, id,edits);
+  else paintDungeonFloorShadows(c, id,edits);
   return canvas;
 }
 /** Cached soft light, no normal maps, shader pipeline or per-frame canvas uploads. */
@@ -98,14 +104,14 @@ export class DungeonLighting {
   readonly shadows: Phaser.GameObjects.Image;
   readonly pools: Phaser.GameObjects.Image;
   readonly bulbs: Phaser.GameObjects.Image[] = [];
-  constructor(scene: Phaser.Scene, id: DungeonId) {
-    const shadowKey = "dungeon-shadow-" + id,
-      lightKey = "dungeon-light-" + id,
+  constructor(scene: Phaser.Scene, id: DungeonId,edits?:MapEditData,namespace="dungeon") {
+    const shadowKey = namespace+"-shadow-" + id,
+      lightKey = namespace+"-light-" + id,
       haloKey = "dungeon-lamp-halo";
-    if (!scene.textures.exists(shadowKey))
-      scene.textures.addCanvas(shadowKey, layerCanvas(id, false));
-    if (!scene.textures.exists(lightKey))
-      scene.textures.addCanvas(lightKey, layerCanvas(id, true));
+    if (!reusableTerrainTexture(scene.textures,shadowKey,edits?.objects))
+      scene.textures.addCanvas(shadowKey, layerCanvas(id, false,edits));
+    if (!reusableTerrainTexture(scene.textures,lightKey,edits?.objects))
+      scene.textures.addCanvas(lightKey, layerCanvas(id, true,edits));
     if (!scene.textures.exists(haloKey)) {
       const canvas = document.createElement("canvas");
       canvas.width = canvas.height = 128;
@@ -124,7 +130,7 @@ export class DungeonLighting {
       .setScale(2)
       .setBlendMode("ADD")
       .setDepth(-70);
-    for (const light of dungeonLightSources(id))
+    for (const light of dungeonLightSources(id,edits))
       this.bulbs.push(
         scene.add
           .image(light.bulbX, light.bulbY, haloKey)

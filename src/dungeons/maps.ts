@@ -1,8 +1,12 @@
+import type {MapEditData} from '../systems/map-editor';
+import {natureArt} from '../data/nature-catalog';
+import {URBAN_PROP_SIZES} from '../data/editor-props';
 import benches from "../../public/assets/visual/dungeons/benches.json";
 import urban from "../../public/assets/visual/dungeons/urban.json";
 import type { DungeonId } from "./config";
 export interface DungeonObstacle {
   id: string;
+  editorId?:string;
   kind:
     | "sedan"
     | "hatchback"
@@ -140,6 +144,20 @@ export function dungeonObstacles(id: DungeonId): DungeonObstacle[] {
   }
   return result;
 }
+export const dungeonObjectId=(p:DungeonObstacle):string=>p.editorId??`urban-${p.kind}-${Math.floor(p.x/32)}-${Math.floor(p.y/32)}`;
+const layouts=new WeakMap<MapEditData,Map<DungeonId,DungeonObstacle[]>>();
+export function editedDungeonObstacles(id:DungeonId,edits?:MapEditData):DungeonObstacle[]{
+ if(!edits)return MAP_OBSTACLES[id];let cache=layouts.get(edits);if(!cache){cache=new Map();layouts.set(edits,cache);}const cached=cache.get(id);if(cached)return cached;
+ const originals=MAP_OBSTACLES[id],ids=new Set(originals.map(dungeonObjectId));
+ const result=originals.flatMap(p=>{const editorId=dungeonObjectId(p),e=edits.objects[editorId];return e?.removed?[]:[{...p,editorId,x:e?e.x*32+16:p.x,y:e?e.y*32+25:p.y}];});
+ for(const [editorId,e] of Object.entries(edits.objects))if(!ids.has(editorId)&&!e.removed&&e.kind?.startsWith('urban-')){
+  const [width,height,solid]=URBAN_PROP_SIZES[e.kind as keyof typeof URBAN_PROP_SIZES];
+  result.push({id:editorId,editorId,kind:e.kind.slice(6) as DungeonObstacle['kind'],x:e.x*32+16,y:e.y*32+25,width,height,solid});
+ }
+ cache.set(id,result);return result;
+}
+export function dungeonNaturalObjects(edits?:MapEditData){return Object.entries(edits?.objects??{}).filter(([,e])=>!e.removed&&e.kind&&!e.kind.startsWith('urban-'));}
+export function dungeonEntry(edits?:MapEditData){const p=edits?.points?.entry;return p?{x:p.x*32+16,y:p.y*32+16}:{...DUNGEON_ENTRY};}
 interface Collider {
   x: number;
   halfWidth: number;
@@ -147,12 +165,14 @@ interface Collider {
   bottom: number;
 }
 const collisionCells = new Map<DungeonId, Map<string, Collider[]>>();
-function collisionIndex(id: DungeonId): Map<string, Collider[]> {
-  const cached = collisionCells.get(id);
+const editedCells=new WeakMap<MapEditData,Map<DungeonId,Map<string,Collider[]>>>();
+function collisionIndex(id: DungeonId,edits?:MapEditData): Map<string, Collider[]> {
+  let cache=collisionCells;if(edits){let saved=editedCells.get(edits);if(!saved){saved=new Map();editedCells.set(edits,saved);}cache=saved;}
+  const cached = cache.get(id);
   if (cached) return cached;
   const cells = new Map<string, Collider[]>();
   const boxes: Collider[] = [];
-  for (const p of MAP_OBSTACLES[id]) {
+  for (const p of editedDungeonObstacles(id,edits)) {
     if (!p.solid) continue;
     if (p.kind === "lamp") {
       boxes.push({ x: p.x, halfWidth: 9, top: p.y - 9, bottom: p.y + 4 });
@@ -174,6 +194,9 @@ function collisionIndex(id: DungeonId): Map<string, Collider[]> {
       bottom: p.y + 6,
     });
   }
+  for(const [,p] of dungeonNaturalObjects(edits)){
+   const art=natureArt(p.kind);if(art?.solid||p.kind==='standingTree'||p.kind==='pine'||p.kind==='vein')boxes.push({x:p.x*32+16,halfWidth:13,top:p.y*32+4,bottom:p.y*32+31});
+  }
   for (const box of boxes)
     for (
       let cy = Math.floor(box.top / 128);
@@ -190,13 +213,14 @@ function collisionIndex(id: DungeonId): Map<string, Collider[]> {
         items.push(box);
         cells.set(key, items);
       }
-  collisionCells.set(id, cells);
+  cache.set(id, cells);
   return cells;
 }
-export function dungeonBlocked(id: DungeonId, x: number, y: number): boolean {
+export function dungeonBlocked(id: DungeonId, x: number, y: number,edits?:MapEditData): boolean {
   if (x < 32 || y < 48 || x > 3040 || y > 2260) return true;
+  if(edits?.terrain[`${Math.floor(x/32)},${Math.floor(y/32)}`]==='water')return true;
   return (
-    collisionIndex(id)
+    collisionIndex(id,edits)
       .get(Math.floor(x / 128) + "," + Math.floor(y / 128))
       ?.some(
         (b) => Math.abs(x - b.x) < b.halfWidth && y > b.top && y < b.bottom,
@@ -213,16 +237,17 @@ export function safeDungeonPoint(
   id: DungeonId,
   x: number,
   y: number,
+  edits?:MapEditData,
 ): { x: number; y: number } {
-  if (!dungeonBlocked(id, x, y)) return { x, y };
+  if (!dungeonBlocked(id, x, y,edits)) return { x, y };
   for (let radius = 8; radius <= 384; radius += 8)
     for (let n = 0; n < 32; n++) {
       const a = (n * Math.PI) / 16,
         px = x + Math.cos(a) * radius,
         py = y + Math.sin(a) * radius;
-      if (!dungeonBlocked(id, px, py)) return { x: px, y: py };
+      if (!dungeonBlocked(id, px, py,edits)) return { x: px, y: py };
     }
-  return { ...DUNGEON_ENTRY };
+  return dungeonEntry(edits);
 }
 
 export const urbanOriginX = (kind: DungeonObstacle["kind"]): number =>

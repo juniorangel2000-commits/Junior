@@ -1,3 +1,4 @@
+import {plazaFurniture,plazaEditorId} from './data/village-plaza';
 import { reusableTerrainTexture } from './terrain-texture-cache';
 import {drawVillageNorthRoad} from "./village-north-road";
 import {VILLAGE_NORTH_GATE,VILLAGE_NORTH_ARRIVAL,villageNorthConnectionDistance} from './data/city-forest';
@@ -21,7 +22,7 @@ import {addWaterMotion} from './water-motion';
 import Phaser from 'phaser';
 import {readTerrainSprites} from './terrain-sprites';
 import {TILE,WORLD_WIDTH,WORLD_HEIGHT} from './data/world-size';
-import {VILLAGE_BUILDINGS,VILLAGE_ENTRY,VILLAGE_EXIT,VILLAGE_PLAZA,VILLAGE_PROPS,VILLAGE_TREES,villageBlockedAt,villagePlazaDistance} from './data/village';
+import {VILLAGE_BUILDINGS,VILLAGE_ENTRY,VILLAGE_EXIT,VILLAGE_PLAZA,VILLAGE_PROPS,villageProps,VILLAGE_TREES,villageBlockedAt,villagePlazaDistance} from './data/village';
 import {natureArt} from './data/nature-catalog';
 import {drawExitSign} from './exit-signs';
 import {drawHouseSmoke} from './house-smoke';
@@ -130,7 +131,9 @@ export class VillageWorld {
   setupVillageGreenery(scene);
   drawVillageNorthRoad(scene,edits,namespace);
   drawExitSign(scene,VILLAGE_NORTH_GATE,VILLAGE_NORTH_ARRIVAL);
-  this.drawLake();drawVillagePier(scene);this.drawTrees();drawVillageDefences(scene);this.drawBuildings();this.landmarks=drawVillageLandmarks(scene);drawVillagePlaza(scene);this.drawGardens();this.drawProps();drawVillageDressing(scene,this.edits);drawVillageTallGrass(scene,this.edits);
+  this.drawLake();drawVillagePier(scene);this.drawTrees();drawVillageDefences(scene);this.drawBuildings();this.landmarks=drawVillageLandmarks(scene);drawVillagePlaza(scene,this.edits);
+  for(const p of plazaFurniture(this.edits))this.editorObjects.push({id:plazaEditorId(p),kind:(p.frame.startsWith('shrubs-')?`village-${p.frame}`:`village-bench-${p.frame}`) as WorldEditorObject['kind'],x:Math.floor(p.x),y:Math.floor(p.y),texture:'village-plaza-furniture',frame:p.frame});
+  this.drawGardens();this.drawProps();drawVillageDressing(scene,this.edits);drawVillageTallGrass(scene,this.edits);
   drawExitSign(scene,this.exit(),this.entry());
   this.environment=scene.children.list.filter(object=>!before.has(object));
   for(let y=0;y<WORLD_HEIGHT;y++)for(let x=0;x<WORLD_WIDTH;x++)if(villageBlockedAt(x,y,edits))this.solid.add(`${x},${y}`);
@@ -238,7 +241,8 @@ export class VillageWorld {
   }
  }
  private drawProps():void {
-  for(const prop of VILLAGE_PROPS){
+  for(const prop of villageProps(this.edits)){
+   const before=this.scene.children.list.length;
    const x=(prop.x+.5)*TILE,y=prop.y*TILE+25;
    if(prop.kind==='well'){
     if(this.scene.textures.exists('property-well-idle'))this.scene.add.image(x,y,'property-well-idle').setOrigin(.5,1).setScale(.49).setDepth(y);
@@ -255,6 +259,11 @@ export class VillageWorld {
     const sizes={bench:[62,44],barrel:[28,38],flowerpot:[29,36],woodpile:[54,38],crates:[38,54],sacks:[41,42],basket:[34,30],planter:[64,40],anvil:[46,46]} as const;
     const [w,h]=sizes[prop.kind];
     this.scene.add.image(x,y,prop.kind==='anvil'?'economy-workshop-anvil':`village-prop-${prop.kind}`).setOrigin(.5,1).setDisplaySize(w,h).setDepth(y).setData('village-prop',prop.kind);
+   }
+   if(prop.kind!=='well'){
+    const image=this.scene.children.list[before] as Phaser.GameObjects.Image|undefined;
+    if(image){const kind=(prop.kind==='bench'&&prop.facing?`village-bench-${prop.facing}`:`village-${prop.kind}`) as WorldEditorObject['kind'];
+     this.editorObjects.push({id:prop.id,kind,x:prop.x,y:prop.y,texture:image.texture.key,frame:image.frame.name});}
    }
   }
  }

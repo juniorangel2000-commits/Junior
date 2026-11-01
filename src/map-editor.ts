@@ -1,3 +1,6 @@
+import {EDITOR_AREAS,EDITOR_AREA_NAMES} from './data/editor-areas';
+import {EXTRA_PROP_NAMES,URBAN_PROP_KINDS} from './data/editor-props';
+import {editorPropThumbnail} from './editor-prop-art';
 import {nearRiverBank,isFiberPlant} from './data/fiber-plants';
 import {paintedWaterPoint} from './data/terrain-paint';
 import type {MapArea} from './data/default-maps';
@@ -16,6 +19,7 @@ export interface MapEditorAdapter {
   rebuild(edits: MapEditData): void;
   objects(): WorldEditorObject[];
   originalObjects: WorldEditorObject[];
+  validateLayout?(map:MapEditData):string|null;
   protectedTile(x: number, y: number): boolean;
   protectedTerrainTile?(x:number,y:number):boolean;
   canPlace(x: number, y: number, ignoreId?: string, kind?: EditorObjectKind): boolean;
@@ -30,6 +34,7 @@ export interface MapEditorAdapter {
 }
 type Point = { x: number; y: number };
 const labels = {
+  ...EXTRA_PROP_NAMES,
   ...Object.fromEntries(NATURE_KINDS.map(kind=>[kind,NATURE_ART[kind].label])),
   standingTree: 'Árvore', pine: 'Pinheiro', stone: 'Pedras', vein: 'Rocha',
   tree: 'Galhos', fiber: 'Fibras', seeds: 'Sementes', scrap: 'Sucata',
@@ -42,6 +47,7 @@ export class MapEditor {
   private readonly ui: MapEditorUI;
   private readonly history: MapEditHistory;
   private readonly initial: string;
+  private readonly area:MapEditData['area'];
   private readonly canvas: HTMLCanvasElement;
   private guides!: Phaser.GameObjects.Graphics;
   private cursor!: Phaser.GameObjects.Graphics;
@@ -64,6 +70,7 @@ export class MapEditor {
   private storedDraft:MapEditData|null=null;
 
   constructor(private readonly scene: Phaser.Scene, initial: MapEditData, private readonly adapter: MapEditorAdapter, history?:MapEditHistory, initialJSON?:string) {
+    this.area=initial.area;
     this.history = history??new MapEditHistory(initial);
     this.resourcesHidden = !!adapter.resourcesHidden;
     this.storedDraft=loadMapDraft(undefined,initial.area);
@@ -78,8 +85,8 @@ export class MapEditor {
       },
       brush: size => { this.brush = size; this.drawCursor(); },
       import: text => this.importMap(text),
-    });
-    this.ui.element.querySelector('h1')!.textContent=initial.area==='village'?'Editor · Vila':initial.area==='forest'?'Editor · Floresta Antiga':'Editor · Propriedade';
+    },undefined,initial.area??'property');
+    this.ui.element.querySelector('h1')!.textContent='Editor · '+EDITOR_AREA_NAMES[initial.area??'property'];
     if(initial.area==='village')this.status='Edite os pisos e a vegetação da vila. As casas e passagens das lojas ficam protegidas.';
     if(initial.area==='forest')this.status='Edite a floresta. As clareiras dos animais ficam protegidas.';
     for(const button of this.ui.element.querySelectorAll<HTMLButtonElement>('[data-map-area]')){button.disabled=!adapter.switchArea||button.dataset.mapArea===(initial.area??'property');button.setAttribute('aria-pressed',String(button.dataset.mapArea===(initial.area??'property')));}
@@ -87,9 +94,10 @@ export class MapEditor {
     this.fit();
     const images: Partial<Record<EditorObjectKind, string>> = {};
     for (const object of adapter.objects()) if (!images[object.kind] && !object.depleted) {
-      images[object.kind] = scene.textures.getBase64(object.texture);
+      images[object.kind] = scene.textures.getBase64(object.texture,object.frame);
     }
     for(const kind of NATURE_KINDS)if(scene.textures.exists(NATURE_ART[kind].texture))images[kind]=scene.textures.getBase64(NATURE_ART[kind].texture);
+    for(const kind of URBAN_PROP_KINDS)if(scene.textures.exists('dungeon-urban'))images[kind]=editorPropThumbnail(scene,kind);
     this.ui.setThumbnails(images);
     const materials:Record<string,string>={grass:'grass',meadow:'meadow',forest:'forest',moss:'moss',forestPath:'forest',path:'path-dry',wetPath:'path-wet',water:'water',sand:'sand',soil:'soil',wood:'wood',paving:'paving'};
     for(const [kind,material] of Object.entries(materials)){
@@ -178,10 +186,11 @@ export class MapEditor {
   }
 
   private protected(p: Point, terrain = false): boolean {
-    return terrain ? isProtectedTerrainTile(p.x,p.y,this.history.current.area,this.tool.mode==='restore'?undefined:this.tool.terrain)
+    return terrain ? isProtectedTerrainTile(p.x,p.y,this.area,this.tool.mode==='restore'?undefined:this.tool.terrain)
       || (this.adapter.protectedTerrainTile ?? this.adapter.protectedTile)(p.x,p.y)
-      : isProtectedMapTile(p.x,p.y,this.history.current.area) || this.adapter.protectedTile(p.x,p.y);
+      : isProtectedMapTile(p.x,p.y,this.area) || this.adapter.protectedTile(p.x,p.y);
   }
+  private movableObject(object:WorldEditorObject):boolean{return !this.protected(object)||(this.area==='village'&&object.kind.startsWith('village-'));}
   private objectAt(p: Point): WorldEditorObject | undefined { return this.adapter.objects().find(o => o.x === p.x && o.y === p.y); }
   private free(p: Point, ignoreId?: string): boolean {
     return !this.protected(p) && !this.adapter.objects().some(o => o.id !== ignoreId && o.x === p.x && o.y === p.y)
@@ -205,7 +214,7 @@ export class MapEditor {
       if(this.resourcesHidden){this.selected=null;this.status='Recursos ocultos. Escolha um piso para pintar ou clique em Mostrar recursos.';this.drawCursor();this.refresh();return;}
       const object = this.objectAt(tile);
       this.selected = object?.id ?? null;
-      if (object && !this.protected(tile)) this.moving = { ...object };
+      if (object && this.movableObject(object)) this.moving = { ...object };
       this.status = object ? `${labels[object.kind]}: arraste pela base para mover.` : 'Clique na base de uma árvore ou de um recurso para selecioná-lo.';
     } else {
       this.stroke = this.history.current;
@@ -237,7 +246,7 @@ export class MapEditor {
     if (this.moving && this.hover) {
       if (this.free(this.hover, this.moving.id)) {
         const data = this.history.current, object = this.moving;
-        data.objects[object.id] = { ...data.objects[object.id], x: this.hover.x, y: this.hover.y };
+        data.objects[object.id] = { ...data.objects[object.id], ...(object.id.startsWith('editor-')?{kind:object.kind}:{}), x: this.hover.x, y: this.hover.y };
         this.commit(data, `${labels[object.kind]} movido.`);
       } else this.status = 'Esse ponto está ocupado, protegido ou tem água. Escolha um chão livre.';
     }
@@ -262,15 +271,15 @@ export class MapEditor {
     const radius = this.tool.mode === 'terrain' || this.tool.mode === 'restore' ? Math.floor(this.brush / 2) : 0;
     for (let y = center.y - radius; y <= center.y + radius; y++) for (let x = center.x - radius; x <= center.x + radius; x++) {
       const p = { x, y };
-      if (this.protected(p,this.tool.mode==='terrain'||this.tool.mode==='restore')) { this.strokeBlocked = true; continue; }
       const cell = key(p), object = this.objectAt(p);
+      if (this.protected(p,this.tool.mode==='terrain'||this.tool.mode==='restore')&&!(this.tool.mode==='remove'&&object&&this.movableObject(object))) { this.strokeBlocked = true; continue; }
       if(this.tool.mode==='entry'||this.tool.mode==='exit'){
         if(!this.free(p)){this.strokeBlocked=true;continue;}
         this.stroke.points={...this.stroke.points,[this.tool.mode]:{x,y}};
       } else if (this.tool.mode === 'terrain' && this.tool.terrain) {
         const plant=object&&(isFiberPlant(object.kind)||object.kind==='berryBush'||object.kind==='fiber'||object.kind==='seeds');
         if (this.tool.terrain === 'water' && object && !plant && !natureArt(object.kind)?.water) { this.strokeBlocked = true; continue; }
-        if(plant&&object)this.stroke.objects[object.id]={...this.stroke.objects[object.id],x:object.x,y:object.y,removed:true};
+        if(plant&&object)this.stroke.objects[object.id]={...this.stroke.objects[object.id],...(object.id.startsWith('editor-')?{kind:object.kind}:{}),x:object.x,y:object.y,removed:true};
         this.stroke.terrain[cell] = this.tool.terrain;
         this.strokePreview.fillStyle(colors[this.tool.terrain], .7).fillRect(x * TILE, y * TILE, TILE, TILE);
       } else if (this.tool.mode === 'restore') {
@@ -278,7 +287,7 @@ export class MapEditor {
         delete this.stroke.terrain[cell];
         this.strokePreview.fillStyle(0xf0dfb6, .4).fillRect(x * TILE, y * TILE, TILE, TILE);
       } else if (this.tool.mode === 'remove' && object) {
-        this.stroke.objects[object.id] = { ...this.stroke.objects[object.id], x, y, removed: true };
+        this.stroke.objects[object.id] = { ...this.stroke.objects[object.id], ...(object.id.startsWith('editor-')?{kind:object.kind}:{}), x, y, removed: true };
         this.strokePreview.fillStyle(0xbb5352, .65).fillRect(x * TILE, y * TILE, TILE, TILE);
       } else if (this.tool.mode === 'object' && this.tool.object) {
         if (!this.free(p) || Object.values(this.stroke.objects).some(o => !o.removed && o.x === x && o.y === y)) { this.strokeBlocked = true; continue; }
@@ -320,14 +329,14 @@ export class MapEditor {
     if (this.history.commit(data)) {
       this.rebuild(data);
       this.status = saveMapDraft(data) ? status : 'Rascunho em memória. O armazenamento está indisponível; use Exportar para guardar.';
-      this.storedDraft = loadMapDraft(undefined,this.history.current.area);
+      this.storedDraft = loadMapDraft(undefined,this.area);
     } else if (this.strokeBlocked) this.status = 'Ponto protegido, ocupado ou com água. Escolha outro local.';
     this.refresh();
   }
 
   /** Resolve imports against the actual original map, not just their JSON shape. */
   private layoutError(data: MapEditData): string | null {
-    if(data.area!==this.history.current.area)return 'Este arquivo pertence a outro cenário. Abra o editor no cenário correspondente.';
+    if(data.area!==this.area)return 'Este arquivo pertence a outro cenário. Abra o editor no cenário correspondente.';
     const original = new Map(this.adapter.originalObjects.map(o => [o.id, o]));
     const resolved = new Map(editorBaselineObjects(this.adapter.originalObjects,data).map(o=>[o.id,o]));
     for (const [id, edit] of Object.entries(data.objects)) {
@@ -357,7 +366,7 @@ export class MapEditor {
       const ground = data.terrain[cell];
       if (!natureArt(object.kind)?.water && (ground === 'water' || (data.objects[object.id] && ground === undefined && (this.adapter.baseWater??isWaterTile)(object.x, object.y)))) return 'Há objetos sobre água nesse arquivo. Ajuste o terreno ou mova os objetos.';
     }
-    return null;
+    return this.adapter.validateLayout?.(data)??null;
   }
 
   private importMap(text: string): void {
@@ -370,9 +379,9 @@ export class MapEditor {
 
   private action(action: EditorAction): void {
     this.finishStroke();
-    if(action==='map-property'||action==='map-forest'||action==='map-village'){
+    if(action.startsWith('map-')&&EDITOR_AREAS.includes(action.slice(4) as MapArea)){
       const error=this.layoutError(this.history.current);if(error){this.status=error;this.refresh(true);return;}
-      this.adapter.switchArea?.(action==='map-village'?'village':action==='map-forest'?'forest':'property',this.history.current);return;
+      this.adapter.switchArea?.(action.slice(4) as MapArea,this.history.current);return;
     }
     if (action === 'cancel') { this.adapter.cancel(); return; }
     if (action === 'apply') {
@@ -391,7 +400,7 @@ export class MapEditor {
       if (data) {
         this.rebuild(data); this.selected = null;
         this.status = saveMapDraft(data) ? (action === 'undo' ? 'Alteração desfeita.' : 'Alteração refeita.') : 'Alteração em memória. Exporte para guardar.';
-        this.storedDraft = loadMapDraft(undefined,this.history.current.area);
+        this.storedDraft = loadMapDraft(undefined,this.area);
       }
     } else if (action === 'grid') { this.grid = !this.grid; this.drawGrid(); }
     else if(action==='resources')this.setResourcesHidden(!this.resourcesHidden);
@@ -399,12 +408,12 @@ export class MapEditor {
     else if (action === 'zoom-out') this.zoom(1 / 1.25);
     else if (action === 'zoom-fit') this.fit();
     else if (action === 'load-draft') {
-      const data = loadMapDraft(undefined,this.history.current.area);
+      const data = loadMapDraft(undefined,this.area);
       if (data) this.importMap(JSON.stringify(data));
       else this.status = 'Nenhum rascunho válido foi encontrado neste navegador.';
     } else if (action === 'export') {
       const url = URL.createObjectURL(new Blob([JSON.stringify(this.history.current, null, 2)], { type: 'application/json' }));
-      const a = document.createElement('a'); a.href = url; a.download = `After-Rain-${this.history.current.area??'propriedade'}-mapa.json`; a.click();
+      const a = document.createElement('a'); a.href = url; a.download = `After-Rain-${this.area??'propriedade'}-mapa.json`; a.click();
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
       this.status = 'Mapa exportado. Guarde o JSON para continuar ou enviar suas alterações.';
     }
@@ -433,9 +442,9 @@ export class MapEditor {
     } else if (key === 'delete' || key === 'backspace') {
       event.preventDefault();
       const object = this.adapter.objects().find(o => o.id === this.selected);
-      if (object && !this.protected(object)) {
+      if (object && this.movableObject(object)) {
         const data = this.history.current;
-        data.objects[object.id] = { ...data.objects[object.id], x: object.x, y: object.y, removed: true };
+        data.objects[object.id] = { ...data.objects[object.id], ...(object.id.startsWith('editor-')?{kind:object.kind}:{}), x: object.x, y: object.y, removed: true };
         this.commit(data, 'Objeto removido do rascunho.'); this.selected = null;
       }
     } else if (key === 'escape') { event.preventDefault(); this.pointerCancel(); this.selected = null; this.drawCursor(); this.refresh(); }

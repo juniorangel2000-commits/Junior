@@ -293,9 +293,28 @@ export const VILLAGE_FENCES:readonly {kind:'fence';x:number;y:number}[]=(()=>{
  }
  return result;
 })();
-export const villageWellTile=(x:number,y:number)=>VILLAGE_PROPS.filter(p=>p.kind==='well').some(p=>[0,16,31].some(dx=>[0,16,31].some(dy=>wellFootprint(x*32+dx,y*32+dy,{x:(p.x+.5)*32,y:p.y*32+25},.49))));
-export function villagePropAt(x:number,y:number):boolean {
- return villageWellTile(x,y)||VILLAGE_PROPS.some(p=>p.kind!=='well'&&p.y===y&&Math.abs(p.x-x)<=(p.kind==='bench'||p.kind==='woodpile'||p.kind==='planter'?1:0));
+export function villagePropId(p:typeof VILLAGE_PROPS[number],_index:number):string {
+ const kind=p.kind==='bench'&&p.facing?`village-bench-${p.facing}`:`village-${p.kind}`;
+ return `editor-${kind}-base-${p.x}-${p.y}`;
+}
+const propCache=new WeakMap<MapEditData,Array<typeof VILLAGE_PROPS[number]&{id:string}>>();
+let defaultProps:Array<typeof VILLAGE_PROPS[number]&{id:string}>|undefined;
+export function villageProps(edits?:MapEditData):Array<typeof VILLAGE_PROPS[number]&{id:string}> {
+ const cached=edits?propCache.get(edits):defaultProps;if(cached)return cached;
+ const originals=VILLAGE_PROPS.map((p,i)=>({...p,id:villagePropId(p,i)}));
+ const ids=new Set(originals.map(p=>p.id));
+ const result=originals.flatMap(p=>{const e=edits?.objects[p.id];return e?.removed?[]:[{...p,x:e?.x??p.x,y:e?.y??p.y}];});
+ for(const [id,e] of Object.entries(edits?.objects??{})){
+  if(ids.has(id)||id.includes('-plaza-')||e.removed||!e.kind?.startsWith('village-')||e.kind.startsWith('village-shrubs-'))continue;
+  const raw=e.kind.slice(8),bench=raw.startsWith('bench-');
+  result.push({id,x:e.x,y:e.y,kind:(bench?'bench':raw) as typeof VILLAGE_PROPS[number]['kind'],...(bench?{facing:raw.slice(6) as 'north'|'south'|'east'|'west'}:{})});
+ }
+ if(edits)propCache.set(edits,result);else defaultProps=result;
+ return result;
+}
+export const villageWellTile=(x:number,y:number,edits?:MapEditData)=>villageProps(edits).filter(p=>p.kind==='well').some(p=>[0,16,31].some(dx=>[0,16,31].some(dy=>wellFootprint(x*32+dx,y*32+dy,{x:(p.x+.5)*32,y:p.y*32+25},.49))));
+export function villagePropAt(x:number,y:number,edits?:MapEditData):boolean {
+ return villageWellTile(x,y,edits)||villageProps(edits).some(p=>p.kind!=='well'&&p.y===y&&Math.abs(p.x-x)<=(p.kind==='bench'||p.kind==='woodpile'||p.kind==='planter'?1:0));
 }
 export const VILLAGE_SHORE_DETAILS:readonly {kind:'shoreStones';x:number;y:number}[]=(()=>{
  const result:Array<{kind:'shoreStones';x:number;y:number}>=[],seen=new Set<string>();
@@ -315,15 +334,15 @@ export function villageSceneryBlockedAt(x:number,y:number,includeWell=true,edits
  return villageDressingBlockedPoint((x+.5)*32,(y+.5)*32)||includeWater&&villageWater(x,y,edits)||x<1||y<1||x>=WORLD_WIDTH-1||y>=WORLD_HEIGHT-1
   ||VILLAGE_TREES.some(t=>{const e=edits?.objects[villageTreeId(t)];return !e?.removed&&(e?.x??t.x)===x&&(e?.y??t.y)===y;})
   ||Object.entries(edits?.objects??{}).some(([id,e])=>!e.removed&&e.x===x&&e.y===y&&natureArt(e.kind)?.solid&&!villageTreeIds.has(id))
-  ||(includeWell?villagePropAt(x,y):VILLAGE_PROPS.some(p=>p.kind!=='well'&&p.y===y&&Math.abs(p.x-x)<=(p.kind==='bench'||p.kind==='woodpile'||p.kind==='planter'?1:0)))||VILLAGE_SHORE_DETAILS.some(p=>p.kind==='shoreStones'&&p.x===x&&p.y===y)||VILLAGE_FENCES.some(p=>p.x===x&&p.y===y);
+  ||(includeWell?villagePropAt(x,y,edits):villageProps(edits).some(p=>p.kind!=='well'&&p.y===y&&Math.abs(p.x-x)<=(p.kind==='bench'||p.kind==='woodpile'||p.kind==='planter'?1:0)))||VILLAGE_SHORE_DETAILS.some(p=>p.kind==='shoreStones'&&p.x===x&&p.y===y)||VILLAGE_FENCES.some(p=>p.x===x&&p.y===y);
 }
-export const villageBlockedAt=(x:number,y:number,edits?:MapEditData)=>villageSceneryBlockedAt(x,y,true,edits)||villageLandmarkBlockedTile(x,y)||plazaFurnitureBlockedTile(x,y)||villagePierRailAtPoint((x+.5)*32,(y+.5)*32)||villageFishingPropAtPoint((x+.5)*32,(y+.5)*32)||villageBarricadeBlockedPoint((x+.5)*32,(y+.5)*32)||!!villageBuildingAt(x,y);
+export const villageBlockedAt=(x:number,y:number,edits?:MapEditData)=>villageSceneryBlockedAt(x,y,true,edits)||villageLandmarkBlockedTile(x,y)||plazaFurnitureBlockedTile(x,y,edits)||villagePierRailAtPoint((x+.5)*32,(y+.5)*32)||villageFishingPropAtPoint((x+.5)*32,(y+.5)*32)||villageBarricadeBlockedPoint((x+.5)*32,(y+.5)*32)||!!villageBuildingAt(x,y);
 export function villagePointBlocked(x:number,y:number,edits?:MapEditData):boolean{
  const tx=Math.floor(x/32),ty=Math.floor(y/32);
  const nearPier=villagePierNear(x,y);
  const scenery=villageSceneryBlockedAt(tx,ty,false,edits,!nearPier);
- const well=VILLAGE_PROPS.find(p=>p.kind==='well'&&Math.abs(p.x-tx)<=2&&Math.abs(p.y-ty)<=3);
- return villageDressingBlockedPoint(x,y)||scenery||nearPier&&villageWaterPoint(x,y,edits)||villagePierRailAtPoint(x,y)||villageFishingPropAtPoint(x,y)||villageBarricadeBlockedPoint(x,y)||plazaFurnitureBlockedPoint(x,y)||villageLandmarkBlockedPoint(x,y)||(!!well&&wellFootprint(x,y,{x:(well.x+.5)*32,y:well.y*32+25},.49))||VILLAGE_BUILDINGS.some(b=>{
+ const well=villageProps(edits).find(p=>p.kind==='well'&&Math.abs(p.x-tx)<=2&&Math.abs(p.y-ty)<=3);
+ return villageDressingBlockedPoint(x,y)||scenery||nearPier&&villageWaterPoint(x,y,edits)||villagePierRailAtPoint(x,y)||villageFishingPropAtPoint(x,y)||villageBarricadeBlockedPoint(x,y)||plazaFurnitureBlockedPoint(x,y,edits)||villageLandmarkBlockedPoint(x,y)||(!!well&&wellFootprint(x,y,{x:(well.x+.5)*32,y:well.y*32+25},.49))||VILLAGE_BUILDINGS.some(b=>{
   const facade=facadeForMerchant(b.shop);
   return b.shop==='blacksmith'?blacksmithBlockedPoint(x,y,b):b.shop==='carpenter'?tobiasShopBlockedPoint(x,y,b):facade?facadeBlockedPoint(facade,x,y,b):cottageSolidPoint(x,y,{x:(b.x+.5)*32,y:b.y*32+25});
  });

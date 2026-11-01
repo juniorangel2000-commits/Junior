@@ -52,6 +52,7 @@ export function advanceBossCombat(
   dungeon: DungeonId,
   dt: number,
   hurt: (damage: number) => void,
+  blocked:typeof dungeonBlocked=dungeonBlocked,
 ): boolean {
   const b = e.boss ??= { cooldown: 5, sequence: 0 };
   if (!b.action) {
@@ -92,7 +93,7 @@ export function advanceBossCombat(
     for (let i = 0; i < steps && a.distance > 0; i++) {
       const x = e.x + Math.cos(a.angle) * travel / steps;
       const y = e.y + Math.sin(a.angle) * travel / steps;
-      if (dungeonBlocked(dungeon, x, y)) { a.distance = 0; break; }
+      if (blocked(dungeon, x, y)) { a.distance = 0; break; }
       e.x = x; e.y = y;
       a.distance = Math.max(0, a.distance - travel / steps);
       if (!a.hit && Math.hypot(player.x - x, player.y - y) <= 38) {

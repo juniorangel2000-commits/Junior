@@ -1,12 +1,13 @@
+import type {MapEditData} from './systems/map-editor';
 import type Phaser from 'phaser';
 import manifest from '../public/assets/visual/village/plaza/manifest.json';
-import {PLAZA_SEATS,PLAZA_BEDS} from './data/village-plaza';
+import {plazaFurniture} from './data/village-plaza';
 
 export function preloadVillagePlaza(scene:Phaser.Scene):void {
  scene.load.image('village-plaza-source',manifest.file);
 }
 
-export function drawVillagePlaza(scene:Phaser.Scene):void {
+export function drawVillagePlaza(scene:Phaser.Scene,edits?:MapEditData):void {
  const key='village-plaza-furniture';
  if(!scene.textures.exists(key)){
   const source=scene.textures.get('village-plaza-source').getSourceImage() as HTMLImageElement;
@@ -18,7 +19,7 @@ export function drawVillagePlaza(scene:Phaser.Scene):void {
   const texture=scene.textures.addCanvas(key,canvas)!;texture.setFilter(0);
   for(const [frame,r] of Object.entries(manifest.frames))texture.add(frame,0,r.x,r.y,r.width,r.height);
  }
- for(const p of [...PLAZA_SEATS,...PLAZA_BEDS]){
+ for(const p of plazaFurniture(edits)){
   const r=manifest.frames[p.frame],scale=Math.min(p.width/r.width,p.height/r.height),y=p.y*32+25;
   scene.add.image((p.x+.5)*32,y,key,p.frame).setOrigin(.5,1).setScale(scale).setDepth(y)
    .setData({'village-plaza-furniture':p.id,'village-plaza-facing':p.frame,'shadow-foot':1});

@@ -7,7 +7,7 @@ import {FOREST_ANIMALS} from '../src/data/ancient-forest';
 import {fenceConnections,fenceStage} from '../src/data/fences';
 import type {BuildingData} from '../src/types';
 const profile={name:'Cercado',skin:'#eac39a',hairColor:'#71462e',outfit:'#70a97c',hairStyle:'preso' as const};
-const inv=()=>new Inventory({...INITIAL_INVENTORY,wood:100});
+const inv=()=>new Inventory({...INITIAL_INVENTORY,wood:100,fenceKit:10});
 function pen():Building {
  const pieces:BuildingData[]=[];
  for(let x=10;x<=16;x++)for(let y=10;y<=16;y++)if(x===10||x===16||y===10||y===16)pieces.push({x,y,kind:x===13&&y===16?'gate':'fence',...(x===13&&y===16?{open:false,rotation:0 as const}:{fenceBuiltDay:1})});
@@ -81,7 +81,7 @@ describe('porteiras, cercados e reparos',()=>{
   for(const gateFlip of [0,1,'false',null,{}])expect(validateSave({...state,buildings:[{...gate,gateFlip}]})).toBe(false);
   for(const kind of ['fence','bench','workbench','wall','door','floor','window','roof']){
    for(const gateFlip of [false,true])expect(validateSave({...state,buildings:[{x:10,y:10,kind,gateFlip}]})).toBe(false);
-   if(kind!=='roof')expect(validateSave({...state,buildings:[{x:10,y:10,kind,rotation:0}]})).toBe(false);
+   if(kind!=='roof'&&kind!=='bench')expect(validateSave({...state,buildings:[{x:10,y:10,kind,rotation:0}]})).toBe(false);
   }
   for(const rotation of [2,3])expect(validateSave({...state,buildings:[{kind:'roof',x:10,y:10,rotation}]})).toBe(false);
   const b=new Building(),i=inv();expect(b.place('fence',10,10,i,true,{nearWorkbench:false,rotation:3,gateFlip:true}).ok).toBe(true);
@@ -104,7 +104,7 @@ describe('porteiras, cercados e reparos',()=>{
  },15000);
  it('restaura os três desgastes sem desmontar nem repetir o consumo',()=>{
   for(const day of [31,61,91]){const b=new Building([{kind:'fence',x:10,y:10,fenceBuiltDay:1}]),i=inv();
-   expect(fenceStage(b.buildings[0],day)).not.toBe('new');expect(b.repairFence(10,10,i,day).ok).toBe(true);expect(i.data.wood).toBe(99);expect(fenceStage(b.buildings[0],day)).toBe('new');expect(b.repairFence(10,10,i,day).ok).toBe(false);expect(i.data.wood).toBe(99);expect(b.isBlocked(10,10)).toBe(true);
+   expect(fenceStage(b.buildings[0],day)).not.toBe('new');expect(b.repairFence(10,10,i,day).ok).toBe(true);expect(i.data.fenceKit).toBe(9);expect(i.data.wood).toBe(100);expect(fenceStage(b.buildings[0],day)).toBe('new');expect(b.repairFence(10,10,i,day).ok).toBe(false);expect(i.data.fenceKit).toBe(9);expect(i.data.wood).toBe(100);expect(b.isBlocked(10,10)).toBe(true);
   }
   const b=pen(),empty=new Inventory();expect(b.repairFence(10,10,empty,31).ok).toBe(false);expect(b.at(10,10)?.fenceBuiltDay).toBe(1);expect(b.repairFence(13,16,inv(),31).ok).toBe(false);
  });

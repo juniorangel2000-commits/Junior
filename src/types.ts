@@ -73,6 +73,8 @@ export interface SaveData {
   villagePosition?: TilePoint & { direction?: CharacterDirection };
   blacksmithInterior?: TilePoint & {direction?:CharacterDirection};
   merchantInterior?:import('./systems/merchant-visit').ShopVisit;
+  cityForestMapEdits?:MapEditData;
+  dungeonMapEdits?:Partial<Record<import('./dungeons/config').DungeonId,MapEditData>>;
   villageMapEdits?:import('./systems/map-editor').MapEditData;
   merchantScenes?:Partial<Record<import('./systems/merchant-visit').ResidentId,import('./systems/smith-layout').SmithLayout>>;
   shopResidents?:import('./systems/merchant-visit').ShopResident[];
@@ -89,7 +91,7 @@ export interface SaveData {
   recruitedAnimals?: string[];
   animalPositions?: {forest:AnimalPosition[];property:AnimalPosition[]};
   animalEscort?: AnimalEscort;
-  version: 3;
+  version: 4;
   quickbar?: QuickSlot[];
   wateringCanWater?: number;
   homeSupplies?: { wateringCan: boolean; seedPacket: boolean };

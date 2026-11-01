@@ -1,3 +1,5 @@
+import {EDITOR_AREAS,EDITOR_AREA_NAMES,type EditorArea} from './data/editor-areas';
+import {EXTRA_PROP_KINDS,EXTRA_PROP_NAMES} from './data/editor-props';
 import { NATURE_KINDS, NATURE_ART } from './data/nature-catalog';
 import './map-editor.css';
 import type { EditorObjectKind, TerrainKind } from './systems/map-editor';
@@ -8,7 +10,7 @@ export interface EditorTool {
   object?: EditorObjectKind;
 }
 export type EditorAction = 'undo' | 'redo' | 'zoom-out' | 'zoom-fit' | 'zoom-in'
-  | 'grid' | 'resources' | 'export' | 'load-draft' | 'apply' | 'cancel' | 'map-property' | 'map-forest' | 'map-village';
+  | 'grid' | 'resources' | 'export' | 'load-draft' | 'apply' | 'cancel' | `map-${EditorArea}`;
 export interface MapEditorCallbacks {
   action(action: EditorAction): void | Promise<void>;
   tool(tool: EditorTool): void;
@@ -41,6 +43,7 @@ const objects: ReadonlyArray<{ kind: EditorObjectKind; label: string; hint: stri
   { kind: 'fiber', label: 'Fibras', hint: 'Posicionar fibras' },
   { kind: 'seeds', label: 'Sementes', hint: 'Posicionar sementes' },
   { kind: 'scrap', label: 'Sucata', hint: 'Posicionar sucata' },
+  ...EXTRA_PROP_KINDS.map(kind=>({kind,label:EXTRA_PROP_NAMES[kind],hint:`Posicionar ${EXTRA_PROP_NAMES[kind].toLowerCase()}`})),
   ...NATURE_KINDS.filter(kind=>kind!=='mossBoulder'&&kind!=='shoreStones').map(kind=>({kind,label:NATURE_ART[kind].label,hint:`Posicionar ${NATURE_ART[kind].label.toLowerCase()}`})),
 ];
 const icons: Record<string, string> = {
@@ -86,7 +89,7 @@ export class MapEditorUI {
     zoom: 1, canLoadDraft: false, grid: true, selected: null, tile: null, error: false,
   };
 
-  constructor(private readonly callbacks: MapEditorCallbacks, host: HTMLElement = document.body) {
+  constructor(private readonly callbacks: MapEditorCallbacks, host: HTMLElement = document.body,area:EditorArea='property') {
     this.element.className = 'map-editor-ui';
     this.element.setAttribute('aria-label', 'Editor do mapa');
     this.element.innerHTML = `
@@ -120,7 +123,7 @@ export class MapEditorUI {
             <button type="button" data-action="resources" aria-pressed="false" title="Ocultar árvores, pedras, sucata e vegetação para editar os pisos">${icon('standingTree')}<span>Ocultar recursos</span></button>
             <button type="button" data-reference aria-expanded="false" aria-controls="map-editor-reference">${icon('map')}<span>Referência</span></button>
           </div>
-          <div class="me-command-group" role="group" aria-label="Trocar cenário em edição"><button type="button" data-action="map-property" data-map-area="property">Propriedade</button><button type="button" data-action="map-forest" data-map-area="forest">Floresta Antiga</button><button type="button" data-action="map-village" data-map-area="village">Vila</button></div><span class="me-map-caption">96 × 72</span>
+          <div class="me-command-group" role="group" aria-label="Trocar cenário em edição">${EDITOR_AREAS.map(id=>`<button type="button" data-action="map-${id}" data-map-area="${id}">${EDITOR_AREA_NAMES[id]}</button>`).join('')}</div><span class="me-map-caption">96 × 72</span>
         </div>
       </header>
       <aside class="me-palette me-panel" aria-label="Ferramentas e elementos do mapa">
@@ -136,7 +139,7 @@ export class MapEditorUI {
         </section>
         <section class="me-palette-section" aria-labelledby="me-objects-title">
           <h3 id="me-objects-title">Posicionar objetos</h3>
-          <div class="me-object-grid">${objects.map(({ kind, label, hint }) => `<button type="button" data-mode="object" data-object="${kind}" aria-label="${hint}" aria-pressed="false"><span class="me-object-preview" data-preview="${kind}" aria-hidden="true">${icon(kind)}</span><span>${label}</span></button>`).join('')}</div>
+          <div class="me-object-grid">${objects.filter(o=>!o.kind.startsWith('village-')||area==='village').filter(o=>!o.kind.startsWith('urban-')||['cityForest','abandoned-central-square','mall-parking'].includes(area)).map(({ kind, label, hint }) => `<button type="button" data-mode="object" data-object="${kind}" aria-label="${hint}" aria-pressed="false"><span class="me-object-preview" data-preview="${kind}" aria-hidden="true">${icon(kind)}</span><span>${label}</span></button>`).join('')}</div>
           <button type="button" class="me-remove-tool" data-mode="remove" aria-pressed="false">${icon('remove')}<span>Remover objeto</span></button>
         </section>
         <div class="me-selection-info"><span class="me-eyebrow">SELEÇÃO</span><p data-selection>Selecione um objeto no cenário.</p></div>
@@ -278,7 +281,8 @@ export class MapEditorUI {
     for (const { kind, label } of objects) {
       const url = images[kind];
       if (!url) continue;
-      const container = this.element.querySelector<HTMLElement>(`[data-preview="${kind}"]`)!;
+      const container = this.element.querySelector<HTMLElement>(`[data-preview="${kind}"]`);
+      if(!container)continue;
       const image = document.createElement('img');
       image.src = url; image.alt = label; image.draggable = false;
       image.addEventListener('error', () => { if (this.alive) container.innerHTML = icon(kind); }, { once: true });

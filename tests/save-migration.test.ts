@@ -1,3 +1,4 @@
+import {SAVE_VERSION} from '../src/systems/save';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { CharacterProfile, SaveData } from '../src/types';
 import { BLUEPRINT_COST } from '../src/data/blueprints';
@@ -67,7 +68,7 @@ describe('migração e proteção da partida existente', () => {
     const migrated = migrateSave(legacy)!;
     expect(migrated).not.toBeNull();
     expect(validateSave(migrated)).toBe(true);
-    expect(migrated.version).toBe(3);
+    expect(migrated.version).toBe(SAVE_VERSION);
     expect(migrated.profile).toEqual(legacy.profile);
     expect(migrated.player).toEqual(legacy.player);
     expect(migrated.crops).toEqual(legacy.crops);
@@ -95,7 +96,7 @@ describe('migração e proteção da partida existente', () => {
   it('carrega e detecta v1 sem escrever, migrar ou reformatar o arquivo original', () => {
     const raw = JSON.stringify(legacySave(), null, 2);
     const { values, storage } = installStorage([[SAVE_KEY, raw]]);
-    expect(loadSave()?.version).toBe(3);
+    expect(loadSave()?.version).toBe(SAVE_VERSION);
     expect(hasSave()).toBe(true);
     expect(storage.setItem).not.toHaveBeenCalled();
     expect(storage.removeItem).not.toHaveBeenCalled();
@@ -134,7 +135,7 @@ describe('migração e proteção da partida existente', () => {
   });
 
   it('preserva um save de versão futura mesmo quando já existe backup de uma partida antiga', () => {
-    const future = JSON.stringify({ ...createNewSave(profile), version: 4 });
+    const future = JSON.stringify({ ...createNewSave(profile), version: SAVE_VERSION + 1 });
     const backup = JSON.stringify(legacySave());
     const { values, storage } = installStorage([[SAVE_KEY, future], [SAVE_BACKUP_KEY, backup]]);
     expect(saveGame(createNewSave(profile))).toBe(false);
@@ -143,7 +144,7 @@ describe('migração e proteção da partida existente', () => {
     expect(storage.setItem).not.toHaveBeenCalled();
   });
 
-  it.each([4, 99])('recusa a versão futura %s sem modificar o armazenamento na leitura', (version) => {
+  it.each([SAVE_VERSION+1, 99])('recusa a versão futura %s sem modificar o armazenamento na leitura', (version) => {
     const future = { ...completeSnapshot(), version };
     const raw = JSON.stringify(future);
     const { values, storage } = installStorage([[SAVE_KEY, raw]]);

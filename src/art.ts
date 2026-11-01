@@ -1,3 +1,4 @@
+import {setupWoodworkArt} from './woodwork-art';
 import { setupFenceArt } from './fence-art';
 import Phaser from 'phaser';
 import type { CharacterProfile } from './types';
@@ -59,6 +60,7 @@ export function createCharacterFrames(scene: Phaser.Scene, profile: CharacterPro
 export function createArt(scene: Phaser.Scene): void {
   setupVisualAssets(scene);
   setupFenceArt(scene);
+  setupWoodworkArt(scene);
   const add = (key: string, width: number, height: number, paint: (ctx: CanvasRenderingContext2D) => void) => {
     if (scene.textures.exists(key)) return;
     const canvas = document.createElement('canvas');
@@ -77,8 +79,6 @@ export function createArt(scene: Phaser.Scene): void {
   adopt('wall', 'imported-wall');
   adopt('window', 'imported-window');
   adopt('door', 'imported-door');
-  adopt('bench', 'asset-bench');
-  adopt('fence', 'asset-fence');
   adopt('workbench', 'asset-workbench');
   const floorSource = scene.textures.exists('asset-ground-wood') ? 'asset-ground-wood' : 'module-piso_tabuas';
   if (scene.textures.exists(floorSource)) {
@@ -95,25 +95,6 @@ export function createArt(scene: Phaser.Scene): void {
     c.fillStyle = '#203e3444';
     c.fillRect(3, 3, 18, 5);
     c.fillRect(0, 5, 24, 2);
-  });
-  add('fence', 32, 32, (c) => {
-    c.fillStyle = '#3d4c3644'; c.fillRect(1, 26, 30, 5);
-    c.fillStyle = '#705943'; c.fillRect(0, 11, 32, 4); c.fillRect(0, 21, 32, 4);
-    c.fillStyle = '#b69768'; c.fillRect(0, 9, 32, 4); c.fillRect(0, 19, 32, 4);
-    for (const x of [3, 24]) {
-      c.fillStyle = '#70533b'; c.fillRect(x, 4, 5, 25);
-      c.fillStyle = '#c2a375'; c.fillRect(x, 4, 3, 22);
-      c.fillStyle = '#e1c391'; c.fillRect(x, 3, 5, 3);
-      c.fillStyle = '#544b37'; c.fillRect(x + 2, 11, 1, 1); c.fillRect(x + 2, 21, 1, 1);
-    }
-  });
-  add('bench', 32, 32, (c) => {
-    c.fillStyle = '#304b3444'; c.fillRect(1, 25, 30, 5);
-    c.fillStyle = '#6b5039'; c.fillRect(4, 10, 3, 18); c.fillRect(25, 10, 3, 18);
-    c.fillStyle = '#c0a073'; c.fillRect(2, 8, 28, 5); c.fillRect(2, 15, 28, 5);
-    c.fillStyle = '#806347'; c.fillRect(2, 12, 28, 2); c.fillRect(2, 19, 28, 3);
-    c.fillStyle = '#d4b786'; c.fillRect(2, 8, 28, 1); c.fillRect(2, 15, 28, 1);
-    c.fillStyle = '#584b37'; c.fillRect(5, 25, 3, 4); c.fillRect(24, 25, 3, 4);
   });
   add('workbench', 32, 32, (c) => {
     const r = (color: string, x: number, y: number, w: number, h: number) => { c.fillStyle = color; c.fillRect(x, y, w, h); };

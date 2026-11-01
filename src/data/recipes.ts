@@ -92,10 +92,10 @@ RECIPES.push(
  {id:'sickle',name:'Foice de Pedra',description:'Ferramenta básica de coleta vegetal.',cost:{flakedStone:1,handle:1,cord:1},output:{sickle:1}},
  {id:'shovel',name:'Pá de Pedra',description:'Ferramenta básica para preparar o chão.',cost:{flakedStone:2,handle:1,cord:1},output:{shovel:1}},
  {id:'forge',name:'Forja própria',description:'Instale na propriedade para fundir sem pagar mão de obra. Este sistema não exige combustível.',cost:{stone:15,wood:8,scrap:6},output:{forge:1},requiresWorkbench:true},
- {id:'furniture',name:'Móvel de madeira',description:'Produto de carpintaria para comercializar.',cost:{wood:10,board:4},output:{furniture:1},requiresWorkbench:true},
+ {id:'furniture',name:'Banco de madeira',description:'Monte o banco com as novas peças de madeira. Depois escolha sua posição e gire com R antes de colocar.',cost:{wood:10,board:4},output:{furniture:1},requiresWorkbench:true,requiresTool:'hammer',durationSeconds:3},
  {id:'doorKit',name:'Porta pronta',description:'Componente de construção.',cost:{board:4,peg:4},output:{doorKit:1}},
  {id:'windowKit',name:'Janela pronta',description:'Componente de construção.',cost:{board:3,peg:2},output:{windowKit:1}},
- {id:'fenceKit',name:'Cerca pronta',description:'Componente de construção.',cost:{wood:3},output:{fenceKit:1}}
+ {id:'fenceKit',name:'Módulo de cerca',description:'Prepare um trecho de cerca na bancada. Os módulos se conectam automaticamente ao serem colocados.',cost:{wood:3},output:{fenceKit:1},requiresWorkbench:true,requiresTool:'hammer',durationSeconds:1.5}
 );
 
 RECIPES.push({id:'pet-bedding-cloth',name:'Tecer tecido',description:'Costura aprendida com Celina; serve para as camas da casinha dos pets.',cost:{fiber:4,cord:1},output:{cloth:2},unlock:'backpack'});

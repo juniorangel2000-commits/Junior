@@ -8,7 +8,7 @@ import { WORLD_HEIGHT, WORLD_WIDTH } from '../data/regions';
 export { BUILD_COSTS } from '../data/blueprints';
 
 export const BUILD_NAMES: Record<BuildingData['kind'], string> = {
-  gate: 'Porteira', fence: 'Cerca', bench: 'Banco', workbench: 'Bancada', wall: 'Parede', door: 'Porta',
+  gate: 'Porteira', fence: 'Cerca', bench: 'Banco de madeira', workbench: 'Bancada', wall: 'Parede', door: 'Porta',
   floor: 'Piso', window: 'Janela', roof: 'Cobertura',
 };
 
@@ -85,7 +85,9 @@ export class Building {
 
   place(kind: BuildingData['kind'], x: number, y: number, inventory: Inventory, isBuildable: boolean,
     context: BuildContext = { nearWorkbench: false }): ActionResult {
+    if(kind==='bench'&&context.rotation!==undefined&&![0,1,2,3].includes(context.rotation))return {ok:false,message:'Escolha uma das quatro orientações do banco.'};
     const piece: BuildingData = kind === 'gate' ? { x, y, kind, open: false, rotation: context.rotation ?? 0, gateFlip: context.gateFlip ?? false }
+      : kind === 'bench' ? {x,y,kind,rotation:context.rotation??0}
       : kind === 'door' ? { x, y, kind, open: false }
       : kind === 'roof' ? { x, y, kind, rotation: ((context.rotation ?? 0) % 2) as 0 | 1 } : { x, y, kind };
     if (kind === 'fence' && context.day !== undefined) piece.fenceBuiltDay = context.day;
@@ -131,17 +133,17 @@ export class Building {
   remove(x: number, y: number, inventory: Inventory): ActionResult {
     const building = this.at(x, y);
     if (!building) return { ok: false, message: 'Aponte para uma construção sua para recolhê-la.' };
-    const legacy = building.kind === 'fence' || building.kind === 'bench';
+    const reusable = building.kind === 'fence' || building.kind === 'bench';
     const refund: ItemCost = {};
     for (const [item, amount] of Object.entries(BUILD_COSTS[building.kind])) {
-      const quantity = legacy ? amount! : Math.floor(amount! * BUILD_RECOVERY_RATE);
+      const quantity = reusable ? amount! : Math.floor(amount! * BUILD_RECOVERY_RATE);
       if (quantity > 0) refund[item as ItemId] = quantity;
     }
     if (!inventory.transact({}, refund)) {
       return { ok: false, message: 'A mochila está cheia. Libere espaço para recuperar todos os materiais.' };
     }
     this.buildings.splice(this.buildings.indexOf(building), 1);
-    return { ok: true, message: legacy ? 'Construção recolhida. Os materiais voltaram para a mochila.'
+    return { ok: true, message: reusable ? 'Peça recolhida. O item pronto voltou para a mochila.'
       : Object.keys(refund).length ? 'Peça desmontada. Você recuperou 60% dos componentes, arredondados para baixo.'
         : 'Piso desmontado. O reembolso de 60% de uma tábua é arredondado para zero.' };
   }
@@ -150,9 +152,9 @@ export class Building {
     const fence=this.at(x,y,'structure');
     if(fence?.kind!=='fence')return {ok:false,message:'Aponte para uma cerca desgastada.'};
     if(fenceStage(fence,day)==='new')return {ok:false,message:'Esta cerca ainda está nova.'};
-    if(!inventory.spend({wood:1}))return {ok:false,message:'Você precisa de 1 madeira para reparar a cerca.'};
+    if(!inventory.spend({fenceKit:1}))return {ok:false,message:'Fabrique um módulo de cerca na bancada para substituir o trecho desgastado.'};
     fence.fenceBuiltDay=day;
-    return {ok:true,message:'Cerca restaurada. Custo: 1 madeira.'};
+    return {ok:true,message:'Cerca restaurada com um módulo pronto.'};
   }
 
   toggleGate(x:number,y:number,occupied=false):ActionResult {

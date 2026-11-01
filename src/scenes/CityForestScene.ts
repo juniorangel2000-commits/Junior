@@ -1,3 +1,5 @@
+import {DEVELOPMENT_TOOLS} from '../development-tools';
+import type {MapArea} from '../data/default-maps';
 import {setupTreeWind} from '../tree-wind';
 import { advanceBackgroundVillage } from '../systems/village-background';
 import {CityTravelTransition} from '../dungeons/city-travel-transition';
@@ -44,10 +46,10 @@ export class CityForestScene extends Phaser.Scene{
   this.state=structuredClone(data.save);this.state.activeArea='cityForest';delete this.state.homePosition;delete this.state.merchantInterior;delete this.state.blacksmithInterior;
   this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
-  this.world=new CityForestWorld(this);
-  const p=this.state.cityForestPosition,valid=p&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!cityForestBlockedPoint(p.x+dx,p.y+dy));
-  this.player=new Player(this,this.state.profile,valid?p.x:(CITY_FOREST_ENTRY.x+.5)*32,valid?p.y:(CITY_FOREST_ENTRY.y+.5)*32,'city-forest-player');
-  this.player.facing=directionVector(valid?p.direction??'up':'up');this.player.update(0,cityForestBlockedTile,cityForestBlockedPoint,false);
+  this.world=new CityForestWorld(this,this.state.cityForestMapEdits);
+  const p=this.state.cityForestPosition,valid=p&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!this.blockedPoint(p.x+dx,p.y+dy));
+  this.player=new Player(this,this.state.profile,valid?p.x:((this.state.cityForestMapEdits?.points?.entry??CITY_FOREST_ENTRY).x+.5)*32,valid?p.y:((this.state.cityForestMapEdits?.points?.entry??CITY_FOREST_ENTRY).y+.5)*32,'city-forest-player');
+  this.player.facing=directionVector(valid?p.direction??'up':'up');this.player.update(0,this.blockedTile,this.blockedPoint,false);
   this.zoom=loadCameraZoom();this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time);
   this.cameras.main.setBounds(0,0,3072,2304);this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
   document.querySelector<HTMLElement>('#ui')!.style.display='';this.ui.showHUD('cityForest');this.ui.setQuickbar(this.state.quickbar??emptyQuickbar());this.updateHUD();
@@ -63,7 +65,7 @@ export class CityForestScene extends Phaser.Scene{
       player: this.player,
       area: "cityForest",
       space: "outdoors",
-      blockedPoint: cityForestBlockedPoint,
+      blockedPoint: this.blockedPoint,
       forage: true,
       enabled: true,
       canMove:
@@ -83,8 +85,11 @@ export class CityForestScene extends Phaser.Scene{
   this.ui.updateHUD({area:'cityForest',coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:null,prompt:this.nearCity()?'Siga pela estrada para viajar à cidade':'Explore as trilhas · caminho ao sul retorna à vila',location:'Floresta de Acesso à Cidade',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
   this.ui.updateCameraZoom(this.zoom,!this.paused);
  }
+ private blockedPoint=(x:number,y:number)=>cityForestBlockedPoint(x,y,this.state.cityForestMapEdits);
+ private blockedTile=(x:number,y:number)=>cityForestBlockedTile(x,y,this.state.cityForestMapEdits);
  private key(e:KeyboardEvent):void{
   if(e.repeat||this.leaving||e.target instanceof HTMLElement&&e.target.matches('input,textarea,select,[contenteditable="true"]'))return;
+  if(DEVELOPMENT_TOOLS&&e.key==='F2'){e.preventDefault();this.openMapEditor();return;}
   const key=e.key.toLowerCase();
   if(key==='escape'){e.preventDefault();this.ui.togglePause();return;}
   if(key==='m'){e.preventDefault();this.updateHUD();this.ui.toggleMap();return;}
@@ -116,7 +121,13 @@ export class CityForestScene extends Phaser.Scene{
  selectTool(_tool:Tool):void{this.ui.toast('Explore a floresta a pé. A coleta continua disponível nos mapas anteriores.');}
  craftRecipe(_id:string):void{this.ui.toast('Use a bancada na propriedade.');}
  async useVillageItem(_item:ItemId):Promise<void>{this.ui.toast('Use esse item na propriedade ou nos comércios.');}
- openMapEditor():void{this.ui.toast('Este cenário está em preparação; o editor permanece disponível nos mapas anteriores.');}
+ openMapEditor():void{
+  if(!DEVELOPMENT_TOOLS||this.leaving)return;
+  if(!this.persist())return;const original=structuredClone(this.state);this.setPaused(true);this.ui.showMapEditorMode();this.scene.setVisible(false);this.scene.pause();
+  this.scene.launch('Editor',{save:original,area:'cityForest',onClose:(updated:SaveData|undefined,_area:MapArea)=>{
+   this.scene.resume();this.scene.setVisible(true);this.scene.restart({save:updated??original,ui:this.ui,onReturn:this.onReturn,fromCity:true});
+  }});
+ }
  mainMenu():void{this.ui.closeModal();this.leave(true);}
  captureMap():Promise<string>{
   this.updateHUD();
@@ -156,11 +167,11 @@ export class CityForestScene extends Phaser.Scene{
  update(time:number,ms:number):void{
   if(!this.player)return;this.daylight.update(this.state.time);this.world.update(time);
   if(this.paused||this.leaving||this.ui.isModalOpen()||document.hidden)return;
-  const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.update(dt,cityForestBlockedTile,cityForestBlockedPoint);
+  const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.update(dt,this.blockedTile,this.blockedPoint);
   const distance=Math.hypot(this.player.x/32-CITY_ACCESS.x,this.player.y/32-CITY_ACCESS.y);
   if(distance>4)this.cityPromptArmed=true;
   if(this.cityPromptArmed&&distance<3){this.askCityTravel();return;}
-  if(this.passage.update(before,this.player,CITY_FOREST_EXIT,CITY_FOREST_ENTRY)){this.leave();return;}
+  if(this.passage.update(before,this.player,this.state.cityForestMapEdits?.points?.exit??CITY_FOREST_EXIT,this.state.cityForestMapEdits?.points?.entry??CITY_FOREST_ENTRY)){this.leave();return;}
   if(Math.hypot(this.player.x-before.x,this.player.y-before.y)>.1)gameAudio.play('step');
   this.farming.update(dt);
   Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));

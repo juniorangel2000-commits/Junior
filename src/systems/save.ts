@@ -34,7 +34,7 @@ import {merchantRoomFits,validMerchantLayout} from '../data/merchant-rooms';
 // A chave e a origem do aplicativo permanecem iguais para localizar partidas antigas.
 export const SAVE_KEY = 'depois-da-chuva-v1';
 export const SAVE_BACKUP_KEY = 'depois-da-chuva-v1-backup';
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 const TOOLS: Tool[] = ['hand', 'plant', 'water', 'gate', 'repair', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'hoe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
 const PROGRESS_KEYS: Array<keyof ProgressData> = ['collected', 'craftedTools', 'harvested', 'processed', 'builtWorkbench', 'sawn', 'builtShelter'];
 const emptyProgress = (): ProgressData => ({ collected: false, craftedTools: false, harvested: false, processed: false, builtWorkbench: false, sawn: false, builtShelter: false });
@@ -60,6 +60,11 @@ export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
   if (value.petShelter !== undefined && !validPetShelter(value.petShelter)) return false;
   if (value.forestMapEdits !== undefined && (!validateMapEdits(value.forestMapEdits)||value.forestMapEdits.area!=='forest')) return false;
+  if(value.cityForestMapEdits!==undefined&&(!validateMapEdits(value.cityForestMapEdits)||value.cityForestMapEdits.area!=='cityForest'))return false;
+  if(value.dungeonMapEdits!==undefined){
+    if(!value.dungeonMapEdits||typeof value.dungeonMapEdits!=='object'||Array.isArray(value.dungeonMapEdits))return false;
+    for(const [id,map] of Object.entries(value.dungeonMapEdits))if(!['abandoned-central-square','mall-parking'].includes(id)||!validateMapEdits(map)||map.area!==id)return false;
+  }
   if(value.villageMapEdits!==undefined&&(!validateMapEdits(value.villageMapEdits)||value.villageMapEdits.area!=='village'))return false;
   if (value.mapEdits !== undefined && (!validateMapEdits(value.mapEdits)||value.mapEdits.area!==undefined)) return false;
   if(value.propertyShoreRevision!==undefined&&value.propertyShoreRevision!==PROPERTY_SHORE_REVISION)return false;
@@ -170,7 +175,7 @@ export function validateSave(value: unknown): value is SaveData {
       || !['gate', 'fence', 'bench', 'workbench', 'wall', 'door', 'floor', 'window', 'roof'].includes(building.kind as string)
       || isFarmTile(building.x, building.y) && !restored.has(`${building.x},${building.y}`)) return false;
     if (building.open !== undefined && (!['door','gate'].includes(building.kind as string) || typeof building.open !== 'boolean')) return false;
-    if (building.rotation !== undefined && !(building.kind === 'gate' ? [0, 1, 2, 3] : building.kind === 'roof' ? [0, 1] : []).includes(building.rotation as number)) return false;
+    if (building.rotation !== undefined && !(['gate','bench'].includes(building.kind as string) ? [0, 1, 2, 3] : building.kind === 'roof' ? [0, 1] : []).includes(building.rotation as number)) return false;
     if (building.gateFlip !== undefined && (building.kind !== 'gate' || typeof building.gateFlip !== 'boolean')) return false;
     if (building.fenceBuiltDay !== undefined && (building.kind !== 'fence' || !integer(building.fenceBuiltDay, 1, value.day))) return false;
     const piece = building as unknown as SaveData['buildings'][number];
@@ -208,9 +213,9 @@ export function validateSave(value: unknown): value is SaveData {
 
 /** Converte em memória; a leitura nunca modifica nem substitui o slot original. */
 export function migrateSave(value: unknown): SaveData | null {
-  // Version 3 admits the new dog species. Older applications recognize it as
-  // a future save and refuse replacement instead of dropping these companions.
-  if (isRecord(value) && value.version === 2) value = { ...value, version: SAVE_VERSION };
+  // Version 4 adds independent city/dungeon layouts and four bench views.
+  // Older applications must treat these saves as future data rather than overwrite them.
+  if (isRecord(value) && (value.version === 2 || value.version === 3)) value = { ...value, version: SAVE_VERSION };
   // New shop fixtures can cover a previously valid saved position. Recover
   // only proven old-layout positions, keeping inventory, money and orders intact.
   if(isRecord(value)&&value.version===SAVE_VERSION&&value.blacksmithHome===undefined&&(value.blacksmithLayoutRevision===undefined||value.blacksmithLayoutRevision===2)){

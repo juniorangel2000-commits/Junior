@@ -156,3 +156,4 @@
   .map-editor-ui .me-reference { right: 6px; width: calc(100vw - var(--me-palette-width) - 22px); padding: 7px; border-width: 4px; }
   .map-editor-ui .me-reference h2 { font-size: 15px; }
 }
+.me-command-group[aria-label="Trocar cenário em edição"]{flex-wrap:wrap;max-width:100%}

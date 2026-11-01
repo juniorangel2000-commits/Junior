@@ -9,9 +9,12 @@ import previousForestV3 from './maps/previous-forest-v3.json';
 import type {MapEditData} from '../systems/map-editor';
 import {repairPropertyShore} from './property-shore-repair';
 import {clearPropertyVillagePaths} from './property-village-gate';
-export type MapArea='property'|'forest'|'village';
+export type {EditorArea as MapArea} from './editor-areas';
+import type {EditorArea as MapArea} from './editor-areas';
 export const MAP_BASE_REVISION=4;
 export function defaultMap(area:MapArea):MapEditData{
+ if(area==='cityForest')return {version:1,width:96,height:72,area,terrain:{},objects:{},points:{entry:{x:48,y:68},exit:{x:48,y:70}}};
+ if(area==='abandoned-central-square'||area==='mall-parking')return {version:1,width:96,height:72,area,terrain:{},objects:{},points:{entry:{x:48,y:58},exit:{x:48,y:60}}};
  if(area==='village')return{version:1,width:96,height:72,area:'village',terrain:{},objects:{},points:{entry:{x:2,y:52},exit:{x:1,y:52}}};
  const data=structuredClone((area==='forest'?forest:property) as MapEditData);
  if(area==='property')data.terrain=clearPropertyVillagePaths(data.terrain);
@@ -19,7 +22,7 @@ export function defaultMap(area:MapArea):MapEditData{
 }
 /** The exact author layout a save was based on, before its local edits. */
 export function previousDefaultMap(area:MapArea,revision:1|2|3=1):MapEditData {
- if(area==='village')return defaultMap(area);
+ if(area!=='forest'&&area!=='property')return defaultMap(area);
  if(revision===3)return structuredClone((area==='forest'?previousForestV3:previousPropertyV3) as MapEditData);
  if(revision===2)return structuredClone((area==='forest'?previousForestV2:previousPropertyV2) as MapEditData);
  const map=structuredClone((area==='forest'?previousForest:previousProperty) as MapEditData);

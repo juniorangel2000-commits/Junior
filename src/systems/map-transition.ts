@@ -37,7 +37,8 @@ export class MapExitPassage {
   const boundary=(horizontal?exit.x:exit.y)*TILE+(outward<0?TILE:0);
   const along=horizontal?to.x:to.y,before=horizontal?from.x:from.y;
   const across=horizontal?to.y:to.x,previousAcross=horizontal?from.y:from.x;
-  const low=(horizontal?exit.y:exit.x)*TILE,high=low+TILE;
+  const center=(horizontal?exit.y:exit.x)*TILE+TILE/2;
+  const low=center-TILE*1.5,high=center+TILE*1.5;
   const inLane=across>=low&&across<high;
   const past=(along-boundary)*outward>0;
   if(!inLane||!past){this.pending=false;return false;}

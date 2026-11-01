@@ -53,6 +53,7 @@ export interface WorldEditorObject {
   y: number;
   kind: EditorObjectKind;
   texture: string;
+  frame?:string;
   /** A visible stump can be moved/deleted without restoring its reward. */
   depleted?: boolean;
 }

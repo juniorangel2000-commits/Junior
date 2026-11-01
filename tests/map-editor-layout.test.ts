@@ -14,7 +14,7 @@ function layoutError(data:MapEditData,original:WorldEditorObject[]):string|null 
   // Exercise the same validation used by Import, Apply and switching maps,
   // without creating a Phaser canvas or editor UI.
   const editor=Object.create(MapEditor.prototype);
-  Object.assign(editor,{history:{current:data},adapter:{originalObjects:original,protectedTile:()=>false,baseWater:()=>false,baseWaterPoint:()=>false}});
+  Object.assign(editor,{area:data.area,history:{current:data},adapter:{originalObjects:original,protectedTile:()=>false,baseWater:()=>false,baseWaterPoint:()=>false}});
   return editor.layoutError(data);
 }
 

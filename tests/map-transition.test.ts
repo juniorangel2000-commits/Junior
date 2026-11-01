@@ -70,3 +70,24 @@ describe('portas automáticas da casa',()=>{
   expect(SCENE_FADE_MS).toBeLessThan(250);
  });
 });
+
+describe('wider scene passages',()=>{
+ it('accepts outward movement across the three-tile lane in all four directions',()=>{
+  for(const [exit,entry,dx,dy] of [
+   [{x:1,y:52},{x:2,y:52},-1,0], [{x:94,y:52},{x:93,y:52},1,0],
+   [{x:48,y:1},{x:48,y:4},0,-1], [{x:48,y:70},{x:48,y:68},0,1],
+  ] as const){
+   for(const offset of [-40,0,40]){
+    const x=dx?(exit.x*32+(dx<0?32:0)):(exit.x+.5)*32+offset;
+    const y=dy?(exit.y*32+(dy<0?32:0)):(exit.y+.5)*32+offset;
+    const passage=new MapExitPassage();
+    expect(passage.update({x:x-dx,y:y-dy},{x:x+dx,y:y+dy},exit,entry)).toBe(true);
+    passage.reset();expect(passage.update({x:x+dx,y:y+dy},{x:x+dx,y:y+dy},exit,entry)).toBe(false);
+   }
+  }
+ });
+ it('does not trigger when walking outside the expanded lane',()=>{
+  const passage=new MapExitPassage(),exit={x:1,y:52},entry={x:2,y:52},y=52.5*32+49;
+  expect(passage.update({x:65,y},{x:63,y},exit,entry)).toBe(false);
+ });
+});

@@ -1,3 +1,7 @@
+import type {MapEditData} from '../systems/map-editor';
+import type {WorldEditorObject} from '../world';
+import {drawEditorProp} from '../editor-prop-art';
+import {drawMapTerrainEdits} from '../map-editor-terrain';
 import { getVisualSettings } from "../visual-settings";
 import {
   DungeonLighting,
@@ -6,7 +10,7 @@ import {
 } from "./lighting";
 import type Phaser from "phaser";
 import {
-  MAP_OBSTACLES,
+  editedDungeonObstacles,dungeonObjectId,dungeonNaturalObjects,
   PARKING_BAYS,
   PARK_LAWNS,
   urbanOriginX,
@@ -228,20 +232,22 @@ export function dungeonMapCanvas(
   }
   return canvas;
 }
-export function dungeonPreview(scene: Phaser.Scene, id: DungeonId): string {
+export function dungeonPreview(scene: Phaser.Scene, id: DungeonId,edits?:MapEditData): string {
   const canvas = dungeonMapCanvas(scene, id, 0.25),
     c = canvas.getContext("2d")!;
   c.setTransform(0.25, 0, 0, 0.25, 0, 0);
+  const painted=drawMapTerrainEdits(scene,edits?.terrain??{},'dungeon-preview-paint',()=>false,'forest');
+  if(painted){c.drawImage(scene.textures.get('dungeon-preview-paint').getSourceImage() as HTMLCanvasElement,0,0);painted.destroy();}
   const settings = getVisualSettings();
   if (settings.dynamicLighting) {
     c.save();
     c.globalAlpha = settings.intensity;
-    paintDungeonFloorShadows(c, id);
+    paintDungeonFloorShadows(c, id,edits);
     c.globalCompositeOperation = "lighter";
-    paintDungeonFloorLights(c, id);
+    paintDungeonFloorLights(c, id,edits);
     c.restore();
   }
-  for (const p of [...MAP_OBSTACLES[id]].sort((a, b) => a.y - b.y)) {
+  for (const p of [...editedDungeonObstacles(id,edits)].sort((a, b) => a.y - b.y)) {
     const source = scene.textures
         .get(urbanTexture(p.kind))
         .getSourceImage() as HTMLImageElement,
@@ -267,18 +273,25 @@ export function dungeonPreview(scene: Phaser.Scene, id: DungeonId): string {
     );
     c.restore();
   }
+  for(const [,p] of dungeonNaturalObjects(edits)){
+   const image=drawEditorProp(scene,p.kind!,p.x*32+16,p.y*32+25);if(!image)continue;
+   const r=image.frame,w=image.displayWidth,h=image.displayHeight;
+   c.drawImage(image.texture.getSourceImage() as HTMLImageElement,r.cutX,r.cutY,r.cutWidth,r.cutHeight,image.x-w*image.originX,image.y-h*image.originY,w,h);image.destroy();
+  }
   return canvas.toDataURL();
 }
 export class DungeonWorld {
+  readonly editorObjects:WorldEditorObject[]=[];
   readonly lighting: DungeonLighting;
   readonly objects: Phaser.GameObjects.GameObject[];
-  constructor(scene: Phaser.Scene, id: DungeonId) {
+  constructor(scene: Phaser.Scene, id: DungeonId,edits?:MapEditData,namespace="dungeon") {
     const before = new Set(scene.children.list),
       key = "dungeon-ground-" + id;
     if (!scene.textures.exists(key))
       scene.textures.addCanvas(key, dungeonMapCanvas(scene, id))!.setFilter(0);
     scene.add.image(0, 0, key).setOrigin(0).setDepth(-100);
-    for (const p of MAP_OBSTACLES[id]) {
+    drawMapTerrainEdits(scene,edits?.terrain??{},namespace+'-paint',()=>false,'forest')?.setDepth(-99);
+    for (const p of editedDungeonObstacles(id,edits)) {
       const r = urbanFrame(p.kind);
       scene.add
         .image(p.x, p.y, urbanTexture(p.kind), p.kind)
@@ -287,9 +300,14 @@ export class DungeonWorld {
         .setScale(Math.min(p.width / r.width, p.height / r.height))
         .setDepth(p.y)
         .setData("dungeon-obstacle", p.id);
+      this.editorObjects.push({id:dungeonObjectId(p),kind:('urban-'+p.kind) as WorldEditorObject['kind'],x:Math.floor(p.x/32),y:Math.floor(p.y/32),texture:urbanTexture(p.kind),frame:p.kind});
+    }
+    for(const [id,p] of dungeonNaturalObjects(edits)){
+     const image=drawEditorProp(scene,p.kind!,p.x*32+16,p.y*32+25);
+     if(image)this.editorObjects.push({id,kind:p.kind!,x:p.x,y:p.y,texture:image.texture.key,frame:image.frame.name});
     }
     this.objects = scene.children.list.filter((o) => !before.has(o));
-    this.lighting = new DungeonLighting(scene, id);
+    this.lighting = new DungeonLighting(scene, id,edits,namespace);
   }
   update(time: number): void {
     this.lighting.update(time);

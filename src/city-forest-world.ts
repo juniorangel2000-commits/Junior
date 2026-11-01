@@ -1,34 +1,44 @@
+import {cityMapObjects} from './data/city-forest-layout';
+import {drawEditorProp} from './editor-prop-art';
+import {drawMapTerrainEdits} from './map-editor-terrain';
+import type {MapEditData} from './systems/map-editor';
+import type {WorldEditorObject} from './world';
+import {preloadDungeonScenery,setupDungeonScenery} from './dungeons/art';
 import type Phaser from 'phaser';
 import art from '../public/assets/visual/city-forest/manifest.json';
 import {setupVillagePropAtlas} from './village-prop-atlas';
 import {readTerrainSprites} from './terrain-sprites';
 import {natureArt} from './data/nature-catalog';
-import {CITY_FOREST_TREES,CITY_FOREST_OBSTACLES,CITY_PUDDLES,CITY_ROAD_FENCES,CITY_SIGN_TEXT,CITY_ACCESS,cityRoadDistance,cityRoadAt,cityForestTrailDistance,cityForestWater,cityForestBlockedPoint} from './data/city-forest';
+import {CITY_PUDDLES,CITY_ROAD_FENCES,CITY_SIGN_TEXT,CITY_ACCESS,cityRoadDistance,cityRoadAt,cityForestTrailDistance,cityForestWater,cityForestBlockedPoint} from './data/city-forest';
 import {drawExitSign} from './exit-signs';
 
-export function preloadCityForest(scene:Phaser.Scene):void{scene.load.image('city-forest-source',art.file);}
+export function preloadCityForest(scene:Phaser.Scene):void{if(!scene.textures.exists('city-forest-source'))scene.load.image('city-forest-source',art.file);preloadDungeonScenery(scene);}
+export function setupCityForestArt(scene:Phaser.Scene):void {setupVillagePropAtlas(scene,'city-forest-art','city-forest-source',art);}
 export class CityForestWorld{
+ readonly editorObjects:WorldEditorObject[]=[];
  readonly objects:Phaser.GameObjects.GameObject[];
  readonly trees:Phaser.GameObjects.Image[]=[];
  private readonly mist:Phaser.GameObjects.TileSprite;
- constructor(private readonly scene:Phaser.Scene){
-  const before=new Set(scene.children.list);setupVillagePropAtlas(scene,'city-forest-art','city-forest-source',art);
+ constructor(private readonly scene:Phaser.Scene,edits?:MapEditData,namespace="city-forest"){
+  const before=new Set(scene.children.list);setupCityForestArt(scene);setupDungeonScenery(scene);
   this.drawGround();this.drawFences();
-  for(const p of CITY_FOREST_TREES){
-   this.trees.push(scene.add.image((p.x+.5)*32,p.y*32+25,`asset-${p.pine?'pine':'tree'}-${p.variant}`).setOrigin(.5,256/264).setDisplaySize(166*p.scale,211*p.scale).setDepth(p.y*32+25).setData('city-forest-tree',true));
+  drawMapTerrainEdits(scene,edits?.terrain??{},namespace+'-edited-ground',cityForestWater,'forest')?.setDepth(-99);
+  for(const p of cityMapObjects(edits)){
+   const x=(p.x+.5)*32,y=p.y*32+25,tree=p.kind==='standingTree'||p.kind==='pine';
+   const image=tree?scene.add.image(x,y,`asset-${p.kind==='pine'?'pine':'tree'}-${p.variant??0}`).setOrigin(.5,256/264).setDisplaySize(166*(p.scale??1),211*(p.scale??1)).setDepth(y).setData('city-forest-tree',true):drawEditorProp(scene,p.kind,x,y);
+   if(image){this.editorObjects.push({id:p.id,kind:p.kind,x:p.x,y:p.y,texture:image.texture.key,frame:image.frame.name});if(tree)this.trees.push(image);}
   }
-  for(const p of CITY_FOREST_OBSTACLES){const a=natureArt(p.kind)!;scene.add.image((p.x+.5)*32,p.y*32+25,a.texture).setOrigin(.5,a.pivot).setDisplaySize(a.width,a.height).setDepth(p.y*32+25);}
   // Small planted clusters and forest-floor details never occupy the trail.
   for(let i=0;i<1400;i++){
    const x=3+(i*73%90),y=17+(i*41%52),d=cityForestTrailDistance(x+.5,y+.5);
-   if(d<1.8||cityRoadDistance(x,y)<5.5||cityForestWater(x,y)||cityForestBlockedPoint((x+.5)*32,(y+.5)*32))continue;
+   if(edits?.terrain[`${x},${y}`]!==undefined||d<1.8||cityRoadDistance(x,y)<5.5||cityForestWater(x,y)||cityForestBlockedPoint((x+.5)*32,(y+.5)*32,edits))continue;
    const a=natureArt(['fern','bush','whiteFlowers','mushrooms'][i%4])!;
    const px=(x+.5)*32+(i%5-2)*3,py=y*32+25;
    scene.add.image(px,py,a.texture).setOrigin(.5,a.pivot).setDisplaySize(a.width*.8,a.height*.8).setDepth(py);
   }
   scene.add.image(27.4*32,5*32,'city-forest-art','city').setOrigin(.5,1).setDisplaySize(80,95).setDepth(160).setData('city-access-sign',CITY_SIGN_TEXT);
   scene.add.zone((CITY_ACCESS.x+.5)*32,(CITY_ACCESS.y+.5)*32,80,90).setData('future-city-access',CITY_ACCESS);
-  drawExitSign(scene,{x:48,y:70},{x:48,y:68});
+  drawExitSign(scene,edits?.points?.exit??{x:48,y:70},edits?.points?.entry??{x:48,y:68});
   if(!scene.textures.exists('city-forest-mist')){
    const canvas=document.createElement('canvas');canvas.width=256;canvas.height=256;const c=canvas.getContext('2d')!;
    for(const [x,y,r]of [[48,80,75],[161,154,92],[220,46,61]]){const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,'#d7e5e0bb');g.addColorStop(1,'#d7e5e000');c.fillStyle=g;c.fillRect(0,0,256,256);}

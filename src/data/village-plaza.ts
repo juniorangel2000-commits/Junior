@@ -1,3 +1,4 @@
+import type {MapEditData} from '../systems/map-editor';
 export type PlazaFrame='south'|'north'|'east'|'west'|'shrubs-white'|'shrubs-lilac';
 export interface PlazaFurniture {
  id:string;frame:PlazaFrame;x:number;y:number;width:number;height:number;
@@ -20,12 +21,22 @@ export const PLAZA_BEDS:readonly PlazaFurniture[]=[
 ];
 export const PLAZA_LAMPS=[{x:40,y:32},{x:52,y:32},{x:37,y:38},{x:55,y:38},{x:40,y:44},{x:52,y:44}] as const;
 const furniture=[...PLAZA_SEATS,...PLAZA_BEDS];
+export const plazaEditorId=(p:PlazaFurniture)=>p.id.startsWith('editor-')?p.id:`editor-village-${p.frame.startsWith('shrubs-')?p.frame:'bench-'+p.frame}-plaza-${p.id}`;
+const furnitureCache=new WeakMap<MapEditData,PlazaFurniture[]>();
+export function plazaFurniture(edits?:MapEditData):PlazaFurniture[]{
+ if(!edits)return furniture;const cached=furnitureCache.get(edits);if(cached)return cached;
+ const result=furniture.flatMap(p=>{const e=edits?.objects[plazaEditorId(p)];return e?.removed?[]:[{...p,x:e?.x??p.x,y:e?.y??p.y}];});
+ for(const [id,e] of Object.entries(edits?.objects??{}))if(!e.removed&&e.kind?.startsWith('village-shrubs-')&&!furniture.some(p=>plazaEditorId(p)===id)){
+  const sample=PLAZA_BEDS[e.kind.endsWith('white')?0:1];result.push({...sample,id,x:e.x,y:e.y});
+ }
+ furnitureCache.set(edits,result);return result;
+}
 
-export function plazaFurnitureBlockedPoint(x:number,y:number):boolean {
- return furniture.some(p=>{
+export function plazaFurnitureBlockedPoint(x:number,y:number,edits?:MapEditData):boolean {
+ return plazaFurniture(edits).some(p=>{
   const ax=(p.x+.5)*32,ay=p.y*32+25,[l,t,w,h]=p.footprint;
   return p.frame.startsWith('shrubs-')?Math.hypot((x-ax)/(w/2),(y-ay-t-h/2)/(h/2))<=1
    :x>=ax+l&&x<=ax+l+w&&y>=ay+t&&y<=ay+t+h;
  });
 }
-export const plazaFurnitureBlockedTile=(x:number,y:number)=>plazaFurnitureBlockedPoint((x+.5)*32,(y+.5)*32);
+export const plazaFurnitureBlockedTile=(x:number,y:number,edits?:MapEditData)=>plazaFurnitureBlockedPoint((x+.5)*32,(y+.5)*32,edits);

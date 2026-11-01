@@ -37,3 +37,10 @@ export function setupDungeonArt(scene: Phaser.Scene): void {
       scene.textures.remove("dungeon-" + id + "-source");
   }
 }
+
+export function preloadDungeonScenery(scene:Phaser.Scene):void {
+ for(const id of ['urban','benches'] as const){const m=DUNGEON_ART[id];if(!scene.textures.exists('dungeon-'+id)&&!scene.textures.exists('dungeon-'+id+'-source'))scene.load.image('dungeon-'+id+'-source',m.file);}
+}
+export function setupDungeonScenery(scene:Phaser.Scene):void {
+ for(const id of ['urban','benches'] as const){if(!scene.textures.exists('dungeon-'+id))setupVillagePropAtlas(scene,'dungeon-'+id,'dungeon-'+id+'-source',DUNGEON_ART[id]);}
+}

@@ -19,7 +19,7 @@ describe('cercas conectadas e desgaste no calendário', () => {
   });
 
   it('recalcula pontas ao colocar e remover e preserva o custo existente', () => {
-    const world=new Building(),inventory=new Inventory({...INITIAL_INVENTORY,wood:30});
+    const world=new Building(),inventory=new Inventory({...INITIAL_INVENTORY,wood:30,fenceKit:10});
     for(const x of [9,10,11]) expect(world.place('fence',x,10,inventory,true,{nearWorkbench:false,day:5}).ok).toBe(true);
     expect(fenceConnections(world.buildings,10,10)).toBe(10);
     expect(fenceConnections(world.buildings,9,10)).toBe(2);

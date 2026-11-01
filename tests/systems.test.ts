@@ -87,18 +87,18 @@ describe('horta', () => {
 
 describe('construção', () => {
   it.each(['fence', 'bench'] as const)('coloca e recolhe %s com reembolso integral', (kind) => {
-    const inventory = new Inventory(legacyStock);
+    const inventory = new Inventory({...legacyStock,furniture:1,fenceKit:1});
     const before = { ...inventory.data };
     const building = new Building();
     expect(building.place(kind, 19, 20, inventory, true).ok).toBe(true);
-    expect(inventory.data.wood).toBe(before.wood - BUILD_COSTS[kind].wood!);
+    for(const [id,amount] of Object.entries(BUILD_COSTS[kind]))expect(inventory.data[id as keyof typeof inventory.data]).toBe(before[id as keyof typeof before]-amount!);
     expect(building.remove(19, 20, inventory).ok).toBe(true);
     expect(inventory.data).toEqual(before);
     expect(building.buildings).toEqual([]);
   });
 
   it('não cobra nem substitui construção ao tentar sobrepor', () => {
-    const inventory = new Inventory(legacyStock);
+    const inventory = new Inventory({...legacyStock,fenceKit:1});
     const building = new Building();
     building.place('fence', 19, 20, inventory, true);
     const before = { ...inventory.data };

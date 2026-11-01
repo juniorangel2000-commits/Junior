@@ -1,3 +1,7 @@
+import {treeGroundClear} from '../systems/tree-ground';
+import type {MapEditData} from '../systems/map-editor';
+import {paintedWaterPoint} from './terrain-paint';
+import {editedCityObjectBlocked} from './city-forest-layout';
 /** Fourth map: independent from the ancient forest and the merchant village. */
 export const CITY_FOREST_SIZE={width:96,height:72,tile:32};
 export const CITY_FOREST_ENTRY={x:48,y:68};
@@ -70,7 +74,7 @@ export const CITY_FOREST_TREES=(()=>{
  const result:{x:number;y:number;variant:number;pine:boolean;scale:number}[]=[];
  for(let i=0;i<6000;i++){
   const seed=hash(i*7,i*13),x=2+(seed%92),y=3+((seed>>>10)%67);
-  if(cityRoadDistance(x+.5,y+.5)<5.8||cityForestTrailDistance(x+.5,y+.5)<2.5||cityForestWater(x+.5,y+.5))continue;
+  if(cityRoadDistance(x+.5,y+.5)<5.8||cityForestTrailDistance(x+.5,y+.5)<2.5||!treeGroundClear(x,y,(px,py)=>cityForestWater(px/32,py/32)))continue;
   if(CITY_FOREST_CLEARINGS.some(p=>Math.hypot((x-p.x)/p.rx,(y-p.y)/p.ry)<1.25))continue;
   if(result.some(t=>Math.hypot(t.x-x,t.y-y)<2+(seed%3)*.17))continue;
   result.push({x,y,variant:(seed>>>5)%3,pine:seed%5<2,scale:.88+(seed%17)/100});
@@ -87,8 +91,8 @@ export const CITY_FOREST_OBSTACLES=(()=>{
  return result;
 })();
 const solids=new Set([...CITY_FOREST_TREES,...CITY_FOREST_OBSTACLES].map(p=>`${p.x},${p.y}`));
-export function cityForestBlockedPoint(px:number,py:number):boolean{
+export function cityForestBlockedPoint(px:number,py:number,edits?:MapEditData):boolean{
  const x=Math.floor(px/32),y=Math.floor(py/32);
- return px<32||py<32||px>3040||py>2272||solids.has(`${x},${y}`)||cityForestWater(px/32,py/32)||cityFenceBlockedPoint(px,py);
+ return px<32||py<32||px>3040||py>2272||(edits?editedCityObjectBlocked(px,py,edits):solids.has(`${x},${y}`))||paintedWaterPoint(edits?.terrain,px,py,(x,y)=>cityForestWater(x/32,y/32))||cityFenceBlockedPoint(px,py);
 }
-export const cityForestBlockedTile=(x:number,y:number)=>cityForestBlockedPoint((x+.5)*32,(y+.5)*32);
+export const cityForestBlockedTile=(x:number,y:number,edits?:MapEditData)=>cityForestBlockedPoint((x+.5)*32,(y+.5)*32,edits);
