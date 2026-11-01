@@ -11,29 +11,30 @@ const random=()=>{const n=new Uint32Array(1);crypto.getRandomValues(n);return n[
 const fishIcon='<svg viewBox="0 0 28 18" aria-hidden="true"><path d="M6 9 1 3v12Zm0 0c3-9 16-9 21 0-5 9-18 9-21 0Z" fill="currentColor"/><path d="m13 4 4-4 3 5M12 14l5 4 3-5" fill="currentColor"/><rect x="22" y="6" width="2" height="2" fill="#173d40"/></svg>';
 
 /** A single paused-world session. The cast and the catch each save an atomic draft. */
-export function fishAtBank(save:SaveData,net:boolean,onChange:()=>void,visual?:{start:()=>Promise<boolean>;destroy:()=>void}):Promise<string>{
+export function fishAtBank(save:SaveData,net:boolean,onChange:()=>void,visual?:{start:()=>Promise<boolean>;destroy:()=>void;signal?:AbortSignal}):Promise<string>{
  if(active)return active;
  const session=new FishingSession(save.villageProgress?.fishingSkill??0,net,save.inventory.accessory>0,random);
  const cast=beginFishingCast(save,net,session.reward,saveGame);
  if(!cast.ok){visual?.destroy();return Promise.resolve(cast.message);}
- onChange();gameAudio.play('water');
+ onChange();if(!visual)gameAudio.play('fishing-cast');
  let released=false;const releaseVisual=()=>{if(!released){released=true;visual?.destroy();}};
- active=(async()=>{try{if(visual&&!await visual.start())return 'Lançamento encerrado. A isca foi utilizada.';return await showFishing(save,session,onChange,!!visual,releaseVisual);}finally{releaseVisual();}})().finally(()=>{active=undefined;});return active;
+ active=(async()=>{try{if(visual&&(!await visual.start()||visual.signal?.aborted))return 'Lançamento encerrado. A isca foi utilizada.';return await showFishing(save,session,onChange,!!visual,releaseVisual,visual?.signal);}finally{releaseVisual();}})().finally(()=>{active=undefined;});return active;
 }
-function showFishing(save:SaveData,session:FishingSession,onChange:()=>void,worldView=false,onResult:()=>void=()=>{}):Promise<string>{
+function showFishing(save:SaveData,session:FishingSession,onChange:()=>void,worldView=false,onResult:()=>void=()=>{},signal?:AbortSignal):Promise<string>{
  return new Promise(resolve=>{
   const previous=document.activeElement instanceof HTMLElement?document.activeElement:undefined;
   const layer=document.createElement('div');layer.className='village-layer fishing-layer'+(worldView?' fishing-world-view':'');
+  const location={property:'Propriedade',forest:'Floresta Antiga',village:'Vila do Recomeço',cityForest:'Floresta de Acesso à Cidade',fishingLake:'Lago entre as Serras'}[save.activeArea??'property'];
   layer.innerHTML=`<section class="village-panel fishing-panel" role="dialog" aria-modal="true" aria-labelledby="fishing-title" tabindex="-1">
-   <div class="fishing-main"><header class="village-panel-heading"><div><span class="village-eyebrow">UM MOMENTO À BEIRA D’ÁGUA</span><h2 id="fishing-title">Pescaria</h2><p class="village-npc-role">${session.net?'Rede · até dois peixes':'Vara de pesca'} · técnica ${save.villageProgress?.fishingSkill??1}/2</p></div><button type="button" class="village-close" data-fishing-cancel aria-label="Cancelar pesca">×</button></header>
+   <div class="fishing-main"><header class="village-panel-heading"><div><span class="village-eyebrow">${location}</span><h2 id="fishing-title">Pescaria</h2><p class="village-npc-role">${session.net?'Rede · até dois peixes':'Vara de pesca'}</p></div><button type="button" class="village-close" data-fishing-cancel aria-label="Cancelar pesca">×</button></header>
    <div class="fishing-body"><p class="fishing-status" data-fishing-prompt role="status" aria-live="polite">A linha está na água. Observe a boia…</p>
-    <div class="fishing-play-area"><div class="fishing-water" aria-hidden="true"><div class="fishing-bank"></div><svg class="fishing-line-svg" aria-hidden="true"><path data-float-line fill="none" stroke="#e8ddbb" stroke-width="1" opacity=".8"/></svg><svg class="fishing-float-svg" viewBox="-40 -35 80 70" aria-hidden="true"><defs><clipPath id="fishing-float-above"><rect x="-40" y="-35" width="80" height="35"/></clipPath><clipPath id="fishing-float-below"><rect x="-40" y="0" width="80" height="35"/></clipPath><g id="fishing-float-shape"><path d="M0-24v9" stroke="#e9dbaf" stroke-width="2"/><rect x="-5" y="-15" width="10" height="20" rx="4" fill="#c95743" stroke="#653b2c" stroke-width="1.5"/><path d="M-4-7v-4a4 4 0 0 1 8 0v4Z" fill="#f4ebce"/><path d="M-2-10v5" stroke="#fff6da" opacity=".65"/></g></defs><ellipse cx="0" cy="1" rx="9" ry="2.5" fill="#163a43" opacity=".3"/><g class="fishing-float-rings">${[0,1,2].map(()=>'<ellipse cx="0" cy="0" rx="8" ry="2" fill="none" stroke="#d6eee2" stroke-width=".8"/>').join('')}</g><g clip-path="url(#fishing-float-below)" opacity=".3"><use href="#fishing-float-shape" data-float-body/></g><g clip-path="url(#fishing-float-above)"><use href="#fishing-float-shape" data-float-body/></g><path d="M-7 0q7 2 14 0" fill="none" stroke="#c7e1d4" stroke-width=".8" opacity=".55"/></svg><div class="fishing-water-fish">${fishIcon}</div><span class="fishing-water-caption">Aguarde a mordida</span></div>
+    <div class="fishing-play-area"><div class="fishing-water" aria-hidden="true"><div class="fishing-bank"></div><svg class="fishing-line-svg" aria-hidden="true"><path data-float-line fill="none" stroke="#e8ddbb" stroke-width="1" opacity=".8"/></svg><svg class="fishing-float-svg" viewBox="-40 -35 80 70" aria-hidden="true"><defs><clipPath id="fishing-float-above"><rect x="-40" y="-35" width="80" height="35"/></clipPath><clipPath id="fishing-float-below"><rect x="-40" y="0" width="80" height="35"/></clipPath><g id="fishing-float-shape"><path d="M0-24v9" stroke="#e9dbaf" stroke-width="2"/><rect x="-5" y="-15" width="10" height="20" rx="4" fill="#c95743" stroke="#653b2c" stroke-width="1.5"/><path d="M-4-7v-4a4 4 0 0 1 8 0v4Z" fill="#f4ebce"/><path d="M-2-10v5" stroke="#fff6da" opacity=".65"/></g></defs><ellipse cx="0" cy="1" rx="9" ry="2.5" fill="#163a43" opacity=".3"/><g class="fishing-float-rings">${[0,1,2].map(()=>'<ellipse cx="0" cy="0" rx="8" ry="2" fill="none" stroke="#d6eee2" stroke-width=".8"/>').join('')}</g><g clip-path="url(#fishing-float-below)" opacity=".3"><use href="#fishing-float-shape" data-float-body/></g><g clip-path="url(#fishing-float-above)"><use href="#fishing-float-shape" data-float-body/></g><path d="M-7 0q7 2 14 0" fill="none" stroke="#c7e1d4" stroke-width=".8" opacity=".55"/></svg><div class="fishing-water-fish">${fishIcon}</div><span class="fishing-water-caption">Aguarde...</span></div>
      <div class="fishing-track-wrap" hidden><span class="fishing-track-label">Acompanhe o peixe</span><div class="fishing-track" role="img" aria-label="Peixe e faixa de controle"><div class="fishing-band"></div><span class="fishing-target">${fishIcon}</span><span class="fishing-track-top">↑ segurar</span><span class="fishing-track-bottom">↓ soltar</span></div></div></div>
-    <p class="fishing-instructions">A mordida pode levar de 10 a 20 segundos.</p>
+    <p class="fishing-instructions" hidden></p>
     <div class="fishing-hook-timer" hidden role="progressbar" aria-label="Tempo para fisgar" aria-valuemin="0" aria-valuemax="3"><span></span></div>
     <div class="fishing-capture" hidden><div><span>Captura</span><strong data-fishing-percent>28%</strong></div><div class="fishing-capture-track" role="progressbar" aria-label="Progresso da captura" aria-valuemin="0" aria-valuemax="100"><span></span></div></div>
     <p class="fishing-feedback" role="status" aria-live="polite"></p>
-    <button type="button" class="village-primary fishing-control" data-fishing-reel disabled>Aguardando a mordida…</button>
+    <button type="button" class="village-primary fishing-control" data-fishing-reel disabled>Aguarde...</button>
    </div><footer class="fishing-footer"><span>1 isca e ${FISHING_RULES.vigorCost} de vigor utilizados</span><span><kbd>Esc</kbd> desistir</span></footer></div>
    <div class="fishing-pause" hidden><span>Ⅱ</span><h3>Pescaria pausada</h3><p>Continue quando estiver pronto. A linha está segura.</p><button type="button" class="village-primary" data-fishing-resume>Continuar pescaria</button><button type="button" class="fishing-pause-cancel" data-fishing-cancel>Encerrar pescaria</button></div>
   </section>`;
@@ -58,7 +59,7 @@ function showFishing(save:SaveData,session:FishingSession,onChange:()=>void,worl
    panel.dataset.phase=session.phase;
    if(session.phase!==phase){
     phase=session.phase;
-    if(phase==='bite'){prompt.textContent='Mordeu! Você tem 3 segundos para fisgar.';button.textContent='Fisgar! · E / Espaço / Clique';button.disabled=false;get('.fishing-instructions').textContent='Aperte uma vez para começar a disputa.';hookMeter.hidden=false;gameAudio.play('ui');}
+    if(phase==='bite'){prompt.textContent='Mordeu! Você tem 3 segundos para fisgar.';button.textContent='Fisgar! · E / Espaço / Clique';button.disabled=false;get('.fishing-instructions').hidden=false;get('.fishing-instructions').textContent='Aperte uma vez para começar a disputa.';hookMeter.hidden=false;gameAudio.play('ui');}
     if(phase==='fighting'){prompt.textContent='Acompanhe o movimento dentro da faixa verde.';button.textContent='Segure para subir · solte para descer';button.disabled=false;get('.fishing-instructions').textContent='Segure E, Espaço ou este botão. Dentro da faixa, a captura avança.';get('.fishing-track-wrap').hidden=false;get('.fishing-capture').hidden=false;hookMeter.hidden=true;get('.fishing-water-caption').textContent='Algo na linha';}
 
     if(phase==='caught'){prompt.textContent='Você conseguiu! Guardando a captura…';button.disabled=true;hookMeter.hidden=true;collect();}
@@ -94,6 +95,7 @@ function showFishing(save:SaveData,session:FishingSession,onChange:()=>void,worl
   button.addEventListener('click',()=>{if(session.phase!=='fighting')act();},{signal:events.signal});
   layer.addEventListener('pointerdown',event=>event.stopPropagation(),{signal:events.signal});layer.addEventListener('pointerup',event=>event.stopPropagation(),{signal:events.signal});layer.addEventListener('contextmenu',event=>{event.preventDefault();event.stopPropagation();},{signal:events.signal});
   window.addEventListener('blur',pause,{signal:events.signal});window.addEventListener('focus',()=>{if(paused)resume.focus();},{signal:events.signal});document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();},{signal:events.signal});window.addEventListener('pagehide',cancel,{capture:true,signal:events.signal});
+  signal?.addEventListener('abort',()=>{if(!outcome)cancel();},{once:true,signal:events.signal});if(signal?.aborted){cancel();return;}
   const tick=(now:number)=>{if(finished)return;advance(now);if(!finished&&!outcome)frame=requestAnimationFrame(tick);};frame=requestAnimationFrame(tick);if(document.hidden)pause();get<HTMLButtonElement>('[data-fishing-cancel]').focus();
  });
 }

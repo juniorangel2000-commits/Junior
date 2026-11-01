@@ -6,7 +6,7 @@ export function audioSettings(value: unknown): AudioSettings {
   const volume = (n: unknown, fallback: number): number => typeof n === 'number' && Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : fallback;
   return { music: volume(v.music, .45), effects: volume(v.effects, .65), muted: v.muted === true };
 }
-export type Sound = 'step' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit' | 'sword-swing' | 'bow-shot' | 'boomerang-throw' | 'weapon-evolution' | 'spear-thrust' | 'hammer-impact' | 'shield-burst' | 'dungeon-start';
+export type Sound = 'step' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'fishing-cast' | 'fishing-splash' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit' | 'sword-swing' | 'bow-shot' | 'boomerang-throw' | 'weapon-evolution' | 'spear-thrust' | 'hammer-impact' | 'shield-burst' | 'dungeon-start';
 type AudioScene = 'title' | 'game' | 'expedition' | 'combat' | 'cinematic';
 const BEAT = 60 / 76;
 export const MUSIC_DURATION = 64 * BEAT;
@@ -372,6 +372,16 @@ export function synthesizeEffect(ctx: BaseAudioContext, out: AudioNode, sound: S
   const now = ctx.currentTime;
   const note = (midi: number, delay = 0, duration = .15, gain = .12): void => tone(ctx, out, hz(midi), now + delay, duration, gain);
   switch (sound) {
+    case 'fishing-cast': {
+      const duration=.34,buffer=ctx.createBuffer(1,Math.ceil(ctx.sampleRate*duration),ctx.sampleRate),samples=buffer.getChannelData(0);
+      for(let i=0;i<samples.length;i++)samples[i]=(Math.random()*2-1)*Math.sin(i/samples.length*Math.PI)**2;
+      const source=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();source.buffer=buffer;filter.type='bandpass';filter.Q.value=.65;filter.frequency.setValueAtTime(850,now);filter.frequency.linearRampToValueAtTime(2200,now+.13);filter.frequency.exponentialRampToValueAtTime(500,now+duration);gain.gain.value=.10;
+      source.connect(filter).connect(gain).connect(out);source.start(now);source.onended=()=>{source.disconnect();filter.disconnect();gain.disconnect();};break;
+    }
+    case 'fishing-splash': {
+      noise(ctx,out,.13,1700,.035);
+      const oscillator=ctx.createOscillator(),gain=ctx.createGain();oscillator.type='sine';oscillator.frequency.setValueAtTime(650,now);oscillator.frequency.exponentialRampToValueAtTime(145,now+.16);gain.gain.setValueAtTime(0,now);gain.gain.linearRampToValueAtTime(.09,now+.006);gain.gain.exponentialRampToValueAtTime(.0001,now+.19);oscillator.connect(gain).connect(out);oscillator.start(now);oscillator.stop(now+.2);oscillator.onended=()=>{oscillator.disconnect();gain.disconnect();};break;
+    }
     case 'dungeon-start': noise(ctx, out, .85, 420, .09); note(33, 0, .9, .07); note(40, .12, .75, .045); note(46, .28, .55, .035); break;
     case 'shield-burst': noise(ctx, out, .18, 1600, .09); note(52, 0, .16, .05); note(64, .04, .13, .03); break;
     case 'spear-thrust': noise(ctx, out, .07, 3000, .06); note(64, 0, .07, .03); break;

@@ -1,8 +1,14 @@
 const fs=require('node:fs');
 const base='public/assets/visual/fishing/catches/';
-for(const [file,cols,rows,ids] of [['fish',3,2,['lambari','tilapia','carpa','bagre','truta','dourado']],['trash',2,2,['rusty-can','soaked-branch','old-boot','tangled-rope']]]){
- const png=fs.readFileSync(base+file+'.png'),width=png.readUInt32BE(16),height=png.readUInt32BE(20),cw=width/cols,ch=height/rows;
- const bounds=file==='fish'?[[43,252,499,478],[22,212,512,504],[0,222,488,492],[19,96,510,358],[19,105,491,349],[4,80,494,346]]:[[101,170,554,530],[96,140,566,548],[53,59,621,527],[63,121,578,553]];
- const views=ids.map((id,i)=>{const [l,t,r,b]=bounds[i],pad=10,left=Math.max(0,l-pad),top=Math.max(0,t-pad),right=Math.min(cw,r+pad),bottom=Math.min(ch,b+pad);return `<view id="${id}" viewBox="${i%cols*cw+left} ${Math.floor(i/cols)*ch+top} ${right-left} ${bottom-top}"/>`;}).join('');
- fs.writeFileSync(base+file+'.svg',`<svg xmlns="http://www.w3.org/2000/svg" width="${cw}" height="${ch}" viewBox="0 0 ${cw} ${ch}">${views}<image width="${width}" height="${height}" href="data:image/png;base64,${png.toString('base64')}"/></svg>\n`);
+for(const [file,ids,bounds] of [
+ ['fish',['lambari','tilapia','carpa','bagre','truta','dourado'],[[43,252,499,478],[534,212,991,504],[1023,222,1512,492],[19,608,511,870],[531,617,1003,861],[1027,592,1518,858]]],
+ ['trash',['rusty-can','soaked-branch','old-boot','tangled-rope'],[[101,170,554,531],[722,140,1193,549],[52,686,622,1155],[690,747,1206,1180]]],
+]){
+ const png=fs.readFileSync(base+file+'.png'),width=png.readUInt32BE(16),height=png.readUInt32BE(20),fw=file==='fish'?512:627,fh=file==='fish'?320:627;
+ // Targeted groups isolate each silhouette even in the viewport's letterbox space.
+ // A viewBox alone exposes neighbouring atlas pixels above/below wide fish.
+ const frames=ids.map((id,i)=>{const[l,t,r,b]=bounds[i],x=Math.max(0,l-4),y=Math.max(0,t-4),w=Math.min(width,r+4)-x,h=Math.min(height,b+4)-y;return{id,x,y,w,h};});
+ const clips=frames.map(f=>`<clipPath id="${f.id}-clip"><rect x="${f.x}" y="${f.y}" width="${f.w}" height="${f.h}"/></clipPath>`).join('');
+ const groups=frames.map(f=>`<g class="catch" id="${f.id}"><svg width="${fw}" height="${fh}" viewBox="${f.x} ${f.y} ${f.w} ${f.h}"><g clip-path="url(#${f.id}-clip)"><use href="#atlas"/></g></svg></g>`).join('');
+ fs.writeFileSync(base+file+'.svg',`<svg xmlns="http://www.w3.org/2000/svg" width="${fw}" height="${fh}" viewBox="0 0 ${fw} ${fh}"><style>.catch{display:none}.catch:target{display:inline}</style><defs><image id="atlas" width="${width}" height="${height}" href="data:image/png;base64,${png.toString('base64')}"/>${clips}</defs>${groups}</svg>\n`);
 }
