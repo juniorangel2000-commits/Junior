@@ -1,3 +1,5 @@
+import {isCascadeFoam} from './cascade-flow';
+import {paintedWaterPoint} from './data/terrain-paint';
 import {submergedWood} from './submerged-wood';
 import {LakeWaterAnimation} from './lake-water-animation';
 import {lakeSurfaceMotion,lakeCascadeMotion,lakeImpactMotion,LAKE_CASCADE} from './data/lake-water-motion';
@@ -33,7 +35,7 @@ export class FishingLakeWorld {
   const before=new Set(scene.children.list);setupTallGrassArt(scene);this.drawGround();
   drawMapTerrainEdits(scene,edits?.terrain??{},namespace+'-paint',lakeWater,'forest')?.setDepth(-99);
   for(const [key,sourceKey] of [['lake-ridge','lake-ridge-source'],['lake-west','lake-west-source']])if(!scene.textures.exists(key)){
-   const source=scene.textures.get(sourceKey).getSourceImage() as HTMLImageElement,canvas=document.createElement('canvas');canvas.width=source.width;canvas.height=source.height;const c=canvas.getContext('2d')!;c.drawImage(source,0,0);const p=c.getImageData(0,0,canvas.width,canvas.height);for(let i=3;i<p.data.length;i+=4)p.data[i]=p.data[i]>160?255:0;c.putImageData(p,0,0);const texture=scene.textures.addCanvas(key,canvas)!;texture.setFilter(0);
+   const source=scene.textures.get(sourceKey).getSourceImage() as HTMLImageElement,canvas=document.createElement('canvas');canvas.width=source.width;canvas.height=source.height;const c=canvas.getContext('2d')!;c.drawImage(source,0,0);const p=c.getImageData(0,0,canvas.width,canvas.height);for(let i=3;i<p.data.length;i+=4){const pixel=(i-3)/4,x=pixel%canvas.width,y=Math.floor(pixel/canvas.width);p.data[i]=key==='lake-ridge'&&isCascadeFoam(x,y,p.data[i-3],p.data[i-2],p.data[i-1],p.data[i])?0:p.data[i]>160?255:0;}c.putImageData(p,0,0);const texture=scene.textures.addCanvas(key,canvas)!;texture.setFilter(0);
    if(key==='lake-west'){const r=LAKE_SIDE_CROP;texture.add('body',0,r.x,r.y,r.width,r.height);}
   }
   for(const p of LAKE_SIDE_RIDGES)scene.add.image(p.x,p.y,'lake-west','body').setOrigin(0).setDisplaySize(LAKE_SIDE_CROP.width*p.scale,LAKE_SIDE_CROP.height*p.scale).setFlipX(p.flip).setDepth(-5).setData('lake-landmark','side-ridge');
@@ -43,7 +45,7 @@ export class FishingLakeWorld {
   scene.add.image(p.x,p.y,'lake-pier-source').setOrigin(0).setDisplaySize(p.width,p.height).setDepth(-3).setData('lake-landmark','pier');
   scene.add.image(p.x,p.y,'lake-pier-source').setOrigin(0).setDisplaySize(p.width,p.height).setCrop(500,480,1210,100).setDepth(47.5*32);
   scene.add.image(p.x,p.y,'lake-pier-source').setOrigin(0).setDisplaySize(p.width,p.height).setCrop(70,670,480,130).setDepth(49.4*32);
-  submergedWood(scene,'lake-pier-source','lake-pier-wet-posts',[[92,747,67,52],[296,740,54,49],[474,742,82,58],[507,565,67,48],[772,551,52,44],[992,554,56,45],[1215,554,55,45],[1437,560,65,50],[1652,558,64,49]],p.x,p.y,p.width,p.height,49.5*32);
+  submergedWood(scene,'lake-pier-source','lake-pier-wet-posts',[[92,747,67,52],[296,740,54,49],[474,742,82,58],[507,565,67,48],[772,551,52,44],[992,554,56,45],[1215,554,55,45],[1437,560,65,50],[1652,558,64,49]],p.x,p.y,p.width,p.height,49.5*32,(x,y)=>paintedWaterPoint(edits?.terrain,x,y,(px,py)=>lakeWater(px/32,py/32)));
   this.drawCabin();
   const bridge=LAKE_BRIDGE;this.drawDeck(bridge.x*32,bridge.y*32,bridge.width*32,bridge.height*32);
   for(const p of LAKE_PIER_PROPS)scene.add.image(p.x*32,p.y*32,'lake-pier',p.frame).setOrigin(.5,1).setDisplaySize(p.width,p.height).setDepth(p.y*32).setData('lake-fishing-prop',p.frame);
@@ -79,11 +81,11 @@ export class FishingLakeWorld {
  private drawDeck(x:number,y:number,width:number,height:number):void {
   const r=pierArt.frames.pier,f=pierArt.frames['pier-front'];
   this.scene.add.image(x,y,'lake-pier','pier').setOrigin(0).setDisplaySize(width,height).setDepth(-3);
-  submergedWood(this.scene,'village-pier-source','lake-bridge-wet-posts',[[r.x,r.y+Math.round(r.height*.84),r.width,Math.floor(r.height*.16)]],x-r.x*width/r.width,y-r.y*height/r.height,(this.scene.textures.get('village-pier-source').getSourceImage() as HTMLImageElement).width*width/r.width,(this.scene.textures.get('village-pier-source').getSourceImage() as HTMLImageElement).height*height/r.height,y+height*.85);
+  submergedWood(this.scene,'village-pier-source','lake-bridge-wet-posts',[[r.x,r.y+Math.round(r.height*.84),r.width,Math.floor(r.height*.16)]],x-r.x*width/r.width,y-r.y*height/r.height,(this.scene.textures.get('village-pier-source').getSourceImage() as HTMLImageElement).width*width/r.width,(this.scene.textures.get('village-pier-source').getSourceImage() as HTMLImageElement).height*height/r.height,y+height*.85,(px,py)=>paintedWaterPoint(this.edits?.terrain,px,py,(a,b)=>lakeWater(a/32,b/32)));
   this.scene.add.image(x,y+(f.y-r.y)*height/r.height,'lake-pier','pier-front').setOrigin(0).setDisplaySize(width,f.height*height/r.height).setDepth(y+height*.84);
  }
  private drawGround():void {
-  const key='lake-natural-ground-v19';if(!this.scene.textures.exists(key)){
+  const key='lake-natural-ground-v22';if(!this.scene.textures.exists(key)){
    const materials=readTerrainSprites(this.scene);if(!materials)throw Error('Terreno do lago indisponível');
    const canvas=document.createElement('canvas');canvas.width=3072;canvas.height=2304;const c=canvas.getContext('2d')!,p=c.createImageData(3072,2304);
    for(let by=0;by<2304;by+=4)for(let bx=0;bx<3072;bx+=4){

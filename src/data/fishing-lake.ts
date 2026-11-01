@@ -41,15 +41,21 @@ export function lakeShoreDistance(x:number,y:number):number {
  const landing=3.3*Math.exp(-(((x-34)/7.5)**2)-(((y-24)/5)**2));
  return shore+landing;
 }
+/** Follow the painted upper stream between the rocks rather than a straight north strip. */
+export function lakeCascadeBanks(y:number):{center:number;half:number}{
+ const points=[[-1,45.55,1],[.8,46.84,1.55],[2.38,48.34,1.34],[4.25,48.88,1.4],[5.82,49.06,1.4],[18.3,49.2,1.25]];
+ let i=0;while(i<points.length-2&&y>points[i+1][0])i++;const a=points[i],b=points[i+1],t=Math.max(0,Math.min(1,(y-a[0])/(b[0]-a[0]))),smooth=t*t*(3-2*t);
+ return{center:a[1]+(b[1]-a[1])*smooth,half:a[2]+(b[2]-a[2])*smooth};
+}
 export function lakeWaterDistance(x:number,y:number):number {
  const shore=lakeShoreDistance(x,y);
  const joined=mergeLakeRiver(shore,lakeRiverDistance(x,y));
- const inletCenter=48.1+Math.max(0,Math.min(1,(y-5)/14));
- const stream=y<25?Math.abs(x-inletCenter)-1.1:Infinity;
- const basin=(Math.hypot((x-49)/3.2,(y-20)/3.5)-1)*3.2;
- const source=Math.min(stream,basin);
+ const inlet=lakeCascadeBanks(y);
+ const stream=Math.max(Math.abs(x-inlet.center)-inlet.half,y-24);
+ const basin=(Math.hypot((x-49)/4.6,(y-20.3)/4.3)-1)*4.3+.11*Math.sin(x*2.1+y*1.7);
+ const source=mergeLakeRiver(stream,basin);
  const island=(1-Math.hypot((x-29)/2.7,(y-38)/1.8))*1.8;
- return Math.max(Math.min(joined,source),island);
+ return Math.max(mergeLakeRiver(joined,source),island);
 }
 export const lakeWater=(x:number,y:number)=>lakeWaterDistance(x,y)<0;
 export const lakeBridge=(x:number,y:number)=>x>=LAKE_BRIDGE.x&&x<=LAKE_BRIDGE.x+LAKE_BRIDGE.width&&y>=LAKE_BRIDGE.y+LAKE_BRIDGE.height*.28&&y<=LAKE_BRIDGE.y+LAKE_BRIDGE.height*.73;

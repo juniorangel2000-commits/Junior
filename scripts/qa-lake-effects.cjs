@@ -11,7 +11,7 @@ const out='/workspace/lake-effects-qa';fs.mkdirSync(out,{recursive:true});
   await page.evaluate(()=>{lake.setPaused(true);lake.player.setVisible(false);document.querySelector('#ui').style.display='none';lake.cameras.main.setZoom(1.55).centerOn(49.2*32,13.5*32);window.effectTime=0;window.naturalUpdate=lake.world.update.bind(lake.world);lake.world.update=()=>naturalUpdate(effectTime);naturalUpdate(0);window.commands=JSON.stringify(lake.world.waterFX.commandBuffer);});await page.screenshot({path:out+'/cachoeira-antes.png'});
   await page.evaluate(()=>{effectTime=650;naturalUpdate(effectTime);});await page.screenshot({path:out+'/cachoeira-em-movimento.png'});check('Correnteza, espuma, respingos e reflexos mudam com o tempo',await page.evaluate(()=>JSON.stringify(lake.world.waterFX.commandBuffer)!==commands));
   await page.evaluate(()=>{lake.cameras.main.setZoom(1.3).centerOn(54*32,35*32);});await page.screenshot({path:out+'/ondulacoes-do-lago.png'});
-  check('A arte original continua na base da água e da cachoeira',await page.evaluate(()=>lake.children.list.some(o=>o.texture?.key==='lake-ridge')&&lake.children.list.some(o=>o.texture?.key==='lake-natural-ground-v19')));
+  check('A arte original continua na base da água e da cachoeira',await page.evaluate(()=>lake.children.list.some(o=>o.texture?.key==='lake-ridge')&&lake.children.list.some(o=>o.texture?.key==='lake-natural-ground-v22')));
   check('Sem erros de execução ou recursos ausentes',errors.length===0);
  }catch(e){console.error(e);await page.screenshot({path:out+'/falha.png'}).catch(()=>{});throw e;}finally{fs.writeFileSync(out+'/resultado.json',JSON.stringify({checks,errors},null,2));await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

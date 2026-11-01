@@ -30,3 +30,12 @@ Cada tentativa utiliza uma minhoca e 3 de vigor. Vara captura um peixe, rede at�
 - QA integrado: arremesso antes do minigame, limpeza dos efeitos, colisão com o Player real, escada utilizável, mochila/cura/fabricação salvas no lago e na estrada, animação da água e transição/editor sem erro.
 
 A alteração ainda não foi publicada como nova versão Windows.
+
+## Refino da queda e da vara
+
+- A queda e o riacho superior usam faixas de textura contínuas, sem reaproveitar trechos estáticos da imagem entre os quadros.
+- A espuma branca original da base e dos respingos é retirada da camada da montanha e substituída por partículas animadas.
+- O leito superior acompanha o desenho do riacho entre as pedras. A bacia abaixo da queda fica mais larga, com união suave e margens irregulares.
+- O acabamento submerso dos apoios consulta a água real, incluindo edições do mapa; não colore madeira sobre terra.
+- A vara de bambu tem quatro vistas, com empunhaduras individuais. Norte fica atrás do personagem. As oito combinações de personagem/direção foram conferidas no navegador.
+- A arte `docs/arte/pescaria/fazendeira-com-vara-previa.png` é uma proposta de pose para avaliação; não substitui ainda as animações dos personagens.

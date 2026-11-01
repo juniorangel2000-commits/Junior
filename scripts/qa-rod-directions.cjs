@@ -1,0 +1,13 @@
+const{chromium}=require('playwright'),fs=require('node:fs');const out='/workspace/previa-cachoeira-v3';fs.mkdirSync(out,{recursive:true});
+(async()=>{const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox','--disable-dev-shm-usage','--use-angle=swiftshader','--enable-unsafe-swiftshader']});try{const page=await browser.newPage({viewport:{width:640,height:850}});page.setDefaultTimeout(180000);await page.goto('http://127.0.0.1:5190');await page.locator('#new-game').click();await page.locator('#character-name').fill('Cachoeira');await page.getByRole('button',{name:'Começar minha história'}).click();await page.waitForFunction(()=>document.querySelector('#ui')?.dataset.area==='property');await page.evaluate(async()=>{window.game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;game.scene.getScene('Vale').enterLake();});await page.waitForFunction(()=>document.querySelector('#ui')?.dataset.area==='fishingLake');await page.evaluate(async()=>{
+window.lake=game.scene.getScene('Lago');lake.setPaused(true);lake.player.setVisible(false);lake.daylight.update(720);document.querySelector('#ui').style.display='none';
+const {Player}=await import('/src/player.ts'),{createFishingCast}=await import('/src/fishing-cast.ts'),{createCharacterProfile}=await import('/src/data/characters.ts');
+window.casts=[];window.attachments=[];
+for(let row=0;row<2;row++)for(let col=0;col<4;col++){
+const profile=createCharacterProfile(row?'Camponesa':'Camponês');profile.characterId=row?'farmer-female':'farmer-male';
+const p=new Player(lake,profile,1500+col*90,1100+row*100,'qa-rod-'+row+'-'+col),directions=[{x:0,y:-1},{x:0,y:1},{x:-1,y:0},{x:1,y:0}];p.facing=directions[col];p.update(0,()=>false,()=>false,false);
+const cast=createFishingCast(lake,p,(x,y)=>Math.hypot(x-p.x-p.facing.x*48,y-p.y-p.facing.y*48)<3);void cast.start();const rod=lake.children.list.filter(o=>o.getData?.('fishing-cast-rod')).at(-1),hand=p.leftHandPosition;
+attachments.push({frame:rod.frame.name,aligned:Math.hypot(rod.x-hand.x,rod.y-hand.y)<.01,behind:rod.depth<p.sprite.depth,north:col===0});casts.push(cast);
+}lake.cameras.main.stopFollow().setZoom(2).centerOn(1635,1140);
+});await page.waitForTimeout(1200);await page.screenshot({path:'/workspace/fishing-integration-qa/vara-bambu-oito-poses.png'});const checks=await page.evaluate(()=>attachments);console.log(JSON.stringify(checks));if(checks.length!==8||!checks.every(c=>c.aligned&&c.behind===c.north))throw Error('attachment mismatch');await page.evaluate(()=>casts.forEach(c=>c.destroy()));
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
