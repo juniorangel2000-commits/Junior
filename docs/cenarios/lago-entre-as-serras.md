@@ -23,3 +23,15 @@ A margem diante da escadaria foi recuada localmente por um contorno suave; a tri
 A trilha não contorna mais o trecho norte após a escadaria: termina no acesso ao mirante. O cenário contém pedras terrestres em chão seco e somente as rochas aquáticas D/E, que têm linha de água desenhada, próximas das margens. O centro do lago permanece livre. Toda a margem recebe uma faixa irregular de areia, com variações locais de largura; moitas maiores usam a verificação de toda a silhueta para não cobrir água ou caminhos. O trecho final do acesso segue reto até a base da escada, em um trecho único e contínuo, sem uma curva ou ponta arredondada antes da ligação. A cor do cascalho se aproxima gradualmente da mediana da terra na arte da montanha. Pequenos cardumes de sombras nadam sob os reflexos, evitando margens, rochas, ponte, píer e terra pintada no editor; são apenas efeitos visuais.
 
 A entrada do rio agora faz uma união suave com o lago, com margens assimétricas, meandros e largura variável. A geometria mantém o alinhamento da ponte e a continuidade com o rio da propriedade. O jogador pode entrar na água e nadar; rochas, penhascos, barco e proteções da ponte/píer permanecem sólidos. Uma partida salva na água retorna ao mesmo ponto, já com a apresentação de natação.
+
+## Cabana de pesca
+
+A arte aprovada da cabana fica na margem leste, antes da entrada da cidade: madeira envelhecida, varanda elevada em pilares e escada de madeira. A imagem original de 1448 × 1086 é preservada, exibida com 432 pixels de largura. Paredes e guarda-corpos têm colisões separadas do piso transitável; a frente do guarda-corpo usa uma camada de oclusão. A clareira reserva a silhueta inteira para as árvores não cobrirem a construção. Um ramal curto liga a escada ao caminho existente, sem ocupar a água.
+
+Damião visita o lago das 08:00 às 11:30. Alterna pausas na varanda e no píer, usando as animações originais de caminhada; não fala durante o deslocamento. A posição inicial segue o relógio salvo, em vez de reiniciar a rotina a cada visita do jogador. O trajeto usa passagens com espaço para os pés, desvia dos obstáculos nativos e espera quando o jogador ou uma edição bloqueia o próximo passo.
+
+E ou um clique próximo abre a conversa, compra/venda e os mesmos serviços de pesca da vila (aulas e entrega do peixe raro). A conversa pausa o mundo e o personagem. Inventário, carteira e serviços são gravados juntos; uma falha de gravação não aplica a transação. Às 11:30 ele deixa de aparecer no lago e retoma a rotina anterior da vila, incluindo almoço e visitas. Durante a manhã não é exibido nem ocupa espaço de colisão na vila.
+
+A cabana é um ponto de atendimento externo: varanda e escada acessíveis, porta fechada. Não foi criado um interior novo. A versão do save e do pacote permanecem inalteradas.
+
+Validação específica: `tests/fisher-cabin.test.ts` verifica percurso, pés, colisões, horários e transações; `scripts/qa-fisher-cabin.cjs` verifica a apresentação, atendimento real, persistência e retorno à vila no navegador.

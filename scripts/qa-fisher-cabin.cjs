@@ -1,0 +1,27 @@
+const {chromium}=require('playwright'),fs=require('node:fs'),assert=require('node:assert/strict');
+const out='/workspace/fisher-cabin-qa';fs.mkdirSync(out,{recursive:true});
+(async()=>{
+ const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox','--disable-dev-shm-usage','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+ const page=await browser.newPage({viewport:{width:1440,height:960}});page.setDefaultTimeout(180000);const checks=[],errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)errors.push(r.status()+' '+r.url());});
+ const check=(name,value)=>{console.log(name,value);checks.push({name,value});assert.ok(value,name);};
+ try{
+  await page.goto('http://127.0.0.1:5190');await page.locator('#new-game').click();await page.locator('#character-name').fill('Pescaria');await page.getByRole('button',{name:'Começar minha história'}).click();await page.waitForFunction(()=>document.querySelector('#ui')?.dataset.area==='property');
+  await page.evaluate(async()=>{window.game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;game.scene.getScene('Vale').enterLake();});await page.waitForFunction(()=>document.querySelector('#ui')?.dataset.area==='fishingLake');
+  await page.evaluate(async()=>{window.lake=game.scene.getScene('Lago');lake.setPaused(true);lake.state.time=480;lake.state.villageEconomy.coins=1000;lake.daylight.update(480);lake.fisher.routeTime=480;lake.fisher.update(0);const{cabinPoint}=await import('/src/data/fisher-cabin.ts');const p=cabinPoint(780,790);lake.player.x=p.x;lake.player.y=p.y;lake.player.update(0,lake.movementBlockedTile,lake.movementBlockedPoint,false,lake.swimmingPoint);lake.cameras.main.stopFollow().setZoom(1.65).centerOn(84*32,28*32);});
+  await page.screenshot({path:out+'/cabana-no-jogo.png'});const url=await page.evaluate(()=>lake.captureMap());fs.writeFileSync(out+'/lago-com-cabana.png',Buffer.from(url.split(',')[1],'base64'));
+  check('Varanda seca e Damião acessível no lago',await page.evaluate(()=>!lake.player.isSwimming&&lake.fisher.near()&&lake.fisher.sprite.visible));
+  await page.evaluate(()=>lake.setPaused(false));await page.keyboard.press('e');await page.locator('.village-layer[data-npc="damiao"]:not([hidden])').waitFor();
+  check('E abre comércio, serviços e conversa sem mover o NPC',await page.evaluate(()=>lake.paused&&document.querySelector('.village-eyebrow').textContent==='CABANA DO LAGO')&&await page.locator('[data-village-tab="buy"]').isVisible()&&await page.locator('[data-village-tab="services"]').isVisible());
+  await page.screenshot({path:out+'/damiao-atendimento.png'});await page.locator('[data-village-tab="services"]').click();await page.locator('[data-village-service="fishing-lesson"]').click();
+  check('Aula de pesca desconta 30 Coroas e salva a habilidade',await page.evaluate(async()=>{const{loadSave}=await import('/src/systems/save.ts'),s=loadSave();return lake.state.villageProgress.fishingSkill===1&&s.villageProgress.fishingSkill===1&&s.villageEconomy.coins===970;}));
+  await page.locator('[data-village-tab="buy"]').click();await page.locator('[data-trade-action="buy"]').click();
+  check('Compra real salva inventário e carteira válidos',await page.evaluate(async()=>{const{loadSave,validateSave}=await import('/src/systems/save.ts'),s=loadSave();return validateSave(s)&&s.villageEconomy.coins<970&&Object.values(s.inventory).reduce((a,b)=>a+b,0)>0;}));
+  await page.locator('[data-village-close]').click();await page.evaluate(()=>{lake.setPaused(true);lake.player.x=92.5*32;lake.player.y=33.5*32;lake.player.update(0,lake.movementBlockedTile,lake.movementBlockedPoint,false,lake.swimmingPoint);});
+  const trip=await page.evaluate(()=>{let max=0,pier=false,porch=false;for(let i=0;i<2500;i++){const x=lake.fisher.sprite.x,y=lake.fisher.sprite.y;lake.fisher.update(.1);max=Math.max(max,Math.hypot(lake.fisher.sprite.x-x,lake.fisher.sprite.y-y));if(lake.fisher.sprite.x<69*32&&lake.fisher.sprite.y>45*32)pier=true;if(lake.fisher.sprite.y<31*32)porch=true;}return{max,pier,porch};});console.log('trip',trip);check('Rotina percorre escada e caminho até o píer sem saltos',trip.pier&&trip.porch&&trip.max<=3.601);
+  await page.evaluate(()=>{lake.state.time=700;lake.fisher.update(0);lake.persist();});check('Após 11:30 Damião deixa de aparecer no lago',await page.evaluate(()=>!lake.fisher.sprite.visible));
+  await page.evaluate(()=>lake.leave(false));await page.waitForFunction(()=>document.querySelector('#ui')?.dataset.area==='cityForest');await page.evaluate(()=>game.scene.getScene('AcessoCidade').leave());await page.waitForFunction(()=>document.querySelector('#ui')?.dataset.area==='village');
+  check('Damião volta à rotina da vila sem duplicação',await page.evaluate(()=>{window.v=game.scene.getScene('Vila');return v.routines.get('damiao').isServing(v.state)&&v.state.time>=690;}));
+  check('Ausente da vila durante a visita da manhã',await page.evaluate(()=>{v.state.time=500;const n=v.villagers.find(n=>n.data.id==='damiao');return !v.sameRoom(n)&&!v.canTrade('damiao');}));
+  check('Sem erros JavaScript ou arquivos ausentes',errors.length===0);
+ }catch(e){await page.screenshot({path:out+'/falha.png'});throw e;}finally{fs.writeFileSync(out+'/resultado.json',JSON.stringify({checks,errors},null,2));await browser.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});

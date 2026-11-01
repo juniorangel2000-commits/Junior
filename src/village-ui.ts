@@ -11,6 +11,8 @@ import { itemIconUrl } from './visual-assets';
 import './village-ui.css';
 
 export interface VillageInteractionCallbacks {
+  locationLabel?:string;
+  returnLabel?:string;
   canTrade?(npcId:VillageNPC['id']):boolean;
   isInside?(npcId:VillageNPC['id']):boolean;
   getAvailability?(npcId:VillageNPC['id']):{message:string;canGuide:boolean}|undefined;
@@ -58,6 +60,8 @@ export class VillageInteractionUI {
     this.layer.hidden = true;
     this.layer.dataset.villageModal = '';
     this.layer.innerHTML = `<section class="village-panel" role="dialog" aria-modal="true" aria-labelledby="village-npc-name" tabindex="-1"><header class="village-panel-heading"><div><span class="village-eyebrow">VILA DO RECOMEÇO</span><h2 id="village-npc-name"></h2><p class="village-npc-role"></p></div><div class="village-heading-actions"><span class="village-wallet" aria-label="Seu saldo"><span class="village-coin" aria-hidden="true"></span><strong data-village-balance></strong><small>Coroas</small></span><button class="village-close" type="button" data-village-close aria-label="Fechar conversa" title="Fechar · Esc">×</button></div></header><nav class="village-tabs" aria-label="Conversa e comércio"></nav><div class="village-panel-body"></div><p class="village-feedback" role="status" aria-live="polite"></p><footer class="village-panel-footer"><span>Converse com os moradores e negocie seus produtos.</span><span><kbd>Esc</kbd> voltar à vila</span></footer></section>`;
+    if(callbacks.locationLabel)this.layer.querySelector<HTMLElement>('.village-eyebrow')!.textContent=callbacks.locationLabel;
+    if(callbacks.returnLabel)this.layer.querySelector('.village-panel-footer span:last-child')!.replaceChildren(Object.assign(document.createElement('kbd'),{textContent:'Esc'}),document.createTextNode(' '+callbacks.returnLabel));
     this.panel = this.layer.querySelector<HTMLElement>('.village-panel')!;
     this.title = this.layer.querySelector<HTMLElement>('#village-npc-name')!;
     this.subtitle = this.layer.querySelector<HTMLElement>('.village-npc-role')!;

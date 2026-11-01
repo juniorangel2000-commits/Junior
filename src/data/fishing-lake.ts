@@ -1,3 +1,4 @@
+import {cabinSolidPoint,cabinFloorPoint,cabinClearing,CABIN_APPROACH} from './fisher-cabin';
 import westContour from './lake-west-contour.json';
 import ridgeContour from './lake-ridge-contour.json';
 import type {MapEditData,EditorObjectKind} from '../systems/map-editor';
@@ -76,7 +77,7 @@ const lakesideTrail=[...Array.from({length:145},(_,i)=>{
  }
  return[x,y] as const;
 }),[34,21.4] as const,[34,17] as const];
-export const LAKE_TRAILS:readonly (readonly (readonly number[])[])[]=[lakesideTrail,[[84,33],[90,33],[96,33]],[[64,61],[68,63],[73.5,65.5],[75,69],[75,72]],[[82.5,46],[81,46.5],[79.5,46.7]],[[34,7],[31,5],[28,5]]];
+export const LAKE_TRAILS:readonly (readonly (readonly number[])[])[]=[lakesideTrail,[[84,33],[90,33],[96,33]],[[64,61],[68,63],[73.5,65.5],[75,69],[75,72]],[[82.5,46],[81,46.5],[79.5,46.7]],[[34,7],[31,5],[28,5]],CABIN_APPROACH.map(p=>[p.x/32,p.y/32])];
 const smoothTrail=(points:readonly (readonly number[])[])=>{
  if(points.length>40)return points;
  const result:number[][]=[];
@@ -128,7 +129,7 @@ export function lakeCliff(x:number,y:number):boolean {
 export function lakeLowVegetationClear(x:number,y:number,edits?:MapEditData,scale=1):boolean {
  return [-.72*scale,0,.72*scale].every(dx=>[-1.05*scale,-.5*scale,0].every(dy=>{
   const px=x+.5+dx,py=y+.78+dy,terrain=edits?.terrain[`${Math.floor(px)},${Math.floor(py)}`];
-  return px>=1&&px<=94&&py>=1&&py<=70&&(!terrain||['grass','forest','meadow','moss'].includes(terrain))&&lakeWaterDistance(px,py)>.55&&lakeTrailDistance(px,py)>1.75&&!lakeProtected(px-.5,py-.5)&&!paintedWaterPoint(edits?.terrain,px*32,py*32,(a,b)=>lakeWater(a/32,b/32));
+  return !cabinClearing(px,py)&&px>=1&&px<=94&&py>=1&&py<=70&&(!terrain||['grass','forest','meadow','moss'].includes(terrain))&&lakeWaterDistance(px,py)>.55&&lakeTrailDistance(px,py)>1.75&&!lakeProtected(px-.5,py-.5)&&!paintedWaterPoint(edits?.terrain,px*32,py*32,(a,b)=>lakeWater(a/32,b/32));
  }));
 }
 export interface LakeObject {id:string;kind:EditorObjectKind;x:number;y:number;variant?:number;scale?:number}
@@ -144,7 +145,7 @@ export const LAKE_OBJECTS:LakeObject[]=(()=>{
  }
  for(let i=0;i<190;i++){
   const s=hash(i+7000),x=3+s%90,y=26+(s>>>9)%42,d=lakeWaterDistance(x+.5,y+.5);
-  if(d<.2||d>1.6||lakeTrailDistance(x+.5,y+.5)<1.8||lakeBridge(x,y)||lakePier(x,y)||result.some(p=>p.x===x&&p.y===y))continue;
+  if(cabinClearing(x,y)||d<.2||d>1.6||lakeTrailDistance(x+.5,y+.5)<1.8||lakeBridge(x,y)||lakePier(x,y)||result.some(p=>p.x===x&&p.y===y))continue;
   result.push({id:`shoreStones-${x}-${y}`,kind:i%3?'shoreStones':'reeds',x,y});
  }
  const dryRocks=[[14,28],[13,44],[19,59],[43,64],[61,65],[73,58],[86,49],[85,26],[69,23],[41,20],[22,19],[77,62]];
@@ -177,7 +178,14 @@ export const LAKE_OBJECTS:LakeObject[]=(()=>{
   if(!lakeLowVegetationClear(x,y)||result.some(p=>p.x===x&&p.y===y))continue;
   const kind=kinds[(i+index*3)%kinds.length];result.push({id:`${kind}-${x}-${y}`,kind,x,y});
  }
- return result;
+ // Keep larger bank vegetation distributed after opening the cabin clearing.
+ let big=result.filter(p=>(p.scale??1)>1.3&&!['standingTree','pine'].includes(p.kind)).length;
+ for(const p of result){
+  if(big>=6)break;
+  if(p.kind!=='fern'||p.scale||!lakeLowVegetationClear(p.x,p.y,undefined,1.5)||result.some(q=>(q.scale??1)>1.3&&Math.hypot(q.x-p.x,q.y-p.y)<4))continue;
+  p.scale=1.5;big++;
+ }
+ return result.filter(p=>!cabinClearing(p.x,p.y)||p.kind.startsWith('lakeRock'));
 })();
 const cache=new WeakMap<MapEditData,LakeObject[]>();
 export function lakeObjects(edits?:MapEditData):LakeObject[]{
@@ -189,10 +197,11 @@ export function lakeObjects(edits?:MapEditData):LakeObject[]{
 const cellCache=new WeakMap<MapEditData,Set<string>>();let nativeCells:Set<string>|undefined;
 export function lakeBlockedPoint(px:number,py:number,edits?:MapEditData,allowWater=false):boolean {
  const x=px/32,y=py/32;
- if(px<32||py<32||px>3040||py>2272||lakeCliff(x,y)||lakeStructureBlockedPoint(x,y))return true;
+ if(px<32||py<32||px>3040||py>2272||lakeCliff(x,y)||lakeStructureBlockedPoint(x,y)||cabinSolidPoint(px,py))return true;
+ if(cabinFloorPoint(px,py))return false;
  if(!allowWater&&!lakePier(x,y)&&!lakeBridge(x,y)&&paintedWaterPoint(edits?.terrain,px,py,(a,b)=>lakeWater(a/32,b/32)))return true;
  let cells=edits?cellCache.get(edits):nativeCells;
  if(!cells){cells=new Set(lakeObjects(edits).filter(p=>p.kind==='standingTree'||p.kind==='pine'||p.kind==='vein'||natureArt(p.kind)?.solid).map(p=>`${p.x},${p.y}`));if(edits)cellCache.set(edits,cells);else nativeCells=cells;}
  return cells.has(`${Math.floor(x)},${Math.floor(y)}`);
 }
-export function lakeProtected(x:number,y:number):boolean {return lakeCliff(x+.5,y+.5)||lakeTerrace(x+.5,y+.5)||lakeStairs(x+.5,y+.5)||lakeBridge(x+.5,y+.5)||lakePier(x+.5,y+.5)||(x>=90&&Math.abs(y-33)<=2)||(y>=66&&Math.abs(x-75)<=2);}
+export function lakeProtected(x:number,y:number):boolean {return cabinClearing(x,y)||lakeCliff(x+.5,y+.5)||lakeTerrace(x+.5,y+.5)||lakeStairs(x+.5,y+.5)||lakeBridge(x+.5,y+.5)||lakePier(x+.5,y+.5)||(x>=90&&Math.abs(y-33)<=2)||(y>=66&&Math.abs(x-75)<=2);}

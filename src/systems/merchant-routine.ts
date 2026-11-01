@@ -1,3 +1,4 @@
+import {fisherAtLake,FISHER_LAKE_HOURS} from '../data/fisher-schedule';
 import {CHARACTER_DIRECTIONS,type CharacterDirection} from '../character-directions';
 import {merchantOutside,type ResidentId} from './merchant-visit';
 import {VillageWalk} from './village-walk';
@@ -73,14 +74,16 @@ export class MerchantDailyRoutine {
   return this.state.area==='village'&&this.target==='plaza'&&!this.walking&&Math.hypot(this.state.x-(p.x+.5)*32,this.state.y-(p.y+.5)*32)<24;
  }
  holdStill(held:boolean):void{this.conversationHeld=held;}
- isServing(clock:GameClock):boolean{return this.state.area==='shop'&&this.roomOwner===this.owner&&(merchantPeriod(this.owner,clock.time)==='work'||merchantPeriod(this.owner,clock.time)==='break'&&this.state.serviceUntil>absolute(clock));}
+ isServing(clock:GameClock):boolean{return !(this.owner==='damiao'&&fisherAtLake(clock.time))&&this.state.area==='shop'&&this.roomOwner===this.owner&&(merchantPeriod(this.owner,clock.time)==='work'||merchantPeriod(this.owner,clock.time)==='break'&&this.state.serviceUntil>absolute(clock));}
  private visit(clock:GameClock){const plan=MERCHANT_VISITS[this.owner];return this.navigationFor&&this.state.serviceUntil<=absolute(clock)&&clock.time>=plan.start&&clock.time<plan.end&&merchantMayEnter(plan.host,clock,this.owner)?plan:undefined;}
  conversation(clock:GameClock):{host:RoutineId;id:RoutineId;text:string}|undefined{
+  if(this.owner==='damiao'&&fisherAtLake(clock.time))return;
   const plan=this.visit(clock);if(merchantPeriod(this.owner,clock.time)!=='work'||!plan||this.walking||this.state.area!=='shop'||this.roomOwner!==plan.host||this.activity!=='visit-talk'||this.state.wait<=0||Math.hypot(this.state.x-288,this.state.y-230)>56)return;
   return{host:plan.host,id:this.owner,text:plan.lines[0]};
  }
  holdConversation(clock:GameClock):void{this.state.socialUntil=absolute(clock)+.15;}
  availability(clock:GameClock):{message:string;canGuide:boolean}{
+  if(this.owner==='damiao'&&fisherAtLake(clock.time))return{message:'Na cabana do lago · '+FISHER_LAKE_HOURS.label,canGuide:false};
   const lunch=merchantLunchHours(this.owner);
   const period=merchantPeriod(this.owner,clock.time),hours=`08:00–${lunch.start} e ${lunch.end}–${String(MERCHANT_DAILY_PLAN.closing[this.owner]/60).padStart(2,'0')}:00`;
   const visit=this.visit(clock);if(visit)return{message:visit.purpose+' · volta após a visita',canGuide:false};
@@ -122,6 +125,7 @@ export class MerchantDailyRoutine {
   const s=this.state;let phase=0,moving=false,transferred=false;
   this.walking=false;
   if(Number.isFinite(seconds)&&seconds>0)s.updatedAt=absolute(clock);
+  if(this.owner==='damiao'&&fisherAtLake(clock.time))return{...s,phase,moving,transferred};
   if(this.conversationHeld)return{...s,phase,moving,transferred};
   if(!Number.isFinite(seconds)||seconds<=0)return{...s,phase,moving,transferred};seconds=Math.min(seconds,.1);
   const now=absolute(clock),period=merchantPeriod(this.owner,clock.time);

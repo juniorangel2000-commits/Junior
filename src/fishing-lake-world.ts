@@ -1,3 +1,4 @@
+import {FISHER_CABIN} from './data/fisher-cabin';
 import {lakeFishShadows} from './data/lake-fish';
 import {waterFinishChannel} from './data/water-style';
 import {setupTallGrassArt} from './tall-grass-art';
@@ -12,6 +13,7 @@ import pierArt from '../public/assets/visual/village/pier/manifest.json';
 import {LAKE_RIDGE,LAKE_SIDE_RIDGES,LAKE_SIDE_CROP,LAKE_PIER,LAKE_BRIDGE,lakeObjects,lakeLowVegetationClear,lakeSandWeight,lakeStairPathBlend,lakeWater,lakeWaterDistance,lakeTrailDistance,lakeBridge,LAKE_CITY_ENTRY,LAKE_CITY_EXIT,LAKE_PROPERTY_ENTRY,LAKE_PROPERTY_EXIT} from './data/fishing-lake';
 import {drawExitSign} from './exit-signs';
 export function preloadFishingLake(scene:Phaser.Scene):void{
+ if(!scene.textures.exists(FISHER_CABIN.texture))scene.load.image(FISHER_CABIN.texture,FISHER_CABIN.file);
  if(!scene.textures.exists('lake-west-source'))scene.load.image('lake-west-source','assets/visual/fishing-lake/west-ridge.png');
  if(!scene.textures.exists('lake-pier-source'))scene.load.image('lake-pier-source','assets/visual/fishing-lake/fishing-pier.png');
  if(!scene.textures.exists('lake-ridge-source'))scene.load.image('lake-ridge-source','assets/visual/fishing-lake/ridge-waterfall.png');
@@ -37,6 +39,7 @@ export class FishingLakeWorld {
   scene.add.image(p.x,p.y,'lake-pier-source').setOrigin(0).setDisplaySize(p.width,p.height).setDepth(-3).setData('lake-landmark','pier');
   scene.add.image(p.x,p.y,'lake-pier-source').setOrigin(0).setDisplaySize(p.width,p.height).setCrop(500,480,1210,100).setDepth(47.5*32);
   scene.add.image(p.x,p.y,'lake-pier-source').setOrigin(0).setDisplaySize(p.width,p.height).setCrop(70,670,480,130).setDepth(49.4*32);
+  this.drawCabin();
   const bridge=LAKE_BRIDGE;this.drawDeck(bridge.x*32,bridge.y*32,bridge.width*32,bridge.height*32);
   for(const [frame,x,y,w,h]of [['crate',79.5,44,44,34],['anchor',80.5,43.5,44,42]] as const)scene.add.image(x*32,y*32,'lake-pier',frame).setOrigin(.5,1).setDisplaySize(w,h).setDepth(y*32);
   // Small lookout bench remains on the terrace, away from the stairs.
@@ -57,13 +60,23 @@ export class FishingLakeWorld {
   this.waterFX=scene.add.graphics().setDepth(-4).setData('lake-water-animation',true);
   this.objects=scene.children.list.filter(o=>!before.has(o));this.update(0);
  }
+ private drawCabin():void {
+  const p=FISHER_CABIN;this.scene.add.image(p.x,p.y,p.texture).setOrigin(0).setScale(p.scale).setDepth(p.y+750*p.scale).setData('lake-landmark','fisher-cabin');
+  const key=p.texture+'-rails';
+  if(!this.scene.textures.exists(key)){
+   const source=this.scene.textures.get(p.texture).getSourceImage() as HTMLImageElement,canvas=document.createElement('canvas');canvas.width=1448;canvas.height=1086;const c=canvas.getContext('2d')!;
+   for(const polygon of [[[135,565],[515,670],[515,835],[135,735]],[[690,735],[830,780],[1320,610],[1350,760],[835,922],[690,870]]]){c.save();c.beginPath();polygon.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.clip();c.drawImage(source,0,0);c.restore();}
+   this.scene.textures.addCanvas(key,canvas)!.setFilter(0);
+  }
+  this.scene.add.image(p.x,p.y,key).setOrigin(0).setScale(p.scale).setDepth(p.y+900*p.scale);
+ }
  private drawDeck(x:number,y:number,width:number,height:number):void {
   const r=pierArt.frames.pier,f=pierArt.frames['pier-front'];
   this.scene.add.image(x,y,'lake-pier','pier').setOrigin(0).setDisplaySize(width,height).setDepth(-3);
   this.scene.add.image(x,y+(f.y-r.y)*height/r.height,'lake-pier','pier-front').setOrigin(0).setDisplaySize(width,f.height*height/r.height).setDepth(y+height*.84);
  }
  private drawGround():void {
-  const key='lake-natural-ground-v16';if(!this.scene.textures.exists(key)){
+  const key='lake-natural-ground-v17';if(!this.scene.textures.exists(key)){
    const materials=readTerrainSprites(this.scene);if(!materials)throw Error('Terreno do lago indisponível');
    const canvas=document.createElement('canvas');canvas.width=3072;canvas.height=2304;const c=canvas.getContext('2d')!,p=c.createImageData(3072,2304);
    for(let by=0;by<2304;by+=4)for(let bx=0;bx<3072;bx+=4){
