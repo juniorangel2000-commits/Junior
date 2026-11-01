@@ -1,6 +1,6 @@
 import {describe,it,expect} from 'vitest';
-import {cabinPoint,cabinFloorPoint,cabinSolidPoint,FISHER_CABIN,cabinClearing} from '../src/data/fisher-cabin';
-import {lakeBlockedPoint,LAKE_OBJECTS,lakeWaterDistance} from '../src/data/fishing-lake';
+import {cabinPoint,cabinFloorPoint,cabinSolidPoint,FISHER_CABIN,cabinClearing,CABIN_APPROACH} from '../src/data/fisher-cabin';
+import {lakeBlockedPoint,LAKE_OBJECTS,lakeWaterDistance,lakeTrailDistance,lakeTrailHalfWidth} from '../src/data/fishing-lake';
 import {fisherAtLake} from '../src/data/fisher-schedule';
 import {lakeFisherPose,LAKE_FISHER_WALK} from '../src/systems/lake-fisher';
 import {fisherTrade,fisherService} from '../src/systems/fisher-transactions';
@@ -17,6 +17,14 @@ describe('fishing cabin and morning visit',()=>{
   expect(LAKE_OBJECTS.filter(p=>cabinClearing(p.x,p.y)&&!p.kind.startsWith('lakeRock'))).toEqual([]);expect(FISHER_CABIN.width).toBeLessThan(450);
  });
  it('provides a continuous dry walk between the porch, stairs and pier with full foot clearance',()=>{
+  const foot=CABIN_APPROACH[1],forward=CABIN_APPROACH[2],head=cabinPoint(603,825),a={x:foot.x-head.x,y:foot.y-head.y},b={x:forward.x-foot.x,y:forward.y-foot.y};
+  expect((a.x*b.x+a.y*b.y)/Math.hypot(a.x,a.y)/Math.hypot(b.x,b.y)).toBeGreaterThan(.995);
+  for(const p of CABIN_APPROACH)expect(lakeTrailDistance(p.x/32,p.y/32)).toBeLessThan(.03);
+  expect(lakeTrailHalfWidth(foot.x/32,foot.y/32,0)).toBeLessThan(1);
+  expect(lakeTrailHalfWidth(84,33,0)).toBeGreaterThan(1);
+  const added=LAKE_OBJECTS.filter(p=>p.id.startsWith('lake-copse-'));expect(added.length).toBeGreaterThan(15);
+  expect(new Set(added.map(p=>p.variant)).size).toBe(3);expect(new Set(added.map(p=>p.scale)).size).toBeGreaterThan(5);
+
   for(let i=1;i<LAKE_FISHER_WALK.length;i++){const a=LAKE_FISHER_WALK[i-1],b=LAKE_FISHER_WALK[i],steps=Math.ceil(Math.hypot(b.x-a.x,b.y-a.y)/3);for(let j=0;j<=steps;j++)for(const[dx,dy]of[[-7,-5],[7,-5],[-7,3],[7,3]]){const x=a.x+(b.x-a.x)*j/steps+dx,y=a.y+(b.y-a.y)*j/steps+dy;expect(lakeBlockedPoint(x,y),`segment ${i} at ${(x/32).toFixed(2)},${(y/32).toFixed(2)}`).toBe(false);}}
  });
  it('uses game time for a continuous routine and stands still at each fishing stop',()=>{

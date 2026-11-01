@@ -89,6 +89,23 @@ const smoothTrail=(points:readonly (readonly number[])[])=>{
 };
 const trailSegments=LAKE_TRAILS.flatMap(points=>{const curve=smoothTrail(points);return curve.slice(1).map((b,i)=>({a:curve[i],b}));});
 export function lakeTrailDistance(x:number,y:number):number {let d=99;for(const s of trailSegments)d=Math.min(d,segment(x,y,s.a,s.b));return d;}
+const cabinTrail=smoothTrail(CABIN_APPROACH.map(p=>[p.x/32,p.y/32]));
+export function lakeTrailHalfWidth(x:number,y:number,distance:number):number{
+ const ordinary=1.18+.13*Math.sin(x*.43+y*.24)+.07*Math.cos(y*.8-x*.35);
+ if(x<80||x>86||y<28||y>34)return ordinary;
+ let branch=99;for(let i=1;i<cabinTrail.length;i++)branch=Math.min(branch,segment(x,y,cabinTrail[i-1],cabinTrail[i]));
+ if(branch>distance+.001)return ordinary;
+ const t=Math.max(0,Math.min(1,(y-CABIN_APPROACH[1].y/32)/3.3)),blend=t*t*(3-2*t);
+ return .85*(1-blend)+ordinary*blend+Math.sin(x*1.7+y*2.3)*.025*blend;
+}
+/** Added copses reserve the full crown, rather than only the trunk tile. */
+export function lakeTreePlantingClear(x:number,y:number,scale:number):boolean{
+ if(cabinClearing(x,y)||lakeCliff(x,y)||lakeTerrace(x,y)||lakeStairs(x,y)||lakePier(x,y)||lakeBridge(x,y))return false;
+ return [-1,0,1].every(dx=>[-1,0,1].every(dy=>{
+  const px=x+.5+dx*2.35*scale,py=y+.78-3.1*scale+dy*3.1*scale;
+  return px>=1&&px<=95&&py>=1&&py<=71&&!cabinClearing(px,py)&&lakeWaterDistance(px,py)>1.5&&lakeTrailDistance(px,py)>1.65;
+ }));
+}
 const smoothBank=(value:number)=>{const t=Math.max(0,Math.min(1,value));return t*t*(3-2*t);};
 export const LAKE_SAND_BANKS=[-.25,.65,1.25,2.35,2.95,3.65].map((angle,index)=>{
  let low=.65,high=1.4;
@@ -177,6 +194,17 @@ export const LAKE_OBJECTS:LakeObject[]=(()=>{
   const angle=i*2.4+index*.7,r=Math.sqrt(i/45)*(2.8+index%3*.35),x=Math.round(cx+Math.cos(angle)*r),y=Math.round(cy+Math.sin(angle)*r*.7);
   if(!lakeLowVegetationClear(x,y)||result.some(p=>p.x===x&&p.y===y))continue;
   const kind=kinds[(i+index*3)%kinds.length];result.push({id:`${kind}-${x}-${y}`,kind,x,y});
+ }
+ // Uneven copses fill the dry outer forest without lining trees up along paths.
+ const copses=[[10,32],[9,49],[14,57],[24,65],[43,67],[57,67],[65,65],[86,61],[87,52],[87,39],[79,17],[73,16],[17,16],[13,23],[82,10]];
+ for(const [group,[cx,cy]]of copses.entries()){
+  let added=0;const limit=4+group%4;
+  for(let i=0;i<70&&added<limit;i++){
+   const seed=hash(12000+group*101+i),angle=(seed%6283)/1000,radius=Math.sqrt((seed>>>8)%100/100)*(3.2+group%3*.7);
+   const x=Math.round(cx+Math.cos(angle)*radius),y=Math.round(cy+Math.sin(angle)*radius*.72),scale=.74+(seed%27)/100;
+   if(!lakeTreePlantingClear(x,y,scale)||result.some(p=>Math.hypot(p.x-x,p.y-y)<(p.kind==='standingTree'||p.kind==='pine'?1.85:1.2)))continue;
+   const kind=seed%3?'standingTree':'pine';result.push({id:`lake-copse-${group}-${x}-${y}`,kind,x,y,scale,variant:(seed>>>5)%3});added++;
+  }
  }
  // Keep larger bank vegetation distributed after opening the cabin clearing.
  let big=result.filter(p=>(p.scale??1)>1.3&&!['standingTree','pine'].includes(p.kind)).length;

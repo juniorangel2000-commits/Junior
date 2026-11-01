@@ -1,7 +1,7 @@
 import {pointInPolygon} from './architecture-collision';
 
 /** Coordinates in the approved 1448 × 1086 artwork, kept at one fixed scale. */
-export const FISHER_CABIN={x:77*32,y:22*32,scale:432/1448,width:432,height:1086*432/1448,texture:'lake-fisher-cabin',file:'assets/visual/fishing-lake/fisher-cabin.png'};
+export const FISHER_CABIN={x:77*32,y:20*32,scale:432/1448,width:432,height:1086*432/1448,texture:'lake-fisher-cabin',file:'assets/visual/fishing-lake/fisher-cabin.png'};
 export const cabinPoint=(x:number,y:number)=>({x:FISHER_CABIN.x+x*FISHER_CABIN.scale,y:FISHER_CABIN.y+y*FISHER_CABIN.scale});
 const local=(x:number,y:number)=>({x:(x-FISHER_CABIN.x)/FISHER_CABIN.scale,y:(y-FISHER_CABIN.y)/FISHER_CABIN.scale});
 const walls=[[350,450],[700,350],[1240,510],[1240,657],[950,758],[350,585]] as const;
@@ -19,7 +19,13 @@ export function cabinFloorPoint(x:number,y:number):boolean{
  const p=local(x,y);return !cabinSolidPoint(x,y)&&(pointInPolygon(p.x,p.y,deck)||pointInPolygon(p.x,p.y,stairs));
 }
 /** Reserve the complete silhouette, including tree canopies and the approach. */
-export function cabinClearing(x:number,y:number):boolean{return x>=75&&x<=92&&y>=19&&y<=34;}
-export const CABIN_APPROACH=[cabinPoint(530,1030),{x:84*32,y:33*32}] as const;
+export function cabinClearing(x:number,y:number):boolean{
+ const cx=FISHER_CABIN.x/32+6.75,cy=FISHER_CABIN.y/32+5.3;
+ return Math.hypot((x-cx)/8,(y-cy)/6.6)<1||y>28&&y<33.5&&Math.abs(x-83.3)<1.4;
+}
+const landing=cabinPoint(530,1030);
+/** The first exposed section continues the stair's axis before bending to the trail. */
+export const CABIN_APPROACH=[cabinPoint(555,955),landing,{x:landing.x-12,y:landing.y+36},{x:landing.x-15,y:landing.y+62},{x:83.5*32,y:32.2*32},{x:84*32,y:33*32}] as const;
 export const CABIN_FISHER_STOP=cabinPoint(650,765);
-export const CABIN_FISHER_ROUTE=[CABIN_FISHER_STOP,cabinPoint(603,825),cabinPoint(530,1030),{x:84*32,y:33*32},{x:84*32,y:39*32},{x:82*32,y:46.6*32},{x:79*32,y:46.6*32},{x:67.5*32,y:46.6*32}] as const;
+export const CABIN_FISHER_EXIT=[CABIN_FISHER_STOP,cabinPoint(603,825),...CABIN_APPROACH.slice(1)];
+export const CABIN_FISHER_ROUTE=[...CABIN_FISHER_EXIT,{x:84*32,y:39*32},{x:82*32,y:46.6*32},{x:79*32,y:46.6*32},{x:67.5*32,y:46.6*32}] as const;

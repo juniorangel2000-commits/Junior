@@ -1,12 +1,12 @@
 import {lakeBlockedPoint,lakeTrailDistance} from '../data/fishing-lake';
 import {villageRoute} from './village-walk';
 import {directionFromVector,type CharacterDirection} from '../character-directions';
-import {CABIN_FISHER_ROUTE} from '../data/fisher-cabin';
+import {CABIN_FISHER_ROUTE,CABIN_FISHER_EXIT} from '../data/fisher-cabin';
 import {FISHER_LAKE_HOURS,fisherAtLake} from '../data/fisher-schedule';
 
 const clear=(x:number,y:number)=>[[-9,-7],[9,-7],[-9,5],[9,5]].every(([dx,dy])=>!lakeBlockedPoint(x+dx,y+dy));
 export const LAKE_FISHER_WALK=(()=>{
- const points=[...CABIN_FISHER_ROUTE.slice(0,4)],anchors=CABIN_FISHER_ROUTE.slice(3);
+ const points=[...CABIN_FISHER_EXIT],anchors=CABIN_FISHER_ROUTE.slice(CABIN_FISHER_EXIT.length-1);
  points.push({x:(Math.floor(anchors[0].x/32)+.5)*32,y:(Math.floor(anchors[0].y/32)+.5)*32});
  for(let i=1;i<anchors.length;i++){
   const a=points[points.length-1],b=anchors[i];

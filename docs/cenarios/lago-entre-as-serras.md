@@ -35,3 +35,7 @@ E ou um clique próximo abre a conversa, compra/venda e os mesmos serviços de p
 A cabana é um ponto de atendimento externo: varanda e escada acessíveis, porta fechada. Não foi criado um interior novo. A versão do save e do pacote permanecem inalteradas.
 
 Validação específica: `tests/fisher-cabin.test.ts` verifica percurso, pés, colisões, horários e transações; `scripts/qa-fisher-cabin.cjs` verifica a apresentação, atendimento real, persistência e retorno à vila no navegador.
+
+A cabana foi recuada dois blocos para norte, mantendo a escala da arte. O ramal começa sob os últimos degraus, continua no eixo da escada e depois faz uma curva suave até a trilha. Sua largura é menor na chegada e aumenta gradualmente junto à bifurcação. A clareira acompanha um contorno arredondado, em vez de uma grande reserva retangular. O trajeto de Damião usa os mesmos pontos da chegada.
+
+Novos grupos irregulares de árvores e pinheiros preenchem áreas secas nas bordas oeste, sul, leste e ao norte da cabana. Usam variações de espécie, porte e espaçamento, com a reserva da copa inteira para não cobrir caminhos, água ou a cabana. Os novos objetos conservam IDs individuais para edição. A validação cobre o alinhamento com a escada, o afunilamento do caminho e a continuidade da caminhada até o píer.

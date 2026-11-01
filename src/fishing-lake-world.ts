@@ -10,7 +10,7 @@ import {drawMapTerrainEdits} from './map-editor-terrain';
 import {drawEditorProp} from './editor-prop-art';
 import {setupVillagePropAtlas} from './village-prop-atlas';
 import pierArt from '../public/assets/visual/village/pier/manifest.json';
-import {LAKE_RIDGE,LAKE_SIDE_RIDGES,LAKE_SIDE_CROP,LAKE_PIER,LAKE_BRIDGE,lakeObjects,lakeLowVegetationClear,lakeSandWeight,lakeStairPathBlend,lakeWater,lakeWaterDistance,lakeTrailDistance,lakeBridge,LAKE_CITY_ENTRY,LAKE_CITY_EXIT,LAKE_PROPERTY_ENTRY,LAKE_PROPERTY_EXIT} from './data/fishing-lake';
+import {LAKE_RIDGE,LAKE_SIDE_RIDGES,LAKE_SIDE_CROP,LAKE_PIER,LAKE_BRIDGE,lakeObjects,lakeLowVegetationClear,lakeSandWeight,lakeStairPathBlend,lakeWater,lakeWaterDistance,lakeTrailDistance,lakeTrailHalfWidth,lakeBridge,LAKE_CITY_ENTRY,LAKE_CITY_EXIT,LAKE_PROPERTY_ENTRY,LAKE_PROPERTY_EXIT} from './data/fishing-lake';
 import {drawExitSign} from './exit-signs';
 export function preloadFishingLake(scene:Phaser.Scene):void{
  if(!scene.textures.exists(FISHER_CABIN.texture))scene.load.image(FISHER_CABIN.texture,FISHER_CABIN.file);
@@ -76,11 +76,11 @@ export class FishingLakeWorld {
   this.scene.add.image(x,y+(f.y-r.y)*height/r.height,'lake-pier','pier-front').setOrigin(0).setDisplaySize(width,f.height*height/r.height).setDepth(y+height*.84);
  }
  private drawGround():void {
-  const key='lake-natural-ground-v17';if(!this.scene.textures.exists(key)){
+  const key='lake-natural-ground-v18';if(!this.scene.textures.exists(key)){
    const materials=readTerrainSprites(this.scene);if(!materials)throw Error('Terreno do lago indisponível');
    const canvas=document.createElement('canvas');canvas.width=3072;canvas.height=2304;const c=canvas.getContext('2d')!,p=c.createImageData(3072,2304);
    for(let by=0;by<2304;by+=4)for(let bx=0;bx<3072;bx+=4){
-    const x=(bx+2)/32,y=(by+2)/32,d=lakeWaterDistance(x,y),trail=lakeTrailDistance(x,y),shore=Math.max(0,1-Math.abs(d)/(.78+.18*Math.sin(x*.31+y*.23)+.13*Math.sin(y*.6-x*.19))),grass=.45+.2*Math.sin(x*.2)*Math.cos(y*.19),path=d>=0?Math.max(0,Math.min(1,(1.18+.13*Math.sin(x*.43+y*.24)+.07*Math.cos(y*.8-x*.35)-trail)/.48)):0;
+    const x=(bx+2)/32,y=(by+2)/32,d=lakeWaterDistance(x,y),trail=lakeTrailDistance(x,y),shore=Math.max(0,1-Math.abs(d)/(.78+.18*Math.sin(x*.31+y*.23)+.13*Math.sin(y*.6-x*.19))),grass=.45+.2*Math.sin(x*.2)*Math.cos(y*.19),path=d>=0?Math.max(0,Math.min(1,(lakeTrailHalfWidth(x,y,trail)-trail)/.48)):0;
     const sand=lakeSandWeight(x,y),stair=lakeStairPathBlend(x,y);
     for(let dy=0;dy<4;dy++)for(let dx=0;dx<4;dx++){
      const px=bx+dx,py=by+dy,at=(py*3072+px)*4,src=((py%96)*96+px%96)*4;
