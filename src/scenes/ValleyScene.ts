@@ -1,5 +1,7 @@
+import {prepareSceneAssets} from '../scene-asset-preparation';
+import {getAmbientBirds} from '../ambient-birds';
 import {createSavedGame} from '../systems/save-library';
-import {initializePetShelter, shelterReserved, shelterUpgrade} from '../systems/pet-shelter';
+import {initializePetShelter, shelterReserved, shelterUpgrade, deliverShelterMaterial} from '../systems/pet-shelter';
 import {drawPetShelter, preloadPetShelter} from '../pet-shelter-art';
 import { advanceBackgroundVillage } from '../systems/village-background';
 import {preloadPetArt} from "../dungeons/pet-sprites";
@@ -142,11 +144,17 @@ export class ValleyScene extends Phaser.Scene {
   constructor() { super('Vale'); }
 
   private petShelterView?: {refresh():void};
-  preload(): void { preloadPetShelter(this); preloadVisualAssets(this); preloadPetArt(this); }
+  private prepareWorld(): Promise<void> {
+    return prepareSceneAssets(this,()=>{
+      this.load.on('progress',this.loadingProgress,this);
+      preloadPetShelter(this);preloadVisualAssets(this);preloadPetArt(this);
+    },()=>{createArt(this);createHomeArt(this);}).finally(()=>this.load.off('progress',this.loadingProgress,this));
+  }
+  private loadingProgress(value:number):void{this.ui.setWorldLoadingProgress(value);}
+
 
   create(): void {
-    createArt(this);
-    createHomeArt(this);
+    this.state=createNewSave(DEFAULT_PROFILE);
     this.adminMenu = new AdminMenu(document.querySelector<HTMLElement>('#ui')!, this.adminAccess, {
       onPause: paused => {
         if (paused && this.running && this.ui.isModalOpen()) this.ui.closeModal();
@@ -159,23 +167,7 @@ export class ValleyScene extends Phaser.Scene {
         return result;
       },
     });
-    this.loadState(createNewSave(DEFAULT_PROFILE));
     this.ui.showTitle(hasSave());
-    installWorldCompanion(
-      this,
-      () => ({
-        save: this.state,
-        player: this.player,
-        area: "property",
-        space: this.inHome ? "home" : "outdoors",
-        blockedPoint: (x, y) =>
-          this.movementBlockedPoint(x, y) || this.swimmingPoint(x, y) > 0,
-        enabled: this.running && !this.forestActive && !this.villageActive,
-        canMove: this.canPlay(),
-      }),
-      this.ui,
-      () => this.persist(),
-    );
     window.addEventListener('keydown', this.handleKey);
     window.addEventListener('keyup', this.handleKeyUp);
     window.addEventListener('pagehide', this.handlePageHide);
@@ -209,6 +201,24 @@ export class ValleyScene extends Phaser.Scene {
     });
   }
 
+  private installCompanions():void {
+    installWorldCompanion(
+      this,
+      () => ({
+        save: this.state,
+        player: this.player,
+        area: "property",
+        space: this.inHome ? "home" : "outdoors",
+        blockedPoint: (x, y) =>
+          this.movementBlockedPoint(x, y) || this.swimmingPoint(x, y) > 0,
+        enabled: this.running && !this.forestActive && !this.villageActive,
+        canMove: this.canPlay(),
+      }),
+      this.ui,
+      () => this.persist(),
+    );
+  }
+
   startNew(profile: CharacterProfile): void {
     this.adminMenu?.close();
     const draft = createNewSave(profile), created = createSavedGame(draft);
@@ -224,7 +234,18 @@ export class ValleyScene extends Phaser.Scene {
       this.ui.toast('Recolha galhos, pedras e fibras perto da casa. Abra a fabricação com C.');
       this.persist(); this.updateHUD();
     };
-    if (!hasNewGameOpening(profile)) { begin(); finish(); return; }
+    const prepare=async()=>{
+      await this.prepareWorld();
+      if(token!==this.openingToken)throw Error('Opening cancelled');
+      begin();
+    };
+    if (!hasNewGameOpening(profile)) {
+      this.ui.showWorldLoading('Preparando sua história…');
+      void prepare().then(finish).catch(()=>{
+        if(token===this.openingToken){this.ui.showTitle(hasSave());this.ui.toast('Não foi possível preparar a partida. Tente novamente.');}
+      });
+      return;
+    }
     this.running = false; this.paused = true;
     let ready!: () => void, failed!: (reason: unknown) => void;
     const preparation = new Promise<void>((resolve, reject) => { ready = resolve; failed = reject; });
@@ -232,19 +253,25 @@ export class ValleyScene extends Phaser.Scene {
       // Paint/start the movie before rebuilding the world behind it.
       requestAnimationFrame(() => setTimeout(() => {
         if (token !== this.openingToken) { failed(Error('Opening cancelled')); return; }
-        try { begin(); ready(); } catch (error) { failed(error); }
+        void prepare().then(ready,failed);
       }, 0));
     }, finish);
   }
 
-  continueGame(): void {
-    this.openingToken++;
+  async continueGame(): Promise<void> {
+    const token=++this.openingToken;
     const stored=inspectSave(),saved=stored.data;
     if(!saved){this.ui.toast('Não foi possível ler a partida. Os dados existentes foram mantidos.');return;}
     if(stored.status==='recovered'){
       if(!window.confirm('A partida principal não pôde ser lida. Recuperar uma cópia de segurança? O progresso pode ser anterior ao último salvamento.'))return;
       if(!preserveInvalidSave()){this.ui.toast('Não foi possível preservar o original. A recuperação foi cancelada.');return;}
     }
+    this.ui.showWorldLoading('Carregando sua partida…');
+    try{await this.prepareWorld();}catch{
+      if(token===this.openingToken){this.ui.showTitle(hasSave());this.ui.toast('Não foi possível carregar os recursos. Sua partida foi preservada.');}
+      return;
+    }
+    if(token!==this.openingToken)return;
     gameAudio.setScene('game');
     this.adminMenu?.close();
     this.loadState(saved);
@@ -272,8 +299,12 @@ export class ValleyScene extends Phaser.Scene {
     this.adminMenu?.toggle();
   }
 
-  openMapEditor(): void {
+  async openMapEditor(): Promise<void> {
     if(!DEVELOPMENT_TOOLS)return;
+    if(!this.world){
+      this.ui.showWorldLoading('Preparando o editor…');
+      try{await this.prepareWorld();this.loadState(this.state);}catch{this.ui.showTitle(hasSave());this.ui.toast('Não foi possível preparar o editor.');return;}
+    }
     if(this.state?.animalEscort){this.ui.toast('Leve o animal à propriedade ou solte a corda com G antes de editar.');return;}
     if(this.editingMap)return;
     const wasRunning=this.running,original=this.snapshotState(),base=wasRunning?original:loadSave()??createNewSave(DEFAULT_PROFILE);
@@ -489,7 +520,7 @@ export class ValleyScene extends Phaser.Scene {
     this.titleLights?.setVisible(mode !== 'off');
 
     if (mode === 'off') {
-      this.updateZoom();
+      if(this.player)this.updateZoom();
       if (this.player && !this.inHome) {
         this.cameras.main.startFollow(this.player, false, .12, .12);
         this.cameras.main.centerOn(this.player.x, this.player.y);
@@ -657,6 +688,7 @@ export class ValleyScene extends Phaser.Scene {
     this.outdoorVisibility.clear();
     this.animals?.destroy();this.animals=undefined;
 
+    getAmbientBirds(this)?.destroy();
     this.children.removeAll(true);
     this.state = structuredClone(data);
 
@@ -707,6 +739,7 @@ export class ValleyScene extends Phaser.Scene {
     this.world.updateOcclusion(this.player.x, this.player.y);
     this.selection = this.add.graphics().setDepth(4000);
     this.daylight = new Daylight(this, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE);
+    this.installCompanions();
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE);
     this.updateZoom();
     this.cameras.main.startFollow(this.player, false, 0.12, 0.12);
@@ -752,6 +785,7 @@ export class ValleyScene extends Phaser.Scene {
   private handleCameraResize = (): void => { if (this.mapEditor) this.mapEditor.resize(); else this.updateZoom(); };
 
   private updateZoom(animate = false, reveal = false): void {
+    if(!this.player)return;
     if (this.titleBackgroundMode !== 'off') { this.updateTitleBackground(0); return; }
     const camera = this.cameras.main;
     const homeWidth = HOME_WIDTH * TILE, homeHeight = HOME_HEIGHT * TILE;
@@ -999,8 +1033,8 @@ export class ValleyScene extends Phaser.Scene {
     if (this.inHome) { this.interactHome(explicitTile); return; }
     if(this.player.isSwimming)return;
     if(this.tool==='hand'&&this.state.petShelter&&Math.hypot(this.player.x-this.state.petShelter.x,this.player.y-this.state.petShelter.y)<90){
-      this.ui.showPetShelter(()=>this.snapshotState(),()=>{
-        const draft=this.snapshotState(), result=shelterUpgrade(draft);
+      this.ui.showPetShelter(()=>this.snapshotState(),action=>{
+        const draft=this.snapshotState(), result=action.kind==='deliver' ? deliverShelterMaterial(draft,action.item,action.amount) : shelterUpgrade(draft);
         if(result.ok){
           if(!saveGame(draft))return {ok:false,message:'Não foi possível salvar. Os materiais foram preservados.'};
           Object.assign(this.state.petShelter!,draft.petShelter);

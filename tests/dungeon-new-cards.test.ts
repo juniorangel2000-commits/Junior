@@ -4,7 +4,7 @@ import { createDungeonProgress } from "../src/dungeons/progression";
 import { UPGRADES, eligibleUpgrades } from "../src/dungeons/upgrades";
 import { hordeProfile } from "../src/dungeons/director";
 import { validDungeonSnapshot } from "../src/dungeons/snapshot";
-import { WEAPONS, type WeaponId } from "../src/dungeons/config";
+import { DUNGEON_BALANCE as B, WEAPONS, type WeaponId } from "../src/dungeons/config";
 const make = () =>
   new DungeonRun(
     "new-cards",
@@ -102,7 +102,7 @@ describe("gradual zombie strength", () => {
         profile = hordeProfile("abandoned-central-square", r.state.elapsed, 1);
       expect(e.maxHp).toBeCloseTo(20 * profile.health);
       expect(e.damage).toBeCloseTo(8 * profile.damage);
-      expect(e.speed).toBeCloseTo(30 * profile.speed);
+      expect(e.speed).toBeCloseTo(B.playerSpeed * 0.8);
     }
   });
 });

@@ -237,6 +237,7 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
       Number(value.lastHealthDropAt) > Number(value.elapsed))
   )
     return false;
+  if (value.enemySpeedRevision !== undefined && value.enemySpeedRevision !== 1) return false;
   if (value.timedBossCount !== undefined && !count(value.timedBossCount, 5))
     return false;
   if (

@@ -29,5 +29,7 @@ export function augustoTexture(scene:Phaser.Scene):string{
  }
  const texture=scene.textures.addCanvas(key,canvas);texture?.setFilter(0);
  for(const[row,direction]of CHARACTER_DIRECTIONS.entries())for(let frame=0;frame<=AUGUSTO_WALK_FRAMES;frame++)texture?.add(characterFrame(direction,frame,AUGUSTO_WALK_FRAMES),0,frame*size,row*size,size,size);
+ // The finished atlas owns every frame; release redundant decoded source textures.
+ for(const direction of CHARACTER_DIRECTIONS)for(let f=0;f<=AUGUSTO_WALK_FRAMES;f++)scene.textures.remove(augustoSourceKey(direction,f));
  return key;
 }

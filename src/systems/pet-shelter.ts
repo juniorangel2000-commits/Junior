@@ -4,7 +4,8 @@ import { buildingFootprint } from './building';
 import type { OwnedPet } from '../dungeons/progression';
 
 export const PET_SHELTER_CAPACITY = 3;
-export interface PetShelterData { stage: 0 | 1 | 2 | 3; x: number; y: number }
+export interface PetShelterData { stage: 0 | 1 | 2 | 3; x: number; y: number; delivered?: Partial<InventoryData> }
+export type ShelterAction = { kind: 'upgrade' } | { kind: 'deliver'; item: ItemId; amount: number };
 export const SHELTER_STEPS: readonly { name: string; description: string; cost: Partial<InventoryData> }[] = [
   { name: 'Preparar a base', description: 'Limpar os escombros e reforçar o piso e os apoios.', cost: { plank: 6, stone: 8, cord: 2 } },
   { name: 'Reparar estrutura e telhado', description: 'Trocar as tábuas e fixar uma nova cobertura.', cost: { board: 8, peg: 12, metalPart: 2 } },
@@ -24,6 +25,10 @@ export const SHELTER_SOURCES: Partial<Record<ItemId, string>> = {
 export function validPetShelter(value: unknown): value is PetShelterData {
   if (!value || typeof value !== 'object') return false;
   const v = value as PetShelterData;
+  const cost = SHELTER_STEPS[v.stage]?.cost ?? {};
+  if (v.delivered !== undefined && (!v.delivered || typeof v.delivered !== 'object' || Array.isArray(v.delivered)
+    || Object.entries(v.delivered).some(([id, amount]) => !Object.hasOwn(cost, id)
+      || !Number.isSafeInteger(amount) || amount < 0 || amount > cost[id as ItemId]!))) return false;
   return Number.isInteger(v.stage) && v.stage >= 0 && v.stage <= 3
     && Number.isInteger(v.x) && Number.isInteger(v.y) && v.x >= 880 && v.x <= 1088 && v.y >= 224 && v.y <= 384;
 }
@@ -48,14 +53,32 @@ export function initializePetShelter(save: SaveData): void {
 export function canAdoptPet(save: Pick<SaveData, 'petShelter' | 'dungeons'>): boolean {
   return save.petShelter?.stage === 3 && (save.dungeons?.pets.length ?? 0) < PET_SHELTER_CAPACITY;
 }
+/** Materials already delivered belong to this stage and are saved with the shelter. */
+export function deliverShelterMaterial(save: SaveData, item: ItemId, amount: number): { ok: boolean; message: string } {
+  const shelter = save.petShelter, cost = shelter && SHELTER_STEPS[shelter.stage]?.cost;
+  if (!shelter || !cost || !Object.hasOwn(cost, item)) return { ok: false, message: 'Este material não faz parte da etapa atual.' };
+  const delivered = shelter.delivered?.[item] ?? 0, remaining = cost[item]! - delivered;
+  if (!Number.isSafeInteger(amount) || amount <= 0 || amount > remaining)
+    return { ok: false, message: `Escolha uma quantidade entre 1 e ${remaining}.` };
+  const inventory = new Inventory(save.inventory);
+  if (!inventory.spend({ [item]: amount })) return { ok: false, message: 'Você não tem essa quantidade na mochila.' };
+  save.inventory = { ...inventory.data };
+  shelter.delivered = { ...shelter.delivered, [item]: delivered + amount };
+  return { ok: true, message: 'Material entregue e guardado para esta etapa.' };
+}
+export function shelterRemainingCost(shelter: PetShelterData): Partial<InventoryData> {
+  return Object.fromEntries(Object.entries(SHELTER_STEPS[shelter.stage]?.cost ?? {})
+    .map(([id, amount]) => [id, amount! - (shelter.delivered?.[id as ItemId] ?? 0)]));
+}
 export function shelterUpgrade(save: SaveData): { ok: boolean; message: string } {
   const shelter = save.petShelter;
   if (!shelter) return { ok: false, message: 'Libere uma área atrás da casa para o abrigo.' };
   if (shelter.stage === 3) return { ok: false, message: 'A casinha já está totalmente reparada.' };
   const inventory = new Inventory(save.inventory), step = SHELTER_STEPS[shelter.stage];
   if (!inventory.has('hammer')) return { ok: false, message: 'Traga um martelo. Ele não será consumido.' };
-  if (!inventory.spend(step.cost)) return { ok: false, message: 'Faltam materiais para esta etapa.' };
+  if (!inventory.spend(shelterRemainingCost(shelter))) return { ok: false, message: 'Faltam materiais para esta etapa.' };
   save.inventory = { ...inventory.data };
+  shelter.delivered = {};
   shelter.stage = (shelter.stage + 1) as PetShelterData['stage'];
   return { ok: true, message: shelter.stage === 3 ? 'Casinha pronta! Agora você pode resgatar até três companheiros.' : `${step.name}: concluído.` };
 }

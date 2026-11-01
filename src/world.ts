@@ -1,4 +1,4 @@
-import {mountainSolid,mountainFits,onHomesteadPetPath} from './data/homestead-landscape';
+import {mountainSolid,mountainSolidTile,mountainFits,onHomesteadPetPath} from './data/homestead-landscape';
 import {drawHomesteadLandscape} from './homestead-landscape-art';
 import {shelterReserved, shelterSolid, type PetShelterData} from './systems/pet-shelter';
 import {drawTreePlantingSoil} from './tree-planting-soil';
@@ -87,6 +87,8 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
       mountainSolid(petShelter,p.x*32+16,p.y*32+16)
       && (farmAt(p.x,p.y)||mapEdits?.terrain[`${p.x},${p.y}`]==='water'));
   const cliffSolid = (x:number,y:number) => !!petShelter && cliff && mountainSolid(petShelter,x,y);
+  const cliffTiles=new Set<string>();
+  if(cliff&&petShelter)for(let y=0;y<11;y++)for(let x=0;x<WORLD_WIDTH;x++)if(mountainSolidTile(petShelter,x,y))cliffTiles.add(`${x},${y}`);
   const petReserved = (x:number,y:number) => !!petShelter && (shelterReserved(petShelter,x,y)||cliffSolid(x*32+16,y*32+16)||onHomesteadPetPath(petShelter,x*32+16,y*32+16));
   const seamLayout=hasMapSeam(mapEdits);
   const villageGate=propertyVillageGateActive(mapEdits);
@@ -478,7 +480,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
       } else if (editorIndex >= 0) editorObjects.splice(editorIndex, 1);
   };
   const resourceAt = (x: number, y: number) => resources.find((node) => node.x === x && node.y === y);
-  const solidTile = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y))||propertyHouseSolidTile(x,y)||cliffSolid(x*32+16,y*32+16)||!!petShelter&&shelterSolid(petShelter,x*32+16,y*32+16);
+  const solidTile = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y))||propertyHouseSolidTile(x,y)||cliffTiles.has(key(x,y))||!!petShelter&&shelterSolid(petShelter,x*32+16,y*32+16);
   const pointSolid=(x:number,y:number)=>{
     const tx=Math.floor(x/TILE),ty=Math.floor(y/TILE);
     return tx<1||ty<1||tx>=WORLD_WIDTH-1||ty>=WORLD_HEIGHT-1||blocked.has(key(tx,ty))||resourceBlocked.has(key(tx,ty))||propertyHouseSolidPoint(x,y)||cliffSolid(x,y)||!!petShelter&&shelterSolid(petShelter,x,y);

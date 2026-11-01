@@ -16,9 +16,18 @@ win:
     - target: portable
       arch:
         - x64
+    - target: nsis
+      arch:
+        - x64
   icon: desktop/resources/icon.ico
   signAndEditExecutable: false
   artifactName: After-Rain-${version}-Windows-x64.exe
+nsis:
+  oneClick: true
+  perMachine: false
+  allowElevation: false
+  deleteAppDataOnUninstall: false
+  artifactName: After-Rain-${version}-Setup-Windows-x64.exe
 portable:
   requestExecutionLevel: user
 linux:

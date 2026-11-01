@@ -1,3 +1,6 @@
+import {setupTreeWind} from '../tree-wind';
+import {preloadVillagePeople} from '../economy-art';
+import {preloadSmithLayout} from '../smith-layout-art';
 import { prepareVillageRoutines, villageRoutineNavigation } from '../systems/village-background';
 import {preloadPetArt} from "../dungeons/pet-sprites";
 import {installWorldCompanion} from "../dungeons/world-pet-controller";
@@ -100,9 +103,18 @@ export class VillageScene extends Phaser.Scene {
  private readonly exitPassage=new MapExitPassage();
  private readonly northPassage=new MapExitPassage();
  constructor(){super('Vila');}
- preload():void{preloadPetArt(this);}
+ init(data:VillageStart):void{this.ui=data.ui;}
+ preload():void{
+  if(!this.textures.exists('village-npc-bento')){
+   this.ui.showWorldLoading('Preparando a vila…');
+   this.load.on('progress',this.ui.setWorldLoadingProgress,this.ui);
+   this.load.once('complete',()=>this.load.off('progress',this.ui.setWorldLoadingProgress,this.ui));
+  }
+  preloadPetArt(this);preloadVillagePeople(this);preloadSmithLayout(this);
+ }
 
  create(data:VillageStart):void {
+  setupTreeWind(this);
   this.state=structuredClone(data.save);this.state.activeArea='village';delete this.state.homePosition;
   this.state.villageEconomy??=createVillageEconomy();this.ui=data.ui;this.onReturn=data.onReturn;
   this.smithLayout=resolveSmithLayout(this.state.blacksmithScene);this.editingRoom=false;

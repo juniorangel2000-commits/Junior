@@ -72,3 +72,9 @@ export function waveEnemyCount(round: number): number {
   const previousBudget = 5 + n * 2 + Math.floor((n - 1) * .75);
   return Math.ceil(previousBudget * 2.2);
 }
+
+/** Difficulty and enemy variants cannot exceed 80% of unmodified player movement. */
+export function zombieSpeed(profileSpeed: number, variantMultiplier = 1): number {
+  return Math.min(DUNGEON_BALANCE.playerSpeed * 0.8,
+    DUNGEON_BALANCE.enemySpeed * variantMultiplier * profileSpeed);
+}

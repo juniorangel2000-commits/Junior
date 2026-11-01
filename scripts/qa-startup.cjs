@@ -1,0 +1,7 @@
+const {chromium}=require('playwright'),fs=require('node:fs');
+(async()=>{const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox','--disable-dev-shm-usage','--use-angle=swiftshader','--enable-unsafe-swiftshader']});try{
+ const page=await browser.newPage({viewport:{width:1280,height:800}});page.setDefaultTimeout(180000);const errors=[];await page.addInitScript(()=>performance.setResourceTimingBufferSize(5000));page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(process.env.QA_URL||'http://127.0.0.1:5190',{waitUntil:'domcontentloaded'});await page.locator('#new-game').waitFor({state:'visible'});
+ const metrics=await page.evaluate(async()=>{const elapsed=performance.now(),requests=performance.getEntriesByType('resource'),{game}=await import(document.querySelector('script[src*="main.ts"]').src),v=game.scene.getScene('Vale');return{menuMilliseconds:elapsed,gameAssetRequests:requests.filter(r=>/assets\/visual\/|dev\//.test(r.name)).length,gameAssetBytes:requests.filter(r=>/assets\/visual\/|dev\//.test(r.name)).reduce((n,r)=>n+r.decodedBodySize,0),worldCreated:!!v.world,textureCount:Object.keys(game.textures.list).length,errors:[]};});
+ metrics.errors=errors;console.log(JSON.stringify(metrics,null,2));if(process.env.STARTUP_QA_OUTPUT)fs.writeFileSync(process.env.STARTUP_QA_OUTPUT,JSON.stringify(metrics,null,2));
+ }finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1)});

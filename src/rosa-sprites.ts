@@ -23,5 +23,7 @@ export function rosaTexture(scene:Phaser.Scene):string{
  }
  const texture=scene.textures.addCanvas(key,canvas);texture?.setFilter(0);
  for(const[row,d]of CHARACTER_DIRECTIONS.entries())for(let f=0;f<=ROSA_WALK_FRAMES;f++)texture?.add(characterFrame(d,f,ROSA_WALK_FRAMES),0,f*size,row*size,size,size);
+ // The finished atlas owns every frame; release redundant decoded source textures.
+ for(const direction of CHARACTER_DIRECTIONS)for(let f=0;f<=ROSA_WALK_FRAMES;f++)scene.textures.remove(rosaSourceKey(direction,f));
  return key;
 }

@@ -33,6 +33,7 @@ export const DUNGEONS = {
     height: 2304,
   },
 } as const;
+const BASE_PLAYER_SPEED = 84;
 export const DUNGEON_BALANCE = {
   transitionSeconds: 5,
   maxWeapons: 4,
@@ -52,9 +53,9 @@ export const DUNGEON_BALANCE = {
   shieldPush: 24,
   enemyHealth: 20,
   enemyDamage: 8,
-  enemySpeed: 30,
+  enemySpeed: BASE_PLAYER_SPEED * 0.8,
   playerHealth: 100,
-  playerSpeed: 84,
+  playerSpeed: BASE_PLAYER_SPEED,
   enemyXP: 3,
   pickupRadius: 70,
   regenerationPerLevel: 0.12,

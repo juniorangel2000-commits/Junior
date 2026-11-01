@@ -50,6 +50,21 @@ const out=process.env.CITY_FOREST_QA_OUTPUT||'/workspace/after-rain-city-forest'
   const future=await page.evaluate(()=>{f.player.update(0,()=>false,()=>false,false);return f.nearCity();});check('Acesso à cidade alcançável na estrada',future);
   const fence=await page.evaluate(async()=>{const {cityForestBlockedPoint}=await import('/src/data/city-forest.ts');f.player.x=36*32;f.player.y=14*32+25;f.player.keys.W.isDown=true;for(let i=0;i<30;i++)f.player.update(.05,()=>false,cityForestBlockedPoint);f.player.keys.W.isDown=false;const stopped=f.player.y>14*32;f.player.x=720;f.player.y=80;f.player.update(0,()=>false,cityForestBlockedPoint,false);return stopped;});check('Trecho intacto da cerca impede atravessar os fios',fence);
   const map=await page.evaluate(async()=>{const url=await f.captureMap();return url.startsWith('data:image/png')&&url.length>10000;});check('Mapa da região gera captura real',map);
+  const registration=await page.evaluate(async()=>{
+   const probes=[{x:64,y:64},{x:720,y:80},{x:3008,y:2240}],objects=probes.map(p=>f.add.rectangle(p.x,p.y,32,32,0xff00fe).setDepth(9000));
+   f.world.objects.push(...objects);
+   const url=await f.captureMap();const image=new Image();image.src=url;await image.decode();
+   const canvas=document.createElement('canvas');canvas.width=960;canvas.height=720;const context=canvas.getContext('2d');context.drawImage(image,0,0);
+   const pixels=probes.map(p=>[...context.getImageData(Math.round(p.x*960/3072),Math.round(p.y*720/2304),1,1).data]);
+   for(const object of objects){const i=f.world.objects.indexOf(object);f.world.objects.splice(i,1);object.destroy();}
+   return {pixels,aligned:pixels.every(p=>p[0]>245&&p[1]<10&&p[2]>245)};
+  });check('Captura do asfalto mantém a origem e os pontos do mundo alinhados',registration.aligned,registration);
+  await page.evaluate(()=>{f.cityPromptArmed=false;f.paused=false;f.updateHUD();game.input.keyboard.queue=[];game.loop.wake();});await page.keyboard.press('m');
+  await page.waitForFunction(()=>document.querySelector('.map-snapshot')?.src.startsWith('data:image/png'));
+  const pin=await page.locator('.map-player').evaluate(el=>({left:parseFloat(el.style.left),top:parseFloat(el.style.top)}));
+  check('M posiciona o marcador sobre a coordenada correta',Math.abs(pin.left-720/3072*100)<.01&&Math.abs(pin.top-80/2304*100)<.01,pin);
+  await page.screenshot({path:out+'/mapa-asfalto-M-alinhado.png'});await page.keyboard.press('m');await page.waitForFunction(()=>!document.querySelector('.map-card'));await page.evaluate(()=>game.loop.sleep());
+  check('M também fecha o mapa durante a pausa',await page.locator('.map-card').count()===0);
   const saved=await page.evaluate(async()=>{const {loadSave,validateSave}=await import('/src/systems/save.ts');f.persist();const s=loadSave();return{valid:validateSave(s),area:s?.activeArea,x:s?.cityForestPosition?.x};});check('Save registra a nova área e posição',saved.valid&&saved.area==='cityForest'&&saved.x===720,saved);
   const views=[['mapa-completo',1536,1152,.49],['entrada-sul',1552,2040,1.6],['trilha-neblina',1400,1450,1.6],['estrada-em-L',1160,300,1.1],['cerca-e-passagem',1536,450,2],['placa-city',810,160,2]];
   for(const [name,x,y,zoom]of views){await page.evaluate(({x,y,zoom})=>{f.paused=true;f.player.setVisible(false);document.querySelector('#ui').style.display='none';f.cameras.main.removeBounds().stopFollow().setZoom(zoom).centerOn(x,y);f.world.update(30000);f.daylight.update(720);game.step(600000,0);game.step(600001,0);},{x,y,zoom});await page.screenshot({path:out+'/'+name+'.png'});}

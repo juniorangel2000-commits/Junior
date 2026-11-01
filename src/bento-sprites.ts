@@ -25,5 +25,7 @@ export function bentoTexture(scene:Phaser.Scene):string{
  }
  const texture=scene.textures.addCanvas(key,canvas);texture?.setFilter(0);
  for(const [row,direction]of CHARACTER_DIRECTIONS.entries())for(let frame=0;frame<=BENTO_WALK_FRAMES;frame++)texture?.add(characterFrame(direction,frame,BENTO_WALK_FRAMES),0,frame*256,row*256,256,256);
+ // The finished atlas owns every frame; release redundant decoded source textures.
+ for(const direction of CHARACTER_DIRECTIONS)for(let f=0;f<=BENTO_WALK_FRAMES;f++)scene.textures.remove(bentoSourceKey(direction,f));
  return key;
 }

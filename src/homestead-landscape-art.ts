@@ -1,13 +1,14 @@
 import {reusableTerrainTexture} from './terrain-texture-cache';
 import type Phaser from 'phaser';
 import type {PetShelterData} from './systems/pet-shelter';
-import {homesteadPetPath,mountainLayout} from './data/homestead-landscape';
+import {homesteadPetPath,mountainPieces} from './data/homestead-landscape';
 export function drawHomesteadLandscape(scene:Phaser.Scene,site:PetShelterData,cliff:boolean,blocked:(x:number,y:number)=>boolean, signature:unknown=[]):void{
- if(cliff&&scene.textures.exists('homestead-mossy-cliff')){
-  const texture=scene.textures.get('homestead-mossy-cliff');
-  if(!texture.has('landscape'))texture.add('landscape',0,42,120,1742,645);
-  const plan=mountainLayout(site);
-  scene.add.image(plan.x,plan.baseY,'homestead-mossy-cliff','landscape').setOrigin(.5,1).setScale(plan.width/1742).setDepth(plan.baseY).setData('homestead-mountain',true);
+ if(cliff)for(const piece of mountainPieces(site)){
+  const key='homestead-cliff-'+piece.art.id;
+  if(!scene.textures.exists(key))continue;
+  const texture=scene.textures.get(key),crop=piece.art.crop;
+  if(!texture.has('landscape'))texture.add('landscape',0,crop.x,crop.y,crop.width,crop.height);
+  scene.add.image(piece.x,piece.y,key,'landscape').setOrigin(.5,1).setScale(piece.width/crop.width).setDepth(-1).setData('homestead-mountain',true);
  }
  const points=homesteadPetPath(site),key=`homestead-pet-path-v3-${site.x}-${site.y}`;
  const left=Math.floor(Math.min(...points.map(p=>p.x))-22),top=Math.floor(Math.min(...points.map(p=>p.y))-22);

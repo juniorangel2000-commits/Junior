@@ -2,7 +2,7 @@ import type Phaser from 'phaser';
 import type { PetShelterData } from './systems/pet-shelter';
 const files = ['01-muito-destruida', '02-parcialmente-reparada', '03-restaurada'];
 export function preloadPetShelter(scene: Phaser.Scene): void {
-  if (!scene.textures.exists('homestead-mossy-cliff')) scene.load.image('homestead-mossy-cliff','/assets/visual/property/homestead-mossy-cliff.png');
+  for(const id of ['left','right'])if(!scene.textures.exists('homestead-cliff-'+id))scene.load.image('homestead-cliff-'+id,'/assets/visual/property/homestead-cliff-'+id+'.png');
   files.forEach((file, i) => { if (!scene.textures.exists(`pet-shelter-${i}`)) scene.load.image(`pet-shelter-${i}`, `/assets/visual/pets/shelter/${file}.png`); });
 }
 export function drawPetShelter(scene: Phaser.Scene, site: PetShelterData): { refresh(): void } {

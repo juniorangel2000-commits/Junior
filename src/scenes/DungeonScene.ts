@@ -1,3 +1,4 @@
+import {setupTreeWind} from '../tree-wind';
 import {canAdoptPet} from '../systems/pet-shelter';
 import type {CityTravelTransition} from '../dungeons/city-travel-transition';
 import type { DungeonReward } from "../dungeons/progression";
@@ -95,6 +96,7 @@ export class DungeonScene extends Phaser.Scene {
     preloadDungeonArt(this);
   }
   create(data: DungeonStart): void {
+    setupTreeWind(this);
     this.state = structuredClone(data.save);
     this.state.activeArea = "cityForest";
     this.state.dungeons ??= createDungeonProgress();

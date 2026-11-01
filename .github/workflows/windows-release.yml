@@ -52,7 +52,7 @@ jobs:
           npm test
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Gerar o executável portátil
+      - name: Gerar o executável portátil e o instalador
         shell: pwsh
         run: |
           $version = (Get-Content package.json -Raw | ConvertFrom-Json).version

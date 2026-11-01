@@ -1,9 +1,9 @@
 import type Phaser from 'phaser';
 import type { WorldPetContext } from './dungeons/world-pet-controller';
-import { createAmbientBird, stepAmbientBird, ambientBirdLift, daylightBirds, type AmbientBirdState } from './systems/ambient-bird';
+import { createAmbientFlock, stepAmbientBird, ambientBirdLift, daylightBirds, type AmbientBirdState } from './systems/ambient-bird';
 const KEY='ambient-wild-birds';
 const POSES=['perch','peck','flap-up','flap-down'] as const;
-const COUNTS={property:6,village:10,forest:8,cityForest:4};
+const COUNTS={property:4,village:6,forest:6,cityForest:4};
 const SLOT=Symbol.for('after-rain-ambient-birds');
 const BODY=['................','................','........ddd.....','.......dcccdd...','.......dcwkdnn..','.....dddcccd....','....dcccccd.....','...dcccbbbd.....','..ddccbbbbd.....','...ddddddd......','.....l..l.......','................'];
 function art(scene:Phaser.Scene):void{
@@ -27,6 +27,7 @@ interface BirdDisplay {state:AmbientBirdState;image:Phaser.GameObjects.Image;sha
 export class AmbientBirds {
  readonly birds:BirdDisplay[]=[];
  private retry=0;
+ private flockSerial=0;
  constructor(private readonly scene:Phaser.Scene,private readonly context:()=>WorldPetContext){art(scene);}
  update(seconds:number):void{
   const c=this.context(),visible=c.enabled&&c.space==='outdoors'&&daylightBirds(c.save.time);
@@ -34,24 +35,28 @@ export class AmbientBirds {
   const dt=c.canMove?Math.min(.1,Math.max(0,seconds)):0;
   const canLand=(x:number,y:number)=>!c.blockedPoint(x,y);
   this.retry=Math.max(0,this.retry-dt);
-  if(this.birds.length<COUNTS[c.area]&&this.retry===0&&dt>0){
-   const id=this.birds.length+c.save.day*37+COUNTS[c.area]*11,state=createAmbientBird(id,c.player,canLand);
-   if(state)this.birds.push({state,image:this.scene.add.image(state.x,state.y,KEY,`${state.variant}-perch`).setOrigin(.5,.75).setScale(1.5).setData('ambient-bird',true),shadow:this.scene.add.image(state.x,state.y,KEY,'shadow').setScale(.75)});
-   this.retry=.15;
-  }
-  const spooked=this.birds.filter(b=>b.state.phase!=='fly'&&Math.hypot(b.state.x-c.player.x,b.state.y-c.player.y)<78).map(b=>({x:b.state.x,y:b.state.y}));
-  for(const b of this.birds){
-   if(dt>0&&(!b.state.active||Math.hypot(b.state.x-c.player.x,b.state.y-c.player.y)>700)){
-    const next=createAmbientBird(b.state.id+b.state.cycle*7+1,c.player,canLand);if(next)b.state=next;
+  if(dt>0){
+   const retired=new Set(this.birds.filter(b=>!b.state.active||Math.hypot(b.state.x-c.player.x,b.state.y-c.player.y)>1100).map(b=>b.state.flockId));
+   for(let i=this.birds.length-1;i>=0;i--)if(retired.has(this.birds[i].state.flockId)){
+    this.birds[i].image.destroy();this.birds[i].shadow.destroy();this.birds.splice(i,1);
    }
-   stepAmbientBird(b.state,dt,c.player,canLand,spooked.some(p=>Math.hypot(p.x-b.state.x,p.y-b.state.y)<135));
+  }
+  if(this.birds.length<COUNTS[c.area]&&this.retry===0&&dt>0){
+   const id=++this.flockSerial+c.save.day*37+COUNTS[c.area]*11;
+   const states=createAmbientFlock(id,c.player,canLand,this.birds.map(b=>b.state.flock!).filter(Boolean));
+   if(states)for(const state of states)this.birds.push({state,image:this.scene.add.image(state.x,state.y,KEY,`${state.variant}-perch`).setOrigin(.5,.75).setScale(1.5).setData('ambient-bird',true),shadow:this.scene.add.image(state.x,state.y,KEY,'shadow').setScale(.75)});
+   this.retry=3;
+  }
+  const spooked=new Set(this.birds.filter(b=>b.state.phase!=='fly'&&Math.hypot(b.state.x-c.player.x,b.state.y-c.player.y)<78).map(b=>b.state.flockId));
+  for(const b of this.birds){
+   stepAmbientBird(b.state,dt,c.player,canLand,spooked.has(b.state.flockId));
    const s=b.state,lift=ambientBirdLift(s),pose=s.phase==='fly'?(Math.floor(s.age*10)%2?'flap-up':'flap-down'):s.phase==='perched'&&s.wait<1?'peck':'perch';
    const frame=`${s.variant}-${pose}`;if(b.image.frame.name!==frame)b.image.setFrame(frame);
    b.image.setVisible(s.active).setPosition(s.x,s.y-lift).setDepth(s.phase==='fly'?5000:s.y).setFlipX(s.direction<0);
    b.shadow.setVisible(s.active).setPosition(s.x,s.y).setDepth(s.y-2).setAlpha(s.phase==='fly'?.45:.8);
   }
  }
- destroy():void{for(const b of this.birds){b.image.destroy();b.shadow.destroy();}this.birds.length=0;}
+ destroy():void{for(const b of this.birds){b.image.destroy();b.shadow.destroy();}this.birds.length=0;this.retry=0;}
 }
 export function installAmbientBirds(scene:Phaser.Scene,context:()=>WorldPetContext):void{
  const host=scene as Phaser.Scene&{[SLOT]?:AmbientBirds};if(host[SLOT])return;

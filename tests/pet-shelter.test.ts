@@ -1,6 +1,6 @@
 import {describe,it,expect} from 'vitest';
 import {createNewSave,validateSave} from '../src/systems/save';
-import {initializePetShelter,SHELTER_STEPS,shelterUpgrade,canAdoptPet,homePet,validPetShelter,shelterSolid} from '../src/systems/pet-shelter';
+import {initializePetShelter,SHELTER_STEPS,shelterUpgrade,canAdoptPet,homePet,validPetShelter,shelterSolid,deliverShelterMaterial} from '../src/systems/pet-shelter';
 import {applyDungeonResult} from '../src/dungeons/progression';
 import {performVillageService} from '../src/systems/village-services';
 import {Inventory} from '../src/systems/inventory';
@@ -24,6 +24,50 @@ describe('pet shelter',()=>{
    expect(s.inventory.hammer).toBe(1);
   }
   expect(canAdoptPet(s)).toBe(true);const done=structuredClone(s);expect(shelterUpgrade(s).ok).toBe(false);expect(s).toEqual(done);expect(validateSave(s)).toBe(true);
+ });
+ it('saves separate partial deliveries without a hammer and charges only the remainder on completion',()=>{
+  const s=fresh();initializePetShelter(s);Object.assign(s.inventory,{plank:6,stone:8,cord:2});
+  expect(deliverShelterMaterial(s,'plank',2).ok).toBe(true);
+  expect(s.inventory.plank).toBe(4);expect(s.petShelter!.delivered).toEqual({plank:2});
+  expect(validateSave(JSON.parse(JSON.stringify(s)))).toBe(true);
+  expect(shelterUpgrade(s).ok).toBe(false);
+  expect(deliverShelterMaterial(s,'stone',8).ok).toBe(true);
+  expect(deliverShelterMaterial(s,'plank',4).ok).toBe(true);
+  s.inventory.hammer=1;
+  expect(shelterUpgrade(s).ok).toBe(true);
+  expect(s.petShelter!.stage).toBe(1);expect(s.petShelter!.delivered).toEqual({});
+  expect(s.inventory.plank+s.inventory.stone+s.inventory.cord).toBe(0);expect(s.inventory.hammer).toBe(1);
+  expect(validateSave(s)).toBe(true);
+ });
+ it('supports individual deliveries and completion in every repair stage',()=>{
+  const s=fresh();initializePetShelter(s);s.inventory.hammer=1;
+  for(let stage=0;stage<3;stage++){
+   for(const [id,total] of Object.entries(SHELTER_STEPS[stage].cost)){
+    const item=id as keyof typeof s.inventory;s.inventory[item]=total!;
+    expect(deliverShelterMaterial(s,item,1).ok).toBe(true);
+    expect(validateSave(s)).toBe(true);
+    expect(deliverShelterMaterial(s,item,total!-1).ok).toBe(true);
+    expect(s.inventory[item]).toBe(0);
+   }
+   expect(shelterUpgrade(s).ok).toBe(true);expect(s.petShelter!.stage).toBe(stage+1);
+   expect(s.petShelter!.delivered).toEqual({});expect(validateSave(s)).toBe(true);
+  }
+ });
+ it('rejects wrong materials, invalid amounts and repeated deliveries without losing stock',()=>{
+  const s=fresh();initializePetShelter(s);s.inventory.plank=3;
+  for(const [id,amount] of [['board',1],['plank',0],['plank',-1],['plank',1.5],['plank',7],['plank',4],['plank',NaN]] as const){
+   const before=structuredClone(s);expect(deliverShelterMaterial(s,id,amount).ok).toBe(false);expect(s).toEqual(before);
+  }
+  expect(deliverShelterMaterial(s,'plank',3).ok).toBe(true);s.inventory.plank=6;
+  expect(deliverShelterMaterial(s,'plank',3).ok).toBe(true);
+  const before=structuredClone(s);expect(deliverShelterMaterial(s,'plank',1).ok).toBe(false);expect(s).toEqual(before);
+ });
+ it('accepts old shelter saves but rejects corrupt or out-of-stage deposits',()=>{
+  const base={stage:0,x:960,y:352};expect(validPetShelter(base)).toBe(true);
+  expect(validPetShelter({...base,delivered:{plank:3,cord:2}})).toBe(true);
+  for(const delivered of [null,[],{plank:-1},{plank:7},{plank:1.5},{board:1},{hammer:1},{plank:'2'}])
+   expect(validPetShelter({...base,delivered})).toBe(false);
+  expect(validPetShelter({...base,stage:3,delivered:{plank:1}})).toBe(false);
  });
  it('rejects adoption before completion, accepts three, preserves existing pets and rejects the fourth',()=>{
   const s=fresh();initializePetShelter(s);applyDungeonResult(s,reward('locked'));expect(s.dungeons!.pets).toHaveLength(0);

@@ -1,3 +1,4 @@
+import {setupTreeWind} from '../tree-wind';
 import { advanceBackgroundVillage } from '../systems/village-background';
 import {preloadPetArt} from "../dungeons/pet-sprites";
 import {installWorldCompanion} from "../dungeons/world-pet-controller";
@@ -74,6 +75,7 @@ export class ForestScene extends Phaser.Scene {
   preload():void{preloadPetArt(this);}
 
   create(data:ForestStart):void {
+    setupTreeWind(this);
     this.exitPassage.reset();this.exitWarningShown=false;
     this.ui=data.ui;this.state=structuredClone(data.save);this.state.activeArea='forest';this.onReturn=data.onReturn;
     this.paused=false;this.leaving=false;this.elapsed=0;this.hudElapsed=0;this.wildlife?.destroy();this.wildlife=undefined;

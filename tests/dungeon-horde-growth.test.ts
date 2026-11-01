@@ -1,6 +1,6 @@
 import { validDungeonSnapshot } from '../src/dungeons/snapshot';
 import { expect, it } from 'vitest';
-import { hordeProfile, waveEnemyCount } from '../src/dungeons/director';
+import { hordeProfile, waveEnemyCount, zombieSpeed } from '../src/dungeons/director';
 import { DungeonRun } from '../src/dungeons/run';
 import { createDungeonProgress } from '../src/dungeons/progression';
 import { DUNGEON_BALANCE as B } from '../src/dungeons/config';
@@ -40,7 +40,7 @@ it('applies the larger enemy budget when the real run advances to the next wave'
 it('keeps ordinary enemies slower than the base player even at maximum level pressure',()=>{
  for(const map of ['mall-parking','abandoned-central-square'] as const){
   const last=hordeProfile(map,900,50,100000);
-  expect(B.enemySpeed*last.speed).toBeLessThan(B.playerSpeed);
+  expect(zombieSpeed(last.speed)).toBeCloseTo(B.playerSpeed * .8);
   expect(last.speed).toBeCloseTo(1.8);
  }
 });
@@ -66,4 +66,28 @@ it.each(['mall-parking','abandoned-central-square'] as const)('supports and rest
  const restored=new DungeonRun('restore-crowd',map,createDungeonProgress());
  restored.restore(saved);expect(restored.state.enemies.length).toBe(480);
  expect(validDungeonSnapshot(restored.snapshot())).toBe(true);
+});
+
+it.each(['mall-parking','abandoned-central-square'] as const)('uses 80% player speed for ordinary zombies and caps all variants in %s', map=>{
+ const run=new DungeonRun('faster-zombies',map,createDungeonProgress());
+ const spawn=(run as unknown as {spawn():boolean}).spawn.bind(run);
+ run.random=()=>.5;
+ expect(spawn()).toBe(true);
+ expect(run.state.enemies[0].kind).toBe('walker');
+ expect(run.state.enemies[0].speed).toBeCloseTo(run.moveSpeed*.8);
+ for(const time of [0,450,899])for(const round of [1,25,50]){
+  run.state.elapsed=time;run.state.round=round;run.state.level=10000;
+  run.state.enemies=[];expect(spawn()).toBe(true);
+  expect(run.state.enemies[0].speed).toBeLessThanOrEqual(B.playerSpeed*.8);
+ }
+ // Existing saved encounters adopt the new speed as well, without healing enemies.
+ run.state.enemies[0].kind='walker';run.state.enemies[0].speed=30;run.state.enemies[0].hp=7;
+ const snapshot=run.snapshot();delete snapshot.enemySpeedRevision;run.restore(snapshot);
+ expect(run.state.enemies[0].speed).toBeCloseTo(B.playerSpeed*.8);
+ expect(run.state.enemies[0].hp).toBe(7);expect(snapshot.enemies[0].speed).toBe(30);
+ expect(run.state.enemySpeedRevision).toBe(1);
+ const current=run.snapshot();run.restore(current);expect(run.snapshot()).toEqual(current);
+ expect(validDungeonSnapshot({...current,enemySpeedRevision:2})).toBe(false);
+ run.state.levels.movement=2;
+ expect(run.state.enemies[0].speed/run.moveSpeed).toBeLessThan(.8);
 });

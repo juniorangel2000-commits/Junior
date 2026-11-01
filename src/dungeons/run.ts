@@ -19,7 +19,7 @@ import {
   type PetSpecies,
 } from "./config";
 import { UPGRADES, rollUpgradeCards, type UpgradeCard } from "./upgrades";
-import { hordeProfile, experienceForLevel, waveEnemyCount } from "./director";
+import { hordeProfile, experienceForLevel, waveEnemyCount, zombieSpeed } from "./director";
 import { insideSwordArc, WEAPON_DESCRIPTIONS } from "./weapon-identity";
 import { dungeonWaypoint, dungeonSegmentClear } from "./navigation";
 import { bossProfile, isBossRound, TIMED_BOSS_SCHEDULE } from "./bosses";
@@ -117,6 +117,7 @@ export interface DungeonSnapshot {
   round: number;
   bossRound?: number;
   timedBossCount?: number;
+  enemySpeedRevision?: 1;
   waveRemaining: number;
   intermission: number;
   kills: number;
@@ -198,6 +199,7 @@ export class DungeonRun {
       elapsed: 0,
       round: 1,
       timedBossCount: 0,
+      enemySpeedRevision: 1,
       waveRemaining: DUNGEONS[dungeon].mode === "waves" ? waveEnemyCount(1) : 7,
       intermission: 0,
       kills: 0,
@@ -451,10 +453,8 @@ export class DungeonRun {
       y,
       hp: health,
       maxHp: health,
-      speed:
-        B.enemySpeed *
-        (boss ? stats.speed : kind === "runner" ? 1.6 : special ? 0.7 : 1) *
-        profile.speed,
+      speed: zombieSpeed(profile.speed,
+        boss ? stats.speed : kind === "runner" ? 1.6 : special ? 0.7 : 1),
       damage:
         B.enemyDamage *
         profile.damage *
@@ -1479,7 +1479,11 @@ export class DungeonRun {
         this.state.player.y,
       ),
     );
+    const restoredProfile = hordeProfile(this.state.dungeon, this.state.elapsed, this.state.round, this.state.level);
     for (const enemy of this.state.enemies) {
+      if (this.state.enemySpeedRevision !== 1) enemy.speed = zombieSpeed(restoredProfile.speed,
+        enemy.kind === "boss" ? bossProfile(enemy.bossTier ?? this.state.round).speed
+          : enemy.kind === "runner" ? 1.6 : enemy.kind === "brute" ? 0.7 : 1);
       const free = safeDungeonPoint(this.state.dungeon, enemy.x, enemy.y);
       if (free.x !== enemy.x || free.y !== enemy.y) {
         delete enemy.detour;
@@ -1495,6 +1499,7 @@ export class DungeonRun {
       )
         delete enemy.detour;
     }
+    this.state.enemySpeedRevision = 1;
     if (this.state.pet)
       Object.assign(
         this.state.pet,

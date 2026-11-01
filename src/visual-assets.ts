@@ -1,4 +1,3 @@
-import {preloadSmithLayout} from './smith-layout-art';
 import {preloadEcologyArt,setupEcologyArt,ecologyIcon} from './ecology-art';
 import {setupTreeWind} from './tree-wind';
 import {preloadVillageScenery} from './village-scenery-art';
@@ -46,7 +45,6 @@ const WORLD_SOURCES: Record<string, string> = {
 const MODULES = ['parede_creme', 'parede_janela_floreira', 'parede_trepadeira', 'parede_porta', 'porta_madeira', 'janela_turquesa', 'telha_lisa', 'telha_variante', 'chamine', 'floreira', 'cerca_natural', 'banco_jardim', 'barril', 'vaso_flor', 'piso_tabuas', 'piso_pedra', 'terra', 'caminho', 'planta'];
 export function preloadVisualAssets(scene: Phaser.Scene): void {
   preloadEcologyArt(scene);
-  preloadSmithLayout(scene);
   preloadEconomyArt(scene);
   preloadVillageScenery(scene);
   scene.load.image('fence-components-source','assets/visual/architecture/fence-components.png');

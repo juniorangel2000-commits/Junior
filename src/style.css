@@ -463,3 +463,28 @@
 .after-rain-title .title-sound:hover{background:#24434d;border-color:#b0c4b96b}
 .after-rain-title .sound-symbol{color:#c5a569;font:16px/1 Georgia,serif;width:12px;text-align:center}
 @media(max-width:760px){.after-rain-title .title-footer-right{gap:8px;flex-wrap:wrap}.after-rain-title .title-sound{font-size:8px}}
+
+.world-loading{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at center,#304d3c,#14271f);color:#f3e7c5;text-align:center;padding:24px;pointer-events:auto}
+.world-loading>div{max-width:480px;width:100%}.world-loading h2{font:30px Georgia,serif;margin-bottom:24px}.world-loading p{font-size:13px;line-height:1.6}.world-loading progress{width:100%;height:14px;accent-color:#c7a36a}
+
+.pet-shelter-menu{width:min(720px,94vw);max-height:88vh;overflow:auto}
+.shelter-stages{display:flex;gap:12px;padding:0;list-style:none;font-size:12px}
+.shelter-stages li{flex:1;padding:10px;border-bottom:2px solid #7f8c7440;color:#79654d}
+.shelter-stages [aria-current=step]{color:#68451f;border-color:#d3ad69}
+.shelter-step-complete{color:#48613c!important}
+.pet-shelter-menu .shelter-costs{display:grid;gap:10px;padding:0;margin:12px 0;list-style:none}
+.shelter-material{display:grid;grid-template-columns:1fr auto;gap:8px 18px;padding:12px;background:#eadbbc;border:1px solid #a68b5c80;border-radius:6px;margin:0}
+.shelter-material-info{display:grid;gap:7px}
+.shelter-material-info span{font-size:12px;color:#665439}
+.shelter-material progress{width:100%;height:7px;accent-color:#c6ac71}
+.shelter-material details{grid-column:1/-1;font-size:12px;color:#665439}
+.shelter-material small{display:block;margin-top:8px;line-height:1.5}
+.shelter-delivery{display:grid;grid-template-columns:64px auto;align-items:center;gap:6px}
+.shelter-delivery label{grid-column:1/-1;font-size:11px;color:#665439}
+.shelter-delivery input{width:64px;min-width:0;padding:8px;color:#4f3921;background:#fff1d5;border:1px solid #857b5e;border-radius:4px}
+.shelter-tool{padding:12px;border-left:3px solid #d6ad64;background:#d6ad6410;font-size:13px;line-height:1.6}
+.shelter-tool.is-ready{border-color:#91b97c}
+.shelter-feedback{color:#63451f;font-size:13px;line-height:1.5}
+.shelter-feedback:empty{display:none}
+@media(max-width:560px){.shelter-material{grid-template-columns:1fr}.shelter-delivery{justify-content:start}.shelter-stages{gap:4px;font-size:10px}}
+.pet-shelter-menu .shelter-material{margin:0}

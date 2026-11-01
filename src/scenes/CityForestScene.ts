@@ -1,3 +1,4 @@
+import {setupTreeWind} from '../tree-wind';
 import { advanceBackgroundVillage } from '../systems/village-background';
 import {CityTravelTransition} from '../dungeons/city-travel-transition';
 import {preloadPetArt} from "../dungeons/pet-sprites";
@@ -39,6 +40,7 @@ export class CityForestScene extends Phaser.Scene{
  constructor(){super('AcessoCidade');}
  preload():void{preloadCityForest(this);preloadPetArt(this);}
  create(data:CityForestStart):void{
+  setupTreeWind(this);
   this.state=structuredClone(data.save);this.state.activeArea='cityForest';delete this.state.homePosition;delete this.state.merchantInterior;delete this.state.blacksmithInterior;
   this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
@@ -85,9 +87,9 @@ export class CityForestScene extends Phaser.Scene{
   if(e.repeat||this.leaving||e.target instanceof HTMLElement&&e.target.matches('input,textarea,select,[contenteditable="true"]'))return;
   const key=e.key.toLowerCase();
   if(key==='escape'){e.preventDefault();this.ui.togglePause();return;}
+  if(key==='m'){e.preventDefault();this.updateHUD();this.ui.toggleMap();return;}
   if(this.paused)return;
   if(key==='e'&&this.nearCity()&&!this.ui.isModalOpen())this.askCityTravel();
-  if(key==='m')this.ui.toggleMap();
   if(['+','=','-','_','Home'].includes(e.key)&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();this.changeCameraZoom(e.key==='Home'?0:e.key==='-'||e.key==='_'?-1:1);}
  }
  private applyCamera=():void=>{
@@ -117,7 +119,8 @@ export class CityForestScene extends Phaser.Scene{
  openMapEditor():void{this.ui.toast('Este cenário está em preparação; o editor permanece disponível nos mapas anteriores.');}
  mainMenu():void{this.ui.closeModal();this.leave(true);}
  captureMap():Promise<string>{
-  const rt=this.make.renderTexture({width:960,height:720},false);rt.camera.setZoom(960/3072);rt.setOrigin(0);this.children.depthSort();rt.draw([...this.world.objects].sort((a,b)=>(a as Phaser.GameObjects.Image).depth-(b as Phaser.GameObjects.Image).depth));
+  this.updateHUD();
+  const rt=this.make.renderTexture({width:960,height:720},false);rt.camera.setZoom(960/3072).setScroll(0,0).setOrigin(0,0);rt.setOrigin(0);this.children.depthSort();rt.draw([...this.world.objects].sort((a,b)=>(a as Phaser.GameObjects.Image).depth-(b as Phaser.GameObjects.Image).depth));
   return new Promise(resolve=>rt.snapshot(image=>{const url=image instanceof HTMLImageElement?image.src:'';rt.destroy();resolve(url);}));
  }
  persist():boolean{if(!this.player||this.leaving)return false;this.state.activeArea='cityForest';this.state.crops=this.farming.crops;this.state.cityForestPosition={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};return saveGame(this.state);}

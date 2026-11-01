@@ -1,5 +1,6 @@
 import {createSaveLibraryPanel} from './save-library-panel';
 import type {SaveData} from './types';
+import type {ShelterAction} from './systems/pet-shelter';
 import {petShelterHTML} from './pet-shelter-menu';
 import { petMenuHTML, petCollectionHTML, type PetMenuView, type PetCommand } from "./dungeons/pet-menu";
 import { CompanionQuickPanel } from './dungeons/companion-quick-panel';
@@ -357,6 +358,24 @@ export class GameUI {
     });
   }
 
+  showWorldLoading(label:string):void {
+    this.cleanupOpening?.();this.cleanupOpening=undefined;
+    this.cleanupTitle?.();this.cleanupTitle=undefined;
+    this.cleanupCreation?.();this.cleanupCreation=undefined;
+    this.topToolbar?.destroy();this.topToolbar=undefined;
+    this.mode='opening';this.modal=null;
+    this.root.dataset.area='loading';this.root.style.display='';
+    this.overlay.replaceChildren();this.overlay.classList.remove('active');
+    this.base.style.display='';
+    this.base.innerHTML='<section class="world-loading" role="status" aria-live="polite"><div><h2></h2><progress max="1" value="0" aria-label="Carregamento dos recursos"></progress><p>Preparando os recursos do cenário…</p></div></section>';
+    this.base.querySelector('h2')!.textContent=label;
+    this.callbacks.onTitleBackground('off');this.callbacks.onPause(true);
+  }
+  setWorldLoadingProgress(value:number):void {
+    const progress=this.base.querySelector<HTMLProgressElement>('.world-loading progress');
+    if(progress)progress.value=Math.max(0,Math.min(1,value));
+  }
+
   showNewGameOpening(resources: Promise<unknown>, prepare: () => void, complete: () => void): void {
     this.cleanupOpening?.();
     this.cleanupTitle?.(); this.cleanupTitle = undefined;
@@ -474,14 +493,30 @@ export class GameUI {
 
   dismissTopToolbar(): boolean { return this.topToolbar?.dismiss() ?? false; }
 
-  showPetShelter(view: () => SaveData, upgrade: () => {ok:boolean;message:string}): void {
+  showPetShelter(view: () => SaveData, act: (action: ShelterAction) => {ok:boolean;message:string}): void {
     this.openModal('pets');
-    const render = () => {
+    const render = (message = '', focus = '[data-shelter-close]') => {
+      const scroll = this.overlay.querySelector('.pet-shelter-menu')?.scrollTop ?? 0;
       this.overlay.innerHTML = petShelterHTML(view());
-      this.overlay.querySelector<HTMLButtonElement>('[data-shelter-close]')!.onclick=()=>this.closeModal();
-      this.overlay.querySelector<HTMLButtonElement>('[data-shelter-upgrade]')?.addEventListener('click',()=>{const r=upgrade();this.toast(r.message);render();});
-      this.overlay.querySelector<HTMLButtonElement>('[data-shelter-pets]')?.addEventListener('click',()=>{this.closeModal();this.callbacks.onCompanions?.();});
-      this.overlay.querySelector<HTMLButtonElement>('[data-shelter-close]')!.focus();
+      this.overlay.querySelector<HTMLElement>('[data-shelter-feedback]')!.textContent = message;
+      const apply = (action: ShelterAction, target: string) => {
+        const result = act(action);
+        render(result.message, target);
+      };
+      this.overlay.querySelector<HTMLButtonElement>('[data-shelter-close]')!.onclick = () => this.closeModal();
+      this.overlay.querySelector<HTMLButtonElement>('[data-shelter-upgrade]')?.addEventListener('click', () => apply({kind:'upgrade'}, '[data-shelter-upgrade]'));
+      this.overlay.querySelectorAll<HTMLButtonElement>('[data-shelter-deliver]').forEach(button => {
+        button.onclick = () => {
+          const item = button.dataset.shelterDeliver as ItemId;
+          const input = this.overlay.querySelector<HTMLInputElement>(`#shelter-quantity-${item}`)!;
+          if (!input.reportValidity()) return;
+          apply({kind:'deliver', item, amount:input.valueAsNumber}, `[data-shelter-deliver="${item}"]`);
+        };
+      });
+      this.overlay.querySelector<HTMLButtonElement>('[data-shelter-pets]')?.addEventListener('click', () => {this.closeModal();this.callbacks.onCompanions?.();});
+      const target = this.overlay.querySelector<HTMLButtonElement>(focus);
+      (target && !target.disabled ? target : this.overlay.querySelector<HTMLButtonElement>('[data-shelter-close]'))?.focus({preventScroll:true});
+      this.overlay.querySelector<HTMLElement>('.pet-shelter-menu')!.scrollTop = scroll;
     };
     render();
   }

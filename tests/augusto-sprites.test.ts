@@ -19,8 +19,8 @@ describe('Augusto supplied sprite set',()=>{
  });
  it('translates idle padding only, preserving native pixels and every authored walking offset',()=>{
   const draw=vi.fn(),add=vi.fn(),filter=vi.fn(),context={imageSmoothingEnabled:true,drawImage:draw},canvas={width:0,height:0,getContext:()=>context};vi.stubGlobal('document',{createElement:()=>canvas});
-  const texture={add,setFilter:filter};const scene={textures:{exists:()=>false,get:(key:string)=>({getSourceImage:()=>({width:key.endsWith(':0')?112:160,height:key.endsWith(':0')?112:160})}),addCanvas:()=>texture}} as unknown as Phaser.Scene;
-  expect(augustoTexture(scene)).toBe('village-npc-augusto');expect(canvas).toMatchObject({width:1120,height:1280});expect(context.imageSmoothingEnabled).toBe(false);expect(draw).toHaveBeenCalledTimes(56);
+  const texture={add,setFilter:filter};const scene={textures:{remove:vi.fn(),exists:()=>false,get:(key:string)=>({getSourceImage:()=>({width:key.endsWith(':0')?112:160,height:key.endsWith(':0')?112:160})}),addCanvas:()=>texture}} as unknown as Phaser.Scene;
+  expect(augustoTexture(scene)).toBe('village-npc-augusto');expect(scene.textures.remove).toHaveBeenCalledTimes(56);expect(canvas).toMatchObject({width:1120,height:1280});expect(context.imageSmoothingEnabled).toBe(false);expect(draw).toHaveBeenCalledTimes(56);
   for(let row=0;row<8;row++)for(let frame=0;frame<7;frame++){const call=draw.mock.calls[row*7+frame];expect(call).toHaveLength(3);expect(call.slice(1)).toEqual([frame*160+(frame?0:24),row*160+(frame?0:24)]);expect(add.mock.calls[row*7+frame]).toEqual([characterFrame(CHARACTER_DIRECTIONS[row],frame,AUGUSTO_WALK_FRAMES),0,frame*160,row*160,AUGUSTO_FRAME_SIZE,AUGUSTO_FRAME_SIZE]);}
   expect(filter).toHaveBeenCalledWith(0);
  });

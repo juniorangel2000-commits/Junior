@@ -22,6 +22,7 @@ const out=process.env.REFRESH_QA_OUTPUT||'/workspace/world-refresh-qa';fs.mkdirS
   await page.evaluate(()=>{const cam=v.cameras.main;window.previousCamera={x:cam.scrollX,y:cam.scrollY,zoom:cam.zoom};cam.stopFollow();cam.setZoom(1.35);cam.centerOn(800,350);document.querySelector('#ui').style.visibility='hidden';game.step(performance.now(),0);});
   await page.screenshot({path:out+'/propriedade-base-montanha.png'});
   await page.evaluate(()=>{const cam=v.cameras.main;cam.setZoom(previousCamera.zoom);cam.setScroll(previousCamera.x,previousCamera.y);document.querySelector('#ui').style.visibility='';});
+  check('Moradores e interiores não carregam antes de visitar a vila',await page.evaluate(()=>!game.textures.exists('village-npc-bento')&&!Object.keys(game.textures.list).some(k=>k.startsWith('bento-original:')||k.startsWith('merchant-room-')||k.startsWith('smith-layout-'))));
   check('Lia removida da propriedade e das missões',await page.evaluate(()=>!v.children.list.some(o=>o.texture?.key==='lia')&&!document.querySelector('#lia-quest')&&!game.textures.exists('lia')));
   for(const species of ['golden-retriever','border-collie'])for(const rare of [false,true]){
    const details=await page.evaluate(({species,rare})=>{const ok=controller.command({kind:'select',id:species+rare});controller.update(0);const image=controller.companion.image;return {ok,texture:image.texture.key,frame:image.frame.name,scale:image.scaleX,visible:image.visible};},{species,rare});
@@ -61,7 +62,7 @@ const out=process.env.REFRESH_QA_OUTPUT||'/workspace/world-refresh-qa';fs.mkdirS
   await page.locator('[data-pet-entry="golden-retriever"]').scrollIntoViewIfNeeded();await page.screenshot({path:out+'/novos-cachorros.png'});await page.locator('[data-pet-close]').click();
   await page.evaluate(()=>{controller.command({kind:'select'});window.birds=birdAPI.getAmbientBirds(v);for(let i=0;i<70;i++)birds.update(.1);});
   const birdState=await page.evaluate(()=>{const c=controller.context();return {count:birds.birds.length,safe:birds.birds.filter(b=>b.state.phase==='perched').every(b=>!c.blockedPoint(b.state.x,b.state.y))};});
-  check('Pássaros na propriedade, sem pousar na água ou em obstáculos',birdState.count===6&&birdState.safe,birdState);
+  check('Pássaros na propriedade, sem pousar na água ou em obstáculos',birdState.count===4&&birdState.safe,birdState);
   await page.evaluate(()=>{const b=birds.birds[0].state;v.cameras.main.stopFollow().setZoom(2.2).centerOn((b.x+v.player.x)/2,(b.y+v.player.y)/2);});await render();await page.screenshot({path:out+'/passaros-pousados.png'});
   const flight=await page.evaluate(()=>{const b=birds.birds[0].state;v.player.x=b.x;v.player.y=b.y;birds.update(.05);for(let i=0;i<8;i++)birds.update(.1);v.cameras.main.centerOn(v.player.x,v.player.y);return birds.birds.filter(b=>b.state.phase==='fly').length;});
   check('Revoada ao aproximar o jogador',flight>0,flight);await render();await page.screenshot({path:out+'/passaros-voando.png'});
@@ -78,6 +79,7 @@ const out=process.env.REFRESH_QA_OUTPUT||'/workspace/world-refresh-qa';fs.mkdirS
   await page.evaluate(()=>{game.loop.sleep();for(let i=0;i<200;i++)v.update(performance.now()+i*100,100);window.expected=structuredClone(v.state.villageRoutines);game.loop.wake();v.enterVillage(v.snapshotState());});
   await page.waitForFunction(()=>game.scene.isActive('Vila')&&document.querySelector('#ui').dataset.area==='village');
   const reentry=await page.evaluate(()=>{game.loop.sleep();const village=game.scene.getScene('Vila');return {ground:game.textures.get('village-ground-v3')===groundTexture,lake:game.textures.get('village-lake-v3')===lakeTexture,times:villageTimes,positions:[...village.routines].every(([id,r])=>r.state.area===expected[id].area&&Math.hypot(r.state.x-expected[id].x,r.state.y-expected[id].y)<16)};});
+  check('Atlas dos moradores mantidos sem texturas de origem redundantes',await page.evaluate(()=>['bento','augusto','rosa'].every(id=>game.textures.exists('village-npc-'+id))&&!Object.keys(game.textures.list).some(k=>/^(bento|augusto|rosa)-original:/.test(k))));
   check('Um único painel após as trocas de cenário',await page.locator('.companion-quick:visible').count()===1);
   await page.keyboard.press('k');check('Atalho funciona na vila após reentrada',await page.locator('.pet-menu:visible').count()===1);await page.keyboard.press('k');
   check('Piso e lago reutilizados na volta à vila',reentry.ground&&reentry.lake,reentry);check('Rotinas continuam sem reiniciar na entrada',reentry.positions,reentry);

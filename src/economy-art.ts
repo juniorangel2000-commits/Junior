@@ -18,17 +18,6 @@ import {CHARACTER_DIRECTIONS} from './character-directions';
 
 /** Dedicated art is loaded beside the original assets; none of the supplied art is replaced. */
 export function preloadEconomyArt(scene:Phaser.Scene):void{
- preloadBentoSprites(scene);
- preloadAugustoSprites(scene);
- preloadRosaSprites(scene);
- preloadTobiasSprites(scene);
- preloadAmeliaSprites(scene);
- preloadNiloSprites(scene);
- preloadCelinaSprites(scene);
- preloadDamiaoSprites(scene);
- preloadIcaroSprites(scene);
- preloadHelenaSprites(scene);
-
  scene.load.image(TOBIAS_SHOP.texture,TOBIAS_SHOP.file);
 
 
@@ -37,12 +26,27 @@ export function preloadEconomyArt(scene:Phaser.Scene):void{
  scene.load.image('detailed-ore-atlas',`${ROOT}/deposits/rochas-detalhadas.png`);
 
  for(const b of Object.values(SHOP_FACADES))scene.load.image(b.texture,b.file);
- preloadMerchantRooms(scene);
+
  for(const metal of ['iron','gold','blackMetal'] as const)scene.load.image(mineralTexture(metal),`${ROOT}/deposits/${metal}.png`);
  for(const tool of ART_TOOL_IDS)for(const [tier,material]of TOOL_MATERIALS.entries())scene.load.image(`economy-tool-${material}-${tool}`,tierToolIcon(tool,tier));
  for(const id of ['anvil','tongs'])scene.load.image(`economy-workshop-${id}`,`${ROOT}/workshop/${id}.png`);
  for(let frame=0;frame<4;frame++)scene.load.image(`economy-forge-${frame}`,`${ROOT}/forge/frame-${frame}.png`);
  for(const id of MERCHANT_ART_IDS)for(const direction of NPC_ART_DIRECTIONS)scene.load.image(`economy-npc-${id}-${direction}`,`${ROOT}/npcs/${id}-${direction}.png`);
+}
+
+/** Merchants and large interior art are first needed when entering the village. */
+export function preloadVillagePeople(scene:Phaser.Scene):void {
+ if(!scene.textures.exists('village-npc-bento'))preloadBentoSprites(scene);
+ if(!scene.textures.exists('village-npc-augusto'))preloadAugustoSprites(scene);
+ if(!scene.textures.exists('village-npc-rosa'))preloadRosaSprites(scene);
+ if(!scene.textures.exists('village-npc-tobias'))preloadTobiasSprites(scene);
+ if(!scene.textures.exists('village-npc-amelia'))preloadAmeliaSprites(scene);
+ if(!scene.textures.exists('village-npc-nilo'))preloadNiloSprites(scene);
+ if(!scene.textures.exists('village-npc-celina'))preloadCelinaSprites(scene);
+ if(!scene.textures.exists('village-npc-damiao'))preloadDamiaoSprites(scene);
+ if(!scene.textures.exists('village-npc-icaro'))preloadIcaroSprites(scene);
+ if(!scene.textures.exists('village-npc-helena'))preloadHelenaSprites(scene);
+ preloadMerchantRooms(scene);
 }
 
 /** Supplied animation sets use their own atlas. Other merchants retain their
