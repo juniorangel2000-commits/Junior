@@ -72,6 +72,7 @@ type Villager={data:VillageNPC;sprite:Phaser.GameObjects.Sprite;frames:number};
  * outdoor position, crops, resource fields or animal population. */
 export class VillageScene extends Phaser.Scene {
  private state!:SaveData;
+ getFishingState():SaveData { this.state.inventory={...this.inventory.data};return this.state; }
  private ui!:GameUI;
  private world!:VillageWorld;
  private player!:Player;
@@ -143,7 +144,7 @@ export class VillageScene extends Phaser.Scene {
    canTrade:id=>this.canTrade(id),isInside:id=>merchantCanTrade(id,this.roomOwner),getAvailability:id=>dailyMerchant(id)?this.routines.get(id)?.availability(this.state):undefined,onGuide:id=>this.beginGuide(id),
    getPortrait:id=>id==='bento'?this.textures.getBase64(bentoSourceKey('down')):id==='augusto'?this.textures.getBase64(augustoSourceKey('down')):id==='rosa'?this.textures.getBase64(rosaSourceKey('down')):id==='tobias'?this.textures.getBase64('village-npc-tobias',characterFrame('down',0,TOBIAS_WALK_FRAMES)):this.textures.getBase64(`village-npc-${id}`,0),
    onBlacksmith:()=>{this.shop?.close();this.setPaused(true);openBlacksmithPanel(()=>({...this.state,inventory:{...this.inventory.data}}),change=>{const before=structuredClone(this.state);this.state.inventory={...this.inventory.data};const r=change(this.state);if(r.ok){Object.assign(this.inventory.data,this.state.inventory);if(!this.persist()){this.state=before;Object.assign(this.inventory.data,before.inventory);return{ok:false,message:'Falha ao salvar. A operação foi revertida.'};}this.updateHUD();}return r;},()=>this.setPaused(false));},
-   getServices:npc=>listVillageServices(npc),
+   getServices:npc=>listVillageServices(npc,this.state),
    onService:id=>{const previous=structuredClone(this.state);const previousStock={...this.inventory.data};this.state.inventory={...this.inventory.data};this.state.crops=this.farming.crops.map(c=>({...c}));const result=performVillageService(this.state,id);if(result.ok){Object.assign(this.inventory.data,this.state.inventory);this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);const x=this.player.x,y=this.player.y;this.player.sprite.destroy();this.player=new Player(this,this.state.profile,x,y,'village-player');this.applyCamera();if(!this.persist()){this.state=previous;Object.assign(this.inventory.data,previousStock);return{ok:false,message:'Falha ao salvar. A operação foi revertida.'};}this.updateHUD();}return result;},
    getInventory:()=>this.inventory.data,getEconomy:()=>this.state.villageEconomy!,getDay:()=>this.state.day,
    onTrade:(merchant,side,item,quantity)=>{

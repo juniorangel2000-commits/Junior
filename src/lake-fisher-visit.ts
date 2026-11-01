@@ -34,7 +34,7 @@ export class LakeFisherVisit {
    canTrade:()=>villageAccessUnlocked(state())&&damiaoAtLake(state()),isInside:()=>true,
    getAvailability:()=>({message:needsDamiaoIntroduction(state())?'Tenho um presente e uma indicação para você':'Cabana do lago · '+FISHER_LAKE_HOURS.label,canGuide:false}),
    getPortrait:()=>scene.textures.getBase64('village-npc-damiao',characterFrame('down',0,DAMIAO_WALK_FRAMES)),
-   getServices:()=>villageAccessUnlocked(state())?listVillageServices('damiao'):[],
+   getServices:()=>villageAccessUnlocked(state())?listVillageServices('damiao',state()):[],
    onService:id=>{const result=fisherService(state(),id,saveGame);if(result.ok)changed();return result;},
    getInventory:()=>state().inventory,getEconomy:()=>state().villageEconomy!,getDay:()=>state().day,
    onTrade:(merchant,side,item,quantity)=>{const result=fisherTrade(state(),merchant,side,item,quantity,saveGame);if(result.ok)changed();return result;},

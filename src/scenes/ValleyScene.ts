@@ -89,6 +89,7 @@ export class ValleyScene extends Phaser.Scene {
   private building!: Building;
   private resources!: Resources;
   private state!: SaveData;
+ getFishingState():SaveData { this.state.inventory={...this.inventory.data};return this.state; }
   private running = false;
   private paused = true;
   private tool: Tool = 'hand';

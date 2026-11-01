@@ -1,0 +1,13 @@
+# Diário de pesca e progressão
+
+J ou Menu do jogo → Diário de pesca abre a coleção e pausa a simulação. O painel segue a moldura de madeira, o papel claro e os verdes da HUD. Mostra seis espécies; nomes, imagens, hábitos e recordes só aparecem depois da primeira captura daquela espécie. Há filtro de descobertos, contagem, primeiro dia e máximos independentes de peso e comprimento. Os recordes persistem após usar ou vender o peixe. Partidas antigas iniciam o diário sem inventar espécies a partir do estoque genérico.
+
+Damião oferece dois reforços da vara (100 C + 4 tábuas + 2 cordas; depois 240 C + 6 tábuas + 2 peças metálicas). Cada reforço amplia a faixa de controle em 0,035. Por 40 C + 3 fibras ele ensina preparos de massa e insetos: escolha no diário; ambos consomem duas unidades do estoque de iscas por lançamento. Minhoca continua consumindo uma. Massa favorece tilápia e carpa; insetos, lambari e truta. As melhorias não alteram a espera aprovada de 10–20 segundos nem permitem espécies raras fora do Lago entre as Serras.
+
+Cada espécie tem velocidade, duração das mudanças de direção e oscilação próprias. A identidade continua oculta durante a disputa. Horário e condição diária de pesca alteram os pesos de seleção de espécies: bagres à noite, lambaris e trutas de manhã, dourados no fim da tarde; chuva favorece carpas e bagres. A condição diária é determinística e não muda ao reabrir a tela. Ela é uma condição da pesca, sem acrescentar um novo efeito visual de chuva aos cenários.
+
+As capturas têm preço por espécie e comprimento. Damião compra o lote identificado ainda disponível na mochila através de “Vender capturas registradas”. O diário exibe a estimativa total. Há uma encomenda rotativa entre as seis espécies por dia, paga uma vez; exige peixes identificados, não o estoque comprado. As vendas genéricas, receitas e a tarefa rara antiga continuam aceitando os estoques fish/rareFish existentes.
+
+Os detalhes dos últimos 200 peixes são mantidos para comércio; os recordes da coleção não dependem desse limite. Os detalhes são limitados ao estoque real quando o jogo salva. Não há criação de peixes ou de registros ao comprar estoque genérico. Transações falhas preservam materiais, peixes, recordes e saldo; tentativas de captura só registram a coleção depois de salvar com sucesso.
+
+Validação: testes de captura/rede/lixo, salvamento, compatibilidade, equipamento, preços, encomendas e seleção por condições; QA em Chromium para J/menu, pausa, filtros, espécies ocultas, recordes, iscas persistidas, tela estreita e troca para o lago. Script: scripts/qa-fishing-journal.cjs.

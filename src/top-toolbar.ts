@@ -1,7 +1,7 @@
 import './top-toolbar.css';
 import { toolbarIcon } from './toolbar-icons';
 
-export type ToolbarAction = 'inventory' | 'map' | 'crafting' | 'building' | 'save' | 'options' | 'controls' | 'audio' | 'graphics' | 'pets';
+export type ToolbarAction = 'fishingJournal' | 'inventory' | 'map' | 'crafting' | 'building' | 'save' | 'options' | 'controls' | 'audio' | 'graphics' | 'pets';
 interface ToolbarCallbacks {
   onOpenChange(open: boolean): void;
   onAction(action: ToolbarAction): void;
@@ -24,6 +24,7 @@ export class TopToolbar {
       { id: 'map', label: 'Mapa', shortcut: 'M', cls: 'map-button' },
       { id: 'crafting', label: 'Fabricação', shortcut: 'C', cls: 'crafting-button' },
       { id: 'building', label: 'Construção', shortcut: 'B', cls: 'building-button' },
+      { id: 'fishingJournal', label: 'Diário de pesca', shortcut: 'J', cls: 'toolbar-fishing-button' },
       { id: 'pets', label: 'Companheiros', shortcut: 'K', cls: 'toolbar-pets-button' },
       { id: 'audio', label: 'Música', cls: 'toolbar-audio-button' },
       { id: 'graphics', label: 'Gráficos', cls: 'toolbar-graphics-button' },

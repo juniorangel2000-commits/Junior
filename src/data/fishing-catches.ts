@@ -23,11 +23,11 @@ export const FISHING_HABITATS={lake:{rare:true,trash:.08},other:{rare:false,tras
 export const fishSpecies=(id:FishSpeciesId)=>FISH_SPECIES.find(f=>f.id===id)!;
 export const fishingTrash=(id:FishingTrashId)=>FISHING_TRASH.find(f=>f.id===id)!;
 const fraction=(random:()=>number)=>Math.max(0,Math.min(1,random()));
-export function rollFishingReward(rare:boolean,net:boolean,random:()=>number,trashChance=FISHING_TRASH_CHANCE):FishingReward {
+export function rollFishingReward(rare:boolean,net:boolean,random:()=>number,trashChance=FISHING_TRASH_CHANCE,weightFor:(id:FishSpeciesId)=>number=()=>1):FishingReward {
  if(!rare&&fraction(random)<trashChance){const trash=FISHING_TRASH[Math.min(FISHING_TRASH.length-1,Math.floor(fraction(random)*FISHING_TRASH.length))];return{kind:'trash',id:trash.id,quantity:net?2:1};}
- const pool=FISH_SPECIES.filter(f=>(f.stock==='rareFish')===rare),total=pool.reduce((n,f)=>n+f.weight,0),specimens:FishSpecimen[]=[];
+ const pool=FISH_SPECIES.filter(f=>(f.stock==='rareFish')===rare),total=pool.reduce((n,f)=>n+f.weight*weightFor(f.id),0),specimens:FishSpecimen[]=[];
  for(let i=0;i<(net?2:1);i++){
-  let roll=fraction(random)*total;const species=pool.find(f=>{roll-=f.weight;return roll<0;})??pool[pool.length-1];
+  let roll=fraction(random)*total;const species=pool.find(f=>{roll-=f.weight*weightFor(f.id);return roll<0;})??pool[pool.length-1];
   const lengthCm=Math.round((species.minCm+fraction(random)*(species.maxCm-species.minCm))*10)/10;
   const weightGrams=Math.max(1,Math.round(species.maxGrams*(lengthCm/species.maxCm)**3*(.9+fraction(random)*.2)));
   specimens.push({species:species.id,lengthCm,weightGrams});

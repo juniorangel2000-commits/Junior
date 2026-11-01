@@ -44,6 +44,7 @@ import { loadCameraZoom, saveCameraZoom, stepCameraZoom } from '../camera-zoom';
 export interface ForestStart { save: SaveData; ui: GameUI; onReturn: (save: SaveData, title?: boolean) => void }
 export class ForestScene extends Phaser.Scene {
   private state!: SaveData;
+ getFishingState():SaveData { return this.state; }
   private daylight!: Daylight;
   private resources!:Resources;
   private resourceLifecycle?:ResourceLifecycle;

@@ -1,3 +1,4 @@
+import {mountFishingJournal} from './fishing-journal';
 import {createSaveLibraryPanel} from './save-library-panel';
 import type {SaveData} from './types';
 import type {ShelterAction} from './systems/pet-shelter';
@@ -42,6 +43,7 @@ import type { HomeData, HomeEditAction } from './systems/home';
 import type { BuildingData, CharacterProfile, HudData, InventoryData, ItemId, Tool } from './types';
 
 interface UICallbacks {
+  getFishingState?():SaveData|undefined;
   onUseItem(item:ItemId):void;
   onNewGame(profile: CharacterProfile): void;
   onContinue(): void;
@@ -141,7 +143,7 @@ export class GameUI {
   private notifications = document.createElement('div');
   private companionQuickPanel?: CompanionQuickPanel;
   private mode: 'title' | 'creation' | 'opening' | 'hud' = 'title';
-  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'pets' | null = null;
+  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'fishingJournal' | 'pets' | null = null;
   private focusBeforeModal?: HTMLElement;
   private onModalClose?: () => void;
   private existingSave = false;
@@ -276,6 +278,11 @@ export class GameUI {
   constructor(private callbacks: UICallbacks) {
     try { this.journalCollapsed = localStorage.getItem('after-rain-missions-collapsed') === 'true'; } catch { /* A interface também funciona sem armazenamento. */ }
     this.base.className = 'ui-base';
+    window.addEventListener('keydown',event=>{
+      if(event.code!=='KeyJ'||event.ctrlKey||event.metaKey||event.altKey||event.repeat||event.target instanceof HTMLInputElement||event.target instanceof HTMLTextAreaElement||event.target instanceof HTMLSelectElement)return;
+      if(this.mode!=='hud'||this.isModalOpen()&&this.modal!=='fishingJournal')return;
+      event.preventDefault();event.stopImmediatePropagation();this.toggleFishingJournal();
+    },true);
     this.overlay.className = 'modal-root';
     this.notifications.className = 'toast-stack';
     this.notifications.setAttribute('aria-live', 'polite');
@@ -283,7 +290,7 @@ export class GameUI {
     // Mantém a navegação pelo teclado no menu que está pausando a partida.
     this.overlay.addEventListener('keydown', event => {
       if (event.key !== 'Tab' || !this.modal) return;
-      const controls = Array.from(this.overlay.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), summary, [tabindex="0"]'))
+      const controls = Array.from(this.overlay.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), summary, [tabindex="0"]'))
         .filter(control => control.getClientRects().length > 0);
       if (!controls.length) return;
       const first = controls[0], last = controls[controls.length - 1];
@@ -595,6 +602,13 @@ export class GameUI {
     render();
     this.overlay.querySelector<HTMLButtonElement>("[data-pet-close]")?.focus();
   }
+  toggleFishingJournal():void {
+    if(this.modal==='fishingJournal'){this.closeModal();return;}
+    if(this.mode!=='hud'||this.isModalOpen()||[...document.querySelectorAll<HTMLElement>('[role=dialog]')].some(panel=>panel.getClientRects().length>0&&!this.overlay.contains(panel)))return;
+    const save=this.callbacks.getFishingState?.();if(!save)return;
+    this.openModal('fishingJournal');
+    mountFishingJournal(this.overlay,save,()=>this.closeModal(),()=>this.callbacks.onSave());
+  }
   private handleToolbarAction(action: ToolbarAction): void {
     if (this.mode !== 'hud' || this.modal) return;
     if (action === 'save') {
@@ -608,6 +622,7 @@ export class GameUI {
       this.overlay.querySelector('button')!.onclick = () => this.closeModal();
       this.overlay.querySelector('button')!.focus();
     }
+    else if (action === 'fishingJournal') this.toggleFishingJournal();
     else if (action === 'pets') this.callbacks.onCompanions?.();
     else if (action === 'audio') this.toggleAudio();
     else if (action === 'graphics') this.toggleGraphics();
@@ -1148,7 +1163,7 @@ export class GameUI {
     callback?.();
   }
 
-  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'pets'): void {
+  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'fishingJournal' | 'pets'): void {
     this.topToolbar?.setOpen(false, false);
     this.topToolbar?.setEnabled(false);
     this.focusBeforeModal = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;

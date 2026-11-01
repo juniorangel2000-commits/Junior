@@ -34,6 +34,7 @@ import {CityForestWorld,preloadCityForest} from '../city-forest-world';
 interface CityForestStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void;fromCity?:boolean}
 export class CityForestScene extends Phaser.Scene{
  private state!:SaveData;
+ getFishingState():SaveData { return this.state; }
  private fisherRoad?:FisherRoadVisit;
  private ui!:GameUI;
  private onReturn!:CityForestStart['onReturn'];

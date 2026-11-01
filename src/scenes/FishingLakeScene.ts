@@ -32,6 +32,7 @@ import {FishingLakeWorld,preloadFishingLake} from '../fishing-lake-world';
 interface FishingLakeStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void;fromCity?:boolean}
 export class FishingLakeScene extends Phaser.Scene{
  private state!:SaveData;
+ getFishingState():SaveData { return this.state; }
  private ui!:GameUI;
  private onReturn!:FishingLakeStart['onReturn'];
  private player!:Player;

@@ -20,6 +20,7 @@ gameAudio.init();
 const scene = new ValleyScene();
 const activeForest=():ForestScene|VillageScene|CityForestScene|FishingLakeScene|DungeonScene|undefined=>scene.scene?.isActive('Lago')?scene.scene.get('Lago') as FishingLakeScene:scene.scene?.isActive('Dungeons')?scene.scene.get('Dungeons') as DungeonScene:scene.scene?.isActive('AcessoCidade')?scene.scene.get('AcessoCidade') as CityForestScene:scene.scene?.isActive('Vila')?scene.scene.get('Vila') as VillageScene:scene.scene?.isActive('Floresta')?scene.scene.get('Floresta') as ForestScene:undefined;
 const ui = new GameUI({
+  getFishingState: () => {const current=activeForest()??scene;return current instanceof DungeonScene?undefined:current.getFishingState();},
   onUseItem: item => {void (activeForest()??scene).useVillageItem(item);},
   onNewGame: profile => scene.startNew(profile),
   onContinue: () => scene.continueGame(),

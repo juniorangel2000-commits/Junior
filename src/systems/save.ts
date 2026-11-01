@@ -1,3 +1,4 @@
+import {validFishingProgress,availableSpecimens} from './fishing-progress';
 import {validFisherTravel} from './fisher-travel';
 import {validFishingHaul} from '../data/fishing-catches';
 import {activeSaveKey,saveKeys} from './save-slot-keys';
@@ -64,6 +65,7 @@ export function validateSave(value: unknown): value is SaveData {
   if (value.petShelter !== undefined && !validPetShelter(value.petShelter)) return false;
   if (value.forestMapEdits !== undefined && (!validateMapEdits(value.forestMapEdits)||value.forestMapEdits.area!=='forest')) return false;
   if(value.fisherTravel!==undefined&&!validFisherTravel(value.fisherTravel))return false;
+  if(value.fishingProgress!==undefined&&!validFishingProgress(value.fishingProgress))return false;
   if(value.lastFishingHaul!==undefined&&!validFishingHaul(value.lastFishingHaul))return false;
   if(value.fishingLakeMapEdits!==undefined&&(!validateMapEdits(value.fishingLakeMapEdits)||value.fishingLakeMapEdits.area!=='fishingLake'))return false;
   if(value.fishingLakePosition!==undefined&&(!isRecord(value.fishingLakePosition)||!finite(value.fishingLakePosition.x,32,3040)||!finite(value.fishingLakePosition.y,32,2272)||(value.fishingLakePosition.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(value.fishingLakePosition.direction as CharacterDirection))))return false;
@@ -221,6 +223,7 @@ export function validateSave(value: unknown): value is SaveData {
 /** Converte em memória; a leitura nunca modifica nem substitui o slot original. */
 export function migrateSave(value: unknown): SaveData | null {
   // Cosmetic catch details must never make an otherwise valid game unloadable.
+  if(isRecord(value)&&value.fishingProgress!==undefined&&!validFishingProgress(value.fishingProgress)){value={...value};delete (value as Record<string,unknown>).fishingProgress;}
   if(isRecord(value)&&value.lastFishingHaul!==undefined&&!validFishingHaul(value.lastFishingHaul)){
     value={...value};delete (value as Record<string,unknown>).lastFishingHaul;
   }
@@ -351,7 +354,10 @@ export function preserveInvalidSave():boolean {
 export function loadSave():SaveData|null { return inspectSave().data; }
 export function hasSave():boolean { return loadSave()!==null; }
 export function saveGame(data:SaveData):boolean {
+  const original=data;
   try {
+    if(!validateSave(data))return false;
+    if(data.fishingProgress){data={...data,fishingProgress:{...data.fishingProgress,basket:availableSpecimens(data)}};}
     const keys=saveKeys(activeSaveKey());
     if(!validateSave(data))return false;
     const previous=localStorage.getItem(keys.main);
@@ -373,7 +379,8 @@ export function saveGame(data:SaveData):boolean {
         }
       }
     }
-    localStorage.setItem(keys.main,JSON.stringify(data));return true;
+    localStorage.setItem(keys.main,JSON.stringify(data));
+    if(original.fishingProgress&&data.fishingProgress)original.fishingProgress.basket=data.fishingProgress.basket;return true;
   } catch { return false; }
 }
 export function clearSave():boolean {
