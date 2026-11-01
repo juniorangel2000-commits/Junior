@@ -6,7 +6,7 @@ import {waterFinishChannel} from './data/water-style';
 import {LAKE_RIDGE,lakeWater,lakeWaterDistance,lakeShoreCoverage} from './data/fishing-lake';
 import {paintedWaterPoint} from './data/terrain-paint';
 let serial=0;
-/** Animate the supplied textures in place; the original PNGs remain unchanged. */
+/** Keep the lake surface, rebuilt stream and rebuilt waterfall in independent layers. */
 export class LakeWaterAnimation {
  private flow:Phaser.GameObjects.TileSprite;
  private maskImage:Phaser.GameObjects.Image;
@@ -46,7 +46,9 @@ export class LakeWaterAnimation {
   this.flow=scene.add.tileSprite(0,0,3072,2304,tile).setOrigin(0).setAlpha(.3).setDepth(-7).setVisible(webgl).setData('lake-water-flow',true);
   if(this.mask)this.flow.setMask(this.mask);
   const image=scene.textures.get('lake-ridge-source').getSourceImage() as HTMLImageElement,original=document.createElement('canvas');original.width=image.width;original.height=image.height;const c=original.getContext('2d')!;c.drawImage(image,0,0);
-  this.cascade=new CascadeFlow(c.getImageData(0,0,image.width,image.height));
+  const material=document.createElement('canvas');material.width=128;material.height=512;const mc=material.getContext('2d')!;mc.drawImage(scene.textures.get('lake-cascade-material-source').getSourceImage() as HTMLImageElement,0,0,128,512);
+  const river=scene.textures.get(tile).getSourceImage() as HTMLCanvasElement;
+  this.cascade=new CascadeFlow(c.getImageData(0,0,image.width,image.height),mc.getImageData(0,0,128,512),river.getContext('2d')!.getImageData(0,0,river.width,river.height));
   this.sizeX=image.width/LAKE_RIDGE.width;this.sizeY=image.height/LAKE_RIDGE.height;
   const {width,height,x,y}=this.cascade;
   this.fall=scene.textures.createCanvas(this.fallKey,width,height)!;this.fall.setFilter(0);this.output=this.fall.context.createImageData(width,height);
@@ -55,7 +57,7 @@ export class LakeWaterAnimation {
  }
  update(time:number):void{
   this.flow.tilePositionX=-time*.007;this.flow.tilePositionY=time*.0035;
-  if(time>=this.next-50&&time<this.next)return;this.next=time+50;
+  if(time>=this.next-33&&time<this.next)return;this.next=time+33;
   this.cascade.update(time);this.output.data.set(this.cascade.pixels);
   this.fall.context.putImageData(this.output,0,0);this.fall.refresh();
  }

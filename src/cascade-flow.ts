@@ -1,61 +1,117 @@
-export const isCascadeFoam=(x:number,y:number,r:number,g:number,b:number,a:number)=>x>=850&&x<=1100&&y>=600&&y<=840&&r>165&&g>185&&b>185&&b>=r*.95&&a>180;
-/** Re-sample the painted water into seamless flowing ribbons, leaving rocks untouched. */
+type PixelSource = {width:number;height:number;data:Uint8ClampedArray};
+const clamp = (n:number) => Math.max(0,Math.min(1,n));
+export function cascadeChannel(y:number):{center:number;half:number}{
+ const points=[[205,847,27],[250,891,50],[300,939,43],[360,956,45],[410,962,45]];
+ let i=0;while(i<points.length-2&&y>points[i+1][0])i++;const a=points[i],b=points[i+1],t=clamp((y-a[0])/(b[0]-a[0]));return{center:a[1]+(b[1]-a[1])*t,half:a[2]+(b[2]-a[2])*t};
+}
+/** Only these painted water pixels are replaced; surrounding scenery stays original. */
+export function cascadePaintMask(x:number,y:number,r:number,g:number,b:number,a:number):boolean {
+ if(x<810||x>1110||y<200||y>840||a<160)return false;
+ const water=b>=r*.95&&g>=r*.98&&b>=g*.87;
+ if(y<410){const c=cascadeChannel(y);return water&&Math.abs(x-c.center)<c.half+3;}
+ const curtain=x>=914&&x<=1014&&y<=805;
+ const foam=x>=850&&x<=1100&&y>=600&&r>70&&g>85&&b>90&&b>=r*.95;
+ return curtain&&(water||x>=928&&x<=997)||foam;
+}
+
+/** New water, not scrolling pieces or foam sampled from the old waterfall PNG. */
 export class CascadeFlow {
  readonly width=300;
  readonly height=650;
  readonly x=810;
  readonly y=200;
- readonly pixels:Uint8ClampedArray;
- private readonly mask:Uint8Array;
- private readonly column:Uint8Array;
- private readonly fall:Uint8ClampedArray;
- private readonly foam:Array<{x:number;y:number;r:number;g:number;b:number}>=[];
- private readonly river:Uint8ClampedArray;
- constructor(source:{width:number;height:number;data:Uint8ClampedArray}){
-  const count=this.width*this.height;this.pixels=new Uint8ClampedArray(count*4);this.mask=new Uint8Array(count);this.column=new Uint8Array(count);
-  const water=(i:number)=>source.data[i+3]>180&&source.data[i+2]>=source.data[i]*.98&&source.data[i+1]>=source.data[i]*1.01&&source.data[i+2]>=source.data[i+1]*.89;
-  for(let sy=600;sy<=840;sy++)for(let sx=850;sx<=1100;sx++){const i=(sy*source.width+sx)*4;if(isCascadeFoam(sx,sy,source.data[i],source.data[i+1],source.data[i+2],source.data[i+3]))this.foam.push({x:sx-this.x,y:sy-this.y,r:source.data[i],g:source.data[i+1],b:source.data[i+2]});}
-  const channel=(y:number)=>{const stops=[[205,847,27],[250,891,50],[300,939,43],[360,956,45],[410,962,45],[590,964,47],[760,969,49],[830,968,82]];let i=0;while(i<stops.length-2&&y>stops[i+1][0])i++;const a=stops[i],b=stops[i+1],t=Math.max(0,Math.min(1,(y-a[0])/(b[0]-a[0])));return{center:a[1]+(b[1]-a[1])*t,half:a[2]+(b[2]-a[2])*t};};
-  for(let y=0;y<this.height;y++)for(let x=0;x<this.width;x++){
-   const sx=x+this.x,sy=y+this.y,i=y*this.width+x,at=(sy*source.width+sx)*4,c=channel(sy),u=(sx-c.center)/c.half;
-   if(Math.abs(u)>1||!water(at))continue;
-   const feather=Math.min(1,(1-Math.abs(u))*c.half/2,(this.height-1-y)/12,y/6);
-   this.mask[i]=Math.round(Math.max(0,feather)*255);this.column[i]=Math.round((u+1)*.5*95);
+ readonly pixels=new Uint8ClampedArray(this.width*this.height*4);
+ private material?:PixelSource;
+ private readonly riverMask=new Uint8Array(this.width*210);
+ constructor(source:PixelSource,material?:PixelSource,private readonly riverMaterial?:PixelSource){
+  if(material){const data=new Uint8ClampedArray(material.data.length);for(let y=0;y<material.height;y++){const phase=y/material.height,w=Math.sin(Math.PI*phase)**2,other=(y+Math.floor(material.height/2))%material.height;for(let x=0;x<material.width;x++)for(let k=0;k<4;k++)data[(y*material.width+x)*4+k]=material.data[(y*material.width+x)*4+k]*w+material.data[(other*material.width+x)*4+k]*(1-w);}this.material={width:material.width,height:material.height,data};}
+  for(let y=0;y<210;y++)for(let x=0;x<this.width;x++){
+   const sx=this.x+x,sy=this.y+y,i=(sy*source.width+sx)*4;
+   if(cascadePaintMask(sx,sy,source.data[i],source.data[i+1],source.data[i+2],source.data[i+3]))this.riverMask[y*this.width+x]=255;
   }
-  const makeTile=(top:number,span:number)=>{
-   const tile=new Uint8ClampedArray(96*256*3);
-   // Each sample's wrap occurs only when its blending weight is zero.
-   for(let row=0;row<256;row++){
-    const phase=row/256,weight=Math.sin(Math.PI*phase)**2,ys=[top+Math.floor(phase*span),top+Math.floor(((phase+.5)%1)*span)];
-    for(let x=0;x<96;x++)for(let k=0;k<3;k++){
-     const sample=(sy:number)=>{const c=channel(sy),sx=Math.round(c.center+(x/95*2-1)*c.half*.92),at=(sy*source.width+sx)*4;return water(at)?source.data[at+k]:[100,166,170][k];};
-     tile[(row*96+x)*3+k]=sample(ys[0])*weight+sample(ys[1])*(1-weight);
-    }
-   }return tile;
-  };
-  this.fall=makeTile(450,220);this.river=makeTile(270,115);
  }
- update(milliseconds:number):void{
+ update(milliseconds:number):void {
   const seconds=milliseconds/1000;this.pixels.fill(0);
-  for(let y=0;y<this.height;y++){
-   const sy=y+this.y,fall=sy>=410,tile=fall?this.fall:this.river;
-   // Flow accelerates through the lip into the vertical fall; no row is left static.
-   const phase=fall?Math.sqrt(Math.max(0,sy-390))*19-seconds*225:(sy-200)*1.7-seconds*58;
-   const row=((Math.floor(phase)%256)+256)%256;
-   for(let x=0;x<this.width;x++){
-    const i=y*this.width+x,at=i*4,alpha=this.mask[i];this.pixels[at+3]=alpha;if(!alpha)continue;
-    const column=Math.max(0,Math.min(95,this.column[i]+Math.round(Math.sin(seconds*2.4+sy*.045)*.7))),sample=(row*96+column)*3;
-    for(let k=0;k<3;k++)this.pixels[at+k]=tile[sample+k];
+  this.drawRiver(seconds);
+  this.drawCurtain(seconds);
+  this.drawLip(seconds);
+  this.drawImpact(seconds);
+ }
+ private put(x:number,y:number,r:number,g:number,b:number,alpha:number):void {
+  x=Math.round(x);y=Math.round(y);if(x<0||x>=this.width||y<0||y>=this.height)return;
+  const i=(y*this.width+x)*4,a=clamp(alpha/255),old=this.pixels[i+3]/255,total=a+old*(1-a);
+  if(total===0)return;
+  this.pixels[i]=(r*a+this.pixels[i]*old*(1-a))/total;
+  this.pixels[i+1]=(g*a+this.pixels[i+1]*old*(1-a))/total;
+  this.pixels[i+2]=(b*a+this.pixels[i+2]*old*(1-a))/total;
+  this.pixels[i+3]=total*255;
+ }
+ private drawRiver(time:number):void {
+  for(let y=0;y<210;y++)for(let x=0;x<this.width;x++){
+   if(!this.riverMask[y*this.width+x])continue;
+   const travel=y-time*45,c=cascadeChannel(y+this.y),u=(x+this.x-c.center)/c.half;
+   const ripple=Math.sin(travel*.19+Math.sin(x*.07)*1.7)*.5+.5;
+   const detail=Math.sin(x*.38+travel*.09)*.5+.5;
+   const light=Math.max(0,ripple-.76)*80*(.35+detail*.65);
+   const material=this.riverMaterial;
+   if(material){
+    const sx=((Math.floor((u+1)*material.width*.5)%material.width)+material.width)%material.width,sy=((Math.floor(travel)%material.height)+material.height)%material.height,i=(sy*material.width+sx)*4;
+    this.put(x,y,material.data[i]*.86+7+light*.3,material.data[i+1]*.86+14+light*.3,material.data[i+2]*.86+15+light*.3,250);
+   }else this.put(x,y,47+detail*13+light,108+detail*17+light,117+detail*17+light,248);
+  }
+ }
+ private drawCurtain(time:number):void {
+  const top=207,bottom=604;
+  for(let y=top;y<=bottom;y++){
+   const t=(y-top)/(bottom-top),center=152+5*t+Math.sin(y*.04-time*2)*.7,half=40+3*t+Math.sin(y*.09-time*5)*.7;
+   const travel=Math.sqrt(y-top+40)*18-time*190;
+   for(let x=Math.floor(center-half-2);x<=center+half+2;x++){
+    const u=(x-center)/half,side=clamp((1-Math.abs(u))*half/2);
+    const lip=clamp((y-top-u*u*2+1)/3),landing=clamp((bottom-y+Math.sin(x*.43)*4+Math.sin(time*7+x*.8)*2)/10);
+    if(side*lip*landing===0)continue;
+    const wave=Math.sin(u*11+travel*.045)*.5+.5;
+    const thread=Math.max(0,Math.sin(u*58+Math.sin(travel*.025+u*4)*.8))**12;
+    const pulse=.3+.7*(Math.sin(travel*.13+u*17)*.5+.5);
+    const sheen=thread*pulse*105;
+    const material=this.material;
+    if(material){
+     const sx=Math.min(material.width-1,Math.max(0,Math.floor((u+1)*.5*(material.width-1)))),sy=((Math.floor(travel)%material.height)+material.height)%material.height,i=(sy*material.width+sx)*4;
+     this.put(x,y,material.data[i]*.92+wave*5,material.data[i+1]*.92+wave*6,material.data[i+2]*.92+wave*6,side*lip*landing*245);
+    }else this.put(x,y,65+wave*28+sheen,133+wave*24+sheen*.8,143+wave*22+sheen*.75,side*lip*landing*250);
    }
   }
-  // The original white spray is removed from the ridge; each fleck now has a life cycle.
-  for(const p of this.foam){
-   const phase=((seconds*.8+p.x*.013+p.y*.007)%1+1)%1,spread=(p.x-155)/70;
-   const x=Math.round(p.x+spread*phase*7+Math.sin(seconds*3+p.y*.09)*1.5),y=Math.round(p.y+phase*11-Math.sin(phase*Math.PI)*5);
-   if(x<0||x>=this.width||y<0||y>=this.height)continue;
-   const i=(y*this.width+x)*4,alpha=Math.round(Math.sin(phase*Math.PI)*235);if(alpha<this.pixels[i+3]&&this.pixels[i]>190)continue;
-   this.pixels[i]=p.r;this.pixels[i+1]=p.g;this.pixels[i+2]=p.b;this.pixels[i+3]=Math.max(this.pixels[i+3],alpha);
+ }
+ private drawLip(time:number):void {
+  for(let x=110;x<=194;x++){
+   const u=(x-152)/42,edge=clamp((1-Math.abs(u))*10),crest=206+u*u*3;
+   for(let y=Math.floor(crest)-2;y<=Math.ceil(crest)+4;y++){
+    const distance=(y-crest)/4,shape=Math.max(0,1-distance*distance),moving=Math.sin(x*.32-time*6)*.5+.5;
+    this.put(x,y,89+moving*62,155+moving*48,166+moving*42,shape*edge*175);
+   }
   }
-
+ }
+ private ellipse(cx:number,cy:number,rx:number,ry:number,r:number,g:number,b:number,alpha:number):void {
+  for(let y=Math.floor(cy-ry);y<=Math.ceil(cy+ry);y++)for(let x=Math.floor(cx-rx);x<=Math.ceil(cx+rx);x++){
+   const d=((x-cx)/rx)**2+((y-cy)/ry)**2;if(d<1)this.put(x,y,r,g,b,alpha*clamp((1-d)*3));
+  }
+ }
+ private drawImpact(time:number):void {
+  const cx=157,cy=607;
+  this.ellipse(cx,cy+4,62+Math.sin(time*2)*2,14+Math.sin(time*1.5),103,173,176,85);
+  for(let i=0;i<72;i++){
+   const phase=(time*(.43+i%5*.035)+i*.6180339)%1,angle=i*2.39996;
+   const radius=9+phase*(24+i%7*4),x=cx+Math.cos(angle)*radius;
+   const y=cy+Math.sin(angle)*radius*.23-Math.sin(phase*Math.PI)*(3+i%4);
+   const alpha=Math.sin(phase*Math.PI)*185;
+   this.ellipse(x,y,1.3+(i%3)*.7, .65+(i%2)*.4,211,239,232,alpha);
+  }
+  // Small broken ripples move away from the impact, rather than a fixed foam outline.
+  for(let i=0;i<3;i++){
+   const p=(time*.45+i/3)%1,rx=22+p*62,ry=4+p*12;
+   for(let j=0;j<54;j++){
+    const angle=.1+j/53*2.9;if((j+i*3)%11<3)continue;
+    this.put(cx+Math.cos(angle)*rx,cy+5+Math.sin(angle)*ry,173,216,208,(1-p)*110);
+   }
+  }
  }
 }

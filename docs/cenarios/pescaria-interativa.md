@@ -39,3 +39,9 @@ A alteração ainda não foi publicada como nova versão Windows.
 - O acabamento submerso dos apoios consulta a água real, incluindo edições do mapa; não colore madeira sobre terra.
 - A vara de bambu tem quatro vistas, com empunhaduras individuais. Norte fica atrás do personagem. As oito combinações de personagem/direção foram conferidas no navegador.
 - A arte `docs/arte/pescaria/fazendeira-com-vara-previa.png` é uma proposta de pose para avaliação; não substitui ainda as animações dos personagens.
+
+## Riacho e cachoeira reconstruídos
+
+A água e a espuma antigas da faixa central foram substituídas por um leito limpo. A composição usa somente a região de água identificada no sprite original; o restante da montanha, pedras, escada e vegetação é preservado. O novo material da queda é independente, com escoamento contínuo, velocidade crescente na descida, bordas levemente irregulares e espuma móvel concentrada no impacto. O riacho superior recebe o material de água do jogo em movimento e uma crista animada na passagem para a queda. Não usa os recortes de espuma da cachoeira anterior.
+
+Validação: testes da animação, margens e plataformas; build de produção; conferência no navegador da preservação dos pixels fora da região alterada, movimento no riacho, em toda a queda e no impacto, e limpeza ao trocar de cenário. Sem nova publicação Windows.

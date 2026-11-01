@@ -1,8 +1,8 @@
-import {isCascadeFoam} from './cascade-flow';
+import {cascadePaintMask} from './cascade-flow';
 import {paintedWaterPoint} from './data/terrain-paint';
 import {submergedWood} from './submerged-wood';
 import {LakeWaterAnimation} from './lake-water-animation';
-import {lakeSurfaceMotion,lakeCascadeMotion,lakeImpactMotion,LAKE_CASCADE} from './data/lake-water-motion';
+import {lakeSurfaceMotion} from './data/lake-water-motion';
 import {FISHER_CABIN} from './data/fisher-cabin';
 import {lakeFishShadows} from './data/lake-fish';
 import {waterFinishChannel} from './data/water-style';
@@ -21,6 +21,8 @@ export function preloadFishingLake(scene:Phaser.Scene):void{
  if(!scene.textures.exists(FISHER_CABIN.texture))scene.load.image(FISHER_CABIN.texture,FISHER_CABIN.file);
  if(!scene.textures.exists('lake-west-source'))scene.load.image('lake-west-source','assets/visual/fishing-lake/west-ridge.png');
  if(!scene.textures.exists('lake-pier-source'))scene.load.image('lake-pier-source','assets/visual/fishing-lake/fishing-pier-relocated.png');
+ if(!scene.textures.exists('lake-cascade-material-source'))scene.load.image('lake-cascade-material-source','assets/visual/fishing-lake/cascade-water-material.png');
+ if(!scene.textures.exists('lake-cascade-bed-source'))scene.load.image('lake-cascade-bed-source','assets/visual/fishing-lake/cascade-dry-bed.png');
  if(!scene.textures.exists('lake-ridge-source'))scene.load.image('lake-ridge-source','assets/visual/fishing-lake/ridge-waterfall.png');
  if(!scene.textures.exists('village-pier-source'))scene.load.image('village-pier-source',pierArt.file);
 }
@@ -35,7 +37,12 @@ export class FishingLakeWorld {
   const before=new Set(scene.children.list);setupTallGrassArt(scene);this.drawGround();
   drawMapTerrainEdits(scene,edits?.terrain??{},namespace+'-paint',lakeWater,'forest')?.setDepth(-99);
   for(const [key,sourceKey] of [['lake-ridge','lake-ridge-source'],['lake-west','lake-west-source']])if(!scene.textures.exists(key)){
-   const source=scene.textures.get(sourceKey).getSourceImage() as HTMLImageElement,canvas=document.createElement('canvas');canvas.width=source.width;canvas.height=source.height;const c=canvas.getContext('2d')!;c.drawImage(source,0,0);const p=c.getImageData(0,0,canvas.width,canvas.height);for(let i=3;i<p.data.length;i+=4){const pixel=(i-3)/4,x=pixel%canvas.width,y=Math.floor(pixel/canvas.width);p.data[i]=key==='lake-ridge'&&isCascadeFoam(x,y,p.data[i-3],p.data[i-2],p.data[i-1],p.data[i])?0:p.data[i]>160?255:0;}c.putImageData(p,0,0);const texture=scene.textures.addCanvas(key,canvas)!;texture.setFilter(0);
+   const source=scene.textures.get(sourceKey).getSourceImage() as HTMLImageElement,canvas=document.createElement('canvas');canvas.width=source.width;canvas.height=source.height;const c=canvas.getContext('2d')!;c.drawImage(source,0,0);const p=c.getImageData(0,0,canvas.width,canvas.height);
+   if(key==='lake-ridge'){
+    const bed=scene.textures.get('lake-cascade-bed-source').getSourceImage() as HTMLImageElement;c.clearRect(0,0,canvas.width,canvas.height);c.drawImage(bed,0,0,canvas.width,canvas.height);const clean=c.getImageData(0,0,canvas.width,canvas.height);
+    for(let i=0;i<p.data.length;i+=4){const pixel=i/4,x=pixel%canvas.width,y=Math.floor(pixel/canvas.width);if(cascadePaintMask(x,y,p.data[i],p.data[i+1],p.data[i+2],p.data[i+3]))for(let k=0;k<4;k++)p.data[i+k]=clean.data[i+k];}
+   }
+   for(let i=3;i<p.data.length;i+=4)p.data[i]=p.data[i]>160?255:0;c.putImageData(p,0,0);const texture=scene.textures.addCanvas(key,canvas)!;texture.setFilter(0);
    if(key==='lake-west'){const r=LAKE_SIDE_CROP;texture.add('body',0,r.x,r.y,r.width,r.height);}
   }
   for(const p of LAKE_SIDE_RIDGES)scene.add.image(p.x,p.y,'lake-west','body').setOrigin(0).setDisplaySize(LAKE_SIDE_CROP.width*p.scale,LAKE_SIDE_CROP.height*p.scale).setFlipX(p.flip).setDepth(-5).setData('lake-landmark','side-ridge');
@@ -114,19 +121,13 @@ export class FishingLakeWorld {
    fish.fillEllipse(0,0,15*s,5.5*s);fish.fillTriangle(-5*s,0,-12*s,-4*s,-12*s,4*s);fish.fillTriangle(0,0,1*s,-4*s,4*s,0);fish.restore();
   }
   const g=this.waterFX;g.clear();
-  // Transparent flow, highlights and spray preserve every pixel of the approved base art.
+  // Lake reflections are separate from the rebuilt stream, curtain and impact.
   for(const p of lakeSurfaceMotion(time,this.edits)){
    g.lineStyle(1,0xb1ddd2,p.alpha);g.beginPath();
    for(let j=0;j<=6;j++){const x=(j/6-.5)*p.radius*2,y=Math.sin(j/6*Math.PI)*2+x*p.lean;j?g.lineTo(p.x+x,p.y+y):g.moveTo(p.x+x,p.y+y);}g.strokePath();
    g.lineStyle(1,0x123e46,p.alpha*.45);g.lineBetween(p.x-p.radius*.6,p.y+4,p.x+p.radius*.25,p.y+4.5);
   }
-  for(const p of lakeCascadeMotion(time)){g.lineStyle(p.width,0xe5ffff,p.alpha);g.lineBetween(p.x,p.y,p.x+Math.sin(p.y*.04)*1.5,Math.min(LAKE_CASCADE.bottom,p.y+p.length));}
-  for(let i=0;i<7;i++){
-   const phase=(time*.0005+i/7)%1,x=LAKE_CASCADE.x+Math.sin(i*2.4)*14,y=LAKE_CASCADE.bottom+8+phase*20,r=20+phase*74;
-   g.lineStyle(1,0xd5f8ef,(1-phase)*.3);g.beginPath();
-   for(let j=0;j<=12;j++){const a=.15+j/12*2.65,px=x+Math.cos(a)*r,py=y+Math.sin(a)*r*.2;j?g.lineTo(px,py):g.moveTo(px,py);}g.strokePath();
-  }
-  for(const p of lakeImpactMotion(time)){g.fillStyle(0xeafff8,p.alpha);g.fillEllipse(p.x,p.y,p.radius*2,p.radius);}
+
 
  }
  destroy():void{this.objects.forEach(o=>o.destroy());this.motion.destroy();}
