@@ -17,3 +17,5 @@ Validação: `tests/fishing-lake.test.ts` testa acesso contínuo, colisões e pe
 O acabamento 4, da floresta, foi escolhido como padrão global para os cenários. `waterFinishChannel` centraliza profundidade e margem para propriedade, floresta, vila, lago, poças do acesso à cidade, pintura do editor e superfície animada. A textura-base permanece a original do jogo.
 
 O acesso à escadaria é uma ligação curta à trilha principal. O anel do lago acompanha o contorno irregular da água e cruza a ponte uma única vez; o antigo ramal paralelo da esquerda foi removido. As copas são reservadas pela silhueta inteira ao redor das trilhas, não somente pelo tronco.
+
+A margem diante da escadaria foi recuada localmente por um contorno suave; a trilha passa pela frente da base, com espaço de terra antes da água. O píer foi deslocado três blocos para oeste, seus objetos ficam fora da trilha e o acesso acompanha a nova posição. A ponte tem oito blocos de extensão, com piso e passagem derivados da mesma configuração, e a trilha se alinha aos dois extremos.

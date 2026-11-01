@@ -11,7 +11,7 @@ const out='/workspace/fishing-lake-qa';fs.mkdirSync(out,{recursive:true});
   const url=await page.evaluate(()=>lake.captureMap());fs.writeFileSync(out+'/lago-mapa-completo.png',Buffer.from(url.split(',')[1],'base64'));
   await page.screenshot({path:out+'/lago-vista-geral.png'});
   check('Save no lago válido',await page.evaluate(async()=>{const s=await import('/src/systems/save.ts');lake.persist();return s.validateSave(s.loadSave());}));
-  for(const[name,x,y]of[['mirante',28,5],['pier',67,46],['entrada-cidade',92,33]]){await page.evaluate(({x,y})=>{lake.player.x=(x+.5)*32;lake.player.y=(y+.5)*32;lake.player.update(0,lake.blockedTile,lake.blockedPoint,false);lake.cameras.main.setZoom(1.25).centerOn(lake.player.x,lake.player.y);},{x,y});await page.screenshot({path:out+'/'+name+'.png'});}
+  for(const[name,x,y]of[['mirante',28,5],['pier',65,46],['entrada-cidade',92,33],['acesso-escada',34,22],['ponte-alinhada',31,60]]){await page.evaluate(({x,y})=>{lake.player.x=(x+.5)*32;lake.player.y=(y+.5)*32;lake.player.update(0,lake.blockedTile,lake.blockedPoint,false);lake.cameras.main.setZoom(1.25).centerOn(lake.player.x,lake.player.y);},{x,y});await page.screenshot({path:out+'/'+name+'.png'});}
   await page.evaluate(()=>{document.querySelector('#ui').style.display='';lake.openMapEditor();});await page.locator('.map-editor-ui[data-map-area="fishingLake"]').waitFor();
   check('Sétimo cenário no editor',await page.locator('button[data-map-area]').count()===7);
   check('Layout original válido',await page.evaluate(()=>{const e=game.scene.getScene('Editor').editor;return e.layoutError(e.history.current)===null;}));

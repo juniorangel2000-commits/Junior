@@ -8,7 +8,7 @@ import {drawMapTerrainEdits} from './map-editor-terrain';
 import {drawEditorProp} from './editor-prop-art';
 import {setupVillagePropAtlas} from './village-prop-atlas';
 import pierArt from '../public/assets/visual/village/pier/manifest.json';
-import {LAKE_RIDGE,LAKE_SIDE_RIDGES,LAKE_SIDE_CROP,LAKE_PIER,lakeObjects,lakeLowVegetationClear,lakeWater,lakeWaterDistance,lakeTrailDistance,lakeBridge,LAKE_CITY_ENTRY,LAKE_CITY_EXIT,LAKE_PROPERTY_ENTRY,LAKE_PROPERTY_EXIT} from './data/fishing-lake';
+import {LAKE_RIDGE,LAKE_SIDE_RIDGES,LAKE_SIDE_CROP,LAKE_PIER,LAKE_BRIDGE,lakeObjects,lakeLowVegetationClear,lakeWater,lakeWaterDistance,lakeTrailDistance,lakeBridge,LAKE_CITY_ENTRY,LAKE_CITY_EXIT,LAKE_PROPERTY_ENTRY,LAKE_PROPERTY_EXIT} from './data/fishing-lake';
 import {drawExitSign} from './exit-signs';
 export function preloadFishingLake(scene:Phaser.Scene):void{
  if(!scene.textures.exists('lake-west-source'))scene.load.image('lake-west-source','assets/visual/fishing-lake/west-ridge.png');
@@ -35,8 +35,8 @@ export class FishingLakeWorld {
   scene.add.image(p.x,p.y,'lake-pier-source').setOrigin(0).setDisplaySize(p.width,p.height).setDepth(-3).setData('lake-landmark','pier');
   scene.add.image(p.x,p.y,'lake-pier-source').setOrigin(0).setDisplaySize(p.width,p.height).setCrop(500,480,1210,100).setDepth(47.5*32);
   scene.add.image(p.x,p.y,'lake-pier-source').setOrigin(0).setDisplaySize(p.width,p.height).setCrop(70,670,480,130).setDepth(49.4*32);
-  this.drawDeck(26.5*32,58.3*32,11*32,3.8*32);
-  for(const [frame,x,y,w,h]of [['crate',84.8,48,44,34],['anchor',82.8,49.2,44,42]] as const)scene.add.image(x*32,y*32,'lake-pier',frame).setOrigin(.5,1).setDisplaySize(w,h).setDepth(y*32);
+  const bridge=LAKE_BRIDGE;this.drawDeck(bridge.x*32,bridge.y*32,bridge.width*32,bridge.height*32);
+  for(const [frame,x,y,w,h]of [['crate',79.5,44,44,34],['anchor',80.5,43.5,44,42]] as const)scene.add.image(x*32,y*32,'lake-pier',frame).setOrigin(.5,1).setDisplaySize(w,h).setDepth(y*32);
   // Small lookout bench remains on the terrace, away from the stairs.
   scene.add.image(28*32,5*32,'woodwork-bench-0').setOrigin(.5,1).setScale(.4).setDepth(5*32);
   for(const p of lakeObjects(edits)){
@@ -60,7 +60,7 @@ export class FishingLakeWorld {
   this.scene.add.image(x,y+(f.y-r.y)*height/r.height,'lake-pier','pier-front').setOrigin(0).setDisplaySize(width,f.height*height/r.height).setDepth(y+height*.84);
  }
  private drawGround():void {
-  const key='lake-natural-ground-v8';if(!this.scene.textures.exists(key)){
+  const key='lake-natural-ground-v11';if(!this.scene.textures.exists(key)){
    const materials=readTerrainSprites(this.scene);if(!materials)throw Error('Terreno do lago indisponível');
    const canvas=document.createElement('canvas');canvas.width=3072;canvas.height=2304;const c=canvas.getContext('2d')!,p=c.createImageData(3072,2304);
    for(let by=0;by<2304;by+=4)for(let bx=0;bx<3072;bx+=4){
