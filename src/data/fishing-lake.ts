@@ -213,6 +213,32 @@ export const LAKE_OBJECTS:LakeObject[]=(()=>{
   if(p.kind!=='fern'||p.scale||!lakeLowVegetationClear(p.x,p.y,undefined,1.5)||result.some(q=>(q.scale??1)>1.3&&Math.hypot(q.x-p.x,q.y-p.y)<4))continue;
   p.scale=1.5;big++;
  }
+ // Dress the open boundary pockets, leaving the existing mountain faces exposed.
+ const corners=[[15,8],[18,16],[10,36],[10,55],[15,65],[26,68],[40,68],[54,68],[64,67],[84,66],[89,58],[88,39],[79,8],[84,13]];
+ const dryFootprint=(x:number,y:number,width:number,height:number)=>[-width/64,0,width/64].every(dx=>[-height/32,-height/64,0].every(dy=>{
+  const px=x+.5+dx,py=y+.78+dy;
+  return px>1&&px<95&&py>1&&py<71&&!lakeProtected(px-.5,py-.5)&&!lakeCliff(px,py)&&lakeWaterDistance(px,py)>1&&lakeTrailDistance(px,py)>1.7;
+ }));
+ for(const[group,[cx,cy]]of corners.entries()){
+  let trees=0,rocks=0,plants=0;
+  for(let i=0;i<180;i++){
+   const seed=hash(18000+group*211+i),angle=(seed%6283)/1000,radius=Math.sqrt((seed>>>10)%100/100)*(4.5+group%3*.7);
+   const x=Math.round(cx+Math.cos(angle)*radius),y=Math.round(cy+Math.sin(angle)*radius*.8);
+   if(i<65&&trees<3+group%3){
+    const scale=.72+(seed%30)/100;
+    if(!lakeTreePlantingClear(x,y,scale)||!dryFootprint(x,y,100*scale,175*scale)||result.some(p=>Math.hypot(p.x-x,p.y-y)<(p.kind==='standingTree'||p.kind==='pine'?1.7:1.1)))continue;
+    const kind=seed%3?'standingTree':'pine';result.push({id:`lake-corner-tree-${group}-${x}-${y}`,kind,x,y,scale,variant:(seed>>>7)%3});trees++;
+   }else if(i<110&&rocks<2+group%2){
+    const kind=(['mossBoulder','stone','shoreStones','fallenLog','stump'] as const)[seed%5],art=natureArt(kind);
+    if(!dryFootprint(x,y,art?.width??36,art?.height??36)||result.some(p=>Math.hypot(p.x-x,p.y-y)<1.55))continue;
+    result.push({id:`lake-corner-${kind}-${group}-${x}-${y}`,kind,x,y});rocks++;
+   }else if(i>=110&&plants<10+group%5){
+    const kind=(['tallGrassA','tallGrassB','tallGrassC','fern','fern','whiteFlowers','bush','mushrooms'] as const)[seed%8];
+    if(!lakeLowVegetationClear(x,y)||result.some(p=>p.x===x&&p.y===y))continue;
+    result.push({id:`lake-corner-${kind}-${group}-${x}-${y}`,kind,x,y});plants++;
+   }
+  }
+ }
  return result.filter(p=>!cabinClearing(p.x,p.y)||p.kind.startsWith('lakeRock'));
 })();
 const cache=new WeakMap<MapEditData,LakeObject[]>();
