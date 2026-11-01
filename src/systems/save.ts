@@ -1,3 +1,5 @@
+import {activeSaveKey,saveKeys} from './save-slot-keys';
+import {validPetShelter} from './pet-shelter';
 import {validDungeonProgress} from '../dungeons/progression';
 import {validDungeonSnapshot} from '../dungeons/snapshot';
 import {validSmithLayout,smithFits,smithNavigation} from './smith-layout';
@@ -32,7 +34,7 @@ import {merchantRoomFits,validMerchantLayout} from '../data/merchant-rooms';
 // A chave e a origem do aplicativo permanecem iguais para localizar partidas antigas.
 export const SAVE_KEY = 'depois-da-chuva-v1';
 export const SAVE_BACKUP_KEY = 'depois-da-chuva-v1-backup';
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 const TOOLS: Tool[] = ['hand', 'plant', 'water', 'gate', 'repair', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'hoe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
 const PROGRESS_KEYS: Array<keyof ProgressData> = ['collected', 'craftedTools', 'harvested', 'processed', 'builtWorkbench', 'sawn', 'builtShelter'];
 const emptyProgress = (): ProgressData => ({ collected: false, craftedTools: false, harvested: false, processed: false, builtWorkbench: false, sawn: false, builtShelter: false });
@@ -56,6 +58,7 @@ export function validateProfile(value: unknown): value is CharacterProfile {
 
 export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
+  if (value.petShelter !== undefined && !validPetShelter(value.petShelter)) return false;
   if (value.forestMapEdits !== undefined && (!validateMapEdits(value.forestMapEdits)||value.forestMapEdits.area!=='forest')) return false;
   if(value.villageMapEdits!==undefined&&(!validateMapEdits(value.villageMapEdits)||value.villageMapEdits.area!=='village'))return false;
   if (value.mapEdits !== undefined && (!validateMapEdits(value.mapEdits)||value.mapEdits.area!==undefined)) return false;
@@ -205,6 +208,9 @@ export function validateSave(value: unknown): value is SaveData {
 
 /** Converte em memória; a leitura nunca modifica nem substitui o slot original. */
 export function migrateSave(value: unknown): SaveData | null {
+  // Version 3 admits the new dog species. Older applications recognize it as
+  // a future save and refuse replacement instead of dropping these companions.
+  if (isRecord(value) && value.version === 2) value = { ...value, version: SAVE_VERSION };
   // New shop fixtures can cover a previously valid saved position. Recover
   // only proven old-layout positions, keeping inventory, money and orders intact.
   if(isRecord(value)&&value.version===SAVE_VERSION&&value.blacksmithHome===undefined&&(value.blacksmithLayoutRevision===undefined||value.blacksmithLayoutRevision===2)){
@@ -299,13 +305,14 @@ function futureSave(raw:string):boolean {
   try { const v=JSON.parse(raw)?.version;return typeof v==='number'&&v>SAVE_VERSION; } catch { return false; }
 }
 /** Reading never rewrites or repairs storage. Future saves are never downgraded. */
-export function inspectSave():SaveReadResult {
+export function inspectSave(base?:string):SaveReadResult {
   try {
-    const raw=localStorage.getItem(SAVE_KEY);
+    const keys=saveKeys(base??activeSaveKey());
+    const raw=localStorage.getItem(keys.main);
     if(raw!==null&&futureSave(raw))return {status:'future',data:null};
     const data=raw===null?null:parseStored(raw);
     if(data)return {status:'valid',data};
-    for(const key of [...SAVE_RECENT_KEYS,SAVE_BACKUP_KEY]){
+    for(const key of [...keys.recent,keys.backup]){
       const backup=localStorage.getItem(key),recovered=backup===null?null:parseStored(backup);
       if(recovered)return {status:'recovered',data:recovered};
     }
@@ -315,41 +322,44 @@ export function inspectSave():SaveReadResult {
 /** Call only after the player confirms recovery/replacement. Preserve exact bytes. */
 export function preserveInvalidSave():boolean {
   try {
-    const raw=localStorage.getItem(SAVE_KEY);
+    const keys=saveKeys(activeSaveKey());
+    const raw=localStorage.getItem(keys.main);
     if(raw===null||parseStored(raw))return true;
     if(futureSave(raw))return false;
-    const preserved=localStorage.getItem(SAVE_DAMAGED_KEY);
+    const preserved=localStorage.getItem(keys.damaged);
     if(preserved!==null&&preserved!==raw)return false;
-    if(preserved===null)localStorage.setItem(SAVE_DAMAGED_KEY,raw);
-    return localStorage.getItem(SAVE_DAMAGED_KEY)===raw;
+    if(preserved===null)localStorage.setItem(keys.damaged,raw);
+    return localStorage.getItem(keys.damaged)===raw;
   } catch { return false; }
 }
 export function loadSave():SaveData|null { return inspectSave().data; }
 export function hasSave():boolean { return loadSave()!==null; }
 export function saveGame(data:SaveData):boolean {
   try {
+    const keys=saveKeys(activeSaveKey());
     if(!validateSave(data))return false;
-    const previous=localStorage.getItem(SAVE_KEY);
+    const previous=localStorage.getItem(keys.main);
     if(previous!==null){
       if(futureSave(previous))return false;
       const valid=parseStored(previous);
-      if(!valid&&localStorage.getItem(SAVE_DAMAGED_KEY)!==previous)return false;
+      if(!valid&&localStorage.getItem(keys.damaged)!==previous)return false;
       if(valid&&previous!==JSON.stringify(data)){
         const version=(JSON.parse(previous) as {version?:number}).version;
         if(version!==SAVE_VERSION){
-          if(localStorage.getItem(SAVE_BACKUP_KEY)===null)localStorage.setItem(SAVE_BACKUP_KEY,previous);
-        }else{
-          const recent=localStorage.getItem(SAVE_RECENT_KEYS[0]);
+          if(localStorage.getItem(keys.backup)===null)localStorage.setItem(keys.backup,previous);
+        }
+        {
+          const recent=localStorage.getItem(keys.recent[0]);
           if(recent!==previous){
-            if(recent!==null&&parseStored(recent))localStorage.setItem(SAVE_RECENT_KEYS[1],recent);
-            localStorage.setItem(SAVE_RECENT_KEYS[0],previous);
+            if(recent!==null&&parseStored(recent))localStorage.setItem(keys.recent[1],recent);
+            localStorage.setItem(keys.recent[0],previous);
           }
         }
       }
     }
-    localStorage.setItem(SAVE_KEY,JSON.stringify(data));return true;
+    localStorage.setItem(keys.main,JSON.stringify(data));return true;
   } catch { return false; }
 }
 export function clearSave():boolean {
-  try { localStorage.removeItem(SAVE_KEY);return true; } catch { return false; }
+  try { localStorage.removeItem(activeSaveKey());return true; } catch { return false; }
 }

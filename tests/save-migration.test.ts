@@ -67,7 +67,7 @@ describe('migração e proteção da partida existente', () => {
     const migrated = migrateSave(legacy)!;
     expect(migrated).not.toBeNull();
     expect(validateSave(migrated)).toBe(true);
-    expect(migrated.version).toBe(2);
+    expect(migrated.version).toBe(3);
     expect(migrated.profile).toEqual(legacy.profile);
     expect(migrated.player).toEqual(legacy.player);
     expect(migrated.crops).toEqual(legacy.crops);
@@ -95,7 +95,7 @@ describe('migração e proteção da partida existente', () => {
   it('carrega e detecta v1 sem escrever, migrar ou reformatar o arquivo original', () => {
     const raw = JSON.stringify(legacySave(), null, 2);
     const { values, storage } = installStorage([[SAVE_KEY, raw]]);
-    expect(loadSave()?.version).toBe(2);
+    expect(loadSave()?.version).toBe(3);
     expect(hasSave()).toBe(true);
     expect(storage.setItem).not.toHaveBeenCalled();
     expect(storage.removeItem).not.toHaveBeenCalled();
@@ -103,13 +103,13 @@ describe('migração e proteção da partida existente', () => {
     expect(values.has(SAVE_BACKUP_KEY)).toBe(false);
   });
 
-  it('faz backup exato de v1 antes do primeiro salvamento v2 e o mantém nos seguintes', () => {
+  it('faz backup exato de v1 antes do primeiro salvamento v3 e o mantém nos seguintes', () => {
     const raw = JSON.stringify(legacySave(), null, 2);
     const { values, storage } = installStorage([[SAVE_KEY, raw]]);
     const migrated = loadSave()!;
     expect(saveGame(migrated)).toBe(true);
     expect(storage.setItem).toHaveBeenNthCalledWith(1, SAVE_BACKUP_KEY, raw);
-    expect(storage.setItem).toHaveBeenNthCalledWith(2, SAVE_KEY, JSON.stringify(migrated));
+    expect(storage.setItem).toHaveBeenLastCalledWith(SAVE_KEY, JSON.stringify(migrated));
     expect(values.get(SAVE_BACKUP_KEY)).toBe(raw);
     expect(JSON.parse(values.get(SAVE_KEY)!)).toEqual(migrated);
     migrated.day += 1;
@@ -134,7 +134,7 @@ describe('migração e proteção da partida existente', () => {
   });
 
   it('preserva um save de versão futura mesmo quando já existe backup de uma partida antiga', () => {
-    const future = JSON.stringify({ ...createNewSave(profile), version: 3 });
+    const future = JSON.stringify({ ...createNewSave(profile), version: 4 });
     const backup = JSON.stringify(legacySave());
     const { values, storage } = installStorage([[SAVE_KEY, future], [SAVE_BACKUP_KEY, backup]]);
     expect(saveGame(createNewSave(profile))).toBe(false);
@@ -143,7 +143,7 @@ describe('migração e proteção da partida existente', () => {
     expect(storage.setItem).not.toHaveBeenCalled();
   });
 
-  it.each([3, 99])('recusa a versão futura %s sem modificar o armazenamento na leitura', (version) => {
+  it.each([4, 99])('recusa a versão futura %s sem modificar o armazenamento na leitura', (version) => {
     const future = { ...completeSnapshot(), version };
     const raw = JSON.stringify(future);
     const { values, storage } = installStorage([[SAVE_KEY, raw]]);

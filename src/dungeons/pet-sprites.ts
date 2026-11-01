@@ -1,3 +1,6 @@
+import golden from '../../public/assets/visual/dungeons/pet-golden-retriever.json';
+import collie from '../../public/assets/visual/dungeons/pet-border-collie.json';
+import { PET_SPECIES, isDogPet } from './config';
 import { petTextureKey, recolorPetPixels } from "./pet-appearance";
 import type Phaser from "phaser";
 import cat from "../../public/assets/visual/dungeons/pet-cat.json";
@@ -7,10 +10,10 @@ import { setupVillagePropAtlas } from "../village-prop-atlas";
 import type { PetDirection } from "./pet-directions";
 export { petDirection, type PetDirection } from "./pet-directions";
 export type PetAction =
-  "idle" | "walk" | "run" | "attack" | "sit" | "stand" | "rest";
-export const PET_ART = { cat, dog };
+  "idle" | "walk" | "run" | "attack" | "bark" | "sit" | "stand" | "rest";
+export const PET_ART = { cat, dog, 'golden-retriever': golden, 'border-collie': collie };
 export function preloadPetArt(scene: Phaser.Scene): void {
-  for (const species of ["cat", "dog"] as const)
+  for (const species of PET_SPECIES)
     if (
       !scene.textures.exists(`dungeon-pet-${species}`) &&
       !scene.textures.exists(`dungeon-pet-${species}-source`)
@@ -18,7 +21,7 @@ export function preloadPetArt(scene: Phaser.Scene): void {
       scene.load.image(`dungeon-pet-${species}-source`, PET_ART[species].file);
 }
 export function setupPetArt(scene: Phaser.Scene): void {
-  for (const species of ["cat", "dog"] as const) {
+  for (const species of PET_SPECIES) {
     const key = `dungeon-pet-${species}`;
     if (!scene.textures.exists(key) && scene.textures.exists(key + "-source")) {
       setupVillagePropAtlas(scene, key, key + "-source", PET_ART[species]);
@@ -46,7 +49,7 @@ export function setupPetArt(scene: Phaser.Scene): void {
 }
 /** Locomotion and quiet poses are slower; attack timing stays at 10 fps. */
 export const petFrameRate = (action: PetAction) =>
-  action === "attack" ? 10 : action === "run" ? 8 : action === "rest" ? 4 : 6;
+  action === "attack" ? 10 : action === "bark" ? 8 : action === "run" ? 8 : action === "rest" ? 4 : 6;
 
 export function petSpritePose(
   species: PetSpecies,
@@ -60,6 +63,12 @@ export function petSpritePose(
   const animations = atlas.animations as Partial<
     Record<PetAction, Partial<Record<PetDirection, string[]>>>
   >;
+  let playback = Math.max(0, time);
+  const bark = animations.bark;
+  if ((action === 'idle' || action === 'rest') && bark) {
+    const phase = playback % 18, duration = bark.south!.length / petFrameRate('bark');
+    if (phase >= 14 && phase < 14 + duration) { action = 'bark'; playback = phase - 14; }
+  }
   const clips = animations[action] ?? animations.idle!;
   const cardinal = direction.endsWith("east")
     ? "east"
@@ -72,9 +81,8 @@ export function petSpritePose(
     animations.idle![direction] ??
     animations.idle![cardinal]!;
   const rate = petFrameRate(action);
-  let playback = Math.max(0, time);
   // Dogs stay quiet between occasional idle sequences, including wait mode.
-  if (species === "dog" && (action === "idle" || action === "rest")) {
+  if (isDogPet(species) && (action === "idle" || action === "rest")) {
     const phase = playback % 12;
     playback = phase >= 4 && phase < 4 + list.length / rate ? phase - 4 : 0;
   }
@@ -90,7 +98,7 @@ export function petSpritePose(
   return {
     texture: petTextureKey(species, rare),
     frame,
-    scale: atlas.animation.bodyHeight / atlas.animation.referenceHeight,
+    scale: atlas.animation.bodyHeight * (isDogPet(species) ? 1.15 : 1) / atlas.animation.referenceHeight,
     originX: pivot.x / rect.width,
     originY: pivot.y / rect.height,
   };
@@ -144,3 +152,6 @@ export function petPortrait(
   );
   return canvas.toDataURL();
 }
+
+export const petAttackHitAt = (species: PetSpecies): number => PET_ART[species].animation.attackHitFrame / petFrameRate('attack');
+export const petAttackMoves = (species: PetSpecies): boolean => species !== 'golden-retriever';

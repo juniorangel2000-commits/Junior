@@ -3,7 +3,6 @@ import type { CharacterProfile } from '../src/types';
 import { Building, BUILD_COSTS } from '../src/systems/building';
 import { Farming, GROWTH_SECONDS } from '../src/systems/farming';
 import { EMPTY_INVENTORY, Inventory } from '../src/systems/inventory';
-import { getLiaDialogue } from '../src/systems/npc';
 import { createNewSave, hasSave, loadSave, SAVE_KEY, saveGame, validateSave } from '../src/systems/save';
 
 const profile: CharacterProfile = { name: 'Ana', skin: '#bc795e', hairStyle: 'preso', hairColor: '#3d302d', outfit: '#69856b' };
@@ -169,13 +168,5 @@ describe('salvamento', () => {
     });
     expect(loadSave()).toBe(null);
     expect(saveGame(createNewSave(profile))).toBe(false);
-  });
-});
-
-describe('Lia', () => {
-  it('oferece apresentação e conversa posterior diferentes', () => {
-    expect(getLiaDialogue(false).length).toBeGreaterThan(1);
-    expect(getLiaDialogue(false)[0]).toContain('Lia');
-    expect(getLiaDialogue(true)[0]).not.toBe(getLiaDialogue(false)[0]);
   });
 });

@@ -1,3 +1,4 @@
+import { advanceBackgroundVillage } from '../systems/village-background';
 import {preloadPetArt} from "../dungeons/pet-sprites";
 import {installWorldCompanion} from "../dungeons/world-pet-controller";
 import {naturalPlantGround} from '../systems/tree-avoidance';
@@ -274,6 +275,7 @@ export class ForestScene extends Phaser.Scene {
     const strike=this.toolUse.advance(delta);if(strike){const node=this.world.resourceAt(strike.target.x,strike.target.y);if(node?.id===strike.target.id&&!this.player.isSwimming)this.hitResource(node,strike.tool);}
     const active=this.toolUse.current;if(active&&(active.tool==='pickaxe'||active.tool==='hatchet'))this.toolVisual?.show(active.tool,active.direction,this.player.x,this.player.y,this.toolUse,toolCondition(this.state,active.tool).tier);else if(!this.toolVisual?.sprite.getData('gathering'))this.toolVisual?.hide();
     Object.assign(this.state,advanceClock(this.state,delta*GAME_MINUTES_PER_SECOND));
+    advanceBackgroundVillage(this.state, delta);
     this.trees.forEach(t=>t.setAlpha(this.player.y<t.y&&Math.abs(this.player.x-t.x)<t.displayWidth*.4&&this.player.y>t.y-t.displayHeight*.85?.42:1));
     this.resourceLifecycle?.tick();
     this.hudElapsed+=delta;if(this.hudElapsed>=.1){this.updateHUD();this.hudElapsed=0;}

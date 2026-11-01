@@ -1,3 +1,5 @@
+import {canAdoptPet,homePet} from '../systems/pet-shelter';
+import { isPetSpecies } from './config';
 import { validWorldPetState, type WorldPetState } from "./world-pet-state";
 import { Inventory } from "../systems/inventory";
 import { ITEM_IDS } from "../data/items";
@@ -98,7 +100,7 @@ export function validDungeonProgress(value: unknown): value is DungeonProgress {
       typeof p.id !== "string" ||
       !/^[\w-]{1,90}$/.test(p.id) ||
       ids.has(p.id) ||
-      !["dog", "cat"].includes(p.species as string) ||
+      !isPetSpecies(p.species) ||
       typeof p.rare !== "boolean" ||
       !count(p.xp) ||
       (p.world !== undefined && !validWorldPetState(p.world)) ||
@@ -275,8 +277,8 @@ export function applyDungeonResult(
     );
   if (
     result.foundPet &&
-    ["dog", "cat"].includes(result.foundPet) &&
-    p.pets.length < 100
+    isPetSpecies(result.foundPet) &&
+    canAdoptPet(save)
   )
     p.pets.push({
       id: "pet-" + result.id,
@@ -291,6 +293,7 @@ export function applyDungeonResult(
         efficiency: 0,
       },
     });
+  if (result.foundPet && p.pets.some(p=>p.id==='pet-'+result.id)) homePet(save, 'pet-'+result.id);
   save.villageEconomy ??= { coins: 0, met: [] };
   save.villageEconomy.coins = Math.min(
     999999999,

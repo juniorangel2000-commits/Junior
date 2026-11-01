@@ -65,9 +65,9 @@ fs.mkdirSync(out, { recursive: true });
         document.querySelector("#ui")?.dataset.area === "cityForest",
     );
     await page.keyboard.press("e");
+    const began = Date.now();
     await page.locator("[data-city-confirm]").click();
     await page.waitForFunction(() => game.scene.isActive("Dungeons"));
-    const began = Date.now();
     await page.waitForSelector(".dungeon-travel");
     await page.screenshot({ path: out + "/viagem.png" });
     await page.waitForSelector("[data-start]");

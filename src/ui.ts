@@ -1,5 +1,9 @@
+import {createSaveLibraryPanel} from './save-library-panel';
+import type {SaveData} from './types';
+import {petShelterHTML} from './pet-shelter-menu';
 import { petMenuHTML, petCollectionHTML, type PetMenuView, type PetCommand } from "./dungeons/pet-menu";
-import {inspectSave} from './systems/save';
+import { CompanionQuickPanel } from './dungeons/companion-quick-panel';
+import {inspectSave,hasSave} from './systems/save';
 import {inventoryCapacity} from './systems/inventory';
 import {USABLE_VILLAGE_ITEMS} from './systems/consumables';
 import { fencePreview, gatePreview } from './fence-art';
@@ -13,7 +17,6 @@ import { gameAudio } from './audio';
 import { toolbarIcon } from './toolbar-icons';
 import {controlGuide} from './control-guide';
 import {DEVELOPMENT_TOOLS} from './development-tools';
-import { CHARACTER_WIDTH, drawLiaPortrait } from './character-sprites';
 import { createCharacterEditor } from './character-creator';
 import { createTitleScreen } from './title-screen';
 import { CinematicPlayer } from './cinematic-player';
@@ -135,11 +138,13 @@ export class GameUI {
   private base = document.createElement('div');
   private overlay = document.createElement('div');
   private notifications = document.createElement('div');
+  private companionQuickPanel?: CompanionQuickPanel;
   private mode: 'title' | 'creation' | 'opening' | 'hud' = 'title';
   private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'pets' | null = null;
   private focusBeforeModal?: HTMLElement;
   private onModalClose?: () => void;
   private existingSave = false;
+  private cleanupLibrary?: () => void;
   private cleanupCreation?: () => void;
   private cleanupTitle?: () => void;
   private cleanupOpening?: () => void;
@@ -287,6 +292,7 @@ export class GameUI {
   }
 
   showTitle(hasSave: boolean): void {
+    this.cleanupLibrary?.(); this.cleanupLibrary = undefined;
     this.cleanupOpening?.(); this.cleanupOpening = undefined;
     this.hideCameraZoom();
     const stored=inspectSave();
@@ -315,8 +321,20 @@ export class GameUI {
       icon,
       onNewGame: () => this.showCreation(),
       onContinue: () => this.callbacks.onContinue(),
+      onLoadGame: () => this.showSaveLibrary(),
       onMapEditor: DEVELOPMENT_TOOLS ? () => this.callbacks.onMapEditor() : undefined,
       onBackgroundMode: mode => this.callbacks.onTitleBackground(mode),
+    });
+  }
+
+  private showSaveLibrary(): void {
+    this.cleanupLibrary?.();
+    this.modal='slots';
+    this.overlay.classList.add('active');
+    this.cleanupLibrary=createSaveLibraryPanel(this.overlay,{
+      close:()=>this.showTitle(hasSave()),
+      newGame:()=>{this.cleanupLibrary?.();this.cleanupLibrary=undefined;this.modal=null;this.showCreation();},
+      load:()=>{this.showTitle(hasSave());this.callbacks.onContinue();},
     });
   }
 
@@ -332,7 +350,7 @@ export class GameUI {
     this.callbacks.onPause(true);
     this.base.innerHTML = '<div class="creation-backdrop"></div>';
     this.cleanupCreation = createCharacterEditor(this.overlay, {
-      hasSave: this.existingSave,
+      hasSave: false,
       icon,
       onBack: () => this.showTitle(this.existingSave),
       onStart: profile => this.callbacks.onNewGame(profile),
@@ -391,7 +409,7 @@ export class GameUI {
         <button type="button" data-zoom="0" aria-label="Restaurar zoom padrão" title="Restaurar para 100% · Home"><span class="camera-zoom-value" aria-live="polite">100%</span></button>
         <button type="button" data-zoom="1" aria-label="Aumentar zoom" title="Aproximar a câmera · + ou roda do mouse">+</button>
       </div>
-      <button class="journal-reopen" ${this.journalCollapsed ? '' : 'hidden'} aria-controls="journal-panel" aria-expanded="false" aria-label="Abrir missões" title="Abrir missões">${icon('leaf')}<span>Missões</span></button><aside id="journal-panel" class="journal" ${this.journalCollapsed ? 'hidden' : ''}><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="journal-close" aria-controls="journal-panel" aria-label="Fechar missões" title="Fechar missões">${icon('close')}</button></header><div id="journal-content" class="journal-content"><div id="farming-quest" aria-label="Missão primeira colheita"></div><div class="journal-rule"></div><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera na parte oeste da propriedade.</p><div class="journal-rule"></div><div class="quest" id="lia-quest"><span class="quest-circle"></span>Converse com Lia <kbd>E</kbd></div><small>Seu tempo. Seu caminho.</small></div></aside>
+      <button class="journal-reopen" ${this.journalCollapsed ? '' : 'hidden'} aria-controls="journal-panel" aria-expanded="false" aria-label="Abrir missões" title="Abrir missões">${icon('leaf')}<span>Missões</span></button><aside id="journal-panel" class="journal" ${this.journalCollapsed ? 'hidden' : ''}><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="journal-close" aria-controls="journal-panel" aria-label="Fechar missões" title="Fechar missões">${icon('close')}</button></header><div id="journal-content" class="journal-content"><div id="farming-quest" aria-label="Missão primeira colheita"></div><div class="journal-rule"></div><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera na parte oeste da propriedade.</p><small>Seu tempo. Seu caminho.</small></div></aside>
       <div class="location-pill">${icon('pin')}<span id="hud-location">Minha propriedade</span></div>
       <div class="bottom-center"><div class="interaction-prompt"><kbd id="hud-interaction-key">E</kbd><span id="hud-prompt">Explore o vale ao seu redor</span></div><div id="hud-resource-progress" class="resource-progress" hidden></div><div class="toolbelt"></div><div class="tool-status"><strong id="active-tool">Explorar</strong><span id="tool-cost">Coletar · conversar · colher</span></div></div>
     </div>`;
@@ -456,6 +474,30 @@ export class GameUI {
 
   dismissTopToolbar(): boolean { return this.topToolbar?.dismiss() ?? false; }
 
+  showPetShelter(view: () => SaveData, upgrade: () => {ok:boolean;message:string}): void {
+    this.openModal('pets');
+    const render = () => {
+      this.overlay.innerHTML = petShelterHTML(view());
+      this.overlay.querySelector<HTMLButtonElement>('[data-shelter-close]')!.onclick=()=>this.closeModal();
+      this.overlay.querySelector<HTMLButtonElement>('[data-shelter-upgrade]')?.addEventListener('click',()=>{const r=upgrade();this.toast(r.message);render();});
+      this.overlay.querySelector<HTMLButtonElement>('[data-shelter-pets]')?.addEventListener('click',()=>{this.closeModal();this.callbacks.onCompanions?.();});
+      this.overlay.querySelector<HTMLButtonElement>('[data-shelter-close]')!.focus();
+    };
+    render();
+  }
+
+  createCompanionQuickPanel(command: (command: PetCommand) => boolean): CompanionQuickPanel | undefined {
+    if (this.mode !== 'hud') return;
+    return this.companionQuickPanel = new CompanionQuickPanel(this.base.querySelector<HTMLElement>('.hud')!, {
+      allowed: () => !this.isModalOpen(),
+      toggleMenu: () => {
+        if (this.modal === 'pets') this.closeModal();
+        else if (this.mode === 'hud' && !this.isModalOpen()) this.callbacks.onCompanions?.();
+      },
+      command,
+    });
+  }
+
   showCompanions(
     view: () => PetMenuView,
     command: (command: PetCommand) => boolean,
@@ -470,6 +512,10 @@ export class GameUI {
       this.overlay.innerHTML = collection
         ? petCollectionHTML(view())
         : petMenuHTML(view());
+      this.overlay.querySelector<HTMLButtonElement>('[data-pet-floating]')?.addEventListener('click', () => {
+        this.companionQuickPanel?.show();
+        this.closeModal();
+      });
       this.overlay.querySelector<HTMLButtonElement>("[data-pet-collection]")
         ?.addEventListener("click", () => {
           collection = true;
@@ -501,7 +547,7 @@ export class GameUI {
         .forEach((button) => {
           button.onclick = () => {
             command({
-              kind: button.dataset.petCommand as "follow" | "stay" | "recall",
+              kind: button.dataset.petCommand as "follow" | "stay" | "recall" | "shelter",
             });
             render();
           };
@@ -641,7 +687,6 @@ export class GameUI {
       farmingQuest.innerHTML = '<p class="eyebrow">PRIMEIRA COLHEITA</p>' + farmingSteps.map(([id,label,done]) =>
         `<div class="quest${done ? ' complete' : ''}" data-farming-step="${id}"><span class="quest-circle"></span>${label}</div>`).join('');
     }
-    this.base.querySelector('#lia-quest')?.classList.toggle('complete', data.metLia);
   }
 
   toast(message: string): void {
@@ -664,12 +709,8 @@ export class GameUI {
     panel.className = 'dialogue-card panel';
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-label', `Conversa com ${name}`);
-    panel.innerHTML = `<div class="dialogue-portrait"><canvas width="24" height="32" aria-label="Lia"></canvas></div><div class="dialogue-copy"><div class="eyebrow">GENTE DO VALE</div><h2></h2><p></p><div class="dialogue-footer"><small></small><button class="text-button"></button></div></div>`;
+    panel.innerHTML = `<div class="dialogue-portrait" aria-hidden="true">${icon('leaf')}</div><div class="dialogue-copy"><div class="eyebrow">GENTE DO VALE</div><h2></h2><p></p><div class="dialogue-footer"><small></small><button class="text-button"></button></div></div>`;
     panel.querySelector('h2')!.textContent = name;
-    const portrait = panel.querySelector('canvas')!;
-    drawLiaPortrait(portrait);
-    portrait.style.width = `${CHARACTER_WIDTH * 2}px`;
-    portrait.style.height = 'auto';
     let index = 0;
     const next = panel.querySelector<HTMLButtonElement>('button')!;
     const update = (): void => {

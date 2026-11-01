@@ -2,7 +2,7 @@ import { isPetDirection } from "./pet-directions";
 import type { PetDirection } from "./pet-sprites";
 export type PetWorldArea = "property" | "forest" | "village" | "cityForest";
 export interface WorldPetState {
-  mode: "follow" | "stay";
+  mode: "follow" | "stay" | "shelter";
   area: PetWorldArea;
   space: string;
   x: number;
@@ -19,7 +19,8 @@ export function validWorldPetState(value: unknown): value is WorldPetState {
   if (!value || typeof value !== "object") return false;
   const v = value as Record<string, unknown>;
   return (
-    ["follow", "stay"].includes(String(v.mode)) &&
+    ["follow", "stay", "shelter"].includes(String(v.mode)) &&
+    (v.mode !== "shelter" || v.area === "property" && v.space === "outdoors") &&
     Object.hasOwn(PET_WORLD_AREAS, String(v.area)) &&
     typeof v.space === "string" &&
     /^[a-z0-9:-]{1,64}$/.test(v.space) &&
@@ -36,7 +37,7 @@ export function validWorldPetState(value: unknown): value is WorldPetState {
 }
 export function worldPetLocation(state: WorldPetState): string {
   return (
-    PET_WORLD_AREAS[state.area] +
+    (state.mode === "shelter" ? "Casinha dos companheiros" : PET_WORLD_AREAS[state.area]) +
     (state.space === "home"
       ? " · dentro de casa"
       : state.space === "blacksmith"

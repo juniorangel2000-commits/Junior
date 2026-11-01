@@ -31,6 +31,7 @@ export function setupDungeonArt(scene: Phaser.Scene): void {
       "dungeon-" + id,
       "dungeon-" + id + "-source",
       m,
+      id.startsWith("zombie-") || id.startsWith("boss-"),
     );
     if (scene.textures.exists("dungeon-" + id + "-source"))
       scene.textures.remove("dungeon-" + id + "-source");

@@ -61,3 +61,14 @@
 
 #ui .simple-character-studio .direction-arrow{display:flex;align-items:center;justify-content:center;width:20px;height:20px}
 #ui .simple-character-studio .direction-arrow .icon{width:16px;height:16px}
+
+/* A dedicated clearing, without a fixed protagonist behind the selection. */
+#ui .creation-backdrop {
+ background: linear-gradient(90deg,#0b1c1b4d,#142b2633 55%,#081a1759),url('/assets/visual/creation/homestead-clearing.png') center/cover no-repeat;
+ image-rendering: pixelated; backdrop-filter: none;
+}
+#ui .dialogue-portrait[aria-hidden=true] {display:flex;align-items:center;justify-content:center;color:#9ba75e}
+#ui .dialogue-portrait>.icon {width:40px;height:40px}
+#ui .creation-backdrop {background-color:#142b23}
+#ui .simple-character-studio .preview-stage {width:100%;margin:10px 0 0;border-radius:4px;overflow:hidden;background:linear-gradient(#142b2622,#142b2622),url('/assets/visual/creation/homestead-clearing.png') center 70%/cover no-repeat}
+#ui .simple-character-studio .preview-sun,#ui .simple-character-studio .preview-ground {display:none}

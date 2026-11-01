@@ -10,13 +10,11 @@ export const CHARACTER_TEXTURE_DENSITY = 4;
 export const CHARACTER_FRAME_WIDTH = CHARACTER_WIDTH * CHARACTER_TEXTURE_DENSITY;
 export const CHARACTER_FRAME_HEIGHT = CHARACTER_HEIGHT * CHARACTER_TEXTURE_DENSITY;
 const frames = new Map<string, HTMLCanvasElement>();
-let liaSource: HTMLImageElement | HTMLCanvasElement | undefined;
 const frameKey = (id: CharacterId, direction: CharacterDirection, phase: number): string =>
   `character:${id}:${characterFrame(direction, phase, resolveCharacter({ characterId: id }).walkFrames)}`;
 
 /** Original user-supplied images, with independent idle and walk poses in eight directions. */
 export function preloadCharacterSprites(scene: Phaser.Scene): void {
-  scene.load.image('asset-lia', 'assets/visual/characters/lia.png');
   for (const character of CHARACTERS) for (const direction of CHARACTER_DIRECTIONS) {
     characterSourcePaths(character.id, direction).forEach((path, phase) => {
       scene.load.image(frameKey(character.id, direction, phase), path);
@@ -26,7 +24,6 @@ export function preloadCharacterSprites(scene: Phaser.Scene): void {
 
 export function setupCharacterSprites(scene: Phaser.Scene): void {
   frames.clear();
-  liaSource = scene.textures.get('asset-lia').getSourceImage() as HTMLImageElement;
   for (const character of CHARACTERS) for (const direction of CHARACTER_DIRECTIONS) {
     characterSourcePaths(character.id, direction).forEach((_, phase) => {
       const key = frameKey(character.id, direction, phase);
@@ -44,14 +41,6 @@ export function setupCharacterSprites(scene: Phaser.Scene): void {
       frames.set(key, canvas);
     });
   }
-}
-
-/** The dialogue portrait uses the same preserved image as Lia in the world. */
-export function drawLiaPortrait(canvas: HTMLCanvasElement): void {
-  canvas.width = CHARACTER_WIDTH; canvas.height = CHARACTER_HEIGHT;
-  const ctx = canvas.getContext('2d')!;
-  ctx.imageSmoothingEnabled = false;
-  if (liaSource) ctx.drawImage(liaSource, 0, 0);
 }
 
 /** Names and legacy save colors never alter the supplied artwork. */

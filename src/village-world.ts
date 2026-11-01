@@ -1,3 +1,4 @@
+import { reusableTerrainTexture } from './terrain-texture-cache';
 import {drawVillageNorthRoad} from "./village-north-road";
 import {VILLAGE_NORTH_GATE,VILLAGE_NORTH_ARRIVAL,villageNorthConnectionDistance} from './data/city-forest';
 import {drawVillageDressing} from './village-dressing';
@@ -40,8 +41,8 @@ const MAP_WIDTH=WORLD_WIDTH*TILE,MAP_HEIGHT=WORLD_HEIGHT*TILE;
  * pixels. Geometry is sampled on an 8px grid and interpolated below: movement
  * never reruns the expensive terrain generation. */
 function drawGround(scene:Phaser.Scene,edits?:MapEditData,namespace='village'):void {
- const key=namespace+'-ground-v3';if(scene.textures.exists(key))scene.textures.remove(key);
- if(!scene.textures.exists(key)){
+ const key=namespace+'-ground-v3';
+ if(!reusableTerrainTexture(scene.textures,key,edits?.terrain)){
   const canvas=document.createElement('canvas');canvas.width=MAP_WIDTH;canvas.height=MAP_HEIGHT;
   const c=canvas.getContext('2d')!,sprites=readTerrainSprites(scene);c.imageSmoothingEnabled=false;
   if(sprites){
@@ -165,8 +166,8 @@ export class VillageWorld {
   this.smoke.forEach(plume=>plume.destroy());this.environment.forEach(object=>{if(object.active)object.destroy();});
  }
  private drawLake():void {
-  const key=this.namespace+'-lake-v3';if(this.scene.textures.exists(key))this.scene.textures.remove(key);
-  if(!this.scene.textures.exists(key)){
+  const key=this.namespace+'-lake-v3';
+  if(!reusableTerrainTexture(this.scene.textures,key,this.edits?.terrain)){
    const sprites=readTerrainSprites(this.scene);if(!sprites)return;
    const canvas=document.createElement('canvas');canvas.width=608;canvas.height=768;
    const c=canvas.getContext('2d')!,pixels=c.createImageData(608,768);

@@ -24,7 +24,7 @@ export class TopToolbar {
       { id: 'map', label: 'Mapa', shortcut: 'M', cls: 'map-button' },
       { id: 'crafting', label: 'Fabricação', shortcut: 'C', cls: 'crafting-button' },
       { id: 'building', label: 'Construção', shortcut: 'B', cls: 'building-button' },
-      { id: 'pets', label: 'Companheiros', cls: 'toolbar-pets-button' },
+      { id: 'pets', label: 'Companheiros', shortcut: 'K', cls: 'toolbar-pets-button' },
       { id: 'audio', label: 'Música', cls: 'toolbar-audio-button' },
       { id: 'graphics', label: 'Gráficos', cls: 'toolbar-graphics-button' },
       { id: 'save', label: 'Salvar', cls: 'toolbar-save-button' },

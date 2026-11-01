@@ -1,3 +1,4 @@
+import {canAdoptPet} from '../systems/pet-shelter';
 import type {CityTravelTransition} from '../dungeons/city-travel-transition';
 import type { DungeonReward } from "../dungeons/progression";
 import { getVisualSettings } from "../visual-settings";
@@ -270,6 +271,7 @@ export class DungeonScene extends Phaser.Scene {
       this.state.dungeons!,
       pet,
       Math.floor(Math.random() * 4294967295),
+      canAdoptPet(this.state),
     );
     this.world?.destroy();
     this.world = new DungeonWorld(this, id);
@@ -417,33 +419,20 @@ export class DungeonScene extends Phaser.Scene {
               resting,
             )
           : ordinaryPose;
-      image
-        .setTexture(
-          e.kind === "boss"
-            ? "dungeon-boss-" + bossProfile(e.bossTier ?? s.round).art
-            : ordinaryPose!.texture,
-          pose?.frame ??
-            direction +
-              "-" +
-              (action?.stage === "warning" || action?.stage === "recovery"
-                ? 0
-                : Math.floor(s.elapsed * (e.kind === "runner" ? 9 : 5)) % 4),
-        )
-        .setOrigin(pose?.originX ?? 0.5, pose?.originY ?? 1)
-        .setScale(e.kind === "boss" ? 1 : e.special ? 0.25 : 0.2)
-        .setPosition(e.x, e.y)
-        .setDepth(e.y);
-      if (e.kind === "boss") {
-        const height = (e.bossTier ?? s.round) === 50 ? 112 : 94;
-        if (pose?.referenceHeight)
-          image.setScale(height / pose.referenceHeight);
-        else
-          image.setDisplaySize(
-            (image.frame.width / image.frame.height) * height,
-            height,
-          );
-      } else if (pose?.referenceHeight)
-        image.setScale((e.special ? 65 : 52) / pose.referenceHeight);
+      const texture = e.kind === 'boss'
+        ? 'dungeon-boss-' + bossProfile(e.bossTier ?? s.round).art
+        : ordinaryPose!.texture;
+      const frame = pose?.frame ?? direction + '-' +
+        (resting ? 0 : Math.floor(s.elapsed * (e.kind === 'runner' ? 9 : 5)) % 4);
+      if (image.texture.key !== texture || image.frame.name !== frame) image.setTexture(texture, frame);
+      const originX = pose?.originX ?? .5, originY = pose?.originY ?? 1;
+      if (image.originX !== originX || image.originY !== originY) image.setOrigin(originX, originY);
+      const height = e.kind === 'boss' ? ((e.bossTier ?? s.round) === 50 ? 112 : 94) : e.special ? 65 : 52;
+      const scale = pose?.referenceHeight
+        ? height / pose.referenceHeight
+        : e.kind === 'boss' ? height / image.frame.realHeight : e.special ? .25 : .2;
+      if (image.scaleX !== scale || image.scaleY !== scale) image.setScale(scale);
+      image.setPosition(e.x, e.y).setDepth(e.y);
       if (flashed.has(e.id)) image.setTintFill(0xffebc2);
       else if (e.kind === "boss") image.clearTint();
       else if (e.special) image.setTint(0xb59e8b);

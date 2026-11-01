@@ -247,7 +247,7 @@ describe("world companions", () => {
     expect(image.visible).toBe(false);
     expect(save.dungeons!.selectedPet).toBeUndefined();
   });
-  it("registers one update hook and removes it on scene shutdown", () => {
+  it("registers companion and ambient hooks once and removes both on shutdown", () => {
     const { save, scene, events } = fixture(),
       context = () => ({
         save,
@@ -261,7 +261,7 @@ describe("world companions", () => {
     const ui = { toast: vi.fn() } as unknown as GameUI;
     installWorldCompanion(scene, context, ui, () => true);
     installWorldCompanion(scene, context, ui, () => true);
-    expect(events.listenerCount("postupdate")).toBe(1);
+    expect(events.listenerCount("postupdate")).toBe(2);
     expect(getWorldPetController(scene)).toBeDefined();
     events.emit("shutdown");
     expect(events.listenerCount("postupdate")).toBe(0);

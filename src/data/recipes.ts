@@ -97,3 +97,5 @@ RECIPES.push(
  {id:'windowKit',name:'Janela pronta',description:'Componente de construção.',cost:{board:3,peg:2},output:{windowKit:1}},
  {id:'fenceKit',name:'Cerca pronta',description:'Componente de construção.',cost:{wood:3},output:{fenceKit:1}}
 );
+
+RECIPES.push({id:'pet-bedding-cloth',name:'Tecer tecido',description:'Costura aprendida com Celina; serve para as camas da casinha dos pets.',cost:{fiber:4,cord:1},output:{cloth:2},unlock:'backpack'});

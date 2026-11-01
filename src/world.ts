@@ -1,3 +1,6 @@
+import {mountainSolid,mountainFits,onHomesteadPetPath} from './data/homestead-landscape';
+import {drawHomesteadLandscape} from './homestead-landscape-art';
+import {shelterReserved, shelterSolid, type PetShelterData} from './systems/pet-shelter';
 import {drawTreePlantingSoil} from './tree-planting-soil';
 import {styleGrowingTree} from './tree-growth-art';
 import {isFiberPlant,fiberPlantFor,fiberPlantArt,nearRiverBank} from './data/fiber-plants';
@@ -38,7 +41,6 @@ export { TILE, WORLD_WIDTH, WORLD_HEIGHT, isWaterTile, getRegionAt, locationAt, 
 export const SPAWN = { x: 25 * TILE + 16, y: 18 * TILE + 16 };
 /** Adult trees are about three character heights; only artwork grows, not trunk collisions. */
 export const TREE_VISUAL_SCALE = 1.6;
-export const NPC_POSITION = { x: 29 * TILE + 16, y: 17 * TILE + 16 };
 export const WORLD_LANDMARKS = {
   chimney: { x: 853, y: 294 },
   porch: { x: 784, y: 506 },
@@ -79,7 +81,13 @@ function randomSource(seed: number): () => number {
   return () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
 }
 
-export function createWorld(scene: Phaser.Scene, depletedResources: string[], buildings: readonly BuildingData[] = [], mapEdits?: MapEditData,textureNamespace='world', farmAt = isFarmTile): WorldView {
+export function createWorld(scene: Phaser.Scene, depletedResources: string[], buildings: readonly BuildingData[] = [], mapEdits?: MapEditData,textureNamespace='world', farmAt = isFarmTile, petShelter?: PetShelterData): WorldView {
+  const cliff = !!petShelter && mountainFits(petShelter, buildings)
+    && !Array.from({length:WORLD_WIDTH*10},(_,i)=>({x:i%WORLD_WIDTH,y:Math.floor(i/WORLD_WIDTH)})).some(p=>
+      mountainSolid(petShelter,p.x*32+16,p.y*32+16)
+      && (farmAt(p.x,p.y)||mapEdits?.terrain[`${p.x},${p.y}`]==='water'));
+  const cliffSolid = (x:number,y:number) => !!petShelter && cliff && mountainSolid(petShelter,x,y);
+  const petReserved = (x:number,y:number) => !!petShelter && (shelterReserved(petShelter,x,y)||cliffSolid(x*32+16,y*32+16)||onHomesteadPetPath(petShelter,x*32+16,y*32+16));
   const seamLayout=hasMapSeam(mapEdits);
   const villageGate=propertyVillageGateActive(mapEdits);
   if(villageGate&&mapEdits)mapEdits={...mapEdits,terrain:clearPropertyVillagePaths(mapEdits.terrain)};
@@ -109,7 +117,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   };
   const bridgeAt = isBridgeTile;
   const treeReservations=new Set<string>();
-  const dryTreeCell=(x:number,y:number)=>treeGroundClear(x,y,waterPointAt)&&!bridgeAt(x,y)&&!wellSiteTile(x,y)&&!homesteadResourceReserved(x,y);
+  const dryTreeCell=(x:number,y:number)=>treeGroundClear(x,y,waterPointAt)&&!bridgeAt(x,y)&&!wellSiteTile(x,y)&&!homesteadResourceReserved(x,y)&&!petReserved(x,y);
   const shoreTreePosition=(x:number,y:number):{x:number;y:number}|undefined=>{
     for(let radius=1;radius<=8;radius++) {
       const candidates:Array<{x:number;y:number;distance:number}>=[];
@@ -302,6 +310,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     const explicitlyPlaced=!!mapEdits?.objects[id];
     if(seamLayout&&!explicitlyPlaced&&(seamBand(x,y,'property')||seamPassage(x,y,'property')))return;
     if(villageGate&&!explicitlyPlaced&&(isPropertyVillagePassage(x,y)||isPropertyVillageCanopyClearance(x,y)))return;
+    if(petReserved(x,y))return;
     if(!treeGroundClear(x,y,waterPointAt)||bridgeAt(x,y)||wellSiteTile(x,y)||homesteadResourceReserved(x,y)&&!explicitlyPlaced) {
       const land=shoreTreePosition(x,y);if(!land)return;
       x=land.x;y=land.y;
@@ -376,13 +385,14 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     candidates.push({ id, x, y, kind });
   }
   const looseLayout = placeLooseResources(candidates, {
-    isStaticBlocked: (x, y) => blocked.has(key(x, y))||wellSiteTile(x,y)||homesteadResourceReserved(x,y),
+    isStaticBlocked: (x, y) => petReserved(x,y)||blocked.has(key(x, y))||wellSiteTile(x,y)||homesteadResourceReserved(x,y),
     isTreeTile: (x, y) => originalForestTiles.has(key(x, y))||forestTiles.has(key(x,y)), buildings,
   });
   const occupiedResources = new Set(forestTiles);
   const addLooseResource = (node: ResourceNode): void => {
     if(seamLayout&&seamPassage(node.x,node.y,'property'))return;
     if(villageGate&&!mapEdits?.objects[node.id]&&isPropertyVillagePassage(node.x,node.y))return;
+    if(petReserved(node.x,node.y))return;
     if(wellSiteTile(node.x,node.y)||homesteadResourceReserved(node.x,node.y)&&!mapEdits?.objects[node.id])return;
     if (depleted.has(node.id) || occupiedResources.has(key(node.x, node.y))&&!node.id.startsWith('growth-')) return;
     const {id,kind}=node;let {x,y}=node;
@@ -468,10 +478,10 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
       } else if (editorIndex >= 0) editorObjects.splice(editorIndex, 1);
   };
   const resourceAt = (x: number, y: number) => resources.find((node) => node.x === x && node.y === y);
-  const solidTile = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y))||propertyHouseSolidTile(x,y);
+  const solidTile = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y))||propertyHouseSolidTile(x,y)||cliffSolid(x*32+16,y*32+16)||!!petShelter&&shelterSolid(petShelter,x*32+16,y*32+16);
   const pointSolid=(x:number,y:number)=>{
     const tx=Math.floor(x/TILE),ty=Math.floor(y/TILE);
-    return tx<1||ty<1||tx>=WORLD_WIDTH-1||ty>=WORLD_HEIGHT-1||blocked.has(key(tx,ty))||resourceBlocked.has(key(tx,ty))||propertyHouseSolidPoint(x,y);
+    return tx<1||ty<1||tx>=WORLD_WIDTH-1||ty>=WORLD_HEIGHT-1||blocked.has(key(tx,ty))||resourceBlocked.has(key(tx,ty))||propertyHouseSolidPoint(x,y)||cliffSolid(x,y)||!!petShelter&&shelterSolid(petShelter,x,y);
   };
   const isBlocked = (x: number, y: number) => solidTile(x, y) || wellSolidTile(x,y) || waterAt(x, y) && !bridgeAt(x, y);
   const isBlockedPoint = (x: number, y: number) => {
@@ -480,6 +490,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   };
   const waterTouchesTile = (x: number, y: number) => [0.01, TILE / 2, TILE - 0.01].some(dx =>
     [0.01, TILE / 2, TILE - 0.01].some(dy => waterPointAt(x * TILE + dx, y * TILE + dy)));
+  if(petShelter)drawHomesteadLandscape(scene,petShelter,cliff,(x,y)=>isBlockedPoint(x,y)||buildings.some(b=>buildingFootprint(b).some(p=>p.x===Math.floor(x/32)&&p.y===Math.floor(y/32))),[buildings,mapEdits?.terrain]);
   // Old grass decorations must not appear on a newly painted path or pond.
   decorateProperty(scene, { isBlocked: (x, y) => mapEdits?.terrain[key(x, y)] !== undefined || isBlocked(x, y), resourceAt,buildings,textureKey:`${textureNamespace}-ground-details`,placeStone:(x,y)=>{const id=`shoreStones-${x}-${y}`;addLooseResource({id,x,y,kind:'vein'});const image=resourceImages.get(id);if(image&&scene.textures.exists('lake-rock-2')){image.setTexture('lake-rock-2').setDisplaySize(52,52).setOrigin(.5,124/128);const object=editorObjects.find(o=>o.id===id);if(object){object.kind='shoreStones';object.texture='lake-rock-2';}}} });
 

@@ -352,6 +352,7 @@ describe("snapshots, rewards, maps and hordes", () => {
       hairColor: "#754323",
       outfit: "#638a9d",
     });
+    save.petShelter = {stage:3,x:960,y:352};
     save.villageEconomy = { coins: 0, met: [] };
     const result = {
       id: "reward-1",

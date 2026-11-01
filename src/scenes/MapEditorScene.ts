@@ -7,7 +7,7 @@ import Phaser from 'phaser';
 import {MapEditor} from '../map-editor';
 import {MapEditHistory,isProtectedMapTile,type MapEditData} from '../systems/map-editor';
 import {defaultMap,type MapArea} from '../data/default-maps';
-import {createWorld,TILE,NPC_POSITION,type WorldView,type WorldEditorObject} from '../world';
+import {createWorld,TILE,type WorldView,type WorldEditorObject} from '../world';
 import {ForestWorld} from '../forest-world';
 import {isTreeKind,treeGroundClear} from '../systems/tree-ground';
 import {forestWater,forestWaterDistanceAt,FOREST_ANIMALS} from '../data/ancient-forest';
@@ -56,7 +56,6 @@ export class MapEditorScene extends Phaser.Scene {
    else if(area==='village'){village=this.villageView=new VillageWorld(this,map,'editor-village');property=undefined;forest=undefined;}
    else {
     property=createWorld(this,save.depletedResources,save.buildings,map,'editor-property',(x,y)=>farming.isPrepared(x,y));forest=undefined;
-    this.add.sprite(NPC_POSITION.x,NPC_POSITION.y,'lia').setOrigin(.5,1).setDepth(NPC_POSITION.y);
     for(const b of save.buildings){
      if(b.kind==='fence')drawConnectedFence(this,b,save.buildings,save.day);
      else if(b.kind==='gate')drawGate(this,b);

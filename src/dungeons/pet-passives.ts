@@ -40,7 +40,7 @@ const BONUSES = {
 
 /** Species passives stay active while equipped, including during pet recovery. */
 export function petPlayerBonuses(pet?: Companion): Readonly<PetPlayerBonuses> {
-  return pet ? BONUSES[pet.species][pet.rare ? "shiny" : "common"] : NONE;
+  return pet ? BONUSES[pet.species === "cat" ? "cat" : "dog"][pet.rare ? "shiny" : "common"] : NONE;
 }
 
 export function petBonusDescription(pet: Companion): string {

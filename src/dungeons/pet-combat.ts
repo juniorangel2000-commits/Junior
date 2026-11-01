@@ -11,7 +11,7 @@ export interface PetAttackAction {
   targetY: number;
   hit: boolean;
 }
-export function validPetAttack(value: unknown): value is PetAttackAction {
+export function validPetAttack(value: unknown, maxDuration = .8): value is PetAttackAction {
   if (!value || typeof value !== "object") return false;
   const v = value as Record<string, unknown>;
   return (
@@ -19,7 +19,7 @@ export function validPetAttack(value: unknown): value is PetAttackAction {
     typeof v.age === "number" &&
     Number.isFinite(v.age) &&
     v.age >= 0 &&
-    v.age <= 0.8 &&
+    v.age <= maxDuration &&
     isPetDirection(v.direction) &&
     Number.isSafeInteger(v.targetId) &&
     Number(v.targetId) >= 0 &&

@@ -1,6 +1,8 @@
 import type { PetSpecies } from "./config";
 
 const COLORS = {
+  'golden-retriever': [[28,25,25],[187,170,145],[255,250,234]],
+  'border-collie': [[28,35,43],[111,139,157],[243,244,237]],
   dog: [
     [28, 23, 19],
     [194, 172, 129],

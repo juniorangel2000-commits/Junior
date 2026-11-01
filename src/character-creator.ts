@@ -49,7 +49,7 @@ export function createCharacterEditor(
         <section class="studio-section"><span class="field-label">Personagem</span><div class="character-roster" role="group" aria-label="Personagens disponíveis">${CHARACTERS.map(character => `<button type="button" class="character-choice choice${character.id === profile.characterId ? ' selected' : ''}" data-character="${character.id}" aria-pressed="${character.id === profile.characterId}"><canvas aria-hidden="true"></canvas><span>${character.label}</span>${icon('check')}</button>`).join('')}</div></section>
         <p class="character-preview-tip">Use as setas da prévia para ver todos os lados e experimentar a caminhada.</p>
         <p class="simple-movement-tip">${icon('arrow')} Caminhe com WASD ou as setas. Combine duas teclas para seguir na diagonal.</p>
-        <footer class="creation-submit">${options.hasSave ? '<p class="save-warning">Ao começar, sua história salva neste navegador será substituída.</p>' : '<p class="creation-tip">O vale está esperando por você.</p>'}<button class="button button-primary start-button" type="submit">Começar minha história ${icon('arrow')}</button></footer>
+        <footer class="creation-submit">${options.hasSave ? '<p class="save-warning">Ao começar, sua história salva neste navegador será substituída.</p>' : '<p class="creation-tip">Uma nova partida será criada. Suas outras histórias serão preservadas.</p>'}<button class="button button-primary start-button" type="submit">Começar minha história ${icon('arrow')}</button></footer>
       </div>
     </form>`;
   holder.replaceChildren(card);

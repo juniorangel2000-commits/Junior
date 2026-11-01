@@ -111,7 +111,7 @@ describe('continuidade do cultivo', () => {
     const legacy = JSON.parse(JSON.stringify(old)); delete legacy.inventory.hoe;
     const raw = JSON.stringify(legacy);
     const setItem = vi.fn();
-    vi.stubGlobal('localStorage',{getItem:()=>raw,setItem});
+    vi.stubGlobal('localStorage',{getItem:(key:string)=>key==='depois-da-chuva-v1'?raw:null,setItem});
     const migrated = loadSave()!;
     expect(migrated).toEqual(old);
     expect(validateSave(migrated)).toBe(true);

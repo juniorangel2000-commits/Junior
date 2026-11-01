@@ -1,3 +1,4 @@
+import { prepareVillageRoutines, villageRoutineNavigation } from '../systems/village-background';
 import {preloadPetArt} from "../dungeons/pet-sprites";
 import {installWorldCompanion} from "../dungeons/world-pet-controller";
 import {VILLAGE_NORTH_GATE,VILLAGE_NORTH_ARRIVAL} from '../data/city-forest';
@@ -111,7 +112,7 @@ export class VillageScene extends Phaser.Scene {
   this.paused=false;this.leaving=false;this.elapsed=0;this.hudElapsed=0;this.exitPassage.reset();this.northPassage.reset();
   this.zoom=loadCameraZoom();this.inventory=new Inventory(this.state.inventory);
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
-  this.world=new VillageWorld(this,this.state.villageMapEdits);this.createVillagers();this.createDailyRoutines();
+  this.world=new VillageWorld(this,this.state.villageMapEdits);this.createVillagers();prepareVillageRoutines(this.state);this.createDailyRoutines();
   const saved=this.state.villagePosition,entry=villagePixelPoint(this.world.entry());
   const valid=saved&&![[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>this.blockedPoint(saved.x+dx,saved.y+dy));
   this.player=new Player(this,this.state.profile,valid?saved.x:entry.x,valid?saved.y:entry.y,'village-player');
@@ -187,7 +188,7 @@ export class VillageScene extends Phaser.Scene {
   for(const id of ['augusto','bento','rosa','tobias','amelia','nilo','celina','damiao','helena','icaro'] as const){
    const npc=this.villagers.find(n=>n.data.id===id)!;
    const shop=id==='bento'?this.bentoRoutine.state.area==='blacksmith-home':this.residents.get(id)!.shop;
-   const nav=id==='bento'?smithNavigation(this.smithLayout):merchantRoomNavigation(id,this.merchantLayouts.get(id));
+   const nav=villageRoutineNavigation(this.state,id);
    const direction=id==='bento'?this.bentoRoutine.state.direction:this.residents.get(id)!.direction;
    const routine=new MerchantDailyRoutine(id,{x:npc.sprite.x,y:npc.sprite.y,direction,shop},nav,this.state.villageRoutines?.[id],npc.frames||6,owner=>this.routines.get(owner)?.homeNavigation??(owner==='bento'?smithNavigation(this.smithLayout):merchantRoomNavigation(owner,this.merchantLayouts.get(owner))));
    const s=routine.state,blocked=s.area==='shop'?(x:number,y:number)=>!routine.navigation.validPosition!(x,y):this.world.isBlockedPoint;

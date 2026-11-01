@@ -56,6 +56,7 @@ export interface VillageEconomy {
   stock?:Partial<Record<ItemId,StockRecord>>;
 }
 export interface SaveData {
+  petShelter?: import('./systems/pet-shelter').PetShelterData;
   dungeons?:import('./dungeons/progression').DungeonProgress;
   dungeonRun?:import('./dungeons/run').DungeonSnapshot;
   treeGrowth?:import('./systems/tree-growth').TreeGrowthData;
@@ -88,7 +89,7 @@ export interface SaveData {
   recruitedAnimals?: string[];
   animalPositions?: {forest:AnimalPosition[];property:AnimalPosition[]};
   animalEscort?: AnimalEscort;
-  version: 2;
+  version: 3;
   quickbar?: QuickSlot[];
   wateringCanWater?: number;
   homeSupplies?: { wateringCan: boolean; seedPacket: boolean };

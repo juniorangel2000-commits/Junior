@@ -1,3 +1,4 @@
+import { advanceBackgroundVillage } from '../systems/village-background';
 import {CityTravelTransition} from '../dungeons/city-travel-transition';
 import {preloadPetArt} from "../dungeons/pet-sprites";
 import {installWorldCompanion,getWorldPetController} from "../dungeons/world-pet-controller";
@@ -160,6 +161,7 @@ export class CityForestScene extends Phaser.Scene{
   if(Math.hypot(this.player.x-before.x,this.player.y-before.y)>.1)gameAudio.play('step');
   this.farming.update(dt);
   Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));
+    advanceBackgroundVillage(this.state, dt);
   for(const tree of this.world.trees)tree.setAlpha(this.player.y<tree.y&&Math.abs(this.player.x-tree.x)<65&&this.player.y>tree.y-170?.45:1);
   this.elapsed+=dt;this.updateHUD();if(this.elapsed>5){this.persist();this.elapsed=0;}
  }

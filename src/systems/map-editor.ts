@@ -50,8 +50,7 @@ export function isProtectedMapTile(x: number, y: number, area?: 'forest'|'villag
   if(area==='village')return !!villageBuildingAt(x,y)||villageDoorApproach(x,y)||villagePropAt(x,y);
   const houseAndPorch = x >= 20 && x <= 28 && y >= 9 && y <= 17;
   const arrival = x >= 24 && x <= 26 && y >= 18 && y <= 19;
-  return houseAndPorch || arrival || isFarmTile(x, y) || isBridgeTile(x, y)
-    || (x === 29 && y === 17);
+  return houseAndPorch || arrival || isFarmTile(x, y) || isBridgeTile(x, y);
 }
 
 /** Dry floor changes preserve access while objects still keep their old reservations. */

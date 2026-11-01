@@ -70,7 +70,7 @@ describe('compatibilidade dos dados antigos de aparência', () => {
     };
     const original = structuredClone(legacy);
     const migrated = migrateSave(legacy)!;
-    expect(migrated.version).toBe(2);
+    expect(migrated.version).toBe(3);
     expect(migrated.profile).toEqual(legacyProfile);
     expect(resolveCharacterAppearance(migrated.profile).shirtColor).toBe(DEFAULT_SHIRT_COLOR);
     expect(legacy).toEqual(original);

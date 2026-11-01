@@ -14,6 +14,7 @@ export interface MerchantRoutineState {
  serviceUntil:number;socialUntil:number;socialDay:number;
  /** Omitted in legacy saves and when the resident occupies their own shop. */
  roomOwner?:RoutineId;
+ updatedAt?:number;
 }
 export const MERCHANT_DAILY_PLAN={
  opening:8*60,lunch:12*60,return:13*60+30,closing:{augusto:20*60,bento:19*60,rosa:18*60,tobias:18*60,amelia:18*60,nilo:18*60,celina:18*60,damiao:18*60,helena:22*60,icaro:18*60},
@@ -36,6 +37,7 @@ export function validMerchantRoutine(v:unknown):v is MerchantRoutineState{
   &&Number.isFinite(s.wait)&&s.wait>=0&&s.wait<=60
   &&[s.serviceUntil,s.socialUntil].every(n=>Number.isFinite(n)&&n>=0&&n<=1440*1_000_001)
   &&Number.isSafeInteger(s.socialDay)&&s.socialDay>=0&&s.socialDay<=999999
+  &&(s.updatedAt===undefined||Number.isFinite(s.updatedAt)&&s.updatedAt>=0&&s.updatedAt<=1440*1_000_001)
   &&(s.roomOwner===undefined||s.area==='shop'&&dailyMerchant(s.roomOwner));
 }
 export function validMerchantRoutines(value:unknown):boolean{
@@ -119,6 +121,7 @@ export class MerchantDailyRoutine {
  step(seconds:number,clock:GameClock,env:RoutineEnvironment){
   const s=this.state;let phase=0,moving=false,transferred=false;
   this.walking=false;
+  if(Number.isFinite(seconds)&&seconds>0)s.updatedAt=absolute(clock);
   if(this.conversationHeld)return{...s,phase,moving,transferred};
   if(!Number.isFinite(seconds)||seconds<=0)return{...s,phase,moving,transferred};seconds=Math.min(seconds,.1);
   const now=absolute(clock),period=merchantPeriod(this.owner,clock.time);

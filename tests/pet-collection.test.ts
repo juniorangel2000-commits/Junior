@@ -3,10 +3,10 @@ import { petCollectionHTML, type PetMenuView } from "../src/dungeons/pet-menu";
 import { petSpritePose } from "../src/dungeons/pet-sprites";
 import { recolorPetPixels } from "../src/dungeons/pet-appearance";
 
-it("shows all four locked variations for a new player, without equip actions", () => {
+it("shows all eight locked variations for a new player, without equip actions", () => {
   const html = petCollectionHTML({ pets: [], icons: {}, nearby: false });
-  expect(html).toContain("0 de 4");
-  expect(html.match(/data-unlocked="false"/g)).toHaveLength(4);
+  expect(html).toContain("0 de 8");
+  expect(html.match(/data-unlocked="false"/g)).toHaveLength(8);
   expect(html).not.toContain("data-pet-select");
   expect(html.toLowerCase()).not.toContain("shiny");
 });
@@ -32,7 +32,7 @@ it("unlocks only rescued species and variants, counts duplicates once and uses v
     icons: { "cat-rare": "gold.png" },
   };
   const html = petCollectionHTML(view);
-  expect(html).toContain("1 de 4");
+  expect(html).toContain("1 de 8");
   expect(html.match(/data-unlocked="true"/g)).toHaveLength(1);
   expect(html).toContain("2 na coleção");
   expect(html).toContain('src="gold.png"');

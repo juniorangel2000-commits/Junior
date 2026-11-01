@@ -1,3 +1,7 @@
+import {canAdoptPet, homePet} from '../systems/pet-shelter';
+import {ShelterResidents} from './shelter-residents';
+import { installAmbientBirds } from '../ambient-birds';
+import { PET_SPECIES } from './config';
 import type Phaser from "phaser";
 import type { SaveData } from "../types";
 import type { GameUI } from "../ui";
@@ -5,6 +9,7 @@ import { WorldCompanion, type CompanionMap } from "./world-companion";
 import { petFreePoint, type PetPoint } from "./world-pet-state";
 import { petPortrait, setupPetArt } from "./pet-sprites";
 import type { PetCommand, PetMenuView } from "./pet-menu";
+import type { CompanionQuickPanel } from './companion-quick-panel';
 export interface WorldPetContext extends CompanionMap {
   save: SaveData;
   player: PetPoint;
@@ -22,6 +27,7 @@ export function installWorldCompanion(
   persist: () => boolean,
 ): void {
   if (getWorldPetController(scene)) return;
+  installAmbientBirds(scene, context);
   const controller = new WorldPetController(scene, context, ui, persist);
   (scene as CompanionScene)[controllerSlot] = controller;
   const update = (_time: number, delta: number) =>
@@ -37,6 +43,8 @@ export function installWorldCompanion(
 }
 export class WorldPetController {
   companion?: WorldCompanion;
+  private residents?: ShelterResidents;
+  private quickPanel?: CompanionQuickPanel;
   private key = "";
   private save?: SaveData;
   constructor(
@@ -47,12 +55,20 @@ export class WorldPetController {
   ) {}
   update(dt: number): void {
     const c = this.context();
+    if (this.quickPanel && !this.quickPanel.element.isConnected) {
+      this.quickPanel.destroy();
+      this.quickPanel = undefined;
+    }
+    if (c.save.petShelter?.stage === 3) this.residents ??= new ShelterResidents(this.scene);
+    this.residents?.update(c, dt);
     if (!c.enabled) {
       this.companion?.setVisible(false);
+      this.quickPanel?.hide();
       return;
     }
+    this.quickPanel ??= this.ui.createCompanionQuickPanel?.(command => this.command(command));
     const pet = c.save.dungeons?.pets.find(
-        (p) => p.id === c.save.dungeons?.selectedPet,
+        (p) => p.id === c.save.dungeons?.selectedPet && p.world?.mode !== "shelter",
       ),
       key = pet ? `${pet.id}:${c.area}:${c.space}` : "";
     if (key !== this.key || c.save !== this.save) {
@@ -72,13 +88,17 @@ export class WorldPetController {
       }
     }
     this.companion?.update(c.canMove ? dt : 0, c.player);
+    this.quickPanel?.update({
+      pets: c.save.dungeons?.pets ?? [], selected: c.save.dungeons?.selectedPet,
+      nearby: !!this.companion?.image.visible, icons: {},
+    }, true, !this.ui.isModalOpen());
   }
   private view(): PetMenuView {
     const c = this.context(),
       p = c.save.dungeons,
       icons: Record<string, string> = {};
     setupPetArt(this.scene);
-    for (const species of ["cat", "dog"] as const) {
+    for (const species of PET_SPECIES) {
       for (const rare of [false, true]) {
         icons[`${species}${rare ? "-rare" : ""}`] = petPortrait(
           this.scene,
@@ -92,6 +112,8 @@ export class WorldPetController {
       selected: p?.selectedPet,
       nearby: !!this.companion?.image.visible,
       icons,
+      shelterReady: c.save.petShelter?.stage === 3,
+      adoptionAvailable: canAdoptPet(c.save),
     };
   }
   openMenu(): void {
@@ -107,7 +129,10 @@ export class WorldPetController {
     if (!p) return false;
     const before = structuredClone(p);
     let transition: "sit" | "stand" | undefined;
-    if (command.kind === "select") {
+    if (command.kind === "shelter") {
+      const result = homePet(c.save, p.selectedPet??'');
+      if(!result.ok){this.ui.toast(result.message);return false;}
+    } else if (command.kind === "select") {
       if (command.id && !p.pets.some((pet) => pet.id === command.id))
         return false;
       p.selectedPet = command.id;
@@ -170,6 +195,10 @@ export class WorldPetController {
     return true;
   }
   destroy(): void {
+    this.quickPanel?.destroy();
+    this.quickPanel = undefined;
+    this.residents?.destroy();
+    this.residents = undefined;
     this.companion?.destroy();
     this.companion = undefined;
     this.key = "";

@@ -1,0 +1,13 @@
+.save-library { width: min(760px, 94vw); max-height: 88dvh; overflow: auto; }
+.save-library .modal-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.save-library .modal-heading .icon-button { width: 32px; height: 32px; font-size: 22px; }
+.save-library-list { display: grid; gap: 12px; margin-top: 15px; }
+.saved-game { padding: 14px; border: 1px solid #b58d56; border-radius: 7px; background: #fff1d377; }
+.saved-game h3 { margin: 0 0 8px; overflow-wrap: anywhere; }
+.saved-game p { line-height: 1.5; margin: 6px 0; }
+.saved-game small { display: block; line-height: 1.5; }
+.saved-game-actions, .saved-game-rename { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.saved-game-rename label { display: grid; gap: 6px; flex: 1 1 100%; }
+.saved-game-rename input { width: 100%; min-height: 38px; padding: 8px; border: 1px solid #b58d56; border-radius: 4px; color: #513c26; background: #fff6df; }
+.saved-game .saved-game-delete { color: #8b3e2d; }
+.save-library-feedback { min-height: 1.3em; line-height: 1.5; }

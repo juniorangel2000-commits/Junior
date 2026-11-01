@@ -9,7 +9,10 @@ export type WeaponId =
   | "rotating-blade"
   | "orbiting-shield";
 export type Rarity = "common" | "rare" | "super-rare" | "legendary";
-export type PetSpecies = "dog" | "cat";
+export const PET_SPECIES = ['dog','cat','golden-retriever','border-collie'] as const;
+export type PetSpecies = typeof PET_SPECIES[number];
+export const isPetSpecies = (value: unknown): value is PetSpecies => typeof value === 'string' && (PET_SPECIES as readonly string[]).includes(value);
+export const isDogPet = (species: PetSpecies): boolean => species !== 'cat';
 export const DUNGEONS = {
   "abandoned-central-square": {
     name: "Praça Central Abandonada",
@@ -169,7 +172,10 @@ export const WEAPONS: Record<
     speed: 0,
   },
 };
+const DOG_STATS = { evasion: .7, damage: 8, health: 70, speed: 72, cooldown: 1.5, specialCooldown: 15 };
 export const PETS = {
+  'golden-retriever': { ...DOG_STATS, name: 'Golden Retriever' },
+  'border-collie': { ...DOG_STATS, name: 'Border Collie' },
   dog: {
     name: "Cão",
     evasion: 0.7,

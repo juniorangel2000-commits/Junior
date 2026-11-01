@@ -1,14 +1,17 @@
+import { PET_SPECIES } from './config';
 import { petBonusDescription } from "./pet-passives";
 import "./pet-menu.css";
 import type { OwnedPet } from "./progression";
 import { PETS } from "./config";
 import { worldPetLocation } from "./world-pet-state";
 export type PetCommand =
-  { kind: "select"; id?: string } | { kind: "follow" | "stay" | "recall" };
+  { kind: "select"; id?: string } | { kind: "follow" | "stay" | "recall" | "shelter" };
 export interface PetMenuView {
   pets: OwnedPet[];
   selected?: string;
   nearby: boolean;
+  shelterReady?: boolean;
+  adoptionAvailable?: boolean;
   icons: Record<string, string>;
 }
 const escape = (value: string) =>
@@ -24,7 +27,7 @@ export function petMenuHTML(view: PetMenuView): string {
   const cards = view.pets
     .map((pet, index) => {
       const status =
-        pet.world?.mode === "stay"
+        pet.world?.mode === "shelter" ? "Descansando na casinha" : pet.world?.mode === "stay"
           ? `Esperando · ${escape(worldPetLocation(pet.world))}`
           : pet.id === view.selected
             ? "Acompanhando você"
@@ -40,8 +43,10 @@ export function petMenuHTML(view: PetMenuView): string {
       <div><span class="eyebrow">AO SEU LADO</span><h2>Companheiros</h2></div>
       <button class="icon-button" data-pet-close aria-label="Fechar companheiros">×</button>
     </header>
+    <p class="pet-menu-note">${view.shelterReady ? `Casinha pronta · ${view.pets.length}/3 companheiros. ${view.adoptionAvailable ? "Há vaga para um novo resgate." : "Sem vaga para novas adoções."}` : "Conclua as três melhorias da casinha para adquirir novos companheiros."}</p>
     <p>Escolha um pet para acompanhar você nos mapas, um companheiro por vez. Use os comandos para seguir, esperar ou voltar para perto.</p>
     <button class="button button-light" data-pet-collection>Ver coleção de pets</button>
+    <button class="button button-light" data-pet-floating>Mostrar painel flutuante</button>
     ${
       view.pets.length
         ? `<div class="pet-menu-list">${cards}</div>`
@@ -56,6 +61,7 @@ export function petMenuHTML(view: PetMenuView): string {
       <button class="button button-light" data-pet-command="follow" aria-pressed="${selected.world?.mode === "follow"}">Seguir</button>
       <button class="button button-light" data-pet-command="stay" aria-pressed="${selected.world?.mode === "stay"}" ${!view.nearby ? "disabled" : ""}>Esperar aqui</button>
       <button class="button button-light" data-pet-command="recall">Chamar para perto</button>
+      <button class="button button-light" data-pet-command="shelter" ${!view.shelterReady ? "disabled" : ""}>Descansar na casinha</button>
     </div>
     <p class="pet-menu-note">Ao esperar, o pet fica nesse mapa até você voltar ou chamar. Nas dungeons, o companheiro escolhido luta automaticamente.</p>
     <button class="button button-light" data-pet-select="">Ficar sem companheiro</button>`
@@ -65,7 +71,7 @@ export function petMenuHTML(view: PetMenuView): string {
 }
 
 export function petCollectionHTML(view: PetMenuView): string {
-  const entries = (["dog", "cat"] as const).flatMap((species) =>
+  const entries = PET_SPECIES.flatMap((species) =>
     [false, true].map((rare) => {
       const owned = view.pets.filter(
         (p) => p.species === species && p.rare === rare,

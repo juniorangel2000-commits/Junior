@@ -1,10 +1,11 @@
+import { PET_SPECIES, isDogPet } from './config';
+import { petAttackHitAt, petAttackMoves } from './pet-sprites';
 import { PERMANENT_EFFECTS as P } from "./permanent-effects";
 import { petPlayerBonuses } from "./pet-passives";
 import { petRoamGoal } from "./pet-roaming";
 import {
   petDirection,
   petActionDuration,
-  PET_ATTACK_HIT_AT,
   type PetDirection,
 } from "./pet-sprites";
 import type { PetAttackAction } from "./pet-combat";
@@ -181,6 +182,7 @@ export class DungeonRun {
     progress: DungeonProgress,
     petId?: string,
     seed = 1234567,
+    private readonly petRescueAllowed = true,
   ) {
     const owned = progress.pets.find((p) => p.id === petId);
     const maxHp =
@@ -1283,9 +1285,9 @@ export class DungeonRun {
         travel = Math.sin(Math.PI * phase);
       const x = action.originX + (action.targetX - action.originX) * travel,
         y = action.originY + (action.targetY - action.originY) * travel;
-      this.moveEnemy(p, x - p.x, y - p.y);
+      if (petAttackMoves(p.species)) this.moveEnemy(p, x - p.x, y - p.y);
       p.direction = action.direction;
-      if (!action.hit && action.age + 1e-9 >= PET_ATTACK_HIT_AT) {
+      if (!action.hit && action.age + 1e-9 >= petAttackHitAt(p.species)) {
         action.hit = true;
         const targets = this.spatial
           .query(p.x, p.y, 100)
@@ -1313,7 +1315,7 @@ export class DungeonRun {
                 multiplier,
               false,
             );
-            if (p.species === "dog") {
+            if (isDogPet(p.species)) {
               const d = Math.hypot(e.x - p.x, e.y - p.y) || 1;
               this.moveEnemy(
                 e,
@@ -1396,6 +1398,7 @@ export class DungeonRun {
         p.y += ((s.player.y - p.y) / (d || 1)) * speed;
       }
       if (d > 20) continue;
+      if (p.kind === "pet" && !this.petRescueAllowed) { s.pickups.splice(i,1); continue; }
       if (p.kind === "level" && s.phase !== "fighting") continue;
       if (p.kind === "health" && s.player.hp >= this.maxHealth) continue;
       s.pickups.splice(i, 1);
@@ -1405,7 +1408,7 @@ export class DungeonRun {
         s.cards = this.buildComplete ? [] : rollUpgradeCards(s, this.random);
         if (s.cards.length) s.phase = "choice";
       } else if (p.kind === "health") this.healPlayer(p.amount);
-      else if (p.kind === "pet") {
+      else if (p.kind === "pet" && this.petRescueAllowed) {
         s.foundPet = p.species;
         s.foundPetRare = this.random() < B.rarePetChance;
       } else if (p.kind === "magnet") {
@@ -1440,6 +1443,7 @@ export class DungeonRun {
         amount: 25,
       });
     if (
+      this.petRescueAllowed &&
       !s.foundPet &&
       !s.pickups.some((p) => p.kind === "pet") &&
       s.pickups.length < 1000 &&
@@ -1452,7 +1456,7 @@ export class DungeonRun {
         y,
         kind: "pet",
         amount: 0,
-        species: this.random() < 0.5 ? "dog" : "cat",
+        species: PET_SPECIES[Math.min(PET_SPECIES.length - 1, Math.floor(this.random() * PET_SPECIES.length))],
       });
   }
   snapshot(): DungeonSnapshot {

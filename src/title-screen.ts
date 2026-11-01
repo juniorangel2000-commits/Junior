@@ -9,6 +9,7 @@ interface TitleScreenOptions {
   icon(name: string): string;
   onNewGame(): void;
   onContinue(): void;
+  onLoadGame?(): void;
   onMapEditor?(): void;
   onBackgroundMode(mode: TitleBackgroundMode): void;
 }
@@ -25,7 +26,7 @@ export function createTitleScreen(holder: HTMLElement, options: TitleScreenOptio
     <div class="title-copy"><div class="eyebrow"><span></span> DEPOIS DA CHUVA, NADA FICOU IGUAL.</div>
       <h1 aria-label="After Rain"><span>After</span><em>Rain<span class="title-period">.</span></em></h1>
       <p>A chuva transformou pessoas em zumbis.<br>Entre as ruínas, ainda há um recomeço.</p>
-      <div class="title-actions">${options.hasSave ? `<button class="button button-primary" id="continue-game">${toolbarIcon('save')} Continuar minha história</button><button class="button button-glass" id="new-game">${toolbarIcon('inventory')} Novo jogo</button>` : `<button class="button button-primary" id="new-game">${toolbarIcon('inventory')} Novo jogo</button>`}</div>
+      <div class="title-actions">${options.hasSave ? `<button class="button button-primary" id="continue-game">${toolbarIcon('save')} Continuar minha história</button><button class="button button-glass" id="new-game">${toolbarIcon('inventory')} Novo jogo</button>` : `<button class="button button-primary" id="new-game">${toolbarIcon('inventory')} Novo jogo</button>`}${options.onLoadGame ? `<button class="button button-glass" id="load-games">${toolbarIcon('save')} Partidas salvas</button>` : ''}</div>
       <div class="title-note">${icon('leaf')} Encontre abrigo. Cultive o que restou.</div>
     </div>
     <aside class="title-location"><span class="location-dot"></span><div>UM REFÚGIO ENTRE AS RUÍNAS<small>Enquanto a chuva cai, a vida resiste.</small></div></aside>
@@ -94,6 +95,7 @@ export function createTitleScreen(holder: HTMLElement, options: TitleScreenOptio
   };
   document.addEventListener('visibilitychange', updateBackground);
   screen.querySelector('#new-game')!.addEventListener('click', options.onNewGame);
+  screen.querySelector('#load-games')?.addEventListener('click',()=>options.onLoadGame?.());
   screen.querySelector('#continue-game')?.addEventListener('click', options.onContinue);
   updateBackground();
   return (): void => {

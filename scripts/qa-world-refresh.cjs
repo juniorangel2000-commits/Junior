@@ -1,0 +1,86 @@
+const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=require('node:fs');
+const out=process.env.REFRESH_QA_OUTPUT||'/workspace/world-refresh-qa';fs.mkdirSync(out,{recursive:true});
+(async()=>{
+ const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox','--disable-dev-shm-usage','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+ const page=await browser.newPage({viewport:{width:1440,height:960}});page.setDefaultTimeout(180000);const errors=[],checks=[];
+ const check=(name,value,details)=>{checks.push({name,passed:!!value,details});console.log(name,!!value,details??'');assert.ok(value,name);};
+ page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)errors.push(r.url())});
+ const render=()=>page.evaluate(()=>{game.step(performance.now(),0);game.step(performance.now()+1,0)});
+ try{
+  await page.goto(process.env.QA_URL||'http://127.0.0.1:5190');await page.locator('#new-game').click();
+  await page.evaluate(()=>new Promise((resolve,reject)=>{const image=new Image();image.onload=resolve;image.onerror=reject;image.src='/assets/visual/creation/homestead-clearing.png'}));
+  check('Fundo dedicado da criação carregado',await page.locator('.creation-backdrop').evaluate(el=>getComputedStyle(el).backgroundImage.includes('homestead-clearing.png')));
+  await page.screenshot({path:out+'/criacao-personagem.png'});
+  await page.locator('#character-name').fill('Clareira');await page.getByRole('button',{name:'Começar minha história'}).click();await page.waitForFunction(()=>document.querySelector('#ui').dataset.area==='property');
+  await page.evaluate(async()=>{
+   window.game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;window.v=game.scene.getScene('Vale');game.loop.sleep();
+   window.petAPI=await import('/src/dungeons/world-pet-controller.ts');window.birdAPI=await import('/src/ambient-birds.ts');
+   const {createDungeonProgress}=await import('/src/dungeons/progression.ts');v.state.dungeons=createDungeonProgress();
+   for(const species of ['golden-retriever','border-collie'])for(const rare of [false,true])v.state.dungeons.pets.push({id:species+rare,species,rare,xp:0,attributes:{speed:0,resistance:0,perception:0,protection:0,efficiency:0}});
+   window.controller=petAPI.getWorldPetController(v);
+  });
+  await page.evaluate(()=>{const cam=v.cameras.main;window.previousCamera={x:cam.scrollX,y:cam.scrollY,zoom:cam.zoom};cam.stopFollow();cam.setZoom(1.35);cam.centerOn(800,350);document.querySelector('#ui').style.visibility='hidden';game.step(performance.now(),0);});
+  await page.screenshot({path:out+'/propriedade-base-montanha.png'});
+  await page.evaluate(()=>{const cam=v.cameras.main;cam.setZoom(previousCamera.zoom);cam.setScroll(previousCamera.x,previousCamera.y);document.querySelector('#ui').style.visibility='';});
+  check('Lia removida da propriedade e das missões',await page.evaluate(()=>!v.children.list.some(o=>o.texture?.key==='lia')&&!document.querySelector('#lia-quest')&&!game.textures.exists('lia')));
+  for(const species of ['golden-retriever','border-collie'])for(const rare of [false,true]){
+   const details=await page.evaluate(({species,rare})=>{const ok=controller.command({kind:'select',id:species+rare});controller.update(0);const image=controller.companion.image;return {ok,texture:image.texture.key,frame:image.frame.name,scale:image.scaleX,visible:image.visible};},{species,rare});
+   check(species+(rare?' especial':' comum')+' utilizável no mundo',details.ok&&details.visible&&details.texture===`dungeon-pet-${species}${rare?'-rare':''}`,details);
+  }
+  const bark=await page.evaluate(()=>{controller.command({kind:'select',id:'golden-retrieverfalse'});controller.update(0);controller.companion.time=14.25;controller.update(0);return controller.companion.image.frame.name;});
+  check('Bark periódico do Golden em repouso',bark.startsWith('bark-'),bark);
+  await page.evaluate(()=>controller.update(0));
+  check('Botão compacto disponível sem pausar',await page.locator('.companion-quick:visible').count()===1&&!await page.evaluate(()=>v.ui.isModalOpen()));
+  await page.locator('[data-companion-toggle]').click();
+  check('Minimizar recolhe os comandos',await page.locator('.companion-quick-body').isHidden());
+  await page.locator('[data-companion-toggle]').click();
+  await page.locator('[data-companion-close]').click();
+  check('Fechar oculta o painel',await page.locator('.companion-quick').isHidden());
+  await page.keyboard.press('k');
+  await page.locator('[data-pet-floating]').click();
+  check('Recuperar painel fechado pela tela de companheiros',await page.locator('.companion-quick-body').isVisible());
+  await page.locator('[data-quick-command=stay]').click();
+  check('Comando rápido de esperar salva o estado',await page.evaluate(()=>v.state.dungeons.pets.find(p=>p.id===v.state.dungeons.selectedPet).world.mode==='stay'&&!v.ui.isModalOpen()));
+  await page.locator('[data-quick-command=follow]').click();
+  await page.locator('[data-quick-command=recall]').click();
+  check('Seguir e chamar pelo painel flutuante',await page.evaluate(()=>v.state.dungeons.pets.find(p=>p.id===v.state.dungeons.selectedPet).world.mode==='follow'&&!v.ui.isModalOpen()));
+  await page.keyboard.press('k');
+  check('K abre companheiros',await page.locator('.pet-menu:visible').count()===1);
+  await page.keyboard.press('k');
+  check('K fecha companheiros',await page.locator('.pet-menu:visible').count()===0);
+  await page.evaluate(()=>{const input=document.createElement('input');input.id='qa-input';document.querySelector('#ui').append(input);input.focus();});
+  await page.keyboard.press('k');
+  check('Atalho não interfere na digitação',await page.locator('.pet-menu:visible').count()===0&&await page.locator('#qa-input').inputValue()==='k');
+  await page.locator('#qa-input').evaluate(el=>el.remove());
+  await page.keyboard.press('Control+k');
+  check('Atalho respeita modificadores',await page.locator('.pet-menu:visible').count()===0);
+  await page.evaluate(()=>{controller.update(0);game.step(performance.now(),0)});
+  await page.screenshot({path:out+'/companheiros-flutuante.png'});
+  await page.keyboard.press('k');await page.locator('[data-pet-collection]').click();
+  check('Coleção com oito variações',await page.locator('[data-pet-entry]').count()===8);
+  await page.locator('[data-pet-entry="golden-retriever"]').scrollIntoViewIfNeeded();await page.screenshot({path:out+'/novos-cachorros.png'});await page.locator('[data-pet-close]').click();
+  await page.evaluate(()=>{controller.command({kind:'select'});window.birds=birdAPI.getAmbientBirds(v);for(let i=0;i<70;i++)birds.update(.1);});
+  const birdState=await page.evaluate(()=>{const c=controller.context();return {count:birds.birds.length,safe:birds.birds.filter(b=>b.state.phase==='perched').every(b=>!c.blockedPoint(b.state.x,b.state.y))};});
+  check('Pássaros na propriedade, sem pousar na água ou em obstáculos',birdState.count===6&&birdState.safe,birdState);
+  await page.evaluate(()=>{const b=birds.birds[0].state;v.cameras.main.stopFollow().setZoom(2.2).centerOn((b.x+v.player.x)/2,(b.y+v.player.y)/2);});await render();await page.screenshot({path:out+'/passaros-pousados.png'});
+  const flight=await page.evaluate(()=>{const b=birds.birds[0].state;v.player.x=b.x;v.player.y=b.y;birds.update(.05);for(let i=0;i<8;i++)birds.update(.1);v.cameras.main.centerOn(v.player.x,v.player.y);return birds.birds.filter(b=>b.state.phase==='fly').length;});
+  check('Revoada ao aproximar o jogador',flight>0,flight);await render();await page.screenshot({path:out+'/passaros-voando.png'});
+  await page.evaluate(()=>{
+   window.villageTimes=[];const village=game.scene.getScene('Vila'),create=village.create.bind(village);
+   village.create=function(data){const start=performance.now();create(data);villageTimes.push(performance.now()-start);};
+   game.loop.wake();v.enterVillage(v.snapshotState());
+  });
+  await page.waitForFunction(()=>game.scene.isActive('Vila')&&document.querySelector('#ui').dataset.area==='village');
+  await page.evaluate(()=>{game.loop.sleep();window.village=game.scene.getScene('Vila');window.groundTexture=game.textures.get('village-ground-v3');window.lakeTexture=game.textures.get('village-lake-v3');});
+  const routine=await page.evaluate(()=>[...village.routines.values()].map(r=>({area:r.state.area,updatedAt:r.state.updatedAt})));
+  check('Primeira visita de manhã com comerciantes já em suas rotinas',routine.length===10&&routine.every(r=>r.area==='shop'&&Number.isFinite(r.updatedAt)),routine);
+  await page.evaluate(()=>{game.loop.wake();village.leave();});await page.waitForFunction(()=>document.querySelector('#ui').dataset.area==='property'&&!game.scene.isActive('Vila'));
+  await page.evaluate(()=>{game.loop.sleep();for(let i=0;i<200;i++)v.update(performance.now()+i*100,100);window.expected=structuredClone(v.state.villageRoutines);game.loop.wake();v.enterVillage(v.snapshotState());});
+  await page.waitForFunction(()=>game.scene.isActive('Vila')&&document.querySelector('#ui').dataset.area==='village');
+  const reentry=await page.evaluate(()=>{game.loop.sleep();const village=game.scene.getScene('Vila');return {ground:game.textures.get('village-ground-v3')===groundTexture,lake:game.textures.get('village-lake-v3')===lakeTexture,times:villageTimes,positions:[...village.routines].every(([id,r])=>r.state.area===expected[id].area&&Math.hypot(r.state.x-expected[id].x,r.state.y-expected[id].y)<16)};});
+  check('Um único painel após as trocas de cenário',await page.locator('.companion-quick:visible').count()===1);
+  await page.keyboard.press('k');check('Atalho funciona na vila após reentrada',await page.locator('.pet-menu:visible').count()===1);await page.keyboard.press('k');
+  check('Piso e lago reutilizados na volta à vila',reentry.ground&&reentry.lake,reentry);check('Rotinas continuam sem reiniciar na entrada',reentry.positions,reentry);
+  check('Sem erros JavaScript ou arquivos ausentes',errors.length===0,errors);
+ }finally{fs.writeFileSync(out+'/results.json',JSON.stringify({checks,errors},null,2));await browser.close();}
+})().catch(e=>{console.error(e);process.exit(1)});

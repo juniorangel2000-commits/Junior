@@ -214,6 +214,4 @@ export function createArt(scene: Phaser.Scene): void {
       }
     });
   }
-  // Lia keeps her existing portrait; she does not inherit the selected player's art.
-  adopt('lia', 'asset-lia');
 }

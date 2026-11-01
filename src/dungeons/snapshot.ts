@@ -1,3 +1,5 @@
+import { petActionDuration } from './pet-sprites';
+import { isPetSpecies } from './config';
 import { isPetDirection } from "./pet-directions";
 import { validPetAttack } from "./pet-combat";
 import type { DungeonSnapshot } from "./run";
@@ -158,7 +160,7 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
             !["normal", "elite", "boss"].includes(p.xpTier as string))) ||
         (p.attracted !== undefined && typeof p.attracted !== "boolean") ||
         (p.species !== undefined &&
-          !["dog", "cat"].includes(p.species as string)),
+          !isPetSpecies(p.species)),
     )
   )
     return false;
@@ -169,7 +171,7 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
     return false;
   if (
     value.foundPet !== undefined &&
-    !["dog", "cat"].includes(value.foundPet as string)
+    !isPetSpecies(value.foundPet)
   )
     return false;
   if (value.pet !== undefined) {
@@ -179,7 +181,7 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
       !rec(p) ||
       typeof p.id !== "string" ||
       typeof p.rare !== "boolean" ||
-      (p.action !== undefined && !validPetAttack(p.action)) ||
+      (p.action !== undefined && !validPetAttack(p.action, isPetSpecies(p.species) ? petActionDuration(p.species, "attack") : .8)) ||
       (p.hurtGrace !== undefined && !finite(p.hurtGrace, 0, 0.9)) ||
       (p.evade !== undefined &&
         (!rec(p.evade) ||
@@ -188,7 +190,7 @@ export function validDungeonSnapshot(value: unknown): value is DungeonSnapshot {
       (p.direction !== undefined && !isPetDirection(p.direction)) ||
       (p.walking !== undefined && typeof p.walking !== "boolean") ||
       (p.running !== undefined && typeof p.running !== "boolean") ||
-      !["dog", "cat"].includes(p.species as string) ||
+      !isPetSpecies(p.species) ||
       !["hp", "maxHp", "attack", "special", "rest"].every((k) =>
         finite(p[k], 0, 10000),
       ) ||
