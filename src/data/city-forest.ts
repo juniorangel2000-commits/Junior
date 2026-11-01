@@ -92,8 +92,8 @@ export const CITY_FOREST_OBSTACLES=(()=>{
  return result;
 })();
 const solids=new Set([...CITY_FOREST_TREES,...CITY_FOREST_OBSTACLES].map(p=>`${p.x},${p.y}`));
-export function cityForestBlockedPoint(px:number,py:number,edits?:MapEditData):boolean{
+export function cityForestBlockedPoint(px:number,py:number,edits?:MapEditData,allowWater=false):boolean{
  const x=Math.floor(px/32),y=Math.floor(py/32);
- return px<32||py<32||px>3040||py>2272||(edits?editedCityObjectBlocked(px,py,edits):solids.has(`${x},${y}`))||paintedWaterPoint(edits?.terrain,px,py,(x,y)=>cityForestWater(x/32,y/32))||cityFenceBlockedPoint(px,py);
+ return px<32||py<32||px>3040||py>2272||(edits?editedCityObjectBlocked(px,py,edits):solids.has(`${x},${y}`))||!allowWater&&paintedWaterPoint(edits?.terrain,px,py,(x,y)=>cityForestWater(x/32,y/32))||cityFenceBlockedPoint(px,py);
 }
 export const cityForestBlockedTile=(x:number,y:number,edits?:MapEditData)=>cityForestBlockedPoint((x+.5)*32,(y+.5)*32,edits);

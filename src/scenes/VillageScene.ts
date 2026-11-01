@@ -1,3 +1,4 @@
+import {sampleWaterDepth} from '../swimming';
 import {setupTreeWind} from '../tree-wind';
 import {preloadVillagePeople} from '../economy-art';
 import {preloadSmithLayout} from '../smith-layout-art';
@@ -126,9 +127,9 @@ export class VillageScene extends Phaser.Scene {
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
   this.world=new VillageWorld(this,this.state.villageMapEdits);this.createVillagers();prepareVillageRoutines(this.state);this.createDailyRoutines();
   const saved=this.state.villagePosition,entry=villagePixelPoint(this.world.entry());
-  const valid=saved&&![[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>this.blockedPoint(saved.x+dx,saved.y+dy));
+  const valid=saved&&![[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>this.movementBlockedPoint(saved.x+dx,saved.y+dy));
   this.player=new Player(this,this.state.profile,valid?saved.x:entry.x,valid?saved.y:entry.y,'village-player');
-  this.player.facing=directionVector(valid?saved.direction??'right':'right');this.player.update(0,this.blocked,undefined,false);
+  this.player.facing=directionVector(valid?saved.direction??'right':'right');this.player.update(0,this.movementBlocked,this.movementBlockedPoint,false,this.swimmingPoint);
   this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time);this.world.updateLighting(this.state.time);
   if(this.state.blacksmithInterior)this.setBlacksmithRoom(true,this.state.blacksmithScene?this.state.blacksmithInterior:undefined);
   else if(this.state.merchantInterior)this.setMerchantRoom(this.state.merchantInterior.owner,this.state.merchantInterior);
@@ -260,8 +261,10 @@ export class VillageScene extends Phaser.Scene {
    return {data:npc,sprite,frames};
   });
  }
- private blocked=(x:number,y:number):boolean=>(this.inBlacksmith?smithBlocked(this.smithLayout,x*32+16,y*32+16):this.merchantRoom?merchantRoomBlocked(this.merchantRoom,x*32+16,y*32+16,this.merchantLayouts.get(this.merchantRoom)):this.world.isBlocked(x,y))||this.villagers.some(n=>n.sprite.visible&&Math.floor(n.sprite.x/32)===x&&Math.floor(n.sprite.y/32)===y);
  private blockedPoint=(x:number,y:number):boolean=>this.closedDoorAt(x,y)||(this.inBlacksmith?smithBlocked(this.smithLayout,x,y):this.merchantRoom?merchantRoomBlocked(this.merchantRoom,x,y,this.merchantLayouts.get(this.merchantRoom)):this.world.isBlockedPoint(x,y))||this.villagers.some(n=>n.sprite.visible&&Math.abs(n.sprite.x-x)<10&&Math.abs(n.sprite.y-y)<6);
+ private movementBlockedPoint=(x:number,y:number):boolean=>this.inShop?this.blockedPoint(x,y):this.closedDoorAt(x,y)||this.world.isSolidPoint(x,y)||this.villagers.some(n=>n.sprite.visible&&Math.abs(n.sprite.x-x)<10&&Math.abs(n.sprite.y-y)<6);
+ private movementBlocked=(x:number,y:number):boolean=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
+ private swimmingPoint=(x:number,y:number):number=>this.inShop?0:sampleWaterDepth(this.world.waterPointAt,x,y);
  private nearest():Villager|undefined {
   return this.villagers.filter(n=>n.sprite.visible&&Math.hypot(n.sprite.x-this.player.x,n.sprite.y-this.player.y)<78)
    .sort((a,b)=>Math.hypot(a.sprite.x-this.player.x,a.sprite.y-this.player.y)-Math.hypot(b.sprite.x-this.player.x,b.sprite.y-this.player.y))[0];
@@ -288,7 +291,7 @@ export class VillageScene extends Phaser.Scene {
   const p=position??(id?MERCHANT_ROOM_ENTRY:merchantOutside(previous!));this.player.x=p.x;this.player.y=p.y;this.player.facing=directionVector(position?.direction??(id?'up':'down'));
   for(const npc of this.villagers){npc.sprite.setVisible(this.sameRoom(npc));}
   const free=freeArrival(this.player,(x,y)=>id?merchantRoomBlocked(id,x,y,this.merchantLayouts.get(id)):this.world.isBlockedPoint(x,y),this.villagers.filter(n=>n.sprite.visible).map(n=>n.sprite));if(free){this.player.x=free.x;this.player.y=free.y;}
-  this.input.keyboard?.resetKeys();this.player.update(0,this.blocked,this.blockedPoint,false);this.daylight.update(this.state.time,!!id);this.applyCamera();
+  this.input.keyboard?.resetKeys();this.player.update(0,this.movementBlocked,this.movementBlockedPoint,false,this.swimmingPoint);this.daylight.update(this.state.time,!!id);this.applyCamera();
  }
  private changeMerchantRoom(id?:ResidentId):void {
   if(id&&!merchantMayEnter(id,this.state)){this.ui.toast('Comércio fechado · abre às 08:00.');this.merchantPassage.reset();return;}
@@ -390,7 +393,7 @@ export class VillageScene extends Phaser.Scene {
   this.player.x=p.x;this.player.y=p.y;this.player.facing=directionVector(position?.direction??(inside?'up':'down'));
   // A resident standing in the doorway must never strand the arriving player.
   const free=freeArrival(this.player,(x,y)=>inside?smithBlocked(this.smithLayout,x,y):this.world.isBlockedPoint(x,y),this.villagers.filter(n=>n.sprite.visible).map(n=>n.sprite));if(free){this.player.x=free.x;this.player.y=free.y;}
-  this.input.keyboard?.resetKeys();this.player.update(0,this.blocked,this.blockedPoint,false);
+  this.input.keyboard?.resetKeys();this.player.update(0,this.movementBlocked,this.movementBlockedPoint,false,this.swimmingPoint);
   this.daylight.update(this.state.time,inside);this.applyCamera();
  }
  private changeBlacksmithRoom():void {
@@ -427,7 +430,7 @@ export class VillageScene extends Phaser.Scene {
  private updateHUD():void {
   this.state.crops=this.farming.crops;updateVillageEquipment(this,this.state,this.player,this.inShop);notifyReadyOrders(this.state,m=>this.ui.toast(m));markMinerals(this,this.world.resources);
   const npc=this.nearest(),nearExit=!this.inShop&&Math.abs(this.player.x-64)<70&&Math.abs(this.player.y-1680)<32,location=this.inBlacksmith?'Ferraria de Bento':this.merchantRoom?`${VILLAGE_NPCS.find(n=>n.id===this.merchantRoom)!.role} · ${VILLAGE_NPCS.find(n=>n.id===this.merchantRoom)!.name}`:VILLAGE_NAME;
-  this.ui.updateHUD({toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'village',coins:this.state.villageEconomy!.coins,inHome:this.inShop,mapEditorAvailable:true,interiorEditor:this.inShop,swimming:false,name:this.state.profile.name,
+  this.ui.updateHUD({toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'village',coins:this.state.villageEconomy!.coins,inHome:this.inShop,mapEditorAvailable:true,interiorEditor:this.inShop,swimming:this.player.isSwimming,name:this.state.profile.name,
    day:this.state.day,time:this.state.time,inventory:this.inventory.data,tool:'hand',wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,
    playerTile:{x:this.player.x/32,y:this.player.y/32},interiorMapSize:this.inShop?{width:18,height:this.merchantRoom?12:11}:undefined,interactionKey:npc?'E':null,prompt:this.closedDoorMessage()??(npc?`Conversar com ${npc.data.name}${this.canTrade(npc.data.id)?' · comprar e vender':' · conversa e serviços'}`:this.guide?`Siga ${VILLAGE_NPCS.find(n=>n.id===this.guide!.owner)!.name} até a loja`:this.inShop?'Caminhe pela porta ao sul para sair':nearExit?'Siga a seta para voltar à propriedade':'Explore a praça e converse com os moradores'),
    location,harvests:this.inventory.data.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:this.inShop,shelterReason:this.inShop?location:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});
@@ -488,7 +491,7 @@ export class VillageScene extends Phaser.Scene {
  update(time:number,ms:number):void {
   if(!this.player)return;this.daylight.update(this.state.time,this.inShop);this.world.update(time,this.inShop?undefined:this.player);this.world.updateLighting(this.state.time);
   if(this.paused||this.leaving||this.changingRoom||this.shop?.isOpen||this.ui.isModalOpen()||document.hidden)return;
-  const delta=Math.min(ms/1000,.1),previous={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta,this.blocked,this.blockedPoint);
+  const delta=Math.min(ms/1000,.1),previous={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta,this.movementBlocked,this.movementBlockedPoint,true,this.swimmingPoint);
   if(this.inShop)this.centerInteriorCamera();
   if(!this.merchantRoom&&this.homePassage.update(previous,this.player,this.inBlacksmith?smithDoor(this.smithLayout):BLACKSMITH_DOOR)){this.changeBlacksmithRoom();return;}
   if(this.merchantRoom){if(this.merchantPassage.update(previous,this.player,MERCHANT_ROOM_EXIT)){this.changeMerchantRoom();return;}}

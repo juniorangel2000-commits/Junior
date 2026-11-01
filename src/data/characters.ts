@@ -8,6 +8,8 @@ export const CHARACTERS = [{
   assetRoot: 'assets/visual/characters/farmer-female/Idle',
   walkAnimation: 'Walk',
   walkFrames: 6,
+  runAnimation: 'Running',
+  runFrames: 8,
   // Fixed origin in original PNG pixels. Keep the authored foot motion;
   // centering each silhouette separately would introduce jitter during the walk.
   originX: 128,
@@ -18,6 +20,8 @@ export const CHARACTERS = [{
   assetRoot: 'assets/visual/characters/farmer-male/Idle',
   walkAnimation: 'Walking',
   walkFrames: 8,
+  runAnimation: 'Running',
+  runFrames: 8,
   originX: 128,
   originY: 240,
 }] as const;
@@ -38,13 +42,13 @@ const EXPORT_DIRECTIONS: Record<CharacterDirection, string> = {
   'up-left': 'north-west', 'up-right': 'north-east',
 };
 
-export function characterSourcePaths(id: CharacterId, direction: CharacterDirection): string[] {
-  const { assetRoot: root, walkAnimation, walkFrames } = resolveCharacter({ characterId: id });
+export function characterSourcePaths(id: CharacterId, direction: CharacterDirection,gait:'walk'|'run'='walk'): string[] {
+  const { assetRoot: root, walkAnimation, walkFrames,runAnimation,runFrames } = resolveCharacter({ characterId: id });
   const view = EXPORT_DIRECTIONS[direction];
   return [
     `${root}/rotations/${view}.png`,
-    ...Array.from({ length: walkFrames }, (_, frame) =>
-      `${root}/animations/${walkAnimation}/${view}/frame_${String(frame).padStart(3, '0')}.png`),
+    ...Array.from({ length: gait==='run'?runFrames:walkFrames }, (_, frame) =>
+      `${root}/animations/${gait==='run'?runAnimation:walkAnimation}/${view}/frame_${String(frame).padStart(3, '0')}.png`),
   ];
 }
 

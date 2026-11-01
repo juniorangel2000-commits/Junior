@@ -143,6 +143,7 @@ export class VillageWorld {
  exit(){return this.edits?.points?.exit??VILLAGE_EXIT;}
  isBlocked=(x:number,y:number):boolean=>x<1||y<1||x>=WORLD_WIDTH-1||y>=WORLD_HEIGHT-1||this.solid.has(`${x},${y}`);
  isBlockedPoint=(x:number,y:number)=>villagePointBlocked(x,y,this.edits);
+ isSolidPoint=(x:number,y:number)=>villagePointBlocked(x,y,this.edits,true);
  waterAt=(x:number,y:number):boolean=>villageWater(x,y,this.edits);
  waterPointAt=(x:number,y:number):boolean=>villageWaterPoint(x,y,this.edits);
  resourceAt=(_x:number,_y:number):ResourceNode|undefined=>undefined;

@@ -1,3 +1,5 @@
+import {sampleWaterDepth} from '../swimming';
+import {paintedWaterPoint} from '../data/terrain-paint';
 import {DEVELOPMENT_TOOLS} from '../development-tools';
 import type {MapArea} from '../data/default-maps';
 import {setupTreeWind} from '../tree-wind';
@@ -307,6 +309,7 @@ export class DungeonScene extends Phaser.Scene {
       this.persist();
     }
   }
+  private swimmingPoint=(x:number,y:number):number=>sampleWaterDepth((px,py)=>paintedWaterPoint(this.run?.state.mapEdits?.terrain,px,py,()=>false),x,y);
   private syncPlayer(): void {
     const p = this.run!.state.player;
     this.player!.x = p.x;
@@ -315,7 +318,7 @@ export class DungeonScene extends Phaser.Scene {
       0,
       () => false,
       () => false,
-      false,
+      false,this.swimmingPoint,
     );
   }
   private key(e: KeyboardEvent): void {
@@ -879,7 +882,8 @@ export class DungeonScene extends Phaser.Scene {
       this.player.update(
         dt,
         () => false,
-        (x, y) => dungeonBlocked(s.dungeon, x, y,s.mapEdits),
+        (x, y) => dungeonBlocked(s.dungeon, x, y,s.mapEdits,true),
+        true,this.swimmingPoint,
       );
       s.player.x = this.player.x;
       s.player.y = this.player.y;
@@ -893,7 +897,7 @@ export class DungeonScene extends Phaser.Scene {
         0,
         () => false,
         () => false,
-        false,
+        false,this.swimmingPoint,
       );
     this.renderRun();
     this.ui.updateRescue(

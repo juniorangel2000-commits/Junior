@@ -13,6 +13,8 @@ import { TILE } from './world';
 type MovementKeys = Record<string, Phaser.Input.Keyboard.Key>;
 
 export const PLAYER_SPEED = 84;
+export const PLAYER_RUN_MULTIPLIER=1.5;
+export const PLAYER_RUN_CYCLE_DISTANCE=64;
 /** Two alternating footfalls over one complete walk cycle, in world pixels. */
 export const PLAYER_WALK_CYCLE_DISTANCE = 48;
 const RELEASE_TURN_GRACE = .03;
@@ -24,13 +26,17 @@ export class Player {
   y: number;
   facing = { x: 0, y: 1 };
   isSwimming=false;
+  isRunning=false;
   speedMultiplier=1;
   readonly swimming=new SwimmingController();
   get swimState(){return this.swimming.state;}
   get waterDepth(){return this.swimming.depth;}
-  get leftHandPosition(){return characterLeftHand(this.profile,Number(this.sprite.frame.name),this.sprite);}
+  get leftHandPosition(){return characterLeftHand(this.profile,Number(this.sprite.frame.name),this.sprite,this.isRunning?'run':'walk');}
   private swimmingVisual?:SwimmingVisual;
   private walkDistance = 0;
+  private runDistance=0;
+  private readonly runFrames:number;
+  private readonly runTextureKey:string;
   private previousInput = { x: 0, y: 0 };
   private releaseTurn?: { x: number; y: number; elapsed: number };
   private readonly keys: MovementKeys;
@@ -39,13 +45,14 @@ export class Player {
   constructor(private readonly scene: Phaser.Scene, private readonly profile: CharacterProfile, x: number, y: number, private readonly textureKey = 'player') {
     this.x = x;
     this.y = y;
-    this.walkFrames = resolveCharacter(profile).walkFrames;
+    const character=resolveCharacter(profile);this.walkFrames=character.walkFrames;this.runFrames=character.runFrames;
+    this.runTextureKey=createCharacterFrames(scene,profile,`character-run-${character.id}`,'run');
     const texture = createCharacterFrames(scene, profile, textureKey);
     // Prepare the expensive body/surface atlases before the player can move.
     prepareSwimmingTextures(scene, profile);
     this.sprite = scene.add.sprite(x, y, texture, characterFrame('down'))
       .setOrigin(0.5, 1).setDisplaySize(CHARACTER_WIDTH, CHARACTER_HEIGHT);
-    this.keys = scene.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT', false) as MovementKeys;
+    this.keys = scene.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,SHIFT', false) as MovementKeys;
   }
 
   setVisible(visible:boolean):void {this.sprite.setVisible(visible);this.swimmingVisual?.setVisible(visible&&this.isSwimming);}
@@ -55,7 +62,8 @@ export class Player {
     const depthAt=(x:number,y:number):number=>{const value=isWaterPoint?.(x,y);return typeof value==='number'?Math.max(0,Math.min(1,value)):value?1:0;};
     const initialDepth=depthAt(this.x,this.y);
     const swimAmount=Math.max(0,(initialDepth-SWIMMING_CONFIG.deepThreshold)/(1-SWIMMING_CONFIG.deepThreshold));
-    const speed=PLAYER_SPEED*this.speedMultiplier*(1-(1-SWIM_SPEED_FACTOR)*swimAmount);
+    const wantsRun=movementEnabled&&!!this.keys.SHIFT?.isDown&&initialDepth<=.005;
+    const speed=PLAYER_SPEED*this.speedMultiplier*(wantsRun?PLAYER_RUN_MULTIPLIER:1)*(1-(1-SWIM_SPEED_FACTOR)*swimAmount);
     const inputX = movementEnabled ? Number(this.keys.D.isDown || this.keys.RIGHT.isDown) - Number(this.keys.A.isDown || this.keys.LEFT.isDown) : 0;
     const inputY = movementEnabled ? Number(this.keys.S.isDown || this.keys.DOWN.isDown) - Number(this.keys.W.isDown || this.keys.UP.isDown) : 0;
     const moving = inputX !== 0 || inputY !== 0;
@@ -115,11 +123,13 @@ export class Player {
       }
     } else {
       // Stop immediately, without inertia; a fresh walk starts at the contact pose.
-      this.walkDistance = 0;
+      this.walkDistance = 0;this.runDistance=0;
       this.releaseTurn = undefined;
     }
     this.previousInput = { x: inputX, y: inputY };
     const walked = distance > 1e-7;
+    const wasRunning=this.isRunning;this.isRunning=wantsRun&&walked&&depthAt(this.x,this.y)<=.005;
+    if(this.isRunning)this.runDistance=(this.runDistance+distance)%PLAYER_RUN_CYCLE_DISTANCE;else this.runDistance=0;
     if (walked) this.walkDistance = (this.walkDistance + distance) % PLAYER_WALK_CYCLE_DISTANCE;
     const phase = Math.floor((this.walkDistance + 1e-7) / PLAYER_WALK_CYCLE_DISTANCE * this.walkFrames) % this.walkFrames + 1;
     const direction = directionFromVector(this.facing.x, this.facing.y);
@@ -128,8 +138,9 @@ export class Player {
       this.swimmingVisual??=new SwimmingVisual(this.scene,this.profile);
       this.swimmingVisual.update(this.sprite,this.x,this.y,direction,walked,delta,this.swimming.depth,characterFrame(direction,walked?phase:0,this.walkFrames),speed/PLAYER_SPEED);return;
     }
-    if(wasWet){this.sprite.setTexture(this.textureKey).setCrop().setOrigin(.5,1);this.swimmingVisual?.setVisible(false);}
-    this.sprite.setFrame(characterFrame(direction, walked ? phase : 0, this.walkFrames));
+    if(wasWet||wasRunning!==this.isRunning){this.sprite.setTexture(this.isRunning?this.runTextureKey:this.textureKey).setCrop().setOrigin(.5,1);this.swimmingVisual?.setVisible(false);}
+    const shownPhase=this.isRunning?Math.floor(this.runDistance/PLAYER_RUN_CYCLE_DISTANCE*this.runFrames)%this.runFrames+1:walked?phase:0;
+    this.sprite.setFrame(characterFrame(direction,shownPhase,this.isRunning?this.runFrames:this.walkFrames));
     this.sprite.setPosition(this.x, this.y).setDepth(this.y);
   }
 }

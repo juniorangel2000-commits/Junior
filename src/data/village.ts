@@ -337,12 +337,12 @@ export function villageSceneryBlockedAt(x:number,y:number,includeWell=true,edits
   ||(includeWell?villagePropAt(x,y,edits):villageProps(edits).some(p=>p.kind!=='well'&&p.y===y&&Math.abs(p.x-x)<=(p.kind==='bench'||p.kind==='woodpile'||p.kind==='planter'?1:0)))||VILLAGE_SHORE_DETAILS.some(p=>p.kind==='shoreStones'&&p.x===x&&p.y===y)||VILLAGE_FENCES.some(p=>p.x===x&&p.y===y);
 }
 export const villageBlockedAt=(x:number,y:number,edits?:MapEditData)=>villageSceneryBlockedAt(x,y,true,edits)||villageLandmarkBlockedTile(x,y)||plazaFurnitureBlockedTile(x,y,edits)||villagePierRailAtPoint((x+.5)*32,(y+.5)*32)||villageFishingPropAtPoint((x+.5)*32,(y+.5)*32)||villageBarricadeBlockedPoint((x+.5)*32,(y+.5)*32)||!!villageBuildingAt(x,y);
-export function villagePointBlocked(x:number,y:number,edits?:MapEditData):boolean{
+export function villagePointBlocked(x:number,y:number,edits?:MapEditData,allowWater=false):boolean{
  const tx=Math.floor(x/32),ty=Math.floor(y/32);
  const nearPier=villagePierNear(x,y);
- const scenery=villageSceneryBlockedAt(tx,ty,false,edits,!nearPier);
+ const scenery=villageSceneryBlockedAt(tx,ty,false,edits,!nearPier&&!allowWater);
  const well=villageProps(edits).find(p=>p.kind==='well'&&Math.abs(p.x-tx)<=2&&Math.abs(p.y-ty)<=3);
- return villageDressingBlockedPoint(x,y)||scenery||nearPier&&villageWaterPoint(x,y,edits)||villagePierRailAtPoint(x,y)||villageFishingPropAtPoint(x,y)||villageBarricadeBlockedPoint(x,y)||plazaFurnitureBlockedPoint(x,y,edits)||villageLandmarkBlockedPoint(x,y)||(!!well&&wellFootprint(x,y,{x:(well.x+.5)*32,y:well.y*32+25},.49))||VILLAGE_BUILDINGS.some(b=>{
+ return villageDressingBlockedPoint(x,y)||scenery||!allowWater&&nearPier&&villageWaterPoint(x,y,edits)||villagePierRailAtPoint(x,y)||villageFishingPropAtPoint(x,y)||villageBarricadeBlockedPoint(x,y)||plazaFurnitureBlockedPoint(x,y,edits)||villageLandmarkBlockedPoint(x,y)||(!!well&&wellFootprint(x,y,{x:(well.x+.5)*32,y:well.y*32+25},.49))||VILLAGE_BUILDINGS.some(b=>{
   const facade=facadeForMerchant(b.shop);
   return b.shop==='blacksmith'?blacksmithBlockedPoint(x,y,b):b.shop==='carpenter'?tobiasShopBlockedPoint(x,y,b):facade?facadeBlockedPoint(facade,x,y,b):cottageSolidPoint(x,y,{x:(b.x+.5)*32,y:b.y*32+25});
  });

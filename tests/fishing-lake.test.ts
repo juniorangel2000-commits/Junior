@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {LAKE_CITY_ENTRY,LAKE_PROPERTY_ENTRY,LAKE_OBJECTS,lakeBlockedPoint,lakeWater,lakeWaterDistance,lakeTrailDistance,lakeSandWeight,lakeStairPathBlend,LAKE_SAND_BANKS,LAKE_PIER,LAKE_BRIDGE,lakeTerrace,lakeStairs,lakePier,lakeBridge,lakeObjects,lakeLowVegetationClear,lakeWestCliff} from '../src/data/fishing-lake';
+import {LAKE_CITY_ENTRY,LAKE_PROPERTY_ENTRY,LAKE_OBJECTS,lakeBlockedPoint,lakeWater,lakeWaterDistance,lakeRiverBanks,lakeTrailDistance,lakeSandWeight,lakeStairPathBlend,LAKE_SAND_BANKS,LAKE_PIER,LAKE_BRIDGE,lakeTerrace,lakeStairs,lakePier,lakeBridge,lakeObjects,lakeLowVegetationClear,lakeWestCliff} from '../src/data/fishing-lake';
 import {createNewSave,validateSave,migrateSave} from '../src/systems/save';
 import {defaultMap} from '../src/data/default-maps';
 import {readSceneMap,writeSceneMap} from '../src/systems/scene-map-edits';
@@ -27,6 +27,12 @@ describe('Lago entre as Serras',()=>{
   const pierEnd=LAKE_PIER.x/32+18.5;
   expect(pierEnd).toBe(79.5);expect(lakePier(pierEnd,46.5)).toBe(true);
   expect(lakePier(82,46.5)).toBe(false);
+ });
+ it('varies the river banks and opens a rounded mouth without moving the bridge or property seam',()=>{
+  const widths=[52,55,58,62,66,70].map(y=>{const b=lakeRiverBanks(y);expect(lakeWater((b.left+b.right)/2,y)).toBe(true);return b.right-b.left;});
+  expect(Math.max(...widths)-Math.min(...widths)).toBeGreaterThan(.6);
+  const seam=lakeRiverBanks(72);expect((seam.left+seam.right)/2).toBeCloseTo(45.5);expect(seam.right-seam.left).toBeCloseTo(4.5);
+  for(const x of[LAKE_BRIDGE.x,LAKE_BRIDGE.x+LAKE_BRIDGE.width])expect(lakeBlockedPoint(x*32,60*32)).toBe(false);
  });
  it('keeps tree roots on land and avoids paths, stairs, decks and water',()=>{
   expect(LAKE_OBJECTS.filter(p=>p.kind==='standingTree'||p.kind==='pine').length).toBeGreaterThan(100);

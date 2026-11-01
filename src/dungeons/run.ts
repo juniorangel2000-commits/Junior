@@ -1483,14 +1483,7 @@ export class DungeonRun {
       this.state.timedBossCount = TIMED_BOSS_SCHEDULE.filter(
         (b) => b.at < this.state.elapsed,
       ).length;
-    Object.assign(
-      this.state.player,
-      this.safePoint(
-        this.state.dungeon,
-        this.state.player.x,
-        this.state.player.y,
-      ),
-    );
+    Object.assign(this.state.player,safeDungeonPoint(this.state.dungeon,this.state.player.x,this.state.player.y,this.state.mapEdits,true));
     const restoredProfile = hordeProfile(this.state.dungeon, this.state.elapsed, this.state.round, this.state.level);
     for (const enemy of this.state.enemies) {
       if (this.state.enemySpeedRevision !== 1) enemy.speed = zombieSpeed(restoredProfile.speed,

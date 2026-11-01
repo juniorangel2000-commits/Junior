@@ -216,9 +216,9 @@ function collisionIndex(id: DungeonId,edits?:MapEditData): Map<string, Collider[
   cache.set(id, cells);
   return cells;
 }
-export function dungeonBlocked(id: DungeonId, x: number, y: number,edits?:MapEditData): boolean {
+export function dungeonBlocked(id: DungeonId, x: number, y: number,edits?:MapEditData,allowWater=false): boolean {
   if (x < 32 || y < 48 || x > 3040 || y > 2260) return true;
-  if(edits?.terrain[`${Math.floor(x/32)},${Math.floor(y/32)}`]==='water')return true;
+  if(!allowWater&&edits?.terrain[`${Math.floor(x/32)},${Math.floor(y/32)}`]==='water')return true;
   return (
     collisionIndex(id,edits)
       .get(Math.floor(x / 128) + "," + Math.floor(y / 128))
@@ -238,14 +238,15 @@ export function safeDungeonPoint(
   x: number,
   y: number,
   edits?:MapEditData,
+  allowWater=false,
 ): { x: number; y: number } {
-  if (!dungeonBlocked(id, x, y,edits)) return { x, y };
+  if (!dungeonBlocked(id, x, y,edits,allowWater)) return { x, y };
   for (let radius = 8; radius <= 384; radius += 8)
     for (let n = 0; n < 32; n++) {
       const a = (n * Math.PI) / 16,
         px = x + Math.cos(a) * radius,
         py = y + Math.sin(a) * radius;
-      if (!dungeonBlocked(id, px, py,edits)) return { x: px, y: py };
+      if (!dungeonBlocked(id, px, py,edits,allowWater)) return { x: px, y: py };
     }
   return dungeonEntry(edits);
 }

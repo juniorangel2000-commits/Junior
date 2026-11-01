@@ -19,12 +19,12 @@ export function shade(hex: string, amount: number): string {
 }
 
 /** Preview, portraits and the world use the same eight-direction pixel poses. */
-export function drawCharacter(canvas: HTMLCanvasElement, profile: CharacterProfile, direction: CharacterDirection = 'down', phase = 0): void {
+export function drawCharacter(canvas: HTMLCanvasElement, profile: CharacterProfile, direction: CharacterDirection = 'down', phase = 0,gait:'walk'|'run'='walk'): void {
   canvas.width = CHARACTER_FRAME_WIDTH;
   canvas.height = CHARACTER_FRAME_HEIGHT;
   const ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
-  drawStyledCharacter(ctx, profile, direction, phase);
+  drawStyledCharacter(ctx, profile, direction, phase,gait);
 }
 
 export function createCharacterTexture(scene: Phaser.Scene, profile: CharacterProfile, key: string): string {
@@ -36,9 +36,10 @@ export function createCharacterTexture(scene: Phaser.Scene, profile: CharacterPr
 }
 
 /** One local canvas atlas; frame order is defined by characterFrame(). */
-export function createCharacterFrames(scene: Phaser.Scene, profile: CharacterProfile, key: string): string {
+export function createCharacterFrames(scene: Phaser.Scene, profile: CharacterProfile, key: string,gait:'walk'|'run'='walk'): string {
+  if(gait==='run'&&scene.textures.exists(key))return key;
   if (scene.textures.exists(key)) scene.textures.remove(key);
-  const { walkFrames } = resolveCharacter(profile);
+  const character=resolveCharacter(profile),walkFrames=gait==='run'?character.runFrames:character.walkFrames;
   const columns = walkFrames + 1;
   const atlas = document.createElement('canvas');
   atlas.width = CHARACTER_FRAME_WIDTH * columns;
@@ -47,7 +48,7 @@ export function createCharacterFrames(scene: Phaser.Scene, profile: CharacterPro
   ctx.imageSmoothingEnabled = false;
   const frameCanvas = document.createElement('canvas');
   for (const [row, direction] of CHARACTER_DIRECTIONS.entries()) for (let phase = 0; phase < columns; phase++) {
-    drawCharacter(frameCanvas, profile, direction, phase);
+    drawCharacter(frameCanvas, profile, direction, phase,gait);
     ctx.drawImage(frameCanvas, phase * CHARACTER_FRAME_WIDTH, row * CHARACTER_FRAME_HEIGHT);
   }
   const texture = scene.textures.addCanvas(key, atlas);

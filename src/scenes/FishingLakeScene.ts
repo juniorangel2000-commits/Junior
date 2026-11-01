@@ -1,3 +1,5 @@
+import {sampleWaterDepth} from '../swimming';
+import {paintedWaterPoint} from '../data/terrain-paint';
 import {DEVELOPMENT_TOOLS} from '../development-tools';
 import type {MapArea} from '../data/default-maps';
 import {setupTreeWind} from '../tree-wind';
@@ -18,7 +20,7 @@ import {advanceClock,GAME_MINUTES_PER_SECOND} from '../systems/clock';
 import {directionFromVector,directionVector} from '../character-directions';
 import {MapExitPassage,SCENE_FADE_MS} from '../systems/map-transition';
 import {loadCameraZoom,saveCameraZoom,stepCameraZoom} from '../camera-zoom';
-import {LAKE_CITY_ENTRY,LAKE_CITY_EXIT,LAKE_PROPERTY_ENTRY,LAKE_PROPERTY_EXIT,CITY_LAKE_ENTRY,PROPERTY_LAKE_ENTRY,lakeBlockedPoint,lakeWater,lakePier} from '../data/fishing-lake';
+import {LAKE_CITY_ENTRY,LAKE_CITY_EXIT,LAKE_PROPERTY_ENTRY,LAKE_PROPERTY_EXIT,CITY_LAKE_ENTRY,PROPERTY_LAKE_ENTRY,lakeBlockedPoint,lakeWater,lakePier,lakeBridge} from '../data/fishing-lake';
 import {FishingLakeWorld,preloadFishingLake} from '../fishing-lake-world';
 
 interface FishingLakeStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void;fromCity?:boolean}
@@ -48,9 +50,9 @@ export class FishingLakeScene extends Phaser.Scene{
   this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.propertyPassage.reset();this.fishing=false;this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
   this.world=new FishingLakeWorld(this,this.state.fishingLakeMapEdits);
-  const p=this.state.fishingLakePosition,valid=p&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!this.blockedPoint(p.x+dx,p.y+dy));
+  const p=this.state.fishingLakePosition,valid=p&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!this.movementBlockedPoint(p.x+dx,p.y+dy));
   this.player=new Player(this,this.state.profile,valid?p.x:((this.state.fishingLakeMapEdits?.points?.entry??LAKE_CITY_ENTRY).x+.5)*32,valid?p.y:((this.state.fishingLakeMapEdits?.points?.entry??LAKE_CITY_ENTRY).y+.5)*32,'fishing-lake-player');
-  this.player.facing=directionVector(valid?p.direction??'up':'up');this.player.update(0,this.blockedTile,this.blockedPoint,false);
+  this.player.facing=directionVector(valid?p.direction??'up':'up');this.player.update(0,this.movementBlockedTile,this.movementBlockedPoint,false,this.swimmingPoint);
   this.zoom=loadCameraZoom();this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time);
   this.cameras.main.setBounds(0,0,3072,2304);this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
   document.querySelector<HTMLElement>('#ui')!.style.display='';this.ui.showHUD('fishingLake');this.ui.setQuickbar(this.state.quickbar??emptyQuickbar());this.updateHUD();
@@ -82,12 +84,14 @@ export class FishingLakeScene extends Phaser.Scene{
  }
  private nearFishing():boolean {const x=this.player.x/32,y=this.player.y/32;return lakePier(x,y)||[[-1.5,0],[1.5,0],[0,-1.5],[0,1.5]].some(([dx,dy])=>lakeWater(x+dx,y+dy));}
  private updateHUD():void{
-  const near=this.nearFishing();
-  this.ui.updateHUD({area:'fishingLake',coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:near?'E':null,prompt:near?'E · Pescar · equipe a vara ou a rede pela mochila':'Explore o lago · mirante ao norte · cidade a leste · propriedade ao sul',location:'Lago entre as Serras',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
+  const near=this.nearFishing()&&!this.player.isSwimming;
+  this.ui.updateHUD({area:'fishingLake',swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:near?'E':null,prompt:near?'E · Pescar · equipe a vara ou a rede pela mochila':'Explore o lago · mirante ao norte · cidade a leste · propriedade ao sul',location:'Lago entre as Serras',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
   this.ui.updateCameraZoom(this.zoom,!this.paused);
  }
  private blockedPoint=(x:number,y:number)=>lakeBlockedPoint(x,y,this.state.fishingLakeMapEdits);
- private blockedTile=(x:number,y:number)=>lakeBlockedPoint((x+.5)*32,(y+.5)*32,this.state.fishingLakeMapEdits);
+ private movementBlockedPoint=(x:number,y:number)=>lakeBlockedPoint(x,y,this.state.fishingLakeMapEdits,true);
+ private movementBlockedTile=(x:number,y:number)=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
+ private swimmingPoint=(x:number,y:number)=>sampleWaterDepth((px,py)=>!lakePier(px/32,py/32)&&!lakeBridge(px/32,py/32)&&paintedWaterPoint(this.state.fishingLakeMapEdits?.terrain,px,py,(x,y)=>lakeWater(x/32,y/32)),x,y);
  private key(e:KeyboardEvent):void{
   if(e.repeat||this.leaving||e.target instanceof HTMLElement&&e.target.matches('input,textarea,select,[contenteditable="true"]'))return;
   if(DEVELOPMENT_TOOLS&&e.key==='F2'){e.preventDefault();this.openMapEditor();return;}
@@ -124,6 +128,7 @@ export class FishingLakeScene extends Phaser.Scene{
  async useVillageItem(item:ItemId):Promise<void>{
   if(this.fishing||this.leaving)return;
   if(item!=='fishingRod'&&item!=='net'){this.ui.toast('Use a vara ou a rede perto da margem ou no píer.');return;}
+  if(this.player.isSwimming){this.ui.toast('Saia da água para pescar pela margem ou pelo píer.');return;}
   if(!this.nearFishing()){this.ui.toast('Aproxime-se da margem ou vá até o píer para pescar.');return;}
   this.fishing=true;this.setPaused(true);
   try{this.ui.toast(await fishAtBank(this.state,item==='net',()=>this.persist()));}finally{this.fishing=false;this.setPaused(false);this.updateHUD();}
@@ -162,7 +167,7 @@ export class FishingLakeScene extends Phaser.Scene{
  update(time:number,ms:number):void{
   if(!this.player)return;this.daylight.update(this.state.time);this.world.update(time);
   if(this.paused||this.leaving||this.ui.isModalOpen()||document.hidden)return;
-  const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.update(dt,this.blockedTile,this.blockedPoint);
+  const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(dt,this.movementBlockedTile,this.movementBlockedPoint,true,this.swimmingPoint);
   if(this.passage.update(before,this.player,this.state.fishingLakeMapEdits?.points?.exit??LAKE_CITY_EXIT,this.state.fishingLakeMapEdits?.points?.entry??LAKE_CITY_ENTRY)){this.leave();return;}
   if(this.propertyPassage.update(before,this.player,LAKE_PROPERTY_EXIT,LAKE_PROPERTY_ENTRY)){this.leave(false,true);return;}
   if(Math.hypot(this.player.x-before.x,this.player.y-before.y)>.1)gameAudio.play('step');
