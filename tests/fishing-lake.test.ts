@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {LAKE_CITY_ENTRY,LAKE_PROPERTY_ENTRY,LAKE_OBJECTS,lakeBlockedPoint,lakeWater,lakeWaterDistance,lakeTrailDistance,LAKE_PIER,LAKE_BRIDGE,lakeTerrace,lakeStairs,lakePier,lakeBridge,lakeObjects,lakeLowVegetationClear,lakeWestCliff} from '../src/data/fishing-lake';
+import {LAKE_CITY_ENTRY,LAKE_PROPERTY_ENTRY,LAKE_OBJECTS,lakeBlockedPoint,lakeWater,lakeWaterDistance,lakeTrailDistance,lakeSandWeight,lakeStairPathBlend,LAKE_SAND_BANKS,LAKE_PIER,LAKE_BRIDGE,lakeTerrace,lakeStairs,lakePier,lakeBridge,lakeObjects,lakeLowVegetationClear,lakeWestCliff} from '../src/data/fishing-lake';
 import {createNewSave,validateSave,migrateSave} from '../src/systems/save';
 import {defaultMap} from '../src/data/default-maps';
 import {readSceneMap,writeSceneMap} from '../src/systems/scene-map-edits';
@@ -17,7 +17,7 @@ describe('Lago entre as Serras',()=>{
   expect(lakeTerrace(28,5)).toBe(true);expect(lakeStairs(34,20)).toBe(true);
  });
  it('keeps the stair landing out of the water and aligns both ends of the bridge with the trail',()=>{
-  expect(lakeTrailDistance(34,23.3)).toBeLessThan(.1);
+  expect(lakeTrailDistance(34,21.4)).toBeLessThan(.1);
   expect(lakeWater(49,20)).toBe(true);expect(lakeWater(49,23)).toBe(true);
   expect(lakeWaterDistance(34.5,23)).toBeGreaterThan(0);expect(lakeWaterDistance(34.5,25)).toBeGreaterThan(.5);expect(lakeWaterDistance(34.5,27)).toBeLessThan(0);
   for(const x of[LAKE_BRIDGE.x,LAKE_BRIDGE.x+LAKE_BRIDGE.width]){
@@ -35,9 +35,18 @@ describe('Lago entre as Serras',()=>{
  });
  it('keeps low vegetation in irregular dry patches clear of paths and entrances',()=>{
   const plants=LAKE_OBJECTS.filter(p=>p.kind.startsWith('tallGrass')||['fern','whiteFlowers','bush','mushrooms'].includes(p.kind));
-  expect(plants.length).toBeGreaterThan(40);for(const p of plants)expect(lakeLowVegetationClear(p.x,p.y),p.id).toBe(true);
+  expect(plants.length).toBeGreaterThan(40);for(const p of plants)expect(lakeLowVegetationClear(p.x,p.y,undefined,p.scale??1),p.id).toBe(true);
   const map=defaultMap('fishingLake'),plant=plants[0];map.terrain[`${plant.x},${plant.y}`]='water';expect(lakeLowVegetationClear(plant.x,plant.y,map)).toBe(false);
   expect(lakeWestCliff(94.5,33.5)).toBe(false);
+ });
+ it('adds aquatic rocks and dry beaches while the mountain path ends at its staircase',()=>{
+  const aquatic=LAKE_OBJECTS.filter(p=>p.kind.startsWith('lakeRock'));expect(aquatic.length).toBeGreaterThan(4);
+  for(const p of aquatic){expect(['lakeRockD','lakeRockE']).toContain(p.kind);expect(lakeWater(p.x+.5,p.y+.5),p.id).toBe(true);expect(lakeWaterDistance(p.x+.5,p.y+.5)).toBeGreaterThan(-2.5);}
+  expect(lakeTrailDistance(34,24)).toBeGreaterThan(2);
+  expect(LAKE_OBJECTS.filter(p=>(p.scale??1)>1.3&&!['pine','standingTree'].includes(p.kind)).length).toBeGreaterThan(3);
+  expect(lakeTrailDistance(39,22)).toBeGreaterThan(2);
+  expect(lakeStairPathBlend(34,21)).toBeGreaterThan(.9);expect(lakeStairPathBlend(20,30)).toBe(0);
+  expect(lakeSandWeight(48,40)).toBe(0);expect(LAKE_SAND_BANKS.some(p=>lakeSandWeight(p.x,p.y)>.5)).toBe(true);
  });
  it('persists independent edits, lake position and validates compatibility without altering older maps',()=>{
   const save=createNewSave({name:'Lago',skin:'#e9bc98',hairColor:'#563b2c',outfit:'#457398',hairStyle:'preso'}),map=defaultMap('fishingLake');
