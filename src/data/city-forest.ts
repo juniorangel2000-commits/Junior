@@ -12,6 +12,7 @@ export const CITY_ACCESS={id:'city-dungeons-access',x:22,y:2,direction:'up',trav
 export const CITY_SIGN_TEXT='↑ City';
 export const CITY_FOREST_TRAILS:readonly (readonly (readonly [number,number])[])[]=[
  [[48,71],[48,64],[43,56],[46,47],[40,38],[46,28],[48,14],[48,10]],
+ [[1,33],[10,33],[19,36],[28,36]],
  [[44,55],[28,57],[21,46],[28,36],[40,38]],
  [[45,47],[62,46],[74,35],[70,23],[76,14],[76,10]],
  [[46,28],[33,26],[25,19],[22,14]],

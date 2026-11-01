@@ -1,3 +1,4 @@
+import {CITY_LAKE_ENTRY,CITY_LAKE_EXIT,LAKE_CITY_ENTRY} from '../data/fishing-lake';
 import {DEVELOPMENT_TOOLS} from '../development-tools';
 import type {MapArea} from '../data/default-maps';
 import {setupTreeWind} from '../tree-wind';
@@ -39,12 +40,13 @@ export class CityForestScene extends Phaser.Scene{
  private wheelZoomDistance=0;
  private lastWheelZoomAt=0;
  private readonly passage=new MapExitPassage();
+ private readonly lakePassage=new MapExitPassage();
  constructor(){super('AcessoCidade');}
  preload():void{preloadCityForest(this);preloadPetArt(this);}
  create(data:CityForestStart):void{
   setupTreeWind(this);
   this.state=structuredClone(data.save);this.state.activeArea='cityForest';delete this.state.homePosition;delete this.state.merchantInterior;delete this.state.blacksmithInterior;
-  this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
+  this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.lakePassage.reset();this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
   this.world=new CityForestWorld(this,this.state.cityForestMapEdits);
   const p=this.state.cityForestPosition,valid=p&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!this.blockedPoint(p.x+dx,p.y+dy));
@@ -80,9 +82,16 @@ export class CityForestScene extends Phaser.Scene{
   this.cityPromptArmed=!data.fromCity;
   if(this.state.dungeonRun)this.enterDungeons();else this.persist();
  }
+ private enterLake():void {
+  if(this.leaving||!this.persist())return;
+  const save=structuredClone(this.state);save.activeArea='fishingLake';save.fishingLakePosition={x:(LAKE_CITY_ENTRY.x+.5)*32,y:(LAKE_CITY_ENTRY.y+.5)*32,direction:'left'};
+  if(!saveGame(save))return;
+  this.leaving=true;this.input.keyboard?.resetKeys();this.cameras.main.fadeOut(SCENE_FADE_MS);
+  this.time.delayedCall(SCENE_FADE_MS,()=>this.scene.start('Lago',{save,ui:this.ui,onReturn:this.onReturn}));
+ }
  private nearCity():boolean{return Math.hypot(this.player.x/32-CITY_ACCESS.x,this.player.y/32-CITY_ACCESS.y)<3;}
  private updateHUD():void{
-  this.ui.updateHUD({area:'cityForest',coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:null,prompt:this.nearCity()?'Siga pela estrada para viajar à cidade':'Explore as trilhas · caminho ao sul retorna à vila',location:'Floresta de Acesso à Cidade',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
+  this.ui.updateHUD({area:'cityForest',coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:null,prompt:this.nearCity()?'Siga pela estrada para viajar à cidade':'Lago a oeste · vila ao sul · cidade ao norte',location:'Floresta de Acesso à Cidade',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
   this.ui.updateCameraZoom(this.zoom,!this.paused);
  }
  private blockedPoint=(x:number,y:number)=>cityForestBlockedPoint(x,y,this.state.cityForestMapEdits);
@@ -168,6 +177,7 @@ export class CityForestScene extends Phaser.Scene{
   if(!this.player)return;this.daylight.update(this.state.time);this.world.update(time);
   if(this.paused||this.leaving||this.ui.isModalOpen()||document.hidden)return;
   const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.update(dt,this.blockedTile,this.blockedPoint);
+  if(this.lakePassage.update(before,this.player,CITY_LAKE_EXIT,CITY_LAKE_ENTRY)){this.enterLake();return;}
   const distance=Math.hypot(this.player.x/32-CITY_ACCESS.x,this.player.y/32-CITY_ACCESS.y);
   if(distance>4)this.cityPromptArmed=true;
   if(this.cityPromptArmed&&distance<3){this.askCityTravel();return;}

@@ -1,10 +1,11 @@
 import {isFiberPlant} from './fiber-plants';
 import type {ResourceKind} from '../types';
-export const NATURE_KINDS = ['oakA','oakB','oakC','pineA','pineB','pineC','mossBoulder','fallenLog','stump','fern','whiteFlowers','bush','shoreStones','reeds','mushrooms','herbs','berryBush','lakeRockA','lakeRockB','lakeRockC','lakeRockD','lakeRockE','lakeRockF'] as const;
+export const NATURE_KINDS = ['tallGrassA','tallGrassB','tallGrassC','oakA','oakB','oakC','pineA','pineB','pineC','mossBoulder','fallenLog','stump','fern','whiteFlowers','bush','shoreStones','reeds','mushrooms','herbs','berryBush','lakeRockA','lakeRockB','lakeRockC','lakeRockD','lakeRockE','lakeRockF'] as const;
 export type NatureKind=typeof NATURE_KINDS[number];
 export interface NatureArt {label:string;texture:string;width:number;height:number;pivot:number;solid:boolean;water:boolean}
 const art=(label:string,texture:string,width:number,height=width,solid=false,water=false,pivot=124/128):NatureArt=>({label,texture,width,height,solid,water,pivot});
 export const NATURE_ART:Record<NatureKind,NatureArt>={
+ tallGrassA:art('Grama alta I','nature-tall-grass-0',46,40,false,false,1),tallGrassB:art('Grama alta II','nature-tall-grass-1',44,42,false,false,1),tallGrassC:art('Grama alta III','nature-tall-grass-2',48,38,false,false,1),
  herbs:art('Ervas medicinais','ecology-herbs',34,38,false,false,124/128),
  berryBush:art('Arbusto de berries','asset-berry-bush',44,44,false,false,1),
  oakA:art('Frondosa I','asset-tree-0',166,211,true,false,256/264),oakB:art('Frondosa II','asset-tree-1',166,211,true,false,256/264),oakC:art('Frondosa III','asset-tree-2',166,211,true,false,256/264),

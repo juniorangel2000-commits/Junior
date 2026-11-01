@@ -9,6 +9,7 @@ import {propertyHouseSolidPoint,propertyHouseSolidTile} from '../src/data/proper
 import { Inventory } from '../src/systems/inventory';
 
 vi.mock('../src/bridge-art',()=>({drawPropertyBridges:vi.fn()}));
+vi.mock('../src/map-editor-terrain',()=>({drawMapTerrainEdits:vi.fn()}));
 vi.mock('../src/water-motion',()=>({addWaterMotion:vi.fn()}));
 vi.mock('phaser', () => ({ default: { Textures: { FilterMode: { NEAREST: 0 } } } }));
 

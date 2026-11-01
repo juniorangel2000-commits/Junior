@@ -35,7 +35,7 @@ export function createSaveLibraryPanel(host:HTMLElement,callbacks:{close():void;
    const card=document.createElement('article');card.className='saved-game';card.dataset.savedGame=game.id;
    const title=document.createElement('h3');title.textContent=game.name;
    const info=document.createElement('p'),data=game.read.data;
-   const areas={property:'Propriedade',forest:'Floresta Antiga',village:'Vila',cityForest:'Estrada da cidade'};
+   const areas={property:'Propriedade',forest:'Floresta Antiga',village:'Vila',cityForest:'Estrada da cidade',fishingLake:'Lago entre as Serras'};
    info.textContent=data?`${data.profile.name} · Dia ${data.day} · ${areas[data.activeArea??'property']}${game.active?' · Última selecionada':''}`:'O arquivo foi mantido para que seu progresso não seja substituído.';
    const state=document.createElement('small');
    state.textContent=game.read.status==='recovered'?'Uma cópia de segurança está disponível.':game.read.status==='future'?'Criada em uma versão mais recente do jogo.':game.read.status==='valid'?'Pronta para continuar.':game.read.status==='unavailable'?'Armazenamento indisponível.':'Não foi possível ler esta partida.';

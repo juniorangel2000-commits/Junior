@@ -67,7 +67,9 @@ export interface SaveData {
   propertyShoreRevision?:number;
   /** One-time homestead layout; removed starter fences/beds are never recreated. */
   homesteadRevision?:1;
-  activeArea?: 'property' | 'forest' | 'village' | 'cityForest';
+  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake';
+  fishingLakePosition?: TilePoint & { direction?: CharacterDirection };
+  fishingLakeMapEdits?:MapEditData;
   cityForestPosition?: TilePoint & { direction?: CharacterDirection };
   forestPosition?: TilePoint & { direction?: CharacterDirection };
   villagePosition?: TilePoint & { direction?: CharacterDirection };
@@ -127,7 +129,7 @@ export interface HudData {
   learnedRecipes?:string[];
   farmingProgress?: FarmingProgress;
   swimming?:boolean;
-  area?: 'property'|'forest'|'village'|'cityForest';
+  area?: 'property'|'forest'|'village'|'cityForest'|'fishingLake';
   coins?: number;
   vigor?: number;
   wateringCan?: boolean;

@@ -1,3 +1,4 @@
+import {setupTallGrassArt} from './tall-grass-art';
 import {setupWoodworkArt} from './woodwork-art';
 import { setupFenceArt } from './fence-art';
 import Phaser from 'phaser';
@@ -61,6 +62,7 @@ export function createArt(scene: Phaser.Scene): void {
   setupVisualAssets(scene);
   setupFenceArt(scene);
   setupWoodworkArt(scene);
+  setupTallGrassArt(scene);
   const add = (key: string, width: number, height: number, paint: (ctx: CanvasRenderingContext2D) => void) => {
     if (scene.textures.exists(key)) return;
     const canvas = document.createElement('canvas');

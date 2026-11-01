@@ -30,6 +30,7 @@ import type {MapEditorScene} from './MapEditorScene';
 import {DoorwayPassage,MapExitPassage,SCENE_FADE_MS} from '../systems/map-transition';
 import {DEVELOPMENT_TOOLS} from '../development-tools';
 import { PROPERTY_FOREST_GATE } from '../data/ancient-forest';
+import {PROPERTY_LAKE_EXIT,PROPERTY_LAKE_ENTRY,LAKE_PROPERTY_ENTRY} from '../data/fishing-lake';
 import {PROPERTY_VILLAGE_ENTRY,PROPERTY_VILLAGE_EXIT} from '../data/property-village-gate';
 import { setupAnimalArt } from '../forest-art';
 import { WATER_CAPACITY } from '../data/watering-can';
@@ -133,6 +134,7 @@ export class ValleyScene extends Phaser.Scene {
   private forestActive = false;
   private villageActive = false;
   private readonly villagePassage=new MapExitPassage();
+  private readonly lakePassage=new MapExitPassage();
   private readonly exitPassage=new MapExitPassage();
   private readonly homePassage=new DoorwayPassage();
   private homeTransitionActive=false;
@@ -279,6 +281,7 @@ export class ValleyScene extends Phaser.Scene {
     this.running = true;
     this.paused = false;
     this.ui.showHUD();
+    if(saved.activeArea==='fishingLake'){this.enterLake(saved);return;}
     if (saved.activeArea === 'forest') { this.enterForest(saved); return; }
     if (saved.activeArea === 'village'||saved.activeArea==='cityForest') { this.enterVillage(saved); return; }
     this.ui.toast(`Que bom ter você de volta, ${saved.profile.name}.`);
@@ -365,6 +368,24 @@ export class ValleyScene extends Phaser.Scene {
     });
   }
 
+  private enterLake(saved?:SaveData):void {
+    if(this.forestActive||this.villageActive||this.state.animalEscort)return;
+    this.world.well?.cancel();this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
+    const data=saved??this.snapshotState();
+    if(!saved)data.fishingLakePosition={x:(LAKE_PROPERTY_ENTRY.x+.5)*32,y:(LAKE_PROPERTY_ENTRY.y+.5)*32,direction:'up'};
+    data.activeArea='fishingLake';delete data.homePosition;
+    if(!saveGame(data)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}
+    this.villageActive=true;this.paused=true;this.input.keyboard?.resetKeys();
+    const root=document.querySelector<HTMLElement>('#ui')!;
+    const onReturn=(updated:SaveData,title=false):void=>{
+      if(!title&&updated.activeArea==='village'){this.scene.launch('Vila',{save:updated,ui:this.ui,onReturn});return;}
+      this.scene.wake();this.villageActive=false;this.loadState(updated);this.running=!title;this.paused=title;root.style.display='';
+      if(title)this.ui.showTitle(hasSave());else{this.ui.showHUD();this.updateHUD();this.persist();}this.cameras.main.fadeIn(SCENE_FADE_MS);
+    };
+    this.cameras.main.fadeOut(SCENE_FADE_MS);
+    this.time.delayedCall(SCENE_FADE_MS,()=>{this.scene.sleep();this.scene.launch('Lago',{save:data,ui:this.ui,onReturn});});
+  }
+
   private enterVillage(saved?:SaveData):void {
     if(this.forestActive||this.villageActive)return;
     if(!saved&&this.state.animalEscort){this.ui.toast('Deixe o animal na propriedade ou solte a corda com G antes de visitar a vila.');return;}
@@ -375,7 +396,7 @@ export class ValleyScene extends Phaser.Scene {
     this.cameras.main.fadeOut(SCENE_FADE_MS);
     this.time.delayedCall(SCENE_FADE_MS,()=>{
       this.scene.sleep();this.scene.launch('Vila',{save:data,ui:this.ui,resumeCityForest,onReturn:(updated:SaveData,title=false)=>{
-        if(!title)updated.player={...updated.player,x:(PROPERTY_VILLAGE_ENTRY.x+.5)*TILE,y:(PROPERTY_VILLAGE_ENTRY.y+.5)*TILE,direction:'left'};
+        if(!title&&updated.activeArea!=='property')updated.player={...updated.player,x:(PROPERTY_VILLAGE_ENTRY.x+.5)*TILE,y:(PROPERTY_VILLAGE_ENTRY.y+.5)*TILE,direction:'left'};
         this.scene.wake();this.villageActive=false;this.loadState(updated);this.running=true;this.paused=false;
         root.style.display='';this.ui.showHUD();this.updateHUD();this.cameras.main.fadeIn(SCENE_FADE_MS);
         if(title){this.running=false;this.paused=true;this.ui.showTitle(hasSave());}
@@ -682,7 +703,7 @@ export class ValleyScene extends Phaser.Scene {
   private loadState(data: SaveData): void {
     data=structuredClone(data);initializeHomestead(data);initializePetShelter(data);
     this.homeTransitionActive=false;this.homeTransitionToken++;this.homePassage.reset();this.homeDoorWarningShown=false;
-    this.exitPassage.reset();this.villagePassage.reset();this.exitWarningShown=false;
+    this.exitPassage.reset();this.villagePassage.reset();this.lakePassage.reset();this.exitWarningShown=false;
     this.daylight?.destroy();
     this.toolUse.cancel(); this.toolVisual = undefined;
     this.craftJob = null;
@@ -1460,6 +1481,7 @@ export class ValleyScene extends Phaser.Scene {
       if(!this.state.animalEscort){this.enterForest();return;}
       if(!this.exitWarningShown){this.ui.toast('Conclua a condução ou solte a corda com G antes de sair.');this.exitWarningShown=true;}
     }else this.exitWarningShown=false;
+    if(!this.inHome&&!this.player.isSwimming&&this.lakePassage.update({x:previousX,y:previousY},this.player,PROPERTY_LAKE_EXIT,PROPERTY_LAKE_ENTRY)){if(!this.state.animalEscort){this.enterLake();return;}this.ui.toast('Solte a corda antes de seguir para o lago.');}
     if(!this.inHome&&!this.player.isSwimming&&this.villagePassage.update({x:previousX,y:previousY},this.player,PROPERTY_VILLAGE_EXIT,PROPERTY_VILLAGE_ENTRY)){
       if(!this.state.animalEscort){this.enterVillage();return;}
       if(!this.exitWarningShown){this.ui.toast('Deixe o animal na propriedade ou solte a corda com G antes de visitar a vila.');this.exitWarningShown=true;}

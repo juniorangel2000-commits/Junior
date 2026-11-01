@@ -13,9 +13,9 @@ const out='/workspace/all-map-editors-qa';fs.mkdirSync(out,{recursive:true});
  try{
   await page.goto(process.env.QA_URL||'http://127.0.0.1:5190');await page.locator('#edit-map').click();await page.locator('.map-editor-ui').waitFor();
   await page.evaluate(async()=>{window.game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;window.v=game.scene.getScene('Vale');window.editorScene=game.scene.getScene('Editor');});
-  check('Seis cenários no seletor',await page.locator('button[data-map-area]').count()===6);
+  check('Sete cenários no seletor',await page.locator('button[data-map-area]').count()===7);
   const painted={};
-  for(const area of ['property','forest','village','cityForest','abandoned-central-square','mall-parking']){
+  for(const area of ['property','forest','village','cityForest','fishingLake','abandoned-central-square','mall-parking']){
    if(area!=='property'){await page.locator(`[data-map-area="${area}"]`).click();console.log('Trocar para',area,'status:',await page.locator('[data-status]').innerText());await page.waitForFunction(area=>document.querySelector('.map-editor-ui')?.dataset.mapArea===area,area,{timeout:10000});}
    if(area==='village'){
     for(const kind of ['village-barrel','village-lantern','village-bench-south']){
@@ -34,7 +34,7 @@ const out='/workspace/all-map-editors-qa';fs.mkdirSync(out,{recursive:true});
    if(area==='mall-parking')await page.screenshot({path:out+'/editor-estacionamento.png'});
   }
   await page.locator('[data-action=apply]').click();await page.waitForSelector('.map-editor-ui',{state:'detached'});
-  const stored=await page.evaluate(async painted=>{const {loadSave,validateSave}=await import('/src/systems/save.ts');const {readSceneMap}=await import('/src/systems/scene-map-edits.ts');const s=loadSave();window.saved=s;return validateSave(s)&&Object.entries(painted).every(([area,p])=>readSceneMap(s,area).terrain[`${p.x},${p.y}`]==='wood');},painted);check('Aplicar salva todos os seis mapas',stored);
+  const stored=await page.evaluate(async painted=>{const {loadSave,validateSave}=await import('/src/systems/save.ts');const {readSceneMap}=await import('/src/systems/scene-map-edits.ts');const s=loadSave();window.saved=s;return validateSave(s)&&Object.entries(painted).every(([area,p])=>readSceneMap(s,area).terrain[`${p.x},${p.y}`]==='wood');},painted);check('Aplicar salva todos os sete mapas',stored);
   await page.evaluate(()=>{v.villageActive=true;v.scene.sleep();game.scene.start('AcessoCidade',{save:structuredClone(saved),ui:v.ui,onReturn(){}});});
   await page.waitForFunction(()=>game.scene.isActive('AcessoCidade')&&document.querySelector('#ui').dataset.area==='cityForest');await page.keyboard.press('F2');await page.waitForSelector('.map-editor-ui');check('F2 abre diretamente no acesso à cidade',await page.locator('.map-editor-ui').getAttribute('data-map-area')==='cityForest');
   await page.locator('[data-action=cancel]').click();await page.waitForSelector('.map-editor-ui',{state:'detached'});

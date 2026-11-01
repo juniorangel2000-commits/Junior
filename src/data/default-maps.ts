@@ -13,6 +13,7 @@ export type {EditorArea as MapArea} from './editor-areas';
 import type {EditorArea as MapArea} from './editor-areas';
 export const MAP_BASE_REVISION=4;
 export function defaultMap(area:MapArea):MapEditData{
+ if(area==='fishingLake')return {version:1,width:96,height:72,area,terrain:{},objects:{},points:{entry:{x:92,y:33},exit:{x:94,y:33}}};
  if(area==='cityForest')return {version:1,width:96,height:72,area,terrain:{},objects:{},points:{entry:{x:48,y:68},exit:{x:48,y:70}}};
  if(area==='abandoned-central-square'||area==='mall-parking')return {version:1,width:96,height:72,area,terrain:{},objects:{},points:{entry:{x:48,y:58},exit:{x:48,y:60}}};
  if(area==='village')return{version:1,width:96,height:72,area:'village',terrain:{},objects:{},points:{entry:{x:2,y:52},exit:{x:1,y:52}}};

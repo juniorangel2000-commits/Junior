@@ -3,7 +3,7 @@ import type { WorldPetContext } from './dungeons/world-pet-controller';
 import { createAmbientFlock, stepAmbientBird, ambientBirdLift, daylightBirds, type AmbientBirdState } from './systems/ambient-bird';
 const KEY='ambient-wild-birds';
 const POSES=['perch','peck','flap-up','flap-down'] as const;
-const COUNTS={property:4,village:6,forest:6,cityForest:4};
+const COUNTS={property:4,village:6,forest:6,fishingLake:6,cityForest:4};
 const SLOT=Symbol.for('after-rain-ambient-birds');
 const BODY=['................','................','........ddd.....','.......dcccdd...','.......dcwkdnn..','.....dddcccd....','....dcccccd.....','...dcccbbbd.....','..ddccbbbbd.....','...ddddddd......','.....l..l.......','................'];
 function art(scene:Phaser.Scene):void{

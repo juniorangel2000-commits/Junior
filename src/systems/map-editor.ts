@@ -1,3 +1,4 @@
+import {lakeProtected} from '../data/fishing-lake';
 import {EXTRA_PROP_KINDS} from '../data/editor-props';
 import {EDITOR_AREAS,type StoredMapArea} from '../data/editor-areas';
 import { NATURE_KINDS, natureArt } from '../data/nature-catalog';
@@ -50,7 +51,8 @@ export function isProtectedMapTile(x: number, y: number, area?: StoredMapArea): 
   if (!validCell(x, y)) return true;
   if(area==='forest')return FOREST_ANIMALS.some(a=>Math.abs(a.x-x)<=1&&Math.abs(a.y-y)<=1);
   if(area==='village')return !!villageBuildingAt(x,y)||villageDoorApproach(x,y);
-  if(area==='cityForest')return (Math.abs(x-48)<=2&&y>=67)||(Math.abs(x-22)<=2&&y<=3);
+  if(area==='fishingLake')return lakeProtected(x,y);
+  if(area==='cityForest')return (x<=5&&Math.abs(y-33)<=2)||(Math.abs(x-48)<=2&&y>=67)||(Math.abs(x-22)<=2&&y<=3);
   if(area==='abandoned-central-square'||area==='mall-parking')return Math.abs(x-48)<=1&&Math.abs(y-58)<=1;
   const houseAndPorch = x >= 20 && x <= 28 && y >= 9 && y <= 17;
   const arrival = x >= 24 && x <= 26 && y >= 18 && y <= 19;

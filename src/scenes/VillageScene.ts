@@ -476,12 +476,12 @@ export class VillageScene extends Phaser.Scene {
   this.leaving=true;const updated=structuredClone(this.state),ui=this.ui,onReturn=this.onReturn;
   this.input.keyboard?.resetKeys();this.cameras.main.fadeOut(SCENE_FADE_MS);
   this.time.delayedCall(SCENE_FADE_MS,()=>this.scene.start('AcessoCidade',{save:updated,ui,onReturn:(save:SaveData,title=false)=>{
-   if(title)onReturn(save,true);else this.scene.start('Vila',{save,ui,onReturn});
+   if(title||save.activeArea==='property')onReturn(save,title);else this.scene.start('Vila',{save,ui,onReturn});
   }}));
  }
  private leave(title=false):void {
   if(this.leaving)return;this.persist();this.leaving=true;
-  if(!title){this.state.activeArea='property';delete this.state.villagePosition;delete this.state.blacksmithInterior;delete this.state.merchantInterior;}
+  if(!title){this.state.activeArea='property';this.state.player={...this.state.player,x:93.5*32,y:52.5*32,direction:'left'};delete this.state.villagePosition;delete this.state.blacksmithInterior;delete this.state.merchantInterior;}
   saveGame(this.state);this.cameras.main.fadeOut(SCENE_FADE_MS);
   this.time.delayedCall(SCENE_FADE_MS,()=>{const state=structuredClone(this.state);this.scene.stop();this.onReturn(state,title);});
  }

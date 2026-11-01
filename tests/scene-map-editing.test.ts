@@ -18,7 +18,7 @@ const fresh=()=>createNewSave({name:'Editor',skin:'#e9bc98',hairColor:'#563b2c',
 afterEach(()=>vi.unstubAllGlobals());
 function storage(){const values=new Map<string,string>();const store={get length(){return values.size;},key:(i:number)=>[...values.keys()][i]??null,getItem:(k:string)=>values.get(k)??null,setItem:(k:string,v:string)=>{values.set(k,v);},removeItem:(k:string)=>{values.delete(k);}};vi.stubGlobal('localStorage',store);return store;}
 describe('all editable scene maps',()=>{
- it('keeps six independent maps and drafts compatible with the saved game',()=>{
+ it('keeps independent maps and drafts compatible with the saved game',()=>{
   const store=storage(),s=fresh();
   for(const area of EDITOR_AREAS){
    const map=defaultMap(area);map.terrain['75,65']='wood';
