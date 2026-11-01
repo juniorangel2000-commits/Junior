@@ -51,3 +51,5 @@
 @keyframes fishing-shadow{0%,100%{transform:translate(-20px,0) rotate(-6deg)}50%{transform:translate(25px,-8px) rotate(6deg)}}
 @media(max-width:540px){.fishing-layer{padding:8px}.fishing-panel{border-width:8px;max-height:calc(100dvh - 16px)}.fishing-body{padding:14px}.fishing-status{font-size:16px}.fishing-panel .village-panel-heading{padding:12px;gap:8px}.fishing-panel .village-panel-heading h2{font-size:24px}.fishing-panel .village-eyebrow{font-size:8px;letter-spacing:1px}.fishing-play-area{gap:12px}.fishing-panel[data-phase=fighting] .fishing-play-area,.fishing-panel[data-phase=caught] .fishing-play-area{grid-template-columns:minmax(0,1fr) 100px}.fishing-water{height:190px}.fishing-track{height:210px}.fishing-footer{font-size:10px;padding:10px}.fishing-instructions{font-size:11px}.fishing-control{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.fishing-water:after,.fishing-bobber,.fishing-ripple,.fishing-water-fish{animation:none}}
+
+@media(min-width:1100px){.fishing-world-view{justify-content:flex-end;padding:16px 24px;background:linear-gradient(90deg,#102c2911,#102c2922 40%,#102c29aa)}.fishing-world-view .fishing-panel{width:650px}}

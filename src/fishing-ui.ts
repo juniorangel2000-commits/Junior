@@ -15,12 +15,12 @@ export function fishAtBank(save:SaveData,net:boolean,onChange:()=>void,visual?:{
  const cast=beginFishingCast(save,net,session.rare,saveGame);
  if(!cast.ok){visual?.destroy();return Promise.resolve(cast.message);}
  onChange();gameAudio.play('water');
- active=(async()=>{try{if(visual&&!await visual.start())return 'Lançamento encerrado. A isca foi utilizada.';return await showFishing(save,session,onChange);}finally{visual?.destroy();}})().finally(()=>{active=undefined;});return active;
+ active=(async()=>{try{if(visual&&!await visual.start())return 'Lançamento encerrado. A isca foi utilizada.';return await showFishing(save,session,onChange,!!visual);}finally{visual?.destroy();}})().finally(()=>{active=undefined;});return active;
 }
-function showFishing(save:SaveData,session:FishingSession,onChange:()=>void):Promise<string>{
+function showFishing(save:SaveData,session:FishingSession,onChange:()=>void,worldView=false):Promise<string>{
  return new Promise(resolve=>{
   const previous=document.activeElement instanceof HTMLElement?document.activeElement:undefined;
-  const layer=document.createElement('div');layer.className='village-layer fishing-layer';
+  const layer=document.createElement('div');layer.className='village-layer fishing-layer'+(worldView?' fishing-world-view':'');
   layer.innerHTML=`<section class="village-panel fishing-panel" role="dialog" aria-modal="true" aria-labelledby="fishing-title" tabindex="-1">
    <div class="fishing-main"><header class="village-panel-heading"><div><span class="village-eyebrow">UM MOMENTO À BEIRA D’ÁGUA</span><h2 id="fishing-title">Pescaria</h2><p class="village-npc-role">${session.net?'Rede · até dois peixes':'Vara de pesca'} · técnica ${save.villageProgress?.fishingSkill??1}/2</p></div><button type="button" class="village-close" data-fishing-cancel aria-label="Cancelar pesca">×</button></header>
    <div class="fishing-body"><p class="fishing-status" data-fishing-prompt role="status" aria-live="polite">A linha está na água. Observe a boia…</p>

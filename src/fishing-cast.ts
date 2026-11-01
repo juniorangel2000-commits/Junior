@@ -1,8 +1,10 @@
+import {preloadFishingCharacters,createFishingCharacter,frameFishingCamera} from './fishing-character';
+import {FISHING_POSE_CELL,fishingDirection,fishingFacing} from './data/fishing-character-poses';
 import type Phaser from 'phaser';
 import type {Player} from './player';
-import {directionFromVector,directionVector} from './character-directions';
 export const FISHING_ART={rod:'assets/visual/fishing/bamboo-rod-directions.png',worm:'assets/visual/fishing/basic-worm.png'} as const;
 export function preloadFishingArt(scene:Phaser.Scene):void{
+ preloadFishingCharacters(scene);
  if(!scene.textures.exists('fishing-bamboo-world'))scene.load.image('fishing-bamboo-world',FISHING_ART.rod);
  if(!scene.textures.exists('fishing-worm-world'))scene.load.image('fishing-worm-world',FISHING_ART.worm);
 }
@@ -17,8 +19,10 @@ export function fishingCastTarget(player:{x:number;y:number;facing:{x:number;y:n
 export function createFishingCast(scene:Phaser.Scene,player:Player,water:(x:number,y:number)=>boolean,clear:(x:number,y:number)=>boolean=()=>true,net=false):{start:()=>Promise<boolean>;destroy:()=>void}{
  const poses={north:{x:0,y:0,hand:[320,540],tip:[352,60],angle:-Math.PI/2},south:{x:640,y:0,hand:[300,100],tip:[260,570],angle:Math.PI/2},west:{x:0,y:640,hand:[540,280],tip:[65,230],angle:Math.PI},east:{x:640,y:640,hand:[80,280],tip:[545,230],angle:0}} as const;
  const texture=scene.textures.get('fishing-bamboo-world');
- if(texture&&texture.key!=='__MISSING')for(const [name,p]of Object.entries(poses))if(!texture.has(name))texture.add(name,0,p.x,p.y,640,640);
+ if(texture&&texture.key!=='__MISSING')for(const [name,p]of Object.entries(poses))if(!texture.has(name))texture.add(name,0,p.x/640*FISHING_POSE_CELL,p.y/640*FISHING_POSE_CELL,FISHING_POSE_CELL,FISHING_POSE_CELL);
  let pose:typeof poses[keyof typeof poses]=poses.north;
+ let restoreCamera:(()=>void)|undefined;
+ let character:ReturnType<typeof createFishingCharacter>;
  let rod:Phaser.GameObjects.Image|undefined,worm:Phaser.GameObjects.Image|undefined,graphics:Phaser.GameObjects.Graphics|undefined,resolve:((ok:boolean)=>void)|undefined,started=0,destroyed=false,landed=false;
  const target=fishingCastTarget(player,water,clear);
  const update=()=>{
@@ -28,7 +32,7 @@ export function createFishingCast(scene:Phaser.Scene,player:Player,water:(x:numb
   const north=player.facing.y<0;
   rod?.setPosition(hand.x,hand.y).setRotation(angle-pose.angle+swing).setDepth(player.y+(north?-1:2));
   const rotation=angle-pose.angle+swing,dx=(pose.tip[0]-pose.hand[0])*60/640,dy=(pose.tip[1]-pose.hand[1])*60/640;
-  const tip={x:hand.x+dx*Math.cos(rotation)-dy*Math.sin(rotation),y:hand.y+dx*Math.sin(rotation)+dy*Math.cos(rotation)};
+  const tip=character?.update(elapsed)??{x:hand.x+dx*Math.cos(rotation)-dy*Math.sin(rotation),y:hand.y+dx*Math.sin(rotation)+dy*Math.cos(rotation)};
   const t=Math.max(0,Math.min(1,(elapsed-.35)/.6)),bob={x:tip.x+(target.x-tip.x)*t,y:tip.y+(target.y-tip.y)*t-Math.sin(Math.PI*t)*48};
   graphics.clear();graphics.setDepth(north?player.y-1:Math.max(player.y,target.y)+3);
   if(!net){graphics.lineStyle(.75,0xf0e1b5,.8);graphics.beginPath();graphics.moveTo(tip.x,tip.y);graphics.lineTo((tip.x+bob.x)/2,(tip.y+bob.y)/2+Math.sin(Math.PI*t)*8);graphics.lineTo(bob.x,bob.y);graphics.strokePath();}
@@ -40,13 +44,14 @@ export function createFishingCast(scene:Phaser.Scene,player:Player,water:(x:numb
    if(!landed){landed=true;resolve?.(true);resolve=undefined;}
   }
  };
- const destroy=()=>{if(destroyed)return;destroyed=true;scene.events.off('update',update);scene.events.off('shutdown',destroy);rod?.destroy();worm?.destroy();graphics?.destroy();resolve?.(false);resolve=undefined;};
+ const destroy=()=>{if(destroyed)return;destroyed=true;scene.events.off('update',update);scene.events.off('shutdown',destroy);character?.destroy();restoreCamera?.();rod?.destroy();worm?.destroy();graphics?.destroy();resolve?.(false);resolve=undefined;};
  return{start:()=>new Promise<boolean>(done=>{
   if(destroyed){done(false);return;}if(!target){done(true);return;}
-  const direction=directionFromVector(target.x-player.x,target.y-player.y);player.facing=directionVector(direction);player.update(0,()=>false,()=>false,false,()=>player.waterDepth);
-  resolve=done;started=scene.time.now;
+  const direction=fishingDirection(target.x-player.x,target.y-player.y);player.facing=fishingFacing(direction);player.update(0,()=>false,()=>false,false,()=>player.waterDepth);
+  resolve=done;started=scene.time.now;restoreCamera=frameFishingCamera(scene,player);
   const facing=player.facing,name=Math.abs(facing.y)>=Math.abs(facing.x)?facing.y<0?'north':'south':facing.x<0?'west':'east';pose=poses[name];
-  if(!net&&scene.textures.exists('fishing-bamboo-world'))rod=scene.add.image(player.x,player.y,'fishing-bamboo-world',name).setOrigin(pose.hand[0]/640,pose.hand[1]/640).setDisplaySize(60,60).setData('fishing-cast-rod',true);
+  if(!net)character=createFishingCharacter(scene,player,direction);
+  if(!net&&!character&&scene.textures.exists('fishing-bamboo-world'))rod=scene.add.image(player.x,player.y,'fishing-bamboo-world',name).setOrigin(pose.hand[0]/640,pose.hand[1]/640).setDisplaySize(60,60).setData('fishing-cast-rod',true);
   if(scene.textures.exists('fishing-worm-world'))worm=scene.add.image(player.x,player.y,'fishing-worm-world').setDisplaySize(12,12).setDepth(player.y+3);
   graphics=scene.add.graphics().setData('fishing-cast-line',true);scene.events.on('update',update);scene.events.once('shutdown',destroy);update();
  }),destroy};

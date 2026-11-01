@@ -29,6 +29,7 @@ export class Player {
   isRunning=false;
   speedMultiplier=1;
   readonly swimming=new SwimmingController();
+  get characterId(){return resolveCharacter(this.profile).id;}
   get swimState(){return this.swimming.state;}
   get waterDepth(){return this.swimming.depth;}
   get leftHandPosition(){return characterLeftHand(this.profile,Number(this.sprite.frame.name),this.sprite,this.isRunning?'run':'walk');}

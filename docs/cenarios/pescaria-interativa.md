@@ -53,3 +53,13 @@ As marcas claras de água pintadas nos pés das pedras foram substituídas por p
 Novas ondas curtas, arcos quebrados e dois redemoinhos suaves se afastam do impacto da cachoeira. São recortados pela margem, pelo terreno editado e pelas silhuetas das pedras. A queda e o riacho aprovados continuam com a mesma animação.
 
 Validação adicional: 31 testes focados aprovados, build e QA no navegador. O QA verifica a limpeza das marcas antigas, preservação da arte fora das regiões de água e dos contatos alterados, pedras molhadas/secas, animação e saída do cenário.
+
+## Personagens segurando a vara
+
+Os dois personagens têm sprites completos de pesca em norte, sul, oeste e leste. A vara faz parte da pose, com as mãos na empunhadura; não é desenhada outra vara sobre o personagem. A arte fica em `public/assets/visual/fishing/characters/`. As células têm 627 × 627 pixels e os pontos de cabeça, sola e ponta da vara ficam em `src/data/fishing-character-poses.ts`.
+
+A altura visível e o contato dos pés foram calibrados para a respectiva pose original. A linha sai da ponta da vara da nova arte, inclusive durante o leve movimento de arremesso. O corpo original é ocultado durante a pesca e restaurado ao capturar, cancelar ou sair do cenário. Rede continua usando o corpo normal. As diagonais escolhem a vista cardinal predominante. Nenhum formato de save foi alterado.
+
+Nas telas largas, o painel aparece à direita e a câmera enquadra o personagem na área livre sem mudar o zoom. Fechar a pesca restaura o enquadramento anterior; telas estreitas mantêm o painel central.
+
+Validação: suíte completa com 1.450 testes aprovada antes do ajuste final de enquadramento; 67 testes focados aprovados após esse ajuste (incluindo 19 novos testes de poses/câmera). Build de produção aprovado. QA no navegador cobre as oito combinações, arremesso/espera/cancelamento dos dois personagens, rede, saída de cenário e ausência de duplicação. Duas pescarias completas gravadas confirmam captura persistida, uma isca por tentativa, restauração do personagem e do zoom/enquadramento. Continua sem nova publicação Windows.
