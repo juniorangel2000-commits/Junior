@@ -23,9 +23,9 @@ const out=process.env.SAVE_LIBRARY_QA_OUTPUT||'/workspace/save-library-qa';fs.mk
   await page.locator('[data-saved-game=legacy]').getByRole('button',{name:'Carregar',exact:true}).click();await page.waitForFunction(()=>document.querySelector('#ui').dataset.area==='property');
   check('Alternar entre partidas mantém os progressos separados',await page.evaluate(()=>v.state.profile.name==='Pioneira'&&v.state.day===6&&library.listSavedGames().games.find(g=>g.id!=='legacy').read.data.day===1));
   await page.evaluate(()=>v.mainMenu());await page.locator('#load-games').click();
-  const other=page.locator('[data-saved-game]:not([data-saved-game=legacy])');page.once('dialog',d=>d.dismiss());await other.getByRole('button',{name:'Excluir',exact:true}).click();
+  const other=page.locator('[data-saved-game]:not([data-saved-game=legacy])');await other.getByRole('button',{name:'Excluir',exact:true}).click();await page.locator('footer [data-library-delete-cancel]').click();
   check('Cancelar exclusão mantém ambas as partidas',await page.locator('[data-saved-game]').count()===2);
-  page.once('dialog',d=>d.accept());await other.getByRole('button',{name:'Excluir',exact:true}).click();
+  await other.getByRole('button',{name:'Excluir',exact:true}).click();await page.locator('[data-library-delete-confirm]').click();
   check('Excluir remove apenas a partida confirmada',await page.locator('[data-saved-game]').count()===1&&await page.locator('[data-saved-game=legacy]').count()===1);
   await page.keyboard.press('Escape');await page.locator('#continue-game').click();await page.waitForFunction(()=>document.querySelector('#ui').dataset.area==='property');
   check('Continuar ainda abre a partida preservada',await page.evaluate(()=>v.state.profile.name==='Pioneira'&&v.state.day===6));
