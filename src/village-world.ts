@@ -1,3 +1,4 @@
+import {waterFinishChannel} from './data/water-style';
 import {plazaFurniture,plazaEditorId} from './data/village-plaza';
 import { reusableTerrainTexture } from './terrain-texture-cache';
 import {drawVillageNorthRoad} from "./village-north-road";
@@ -169,7 +170,7 @@ export class VillageWorld {
   this.smoke.forEach(plume=>plume.destroy());this.environment.forEach(object=>{if(object.active)object.destroy();});
  }
  private drawLake():void {
-  const key=this.namespace+'-lake-v3';
+  const key=this.namespace+'-lake-v4';
   if(!reusableTerrainTexture(this.scene.textures,key,this.edits?.terrain)){
    const sprites=readTerrainSprites(this.scene);if(!sprites)return;
    const canvas=document.createElement('canvas');canvas.width=608;canvas.height=768;
@@ -178,7 +179,7 @@ export class VillageWorld {
     const wx=(VILLAGE_LAKE.x-10)*32+x,wy=32*32+y,d=villageLakeDistance(wx/32,wy/32),at=(y*608+x)*4;if(d>1.7)continue;
     const water=1-smooth((d+.16)/.32),wet=(1-smooth((d-.05)/.5))*(1-water);
     const a=sprites.water,b=sprites.sand,ai=((wy%a.size)*a.size+wx%a.size)*4,bi=((wy%b.size)*b.size+wx%b.size)*4;
-    for(let channel=0;channel<3;channel++)pixels.data[at+channel]=a.pixels[ai+channel]*water+b.pixels[bi+channel]*(1-water-wet)+b.pixels[bi+channel]*.78*wet;
+    for(let channel=0;channel<3;channel++)pixels.data[at+channel]=waterFinishChannel(a.pixels[ai+channel],channel,d*32)*water+b.pixels[bi+channel]*(1-water-wet)+b.pixels[bi+channel]*.78*wet;
     const kind=this.edits?.terrain[`${Math.floor(wx/32)},${Math.floor(wy/32)}`];const cover=kind&&kind!=='water'?terrainPaintAlpha(this.edits!.terrain,wx,wy):0;
     pixels.data[at+3]=Math.round(255*(1-smooth((d-.65)/.85))*(1-cover));
    }

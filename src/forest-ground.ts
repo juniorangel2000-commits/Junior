@@ -1,3 +1,4 @@
+import {waterFinishChannel} from './data/water-style';
 import { forestClearing, forestPathDistance, forestWaterDistanceAt } from './data/ancient-forest';
 import type { TerrainSprites } from './terrain-sprites';
 
@@ -50,8 +51,7 @@ export function forestGroundPixels(sprites:TerrainSprites|undefined,left:number,
     color[1]=color[1]*(1-bank*.25)+117*bank*.25;
     color[2]=color[2]*(1-bank*.25)+78*bank*.25;
     if(shorePixels<0){
-      const shallow=smooth((shorePixels+28)/28)*.22,depth=.9+.1*smooth((shorePixels+100)/100);
-      for(let c=0;c<3;c++)color[c]=color[c]*depth*(1-shallow)+[125,176,160][c]*shallow;
+      for(let c=0;c<3;c++)color[c]=waterFinishChannel(color[c],c,shorePixels);
     }
     // Sand shares the exact asymmetric contour used by swimming and waves.
     const shoreDistance=shorePixels/32;

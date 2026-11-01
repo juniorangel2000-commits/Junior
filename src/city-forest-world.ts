@@ -1,3 +1,4 @@
+import {waterFinishChannel} from './data/water-style';
 import {cityMapObjects} from './data/city-forest-layout';
 import {drawEditorProp} from './editor-prop-art';
 import {drawMapTerrainEdits} from './map-editor-terrain';
@@ -49,7 +50,7 @@ export class CityForestWorld{
   this.objects=scene.children.list.filter(o=>!before.has(o));
  }
  private drawGround():void{
-  const key='city-forest-ground';
+  const key='city-forest-ground-v2';
   if(!this.scene.textures.exists(key)){
    const sprites=readTerrainSprites(this.scene);if(!sprites)throw new Error('Materiais de terreno não carregados');
    const asphaltFrame=this.scene.textures.get('city-forest-art').get('asphalt');
@@ -62,6 +63,7 @@ export class CityForestWorld{
     const x=(bx+2)/32,y=(by+2)/32,road=cityRoadDistance(x,y),trail=cityForestTrailDistance(x,y);
     const irregular=.09*Math.sin(x*3.1+y*2.3)+.05*Math.cos(y*5-x);
     const trailWeight=Math.max(0,Math.min(1,(1.35+irregular-trail)/.5));
+    const puddle=CITY_PUDDLES.find(p=>Math.hypot((x-p.x)/p.rx,(y-p.y)/p.ry)<1);
     const ground=sprites.forest,grass=sprites.grass,path=sprites['path-dry'];
     const cover=.22+.18*(Math.sin(x*.47+y*.31)+1)/2;
     for(let dy=0;dy<4;dy++)for(let dx=0;dx<4;dx++){
@@ -70,6 +72,7 @@ export class CityForestWorld{
       let v=ground.pixels[src+k]*(1-cover)+grass.pixels[src+k]*cover;
       v=v*(1-trailWeight)+path.pixels[src+k]*trailWeight;
       if(road<3.16){const a=Math.max(0,Math.min(1,(3.16-road)/.2));v=v*(1-a)+asphalt[src+k]*a;}
+      if(puddle)v=waterFinishChannel(sprites.water.pixels[src+k],k,(Math.hypot((x-puddle.x)/puddle.rx,(y-puddle.y)/puddle.ry)-1)*puddle.ry*32);
       pixels.data[at+k]=v;
      }
      pixels.data[at+3]=255;
@@ -79,7 +82,7 @@ export class CityForestWorld{
    // Road markings follow the same L; both remain entirely in the north.
    c.strokeStyle='#c2b994';c.lineWidth=3;c.setLineDash([23,19]);c.beginPath();c.moveTo(22*32,0);c.lineTo(22*32,10*32);c.lineTo(3072,10*32);c.stroke();c.setLineDash([]);
    c.globalAlpha=.17;c.fillStyle='#17252b';for(const [x,y,w,h]of[[35,10,2,.45],[58,9,2.8,.65],[22,5,1,1.4],[83,11,2,.7]]){c.beginPath();c.ellipse(x*32,y*32,w*32,h*32,0,0,Math.PI*2);c.fill();}c.globalAlpha=1;
-   for(const p of CITY_PUDDLES){c.fillStyle='#385f58';c.beginPath();c.ellipse(p.x*32,p.y*32,p.rx*32,p.ry*32,0,0,Math.PI*2);c.fill();c.strokeStyle='#6f9582';c.lineWidth=2;c.stroke();}
+
    // Fine leaf litter and exposed roots reuse the ground palette, baked once.
    for(let i=0;i<1600;i++){const x=(i*197)%3030+20,y=(i*283)%2200+50;if(cityRoadAt(x/32,y/32)||cityForestWater(x/32,y/32))continue;c.fillStyle=i%3?'#93845488':'#493e2f88';c.fillRect(x,y,2+i%3,1+i%2);}
    this.scene.textures.addCanvas(key,canvas)!.setFilter(0);

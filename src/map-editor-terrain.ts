@@ -1,3 +1,4 @@
+import {waterFinishChannel} from './data/water-style';
 import type Phaser from 'phaser';
 import { TILE, WORLD_HEIGHT, WORLD_WIDTH,isFarmTile,isBridgeTile } from './data/regions';
 import { isWaterPoint } from './data/terrain-shape';
@@ -101,17 +102,13 @@ export function drawMapTerrainEdits(
         // Match the existing world's continuous sampling; water keeps its wave
         // direction instead of mirroring into diamond-shaped repeats.
         if (material === 'water') {
-          const offsetX = Math.round(Math.sin(wy * .018) * 13 + Math.sin(wy * .043) * 5);
-          const offsetY = Math.round(Math.sin(wx * .009 + wy * .005) * 4);
-          sample = (((wy + offsetY + sprite.size) % sprite.size) * sprite.size
-            + (wx + offsetX + sprite.size) % sprite.size) * 4;
+          sample=((wy%sprite.size)*sprite.size+wx%sprite.size)*4;
         } else sample = (naturalSampling==='forest'&&isGrassKind(material)?((wy%sprite.size)*sprite.size+wx%sprite.size):(mirror(wy, sprite.size) * sprite.size + mirror(wx, sprite.size))) * 4;
       }
       const edgeDistance = edges ? Math.min(
         edges.left ? px : TILE, edges.right ? TILE - px - 1 : TILE,
         edges.top ? py : TILE, edges.bottom ? TILE - py - 1 : TILE,
       ) : TILE;
-      const shallow = material === 'water' ? Math.max(0, 1 - edgeDistance / 5) * .22 : 0;
       for (let channel = 0; channel < 3; channel++) {
         let value = sprite?.pixels[sample + channel] ?? FALLBACK[material][channel];
         if(blend){
@@ -134,7 +131,7 @@ export function drawMapTerrainEdits(
           value = value * (1 - forest - field) + sprites.forest.pixels[sample + channel] * forest + sprites.meadow.pixels[sample + channel] * field;
           value=value*(1-moss)+sprites.moss.pixels[sample+channel]*moss+light;
         }
-        if (shallow) value = value * (1 - shallow) + [125, 176, 160][channel] * shallow;
+        if(material==='water')value=waterFinishChannel(value,channel,edgeDistance===TILE?-100:-edgeDistance);
         if(seamColor)value=value*(1-seamWeight)+seamColor[channel]*seamWeight;
         pixels.data[destination + channel] = value;
       }

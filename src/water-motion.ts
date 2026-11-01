@@ -7,7 +7,7 @@ export function addWaterMotion(scene:Phaser.Scene,water:(x:number,y:number)=>boo
   const {frames,fps,tile,period}=WATER_ANIMATION;
   const point=contains??((x:number,y:number)=>water(Math.floor(x/tile),Math.floor(y/tile)));
   // Nine shared phase tiles preserve the original 96px water drawing across seams.
-  const sourceKey='water-surface-v3-base',columns=period/tile;
+  const sourceKey='water-surface-v4-base',columns=period/tile;
   const art=readTerrainSprites(scene)?.water;
   const sources:Uint8ClampedArray[]=[];
   for(let quadrant=0;quadrant<columns*columns;quadrant++) {
@@ -33,7 +33,7 @@ export function addWaterMotion(scene:Phaser.Scene,water:(x:number,y:number)=>boo
     }
     if(!count)continue;
     const quadrant=tx%columns+(ty%columns)*columns;
-    const key=count===tile*tile?`${sourceKey}:${quadrant}`:`water-surface-v3:${quadrant}:${hash.toString(16)}:${count}`;
+    const key=count===tile*tile?`${sourceKey}:${quadrant}`:`water-surface-v4:${quadrant}:${hash.toString(16)}:${count}`;
     if(!scene.textures.exists(key)) {
       const canvas=document.createElement('canvas');canvas.width=frames*tile;canvas.height=tile;
       const g=canvas.getContext('2d')!,image=g.createImageData(canvas.width,tile);image.data.set(sources[quadrant]);

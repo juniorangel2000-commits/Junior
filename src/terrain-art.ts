@@ -1,3 +1,4 @@
+import {waterFinishChannel} from './data/water-style';
 import {shoreSandAt} from './data/property-water';
 import { getRegionAt, isBridgeTile, isFarmTile, TILE, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 import { isWaterPoint, roadDistanceAt, waterDistanceAt } from './data/terrain-shape';
@@ -63,12 +64,10 @@ function paintSpriteGround(ctx: CanvasRenderingContext2D, tiles: readonly Ground
   for (let y = 0; y < HEIGHT; y += 2) {
     const fieldWeight = smooth((y - 38 * TILE) / (10 * TILE));
     const sy = y % period, sampleY = sy < size ? sy : period - sy - 1;
-    const waterOffsetX = Math.round(Math.sin(y * 0.018) * 13 + Math.sin(y * 0.043) * 5);
     for (let x = 0; x < WIDTH; x += 2) {
       const tile = tiles[Math.floor(y / TILE) * WORLD_WIDTH + Math.floor(x / TILE)];
       const sx = x % period, sampleX = sx < size ? sx : period - sx - 1;
       const shoreField = waterDistanceAt(x + 1, y + 1), waterHere = shoreField < 0;
-      const shore = Math.abs(shoreField);
       const grove = Math.max(smooth((16*TILE-x)/(11*TILE)),smooth((9*TILE-y)/(7*TILE)))*.45;
       const forestWeight = Math.max(grove,smooth((x - 45 * TILE) / (12 * TILE))) * (1 - fieldWeight);
       const road = !waterHere && !tile.farm ? roadDistanceAt(x + 1, y + 1) : Infinity;
@@ -80,20 +79,17 @@ function paintSpriteGround(ctx: CanvasRenderingContext2D, tiles: readonly Ground
       const bankWeight = !tile.farm ? bank.weight : 0;
       const mossWeight = !waterHere && !tile.farm ? smooth((noise(x, y, 112, 52) - 0.45) / 0.42) * 0.3 : 0;
       const light = (noise(x, y, 146, 71) - 0.5) * 13 + (noise(x, y, 38, 14) - 0.5) * 5;
-      const shallow = waterHere ? smooth((22 - shore) / 22) : 0;
-      const waterOffsetY = waterHere ? Math.round(Math.sin(x * 0.009 + y * 0.005) * 4) : 0;
       // Share only the mask calculation across 2×2 pixels, never the sprite
       // sample. Reading every pixel avoids aliasing away the small grass blades.
       for (let py = 0; py < 2; py++) for (let px = 0; px < 2; px++) {
         const sample = ((sampleY + (sy < size ? py : -py)) * size + sampleX + (sx < size ? px : -px)) * 4;
-        const waterSample = waterHere ? (((y + py + waterOffsetY + size) % size) * size + (x + px + waterOffsetX + size) % size) * 4 : 0;
+        const waterSample = waterHere ? (((y + py + size) % size) * size + (x + px + size) % size) * 4 : 0;
         const dest = ((y + py) * WIDTH + x + px) * 4;
         for (let channel = 0; channel < 3; channel++) {
           const index = sample + channel;
           let value: number;
           if (waterHere) {
-            const depth=.9+.1*smooth((90-shore)/90);
-            value = water[waterSample + channel] * depth * (1 - shallow * 0.24) + [125, 176, 160][channel] * shallow * 0.24;
+            value=waterFinishChannel(water[waterSample+channel],channel,shoreField);
           } else if (tile.farm) {
             value = soil[index] + light * 0.5;
           } else {
@@ -198,7 +194,7 @@ export function paintTerrain(ctx: CanvasRenderingContext2D, sprites?: TerrainSpr
             continue;
           }
           const i = (((Math.floor(y + py) % source.size) * source.size + Math.floor(x + px) % source.size) * 4);
-          rect(`rgb(${source.pixels[i]},${source.pixels[i + 1]},${source.pixels[i + 2]})`, x + px, y + py, 1, 1);
+          rect(`rgb(${waterFinishChannel(source.pixels[i],0,-4)},${waterFinishChannel(source.pixels[i+1],1,-4)},${waterFinishChannel(source.pixels[i+2],2,-4)})`, x + px, y + py, 1, 1);
         }
       }
       rect('#b5cbbc', x + 5, y + 2, Math.max(3, Math.floor(w / 3)), 1);

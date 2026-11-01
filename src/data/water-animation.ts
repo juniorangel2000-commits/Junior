@@ -1,3 +1,4 @@
+import {waterFinishChannel} from './water-style';
 export const WATER_ANIMATION = { frames:64, fps:16, tile:32, period:96 } as const;
 /** Continuous, four-second loop sampled in world space; adjacent cells share the wave. */
 export function waterSurfaceAlpha(frame:number,x:number,y:number):number {
@@ -21,7 +22,7 @@ export function animatedWaterRGB(frame:number,x:number,y:number,source?:{size:nu
   return [0,1,2].map(c=>{
     const pixel=(px:number,py:number)=>source?.pixels[(wrap(py)*size+wrap(px))*4+c]??[48,130,138][c];
     const top=pixel(ix,iy)*(1-fx)+pixel(ix+1,iy)*fx,bottom=pixel(ix,iy+1)*(1-fx)+pixel(ix+1,iy+1)*fx;
-    const base=top*(1-fy)+bottom*fy;
+    const base=waterFinishChannel(top*(1-fy)+bottom*fy,c);
     return Math.round(base*(1-glow*.65)+[175,222,209][c]*glow*.65);
   });
 }
