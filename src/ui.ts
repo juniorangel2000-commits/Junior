@@ -1,3 +1,4 @@
+import {weatherForDay,WEATHER_NAMES} from './weather-model';
 import {mountFishingJournal} from './fishing-journal';
 import {createSaveLibraryPanel} from './save-library-panel';
 import type {SaveData} from './types';
@@ -65,6 +66,7 @@ interface UICallbacks {
 const paths: Record<string, string> = {
   map: '<path d="m2 4 6-2 8 3 6-2v17l-6 2-8-3-6 2Zm6-2v17M16 5v17"/>',
   leaf: '<path d="M12 21V11m0 5C3 16 3 5 3 5s9-1 9 11Zm0-5C12 3 21 3 21 3s1 9-9 10Z"/>',
+  rain: '<path d="M6 14a4 4 0 1 1 1-8 5 5 0 0 1 9 0 4 4 0 0 1 1 8Z M7 17l-1 3m6-3-1 3m6-3-1 3"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/>',
   moon: '<path d="M20 15A9 9 0 0 1 9 3a9 9 0 1 0 11 12Z"/>',
   wood: '<path d="m5 15 9-9 5 5-9 9Z"/><ellipse cx="7.5" cy="17.5" rx="3.5" ry="3.5"/><path d="m15 5 3-2 4 4-3 3M5 17l3 1"/>',
@@ -279,6 +281,7 @@ export class GameUI {
     try { this.journalCollapsed = localStorage.getItem('after-rain-missions-collapsed') === 'true'; } catch { /* A interface também funciona sem armazenamento. */ }
     this.base.className = 'ui-base';
     window.addEventListener('keydown',event=>{
+      if(event.key==='Escape'&&this.modal==='fishingJournal'){event.preventDefault();event.stopImmediatePropagation();this.closeModal();return;}
       if(event.code!=='KeyJ'||event.ctrlKey||event.metaKey||event.altKey||event.repeat||event.target instanceof HTMLInputElement||event.target instanceof HTMLTextAreaElement||event.target instanceof HTMLSelectElement)return;
       if(this.mode!=='hud'||this.isModalOpen()&&this.modal!=='fishingJournal')return;
       event.preventDefault();event.stopImmediatePropagation();this.toggleFishingJournal();
@@ -667,13 +670,16 @@ export class GameUI {
     const phase = dayPhase(minutes);
     const night = minutes < SUNRISE_MINUTES || minutes >= SUNSET_MINUTES;
     const clock = this.base.querySelector<HTMLElement>('.day-clock')!;
-    clock.title = `${phase} · Nascer do sol 06:00 · Pôr do sol 19:00`;
+    const weatherState=weatherForDay(data.day);
+    clock.title = `${WEATHER_NAMES[weatherState]} · ${phase} · Nascer do sol 06:00 · Pôr do sol 19:00`;
     clock.setAttribute('aria-label', `${phase}, dia ${data.day}`);
     set('#hud-day-phase', phase);
     const weather = this.base.querySelector('.weather-icon')!;
-    if (weather.getAttribute('data-night') !== String(night)) {
-      weather.innerHTML = icon(night ? 'moon' : 'sun');
-      weather.setAttribute('data-night', String(night));
+    const weatherIcon=weatherState==='rain'?'rain':night?'moon':'sun';
+    if (weather.getAttribute('data-weather') !== weatherIcon) {
+      weather.innerHTML = icon(weatherIcon);
+      weather.setAttribute('data-weather', weatherIcon);
+      weather.setAttribute('aria-label',WEATHER_NAMES[weatherState]);
     }
     this.updateQuickbar();
     const selectedTool = tools.find(tool => tool.id === data.tool) ?? tools[0];

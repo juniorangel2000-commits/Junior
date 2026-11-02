@@ -1394,7 +1394,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private updateNight(): void {
-    this.daylight?.update(this.state.time, this.inHome);
+    this.daylight?.update(this.state.time, this.inHome,this.state.day);
   }
 
   private updateHUD(): void {

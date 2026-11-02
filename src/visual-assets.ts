@@ -1,3 +1,4 @@
+import {fishingSupplyIcon} from './data/fishing-supplies';
 import {preloadFishingArt} from './fishing-cast';
 import {preloadEcologyArt,setupEcologyArt,ecologyIcon} from './ecology-art';
 import {setupTreeWind} from './tree-wind';
@@ -28,6 +29,7 @@ export function itemIconUrl(id: string, tier=0): string | undefined {
   if(id==='fishingRod')return 'assets/visual/fishing/fishing-rod.png';
   if(id==='fish')return 'assets/visual/fishing/catches/fish.svg#tilapia';
   if(id==='rareFish')return 'assets/visual/fishing/catches/fish.svg#dourado';
+  if(id==='net')return fishingSupplyIcon('net');
   if(id==='bait')return 'assets/visual/fishing/basic-worm.png';
   const natural=ecologyIcon(id);if(natural)return natural;
   const dedicated=economyIcon(id);if(dedicated)return dedicated;

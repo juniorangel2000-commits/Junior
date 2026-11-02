@@ -1,4 +1,4 @@
-import {newFishingProgress,availableSpecimens,specimenPrice,fishingOrder,RODS} from './fishing-progress';
+import {newFishingProgress,availableSpecimens,specimenPrice,fishingOrder,RODS,ROD_UPGRADES,rodControlLabel} from './fishing-progress';
 import {fishSpecies} from '../data/fishing-catches';
 import {fulfillContract,toolCondition,configureTool} from './economy';
 import {ECONOMY_BALANCE as B} from '../data/economy-balance';
@@ -8,7 +8,7 @@ import {createVillageProgress} from '../data/village-progress';
 import {createVillageEconomy,MAX_COINS} from '../data/village-commerce';
 import {FOREST_ANIMALS} from '../data/ancient-forest';
 import {ECOLOGY_BALANCE as ECOLOGY} from '../data/ecology-balance';
-export interface VillageServiceOffer{id:string;label:string;description:string}
+export interface VillageServiceOffer{id:string;label:string;description:string;disabled?:boolean;actionLabel?:string}
 type Service={npc:string;label:string;description:string;run:(s:SaveData,i:Inventory)=>void};
 const services:Record<string,Service>={};
 const add=(id:string,npc:string,label:string,description:string,run:Service['run'])=>{services[id]={npc,label,description,run};};
@@ -27,7 +27,7 @@ add('learn-tailoring','celina','Aprender costura','30 Coroas e 6 fibras. Libera 
 for(const look of ['female','male'] as const)add(`outfit-${look}`,'celina',`Vestir ${look==='female'?'fazendeira':'fazendeiro'}`,'10 Coroas e uma muda de roupa. Usa os personagens originais do jogo.',(s,i)=>{pay(s,i,10,{clothing:1});s.profile.characterId=look==='female'?'farmer-female':'farmer-male';s.villageProgress!.outfit=look;});
 add('fishing-lesson','damiao','Aprender pesca','Primeira aula: 30 Coroas. Segunda: 60 Coroas e 3 peixes. Melhora capturas raras.',(s,i)=>{const p=s.villageProgress!;requireThat(p.fishingSkill<2,'Você já aprendeu as duas técnicas.');pay(s,i,p.fishingSkill?60:30,p.fishingSkill?{fish:3}:{});p.fishingSkill++;});
 add('rare-fish-task','damiao','Entregar peixe raro','Damião paga 180 Coroas pela primeira espécie rara. Uma única entrega.',(s,i)=>{requireThat(!s.villageProgress!.rareFishTaskCompleted,'A pesquisa desta espécie já foi concluída.');pay(s,i,0,{rareFish:1});reward(s,180);s.villageProgress!.rareFishTaskCompleted=true;});
-add('fishing-rod-upgrade','damiao','Melhorar vara','Reforçada: 100 C, 4 tábuas e 2 cordas. Equilibrada: 240 C, 6 tábuas e 2 peças metálicas. Amplia a faixa de controle.',(s,i)=>{const p=s.fishingProgress??=newFishingProgress();requireThat(i.has('fishingRod'),'Traga sua vara de pesca.');requireThat(p.rodTier<2,'Sua vara já está no último estágio.');pay(s,i,p.rodTier?240:100,p.rodTier?{plank:6,metalPart:2}:{plank:4,cord:2});p.rodTier=(p.rodTier+1) as 1|2;});
+add('fishing-rod-upgrade','damiao','Melhorar vara','Reforçada: 100 C, 4 tábuas e 2 cordas. Equilibrada: 240 C, 6 tábuas e 2 peças metálicas. Amplia a faixa de controle.',(s,i)=>{const p=s.fishingProgress??=newFishingProgress();requireThat(i.has('fishingRod'),'Traga sua vara de pesca.');requireThat(p.rodTier<2,'Sua vara já está no último estágio.');const upgrade=ROD_UPGRADES[p.rodTier as 0|1];pay(s,i,upgrade.coins,upgrade.materials);p.rodTier=(p.rodTier+1) as 1|2;});
 add('fishing-baits','damiao','Aprender novas iscas','40 C e 3 fibras. Aprenda massa caseira e isca de inseto. Escolha o preparo no diário; cada lançamento preparado usa 2 iscas.',(s,i)=>{const p=s.fishingProgress??=newFishingProgress();requireThat(!p.preparedBait,'Você já conhece estes preparos.');pay(s,i,40,{fiber:3});p.preparedBait=true;});
 add('fishing-specimens-sell','damiao','Vender capturas registradas','Vende os peixes identificados que ainda estão na mochila. O valor considera espécie, raridade e tamanho; consulte o total no diário.',(s,i)=>{const p=s.fishingProgress??=newFishingProgress(),basket=availableSpecimens(s);requireThat(basket.length,'Você não tem capturas registradas na mochila.');const cost={fish:0,rareFish:0};for(const f of basket)cost[fishSpecies(f.species).stock]++;pay(s,i,0,cost);reward(s,basket.reduce((n,f)=>n+specimenPrice(f),0));p.basket=[];});
 add('fishing-order','damiao','Encomenda de pesca do dia','Uma encomenda diferente por dia. Entregue a espécie solicitada para receber um pagamento especial. Veja a encomenda no diário.',(s,i)=>{const p=s.fishingProgress??=newFishingProgress(),order=fishingOrder(s.day),basket=availableSpecimens(s);requireThat(p.orderDay!==s.day,'A encomenda de hoje já foi entregue.');const selected=basket.filter(f=>f.species===order.species).slice(0,order.quantity);requireThat(selected.length===order.quantity,`Traga ${order.quantity} × ${fishSpecies(order.species).name} de suas capturas registradas.`);pay(s,i,0,{[fishSpecies(order.species).stock]:order.quantity});reward(s,order.reward);p.basket=basket.filter(f=>!selected.includes(f));p.orderDay=s.day;});
@@ -40,7 +40,28 @@ for(const tool of ['hatchet','pickaxe','hoe','sickle','shovel'] as const)add(`re
 add('shelter-carpentry','tobias','Preparar peças para a casinha','30 C, 2 troncos e 6 madeiras: recebe 6 tábuas regulares e 6 cavilhas.',(s,i)=>{pay(s,i,30,{log:2,wood:6});requireThat(i.transact({},{board:6,peg:6}),'Libere espaço na mochila.');});
 add('shelter-textiles','celina','Preparar tecidos para os pets','20 C e 8 fibras: recebe 4 tecidos e 2 cordas.',(s,i)=>{pay(s,i,20,{fiber:8});requireThat(i.transact({},{cloth:4,cord:2}),'Libere espaço na mochila.');});
 add('shelter-fittings','icaro','Preparar fixadores para a casinha','12 C e 4 sucatas: recebe 2 peças metálicas.',(s,i)=>{pay(s,i,12,{scrap:4});requireThat(i.transact({},{metalPart:2}),'Libere espaço na mochila.');});
-export function listVillageServices(npc:string,save?:SaveData):VillageServiceOffer[]{return Object.entries(services).filter(([,s])=>s.npc===npc).map(([id,s])=>({id,label:id==='fishing-rod-upgrade'&&save?`Melhorar vara · ${RODS[save.fishingProgress?.rodTier??0]}`:s.label,description:id==='fishing-order'&&save?`${fishingOrder(save.day).quantity} × ${fishSpecies(fishingOrder(save.day).species).name} · ${fishingOrder(save.day).reward} C. ${save.fishingProgress?.orderDay===save.day?'Entregue hoje.':'Uma entrega por dia.'}`:s.description}));}
+export function listVillageServices(npc:string,save?:SaveData):VillageServiceOffer[]{
+ return Object.entries(services).filter(([,s])=>s.npc===npc).map(([id,s])=>{
+  const offer:VillageServiceOffer={id,label:s.label,description:s.description};if(!save)return offer;
+  const tier=save.fishingProgress?.rodTier??0,basket=availableSpecimens(save),order=fishingOrder(save.day);
+  if(id==='fishing-rod-upgrade'){
+   offer.label=tier<2?`Melhorar para ${RODS[tier+1]}`:RODS[tier];offer.disabled=tier===2;
+   offer.description=tier<2?`${ROD_UPGRADES[tier as 0|1].description}. ${rodControlLabel(tier+1)}. A melhoria permanece na sua vara.`:'Sua vara já tem todas as melhorias.';
+   offer.actionLabel=tier<2?'Melhorar vara':'Melhoria máxima';
+  }
+  if(id==='fishing-baits'){offer.disabled=!!save.fishingProgress?.preparedBait;offer.actionLabel=offer.disabled?'Preparos aprendidos':'Aprender preparos';}
+  if(id==='fishing-specimens-sell'){
+   offer.disabled=basket.length===0;offer.actionLabel='Vender capturas';
+   offer.description=`${basket.length} peixe(s) identificado(s) na mochila · total ${basket.reduce((n,f)=>n+specimenPrice(f),0)} C. Vende todas essas capturas, com valor por espécie, raridade e tamanho.`;
+  }
+  if(id==='fishing-order'){
+   offer.disabled=save.fishingProgress?.orderDay===save.day;offer.actionLabel=offer.disabled?'Entregue hoje':'Entregar encomenda';
+   const held=basket.filter(f=>f.species===order.species).length;
+   offer.description=`${order.quantity} × ${fishSpecies(order.species).name} · ${order.reward} C. Na mochila: ${Math.min(held,order.quantity)}/${order.quantity}. ${offer.disabled?'Entregue hoje.':'Uma entrega por dia.'}`;
+  }
+  return offer;
+ });
+}
 export function performVillageService(save:SaveData,id:string):{ok:boolean;message:string}{
  const service=services[id];if(!service)return{ok:false,message:'Serviço desconhecido.'};
  const draft=structuredClone(save);draft.villageProgress??=createVillageProgress();draft.villageEconomy??=createVillageEconomy();

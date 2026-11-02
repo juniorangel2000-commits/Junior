@@ -1,5 +1,5 @@
 import {FISHING_HABITATS,rollFishingReward,fishingRewardItems,validFishingReward,type FishingReward} from '../data/fishing-catches';
-import {BAITS,FISH_HABITS,speciesWeight,recordFishingReward,type BaitStyle} from './fishing-progress';
+import {BAITS,FISH_HABITS,rodControlBonus,speciesWeight,recordFishingReward,type BaitStyle} from './fishing-progress';
 import type {SaveData} from '../types';
 import {Inventory} from './inventory';
 import {createVillageProgress} from '../data/village-progress';
@@ -22,7 +22,7 @@ export class FishingSession {
   this.waitSeconds=FISHING_RULES.waitMin+clamp(random())*(FISHING_RULES.waitMax-FISHING_RULES.waitMin);
   const chance=clamp(random()),rules=FISHING_HABITATS[habitat],rare=rules.rare&&chance<.04+clamp(skill,0,2)*.04+(accessory?.03:0);
   this.reward=rollFishingReward(rare,net,random,rules.trash,id=>speciesWeight(id,equipment.time??720,equipment.day??1,equipment.bait??'worm'));this.rare=this.reward.kind==='fish'&&rare;
-  this.bandSize=.28+(clamp(skill,1,2)-1)*.08+(net?.05:0)+(net?0:clamp(equipment.rodTier??0,0,2)*.035);
+  this.bandSize=.28+(clamp(skill,1,2)-1)*.08+(net?.05:0)+rodControlBonus(equipment.rodTier??0,net);
  }
  hook():boolean{if(this.phase!=='bite')return false;this.phase='fighting';return true;}
  cancel():void{if(this.phase!=='caught'&&this.phase!=='escaped')this.phase='cancelled';}
@@ -57,13 +57,13 @@ export function beginFishingCast(save:SaveData,net:boolean,rare:boolean|FishingR
  if(!save.villageProgress?.fishingSkill)return{ok:false,message:'Aprenda a pescar com Damião na cabana do lago ou na vila.'};
  if(typeof rare!=='boolean'&&(!validFishingReward(rare)||(rare.kind==='fish'?rare.specimens.length:rare.quantity)!==(net?2:1)))return{ok:false,message:'Captura inválida.'};
  const draft=structuredClone(save),inventory=new Inventory(draft.inventory),baitCost=BAITS[draft.fishingProgress?.bait??'worm'].cost;
- if(!inventory.has(net?'net':'fishingRod')||!inventory.has('bait',baitCost))return{ok:false,message:'Você precisa do equipamento e de uma isca.'};
+ if(!inventory.has(net?'net':'fishingRod')||!inventory.has('bait',baitCost))return{ok:false,message:`Você precisa do equipamento e de ${baitCost} ${baitCost===1?'isca':'iscas'} para este preparo.`};
  const capacity=new Inventory(draft.inventory);
  if(!capacity.transact({bait:baitCost},typeof rare==='boolean'?{[rare?'rareFish':'fish']:net?2:1}:fishingRewardItems(rare)))return{ok:false,message:'Libere espaço na mochila para a captura antes de lançar a linha.'};
  inventory.spend({bait:baitCost});draft.inventory={...inventory.data};
  const p=draft.villageProgress??=createVillageProgress();p.vigor=Math.max(0,p.vigor-FISHING_RULES.vigorCost);
  if(!persist(draft,write))return{ok:false,message:'Não foi possível salvar o lançamento. A isca e o vigor foram preservados.'};
- save.inventory=draft.inventory;save.villageProgress=draft.villageProgress;return{ok:true,message:''};
+ save.inventory=draft.inventory;save.villageProgress=draft.villageProgress;save.fishingProgress=draft.fishingProgress;return{ok:true,message:''};
 }
 export function collectFishingCatch(save:SaveData,net:boolean,rare:boolean|FishingReward,write:Writer):{ok:boolean;message:string}{
  const amount=net?2:1;

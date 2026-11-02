@@ -1,3 +1,6 @@
+import {MERCHANTS} from '../data/village-commerce';
+import {weatherForDay,WEATHER_NAMES} from '../weather-model';
+import {dayPhase,dayMinutes} from '../daylight-model';
 import type {SaveData} from '../types';
 import {FISH_SPECIES,fishSpecies,validFishingReward,type FishSpecimen,type FishSpeciesId,type FishingReward} from '../data/fishing-catches';
 export type BaitStyle='worm'|'dough'|'insect';
@@ -14,8 +17,14 @@ export const FISH_HABITS={
  truta:{speed:2.3,turn:.65,sway:.09,frequency:5,hint:'Ágil e imprevisível. No lago, prefere manhãs e insetos.',base:38},
  dourado:{speed:2.8,turn:.45,sway:.12,frequency:6,hint:'Arrancadas intensas. No lago, prefere o fim da tarde.',base:60},
 } as const;
-// A stable daily forecast: opening a panel or reloading never rerolls the weather.
-export const fishingWeather=(day:number):'rain'|'clear'=>((day*17+3)%7)<2?'rain':'clear';
+export const fishingWeather=weatherForDay;
+export function fishingConditions(day:number,time:number):string {
+ const minutes=Math.floor(dayMinutes(time)),clock=String(Math.floor(minutes/60)).padStart(2,'0')+':'+String(minutes%60).padStart(2,'0');
+ return `${dayPhase(time)} · ${clock} · ${WEATHER_NAMES[weatherForDay(day)]}`;
+}
+export const ROD_UPGRADES=[{coins:100,materials:{plank:4,cord:2},description:'100 C, 4 tábuas e 2 cordas'},{coins:240,materials:{plank:6,metalPart:2},description:'240 C, 6 tábuas e 2 peças metálicas'}] as const;
+export const rodControlBonus=(tier:number,net=false)=>net?0:Math.max(0,Math.min(2,Math.floor(tier)))*.035;
+export const rodControlLabel=(tier:number)=>`Faixa de controle +${(Math.round(rodControlBonus(tier)/.28*1000)/10).toLocaleString('pt-BR')}%`;
 export function speciesWeight(id:FishSpeciesId,time:number,day:number,bait:BaitStyle):number {
  const hour=((time%1440)+1440)%1440,night=hour<360||hour>=1140,morning=hour>=360&&hour<660;
  let weight=1;
@@ -30,7 +39,9 @@ export function speciesWeight(id:FishSpeciesId,time:number,day:number,bait:BaitS
 }
 export function specimenPrice(f:FishSpecimen):number {
  const species=fishSpecies(f.species),size=Math.max(0,Math.min(1,(f.lengthCm-species.minCm)/(species.maxCm-species.minCm)));
- return Math.round(FISH_HABITS[f.species].base*(.8+size*.8));
+ // Identified catches earn the ordinary shop price plus a species/size premium.
+ const floor=MERCHANTS.fisher.sell[species.stock]??0;
+ return floor+Math.round(FISH_HABITS[f.species].base*(.25+size*.75));
 }
 /** Metadata never creates inventory. Generic fish used in recipes or trades trim the basket. */
 export function availableSpecimens(save:SaveData):FishSpecimen[]{
@@ -51,5 +62,6 @@ export function validFishingProgress(v:unknown):v is FishingProgress {
 }
 export function fishingOrder(day:number):{species:FishSpeciesId;quantity:number;reward:number}{
  const species=FISH_SPECIES[(day-1)%FISH_SPECIES.length].id,quantity=fishSpecies(species).stock==='rareFish'?1:2;
- return{species,quantity,reward:Math.round(FISH_HABITS[species].base*1.8*quantity+20)};
+ const fish=fishSpecies(species),bestPrice=specimenPrice({species,lengthCm:fish.maxCm,weightGrams:fish.maxGrams});
+ return{species,quantity,reward:Math.ceil(bestPrice*quantity*1.25)+20};
 }

@@ -50,7 +50,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   fertilizer: {name:'Fertilizante',description:'Adubo preparado para cuidar dos canteiros da propriedade.',iconFallback:'fiber'},
   fishingRod: {name:'Vara de pesca',description:'Equipamento de Damião para pescar nas margens dos lagos.',iconFallback:'branch'},
   bait: {name:'Minhoca',description:'Isca básica. Uma minhoca é utilizada por tentativa com vara ou rede.',iconFallback:'seeds'},
-  net: {name:'Rede de pesca',description:'Equipamento de pesca vendido por Damião.',iconFallback:'cord'},
+  net: {name:'Rede de pesca',description:'Rede de arremesso de Damião. Recolhe duas capturas por tentativa e amplia a faixa de controle.',iconFallback:'cord'},
   fish: {name:'Peixes',description:'Pescado comum: lambari, tilápia, carpa ou bagre. Pode ser vendido, cozinhado ou negociado na vila.',iconFallback:'seeds'},
   rareFish: {name:'Peixe raro',description:'Truta ou dourado: capturas raras procuradas por Damião.',iconFallback:'seeds'},
   meal: {name:'Refeições',description:'Comida preparada por Helena para recuperar o vigor.',iconFallback:'seeds'},

@@ -63,7 +63,7 @@ export class FishingLakeScene extends Phaser.Scene{
   this.player=new Player(this,this.state.profile,valid?p.x:((this.state.fishingLakeMapEdits?.points?.entry??LAKE_CITY_ENTRY).x+.5)*32,valid?p.y:((this.state.fishingLakeMapEdits?.points?.entry??LAKE_CITY_ENTRY).y+.5)*32,'fishing-lake-player');
   this.player.facing=directionVector(valid?p.direction??'up':'up');this.player.update(0,this.movementBlockedTile,this.movementBlockedPoint,false,this.swimmingPoint,this.allowCabinStep);
   this.fisher=new LakeFisherVisit(this,()=>this.state,()=>this.player,(x,y)=>lakeBlockedPoint(x,y,this.state.fishingLakeMapEdits),value=>this.setPaused(value),()=>this.updateHUD());
-  this.zoom=loadCameraZoom();this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time);
+  this.zoom=loadCameraZoom();this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time,false,this.state.day);
   this.cameras.main.setBounds(0,0,3072,2304);this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
   document.querySelector<HTMLElement>('#ui')!.style.display='';this.ui.showHUD('fishingLake');this.ui.setQuickbar(this.state.quickbar??emptyQuickbar());this.updateHUD();
   const mouse=this.input.mouse,previousWheelDefault=mouse?.preventDefaultWheel;
@@ -182,7 +182,7 @@ export class FishingLakeScene extends Phaser.Scene{
   });
  }
  update(time:number,ms:number):void{
-  if(!this.player)return;this.player.sprite.setDepth(cabinActorDepth(this.player.x,this.player.y));this.daylight.update(this.state.time);this.world.update(time);
+  if(!this.player)return;this.player.sprite.setDepth(cabinActorDepth(this.player.x,this.player.y));this.daylight.update(this.state.time,false,this.state.day);this.world.update(time);
   if(this.paused||this.leaving||this.ui.isModalOpen()||document.hidden)return;
   const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(dt,this.movementBlockedTile,this.movementBlockedPoint,true,this.swimmingPoint,this.allowCabinStep);this.player.sprite.setDepth(cabinActorDepth(this.player.x,this.player.y));
   if(this.passage.update(before,this.player,this.state.fishingLakeMapEdits?.points?.exit??LAKE_CITY_EXIT,this.state.fishingLakeMapEdits?.points?.entry??LAKE_CITY_ENTRY)){this.leave();return;}

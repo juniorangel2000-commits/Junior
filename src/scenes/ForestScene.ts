@@ -92,7 +92,7 @@ export class ForestScene extends Phaser.Scene {
     this.player.facing=directionVector(valid?p.direction??'up':'up');this.player.update(0,this.movementBlockedAt,undefined,true,this.swimmingPoint);
 
     this.resetNaturalResources();this.rebuildAnimals();
-    this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time);
+    this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time,false,this.state.day);
     this.cameras.main.setBounds(0,0,3072,2304);this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
     document.querySelector<HTMLElement>('#ui')!.style.display='';this.ui.setQuickbar(this.state.quickbar??emptyQuickbar());this.ui.showHUD('forest');this.updateHUD();
     this.input.keyboard!.on('keydown',this.key,this);this.input.on('wheel',this.wheel,this);
@@ -269,7 +269,7 @@ export class ForestScene extends Phaser.Scene {
     this.time.delayedCall(SCENE_FADE_MS,()=>{const save=structuredClone(this.state);this.scene.stop();this.onReturn(save,title);});
   }
   update(_time:number,ms:number):void {
-    this.daylight?.update(this.state.time);
+    this.daylight?.update(this.state.time,false,this.state.day);
     if(!this.player||this.paused||this.leaving||this.mapEditor||document.hidden)return;
     const previous={x:this.player.x,y:this.player.y};
     const delta=Math.min(ms/1000,.1);this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta,this.movementBlockedAt,undefined,!this.toolUse.active,this.swimmingPoint,this.allowLeashMovement);this.wildlife?.update(delta,this.player);this.farming.update(delta);if(this.player.isSwimming){this.state.equippedTool='hand';this.toolUse.cancel();this.toolVisual?.hide();}

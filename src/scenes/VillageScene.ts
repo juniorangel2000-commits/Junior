@@ -136,7 +136,7 @@ export class VillageScene extends Phaser.Scene {
   const valid=saved&&![[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>this.movementBlockedPoint(saved.x+dx,saved.y+dy));
   this.player=new Player(this,this.state.profile,valid?saved.x:entry.x,valid?saved.y:entry.y,'village-player');
   this.player.facing=directionVector(valid?saved.direction??'right':'right');this.player.update(0,this.movementBlocked,this.movementBlockedPoint,false,this.swimmingPoint);
-  this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time);this.world.updateLighting(this.state.time);
+  this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time,false,this.state.day);this.world.updateLighting(this.state.time);
   if(this.state.blacksmithInterior)this.setBlacksmithRoom(true,this.state.blacksmithScene?this.state.blacksmithInterior:undefined);
   else if(this.state.merchantInterior)this.setMerchantRoom(this.state.merchantInterior.owner,this.state.merchantInterior);
   this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
@@ -300,7 +300,7 @@ export class VillageScene extends Phaser.Scene {
   const p=position??(id?MERCHANT_ROOM_ENTRY:merchantOutside(previous!));this.player.x=p.x;this.player.y=p.y;this.player.facing=directionVector(position?.direction??(id?'up':'down'));
   for(const npc of this.villagers){npc.sprite.setVisible(this.sameRoom(npc));}
   const free=freeArrival(this.player,(x,y)=>id?merchantRoomBlocked(id,x,y,this.merchantLayouts.get(id)):this.world.isBlockedPoint(x,y),this.villagers.filter(n=>n.sprite.visible).map(n=>n.sprite));if(free){this.player.x=free.x;this.player.y=free.y;}
-  this.input.keyboard?.resetKeys();this.player.update(0,this.movementBlocked,this.movementBlockedPoint,false,this.swimmingPoint);this.daylight.update(this.state.time,!!id);this.applyCamera();
+  this.input.keyboard?.resetKeys();this.player.update(0,this.movementBlocked,this.movementBlockedPoint,false,this.swimmingPoint);this.daylight.update(this.state.time,!!id,this.state.day);this.applyCamera();
  }
  private changeMerchantRoom(id?:ResidentId):void {
   if(id&&!merchantMayEnter(id,this.state)){this.ui.toast('Comércio fechado · abre às 08:00.');this.merchantPassage.reset();return;}
@@ -404,7 +404,7 @@ export class VillageScene extends Phaser.Scene {
   // A resident standing in the doorway must never strand the arriving player.
   const free=freeArrival(this.player,(x,y)=>inside?smithBlocked(this.smithLayout,x,y):this.world.isBlockedPoint(x,y),this.villagers.filter(n=>n.sprite.visible).map(n=>n.sprite));if(free){this.player.x=free.x;this.player.y=free.y;}
   this.input.keyboard?.resetKeys();this.player.update(0,this.movementBlocked,this.movementBlockedPoint,false,this.swimmingPoint);
-  this.daylight.update(this.state.time,inside);this.applyCamera();
+  this.daylight.update(this.state.time,inside,this.state.day);this.applyCamera();
  }
  private changeBlacksmithRoom():void {
   if(!this.inBlacksmith&&!merchantMayEnter('bento',this.state)){this.ui.toast('Ferraria fechada · abre às 08:00.');this.homePassage.reset();return;}
@@ -499,7 +499,7 @@ export class VillageScene extends Phaser.Scene {
   this.time.delayedCall(SCENE_FADE_MS,()=>{const state=structuredClone(this.state);this.scene.stop();this.onReturn(state,title);});
  }
  update(time:number,ms:number):void {
-  if(!this.player)return;this.daylight.update(this.state.time,this.inShop);this.world.update(time,this.inShop?undefined:this.player);this.world.updateLighting(this.state.time);
+  if(!this.player)return;this.daylight.update(this.state.time,this.inShop,this.state.day);this.world.update(time,this.inShop?undefined:this.player);this.world.updateLighting(this.state.time);
   if(this.paused||this.leaving||this.changingRoom||this.shop?.isOpen||this.ui.isModalOpen()||document.hidden)return;
   const delta=Math.min(ms/1000,.1),previous={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta,this.movementBlocked,this.movementBlockedPoint,true,this.swimmingPoint,this.allowPierStep);
   if(this.inShop)this.centerInteriorCamera();

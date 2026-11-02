@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import {WorldRain} from './world-rain';
 import { daylightAt } from './daylight-model';
 import { getVisualSettings } from './visual-settings';
 import { SolarShadows } from './solar-shadows';
@@ -16,8 +17,10 @@ export class Daylight {
   private readonly fixtures:FixtureLighting;
   private readonly panes: Phaser.GameObjects.Image | Phaser.GameObjects.Graphics;
   private shown = true;
+  private rain:WorldRain;
   private windows: Array<{ x: number; y: number }> = [];
   constructor(scene: Phaser.Scene, width: number, height: number) {
+    this.rain=new WorldRain(scene);
     this.shade = scene.add.rectangle(0, 0, width, height, 0x182642).setOrigin(0).setDepth(5000).setAlpha(0);
     this.warmth = scene.add.rectangle(0, 0, width, height, 0xf3b56c).setOrigin(0).setDepth(5001).setAlpha(0);
     this.shadows = new SolarShadows(scene);
@@ -42,17 +45,19 @@ export class Daylight {
     }
   }
   contains(object: Phaser.GameObjects.GameObject): boolean {
-    return object === this.shade || object === this.warmth || object === this.shader || object === this.panes || !!object.getData('solar-shadow')||this.fixtures.contains(object);
+    return object===this.rain.graphics || object === this.shade || object === this.warmth || object === this.shader || object === this.panes || !!object.getData('solar-shadow')||this.fixtures.contains(object);
   }
   setVisible(visible: boolean): void {
+    this.rain.setVisible(visible);
     this.shown=visible;this.shade.setVisible(visible);this.warmth.setVisible(visible);
     if(!visible){this.shader?.setVisible(false);this.panes.setVisible(false);this.shadows.setVisible(false);}
   }
   destroy(): void {
-    this.shadows.destroy();this.fixtures.destroy();this.shader?.destroy();
+    this.rain.destroy();this.shadows.destroy();this.fixtures.destroy();this.shader?.destroy();
     this.shade.destroy();this.warmth.destroy();this.panes.destroy();
   }
-  update(time: number, indoors = false): void {
+  update(time: number, indoors = false, day = 1): void {
+    this.rain.update(day,indoors);
     this.fixtures.update(time);
     const settings = getVisualSettings();
     const light = daylightAt(time, settings.daylight ? settings.intensity : 0, indoors);

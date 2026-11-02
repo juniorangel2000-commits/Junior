@@ -3,3 +3,5 @@
 @media(max-width:700px){#ui .fishing-journal{padding:15px;border-width:6px;width:96vw}#ui .fj-body,#ui .fj-bottom{grid-template-columns:1fr;gap:14px}#ui .fj-summary{gap:18px}#ui .fj-summary strong{font-size:18px}#ui .fj-summary span{font-size:10px}#ui .fj-heading{gap:10px}#ui .fj-heading h2{font-size:25px}#ui .fj-book{width:46px;height:46px}#ui .fj-eyebrow{font-size:8px}#ui .fj-heading p{font-size:12px}#ui .fj-entry{min-height:110px}#ui .fj-footer{align-items:flex-start}#ui .fj-footer>span{max-width:55%}}
 /* A modal stays above draggable HUD panels and notifications. */
 #ui .modal-root:has(.fishing-journal){z-index:1000;isolation:isolate}
+#ui .fj-bait-preview{display:flex;align-items:center;gap:12px;margin-top:8px}#ui .fj-bait-preview img{width:48px;height:48px;object-fit:contain;image-rendering:pixelated}#ui .fj-bait-preview p{margin:0}#ui .fj-summary>div:nth-child(3)>strong{font-size:16px;max-width:260px}#ui .fj-summary>div:nth-child(3){flex:1;min-width:0}
+#ui .fj-equipment>.fj-bait-preview{flex-direction:row}
