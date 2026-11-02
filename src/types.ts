@@ -56,6 +56,8 @@ export interface VillageEconomy {
   stock?:Partial<Record<ItemId,StockRecord>>;
 }
 export interface SaveData {
+  highlandPosition?:TilePoint & {direction?:CharacterDirection};
+  highlandMapEdits?:MapEditData;
   /** Outdoor equipment references an owned sword; missing keeps hands free. */
   worldWeapon?:'sword'|'unarmed';
   survivorCamp?:import('./systems/survivor-camp').SurvivorCampState;
@@ -76,7 +78,7 @@ export interface SaveData {
   propertyShoreRevision?:number;
   /** One-time homestead layout; removed starter fences/beds are never recreated. */
   homesteadRevision?:1;
-  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake' | 'survivorCamp';
+  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake' | 'survivorCamp' | 'highland';
   fishingLakePosition?: TilePoint & { direction?: CharacterDirection };
   fishingLakeMapEdits?:MapEditData;
   cityForestPosition?: TilePoint & { direction?: CharacterDirection };
@@ -134,6 +136,7 @@ export interface SaveData {
   forestMapEdits?: MapEditData;
 }
 export interface HudData {
+  worldMapSize?:{width:number;height:number};
   worldWeapon?:SaveData['worldWeapon'];
   mapEditorAvailable?:boolean;
   interiorEditor?:boolean;
@@ -141,7 +144,7 @@ export interface HudData {
   learnedRecipes?:string[];
   farmingProgress?: FarmingProgress;
   swimming?:boolean;
-  area?: 'property'|'forest'|'village'|'cityForest'|'fishingLake'|'survivorCamp';
+  area?: 'property'|'forest'|'village'|'cityForest'|'fishingLake'|'survivorCamp'|'highland';
   coins?: number;
   vigor?: number;
   wateringCan?: boolean;

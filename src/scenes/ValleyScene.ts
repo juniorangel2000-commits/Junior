@@ -288,7 +288,7 @@ export class ValleyScene extends Phaser.Scene {
     this.running = true;
     this.paused = false;
     this.ui.showHUD();
-    if(saved.activeArea==='fishingLake'){this.enterLake(saved);return;}
+    if(saved.activeArea==='fishingLake'||saved.activeArea==='highland'){this.enterLake(saved);return;}
     if (saved.activeArea === 'forest'||saved.activeArea==='survivorCamp') { this.enterForest(saved); return; }
     if (saved.activeArea === 'village'||saved.activeArea==='cityForest') { this.enterVillage(saved); return; }
     this.ui.toast(`Que bom ter você de volta, ${saved.profile.name}.`);
@@ -380,7 +380,7 @@ export class ValleyScene extends Phaser.Scene {
     this.world.well?.cancel();this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
     const data=saved??this.snapshotState();
     if(!saved)data.fishingLakePosition={x:(LAKE_PROPERTY_ENTRY.x+.5)*32,y:(LAKE_PROPERTY_ENTRY.y+.5)*32,direction:'up'};
-    data.activeArea='fishingLake';delete data.homePosition;
+    if(data.activeArea!=='highland')data.activeArea='fishingLake';delete data.homePosition;
     if(!saveGame(data)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}
     this.villageActive=true;this.paused=true;this.input.keyboard?.resetKeys();
     const root=document.querySelector<HTMLElement>('#ui')!;

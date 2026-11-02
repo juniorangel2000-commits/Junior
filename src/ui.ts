@@ -415,7 +415,7 @@ export class GameUI {
     this.cleanupOpening = () => player.destroy();
   }
 
-  showHUD(area: 'property'|'forest'|'village'|'cityForest'|'fishingLake'|'survivorCamp'='property'): void {
+  showHUD(area: 'property'|'forest'|'village'|'cityForest'|'fishingLake'|'survivorCamp'|'highland'='property'): void {
     this.cleanupOpening?.(); this.cleanupOpening = undefined;
     this.hideCameraZoom();
     this.root.dataset.area=area;
@@ -953,14 +953,14 @@ export class GameUI {
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Mapa das regiões exploráveis');
-    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM VALE PARA CONHECER</span><h2>${this.latest?.inHome ? this.latest.area==='village'?'Interior do comércio':"Interior da casa" : this.latest?.area==='survivorCamp' ? "Acampamento de Sobreviventes" : this.latest?.area==='fishingLake' ? "Lago entre as Serras" : this.latest?.area==='cityForest' ? "Floresta de Acesso à Cidade" : this.latest?.area==='forest' ? "Floresta Antiga" : this.latest?.area==='village' ? "Vila do Recomeço" : "Mapa completo do vale"}</h2></div><button class="icon-button" aria-label="Fechar mapa">${icon('close')}</button></div>
+    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM VALE PARA CONHECER</span><h2>${this.latest?.inHome ? this.latest.area==='village'?'Interior do comércio':"Interior da casa" : this.latest?.area==='highland' ? 'Alto da Serra' : this.latest?.area==='survivorCamp' ? "Acampamento de Sobreviventes" : this.latest?.area==='fishingLake' ? "Lago entre as Serras" : this.latest?.area==='cityForest' ? "Floresta de Acesso à Cidade" : this.latest?.area==='forest' ? "Floresta Antiga" : this.latest?.area==='village' ? "Vila do Recomeço" : "Mapa completo do vale"}</h2></div><button class="icon-button" aria-label="Fechar mapa">${icon('close')}</button></div>
       <p class="map-current">Você está em <strong></strong>.</p>
       <div class="exploration-map real-map" role="img" aria-label="Cenário real e posição do personagem"><img class="map-snapshot" alt="Vista do cenário atual" /><span class="map-player" hidden><i></i><b>Você</b></span><span class="map-north">N ↑</span></div>
       <p class="map-caption">Vista atual do cenário. Seu marcador indica a posição exata.</p>
       <div class="inventory-footer">${icon('leaf')} Sempre há um caminho de volta.<span>SIMULAÇÃO PAUSADA · M OU ESC PARA VOLTAR</span></div>`;
     const map = panel.querySelector<HTMLElement>('.exploration-map')!;
-    const mapWidth=this.latest?.inHome?(this.latest.interiorMapSize?.width??HOME_WIDTH):WORLD_WIDTH;
-    const mapHeight=this.latest?.inHome?(this.latest.interiorMapSize?.height??HOME_HEIGHT):WORLD_HEIGHT;
+    const mapWidth=this.latest?.inHome?(this.latest.interiorMapSize?.width??HOME_WIDTH):(this.latest?.worldMapSize?.width??WORLD_WIDTH);
+    const mapHeight=this.latest?.inHome?(this.latest.interiorMapSize?.height??HOME_HEIGHT):(this.latest?.worldMapSize?.height??WORLD_HEIGHT);
     map.style.aspectRatio = `${mapWidth}/${mapHeight}`;
     void this.callbacks.onMap().then(url => { if (panel.isConnected) panel.querySelector<HTMLImageElement>('.map-snapshot')!.src = url; });
     panel.querySelector('.map-current strong')!.textContent = this.latest?.location || 'Propriedade';

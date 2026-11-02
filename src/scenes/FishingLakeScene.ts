@@ -1,3 +1,4 @@
+import {LAKE_HIGHLAND_EXIT,LAKE_HIGHLAND_RETURN} from '../data/highland';
 import {gameAudio} from '../audio';
 import {cabinActorDepth} from '../data/fisher-cabin';
 import {createFishingCast} from '../fishing-cast';
@@ -44,6 +45,7 @@ export class FishingLakeScene extends Phaser.Scene{
  private paused=false;
  private leaving=false;
  private fishing=false;
+ private readonly highlandPassage=new MapExitPassage();
  private readonly propertyPassage=new MapExitPassage();
  private elapsed=0;
  private zoom=1;
@@ -55,8 +57,8 @@ export class FishingLakeScene extends Phaser.Scene{
  create(data:FishingLakeStart):void{
   gameAudio.setScene('game');
   setupTreeWind(this);
-  this.state=structuredClone(data.save);this.state.activeArea='fishingLake';delete this.state.homePosition;delete this.state.merchantInterior;delete this.state.blacksmithInterior;
-  this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.propertyPassage.reset();this.fishing=false;this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
+  const restoreHighland=data.save.activeArea==='highland';this.state=structuredClone(data.save);this.state.activeArea='fishingLake';delete this.state.homePosition;delete this.state.merchantInterior;delete this.state.blacksmithInterior;
+  this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.propertyPassage.reset();this.highlandPassage.reset();this.fishing=false;this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
   this.world=new FishingLakeWorld(this,this.state.fishingLakeMapEdits);
   const p=this.state.fishingLakePosition,valid=p&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!this.movementBlockedPoint(p.x+dx,p.y+dy));
@@ -90,12 +92,12 @@ export class FishingLakeScene extends Phaser.Scene{
     this.ui,
     () => this.persist(),
   );
-  this.persist();
+  if(restoreHighland){this.enterHighland();return;}this.persist();
  }
  private nearFishing():boolean {const x=this.player.x/32,y=this.player.y/32;return lakePier(x,y)||[[-1.5,0],[1.5,0],[0,-1.5],[0,1.5]].some(([dx,dy])=>lakeWater(x+dx,y+dy));}
  private updateHUD():void{
   const resident=this.fisher?.near(),near=this.nearFishing()&&!this.player.isSwimming;
-  this.ui.updateHUD({worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,farmingProgress:this.state.farmingProgress,area:'fishingLake',swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:resident||near?'E':null,prompt:resident?'E · Conversar com Damião · comércio e serviços de pesca':near?'E · Pescar · equipe a vara ou a rede pela mochila':'Explore o lago · mirante ao norte · cidade a leste · propriedade ao sul',location:'Lago entre as Serras',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
+  this.ui.updateHUD({worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,farmingProgress:this.state.farmingProgress,area:'fishingLake',swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:resident||near?'E':null,prompt:resident?'E · Conversar com Damião · comércio e serviços de pesca':near?'E · Pescar · equipe a vara ou a rede pela mochila':'Explore o lago · Alto da Serra ao norte · cidade a leste · propriedade ao sul',location:'Lago entre as Serras',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
   this.ui.updateCameraZoom(this.zoom,!this.paused);
  }
  private blockedPoint=(x:number,y:number)=>lakeBlockedPoint(x,y,this.state.fishingLakeMapEdits);
@@ -181,11 +183,15 @@ export class FishingLakeScene extends Phaser.Scene{
    else{this.scene.stop();this.onReturn(next,title);}
   });
  }
+ enterHighland():void{
+  if(this.leaving||!this.persist())return;const state=structuredClone(this.state);state.activeArea='highland';if(!saveGame(state)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}this.leaving=true;const ui=this.ui,onReturn=this.onReturn;this.cameras.main.fadeOut(SCENE_FADE_MS);this.time.delayedCall(SCENE_FADE_MS,()=>this.scene.start('Serra',{save:state,ui,onReturn:(save:SaveData,title=false)=>{if(title){onReturn(save,true);return;}this.scene.start('Lago',{save,ui,onReturn});}}));
+ }
  update(time:number,ms:number):void{
   if(!this.player)return;this.player.sprite.setDepth(cabinActorDepth(this.player.x,this.player.y));this.daylight.update(this.state.time,false,this.state.day);this.world.update(time);
   if(this.paused||this.leaving||this.ui.isModalOpen()||document.hidden)return;
   const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(dt,this.movementBlockedTile,this.movementBlockedPoint,true,this.swimmingPoint,this.allowCabinStep);this.player.sprite.setDepth(cabinActorDepth(this.player.x,this.player.y));
   if(this.passage.update(before,this.player,this.state.fishingLakeMapEdits?.points?.exit??LAKE_CITY_EXIT,this.state.fishingLakeMapEdits?.points?.entry??LAKE_CITY_ENTRY)){this.leave();return;}
+  if(this.highlandPassage.update(before,this.player,LAKE_HIGHLAND_EXIT,LAKE_HIGHLAND_RETURN)){this.enterHighland();return;}
   if(this.propertyPassage.update(before,this.player,LAKE_PROPERTY_EXIT,LAKE_PROPERTY_ENTRY)){this.leave(false,true);return;}
   this.farming.update(dt);
   Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));
