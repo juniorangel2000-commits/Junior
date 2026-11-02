@@ -1,0 +1,43 @@
+{
+  "source": "sprites-acampamento.png",
+  "frames": {
+    "barraca-bege": {
+      "x": 80,
+      "y": 5,
+      "width": 760,
+      "height": 575
+    },
+    "barraca-oliva": {
+      "x": 855,
+      "y": 95,
+      "width": 630,
+      "height": 505
+    },
+    "fogueira-cozinha": {
+      "x": 275,
+      "y": 582,
+      "width": 445,
+      "height": 425
+    },
+    "suprimentos": {
+      "x": 875,
+      "y": 630,
+      "width": 555,
+      "height": 365
+    }
+  },
+  "origin": [
+    0.5,
+    0.94
+  ],
+  "status": "Previa visual; encontros e conexao ainda nao integrados ao jogo",
+  "fenceSource": "cercas-e-barreiras.png",
+  "fenceFrames": {
+    "cerca-rustica": {
+      "x": 1100,
+      "y": 135,
+      "width": 850,
+      "height": 480
+    }
+  }
+}
