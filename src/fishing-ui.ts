@@ -35,7 +35,7 @@ function showFishing(save:SaveData,session:FishingSession,onChange:()=>void,worl
  return new Promise(resolve=>{
   const previous=document.activeElement instanceof HTMLElement?document.activeElement:undefined;
   const layer=document.createElement('div');layer.className='village-layer fishing-layer'+(worldView?' fishing-world-view':'');
-  const location={property:'Propriedade',forest:'Floresta Antiga',village:'Vila do Recomeço',cityForest:'Floresta de Acesso à Cidade',fishingLake:'Lago entre as Serras'}[save.activeArea??'property'];
+  const location={property:'Propriedade',forest:'Floresta Antiga',village:'Vila do Recomeço',cityForest:'Floresta de Acesso à Cidade',fishingLake:'Lago entre as Serras',survivorCamp:'Acampamento de Sobreviventes'}[save.activeArea??'property'];
   layer.innerHTML=`<section class="village-panel fishing-panel" role="dialog" aria-modal="true" aria-labelledby="fishing-title" tabindex="-1">
    <div class="fishing-main"><header class="village-panel-heading"><div><span class="village-eyebrow">${location}</span><h2 id="fishing-title">Pescaria</h2><p class="village-npc-role">${session.net?`<img class="fishing-equipment-icon" src="${fishingSupplyIcon('net')}" alt=""/>`:''}${session.net?'Rede · até dois peixes':RODS[save.fishingProgress?.rodTier??0]+' · '+BAITS[save.fishingProgress?.bait??'worm'].name}</p></div><button type="button" class="village-close" data-fishing-cancel aria-label="Cancelar pesca">×</button></header>
    <div class="fishing-body"><p class="fishing-status" data-fishing-prompt role="status" aria-live="polite">A linha está na água. Observe a boia…</p>

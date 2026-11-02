@@ -3,6 +3,16 @@ import type { DungeonRun } from "./run";
 import { weaponIdentity, swordHalfArc } from "./weapon-identity";
 import { WEAPON_PALETTES, effectProgress } from "./weapon-presentation";
 const TAU = Math.PI * 2;
+/** Shared by dungeon attacks and outdoor sword combat. */
+export function drawSwordSlash(ink:Phaser.GameObjects.Graphics,e:{x:number;y:number;angle:number;ttl:number;variant?:number},radius:number,wide=0,evolved=false):void {
+ const t=effectProgress(e.ttl),alpha=1-t,half=swordHalfArc(wide),end=e.angle+(e.variant?-1:1)*(t*2-1)*half;
+ const core=evolved?0xffdf9d:WEAPON_PALETTES.sword.core,trail=evolved?0xc6a160:WEAPON_PALETTES.sword.trail;
+ for(let layer=0;layer<3;layer++){
+  const r=radius*(1-layer*.1),start=end-(e.variant?-1:1)*Math.min(half*2,t*half*2,.85);
+  ink.lineStyle(5-layer*1.7,layer===0?core:trail,alpha*(.75-layer*.17)).beginPath().arc(e.x,e.y-20,r,Math.min(start,end),Math.max(start,end),false).strokePath();
+ }
+ const x=e.x+Math.cos(end)*radius,y=e.y-20+Math.sin(end)*radius;ink.fillStyle(core,alpha).fillRect(x-2,y-2,4,4);
+}
 export function drawWeaponEffects(
   ink: Phaser.GameObjects.Graphics,
   run: DungeonRun,
@@ -36,33 +46,7 @@ export function drawWeaponEffects(
       core = evolved ? 0xffdf9d : palette.core,
       trail = evolved ? 0xc6a160 : palette.trail;
     if (e.weapon === "sword") {
-      const radius = run.weaponStats("sword").range,
-        half = swordHalfArc(run.level("sword-wide"));
-      const end = e.angle + (e.variant ? -1 : 1) * (t * 2 - 1) * half;
-      for (let layer = 0; layer < 3; layer++) {
-        const r = radius * (1 - layer * 0.1),
-          start =
-            end - (e.variant ? -1 : 1) * Math.min(half * 2, t * half * 2, 0.85);
-        ink.lineStyle(
-          5 - layer * 1.7,
-          layer === 0 ? core : trail,
-          alpha * (0.75 - layer * 0.17),
-        );
-        ink
-          .beginPath()
-          .arc(
-            e.x,
-            e.y - 20,
-            r,
-            Math.min(start, end),
-            Math.max(start, end),
-            false,
-          )
-          .strokePath();
-      }
-      const x = e.x + Math.cos(end) * radius,
-        y = e.y - 20 + Math.sin(end) * radius;
-      ink.fillStyle(core, alpha).fillRect(x - 2, y - 2, 4, 4);
+      drawSwordSlash(ink,e,run.weaponStats('sword').range,run.level('sword-wide'),evolved);
     } else if (e.weapon === "spear") {
       const length = e.radius ?? run.weaponStats("spear").range,
         reach = length * Math.min(1, t * 3.2);

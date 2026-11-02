@@ -1,3 +1,4 @@
+import {advanceSurvivorCamp} from './survivor-camp';
 import {ensureFisherTravel,advanceFisherTravel} from './fisher-travel';
 import {damiaoAtLake} from '../data/fisher-schedule';
 import type { SaveData } from '../types';
@@ -70,6 +71,7 @@ export function prepareVillageRoutines(save:SaveData):void{
 /** The village scene updates its visible actors; other world maps update them here. */
 export function advanceBackgroundVillage(save:SaveData,seconds:number,player?:{x:number;y:number}):void{
   advanceFisherTravel(save,seconds,player);
+  if(save.activeArea!=='survivorCamp')advanceSurvivorCamp(save,seconds);
   if(save.activeArea==='village'||!Number.isFinite(seconds)||seconds<=0)return;
   let model=models.get(save);
   if(!model||Math.abs(clock(save)-model.last)>5){model=new BackgroundVillage(save);models.set(save,model);}

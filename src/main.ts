@@ -1,3 +1,4 @@
+import {SurvivorCampScene} from './scenes/SurvivorCampScene';
 import {getWorldPetController} from "./dungeons/world-pet-controller";
 import {DungeonScene} from './scenes/DungeonScene';
 import {FishingLakeScene} from './scenes/FishingLakeScene';
@@ -18,7 +19,7 @@ import './character-studio.css';
 
 gameAudio.init();
 const scene = new ValleyScene();
-const activeForest=():ForestScene|VillageScene|CityForestScene|FishingLakeScene|DungeonScene|undefined=>scene.scene?.isActive('Lago')?scene.scene.get('Lago') as FishingLakeScene:scene.scene?.isActive('Dungeons')?scene.scene.get('Dungeons') as DungeonScene:scene.scene?.isActive('AcessoCidade')?scene.scene.get('AcessoCidade') as CityForestScene:scene.scene?.isActive('Vila')?scene.scene.get('Vila') as VillageScene:scene.scene?.isActive('Floresta')?scene.scene.get('Floresta') as ForestScene:undefined;
+const activeForest=():ForestScene|VillageScene|CityForestScene|FishingLakeScene|SurvivorCampScene|DungeonScene|undefined=>scene.scene?.isActive('Acampamento')?scene.scene.get('Acampamento') as SurvivorCampScene:scene.scene?.isActive('Lago')?scene.scene.get('Lago') as FishingLakeScene:scene.scene?.isActive('Dungeons')?scene.scene.get('Dungeons') as DungeonScene:scene.scene?.isActive('AcessoCidade')?scene.scene.get('AcessoCidade') as CityForestScene:scene.scene?.isActive('Vila')?scene.scene.get('Vila') as VillageScene:scene.scene?.isActive('Floresta')?scene.scene.get('Floresta') as ForestScene:undefined;
 const ui = new GameUI({
   getFishingState: () => {const current=activeForest()??scene;return current instanceof DungeonScene?undefined:current.getFishingState();},
   onUseItem: item => {void (activeForest()??scene).useVillageItem(item);},
@@ -49,7 +50,7 @@ export const game = new Phaser.Game({
   roundPixels: true,
   render: { antialias: false, powerPreference: 'high-performance' },
   scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight },
-  scene: [scene, new ForestScene(),new VillageScene(),new CityForestScene(),new FishingLakeScene(),new DungeonScene(),new MapEditorScene()],
+  scene: [scene, new ForestScene(),new VillageScene(),new CityForestScene(),new FishingLakeScene(),new SurvivorCampScene(),new DungeonScene(),new MapEditorScene()],
   audio: { noAudio: true },
   banner: false,
 });

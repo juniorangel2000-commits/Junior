@@ -56,6 +56,11 @@ export interface VillageEconomy {
   stock?:Partial<Record<ItemId,StockRecord>>;
 }
 export interface SaveData {
+  /** Basic expedition sword can also be equipped outdoors. Missing keeps hands free. */
+  worldWeapon?:'sword'|'unarmed';
+  survivorCamp?:import('./systems/survivor-camp').SurvivorCampState;
+  survivorCampPosition?:TilePoint & {direction?:CharacterDirection};
+  survivorCampMapEdits?:MapEditData;
   fisherTravel?:import('./systems/fisher-travel').FisherTravel;
   /** Most recent persisted catch; absent in older games. Fish stock remains compatible with village recipes/trades. */
   fishingProgress?:import('./systems/fishing-progress').FishingProgress;
@@ -71,7 +76,7 @@ export interface SaveData {
   propertyShoreRevision?:number;
   /** One-time homestead layout; removed starter fences/beds are never recreated. */
   homesteadRevision?:1;
-  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake';
+  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake' | 'survivorCamp';
   fishingLakePosition?: TilePoint & { direction?: CharacterDirection };
   fishingLakeMapEdits?:MapEditData;
   cityForestPosition?: TilePoint & { direction?: CharacterDirection };
@@ -135,7 +140,7 @@ export interface HudData {
   learnedRecipes?:string[];
   farmingProgress?: FarmingProgress;
   swimming?:boolean;
-  area?: 'property'|'forest'|'village'|'cityForest'|'fishingLake';
+  area?: 'property'|'forest'|'village'|'cityForest'|'fishingLake'|'survivorCamp';
   coins?: number;
   vigor?: number;
   wateringCan?: boolean;

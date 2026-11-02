@@ -1,3 +1,4 @@
+import {SurvivorResidentsView} from '../survivor-residents-view';
 import {createFishingCast} from '../fishing-cast';
 import {villageAccessUnlocked,invitationGateBlocked,VILLAGE_LOCK_MESSAGE} from '../systems/village-introduction';
 import {drawVillageInvitationGate} from '../village-invitation-gate';
@@ -160,6 +161,7 @@ export class ValleyScene extends Phaser.Scene {
   private loadingProgress(value:number):void{this.ui.setWorldLoadingProgress(value);}
 
 
+  private helpers?:SurvivorResidentsView;
   create(): void {
     this.state=createNewSave(DEFAULT_PROFILE);
     this.adminMenu = new AdminMenu(document.querySelector<HTMLElement>('#ui')!, this.adminAccess, {
@@ -286,7 +288,7 @@ export class ValleyScene extends Phaser.Scene {
     this.paused = false;
     this.ui.showHUD();
     if(saved.activeArea==='fishingLake'){this.enterLake(saved);return;}
-    if (saved.activeArea === 'forest') { this.enterForest(saved); return; }
+    if (saved.activeArea === 'forest'||saved.activeArea==='survivorCamp') { this.enterForest(saved); return; }
     if (saved.activeArea === 'village'||saved.activeArea==='cityForest') { this.enterVillage(saved); return; }
     this.ui.toast(`Que bom ter você de volta, ${saved.profile.name}.`);
     this.updateHUD();
@@ -356,7 +358,7 @@ export class ValleyScene extends Phaser.Scene {
     if(this.forestActive||this.villageActive)return;
     this.world.well?.cancel();
     this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
-    const data=saved??this.snapshotState();data.activeArea='forest';delete data.homePosition;
+    const data=saved??this.snapshotState();if(data.activeArea!=='survivorCamp')data.activeArea='forest';delete data.homePosition;
     this.forestActive=true;this.paused=true;this.input.keyboard?.resetKeys();
     const root=document.querySelector<HTMLElement>('#ui')!;root.style.display='none';
     this.cameras.main.fadeOut(SCENE_FADE_MS);
@@ -718,6 +720,7 @@ export class ValleyScene extends Phaser.Scene {
     this.animals?.destroy();this.animals=undefined;
 
     getAmbientBirds(this)?.destroy();
+    this.helpers?.destroy();this.helpers=undefined;
     this.children.removeAll(true);
     this.state = structuredClone(data);
 
@@ -757,6 +760,7 @@ export class ValleyScene extends Phaser.Scene {
     this.cropSoil = this.add.graphics().setDepth(-49);
     this.damageMarks = this.add.graphics().setDepth(3500);
     this.player = new Player(this, data.profile, data.player.x, data.player.y);
+    this.helpers=new SurvivorResidentsView(this,()=>{this.state.inventory={...this.inventory.data};return{save:this.state,area:'property',player:this.player,visible:this.running&&!this.inHome&&this.titleBackgroundMode==='off',blocked:(x,y)=>this.world.isBlocked(x,y)||this.building.isBlocked(x,y)};},this.ui,()=>{Object.assign(this.inventory.data,this.state.inventory);this.updateHUD();});
     this.toolVisual = new ToolVisual(this, data.profile);
     const direction = data.player.direction;
     this.player.facing = directionVector(direction ?? 'down');
@@ -873,7 +877,7 @@ export class ValleyScene extends Phaser.Scene {
     if(releaseAnimalEscort(this.state)){Object.assign(this.inventory.data,this.state.inventory);this.animals?.store();this.animals?.destroy();this.animals=new AnimalPopulation(this,this.state,'property',this.animalBlocked,PLAYER_SPEED,()=>treeTiles(this.world.resources));this.updateHUD();this.persist();this.ui.toast('Corda solta e guardada.');}
   }
   private movementBlocked=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(x,y):invitationGateBlocked(this.state,'property',(x+.5)*TILE,(y+.5)*TILE)||this.world.isSolid(x,y)||this.building.isBlocked(x,y);
-  private movementBlockedPoint=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):invitationGateBlocked(this.state,'property',x,y)||this.world.isSolidPoint(x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE));
+  private movementBlockedPoint=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):!!this.helpers?.blocked(x,y)||invitationGateBlocked(this.state,'property',x,y)||this.world.isSolidPoint(x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE));
   private swimmingPoint=(x:number,y:number):number=>this.inHome||bridgeAtPoint(x,y)?0:sampleWaterDepth((px,py)=>!this.building.at(Math.floor(px/TILE),Math.floor(py/TILE),'floor')&&this.world.isWaterGroundPoint(px,py),x,y);
 
   private blockedPoint = (x: number, y: number): boolean => {
@@ -1054,6 +1058,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private interact(explicitTile?: TilePoint, restoreSoil = false): void {
+    if(this.canPlay()&&!this.inHome&&this.tool==='hand'&&this.helpers?.interact())return;
     const forge=this.state.villageInstallations?.find(f=>f.kind==='forge'&&Math.hypot(f.x*32+16-this.player.x,f.y*32+16-this.player.y)<70);
     if(forge&&!this.inHome&&this.canPlay()&&this.tool==='hand'&&!this.ui.isModalOpen()){
       this.setPaused(true);openBlacksmithPanel(()=>this.snapshotState(),change=>{const before=this.snapshotState(),draft=structuredClone(before),r=change(draft);if(r.ok){if(!saveGame(draft))return{ok:false,message:'Falha ao salvar. Operação cancelada.'};this.state=draft;Object.assign(this.inventory.data,draft.inventory);this.updateHUD();}return r;},()=>this.setPaused(false),true);return;
@@ -1449,7 +1454,7 @@ export class ValleyScene extends Phaser.Scene {
     if(!villageAccessUnlocked(this.state)&&Math.abs(this.player.x-93.5*TILE)<96&&Math.abs(this.player.y-52.5*TILE)<64)prompt=VILLAGE_LOCK_MESSAGE;
     if(this.tool==='hand'&&this.state.petShelter&&Math.hypot(this.player.x-this.state.petShelter.x,this.player.y-this.state.petShelter.y)<90)prompt='Casinha dos companheiros · E';
     this.ui.updateHUD({toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100, coins:this.state.villageEconomy?.coins??0,farmingProgress: this.farming.progress, wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, swimming:this.player.isSwimming, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
-      tool: this.tool, prompt, interactionKey:nearPassage||nearHouse?null:undefined, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
+      tool: this.tool, prompt:this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:prompt, interactionKey:nearPassage||nearHouse?null:undefined, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
       playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
       harvests: this.inventory.data.turnip, metLia: this.state.metLia,
       nearWorkbench: this.nearWorkbench(), sheltered: this.shelter.sheltered, shelterReason: this.shelter.reason,
@@ -1501,7 +1506,7 @@ export class ValleyScene extends Phaser.Scene {
     this.farming.update(delta);
     const previousDay = this.state.day;
     Object.assign(this.state, advanceClock(this.state, delta * GAME_MINUTES_PER_SECOND));
-    advanceBackgroundVillage(this.state, delta);
+    this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state, delta);
     if (this.state.day !== previousDay) this.ui.toast(`Dia ${this.state.day}. A terra espera por você.`);
     if(!this.inHome)this.resourceLifecycle?.tick();
     this.updateNight();

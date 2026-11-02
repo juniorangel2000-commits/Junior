@@ -189,7 +189,7 @@ export class FishingLakeScene extends Phaser.Scene{
   if(this.propertyPassage.update(before,this.player,LAKE_PROPERTY_EXIT,LAKE_PROPERTY_ENTRY)){this.leave(false,true);return;}
   this.farming.update(dt);
   Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));
-  advanceBackgroundVillage(this.state,dt,this.player);this.fisher?.update(dt);
+  this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state,dt,this.player);this.fisher?.update(dt);
   for(const tree of this.world.trees)tree.setAlpha(this.player.y<tree.y&&Math.abs(this.player.x-tree.x)<65&&this.player.y>tree.y-170?.45:1);
   this.elapsed+=dt;this.updateHUD();if(this.elapsed>5){this.persist();this.elapsed=0;}
  }
