@@ -63,8 +63,11 @@ export const RECIPES: CraftingRecipe[] = [
   },
   {
     id: 'blade', name: 'Lâmina de sucata',
-    description: 'Prepare uma lâmina reaproveitada na bancada para montar o serrote.',
+    description: 'Prepare uma lâmina reaproveitada na bancada para montar o serrote ou a espada.',
     cost: { scrap: 1 }, output: { blade: 1 }, requiresWorkbench: true,
+  },
+  {
+    id:'sword',name:'Espada improvisada',description:'Monte uma espada para enfrentar grupos hostis. Equipe na mochila ou na barra rápida; no acampamento, Q abre o equipamento e E ou clique desfere o golpe.',cost:{blade:2,handle:1,cord:1},output:{sword:1},requiresWorkbench:true,requiresTool:'hammer',durationSeconds:4,
   },
   {
     id: 'handsaw', name: 'Serrote improvisado',

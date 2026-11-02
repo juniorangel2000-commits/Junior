@@ -1,3 +1,4 @@
+import {equipWorldSword} from './world-sword';
 import type {SaveData,ItemId} from '../types';
 import {Inventory} from './inventory';
 import {craft} from './crafting';
@@ -12,6 +13,7 @@ export function craftInField(save:SaveData,id:string,write:Writer):Result{
  save.inventory=draft.inventory;return result;
 }
 export function consumeInField(save:SaveData,item:ItemId,write:Writer):Result{
+ if(item==='sword')return equipWorldSword(save,save.worldWeapon!=='sword',write);
  if(!['herb','bandage','herbalTonic','fungalInfusion','meal','oldMap'].includes(item))return{ok:false,message:'Este item é usado na propriedade ou funciona ao ser carregado na mochila.'};
  const draft=structuredClone(save),result=useConsumable(draft,item);if(!result.ok)return result;
  if(!persist(write,draft))return{ok:false,message:'Não foi possível salvar. O item foi preservado.'};

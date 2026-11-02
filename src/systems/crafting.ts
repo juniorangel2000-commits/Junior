@@ -3,12 +3,12 @@ import type { ItemId } from '../types';
 import type { ActionResult } from './farming';
 import { Inventory, ITEM_NAMES, MAX_ITEM_COUNT } from './inventory';
 
-const UNIQUE_TOOLS: ItemId[] = ['hatchet', 'pickaxe', 'hoe', 'hammer', 'handsaw','sickle','shovel'];
+export const UNIQUE_CRAFT_ITEMS: readonly ItemId[] = ['hatchet', 'pickaxe', 'hoe', 'hammer', 'handsaw','sickle','shovel','sword'];
 
 function missingRequirement(recipe: CraftingRecipe, inventory: Inventory, nearWorkbench: boolean, progress?:{recipes:string[]}): string | undefined {
   if(recipe.unlock&&!progress?.recipes.includes(recipe.unlock))return 'Aprenda esta receita com os moradores da vila.';
-  if (UNIQUE_TOOLS.some((item) => (recipe.output[item] ?? 0) > 0 && inventory.has(item))) {
-    return 'Você já tem esta ferramenta. Ela não se desgasta com o uso.';
+  if (UNIQUE_CRAFT_ITEMS.some((item) => (recipe.output[item] ?? 0) > 0 && inventory.has(item))) {
+    return inventory.has('sword')&&recipe.output.sword?'Você já tem uma espada. Equipe-a pela mochila ou pela barra rápida.':'Você já tem esta ferramenta. Ela não se desgasta com o uso.';
   }
   if (recipe.requiresTool && !inventory.has(recipe.requiresTool)) {
     return `Você precisa possuir: ${ITEM_NAMES[recipe.requiresTool]}.`;

@@ -14,7 +14,7 @@ O primeiro grupo é pacífico. Novos grupos chegam a cada três dias de jogo; os
 
 Hostis avisam antes de atacar. O jogador pode escolher recuar e tem cinco segundos de simulação para sair da proximidade. Escolher permanecer, avançar para muito perto ou continuar próximo após o prazo inicia perseguição e ataques. O mundo usa vigor para os ferimentos. Golpes têm intervalo, alcance e verificação de obstáculos; a fuga continua possível.
 
-Q abre o equipamento de defesa no acampamento. A espada básica das expedições pode ser equipada ou guardada. E ou clique perto de um agressor ataca: com a espada equipada, usa a mesma arte, escala, arco, apresentação e som da dungeon, com alcance de 74 pixels, 22 de dano e intervalo de 0,85 s. Desarmado usa alcance de 42 pixels e 6 de dano, sem efeito de espada. Aliados e visitantes pacíficos não recebem golpes. Agressores derrotados recuam andando; não geram uma fonte ilimitada de recursos.
+A espada improvisada é fabricada na bancada da propriedade com 2 lâminas de sucata, 1 cabo e 1 corda, usando o martelo. Ela aparece na mochila e pode ir para a barra rápida. Q abre o equipamento de defesa no acampamento para equipar ou guardar uma espada que o jogador possua. E ou clique perto de um agressor ataca: com a espada equipada, usa a mesma arte, escala, arco, apresentação e som da dungeon, com alcance de 74 pixels, 22 de dano e intervalo de 0,85 s. Desarmado usa alcance de 42 pixels e 6 de dano, sem efeito de espada. Aliados e visitantes pacíficos não recebem golpes. Agressores derrotados recuam andando; não geram uma fonte ilimitada de recursos.
 
 ## Recrutamento e casa comunitária
 
@@ -36,6 +36,6 @@ Cada sobrevivente aceita um pedido por dia, entre 08:00 e 19:00, e só um pedido
 
 Campos opcionais mantêm partidas anteriores compatíveis. Visitas, moradores, localização, aparência, pedido atual e equipamento de defesa são persistidos. O acampamento tem HUD, inventário, fabricação, mapa, zoom e companheiro animal.
 
-A validação inclui 1.548 testes automatizados em 179 arquivos, build de produção e um roteiro Chromium em `scripts/qa-survivor-camp.cjs`: entrada por caminhada, pegadas fora da água, deslocamento dos visitantes sem saltos, convite e retomada de save, recuo seguro, ataque hostil, golpe visual da espada, chegada à casa comunitária e pedido com recompensa persistida. A galeria e o vídeo de caminhada são exportados das texturas efetivamente usadas no jogo.
+A validação inclui 1.555 testes automatizados em 180 arquivos, build de produção e um roteiro Chromium em `scripts/qa-survivor-camp.cjs`: entrada por caminhada, pegadas fora da água, deslocamento dos visitantes sem saltos, convite e retomada de save, recuo seguro, ataque hostil, golpe visual da espada, chegada à casa comunitária e pedido com recompensa persistida. A galeria e o vídeo de caminhada são exportados das texturas efetivamente usadas no jogo.
 
-O calendário sazonal permanece adiado. Estas alterações são de desenvolvimento e não alteram o instalador já publicado da preview.26.
+O calendário sazonal permanece adiado. Estas alterações fazem parte da preview.27. O instalador anterior da preview.26 não as contém.

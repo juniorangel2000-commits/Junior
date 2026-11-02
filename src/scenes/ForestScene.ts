@@ -1,3 +1,4 @@
+import {equipWorldSword} from '../systems/world-sword';
 import {SurvivorResidentsView} from '../survivor-residents-view';
 import {FOREST_CAMP_EXIT,FOREST_CAMP_RETURN,campApproachDistance} from '../data/forest-camp-access';
 import {createFishingCast} from '../fishing-cast';
@@ -186,7 +187,8 @@ export class ForestScene extends Phaser.Scene {
       for(const node of nodes){const inventory=new Inventory(this.state.inventory),r=this.resources.hit(node,'hand',inventory,this.state);if(r.ok)Object.assign(this.state.inventory,inventory.data);if(r.depleted){this.world.removeResource(node.id);if(!this.resourceLifecycle?.collected(node)){this.state.depletedResources.push(node.id);this.world.depleted.add(node.id);}done=true;}}
       if(done){spendDurability(this.state,'sickle');this.toolVisual?.playGather('sickle',directionFromVector(this.player.facing.x,this.player.facing.y),this.player,toolCondition(this.state,'sickle').tier);this.state.resourceProgress=this.resources.progress;this.save();}this.ui.toast(done?'Vegetação recolhida.':'Aproxime-se de uma planta coletável.');this.updateHUD();return;
     }
-    this.state.inventory={...this.state.inventory};this.state.crops=this.farming.crops.map(c=>({...c}));
+    this.state.inventory={...this.state.inventory};
+    if(item==='sword'){const result=equipWorldSword(this.state,this.state.worldWeapon!=='sword',saveGame);this.ui.toast(result.message);this.updateHUD();return;}this.state.crops=this.farming.crops.map(c=>({...c}));
     const planting=item==='oakSeed'||item==='pineSeed';
     const point={x:Math.floor(this.player.x/32+this.player.facing.x),y:Math.floor(this.player.y/32+this.player.facing.y)};
     const water=(x:number,y:number)=>this.world.waterPointAt(x,y);
@@ -209,7 +211,7 @@ export class ForestScene extends Phaser.Scene {
   this.state.crops=this.farming.crops;updateVillageEquipment(this,this.state,this.player);notifyReadyOrders(this.state,m=>this.ui.toast(m));markMinerals(this,this.world.resources);
     const campNear=campApproachDistance(this.player.x,this.player.y)<50&&this.player.y<240;
     const nearest=this.nearest(),info=nearest&&FOREST_ANIMALS.find(a=>a.id===nearest.id),node=this.nearestResource();
-    this.ui.updateHUD({toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'forest',coins:this.state.villageEconomy?.coins??0,inHome:false,swimming:this.player.isSwimming,name:this.state.profile.name,day:this.state.day,time:this.state.time,
+    this.ui.updateHUD({worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'forest',coins:this.state.villageEconomy?.coins??0,inHome:false,swimming:this.player.isSwimming,name:this.state.profile.name,day:this.state.day,time:this.state.time,
       inventory:this.state.inventory,tool:this.state.equippedTool??'hand',wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,
       playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:campNear?null:this.nearExit()?null:this.state.animalEscort?'G':'E',prompt:this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:campNear?'Pegadas seguem para o norte':this.player.isSwimming?'Nadar · siga até a margem para sair':this.nearExit()?this.state.animalEscort?'Siga pela placa para levar o animal à propriedade':'Siga a seta e ultrapasse a placa para continuar':this.state.animalEscort?'Conduzindo animal · siga até a saída · soltar corda':info?'Prender '+ANIMAL_NAMES[info.kind].toLowerCase()+' com corda':node?`${RESOURCE_DEFINITIONS[node.kind].label} · ${RESOURCE_DEFINITIONS[node.kind].tool==='pickaxe'?'use a picareta':RESOURCE_DEFINITIONS[node.kind].tool==='hatchet'?'use a machadinha':'recolher'}`:'Explorar a floresta',
       location:'Floresta Antiga',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});

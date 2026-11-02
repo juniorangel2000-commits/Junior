@@ -1,3 +1,4 @@
+import {equipWorldSword} from '../systems/world-sword';
 import {advanceSurvivorCamp} from '../systems/survivor-camp';
 import {SurvivorResidentsView} from '../survivor-residents-view';
 import {villagePierAllowsStep,villagePierDeckContains} from '../data/village-pier';
@@ -426,7 +427,8 @@ export class VillageScene extends Phaser.Scene {
  }
   async useVillageItem(item:import('../types').ItemId):Promise<void>{
     if(this.inShop){this.ui.toast('Use os equipamentos de exploração fora do comércio.');return;}
-    this.state.inventory={...this.inventory.data};this.state.crops=this.farming.crops.map(c=>({...c}));
+    this.state.inventory={...this.inventory.data};
+    if(item==='sword'){const result=equipWorldSword(this.state,this.state.worldWeapon!=='sword',saveGame);this.ui.toast(result.message);this.updateHUD();return;}this.state.crops=this.farming.crops.map(c=>({...c}));
     const point={x:Math.floor(this.player.x/32+this.player.facing.x),y:Math.floor(this.player.y/32+this.player.facing.y)};
     const water=(x:number,y:number)=>this.world.waterPointAt(x,y);
     const near=Array.from({length:7},(_,a)=>a-3).some(dx=>Array.from({length:7},(_,a)=>a-3).some(dy=>water(this.player.x+dx*16,this.player.y+dy*16)));
@@ -446,7 +448,7 @@ export class VillageScene extends Phaser.Scene {
  private updateHUD():void {
   this.state.crops=this.farming.crops;updateVillageEquipment(this,this.state,this.player,this.inShop);notifyReadyOrders(this.state,m=>this.ui.toast(m));markMinerals(this,this.world.resources);
   const npc=this.nearest(),nearExit=!this.inShop&&Math.abs(this.player.x-64)<70&&Math.abs(this.player.y-1680)<32,location=this.inBlacksmith?'Ferraria de Bento':this.merchantRoom?`${VILLAGE_NPCS.find(n=>n.id===this.merchantRoom)!.role} · ${VILLAGE_NPCS.find(n=>n.id===this.merchantRoom)!.name}`:VILLAGE_NAME;
-  this.ui.updateHUD({toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'village',coins:this.state.villageEconomy!.coins,inHome:this.inShop,mapEditorAvailable:true,interiorEditor:this.inShop,swimming:this.player.isSwimming,name:this.state.profile.name,
+  this.ui.updateHUD({worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'village',coins:this.state.villageEconomy!.coins,inHome:this.inShop,mapEditorAvailable:true,interiorEditor:this.inShop,swimming:this.player.isSwimming,name:this.state.profile.name,
    day:this.state.day,time:this.state.time,inventory:this.inventory.data,tool:'hand',wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,
    playerTile:{x:this.player.x/32,y:this.player.y/32},interiorMapSize:this.inShop?{width:18,height:this.merchantRoom?12:11}:undefined,interactionKey:npc||this.helpers?.nearest()?'E':null,prompt:(this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:undefined)??this.closedDoorMessage()??(npc?`Conversar com ${npc.data.name}${this.canTrade(npc.data.id)?' · comprar e vender':' · conversa e serviços'}`:this.guide?`Siga ${VILLAGE_NPCS.find(n=>n.id===this.guide!.owner)!.name} até a loja`:this.inShop?'Caminhe pela porta ao sul para sair':nearExit?'Siga a seta para voltar à propriedade':'Explore a praça e converse com os moradores'),
    location,harvests:this.inventory.data.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:this.inShop,shelterReason:this.inShop?location:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});

@@ -40,7 +40,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   flakedStone: { name: 'Pedras lascadas', description: 'Pedras preparadas para as cabeças da machadinha e da picareta.' },
   handle: { name: 'Cabos', description: 'Um galho preparado para receber a cabeça de uma ferramenta.' },
   peg: { name: 'Cavilhas', description: 'Encaixes de madeira para a bancada, paredes e portas.' },
-  blade: { name: 'Lâminas de sucata', description: 'Preparadas na bancada para montar o serrote.' },
+  blade: { name: 'Lâminas de sucata', description: 'Preparadas na bancada para montar o serrote e a espada.' },
   board: { name: 'Tábuas regulares', description: 'O serrote improvisado aproveita um tronco em três tábuas regulares, reservadas para carpintaria futura.' },
   hammer: { name: 'Martelo rudimentar', description: 'Necessário para montar bancada e peças do abrigo.' },
   herb: {name:'Ervas',description:'Ervas comuns para curativos, tônicos e receitas de Amélia.',iconFallback:'fiber'},
@@ -64,12 +64,13 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   boots: {name:'Botas',description:'Calçado preparado por Celina para as caminhadas.',iconFallback:'handle'},
   cloth: {name:'Tecidos',description:'Matéria-prima para a costura e para os curativos.',iconFallback:'fiber'},
   clothing: {name:'Roupas',description:'Uma muda de roupa costurada na vila.',iconFallback:'fiber'},
+  sword:{name:'Espada improvisada',description:'Fabricada na bancada com 2 lâminas de sucata, 1 cabo e 1 corda. Equipe pela mochila ou pela barra rápida para enfrentar hostis no acampamento.',iconFallback:'blade'},
   accessory: {name:'Acessórios',description:'Peças de costura feitas para acompanhar a exploração.',iconFallback:'cord'},
 };
 
 /** Only these stock fields may be absent in a save from before the village
  * services update. Missing any older field still indicates a corrupt save. */
-export const VILLAGE_ITEM_IDS=[...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory'] as const satisfies readonly ItemId[];
+export const VILLAGE_ITEM_IDS=[...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
 
 export const ITEM_IDS = Object.keys(ITEMS) as ItemId[];
 export const ITEM_NAMES = Object.fromEntries(ITEM_IDS.map(id => [id, ITEMS[id].name])) as Record<ItemId, string>;

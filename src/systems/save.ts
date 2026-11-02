@@ -148,6 +148,7 @@ export function validateSave(value: unknown): value is SaveData {
       Math.floor(((value.homePosition as Record<string, number>).y + oy) / TILE)))) return false;
   }
   if (!isRecord(value.inventory) || !ITEM_IDS.every(id => integer((value.inventory as Record<string, unknown>)[id], 0, MAX_ITEM_COUNT))) return false;
+  if(value.worldWeapon==='sword'&&(value.inventory.sword as number)<1)return false;
   if (Object.keys(value.inventory).some(id => !ITEM_IDS.includes(id as typeof ITEM_IDS[number]))) return false;
   if (!TOOLS.includes(value.equippedTool as Tool)) return false;
   if ((value.equippedTool === 'hatchet' || value.equippedTool === 'pickaxe' || value.equippedTool === 'hoe') && (value.inventory[value.equippedTool] as number) < 1) return false;
@@ -254,7 +255,7 @@ export function migrateSave(value: unknown): SaveData | null {
   if(isRecord(value)&&value.version===SAVE_VERSION&&isRecord(value.inventory)){
     const stock=value.inventory;
     const missing=VILLAGE_ITEM_IDS.filter(id=>!Object.hasOwn(stock,id));
-    if(missing.length)value={...value,inventory:{...value.inventory,...Object.fromEntries(missing.map(id=>[id,0]))}};
+    if(missing.length){const unarmed=missing.includes('sword')&&value.worldWeapon==='sword';value={...value,inventory:{...stock,...Object.fromEntries(missing.map(id=>[id,0]))},...(unarmed?{worldWeapon:'unarmed'}:{})};}
   }
   // Preserve the unpublished village preview wallet after the residents were
   // named. Reading still leaves the original save and its coin balance intact.

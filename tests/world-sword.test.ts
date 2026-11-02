@@ -1,0 +1,21 @@
+import {describe,it,expect} from 'vitest';
+import {RECIPES} from '../src/data/recipes';
+import {createCharacterProfile} from '../src/data/characters';
+import {createNewSave,migrateSave,validateSave} from '../src/systems/save';
+import {Inventory} from '../src/systems/inventory';
+import {craft,canCraft} from '../src/systems/crafting';
+import {equipWorldSword,hasEquippedSword} from '../src/systems/world-sword';
+import {consumeInField} from '../src/systems/field-inventory';
+import {assignQuickSlot,emptyQuickbar,inventoryEntries,validQuickbar} from '../src/systems/quickbar';
+import {ensureSurvivorCamp} from '../src/systems/survivor-camp';
+import {campStrike} from '../src/systems/survivor-combat';
+const stock=()=>createNewSave(createCharacterProfile('Espada'));
+describe('craftable outdoor sword',()=>{
+ it('requires a workbench, hammer and exact components, without consuming materials on refusal',()=>{const inventory=new Inventory({blade:2,handle:1,cord:1}),recipe=RECIPES.find(r=>r.id==='sword')!,before={...inventory.data};expect(canCraft(recipe,inventory,true)).toBe(false);expect(craft('sword',inventory,true).ok).toBe(false);expect(inventory.data).toEqual(before);inventory.add('hammer');expect(craft('sword',inventory,false).ok).toBe(false);expect(inventory.data.blade).toBe(2);expect(craft('sword',inventory,true).ok).toBe(true);expect(inventory.data).toMatchObject({blade:0,handle:0,cord:0,hammer:1,sword:1});});
+ it('does not create a duplicate or spend another set of components',()=>{const inventory=new Inventory({blade:4,handle:2,cord:2,hammer:1});expect(craft('sword',inventory,true).ok).toBe(true);const before={...inventory.data};expect(craft('sword',inventory,true).ok).toBe(false);expect(inventory.data).toEqual(before);});
+ it('cannot equip an unowned sword, and an equipment flag alone cannot produce a sword attack',()=>{const save=stock(),c=ensureSurvivorCamp(save);expect(equipWorldSword(save,true,validateSave).ok).toBe(false);save.worldWeapon='sword';expect(validateSave(save)).toBe(false);expect(hasEquippedSword(save)).toBe(false);c.kind='hostile';c.warned=true;c.aggressive=true;expect(campStrike(save,{x:1500,y:1400},0,()=>false).effect).toBeUndefined();});
+ it('equips and stores the same item, preserves stock and survives save reload',()=>{const save=stock();save.inventory.sword=1;const before={...save.inventory};expect(equipWorldSword(save,true,validateSave).ok).toBe(true);expect(hasEquippedSword(save)).toBe(true);expect(migrateSave(structuredClone(save))?.worldWeapon).toBe('sword');expect(equipWorldSword(save,false,validateSave).ok).toBe(true);expect(hasEquippedSword(save)).toBe(false);expect(save.inventory).toEqual(before);});
+ it('keeps equipment unchanged if saving fails or throws',()=>{const save=stock();save.inventory.sword=1;expect(equipWorldSword(save,true,()=>false).ok).toBe(false);expect(save.worldWeapon).toBeUndefined();expect(equipWorldSword(save,true,()=>{throw Error('disk');}).ok).toBe(false);expect(save.worldWeapon).toBeUndefined();});
+ it('fills only the new stock field in older saves and safely clears the old preview free-equipment flag',()=>{const save:unknown=stock(),old=save as {inventory:Record<string,unknown>;worldWeapon?:string};delete old.inventory.sword;old.worldWeapon='sword';const restored=migrateSave(save);expect(restored).not.toBeNull();expect(restored!.inventory.sword).toBe(0);expect(restored!.worldWeapon).toBe('unarmed');});
+ it('uses the normal inventory and quickbar and toggles equipment without consuming the item',()=>{const save=stock();save.inventory.sword=1;save.quickbar=assignQuickSlot(emptyQuickbar(),0,'item:sword');expect(inventoryEntries(save.inventory,false)).toContain('item:sword');expect(validQuickbar(save.quickbar)).toBe(true);expect(consumeInField(save,'sword',validateSave).ok).toBe(true);expect(save.worldWeapon).toBe('sword');expect(consumeInField(save,'sword',validateSave).ok).toBe(true);expect(save.worldWeapon).toBe('unarmed');expect(save.inventory.sword).toBe(1);});
+});

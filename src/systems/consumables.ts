@@ -3,7 +3,7 @@ import {Inventory} from './inventory';
 import {createVillageProgress} from '../data/village-progress';
 import {plantTree} from './tree-growth';
 import {ECOLOGY_BALANCE as B} from '../data/ecology-balance';
-export const USABLE_VILLAGE_ITEMS:ItemId[]=['furniture','doorKit','windowKit','fenceKit','sickle','shovel','forge','herb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','meal','oldMap','fertilizer','lamp','waterPump','fishingRod','net'];
+export const USABLE_VILLAGE_ITEMS:ItemId[]=['sword','furniture','doorKit','windowKit','fenceKit','sickle','shovel','forge','herb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','meal','oldMap','fertilizer','lamp','waterPump','fishingRod','net'];
 export function useConsumable(s:SaveData,item:ItemId,point?:TilePoint,blocked?: (x:number,y:number)=>boolean):{ok:boolean;message:string}{
  if(item==='oakSeed'||item==='pineSeed')return point?plantTree(s,item,point,blocked??(()=>true)):{ok:false,message:'Escolha terra livre para plantar.'};
  const p=s.villageProgress??createVillageProgress(),i=new Inventory(s.inventory);

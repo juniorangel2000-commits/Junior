@@ -1,3 +1,5 @@
+import {UNIQUE_CRAFT_ITEMS} from './systems/crafting';
+import {swordIcon} from './data/sword-icon';
 import {weatherForDay,WEATHER_NAMES} from './weather-model';
 import {mountFishingJournal} from './fishing-journal';
 import {createSaveLibraryPanel} from './save-library-panel';
@@ -112,6 +114,7 @@ const paths: Record<string, string> = {
   keys: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h1m4 0h1m4 0h1M6 12h1m4 0h1m4 0h1M7 16h10"/>',
 };
 function icon(name: string, cls = '', tier=0): string {
+  if(name==='sword')return swordIcon('icon '+cls);
   const asset = name === 'gate' ? gatePreview() : name === 'fence' ? fencePreview() ?? itemIconUrl(name) : itemIconUrl(name,tier);
   if (asset) return `<img class="icon asset-icon ${cls}" src="${asset}" alt="" aria-hidden="true" draggable="false" />`;
   return `<svg class="icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] ?? paths.leaf}</svg>`;
@@ -187,6 +190,7 @@ export class GameUI {
     const quantity = this.latest ? quickQuantity(slot, this.latest.inventory, !!this.latest.wateringCan) : null;
     if (quantity === 0) { this.toast('Este item acabou. Recolha mais para usar este atalho.'); return; }
     this.activeSlot = index;
+    if(quickItem(slot)==='sword'){this.callbacks.onTool('hand');if(this.latest?.worldWeapon!=='sword')this.callbacks.onUseItem('sword');else this.toast('Espada já equipada · E ou clique contra hostis no acampamento.');this.updateQuickbar();return;}
     this.callbacks.onTool(quickAction(slot));
     if (quickItem(slot) && quickAction(slot) === 'hand') this.toast(`${this.slotInfo(slot).label}: material disponível na mochila para fabricar e construir.`);
     this.updateQuickbar();
@@ -699,7 +703,7 @@ export class GameUI {
     const activeItem = this.quickbar[this.activeSlot] ?? null;
     if (quickItem(activeItem) && quickAction(activeItem) === data.tool) {
       set('#active-tool', this.slotInfo(activeItem).label);
-      set('#tool-cost', `${quickQuantity(activeItem, data.inventory, !!data.wateringCan)} na mochila · ${quickAction(activeItem) === 'hand' ? 'Material para fabricação e construção' : detail}`);
+      set('#tool-cost',quickItem(activeItem)==='sword'?`${data.worldWeapon==='sword'?'Espada equipada':'Espada guardada'} · E ou clique contra hostis no acampamento`:`${quickQuantity(activeItem, data.inventory, !!data.wateringCan)} na mochila · ${quickAction(activeItem) === 'hand' ? 'Material para fabricação e construção' : detail}`);
     }
     const costLabel = this.base.querySelector<HTMLElement>('#tool-cost')!;
     costLabel.classList.toggle('insufficient', missingMaterials || missingTools.length > 0 || missingStation);
@@ -814,7 +818,7 @@ export class GameUI {
         panel.querySelector('.detail-text')!.textContent = info.detail+(condition?` · Material: ${['Pedra','Ferro','Ouro','Metal Negro'][condition.tier]} · Durabilidade: ${condition.durability}`:'');
         panel.querySelector('[data-use-item]')?.remove();
         const id=item.startsWith('item:')?item.slice(5) as ItemId:undefined;
-        if(id&&USABLE_VILLAGE_ITEMS.includes(id)){const use=document.createElement('button');use.dataset.useItem=id;use.className='button button-light';use.textContent='Usar / instalar';use.onclick=()=>{this.closeModal();this.callbacks.onUseItem(id);};panel.querySelector('.backpack-detail')!.append(use);}
+        if(id&&USABLE_VILLAGE_ITEMS.includes(id)){const use=document.createElement('button');use.dataset.useItem=id;use.className='button button-light';use.textContent=id==='sword'?(this.latest?.worldWeapon==='sword'?'Guardar espada':'Equipar espada'):'Usar / instalar';use.onclick=()=>{this.closeModal();this.callbacks.onUseItem(id);};panel.querySelector('.backpack-detail')!.append(use);}
         panel.querySelectorAll('[data-bag-item]').forEach(cell => cell.classList.toggle('chosen', cell === button));
       };
       button.onclick = select;
@@ -867,7 +871,7 @@ export class GameUI {
       for (const [item, quantity] of inputs) {
         if (inventory[item] < quantity) missing.push(`${quantity - inventory[item]} ${ITEM_NAMES[item].toLocaleLowerCase('pt-BR')}`);
       }
-      const outputTool = outputs.find(([item]) => ['hatchet', 'pickaxe', 'hoe', 'handsaw', 'hammer'].includes(item));
+      const outputTool = outputs.find(([item]) => UNIQUE_CRAFT_ITEMS.includes(item));
       const alreadyOwned = !!outputTool && inventory[outputTool[0]] > 0;
       const missingTool = recipe.requiresTool && inventory[recipe.requiresTool] < 1;
       const missingStation = recipe.requiresWorkbench && !nearWorkbench;
@@ -878,7 +882,7 @@ export class GameUI {
         recipe.requiresWorkbench ? 'Bancada próxima' : 'À mão',
         recipe.durationSeconds ? `${recipe.durationSeconds} segundos` : '',
       ].filter(Boolean).join(' · ');
-      const status = this.craftingBusy ? 'Aguarde a fabricação atual ou cancele.' : alreadyOwned ? 'Você já possui esta ferramenta.'
+      const status = this.craftingBusy ? 'Aguarde a fabricação atual ou cancele.' : alreadyOwned ? recipe.output.sword?'Você já possui uma espada.':'Você já possui esta ferramenta.'
         : missingTool ? `Precisa de ${ITEM_NAMES[recipe.requiresTool!].toLocaleLowerCase('pt-BR')}.`
         : missingStation ? 'Aproxime-se de uma bancada.'
         : missing.length ? `Faltam: ${missing.join(', ')}.` : 'Materiais e requisitos disponíveis.';

@@ -19,4 +19,4 @@ export const ECONOMY_ITEM_IDS=['ironShard','ironOre','ironIngot','goldShard','go
 export const shard=(metal:Metal)=>`${metal}Shard` as ItemId;
 export const ore=(metal:Metal)=>`${metal}Ore` as ItemId;
 export const ingot=(metal:Metal)=>`${metal}Ingot` as ItemId;
-export const NON_COMMERCIAL:readonly string[]=['branch','stone','fiber','flakedStone','hatchet','pickaxe','hoe','sickle','shovel','hammer','handsaw','ironOre','goldOre','blackMetalOre'];
+export const NON_COMMERCIAL:readonly string[]=['sword','branch','stone','fiber','flakedStone','hatchet','pickaxe','hoe','sickle','shovel','hammer','handsaw','ironOre','goldOre','blackMetalOre'];
