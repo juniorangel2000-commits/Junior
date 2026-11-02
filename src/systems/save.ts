@@ -1,3 +1,4 @@
+import {validMineInterior} from '../data/mine-room';
 import {validSurvivorCamp} from './survivor-camp';
 import {validFishingProgress,availableSpecimens} from './fishing-progress';
 import {validFisherTravel} from './fisher-travel';
@@ -62,6 +63,7 @@ export function validateProfile(value: unknown): value is CharacterProfile {
 
 export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
+  if(value.mineInterior!==undefined&&(value.activeArea!=='highland'||!validMineInterior(value.mineInterior)))return false;
   if(value.damiaoIntroduction!==undefined&&typeof value.damiaoIntroduction!=='boolean')return false;
   if (value.petShelter !== undefined && !validPetShelter(value.petShelter)) return false;
   if (value.forestMapEdits !== undefined && (!validateMapEdits(value.forestMapEdits)||value.forestMapEdits.area!=='forest')) return false;

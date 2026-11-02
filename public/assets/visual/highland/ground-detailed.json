@@ -1,0 +1,15 @@
+{
+  "scale": 2,
+  "width": 3072,
+  "height": 2048,
+  "baseSha256": "723b33cbbcb0fe83305bcca526341a8ef19f8b1e2f4c3ae87c8162b873b4d2e8",
+  "sectionsSha256": {
+    "noroeste": "af5923672d748793062a39cdd8e19e3ab7c690705fa7c2265a3973737d796a91",
+    "nordeste": "a0c753876112c8cd291390a0a3e2ae5a1406f175e6d5ac0ffec861639a23abdd",
+    "sudoeste": "eef24081bc3df08bee8b682ae0953d447e9596e8469da68e09532925849e0ee5",
+    "sudeste": "0bda24ae92f22abdc3532695e8e57a2a4108374a4fbe92a0829e8f896d35a0e9"
+  },
+  "shoreSha256": "f5e0bce3cbd34d623fa549f0c7aca0a463840596cf44344cf61c2dba8c335a27",
+  "recipeSha256": "f8e78a5067adbb5d1309a4afbd836df107780496204f1ead52c9f54ad432a414",
+  "sha256": "bb12f85a35ad0bfc607fdf839e4506e8db3e0b8771eb72c8d1678343bc6048f5"
+}

@@ -15,7 +15,7 @@ export const PET_WORLD_AREAS: Record<PetWorldArea, string> = {
   village: "Vila",
   cityForest: "Floresta de acesso",
   fishingLake: "Lago entre as Serras",
-  survivorCamp: "Acampamento de Sobreviventes",highland:"Alto da Serra",
+  survivorCamp: "Acampamento de Sobreviventes",highland:"Platô da Nascente",
 };
 export function validWorldPetState(value: unknown): value is WorldPetState {
   if (!value || typeof value !== "object") return false;
@@ -40,7 +40,9 @@ export function validWorldPetState(value: unknown): value is WorldPetState {
 export function worldPetLocation(state: WorldPetState): string {
   return (
     (state.mode === "shelter" ? "Casinha dos companheiros" : PET_WORLD_AREAS[state.area]) +
-    (state.space === "home"
+    (state.space === "mine"
+      ? " · Mina Antiga"
+      : state.space === "home"
       ? " · dentro de casa"
       : state.space === "blacksmith"
         ? " · ferraria"

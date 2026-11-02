@@ -11,6 +11,10 @@ const PRUNED_PATHS=[
  'assets/visual/village/plaza/piso-intertravado.png',
  'assets/visual/village/paving.png','assets/visual/characters/lia.png',
  'assets/visual/property/homestead-mossy-cliff.png',
+ // Ground authoring inputs stay in the repository; only the detailed bake ships.
+ 'assets/visual/highland/terrain.png',
+ 'assets/visual/highland/terrain-sections',
+ 'assets/visual/highland/ground-detailed.json',
 ];
 function excludedAsset(file){return PRUNED_PATHS.some(p=>file===p||file.startsWith(p+'/'));}
 function size(file){const stat=fs.statSync(file);return stat.isDirectory()?fs.readdirSync(file).reduce((n,name)=>n+size(path.join(file,name)),0):stat.size;}

@@ -147,7 +147,7 @@ export class GameUI {
   private overlay = document.createElement('div');
   private notifications = document.createElement('div');
   private companionQuickPanel?: CompanionQuickPanel;
-  private mode: 'title' | 'creation' | 'opening' | 'hud' = 'title';
+  private mode: 'title' | 'creation' | 'opening' | 'hud' | 'expedition' = 'title';
   private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'fishingJournal' | 'pets' | null = null;
   private focusBeforeModal?: HTMLElement;
   private onModalClose?: () => void;
@@ -184,7 +184,7 @@ export class GameUI {
     return tools.find(tool => tool.id === slot) ?? { label: 'Vazio', icon: 'bag', detail: 'Arraste um item da mochila para este slot.' };
   }
   activateSlot(index: number): void {
-    if(this.latest?.swimming)return;
+    if(this.mode!=='hud'||this.latest?.swimming)return;
     if (this.modal || !Number.isInteger(index) || index < 0 || index >= this.quickbar.length) return;
     const slot = this.quickbar[index];
     const quantity = this.latest ? quickQuantity(slot, this.latest.inventory, !!this.latest.wateringCan) : null;
@@ -285,10 +285,22 @@ export class GameUI {
     try { this.journalCollapsed = localStorage.getItem('after-rain-missions-collapsed') === 'true'; } catch { /* A interface também funciona sem armazenamento. */ }
     this.base.className = 'ui-base';
     window.addEventListener('keydown',event=>{
-      if(event.key==='Escape'&&this.modal==='fishingJournal'){event.preventDefault();event.stopImmediatePropagation();this.closeModal();return;}
-      if(event.code!=='KeyJ'||event.ctrlKey||event.metaKey||event.altKey||event.repeat||event.target instanceof HTMLInputElement||event.target instanceof HTMLTextAreaElement||event.target instanceof HTMLSelectElement)return;
-      if(this.mode!=='hud'||this.isModalOpen()&&this.modal!=='fishingJournal')return;
-      event.preventDefault();event.stopImmediatePropagation();this.toggleFishingJournal();
+      if(this.mode==='hud'&&event.key==='Escape'&&!event.repeat&&!event.defaultPrevented){
+        if([...document.querySelectorAll<HTMLElement>('[role=dialog]')].some(panel=>panel.getClientRects().length>0&&!this.overlay.contains(panel)))return;
+        event.preventDefault();event.stopImmediatePropagation();if(!this.dismissTopToolbar())this.togglePause();return;
+      }
+      if(this.mode!=='hud'||!this.latest||event.defaultPrevented||event.ctrlKey||event.metaKey||event.altKey||event.repeat||event.target instanceof Element&&event.target.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"])'))return;
+      const shortcuts={KeyI:'inventory',KeyM:'map',KeyC:'crafting',KeyB:'building',KeyJ:'fishingJournal',KeyK:'pets'} as const;
+      const action=shortcuts[event.code as keyof typeof shortcuts];if(!action)return;
+      if([...document.querySelectorAll<HTMLElement>('[role=dialog]')].some(panel=>panel.getClientRects().length>0&&!this.overlay.contains(panel)))return;
+      event.preventDefault();event.stopImmediatePropagation();
+      if(this.modal&&this.modal!==action)return;
+      if(action==='inventory')this.toggleInventory(this.latest.inventory);
+      else if(action==='map')this.toggleMap();
+      else if(action==='crafting')this.toggleCrafting(this.latest.inventory,this.latest.nearWorkbench);
+      else if(action==='building')this.toggleBuilding(this.latest.inventory,this.latest.nearWorkbench);
+      else if(action==='fishingJournal')this.toggleFishingJournal();
+      else if(this.modal==='pets')this.closeModal();else this.callbacks.onCompanions?.();
     },true);
     this.overlay.className = 'modal-root';
     this.notifications.className = 'toast-stack';
@@ -419,6 +431,7 @@ export class GameUI {
     this.cleanupOpening?.(); this.cleanupOpening = undefined;
     this.hideCameraZoom();
     this.root.dataset.area=area;
+    this.root.style.display='';
     this.base.style.display = '';
     this.journalCleanup?.();
     this.topToolbar?.destroy();
@@ -503,6 +516,15 @@ export class GameUI {
   toggleTopToolbar(): void {
     if (this.mode !== 'hud' || this.modal) return;
     this.topToolbar?.toggle();
+  }
+
+  /** Expeditions own their combat UI; exploration shortcuts cannot open hidden menus. */
+  suspendExploration():void {
+    if(this.mode==='hud')this.closeModal();
+    this.mode='expedition';this.latest=undefined;this.modal=null;
+    this.topToolbar?.setOpen(false,false);this.topToolbar?.setEnabled(false);this.companionQuickPanel?.hide();
+    this.hideCameraZoom();this.overlay.replaceChildren();this.overlay.classList.remove('active');
+    this.root.dataset.area='dungeon';this.root.style.display='none';
   }
 
   dismissTopToolbar(): boolean { return this.topToolbar?.dismiss() ?? false; }
@@ -648,6 +670,7 @@ export class GameUI {
     const key = JSON.stringify(data);
     if (key === this.lastHudKey) return;
     this.lastHudKey = key;
+    this.topToolbar?.setActionVisible('building',(data.area??'property')==='property'&&!data.inHome);
     const set = (selector: string, value: string): void => {
       const element = this.base.querySelector(selector);
       if (element && element.textContent !== value) element.textContent = value;
@@ -914,6 +937,7 @@ export class GameUI {
 
   toggleBuilding(inventory: InventoryData, nearWorkbench: boolean): void {
     if (this.mode !== 'hud') return;
+    if(this.latest&&((this.latest.area??'property')!=='property'||this.latest.inHome)){this.toast(this.latest.inHome?'Use H para personalizar os móveis da casa.':'As construções são feitas na propriedade.');return;}
     if (this.modal === 'building') { this.closeModal(); return; }
     if (this.modal) return;
     this.openModal('building');
@@ -953,7 +977,7 @@ export class GameUI {
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Mapa das regiões exploráveis');
-    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM VALE PARA CONHECER</span><h2>${this.latest?.inHome ? this.latest.area==='village'?'Interior do comércio':"Interior da casa" : this.latest?.area==='highland' ? 'Alto da Serra' : this.latest?.area==='survivorCamp' ? "Acampamento de Sobreviventes" : this.latest?.area==='fishingLake' ? "Lago entre as Serras" : this.latest?.area==='cityForest' ? "Floresta de Acesso à Cidade" : this.latest?.area==='forest' ? "Floresta Antiga" : this.latest?.area==='village' ? "Vila do Recomeço" : "Mapa completo do vale"}</h2></div><button class="icon-button" aria-label="Fechar mapa">${icon('close')}</button></div>
+    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM VALE PARA CONHECER</span><h2>${this.latest?.inHome ? this.latest.area==='village'?'Interior do comércio':"Interior da casa" : this.latest?.area==='highland' ? 'Platô da Nascente' : this.latest?.area==='survivorCamp' ? "Acampamento de Sobreviventes" : this.latest?.area==='fishingLake' ? "Lago entre as Serras" : this.latest?.area==='cityForest' ? "Floresta de Acesso à Cidade" : this.latest?.area==='forest' ? "Floresta Antiga" : this.latest?.area==='village' ? "Vila do Recomeço" : "Mapa completo do vale"}</h2></div><button class="icon-button" aria-label="Fechar mapa">${icon('close')}</button></div>
       <p class="map-current">Você está em <strong></strong>.</p>
       <div class="exploration-map real-map" role="img" aria-label="Cenário real e posição do personagem"><img class="map-snapshot" alt="Vista do cenário atual" /><span class="map-player" hidden><i></i><b>Você</b></span><span class="map-north">N ↑</span></div>
       <p class="map-caption">Vista atual do cenário. Seu marcador indica a posição exata.</p>
@@ -964,6 +988,7 @@ export class GameUI {
     map.style.aspectRatio = `${mapWidth}/${mapHeight}`;
     void this.callbacks.onMap().then(url => { if (panel.isConnected) panel.querySelector<HTMLImageElement>('.map-snapshot')!.src = url; });
     panel.querySelector('.map-current strong')!.textContent = this.latest?.location || 'Propriedade';
+    if(this.latest?.mapTitle)panel.querySelector('h2')!.textContent=this.latest.mapTitle;
     const position = this.latest?.playerTile;
     if (position) {
       const marker = panel.querySelector<HTMLElement>('.map-player')!;

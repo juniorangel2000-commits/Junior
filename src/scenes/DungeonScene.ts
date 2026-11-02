@@ -134,7 +134,7 @@ export class DungeonScene extends Phaser.Scene {
     setupPetArt(this);
     setupWeaponEffects(this);
     this.cameras.main.setBounds(0, 0, 3072, 2304);
-    document.querySelector<HTMLElement>("#ui")!.style.display = "none";
+    this.gameUI.suspendExploration();
     const icons = Object.fromEntries(
       (Object.keys(WEAPONS) as WeaponId[]).flatMap((id) =>
         [id, `${id}-evolved`].map((frame) => [

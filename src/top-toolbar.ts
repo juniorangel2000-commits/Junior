@@ -72,6 +72,9 @@ export class TopToolbar {
   }
 
   toggle(): void { this.setOpen(!this.open); }
+  setActionVisible(action:ToolbarAction,visible:boolean):void {
+    const button=this.root.querySelector<HTMLButtonElement>(`[data-toolbar-action="${action}"]`);if(button)button.hidden=!visible;
+  }
   setEnabled(enabled: boolean): void { this.root.hidden = !enabled; }
   dismiss(): boolean {
     if (!this.open) return false;

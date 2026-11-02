@@ -56,6 +56,8 @@ export interface VillageEconomy {
   stock?:Partial<Record<ItemId,StockRecord>>;
 }
 export interface SaveData {
+  /** Interior of the highland mine; absent means the player is outdoors. */
+  mineInterior?:import('./data/mine-room').MinePosition;
   highlandPosition?:TilePoint & {direction?:CharacterDirection};
   highlandMapEdits?:MapEditData;
   /** Outdoor equipment references an owned sword; missing keeps hands free. */
@@ -136,6 +138,7 @@ export interface SaveData {
   forestMapEdits?: MapEditData;
 }
 export interface HudData {
+  mapTitle?:string;
   worldMapSize?:{width:number;height:number};
   worldWeapon?:SaveData['worldWeapon'];
   mapEditorAvailable?:boolean;

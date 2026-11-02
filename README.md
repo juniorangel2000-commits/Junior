@@ -1,3 +1,5 @@
+> **Prévia atual 0.10.0-preview.28:** [Instalador Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.10.0-preview.28/After-Rain-0.10.0-preview.28-Setup-Windows-x64.exe) · [Notas da atualização](docs/cenarios/NOTAS-0.10.0-preview.28.md) · Platô da Nascente, Mina Antiga e HUD comum nos cenários de exploração.
+
 > **Atualização 0.8.0:** [Jogar no navegador (computador)](https://after-rain-junior-desktop.astralpeach256.chatgpt.site) · [Download Windows 11 x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.8.0) · [Personagem detalhado, oito direções e árvores maiores](docs/personagem-oito-direcoes-v0.8.md). O site usa acesso pela conta do ChatGPT.
 
 > **Atualização 0.7.1:** [Download Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.7.1) · [Ícones, painel de som e missões livres](docs/barra-som-missoes-v0.7.1.md).
@@ -66,7 +68,7 @@ O build fica em `dist/`. Sirva essa pasta por HTTP; abrir `index.html` diretamen
 
 ## Aplicativo para Windows
 
-**Versão atual:** [After Rain v0.8.0 — Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.8.0/After-Rain-0.8.0-Windows-x64.exe). A [página da Release](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.8.0) reúne o executável e seu manifesto de integridade. Inclui o personagem detalhado com oito direções e oito quadros de caminhada, criação simples e árvores maiores, além da HUD, chuva com raios, trilha chuvosa, painel de som e missões livres. Feche a versão antiga antes de abrir o novo arquivo.
+**Prévia atual:** [After Rain v0.10.0-preview.28 — instalador Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.10.0-preview.28/After-Rain-0.10.0-preview.28-Setup-Windows-x64.exe). A [página da Release](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.10.0-preview.28) reúne instalador, portátil e manifesto de integridade. Inclui o Platô da Nascente, a sala jogável da Mina Antiga e comandos comuns da HUD fora das dungeons. Feche a versão anterior antes de atualizar.
 
 O pacote portátil é gerado em `release/`, com nome `After-Rain-<versão>-Windows-x64.exe` a partir da versão 0.5.0. Os pacotes anteriores mantêm o nome de arquivo original. Ele é destinado a **Windows 10/11 de 64 bits**. Para jogar o pacote pronto, abra o `.exe` com dois cliques. Não precisa instalar Node.js, abrir um terminal, manter o Vite ativo, conectar à internet ou executar como administrador. A primeira abertura pode demorar um pouco enquanto o pacote prepara seus arquivos temporários.
 
