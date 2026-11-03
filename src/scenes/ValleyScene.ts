@@ -1,3 +1,4 @@
+import {freeArrival} from '../systems/actor-arrival';
 import {acknowledgeMineRescue,rescuePending,rescueDialogue} from '../systems/mine-rescue-state';
 import {MineRescueView,preloadMineRescue} from '../mine-rescue-view';
 import {BentoTravelView,preloadBentoTravel} from '../bento-travel-view';
@@ -507,8 +508,13 @@ export class ValleyScene extends Phaser.Scene {
     this.outdoorVisibility.clear();
     this.inHome = false;
     this.homePassage.reset();this.homeDoorWarningShown=false;
-    this.player.x = HOME_OUTDOOR_SPAWN.x;
-    this.player.y = HOME_OUTDOOR_SPAWN.y;
+    // Refresh the NPC's room before querying collisions: his indoor sprite may
+    // still be visible until the next frame after the player changes rooms.
+    this.bentoView?.update();
+    const trip=this.state.bentoTravel?.trip;
+    const arrival=freeArrival(HOME_OUTDOOR_SPAWN,(x,y)=>this.world.isSolidPoint(x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)),trip?.area==='property'?[trip]:[]);
+    this.player.x = arrival?.x ?? HOME_OUTDOOR_SPAWN.x;
+    this.player.y = arrival?.y ?? HOME_OUTDOOR_SPAWN.y;
     this.player.facing = { x: 0, y: 1 };
     this.player.update(0, this.movementBlocked, this.movementBlockedPoint,true,this.swimmingPoint);
     this.recoverPlayerPosition();
