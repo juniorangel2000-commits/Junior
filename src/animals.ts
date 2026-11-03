@@ -61,7 +61,7 @@ export class AnimalPopulation {
   for(const a of this.animals){
    if(!a.brain.canStand(a.x,a.y))this.placeSafely(a.brain);
    const home=farmAnimalHome(this.save,a.id),homing=this.area==='property'&&!!home&&a!==this.led&&!farmAnimalSettled(home,a.brain,a.brain.radius);
-   a.brain.update(delta,homing?farmHomePoint(home!):player,this.brains,a===this.led||homing,homing?8:ANIMAL_BEHAVIOR.followDistance,!homing);
+   a.brain.update(delta,homing?farmHomePoint(home!):player,this.brains,a===this.led||homing,homing?2:ANIMAL_BEHAVIOR.followDistance,!homing);
    if(updateAnimalSprite(a.sprite,a.brain,delta))continue;
    const moving=a.brain.moving;
    // Temporary rigid-body locomotion, without stretching the authored animal art.

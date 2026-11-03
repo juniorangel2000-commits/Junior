@@ -30,7 +30,7 @@ export function farmSitePointBlocked(s:FarmSite,px:number,py:number):boolean{
 }
 export const farmPointBlocked=(save:SaveData,x:number,y:number)=>farmSites(save).some(s=>farmSitePointBlocked(s,x,y));
 export function farmAnimalHome(save:SaveData,id:string):FarmSite|undefined{return farmSites(save).find(s=>s.finished&&s.animals.includes(id));}
-export function farmAnimalSettled(s:FarmSite,p:TilePoint,radius:number):boolean{return[[-radius,-radius],[radius,-radius],[-radius,radius],[radius,radius]].every(([dx,dy])=>farmYard(s,Math.floor((p.x+dx)/32),Math.floor((p.y+dy)/32)));}
+export function farmAnimalSettled(s:FarmSite,p:TilePoint,radius:number):boolean{return[[-radius,-radius*.6],[radius,-radius*.6],[-radius,radius*.6],[radius,radius*.6]].every(([dx,dy])=>farmYard(s,Math.floor((p.x+dx)/32),Math.floor((p.y+dy)/32)));}
 export const farmBlocked=(save:SaveData,x:number,y:number)=>farmSites(save).some(s=>farmSiteBlocked(s,x,y));
 export function farmStage(s:FarmSite):0|1|2{if(s.finished)return 2;const cost=FARM_BUILDINGS[s.kind].cost,total=Object.values(cost).reduce((a,b)=>a+(b??0),0),delivered=Object.values(s.delivered).reduce((a,b)=>a+(b??0),0);return delivered>=total/2?1:0;}
 export const farmReady=(s:FarmSite)=>Object.entries(FARM_BUILDINGS[s.kind].cost).every(([id,n])=>(s.delivered[id as ItemId]??0)>=n!);
