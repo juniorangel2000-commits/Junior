@@ -312,7 +312,7 @@ export class ForestScene extends Phaser.Scene {
     }else this.exitWarningShown=false;
     if(!this.player.isSwimming&&this.campPassage.update(previous,this.player,FOREST_CAMP_EXIT,FOREST_CAMP_RETURN)){this.enterSurvivorCamp();return;}
     const strike=this.toolUse.advance(delta);if(strike){const node=this.world.resourceAt(strike.target.x,strike.target.y);if(node?.id===strike.target.id&&!this.player.isSwimming)this.hitResource(node,strike.tool);}
-    const active=this.toolUse.current;if(active&&(active.tool==='pickaxe'||active.tool==='hatchet'))this.toolVisual?.show(active.tool,active.direction,this.player.x,this.player.y,this.toolUse,toolCondition(this.state,active.tool).tier);else if(!this.toolVisual?.sprite.getData('gathering'))this.toolVisual?.hide();
+    const active=this.toolUse.current;if(active&&(active.tool==='pickaxe'||active.tool==='hatchet'))this.toolVisual?.show(active.tool,active.direction,this.player.x,this.player.y,this.toolUse,toolCondition(this.state,active.tool).tier,this.player.sprite);else if(!this.toolVisual?.sprite.getData('gathering'))this.toolVisual?.hide();
     Object.assign(this.state,advanceClock(this.state,delta*GAME_MINUTES_PER_SECOND));
     this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state, delta,undefined,this.bentoWorkRuntime);
     this.trees.forEach(t=>t.setAlpha(this.player.y<t.y&&Math.abs(this.player.x-t.x)<t.displayWidth*.4&&this.player.y>t.y-t.displayHeight*.85?.42:1));

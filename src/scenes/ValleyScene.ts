@@ -1334,7 +1334,7 @@ export class ValleyScene extends Phaser.Scene {
     if(this.toolVisual.sprite.getData('gathering')&&!this.player.isSwimming&&this.canPlay())return;
     if (this.player.isSwimming || !this.toolUse.active || !this.canPlay() || !isAnimatedTool(this.tool) || !(this.tool === 'water' ? this.state.homeSupplies?.wateringCan : this.inventory.has(this.tool))) { this.toolVisual.hide(); return; }
     const direction = this.toolUse.current?.direction ?? directionFromVector(this.player.facing.x, this.player.facing.y);
-    this.toolVisual.show(this.tool, direction, this.player.x, this.player.y, this.toolUse, this.tool==='water'?0:toolCondition(this.state,this.tool).tier);
+    this.toolVisual.show(this.tool, direction, this.player.x, this.player.y, this.toolUse, this.tool==='water'?0:toolCondition(this.state,this.tool).tier,this.player.sprite);
   }
 
   /** Short pixel droplets: draw water toward the can on refill and onto soil on use. */

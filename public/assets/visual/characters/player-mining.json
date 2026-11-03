@@ -1,0 +1,60 @@
+{
+  "frameWidth": 256,
+  "frameHeight": 256,
+  "columns": 6,
+  "rows": 4,
+  "characters": {
+    "farmer-male": {
+      "file": "assets/visual/characters/farmer-male/work-mining.png",
+      "scale": 0.2488479262672811,
+      "rows": [
+        {
+          "direction": "south",
+          "originX": 0.5000090422453703,
+          "originY": 1.0042317708333333
+        },
+        {
+          "direction": "north",
+          "originX": 0.5058865017361112,
+          "originY": 1.0003074363425926
+        },
+        {
+          "direction": "east",
+          "originX": 0.5038791232638888,
+          "originY": 0.9845920138888888
+        },
+        {
+          "direction": "west",
+          "originX": 0.4824761284722222,
+          "originY": 0.9845920138888888
+        }
+      ]
+    },
+    "farmer-female": {
+      "file": "assets/visual/characters/farmer-female/work-mining.png",
+      "scale": 0.21555555555555556,
+      "rows": [
+        {
+          "direction": "south",
+          "originX": 0.50390625,
+          "originY": 0.9996778350515464
+        },
+        {
+          "direction": "north",
+          "originX": 0.501953125,
+          "originY": 1.0087387242268042
+        },
+        {
+          "direction": "east",
+          "originX": 0.48781813788659795,
+          "originY": 0.9996778350515464
+        },
+        {
+          "direction": "west",
+          "originX": 0.4938990012886598,
+          "originY": 1.0035840850515463
+        }
+      ]
+    }
+  }
+}

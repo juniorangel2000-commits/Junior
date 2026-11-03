@@ -1,3 +1,4 @@
+import {preloadPlayerMiningArt,playerMiningPose} from './player-mining-art';
 import Phaser from 'phaser';
 import { CHARACTER_DIRECTIONS, directionVector, type CharacterDirection } from './character-directions';
 import { toolIdleArt, toolUseArt, toolSwingAngle, TOOL_USE_FRAMES, TOOL_FRAME_SIZE, type AnimatedTool } from './data/tool-art';
@@ -22,6 +23,7 @@ const HANDS: Record<'farmer-female' | 'farmer-male', Record<CharacterDirection, 
 };
 
 export function preloadToolArt(scene: Phaser.Scene): void {
+  preloadPlayerMiningArt(scene);
   const sources = new Map<string, string>();
   for (const tool of ['hatchet', 'pickaxe', 'water', 'hoe'] as const) for (const direction of CHARACTER_DIRECTIONS) {
     const idle = toolIdleArt(tool, direction); sources.set(idle.key, idle.path);
@@ -35,16 +37,33 @@ export function preloadToolArt(scene: Phaser.Scene): void {
 /** Original 97×97 textures remain intact; only their on-screen scale changes. */
 export class ToolVisual {
   readonly sprite: Phaser.GameObjects.Image;
+  private miningSprite?:Phaser.GameObjects.Image;
+  private hiddenBody?:Phaser.GameObjects.Sprite;
+  private bodyWasVisible=false;
   private gatherTween?:Phaser.Tweens.Tween;
 
   constructor(scene: Phaser.Scene, private readonly profile: CharacterProfile) {
     this.sprite = scene.add.image(0, 0, toolIdleArt('hatchet', 'down').key).setVisible(false);
+    scene.events.once('shutdown',()=>this.hideMiningPose());
   }
 
-  hide(): void { this.gatherTween?.stop();this.gatherTween=undefined;this.sprite.setData('gathering',false).setVisible(false); }
+  private hideMiningPose():void{this.miningSprite?.setVisible(false);if(this.hiddenBody?.scene)this.hiddenBody.setVisible(this.bodyWasVisible);this.hiddenBody=undefined;}
 
-  show(tool: AnimatedTool | 'sickle' | 'shovel', direction: CharacterDirection, x: number, y: number, use: Pick<ToolUse,'active'|'frame'>, tier=0): void {
+  hide(): void { this.hideMiningPose(); this.gatherTween?.stop();this.gatherTween=undefined;this.sprite.setData('gathering',false).setVisible(false); }
+
+  show(tool: AnimatedTool | 'sickle' | 'shovel', direction: CharacterDirection, x: number, y: number, use: Pick<ToolUse,'active'|'frame'>, tier=0,body?:Phaser.GameObjects.Sprite): void {
     if (!use.active) { this.hide(); return; }
+    if(tool==='pickaxe'&&body){
+      const pose=playerMiningPose(this.sprite.scene,this.profile,direction,use.frame,tier);
+      if(pose){
+        if(this.hiddenBody!==body){this.hideMiningPose();this.hiddenBody=body;this.bodyWasVisible=body.visible;}
+        body.setVisible(false);this.sprite.setVisible(false);
+        this.miningSprite??=this.sprite.scene.add.image(x,y,pose.key,pose.frame).setData('player-mining-pose',true);
+        this.miningSprite.setTexture(pose.key,pose.frame).setPosition(x,y).setOrigin(pose.originX,pose.originY).setScale(pose.scale).setDepth(body.depth).setAlpha(body.alpha).setVisible(this.bodyWasVisible);
+        return;
+      }
+    }
+    this.hideMiningPose();
     direction = direction.includes('left') ? 'left' : 'right';
     if(tool!=='water'&&(tier>0||tool==='sickle'||tool==='shovel')){
       const material=TOOL_MATERIALS[Math.max(0,Math.min(3,Math.floor(tier)))];
