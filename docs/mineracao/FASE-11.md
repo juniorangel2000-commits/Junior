@@ -48,7 +48,13 @@ comportamento de movimento do jogo.
   retomada. A fixture da ferraria foi ajustada para depois da visita matinal de
   Bento ao Ícaro; sua saída naquele horário era a rotina normal, não perda do NPC
   ou de afinidade. O script padrão já usa o horário de atendimento adequado.
-- Suíte global em execução; resultado final pendente.
+- Suíte global: **1.767 testes aprovados em 195 arquivos**, sem falhas.
+  Comando: `npx vitest run --maxWorkers=1 --testTimeout=30000`.
+  Executada uma única vez para esta entrega, incluindo os testes novos e a
+  regressão de todos os sistemas; nenhuma asserção foi relaxada.
+- `git diff --check` aprovado. Código verificado no commit
+  `df9781c334b54b36387b8d4016d3d86463865d35`; o fechamento posterior altera apenas
+  estes relatórios. Branch sincronizada com o GitHub.
 
 Prévias locais: `/workspace/npcs-fase10-qa/01-Bento-lembra-do-resgate.png`,
 `02-Resposta-e-afinidade.png`, `03-Relacao-preservada-apos-recarregar.png`,

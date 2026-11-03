@@ -1,6 +1,6 @@
 # Mineração integrada — execução por fases
 
-**Estado atual: fase 10 implementada; fase 11 em verificação final.** Veja
+**Estado atual: fases 10 e 11 concluídas e verificadas.** Veja
 [FASE-10.md](FASE-10.md) para afinidade, conversas e memórias verdadeiras, e
 [FASE-11.md](FASE-11.md) para os ajustes de persistência, polimento e regressão.
 A última distribuição Windows é `v0.10.0-preview.29`, com as fases 1–9.
