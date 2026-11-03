@@ -148,7 +148,7 @@ export function advanceBentoTravel(save:SaveData,seconds:number,player?:TilePoin
     else changeLeg(trip,'settle',B.returnPreparationSeconds);
    }else if(result==='blocked'){trip.wait=B.routeRetrySeconds;trip.blocked=true;}break;
   }
-  if(trip.leg==='shop-back'&&runtime){changeLeg(trip,'unload');continue;}
+  if(trip.leg==='shop-back'&&runtime){changeLeg(trip,ensureBentoWork(save).job?.phase==='carrying'?'forge':'unload');continue;}
   const next=nextLeg[trip.leg];
   if(next){changeLeg(trip,next,next==='explore'?B.explorationMinutes:next==='settle'?B.returnPreparationSeconds:B.preparationSeconds);continue;}
   if(portal(save,trip.leg)){trip.transition='out';trip.wait=B.portalPause;trip.moving=false;continue;}

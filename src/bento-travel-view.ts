@@ -21,7 +21,7 @@ export class BentoTravelView{
  }
  get hud():Partial<Pick<HudData,'prompt'|'interactionKey'>>{return this.near&&!this.save().bentoTravel?.trip?.purpose?{prompt:'Conversar com Bento · expedição',interactionKey:'E'}:{};}
  get near():boolean{return!!this.save().bentoTravel?.trip&&this.sprite.visible&&Math.hypot(this.sprite.x-this.player().x,this.sprite.y-this.player().y)<78;}
- blocks(x:number,y:number):boolean{return!!this.save().bentoTravel?.trip&&this.sprite.visible&&Math.abs(this.sprite.x-x)<10&&Math.abs(this.sprite.y-y)<6;}
+ blocks(x:number,y:number):boolean{return!!this.save().bentoTravel?.trip&&this.sprite.visible&&Math.abs(this.sprite.x-x)<12&&Math.abs(this.sprite.y-y)<10;}
  private lastNotice?:string;
  update():void{
   const party=this.save().bentoExpedition?.party,notice=party?.status==='ended'?party.reason:undefined;if(notice&&this.lastNotice!==notice&&this.lastNotice!==undefined)this.ui.toast(bentoExpeditionStatus(this.save()));this.lastNotice=notice??'active';

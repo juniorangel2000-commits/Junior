@@ -44,8 +44,15 @@ export function bentoPlayerSpace(save:SaveData):BentoTravelArea|undefined{
  if(save.activeArea==='village')return save.blacksmithInterior?'shop':save.merchantInterior||save.communityInterior?undefined:'village';
  return save.activeArea==='cityForest'||save.activeArea==='fishingLake'?save.activeArea:undefined;
 }
+/** A loaded/rounded contact may already overlap. Only steps away can separate it. */
+function avoidsPlayer(from:TilePoint,to:TilePoint,player:TilePoint,origin=false):boolean{
+ const inside=(p:TilePoint)=>Math.abs(p.x-player.x)<19&&Math.abs(p.y-player.y)<13;
+ if(!inside(to))return true;
+ const dx=to.x-from.x,dy=to.y-from.y;if(origin&&Math.hypot(dx,dy)<.01)return true;
+ return inside(from)&&dx*(from.x-player.x)+dy*(from.y-player.y)>1e-6;
+}
 export function bentoActorFits(save:SaveData,trip:BentoTrip,p:TilePoint,player?:TilePoint,navigation?:BentoNavigation):boolean{
- if(player&&bentoPlayerSpace(save)===trip.area&&Math.abs(p.x-player.x)<19&&Math.abs(p.y-player.y)<13)return false;
+ if(player&&bentoPlayerSpace(save)===trip.area&&!avoidsPlayer(trip,p,player))return false;
  const fisher=save.fisherTravel;if(fisher&&trip.area!=='village'&&fisher.area===trip.area&&Math.abs(p.x-fisher.x)<18&&Math.abs(p.y-fisher.y)<12)return false;
  if(trip.area==='village'||trip.area==='shop')for(const [id,r]of Object.entries(save.villageRoutines??{})){
   if(id==='bento'||id==='damiao'&&save.fisherTravel?.area!=='village')continue;
@@ -59,7 +66,7 @@ export function bentoSegment(nav:BentoNavigation,a:TilePoint,b:TilePoint):boolea
  for(let i=1;i<=steps;i++){const p={x:a.x+(b.x-a.x)*i/steps,y:a.y+(b.y-a.y)*i/steps};if(!nav.fits(p)||!nav.allows(from,p))return false;from=p;}return true;
 }
 export function* bentoRouteSearch(save:SaveData,area:BentoTravelArea,from:TilePoint,to:TilePoint,options:BentoRouteOptions={}):Generator<undefined,TilePoint[],void>{
- const geometry=bentoMapNavigation(save,area,options),base={...geometry,fits:(p:TilePoint)=>geometry.fits(p)&&(!options.avoid||Math.abs(p.x-options.avoid.x)>=19||Math.abs(p.y-options.avoid.y)>=13||Math.hypot(p.x-from.x,p.y-from.y)<.01)},fitsCache=new Map<string,boolean>(),nav={...base,fits:(p:TilePoint)=>{const key=p.x+','+p.y;if(!fitsCache.has(key))fitsCache.set(key,base.fits(p));return fitsCache.get(key)!;}};
+ const geometry=bentoMapNavigation(save,area,options),base={...geometry,fits:(p:TilePoint)=>geometry.fits(p)&&(!options.avoid||avoidsPlayer(from,p,options.avoid,true))},fitsCache=new Map<string,boolean>(),nav={...base,fits:(p:TilePoint)=>{const key=p.x+','+p.y;if(!fitsCache.has(key))fitsCache.set(key,base.fits(p));return fitsCache.get(key)!;}};
  const tile=nav.tile,origin=nav.origin;
  if(!nav.fits(from)||!nav.fits(to))return[];
  if(bentoSegment(nav,from,to))return[{...to}];

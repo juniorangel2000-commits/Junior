@@ -47,6 +47,26 @@ describe('phase 9 persistent Bento rescue',()=>{
  },30000);
  it('rejects malformed optional state while keeping saves from older phases compatible',()=>{
   const s=fallen();expect(validateSave(s)).toBe(true);expect(recoverMineDefeat(s,validateSave)).toBe(true);
-  for(const change of[(x:typeof s)=>{x.mineRescue!.elapsedMinutes=-1;},(x:typeof s)=>{x.mineRescue!.variant=3;},(x:typeof s)=>{x.mineRescue!.day=x.day+1;},(x:typeof s)=>{x.bentoTravel!.trip!.area='shop';}]){const draft=structuredClone(s);change(draft);expect(validateSave(draft)).toBe(false);}
+  for(const change of[(x:typeof s)=>{x.mineRescue!.elapsedMinutes=-1;},(x:typeof s)=>{x.mineRescue!.variant=3;},(x:typeof s)=>{x.mineRescue!.day=x.day+1;},(x:typeof s)=>{x.bentoTravel!.trip!.area='shop';},(x:typeof s)=>{delete x.bentoTravel;},(x:typeof s)=>{x.mineRescue!.bedId='missing-bed';},(x:typeof s)=>{delete x.homePosition;}]){const draft=structuredClone(s);change(draft);expect(validateSave(draft)).toBe(false);}
  });
+});
+describe('scene rescue integration',()=>{
+ it('advances the canonical actor beside the standing player with the live scene writer',async()=>{
+  const {advanceBackgroundVillage}=await import('../src/systems/village-background');const {bentoSceneWriter}=await import('../src/systems/bento-commit');const s=fallen();prepareVillageRoutines(s);expect(recoverMineDefeat(s,validateSave)).toBe(true);expect(acknowledgeMineRescue(s,validateSave)).toBe(true);const player={x:s.homePosition!.x,y:s.homePosition!.y+12},runtime={write:bentoSceneWriter(()=>structuredClone(s),validateSave)};
+  for(let i=0;i<600&&s.bentoTravel!.trip!.area==='home';i++){Object.assign(s,advanceClock(s,.1));advanceBackgroundVillage(s,.1,player,runtime);}
+  expect(s.bentoTravel!.trip!.area,JSON.stringify(s.bentoTravel!.trip)).toBe('property');
+ });
+});
+
+describe('rescue edge cases',()=>{
+ it('separates an existing close contact without crossing the player or teleporting',()=>{
+  const s=fallen();recoverMineDefeat(s,validateSave);acknowledgeMineRescue(s,validateSave);Object.assign(s.bentoTravel!.trip!,{x:48,y:112});const player={x:48,y:103};let previous=structuredClone(s.bentoTravel!.trip!);
+  for(let i=0;i<600&&s.bentoTravel!.trip!.area==='home';i++){Object.assign(s,advanceClock(s,.1));advanceBentoTravel(s,.1,player);const t=s.bentoTravel!.trip!;if(t.area==='home'){expect(Math.hypot(t.x-previous.x,t.y-previous.y)).toBeLessThanOrEqual(4.801);if(Math.abs(previous.x-player.x)<19&&Math.abs(previous.y-player.y)<13)expect(Math.hypot(t.x-player.x,t.y-player.y)).toBeGreaterThanOrEqual(Math.hypot(previous.x-player.x,previous.y-player.y)-.001);}previous=structuredClone(t);}
+  expect(s.bentoTravel!.trip!.area).toBe('property');
+ });
+ it('resumes a privately reserved smithy job after rescue without depositing its carried materials twice',()=>{
+  const s=fallen(),w=ensureBentoWork(s);w.sequence=1;w.pack.stone=4;w.ledger.collected.stone=4;w.job={id:1,kind:'stone',item:'stone',amount:4,phase:'carrying',elapsed:1};prepareVillageRoutines(s);expect(validateSave(s)).toBe(true);recoverMineDefeat(s,validateSave);acknowledgeMineRescue(s,validateSave);const inventory=structuredClone(s.inventory);const runtime={write:validateSave};
+  for(let i=0;i<18000&&s.bentoTravel?.trip;i++){Object.assign(s,advanceClock(s,.1));advanceBentoTravel(s,.1,undefined,false,runtime);}
+  expect(s.bentoTravel!.trip).toBeUndefined();expect(s.mineRescue!.stage).toBe('complete');expect(s.bentoWork!.job?.phase).toBe('done');expect(s.bentoWork!.ledger.consumed.stone).toBe(4);expect(s.bentoWork!.pack.stone).toBe(0);expect(s.bentoWork!.depot.stone).toBe(0);expect(s.inventory).toEqual(inventory);expect(validateSave(s)).toBe(true);
+ },30000);
 });

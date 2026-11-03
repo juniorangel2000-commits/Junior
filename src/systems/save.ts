@@ -161,6 +161,10 @@ export function validateSave(value: unknown): value is SaveData {
     || !finite(value.player.y, TILE / 2, WORLD_HEIGHT * TILE - TILE / 2)) return false;
   if (value.player.direction !== undefined && !CHARACTER_DIRECTIONS.includes(value.player.direction as CharacterDirection)) return false;
   if (value.home !== undefined && !validateHome(value.home)) return false;
+  if(value.mineRescue&&(value.mineRescue as SaveData['mineRescue'])!.stage==='waking'){
+    const trip=(value.bentoTravel as SaveData['bentoTravel'])?.trip;
+    if(value.activeArea!=='property'||!value.homePosition||trip?.area!=='home'||trip.leg!=='rescue-dialogue'||trip.purpose!=='rescue'||!new Home(value.home as SaveData['home']).data.furniture.some(f=>f.kind==='bed'&&f.id===(value.mineRescue as SaveData['mineRescue'])!.bedId))return false;
+  }
   if (value.homePosition !== undefined) {
     if (!isRecord(value.homePosition) || !finite(value.homePosition.x, TILE, (HOME_WIDTH - 1) * TILE - 1)
       || !finite(value.homePosition.y, TILE * 2, HOME_HEIGHT * TILE)) return false;

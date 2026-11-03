@@ -1,11 +1,11 @@
 # Mineração integrada — execução por fases
 
-**Estado atual: fase 8 concluída.** Veja [FASE-8.md](FASE-8.md) para pedidos
-renováveis, acontecimentos únicos, diário, objetos físicos, entregas parciais e
-continuidade após interrupção ou derrota. A próxima fase é a cena completa de
-resgate e retorno para casa. Companhia e defesa estão em `FASE-7.md`; mineração e
-depósitos particulares em `FASE-6.md`; rotina e viagens em `FASE-5.md`; perigos e
-acesso por menu em `FASE-4.md`.
+**Estado atual: fase 9 concluída.** Veja [FASE-9.md](FASE-9.md) para a cena de
+resgate, despertar na cama, persistência das consequências e volta física de
+Bento à ferraria. A próxima fase é a vida social simples dos NPCs. Pedidos,
+acontecimentos únicos e diário estão em `FASE-8.md`; companhia e defesa em
+`FASE-7.md`; mineração e depósitos em `FASE-6.md`; rotina e viagens em
+`FASE-5.md`; perigos e acesso por menu em `FASE-4.md`.
 
 **Correção mais recente do usuário:** Mina Antiga → menu na porta central →
 cenário separado Galerias da Mina. A recepção não inicia uma expedição. Confirmar

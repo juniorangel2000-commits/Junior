@@ -14,8 +14,15 @@ export function rescueHomePlacement(home:Home):{bedId:string;player:TilePoint;be
  const floors:TilePoint[]=[];
  for(let y=2;y<HOME_HEIGHT;y++)for(let x=1;x<HOME_WIDTH-1;x++)if(!home.isBlocked(x,y)&&home.canReachExit({x,y}))floors.push({x:x*32+16,y:y*32+16});
  for(const bed of home.data.furniture.filter(f=>f.kind==='bed')){
-  const center={x:(bed.x+1)*32,y:(bed.y+1)*32},sorted=[...floors].sort((a,b)=>Math.hypot(a.x-center.x,a.y-center.y)-Math.hypot(b.x-center.x,b.y-center.y));
-  for(const player of sorted){const bento=sorted.find(p=>Math.hypot(p.x-player.x,p.y-player.y)>=30&&Math.hypot(p.x-player.x,p.y-player.y)<=72);if(bento)return{bedId:bed.id,player,bento};}
+  const foot={x:(bed.x+1)*32,y:(bed.y+2)*32+16};
+  const adjacent=(p:TilePoint)=>{const x=Math.floor(p.x/32),y=Math.floor(p.y/32);return Math.abs(x-Math.max(bed.x,Math.min(bed.x+1,x)))+Math.abs(y-Math.max(bed.y,Math.min(bed.y+1,y)))===1;};
+  const sorted=[...floors].sort((a,b)=>Number(adjacent(b))-Number(adjacent(a))||Math.hypot(a.x-foot.x,a.y-foot.y)-Math.hypot(b.x-foot.x,b.y-foot.y));
+  for(const player of sorted){
+   const neighbours=sorted.filter(p=>Math.hypot(p.x-player.x,p.y-player.y)>=30&&Math.hypot(p.x-player.x,p.y-player.y)<=96);
+   // Side-by-side bodies remain readable; a narrow valid room can use a farther vertical stop.
+   const bento=neighbours.find(p=>Math.abs(p.x-player.x)>=32&&Math.abs(p.y-player.y)<=32)??neighbours.find(p=>Math.abs(p.y-player.y)>=64)??neighbours[0];
+   if(bento)return{bedId:bed.id,player,bento};
+  }
  }
 }
 export const rescuePending=(save:SaveData)=>save.mineRescue?.stage==='waking';
