@@ -1,3 +1,4 @@
+import {drawGroundWarning} from './ground-warning';
 import type Phaser from "phaser";
 import type { Enemy } from "./run";
 import { bossProfile } from "./bosses";
@@ -44,9 +45,7 @@ export function drawBossAttacks(
       ink.fillPath(); ink.strokePath();
     } else {
       const radius = bossAttackRadius(a.kind) + 10;
-      ink.fillCircle(a.x, a.y, radius);
-      ink.strokeCircle(a.x, a.y, radius);
-      if (warning) ink.strokeCircle(a.x, a.y, radius * Math.max(0.04, progress));
+      drawGroundWarning(ink,a.x,a.y,radius,warning,progress,color);
       if (a.kind === "plague") {
         // Crosses distinguish a persistent hazard from the single shockwave.
         for (const dx of [-24, 0, 24]) {

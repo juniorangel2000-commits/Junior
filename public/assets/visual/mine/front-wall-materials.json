@@ -1,0 +1,15 @@
+{
+  "file": "assets/visual/mine/front-wall-materials.png",
+  "width": 1254,
+  "height": 1254,
+  "sha256": "270ea6d7cc169faa5df054e9d6b3254256723163f15215336eae00937ba49864",
+  "reference": "assets/visual/mine/first-gallery.png",
+  "quadrants": [
+    "stone",
+    "iron",
+    "gold",
+    "blackMetal"
+  ],
+  "layout": "2 x 2; raw mineral veins embedded in a matching base rock formation",
+  "rendering": "only exposed wall cells; interior rock is hidden; shared organic masks update locally after excavation"
+}

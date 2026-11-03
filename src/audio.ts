@@ -6,7 +6,7 @@ export function audioSettings(value: unknown): AudioSettings {
   const volume = (n: unknown, fallback: number): number => typeof n === 'number' && Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : fallback;
   return { music: volume(v.music, .45), effects: volume(v.effects, .65), muted: v.muted === true };
 }
-export type Sound = 'step' | 'swim' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'fishing-cast' | 'fishing-splash' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit' | 'sword-swing' | 'bow-shot' | 'boomerang-throw' | 'weapon-evolution' | 'spear-thrust' | 'hammer-impact' | 'shield-burst' | 'dungeon-start';
+export type Sound = 'cave-rumble' | 'cave-impact' | 'step' | 'swim' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'fishing-cast' | 'fishing-splash' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit' | 'sword-swing' | 'bow-shot' | 'boomerang-throw' | 'weapon-evolution' | 'spear-thrust' | 'hammer-impact' | 'shield-burst' | 'dungeon-start';
 type AudioScene = 'title' | 'game' | 'expedition' | 'combat' | 'cinematic';
 const BEAT = 60 / 76;
 export const MUSIC_DURATION = 64 * BEAT;
@@ -382,6 +382,8 @@ export function synthesizeEffect(ctx: BaseAudioContext, out: AudioNode, sound: S
       noise(ctx,out,.13,1700,.035);
       const oscillator=ctx.createOscillator(),gain=ctx.createGain();oscillator.type='sine';oscillator.frequency.setValueAtTime(650,now);oscillator.frequency.exponentialRampToValueAtTime(145,now+.16);gain.gain.setValueAtTime(0,now);gain.gain.linearRampToValueAtTime(.09,now+.006);gain.gain.exponentialRampToValueAtTime(.0001,now+.19);oscillator.connect(gain).connect(out);oscillator.start(now);oscillator.stop(now+.2);oscillator.onended=()=>{oscillator.disconnect();gain.disconnect();};break;
     }
+    case 'cave-rumble': noise(ctx,out,1.1,220,.12);note(30,0,.8,.04);note(33,.25,.65,.025);break;
+    case 'cave-impact': noise(ctx,out,.55,480,.19);note(26,0,.5,.08);note(38,.06,.3,.04);break;
     case 'dungeon-start': noise(ctx, out, .85, 420, .09); note(33, 0, .9, .07); note(40, .12, .75, .045); note(46, .28, .55, .035); break;
     case 'shield-burst': noise(ctx, out, .18, 1600, .09); note(52, 0, .16, .05); note(64, .04, .13, .03); break;
     case 'spear-thrust': noise(ctx, out, .07, 3000, .06); note(64, 0, .07, .03); break;

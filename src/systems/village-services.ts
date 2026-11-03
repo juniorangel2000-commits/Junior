@@ -1,3 +1,4 @@
+import {bentoAvailability} from './bento-schedule';
 import {newFishingProgress,availableSpecimens,specimenPrice,fishingOrder,RODS,ROD_UPGRADES,rodControlLabel} from './fishing-progress';
 import {fishSpecies} from '../data/fishing-catches';
 import {fulfillContract,toolCondition,configureTool} from './economy';
@@ -64,6 +65,7 @@ export function listVillageServices(npc:string,save?:SaveData):VillageServiceOff
 }
 export function performVillageService(save:SaveData,id:string):{ok:boolean;message:string}{
  const service=services[id];if(!service)return{ok:false,message:'Serviço desconhecido.'};
+ if(service.npc==='bento'&&!bentoAvailability(save).open)return{ok:false,message:bentoAvailability(save).message};
  const draft=structuredClone(save);draft.villageProgress??=createVillageProgress();draft.villageEconomy??=createVillageEconomy();
  try{const inventory=new Inventory(draft.inventory);service.run(draft,inventory);draft.inventory={...inventory.data};Object.assign(save,draft);return{ok:true,message:`${service.label}: concluído.`};}catch(error){return{ok:false,message:error instanceof Error?error.message:'Não foi possível concluir.'};}
 }

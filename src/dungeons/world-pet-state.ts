@@ -29,18 +29,20 @@ export function validWorldPetState(value: unknown): value is WorldPetState {
     typeof v.x === "number" &&
     Number.isFinite(v.x) &&
     v.x >= 0 &&
-    v.x <= 3072 &&
+    v.x <= (v.area==="highland"&&v.space==="mine"?5120:3072) &&
     typeof v.y === "number" &&
     Number.isFinite(v.y) &&
     v.y >= 0 &&
-    v.y <= 2304 &&
+    v.y <= (v.area==="highland"&&v.space==="mine"?6144:2304) &&
     isPetDirection(v.direction)
   );
 }
 export function worldPetLocation(state: WorldPetState): string {
   return (
     (state.mode === "shelter" ? "Casinha dos companheiros" : PET_WORLD_AREAS[state.area]) +
-    (state.space === "mine"
+    (state.space === "community"
+      ? " · Centro comunitário"
+      : state.space === "mine"
       ? " · Mina Antiga"
       : state.space === "home"
       ? " · dentro de casa"
@@ -58,12 +60,13 @@ export interface PetPoint {
 export function petFreePoint(
   near: PetPoint,
   blocked: (x: number, y: number) => boolean,
+  bounds={width:3072,height:2304},
 ): PetPoint | undefined {
   const free = (x: number, y: number) =>
     x >= 8 &&
     y >= 8 &&
-    x <= 3064 &&
-    y <= 2296 &&
+    x <= bounds.width-8 &&
+    y <= bounds.height-8 &&
     [
       [0, 0],
       [-5, -3],

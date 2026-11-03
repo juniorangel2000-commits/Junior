@@ -1,3 +1,4 @@
+import {communityReady} from './community-center';
 import {advanceSurvivorResidents} from './survivor-residents';
 import type {SaveData} from '../types';
 import {CAMP_ENTRY,CAMP_VISITOR_SLOTS,campBlockedPoint,campHash} from '../data/survivor-camp';
@@ -44,6 +45,7 @@ export function advanceSurvivorCamp(save:SaveData,seconds:number,player?:{x:numb
  advanceSurvivorResidents(save,dt);
 }
 export function recruitCampVisitor(save:SaveData,id:string,write:(draft:SaveData)=>boolean):{ok:boolean;message:string}{
+ if(!communityReady(save))return{ok:false,message:'Repare o centro comunitário da vila antes de recrutar sobreviventes.'};
  const draft=structuredClone(save),camp=draft.survivorCamp,p=camp?.members.find(p=>p.id===id);
  if(!camp||camp.kind!=='peaceful'||!p||!['arriving','staying'].includes(p.status))return{ok:false,message:'Este visitante não está disponível para recrutamento.'};
  if(camp.residents.length>=MAX_CAMP_RESIDENTS)return{ok:false,message:'A casa comunitária já abriga oito aliados.'};

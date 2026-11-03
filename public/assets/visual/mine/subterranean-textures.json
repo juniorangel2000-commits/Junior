@@ -1,0 +1,9 @@
+{
+  "file": "assets/visual/mine/subterranean-textures.png",
+  "width": 1254,
+  "height": 1254,
+  "sha256": "db68c8a9b882923438016496fea0455c0f35249dc8e3242e380efbed825c6820",
+  "reference": "assets/visual/mine/first-gallery.png",
+  "layout": "four equal quadrants: two floor materials above, two bedrock materials below",
+  "use": "Continuous world-aligned floor and rock samples; runtime edge masks and native approved entrance remain separate."
+}

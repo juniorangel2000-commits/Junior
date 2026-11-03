@@ -23,6 +23,7 @@ export interface CompanionMap {
   space: string;
   blockedPoint: (x: number, y: number) => boolean;
   forage?: boolean;
+  bounds?:{width:number;height:number};
 }
 /** One selected companion; commands and waiting locations live in the game save. */
 export class WorldCompanion {
@@ -76,7 +77,7 @@ export class WorldCompanion {
       return;
     }
     const same = old?.area === this.map.area && old.space === this.map.space;
-    const point = petFreePoint(same ? old : player, this.map.blockedPoint);
+    const point = petFreePoint(same ? old : player, this.map.blockedPoint,this.map.bounds);
     if (!point) {
       this.image.setVisible(false);
       return;
@@ -137,12 +138,12 @@ export class WorldCompanion {
         Math.hypot(roam.x - this.image.x, roam.y - this.image.y) > 12
       ) {
         this.recalculate = 0.8;
-        const goal = petFreePoint(roam, this.map.blockedPoint);
+        const goal = petFreePoint(roam, this.map.blockedPoint,this.map.bounds);
         this.route = goal
           ? villageRoute(
               { x: this.image.x / 32, y: this.image.y / 32 },
               { x: goal.x / 32, y: goal.y / 32 },
-              blockedTile,
+              blockedTile,undefined,this.map.bounds?{width:this.map.bounds.width/32,height:this.map.bounds.height/32}:undefined,
             ).map((p) => ({ x: (p.x + 0.5) * 32, y: (p.y + 0.5) * 32 }))
           : [];
       }

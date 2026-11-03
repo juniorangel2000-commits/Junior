@@ -1,4 +1,12 @@
-import {validMineInterior} from '../data/mine-room';
+import {validMineMissions} from './mine-mission-state';
+import {validBentoExpedition} from './bento-expedition-state';
+import {validBentoTravel} from './bento-travel-state';
+import {validMineRescue} from './mine-rescue-state';
+import {validBentoWork} from './bento-work-state';
+import {validUnderground,validUndergroundPosition} from './underground';
+import {validCommunityCenter,communityReady} from './community-center';
+import {validCommunityInterior} from '../data/community-room';
+import {validMineInterior,previousMinePosition,recoverMinePosition} from '../data/mine-room';
 import {validSurvivorCamp} from './survivor-camp';
 import {validFishingProgress,availableSpecimens} from './fishing-progress';
 import {validFisherTravel} from './fisher-travel';
@@ -63,7 +71,15 @@ export function validateProfile(value: unknown): value is CharacterProfile {
 
 export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
-  if(value.mineInterior!==undefined&&(value.activeArea!=='highland'||!validMineInterior(value.mineInterior)))return false;
+  if(value.bentoTravel!==undefined&&!validBentoTravel(value.bentoTravel,typeof value.day==='number'?value.day:999999))return false;
+  if(value.mineRescue!==undefined&&!validMineRescue(value.mineRescue,typeof value.day==='number'?value.day:999999))return false;
+  if(value.mineMissions!==undefined&&!validMineMissions(value.mineMissions,typeof value.day==='number'?value.day:999999))return false;
+  if(value.bentoExpedition!==undefined&&!validBentoExpedition(value.bentoExpedition,typeof value.day==='number'?value.day:999999))return false;
+  if(value.bentoWork!==undefined&&!validBentoWork(value.bentoWork,typeof value.day==='number'?value.day:999999))return false;
+  if(value.underground!==undefined&&!validUnderground(value.underground,typeof value.day==='number'?value.day:999999))return false;
+  if(value.miningInterior!==undefined&&(value.miningInterior!==true||!value.mineInterior||!value.underground))return false;
+  if(value.underground){const mine=value.underground as NonNullable<SaveData['underground']>;if(mine.expedition&&mine.expedition.inside!==(mine.access===1?!!value.miningInterior:!!value.mineInterior))return false;}
+  if(value.mineInterior!==undefined&&(value.activeArea!=='highland'||!(value.underground?validUndergroundPosition(value.underground as NonNullable<SaveData['underground']>,value.mineInterior):validMineInterior(value.mineInterior))))return false;
   if(value.damiaoIntroduction!==undefined&&typeof value.damiaoIntroduction!=='boolean')return false;
   if (value.petShelter !== undefined && !validPetShelter(value.petShelter)) return false;
   if (value.forestMapEdits !== undefined && (!validateMapEdits(value.forestMapEdits)||value.forestMapEdits.area!=='forest')) return false;
@@ -72,7 +88,10 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.lastFishingHaul!==undefined&&!validFishingHaul(value.lastFishingHaul))return false;
   if(value.highlandPosition!==undefined&&(!isRecord(value.highlandPosition)||!finite(value.highlandPosition.x,16,1520)||!finite(value.highlandPosition.y,16,1008)||(value.highlandPosition.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(value.highlandPosition.direction as CharacterDirection))))return false;
   if(value.highlandMapEdits!==undefined&&(!validateMapEdits(value.highlandMapEdits)||value.highlandMapEdits.area!=='highland'))return false;
+  if(value.mineCollisionRevision!==undefined&&value.mineCollisionRevision!==2)return false;
   if(value.survivorCamp!==undefined&&!validSurvivorCamp(value.survivorCamp))return false;
+  if(value.communityCenter!==undefined&&!validCommunityCenter(value.communityCenter))return false;
+  if(value.communityInterior!==undefined&&(value.activeArea!=='village'||!communityReady(value as unknown as SaveData)||value.merchantInterior!==undefined||value.blacksmithInterior!==undefined||!validCommunityInterior(value.communityInterior)))return false;
   if(value.worldWeapon!==undefined&&!['sword','unarmed'].includes(value.worldWeapon as string))return false;
   if(value.survivorCampMapEdits!==undefined&&(!validateMapEdits(value.survivorCampMapEdits)||value.survivorCampMapEdits.area!=='survivorCamp'))return false;
   if(value.survivorCampPosition!==undefined&&(!isRecord(value.survivorCampPosition)||!finite(value.survivorCampPosition.x,24,3048)||!finite(value.survivorCampPosition.y,24,2280)||(value.survivorCampPosition.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(value.survivorCampPosition.direction as CharacterDirection))))return false;
@@ -232,6 +251,10 @@ export function validateSave(value: unknown): value is SaveData {
 
 /** Converte em memória; a leitura nunca modifica nem substitui o slot original. */
 export function migrateSave(value: unknown): SaveData | null {
+  if(isRecord(value)&&value.version===SAVE_VERSION&&value.underground===undefined&&value.mineCollisionRevision===undefined&&value.activeArea==='highland'&&isRecord(value.mineInterior)){
+    const p=value.mineInterior;
+    if(typeof p.x==='number'&&typeof p.y==='number'&&previousMinePosition(p.x,p.y)&&!validMineInterior(p)&& (p.direction===undefined||CHARACTER_DIRECTIONS.includes(p.direction as CharacterDirection)))value={...value,mineInterior:recoverMinePosition(p as unknown as import('../data/mine-room').MinePosition),mineCollisionRevision:2};
+  }
   // Cosmetic catch details must never make an otherwise valid game unloadable.
   if(isRecord(value)&&value.fishingProgress!==undefined&&!validFishingProgress(value.fishingProgress)){value={...value};delete (value as Record<string,unknown>).fishingProgress;}
   if(isRecord(value)&&value.lastFishingHaul!==undefined&&!validFishingHaul(value.lastFishingHaul)){
@@ -273,6 +296,11 @@ export function migrateSave(value: unknown): SaveData | null {
   }
   if(validateSave(value)){
     const data=structuredClone(value);
+    if(data.mineInterior)data.mineCollisionRevision=2;
+    if(!data.communityCenter){
+      data.communityCenter={stage:communityReady(data)?3:0,delivered:{}};
+      if(data.activeArea==='survivorCamp'&&!communityReady(data)){data.activeArea='forest';data.forestPosition={x:1136,y:272,direction:'down'};}
+    }
     if(!data.economy6){data.economy6=newEconomyState();for(const tool of ['hatchet','pickaxe','hoe'] as const){const tier=data.villageProgress?.toolLevels[tool]??0;if(tier>0&&data.inventory[tool]>0)data.economy6.tools[tool]={tier,durability:[100,250,450,800][tier]};}}
     if(data.mapBaseRevision!==MAP_BASE_REVISION){
       if(data.mapBaseRevision===1||data.mapBaseRevision===2||data.mapBaseRevision===3){
@@ -320,7 +348,7 @@ export function createNewSave(profile: CharacterProfile): SaveData {
     player: { x: 25 * TILE + TILE / 2, y: 18 * TILE + TILE / 2 },
     inventory: { ...INITIAL_INVENTORY },
     crops: [], buildings: [], depletedResources: [], resourceProgress: [], equippedTool: 'hand', progress: emptyProgress(),
-    damiaoIntroduction:false,economy6:newEconomyState(),day: 1, time: 8 * 60, metLia: false, villageEconomy: createVillageEconomy(), villageProgress:createVillageProgress(),
+    communityCenter:{stage:0,delivered:{}},damiaoIntroduction:false,economy6:newEconomyState(),day: 1, time: 8 * 60, metLia: false, villageEconomy: createVillageEconomy(), villageProgress:createVillageProgress(),
   };
 }
 

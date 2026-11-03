@@ -1,5 +1,6 @@
+import {advanceWorldRoute} from './world-route';
 import type {SaveData} from '../types';
-import {CHARACTER_DIRECTIONS,directionFromVector,type CharacterDirection} from '../character-directions';
+import {CHARACTER_DIRECTIONS,type CharacterDirection} from '../character-directions';
 import {CABIN_FISHER_STOP,CABIN_FISHER_EXIT} from '../data/fisher-cabin';
 import {LAKE_CITY_ENTRY,LAKE_CITY_EXIT,CITY_LAKE_ENTRY,CITY_LAKE_EXIT,lakeBlockedPoint,lakeTrailDistance} from '../data/fishing-lake';
 import {CITY_FOREST_ENTRY,CITY_FOREST_EXIT,VILLAGE_NORTH_ARRIVAL,cityForestBlockedPoint,cityForestTrailDistance} from '../data/city-forest';
@@ -51,8 +52,7 @@ export function advanceFisherTravel(save:SaveData,seconds:number,player?:Point):
   const route=cabinDeparture(save,s);if(!route.length)return;s.mode='to-village';s.route=route;s.index=0;
  }
  if(!s.route.length)return; // A blocked passage never becomes an instant transfer.
- let budget=SPEED*dt;
- while(budget>0&&s.index<s.route.length){const p=s.route[s.index],dx=p.x-s.x,dy=p.y-s.y,d=Math.hypot(dx,dy);if(d<.01){s.index++;continue;}const step=Math.min(d,budget),next={x:s.x+dx/d*step,y:s.y+dy/d*step};if(!fits(next))return;s.x=next.x;s.y=next.y;s.direction=directionFromVector(dx,dy);s.distance+=step;s.moving=true;budget-=step;if(step>=d-.001)s.index++;}
+ advanceWorldRoute(s,dt,SPEED,next=>fits(next));
  if(s.index<s.route.length)return;
  if(s.area==='fishingLake'&&s.mode==='to-village'){const from=center(CITY_LAKE_ENTRY);leg(s,'cityForest',from,path(save,'cityForest',from,center(CITY_FOREST_EXIT)));}
  else if(s.area==='cityForest'&&s.mode==='to-lake'){const from=center(LAKE_CITY_ENTRY),outside=CABIN_FISHER_EXIT.at(-1)!;const route=path(save,'fishingLake',from,outside);leg(s,'fishingLake',from,route.length?[...route,...CABIN_FISHER_EXIT.slice(0,-1).reverse()]:[]);}

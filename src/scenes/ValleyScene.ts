@@ -1,3 +1,9 @@
+import {acknowledgeMineRescue,rescuePending,rescueDialogue} from '../systems/mine-rescue-state';
+import {MineRescueView,preloadMineRescue} from '../mine-rescue-view';
+import {BentoTravelView,preloadBentoTravel} from '../bento-travel-view';
+import {registerBentoPropertyNavigation} from '../systems/bento-navigation';
+import {createMineMissionRuntime} from '../systems/mine-missions';
+import {bentoSceneWriter} from '../systems/bento-commit';
 import {equipWorldSword} from '../systems/world-sword';
 import {SurvivorResidentsView} from '../survivor-residents-view';
 import {createFishingCast} from '../fishing-cast';
@@ -83,6 +89,14 @@ import { isAnimatedTool } from '../data/tool-art';
 const DEFAULT_PROFILE: CharacterProfile = { name: 'Viajante', skin: '#d9a276', hairStyle: 'preso', hairColor: '#754323', outfit: '#638a9d' };
 
 export class ValleyScene extends Phaser.Scene {
+ private mineMissionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player,()=>this.inventory.data);
+ getMineMissionRuntime=()=>this.mineMissionRuntime;
+ private bentoWorkRuntime={missions:this.mineMissionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
+  private bentoView?:BentoTravelView;
+  private unregisterBentoNavigation?:()=>void;
+  private rescueView?:MineRescueView;
+  private rescueStarting=false;
+  private rescueToken=0;
   ui!: GameUI;
   private world!: WorldView;
   private player!: Player;
@@ -156,7 +170,7 @@ export class ValleyScene extends Phaser.Scene {
   private prepareWorld(): Promise<void> {
     return prepareSceneAssets(this,()=>{
       this.load.on('progress',this.loadingProgress,this);
-      preloadPetShelter(this);preloadVisualAssets(this);preloadPetArt(this);
+      preloadPetShelter(this);preloadVisualAssets(this);preloadPetArt(this);preloadBentoTravel(this);preloadMineRescue(this);
     },()=>{createArt(this);createHomeArt(this);}).finally(()=>this.load.off('progress',this.loadingProgress,this));
   }
   private loadingProgress(value:number):void{this.ui.setWorldLoadingProgress(value);}
@@ -329,13 +343,15 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   openHomeMenu(): void {
-    if (!this.running || this.adminMenu?.isOpen) return;
+    if (!this.running || this.adminMenu?.isOpen || rescuePending(this.state)||this.rescueStarting) return;
     if (!this.inHome) { this.ui.toast('Entre na casa da propriedade para personalizar o interior.'); return; }
     if (this.ui.isModalOpen()) this.ui.closeModal();
     this.ui.showHomeCustomization(structuredClone(this.home.data), (action: HomeEditAction) => {
       if (!this.inHome || !this.running) return { ok: false, message: 'Entre em casa primeiro.', home: structuredClone(this.home.data) };
       const before = structuredClone(this.home.data);
       let result = this.home.apply(action, { x: Math.floor(this.player.x / TILE), y: Math.floor(this.player.y / TILE) });
+      const bento=this.state.bentoTravel?.trip;
+      if(result.ok&&bento?.area==='home'&&[[-7,-5],[7,-5],[-7,3],[7,3]].some(([x,y])=>this.home.isBlocked(Math.floor((bento.x+x)/32),Math.floor((bento.y+y)/32)))){this.home=new Home(before);result={ok:false,message:'Deixe livre o espaço onde Bento está.'};}
       if (result.ok && this.feetTiles().some(tile => this.home.isBlocked(tile.x, tile.y))) {
         this.home = new Home(before);
         result = { ok: false, message: 'Deixe livre o espaço onde você está. Mova o personagem primeiro.' };
@@ -711,6 +727,7 @@ export class ValleyScene extends Phaser.Scene {
 
   private loadState(data: SaveData): void {
     data=structuredClone(data);initializeHomestead(data);initializePetShelter(data);
+    this.rescueToken++;this.rescueStarting=false;this.rescueView?.destroy();this.rescueView=undefined;this.bentoView?.destroy();this.bentoView=undefined;this.unregisterBentoNavigation?.();
     this.homeTransitionActive=false;this.homeTransitionToken++;this.homePassage.reset();this.homeDoorWarningShown=false;
     this.exitPassage.reset();this.villagePassage.reset();this.lakePassage.reset();this.exitWarningShown=false;
     this.daylight?.destroy();
@@ -724,7 +741,7 @@ export class ValleyScene extends Phaser.Scene {
     getAmbientBirds(this)?.destroy();
     this.helpers?.destroy();this.helpers=undefined;
     this.children.removeAll(true);
-    this.state = structuredClone(data);
+    this.state = structuredClone(data);this.ui.setGameplayLocked(rescuePending(this.state));
 
     this.supplySprites = [];
     this.ui.setQuickbar(data.quickbar ?? emptyQuickbar());
@@ -791,7 +808,35 @@ export class ValleyScene extends Phaser.Scene {
     this.updateNight();
     this.updateShelter();
     if (data.homePosition) this.enterHome(data.homePosition, false);
+    this.unregisterBentoNavigation=registerBentoPropertyNavigation(this.state,{fits:p=>[[-7,-5],[7,-5],[-7,3],[7,3]].every(([x,y])=>!this.world.isBlockedPoint(p.x+x,p.y+y)&&!this.building.isBlocked(Math.floor((p.x+x)/32),Math.floor((p.y+y)/32))),allows:(a,b)=>bridgeAllowsStep(a.x,a.y,b.x,b.y,this.world.isSwimmingPoint)});
+    this.bentoView=new BentoTravelView(this,()=>this.state,()=>this.player,()=>this.inHome?'home':'property',this.ui,undefined,this.bentoWorkRuntime);
     if(this.state.animalEscort)this.ui.toast('Leve o animal ao cercado e aperte G para soltá-lo.');
+  }
+
+  private beginRescueScene():void {
+    if(!this.inHome||!this.state.mineRescue||this.rescueStarting)return;
+    this.rescueStarting=true;this.ui.setGameplayLocked(true);const token=++this.rescueToken;
+    this.paused=true;this.toolUse.cancel();this.toolVisual?.hide();this.input.keyboard?.resetKeys();
+    this.rescueView=new MineRescueView(this,this.snapshotState());this.player.sprite.setVisible(false);this.bentoView?.update();
+    this.cameras.main.fadeIn(SCENE_FADE_MS);
+    this.time.delayedCall(SCENE_FADE_MS+650,()=>{
+      if(token!==this.rescueToken)return;this.rescueView?.wake();
+      this.ui.showDialogue('Bento',rescueDialogue(this.state),()=>this.finishRescueScene(token));
+    });
+  }
+  private finishRescueScene(token:number):void {
+    if(token!==this.rescueToken)return;
+    const draft=this.snapshotState();
+    if(!acknowledgeMineRescue(draft,saveGame)){
+      this.time.delayedCall(0,()=>this.ui.showDialogue('Bento',['Ainda não foi possível salvar o seu retorno. Vamos tentar novamente antes de você se levantar.'],()=>this.finishRescueScene(token)));return;
+    }
+    this.state.mineRescue=draft.mineRescue;this.state.bentoTravel=draft.bentoTravel;
+    this.cameras.main.fadeOut(220);
+    this.time.delayedCall(220,()=>{
+      if(token!==this.rescueToken)return;
+      this.rescueView?.destroy();this.rescueView=undefined;this.player.sprite.setVisible(true);this.input.keyboard?.resetKeys();
+      this.rescueStarting=false;this.ui.setGameplayLocked(false);this.paused=false;this.updateHUD();this.cameras.main.fadeIn(220);this.persist();
+    });
   }
 
   changeCameraZoom(direction: -1 | 0 | 1): void {
@@ -868,7 +913,7 @@ export class ValleyScene extends Phaser.Scene {
     }
   }
 
-  private canPlay(): boolean { return !this.homeTransitionActive && !this.forestActive && !this.villageActive && !this.editingMap && this.running && !this.paused && !this.ui.isModalOpen() && !this.adminMenu?.isOpen && !document.hidden; }
+  private canPlay(): boolean { return !rescuePending(this.state) && !this.rescueStarting && !this.homeTransitionActive && !this.forestActive && !this.villageActive && !this.editingMap && this.running && !this.paused && !this.ui.isModalOpen() && !this.adminMenu?.isOpen && !document.hidden; }
   private blocked = (x: number, y: number): boolean => this.inHome ? this.home.isBlocked(x, y)
     : this.world.isBlocked(x, y) || this.building.isBlocked(x, y);
 
@@ -879,7 +924,7 @@ export class ValleyScene extends Phaser.Scene {
     if(releaseAnimalEscort(this.state)){Object.assign(this.inventory.data,this.state.inventory);this.animals?.store();this.animals?.destroy();this.animals=new AnimalPopulation(this,this.state,'property',this.animalBlocked,PLAYER_SPEED,()=>treeTiles(this.world.resources));this.updateHUD();this.persist();this.ui.toast('Corda solta e guardada.');}
   }
   private movementBlocked=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(x,y):invitationGateBlocked(this.state,'property',(x+.5)*TILE,(y+.5)*TILE)||this.world.isSolid(x,y)||this.building.isBlocked(x,y);
-  private movementBlockedPoint=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):!!this.helpers?.blocked(x,y)||invitationGateBlocked(this.state,'property',x,y)||this.world.isSolidPoint(x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE));
+  private movementBlockedPoint=(x:number,y:number):boolean=>!!this.bentoView?.blocks(x,y)||(this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):!!this.helpers?.blocked(x,y)||invitationGateBlocked(this.state,'property',x,y)||this.world.isSolidPoint(x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)));
   private swimmingPoint=(x:number,y:number):number=>this.inHome||bridgeAtPoint(x,y)?0:sampleWaterDepth((px,py)=>!this.building.at(Math.floor(px/TILE),Math.floor(py/TILE),'floor')&&this.world.isWaterGroundPoint(px,py),x,y);
 
   private blockedPoint = (x: number, y: number): boolean => {
@@ -893,6 +938,7 @@ export class ValleyScene extends Phaser.Scene {
 
   private handleKey = (event: KeyboardEvent): void => {
     this.restoreSoilHeld = event.shiftKey;
+    if(rescuePending(this.state)||this.rescueStarting)return;
     if(this.homeTransitionActive){event.preventDefault();return;}
     if (this.forestActive||this.villageActive) return;
     if (this.editingMap) return;
@@ -1067,6 +1113,7 @@ export class ValleyScene extends Phaser.Scene {
     }
 
     if (!this.canPlay() || this.toolUse.active || this.world.well?.busy || this.time.now < this.nextInteractionAt) return;
+    if(this.bentoView?.talk())return;
     if (this.inHome) { this.interactHome(explicitTile); return; }
     if(this.player.isSwimming)return;
     if(this.tool==='hand'&&this.state.petShelter&&Math.hypot(this.player.x-this.state.petShelter.x,this.player.y-this.state.petShelter.y)<90){
@@ -1478,6 +1525,8 @@ export class ValleyScene extends Phaser.Scene {
         }
       }
     }
+    this.bentoView?.update();
+    if(this.running&&rescuePending(this.state)&&!this.rescueStarting)this.beginRescueScene();
     if (!this.canPlay()) { this.toolUse.cancel(); this.toolVisual?.hide(); return; }
     if(!this.inHome&&this.world.well?.advance(delta*1000)&&this.state.homeSupplies?.wateringCan&&nearPropertyWell(this.player.x,this.player.y)){
       this.state.wateringCanWater=WATER_CAPACITY;this.waterFeedback({x:Math.floor(WELL_BASE.x/TILE),y:Math.floor(WELL_BASE.y/TILE)},true);
@@ -1508,7 +1557,7 @@ export class ValleyScene extends Phaser.Scene {
     this.farming.update(delta);
     const previousDay = this.state.day;
     Object.assign(this.state, advanceClock(this.state, delta * GAME_MINUTES_PER_SECOND));
-    this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state, delta);
+    this.state.crops=this.farming.crops;this.state.homePosition=this.inHome?this.playerPosition():undefined;this.state.home=this.home.data;this.state.buildings=this.building.buildings;advanceBackgroundVillage(this.state, delta,this.player,this.bentoWorkRuntime);this.bentoView?.update();
     if (this.state.day !== previousDay) this.ui.toast(`Dia ${this.state.day}. A terra espera por você.`);
     if(!this.inHome)this.resourceLifecycle?.tick();
     this.updateNight();

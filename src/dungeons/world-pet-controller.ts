@@ -155,7 +155,7 @@ export class WorldPetController {
           pet.world?.area === c.area && pet.world.space === c.space;
         const point = petFreePoint(
           command.kind === "follow" && existing ? pet.world! : c.player,
-          c.blockedPoint,
+          c.blockedPoint,c.bounds,
         );
         if (!point) {
           this.ui.toast(

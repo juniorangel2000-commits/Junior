@@ -1,3 +1,6 @@
+import {createMineMissionRuntime} from '../systems/mine-missions';
+import {bentoSceneWriter} from '../systems/bento-commit';
+import {communityReady} from '../systems/community-center';
 import {equipWorldSword,ownsWorldSword} from '../systems/world-sword';
 import {swordIcon} from '../data/sword-icon';
 import {showSurvivorHelp} from '../survivor-dialog';
@@ -30,6 +33,9 @@ import {ensureSurvivorCamp,advanceSurvivorCamp,advanceHostileWarning,recruitCamp
 import {DEVELOPMENT_TOOLS} from '../development-tools';
 interface CampStart {save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 export class SurvivorCampScene extends Phaser.Scene {
+ private mineMissionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player);
+ getMineMissionRuntime=()=>this.mineMissionRuntime;
+ private bentoWorkRuntime={missions:this.mineMissionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
  private state!:SaveData;
  private ui!:GameUI;
  private player!:Player;
@@ -50,6 +56,7 @@ export class SurvivorCampScene extends Phaser.Scene {
  preload():void{preloadSurvivorCamp(this);preloadPetArt(this);preloadCampCombat(this);}
  getFishingState():SaveData{return this.state;}
  create(data:CampStart):void {
+  if(!communityReady(data.save)){this.leaving=true;const save=structuredClone(data.save);save.activeArea='forest';save.forestPosition={x:1136,y:272,direction:'down'};this.scene.stop();data.onReturn(save);return;}
   this.state=structuredClone(data.save);this.state.activeArea='survivorCamp';delete this.state.homePosition;delete this.state.merchantInterior;delete this.state.blacksmithInterior;
   this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.leaving=false;this.elapsed=this.attackCooldown=this.enemyCooldown=0;this.passage.reset();this.actors.clear();gameAudio.setScene('game');setupTreeWind(this);
   this.combatArt=new CampCombatArt(this);ensureSurvivorCamp(this.state);this.world=new SurvivorCampWorld(this,this.state.survivorCampMapEdits);this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
@@ -120,16 +127,17 @@ export class SurvivorCampScene extends Phaser.Scene {
  openMapEditor():void{if(!DEVELOPMENT_TOOLS||this.leaving||this.ui.isModalOpen())return;this.persist();this.setPaused(true);const original=structuredClone(this.state);this.ui.showMapEditorMode();this.scene.setVisible(false);this.scene.pause();this.scene.launch('Editor',{save:original,area:'survivorCamp',onClose:(updated:SaveData|undefined)=>{this.scene.resume();this.scene.setVisible(true);this.scene.restart({save:updated??original,ui:this.ui,onReturn:this.onReturn});}});}
  mainMenu():void{this.ui.closeModal();this.leave(true);}
  persist():boolean {return this.save();}
- private save=():boolean=>{if(!this.player||this.leaving)return true;this.state.survivorCampPosition={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};this.state.quickbar=this.ui.getQuickbar();this.state.crops=this.farming.crops.map(c=>({...c}));return saveGame(this.state);};
+ private save=():boolean=>!!this.player&&!this.leaving&&saveGame(this.snapshotState());
+ private snapshotState():SaveData{this.state.survivorCampPosition={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};this.state.quickbar=this.ui.getQuickbar();this.state.crops=this.farming.crops.map(c=>({...c}));return this.state;}
  private blur=()=>this.input.keyboard?.resetKeys();
  private visibility=()=>{if(document.hidden){this.blur();this.persist();}};
  private leave(title=false):void {if(this.leaving)return;this.persist();this.leaving=true;if(!title){this.state.activeArea='forest';this.state.forestPosition={x:(FOREST_CAMP_RETURN.x+.5)*32,y:(FOREST_CAMP_RETURN.y+.5)*32,direction:'down'};}saveGame(this.state);this.cameras.main.fadeOut(SCENE_FADE_MS);this.time.delayedCall(SCENE_FADE_MS,()=>{const state=structuredClone(this.state);this.scene.stop();this.onReturn(state,title);});}
  update(time:number,ms:number):void {
-  if(!this.player)return;this.daylight.update(this.state.time,false,this.state.day);this.world.update(time);
+  if(this.leaving||!this.player)return;this.daylight.update(this.state.time,false,this.state.day);this.world.update(time);
   if(this.paused||this.leaving||this.ui.isModalOpen()||document.hidden){this.combatArt.update(0);this.renderPeople();return;}
   const dt=Math.min(.1,ms/1000);this.combatArt.update(dt);const before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(dt,this.blockedTile,this.blockedPoint,true);this.player.sprite.setDepth(this.player.y);
   if(this.passage.update(before,this.player,this.state.survivorCampMapEdits?.points?.exit??CAMP_EXIT,this.state.survivorCampMapEdits?.points?.entry??CAMP_ENTRY)){this.leave();return;}
-  Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));this.farming.update(dt);this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state,dt);advanceSurvivorCamp(this.state,dt,this.player);this.renderPeople();
+  Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));this.farming.update(dt);this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state,dt,undefined,this.bentoWorkRuntime);advanceSurvivorCamp(this.state,dt,this.player);this.renderPeople();
   const c=this.state.survivorCamp!,enemies=c.members.filter(p=>p.status!=='gone'&&p.status!=='leaving'&&p.hp>0),near=enemies.find(p=>Math.hypot(p.x-this.player.x,p.y-this.player.y)<210);
   if(c.kind==='hostile'&&near&&!c.warned){this.warning();return;}
   const nearestEnemy=enemies.reduce((best,p)=>Math.min(best,Math.hypot(p.x-this.player.x,p.y-this.player.y)),Infinity);advanceHostileWarning(c,dt,nearestEnemy,near?Math.hypot(near.x-this.player.x,near.y-this.player.y)<Math.hypot(near.x-before.x,near.y-before.y)-.05:false);

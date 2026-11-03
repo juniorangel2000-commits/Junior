@@ -45,12 +45,12 @@ export class Resources {
     this.progress = progress.map((entry) => ({ ...entry }));
   }
 
-  hit(node: ResourceNode, tool: Tool, inventory: Inventory,context:number|SaveData=0): ResourceActionResult {
+  hit(node: ResourceNode, tool: Tool, inventory: Inventory,context:number|SaveData=0,mineral?:import('../data/economy-balance').Metal|'stone'): ResourceActionResult {
     const seed=node.treeSpecies==='pine'?'pineSeed':'oakSeed';
     const young=node.kind==='standingTree'&&(node.treeStage??3)<3;
     const definition = young?{...RESOURCE_DEFINITIONS.standingTree,label:'Muda',hits:1,drops:{[seed]:1}}:RESOURCE_DEFINITIONS[node.kind];
     const state=typeof context==='object'?context:undefined;
-    const metal=depositMetal(node);
+    const metal=mineral==='stone'?undefined:mineral??depositMetal(node);
     const economicTool=tool==='pickaxe'||tool==='hatchet'?tool:undefined;
     const condition=state&&economicTool?toolCondition(state,economicTool):undefined;
     if(state&&metal&&!canMine(state,metal))return{ok:false,message:'Você precisa de uma picareta melhor para extrair este minério.'};

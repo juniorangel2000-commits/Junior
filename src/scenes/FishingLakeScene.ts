@@ -1,3 +1,6 @@
+import {createMineMissionRuntime} from '../systems/mine-missions';
+import {bentoSceneWriter} from '../systems/bento-commit';
+import {BentoTravelView,preloadBentoTravel} from '../bento-travel-view';
 import {LAKE_HIGHLAND_EXIT,LAKE_HIGHLAND_RETURN,highlandArrivalPosition} from '../data/highland';
 import {gameAudio} from '../audio';
 import {cabinActorDepth} from '../data/fisher-cabin';
@@ -32,6 +35,9 @@ import {FishingLakeWorld,preloadFishingLake} from '../fishing-lake-world';
 
 interface FishingLakeStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void;fromCity?:boolean}
 export class FishingLakeScene extends Phaser.Scene{
+ private mineMissionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player);
+ getMineMissionRuntime=()=>this.mineMissionRuntime;
+ private bentoWorkRuntime={missions:this.mineMissionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
  private state!:SaveData;
  getFishingState():SaveData { return this.state; }
  private ui!:GameUI;
@@ -52,12 +58,13 @@ export class FishingLakeScene extends Phaser.Scene{
  private wheelZoomDistance=0;
  private lastWheelZoomAt=0;
  private readonly passage=new MapExitPassage();
+ private bentoTravelView?:BentoTravelView;
  constructor(){super('Lago');}
- preload():void{preloadFishingLake(this);preloadPetArt(this);preloadDamiaoSprites(this);}
+ preload():void{preloadBentoTravel(this);preloadFishingLake(this);preloadPetArt(this);preloadDamiaoSprites(this);}
  create(data:FishingLakeStart):void{
   if(data.save.activeArea==='highland'&&data.save.mineInterior){
    this.leaving=true;const ui=data.ui,onReturn=data.onReturn;
-   this.scene.start('Serra',{save:data.save,ui,onReturn:(save:SaveData,title=false)=>{if(title)onReturn(save,true);else this.scene.start('Lago',{save,ui,onReturn});}});return;
+   this.scene.start('Serra',{save:data.save,ui,onReturn:(save:SaveData,title=false)=>{if(title)onReturn(save,true);else if(save.activeArea==='property')onReturn(save);else this.scene.start('Lago',{save,ui,onReturn});}});return;
   }
   gameAudio.setScene('game');
   setupTreeWind(this);
@@ -71,7 +78,7 @@ export class FishingLakeScene extends Phaser.Scene{
   this.fisher=new LakeFisherVisit(this,()=>this.state,()=>this.player,(x,y)=>lakeBlockedPoint(x,y,this.state.fishingLakeMapEdits),value=>this.setPaused(value),()=>this.updateHUD());
   this.zoom=loadCameraZoom();this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time,false,this.state.day);
   this.cameras.main.setBounds(0,0,3072,2304);this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
-  document.querySelector<HTMLElement>('#ui')!.style.display='';this.ui.showHUD('fishingLake');this.ui.setQuickbar(this.state.quickbar??emptyQuickbar());this.updateHUD();
+  document.querySelector<HTMLElement>('#ui')!.style.display='';this.bentoTravelView=new BentoTravelView(this,()=>this.state,()=>this.player,()=>'fishingLake',this.ui,undefined,this.bentoWorkRuntime);this.events.once('shutdown',()=>this.bentoTravelView?.destroy());this.ui.showHUD('fishingLake');this.ui.setQuickbar(this.state.quickbar??emptyQuickbar());this.updateHUD();
   const mouse=this.input.mouse,previousWheelDefault=mouse?.preventDefaultWheel;
   if(mouse)mouse.preventDefaultWheel=false;
   this.input.on('pointerdown',this.pointer,this);this.input.keyboard!.on('keydown',this.key,this);this.game.canvas.addEventListener('wheel',this.wheel,{passive:false});this.scale.on('resize',this.applyCamera,this);
@@ -101,11 +108,11 @@ export class FishingLakeScene extends Phaser.Scene{
  private nearFishing():boolean {const x=this.player.x/32,y=this.player.y/32;return lakePier(x,y)||[[-1.5,0],[1.5,0],[0,-1.5],[0,1.5]].some(([dx,dy])=>lakeWater(x+dx,y+dy));}
  private updateHUD():void{
   const resident=this.fisher?.near(),near=this.nearFishing()&&!this.player.isSwimming;
-  this.ui.updateHUD({worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,farmingProgress:this.state.farmingProgress,area:'fishingLake',swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:resident||near?'E':null,prompt:resident?'E · Conversar com Damião · comércio e serviços de pesca':near?'E · Pescar · equipe a vara ou a rede pela mochila':'Explore o lago · Platô da Nascente ao norte · cidade a leste · propriedade ao sul',location:'Lago entre as Serras',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32}});
+  this.ui.updateHUD({worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,farmingProgress:this.state.farmingProgress,area:'fishingLake',swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:resident||near?'E':null,prompt:resident?'E · Conversar com Damião · comércio e serviços de pesca':near?'E · Pescar · equipe a vara ou a rede pela mochila':'Explore o lago · Platô da Nascente ao norte · cidade a leste · propriedade ao sul',location:'Lago entre as Serras',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32},...this.bentoTravelView?.hud});
   this.ui.updateCameraZoom(this.zoom,!this.paused);
  }
- private blockedPoint=(x:number,y:number)=>lakeBlockedPoint(x,y,this.state.fishingLakeMapEdits);
- private movementBlockedPoint=(x:number,y:number)=>lakeBlockedPoint(x,y,this.state.fishingLakeMapEdits,true)||!!this.fisher?.sprite.visible&&Math.abs(this.fisher.sprite.x-x)<9&&Math.abs(this.fisher.sprite.y-y)<5;
+ private blockedPoint=(x:number,y:number)=>!!this.bentoTravelView?.blocks(x,y)||(lakeBlockedPoint(x,y,this.state.fishingLakeMapEdits));
+ private movementBlockedPoint=(x:number,y:number)=>!!this.bentoTravelView?.blocks(x,y)||(lakeBlockedPoint(x,y,this.state.fishingLakeMapEdits,true)||!!this.fisher?.sprite.visible&&Math.abs(this.fisher.sprite.x-x)<9&&Math.abs(this.fisher.sprite.y-y)<5);
  private allowCabinStep=(x:number,y:number)=>cabinAllowsStep(this.player,{x,y})&&lakeDeckAllowsStep(this.player,{x,y},(px,py)=>paintedWaterPoint(this.state.fishingLakeMapEdits?.terrain,px,py,(a,b)=>lakeWater(a/32,b/32)))&&lakeElevationAllowsStep(this.player,{x,y});
  private movementBlockedTile=(x:number,y:number)=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
  private swimmingPoint=(x:number,y:number)=>lakePier(x/32,y/32)||lakeBridge(x/32,y/32)||cabinFloorPoint(x,y)?0:sampleWaterDepth((px,py)=>!cabinFloorPoint(px,py)&&!lakePier(px/32,py/32)&&!lakeBridge(px/32,py/32)&&paintedWaterPoint(this.state.fishingLakeMapEdits?.terrain,px,py,(x,y)=>lakeWater(x/32,y/32)),x,y);
@@ -169,7 +176,8 @@ export class FishingLakeScene extends Phaser.Scene{
   const rt=this.make.renderTexture({width:960,height:720},false);rt.camera.setZoom(960/3072).setScroll(0,0).setOrigin(0,0);rt.setOrigin(0);this.children.depthSort();rt.draw([...this.world.objects].sort((a,b)=>(a as Phaser.GameObjects.Image).depth-(b as Phaser.GameObjects.Image).depth));
   return new Promise(resolve=>rt.snapshot(image=>{const url=image instanceof HTMLImageElement?image.src:'';rt.destroy();resolve(url);}));
  }
- persist():boolean{if(!this.player||this.leaving)return false;this.state.activeArea='fishingLake';this.state.quickbar=this.ui.getQuickbar();this.state.crops=this.farming.crops;this.state.fishingLakePosition={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};return saveGame(this.state);}
+ persist():boolean{return!!this.player&&!this.leaving&&saveGame(this.snapshotState());}
+ private snapshotState():SaveData{this.state.activeArea='fishingLake';this.state.quickbar=this.ui.getQuickbar();this.state.crops=this.farming.crops;this.state.fishingLakePosition={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};return this.state;}
  private save=():void=>{this.persist();};
  private blur=():void=>{if(!this.paused&&!this.leaving){this.setPaused(true);this.ui.togglePause();}this.persist();};
  private visibility=():void=>{if(document.hidden)this.blur();};
@@ -188,7 +196,7 @@ export class FishingLakeScene extends Phaser.Scene{
   });
  }
  enterHighland(resume=false):void{
-  if(this.leaving||!this.persist())return;const state=structuredClone(this.state);state.activeArea='highland';if(!resume)state.highlandPosition=highlandArrivalPosition(state.highlandMapEdits);if(!saveGame(state)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}this.leaving=true;const ui=this.ui,onReturn=this.onReturn;this.cameras.main.fadeOut(SCENE_FADE_MS);this.time.delayedCall(SCENE_FADE_MS,()=>this.scene.start('Serra',{save:state,ui,onReturn:(save:SaveData,title=false)=>{if(title){onReturn(save,true);return;}this.scene.start('Lago',{save,ui,onReturn});}}));
+  if(this.leaving||!this.persist())return;const state=structuredClone(this.state);state.activeArea='highland';if(!resume)state.highlandPosition=highlandArrivalPosition(state.highlandMapEdits);if(!saveGame(state)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}this.leaving=true;const ui=this.ui,onReturn=this.onReturn;this.cameras.main.fadeOut(SCENE_FADE_MS);this.time.delayedCall(SCENE_FADE_MS,()=>this.scene.start('Serra',{save:state,ui,onReturn:(save:SaveData,title=false)=>{if(title){onReturn(save,true);return;}if(save.activeArea==='property'){onReturn(save);return;}this.scene.start('Lago',{save,ui,onReturn});}}));
  }
  update(time:number,ms:number):void{
   if(!this.player||this.leaving)return;this.player.sprite.setDepth(cabinActorDepth(this.player.x,this.player.y));this.daylight.update(this.state.time,false,this.state.day);this.world.update(time);
@@ -199,7 +207,7 @@ export class FishingLakeScene extends Phaser.Scene{
   if(this.propertyPassage.update(before,this.player,LAKE_PROPERTY_EXIT,LAKE_PROPERTY_ENTRY)){this.leave(false,true);return;}
   this.farming.update(dt);
   Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));
-  this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state,dt,this.player);this.fisher?.update(dt);
+  this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state,dt,this.player,this.bentoWorkRuntime);this.bentoTravelView?.update();this.fisher?.update(dt);
   for(const tree of this.world.trees)tree.setAlpha(this.player.y<tree.y&&Math.abs(this.player.x-tree.x)<65&&this.player.y>tree.y-170?.45:1);
   this.elapsed+=dt;this.updateHUD();if(this.elapsed>5){this.persist();this.elapsed=0;}
  }

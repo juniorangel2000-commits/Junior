@@ -1,3 +1,5 @@
+import {mountMineMissionJournal,mineMissionSummary} from './mine-mission-journal';
+import type {MineMissionRuntime} from './systems/mine-missions';
 import {UNIQUE_CRAFT_ITEMS} from './systems/crafting';
 import {swordIcon} from './data/sword-icon';
 import {weatherForDay,WEATHER_NAMES} from './weather-model';
@@ -46,6 +48,7 @@ import type { HomeData, HomeEditAction } from './systems/home';
 import type { BuildingData, CharacterProfile, HudData, InventoryData, ItemId, Tool } from './types';
 
 interface UICallbacks {
+  getMineMissionRuntime?():MineMissionRuntime|undefined;
   getFishingState?():SaveData|undefined;
   onUseItem(item:ItemId):void;
   onNewGame(profile: CharacterProfile): void;
@@ -142,13 +145,15 @@ const tools: { id: Tool; label: string; icon: string; detail: string }[] = [
 const items = ITEM_IDS.map(id => ({ id, label: ITEMS[id].name, description: ITEMS[id].description }));
 
 export class GameUI {
+  private gameplayLocked=false;
+  setGameplayLocked(locked:boolean):void {this.gameplayLocked=locked;const hud=this.base.querySelector<HTMLElement>('.hud');if(hud)hud.inert=locked;}
   private root = document.querySelector<HTMLDivElement>('#ui')!;
   private base = document.createElement('div');
   private overlay = document.createElement('div');
   private notifications = document.createElement('div');
   private companionQuickPanel?: CompanionQuickPanel;
   private mode: 'title' | 'creation' | 'opening' | 'hud' | 'expedition' = 'title';
-  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'fishingJournal' | 'pets' | null = null;
+  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'fishingJournal' | 'mineJournal' | 'pets' | null = null;
   private focusBeforeModal?: HTMLElement;
   private onModalClose?: () => void;
   private existingSave = false;
@@ -285,12 +290,12 @@ export class GameUI {
     try { this.journalCollapsed = localStorage.getItem('after-rain-missions-collapsed') === 'true'; } catch { /* A interface também funciona sem armazenamento. */ }
     this.base.className = 'ui-base';
     window.addEventListener('keydown',event=>{
-      if(this.mode==='hud'&&event.key==='Escape'&&!event.repeat&&!event.defaultPrevented){
+      if(!this.gameplayLocked&&this.mode==='hud'&&event.key==='Escape'&&!event.repeat&&!event.defaultPrevented){
         if([...document.querySelectorAll<HTMLElement>('[role=dialog]')].some(panel=>panel.getClientRects().length>0&&!this.overlay.contains(panel)))return;
         event.preventDefault();event.stopImmediatePropagation();if(!this.dismissTopToolbar())this.togglePause();return;
       }
-      if(this.mode!=='hud'||!this.latest||event.defaultPrevented||event.ctrlKey||event.metaKey||event.altKey||event.repeat||event.target instanceof Element&&event.target.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"])'))return;
-      const shortcuts={KeyI:'inventory',KeyM:'map',KeyC:'crafting',KeyB:'building',KeyJ:'fishingJournal',KeyK:'pets'} as const;
+      if(this.gameplayLocked||this.mode!=='hud'||!this.latest||event.defaultPrevented||event.ctrlKey||event.metaKey||event.altKey||event.repeat||event.target instanceof Element&&event.target.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"])'))return;
+      const shortcuts={KeyI:'inventory',KeyM:'map',KeyC:'crafting',KeyB:'building',KeyJ:'fishingJournal',KeyL:'mineJournal',KeyK:'pets'} as const;
       const action=shortcuts[event.code as keyof typeof shortcuts];if(!action)return;
       if([...document.querySelectorAll<HTMLElement>('[role=dialog]')].some(panel=>panel.getClientRects().length>0&&!this.overlay.contains(panel)))return;
       event.preventDefault();event.stopImmediatePropagation();
@@ -300,6 +305,7 @@ export class GameUI {
       else if(action==='crafting')this.toggleCrafting(this.latest.inventory,this.latest.nearWorkbench);
       else if(action==='building')this.toggleBuilding(this.latest.inventory,this.latest.nearWorkbench);
       else if(action==='fishingJournal')this.toggleFishingJournal();
+      else if(action==='mineJournal')this.toggleMineJournal();
       else if(this.modal==='pets')this.closeModal();else this.callbacks.onCompanions?.();
     },true);
     this.overlay.className = 'modal-root';
@@ -449,13 +455,13 @@ export class GameUI {
     this.overlay.classList.remove('active');
     this.lastHudKey = '';
     this.base.innerHTML = `<div class="hud">
-      <header class="hud-header hud-status" aria-label="Dia, hora e recursos"><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><strong id="hud-day">Dia 1</strong><span class="status-time"><b id="hud-time">08:00</b><small id="hud-day-phase">Manhã</small></span></div><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}<div class="resource" title="Coroas (C) para comprar nas lojas da vila">${icon('crown')}<strong id="hud-coins">0</strong></div><div class="resource" title="Vigor — refeições e preparados medicinais recuperam o vigor"><strong id="hud-vigor">100</strong><small>vigor</small></div></div></header>
+      <header class="hud-header hud-status" aria-label="Dia, hora e recursos"><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><strong id="hud-day">Dia 1</strong><span class="status-time"><b id="hud-time">08:00</b><small id="hud-day-phase">Manhã</small></span></div><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}<div class="resource" title="Coroas (C) para comprar nas lojas da vila">${icon('crown')}<strong id="hud-coins">0</strong></div><div class="resource" title="Vigor — refeições e preparados medicinais recuperam o vigor"><strong id="hud-vigor">100</strong><small>vigor</small></div><div class="mine-health" id="hud-health" hidden><span><span id="hud-health-label">Vida</span> <b id="hud-health-value">100</b></span><meter id="hud-health-meter" min="0" max="100" value="100" aria-label="Vida na mina"></meter></div></div></header>
       <div class="camera-zoom" role="group" aria-label="Zoom da câmera" hidden>
         <button type="button" data-zoom="-1" aria-label="Diminuir zoom" title="Afastar a câmera · − ou roda do mouse">−</button>
         <button type="button" data-zoom="0" aria-label="Restaurar zoom padrão" title="Restaurar para 100% · Home"><span class="camera-zoom-value" aria-live="polite">100%</span></button>
         <button type="button" data-zoom="1" aria-label="Aumentar zoom" title="Aproximar a câmera · + ou roda do mouse">+</button>
       </div>
-      <button class="journal-reopen" ${this.journalCollapsed ? '' : 'hidden'} aria-controls="journal-panel" aria-expanded="false" aria-label="Abrir missões" title="Abrir missões">${icon('leaf')}<span>Missões</span></button><aside id="journal-panel" class="journal" ${this.journalCollapsed ? 'hidden' : ''}><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="journal-close" aria-controls="journal-panel" aria-label="Fechar missões" title="Fechar missões">${icon('close')}</button></header><div id="journal-content" class="journal-content"><div id="farming-quest" aria-label="Missão primeira colheita"></div><div class="journal-rule"></div><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera na parte oeste da propriedade.</p><small>Seu tempo. Seu caminho.</small></div></aside>
+      <button class="journal-reopen" ${this.journalCollapsed ? '' : 'hidden'} aria-controls="journal-panel" aria-expanded="false" aria-label="Abrir missões" title="Abrir missões">${icon('leaf')}<span>Missões</span></button><aside id="journal-panel" class="journal" ${this.journalCollapsed ? 'hidden' : ''}><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="journal-close" aria-controls="journal-panel" aria-label="Fechar missões" title="Fechar missões">${icon('close')}</button></header><div id="journal-content" class="journal-content"><section id="mine-journal-summary" hidden><p class="mine-mission-summary"></p><button class="button button-light mine-journal-button">Diário da mina · L</button></section><div id="farming-quest" aria-label="Missão primeira colheita"></div><div class="journal-rule"></div><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera na parte oeste da propriedade.</p><small>Seu tempo. Seu caminho.</small></div></aside>
       <div class="location-pill">${icon('pin')}<span id="hud-location">Minha propriedade</span></div>
       <div class="bottom-center"><div class="interaction-prompt"><kbd id="hud-interaction-key">E</kbd><span id="hud-prompt">Explore o vale ao seu redor</span></div><div id="hud-resource-progress" class="resource-progress" hidden></div><div class="toolbelt"></div><div class="tool-status"><strong id="active-tool">Explorar</strong><span id="tool-cost">Coletar · conversar · colher</span></div></div>
     </div>`;
@@ -464,6 +470,7 @@ export class GameUI {
       button.addEventListener('click', () => this.callbacks.onZoom(Number(button.dataset.zoom) as -1 | 0 | 1));
     });
     this.updateCameraZoom(this.cameraZoomFactor, this.cameraZoomEnabled);
+    this.setGameplayLocked(this.gameplayLocked);
     this.locationName = '';
     this.topToolbar = new TopToolbar(this.base.querySelector<HTMLElement>('.hud')!, {
       onOpenChange: open => this.callbacks.onPause(open || this.modal !== null),
@@ -478,6 +485,7 @@ export class GameUI {
       else this.base.querySelector<HTMLButtonElement>('.journal-close')!.focus();
       try { localStorage.setItem('after-rain-missions-collapsed', String(closed)); } catch { /* A preferência vale para esta sessão. */ }
     };
+    this.base.querySelector('.mine-journal-button')!.addEventListener('click',()=>this.toggleMineJournal());
     this.base.querySelector('.journal-close')!.addEventListener('click', () => setJournalClosed(true));
     this.base.querySelector('.journal-reopen')!.addEventListener('click', () => setJournalClosed(false));
     this.base.querySelectorAll<HTMLButtonElement>('[data-collapse]').forEach(button => button.addEventListener('click', () => {
@@ -631,6 +639,12 @@ export class GameUI {
     render();
     this.overlay.querySelector<HTMLButtonElement>("[data-pet-close]")?.focus();
   }
+  toggleMineJournal():void{
+    if(this.modal==='mineJournal'){this.closeModal();return;}
+    if(this.mode!=='hud'||this.isModalOpen()||[...document.querySelectorAll<HTMLElement>('[role=dialog]')].some(panel=>panel.getClientRects().length>0&&!this.overlay.contains(panel)))return;
+    const save=this.callbacks.getFishingState?.();if(!save)return;
+    this.openModal('mineJournal');const runtime=this.callbacks.getMineMissionRuntime?.();this.onModalClose=mountMineMissionJournal(this.overlay,()=>this.callbacks.getFishingState?.()??save,()=>this.closeModal(),runtime);
+  }
   toggleFishingJournal():void {
     if(this.modal==='fishingJournal'){this.closeModal();return;}
     if(this.mode!=='hud'||this.isModalOpen()||[...document.querySelectorAll<HTMLElement>('[role=dialog]')].some(panel=>panel.getClientRects().length>0&&!this.overlay.contains(panel)))return;
@@ -639,7 +653,7 @@ export class GameUI {
     mountFishingJournal(this.overlay,save,()=>this.closeModal(),()=>this.callbacks.onSave());
   }
   private handleToolbarAction(action: ToolbarAction): void {
-    if (this.mode !== 'hud' || this.modal) return;
+    if (this.gameplayLocked || this.mode !== 'hud' || this.modal) return;
     if (action === 'save') {
       this.toast(this.callbacks.onSave() ? 'Sua história foi salva neste navegador.' : 'Não foi possível salvar. Confira o armazenamento do navegador.');
       return;
@@ -652,6 +666,7 @@ export class GameUI {
       this.overlay.querySelector('button')!.focus();
     }
     else if (action === 'fishingJournal') this.toggleFishingJournal();
+    else if (action === 'mineJournal') this.toggleMineJournal();
     else if (action === 'pets') this.callbacks.onCompanions?.();
     else if (action === 'audio') this.toggleAudio();
     else if (action === 'graphics') this.toggleGraphics();
@@ -681,6 +696,9 @@ export class GameUI {
     for (const item of items) set(`#count-${item.id}`, String(data.inventory[item.id]));
     set('#hud-location', data.location);
     set('#hud-coins',String(data.coins??0)+' C');set('#hud-vigor',String(data.vigor??100));
+    const health=this.base.querySelector<HTMLElement>('#hud-health')!;health.hidden=!data.health;
+    if(data.health){const hp=data.health,meter=this.base.querySelector<HTMLMeterElement>('#hud-health-meter')!;meter.max=hp.max;meter.value=hp.current;set('#hud-health-value',Math.ceil(hp.current)+'/'+hp.max);set('#hud-health-label',hp.contaminated?'Vida · ar contaminado':'Vida');health.classList.toggle('exposed',!!hp.contaminated);health.classList.toggle('critical',hp.current<hp.max*.3);}
+
     if (this.locationName !== data.location) {
       this.locationName = data.location;
       const pill = this.base.querySelector<HTMLElement>('.location-pill')!;
@@ -749,6 +767,7 @@ export class GameUI {
       : !data.progress.builtShelter ? 'Abra B para piso, paredes, porta, janela e cobertura, ou selecione o molde 3×3. Selecione Explorar e pressione E para abrir e fechar a porta.'
       : 'Seu primeiro lar está de pé. Atravesse a ponte para o Bosque do Pinheiro ou siga ao sul para os Campos Abertos. M abre o mapa.';
     set('.journal-tip', nextTip);
+    const missionSave=this.callbacks.getFishingState?.(),missionPanel=this.base.querySelector<HTMLElement>('#mine-journal-summary');if(missionPanel){missionPanel.hidden=!missionSave?.mineMissions&&!missionSave?.underground;if(missionSave)missionPanel.querySelector('.mine-mission-summary')!.textContent=mineMissionSummary(missionSave);}
     const progress = this.base.querySelector('#slice-progress')!;
     const progressKey = JSON.stringify(data.progress);
     if (progress.getAttribute('data-progress') !== progressKey) {
@@ -808,6 +827,7 @@ export class GameUI {
   }
 
   toggleInventory(inventory: InventoryData): void {
+    if(this.gameplayLocked)return;
     if (this.mode !== 'hud') return;
     if (this.modal === 'inventory') { this.closeModal(); return; }
     if (this.modal) return;
@@ -858,6 +878,7 @@ export class GameUI {
   }
 
   toggleCrafting(inventory: InventoryData, nearWorkbench: boolean): void {
+    if(this.gameplayLocked)return;
     if (this.mode !== 'hud') return;
     if (this.modal === 'crafting') { this.closeModal(); return; }
     if (this.modal) return;
@@ -936,6 +957,7 @@ export class GameUI {
   }
 
   toggleBuilding(inventory: InventoryData, nearWorkbench: boolean): void {
+    if(this.gameplayLocked)return;
     if (this.mode !== 'hud') return;
     if(this.latest&&((this.latest.area??'property')!=='property'||this.latest.inHome)){this.toast(this.latest.inHome?'Use H para personalizar os móveis da casa.':'As construções são feitas na propriedade.');return;}
     if (this.modal === 'building') { this.closeModal(); return; }
@@ -968,6 +990,7 @@ export class GameUI {
   }
 
   toggleMap(): void {
+    if(this.gameplayLocked)return;
     if (this.mode !== 'hud') return;
     if (this.modal === 'map') { this.closeModal(); return; }
     if (this.modal) return;
@@ -1073,6 +1096,7 @@ export class GameUI {
   }
 
   togglePause(): void {
+    if(this.gameplayLocked)return;
     if (this.mode !== 'hud') return;
     if (this.modal) { this.closeModal(); return; }
     this.openModal('pause');
@@ -1173,7 +1197,7 @@ export class GameUI {
 
   isCraftingOpen(): boolean { return this.modal === 'crafting'; }
 
-  isModalOpen(): boolean { return this.mode !== 'hud' || this.modal !== null || this.topToolbar?.isOpen === true; }
+  isModalOpen(): boolean { return this.gameplayLocked || this.mode !== 'hud' || this.modal !== null || this.topToolbar?.isOpen === true; }
 
   closeModal(): void {
     if (this.mode !== 'hud') return;
@@ -1198,7 +1222,7 @@ export class GameUI {
     callback?.();
   }
 
-  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'fishingJournal' | 'pets'): void {
+  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'fishingJournal' | 'mineJournal' | 'pets'): void {
     this.topToolbar?.setOpen(false, false);
     this.topToolbar?.setEnabled(false);
     this.focusBeforeModal = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;

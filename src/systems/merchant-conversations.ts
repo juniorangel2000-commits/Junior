@@ -29,7 +29,7 @@ export class MerchantConversations {
    const c=this.active;
    const valid=c.room===room&&c.pair.every(id=>{
     const r=routines.get(id);
-    return r&&id!==guide&&r.state.area===(room?'shop':'village')
+    return r&&!r.externallyControlled&&id!==guide&&r.state.area===(room?'shop':'village')
      &&(!room||r.roomOwner===room)&&merchantPeriod(id,clock.time)===(room?'work':'break');
    });
    if(!valid)this.release(routines);
@@ -52,7 +52,7 @@ export class MerchantConversations {
     const host=routines.get(room);
     for(const [id,visitor] of routines){
      const cue=visitor.conversation(clock);
-     if(!host||!cue||cue.host!==room||host.state.area!=='shop'||host.roomOwner!==room||merchantPeriod(room,clock.time)!=='work'||id===guide||room===guide||this.completed.has('shop:'+id))continue;
+     if(!host||host.externallyControlled||!cue||cue.host!==room||host.state.area!=='shop'||host.roomOwner!==room||merchantPeriod(room,clock.time)!=='work'||id===guide||room===guide||this.completed.has('shop:'+id))continue;
      host.holdConversation(clock);
      if(host.isMoving||host.activity!=='receiving-visitor'||Math.hypot(host.state.x-visitor.state.x,host.state.y-visitor.state.y)>110)continue;
      start([id,room],MERCHANT_VISITS[id].lines,'shop:'+id);

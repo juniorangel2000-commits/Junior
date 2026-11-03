@@ -1,3 +1,6 @@
+import {createMineMissionRuntime} from '../systems/mine-missions';
+import {bentoSceneWriter} from '../systems/bento-commit';
+import {communityReady} from '../systems/community-center';
 import {equipWorldSword} from '../systems/world-sword';
 import {SurvivorResidentsView} from '../survivor-residents-view';
 import {FOREST_CAMP_EXIT,FOREST_CAMP_RETURN,campApproachDistance} from '../data/forest-camp-access';
@@ -46,6 +49,9 @@ import { loadCameraZoom, saveCameraZoom, stepCameraZoom } from '../camera-zoom';
 
 export interface ForestStart { save: SaveData; ui: GameUI; onReturn: (save: SaveData, title?: boolean) => void }
 export class ForestScene extends Phaser.Scene {
+ private mineMissionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player);
+ getMineMissionRuntime=()=>this.mineMissionRuntime;
+ private bentoWorkRuntime={missions:this.mineMissionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
   private state!: SaveData;
  getFishingState():SaveData { return this.state; }
   private daylight!: Daylight;
@@ -72,7 +78,7 @@ export class ForestScene extends Phaser.Scene {
   get mapEditor():MapEditor|undefined{return this.scene.isActive('Editor')?(this.scene.get('Editor') as MapEditorScene).editor:undefined;}
   private get solid(){return this.world.solid;}
   private get edits(){return this.world.edits;}
-  private movementBlockedAt=(x:number,y:number):boolean=>x<1||y<1||x>=95||y>=71||this.solid.has(`${x},${y}`)||!!this.helpers?.blocked((x+.5)*32,(y+.5)*32);
+  private movementBlockedAt=(x:number,y:number):boolean=>x<1||y<1||x>=95||y>=71||!communityReady(this.state)&&x>=33&&x<=37&&y>=5&&y<=6||this.solid.has(`${x},${y}`)||!!this.helpers?.blocked((x+.5)*32,(y+.5)*32);
   private waterContains=(x:number,y:number):boolean=>this.world.waterPointAt(x,y);
   private swimmingPoint=(x:number,y:number):number=>sampleWaterDepth(this.waterContains,x,y);
   private entry(){return this.edits?.points?.entry??FOREST_ENTRY;}
@@ -85,7 +91,7 @@ export class ForestScene extends Phaser.Scene {
   gameAudio.setScene('game');
     setupTreeWind(this);
     this.exitPassage.reset();this.campPassage.reset();this.exitWarningShown=false;
-    this.ui=data.ui;this.state=structuredClone(data.save);const restoreCamp=data.save.activeArea==='survivorCamp';this.state.activeArea='forest';this.onReturn=data.onReturn;
+    this.ui=data.ui;this.state=structuredClone(data.save);const restoreCamp=data.save.activeArea==='survivorCamp'&&communityReady(data.save);this.state.activeArea='forest';this.onReturn=data.onReturn;
     this.paused=false;this.leaving=false;this.elapsed=0;this.hudElapsed=0;this.wildlife?.destroy();this.wildlife=undefined;
     this.zoom=loadCameraZoom();this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);setupAnimalArt(this);
     this.world=new ForestWorld(this);
@@ -127,6 +133,12 @@ export class ForestScene extends Phaser.Scene {
       this.ui,
       () => this.persist(),
     );
+    const unlocked=communityReady(this.state);
+    for(const o of this.children.list)if(o.getData('camp-footprints'))(o as Phaser.GameObjects.Graphics).setVisible(unlocked);
+    if(!unlocked){
+      for(const x of [1080,1120,1160,1200])this.add.image(x,215,'asset-new-branches').setOrigin(.5,1).setDisplaySize(54,34).setDepth(215);
+      this.add.text(1136,162,'Passagem fechada\nRepare o centro comunitário da vila',{fontSize:'12px',fontFamily:'Georgia',color:'#efe2bd',backgroundColor:'#243b2bd9',padding:{x:8,y:6},align:'center'}).setOrigin(.5).setDepth(230);
+    }
     if(restoreCamp){this.enterSurvivorCamp();return;}
     this.save();
   }
@@ -213,7 +225,7 @@ export class ForestScene extends Phaser.Scene {
     const nearest=this.nearest(),info=nearest&&FOREST_ANIMALS.find(a=>a.id===nearest.id),node=this.nearestResource();
     this.ui.updateHUD({worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'forest',coins:this.state.villageEconomy?.coins??0,inHome:false,swimming:this.player.isSwimming,name:this.state.profile.name,day:this.state.day,time:this.state.time,
       inventory:this.state.inventory,tool:this.state.equippedTool??'hand',wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,
-      playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:campNear?null:this.nearExit()?null:this.state.animalEscort?'G':'E',prompt:this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:campNear?'Pegadas seguem para o norte':this.player.isSwimming?'Nadar · siga até a margem para sair':this.nearExit()?this.state.animalEscort?'Siga pela placa para levar o animal à propriedade':'Siga a seta e ultrapasse a placa para continuar':this.state.animalEscort?'Conduzindo animal · siga até a saída · soltar corda':info?'Prender '+ANIMAL_NAMES[info.kind].toLowerCase()+' com corda':node?`${RESOURCE_DEFINITIONS[node.kind].label} · ${RESOURCE_DEFINITIONS[node.kind].tool==='pickaxe'?'use a picareta':RESOURCE_DEFINITIONS[node.kind].tool==='hatchet'?'use a machadinha':'recolher'}`:'Explorar a floresta',
+      playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:campNear?null:this.nearExit()?null:this.state.animalEscort?'G':'E',prompt:this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:campNear?(communityReady(this.state)?'Pegadas seguem para o norte':'Repare o centro comunitário da vila para abrir esta passagem'):this.player.isSwimming?'Nadar · siga até a margem para sair':this.nearExit()?this.state.animalEscort?'Siga pela placa para levar o animal à propriedade':'Siga a seta e ultrapasse a placa para continuar':this.state.animalEscort?'Conduzindo animal · siga até a saída · soltar corda':info?'Prender '+ANIMAL_NAMES[info.kind].toLowerCase()+' com corda':node?`${RESOURCE_DEFINITIONS[node.kind].label} · ${RESOURCE_DEFINITIONS[node.kind].tool==='pickaxe'?'use a picareta':RESOURCE_DEFINITIONS[node.kind].tool==='hatchet'?'use a machadinha':'recolher'}`:'Explorar a floresta',
       location:'Floresta Antiga',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});
     this.ui.updateCameraZoom(this.zoom,!this.paused&&!this.mapEditor);
   }
@@ -265,14 +277,16 @@ export class ForestScene extends Phaser.Scene {
       gameAudio.play(tool==='pickaxe'?'stone':tool==='hatchet'?'wood':'pickup');}
     this.ui.toast(result.message);this.updateHUD();this.save();
   }
-  private save=():boolean=>{
-    if(!this.player||this.leaving||this.mapEditor)return false;
+ private save=():boolean=>!!this.player&&!this.leaving&&!this.mapEditor&&saveGame(this.snapshotState());
+  private snapshotState():SaveData{
+
     this.wildlife?.store();
     this.state.quickbar=this.ui.getQuickbar();
     this.state.forestPosition={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};
-    this.state.crops=this.farming.crops.map(c=>({...c}));return saveGame(this.state);
-  };
+    this.state.crops=this.farming.crops.map(c=>({...c}));return this.state;
+  }
   enterSurvivorCamp():void {
+    if(!communityReady(this.state)){this.ui.toast('Repare o centro comunitário da vila para abrir o acesso ao acampamento.');this.campPassage.reset();return;}
     if(this.leaving||this.state.animalEscort){if(this.state.animalEscort)this.ui.toast('Solte a corda ou leve o animal à propriedade antes de entrar no acampamento.');return;}
     this.save();this.leaving=true;this.toolUse.cancel();this.toolVisual?.hide();const originalReturn=this.onReturn,ui=this.ui;
     this.state.activeArea='survivorCamp';saveGame(this.state);this.cameras.main.fadeOut(SCENE_FADE_MS);
@@ -300,7 +314,7 @@ export class ForestScene extends Phaser.Scene {
     const strike=this.toolUse.advance(delta);if(strike){const node=this.world.resourceAt(strike.target.x,strike.target.y);if(node?.id===strike.target.id&&!this.player.isSwimming)this.hitResource(node,strike.tool);}
     const active=this.toolUse.current;if(active&&(active.tool==='pickaxe'||active.tool==='hatchet'))this.toolVisual?.show(active.tool,active.direction,this.player.x,this.player.y,this.toolUse,toolCondition(this.state,active.tool).tier);else if(!this.toolVisual?.sprite.getData('gathering'))this.toolVisual?.hide();
     Object.assign(this.state,advanceClock(this.state,delta*GAME_MINUTES_PER_SECOND));
-    this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state, delta);
+    this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state, delta,undefined,this.bentoWorkRuntime);
     this.trees.forEach(t=>t.setAlpha(this.player.y<t.y&&Math.abs(this.player.x-t.x)<t.displayWidth*.4&&this.player.y>t.y-t.displayHeight*.85?.42:1));
     this.resourceLifecycle?.tick();
     this.hudElapsed+=delta;if(this.hudElapsed>=.1){this.updateHUD();this.hudElapsed=0;}

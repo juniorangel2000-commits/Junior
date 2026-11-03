@@ -1,3 +1,5 @@
+import type {BentoWorkRuntime} from './bento-commit';
+import {advanceBentoTravel} from './bento-travel';
 import {advanceSurvivorCamp} from './survivor-camp';
 import {ensureFisherTravel,advanceFisherTravel} from './fisher-travel';
 import {damiaoAtLake} from '../data/fisher-schedule';
@@ -50,7 +52,7 @@ class BackgroundVillage {
   private environment(id:RoutineId):RoutineEnvironment{
     const routine=this.routines.get(id)!,current=routine.roomOwner;
     const navigation=(owner=current)=>this.rooms.get(owner)!;
-    const actors=(area:RoutineArea,owner=current)=>[...this.routines].filter(([other,r])=>other!==id&&!(other==='damiao'&&damiaoAtLake(this.save))&&r.state.area===area&&(area==='village'||r.roomOwner===owner)).map(([,r])=>r.state);
+    const actors=(area:RoutineArea,owner=current)=>{const list=[...this.routines].filter(([other,r])=>other!==id&&!(other==='bento'&&this.save.bentoTravel?.trip)&&!(other==='damiao'&&damiaoAtLake(this.save))&&r.state.area===area&&(area==='village'||r.roomOwner===owner)).map(([,r])=>({x:r.state.x,y:r.state.y}));const trip=this.save.bentoTravel?.trip;if(id!=='bento'&&trip&&(area==='village'?trip.area==='village':trip.area==='shop'&&owner==='bento'))list.push({x:trip.x,y:trip.y});return list;};
     const scenery=(area:RoutineArea,x:number,y:number,owner=current)=>area==='shop'?!navigation(owner).validPosition!(x,y):[[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>villagePointBlocked(x+dx,y+dy));
     return {
       blocked:(area,x,y,owner=current)=>area==='village'?villageBlockedAt(x,y,this.save.villageMapEdits)||actors(area).some(a=>Math.floor(a.x/32)===x&&Math.floor(a.y/32)===y):navigation(owner).isBlocked(x,y)||actors(area,owner).some(a=>actorsOverlap({x:(x+.5)*8,y:(y+.5)*8},a)),
@@ -60,7 +62,7 @@ class BackgroundVillage {
     };
   }
   step(seconds:number):void{
-    for(const id of IDS)this.routines.get(id)!.step(seconds,this.save,this.environment(id));
+    for(const id of IDS){const routine=this.routines.get(id)!;routine.setExternal(id==='bento'&&!!this.save.bentoTravel?.trip);routine.step(seconds,this.save,this.environment(id));}
     this.last=clock(this.save);
   }
 }
@@ -69,11 +71,11 @@ export function prepareVillageRoutines(save:SaveData):void{
   if(!models.has(save))models.set(save,new BackgroundVillage(save));
 }
 /** The village scene updates its visible actors; other world maps update them here. */
-export function advanceBackgroundVillage(save:SaveData,seconds:number,player?:{x:number;y:number}):void{
+export function advanceBackgroundVillage(save:SaveData,seconds:number,player?:{x:number;y:number},runtime?:BentoWorkRuntime):void{
   advanceFisherTravel(save,seconds,player);
   if(save.activeArea!=='survivorCamp')advanceSurvivorCamp(save,seconds);
   if(save.activeArea==='village'||!Number.isFinite(seconds)||seconds<=0)return;
   let model=models.get(save);
   if(!model||Math.abs(clock(save)-model.last)>5){model=new BackgroundVillage(save);models.set(save,model);}
-  model.step(Math.min(seconds,.1));
+  advanceBentoTravel(save,Math.min(seconds,.1),player,false,runtime);model.step(Math.min(seconds,.1));
 }

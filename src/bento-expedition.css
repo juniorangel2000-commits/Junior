@@ -1,0 +1,10 @@
+.bento-expedition-card{width:min(540px,calc(100vw - 32px));padding:24px;color:#50391f;max-height:88vh;overflow:auto}
+.bento-expedition-heading{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.bento-expedition-heading img{width:64px;height:64px;object-fit:contain;image-rendering:pixelated}
+.bento-expedition-heading h2{font-family:Georgia,serif;font-size:24px;margin:5px 0}
+.bento-expedition-note{font-size:13px;line-height:1.5;opacity:.85}
+.bento-expedition-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px}
+.bento-expedition-actions button{white-space:normal;min-height:44px}
+.bento-expedition-feedback{font-size:14px;line-height:1.5;min-height:22px;margin:15px 0}
+.bento-expedition-card>[data-bento-close]{display:block;margin-left:auto}
+@media(max-width:480px){.bento-expedition-actions{grid-template-columns:1fr}.bento-expedition-card{padding:18px}}
