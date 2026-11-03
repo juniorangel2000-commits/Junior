@@ -1,5 +1,6 @@
+import {mineWallRefreshCells} from './data/mine-wall-depth';
 import {minePropFrame} from './mine-gallery-art';
-import {createMineMineralAtlas,MINE_ORE_ATLASES,MINE_TERRAIN_ATLAS,MINE_HIDDEN_ROCK_TILE,mineMineralTile} from './underground-mineral-art';
+import {createMineMineralAtlas,MINE_ORE_ATLASES,MINE_TERRAIN_ATLAS,MINE_HIDDEN_ROCK_TILE,MINE_INNER_WALL_TILE,mineMineralTile} from './underground-mineral-art';
 import {mineFixedLights} from './systems/underground-light';
 import {mineMaterialAt} from './systems/underground-geology';
 import {MINE_FLOOR_CORNER_MASKS} from './data/mine-wall-shape';
@@ -7,7 +8,7 @@ import Phaser from 'phaser';
 import type {TilePoint} from './types';
 import {MineRoomView} from './mine-room-view';
 import {UNDERGROUND,MINE_SPINE,MINE_DECOR,mineDecorGeometry,inMineEntrance} from './data/underground-layout';
-import {mineRockAt,mineWallMask,type UndergroundState} from './systems/underground';
+import {mineRockAt,mineWallMask,mineInnerWallMask,type UndergroundState} from './systems/underground';
 const ATLAS=MINE_TERRAIN_ATLAS,TILE=32;
 
 export class UndergroundView{
@@ -40,11 +41,12 @@ export class UndergroundView{
   if(mineRockAt(mine,x,y)&&material!=='stone'&&mask!==15)this.ores.putTileAt(mineMineralTile(material,mask,(y%8)*8+x%8),x,y,false);
   const pattern=(y%8)*8+x%8;
   if(!mineRockAt(mine,x,y)){const kind=(MINE_FLOOR_CORNER_MASKS as readonly number[]).indexOf(mask);this.terrain.putTileAt(kind<0?pattern:1088+kind*64+pattern,x,y,false);return;}
-  this.terrain.putTileAt(mask===15?MINE_HIDDEN_ROCK_TILE:64+mask*64+pattern,x,y,false);
+  const inner=mask===15?mineInnerWallMask(mine,x,y):0;
+  this.terrain.putTileAt(mask===15?(inner?MINE_INNER_WALL_TILE+inner*64+pattern:MINE_HIDDEN_ROCK_TILE):64+mask*64+pattern,x,y,false);
  }
- /** The affected cell and its four neighbours are the entire terrain update. */
+ /** Partial damage touches one cell; excavation refreshes only its two-cell rim. */
  refresh(cells:readonly TilePoint[]):void{
-  const seen=new Set<string>();for(const p of cells){const id=p.x+','+p.y;if(seen.has(id))continue;seen.add(id);this.drawCell(p.x,p.y);this.localUpdates++;}
+  const seen=new Set<string>();for(const p of mineWallRefreshCells(cells)){const id=p.x+','+p.y;if(seen.has(id))continue;seen.add(id);this.drawCell(p.x,p.y);this.localUpdates++;}
   this.drawDamage(cells.map(p=>p.y*UNDERGROUND.width+p.x));
  }
  private drawDamage(indices:readonly number[]):void{

@@ -42,6 +42,10 @@ export function mineRockAt(mine:UndergroundState,x:number,y:number):boolean{
 export function mineWallMask(mine:UndergroundState,x:number,y:number):number{
  let mask=0;for(const [dx,dy,bit]of [[0,-1,1],[1,0,2],[0,1,4],[-1,0,8]])if(mineRockAt(mine,x+dx,y+dy))mask|=bit;return mask;
 }
+/** Back band only; these cells do not reveal ore through the front layer. */
+export function mineInnerWallMask(mine:UndergroundState,x:number,y:number):number{
+ let mask=0;for(const[dx,dy,bit]of[[0,-2,1],[2,0,2],[0,2,4],[-2,0,8]])if(!mineRockAt(mine,x+dx,y+dy))mask|=bit;return mask;
+}
 export function undergroundBlocked(mine:UndergroundState,x:number,y:number):boolean{
  if(!Number.isFinite(x)||!Number.isFinite(y)||x<0||y<0||x>=UNDERGROUND.width*32||y>=UNDERGROUND.height*32)return true;
  if(inMineEntrance(x,y))return !inMineConnector(x,y)&&mineBlockedPoint(x-UNDERGROUND.entryX,y-UNDERGROUND.entryY);

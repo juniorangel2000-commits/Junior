@@ -57,7 +57,7 @@ for(const id of ['farmer-male','farmer-female']){
   for(let t=0;t<4;t++){await page.evaluate(()=>game.step(performance.now(),1000/18));if(strike<3)await page.screenshot({path:folder+'/'+String(frame++).padStart(3,'0')+'.png',clip:{x:448,y:240,width:640,height:480}});}
  }
  const result=await page.evaluate(()=>({dug:!!m.state.underground.changes[layout.mineCellIndex(face.node.x,face.node.y)]?.dug,reward:m.state.inventory.stone-stoneBefore,walkable:rock.undergroundFits(m.state.underground,face.node.x*32+16,face.node.y*32+16),localUpdates:m.view.localUpdates-localBefore,valid:saves.validateSave(m.snapshotState()),bodyRestored:m.player.sprite.visible&&!m.toolVisual.miningSprite.visible}));
- assert.ok(result.dug&&result.walkable&&result.valid&&result.bodyRestored);assert.equal(result.reward,4);assert.equal(result.localUpdates,9);shots[id]=result;console.log(id,JSON.stringify(result));
+ assert.ok(result.dug&&result.walkable&&result.valid&&result.bodyRestored);assert.equal(result.reward,4);assert.equal(result.localUpdates,17);shots[id]=result;console.log(id,JSON.stringify(result));
  // Cancel restores the real body immediately and must not create another hit.
  await page.evaluate(()=>{m.toolVisual.show('pickaxe','up',m.player.x,m.player.y,{active:true,frame:2},2,m.player.sprite);m.setPaused(true);});
  assert.ok(await page.evaluate(()=>m.player.sprite.visible&&!m.toolVisual.miningSprite.visible));await page.evaluate(()=>m.setPaused(false));
