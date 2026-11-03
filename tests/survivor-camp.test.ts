@@ -7,7 +7,7 @@ import {CAMP_APPROACH,forestCampFootprints} from '../src/data/forest-camp-access
 import {forestWaterDistanceAt} from '../src/data/ancient-forest';
 import {CHARACTER_DIRECTIONS,characterFrame} from '../src/character-directions';
 import {survivorWalkFrame,SURVIVOR_LOOKS} from '../src/data/survivor-looks';
-const stock=()=>{const s=createNewSave(createCharacterProfile('Acampamento'));s.activeArea='survivorCamp';return s;};
+const stock=()=>{const s=createNewSave(createCharacterProfile('Acampamento'));s.activeArea='survivorCamp';s.communityCenter={stage:3};return s;};
 describe('separate survivor camp',()=>{
  it('keeps gates and all arrival/resident slots walkable',()=>{for(const p of [CAMP_ENTRY,CAMP_EXIT])expect(campBlockedPoint((p.x+.5)*32,(p.y+.5)*32)).toBe(false);for(const p of [...CAMP_VISITOR_SLOTS,...CAMP_RESIDENT_SLOTS])expect(campBlockedPoint(p.x,p.y),JSON.stringify(p)).toBe(false);});
  it('places a few footprints west of the lake without touching its water',()=>{expect(forestCampFootprints()).toHaveLength(7);for(const p of forestCampFootprints())expect(forestWaterDistanceAt(p.x,p.y)).toBeGreaterThan(32);for(const p of CAMP_APPROACH)expect(forestWaterDistanceAt(p.x,p.y)).toBeGreaterThan(32);});

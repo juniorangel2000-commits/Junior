@@ -56,12 +56,23 @@ export interface VillageEconomy {
   stock?:Partial<Record<ItemId,StockRecord>>;
 }
 export interface SaveData {
-  /** Interior of the highland mine; absent means the player is outdoors. */
+  mineMissions?:import('./systems/mine-mission-state').MineMissionsState;
+  mineRescue?:import('./systems/mine-rescue-state').MineRescueState;
+  bentoExpedition?:import('./systems/bento-expedition-state').BentoExpeditionState;
+  bentoWork?:import('./systems/bento-work-state').BentoWorkState;
+  bentoTravel?:import('./systems/bento-travel-state').BentoTravelState;
+  /** Mine position; legacy entrance coordinates until the underground layout is initialized. */
+  underground?:import('./systems/underground').UndergroundState;
+  /** Explicit underground scene; the Mina Antiga reception room remains separate. */
+  miningInterior?:true;
   mineInterior?:import('./data/mine-room').MinePosition;
   highlandPosition?:TilePoint & {direction?:CharacterDirection};
   highlandMapEdits?:MapEditData;
   /** Outdoor equipment references an owned sword; missing keeps hands free. */
   worldWeapon?:'sword'|'unarmed';
+  mineCollisionRevision?:2;
+  communityCenter?:import('./systems/community-center').CommunityCenterData;
+  communityInterior?:{x:number;y:number;direction?:CharacterDirection};
   survivorCamp?:import('./systems/survivor-camp').SurvivorCampState;
   survivorCampPosition?:TilePoint & {direction?:CharacterDirection};
   survivorCampMapEdits?:MapEditData;
@@ -138,6 +149,7 @@ export interface SaveData {
   forestMapEdits?: MapEditData;
 }
 export interface HudData {
+  health?:{current:number;max:number;contaminated?:boolean};
   mapTitle?:string;
   worldMapSize?:{width:number;height:number};
   worldWeapon?:SaveData['worldWeapon'];

@@ -488,3 +488,9 @@
 .shelter-feedback:empty{display:none}
 @media(max-width:560px){.shelter-material{grid-template-columns:1fr}.shelter-delivery{justify-content:start}.shelter-stages{gap:4px;font-size:10px}}
 .pet-shelter-menu .shelter-material{margin:0}
+
+.mine-health{display:grid;gap:3px;min-width:100px;color:#efe1b8;font-size:10px}.mine-health[hidden]{display:none}.mine-health span{display:flex;justify-content:space-between;gap:8px}.mine-health meter{width:100%;height:9px;accent-color:#93ae63}.mine-health small{font-size:9px;color:#e8d188}.mine-health small[hidden]{display:none}.mine-health.exposed meter{accent-color:#b5b660}.mine-health.critical{color:#ffb49a}.mine-health.critical meter{accent-color:#c96047}
+
+#ui .hud-status .mine-health{grid-column:1/-1;min-width:0;color:#523b23;line-height:1.15;border-top:1px solid #91704555;padding-top:4px}#ui .hud-status .mine-health small{color:#6d5530}#ui .hud-status .mine-health.critical{color:#9e3429}
+
+.mining-entry-menu{max-width:560px}.mining-entry-summary{margin:18px 0;padding:14px;background:#e1d2ac;border:1px solid #a38a5c;border-radius:5px}.mining-entry-summary p{margin:7px 0}.mining-entry-summary small{line-height:1.6}.mining-entry-actions{display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap}

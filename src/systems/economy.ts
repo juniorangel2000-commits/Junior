@@ -1,3 +1,4 @@
+import {bentoAvailability} from './bento-schedule';
 import {validateVillageEconomy} from '../data/village-commerce';
 import type {SaveData,ItemId,VillageEconomy} from '../types';
 import {Inventory,type ItemCost} from './inventory';
@@ -33,21 +34,23 @@ export function startOwnSmelt(s:SaveData,m:Metal,q:number){return atomicEconomy(
  d.economy6!.orders.push({id:++d.economy6!.sequence,station:'own',kind:'smelt',metal:m,tier:METALS.indexOf(m)+1,quantity:q,materials,fee:0,phase:'working',createdAt:now,readyAt});
  });}
 export function reserveTool(s:SaveData,tool:EconomicTool,tier:number){return atomicEconomy(s,(d,i)=>{
+ need(bentoAvailability(d).open,bentoAvailability(d).message);
  need(TOOL_IDS.includes(tool)&&[1,2,3].includes(tier),'Ferramenta inválida.');need(d.economy6!.orders.filter(o=>o.phase==='reserved'||o.phase==='working').length<B.maxOrders,'Limite de encomendas pendentes.');
  need(!d.economy6!.orders.some(o=>o.kind==='tool'&&o.tool===tool&&(o.phase==='working'||o.phase==='reserved')),'Já há uma encomenda desta ferramenta.');need(i.has(tool),'Fabrique primeiro a ferramenta básica.');need(toolCondition(d,tool).tier===tier-1,'Respeite a sequência Pedra → Ferro → Ouro → Metal Negro.');
  const m=METALS[tier-1],cost:ItemCost=tier===3?{...B.blackToolRecipe}:{[ingot(m)]:B.ingots[tool][tier],[tier===2?'board':'wood']:2};
  need(i.spend(cost),'Materiais insuficientes.');const now=gameMinute(d);d.economy6!.orders.push({id:++d.economy6!.sequence,kind:'tool',tool,metal:m,tier,quantity:1,materials:cost,fee:B.labor[tool][tier],phase:'reserved',createdAt:now,readyAt:0});
  });}
-export function reserveSmelt(s:SaveData,m:Metal,q:number){return atomicEconomy(s,(d,i)=>{need(METALS.includes(m)&&Number.isSafeInteger(q)&&q>=1&&q<=99,'Quantidade inválida.');need(d.economy6!.orders.filter(o=>['reserved','working'].includes(o.phase)).length<B.maxOrders,'Limite de encomendas.');const materials=smeltCost(i,m,q);need(i.spend(materials),'Materiais insuficientes.');d.economy6!.orders.push({id:++d.economy6!.sequence,kind:'smelt',metal:m,tier:METALS.indexOf(m)+1,quantity:q,materials,fee:B.smeltFee[m]*q,phase:'reserved',createdAt:gameMinute(d),readyAt:0});});}
+export function reserveSmelt(s:SaveData,m:Metal,q:number){return atomicEconomy(s,(d,i)=>{need(bentoAvailability(d).open,bentoAvailability(d).message);need(METALS.includes(m)&&Number.isSafeInteger(q)&&q>=1&&q<=99,'Quantidade inválida.');need(d.economy6!.orders.filter(o=>['reserved','working'].includes(o.phase)).length<B.maxOrders,'Limite de encomendas.');const materials=smeltCost(i,m,q);need(i.spend(materials),'Materiais insuficientes.');d.economy6!.orders.push({id:++d.economy6!.sequence,kind:'smelt',metal:m,tier:METALS.indexOf(m)+1,quantity:q,materials,fee:B.smeltFee[m]*q,phase:'reserved',createdAt:gameMinute(d),readyAt:0});});}
 export function orderAction(s:SaveData,id:number,action:'pay'|'cancel'|'collect'){return atomicEconomy(s,(d,i)=>{
  const order=d.economy6!.orders.find(o=>o.id===id);need(order,'Encomenda desconhecida.');const o=order!;
+ if(o.station!=='own')need(bentoAvailability(d).open,bentoAvailability(d).message);
  if(action==='cancel'){need(o.phase==='reserved','Após o pagamento, a encomenda não pode ser cancelada. Retire-a quando ficar pronta.');need(i.transact({},o.materials),'Libere espaço para receber todos os materiais de volta.');o.phase='cancelled';return;}
  if(action==='pay'){need(o.phase==='reserved','Você precisa entregar os materiais primeiro.');need(d.villageEconomy!.coins>=o.fee,'Saldo insuficiente para pagar a mão de obra.');need(gameMinute(d)+(o.kind==='tool'?B.workDays[o.tier]*1440:B.smeltMinutes[o.metal]*o.quantity)<999999*1440,'O calendário chegou ao limite.');d.villageEconomy!.coins-=o.fee;o.phase='working';o.readyAt=gameMinute(d)+(o.kind==='tool'?B.workDays[o.tier]*1440:B.smeltMinutes[o.metal]*o.quantity);return;}
  need(o.phase==='working','Esta encomenda não está disponível para retirada.');need(gameMinute(d)>=o.readyAt,'Bento ainda está trabalhando nesta encomenda.');
  if(o.kind==='smelt')need(i.transact({},{[ingot(o.metal)]:o.quantity}),'Sem espaço na mochila.');else{need(i.has(o.tool!),'Traga a ferramenta original para receber o aprimoramento.');need(toolCondition(d,o.tool!).tier===o.tier-1,'Esta ferramenta já foi aprimorada.');configureTool(d,o.tool!,o.tier);}
  o.phase='collected';
  });}
-export function fulfillContract(s:SaveData,npc:string){return atomicEconomy(s,(d,i)=>{const spec=B.contracts.find(c=>c.npc===npc);need(spec,'Pedido desconhecido.');const c=spec!,cycle=Math.floor((d.day-1)/c.interval);need(d.economy6!.contracts[npc]?.cycle!==cycle||!d.economy6!.contracts[npc]?.completed,'Este pedido já foi concluído. Aguarde a renovação.');need(i.spend({[c.item]:c.quantity}),'Materiais insuficientes.');need(d.villageEconomy!.coins<=999999999-c.reward,'Sua carteira está cheia.');d.villageEconomy!.coins+=c.reward;d.economy6!.contracts[npc]={cycle,completed:true};});}
+export function fulfillContract(s:SaveData,npc:string){return atomicEconomy(s,(d,i)=>{if(npc==='bento')need(bentoAvailability(d).open,bentoAvailability(d).message);const spec=B.contracts.find(c=>c.npc===npc);need(spec,'Pedido desconhecido.');const c=spec!,cycle=Math.floor((d.day-1)/c.interval);need(d.economy6!.contracts[npc]?.cycle!==cycle||!d.economy6!.contracts[npc]?.completed,'Este pedido já foi concluído. Aguarde a renovação.');need(i.spend({[c.item]:c.quantity}),'Materiais insuficientes.');need(d.villageEconomy!.coins<=999999999-c.reward,'Sua carteira está cheia.');d.villageEconomy!.coins+=c.reward;d.economy6!.contracts[npc]={cycle,completed:true};});}
 export function validateEconomyState(value:unknown):value is EconomyState {
  if(!value||typeof value!=='object')return false;const s=value as EconomyState,integer=(n:unknown,a:number,b:number)=>Number.isSafeInteger(n)&&Number(n)>=a&&Number(n)<=b;
  if(s.version!==6||!integer(s.sequence,0,999999999)||!s.tools||typeof s.tools!=='object'||!s.contracts||typeof s.contracts!=='object'||!s.mined||typeof s.mined!=='object'||!Array.isArray(s.orders)||s.orders.length>10000)return false;

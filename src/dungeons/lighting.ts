@@ -28,7 +28,7 @@ export function dungeonLightingState(settings: VisualSettings, time: number) {
     shadowAlpha: intensity * 0.16,
   };
 }
-function radial(
+export function paintRadialLight(
   c: CanvasRenderingContext2D,
   x: number,
   y: number,
@@ -46,6 +46,7 @@ function radial(
   c.fillRect(-1, -1, 2, 2);
   c.restore();
 }
+const radial=paintRadialLight;
 export function paintDungeonFloorShadows(
   c: CanvasRenderingContext2D,
   id: DungeonId,

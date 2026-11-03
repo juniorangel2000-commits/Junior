@@ -3,35 +3,41 @@ import {WORLD_WIDTH,WORLD_HEIGHT,TILE} from '../data/world-size';
 type Point={x:number;y:number};
 type Blocked=(x:number,y:number)=>boolean;
 type Cost=(x:number,y:number)=>number;
-const index=(x:number,y:number)=>y*WORLD_WIDTH+x;
-const inside=(x:number,y:number)=>x>=1&&y>=1&&x<WORLD_WIDTH-1&&y<WORLD_HEIGHT-1;
 
 /** Weighted A*: prefer the village streets and never cut diagonally between
  * walls, trees, garden fences or the new street lamps. */
-export function villageRoute(start:Point,goal:Point,blocked:Blocked,cost:Cost=()=>1):Point[]{
+export function* villageRouteSearch(start:Point,goal:Point,blocked:Blocked,cost:Cost=()=>1,bounds={width:WORLD_WIDTH,height:WORLD_HEIGHT},canStep?: (from:Point,to:Point)=>boolean):Generator<undefined,Point[],void>{
+ const index=(x:number,y:number)=>y*bounds.width+x,inside=(x:number,y:number)=>x>=1&&y>=1&&x<bounds.width-1&&y<bounds.height-1;
  const sx=Math.floor(start.x),sy=Math.floor(start.y),gx=Math.floor(goal.x),gy=Math.floor(goal.y);
  if(!inside(sx,sy)||!inside(gx,gy))return [];
- const blockedCells=new Uint8Array(WORLD_WIDTH*WORLD_HEIGHT),costs=new Float64Array(blockedCells.length);
+ const blockedCells=new Uint8Array(bounds.width*bounds.height),costs=new Float64Array(blockedCells.length);
  const occupied=(x:number,y:number)=>{const i=index(x,y);if(!blockedCells[i])blockedCells[i]=blocked(x,y)?2:1;return blockedCells[i]===2;};
  const weight=(x:number,y:number)=>{const i=index(x,y);return costs[i]||(costs[i]=Math.max(1,cost(x,y)));};
  if(occupied(gx,gy)||sx===gx&&sy===gy)return [];
- const from=new Int32Array(WORLD_WIDTH*WORLD_HEIGHT).fill(-1),scores=new Float64Array(from.length).fill(Infinity);
+ const from=new Int32Array(bounds.width*bounds.height).fill(-1),scores=new Float64Array(from.length).fill(Infinity);
  const open:Array<{id:number;priority:number}>=[];
  const push=(value:{id:number;priority:number})=>{let i=open.length;open.push(value);while(i>0){const p=(i-1)>>1;if(open[p].priority<=value.priority)break;open[i]=open[p];i=p;}open[i]=value;};
  const pop=()=>{const best=open[0],last=open.pop()!;if(open.length){let i=0;while(i*2+1<open.length){let child=i*2+1;if(child+1<open.length&&open[child+1].priority<open[child].priority)child++;if(open[child].priority>=last.priority)break;open[i]=open[child];i=child;}open[i]=last;}return best;};
  const source=index(sx,sy),target=index(gx,gy);scores[source]=0;push({id:source,priority:0});
  const closed=new Uint8Array(from.length);
+ let expanded=0;
  while(open.length){
+  if(++expanded%32===0)yield undefined;
   const current=pop().id;if(closed[current])continue;closed[current]=1;
-  if(current===target){const path:Point[]=[];for(let p=target;p!==source;p=from[p]){if(p<0)return [];path.push({x:p%WORLD_WIDTH,y:Math.floor(p/WORLD_WIDTH)});}return path.reverse();}
-  const x=current%WORLD_WIDTH,y=Math.floor(current/WORLD_WIDTH);
+  if(current===target){const path:Point[]=[];for(let p=target;p!==source;p=from[p]){if(p<0)return [];path.push({x:p%bounds.width,y:Math.floor(p/bounds.width)});}return path.reverse();}
+  const x=current%bounds.width,y=Math.floor(current/bounds.width);
   for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){
-   const nx=x+dx,ny=y+dy;if(!inside(nx,ny)||occupied(nx,ny)||dx&&dy&&(occupied(x+dx,y)||occupied(x,y+dy)))continue;
+   const nx=x+dx,ny=y+dy;if(!inside(nx,ny)||occupied(nx,ny)||dx&&dy&&(occupied(x+dx,y)||occupied(x,y+dy))||canStep&&!canStep({x,y},{x:nx,y:ny}))continue;
    const next=index(nx,ny),score=scores[current]+Math.hypot(dx,dy)*weight(nx,ny);
    if(score>=scores[next])continue;scores[next]=score;from[next]=current;push({id:next,priority:score+Math.hypot(gx-nx,gy-ny)});
   }
  }
  return [];
+}
+
+/** Synchronous callers retain the original path/result; travelling NPCs can budget search steps. */
+export function villageRoute(start:Point,goal:Point,blocked:Blocked,cost:Cost=()=>1,bounds={width:WORLD_WIDTH,height:WORLD_HEIGHT},canStep?:(from:Point,to:Point)=>boolean):Point[]{
+ const search=villageRouteSearch(start,goal,blocked,cost,bounds,canStep);let step=search.next();while(!step.done)step=search.next();return step.value;
 }
 
 export class VillageWalk {

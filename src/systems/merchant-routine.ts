@@ -1,3 +1,4 @@
+import {bentoTravelling,bentoTripPending,bentoAvailability} from './bento-schedule';
 import {beginFisherLakeTrip} from './fisher-travel';
 import type {SaveData} from '../types';
 import {damiaoAtLake,FISHER_LAKE_HOURS} from '../data/fisher-schedule';
@@ -31,7 +32,7 @@ export function merchantPeriod(id:RoutineId,time:number):'work'|'break'|'closed'
  const lunch=MERCHANT_LUNCHES[id];
  return time<p.opening||time>=p.closing[id]?'closed':time>=lunch.start&&time<lunch.end?'break':'work';
 }
-export const merchantMayEnter=(shop:RoutineId,clock:GameClock,actor:'player'|RoutineId='player'):boolean=>actor===shop||merchantPeriod(shop,clock.time)!=='closed';
+export const merchantMayEnter=(shop:RoutineId,clock:GameClock,actor:'player'|RoutineId='player'):boolean=>actor===shop||(shop==='bento'?bentoAvailability(clock).open:merchantPeriod(shop,clock.time)!=='closed');
 export function validMerchantRoutine(v:unknown):v is MerchantRoutineState{
  if(!v||typeof v!=='object')return false;const s=v as MerchantRoutineState;
  return (s.area==='village'||s.area==='shop')&&Number.isFinite(s.x)&&Number.isFinite(s.y)
@@ -61,6 +62,9 @@ export class MerchantDailyRoutine {
  private target='';
  private walking=false;
  private conversationHeld=false;
+ private external=false;
+ setExternal(value:boolean):void{this.external=value;if(value){this.walking=false;this.resetPath();}}
+ get externallyControlled(){return this.external;}
  constructor(readonly owner:RoutineId,position:{x:number;y:number;direction:CharacterDirection;shop:boolean},private room:BentoRoomNavigation,saved?:MerchantRoutineState,private readonly walkFrames=6,private readonly navigationFor?:(owner:RoutineId)=>BentoRoomNavigation){
   this.state=structuredClone(validMerchantRoutine(saved)?saved:{area:position.shop?'shop':'village',x:position.x,y:position.y,direction:position.direction,stop:0,wait:0,serviceUntil:0,socialUntil:0,socialDay:0});
  }
@@ -73,18 +77,19 @@ export class MerchantDailyRoutine {
  get isMoving():boolean{return this.walking;}
  get plazaReady():boolean{
   const p=MERCHANT_DAILY_PLAN.plaza[this.owner];
-  return this.state.area==='village'&&this.target==='plaza'&&!this.walking&&Math.hypot(this.state.x-(p.x+.5)*32,this.state.y-(p.y+.5)*32)<24;
+  return !this.external&&this.state.area==='village'&&this.target==='plaza'&&!this.walking&&Math.hypot(this.state.x-(p.x+.5)*32,this.state.y-(p.y+.5)*32)<24;
  }
  holdStill(held:boolean):void{this.conversationHeld=held;}
- isServing(clock:GameClock):boolean{return !(this.owner==='damiao'&&damiaoAtLake(clock))&&this.state.area==='shop'&&this.roomOwner===this.owner&&(merchantPeriod(this.owner,clock.time)==='work'||merchantPeriod(this.owner,clock.time)==='break'&&this.state.serviceUntil>absolute(clock));}
- private visit(clock:GameClock){const plan=MERCHANT_VISITS[this.owner];return this.navigationFor&&this.state.serviceUntil<=absolute(clock)&&clock.time>=plan.start&&clock.time<plan.end&&merchantMayEnter(plan.host,clock,this.owner)?plan:undefined;}
+ isServing(clock:GameClock):boolean{if(this.owner==='bento'&&'bentoTravel'in clock&&(clock as SaveData).bentoTravel?.trip?.purpose==='workshop')return bentoAvailability(clock as SaveData).open;return !this.external&&!(this.owner==='bento'&&bentoTravelling(clock))&&!(this.owner==='damiao'&&damiaoAtLake(clock))&&this.state.area==='shop'&&this.roomOwner===this.owner&&(merchantPeriod(this.owner,clock.time)==='work'||merchantPeriod(this.owner,clock.time)==='break'&&this.state.serviceUntil>absolute(clock));}
+ private visit(clock:GameClock){if(this.owner==='bento'&&'profile'in clock&&bentoTripPending(clock as SaveData))return;const plan=MERCHANT_VISITS[this.owner];return this.navigationFor&&this.state.serviceUntil<=absolute(clock)&&clock.time>=plan.start&&clock.time<plan.end&&merchantMayEnter(plan.host,clock,this.owner)?plan:undefined;}
  conversation(clock:GameClock):{host:RoutineId;id:RoutineId;text:string}|undefined{
-  if(this.owner==='damiao'&&damiaoAtLake(clock))return;
+  if(this.external||this.owner==='bento'&&bentoTravelling(clock)||this.owner==='damiao'&&damiaoAtLake(clock))return;
   const plan=this.visit(clock);if(merchantPeriod(this.owner,clock.time)!=='work'||!plan||this.walking||this.state.area!=='shop'||this.roomOwner!==plan.host||this.activity!=='visit-talk'||this.state.wait<=0||Math.hypot(this.state.x-288,this.state.y-230)>56)return;
   return{host:plan.host,id:this.owner,text:plan.lines[0]};
  }
  holdConversation(clock:GameClock):void{this.state.socialUntil=absolute(clock)+.15;}
  availability(clock:GameClock):{message:string;canGuide:boolean}{
+  if(this.owner==='bento'&&(bentoTravelling(clock)||'profile'in clock&&bentoTripPending(clock as SaveData)))return{message:bentoTravelling(clock)?bentoAvailability(clock).message:'Bento vai preparar a viagem à mina. Aguarde o retorno para pedir atendimento.',canGuide:false};
   if(this.owner==='damiao'&&damiaoAtLake(clock))return{message:'Na cabana do lago · '+FISHER_LAKE_HOURS.label,canGuide:false};
   const lunch=merchantLunchHours(this.owner);
   const period=merchantPeriod(this.owner,clock.time),hours=`08:00–${lunch.start} e ${lunch.end}–${String(MERCHANT_DAILY_PLAN.closing[this.owner]/60).padStart(2,'0')}:00`;
@@ -128,6 +133,7 @@ export class MerchantDailyRoutine {
   this.walking=false;
   if(Number.isFinite(seconds)&&seconds>0)s.updatedAt=absolute(clock);
   if(this.owner==='damiao'&&damiaoAtLake(clock))return{...s,phase,moving,transferred};
+  if(this.external||this.owner==='bento'&&bentoTravelling(clock))return{...s,phase,moving,transferred};
   if(this.conversationHeld)return{...s,phase,moving,transferred};
   if(!Number.isFinite(seconds)||seconds<=0)return{...s,phase,moving,transferred};seconds=Math.min(seconds,.1);
   const now=absolute(clock),period=merchantPeriod(this.owner,clock.time);

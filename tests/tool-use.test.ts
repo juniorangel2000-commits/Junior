@@ -100,4 +100,9 @@ describe('artes de ferramenta disponíveis', () => {
       expect(toolSwingAngle('water',frame,left)).toBe(0);
     }
   });
+  it('persists an in-progress action and its impact flag without replaying the strike',()=>{
+    const original=new ToolUse();original.start(strike);original.advance(.15);const saved=JSON.parse(JSON.stringify(original.snapshot())),loaded=new ToolUse();expect(loaded.restore(saved)).toBe(true);expect(loaded.advance(.1)).toMatchObject({tool:strike.tool});const after=new ToolUse();expect(after.restore(loaded.snapshot())).toBe(true);expect(after.advance(.2)).toBeNull();expect(after.advance(.2)).toBeNull();expect(after.active).toBe(false);
+    for(const bad of[{...saved,elapsed:NaN},{...saved,elapsed:.3,impacted:false},{...saved,elapsed:0,impacted:true},{...saved,strike:{...strike,direction:'invalid'}}])expect(new ToolUse().restore(bad)).toBe(false);
+  });
+
 });

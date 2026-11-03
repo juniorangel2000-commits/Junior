@@ -1,3 +1,16 @@
+import {showMineMissionJournal} from '../mine-mission-journal';
+import {createMineMissionRuntime} from '../systems/mine-missions';
+import {showBentoExpedition} from '../bento-expedition-menu';
+import {bentoSceneWriter} from '../systems/bento-commit';
+import {nearBentoDepot} from '../systems/bento-fixtures';
+import {preloadBentoWorkArt} from '../bento-work-art';
+import {BentoTravelView} from '../bento-travel-view';
+import {advanceBentoTravel} from '../systems/bento-travel';
+import {bentoAvailability} from '../systems/bento-schedule';
+import {communityReady,communityStage,repairCommunity} from '../systems/community-center';
+import {showCommunityRepair} from '../community-center-menu';
+import {COMMUNITY_ENTRANCE,COMMUNITY_ROOM_ENTRY,COMMUNITY_ROOM_EXIT,communityRoomBlocked} from '../data/community-room';
+import {drawCommunityRoom} from '../community-room-view';
 import {equipWorldSword} from '../systems/world-sword';
 import {advanceSurvivorCamp} from '../systems/survivor-camp';
 import {SurvivorResidentsView} from '../survivor-residents-view';
@@ -22,7 +35,7 @@ import {NILO_WALK_FRAMES,NILO_DISPLAY,NILO_ORIGIN_Y} from '../nilo-sprites';
 import {createSmithLayout,resolveSmithLayout,smithFits,smithBlocked,smithNavigation,smithSpawn,smithDoor,validSmithLayout,smithConnected,type SmithLayout} from '../systems/smith-layout';
 import {drawSmithLayout,type SmithView} from '../smith-layout-art';
 import {mountSmithEditor} from '../smith-layout-editor';
-import {BENTO_WALK_FRAMES,BENTO_DISPLAY,bentoSourceKey} from '../bento-sprites';
+import {BENTO_WALK_FRAMES,BENTO_DISPLAY,bentoTexture} from '../bento-sprites';
 import {AUGUSTO_WALK_FRAMES,AUGUSTO_DISPLAY,AUGUSTO_ORIGIN_Y,augustoSourceKey} from '../augusto-sprites';
 import {ROSA_WALK_FRAMES,ROSA_DISPLAY,ROSA_ORIGIN_Y,rosaSourceKey} from '../rosa-sprites';
 import {TOBIAS_WALK_FRAMES,TOBIAS_DISPLAY,TOBIAS_ORIGIN_Y} from '../tobias-sprites';
@@ -74,6 +87,9 @@ type Villager={data:VillageNPC;sprite:Phaser.GameObjects.Sprite;frames:number};
 /** Town state travels through the same save as the farm, without replacing its
  * outdoor position, crops, resource fields or animal population. */
 export class VillageScene extends Phaser.Scene {
+ private mineMissionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player,()=>this.inventory.data);
+ getMineMissionRuntime=()=>this.mineMissionRuntime;
+ private bentoWorkRuntime={missions:this.mineMissionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
  private helpers?:SurvivorResidentsView;
  private state!:SaveData;
  getFishingState():SaveData { this.state.inventory={...this.inventory.data};return this.state; }
@@ -93,6 +109,10 @@ export class VillageScene extends Phaser.Scene {
  private smithLayout=createSmithLayout();
  private editingRoom=false;
  private inBlacksmith=false;
+ private inCommunity=false;
+ private communityView?:{destroy():void};
+ private communityLabel?:Phaser.GameObjects.Text;
+ private readonly communityPassage=new DoorwayPassage();
  private roomView?:SmithView;
  private merchantRoom?:ResidentId;
  private merchantView?:SmithView;
@@ -104,7 +124,7 @@ export class VillageScene extends Phaser.Scene {
  private speech?:{id:RoutineId;text:string};
  private conversations=new MerchantConversations();
  private readonly merchantPassage=new DoorwayPassage();
- private get inShop():boolean{return this.inBlacksmith||!!this.merchantRoom;}
+ private get inShop():boolean{return this.inCommunity||this.inBlacksmith||!!this.merchantRoom;}
  private get roomOwner():ResidentId|undefined{return this.inBlacksmith?'bento':this.merchantRoom;}
  private changingRoom=false;
  private readonly homePassage=new DoorwayPassage();
@@ -112,6 +132,7 @@ export class VillageScene extends Phaser.Scene {
  private hudElapsed=0;
  private readonly exitPassage=new MapExitPassage();
  private readonly northPassage=new MapExitPassage();
+ private bentoTravelView?:BentoTravelView;
  constructor(){super('Vila');}
  init(data:VillageStart):void{this.ui=data.ui;}
  preload():void{
@@ -120,13 +141,13 @@ export class VillageScene extends Phaser.Scene {
    this.load.on('progress',this.ui.setWorldLoadingProgress,this.ui);
    this.load.once('complete',()=>this.load.off('progress',this.ui.setWorldLoadingProgress,this.ui));
   }
-  preloadPetArt(this);preloadVillagePeople(this);preloadSmithLayout(this);
+  preloadPetArt(this);preloadVillagePeople(this);preloadBentoWorkArt(this);preloadSmithLayout(this);
  }
 
  create(data:VillageStart):void {
   gameAudio.setScene('game');
   setupTreeWind(this);
-  this.state=structuredClone(data.save);this.state.activeArea='village';delete this.state.homePosition;
+  this.state=structuredClone(data.save);this.inCommunity=false;this.communityView=undefined;this.communityPassage.reset();this.state.activeArea='village';delete this.state.homePosition;
   this.state.villageEconomy??=createVillageEconomy();this.ui=data.ui;this.onReturn=data.onReturn;
   this.smithLayout=resolveSmithLayout(this.state.blacksmithScene);this.editingRoom=false;
   this.bentoRoutine=new BentoRoutine(this.state.blacksmithScene?this.state.bentoRoutine:undefined,smithNavigation(this.smithLayout));this.inBlacksmith=false;this.changingRoom=false;this.homePassage.reset();
@@ -140,15 +161,20 @@ export class VillageScene extends Phaser.Scene {
   const valid=saved&&![[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>this.movementBlockedPoint(saved.x+dx,saved.y+dy));
   this.player=new Player(this,this.state.profile,valid?saved.x:entry.x,valid?saved.y:entry.y,'village-player');
   this.player.facing=directionVector(valid?saved.direction??'right':'right');this.player.update(0,this.movementBlocked,this.movementBlockedPoint,false,this.swimmingPoint);
-  this.helpers?.destroy();this.helpers=new SurvivorResidentsView(this,()=>{this.state.inventory={...this.inventory.data};return{save:this.state,area:'village',player:this.player,visible:!this.inShop,blocked:(x,y)=>this.world.isBlocked(x,y)};},this.ui,()=>{Object.assign(this.inventory.data,this.state.inventory);this.updateHUD();});
+  this.helpers?.destroy();this.helpers=new SurvivorResidentsView(this,()=>{this.state.inventory={...this.inventory.data};return{save:this.state,area:'village',player:this.player,visible:!this.inShop||this.inCommunity,interior:this.inCommunity,blocked:(x,y)=>this.world.isBlocked(x,y)};},this.ui,()=>{Object.assign(this.inventory.data,this.state.inventory);this.updateHUD();});
   this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time,false,this.state.day);this.world.updateLighting(this.state.time);
-  if(this.state.blacksmithInterior)this.setBlacksmithRoom(true,this.state.blacksmithScene?this.state.blacksmithInterior:undefined);
+  if(this.state.communityInterior&&communityReady(this.state))this.setCommunityRoom(true,this.state.communityInterior);
+  else if(this.state.blacksmithInterior)this.setBlacksmithRoom(true,this.state.blacksmithScene?this.state.blacksmithInterior:undefined);
   else if(this.state.merchantInterior)this.setMerchantRoom(this.state.merchantInterior.owner,this.state.merchantInterior);
+  this.bentoTravelView=new BentoTravelView(this,()=>this.state,()=>this.player,()=>this.inBlacksmith?'shop':this.inShop?undefined:'village',this.ui,this.villagers.find(n=>n.data.id==='bento')!.sprite,this.bentoWorkRuntime);this.events.once('shutdown',()=>this.bentoTravelView?.destroy());
+  this.communityLabel=this.add.text(COMMUNITY_ENTRANCE.x,COMMUNITY_ENTRANCE.y+8,'',{fontFamily:'Georgia',fontSize:'12px',color:'#f4e6be',backgroundColor:'#24372edb',padding:{x:7,y:5}}).setOrigin(.5,0).setDepth(600);
   this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
   this.shop=new VillageInteractionUI({
-   canTrade:id=>this.canTrade(id),isInside:id=>merchantCanTrade(id,this.roomOwner),getAvailability:id=>dailyMerchant(id)?this.routines.get(id)?.availability(this.state):undefined,onGuide:id=>this.beginGuide(id),
-   getPortrait:id=>id==='bento'?this.textures.getBase64(bentoSourceKey('down')):id==='augusto'?this.textures.getBase64(augustoSourceKey('down')):id==='rosa'?this.textures.getBase64(rosaSourceKey('down')):id==='tobias'?this.textures.getBase64('village-npc-tobias',characterFrame('down',0,TOBIAS_WALK_FRAMES)):this.textures.getBase64(`village-npc-${id}`,0),
-   onBlacksmith:()=>{this.shop?.close();this.setPaused(true);openBlacksmithPanel(()=>({...this.state,inventory:{...this.inventory.data}}),change=>{const before=structuredClone(this.state);this.state.inventory={...this.inventory.data};const r=change(this.state);if(r.ok){Object.assign(this.inventory.data,this.state.inventory);if(!this.persist()){this.state=before;Object.assign(this.inventory.data,before.inventory);return{ok:false,message:'Falha ao salvar. A operação foi revertida.'};}this.updateHUD();}return r;},()=>this.setPaused(false));},
+   canTrade:id=>this.canTrade(id),isInside:id=>merchantCanTrade(id,this.roomOwner),getAvailability:id=>id==='bento'?{...this.routines.get('bento')!.availability(this.state),message:bentoAvailability(this.state).message}:dailyMerchant(id)?this.routines.get(id)?.availability(this.state):undefined,onGuide:id=>this.beginGuide(id),
+   getPortrait:id=>id==='bento'?this.textures.getBase64(bentoTexture(this),characterFrame('down',0,BENTO_WALK_FRAMES)):id==='augusto'?this.textures.getBase64(augustoSourceKey('down')):id==='rosa'?this.textures.getBase64(rosaSourceKey('down')):id==='tobias'?this.textures.getBase64('village-npc-tobias',characterFrame('down',0,TOBIAS_WALK_FRAMES)):this.textures.getBase64(`village-npc-${id}`,0),
+   onMineRequests:()=>{this.shop?.close();showMineMissionJournal(this.ui,this.mineMissionRuntime);},
+   onBentoExpedition:()=>{this.shop?.close();showBentoExpedition(this.ui,()=>this.state,()=>this.player,this.bentoWorkRuntime,this.textures.getBase64(bentoTexture(this),0));},
+   onBlacksmith:()=>{if(!bentoAvailability(this.state).open){this.ui.toast(bentoAvailability(this.state).message);return;}this.shop?.close();this.setPaused(true);openBlacksmithPanel(()=>({...this.state,inventory:{...this.inventory.data}}),change=>{const before=structuredClone(this.state);this.state.inventory={...this.inventory.data};const r=change(this.state);if(r.ok){Object.assign(this.inventory.data,this.state.inventory);if(!this.persist()){this.state=before;Object.assign(this.inventory.data,before.inventory);return{ok:false,message:'Falha ao salvar. A operação foi revertida.'};}this.updateHUD();}return r;},()=>this.setPaused(false));},
    getServices:npc=>listVillageServices(npc,this.state),
    onService:id=>{const previous=structuredClone(this.state);const previousStock={...this.inventory.data};this.state.inventory={...this.inventory.data};this.state.crops=this.farming.crops.map(c=>({...c}));const result=performVillageService(this.state,id);if(result.ok){Object.assign(this.inventory.data,this.state.inventory);this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);const x=this.player.x,y=this.player.y;this.player.sprite.destroy();this.player=new Player(this,this.state.profile,x,y,'village-player');this.applyCamera();if(!this.persist()){this.state=previous;Object.assign(this.inventory.data,previousStock);return{ok:false,message:'Falha ao salvar. A operação foi revertida.'};}this.updateHUD();}return result;},
    getInventory:()=>this.inventory.data,getEconomy:()=>this.state.villageEconomy!,getDay:()=>this.state.day,
@@ -181,7 +207,9 @@ export class VillageScene extends Phaser.Scene {
       save: this.state,
       player: this.player,
       area: "village",
-      space: this.inBlacksmith
+      space: this.inCommunity
+        ? "community"
+        : this.inBlacksmith
         ? "blacksmith"
         : this.merchantRoom
           ? "shop:" + this.merchantRoom
@@ -221,7 +249,8 @@ export class VillageScene extends Phaser.Scene {
   }
  }
  private spaceActors(id:RoutineId,area:RoutineArea,room:RoutineId):{x:number;y:number}[]{
-  const actors=[...this.routines].filter(([other,r])=>other!==id&&!(other==='damiao'&&damiaoAtLake(this.state))&&r.state.area===area&&(area==='village'||r.roomOwner===room)).map(([,r])=>({x:r.state.x,y:r.state.y}));
+  const actors=[...this.routines].filter(([other,r])=>other!==id&&!(other==='bento'&&this.state.bentoTravel?.trip)&&!(other==='damiao'&&damiaoAtLake(this.state))&&r.state.area===area&&(area==='village'||r.roomOwner===room)).map(([,r])=>({x:r.state.x,y:r.state.y}));
+  const trip=this.state.bentoTravel?.trip;if(id!=='bento'&&trip&&(area==='village'?trip.area==='village':trip.area==='shop'&&room==='bento'))actors.push({x:trip.x,y:trip.y});
   if(this.player&&(area==='shop'?this.roomOwner===room:!this.inShop))actors.push({x:this.player.x,y:this.player.y});return actors;
  }
  private routineEnvironment(id:RoutineId):RoutineEnvironment {
@@ -238,18 +267,20 @@ export class VillageScene extends Phaser.Scene {
   };
  }
  private syncRoutine(id:RoutineId,phase:number):void {
+  if(id==='bento'&&this.state.bentoTravel?.trip)return;
   const s=this.routines.get(id)!.state,npc=this.villagers.find(n=>n.data.id===id)!;
+  if(id==='bento'&&npc.sprite.texture.key!==bentoTexture(this))npc.sprite.setTexture(bentoTexture(this)).setOrigin(.5,1).setDisplaySize(BENTO_DISPLAY,CHARACTER_HEIGHT);
   if(id==='bento'){const home=s.area==='shop'&&this.routines.get(id)!.roomOwner==='bento';Object.assign(this.bentoRoutine.state,{x:s.x,y:s.y,direction:s.direction,area:home?'blacksmith-home':'village',stop:home?4:0,wait:0,doorway:false});}
   else Object.assign(this.residents.get(id)!,{x:s.x,y:s.y,direction:s.direction,shop:s.area==='shop'});
   npc.sprite.setPosition(s.x,s.y).setDepth(s.y).setFrame(characterFrame(s.direction,npc.frames?phase:0,npc.frames));
  }
  private readonly idleSeconds=new Map<RoutineId,number>();
  private updateDailyRoutines(seconds:number):void {
-  this.state.villageRoutines=Object.fromEntries([...this.routines].map(([id,r])=>[id,r.state]));advanceFisherTravel(this.state,seconds);
+  this.state.villageRoutines=Object.fromEntries([...this.routines].map(([id,r])=>[id,r.state]));advanceFisherTravel(this.state,seconds);advanceBentoTravel(this.state,seconds,this.player,this.guide?.owner==='bento',this.bentoWorkRuntime);for(const[id,r]of this.routines)r.setExternal(id==='bento'&&!!this.state.bentoTravel?.trip);
   this.speech=this.conversations.update(seconds,this.state,this.routines,this.roomOwner as RoutineId|undefined,this.guide?.owner as RoutineId|undefined);
   for(const [id,routine] of this.routines){
    if(this.guide?.owner===id){this.idleSeconds.set(id,0);continue;}
-   const step=routine.step(seconds,this.state,this.routineEnvironment(id));this.syncRoutine(id,step.phase);
+   const step=routine.step(seconds,this.state,this.routineEnvironment(id));this.syncRoutine(id,step.phase);if(id==='bento'&&this.state.bentoTravel?.trip)continue;
    const still=step.moving?0:(this.idleSeconds.get(id)??0)+seconds;this.idleSeconds.set(id,still);
    const npc=this.villagers.find(n=>n.data.id===id)!;
    const blocked=step.moving||this.conversations.participants.includes(id)||!!this.speech||Math.hypot(npc.sprite.x-this.player.x,npc.sprite.y-this.player.y)<100;
@@ -273,11 +304,35 @@ export class VillageScene extends Phaser.Scene {
    return {data:npc,sprite,frames};
   });
  }
- private blockedPoint=(x:number,y:number):boolean=>!!this.helpers?.blocked(x,y)||this.closedDoorAt(x,y)||(this.inBlacksmith?smithBlocked(this.smithLayout,x,y):this.merchantRoom?merchantRoomBlocked(this.merchantRoom,x,y,this.merchantLayouts.get(this.merchantRoom)):this.world.isBlockedPoint(x,y))||this.villagers.some(n=>n.sprite.visible&&Math.abs(n.sprite.x-x)<10&&Math.abs(n.sprite.y-y)<6);
+ private blockedPoint=(x:number,y:number):boolean=>!!this.helpers?.blocked(x,y)||this.closedDoorAt(x,y)||(this.inCommunity?communityRoomBlocked(x,y):this.inBlacksmith?smithBlocked(this.smithLayout,x,y):this.merchantRoom?merchantRoomBlocked(this.merchantRoom,x,y,this.merchantLayouts.get(this.merchantRoom)):this.world.isBlockedPoint(x,y))||this.villagers.some(n=>n.sprite.visible&&Math.abs(n.sprite.x-x)<10&&Math.abs(n.sprite.y-y)<6);
  private movementBlockedPoint=(x:number,y:number):boolean=>this.inShop?this.blockedPoint(x,y):!!this.helpers?.blocked(x,y)||this.closedDoorAt(x,y)||this.world.isSolidPoint(x,y)||this.villagers.some(n=>n.sprite.visible&&Math.abs(n.sprite.x-x)<10&&Math.abs(n.sprite.y-y)<6);
  private movementBlocked=(x:number,y:number):boolean=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
  private allowPierStep=(x:number,y:number)=>this.inShop||villagePierAllowsStep(this.player,{x,y},this.world.waterPointAt);
  private swimmingPoint=(x:number,y:number):number=>this.inShop||villagePierDeckContains(x,y)?0:sampleWaterDepth(this.world.waterPointAt,x,y);
+ private nearCommunity():boolean{return !this.inShop&&this.player.y>=COMMUNITY_ENTRANCE.y-20&&Math.hypot(this.player.x-COMMUNITY_ENTRANCE.x,this.player.y-COMMUNITY_ENTRANCE.y)<76;}
+ private openCommunity():void {
+  if(communityReady(this.state)){this.changeCommunityRoom(true);return;}
+  showCommunityRepair(this.ui,()=>({...this.state,inventory:{...this.inventory.data}}),action=>{
+   this.persist();this.state.inventory={...this.inventory.data};
+   const result=repairCommunity(this.state,action,saveGame);
+   if(result.ok){Object.assign(this.inventory.data,this.state.inventory);this.updateHUD();gameAudio.play('craft');}
+   return result;
+  },()=>this.changeCommunityRoom(true));
+ }
+ private setCommunityRoom(inside:boolean,position?:SaveData['communityInterior']):void {
+  this.inCommunity=inside;this.communityPassage.reset();this.world.setVisible(!inside);
+  this.communityView?.destroy();this.communityView=inside?drawCommunityRoom(this):undefined;
+  const p=position??(inside?COMMUNITY_ROOM_ENTRY:COMMUNITY_ENTRANCE);
+  this.player.x=p.x;this.player.y=p.y;this.player.facing=directionVector(position?.direction??(inside?'up':'down'));
+  for(const npc of this.villagers)npc.sprite.setVisible(this.sameRoom(npc));
+  this.input.keyboard?.resetKeys();this.player.update(0,this.movementBlocked,this.movementBlockedPoint,false,this.swimmingPoint);this.applyCamera();
+ }
+ private changeCommunityRoom(inside:boolean):void {
+  if(this.changingRoom||this.leaving||inside&&!communityReady(this.state))return;
+  if(!this.persist()){this.ui.toast('Não foi possível salvar. Tente novamente.');return;}
+  this.changingRoom=true;this.cameras.main.fadeOut(SCENE_FADE_MS);
+  this.time.delayedCall(SCENE_FADE_MS,()=>{if(this.leaving)return;this.setCommunityRoom(inside);this.changingRoom=false;this.cameras.main.fadeIn(SCENE_FADE_MS);gameAudio.play('door');this.updateHUD();this.persist();});
+ }
  private nearest():Villager|undefined {
   return this.villagers.filter(n=>n.sprite.visible&&Math.hypot(n.sprite.x-this.player.x,n.sprite.y-this.player.y)<78)
    .sort((a,b)=>Math.hypot(a.sprite.x-this.player.x,a.sprite.y-this.player.y)-Math.hypot(b.sprite.x-this.player.x,b.sprite.y-this.player.y))[0];
@@ -313,14 +368,17 @@ export class VillageScene extends Phaser.Scene {
   this.time.delayedCall(SCENE_FADE_MS,()=>{if(this.leaving)return;if(id)this.completeGuide(id);this.guide=undefined;this.setMerchantRoom(id);this.changingRoom=false;this.cameras.main.fadeIn(SCENE_FADE_MS);gameAudio.play('door');this.updateHUD();this.persist();});
  }
  private interact():void {
+  if(this.bentoTravelView?.talk())return;
   if(this.paused||this.leaving||this.changingRoom||this.ui.isModalOpen()||this.shop?.isOpen)return;
+  if(this.nearCommunity()){this.openCommunity();return;}
   if(this.helpers?.interact())return;
-  const npc=this.nearest();if(!npc)return;
+  const npc=this.nearest();if(!npc){if(this.inBlacksmith&&nearBentoDepot(this.state,this.player))this.ui.toast('Depósito particular do Bento · materiais de trabalho da ferraria.');return;}
   npc.sprite.setFrame(characterFrame(directionFromVector(this.player.x-npc.sprite.x,this.player.y-npc.sprite.y),0,npc.frames));
   meetVillager(this.state.villageEconomy!,npc.data.id);this.setPaused(true);this.shop!.open(npc.data);this.persist();
  }
  private pointer=(pointer:Phaser.Input.Pointer):void=>{
   if(pointer.button!==0||this.paused||this.ui.isModalOpen())return;
+  if(this.nearCommunity()&&Math.hypot(pointer.worldX-COMMUNITY_ENTRANCE.x,pointer.worldY-COMMUNITY_ENTRANCE.y)<100){this.openCommunity();return;}
   if(this.helpers?.nearest()){this.interact();return;}
   if(this.villagers.some(n=>Math.hypot(n.sprite.x-pointer.worldX,n.sprite.y-28-pointer.worldY)<44))this.interact();
  };
@@ -377,7 +435,7 @@ export class VillageScene extends Phaser.Scene {
  mainMenu():void {this.shop?.close();this.ui.closeModal();this.leave(true);}
  private applyCamera():void {
   if(!this.player)return;
-  const w=this.inShop?576:3072,h=this.merchantRoom?MERCHANT_ROOM_SIZE.height:this.inBlacksmith?352:2304;
+  const w=this.inShop?576:3072,h=this.merchantRoom||this.inCommunity?MERCHANT_ROOM_SIZE.height:this.inBlacksmith?352:2304;
   const viewport=this.editingRoom?Math.max(400,this.scale.width-340):this.scale.width;this.cameras.main.setViewport(0,0,viewport,this.scale.height);
   const base=this.inShop?Math.min(viewport/(w+64),this.scale.height/(h+64)):2;
   const camera=this.cameras.main;camera.setBackgroundColor(this.inShop?'#26302c':'#526b3e').setZoom(base*this.zoom);
@@ -385,22 +443,23 @@ export class VillageScene extends Phaser.Scene {
   else camera.setBounds(0,0,w,h).startFollow(this.player,false,1,1).centerOn(this.player.x,this.player.y);
  }
  private centerInteriorCamera():void {
-  const c=this.cameras.main,w=576,h=this.merchantRoom?384:352;
+  const c=this.cameras.main,w=576,h=this.merchantRoom||this.inCommunity?384:352;
   const halfW=c.width/c.zoom/2,halfH=c.height/c.zoom/2;
   c.centerOn(halfW*2>=w?w/2:Phaser.Math.Clamp(this.player.x,halfW,w-halfW),halfH*2>=h?h/2:Phaser.Math.Clamp(this.player.y,halfH,h-halfH));
  }
  private sameRoom(npc:Villager):boolean {
+  const trip=this.state.bentoTravel?.trip;if(npc.data.id==='bento'&&trip)return trip.area==='village'?!this.inShop:trip.area==='shop'&&this.inBlacksmith;
   if(npc.data.id==='damiao'&&damiaoAtLake(this.state))return false;
   const routine=this.routines.get(npc.data.id);return !!routine&&(routine.state.area==='village'?!this.inShop:this.roomOwner===routine.roomOwner);
  }
  private closedDoorAt(x:number,y:number):boolean {
   if(this.inShop)return false;
-  return VILLAGE_NPCS.some(n=>{if(merchantMayEnter(n.id,this.state))return false;const d=merchantDoor(n.id);return Math.abs(x-d.x)<d.halfWidth&&y>=d.y-3&&y<=d.y+8;});
+  return VILLAGE_NPCS.some(n=>{if(merchantMayEnter(n.id,this.state)||n.id==='bento'&&this.guide?.owner==='bento'&&!this.state.bentoTravel?.trip)return false;const d=merchantDoor(n.id);return Math.abs(x-d.x)<d.halfWidth&&y>=d.y-3&&y<=d.y+8;});
  }
  private closedDoorMessage():string|undefined {
   if(this.inShop)return;
   const npc=VILLAGE_NPCS.find(n=>!merchantMayEnter(n.id,this.state)&&Math.hypot(this.player.x-merchantDoor(n.id).x,this.player.y-merchantDoor(n.id).y)<70);
-  if(npc)return 'Fechado · '+npc.role+' · abre às 08:00';
+  if(npc)return npc.id==='bento'?bentoAvailability(this.state).message:'Fechado · '+npc.role+' · abre às 08:00';
  }
  private setBlacksmithRoom(inside:boolean,position?:SaveData['blacksmithInterior']):void {
   this.inBlacksmith=inside;this.homePassage.reset();this.world.setVisible(!inside);
@@ -414,7 +473,7 @@ export class VillageScene extends Phaser.Scene {
   this.daylight.update(this.state.time,inside,this.state.day);this.applyCamera();
  }
  private changeBlacksmithRoom():void {
-  if(!this.inBlacksmith&&!merchantMayEnter('bento',this.state)){this.ui.toast('Ferraria fechada · abre às 08:00.');this.homePassage.reset();return;}
+  if(!this.inBlacksmith&&!merchantMayEnter('bento',this.state)&&!(this.guide?.owner==='bento'&&!this.state.bentoTravel?.trip)){this.ui.toast(bentoAvailability(this.state).message);this.homePassage.reset();return;}
   if(this.changingRoom)return;this.persist();this.changingRoom=true;
   this.cameras.main.fadeOut(SCENE_FADE_MS);
   this.time.delayedCall(SCENE_FADE_MS,()=>{
@@ -441,33 +500,36 @@ export class VillageScene extends Phaser.Scene {
   }
 
  captureMap():Promise<string> {
-  this.updateHUD();const rt=this.make.renderTexture(this.inShop?{width:1152,height:this.merchantRoom?768:704}:{width:960,height:720},false);rt.camera.setZoom(this.inShop?2:960/3072).setScroll(0,0).setOrigin(0,0);
+  this.updateHUD();const rt=this.make.renderTexture(this.inShop?{width:1152,height:this.merchantRoom||this.inCommunity?768:704}:{width:960,height:720},false);rt.camera.setZoom(this.inShop?2:960/3072).setScroll(0,0).setOrigin(0,0);
   this.children.depthSort();rt.draw(this.children.list.filter(o=>o!==this.player.sprite&&!this.daylight.contains(o)&&'visible'in o&&o.visible));
   return new Promise(resolve=>rt.snapshot(image=>{const url=image instanceof HTMLImageElement?image.src:'';rt.destroy();resolve(url);}));
  }
  private updateHUD():void {
   this.state.crops=this.farming.crops;updateVillageEquipment(this,this.state,this.player,this.inShop);notifyReadyOrders(this.state,m=>this.ui.toast(m));markMinerals(this,this.world.resources);
-  const npc=this.nearest(),nearExit=!this.inShop&&Math.abs(this.player.x-64)<70&&Math.abs(this.player.y-1680)<32,location=this.inBlacksmith?'Ferraria de Bento':this.merchantRoom?`${VILLAGE_NPCS.find(n=>n.id===this.merchantRoom)!.role} · ${VILLAGE_NPCS.find(n=>n.id===this.merchantRoom)!.name}`:VILLAGE_NAME;
-  this.ui.updateHUD({worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'village',coins:this.state.villageEconomy!.coins,inHome:this.inShop,mapEditorAvailable:true,interiorEditor:this.inShop,swimming:this.player.isSwimming,name:this.state.profile.name,
+  const npc=this.nearest(),nearExit=!this.inShop&&Math.abs(this.player.x-64)<70&&Math.abs(this.player.y-1680)<32,location=this.inCommunity?'Centro comunitário':this.inBlacksmith?'Ferraria de Bento':this.merchantRoom?`${VILLAGE_NPCS.find(n=>n.id===this.merchantRoom)!.role} · ${VILLAGE_NPCS.find(n=>n.id===this.merchantRoom)!.name}`:VILLAGE_NAME;
+  this.communityLabel?.setText(communityReady(this.state)?'Centro comunitário':`Centro comunitário · reforma ${communityStage(this.state)}/3`).setVisible(!this.inShop&&Math.hypot(this.player.x-COMMUNITY_ENTRANCE.x,this.player.y-COMMUNITY_ENTRANCE.y)<260);
+  this.ui.updateHUD({worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'village',mapTitle:this.inCommunity?'Centro comunitário':undefined,coins:this.state.villageEconomy!.coins,inHome:this.inShop,mapEditorAvailable:!this.inCommunity,interiorEditor:this.inShop&&!this.inCommunity,swimming:this.player.isSwimming,name:this.state.profile.name,
    day:this.state.day,time:this.state.time,inventory:this.inventory.data,tool:'hand',wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,
-   playerTile:{x:this.player.x/32,y:this.player.y/32},interiorMapSize:this.inShop?{width:18,height:this.merchantRoom?12:11}:undefined,interactionKey:npc||this.helpers?.nearest()?'E':null,prompt:(this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:undefined)??this.closedDoorMessage()??(npc?`Conversar com ${npc.data.name}${this.canTrade(npc.data.id)?' · comprar e vender':' · conversa e serviços'}`:this.guide?`Siga ${VILLAGE_NPCS.find(n=>n.id===this.guide!.owner)!.name} até a loja`:this.inShop?'Caminhe pela porta ao sul para sair':nearExit?'Siga a seta para voltar à propriedade':'Explore a praça e converse com os moradores'),
-   location,harvests:this.inventory.data.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:this.inShop,shelterReason:this.inShop?location:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});
+   playerTile:{x:this.player.x/32,y:this.player.y/32},interiorMapSize:this.inShop?{width:18,height:this.merchantRoom||this.inCommunity?12:11}:undefined,interactionKey:npc||this.helpers?.nearest()||this.nearCommunity()?'E':null,prompt:this.nearCommunity()?(communityReady(this.state)?'Entrar no centro comunitário':'Reparar o centro comunitário · preparar um lar para sobreviventes'):(this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:undefined)??this.closedDoorMessage()??(npc?`Conversar com ${npc.data.name}${this.canTrade(npc.data.id)?' · comprar e vender':' · conversa e serviços'}`:this.guide?`Siga ${VILLAGE_NPCS.find(n=>n.id===this.guide!.owner)!.name} até a loja`:this.inShop?'Caminhe pela porta ao sul para sair':nearExit?'Siga a seta para voltar à propriedade':'Explore a praça e converse com os moradores'),
+   location,harvests:this.inventory.data.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:this.inShop,shelterReason:this.inShop?location:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress,...this.bentoTravelView?.hud,...(this.inBlacksmith&&!npc&&nearBentoDepot(this.state,this.player)?{prompt:'Depósito particular do Bento',interactionKey:'E'}:{})});
   this.ui.updateCameraZoom(this.zoom,!this.paused&&!this.shop?.isOpen);
  }
- persist():boolean {
-  if(!this.player||this.leaving)return false;
+ persist():boolean {return!!this.player&&!this.leaving&&saveGame(this.snapshotState());}
+ private snapshotState():SaveData {
   this.state.quickbar=this.ui.getQuickbar();this.state.inventory={...this.inventory.data};
   const position={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};
-  if(this.inBlacksmith){this.state.blacksmithInterior=position;delete this.state.merchantInterior;}
+  if(this.inCommunity){this.state.communityInterior=position;delete this.state.blacksmithInterior;delete this.state.merchantInterior;}
+  else if(this.inBlacksmith){this.state.blacksmithInterior=position;delete this.state.merchantInterior;}
   else if(this.merchantRoom){this.state.merchantInterior={owner:this.merchantRoom,...position};delete this.state.blacksmithInterior;}
   else{this.state.villagePosition=position;delete this.state.blacksmithInterior;delete this.state.merchantInterior;}
+  if(!this.inCommunity)delete this.state.communityInterior;
   this.state.shopResidents=[...this.residents.values()].map(p=>({...p}));
   this.state.merchantScenes=Object.fromEntries([...this.merchantLayouts].map(([id,data])=>[id,structuredClone(data)]));
   this.state.bentoRoutine=structuredClone(this.bentoRoutine.state);
   this.state.villageRoutines=Object.fromEntries([...this.routines].map(([id,r])=>[id,structuredClone(r.state)]));
   this.state.blacksmithScene=structuredClone(this.smithLayout);
   this.state.blacksmithLayoutRevision=3;
-  this.state.crops=this.farming.crops.map(c=>({...c}));return saveGame(this.state);
+  this.state.crops=this.farming.crops.map(c=>({...c}));return this.state;
  }
  private save=():void=>{this.persist();};
  private blur=():void=>{if(!this.paused&&!this.leaving){this.setPaused(true);this.ui.togglePause();}this.persist();};
@@ -511,7 +573,8 @@ export class VillageScene extends Phaser.Scene {
   if(this.paused||this.leaving||this.changingRoom||this.shop?.isOpen||this.ui.isModalOpen()||document.hidden)return;
   const delta=Math.min(ms/1000,.1),previous={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta,this.movementBlocked,this.movementBlockedPoint,true,this.swimmingPoint,this.allowPierStep);
   if(this.inShop)this.centerInteriorCamera();
-  if(!this.merchantRoom&&this.homePassage.update(previous,this.player,this.inBlacksmith?smithDoor(this.smithLayout):BLACKSMITH_DOOR)){this.changeBlacksmithRoom();return;}
+  if(this.inCommunity&&this.communityPassage.update(previous,this.player,COMMUNITY_ROOM_EXIT)){this.changeCommunityRoom(false);return;}
+  if(!this.inCommunity&&!this.merchantRoom&&this.homePassage.update(previous,this.player,this.inBlacksmith?smithDoor(this.smithLayout):BLACKSMITH_DOOR)){this.changeBlacksmithRoom();return;}
   if(this.merchantRoom){if(this.merchantPassage.update(previous,this.player,MERCHANT_ROOM_EXIT)){this.changeMerchantRoom();return;}}
   else if(!this.inShop){const near=VILLAGE_NPCS.find(n=>n.id!=='bento'&&Math.hypot(this.player.x-merchantDoor(n.id).x,this.player.y-merchantDoor(n.id).y)<80);if(near){if(this.merchantPassage.update(previous,this.player,merchantDoor(near.id))){this.changeMerchantRoom(near.id);return;}}else this.merchantPassage.reset();}
   if(!this.inShop&&this.northPassage.update(previous,this.player,VILLAGE_NORTH_GATE,VILLAGE_NORTH_ARRIVAL)){this.enterCityForest();return;}
@@ -531,6 +594,7 @@ export class VillageScene extends Phaser.Scene {
   }
   for(const npc of this.villagers)npc.sprite.setVisible(this.sameRoom(npc)&&(!npc.data.merchantId||isMerchantOpen(npc.data.merchantId,this.state.day)));
 
+  this.bentoTravelView?.update();
   this.hudElapsed+=delta;if(this.hudElapsed>.1){this.updateHUD();this.hudElapsed=0;}
   this.elapsed+=delta;if(this.elapsed>5){this.persist();this.elapsed=0;}
  }

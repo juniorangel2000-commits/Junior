@@ -1,0 +1,20 @@
+{
+  "file": "assets/visual/mine/cave-bats.png",
+  "sha256": "247efe0a52f0e90855e65cc1caa731e73c1181878904ddde2f0123c698aa3dbb",
+  "source": "Generated for phase 4, matching first-gallery.png; original retained in /workspace/generated_images.",
+  "grid": {
+    "columns": 4,
+    "rows": 2
+  },
+  "frames": [
+    "south-up",
+    "south-spread",
+    "south-down",
+    "south-half",
+    "north-up",
+    "north-spread",
+    "north-down",
+    "roost"
+  ],
+  "use": "Equal normalized cells, floor-rounded integer coordinates, nearest filtering. Animated only while flying."
+}

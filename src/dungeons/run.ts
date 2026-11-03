@@ -1,3 +1,4 @@
+import {advanceEnemyPursuit,swordTargets,damageWithGrace} from './combat-core';
 import type {MapEditData} from '../systems/map-editor';
 import { PET_SPECIES, isDogPet } from './config';
 import { petAttackHitAt, petAttackMoves } from './pet-sprites';
@@ -21,7 +22,7 @@ import {
 } from "./config";
 import { UPGRADES, rollUpgradeCards, type UpgradeCard } from "./upgrades";
 import { hordeProfile, experienceForLevel, waveEnemyCount, zombieSpeed } from "./director";
-import { insideSwordArc, WEAPON_DESCRIPTIONS } from "./weapon-identity";
+import { WEAPON_DESCRIPTIONS } from "./weapon-identity";
 import { dungeonWaypoint, dungeonSegmentClear } from "./navigation";
 import { bossProfile, isBossRound, TIMED_BOSS_SCHEDULE } from "./bosses";
 import { advanceBossCombat, type BossCombatState } from "./boss-combat";
@@ -587,41 +588,12 @@ export class DungeonRun {
         if (s.phase === "defeat") return;
         if (!pursue) continue;
       }
-      const dx = s.player.x - e.x,
-        dy = s.player.y - e.y,
-        d = Math.hypot(dx, dy) || 1,
-        speed = e.speed * dt;
-      let mx = (dx / d) * speed,
-        my = (dy / d) * speed;
-      if (
-        e.detour &&
-        (Math.hypot(e.detour.x - e.x, e.detour.y - e.y) < speed * 2 ||
-          !this.segmentClear(s.dungeon, e.x, e.y, e.detour.x, e.detour.y))
-      ) {
-        delete e.detour;
-        // Finish routing around the obstacle rather than cutting back into it
-        // as soon as one intermediate waypoint has been reached.
-        if (!this.segmentClear(s.dungeon, e.x, e.y, s.player.x, s.player.y))
-          e.detour = this.waypoint(
-            s.dungeon,
-            e.x,
-            e.y,
-            s.player.x,
-            s.player.y,
-          );
-      }
-      if (
-        !e.detour &&
-        (this.blocked(s.dungeon, e.x + mx, e.y) ||
-          this.blocked(s.dungeon, e.x, e.y + my))
-      )
-        e.detour = this.waypoint(s.dungeon, e.x, e.y, s.player.x, s.player.y);
-      if (e.detour) {
-        const distance = Math.hypot(e.detour.x - e.x, e.detour.y - e.y) || 1;
-        mx = ((e.detour.x - e.x) / distance) * speed;
-        my = ((e.detour.y - e.y) / distance) * speed;
-      }
-      this.moveEnemy(e, mx, my);
+      const d = advanceEnemyPursuit(e,s.player,dt,{
+        blocked:(x,y)=>this.blocked(s.dungeon,x,y),
+        clear:(a,b)=>this.segmentClear(s.dungeon,a.x,a.y,b.x,b.y),
+        waypoint:(a,b)=>this.waypoint(s.dungeon,a.x,a.y,b.x,b.y),
+        move:(enemy,dx,dy)=>this.moveEnemy(enemy,dx,dy),
+      });
       if (d < 22) this.hurtPlayer(e.damage);
       if (s.phase === "defeat") return;
     }
@@ -877,13 +849,7 @@ export class DungeonRun {
     variant = 0,
   ): void {
     const wide = this.level("sword-wide");
-    const targets = this.spatial
-      .query(x, y, radius)
-      .filter((e) => e.hp > 0 && insideSwordArc(e.x - x, e.y - y, angle, wide))
-      .sort(
-        (a, b) => Math.hypot(a.x - x, a.y - y) - Math.hypot(b.x - x, b.y - y),
-      )
-      .slice(0, 1 + wide);
+    const targets = swordTargets(this.spatial.query(x,y,radius),{x,y},angle,radius,wide);
     for (const e of targets) {
       this.hit(e, damage);
       if (e.hp > 0) {
@@ -924,11 +890,7 @@ export class DungeonRun {
           ? s.pet.attributes.protection * 0.01 + this.bonus("pet-protection")
           : 0),
     );
-    s.player.hp = Math.max(
-      0,
-      s.player.hp - Math.max(1, damage * (1 - reduction)),
-    );
-    s.player.invulnerable = B.contactGrace;
+    damageWithGrace(s.player,Math.max(1,damage*(1-reduction)),B.contactGrace);
     if (s.player.hp === 0) s.phase = "defeat";
   }
   get shieldRadius(): number {

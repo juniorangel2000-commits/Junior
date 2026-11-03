@@ -7,6 +7,7 @@ const root='assets/visual/village/bento/Idle';
 const views:Record<CharacterDirection,string>={down:'south',up:'north',left:'west',right:'east','down-left':'south-west','down-right':'south-east','up-left':'north-west','up-right':'north-east'};
 export const bentoSourceKey=(direction:CharacterDirection,frame=0)=>`bento-original:${direction}:${frame}`;
 export function preloadBentoSprites(scene:Phaser.Scene):void{
+ if(scene.textures.exists('village-npc-bento'))return;
  for(const direction of CHARACTER_DIRECTIONS){
   scene.load.image(bentoSourceKey(direction),`${root}/rotations/${views[direction]}.png`);
   for(let frame=0;frame<BENTO_WALK_FRAMES;frame++)scene.load.image(bentoSourceKey(direction,frame+1),`${root}/animations/Walking/${views[direction]}/frame_${String(frame).padStart(3,'0')}.png`);

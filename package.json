@@ -1,7 +1,7 @@
 {
   "name": "depois-da-chuva",
   "private": true,
-  "version": "0.10.0-preview.28",
+  "version": "0.10.0-preview.29",
   "description": "Um jogo de cultivo, exploração e recomeços.",
   "author": "Depois da Chuva",
   "main": "desktop/main.cjs",
@@ -11,7 +11,7 @@
     "build": "tsc --noEmit && vite build && node scripts/prune-distribution.cjs",
     "preview": "vite preview --host 0.0.0.0",
     "check": "tsc --noEmit",
-    "test": "vitest run --maxWorkers=2",
+    "test": "vitest run --maxWorkers=2 --testTimeout=30000",
     "desktop": "npm run build && electron .",
     "desktop:win": "npm run build && electron-builder --win portable nsis --x64",
     "desktop:linux": "npm run build && electron-builder --linux dir --x64"

@@ -20,6 +20,8 @@ export interface VillageInteractionCallbacks {
   onGuide?(npcId:VillageNPC['id']):void;
   getPortrait?(npcId:string):string;
   onBlacksmith?():void;
+  onBentoExpedition?():void;
+  onMineRequests?():void;
   getServices?(npcId:string):VillageServiceOffer[];
   onService?(id:string):{ok:boolean;message:string};
   getInventory(): InventoryData;
@@ -162,6 +164,8 @@ export class VillageInteractionUI {
     this.tabs.replaceChildren();
     const options: Array<[Tab, string]> = [['talk', 'Conversar']];
     if(this.npc.id==='bento'){const b=document.createElement('button');b.className='village-primary';b.textContent='Fundição, ferramentas e encomendas';b.dataset.openBlacksmith='';b.onclick=()=>this.callbacks.onBlacksmith?.();this.tabs.append(b);}
+    if(this.npc.id==='bento'&&this.callbacks.onBentoExpedition){const b=document.createElement('button');b.className='village-primary';b.textContent='Expedição à mina';b.dataset.bentoExpedition='';b.onclick=()=>this.callbacks.onBentoExpedition?.();this.tabs.append(b);}
+    if(this.npc.id==='bento'&&this.callbacks.onMineRequests){const b=document.createElement('button');b.className='village-primary';b.textContent='Pedidos da mina';b.dataset.mineRequests='';b.onclick=()=>this.callbacks.onMineRequests?.();this.tabs.append(b);}
     if(this.callbacks.getServices?.(this.npc.id).length)options.push(['services','Serviços']);
     if (available&&(this.callbacks.canTrade?.(this.npc.id)??true)) options.push(['buy', this.npc.id==='bento'?'Comprar materiais':'Comprar'], ['sell', 'Vender']);
     for (const [tab, label] of options) {

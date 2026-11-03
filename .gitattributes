@@ -2,6 +2,7 @@
 # e quebras Markdown com dois espaços. O código do jogo mantém a checagem normal.
 /LEIA_PRIMEIRO.md -text -whitespace
 /documentacao/** -text -whitespace
+/docs/mineracao/ESPECIFICACAO.md -text -whitespace
 /pacotes_existentes/Jardim*/** -text -whitespace
 /referencias/otimizadas/** -text -whitespace
 
