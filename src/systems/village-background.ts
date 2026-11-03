@@ -1,3 +1,5 @@
+import {MerchantConversations} from './merchant-conversations';
+import {createSocialRuntime,type SocialRuntime} from './npc-social';
 import type {BentoWorkRuntime} from './bento-commit';
 import {advanceBentoTravel} from './bento-travel';
 import {advanceSurvivorCamp} from './survivor-camp';
@@ -27,6 +29,8 @@ class BackgroundVillage {
   readonly routines=new Map<RoutineId,MerchantDailyRoutine>();
   private readonly rooms=new Map<RoutineId,BentoRoomNavigation>();
   last:number;
+  private socialRuntime?:SocialRuntime;
+  private social=new MerchantConversations(()=>this.socialRuntime);
   constructor(readonly save:SaveData){
     this.last=clock(save);ensureFisherTravel(save);
     for(const id of IDS)this.rooms.set(id,villageRoutineNavigation(save,id));
@@ -61,7 +65,10 @@ class BackgroundVillage {
       arrival:(area,p,owner=current)=>freeArrival(p,(x,y)=>scenery(area,x,y,owner),actors(area,owner)),
     };
   }
-  step(seconds:number):void{
+  step(seconds:number,runtime?:BentoWorkRuntime):void{
+    this.socialRuntime=runtime?createSocialRuntime(()=>this.save,runtime.write,()=>this.save):undefined;
+    for(const[id,r]of this.routines)r.setExternal(id==='bento'&&!!this.save.bentoTravel?.trip);
+    if(runtime)this.social.update(seconds,this.save,this.routines);else this.social.reset(this.routines);
     for(const id of IDS){const routine=this.routines.get(id)!;routine.setExternal(id==='bento'&&!!this.save.bentoTravel?.trip);routine.step(seconds,this.save,this.environment(id));}
     this.last=clock(this.save);
   }
@@ -77,5 +84,5 @@ export function advanceBackgroundVillage(save:SaveData,seconds:number,player?:{x
   if(save.activeArea==='village'||!Number.isFinite(seconds)||seconds<=0)return;
   let model=models.get(save);
   if(!model||Math.abs(clock(save)-model.last)>5){model=new BackgroundVillage(save);models.set(save,model);}
-  advanceBentoTravel(save,Math.min(seconds,.1),player,false,runtime);model.step(Math.min(seconds,.1));
+  advanceBentoTravel(save,Math.min(seconds,.1),player,false,runtime);model.step(Math.min(seconds,.1),runtime);
 }

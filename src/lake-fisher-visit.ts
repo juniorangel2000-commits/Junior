@@ -1,3 +1,4 @@
+import {createSocialRuntime,openSocialConversation,respondSocial} from './systems/npc-social';
 import {ensureFisherTravel} from './systems/fisher-travel';
 import {villageAccessUnlocked,needsDamiaoIntroduction,receiveDamiaoIntroduction,DAMIAO_INTRODUCTION} from './systems/village-introduction';
 import type Phaser from 'phaser';
@@ -28,7 +29,9 @@ export class LakeFisherVisit {
  constructor(scene:Phaser.Scene,private state:()=>SaveData,private player:()=>Player,_blocked:(x:number,y:number)=>boolean,pause:(value:boolean)=>void,changed:()=>void){
   const travel=ensureFisherTravel(state()),start=travel;
   this.sprite=scene.add.sprite(start.x,start.y,damiaoTexture(scene),characterFrame(start.direction,0,DAMIAO_WALK_FRAMES)).setOrigin(.5,DAMIAO_ORIGIN_Y).setDisplaySize(DAMIAO_DISPLAY,DAMIAO_DISPLAY).setDepth(start.y).setVisible(start.area==='fishingLake');
+  const socialRuntime=createSocialRuntime(state,saveGame,state);
   this.panel=new VillageInteractionUI({
+   onSocialOpen:id=>openSocialConversation(socialRuntime,id),onSocialResponse:(id,tone)=>respondSocial(socialRuntime,id,tone),
    locationLabel:'CABANA DO LAGO',returnLabel:'voltar ao lago',
    getDialogueAction:()=>needsDamiaoIntroduction(state())?{label:'Receber vara de pesca',complete:()=>{const result=receiveDamiaoIntroduction(state(),saveGame);if(result.ok)changed();return result;}}:undefined,
    canTrade:()=>villageAccessUnlocked(state())&&damiaoAtLake(state()),isInside:()=>true,

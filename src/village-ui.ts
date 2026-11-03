@@ -1,3 +1,4 @@
+import type {SocialContext} from './systems/npc-social';
 import {stockInfo} from './systems/economy';
 import {ECONOMY_BALANCE as BALANCE} from './data/economy-balance';
 import type {VillageServiceOffer} from './systems/village-services';
@@ -11,6 +12,8 @@ import { itemIconUrl } from './visual-assets';
 import './village-ui.css';
 
 export interface VillageInteractionCallbacks {
+  onSocialOpen?(id:VillageNPC['id']):SocialContext;
+  onSocialResponse?(id:VillageNPC['id'],tone:'warm'|'distant'):{ok:boolean;message:string;context?:SocialContext};
   locationLabel?:string;
   getDialogueAction?(npcId:string):{label:string;complete:()=>{ok:boolean;message:string}}|undefined;
   returnLabel?:string;
@@ -53,6 +56,7 @@ export class VillageInteractionUI {
   private npc?: VillageNPC;
   private tab: Tab = 'talk';
   private dialogueIndex = 0;
+  private socialContext?:SocialContext;
   private selected?: ItemId;
   private quantity = 1;
   private previousFocus?: HTMLElement;
@@ -91,7 +95,7 @@ export class VillageInteractionUI {
   open(npc: VillageNPC): void {
     if (this.disposed) return;
     if (!this.isOpen) this.previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
-    this.npc = npc;
+    this.npc = npc;this.socialContext=this.callbacks.onSocialOpen?.(npc.id);
     this.tab = 'talk'; this.dialogueIndex = 0; this.selected = undefined; this.quantity = 1;
     this.layer.dataset.npc = npc.id;
     this.layer.hidden = false;
@@ -102,7 +106,7 @@ export class VillageInteractionUI {
 
   close(): void {
     if (!this.isOpen) return;
-    this.npc = undefined;
+    this.npc = undefined;this.socialContext=undefined;
     this.layer.hidden = true;
     this.body.replaceChildren();
     this.callbacks.onClose();
@@ -237,7 +241,16 @@ export class VillageInteractionUI {
     });
     actions.append(progress, next);
     if(available&&!inside&&this.callbacks.onGuide){const guide=document.createElement('button');guide.type='button';guide.className='village-primary';guide.dataset.guideToShop='';guide.textContent='Leve-me até sua loja';guide.disabled=this.callbacks.getAvailability?.(npc.id)?.canGuide===false;guide.onclick=()=>{this.close();this.callbacks.onGuide?.(npc.id);};actions.append(guide);const note=document.createElement('p');note.textContent='Compra e venda acontecem dentro da loja. Conversas e serviços continuam disponíveis aqui.';copy.append(note);}
-    copy.prepend(quote);copy.append(actions); this.body.append(emblem, copy);
+    copy.prepend(quote);
+    if(this.socialContext){
+      const context=this.socialContext,note=document.createElement('aside');note.className='village-social-note';note.dataset.socialNpc=npc.id;
+      const label=document.createElement('small');label.textContent=context.label;const greeting=document.createElement('p');greeting.textContent=context.greeting;note.append(label,greeting);
+      if(context.memory){const memory=document.createElement('p');memory.dataset.socialMemory='';memory.textContent=context.memory;note.append(memory);}
+      copy.prepend(note);
+      if(!completion&&this.callbacks.onSocialResponse){const choices=document.createElement('div');choices.className='village-social-choices';
+       for(const[tone,text]of[['warm','É bom conversar com você.'],['distant','Prefiro não conversar agora.']]as const){const button=document.createElement('button');button.type='button';button.className='village-primary';button.dataset.socialResponse=tone;button.textContent=text;button.disabled=!context.canRespond;button.onclick=()=>{const result=this.callbacks.onSocialResponse!(npc.id,tone);if(result.ok){this.socialContext={...context,...result.context};this.renderDialogue();}this.report(result.message,result.ok);};choices.append(button);}copy.append(choices);}
+    }
+    copy.append(actions); this.body.append(emblem, copy);
   }
 
   private renderTrade(merchantId: MerchantId, side: TradeSide): void {

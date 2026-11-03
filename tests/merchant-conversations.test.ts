@@ -1,3 +1,6 @@
+import {createNewSave,validateSave,migrateSave} from '../src/systems/save';
+import {createCharacterProfile} from '../src/data/characters';
+import {createSocialRuntime} from '../src/systems/npc-social';
 import {describe,it,expect} from 'vitest';
 import {MerchantConversations} from '../src/systems/merchant-conversations';
 import {MerchantDailyRoutine,merchantPeriod,MERCHANT_DAILY_PLAN,type RoutineId,type RoutineEnvironment} from '../src/systems/merchant-routine';
@@ -85,4 +88,19 @@ describe('slower clock and staggered lunch conversations',()=>{
    }
   }
  });
+});
+
+describe('persistent social exchanges reuse native routines',()=>{
+ const setup=()=>{const {routines,clock}=plazaPair(['augusto','bento']);const save=createNewSave(createCharacterProfile('Conversa QA'));Object.assign(save,clock);const runtime=createSocialRuntime(()=>structuredClone(save),validateSave,()=>save);return{routines,save,runtime,conversation:new MerchantConversations(()=>runtime)};};
+ it('finishes the exchange with a farewell, records one relationship and keeps both feet fixed',()=>{
+  const {routines,save,conversation}=setup(),positions=[...routines.values()].map(r=>({x:r.state.x,y:r.state.y}));let farewell=false;
+  for(let i=0;i<180;i++){const speech=conversation.update(.1,save,routines);if(speech?.text.startsWith('Até mais'))farewell=true;for(const[index,r]of[...routines.values()].entries()){r.step(.1,save,env);expect({x:r.state.x,y:r.state.y}).toEqual(positions[index]);}save.time+=.1;}
+  expect(farewell).toBe(true);expect(save.npcSocial!.pairs['augusto:bento']).toMatchObject({encounters:1,affinity:1});expect(validateSave(save)).toBe(true);
+ });
+ it('performs exactly two durable writes per encounter and none during idle frames or scene re-entry',()=>{const {routines,save}=setup();let snapshots=0,writes=0;const runtime=createSocialRuntime(()=>{snapshots++;return structuredClone(save);},d=>{writes++;return validateSave(d);},()=>save),conversation=new MerchantConversations(()=>runtime);for(let i=0;i<400;i++)conversation.update(.1,save,routines);expect(writes).toBe(2);expect(snapshots).toBe(2);conversation.reset(routines);for(let i=0;i<200;i++)conversation.update(.1,save,routines);expect(writes).toBe(2);expect(snapshots).toBe(2);expect(save.npcSocial!.pairs['augusto:bento'].encounters).toBe(1);});
+ it('does not write or begin social activity when simulation is stopped',()=>{const {routines,save,conversation}=setup();for(const dt of [0,-1,NaN])expect(conversation.update(dt,save,routines)).toBeUndefined();expect(save.npcSocial).toBeUndefined();});
+ it('releases both actors at work time and never rewards an interrupted exchange',()=>{const {routines,save,conversation}=setup();expect(conversation.update(.1,save,routines)).toBeDefined();save.time=770;expect(conversation.update(.1,save,routines)).toBeUndefined();expect(conversation.participants).toHaveLength(0);expect(save.npcSocial!.pairs['augusto:bento'].encounters).toBe(0);for(const r of routines.values()){r.state.wait=0;expect(r.step(.1,save,env).moving).toBe(true);}});
+ it('resumes routines after reload without replaying a half-finished conversation',()=>{const {routines,save,conversation}=setup();conversation.update(.1,save,routines);conversation.reset(routines);const loaded=migrateSave(JSON.parse(JSON.stringify(save)))!,runtime=createSocialRuntime(()=>structuredClone(loaded),validateSave,()=>loaded),next=new MerchantConversations(()=>runtime);expect(next.update(.1,loaded,routines)).toBeUndefined();expect(next.participants).toHaveLength(0);expect(loaded.npcSocial!.pairs['augusto:bento'].encounters).toBe(0);});
+ it('prioritizes service, guidance and externally controlled actors before reserving any social event',()=>{for(const mode of['service','guide','external']as const){const {routines,save,conversation}=setup();if(mode==='service')routines.get('bento')!.state.serviceUntil=save.day*1440+save.time+5;if(mode==='external')routines.get('bento')!.setExternal(true);expect(conversation.update(.1,save,routines,undefined,mode==='guide'?'bento':undefined)).toBeUndefined();expect(save.npcSocial).toBeUndefined();expect(conversation.participants).toHaveLength(0);}});
+ it('does not hold either actor when durable reservation fails',()=>{const {routines,save}=setup(),runtime=createSocialRuntime(()=>structuredClone(save),()=>false,()=>save),c=new MerchantConversations(()=>runtime);expect(c.update(.1,save,routines)).toBeUndefined();expect(save.npcSocial).toBeUndefined();expect(c.participants).toHaveLength(0);save.time=1000;for(const r of routines.values()){r.state.wait=0;expect(r.step(.1,save,env).moving).toBe(true);}});
 });

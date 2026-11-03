@@ -1,3 +1,4 @@
+import {recordSocialMemory} from './npc-social';
 import {HOME_INTERIOR_DOORWAY,HOME_OUTDOOR_SPAWN} from './home';
 import {PROPERTY_VILLAGE_EXIT} from '../data/property-village-gate';
 import {defaultMap} from '../data/default-maps';
@@ -115,6 +116,7 @@ export function advanceBentoTravel(save:SaveData,seconds:number,player?:TilePoin
    if(result.done){const work=ensureBentoWork(save),inspect=work.trip.blocks===0&&bentoMapNavigation(save,'mining').fits(trip);delete work.mining;changeLeg(trip,inspect?'inspect':'mining-back',inspect?B.explorationMinutes:0);if(!inspect){const p=activeBentoParty(save);if(p)p.mode='return';}continue;}break;
   }
   if(trip.leg==='unload'&&runtime&&!ensureBentoWork(save).handling&&!bentoDepositKind(ensureBentoWork(save))){
+   if(!trip.purpose&&ensureBentoWork(save).trip.day===trip.day&&ensureBentoWork(save).trip.blocks>0)recordSocialMemory(save,'bento','productive-trip',trip.day);
    if(trip.purpose==='rescue'&&save.mineRescue)save.mineRescue.stage='complete';if(!trip.purpose)state.lastCompletedDay=trip.day;trip.purpose='workshop';
    if(bentoAvailability(save).open&&planBentoPersonalJob(save)){changeLeg(trip,ensureBentoWork(save).job?.phase==='carrying'?'forge':'withdraw');continue;}
    changeLeg(trip,'settle',B.returnPreparationSeconds);continue;
@@ -123,7 +125,7 @@ export function advanceBentoTravel(save:SaveData,seconds:number,player?:TilePoin
   if(trip.transition==='out'){
    const destination=portal(save,trip.leg);
    if(destination){const arrived={...trip,area:destination.area,x:destination.spawn.x,y:destination.spawn.y};
-    if(bentoActorFits(save,arrived,destination.spawn,player)){trip.area=destination.area;trip.x=destination.spawn.x;trip.y=destination.spawn.y;changeLeg(trip,destination.leg);trip.transition='in';trip.wait=B.portalPause;if(bentoPlayerSpace(save)===trip.area)break;continue;}
+    if(bentoActorFits(save,arrived,destination.spawn,player)){if(trip.leg==='mining-back'&&save.bentoExpedition?.safety?.returning&&save.bentoExpedition.safety.reason==='zombie')recordSocialMemory(save,'bento','fled-zombies',trip.day);trip.area=destination.area;trip.x=destination.spawn.x;trip.y=destination.spawn.y;changeLeg(trip,destination.leg);trip.transition='in';trip.wait=B.portalPause;if(bentoPlayerSpace(save)===trip.area)break;continue;}
    }
    trip.transition='in';trip.wait=B.portalPause;trip.blocked=true;continue;
   }

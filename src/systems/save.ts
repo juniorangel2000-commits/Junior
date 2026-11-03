@@ -1,6 +1,7 @@
 import {validMineMissions} from './mine-mission-state';
 import {validBentoExpedition} from './bento-expedition-state';
 import {validBentoTravel} from './bento-travel-state';
+import {validNpcSocial} from './npc-social-state';
 import {validMineRescue} from './mine-rescue-state';
 import {validBentoWork} from './bento-work-state';
 import {validUnderground,validUndergroundPosition} from './underground';
@@ -71,6 +72,7 @@ export function validateProfile(value: unknown): value is CharacterProfile {
 
 export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
+  if(value.npcSocial!==undefined&&!validNpcSocial(value.npcSocial,typeof value.day==='number'?value.day:999999))return false;
   if(value.bentoTravel!==undefined&&!validBentoTravel(value.bentoTravel,typeof value.day==='number'?value.day:999999))return false;
   if(value.mineRescue!==undefined&&!validMineRescue(value.mineRescue,typeof value.day==='number'?value.day:999999))return false;
   if(value.mineMissions!==undefined&&!validMineMissions(value.mineMissions,typeof value.day==='number'?value.day:999999))return false;

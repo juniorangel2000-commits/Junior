@@ -1,3 +1,4 @@
+import {recordSocialMemory} from './npc-social';
 import {returnMineMissionObjects} from './mine-mission-lifecycle';
 import type {SaveData,ItemId} from '../types';
 import {Home} from './home';
@@ -24,6 +25,7 @@ export function recoverMineDefeat(save:SaveData,write:(draft:SaveData)=>boolean)
  if(draft.bentoWork){delete draft.bentoWork.mining;delete draft.bentoWork.handling;}
  const count=(draft.mineRescue?.count??0)+1;
  draft.mineRescue={version:1,count,day:draft.day,time:draft.time,elapsedMinutes,bedId:placement.bedId,stage:'waking',variant:(count-1)%3};
+ recordSocialMemory(draft,'bento','rescue',count);
  const travel=ensureBentoTravel(draft);travel.updatedAt=(draft.day-1)*1440+draft.time;travel.lastAttemptDay=draft.day;
  travel.trip={day:draft.day,area:'home',leg:'rescue-dialogue',...placement.bento,direction:'down',route:[],index:0,distance:0,moving:false,wait:0,blocked:false,purpose:'rescue'};
  const h=draft.underground!.hazards!;h.hp=MINE_HAZARDS.maxHealth;h.invulnerable=0;h.swordCooldown=0;

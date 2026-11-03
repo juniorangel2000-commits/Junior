@@ -1,3 +1,4 @@
+import {createSocialRuntime,openSocialConversation,respondSocial} from '../systems/npc-social';
 import {showMineMissionJournal} from '../mine-mission-journal';
 import {createMineMissionRuntime} from '../systems/mine-missions';
 import {showBentoExpedition} from '../bento-expedition-menu';
@@ -87,6 +88,7 @@ type Villager={data:VillageNPC;sprite:Phaser.GameObjects.Sprite;frames:number};
 /** Town state travels through the same save as the farm, without replacing its
  * outdoor position, crops, resource fields or animal population. */
 export class VillageScene extends Phaser.Scene {
+ private socialRuntime=createSocialRuntime(()=>this.snapshotState(),saveGame,()=>this.state);
  private mineMissionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player,()=>this.inventory.data);
  getMineMissionRuntime=()=>this.mineMissionRuntime;
  private bentoWorkRuntime={missions:this.mineMissionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
@@ -122,7 +124,7 @@ export class VillageScene extends Phaser.Scene {
  private routines=new Map<RoutineId,MerchantDailyRoutine>();
  private npcOverlays?:VillageNpcOverlays;
  private speech?:{id:RoutineId;text:string};
- private conversations=new MerchantConversations();
+ private conversations=new MerchantConversations(()=>this.socialRuntime);
  private readonly merchantPassage=new DoorwayPassage();
  private get inShop():boolean{return this.inCommunity||this.inBlacksmith||!!this.merchantRoom;}
  private get roomOwner():ResidentId|undefined{return this.inBlacksmith?'bento':this.merchantRoom;}
@@ -170,6 +172,7 @@ export class VillageScene extends Phaser.Scene {
   this.communityLabel=this.add.text(COMMUNITY_ENTRANCE.x,COMMUNITY_ENTRANCE.y+8,'',{fontFamily:'Georgia',fontSize:'12px',color:'#f4e6be',backgroundColor:'#24372edb',padding:{x:7,y:5}}).setOrigin(.5,0).setDepth(600);
   this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
   this.shop=new VillageInteractionUI({
+   onSocialOpen:id=>openSocialConversation(this.socialRuntime,id),onSocialResponse:(id,tone)=>respondSocial(this.socialRuntime,id,tone),
    canTrade:id=>this.canTrade(id),isInside:id=>merchantCanTrade(id,this.roomOwner),getAvailability:id=>id==='bento'?{...this.routines.get('bento')!.availability(this.state),message:bentoAvailability(this.state).message}:dailyMerchant(id)?this.routines.get(id)?.availability(this.state):undefined,onGuide:id=>this.beginGuide(id),
    getPortrait:id=>id==='bento'?this.textures.getBase64(bentoTexture(this),characterFrame('down',0,BENTO_WALK_FRAMES)):id==='augusto'?this.textures.getBase64(augustoSourceKey('down')):id==='rosa'?this.textures.getBase64(rosaSourceKey('down')):id==='tobias'?this.textures.getBase64('village-npc-tobias',characterFrame('down',0,TOBIAS_WALK_FRAMES)):this.textures.getBase64(`village-npc-${id}`,0),
    onMineRequests:()=>{this.shop?.close();showMineMissionJournal(this.ui,this.mineMissionRuntime);},
@@ -292,6 +295,7 @@ export class VillageScene extends Phaser.Scene {
    for(const [index,id] of pair.entries()){
     const own=this.routines.get(id)!.state,peer=this.routines.get(pair[1-index])!.state;
     own.direction=directionFromVector(peer.x-own.x,peer.y-own.y);this.syncRoutine(id,0);
+    if(this.conversations.glance(id)){const npc=this.villagers.find(n=>n.data.id===id)!;const glance=own.direction.includes('up')?'up':own.direction.includes('down')?'down':own.direction==='left'?'up-left':'up-right';npc.sprite.setFrame(characterFrame(glance,0,npc.frames));}
    }
   }
  }

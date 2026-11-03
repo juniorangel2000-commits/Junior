@@ -56,6 +56,7 @@ export interface VillageEconomy {
   stock?:Partial<Record<ItemId,StockRecord>>;
 }
 export interface SaveData {
+  npcSocial?:import('./systems/npc-social-state').NpcSocialState;
   mineMissions?:import('./systems/mine-mission-state').MineMissionsState;
   mineRescue?:import('./systems/mine-rescue-state').MineRescueState;
   bentoExpedition?:import('./systems/bento-expedition-state').BentoExpeditionState;

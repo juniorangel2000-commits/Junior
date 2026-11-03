@@ -47,3 +47,10 @@
 @media(max-height:650px) and (min-width:700px){.village-layer{padding:12px}.village-panel{max-height:calc(100dvh - 24px)}.village-panel-heading{padding:10px 18px}.village-panel-heading h2{font-size:24px}.village-tabs{padding-top:10px}.village-trade{min-height:0;padding-top:12px;padding-bottom:12px}.village-selected-icon{display:none}.village-dialogue{min-height:230px}.village-feedback{min-height:28px}.village-panel-footer{padding-top:8px;padding-bottom:8px}}
 
 .smith-art{width:58px;height:58px;object-fit:contain;image-rendering:pixelated;float:left;margin:0 15px 9px 0}.village-coin{background:transparent url('/assets/visual/economy/icons/crown.png') center/contain no-repeat!important;border:0!important;box-shadow:none!important;border-radius:0!important}.village-dialogue-emblem img{width:96px;height:128px;object-fit:contain;image-rendering:pixelated}
+
+.village-social-note{margin:0 0 14px;padding:12px 15px;border:1px solid #ba9558;border-radius:5px;background:#f4e8c8;color:#51452d;}
+.village-social-note small{display:block;color:#6b7446;font-weight:700;letter-spacing:.05em;}
+.village-social-note p{margin:6px 0 0;line-height:1.5;}
+.village-social-note [data-social-memory]{padding-top:8px;border-top:1px solid #d5bf91;font-style:italic;}
+.village-social-choices{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;}
+.village-social-choices button{font-size:.86rem;}

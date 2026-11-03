@@ -1,11 +1,13 @@
 # Mineração integrada — execução por fases
 
-**Estado atual: fase 9 concluída.** Veja [FASE-9.md](FASE-9.md) para a cena de
-resgate, despertar na cama, persistência das consequências e volta física de
-Bento à ferraria. A próxima fase é a vida social simples dos NPCs. Pedidos,
-acontecimentos únicos e diário estão em `FASE-8.md`; companhia e defesa em
-`FASE-7.md`; mineração e depósitos em `FASE-6.md`; rotina e viagens em
-`FASE-5.md`; perigos e acesso por menu em `FASE-4.md`.
+**Estado atual: fase 10 implementada; fase 11 em verificação final.** Veja
+[FASE-10.md](FASE-10.md) para afinidade, conversas e memórias verdadeiras, e
+[FASE-11.md](FASE-11.md) para os ajustes de persistência, polimento e regressão.
+A última distribuição Windows é `v0.10.0-preview.29`, com as fases 1–9.
+As fases posteriores estão na branch `feature/vida-social-npcs`.
+Resgate e retorno físico de Bento estão em `FASE-9.md`; pedidos e diário em
+`FASE-8.md`; companhia e defesa em `FASE-7.md`; mineração e depósitos em
+`FASE-6.md`; rotina e viagens em `FASE-5.md`; perigos e menu em `FASE-4.md`.
 
 **Correção mais recente do usuário:** Mina Antiga → menu na porta central →
 cenário separado Galerias da Mina. A recepção não inicia uma expedição. Confirmar

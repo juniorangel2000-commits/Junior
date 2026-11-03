@@ -1,3 +1,4 @@
+import {recordSocialMemory} from './npc-social';
 import {pauseMineMissions,resumeMineMissions} from './mine-mission-lifecycle';
 import type {SaveData,TilePoint} from '../types';
 import {BENTO_EXPEDITION as B} from '../data/bento-expedition';
@@ -41,7 +42,7 @@ export function commandBento(save:SaveData,command:BentoCommand,player:TilePoint
   if(command==='follow')message='Você escolhe o caminho. Só vou seguir por passagens livres e seguras.';
  }
  try{if(!runtime.write(draft))return{ok:false,message:'Não foi possível salvar. A combinação foi preservada como estava.'};}catch{return{ok:false,message:'Não foi possível salvar. Tente novamente.'};}
- save.mineMissions=draft.mineMissions;save.bentoExpedition=draft.bentoExpedition;save.bentoTravel=draft.bentoTravel;save.bentoWork=draft.bentoWork;return{ok:true,message};
+ save.npcSocial=draft.npcSocial;save.mineMissions=draft.mineMissions;save.bentoExpedition=draft.bentoExpedition;save.bentoTravel=draft.bentoTravel;save.bentoWork=draft.bentoWork;return{ok:true,message};
 }
 function followGoal(save:SaveData,t:BentoTrip,player:TilePoint):TilePoint|undefined{
  const nav=bentoMapNavigation(save,t.area,{mode:'follow',player});const points:TilePoint[]=[];
@@ -55,6 +56,7 @@ export function stepBentoParty(save:SaveData,t:BentoTrip,seconds:number,player?:
  if(d> B.regroupDistance){p.separation=Math.min(B.separationSeconds+.1,p.separation+dt);p.regrouping=true;}else{p.separation=0;p.regrouping=false;}
  if(p.separation>=B.separationSeconds){endBentoParty(save,'separated');if(save.bentoWork)delete save.bentoWork.mining;changeBentoLeg(t,bentoReturnLeg(t.area));return false;}
  const deadline=(t.day-1)*1440+BENTO_WEEKLY_PLAN.latestReturn;if((save.day-1)*1440+save.time>=deadline){endBentoParty(save,'time');changeBentoLeg(t,bentoReturnLeg(t.area));return false;}
+ if(same&&d<=B.talkDistance&&t.area!=='shop'&&(t.distance>24||t.area==='mine'||t.area==='mining'))recordSocialMemory(save,'bento','first-trip',1,undefined,save.day,1);
  if(p.mode==='wait'){p.waiting=Math.min(1440,p.waiting+dt);t.moving=false;return true;}
  if(p.mode==='guide'||p.mode==='return')return p.regrouping;
  if(t.area!=='mine'&&t.area!=='mining'){p.mode='guide';return p.regrouping;}

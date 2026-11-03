@@ -1,3 +1,4 @@
+import {recordSocialMemory} from './npc-social';
 import type {SaveData,TilePoint,InventoryData} from '../types';
 import {Inventory} from './inventory';
 import {MINE_MISSIONS,MINE_REQUESTS,mineMission,mineMissionOrigin,mineMissionObjectId,mineMissionTarget,mineRequestCycle,mineMissionWorld,type MineMissionId} from '../data/mine-missions';
@@ -8,7 +9,7 @@ import {bentoPlayerSpace} from './bento-navigation';
 import {createVillageEconomy} from '../data/village-commerce';
 export interface MineMissionRuntime{snapshot:()=>SaveData;write:(draft:SaveData)=>boolean;apply:(draft:SaveData)=>void;player:()=>TilePoint}
 export function createMineMissionRuntime(snapshot:()=>SaveData,write:(draft:SaveData)=>boolean,root:()=>SaveData,player:()=>TilePoint,inventory?:()=>InventoryData):MineMissionRuntime{
- return{snapshot:()=>structuredClone(snapshot()),write,player,apply:d=>{const s=root();s.mineMissions=d.mineMissions;s.underground=d.underground;s.inventory={...d.inventory};s.villageEconomy=d.villageEconomy;const live=inventory?.();if(live)Object.assign(live,d.inventory);}};
+ return{snapshot:()=>structuredClone(snapshot()),write,player,apply:d=>{const s=root();s.npcSocial=d.npcSocial;s.mineMissions=d.mineMissions;s.underground=d.underground;s.inventory={...d.inventory};s.villageEconomy=d.villageEconomy;const live=inventory?.();if(live)Object.assign(live,d.inventory);}};
 }
 export function ensureMineMissions(save:SaveData):MineMissionsState{return save.mineMissions??=newMineMissions();}
 export function refreshMineRequests(save:SaveData):void{
@@ -54,6 +55,7 @@ export function actMineMission(runtime:MineMissionRuntime,id:MineMissionId,actio
   if(q.status!=='ready'||q.progress!==mineMissionTarget(id)||def.object&&q.object?.state!=='carried')return{ok:false,message:'Ainda falta concluir o objetivo deste pedido.'};
   if(def.kind==='repeat'&&state.repeatPaidCycle===mineRequestCycle(d.day))return{ok:false,message:'Você já recebeu pelo pedido deste período.'};
   const economy=d.villageEconomy??=createVillageEconomy();if(economy.coins>MINE_REQUESTS.coinsCap-def.reward)return{ok:false,message:'Sua carteira está cheia. O pagamento continua disponível.'};
+  recordSocialMemory(d,'bento','request-completed',def.kind==='repeat'?(q.cycle??0)+1:1,id,d.day,2);if(def.visits)recordSocialMemory(d,'bento','gallery',1,id);
   economy.coins+=def.reward;state.rewarded+=def.reward;q.status='completed';q.completedDay=d.day;if(q.object)q.object.state='delivered';if(def.kind==='repeat')state.repeatPaidCycle=mineRequestCycle(d.day);
   return{ok:true,message:`Bento agradeceu sua ajuda. Você recebeu ${def.reward} C.`};
  });
@@ -75,5 +77,5 @@ export function visitMineMissionTargets(runtime:MineMissionRuntime):{ok:boolean;
  const hits=MINE_MISSIONS.flatMap(def=>{const q=current.mineMissions?.quests[def.id];if(!def.visits||q?.status==='completed'||def.kind==='repeat'&&(!q||!['active','waiting'].includes(q.status)))return[];
   return def.visits.flatMap((p,index)=>{const world=mineMissionWorld(p);return!q?.visited.includes(index)&&Math.hypot(player.x-world.x,player.y-world.y)<=MINE_REQUESTS.visitReach&&undergroundFits(current.underground!,player.x,player.y)&&mineSegmentClear(current.underground!,player,world)?[{id:def.id,index}]:[];});
  });if(!hits.length)return{ok:false,message:''};
- return transaction(runtime,d=>{const state=ensureMineMissions(d);for(const hit of hits){const q=state.quests[hit.id];if(q.visited.includes(hit.index)||q.status==='completed')continue;if(q.status==='available')q.acceptedDay=d.day;q.visited.push(hit.index);q.visited.sort();q.progress=q.visited.length;q.status=q.progress===mineMissionTarget(hit.id)?'ready':'active';}return{ok:true,message:hits.some(h=>h.id==='forgotten-passage')?'Você encontrou uma antiga área de trabalho. A descoberta ficou registrada no diário.':'Reconhecimento anotado no diário da mina.'};});
+ return transaction(runtime,d=>{const state=ensureMineMissions(d);for(const hit of hits){const q=state.quests[hit.id];if(q.visited.includes(hit.index)||q.status==='completed')continue;if(q.status==='available')q.acceptedDay=d.day;q.visited.push(hit.index);q.visited.sort();q.progress=q.visited.length;const bento=d.bentoTravel?.trip;if(bento?.area==='mining'&&Math.hypot(bento.x-player.x,bento.y-player.y)<=78)recordSocialMemory(d,'bento','gallery',1,hit.id,d.day,1);q.status=q.progress===mineMissionTarget(hit.id)?'ready':'active';}return{ok:true,message:hits.some(h=>h.id==='forgotten-passage')?'Você encontrou uma antiga área de trabalho. A descoberta ficou registrada no diário.':'Reconhecimento anotado no diário da mina.'};});
 }
