@@ -1,0 +1,187 @@
+{
+  "file": "assets/visual/mine/mineral-family.png",
+  "columns": 3,
+  "rows": 5,
+  "frames": {
+    "ironShard": {
+      "x": 0,
+      "y": 0,
+      "width": 324,
+      "height": 323,
+      "bounds": [
+        60,
+        93,
+        264,
+        270
+      ]
+    },
+    "ironOre": {
+      "x": 324,
+      "y": 0,
+      "width": 324,
+      "height": 323,
+      "bounds": [
+        41,
+        65,
+        277,
+        286
+      ]
+    },
+    "ironIngot": {
+      "x": 648,
+      "y": 0,
+      "width": 324,
+      "height": 323,
+      "bounds": [
+        50,
+        90,
+        270,
+        277
+      ]
+    },
+    "goldShard": {
+      "x": 0,
+      "y": 323,
+      "width": 324,
+      "height": 324,
+      "bounds": [
+        60,
+        86,
+        264,
+        259
+      ]
+    },
+    "goldOre": {
+      "x": 324,
+      "y": 323,
+      "width": 324,
+      "height": 324,
+      "bounds": [
+        38,
+        58,
+        281,
+        279
+      ]
+    },
+    "goldIngot": {
+      "x": 648,
+      "y": 323,
+      "width": 324,
+      "height": 324,
+      "bounds": [
+        50,
+        81,
+        270,
+        267
+      ]
+    },
+    "blackMetalShard": {
+      "x": 0,
+      "y": 647,
+      "width": 324,
+      "height": 323,
+      "bounds": [
+        60,
+        73,
+        260,
+        252
+      ]
+    },
+    "blackMetalOre": {
+      "x": 324,
+      "y": 647,
+      "width": 324,
+      "height": 323,
+      "bounds": [
+        37,
+        50,
+        281,
+        273
+      ]
+    },
+    "blackMetalIngot": {
+      "x": 648,
+      "y": 647,
+      "width": 324,
+      "height": 323,
+      "bounds": [
+        50,
+        75,
+        270,
+        262
+      ]
+    },
+    "inlay-iron": {
+      "x": 0,
+      "y": 970,
+      "width": 324,
+      "height": 324,
+      "bounds": [
+        56,
+        71,
+        263,
+        231
+      ]
+    },
+    "deposit-iron": {
+      "x": 0,
+      "y": 1294,
+      "width": 324,
+      "height": 324,
+      "bounds": [
+        32,
+        24,
+        296,
+        262
+      ]
+    },
+    "inlay-gold": {
+      "x": 324,
+      "y": 970,
+      "width": 324,
+      "height": 324,
+      "bounds": [
+        57,
+        74,
+        260,
+        229
+      ]
+    },
+    "deposit-gold": {
+      "x": 324,
+      "y": 1294,
+      "width": 324,
+      "height": 324,
+      "bounds": [
+        28,
+        27,
+        295,
+        262
+      ]
+    },
+    "inlay-blackMetal": {
+      "x": 648,
+      "y": 970,
+      "width": 324,
+      "height": 324,
+      "bounds": [
+        50,
+        71,
+        264,
+        231
+      ]
+    },
+    "deposit-blackMetal": {
+      "x": 648,
+      "y": 1294,
+      "width": 324,
+      "height": 324,
+      "bounds": [
+        32,
+        24,
+        288,
+        255
+      ]
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import {minePropFrame} from './mine-gallery-art';
 import {createMineMineralAtlas,MINE_ORE_ATLASES,MINE_TERRAIN_ATLAS,MINE_HIDDEN_ROCK_TILE,mineMineralTile} from './underground-mineral-art';
 import {mineFixedLights} from './systems/underground-light';
 import {mineMaterialAt} from './systems/underground-geology';
@@ -5,7 +6,7 @@ import {MINE_FLOOR_CORNER_MASKS} from './data/mine-wall-shape';
 import Phaser from 'phaser';
 import type {TilePoint} from './types';
 import {MineRoomView} from './mine-room-view';
-import {UNDERGROUND,MINE_SPINE,MINE_DECOR,inMineEntrance} from './data/underground-layout';
+import {UNDERGROUND,MINE_SPINE,MINE_DECOR,mineDecorGeometry,inMineEntrance} from './data/underground-layout';
 import {mineRockAt,mineWallMask,type UndergroundState} from './systems/underground';
 const ATLAS=MINE_TERRAIN_ATLAS,TILE=32;
 
@@ -67,23 +68,18 @@ export class UndergroundView{
   }
  }
  private placeDecorations():void{
-  const source=this.scene.textures.get('mine-first-gallery').getSourceImage() as HTMLImageElement;
   for(const d of MINE_DECOR){
-   const key='underground-prop-'+d.kind;
-   if(!this.scene.textures.exists(key)){
-    const crop=d.kind==='cart'?{x:270,y:449,w:170,h:150}:{x:821,y:231,w:104,h:117},canvas=document.createElement('canvas');canvas.width=crop.w;canvas.height=crop.h;const c=canvas.getContext('2d')!;
-    // Alpha silhouettes cut the floor away; never paste rectangular patches into the new gallery.
-    const poly=d.kind==='cart'?[[15,29],[84,0],[165,22],[154,80],[168,97],[155,123],[110,148],[54,128],[6,104],[3,85],[18,68]]:[[1,23],[47,0],[101,21],[103,93],[54,116],[0,96]];
-    c.beginPath();poly.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.clip();c.drawImage(source,-crop.x,-crop.y);this.scene.textures.addCanvas(key,canvas)!.setFilter(0);
-   }
-   const image=this.scene.add.image(d.x*32,(d.y+d.h)*32,key).setOrigin(0,1).setScale(d.kind==='cart'?.38:.27).setDepth((d.y+d.h)*32).setData('mine-decoration',d.id);this.decorations.push(image);
+   const geometry=mineDecorGeometry(d),art=minePropFrame(this.scene,d.kind);
+   const shadow=this.scene.add.ellipse(geometry.x,geometry.y-5,geometry.width*.86,12,0x171114,.32).setDepth(-108);
+   const image=this.scene.add.image(geometry.x,geometry.y,art.key,art.frame).setOrigin(.5,1).setDisplaySize(geometry.width,geometry.height).setDepth(geometry.y).setData('mine-decoration',d.id);
+   this.decorations.push(shadow,image);
   }
-  // Fixed warm fixtures use the existing light renderer owned by the entrance view.
-  for(const {x,y} of mineFixedLights(this.state())){const key='underground-lantern';
-   if(!this.scene.textures.exists(key)){const canvas=document.createElement('canvas');canvas.width=44;canvas.height=84;const c=canvas.getContext('2d')!;c.beginPath();[[22,0],[26,15],[38,29],[36,68],[22,82],[8,68],[6,29],[18,15]].forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.clip();c.drawImage(source,788,112,44,84,0,0,44,84);this.scene.textures.addCanvas(key,canvas)!.setFilter(0);}
-   const lamp=this.scene.add.image(x,y,key).setOrigin(.5,1).setScale(.38).setDepth(y).setData('fixture-light',{radius:80,always:true,strength:.5});this.decorations.push(lamp);
+  for(const {x,y}of mineFixedLights(this.state())){
+   const art=minePropFrame(this.scene,'lantern');
+   const lamp=this.scene.add.image(x,y,art.key,art.frame).setOrigin(.5,1).setDisplaySize(16,30).setDepth(y).setData('fixture-light',{radius:80,always:true,strength:.5});this.decorations.push(lamp);
   }
  }
+
  impact(p:TilePoint):void{
   for(let i=0;i<6;i++){const chip=this.scene.add.rectangle(p.x*32+16,p.y*32+12,2+i%2,2,0xc78a58).setDepth(p.y*32+34);this.scene.tweens.add({targets:chip,x:chip.x+(i-2.5)*7,y:chip.y+10+(i%3)*5,alpha:0,duration:260,onComplete:()=>chip.destroy()});}
  }

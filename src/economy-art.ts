@@ -23,7 +23,7 @@ export function preloadEconomyArt(scene:Phaser.Scene):void{
 
 
 
- scene.load.image('detailed-ore-atlas',`${ROOT}/deposits/rochas-detalhadas.png`);
+ scene.load.image('detailed-ore-atlas','assets/visual/mine/mineral-family.png');
 
  for(const b of Object.values(SHOP_FACADES))scene.load.image(b.texture,b.file);
 

@@ -7,7 +7,7 @@ import {CHARACTER_DIRECTIONS} from '../character-directions';
 import {Resources} from './resources';
 import {Inventory} from './inventory';
 import {MINE_ARRIVAL,mineResumePosition} from '../data/mine-room';
-import {UNDERGROUND,mineCellIndex,mineCellPoint,mineZone,undergroundLayout,inMineEntrance,inMineConnector} from '../data/underground-layout';
+import {UNDERGROUND,mineDecorCell,mineDecorBlocked,mineCellIndex,mineCellPoint,mineZone,undergroundLayout,inMineEntrance,inMineConnector} from '../data/underground-layout';
 import {mineBlockedPoint} from '../data/mine-room';
 export interface MineCellChange{dug?:true;hits?:number;mineral?:MineMaterial;dugDay?:number;cycle?:number;renewedDay?:number}
 export interface UndergroundState{access?:1;hazards?:MineHazardState;version:1;seed:number;changes:Record<string,MineCellChange>;revision:number;geology?:1;expedition?:{id:number;inside:boolean;enteredDay:number;exitedDay?:number};renewal?:{day:number;count:number;sequence:number;lastRegeneratedDay?:number}}
@@ -36,6 +36,7 @@ export function mineRockAt(mine:UndergroundState,x:number,y:number):boolean{
  const px=x*32+16,py=y*32+16;
  if(inMineEntrance(px,py))return!inMineConnector(px,py)&&mineBlockedPoint(px-UNDERGROUND.entryX,py-UNDERGROUND.entryY);
  if(inMineConnector(px,py))return false;
+ if(mineDecorCell(x,y))return false;
  const i=mineCellIndex(x,y);return !!undergroundLayout(mine.seed).rock[i]&&!mine.changes[i]?.dug;
 }
 export function mineWallMask(mine:UndergroundState,x:number,y:number):number{
@@ -45,6 +46,7 @@ export function undergroundBlocked(mine:UndergroundState,x:number,y:number):bool
  if(!Number.isFinite(x)||!Number.isFinite(y)||x<0||y<0||x>=UNDERGROUND.width*32||y>=UNDERGROUND.height*32)return true;
  if(inMineEntrance(x,y))return !inMineConnector(x,y)&&mineBlockedPoint(x-UNDERGROUND.entryX,y-UNDERGROUND.entryY);
  if(inMineConnector(x,y))return false;
+ if(mineDecorBlocked(x,y))return true;
  const tx=Math.floor(x/32),ty=Math.floor(y/32);
  if(!mineRockAt(mine,tx,ty))return organicMineFloorCornerRock(x-tx*32,y-ty*32,mineWallMask(mine,tx,ty),tx,ty);
  return organicMineWallContains(x-tx*32,y-ty*32,mineWallMask(mine,tx,ty),tx,ty);

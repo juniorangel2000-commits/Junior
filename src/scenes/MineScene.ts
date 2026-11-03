@@ -1,3 +1,4 @@
+import {preloadMineGalleryArt} from '../mine-gallery-art';
 import {forgottenGalleryFloor} from '../data/mine-quest-geometry';
 import {MineMissionView,preloadMineMissionArt} from '../mine-mission-view';
 import {ensureMineMissions,visitMineMissionTargets} from '../systems/mine-missions';
@@ -56,7 +57,7 @@ export class MineScene extends Phaser.Scene{
  private bentoTravelView?:BentoTravelView;private missionView?:MineMissionView;private missionElapsed=0;
  constructor(private readonly sceneKey='Mina'){super(sceneKey);}
  private get miningMode(){return this.sceneKey==='Mineracao';}
- preload():void{preloadBentoTravel(this);if(this.miningMode){preloadMineMissionArt(this);preloadMineHazards(this);preloadMineMinerals(this);if(!this.textures.exists('mine-terrain-materials'))this.load.image('mine-terrain-materials','assets/visual/mine/subterranean-textures.png');}preloadMineRoom(this);preloadPetArt(this);}
+ preload():void{preloadBentoTravel(this);if(this.miningMode){preloadMineGalleryArt(this);preloadMineMissionArt(this);preloadMineHazards(this);preloadMineMinerals(this);if(!this.textures.exists('mine-terrain-materials'))this.load.image('mine-terrain-materials','assets/visual/mine/subterranean-textures.png');}preloadMineRoom(this);preloadPetArt(this);}
  getFishingState():SaveData{return this.state;}
  create(data:MineStart):void{
   this.state=structuredClone(data.save);this.state.activeArea='highland';delete this.state.homePosition;delete this.state.merchantInterior;delete this.state.blacksmithInterior;delete this.state.communityInterior;

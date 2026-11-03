@@ -1,3 +1,4 @@
+import {pointInPolygon} from './architecture-collision';
 import {forgottenGalleryFloor,mineMissionSeal} from './mine-quest-geometry';
 import {mineBlockedPoint,MINE_ROOM} from './mine-room';
 export const UNDERGROUND={version:1,width:160,height:192,tile:32,entryX:2176,entryY:5632} as const;
@@ -22,6 +23,18 @@ export const MINE_DECOR=[
  {id:'forgotten-crate',kind:'crate',x:17,y:87,w:1,h:1},
  {id:'crate-north',kind:'crate',x:73,y:23,w:1,h:1},
 ] as const;
+export type MineDecoration=typeof MINE_DECOR[number];
+/** Visuals and collision share a single ground anchor and authored footprint.
+ * Reserved cells stay protected in geology/saves, but are not rock walls. */
+export function mineDecorGeometry(d:MineDecoration){
+ const width=d.kind==='cart'?64:32,height=d.kind==='cart'?58:36;
+ const x=(d.x+d.w/2)*32,y=(d.y+d.h)*32;
+ const footprint=(d.kind==='cart'?[[-.46,-18],[-.15,-29],[.44,-18],[.46,-7],[.13,-4],[-.44,-8]]:[[-.30,-12],[0,-20],[.30,-12],[.30,-6],[0,-4],[-.30,-6]]).map(([u,v])=>[x+u*width,y+v]as const);
+ return{x,y,width,height,footprint};
+}
+const DECOR_GEOMETRY=MINE_DECOR.map(mineDecorGeometry);
+export const mineDecorCell=(x:number,y:number)=>MINE_DECOR.some(d=>x>=d.x&&x<d.x+d.w&&y>=d.y&&y<d.y+d.h);
+export const mineDecorBlocked=(x:number,y:number)=>DECOR_GEOMETRY.some(d=>x>=d.x-d.width/2&&x<=d.x+d.width/2&&y>=d.y-30&&y<=d.y&&pointInPolygon(x,y,d.footprint));
 export const mineCellIndex=(x:number,y:number)=>y*UNDERGROUND.width+x;
 export const mineCellPoint=(index:number)=>({x:index%UNDERGROUND.width,y:Math.floor(index/UNDERGROUND.width)});
 export const mineDepth=(y:number):MineDepth=>y>=132?'surface':y>=88?'middle':y>=44?'deep':'extreme';
