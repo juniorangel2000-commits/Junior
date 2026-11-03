@@ -1,3 +1,4 @@
+import {collectGroundItems,groundItems} from '../src/systems/ground-items';
 import {describe,it,expect,vi} from 'vitest';
 import {createNewSave,validateSave,migrateSave} from '../src/systems/save';
 import {createCharacterProfile} from '../src/data/characters';
@@ -10,6 +11,7 @@ import {configureTool,toolCondition} from '../src/systems/economy';
 import {createDungeonProgress} from '../src/dungeons/progression';
 const fresh=()=>{const s=createNewSave(createCharacterProfile('Geologia'));s.activeArea='highland';s.inventory.pickaxe=1;ensureUnderground(s);return s;};
 const forceRenew=()=>{const b=structuredClone(UNDERGROUND_BALANCE);b.regeneration.fraction=1;b.regeneration.maxPerEntry=64;for(const band of Object.values(b.deposits))band.iron=band.gold=band.blackMetal=0;return b;};
+function collectAt(s:ReturnType<typeof fresh>,p:{x:number;y:number}){s.time+=.2;const result=collectGroundItems({snapshot:()=>structuredClone(s),write:validateSave,apply:d=>{s.inventory=d.inventory;s.groundItems=d.groundItems;},player:()=>({x:p.x*32+16,y:p.y*32+16}),space:()=> 'mining',blocked:(x,y)=>!undergroundFits(s.underground!,x,y),enabled:()=>true});expect(result.ok,result.message).toBe(true);}
 function deposit(s:ReturnType<typeof fresh>,material:MineMaterial){const m=s.underground!;for(let y=5;y<172;y++)for(let x=5;x<155;x++)if(mineBlockNode(m,x,y)&&mineMaterialAt(m,x,y)===material)return{x,y};throw Error('Missing sample '+material);}
 function workFace(s:ReturnType<typeof fresh>,material:MineMaterial){
  const p=deposit(s,material),origin={x:p.x*32+16,y:(p.y+1)*32+16};
@@ -62,7 +64,7 @@ describe('official deposits and existing equipment',()=>{
  it.each(['iron','gold','blackMetal']as const)('collects %s through the current resource and inventory system exactly once',material=>{
   const s=fresh(),{p,origin}=workFace(s,material);configureTool(s,'pickaxe',material==='iron'?0:material==='gold'?1:2);
   let result;for(let n=0;n<6&&!s.underground!.changes[mineCellIndex(p.x,p.y)]?.dug;n++){result=excavateMineBlock(s,origin,p,'pickaxe',validateSave);expect(result.ok,result.message).toBe(true);}
-  expect(result?.depleted).toBe(true);expect(s.inventory[`${material}Shard`]+s.inventory[`${material}Ore`]).toBe(1);expect(s.economy6!.mined[material]).toBe(1);const before=structuredClone(s);expect(excavateMineBlock(s,origin,p,'pickaxe',validateSave).ok).toBe(false);expect(s).toEqual(before);
+  expect(result?.depleted).toBe(true);expect(groundItems(s)).toHaveLength(1);collectAt(s,p);expect(s.inventory[`${material}Shard`]+s.inventory[`${material}Ore`]).toBe(1);expect(s.economy6!.mined[material]).toBe(1);const before=structuredClone(s);expect(excavateMineBlock(s,origin,p,'pickaxe',validateSave).ok).toBe(false);expect(s).toEqual(before);
  });
  it('keeps the current gold/black-metal pickaxe restrictions without wear or cracks on rejection',()=>{
   for(const material of ['gold','blackMetal']as const){const s=fresh(),{p,origin}=workFace(s,material),before=structuredClone(s);expect(excavateMineBlock(s,origin,p,'pickaxe',validateSave).ok).toBe(false);expect(s).toEqual(before);expect(toolCondition(s,'pickaxe').durability).toBe(100);}
@@ -92,7 +94,7 @@ describe('partial secondary-gallery renewal',()=>{
  });
  it('gives regenerated ore a new stable cycle identity and makes it wait again after mining',()=>{
   const s=fresh(),path=spur(s);outside(s);const b=forceRenew();expect(beginMineExpedition(s,validateSave,[],b).ok).toBe(true);const p=path.find(p=>!s.underground!.changes[mineCellIndex(p.x,p.y)].dug)!;const id=mineBlockNode(s.underground!,p.x,p.y)!.id;expect(id).toContain('-r1');expect(mineBlockNode(migrateSave(s)!.underground!,p.x,p.y)!.id).toBe(id);
-  const origin=[[0,1],[0,-1],[1,0],[-1,0]].map(([dx,dy])=>({x:(p.x+dx)*32+16,y:(p.y+dy)*32+16})).find(a=>undergroundFits(s.underground!,a.x,a.y))!;s.mineInterior=origin;const stock=s.inventory.stone;for(let k=0;k<5;k++)expect(excavateMineBlock(s,origin,p,'pickaxe',validateSave).ok).toBe(true);expect(s.inventory.stone).toBe(stock+4);expect(s.underground!.changes[mineCellIndex(p.x,p.y)]).toMatchObject({cycle:1,dug:true,dugDay:20});finishMineExpedition(s);s.day=21;expect(beginMineExpedition(s,validateSave,[],b).regenerated).toBe(0);
+  const origin=[[0,1],[0,-1],[1,0],[-1,0]].map(([dx,dy])=>({x:(p.x+dx)*32+16,y:(p.y+dy)*32+16})).find(a=>undergroundFits(s.underground!,a.x,a.y))!;s.mineInterior=origin;const stock=s.inventory.stone;for(let k=0;k<5;k++)expect(excavateMineBlock(s,origin,p,'pickaxe',validateSave).ok).toBe(true);expect(groundItems(s).some(d=>d.item==='stone'&&d.amount===4)).toBe(true);collectAt(s,p);expect(s.inventory.stone).toBe(stock+4);expect(s.underground!.changes[mineCellIndex(p.x,p.y)]).toMatchObject({cycle:1,dug:true,dugDay:20});finishMineExpedition(s);s.day=21;expect(beginMineExpedition(s,validateSave,[],b).regenerated).toBe(0);
  });
  it('reverts renewal, geology migration, visit counters and actor positions if saving fails',()=>{
   for(const write of [()=>false,()=>{throw Error('disk');}]){const s=fresh();spur(s);outside(s);const before=structuredClone(s);expect(beginMineExpedition(s,write,[],forceRenew()).ok).toBe(false);expect(s).toEqual(before);}

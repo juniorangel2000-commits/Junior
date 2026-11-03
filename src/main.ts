@@ -1,3 +1,5 @@
+import {GroundItemsView} from './ground-items-view';
+import {dropInventoryItem} from './systems/ground-items';
 import {MineScene} from './scenes/MineScene';
 import {HighlandScene} from './scenes/HighlandScene';
 import {SurvivorCampScene} from './scenes/SurvivorCampScene';
@@ -25,6 +27,7 @@ const activeForest=():ForestScene|VillageScene|CityForestScene|FishingLakeScene|
 const ui = new GameUI({
   getMineMissionRuntime:()=>{const current=activeForest()??scene;return current instanceof DungeonScene?undefined:current.getMineMissionRuntime();},
   getFishingState: () => {const current=activeForest()??scene;return current instanceof DungeonScene?undefined:current.getFishingState();},
+  onDropItem:(item,amount)=>{const current=activeForest()??scene;if(current instanceof DungeonScene)return;const rt=current.getGroundItemRuntime();if(!rt)return;const result=dropInventoryItem(rt,item,amount);ui.toast(result.message);},
   onUseItem: item => {void (activeForest()??scene).useVillageItem(item);},
   onNewGame: profile => scene.startNew(profile),
   onContinue: () => scene.continueGame(),
@@ -59,3 +62,11 @@ export const game = new Phaser.Game({
 });
 
 export { gameAudio };
+
+const groundViews=new WeakMap<Phaser.Scene,GroundItemsView>();
+game.events.on(Phaser.Core.Events.POST_STEP,(time:number)=>{
+ const current=activeForest()??scene;if(current instanceof DungeonScene||!current.sys.isActive())return;
+ const rt=current.getGroundItemRuntime();if(!rt)return;let view=groundViews.get(current);
+ if(!view){view=new GroundItemsView(current);groundViews.set(current,view);current.events.once('shutdown',()=>{view!.destroy();groundViews.delete(current);});}
+ view.tick(rt,time);
+});

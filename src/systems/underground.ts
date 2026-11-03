@@ -1,3 +1,4 @@
+import {resourceGroundSink} from './ground-items';
 import {validMineHazards,type MineHazardState} from './underground-hazard-state';
 import {mineMaterialAt,MINE_MATERIALS} from './underground-geology';
 import type {MineMaterial} from '../data/underground-balance';
@@ -104,24 +105,24 @@ export function nearbyMineBlock(mine:UndergroundState,origin:TilePoint,facing:Ti
 }
 export interface ExcavationResult{ok:boolean;message:string;depleted?:boolean;changed?:TilePoint[]}
 /** Shared physical strike. Future NPC actors supply their own inventory and tool context. */
-export function applyMineStrike(mine:UndergroundState,origin:TilePoint,target:TilePoint,tool:Tool,inventory:Inventory,context:SaveData):ExcavationResult{
+export function applyMineStrike(mine:UndergroundState,origin:TilePoint,target:TilePoint,tool:Tool,inventory:Inventory,context:SaveData,ground=false):ExcavationResult{
  if(!undergroundFits(mine,origin.x,origin.y))return{ok:false,message:'Fique em um ponto livre para escavar.'};
  const node=mineBlockNode(mine,target.x,target.y);
  if(!node)return{ok:false,message:'Esta rocha é estrutural ou já foi escavada.'};
  if(!mineTargetVisible(mine,origin,target))return{ok:false,message:'Aproxime-se da rocha por um caminho livre.'};
  if(mine.revision>=1e9)return{ok:false,message:'O limite de alterações desta mina foi atingido.'};
  const key=mineCellIndex(target.x,target.y),old=mine.changes[key],resources=new Resources(old?.hits?[{id:node.id,hits:old.hits}]:[]);
- const result=resources.hit(node,tool,inventory,context,mineMaterialAt(mine,target.x,target.y));
+ const result=resources.hit(node,tool,inventory,context,mineMaterialAt(mine,target.x,target.y),ground?resourceGroundSink(context,'mining',target):undefined);
  if(!result.ok)return result;
  mine.changes[key]={...(old?.cycle?{cycle:old.cycle,renewedDay:old.renewedDay}:{}),mineral:mineMaterialAt(mine,target.x,target.y),...(result.depleted?{dug:true,dugDay:context.day}:{hits:resources.progress[0].hits})};mine.revision++;
  return{...result,changed:[target,...(result.depleted?[{x:target.x-1,y:target.y},{x:target.x+1,y:target.y},{x:target.x,y:target.y-1},{x:target.x,y:target.y+1}]:[])]};
 }
 export function excavateMineBlock(save:SaveData,origin:TilePoint,target:TilePoint,tool:Tool,write:(draft:SaveData)=>boolean):ExcavationResult{
  if(!save.underground)return{ok:false,message:'Entre nas galerias para minerar.'};
- const draft=structuredClone(save),inventory=new Inventory(draft.inventory),result=applyMineStrike(draft.underground!,origin,target,tool,inventory,draft);
+ const draft=structuredClone(save),inventory=new Inventory(draft.inventory),result=applyMineStrike(draft.underground!,origin,target,tool,inventory,draft,true);
  if(!result.ok)return result;
  draft.inventory={...inventory.data};draft.progress.collected ||= draft.inventory.wood>0&&draft.inventory.stone>0&&draft.inventory.fiber>0;
  try{if(!write(draft))return{ok:false,message:'Não foi possível salvar. A rocha, a ferramenta e os materiais foram preservados.'};}catch{return{ok:false,message:'Não foi possível salvar. A ação foi revertida.'};}
- save.underground=draft.underground;save.inventory=draft.inventory;save.economy6=draft.economy6;save.progress=draft.progress;
+ save.groundItems=draft.groundItems;save.underground=draft.underground;save.inventory=draft.inventory;save.economy6=draft.economy6;save.progress=draft.progress;
  return result;
 }

@@ -1,3 +1,4 @@
+import {createGroundRuntime,resourceGroundSink} from '../systems/ground-items';
 import {createMineMissionRuntime} from '../systems/mine-missions';
 import {bentoSceneWriter} from '../systems/bento-commit';
 import {communityReady} from '../systems/community-center';
@@ -49,6 +50,8 @@ import { loadCameraZoom, saveCameraZoom, stepCameraZoom } from '../camera-zoom';
 
 export interface ForestStart { save: SaveData; ui: GameUI; onReturn: (save: SaveData, title?: boolean) => void }
 export class ForestScene extends Phaser.Scene {
+ private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>'forest',(x,y)=>this.movementBlockedAt(Math.floor(x/32),Math.floor(y/32))||this.world.waterPointAt(x,y),()=>!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden,()=>{this.updateHUD();});
+ getGroundItemRuntime(){return this.player?this.groundRuntime:undefined;}
  private mineMissionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player);
  getMineMissionRuntime=()=>this.mineMissionRuntime;
  private bentoWorkRuntime={missions:this.mineMissionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
@@ -196,7 +199,7 @@ export class ForestScene extends Phaser.Scene {
     if(item==='sickle'){
       if(this.state.inventory.sickle<1||toolCondition(this.state,'sickle').durability<=0){this.ui.toast('A foice precisa ser fabricada ou reparada.');return;}
       const nodes=this.world.resources.filter(n=>n.kind==='fiber'&&Math.hypot(n.x*32+16-this.player.x,n.y*32+25-this.player.y)<75&&!this.world.waterAt(n.x,n.y)).slice(0,toolWork(this.state,'sickle'));let done=false;
-      for(const node of nodes){const inventory=new Inventory(this.state.inventory),r=this.resources.hit(node,'hand',inventory,this.state);if(r.ok)Object.assign(this.state.inventory,inventory.data);if(r.depleted){this.world.removeResource(node.id);if(!this.resourceLifecycle?.collected(node)){this.state.depletedResources.push(node.id);this.world.depleted.add(node.id);}done=true;}}
+      for(const node of nodes){const inventory=new Inventory(this.state.inventory),r=this.resources.hit(node,'hand',inventory,this.state,undefined,resourceGroundSink(this.state,'forest',node));if(r.ok)Object.assign(this.state.inventory,inventory.data);if(r.depleted){this.world.removeResource(node.id);if(!this.resourceLifecycle?.collected(node)){this.state.depletedResources.push(node.id);this.world.depleted.add(node.id);}done=true;}}
       if(done){spendDurability(this.state,'sickle');this.toolVisual?.playGather('sickle',directionFromVector(this.player.facing.x,this.player.facing.y),this.player,toolCondition(this.state,'sickle').tier);this.state.resourceProgress=this.resources.progress;this.save();}this.ui.toast(done?'Vegetação recolhida.':'Aproxime-se de uma planta coletável.');this.updateHUD();return;
     }
     this.state.inventory={...this.state.inventory};
@@ -272,7 +275,7 @@ export class ForestScene extends Phaser.Scene {
     this.ui.toast('Corda presa! Leve o animal até a propriedade. G para soltar.');this.updateHUD();this.save();
   }
   private hitResource(node:ResourceNode,tool:Tool):void {
-    const inventory=new Inventory(this.state.inventory),result=this.resources.hit(node,tool,inventory,this.state);
+    const inventory=new Inventory(this.state.inventory),result=this.resources.hit(node,tool,inventory,this.state,undefined,resourceGroundSink(this.state,'forest',node));
     if(result.ok){Object.assign(this.state.inventory,inventory.data);this.state.resourceProgress=this.resources.progress;if(result.depleted){this.world.removeResource(node.id);if(!this.resourceLifecycle?.collected(node)){this.state.depletedResources.push(node.id);this.world.depleted.add(node.id);}this.state.progress.collected ||=this.state.inventory.wood>0&&this.state.inventory.stone>0&&this.state.inventory.fiber>0;}
       gameAudio.play(tool==='pickaxe'?'stone':tool==='hatchet'?'wood':'pickup');}
     this.ui.toast(result.message);this.updateHUD();this.save();

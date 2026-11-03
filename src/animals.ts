@@ -1,3 +1,4 @@
+import {farmAnimalHome,farmAnimalSettled,farmYard,farmHomePoint} from './systems/farm-construction';
 import type Phaser from 'phaser';
 import {animalSprite} from './forest-art';
 import {updateAnimalSprite,animalRopeAnchor} from './animal-sprites';
@@ -29,7 +30,7 @@ export class AnimalPopulation {
    const saved=save.animalPositions?.[area].find(p=>p.id===definition.id);
    const x=area==='forest'?definition.x*32+16:(20+(index%8)*3)*32+16;
    const y=area==='forest'?definition.y*32+16:(44+Math.floor(index/8)*3)*32+16;index++;
-   const brain=new AnimalBrain(definition.id,definition.kind,saved?.x??x,saved?.y??y,!owned,blocked,playerSpeed,this.treeCover.cost);
+   const brain:AnimalBrain=new AnimalBrain(definition.id,definition.kind,saved?.x??x,saved?.y??y,!owned,(tx,ty)=>{if(blocked(tx,ty))return true;const h=farmAnimalHome(this.save,definition.id);return !!h&&this.save.animalEscort?.id!==definition.id&&farmAnimalSettled(h,brain,brain.radius)&&!farmYard(h,tx,ty);},playerSpeed,this.treeCover.cost);
    if(saved)brain.restore(saved);
    if(!this.placeSafely(brain))continue;
    const sprite=animalSprite(scene,definition.kind,brain.x,brain.y);
@@ -59,7 +60,8 @@ export class AnimalPopulation {
   this.treeCheck-=delta;if(this.treeCheck<=0){this.treeCover.refresh(this.trees());this.treeCheck=.5;}
   for(const a of this.animals){
    if(!a.brain.canStand(a.x,a.y))this.placeSafely(a.brain);
-   a.brain.update(delta,player,this.brains,a===this.led);
+   const home=farmAnimalHome(this.save,a.id),homing=this.area==='property'&&!!home&&a!==this.led&&!farmAnimalSettled(home,a.brain,a.brain.radius);
+   a.brain.update(delta,homing?farmHomePoint(home!):player,this.brains,a===this.led||homing,homing?8:ANIMAL_BEHAVIOR.followDistance,!homing);
    if(updateAnimalSprite(a.sprite,a.brain,delta))continue;
    const moving=a.brain.moving;
    // Temporary rigid-body locomotion, without stretching the authored animal art.

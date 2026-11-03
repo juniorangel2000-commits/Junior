@@ -1,3 +1,4 @@
+import {createGroundRuntime} from '../systems/ground-items';
 import {createMineMissionRuntime} from '../systems/mine-missions';
 import {bentoSceneWriter} from '../systems/bento-commit';
 import {communityReady} from '../systems/community-center';
@@ -33,6 +34,8 @@ import {ensureSurvivorCamp,advanceSurvivorCamp,advanceHostileWarning,recruitCamp
 import {DEVELOPMENT_TOOLS} from '../development-tools';
 interface CampStart {save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 export class SurvivorCampScene extends Phaser.Scene {
+ private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>'survivorCamp',(x,y)=>this.world.blockedPoint(x,y),()=>!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden,()=>{this.updateHUD();});
+ getGroundItemRuntime(){return this.player?this.groundRuntime:undefined;}
  private mineMissionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player);
  getMineMissionRuntime=()=>this.mineMissionRuntime;
  private bentoWorkRuntime={missions:this.mineMissionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};

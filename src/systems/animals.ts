@@ -79,7 +79,7 @@ export class AnimalBrain {
   snapshot(): AnimalPosition {return{id:this.id,x:this.x,y:this.y,direction:this.direction};}
 
   /** Bounded weighted search prefers open ground, retaining narrow routes as a fallback. */
-  private plan(player: AnimalPoint, fleeing: boolean): AnimalPoint[] {
+  private plan(player: AnimalPoint, fleeing: boolean,arrivalDistance=32): AnimalPoint[] {
     const sx=Math.floor(this.x/TILE),sy=Math.floor(this.y/TILE);
     const nodes=[{x:sx,y:sy,parent:-1,distance:0,cost:0}],costs=new Map([[`${sx},${sy}`,0]]),queue=[0];
     const push=(index:number)=>{queue.push(index);let at=queue.length-1;while(at>0){const parent=(at-1)>>1;if(nodes[queue[parent]].cost<=nodes[index].cost)break;queue[at]=queue[parent];at=parent;}queue[at]=index;};
@@ -90,7 +90,7 @@ export class AnimalBrain {
       const node=nodes[n],px=node.x*TILE+16,py=node.y*TILE+16;
       if(node.cost>(costs.get(`${node.x},${node.y}`)??Infinity)+.0001)continue;
       const point=n===0?this:{x:px,y:py},distance=Math.hypot(point.x-player.x,point.y-player.y);
-      if(!fleeing&&n>0&&distance<=ANIMAL_BEHAVIOR.followDistance+8&&this.lineClear(point,player)){best=n;break;}
+      if(!fleeing&&n>0&&distance<=arrivalDistance+8&&this.lineClear(point,player)){best=n;break;}
       if(fleeing){
         const score=distance-node.distance*2-(node.cost-node.distance)*10-this.terrainCost(node.x,node.y)*24;
         if(score>bestScore){bestScore=score;best=n;}
@@ -106,12 +106,12 @@ export class AnimalBrain {
         costs.set(key,cost);nodes.push({x,y,parent:n,distance:nextDistance,cost});push(nodes.length-1);
       }
     }
-    if(!fleeing&&Math.hypot(nodes[best].x*TILE+16-player.x,nodes[best].y*TILE+16-player.y)>ANIMAL_BEHAVIOR.followDistance+8)return[];
+    if(!fleeing&&Math.hypot(nodes[best].x*TILE+16-player.x,nodes[best].y*TILE+16-player.y)>arrivalDistance+8)return[];
     const path:AnimalPoint[]=[];
     for(let n=best;n>0;n=nodes[n].parent)path.push({x:nodes[n].x*TILE+16,y:nodes[n].y*TILE+16});
     return path.reverse();
   }
-  update(delta: number,player: AnimalPoint,neighbors: readonly AnimalBrain[],led=false): void {
+  update(delta: number,player: AnimalPoint,neighbors: readonly AnimalBrain[],led=false,arrivalDistance:number=32,ropeLimit=true): void {
     const dt=Math.max(0,Math.min(delta,.1));this.moving=false;if(!dt)return;
     const range=Math.hypot(this.x-player.x,this.y-player.y);
     if(led){if(this.mode!=='led'){this.mode='led';this.path=[];this.rethink=0;this.following=false;}}
@@ -127,12 +127,12 @@ export class AnimalBrain {
     if(this.mode==='flee'||this.mode==='led'){
       if(this.mode==='led'){
         const clear=this.lineClear(this,player);
-        if(range<=ANIMAL_BEHAVIOR.followDistance&&clear){this.following=false;this.path=[];return;}
-        if(!this.following&&range<ANIMAL_BEHAVIOR.followDistance+8&&clear){this.path=[];return;}
+        if(range<=arrivalDistance&&clear){this.following=false;this.path=[];return;}
+        if(!this.following&&range<arrivalDistance+8&&clear){this.path=[];return;}
         this.following=true;
       }
-      if(this.mode==='led'&&this.canTravel(this,player)&&(range<ANIMAL_BEHAVIOR.followDistance+8||this.travelCost(this,player)<=range/TILE*1.1))this.path=[{x:player.x,y:player.y}];
-      else if(this.rethink<=0){this.path=this.plan(player,this.mode==='flee');this.rethink=ANIMAL_BEHAVIOR.replanSeconds;}
+      if(this.mode==='led'&&this.canTravel(this,player)&&(range<arrivalDistance+8||this.travelCost(this,player)<=range/TILE*1.1))this.path=[{x:player.x,y:player.y}];
+      else if(this.rethink<=0){this.path=this.plan(player,this.mode==='flee',arrivalDistance);this.rethink=ANIMAL_BEHAVIOR.replanSeconds;}
     }else{
       this.timer-=dt;
       if(this.mode==='idle'&&this.timer<=0){
@@ -159,7 +159,7 @@ export class AnimalBrain {
     const dx=target.x-this.x,dy=target.y-this.y,length=Math.hypot(dx,dy);
     const speed=this.playerSpeed*(this.mode==='flee'?ANIMAL_BEHAVIOR.fleeSpeedFactor:this.mode==='led'?ANIMAL_BEHAVIOR.leadSpeedFactor:ANIMAL_BEHAVIOR.wanderSpeedFactor);
     const amount=Math.min(speed*dt,length),steps=Math.max(1,Math.ceil(amount/3)),oldX=this.x,oldY=this.y;
-    const fits=(x:number,y:number)=>this.canStand(x,y)&&(!led||Math.hypot(x-player.x,y-player.y)<=ANIMAL_BEHAVIOR.maxRopeLength||Math.hypot(x-player.x,y-player.y)<range)&&neighbors.every(other=>other===this||Math.hypot(x-other.x,y-other.y)>=this.radius+other.radius+3);
+    const fits=(x:number,y:number)=>this.canStand(x,y)&&(!led||!ropeLimit||Math.hypot(x-player.x,y-player.y)<=ANIMAL_BEHAVIOR.maxRopeLength||Math.hypot(x-player.x,y-player.y)<range)&&neighbors.every(other=>other===this||Math.hypot(x-other.x,y-other.y)>=this.radius+other.radius+3);
     for(let i=0;i<steps;i++){
       const mx=dx/length*amount/steps,my=dy/length*amount/steps;
       if(fits(this.x+mx,this.y))this.x+=mx;

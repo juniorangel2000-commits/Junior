@@ -29,20 +29,21 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   turnip: { name: 'Nabos', description: 'Sua primeira colheita.' },
   branch: { name: 'Galhos', description: 'Recolha os feixes de madeira no chão para fabricar cabos.' },
   log: { name: 'Troncos', description: 'Use a machadinha em árvores, troncos caídos e tocos; transforme os troncos obtidos em tábuas.' },
-  plank: { name: 'Tábuas brutas', description: 'Feitas com machadinha; usadas na bancada e nas peças do abrigo.' },
+  plank: { name: 'Tábuas brutas', description: 'Feitas com machadinha; usadas na bancada e nas construções da fazenda.' },
   scrap: { name: 'Sucata metálica', description: 'Encontrada na parte oeste da propriedade. Na bancada, transforme em lâmina.' },
   hatchet: { name: 'Machadinha', description: 'Corta árvores e permite fazer as primeiras tábuas.' },
   pickaxe: { name: 'Picareta', description: 'Quebra veios de pedra e recupera materiais.' },
   hoe: { name: 'Enxada', description: 'E ou clique prepara um canteiro no solo livre da propriedade. Shift + E ou Shift + clique desfaz o canteiro vazio e restaura o piso anterior.' },
-  handsaw: { name: 'Serrote', description: 'Usado junto à bancada para serrar e construir paredes e portas.' },
-  fiber: { name: 'Fibras vegetais', description: 'Recolha samambaias, flores brancas, arbustos e juncos das margens do rio para fazer cordas e cobertura.' },
+  handsaw: { name: 'Serrote', description: 'Usado junto à bancada para serrar tábuas e preparar componentes das construções.' },
+  hay:{name:'Palha',description:'Palha seca para armazenar no silo. Prepare a partir de fibras vegetais no próprio silo.',iconFallback:'fiber'},
+  fiber: { name: 'Fibras vegetais', description: 'Recolha samambaias, flores brancas, arbustos e juncos das margens do rio para fazer cordas e preparar palha no silo.' },
   cord: { name: 'Cordas vegetais', description: 'Prendem as partes das ferramentas e permitem conduzir animais até a propriedade.' },
   flakedStone: { name: 'Pedras lascadas', description: 'Pedras preparadas para as cabeças da machadinha e da picareta.' },
   handle: { name: 'Cabos', description: 'Um galho preparado para receber a cabeça de uma ferramenta.' },
-  peg: { name: 'Cavilhas', description: 'Encaixes de madeira para a bancada, paredes e portas.' },
+  peg: { name: 'Cavilhas', description: 'Encaixes de madeira para a bancada e componentes das construções.' },
   blade: { name: 'Lâminas de sucata', description: 'Preparadas na bancada para montar o serrote e a espada.' },
   board: { name: 'Tábuas regulares', description: 'O serrote improvisado aproveita um tronco em três tábuas regulares, reservadas para carpintaria futura.' },
-  hammer: { name: 'Martelo rudimentar', description: 'Necessário para montar bancada e peças do abrigo.' },
+  hammer: { name: 'Martelo rudimentar', description: 'Necessário para montar a bancada, colocar bases e concluir as obras da fazenda.' },
   herb: {name:'Ervas',description:'Ervas comuns para curativos, tônicos e receitas de Amélia.',iconFallback:'fiber'},
   rareHerb: {name:'Ervas raras',description:'Plantas incomuns procuradas pela curandeira da vila.',iconFallback:'seeds'},
   bandage: {name:'Curativos',description:'Faixas preparadas para recuperar o vigor durante a exploração.',iconFallback:'cord'},
@@ -70,7 +71,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
 
 /** Only these stock fields may be absent in a save from before the village
  * services update. Missing any older field still indicates a corrupt save. */
-export const VILLAGE_ITEM_IDS=[...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
+export const VILLAGE_ITEM_IDS=['hay',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
 
 export const ITEM_IDS = Object.keys(ITEMS) as ItemId[];
 export const ITEM_NAMES = Object.fromEntries(ITEM_IDS.map(id => [id, ITEMS[id].name])) as Record<ItemId, string>;

@@ -1,3 +1,4 @@
+import {createGroundRuntime} from '../systems/ground-items';
 import {createMineMissionRuntime} from '../systems/mine-missions';
 import {bentoSceneWriter} from '../systems/bento-commit';
 import {BentoTravelView,preloadBentoTravel} from '../bento-travel-view';
@@ -17,7 +18,7 @@ import {craftInField,consumeInField} from '../systems/field-inventory';
 import {emptyQuickbar} from '../systems/quickbar';
 import {DoorwayPassage,SCENE_FADE_MS} from '../systems/map-transition';
 import {directionFromVector,directionVector} from '../character-directions';
-import {loadCameraZoom,saveCameraZoom,stepCameraZoom} from '../camera-zoom';
+import {loadCameraZoom,saveCameraZoom,stepCameraZoom,mapCameraZoom} from '../camera-zoom';
 import {installWorldCompanion} from '../dungeons/world-pet-controller';
 import {preloadPetArt} from '../dungeons/pet-sprites';
 import {sampleWaterDepth} from '../swimming';
@@ -28,6 +29,8 @@ import {HIGHLAND_LAKE_PASSAGE,highlandResumePosition,HIGHLAND_SIZE,LAKE_HIGHLAND
 import {DEVELOPMENT_TOOLS} from '../development-tools';
 interface HighlandStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 export class HighlandScene extends Phaser.Scene {
+ private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>'highland',(x,y)=>this.blockedPoint(x,y)||this.swimmingPoint(x,y)>0,()=>!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden,()=>{this.updateHUD();});
+ getGroundItemRuntime(){return this.player?this.groundRuntime:undefined;}
  private mineMissionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player);
  getMineMissionRuntime=()=>this.mineMissionRuntime;
  private bentoWorkRuntime={missions:this.mineMissionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
@@ -57,7 +60,7 @@ export class HighlandScene extends Phaser.Scene {
  private allowStep=(x:number,y:number)=>highlandAllowsStep(this.player,{x,y},this.state.highlandMapEdits);
  private nearMine():boolean{const p=highlandMineApproach(this.state.highlandMapEdits);return !!p&&Math.hypot(this.player.x-p.x,this.player.y-p.y)<70&&!this.player.isSwimming;}
  private nearFishing():boolean{return !this.player.isSwimming&&[[40,0],[-40,0],[0,40],[0,-40]].some(([dx,dy])=>highlandWaterPoint(this.player.x+dx,this.player.y+dy,this.state.highlandMapEdits));}
- private updateHUD():void{this.ui.updateHUD({area:'highland',worldMapSize:{width:48,height:32},worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',inHome:false,swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:this.nearMine()||this.nearFishing()?'E':null,prompt:this.nearMine()?'Entrar na Mina Antiga':this.nearFishing()?'Pescar no rio da serra':this.player.isSwimming?'Nadar · a corrente segue para a queda':Math.hypot(this.player.x-HIGHLAND_LAKE_PASSAGE.x,this.player.y-HIGHLAND_LAKE_PASSAGE.y)<70?'Descer ao Lago entre as Serras':'Ponte elevada · mina a nordeste · escadaria de volta ao lago a sudoeste',location:'Platô da Nascente',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress,...this.bentoTravelView?.hud});this.ui.updateCameraZoom(this.zoom,!this.paused);}
+ private updateHUD():void{this.ui.updateHUD({area:'highland',worldMapSize:{width:48,height:32},worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',inHome:false,swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:this.nearMine()||this.nearFishing()?'E':null,prompt:this.nearMine()?'Entrar na Mina Antiga':this.nearFishing()?'Pescar no rio da serra':this.player.isSwimming?'Nadar · a corrente segue para a queda':Math.hypot(this.player.x-HIGHLAND_LAKE_PASSAGE.x,this.player.y-HIGHLAND_LAKE_PASSAGE.y)<70?'Descer ao Lago entre as Serras':'Ponte elevada · mina a nordeste · escadaria de volta ao lago a sudoeste',location:'Platô da Nascente',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress,...this.bentoTravelView?.hud});this.ui.updateCameraZoom(this.shownZoom,!this.paused);}
  private interact():void{if(this.bentoTravelView?.talk())return;if(this.nearMine())this.enterMine();else if(this.nearFishing())void this.useVillageItem('fishingRod');}
  private enterMine():void{
   if(this.leaving||!this.persist())return;const next=structuredClone(this.state);
@@ -67,8 +70,9 @@ export class HighlandScene extends Phaser.Scene {
  private key(e:KeyboardEvent):void{if(e.repeat||this.leaving)return;if(e.key!=='Escape'&&e.target instanceof HTMLElement&&e.target.matches('input,textarea,select,[contenteditable="true"]'))return;const k=e.key.toLowerCase();if(k==='escape'){e.preventDefault();this.ui.togglePause();return;}if(k==='i'){this.ui.toggleInventory(this.state.inventory);return;}if(k==='m'){void this.ui.toggleMap();return;}if(k==='c'){this.ui.toggleCrafting(this.state.inventory,false);return;}if(this.paused||this.ui.isModalOpen())return;if(k==='e')this.interact();if(DEVELOPMENT_TOOLS&&e.key==='F2')this.openMapEditor();if(e.key>='1'&&e.key<='9')this.ui.activateSlot(Number(e.key)-1);if(['+','=','-','_','Home'].includes(e.key))this.changeCameraZoom(e.key==='Home'?0:e.key==='-'||e.key==='_'?-1:1);}
  private pointer=(p:Phaser.Input.Pointer)=>{if(p.button===0&&!this.paused&&!this.ui.isModalOpen())this.interact();};
  private wheel=(_p:Phaser.Input.Pointer,_objects:unknown,_dx:number,dy:number)=>{if(!this.paused&&!this.ui.isModalOpen()&&Math.abs(dy)>5)this.changeCameraZoom(dy>0?-1:1);};
- private applyCamera=()=>{this.cameras.main.setZoom(2*this.zoom).startFollow(this.player,true,.12,.12).setRoundPixels(true);};
- changeCameraZoom(d:-1|0|1):void{if(this.paused)return;this.zoom=stepCameraZoom(this.zoom,d);saveCameraZoom(this.zoom);this.applyCamera();this.ui.updateCameraZoom(this.zoom,true,true);}
+ private get shownZoom():number{return mapCameraZoom(this.zoom,this.scale.width,this.scale.height,HIGHLAND_SIZE.width,HIGHLAND_SIZE.height);}
+ private applyCamera=()=>{this.cameras.main.setZoom(2*this.shownZoom).startFollow(this.player,true,.12,.12).setRoundPixels(true);this.ui?.updateCameraZoom(this.shownZoom,!this.paused);};
+ changeCameraZoom(d:-1|0|1):void{if(this.paused)return;this.zoom=stepCameraZoom(this.shownZoom,d);saveCameraZoom(this.zoom);this.applyCamera();this.ui.updateCameraZoom(this.shownZoom,true,true);}
  setPaused(value:boolean):void{this.paused=value;this.input.keyboard?.resetKeys();if(value)this.persist();}
  selectTool(_tool:Tool):void{}
  craftRecipe(id:string):void{const r=craftInField(this.state,id,saveGame);this.ui.toast(r.message);this.updateHUD();this.ui.refreshCrafting(this.state.inventory,false);}

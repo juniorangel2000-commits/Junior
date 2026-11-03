@@ -53,7 +53,7 @@ export const RECIPES: CraftingRecipe[] = [
   },
   {
     id: 'hammer', name: 'Martelo rudimentar',
-    description: 'Monte a bancada e junte os módulos do primeiro abrigo.',
+    description: 'Monte a bancada, posicione bases e conclua as construções da fazenda.',
     cost: { handle: 1, stone: 1, cord: 1 }, output: { hammer: 1 },
   },
   {

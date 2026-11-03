@@ -1,3 +1,4 @@
+import {FARM_KINDS,FARM_BUILDINGS,FARM_BASE_COST,isFarmTool} from './data/farm-buildings';
 import {mountMineMissionJournal,mineMissionSummary} from './mine-mission-journal';
 import type {MineMissionRuntime} from './systems/mine-missions';
 import {UNIQUE_CRAFT_ITEMS} from './systems/crafting';
@@ -40,7 +41,7 @@ import './inventory-ui.css';
 import { WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 import { BUILD_COSTS, BUILD_NAMES, BUILD_REQUIREMENTS } from './systems/building';
 import { ITEMS, ITEM_IDS, ITEM_NAMES } from './data/items';
-import { BLUEPRINT_COST, BLUEPRINT_LABEL } from './data/blueprints';
+import { BLUEPRINT_COST } from './data/blueprints';
 import { RECIPES } from './data/recipes';
 import { createHomeEditor } from './home-ui';
 import type { HomeEditor, HomeEditResponse,HomeEditorOptions } from './home-ui';
@@ -51,6 +52,7 @@ interface UICallbacks {
   getMineMissionRuntime?():MineMissionRuntime|undefined;
   getFishingState?():SaveData|undefined;
   onUseItem(item:ItemId):void;
+  onDropItem?(item:ItemId,amount:number):void;
   onNewGame(profile: CharacterProfile): void;
   onContinue(): void;
   onTool(tool: Tool): void;
@@ -135,12 +137,7 @@ const tools: { id: Tool; label: string; icon: string; detail: string }[] = [
   { id: 'hoe', label: 'Enxada', icon: 'hoe', detail: 'E prepara · Shift + E desfaz canteiros vazios' },
   { id: 'pickaxe', label: 'Picareta', icon: 'pickaxe', detail: 'Minerar rochas com uma picareta da mochila' },
   { id: 'workbench', label: 'Bancada', icon: 'workbench', detail: 'Colocar uma bancada de trabalho' },
-  { id: 'wall', label: 'Parede', icon: 'wall', detail: 'Construir uma parede com martelo perto da bancada' },
-  { id: 'door', label: 'Porta', icon: 'door', detail: 'Construir uma porta com martelo perto da bancada' },
-  { id: 'floor', label: 'Piso', icon: 'floor', detail: 'Assentar piso de madeira com martelo perto da bancada' },
-  { id: 'window', label: 'Janela', icon: 'window', detail: 'Colocar um módulo de janela com martelo perto da bancada' },
-  { id: 'roof', label: 'Cobertura', icon: 'roof', detail: 'Cobrir o abrigo com martelo perto da bancada' },
-  { id: 'blueprint', label: 'Abrigo 3×3', icon: 'blueprint', detail: 'Posicionar o molde completo de um abrigo 3×3' },
+  ...FARM_KINDS.map(kind=>({id:`farm-${kind}` as Tool,label:FARM_BUILDINGS[kind].name,icon:`farm-${kind}`,detail:'Colocar base no terreno livre e entregar materiais na obra'})),
 ];
 const items = ITEM_IDS.map(id => ({ id, label: ITEMS[id].name, description: ITEMS[id].description }));
 
@@ -729,11 +726,11 @@ export class GameUI {
     this.updateQuickbar();
     const selectedTool = tools.find(tool => tool.id === data.tool) ?? tools[0];
     const buildingKind = data.tool in BUILD_COSTS ? data.tool as BuildingData['kind'] : null;
-    const cost = data.tool === 'blueprint' ? BLUEPRINT_COST : buildingKind ? BUILD_COSTS[buildingKind] : data.tool === 'plant' ? { seeds: 1 } : data.tool==='repair'?{fenceKit:1}:{};
+    const cost = isFarmTool(data.tool)?FARM_BASE_COST:data.tool === 'blueprint' ? BLUEPRINT_COST : buildingKind ? BUILD_COSTS[buildingKind] : data.tool === 'plant' ? { seeds: 1 } : data.tool==='repair'?{fenceKit:1}:{};
     const entries = Object.entries(cost) as [ItemId, number][];
     const missingMaterials = entries.some(([item, amount]) => data.inventory[item] < amount);
     const requirements = data.tool === 'blueprint' ? BUILD_REQUIREMENTS.wall : buildingKind ? BUILD_REQUIREMENTS[buildingKind] : null;
-    const missingTools = requirements?.tools.filter(item => data.inventory[item] < 1) ?? [];
+    const missingTools = isFarmTool(data.tool)?(data.inventory.hammer<1?['hammer' as ItemId]:[]):requirements?.tools.filter(item => data.inventory[item] < 1) ?? [];
     const missingStation = !!requirements?.nearWorkbench && !data.nearWorkbench;
     const materialText = entries.map(([item, amount]) => `${amount} ${ITEM_NAMES[item].toLocaleLowerCase('pt-BR')}`).join(' + ');
     let detail = materialText || (data.tool === 'remove' ? 'Recupera parte dos materiais' : data.tool === 'water' ? 'Cuide da sua horta' : selectedTool.detail);
@@ -756,7 +753,7 @@ export class GameUI {
       ['processed', 'Transformar tronco em tábuas'],
       ['builtWorkbench', 'Colocar a bancada de trabalho'],
       ['sawn', 'Serrar tábuas na bancada'],
-      ['builtShelter', 'Fechar seu primeiro abrigo'],
+      ['builtShelter', 'Concluir sua primeira construção da fazenda'],
     ];
     const nextTip = !data.progress.collected ? 'Recolha galhos, pedras pequenas e fibras vegetais para começar suas ferramentas.'
       : !data.progress.craftedTools ? 'Abra C: prepare cordas, cabos e pedras lascadas. Fabrique machadinha, picareta e martelo.'
@@ -764,8 +761,8 @@ export class GameUI {
       : !data.progress.processed ? 'Abra C e prepare as primeiras tábuas com a machadinha.'
       : !data.progress.builtWorkbench ? 'Fabrique um martelo e selecione a bancada na barra ou em B para colocá-la em um espaço livre.'
       : !data.progress.sawn ? 'Recolha sucata na parte oeste da propriedade. Na bancada, prepare a lâmina e o serrote para serrar tábuas regulares com C.'
-      : !data.progress.builtShelter ? 'Abra B para piso, paredes, porta, janela e cobertura, ou selecione o molde 3×3. Selecione Explorar e pressione E para abrir e fechar a porta.'
-      : 'Seu primeiro lar está de pé. Atravesse a ponte para o Bosque do Pinheiro ou siga ao sul para os Campos Abertos. M abre o mapa.';
+      : !data.progress.builtShelter ? 'Abra B e escolha um galinheiro, curral ou silo. Coloque a base no terreno limpo e leve os materiais até a entrada da obra.'
+      : 'Sua fazenda está crescendo. Aloje os animais no galinheiro e no curral, armazene palha no silo e explore os arredores. M abre o mapa.';
     set('.journal-tip', nextTip);
     const missionSave=this.callbacks.getFishingState?.(),missionPanel=this.base.querySelector<HTMLElement>('#mine-journal-summary');if(missionPanel){missionPanel.hidden=!missionSave?.mineMissions&&!missionSave?.underground;if(missionSave)missionPanel.querySelector('.mine-mission-summary')!.textContent=mineMissionSummary(missionSave);}
     const progress = this.base.querySelector('#slice-progress')!;
@@ -860,7 +857,9 @@ export class GameUI {
         const condition=this.latest?.toolConditions?.[item.replace('item:','') as 'hatchet'];
         panel.querySelector('.detail-text')!.textContent = info.detail+(condition?` · Material: ${['Pedra','Ferro','Ouro','Metal Negro'][condition.tier]} · Durabilidade: ${condition.durability}`:'');
         panel.querySelector('[data-use-item]')?.remove();
+        panel.querySelector('[data-drop-item]')?.remove();
         const id=item.startsWith('item:')?item.slice(5) as ItemId:undefined;
+        if(id&&this.callbacks.onDropItem){const actions=document.createElement('div');actions.dataset.dropItem=id;const amount=document.createElement('input');amount.type='number';amount.min='1';amount.max=String(inventory[id]);amount.value='1';amount.setAttribute('aria-label','Quantidade para soltar');amount.style.width='65px';const drop=document.createElement('button');drop.className='button button-light';drop.textContent='Soltar no chão';drop.onclick=()=>{const n=Number(amount.value);if(!Number.isSafeInteger(n)||n<1||n>inventory[id]){this.toast('Escolha uma quantidade disponível na mochila.');return;}this.callbacks.onDropItem?.(id,n);this.closeModal();};actions.append(amount,drop);panel.querySelector('.backpack-detail')!.append(actions);}
         if(id&&USABLE_VILLAGE_ITEMS.includes(id)){const use=document.createElement('button');use.dataset.useItem=id;use.className='button button-light';use.textContent=id==='sword'?(this.latest?.worldWeapon==='sword'?'Guardar espada':'Equipar espada'):'Usar / instalar';use.onclick=()=>{this.closeModal();this.callbacks.onUseItem(id);};panel.querySelector('.backpack-detail')!.append(use);}
         panel.querySelectorAll('[data-bag-item]').forEach(cell => cell.classList.toggle('chosen', cell === button));
       };
@@ -976,8 +975,8 @@ export class GameUI {
       if(kind==='bench'||kind==='fence')descriptions.push('Peça pronta na mochila · fabricação na bancada');
       return descriptions.join(' · ') || 'Construção manual';
     };
-    const kinds: BuildingData['kind'][] = ['floor', 'wall', 'door', 'window', 'roof', 'workbench', 'fence', 'gate', 'bench'];
-    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">PEÇA POR PEÇA, UM LAR</span><h2>Construção</h2></div><button class="icon-button" aria-label="Fechar construção">${icon('close')}</button></div><p class="crafting-intro">Fabrique bancos e módulos de cerca na bancada e depois selecione a peça pronta para posicionar. R gira o banco. Os itens são consumidos somente ao colocar. Use as mãos + E para abrir portas ou porteiras. R gira a porteira em quatro posições; F inverte a abertura antes de colocar. Com a porteira fechada, os animais ficam no cercado; aberta, podem sair.</p><div class="build-blueprint"><div class="recipe-title">${icon('blueprint')}<h3>${BLUEPRINT_LABEL}</h3></div><p>Um molde para começar: piso, paredes, porta, janela e cobertura, com espaço interno para se abrigar.</p><div class="recipe-materials">${materialList(BLUEPRINT_COST)}</div><small class="recipe-requirements">${requirementText('wall')}</small><button class="button button-primary" data-build="blueprint" aria-label="Selecionar molde ${BLUEPRINT_LABEL}">Selecionar molde ${icon('arrow')}</button></div><div class="build-grid">${kinds.map(kind => `<article class="build-option"><div class="recipe-title">${icon(kind)}<h3>${BUILD_NAMES[kind]}</h3></div><div class="recipe-materials">${materialList(BUILD_COSTS[kind])}</div><small class="recipe-requirements">${requirementText(kind)}</small>${kind === 'gate' ? '<p class="fence-aging-note">R gira entre quatro posições e troca o lado da dobradiça. F inverte para onde ela abre. A seta no terreno mostra a abertura. Mãos + E abre e fecha. Não fecha sobre o jogador ou um animal.</p>' : ''}${kind === 'fence' ? `<div class="fence-stages" aria-label="Estágios de desgaste da cerca">${FENCE_STAGES.map((stage,i)=>`<figure><img src="${fencePreview(stage)}" alt="Cerca ${FENCE_NAMES[i].toLowerCase()}"/><figcaption>${FENCE_NAMES[i]}<small>${i*FENCE_STAGE_DAYS} dias</small></figcaption></figure>`).join('')}</div><p class="fence-aging-note">Conecta em todas as direções. Desgasta a cada 30 dias do jogo, até ficar arruinada; permanece no terreno até ser recolhida.</p>` : ''}<button class="button button-light" data-build="${kind}" aria-label="Selecionar construção: ${BUILD_NAMES[kind]}">Selecionar ${icon('arrow')}</button></article>`).join('')}<article class="build-option"><div class="recipe-title">${icon('hammer')}<h3>Reparar cerca</h3></div><p>Substitua um trecho desgastado usando 1 módulo de cerca fabricado na bancada. Uma cerca nova não gasta material.</p><button class="button button-light" data-build="repair">Selecionar reparo ${icon('arrow')}</button></article><article class="build-option"><div class="recipe-title">${icon('remove')}<h3>Remover</h3></div><p>Recolha uma peça colocada por você. Bancos e cercas voltam como peças prontas para reposicionar; outras construções devolvem parte dos materiais.</p><button class="button button-light" data-build="remove" aria-label="Selecionar remoção de construção">Selecionar ${icon('arrow')}</button></article></div><div class="inventory-footer">${icon('leaf')} Um abrigo precisa de piso, limites fechados, porta e cobertura.<span>SIMULAÇÃO PAUSADA</span></div>`;
+    const kinds: BuildingData['kind'][] = ['workbench', 'fence', 'gate', 'bench'];
+    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">CUIDE DA SUA PROPRIEDADE</span><h2>Construção</h2></div><button class="icon-button" aria-label="Fechar construção">${icon('close')}</button></div><p class="crafting-intro">Escolha uma base e posicione no terreno limpo, fora dos caminhos e da água. Depois leve os materiais à entrada da obra e conclua com o martelo. Sua casa principal continua sendo o seu lar.</p><div class="build-grid">${FARM_KINDS.map(kind=>`<article class="build-option"><div class="recipe-title"><img src="assets/visual/farm/${kind}.png" alt="" style="width:72px;height:72px;object-fit:contain"/><h3>${FARM_BUILDINGS[kind].name}</h3></div><p>${FARM_BUILDINGS[kind].description}</p><strong>Para colocar a base</strong><div class="recipe-materials">${materialList(FARM_BASE_COST)}</div><small class="recipe-requirements">Martelo na mochila · área livre de ${FARM_BUILDINGS[kind].width} × ${FARM_BUILDINGS[kind].height}</small><p>Entregue depois na obra:</p><div class="recipe-materials">${materialList(FARM_BUILDINGS[kind].cost)}</div><button class="button button-primary" data-build="farm-${kind}">Selecionar base ${icon('arrow')}</button></article>`).join('')}${kinds.map(kind => `<article class="build-option"><div class="recipe-title">${icon(kind)}<h3>${BUILD_NAMES[kind]}</h3></div><div class="recipe-materials">${materialList(BUILD_COSTS[kind])}</div><small class="recipe-requirements">${requirementText(kind)}</small>${kind === 'gate' ? '<p class="fence-aging-note">R gira entre quatro posições e troca o lado da dobradiça. F inverte para onde ela abre. A seta no terreno mostra a abertura. Mãos + E abre e fecha. Não fecha sobre o jogador ou um animal.</p>' : ''}${kind === 'fence' ? `<div class="fence-stages" aria-label="Estágios de desgaste da cerca">${FENCE_STAGES.map((stage,i)=>`<figure><img src="${fencePreview(stage)}" alt="Cerca ${FENCE_NAMES[i].toLowerCase()}"/><figcaption>${FENCE_NAMES[i]}<small>${i*FENCE_STAGE_DAYS} dias</small></figcaption></figure>`).join('')}</div><p class="fence-aging-note">Conecta em todas as direções. Desgasta a cada 30 dias do jogo, até ficar arruinada; permanece no terreno até ser recolhida.</p>` : ''}<button class="button button-light" data-build="${kind}" aria-label="Selecionar construção: ${BUILD_NAMES[kind]}">Selecionar ${icon('arrow')}</button></article>`).join('')}<article class="build-option"><div class="recipe-title">${icon('hammer')}<h3>Reparar cerca</h3></div><p>Substitua um trecho desgastado usando 1 módulo de cerca fabricado na bancada. Uma cerca nova não gasta material.</p><button class="button button-light" data-build="repair">Selecionar reparo ${icon('arrow')}</button></article><article class="build-option"><div class="recipe-title">${icon('remove')}<h3>Remover</h3></div><p>Recolha uma peça colocada por você. Bancos e cercas voltam como peças prontas para reposicionar; outras construções devolvem parte dos materiais.</p><button class="button button-light" data-build="remove" aria-label="Selecionar remoção de construção">Selecionar ${icon('arrow')}</button></article></div><div class="inventory-footer">${icon('leaf')} Leve os materiais até a entrada de cada obra para finalizar.<span>SIMULAÇÃO PAUSADA</span></div>`;
     panel.querySelector('.modal-heading button')!.addEventListener('click', () => this.closeModal());
     panel.querySelectorAll<HTMLButtonElement>('[data-build]').forEach(button => button.addEventListener('click', () => {
       const mode = button.dataset.build!;

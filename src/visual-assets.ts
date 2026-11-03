@@ -1,3 +1,4 @@
+import {preloadFarmConstructionArt} from './farm-construction-view';
 import {fishingSupplyIcon} from './data/fishing-supplies';
 import {preloadFishingArt} from './fishing-cast';
 import {preloadEcologyArt,setupEcologyArt,ecologyIcon} from './ecology-art';
@@ -26,6 +27,8 @@ import { TOOL_ICON_URLS } from './data/tool-art';
 const BASE = 'assets/visual/';
 const ICON_IDS = new Set(['wood', 'stone', 'branch', 'log', 'plank', 'scrap', 'hatchet', 'pickaxe', 'handsaw', 'fiber', 'cord', 'flakedStone', 'handle', 'blade', 'board', 'hammer', 'water', 'workbench', 'seeds']);
 export function itemIconUrl(id: string, tier=0): string | undefined {
+  if(id==='hay')return 'assets/visual/farm/hay.png';
+  if(id.startsWith('farm-'))return 'assets/visual/farm/'+id.slice(5)+'.png';
   if(id==='fishingRod')return 'assets/visual/fishing/fishing-rod.png';
   if(id==='fish')return 'assets/visual/fishing/catches/fish.svg#tilapia';
   if(id==='rareFish')return 'assets/visual/fishing/catches/fish.svg#dourado';
@@ -51,6 +54,7 @@ const WORLD_SOURCES: Record<string, string> = {
 };
 const MODULES = ['parede_creme', 'parede_janela_floreira', 'parede_trepadeira', 'parede_porta', 'porta_madeira', 'janela_turquesa', 'telha_lisa', 'telha_variante', 'chamine', 'floreira', 'cerca_natural', 'banco_jardim', 'barril', 'vaso_flor', 'piso_tabuas', 'piso_pedra', 'terra', 'caminho', 'planta'];
 export function preloadVisualAssets(scene: Phaser.Scene): void {
+  preloadFarmConstructionArt(scene);
   preloadFishingArt(scene);
   preloadEcologyArt(scene);
   preloadEconomyArt(scene);

@@ -1,3 +1,4 @@
+import {createGroundRuntime} from '../systems/ground-items';
 import {preloadMineGalleryArt} from '../mine-gallery-art';
 import {forgottenGalleryFloor} from '../data/mine-quest-geometry';
 import {MineMissionView,preloadMineMissionArt} from '../mine-mission-view';
@@ -33,7 +34,7 @@ import {craftInField,consumeInField} from '../systems/field-inventory';
 import {emptyQuickbar} from '../systems/quickbar';
 import {DoorwayPassage,SCENE_FADE_MS} from '../systems/map-transition';
 import {directionFromVector,directionVector} from '../character-directions';
-import {loadCameraZoom,saveCameraZoom,stepCameraZoom} from '../camera-zoom';
+import {loadCameraZoom,saveCameraZoom,stepCameraZoom,mapCameraZoom} from '../camera-zoom';
 import {installWorldCompanion} from '../dungeons/world-pet-controller';
 import {preloadPetArt} from '../dungeons/pet-sprites';
 import {MineRoomView,preloadMineRoom} from '../mine-room-view';
@@ -48,6 +49,8 @@ import {highlandMineApproach,highlandResumePosition} from '../data/highland';
 interface MineStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 /** Shared exploration controls for the separate reception room and continuous mining scene. */
 export class MineScene extends Phaser.Scene{
+ private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>this.miningMode?'mining':'mine',(x,y)=>this.blockedPoint(x,y),()=>!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden,()=>{this.updateHUD();});
+ getGroundItemRuntime(){return this.player?this.groundRuntime:undefined;}
  private mineMissionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player);
  getMineMissionRuntime=()=>this.mineMissionRuntime;
  private bentoWorkRuntime={missions:this.mineMissionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame),onMineImpact:(target:TilePoint,changed:readonly TilePoint[],depleted:boolean)=>{if(this.miningMode&&this.view instanceof UndergroundView){this.view.refresh([...changed]);this.view.impact(target);gameAudio.play(depleted?'pickup':'stone');}},onBentoDefense:(_point:TilePoint,hits:number)=>{gameAudio.play(hits?'combat-hit':'sword-swing');}};
@@ -85,7 +88,7 @@ export class MineScene extends Phaser.Scene{
  private updateHUD():void{
   const mission=this.missionView?.nearest(),tunnel=this.nearTunnel(),deposit=this.nearDeposit(),exit=this.nearExit(),node=this.node(),depth=mineDepth(Math.floor(this.player.y/32)),location=inMineEntrance(this.player.x,this.player.y)?MINE_NAME:this.miningMode&&forgottenGalleryFloor(Math.floor(this.player.x/32),Math.floor(this.player.y/32))?'Galeria esquecida':({surface:'Galerias superficiais',middle:'Galerias intermediárias',deep:'Galerias profundas',extreme:'Galerias extremas'}[depth]);
   const material=node?mineMaterialAt(this.state.underground!,node.x,node.y):'stone',label=material==='stone'?'Rocha':`Veio de ${METAL_NAMES[material]}`;
-  this.ui.updateHUD({health:this.miningMode?{current:this.hazards.health,max:MINE_HAZARDS.maxHealth,contaminated:this.hazards.exposure}:undefined,area:'highland',mapTitle:this.miningMode?MINING_NAME:MINE_NAME,worldMapSize:this.miningMode?{width:UNDERGROUND.width,height:175}:{width:24,height:16},mapEditorAvailable:false,worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:this.state.equippedTool,inHome:false,swimming:false,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:this.miningMode?{x:this.player.x/32,y:this.player.y/32}:{x:this.localPlayer.x/32,y:this.localPlayer.y/32},interactionKey:mission||tunnel||deposit||exit||node?'E':null,prompt:mission?`${mission.label} · examinar`:node?(this.state.equippedTool==='pickaxe'?`${label} · escavar`:`${label} · equipe a picareta`):exit?(this.miningMode?'Voltar à Mina Antiga':'Voltar ao Platô da Nascente'):tunnel?.id==='north'?'Abrir menu de mineração':tunnel?'Examinar a passagem lateral':deposit?deposit.label+' · examinar':inMineEntrance(this.player.x,this.player.y)?'Galeria de entrada · siga os trilhos para voltar à montanha':(hasEquippedSword(this.state)?'Espaço · atacar | Picareta · abrir caminhos':'Explore as galerias ou use a picareta para abrir caminhos'),location,harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:true,shelterReason:'Interior da mina',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress,...this.bentoTravelView?.hud});this.ui.updateCameraZoom(this.zoom,!this.paused);
+  this.ui.updateHUD({health:this.miningMode?{current:this.hazards.health,max:MINE_HAZARDS.maxHealth,contaminated:this.hazards.exposure}:undefined,area:'highland',mapTitle:this.miningMode?MINING_NAME:MINE_NAME,worldMapSize:this.miningMode?{width:UNDERGROUND.width,height:175}:{width:24,height:16},mapEditorAvailable:false,worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:this.state.equippedTool,inHome:false,swimming:false,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:this.miningMode?{x:this.player.x/32,y:this.player.y/32}:{x:this.localPlayer.x/32,y:this.localPlayer.y/32},interactionKey:mission||tunnel||deposit||exit||node?'E':null,prompt:mission?`${mission.label} · examinar`:node?(this.state.equippedTool==='pickaxe'?`${label} · escavar`:`${label} · equipe a picareta`):exit?(this.miningMode?'Voltar à Mina Antiga':'Voltar ao Platô da Nascente'):tunnel?.id==='north'?'Abrir menu de mineração':tunnel?'Examinar a passagem lateral':deposit?deposit.label+' · examinar':inMineEntrance(this.player.x,this.player.y)?'Galeria de entrada · siga os trilhos para voltar à montanha':(hasEquippedSword(this.state)?'Espaço · atacar | Picareta · abrir caminhos':'Explore as galerias ou use a picareta para abrir caminhos'),location,harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:true,shelterReason:'Interior da mina',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress,...this.bentoTravelView?.hud});this.ui.updateCameraZoom(this.shownZoom,!this.paused);
  }
  private interact():void{if(this.bentoTravelView?.talk())return;
   if(this.toolUse.active)return;
@@ -159,8 +162,9 @@ export class MineScene extends Phaser.Scene{
   const next=structuredClone(this.state);this.leaving=true;this.scene.stop();this.onReturn(next);
  }
  private wheel=(_p:Phaser.Input.Pointer,_objects:unknown,_dx:number,dy:number)=>{if(!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&Math.abs(dy)>5)this.changeCameraZoom(dy>0?-1:1);};
- private applyCamera=()=>{this.cameras.main.setZoom(2*this.zoom).startFollow(this.player,true,.12,.12).setRoundPixels(true);};
- changeCameraZoom(d:-1|0|1):void{if(this.paused||this.leaving||this.ui.isModalOpen())return;this.zoom=stepCameraZoom(this.zoom,d);saveCameraZoom(this.zoom);this.applyCamera();this.ui.updateCameraZoom(this.zoom,true,true);}
+ private get shownZoom():number{return mapCameraZoom(this.zoom,this.scale.width,this.scale.height,this.miningMode?UNDERGROUND.width*32:MINE_ROOM.width,this.miningMode?MINING_HEIGHT:MINE_ROOM.height);}
+ private applyCamera=()=>{this.cameras.main.setZoom(2*this.shownZoom).startFollow(this.player,true,.12,.12).setRoundPixels(true);this.ui?.updateCameraZoom(this.shownZoom,!this.paused);};
+ changeCameraZoom(d:-1|0|1):void{if(this.paused||this.leaving||this.ui.isModalOpen())return;this.zoom=stepCameraZoom(this.shownZoom,d);saveCameraZoom(this.zoom);this.applyCamera();this.ui.updateCameraZoom(this.shownZoom,true,true);}
  setPaused(value:boolean):void{this.paused=value;if(value){this.toolUse.cancel();this.toolVisual?.hide();}this.input.keyboard?.resetKeys();if(value)this.persist();}
  selectTool(tool:Tool):void{if((tool==='pickaxe'||tool==='hatchet'||tool==='hoe')&&this.state.inventory[tool]<1){this.ui.toast('Você ainda não possui essa ferramenta.');return;}this.toolUse.cancel();this.toolVisual?.hide();this.state.equippedTool=tool;this.updateHUD();}
  craftRecipe(id:string):void{const result=craftInField(this.state,id,saveGame);this.ui.toast(result.message);this.updateHUD();this.ui.refreshCrafting(this.state.inventory,false);}

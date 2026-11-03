@@ -61,3 +61,10 @@ describe('zoom da câmera independente do progresso', () => {
     expect(homeFitsCamera(960, 640, .5, 384, 320)).toBe(true);
   });
 });
+
+import {mapCameraZoom} from '../src/camera-zoom';
+describe('small-map zoom bounds',()=>{
+ it('fills the plateau and offset mine reception at the reported 1920×1080 resolution',()=>{expect(mapCameraZoom(.5,1920,1080,1536,1024)).toBe(.75);expect(mapCameraZoom(.5,1920,1080,768,512)).toBe(1.25);});
+ it('covers ultrawide, portrait, resized and 4K viewports without forcing a change on the large galleries',()=>{for(const[w,h]of[[960,640],[1920,1080],[3440,1440],[3840,2160],[1080,1920]])for(const[mw,mh]of[[1536,1024],[768,512]]){const z=mapCameraZoom(.5,w,h,mw,mh);expect(mw*2*z).toBeGreaterThanOrEqual(w);expect(mh*2*z).toBeGreaterThanOrEqual(h);}expect(mapCameraZoom(.5,1920,1080,5120,5600)).toBe(.5);});
+ it('keeps the stored preference and restores its framing when the viewport shrinks again',()=>{const preferred=.5;expect(mapCameraZoom(preferred,3840,2160,1536,1024)).toBe(1.25);expect(mapCameraZoom(preferred,960,640,1536,1024)).toBe(.5);expect(preferred).toBe(.5);});
+});

@@ -1,3 +1,4 @@
+import {createGroundRuntime} from '../systems/ground-items';
 import {createSocialRuntime,openSocialConversation,respondSocial} from '../systems/npc-social';
 import {showMineMissionJournal} from '../mine-mission-journal';
 import {createMineMissionRuntime} from '../systems/mine-missions';
@@ -89,6 +90,8 @@ type Villager={data:VillageNPC;sprite:Phaser.GameObjects.Sprite;frames:number};
  * outdoor position, crops, resource fields or animal population. */
 export class VillageScene extends Phaser.Scene {
  private socialRuntime=createSocialRuntime(()=>this.snapshotState(),saveGame,()=>this.state);
+ private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.inventory.data,()=>this.player,()=>this.inCommunity?'community':this.inBlacksmith?'blacksmith':this.merchantRoom?'shop:'+this.merchantRoom:'village',(x,y)=>this.blockedPoint(x,y)||this.swimmingPoint(x,y)>0,()=>!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden,()=>{this.updateHUD();});
+ getGroundItemRuntime(){return this.player?this.groundRuntime:undefined;}
  private mineMissionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player,()=>this.inventory.data);
  getMineMissionRuntime=()=>this.mineMissionRuntime;
  private bentoWorkRuntime={missions:this.mineMissionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};

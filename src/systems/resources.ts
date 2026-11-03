@@ -45,7 +45,7 @@ export class Resources {
     this.progress = progress.map((entry) => ({ ...entry }));
   }
 
-  hit(node: ResourceNode, tool: Tool, inventory: Inventory,context:number|SaveData=0,mineral?:import('../data/economy-balance').Metal|'stone'): ResourceActionResult {
+  hit(node: ResourceNode, tool: Tool, inventory: Inventory,context:number|SaveData=0,mineral?:import('../data/economy-balance').Metal|'stone',ground?:(cost:ItemCost)=>boolean): ResourceActionResult {
     const seed=node.treeSpecies==='pine'?'pineSeed':'oakSeed';
     const young=node.kind==='standingTree'&&(node.treeStage??3)<3;
     const definition = young?{...RESOURCE_DEFINITIONS.standingTree,label:'Muda',hits:1,drops:{[seed]:1}}:RESOURCE_DEFINITIONS[node.kind];
@@ -89,11 +89,11 @@ export class Resources {
     if(node.kind==='standingTree'&&!young)drops[seed]=1;
     if(node.kind==='herb'&&(node.id.startsWith('f-')||node.id.startsWith('spawn-f-'))){let h=0;for(const c of node.id)h=(Math.imul(h,31)+c.charCodeAt(0))>>>0;if(h%ECOLOGY.rareHerbForestDenominator===0)drops.rareHerb=1;}
     if(node.kind==='fiber'&&node.plant){drops.herb=1;let h=0;for(const c of node.id)h=(Math.imul(h,31)+c.charCodeAt(0))>>>0;if((node.id.startsWith('f-')||node.id.startsWith('spawn-f-'))&&h%7===0)drops.rareHerb=1;}
-    if (!inventory.transact({}, drops)) {
+    if (!(ground?ground(drops):inventory.transact({}, drops))) {
       return { ok: false, message: 'A mochila está cheia. Libere espaço antes de recolher este recurso.' };
     }
     if (savedProgress) this.progress.splice(this.progress.indexOf(savedProgress), 1);
     this.depleted.add(node.id);wear();if(state&&metal)recordMetal(state,metal);
-    return { ok: true, message: `${definition.label}: materiais guardados na mochila.`, depleted: true };
+    return { ok: true, message: `${definition.label}: ${ground?'materiais no chão. Aproxime-se para recolher.':'materiais guardados na mochila.'}`, depleted: true };
   }
 }

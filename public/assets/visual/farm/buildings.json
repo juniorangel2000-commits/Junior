@@ -1,0 +1,59 @@
+{
+  "file": "assets/visual/farm/buildings.png",
+  "frames": {
+    "coop-0": {
+      "x": 64,
+      "y": 90,
+      "width": 276,
+      "height": 252
+    },
+    "barn-0": {
+      "x": 429,
+      "y": 83,
+      "width": 431,
+      "height": 259
+    },
+    "silo-0": {
+      "x": 952,
+      "y": 64,
+      "width": 238,
+      "height": 261
+    },
+    "coop-1": {
+      "x": 60,
+      "y": 429,
+      "width": 283,
+      "height": 371
+    },
+    "barn-1": {
+      "x": 427,
+      "y": 422,
+      "width": 440,
+      "height": 378
+    },
+    "silo-1": {
+      "x": 965,
+      "y": 410,
+      "width": 212,
+      "height": 370
+    },
+    "coop-2": {
+      "x": 62,
+      "y": 876,
+      "width": 281,
+      "height": 360
+    },
+    "barn-2": {
+      "x": 428,
+      "y": 861,
+      "width": 438,
+      "height": 374
+    },
+    "silo-2": {
+      "x": 970,
+      "y": 843,
+      "width": 202,
+      "height": 381
+    }
+  }
+}

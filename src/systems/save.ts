@@ -1,3 +1,6 @@
+import {validGroundItems} from './ground-items';
+import {isLegacyHouseTool} from '../data/farm-buildings';
+import {validFarmConstruction} from './farm-construction';
 import {validMineMissions} from './mine-mission-state';
 import {validBentoExpedition} from './bento-expedition-state';
 import {validBentoTravel} from './bento-travel-state';
@@ -49,7 +52,7 @@ import {merchantRoomFits,validMerchantLayout} from '../data/merchant-rooms';
 export const SAVE_KEY = 'depois-da-chuva-v1';
 export const SAVE_BACKUP_KEY = 'depois-da-chuva-v1-backup';
 export const SAVE_VERSION = 4;
-const TOOLS: Tool[] = ['hand', 'plant', 'water', 'gate', 'repair', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'hoe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
+const TOOLS: Tool[] = ['farm-coop','farm-barn','farm-silo','hand', 'plant', 'water', 'gate', 'repair', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'hoe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
 const PROGRESS_KEYS: Array<keyof ProgressData> = ['collected', 'craftedTools', 'harvested', 'processed', 'builtWorkbench', 'sawn', 'builtShelter'];
 const emptyProgress = (): ProgressData => ({ collected: false, craftedTools: false, harvested: false, processed: false, builtWorkbench: false, sawn: false, builtShelter: false });
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -72,6 +75,8 @@ export function validateProfile(value: unknown): value is CharacterProfile {
 
 export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
+  if(value.groundItems!==undefined&&!validGroundItems(value.groundItems))return false;
+  if(value.farmConstruction!==undefined&&!validFarmConstruction(value.farmConstruction,value.recruitedAnimals))return false;
   if(value.npcSocial!==undefined&&!validNpcSocial(value.npcSocial,typeof value.day==='number'?value.day:999999))return false;
   if(value.bentoTravel!==undefined&&!validBentoTravel(value.bentoTravel,typeof value.day==='number'?value.day:999999))return false;
   if(value.mineRescue!==undefined&&!validMineRescue(value.mineRescue,typeof value.day==='number'?value.day:999999))return false;
@@ -302,6 +307,8 @@ export function migrateSave(value: unknown): SaveData | null {
   }
   if(validateSave(value)){
     const data=structuredClone(value);
+    if(isLegacyHouseTool(data.equippedTool))data.equippedTool='hand';
+    if(data.quickbar)data.quickbar=data.quickbar.map(s=>s&&isLegacyHouseTool(s)?null:s);
     if(data.mineInterior)data.mineCollisionRevision=2;
     if(!data.communityCenter){
       data.communityCenter={stage:communityReady(data)?3:0,delivered:{}};

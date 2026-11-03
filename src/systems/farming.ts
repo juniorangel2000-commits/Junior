@@ -117,14 +117,14 @@ export class Farming {
     return { ok: true, message: 'Terra regada. Seu nabo fica pronto em 45 segundos de jogo.' };
   }
 
-  harvest(x: number, y: number, inventory: Inventory): ActionResult {
+  harvest(x: number, y: number, inventory: Inventory,ground?:(cost:import('./inventory').ItemCost)=>boolean): ActionResult {
     const crop = this.cropAt(x, y);
     if (!crop) return { ok: false, message: 'Um bom lugar para começar a plantar.' };
     if (crop.growth < 1) return {
       ok: false,
       message: crop.watered ? `Crescendo com calma… ${Math.floor(crop.growth * 100)}%.` : 'A plantinha está com sede. Use o regador.',
     };
-    if (!inventory.transact({}, { turnip: 1, seeds: 1 })) return { ok: false, message: 'A mochila não comporta a colheita. Abra espaço antes de colher.' };
+    if (!(ground?ground({turnip:1,seeds:1}):inventory.transact({}, { turnip: 1, seeds: 1 }))) return { ok: false, message: 'A mochila não comporta a colheita. Abra espaço antes de colher.' };
     this.crops.splice(this.crops.indexOf(crop), 1);
     this.progress.harvested = true;
     return { ok: true, message: 'Colheita! +1 nabo e +1 semente para recomeçar.' };

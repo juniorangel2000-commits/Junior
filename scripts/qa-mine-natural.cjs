@@ -52,12 +52,14 @@ for(const id of ['farmer-male','farmer-female']){
    const state=await page.evaluate(t=>{game.step(performance.now(),t===0?.01:1000/18);const pose=m.toolVisual.miningSprite;return{active:m.toolUse.active,frame:m.toolUse.frame,bodyVisible:m.player.sprite.visible,poseVisible:pose?.visible,poseFrame:pose?.frame.name};},t);
    if(state.active)assert.ok(!state.bodyVisible&&state.poseVisible);else assert.ok(state.bodyVisible&&!state.poseVisible);
    if(strike===0&&t===4){assert.equal(Number(state.poseFrame)%6,3);await page.screenshot({path:out+'/'+id+'-contato.png'});}
-   if(strike<3){await page.screenshot({path:folder+'/'+String(frame++).padStart(3,'0')+'.png',clip:{x:448,y:240,width:640,height:480}});}
+   if(strike<5){await page.screenshot({path:folder+'/'+String(frame++).padStart(3,'0')+'.png',clip:{x:448,y:240,width:640,height:480}});}
   }
-  for(let t=0;t<4;t++){await page.evaluate(()=>game.step(performance.now(),1000/18));if(strike<3)await page.screenshot({path:folder+'/'+String(frame++).padStart(3,'0')+'.png',clip:{x:448,y:240,width:640,height:480}});}
+  for(let t=0;t<4;t++){await page.evaluate(()=>game.step(performance.now(),1000/18));if(strike<5)await page.screenshot({path:folder+'/'+String(frame++).padStart(3,'0')+'.png',clip:{x:448,y:240,width:640,height:480}});}
  }
- const result=await page.evaluate(()=>({dug:!!m.state.underground.changes[layout.mineCellIndex(face.node.x,face.node.y)]?.dug,reward:m.state.inventory.stone-stoneBefore,walkable:rock.undergroundFits(m.state.underground,face.node.x*32+16,face.node.y*32+16),localUpdates:m.view.localUpdates-localBefore,valid:saves.validateSave(m.snapshotState()),bodyRestored:m.player.sprite.visible&&!m.toolVisual.miningSprite.visible}));
+ const result=await page.evaluate(()=>({dug:!!m.state.underground.changes[layout.mineCellIndex(face.node.x,face.node.y)]?.dug,reward:(m.state.groundItems?.items??[]).filter(d=>d.space==='mining'&&d.item==='stone'&&Math.hypot(d.x-(face.node.x*32+16),d.y-(face.node.y*32+16))<20).reduce((n,d)=>n+d.amount,0),walkable:rock.undergroundFits(m.state.underground,face.node.x*32+16,face.node.y*32+16),localUpdates:m.view.localUpdates-localBefore,valid:saves.validateSave(m.snapshotState()),bodyRestored:m.player.sprite.visible&&!m.toolVisual.miningSprite.visible}));
  assert.ok(result.dug&&result.walkable&&result.valid&&result.bodyRestored);assert.equal(result.reward,4);assert.equal(result.localUpdates,17);shots[id]=result;console.log(id,JSON.stringify(result));
+ await page.evaluate(async()=>{const drop=await import('/src/systems/ground-items.ts');m.player.x=face.node.x*32+16;m.player.y=face.node.y*32+16;m.state.time+=1;const collected=drop.collectGroundItems(m.getGroundItemRuntime());if(!collected.ok)throw Error('Native drop pickup failed: '+collected.message);});
+ assert.equal(await page.evaluate(()=>m.state.inventory.stone-stoneBefore),4);
  // Cancel restores the real body immediately and must not create another hit.
  await page.evaluate(()=>{m.toolVisual.show('pickaxe','up',m.player.x,m.player.y,{active:true,frame:2},2,m.player.sprite);m.setPaused(true);});
  assert.ok(await page.evaluate(()=>m.player.sprite.visible&&!m.toolVisual.miningSprite.visible));await page.evaluate(()=>m.setPaused(false));

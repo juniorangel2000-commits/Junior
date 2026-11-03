@@ -36,3 +36,11 @@ export function baseCameraZoom(width: number, height: number, homeHeight?: numbe
 export function homeFitsCamera(width: number, height: number, zoom: number, homeWidth: number, homeHeight: number): boolean {
   return homeWidth * zoom <= width - 40 && homeHeight * zoom <= height - 140;
 }
+
+/** A small map must cover the viewport even when a saved preference is 50%.
+ * Fit is runtime-only: resizing/entering a room does not rewrite preference. */
+export function mapCameraZoom(preferred:number,viewWidth:number,viewHeight:number,mapWidth:number,mapHeight:number,base=2):number{
+ if(![viewWidth,viewHeight,mapWidth,mapHeight,base].every(n=>Number.isFinite(n)&&n>0))return clampCameraZoom(preferred);
+ const minimum=Math.ceil(Math.max(viewWidth/mapWidth,viewHeight/mapHeight)/base/CAMERA_ZOOM_STEP-1e-9)*CAMERA_ZOOM_STEP;
+ return Math.max(clampCameraZoom(preferred),minimum);
+}
