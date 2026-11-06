@@ -9,6 +9,7 @@ import {gameAudio} from './audio';
 import './fishing.css';
 
 let active:Promise<string>|undefined;
+export const fishingActive=():boolean=>active!==undefined;
 const random=()=>{const n=new Uint32Array(1);crypto.getRandomValues(n);return n[0]/4294967296;};
 const fishIcon='<svg viewBox="0 0 28 18" aria-hidden="true"><path d="M6 9 1 3v12Zm0 0c3-9 16-9 21 0-5 9-18 9-21 0Z" fill="currentColor"/><path d="m13 4 4-4 3 5M12 14l5 4 3-5" fill="currentColor"/><rect x="22" y="6" width="2" height="2" fill="#173d40"/></svg>';
 

@@ -91,6 +91,9 @@ export class AnimalBrain {
   /** Bounded weighted search prefers open ground, retaining narrow routes as a fallback. */
   private plan(player: AnimalPoint, fleeing: boolean,arrivalDistance=32): AnimalPoint[] {
     const sx=Math.floor(this.x/TILE),sy=Math.floor(this.y/TILE);
+    // A narrow gate may require aligning inside the current tile before leaving it.
+    const center={x:sx*TILE+16,y:sy*TILE+16};
+    const start=this.pointBlocked&&this.canStand(center.x,center.y)&&this.canTravel(this,center)?center:this;
     const nodes=[{x:sx,y:sy,parent:-1,distance:0,cost:0}],costs=new Map([[`${sx},${sy}`,0]]),queue=[0];
     const push=(index:number)=>{queue.push(index);let at=queue.length-1;while(at>0){const parent=(at-1)>>1;if(nodes[queue[parent]].cost<=nodes[index].cost)break;queue[at]=queue[parent];at=parent;}queue[at]=index;};
     const pop=():number=>{const first=queue[0],last=queue.pop()!;if(queue.length){let at=0;while(at*2+1<queue.length){let child=at*2+1;if(child+1<queue.length&&nodes[queue[child+1]].cost<nodes[queue[child]].cost)child++;if(nodes[last].cost<=nodes[queue[child]].cost)break;queue[at]=queue[child];at=child;}queue[at]=last;}return first;};
@@ -99,7 +102,7 @@ export class AnimalBrain {
       const n=pop();
       const node=nodes[n],px=node.x*TILE+16,py=node.y*TILE+16;
       if(node.cost>(costs.get(`${node.x},${node.y}`)??Infinity)+.0001)continue;
-      const point=n===0?this:{x:px,y:py},distance=Math.hypot(point.x-player.x,point.y-player.y);
+      const point=n===0?start:{x:px,y:py},distance=Math.hypot(point.x-player.x,point.y-player.y);
       if(!fleeing&&n>0&&distance<=arrivalDistance+8&&this.lineClear(point,player)){best=n;break;}
       if(fleeing){
         const score=distance-node.distance*2-(node.cost-node.distance)*10-this.terrainCost(node.x,node.y)*24;
@@ -119,7 +122,8 @@ export class AnimalBrain {
     if(!fleeing&&Math.hypot(nodes[best].x*TILE+16-player.x,nodes[best].y*TILE+16-player.y)>arrivalDistance+8)return[];
     const path:AnimalPoint[]=[];
     for(let n=best;n>0;n=nodes[n].parent)path.push({x:nodes[n].x*TILE+16,y:nodes[n].y*TILE+16});
-    return path.reverse();
+    path.reverse();if(path.length&&start!==this&&Math.hypot(start.x-this.x,start.y-this.y)>.01)path.unshift(start);
+    return path;
   }
   update(delta: number,player: AnimalPoint,neighbors: readonly AnimalBrain[],led=false,arrivalDistance:number=32,ropeLimit=true): void {
     const dt=Math.max(0,Math.min(delta,.1));this.moving=false;if(!dt)return;

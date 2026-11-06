@@ -9,6 +9,7 @@ import {ensureBentoTravel} from './bento-travel';
 import {endBentoParty} from './bento-expedition';
 import {finishMineExpedition} from './underground-renewal';
 import {MINE_HAZARDS} from '../data/underground-hazards';
+import {ITEM_IDS} from '../data/items';
 const EQUIPMENT:ReadonlySet<ItemId>=new Set(['hatchet','pickaxe','hoe','handsaw','hammer','sickle','shovel','sword','lantern','backpack','boots','clothing','accessory','fishingRod','net']);
 /** One atomic rescue: the darkened scene is the only off-screen relocation. */
 export function recoverMineDefeat(save:SaveData,write:(draft:SaveData)=>boolean):boolean{
@@ -17,7 +18,7 @@ export function recoverMineDefeat(save:SaveData,write:(draft:SaveData)=>boolean)
  const before=(draft.day-1)*1440+draft.time;Object.assign(draft,advanceClock(draft,120));
  const elapsedMinutes=Math.max(0,(draft.day-1)*1440+draft.time-before),farm=new Farming(draft.crops,draft.preparedSoil,draft.farmingProgress,draft.restoredFarmSoil);farm.update(elapsedMinutes/GAME_MINUTES_PER_SECOND);draft.crops=farm.crops;draft.farmingProgress=farm.progress;
  draft.home=home.data;draft.activeArea='property';draft.homePosition={...placement.player,direction:'down'};
- for(const id of Object.keys(draft.inventory) as ItemId[])if(!EQUIPMENT.has(id))draft.inventory[id]=0;
+ for(const id of ITEM_IDS)if(!EQUIPMENT.has(id))draft.inventory[id]=0;
  if(draft.fishingProgress)draft.fishingProgress.basket=[];
  delete draft.lastFishingHaul;returnMineMissionObjects(draft);finishMineExpedition(draft);
  endBentoParty(draft,'danger');

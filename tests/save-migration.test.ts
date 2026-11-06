@@ -1,3 +1,5 @@
+import {TOOL_IDS} from '../src/data/economy-balance';
+import {syncToolInstances,activeToolCopy} from '../src/systems/tool-instances';
 import {SAVE_VERSION} from '../src/systems/save';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { CharacterProfile, SaveData } from '../src/types';
@@ -56,6 +58,8 @@ function completeSnapshot(): SaveData {
   saved.day = 14;
   saved.time = 1115;
   saved.metLia = true;
+  syncToolInstances(saved.inventory,saved.economy6?.tools);
+  for(const kind of TOOL_IDS){const copy=activeToolCopy(saved.inventory,kind);if(copy)saved.economy6!.tools[kind]=copy.condition;}
   return saved;
 }
 

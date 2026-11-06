@@ -1,0 +1,210 @@
+{
+  "scope": "Native UI: ten individual tools, selected-copy resource strike, drop/pickup/save; deployed net, cancellation during cast, invalid landing; complete two-fish minigame by pointer",
+  "tools": {
+    "refs": [
+      "tool:pickaxe:1",
+      "tool:pickaxe:2",
+      "tool:pickaxe:3",
+      "tool:pickaxe:4",
+      "tool:pickaxe:5",
+      "tool:pickaxe:6",
+      "tool:pickaxe:7",
+      "tool:pickaxe:8",
+      "tool:pickaxe:9",
+      "tool:pickaxe:10"
+    ],
+    "selectedId": 3,
+    "wear": {
+      "before": [
+        {
+          "id": 1,
+          "durability": 100
+        },
+        {
+          "id": 2,
+          "durability": 95
+        },
+        {
+          "id": 3,
+          "durability": 90
+        },
+        {
+          "id": 4,
+          "durability": 85
+        },
+        {
+          "id": 5,
+          "durability": 80
+        },
+        {
+          "id": 6,
+          "durability": 75
+        },
+        {
+          "id": 7,
+          "durability": 70
+        },
+        {
+          "id": 8,
+          "durability": 65
+        },
+        {
+          "id": 9,
+          "durability": 60
+        },
+        {
+          "id": 10,
+          "durability": 55
+        }
+      ],
+      "after": [
+        {
+          "id": 1,
+          "durability": 100
+        },
+        {
+          "id": 2,
+          "durability": 95
+        },
+        {
+          "id": 3,
+          "durability": 89
+        },
+        {
+          "id": 4,
+          "durability": 85
+        },
+        {
+          "id": 5,
+          "durability": 80
+        },
+        {
+          "id": 6,
+          "durability": 75
+        },
+        {
+          "id": 7,
+          "durability": 70
+        },
+        {
+          "id": 8,
+          "durability": 65
+        },
+        {
+          "id": 9,
+          "durability": 60
+        },
+        {
+          "id": 10,
+          "durability": 55
+        }
+      ],
+      "active": 89
+    },
+    "pickup": {
+      "count": 10,
+      "live": {
+        "id": 3,
+        "kind": "pickaxe",
+        "condition": {
+          "tier": 0,
+          "durability": 89,
+          "work": 0
+        }
+      },
+      "saved": {
+        "id": 3,
+        "kind": "pickaxe",
+        "condition": {
+          "tier": 0,
+          "durability": 89,
+          "work": 0
+        }
+      },
+      "bar": "tool:pickaxe:3"
+    },
+    "errors": []
+  },
+  "net": {
+    "realSprite": true,
+    "correctFootprint": true,
+    "noRod": true,
+    "normalPlayer": true,
+    "oneBait": true,
+    "cancelCleanup": true,
+    "invalidCastPreservesBait": true,
+    "errors": []
+  },
+  "minigame": {
+    "checks": [
+      {
+        "name": "A mordida não acontece antes de dez segundos",
+        "value": true
+      },
+      {
+        "name": "Morde após a espera sorteada de quinze segundos",
+        "value": true
+      },
+      {
+        "name": "Segunda chamada reutiliza a sessão sem consumir outra isca",
+        "value": true
+      },
+      {
+        "name": "Teclado conclui a disputa e guarda um peixe uma única vez",
+        "value": true
+      },
+      {
+        "name": "Não há recompensa duplicada depois de fechar",
+        "value": true
+      },
+      {
+        "name": "Perder foco pausa a espera e limpa a entrada",
+        "value": true
+      },
+      {
+        "name": "Interface cabe na tela estreita",
+        "value": true
+      },
+      {
+        "name": "Mouse controla a rede e guarda dois peixes",
+        "value": true
+      },
+      {
+        "name": "Resultado de fuga aparece",
+        "value": true
+      },
+      {
+        "name": "Perder a janela de três segundos faz o peixe escapar",
+        "value": true
+      },
+      {
+        "name": "Esc limpa o painel sem devolver a isca já utilizada",
+        "value": true
+      },
+      {
+        "name": "Identidade do raro permanece oculta na disputa",
+        "value": true
+      },
+      {
+        "name": "Captura rara mantém o tipo no inventário e no save",
+        "value": true
+      },
+      {
+        "name": "Sem erros de JavaScript",
+        "value": true
+      }
+    ],
+    "errors": []
+  },
+  "scripts": [
+    "scripts/qa-tool-copies.cjs",
+    "scripts/qa-fishing-net.cjs",
+    "scripts/qa-fishing-minigame.cjs"
+  ],
+  "automated": {
+    "typeScript": true,
+    "productionBuild": true,
+    "testFiles": 206,
+    "testsPassed": 1830
+  }
+}

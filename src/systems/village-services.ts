@@ -9,6 +9,7 @@ import {createVillageProgress} from '../data/village-progress';
 import {createVillageEconomy,MAX_COINS} from '../data/village-commerce';
 import {FOREST_ANIMALS} from '../data/ancient-forest';
 import {ECOLOGY_BALANCE as ECOLOGY} from '../data/ecology-balance';
+import {inventoryToolCondition,repairInventoryTool} from './tool-instances';
 export interface VillageServiceOffer{id:string;label:string;description:string;disabled?:boolean;actionLabel?:string}
 type Service={npc:string;label:string;description:string;run:(s:SaveData,i:Inventory)=>void};
 const services:Record<string,Service>={};
@@ -38,6 +39,7 @@ for(const survivor of ['marina','rui'])add(`welcome-${survivor}`,'helena',`Receb
 add('learn-machines','icaro','Aprender iluminação e bombas','80 Coroas, 6 sucatas e 2 componentes eletrônicos. Libera luminárias e bombas.',(s,i)=>{requireThat(!s.villageProgress!.recipes.includes('waterPump'),'Projetos já conhecidos.');pay(s,i,80,{scrap:6,electronicPart:2});s.villageProgress!.recipes.push('lamp','waterPump');});
 for(const c of B.contracts)add(`request-${c.npc}`,c.npc,'Quadro de pedidos',`${c.quantity} ${c.item}: ${c.reward} C. Renova a cada ${c.interval} dias.`,(s)=>{const r=fulfillContract(s,c.npc);requireThat(r.ok,r.message);});
 for(const tool of ['hatchet','pickaxe','hoe','sickle','shovel'] as const)add(`repair-${tool}`,'bento',`Reparar ${tool}`,'20 C. Restaura a durabilidade do material atual.',(s,i)=>{requireThat(i.has(tool),'Traga a ferramenta.');const c=toolCondition(s,tool);requireThat(c.durability<B.durability[c.tier],'A ferramenta já está em bom estado.');pay(s,i,20);configureTool(s,tool,c.tier);});
+for(const tool of ['hammer','handsaw','fishingRod','net'] as const)add(`repair-${tool}`,'bento',`Reparar ${{hammer:'martelo',handsaw:'serrote',fishingRod:'vara de pesca',net:'rede'}[tool]}`,'20 C. Repara somente a cópia selecionada.',(s,i)=>{requireThat(i.has(tool),'Traga a ferramenta.');requireThat(inventoryToolCondition(i.data,tool).durability<100,'A ferramenta já está em bom estado.');pay(s,i,20);repairInventoryTool(i.data,tool);});
 add('shelter-carpentry','tobias','Preparar peças para a casinha','30 C, 2 troncos e 6 madeiras: recebe 6 tábuas regulares e 6 cavilhas.',(s,i)=>{pay(s,i,30,{log:2,wood:6});requireThat(i.transact({},{board:6,peg:6}),'Libere espaço na mochila.');});
 add('shelter-textiles','celina','Preparar tecidos para os pets','20 C e 8 fibras: recebe 4 tecidos e 2 cordas.',(s,i)=>{pay(s,i,20,{fiber:8});requireThat(i.transact({},{cloth:4,cord:2}),'Libere espaço na mochila.');});
 add('shelter-fittings','icaro','Preparar fixadores para a casinha','12 C e 4 sucatas: recebe 2 peças metálicas.',(s,i)=>{pay(s,i,12,{scrap:4});requireThat(i.transact({},{metalPart:2}),'Libere espaço na mochila.');});
@@ -67,5 +69,5 @@ export function performVillageService(save:SaveData,id:string):{ok:boolean;messa
  const service=services[id];if(!service)return{ok:false,message:'Serviço desconhecido.'};
  if(service.npc==='bento'&&!bentoAvailability(save).open)return{ok:false,message:bentoAvailability(save).message};
  const draft=structuredClone(save);draft.villageProgress??=createVillageProgress();draft.villageEconomy??=createVillageEconomy();
- try{const inventory=new Inventory(draft.inventory);service.run(draft,inventory);draft.inventory={...inventory.data};Object.assign(save,draft);return{ok:true,message:`${service.label}: concluído.`};}catch(error){return{ok:false,message:error instanceof Error?error.message:'Não foi possível concluir.'};}
+ try{const inventory=new Inventory(draft.inventory);draft.inventory=inventory.data;service.run(draft,inventory);draft.inventory={...inventory.data};Object.assign(save,draft);return{ok:true,message:`${service.label}: concluído.`};}catch(error){return{ok:false,message:error instanceof Error?error.message:'Não foi possível concluir.'};}
 }

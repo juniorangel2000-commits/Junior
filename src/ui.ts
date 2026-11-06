@@ -36,6 +36,9 @@ import type { TitleBackgroundMode } from './title-screen';
 import { itemIconUrl } from './visual-assets';
 import { HOME_WIDTH, HOME_HEIGHT } from './systems/home';
 import { emptyQuickbar, assignQuickSlot, quickItem, quickAction, quickQuantity, isQuickSlot, inventoryEntries } from './systems/quickbar';
+import {referencedTool,toolReferenceParts,syncToolInstances,durableTool,wearsOut,individualTool,activeToolCopy} from './systems/tool-instances';
+import {ECONOMY_BALANCE} from './data/economy-balance';
+import {fishingActive} from './fishing-ui';
 import type { QuickSlot } from './types';
 import './inventory-ui.css';
 import { WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
@@ -51,11 +54,11 @@ import type { BuildingData, CharacterProfile, HudData, InventoryData, ItemId, To
 interface UICallbacks {
   getMineMissionRuntime?():MineMissionRuntime|undefined;
   getFishingState?():SaveData|undefined;
-  onUseItem(item:ItemId):void;
-  onDropItem?(item:ItemId,amount:number):void;
+  onUseItem(item:ItemId,toolId?:number):void;
+  onDropItem?(item:ItemId,amount:number,toolId?:number):void;
   onNewGame(profile: CharacterProfile): void;
   onContinue(): void;
-  onTool(tool: Tool): void;
+  onTool(tool: Tool,toolId?:number): void;
   onCraft(recipeId: string): void;
   onCancelCraft(): void;
   onBlueprint(): void;
@@ -178,11 +181,13 @@ export class GameUI {
   private activeSlot = -1;
   private draggedItem: Exclude<QuickSlot, null> | null = null;
   private selectedInventoryItem: Exclude<QuickSlot, null> | null = null;
+  private slotCondition(slot:QuickSlot){const copy=this.latest&&referencedTool(this.latest.inventory,slot),kind=quickItem(slot);return copy?.condition??(this.latest&&individualTool(kind)?activeToolCopy(this.latest.inventory,kind)?.condition:undefined)??this.latest?.toolConditions?.[kind as 'hatchet'];}
+  private durabilityMarkup(slot:QuickSlot):string{const c=this.slotCondition(slot),item=quickItem(slot);return c&&wearsOut(item)?`<span class="tool-durability" role="meter" aria-label="Durabilidade" aria-valuemin="0" aria-valuemax="${ECONOMY_BALANCE.durability[c.tier]}" aria-valuenow="${c.durability}"><span style="width:${c.durability/ECONOMY_BALANCE.durability[c.tier]*100}%"></span></span>`:'';}
 
   private slotInfo(slot: QuickSlot): { label: string; icon: string; detail: string } {
     const item = quickItem(slot);
     if (item === 'wateringCan' || slot === 'water') return { label: (this.latest?.wateringCanWater ?? 0) > 0 ? 'Regador com água' : 'Regador vazio', icon: (this.latest?.wateringCanWater ?? 0) > 0 ? 'water-full' : 'water-empty', detail: `${this.latest?.wateringCanWater ?? 0}/8 regas · Equipe e pressione E no poço ou junto ao rio/lago para encher.` };
-    if (item) return { label: ITEMS[item].name, icon: item, detail: ITEMS[item].description };
+    if (item) return { label: ITEMS[item].name+(toolReferenceParts(slot)?` · #${toolReferenceParts(slot)!.id}`:''), icon: item, detail: ITEMS[item].description };
     return tools.find(tool => tool.id === slot) ?? { label: 'Vazio', icon: 'bag', detail: 'Arraste um item da mochila para este slot.' };
   }
   activateSlot(index: number): void {
@@ -193,14 +198,16 @@ export class GameUI {
     if (quantity === 0) { this.toast('Este item acabou. Recolha mais para usar este atalho.'); return; }
     this.activeSlot = index;
     if(quickItem(slot)==='sword'){this.callbacks.onTool('hand');if(this.latest?.worldWeapon!=='sword')this.callbacks.onUseItem('sword');else this.toast('Espada já equipada · E ou clique contra hostis no acampamento.');this.updateQuickbar();return;}
-    this.callbacks.onTool(quickAction(slot));
-    if (quickItem(slot) && quickAction(slot) === 'hand') this.toast(`${this.slotInfo(slot).label}: material disponível na mochila para fabricar e construir.`);
+    const copy=toolReferenceParts(slot);
+    this.callbacks.onTool(quickAction(slot),copy?.id);
+    if(copy&&quickAction(slot)==='hand'&&USABLE_VILLAGE_ITEMS.includes(copy.kind))this.callbacks.onUseItem(copy.kind,copy.id);
+    else if (quickItem(slot) && quickAction(slot) === 'hand') this.toast(`${this.slotInfo(slot).label}: material disponível na mochila para fabricar e construir.`);
     this.updateQuickbar();
   }
   private slotMarkup(slot: QuickSlot, index: number, inventory = false): string {
     const info = this.slotInfo(slot);
     const quantity = this.latest ? quickQuantity(slot, this.latest.inventory, !!this.latest.wateringCan) : null;
-    return `<button type="button" class="${inventory ? 'bag-slot quick-target' : 'tool'}" data-slot="${index}" ${slot ? `data-tool="${quickAction(slot)}"` : ''} aria-label="Slot ${index + 1}: ${slot ? info.label : 'vazio — mãos vazias'}" title="${slot ? info.label : 'Mãos vazias'} · ${inventory ? 'solte um item aqui; Delete remove' : 'I abre a mochila; botão direito configura'}"><span class="tool-key">${index + 1}</span>${slot ? icon(info.icon,'',this.latest?.toolConditions?.[info.icon as 'hatchet']?.tier??0) : '<span class="empty-slot">+</span>'}<strong class="slot-quantity">${quantity ?? ''}</strong></button>`;
+    return `<button type="button" class="${inventory ? 'bag-slot quick-target' : 'tool'}" data-slot="${index}" ${slot ? `data-tool="${quickAction(slot)}"` : ''} aria-label="Slot ${index + 1}: ${slot ? info.label : 'vazio — mãos vazias'}" title="${slot ? info.label : 'Mãos vazias'} · ${inventory ? 'solte um item aqui; Delete remove' : 'I abre a mochila; botão direito configura'}"><span class="tool-key">${index + 1}</span>${slot ? icon(info.icon,'',this.slotCondition(slot)?.tier??0) : '<span class="empty-slot">+</span>'}<strong class="slot-quantity">${toolReferenceParts(slot)?'':quantity ?? ''}</strong>${this.durabilityMarkup(slot)}</button>`;
   }
   private renderQuickbar(): void {
     const belt = this.base.querySelector('.toolbelt');
@@ -217,8 +224,9 @@ export class GameUI {
     this.base.querySelectorAll<HTMLButtonElement>('[data-slot]').forEach(button => {
       const index = Number(button.dataset.slot), slot = this.quickbar[index];
       const quantity = quickQuantity(slot, this.latest!.inventory, !!this.latest!.wateringCan);
-      button.querySelector('.slot-quantity')!.textContent = quantity === null ? '' : String(quantity);
-      if(slot){const info=this.slotInfo(slot),img=button.querySelector<HTMLImageElement>('img.asset-icon'),src=itemIconUrl(info.icon,this.latest?.toolConditions?.[info.icon as 'hatchet']?.tier??0);if(img&&src&&img.getAttribute('src')!==src)img.src=src;}
+      button.querySelector('.slot-quantity')!.textContent = toolReferenceParts(slot)||quantity === null ? '' : String(quantity);
+      button.querySelector('.tool-durability')?.remove();button.insertAdjacentHTML('beforeend',this.durabilityMarkup(slot));
+      if(slot){const info=this.slotInfo(slot),img=button.querySelector<HTMLImageElement>('img.asset-icon'),src=itemIconUrl(info.icon,this.slotCondition(slot)?.tier??0);if(img&&src&&img.getAttribute('src')!==src)img.src=src;}
       const selected = quickAction(slot) === this.latest!.tool && (slot === null || quickItem(slot) ? this.activeSlot === index : true);
       button.classList.toggle('selected', selected);
       button.classList.toggle('depleted', quantity === 0);
@@ -287,6 +295,7 @@ export class GameUI {
     try { this.journalCollapsed = localStorage.getItem('after-rain-missions-collapsed') === 'true'; } catch { /* A interface também funciona sem armazenamento. */ }
     this.base.className = 'ui-base';
     window.addEventListener('keydown',event=>{
+      if(fishingActive())return;
       if(!this.gameplayLocked&&this.mode==='hud'&&event.key==='Escape'&&!event.repeat&&!event.defaultPrevented){
         if([...document.querySelectorAll<HTMLElement>('[role=dialog]')].some(panel=>panel.getClientRects().length>0&&!this.overlay.contains(panel)))return;
         event.preventDefault();event.stopImmediatePropagation();if(!this.dismissTopToolbar())this.togglePause();return;
@@ -675,6 +684,7 @@ export class GameUI {
   }
 
   updateHUD(data: HudData): void {
+    syncToolInstances(data.inventory,data.toolConditions);
     const waterChanged = this.latest?.wateringCanWater !== data.wateringCanWater;
     this.latest = data;
     if (waterChanged && this.mode === 'hud') this.renderQuickbar();
@@ -824,7 +834,7 @@ export class GameUI {
   }
 
   toggleInventory(inventory: InventoryData): void {
-    if(this.gameplayLocked)return;
+    if(this.gameplayLocked||fishingActive())return;
     if (this.mode !== 'hud') return;
     if (this.modal === 'inventory') { this.closeModal(); return; }
     if (this.modal) return;
@@ -840,11 +850,11 @@ export class GameUI {
       <div class="backpack-grid" aria-label="Mochila com ${inventoryCapacity(inventory)} espaços">${Array.from({ length: Math.max(entries.length,inventoryCapacity(inventory)) }, (_, index) => {
         const slot = entries[index] ?? null, info = this.slotInfo(slot);
         const quantity = quickQuantity(slot, inventory, !!this.latest?.wateringCan);
-        return `<button type="button" class="bag-slot${slot ? ' occupied' : ''}" ${slot ? `data-bag-item="${slot}" draggable="true"` : 'disabled'} aria-label="${slot ? `${info.label}, quantidade ${quantity}` : `Espaço ${index + 1} vazio`}" title="${slot ? info.label : 'Vazio'}">${slot ? `${icon(info.icon,'',this.latest?.toolConditions?.[info.icon as 'hatchet']?.tier??0)}<strong class="slot-quantity">${quantity}</strong>` : ''}</button>`;
+        return `<button type="button" class="bag-slot${slot ? ' occupied' : ''}" ${slot ? `data-bag-item="${slot}" draggable="true"` : 'disabled'} aria-label="${slot ? `${info.label}, quantidade ${quantity}` : `Espaço ${index + 1} vazio`}" title="${slot ? info.label : 'Vazio'}">${slot ? `${icon(info.icon,'',this.slotCondition(slot)?.tier??0)}<strong class="slot-quantity">${toolReferenceParts(slot)?'':quantity}</strong>${this.durabilityMarkup(slot)}` : ''}</button>`;
       }).join('')}</div>
       <div class="backpack-detail" aria-live="polite"><span class="detail-icon">${icon('leaf')}</span><div><strong class="detail-name">Cada coisa no seu lugar</strong><p class="detail-text">Arraste um item para a barra abaixo. Ou clique no item e depois no slot.</p></div></div>
       <div class="backpack-bar-heading"><strong>Barra rápida</strong><span>Teclas 1–9</span></div><div class="inventory-quickbar" aria-label="Nove slots da barra rápida"></div>
-      <p class="backpack-help">Itens iguais ficam empilhados. A barra é um atalho para a mochila: não duplica nem consome itens. Botão direito ou Delete no slot remove o atalho.</p>
+      <p class="backpack-help">Materiais iguais ficam empilhados. Ferramentas ocupam espaços individuais. A barra é um atalho para a mochila: não duplica nem consome itens. Botão direito ou Delete no slot remove o atalho.</p>
       <div class="inventory-footer">${icon('leaf')} Um espaço para cada descoberta.<span>SIMULAÇÃO PAUSADA · I PARA VOLTAR</span></div>`;
     panel.querySelector('.icon-button')!.addEventListener('click', () => this.closeModal());
     panel.querySelectorAll<HTMLButtonElement>('[data-bag-item]').forEach(button => {
@@ -852,15 +862,16 @@ export class GameUI {
       const select = (): void => {
         this.selectedInventoryItem = item;
         const info = this.slotInfo(item);
-        panel.querySelector('.detail-icon')!.innerHTML = icon(info.icon,'',this.latest?.toolConditions?.[info.icon as 'hatchet']?.tier??0);
+        panel.querySelector('.detail-icon')!.innerHTML = icon(info.icon,'',this.slotCondition(item)?.tier??0);
         panel.querySelector('.detail-name')!.textContent = info.label;
-        const condition=this.latest?.toolConditions?.[item.replace('item:','') as 'hatchet'];
-        panel.querySelector('.detail-text')!.textContent = info.detail+(condition?` · Material: ${['Pedra','Ferro','Ouro','Metal Negro'][condition.tier]} · Durabilidade: ${condition.durability}`:'');
+        const condition=this.slotCondition(item),copy=toolReferenceParts(item);
+        panel.querySelector('.detail-text')!.textContent = info.detail+(condition&&wearsOut(quickItem(item))?`${durableTool(quickItem(item))?' · Material: '+['Pedra','Ferro','Ouro','Metal Negro'][condition.tier]:''} · Durabilidade: ${condition.durability}/${ECONOMY_BALANCE.durability[condition.tier]}`:'');
         panel.querySelector('[data-use-item]')?.remove();
         panel.querySelector('[data-drop-item]')?.remove();
-        const id=item.startsWith('item:')?item.slice(5) as ItemId:undefined;
-        if(id&&this.callbacks.onDropItem){const actions=document.createElement('div');actions.dataset.dropItem=id;const amount=document.createElement('input');amount.type='number';amount.min='1';amount.max=String(inventory[id]);amount.value='1';amount.setAttribute('aria-label','Quantidade para soltar');amount.style.width='65px';const drop=document.createElement('button');drop.className='button button-light';drop.textContent='Soltar no chão';drop.onclick=()=>{const n=Number(amount.value);if(!Number.isSafeInteger(n)||n<1||n>inventory[id]){this.toast('Escolha uma quantidade disponível na mochila.');return;}this.callbacks.onDropItem?.(id,n);this.closeModal();};actions.append(amount,drop);panel.querySelector('.backpack-detail')!.append(actions);}
-        if(id&&USABLE_VILLAGE_ITEMS.includes(id)){const use=document.createElement('button');use.dataset.useItem=id;use.className='button button-light';use.textContent=id==='sword'?(this.latest?.worldWeapon==='sword'?'Guardar espada':'Equipar espada'):'Usar / instalar';use.onclick=()=>{this.closeModal();this.callbacks.onUseItem(id);};panel.querySelector('.backpack-detail')!.append(use);}
+        const id=quickItem(item) as ItemId|undefined;
+        if(id&&this.callbacks.onDropItem){const actions=document.createElement('div');actions.dataset.dropItem=id;const amount=document.createElement('input');amount.type='number';amount.min='1';amount.max=String(copy?1:inventory[id]);amount.value='1';amount.setAttribute('aria-label','Quantidade para soltar');amount.style.width='65px';const drop=document.createElement('button');drop.className='button button-light';drop.textContent='Soltar no chão';drop.onclick=()=>{const n=Number(amount.value);if(!Number.isSafeInteger(n)||n<1||n>(copy?1:inventory[id])){this.toast('Escolha uma quantidade disponível na mochila.');return;}this.callbacks.onDropItem?.(id,n,copy?.id);this.closeModal();};actions.append(amount,drop);panel.querySelector('.backpack-detail')!.append(actions);}
+        if(copy&&quickAction(item)!=='hand'){const equip=document.createElement('button');equip.dataset.useItem=copy.kind;equip.className='button button-light';equip.textContent='Equipar esta ferramenta';equip.onclick=()=>{this.callbacks.onTool(quickAction(item),copy.id);this.closeModal();};panel.querySelector('.backpack-detail')!.append(equip);}
+        else if(id&&USABLE_VILLAGE_ITEMS.includes(id)){const use=document.createElement('button');use.dataset.useItem=id;use.className='button button-light';use.textContent=id==='sword'?(this.latest?.worldWeapon==='sword'?'Guardar espada':'Equipar espada'):'Usar / instalar';use.onclick=()=>{this.closeModal();this.callbacks.onUseItem(id,copy?.id);};panel.querySelector('.backpack-detail')!.append(use);}
         panel.querySelectorAll('[data-bag-item]').forEach(cell => cell.classList.toggle('chosen', cell === button));
       };
       button.onclick = select;
@@ -967,7 +978,7 @@ export class GameUI {
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Construção');
-    const materialList = (cost: Partial<InventoryData>): string => (Object.entries(cost) as [ItemId, number][]).map(([item, quantity]) => `<span class="${inventory[item] < quantity ? 'insufficient' : ''}">${icon(item)}${quantity} ${ITEM_NAMES[item]} <small>(${inventory[item]})</small></span>`).join('');
+    const materialList = (cost: Partial<Record<ItemId,number>>): string => (Object.entries(cost) as [ItemId, number][]).map(([item, quantity]) => `<span class="${inventory[item] < quantity ? 'insufficient' : ''}">${icon(item)}${quantity} ${ITEM_NAMES[item]} <small>(${inventory[item]})</small></span>`).join('');
     const requirementText = (kind: BuildingData['kind']): string => {
       const requirement = BUILD_REQUIREMENTS[kind];
       const descriptions = requirement.tools.map(item => `${ITEM_NAMES[item]}${inventory[item] < 1 ? ' — falta na mochila' : ''}`);
@@ -1095,6 +1106,7 @@ export class GameUI {
   }
 
   togglePause(): void {
+    if(fishingActive())return;
     if(this.gameplayLocked)return;
     if (this.mode !== 'hud') return;
     if (this.modal) { this.closeModal(); return; }
@@ -1196,7 +1208,7 @@ export class GameUI {
 
   isCraftingOpen(): boolean { return this.modal === 'crafting'; }
 
-  isModalOpen(): boolean { return this.gameplayLocked || this.mode !== 'hud' || this.modal !== null || this.topToolbar?.isOpen === true; }
+  isModalOpen(): boolean { return fishingActive() || this.gameplayLocked || this.mode !== 'hud' || this.modal !== null || this.topToolbar?.isOpen === true; }
 
   closeModal(): void {
     if (this.mode !== 'hud') return;

@@ -1,4 +1,6 @@
 import {validGroundItems} from './ground-items';
+import {syncToolInstances,validToolInventory,activeToolCopy,toolReference} from './tool-instances';
+import {TOOL_IDS} from '../data/economy-balance';
 import {isLegacyHouseTool} from '../data/farm-buildings';
 import {validFarmConstruction} from './farm-construction';
 import {validMineMissions} from './mine-mission-state';
@@ -183,7 +185,10 @@ export function validateSave(value: unknown): value is SaveData {
   }
   if (!isRecord(value.inventory) || !ITEM_IDS.every(id => integer((value.inventory as Record<string, unknown>)[id], 0, MAX_ITEM_COUNT))) return false;
   if(value.worldWeapon==='sword'&&(value.inventory.sword as number)<1)return false;
-  if (Object.keys(value.inventory).some(id => !ITEM_IDS.includes(id as typeof ITEM_IDS[number]))) return false;
+  if (Object.keys(value.inventory).some(id => id!=='toolInstances'&&!ITEM_IDS.includes(id as typeof ITEM_IDS[number]))) return false;
+  if(value.inventory.toolInstances!==undefined&&!validToolInventory(value.inventory.toolInstances,value.inventory as unknown as SaveData['inventory']))return false;
+  const toolBook=(value.inventory as unknown as SaveData['inventory']).toolInstances,toolIds=new Set(toolBook?.items.map(t=>t.id));
+  for(const drop of (value.groundItems as SaveData['groundItems'])?.items??[])if(drop.tool){if(!toolBook||drop.tool.id>=toolBook.nextId||toolIds.has(drop.tool.id))return false;toolIds.add(drop.tool.id);}
   if (!TOOLS.includes(value.equippedTool as Tool)) return false;
   if ((value.equippedTool === 'hatchet' || value.equippedTool === 'pickaxe' || value.equippedTool === 'hoe') && (value.inventory[value.equippedTool] as number) < 1) return false;
   if (!isRecord(value.progress) || !PROGRESS_KEYS.every(key => typeof (value.progress as Record<string, unknown>)[key] === 'boolean')) return false;
@@ -315,6 +320,10 @@ export function migrateSave(value: unknown): SaveData | null {
       if(data.activeArea==='survivorCamp'&&!communityReady(data)){data.activeArea='forest';data.forestPosition={x:1136,y:272,direction:'down'};}
     }
     if(!data.economy6){data.economy6=newEconomyState();for(const tool of ['hatchet','pickaxe','hoe'] as const){const tier=data.villageProgress?.toolLevels[tool]??0;if(tier>0&&data.inventory[tool]>0)data.economy6.tools[tool]={tier,durability:[100,250,450,800][tier]};}}
+    syncToolInstances(data.inventory,data.economy6.tools);
+    for(const tool of TOOL_IDS){const copy=activeToolCopy(data.inventory,tool);if(copy)data.economy6.tools[tool]=copy.condition;}
+    for(const order of data.economy6.orders)if(order.kind==='tool'&&order.tool&&order.toolId===undefined&&['reserved','working'].includes(order.phase))order.toolId=activeToolCopy(data.inventory,order.tool)?.id;
+    if(data.quickbar)data.quickbar=data.quickbar.map(slot=>{const kind=slot?.startsWith('item:')?slot.slice(5):undefined,copy=data.inventory.toolInstances?.items.find(t=>t.kind===kind&&t.id===data.inventory.toolInstances!.active[t.kind]);return copy?toolReference(copy):slot;});
     if(data.mapBaseRevision!==MAP_BASE_REVISION){
       if(data.mapBaseRevision===1||data.mapBaseRevision===2||data.mapBaseRevision===3){
         const protectedCells={

@@ -1,4 +1,4 @@
-> **Prévia atual 0.10.0-preview.31:** [Instalador Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.10.0-preview.31/After-Rain-0.10.0-preview.31-Setup-Windows-x64.exe) · [Notas da atualização](docs/cenarios/NOTAS-0.10.0-preview.31.md) · Bases da fazenda, itens no chão e melhorias da mineração.
+> **Prévia atual 0.10.0-preview.32:** [Instalador Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.10.0-preview.32/After-Rain-0.10.0-preview.32-Setup-Windows-x64.exe) · [Notas da atualização](docs/cenarios/NOTAS-0.10.0-preview.32.md) · Ferramentas individuais, novas vacas, palha e passagem pelos NPCs.
 
 > **Manutenção:** [Arquivo das prévias históricas e restauração](docs/manutencao/README.md). Os estudos e testes visuais antigos continuam disponíveis na versão publicada, sem ocupar a árvore atual.
 

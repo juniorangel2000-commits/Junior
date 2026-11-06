@@ -1,3 +1,4 @@
+import type {ItemId} from '../src/types';
 import {describe,it,expect} from 'vitest';
 import {createNewSave,validateSave} from '../src/systems/save';
 import {initializePetShelter,SHELTER_STEPS,shelterUpgrade,canAdoptPet,homePet,validPetShelter,shelterSolid,deliverShelterMaterial} from '../src/systems/pet-shelter';
@@ -20,7 +21,7 @@ describe('pet shelter',()=>{
    expect(canAdoptPet(s)).toBe(false);
    Object.assign(s.inventory,SHELTER_STEPS[stage].cost);
    expect(shelterUpgrade(s).ok).toBe(true);expect(s.petShelter?.stage).toBe(stage+1);
-   for(const id of Object.keys(SHELTER_STEPS[stage].cost))expect(s.inventory[id as keyof typeof s.inventory]).toBe(0);
+   for(const id of Object.keys(SHELTER_STEPS[stage].cost))expect(s.inventory[id as ItemId]).toBe(0);
    expect(s.inventory.hammer).toBe(1);
   }
   expect(canAdoptPet(s)).toBe(true);const done=structuredClone(s);expect(shelterUpgrade(s).ok).toBe(false);expect(s).toEqual(done);expect(validateSave(s)).toBe(true);
@@ -43,7 +44,7 @@ describe('pet shelter',()=>{
   const s=fresh();initializePetShelter(s);s.inventory.hammer=1;
   for(let stage=0;stage<3;stage++){
    for(const [id,total] of Object.entries(SHELTER_STEPS[stage].cost)){
-    const item=id as keyof typeof s.inventory;s.inventory[item]=total!;
+    const item=id as ItemId;s.inventory[item]=total!;
     expect(deliverShelterMaterial(s,item,1).ok).toBe(true);
     expect(validateSave(s)).toBe(true);
     expect(deliverShelterMaterial(s,item,total!-1).ok).toBe(true);

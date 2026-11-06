@@ -1,16 +1,17 @@
 import type { InventoryData, ItemId, QuickSlot, Tool } from '../types';
 import { ITEM_IDS } from '../data/items';
+import {toolReferenceParts,toolReference,referencedTool,individualTool,syncToolInstances} from './tool-instances';
 export const QUICK_TOOLS: Tool[] = ['farm-coop','farm-barn','farm-silo','hand', 'plant', 'water', 'gate', 'repair', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'hoe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
 export const emptyQuickbar = (): QuickSlot[] => Array.from({ length: 9 }, () => null);
 export function isQuickSlot(value: unknown): value is Exclude<QuickSlot, null> {
-  return typeof value === 'string' && (QUICK_TOOLS.includes(value as Tool) || value === 'item:wateringCan'
+  return typeof value === 'string' && (!!toolReferenceParts(value)||QUICK_TOOLS.includes(value as Tool) || value === 'item:wateringCan'
     || (value.startsWith('item:') && ITEM_IDS.includes(value.slice(5) as ItemId)));
 }
 export function validQuickbar(value: unknown): value is QuickSlot[] {
   return Array.isArray(value) && value.length === 9 && value.every(tool => tool === null || isQuickSlot(tool));
 }
 export function quickItem(slot: QuickSlot): ItemId | 'wateringCan' | null {
-  return slot?.startsWith('item:') ? slot.slice(5) as ItemId | 'wateringCan' : null;
+  return toolReferenceParts(slot)?.kind??(slot?.startsWith('item:') ? slot.slice(5) as ItemId | 'wateringCan' : null);
 }
 export function quickAction(slot: QuickSlot): Tool {
   const item = quickItem(slot);
@@ -20,6 +21,7 @@ export function quickAction(slot: QuickSlot): Tool {
 }
 export function quickQuantity(slot: QuickSlot, inventory: InventoryData, wateringCan: boolean): number | null {
   const item = quickItem(slot);
+  if(toolReferenceParts(slot))return Number(!!referencedTool(inventory,slot));
   return item === 'wateringCan' ? Number(wateringCan) : item ? inventory[item] : null;
 }
 /** A barra contém referências; atribuir/trocar nunca altera o estoque. */
@@ -29,5 +31,6 @@ export function assignQuickSlot(slots: QuickSlot[], index: number, value: unknow
 }
 export { INVENTORY_CAPACITY } from './inventory';
 export function inventoryEntries(inventory: InventoryData, wateringCan: boolean): Exclude<QuickSlot, null>[] {
-  return [...ITEM_IDS.filter(id => inventory[id] > 0).map(id => `item:${id}` as const), ...(wateringCan ? ['item:wateringCan' as const] : [])];
+  const book=syncToolInstances(inventory);
+  return [...ITEM_IDS.filter(id=>inventory[id]>0).flatMap(id=>individualTool(id)?book.items.filter(t=>t.kind===id).map(toolReference):[`item:${id}` as const]),...(wateringCan?['item:wateringCan' as const]:[])];
 }

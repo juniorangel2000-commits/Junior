@@ -1,3 +1,4 @@
+import type {ItemId} from '../src/types';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { CharacterProfile } from '../src/types';
 import { Building, BUILD_COSTS } from '../src/systems/building';
@@ -91,7 +92,7 @@ describe('construção', () => {
     const before = { ...inventory.data };
     const building = new Building();
     expect(building.place(kind, 19, 20, inventory, true).ok).toBe(true);
-    for(const [id,amount] of Object.entries(BUILD_COSTS[kind]))expect(inventory.data[id as keyof typeof inventory.data]).toBe(before[id as keyof typeof before]-amount!);
+    for(const [id,amount] of Object.entries(BUILD_COSTS[kind]))expect(inventory.data[id as ItemId]).toBe(before[id as ItemId]-amount!);
     expect(building.remove(19, 20, inventory).ok).toBe(true);
     expect(inventory.data).toEqual(before);
     expect(building.buildings).toEqual([]);

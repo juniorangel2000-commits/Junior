@@ -1,3 +1,4 @@
+import type {ItemId} from '../src/types';
 import {describe,it,expect} from 'vitest';
 import {createNewSave,migrateSave,validateSave} from '../src/systems/save';
 import {createCharacterProfile} from '../src/data/characters';
@@ -30,7 +31,7 @@ describe('Economia 6.0 critérios obrigatórios',()=>{
  it('forja própria não perde materiais quando a mochila não comporta o lingote',()=>{const s=save();s.inventory.ironShard=9;s.inventory.ironIngot=999999;const before=structuredClone(s);expect(selfSmelt(s,'iron',1,true).ok).toBe(false);expect(s).toEqual(before);});
 
  it('completa o começo real por coleta e crafting sem comprar ferramentas',()=>{const s=createNewSave(createCharacterProfile('Começo'));const inventory=new Inventory(s.inventory),resources=new Resources();for(const [n,kind]of(['tree','stone','stone','fiber'] as const).entries())expect(resources.hit({id:'start-'+n,kind,x:10,y:10},'hand',inventory,s).ok).toBe(true);for(const recipe of ['cord','handle','flaked-stone','flaked-stone','pickaxe'])expect(craft(recipe,inventory,false).ok).toBe(true);const node={id:'first-iron',kind:'vein' as const,metal:'iron' as const,x:12,y:12};for(let n=0;n<5;n++)expect(resources.hit(node,'pickaxe',inventory,s).ok).toBe(true);expect(inventory.data.ironShard).toBe(1);expect(s.villageEconomy!.coins).toBe(100);});
- it.each(Object.entries(B.stock))('respeita a reposição independente de %s',(item,spec)=>{const s=save(),i=new Inventory(s.inventory);expect(trade('blacksmith','buy',item as keyof typeof s.inventory,spec.quantity,i,s.villageEconomy!,31).ok).toBe(true);expect(stockInfo(s.villageEconomy!,item as keyof typeof s.inventory,31+spec.interval-1).remaining).toBe(0);expect(stockInfo(s.villageEconomy!,item as keyof typeof s.inventory,31+spec.interval).remaining).toBe(spec.quantity);});
+ it.each(Object.entries(B.stock))('respeita a reposição independente de %s',(item,spec)=>{const s=save(),i=new Inventory(s.inventory);expect(trade('blacksmith','buy',item as ItemId,spec.quantity,i,s.villageEconomy!,31).ok).toBe(true);expect(stockInfo(s.villageEconomy!,item as ItemId,31+spec.interval-1).remaining).toBe(0);expect(stockInfo(s.villageEconomy!,item as ItemId,31+spec.interval).remaining).toBe(spec.quantity);});
 
  it('forja própria processa pelo calendário, sem mão de obra nem retirada antecipada',()=>{const s=save();s.inventory.ironShard=9;expect(startOwnSmelt(s,'iron',1).ok).toBe(true);expect(s.villageEconomy!.coins).toBe(100000);expect(orderAction(s,1,'collect').ok).toBe(false);s.time+=30;expect(orderAction(s,1,'collect').ok).toBe(true);expect(s.inventory.ironIngot).toBe(1);expect(validateSave(s)).toBe(true);});
 

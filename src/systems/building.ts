@@ -4,6 +4,7 @@ import type { ActionResult } from './farming';
 import { Inventory, ITEM_NAMES, type ItemCost } from './inventory';
 import { BUILD_COSTS, BLUEPRINT_COST, BLUEPRINT_SHELTER } from '../data/blueprints';
 import { WORLD_HEIGHT, WORLD_WIDTH } from '../data/regions';
+import {inventoryToolCondition,wearInventoryTool} from './tool-instances';
 
 export { BUILD_COSTS } from '../data/blueprints';
 
@@ -50,6 +51,7 @@ function requirementsError(kind: BuildingData['kind'], inventory: Inventory, con
   if (requirements.nearWorkbench && !context.nearWorkbench) {
     return 'Aproxime-se de uma bancada para construir pisos, paredes, portas, janelas e coberturas.';
   }
+  if(requirements.tools.includes('hammer')&&inventoryToolCondition(inventory.data,'hammer').durability<=0)return'Repare este martelo antes de construir.';
 }
 
 function materialError(name: string, cost: ItemCost): ActionResult {
@@ -101,6 +103,7 @@ export class Building {
     const error = requirementsError(kind, inventory, context);
     if (error) return { ok: false, message: error };
     if (!inventory.transact(BUILD_COSTS[kind], {})) return materialError(BUILD_NAMES[kind], BUILD_COSTS[kind]);
+    if(BUILD_REQUIREMENTS[kind].tools.includes('hammer'))wearInventoryTool(inventory.data,'hammer');
     this.buildings.push(piece);
     return { ok: true, message: kind === 'fence' ? 'Uma cerca para chamar de sua.' : kind === 'bench'
       ? 'Um banco para ver a vida voltar.' : `${BUILD_NAMES[kind]} construída. Os materiais ganharam um novo propósito.` };
@@ -125,7 +128,10 @@ export class Building {
         occupied.add(key);
       }
     }
+    const hammerUses=pieces.filter(p=>BUILD_REQUIREMENTS[p.kind].tools.includes('hammer')).length;
+    if(inventoryToolCondition(inventory.data,'hammer').durability<hammerUses)return{ok:false,message:'Repare este martelo antes de montar o projeto completo.'};
     if (!inventory.transact(BLUEPRINT_COST, {})) return materialError('Abrigo 3×3', BLUEPRINT_COST);
+    wearInventoryTool(inventory.data,'hammer',hammerUses);
     this.buildings.push(...pieces);
     return { ok: true, message: 'Abrigo 3×3 montado com piso, janela, porta e cobertura. Entre e feche a porta.' };
   }

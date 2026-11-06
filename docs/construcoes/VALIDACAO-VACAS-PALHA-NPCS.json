@@ -1,0 +1,74 @@
+{
+  "setup": {
+    "plot": {
+      "x": 22,
+      "y": 28
+    },
+    "ids": [
+      "forest-cow-1",
+      "forest-cow-2"
+    ],
+    "cell": 192
+  },
+  "result": {
+    "entered": {
+      "forest-cow-1": true,
+      "forest-cow-2": true
+    },
+    "extents": {
+      "forest-cow-1": {
+        "minX": 752.1510273945157,
+        "maxX": 816,
+        "minY": 1041.7737970777657,
+        "maxY": 1131.7591936
+      },
+      "forest-cow-2": {
+        "minX": 816.5563448646355,
+        "maxX": 891.3398438498942,
+        "minY": 1037.6868760123857,
+        "maxY": 1167.1443669949372
+      }
+    },
+    "phases": {
+      "forest-cow-1": [
+        "awake",
+        "settling",
+        "lying",
+        "resting",
+        "rising"
+      ],
+      "forest-cow-2": [
+        "awake",
+        "settling",
+        "lying",
+        "resting",
+        "rising"
+      ]
+    },
+    "maxStep": 2.2408064000001104,
+    "invalid": [],
+    "restDrift": 0,
+    "valid": true,
+    "poses": [
+      {
+        "id": "forest-cow-1",
+        "phase": "resting"
+      },
+      {
+        "id": "forest-cow-2",
+        "phase": "resting"
+      }
+    ]
+  },
+  "npcPassage": {
+    "escaped": true,
+    "stationaryStops": true,
+    "walkingPasses": true,
+    "unchanged": true,
+    "scenerySolid": true
+  },
+  "recorded": 27,
+  "errors": [],
+  "scope": "Native Chromium game: real farm construction, supplied cow atlas, movement/rest, save and player/NPC/scenery contact",
+  "script": "scripts/qa-cow-yard.cjs"
+}

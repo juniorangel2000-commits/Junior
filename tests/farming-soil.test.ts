@@ -11,13 +11,13 @@ const profile: CharacterProfile = { name:'Ana', skin:'#d9a276', hairStyle:'preso
 afterEach(() => vi.unstubAllGlobals());
 
 describe('enxada e novos canteiros', () => {
-  it('fabrica uma única enxada com componentes e equipa pelo inventário', () => {
+  it('fabrica enxadas independentes com componentes e equipa pelo inventário', () => {
     const inventory = new Inventory({ handle:2, flakedStone:2, cord:2 });
     expect(craft('hoe',inventory,false).ok).toBe(true);
     expect(inventory.data).toMatchObject({hoe:1,handle:1,flakedStone:1,cord:1});
-    const before = {...inventory.data};
-    expect(craft('hoe',inventory,false).ok).toBe(false);
-    expect(inventory.data).toEqual(before);
+    expect(craft('hoe',inventory,false).ok).toBe(true);
+    expect(inventory.data.hoe).toBe(2);
+    expect(inventory.data.toolInstances!.items.filter(t=>t.kind==='hoe')).toHaveLength(2);
     expect(quickAction('item:hoe')).toBe('hoe');
     expect(validQuickbar(['item:hoe',null,null,null,null,null,null,null,null])).toBe(true);
   });

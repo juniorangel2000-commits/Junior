@@ -1,5 +1,5 @@
 import {depositMetal,canMine,metalDrop,recordMetal} from './mining';
-import {toolCondition,configureTool} from './economy';
+import {toolCondition,spendDurability} from './economy';
 import {ECONOMY_BALANCE as BALANCE} from '../data/economy-balance';
 import type {SaveData} from '../types';
 import type { ResourceKind, ResourceNode, ResourceProgressData, Tool } from '../types';
@@ -52,11 +52,12 @@ export class Resources {
     const state=typeof context==='object'?context:undefined;
     const metal=mineral==='stone'?undefined:mineral??depositMetal(node);
     const economicTool=tool==='pickaxe'||tool==='hatchet'?tool:undefined;
-    const condition=state&&economicTool?toolCondition(state,economicTool):undefined;
+    const toolState=state?{...state,inventory:inventory.data}:undefined;
+    const condition=toolState&&economicTool?toolCondition(toolState,economicTool):undefined;
     if(state&&metal&&!canMine(state,metal))return{ok:false,message:'Você precisa de uma picareta melhor para extrair este minério.'};
     if(condition&&condition.durability<=0)return{ok:false,message:'Ferramenta sem durabilidade. Repare-a na ferraria.'};
     const damage=condition?Math.floor(BALANCE.efficiency[condition.tier]+(condition.work??0)):1;
-    const wear=()=>{if(state&&economicTool&&condition){configureTool(state,economicTool,condition.tier);state.economy6!.tools[economicTool]={...condition,durability:condition.durability-1,work:(BALANCE.efficiency[condition.tier]+(condition.work??0))%1};}};
+    const wear=()=>{if(state&&toolState&&economicTool&&condition){spendDurability(toolState,economicTool);state.economy6=toolState.economy6;}};
 
     if (!definition || !node.id || node.id.length > 80) {
       return { ok: false, message: 'Este recurso não está disponível.' };

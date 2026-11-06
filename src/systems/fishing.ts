@@ -1,3 +1,4 @@
+import {inventoryToolCondition,wearInventoryTool} from './tool-instances';
 import {FISHING_HABITATS,rollFishingReward,fishingRewardItems,validFishingReward,type FishingReward} from '../data/fishing-catches';
 import {BAITS,FISH_HABITS,rodControlBonus,speciesWeight,recordFishingReward,type BaitStyle} from './fishing-progress';
 import type {SaveData} from '../types';
@@ -58,9 +59,10 @@ export function beginFishingCast(save:SaveData,net:boolean,rare:boolean|FishingR
  if(typeof rare!=='boolean'&&(!validFishingReward(rare)||(rare.kind==='fish'?rare.specimens.length:rare.quantity)!==(net?2:1)))return{ok:false,message:'Captura inválida.'};
  const draft=structuredClone(save),inventory=new Inventory(draft.inventory),baitCost=BAITS[draft.fishingProgress?.bait??'worm'].cost;
  if(!inventory.has(net?'net':'fishingRod')||!inventory.has('bait',baitCost))return{ok:false,message:`Você precisa do equipamento e de ${baitCost} ${baitCost===1?'isca':'iscas'} para este preparo.`};
+ if(inventoryToolCondition(inventory.data,net?'net':'fishingRod').durability<=0)return{ok:false,message:'Este equipamento está sem durabilidade. Leve-o para reparar.'};
  const capacity=new Inventory(draft.inventory);
  if(!capacity.transact({bait:baitCost},typeof rare==='boolean'?{[rare?'rareFish':'fish']:net?2:1}:fishingRewardItems(rare)))return{ok:false,message:'Libere espaço na mochila para a captura antes de lançar a linha.'};
- inventory.spend({bait:baitCost});draft.inventory={...inventory.data};
+ inventory.spend({bait:baitCost});wearInventoryTool(inventory.data,net?'net':'fishingRod');draft.inventory={...inventory.data};
  const p=draft.villageProgress??=createVillageProgress();p.vigor=Math.max(0,p.vigor-FISHING_RULES.vigorCost);
  if(!persist(draft,write))return{ok:false,message:'Não foi possível salvar o lançamento. A isca e o vigor foram preservados.'};
  save.inventory=draft.inventory;save.villageProgress=draft.villageProgress;save.fishingProgress=draft.fishingProgress;return{ok:true,message:''};

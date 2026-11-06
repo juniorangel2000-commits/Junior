@@ -1,5 +1,6 @@
 import {GroundItemsView} from './ground-items-view';
 import {dropInventoryItem} from './systems/ground-items';
+import {equipToolCopy} from './systems/economy';
 import {MineScene} from './scenes/MineScene';
 import {HighlandScene} from './scenes/HighlandScene';
 import {SurvivorCampScene} from './scenes/SurvivorCampScene';
@@ -27,11 +28,11 @@ const activeForest=():ForestScene|VillageScene|CityForestScene|FishingLakeScene|
 const ui = new GameUI({
   getMineMissionRuntime:()=>{const current=activeForest()??scene;return current instanceof DungeonScene?undefined:current.getMineMissionRuntime();},
   getFishingState: () => {const current=activeForest()??scene;return current instanceof DungeonScene?undefined:current.getFishingState();},
-  onDropItem:(item,amount)=>{const current=activeForest()??scene;if(current instanceof DungeonScene)return;const rt=current.getGroundItemRuntime();if(!rt)return;const result=dropInventoryItem(rt,item,amount);ui.toast(result.message);},
-  onUseItem: item => {void (activeForest()??scene).useVillageItem(item);},
+  onDropItem:(item,amount,toolId)=>{const current=activeForest()??scene;if(current instanceof DungeonScene)return;const rt=current.getGroundItemRuntime();if(!rt)return;const result=dropInventoryItem(rt,item,amount,toolId);ui.toast(result.message);},
+  onUseItem: (item,toolId) => {const current=activeForest()??scene;if(toolId&&!(current instanceof DungeonScene)&&!equipToolCopy(current.getFishingState(),toolId))return;void current.useVillageItem(item);},
   onNewGame: profile => scene.startNew(profile),
   onContinue: () => scene.continueGame(),
-  onTool: tool => {const forest=activeForest();if(forest)forest.selectTool(tool);else scene.selectTool(tool);},
+  onTool: (tool,toolId) => {const current=activeForest()??scene;if(toolId&&!(current instanceof DungeonScene)&&!equipToolCopy(current.getFishingState(),toolId))return;current.selectTool(tool);},
   onCraft: recipeId => {const forest=activeForest();if(forest)forest.craftRecipe(recipeId);else scene.craftRecipe(recipeId);},
   onCancelCraft: () => scene.cancelCrafting(),
   onBlueprint: () => {const forest=activeForest();if(forest)forest.selectTool('blueprint');else scene.selectTool('blueprint');},

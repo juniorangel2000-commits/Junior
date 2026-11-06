@@ -30,6 +30,7 @@ import {naturalPlantGround} from '../systems/tree-avoidance';
 import {notifyReadyOrders} from '../systems/economy';
 import {markMinerals} from '../economy-visuals';
 import {toolCondition,spendDurability,toolWork} from '../systems/economy';
+import {syncToolInstances} from '../systems/tool-instances';
 import {openBlacksmithPanel} from '../blacksmith-panel';
 import {useConsumable} from '../systems/consumables';
 import {fishAtBank} from '../fishing-ui';
@@ -724,6 +725,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private snapshotState(): SaveData {
+    syncToolInstances(this.inventory.data,this.state.economy6?.tools);
     this.animals?.store();
     return structuredClone({
       ...this.state,
@@ -1316,6 +1318,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private applyResourceHit(resource: ResourceNode, tool: Tool): void {
+    this.state.inventory={...this.inventory.data};
     const result = this.resources.hit(resource, tool, this.inventory,this.state,undefined,resourceGroundSink(this.state,'property',resource));
     if (result.ok) {
       if (!isAnimatedTool(tool)) this.nextInteractionAt = this.time.now + 260;

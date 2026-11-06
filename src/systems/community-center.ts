@@ -1,8 +1,10 @@
-import type {SaveData,InventoryData,ItemId} from '../types';
+import type {ItemCost} from './inventory';
+import {inventoryToolCondition,wearInventoryTool} from './tool-instances';
+import type {SaveData,ItemId} from '../types';
 import {Inventory} from './inventory';
-export interface CommunityCenterData {stage:0|1|2|3;delivered?:Partial<InventoryData>}
+export interface CommunityCenterData {stage:0|1|2|3;delivered?:ItemCost}
 export type CommunityAction={kind:'deliver';item:ItemId;amount:number}|{kind:'upgrade'};
-export const COMMUNITY_STEPS:readonly {name:string;description:string;cost:Partial<InventoryData>}[]=[
+export const COMMUNITY_STEPS:readonly {name:string;description:string;cost:ItemCost}[]=[
  {name:'Limpar e preparar',description:'Remover os entulhos, firmar a base e preparar o piso.',cost:{stone:16,plank:12,cord:4}},
  {name:'Reparar a estrutura',description:'Reforçar paredes, portas e telhado para tornar o prédio seguro.',cost:{board:16,peg:24,metalPart:4}},
  {name:'Preparar o alojamento',description:'Montar as camas e organizar os suprimentos para receber oito moradores.',cost:{cloth:12,fiber:24,meal:8}},
@@ -15,10 +17,10 @@ export const communityReady=(save:Pick<SaveData,'communityCenter'|'survivorCamp'
 export function validCommunityCenter(value:unknown):value is CommunityCenterData{
  if(!value||typeof value!=='object'||Array.isArray(value))return false;const c=value as CommunityCenterData;
  if(!Number.isInteger(c.stage)||c.stage<0||c.stage>3)return false;
- const cost:Partial<InventoryData>=COMMUNITY_STEPS[c.stage]?.cost??{};
+ const cost:ItemCost=COMMUNITY_STEPS[c.stage]?.cost??{};
  return c.delivered===undefined||!!c.delivered&&typeof c.delivered==='object'&&!Array.isArray(c.delivered)&&Object.entries(c.delivered).every(([id,n])=>Object.hasOwn(cost,id)&&Number.isSafeInteger(n)&&n>=0&&n<=cost[id as ItemId]!);
 }
-export function communityRemaining(save:SaveData):Partial<InventoryData>{
+export function communityRemaining(save:SaveData):ItemCost{
  return Object.fromEntries(Object.entries(COMMUNITY_STEPS[communityStage(save)]?.cost??{}).map(([id,n])=>[id,n!-(save.communityCenter?.delivered?.[id as ItemId]??0)]));
 }
 /** Commit stock and progress together only after the durable write succeeds. */
@@ -34,7 +36,9 @@ export function repairCommunity(save:SaveData,action:CommunityAction,write:(draf
   center.delivered={...center.delivered,[action.item]:(center.delivered?.[action.item]??0)+action.amount};
  }else{
   if(!inventory.has('hammer'))return{ok:false,message:'Traga um martelo para concluir a etapa. Ele não será consumido.'};
+  if(inventoryToolCondition(inventory.data,'hammer').durability<=0)return{ok:false,message:'Repare este martelo antes de concluir a etapa.'};
   if(!inventory.spend(remaining))return{ok:false,message:'Ainda faltam materiais para concluir esta etapa.'};
+  wearInventoryTool(inventory.data,'hammer');
   center.stage=(stage+1) as CommunityCenterData['stage'];center.delivered={};
  }
  draft.inventory={...inventory.data};

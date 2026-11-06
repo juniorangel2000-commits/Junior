@@ -1,3 +1,4 @@
+import type {ItemId} from '../src/types';
 import { describe, expect, it } from 'vitest';
 import { RECIPES } from '../src/data/recipes';
 import { Building } from '../src/systems/building';
@@ -19,18 +20,18 @@ describe('fabricação', () => {
     { id: 'hatchet', cost: { handle: 1, flakedStone: 1, cord: 1 } },
     { id: 'pickaxe', cost: { handle: 1, flakedStone: 2, cord: 1 } },
     { id: 'hammer', cost: { handle: 1, stone: 1, cord: 1 } },
-  ] as const)('consome os componentes exatos de $id e impede fabricar uma segunda ferramenta', ({ id, cost }) => {
+  ] as const)('consome os componentes exatos de $id e fabrica cópias separadas', ({ id, cost }) => {
     const inventory = new Inventory({ handle: 3, flakedStone: 4, cord: 3, stone: 2 });
     const initial = { ...inventory.data };
     expect(craft(id, inventory, false).ok).toBe(true);
     for (const [key, amount] of Object.entries(cost)) {
-      const item = key as keyof typeof inventory.data;
+      const item = key as ItemId;
       expect(inventory.data[item]).toBe(initial[item] - amount);
     }
     expect(inventory.data[id]).toBe(1);
-    const before = { ...inventory.data };
-    expect(craft(id, inventory, false).ok).toBe(false);
-    expect(inventory.data).toEqual(before);
+    expect(craft(id, inventory, false).ok).toBe(true);
+    expect(inventory.data[id]).toBe(2);
+    expect(inventory.data.toolInstances!.items.filter(t=>t.kind===id)).toHaveLength(2);
   });
 
   it.each([
@@ -85,10 +86,9 @@ describe('fabricação', () => {
     expect(inventory.data.blade).toBe(1);
   });
 
-  it('não duplica serrote nem cobra materiais quando a saída não cabe na mochila', () => {
+  it('não cobra materiais quando a saída ultrapassa o limite da pilha', () => {
     const inventory = new Inventory({ log: 1, plank: MAX_ITEM_COUNT - 1, board: MAX_ITEM_COUNT - 1, hatchet: 1, blade: 1, handle: 1, cord: 1, handsaw: 1 });
     const before = { ...inventory.data };
-    expect(craft('handsaw', inventory, true).ok).toBe(false);
     expect(craft('rough-planks', inventory, false).ok).toBe(false);
     expect(craft('sawn-planks', inventory, true).ok).toBe(false);
     expect(inventory.data).toEqual(before);

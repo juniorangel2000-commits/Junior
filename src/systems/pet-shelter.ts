@@ -1,12 +1,13 @@
-import type { SaveData, InventoryData, ItemId } from '../types';
+import type {ItemCost} from './inventory';
+import type { SaveData, ItemId } from '../types';
 import { Inventory } from './inventory';
 import { buildingFootprint } from './building';
 import type { OwnedPet } from '../dungeons/progression';
 
 export const PET_SHELTER_CAPACITY = 3;
-export interface PetShelterData { stage: 0 | 1 | 2 | 3; x: number; y: number; delivered?: Partial<InventoryData> }
+export interface PetShelterData { stage: 0 | 1 | 2 | 3; x: number; y: number; delivered?: ItemCost }
 export type ShelterAction = { kind: 'upgrade' } | { kind: 'deliver'; item: ItemId; amount: number };
-export const SHELTER_STEPS: readonly { name: string; description: string; cost: Partial<InventoryData> }[] = [
+export const SHELTER_STEPS: readonly { name: string; description: string; cost: ItemCost }[] = [
   { name: 'Preparar a base', description: 'Limpar os escombros e reforçar o piso e os apoios.', cost: { plank: 6, stone: 8, cord: 2 } },
   { name: 'Reparar estrutura e telhado', description: 'Trocar as tábuas e fixar uma nova cobertura.', cost: { board: 8, peg: 12, metalPart: 2 } },
   { name: 'Preparar camas e potes', description: 'Concluir o abrigo, preparar camas e abastecer os potes. Libera três companheiros.', cost: { cloth: 6, fiber: 12, meal: 2 } },
@@ -66,7 +67,7 @@ export function deliverShelterMaterial(save: SaveData, item: ItemId, amount: num
   shelter.delivered = { ...shelter.delivered, [item]: delivered + amount };
   return { ok: true, message: 'Material entregue e guardado para esta etapa.' };
 }
-export function shelterRemainingCost(shelter: PetShelterData): Partial<InventoryData> {
+export function shelterRemainingCost(shelter: PetShelterData): ItemCost {
   return Object.fromEntries(Object.entries(SHELTER_STEPS[shelter.stage]?.cost ?? {})
     .map(([id, amount]) => [id, amount! - (shelter.delivered?.[id as ItemId] ?? 0)]));
 }
