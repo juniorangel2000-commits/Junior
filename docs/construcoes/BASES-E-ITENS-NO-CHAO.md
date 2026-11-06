@@ -24,7 +24,7 @@ O galinheiro comporta seis galinhas; o curral, quatro vacas. Novos produtos anim
 e interiores destas construções não fazem parte desta alteração.
 
 O silo guarda 240 palhas. Seu painel permite depositar, retirar ou preparar palha
-a partir de fibras, na proporção 1:1. O estoque é independente da mochila e persiste.
+a partir de fibras, na proporção 3 fibras para 1 palha. O estoque é independente da mochila e persiste.
 
 Recursos da propriedade e floresta, colheitas e materiais minerados pelo jogador
 agora caem no chão. Cada pilha usa o ícone do item, quantidade, sombra e um pequeno

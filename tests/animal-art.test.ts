@@ -11,7 +11,7 @@ describe('supplied animal animation assets',()=>{
  it.each(['chicken','cow'] as const)('keeps every original %s PNG and maps all eight poses and walk cycles',kind=>{
   const base=`public/assets/animals/${kind}`;
   const atlas=JSON.parse(fs.readFileSync(`${base}/atlas.json`,'utf8'));
-  expect(atlas.frames).toHaveLength(72);expect(atlas.cell).toBe(ANIMAL_ART[kind].cell);
+  expect(atlas.frames).toHaveLength(kind==='cow'?141:72);expect(atlas.cell).toBe(ANIMAL_ART[kind].cell);
   for(const frame of atlas.frames){
    expect(createHash('sha256').update(fs.readFileSync(`${base}/${frame.file}`)).digest('hex')).toBe(frame.sha256);
    expect(frame.x).toBe((atlas.cell-frame.width)/2);expect(frame.y).toBe((atlas.cell-frame.height)/2);

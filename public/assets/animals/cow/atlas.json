@@ -1,5 +1,5 @@
 {
-  "cell": 128,
+  "cell": 192,
   "columns": 9,
   "directions": [
     "south",
@@ -11,654 +11,2216 @@
     "north-west",
     "north-east"
   ],
+  "animations": {
+    "Lie_Down": {
+      "south": [
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79
+      ],
+      "west": [
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87
+      ],
+      "east": [
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95
+      ]
+    },
+    "Rest_Cycle": {
+      "south": [
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104
+      ],
+      "west": [
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113
+      ],
+      "east": [
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122
+      ]
+    },
+    "Stand_Up": {
+      "south": [
+        123,
+        124,
+        125,
+        126,
+        127,
+        128
+      ],
+      "west": [
+        129,
+        130,
+        131,
+        132,
+        133,
+        134
+      ],
+      "east": [
+        135,
+        136,
+        137,
+        138,
+        139,
+        140
+      ]
+    }
+  },
   "frames": [
     {
       "file": "Idle/rotations/south.png",
-      "sha256": "4eac08388224ca6afd6e690f8473d20b64d5d3e5d527f5eb341fcfcd72551557",
+      "direction": "south",
+      "action": "Idle",
       "frame": 0,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 128,
+      "height": 128,
+      "x": 32,
+      "y": 32,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "d3031c15c95f2d2c819c59c64f0a653c10cdca8f4e614ea8e3b15b4610c4a987"
     },
     {
       "file": "Idle/animations/Walk/south/frame_000.png",
-      "sha256": "a6cff488a4e6114d8cba637c51faeb782da8425c57bf2ae914a935384ffd584f",
+      "direction": "south",
+      "action": "Walk",
       "frame": 1,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "8bdeb99b56be8eb66f2b485299d38f81c71e22aef731dad6dd8072b27d7faec8"
     },
     {
       "file": "Idle/animations/Walk/south/frame_001.png",
-      "sha256": "de42cb6662cea76b0e0f3b12b4a8c03b91ac306779ea1f73d8588fb580838f20",
+      "direction": "south",
+      "action": "Walk",
       "frame": 2,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "9ed1dfc7b7a7253a89a61c605ff3d4a86643247fb3d5312e41185b1d1f0f1d5e"
     },
     {
       "file": "Idle/animations/Walk/south/frame_002.png",
-      "sha256": "a7bd6024fb1bf4065504af1a9959afd1591144ae3f3384b38caec3ef479bffe2",
+      "direction": "south",
+      "action": "Walk",
       "frame": 3,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "9e41f03cbbcaf1dfba13a33616d6e7bc67263c7cd6f83a8f8bbb3863b610acc7"
     },
     {
       "file": "Idle/animations/Walk/south/frame_003.png",
-      "sha256": "4a9e02016bb7e00ae05cfec4e4beb385bf3b8d77a516f3a59c6fcf291c919177",
+      "direction": "south",
+      "action": "Walk",
       "frame": 4,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "426af62344d66177bfdf4a43a3c8748e2bd8b46670ca8f15e4f9b6a9a3580508"
     },
     {
       "file": "Idle/animations/Walk/south/frame_004.png",
-      "sha256": "3e4e7f82ed66b3da4783f7c3f8c365dde7a73011dfccaf0b6f748de9de0253d2",
+      "direction": "south",
+      "action": "Walk",
       "frame": 5,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "7a9d3541b92bf96298725056d2ad459ba20fc5d4c54d948ac3c964a1f241d6af"
     },
     {
       "file": "Idle/animations/Walk/south/frame_005.png",
-      "sha256": "89980790f31c99c896078609e82aeb8f0143e771b50c9fce88d5cb3075da67db",
+      "direction": "south",
+      "action": "Walk",
       "frame": 6,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "4c376adcaa7ac102bfa03623202b331f90cb1d3a995bc891bb2e2b48801873c4"
     },
     {
       "file": "Idle/animations/Walk/south/frame_006.png",
-      "sha256": "82a3931514a56748735aad37a476c493912027c7a123e479cb4fe608a17dd256",
+      "direction": "south",
+      "action": "Walk",
       "frame": 7,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "63f734ace838bf3c91bcd99fa8a119e0df6fd51fcc002f733ed6e363ea9cf0e3"
     },
     {
       "file": "Idle/animations/Walk/south/frame_007.png",
-      "sha256": "861f78d626e5834d42600ae2379c7b1b1b507693cda8e80a158c7aa17aaf80a5",
+      "direction": "south",
+      "action": "Walk",
       "frame": 8,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "38c31fec5e7d5e62872cc4b2c4070c1d9eeca346f719fd3d388ada26df487d18"
     },
     {
       "file": "Idle/rotations/west.png",
-      "sha256": "8a544bfdd946f9fa92e209121d5859f034970cfc1242af3b0e816f012455dd29",
+      "direction": "west",
+      "action": "Idle",
       "frame": 9,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 128,
+      "height": 128,
+      "x": 32,
+      "y": 32,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "72d63f5c62efc160356c29309b9c89fb7807ba5f9fefc84ff2e2796b77d82c31"
     },
     {
       "file": "Idle/animations/Walk/west/frame_000.png",
-      "sha256": "66827116d53aafcea862771fe89e6755478305946e6b5f81eaa5b3ed0d95c5d8",
+      "direction": "west",
+      "action": "Walk",
       "frame": 10,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "d6b85eda64269a0197e2383b4d33b40decc99fd2c245930e270a51984626fa7e"
     },
     {
       "file": "Idle/animations/Walk/west/frame_001.png",
-      "sha256": "76a856656e56aa00efa522148c9fceafc7f746e332dc63722e872a34bfe47dc4",
+      "direction": "west",
+      "action": "Walk",
       "frame": 11,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "cff24deb4649d3dc03fb70b4ee7c45244515f9ab016ad6c60b5d408f998d3185"
     },
     {
       "file": "Idle/animations/Walk/west/frame_002.png",
-      "sha256": "7c48fe04f8fe17d137868076ec7cd623ee70843862e15f60e81efab4f79a8a68",
+      "direction": "west",
+      "action": "Walk",
       "frame": 12,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "b1db0648f09e07c0a8e3a87b8838a31ef03871962c83f1e9acfad40c860d5474"
     },
     {
       "file": "Idle/animations/Walk/west/frame_003.png",
-      "sha256": "1ffb2fedacbfb9e300e5c03f7746113497ed21e255378098b6419ad3b1b68286",
+      "direction": "west",
+      "action": "Walk",
       "frame": 13,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "a09469df444aac4f53de33116bd5702283cd06a8e90cf3ab75ec579d0c5d6ceb"
     },
     {
       "file": "Idle/animations/Walk/west/frame_004.png",
-      "sha256": "287fa868f3bb080377087b6b5995a870e5a73e1efb7ab2439bfea715ffef5857",
+      "direction": "west",
+      "action": "Walk",
       "frame": 14,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "a0721d1802eaa4b54f2ea89164848c74d67d4b9629f70b821b1c40f048b42fcc"
     },
     {
       "file": "Idle/animations/Walk/west/frame_005.png",
-      "sha256": "6f69da69549e6e214906fa96f536488cbbf638b4e2eea0a805f39489f62c6020",
+      "direction": "west",
+      "action": "Walk",
       "frame": 15,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "6cfd82b0e1aa529cd94dbc5734077d69f057310db2b0982e7abd61ce356a1fa8"
     },
     {
       "file": "Idle/animations/Walk/west/frame_006.png",
-      "sha256": "41c89d302cffc11ba43c1d9aff3eae7f347936363cf99afab2cc69b4726bc936",
+      "direction": "west",
+      "action": "Walk",
       "frame": 16,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "3cb85b5900a390579c1c6eeedb3c0e172a89590462659c86d07933725f6bc7ec"
     },
     {
       "file": "Idle/animations/Walk/west/frame_007.png",
-      "sha256": "4adaee1e0d922b3a67fa96e479ef07c25540111744b095b9e6d670e2c8c16b0e",
+      "direction": "west",
+      "action": "Walk",
       "frame": 17,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "3b04bd4c631bf89320c365fc3ad8519b5e38e544de7dd6fe0cb77887c6aab0a4"
     },
     {
       "file": "Idle/rotations/east.png",
-      "sha256": "04c759011b05b00d4e458b75d198fc12c46729c97fecfe1866c024e0b670f5ab",
+      "direction": "east",
+      "action": "Idle",
       "frame": 18,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 128,
+      "height": 128,
+      "x": 32,
+      "y": 32,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "ee9155c04bc3392e1c1682bc49df8f0817d340324df8a71f12cc2f291b3a27a3"
     },
     {
       "file": "Idle/animations/Walk/east/frame_000.png",
-      "sha256": "a8f77f37659ede56bbc02b5eb7668576a0f26ac8f0d9860975d23971f077f547",
+      "direction": "east",
+      "action": "Walk",
       "frame": 19,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "04a53828da4883cc6b48ef8b7958b5d69616c07e2afeacf233833489f7f089b3"
     },
     {
       "file": "Idle/animations/Walk/east/frame_001.png",
-      "sha256": "337ca17706b9e5ee10d26a5487b29e70eef6660a9968e77b397133f7af602e1e",
+      "direction": "east",
+      "action": "Walk",
       "frame": 20,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "74deb21f86c1daea067fc6ac7e07f2caa7f6c8f3e0be690b414dbad9458baef3"
     },
     {
       "file": "Idle/animations/Walk/east/frame_002.png",
-      "sha256": "00c718a9c7ba591d4d28cff44601b964689629b9f51d0c860ae50c8ca82628f3",
+      "direction": "east",
+      "action": "Walk",
       "frame": 21,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "d72ab611182f0edeece4113e3b3229c050057e5440e7ce20c9cee7baa2494256"
     },
     {
       "file": "Idle/animations/Walk/east/frame_003.png",
-      "sha256": "cb0f13a228029a04ffd0acfa14ade52971228efa6e817ffae7b100383cbaa41b",
+      "direction": "east",
+      "action": "Walk",
       "frame": 22,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "56d8cee931dd039712083f4d3ed78b3da1185f5b0ecb007947a50b3169f43828"
     },
     {
       "file": "Idle/animations/Walk/east/frame_004.png",
-      "sha256": "f87ae50fa381bafd7a83a222de4d57f31478b4b06886dd443d9084f9a3e41952",
+      "direction": "east",
+      "action": "Walk",
       "frame": 23,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "006792617c3c8a591a005ea42c2b83a707a5979d1381cd6b44d067ad1d8ace4a"
     },
     {
       "file": "Idle/animations/Walk/east/frame_005.png",
-      "sha256": "c55aa27d312c09ace24768215a88650fff48ac980c90f5896f0d1905fdfb0ec1",
+      "direction": "east",
+      "action": "Walk",
       "frame": 24,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "717f0d2060c8258426ceec904248d6bcbf9aa151928539636eb175ae4ef74a38"
     },
     {
       "file": "Idle/animations/Walk/east/frame_006.png",
-      "sha256": "a626c3b0e8c45a16b073a6b575446e4c5c58f7f5e5729aa99bfcf936547fa70e",
+      "direction": "east",
+      "action": "Walk",
       "frame": 25,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "d66e407ee3f3905eebfed5bf39b8b4230a183851142af09a4a21d74121313192"
     },
     {
       "file": "Idle/animations/Walk/east/frame_007.png",
-      "sha256": "3afc0ddfe51e2a28d6b974175850edbfba790839699e7e4f4fd5691382898c53",
+      "direction": "east",
+      "action": "Walk",
       "frame": 26,
-      "width": 128,
-      "height": 128,
-      "x": 0,
-      "y": 0
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "19f67a8f1cb30c8b086cb9149827b33a009ff9a666e7585024a1b12b984ef173"
     },
     {
       "file": "Idle/rotations/north.png",
-      "sha256": "11df373eb189f93f9a552a8ab19dc3d81c89c03f25dec8defe78a19a15840e66",
+      "direction": "north",
+      "action": "Idle",
       "frame": 27,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 128,
+      "height": 128,
+      "x": 32,
+      "y": 32,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "7daa0d220da2b0c568847e6d2931ad246df6ea8c77f031dccf04c51a08009782"
     },
     {
       "file": "Idle/animations/Walk/north/frame_000.png",
-      "sha256": "2379cc1ed934f2254cce4e950b8e2b2f8def5c67127c5ec1e57679e6c701e5a9",
+      "direction": "north",
+      "action": "Walk",
       "frame": 28,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "944379880779ea7d54c6d4b4bd6b13d9fcb01fd7af8f2a98e4470d752bdc2248"
     },
     {
       "file": "Idle/animations/Walk/north/frame_001.png",
-      "sha256": "04b6fa4bae28b71567d7f0f9bebc3f252834a35f1f8ec6cad471a86bcdfc3b95",
+      "direction": "north",
+      "action": "Walk",
       "frame": 29,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "5384fb96f0cb961225a194090583d71ea402f898d8dc3b7fb2c0eccf54a582a7"
     },
     {
       "file": "Idle/animations/Walk/north/frame_002.png",
-      "sha256": "aa850977df9b344520df9517f57a4de0840b47bc27a6306d35a5ea7ddbc40a27",
+      "direction": "north",
+      "action": "Walk",
       "frame": 30,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "3779e3d45f5d74a81204780342d577330efbc29c938d437a9958297c0672360a"
     },
     {
       "file": "Idle/animations/Walk/north/frame_003.png",
-      "sha256": "32d8797ae25ccbf50b302f9f6a5a0bb5e1c53ad11c89c1304945b4dd23ac40e6",
+      "direction": "north",
+      "action": "Walk",
       "frame": 31,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "8afcdb8bfd2c9ea2c4daa0834f69054ac9cdf615c74e889e5004b994ef291313"
     },
     {
       "file": "Idle/animations/Walk/north/frame_004.png",
-      "sha256": "b176e406301212f88e9e04f768f6a207ee8840a7fa7b9c756f77cf6dcba8e52a",
+      "direction": "north",
+      "action": "Walk",
       "frame": 32,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "36bea0f9467aa0ce8f8c455cf7b483103c47c5b7f4c7813a3a3760d138109f08"
     },
     {
       "file": "Idle/animations/Walk/north/frame_005.png",
-      "sha256": "6ba56fc5c331f21401d9a7d81ddd290197f546b1cfe42e7df03654ade7cb3a72",
+      "direction": "north",
+      "action": "Walk",
       "frame": 33,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "0fe44eb9c632e9abe4407092aaf079a8702a1bff37ca43f0c1bbd6e12b0083ee"
     },
     {
       "file": "Idle/animations/Walk/north/frame_006.png",
-      "sha256": "ba887fe3ca085cf8487672ff1e3f47d0305ef7ec713e82da2908ce4f5c7947eb",
+      "direction": "north",
+      "action": "Walk",
       "frame": 34,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "b877a19775724f8a98884574eb3ae0e4e01c77ff7d5066f4998a74edbddf3e18"
     },
     {
       "file": "Idle/animations/Walk/north/frame_007.png",
-      "sha256": "cb6881694d87c3554868dd6130a0373dd3c6dfeaac63dd8a6832a4c8ddc1a995",
+      "direction": "north",
+      "action": "Walk",
       "frame": 35,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "c0ba97ae4c39268092066543b0eb97a92a729a9a1d5cf5442ac760ea88e6b7e5"
     },
     {
       "file": "Idle/rotations/south-west.png",
-      "sha256": "adeead3a9281fffdeea25ddb2a58f89cee6bc6833bc7845c2f750a99583c6574",
+      "direction": "south-west",
+      "action": "Idle",
       "frame": 36,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 128,
+      "height": 128,
+      "x": 32,
+      "y": 32,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "34509d72a0134058704476a34f5b1129784eb98eea1fe2750b9313d46df87587"
     },
     {
       "file": "Idle/animations/Walk/south-west/frame_000.png",
-      "sha256": "f667a3eae51a3d9af6583792069cd8f143e420b0412ffabb239be102dc8c6e66",
+      "direction": "south-west",
+      "action": "Walk",
       "frame": 37,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "112f054dd7151af0fbec7697be1b4b7c9cf8c182075cd52c708b7b73e7c4b7e3"
     },
     {
       "file": "Idle/animations/Walk/south-west/frame_001.png",
-      "sha256": "b0c9a8122c23df4a699a2620b1b3c19330f0ddeceedae6e66a66f2c958f3f2e7",
+      "direction": "south-west",
+      "action": "Walk",
       "frame": 38,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "7479a107093aa9234793d2204527005651d1ddb2f3a7f815b6647a75a8b48a2c"
     },
     {
       "file": "Idle/animations/Walk/south-west/frame_002.png",
-      "sha256": "5263f19151f65bb22356f417537738a3b95220d2208f8df4fd66242cd041442d",
+      "direction": "south-west",
+      "action": "Walk",
       "frame": 39,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "8018dc16ff7bf8cde4f0a3558d4fecbb6d7624a3e1ea3edcfa9ab96f424e8c29"
     },
     {
       "file": "Idle/animations/Walk/south-west/frame_003.png",
-      "sha256": "dd53310a361eb2bfd6ef9a8eb9efba3f27495cb46e6bba5477f58fe77e258521",
+      "direction": "south-west",
+      "action": "Walk",
       "frame": 40,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "e34f42a23731d9573926d0373f32d1efd17199fb53bdce66d8ce9a01d5190140"
     },
     {
       "file": "Idle/animations/Walk/south-west/frame_004.png",
-      "sha256": "cfcf2c917c25fe940e3e2893f7a6e346fc0377953cf45b3e28fe90be515a6338",
+      "direction": "south-west",
+      "action": "Walk",
       "frame": 41,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "8e1ae3aac5c05553516912bd14f4dfefa0d4c78b67c510d774da5814f212f4eb"
     },
     {
       "file": "Idle/animations/Walk/south-west/frame_005.png",
-      "sha256": "800d4e46cf876cb6f93bfe754e3203c2f2f51fb60a9b3a7605d74bba995b8659",
+      "direction": "south-west",
+      "action": "Walk",
       "frame": 42,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "7c6dffd108a5d8506b823062d4af90de9c21abd511b86e7ff77048bf926839d6"
     },
     {
       "file": "Idle/animations/Walk/south-west/frame_006.png",
-      "sha256": "1f9b07b0ff94b65773acaa39f9f4fb68e88f034943c71916969f02018b523fc3",
+      "direction": "south-west",
+      "action": "Walk",
       "frame": 43,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "00a27dac48fb499cbeec589deef286be5cc7d24ea62a062a89b796b316396fb1"
     },
     {
       "file": "Idle/animations/Walk/south-west/frame_007.png",
-      "sha256": "652c63bdf0e1ccb3b0dba288d2f3e452851727ccf9bbe55cd2257c247ee11260",
+      "direction": "south-west",
+      "action": "Walk",
       "frame": 44,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "68a6a2630a5ad3dcc7e9d205534b171d27c754a205205512990e1f6edb1f9f7c"
     },
     {
       "file": "Idle/rotations/south-east.png",
-      "sha256": "ae16328159a3a1eb395e335628cca0314738c9120e28ca5b33b61385e72adaef",
+      "direction": "south-east",
+      "action": "Idle",
       "frame": 45,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 128,
+      "height": 128,
+      "x": 32,
+      "y": 32,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "bb166f9e5129d28e244afa30e5a99e126bb9092380ede3c8ae262032bc11b990"
     },
     {
       "file": "Idle/animations/Walk/south-east/frame_000.png",
-      "sha256": "cc07dea40489330881beed0177b2daacc148d32593ac66485e429c43e7190843",
+      "direction": "south-east",
+      "action": "Walk",
       "frame": 46,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "bc1860cea9fbd38bd89e8834a85e6cd4f8aede00d8b7cc0d37d154a945a0089e"
     },
     {
       "file": "Idle/animations/Walk/south-east/frame_001.png",
-      "sha256": "262170add579eca725818f18d5a3cda8fb179d67be465038ee96f307f3f1f71c",
+      "direction": "south-east",
+      "action": "Walk",
       "frame": 47,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "6ff392d74dda26945f0a4cfd554cb33f4e2c6c51e96bf9ee5d6387b52ef96ccb"
     },
     {
       "file": "Idle/animations/Walk/south-east/frame_002.png",
-      "sha256": "287179ad5543ae7f7594f02ee26e8cc44596754ed9b2e3bd4a7cf91e5d0c2a66",
+      "direction": "south-east",
+      "action": "Walk",
       "frame": 48,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "ac60b695599b881f2f2436bc02b2b69f2a5cb20098aade5ca8e3ace380664d4e"
     },
     {
       "file": "Idle/animations/Walk/south-east/frame_003.png",
-      "sha256": "0485c7dc973c0f5fde49a31d444c32612a6a7309f0cbfe0016d6586c7a6b730e",
+      "direction": "south-east",
+      "action": "Walk",
       "frame": 49,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "34aaf800d875b7c6a0ef09352a921ccdea8738613bdbfbd232e94649d498db7b"
     },
     {
       "file": "Idle/animations/Walk/south-east/frame_004.png",
-      "sha256": "4b1bca9efa2d37bb45a706b3366d550f2b34def4db4b220f8968bbe38e9bc706",
+      "direction": "south-east",
+      "action": "Walk",
       "frame": 50,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "3a5c5e2036b292caf2e99f20f6f472da89626159eba7f716cd24564bf1ce2f47"
     },
     {
       "file": "Idle/animations/Walk/south-east/frame_005.png",
-      "sha256": "4c8baf162279bec4462438004dc6dfb29d0475bf42f531417d5b68d7dcd63137",
+      "direction": "south-east",
+      "action": "Walk",
       "frame": 51,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "277dbd908cfc60494b84bd3aa500bb8b7d25bd9b943d4075a50b16e2064dbb9a"
     },
     {
       "file": "Idle/animations/Walk/south-east/frame_006.png",
-      "sha256": "6b2dfb8183920ddbff98c177860a7b05fb8b4a8aa79b8b0cf8732c4a9525ea85",
+      "direction": "south-east",
+      "action": "Walk",
       "frame": 52,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "84556bce7ee4fa28be8f1520dfaab4c218616f45224f0fbbc891f5c2f0e5d027"
     },
     {
       "file": "Idle/animations/Walk/south-east/frame_007.png",
-      "sha256": "6ae0b3de32c059dc5b3b1c8a983c987c24fae99758f420b06fc6a1b3f87eea9e",
+      "direction": "south-east",
+      "action": "Walk",
       "frame": 53,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "1cb5e1a01433b60a9ae6af16460e8d1fba443f3d92be557fed61ad41f539593a"
     },
     {
       "file": "Idle/rotations/north-west.png",
-      "sha256": "f3417572961585a36d84541f535192b0a417fd596579e6df7fb38286910fea0c",
+      "direction": "north-west",
+      "action": "Idle",
       "frame": 54,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 128,
+      "height": 128,
+      "x": 32,
+      "y": 32,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "fce6753cc2d2866eb8597e072a780f381e662bef9947b76ba327cde6b621629a"
     },
     {
       "file": "Idle/animations/Walk/north-west/frame_000.png",
-      "sha256": "b80076d5f6eb0adc7962d78b07ab69a9714d1edb5cc4108df580187942a7db5e",
+      "direction": "north-west",
+      "action": "Walk",
       "frame": 55,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "6a170d09e52ea483cfd5c17098f386b0f1342d6772bc90ae793b379b3cf05e52"
     },
     {
       "file": "Idle/animations/Walk/north-west/frame_001.png",
-      "sha256": "92982c31f64e5626cfbb664eff71c55972da2ee033a95dbb79dbc6180e8e000a",
+      "direction": "north-west",
+      "action": "Walk",
       "frame": 56,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "eea51508d518206012d1203f9ff51cc3abbedbb9fff81f744878eac1a771f072"
     },
     {
       "file": "Idle/animations/Walk/north-west/frame_002.png",
-      "sha256": "e6bc60842b251fec4e89fb3135a6452b0c94c880167b7f27faadd1fb905a5d5c",
+      "direction": "north-west",
+      "action": "Walk",
       "frame": 57,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "255cdb46a495eac68c64c6d6f4182416e13c4c08caa5eeee46e3a3d706c2f312"
     },
     {
       "file": "Idle/animations/Walk/north-west/frame_003.png",
-      "sha256": "113f8efc3c07e3a0c5764437f65f03a36c0c19aecffad0e441814aa7d72876ac",
+      "direction": "north-west",
+      "action": "Walk",
       "frame": 58,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "d8522b127d8a9be649f81d9ae7dcaa39326554c071e5153c93c92f2ec904b447"
     },
     {
       "file": "Idle/animations/Walk/north-west/frame_004.png",
-      "sha256": "f31aed10fd382a90621030730ab92bccd2007f171aa6bc870d65821485a39c44",
+      "direction": "north-west",
+      "action": "Walk",
       "frame": 59,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "25bfaee4e0151c3fdd242090623cfbfd9224089a8722385809ca2844198715a3"
     },
     {
       "file": "Idle/animations/Walk/north-west/frame_005.png",
-      "sha256": "6dd5cd305e0f3440dcc8f2cca0f848cacf883db242da8205c92d9ddfbb63b8ec",
+      "direction": "north-west",
+      "action": "Walk",
       "frame": 60,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "1fcec296dda952616c2ff927863aaf096cf91af3cc8c459f8e2474a51fd00fab"
     },
     {
       "file": "Idle/animations/Walk/north-west/frame_006.png",
-      "sha256": "4a90f096b6c70ff3e8f5420e422c4a3e1db46bc75fb265044ff518e5ccbfda0f",
+      "direction": "north-west",
+      "action": "Walk",
       "frame": 61,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "d057a34e2360874bbc8f123805940397956fe3b60abec6b556585ee9f2beefb9"
     },
     {
       "file": "Idle/animations/Walk/north-west/frame_007.png",
-      "sha256": "04cb4ac7d8a385b50c8bd9f49d759f728981b6409023b78a7f0aaf7e025b0911",
+      "direction": "north-west",
+      "action": "Walk",
       "frame": 62,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "fdcc4ef6427e33aa11e59cda958e3c21d339320a5c864824a4c0f404a2740bd6"
     },
     {
       "file": "Idle/rotations/north-east.png",
-      "sha256": "f8377eabd8d143e7fe25fe00d9c4feaab451c178a278034b70b31e42ce9fedee",
+      "direction": "north-east",
+      "action": "Idle",
       "frame": 63,
-      "width": 96,
-      "height": 96,
-      "x": 16,
-      "y": 16
+      "width": 128,
+      "height": 128,
+      "x": 32,
+      "y": 32,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "553e142e9ed8f54eb9b5a34e8ace0ef44f0d16d4d939f84bf4ff304b47cb405e"
     },
     {
       "file": "Idle/animations/Walk/north-east/frame_000.png",
-      "sha256": "21aa5dee3416449fe05013f9df08237c6e86280ebcb3fee271cf1c4f7f2de62a",
+      "direction": "north-east",
+      "action": "Walk",
       "frame": 64,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "d27e1f85c932b762c9a13caba9cfe6000a5f49f777ba4dcfa01144a59252241e"
     },
     {
       "file": "Idle/animations/Walk/north-east/frame_001.png",
-      "sha256": "7cee6b24b5047bc5030b21e2ffb961684e1135784fd6bfbb3b4366af851d248f",
+      "direction": "north-east",
+      "action": "Walk",
       "frame": 65,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "3597bfd94214371c6373401bc93c0168b503e47f44be2fd84b25b54fc4ef1198"
     },
     {
       "file": "Idle/animations/Walk/north-east/frame_002.png",
-      "sha256": "406445b7fe40f9a71554c9f82ea09e7fa79039ccfdaa85c38952a225baf13813",
+      "direction": "north-east",
+      "action": "Walk",
       "frame": 66,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "9b65e8ef6f180ca69249c27901f4f21d7594fd3e69447755a7852c4695de6c15"
     },
     {
       "file": "Idle/animations/Walk/north-east/frame_003.png",
-      "sha256": "0aedaa6044c8c45082a65f488ccbd9168305c4d2a256e9c86b2647816207dc68",
+      "direction": "north-east",
+      "action": "Walk",
       "frame": 67,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "f7d3025ad01ebd0e806fb493818cb2db99a4acaae51604e54446dd865bead5a5"
     },
     {
       "file": "Idle/animations/Walk/north-east/frame_004.png",
-      "sha256": "30a8127cf084e59e0e0e6741f71e4f2709320eb0d530e680ff52f7ff521e6d2b",
+      "direction": "north-east",
+      "action": "Walk",
       "frame": 68,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "c593f02074582c01273fbe4fe49b4ecef6b5179c13a6eb294b63d0898367bcd5"
     },
     {
       "file": "Idle/animations/Walk/north-east/frame_005.png",
-      "sha256": "0ff51674fe14e9a4b8a9857a62b21bd80a8e78b58a60b6f30c38ce4b9ceaaf35",
+      "direction": "north-east",
+      "action": "Walk",
       "frame": 69,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "5950c039a842822f18720eadada5a1b42c887f8930667daae14c828ddbfb80f2"
     },
     {
       "file": "Idle/animations/Walk/north-east/frame_006.png",
-      "sha256": "c376ac45f5664dad2c681828e229f79ba8455c398ebcececb227c4bcfcd8b2ea",
+      "direction": "north-east",
+      "action": "Walk",
       "frame": 70,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "ac047d55ec396772603973559264606895067c84c705444e99b14452686b7103"
     },
     {
       "file": "Idle/animations/Walk/north-east/frame_007.png",
-      "sha256": "78248d2c42062278a51b7e6bc5347177dcd707f025bf82e17ae26600f4d1352b",
+      "direction": "north-east",
+      "action": "Walk",
       "frame": 71,
-      "width": 112,
-      "height": 112,
-      "x": 8,
-      "y": 8
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        0
+      ],
+      "sha256": "2eca89207bd111fab97f4070d2087fb8e126bda39b9f6915ff015cfde5900761"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/south/frame_000.png",
+      "direction": "south",
+      "action": "Lie_Down",
+      "frame": 72,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        8
+      ],
+      "sha256": "71bbc6f305b04c2a10205f98f3f6f029545a158a7a99411bde7d91998ef3ba6e"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/south/frame_001.png",
+      "direction": "south",
+      "action": "Lie_Down",
+      "frame": 73,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        0,
+        8
+      ],
+      "sha256": "246a19d8978384fb82fadda3494e744ed0d58abaaf4b7f6d7ff414fac6665263"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/south/frame_002.png",
+      "direction": "south",
+      "action": "Lie_Down",
+      "frame": 74,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -1.5,
+        10
+      ],
+      "sha256": "77eefe71f602a7a3a9bf38620e57193ea322afb53f345f4c1efd0b739cd80b32"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/south/frame_003.png",
+      "direction": "south",
+      "action": "Lie_Down",
+      "frame": 75,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -3,
+        14
+      ],
+      "sha256": "04246ba66b934f75e150448c75d48a387a0385c8600ff6e0c528bf36d032ce35"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/south/frame_004.png",
+      "direction": "south",
+      "action": "Lie_Down",
+      "frame": 76,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -2,
+        17
+      ],
+      "sha256": "9eed47ef6c8000ac43a2cf36fbd3dcf73947452fb5dfb182d452487244a192ea"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/south/frame_005.png",
+      "direction": "south",
+      "action": "Lie_Down",
+      "frame": 77,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -3.5,
+        14
+      ],
+      "sha256": "2b9decbde0860cb5fff0817840acb5dcea06a33e0918c48deea709bd478e1ff1"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/south/frame_006.png",
+      "direction": "south",
+      "action": "Lie_Down",
+      "frame": 78,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -3.5,
+        10
+      ],
+      "sha256": "e5eaf73c7001d3ae1c274850526f9748183c1a02e0deeb1df23270cf2fed282a"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/south/frame_007.png",
+      "direction": "south",
+      "action": "Lie_Down",
+      "frame": 79,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -4,
+        6
+      ],
+      "sha256": "95a8be52e064794ad7a95952ed0fe51ff3d007fad27bce834c0109ec402eb5eb"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/west/frame_000.png",
+      "direction": "west",
+      "action": "Lie_Down",
+      "frame": 80,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0.5,
+        11
+      ],
+      "sha256": "540fe9f16dcee0901af440ee8b70e2e2e1e4c501b38572131667f4acf1238026"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/west/frame_001.png",
+      "direction": "west",
+      "action": "Lie_Down",
+      "frame": 81,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -0.5,
+        11
+      ],
+      "sha256": "8cadeadc90ab101d21661da6e3a4160f837a6907a05f498766fec4ac45ddbaca"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/west/frame_002.png",
+      "direction": "west",
+      "action": "Lie_Down",
+      "frame": 82,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -2,
+        14
+      ],
+      "sha256": "020e5f1fbcb3cd27444492dcee8032dc7cec6f76332d6afe1cac0e642428fd22"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/west/frame_003.png",
+      "direction": "west",
+      "action": "Lie_Down",
+      "frame": 83,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -2.5,
+        16
+      ],
+      "sha256": "dcd465ae2a6045f8e06b9f409ba32ffef293d91bf78ff7e432ad619296b68ee1"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/west/frame_004.png",
+      "direction": "west",
+      "action": "Lie_Down",
+      "frame": 84,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -2.5,
+        15
+      ],
+      "sha256": "4491eb332aefd7bb80e3a1042297d00cc46fb634d45ad12246438c70e9403aac"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/west/frame_005.png",
+      "direction": "west",
+      "action": "Lie_Down",
+      "frame": 85,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -2.5,
+        9
+      ],
+      "sha256": "1e4c3b1f2f6d7616983c23795816e08a724cd0eed857c103f210f921e9b1e145"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/west/frame_006.png",
+      "direction": "west",
+      "action": "Lie_Down",
+      "frame": 86,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -3.5,
+        4
+      ],
+      "sha256": "a8e15dd8042b8de3b33a29bcac51584cf1379f8f45a56c8e0ba6b80707849123"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/west/frame_007.png",
+      "direction": "west",
+      "action": "Lie_Down",
+      "frame": 87,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -3,
+        2
+      ],
+      "sha256": "f6e71173a2b9a96cd9eb362108abd0cb28c24fbba8ae8af0eebdaa30155792bc"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/east/frame_000.png",
+      "direction": "east",
+      "action": "Lie_Down",
+      "frame": 88,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -0.5,
+        11
+      ],
+      "sha256": "d6ce41595ac6da14b6450f44b5fd19bf2f398ef7cbc5904e1388ea0ceca7e1fa"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/east/frame_001.png",
+      "direction": "east",
+      "action": "Lie_Down",
+      "frame": 89,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0.5,
+        11
+      ],
+      "sha256": "57d7f7eea17f26a8d6e977af317354b58c7c62c2222394933b552f6425b2b2db"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/east/frame_002.png",
+      "direction": "east",
+      "action": "Lie_Down",
+      "frame": 90,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        2,
+        14
+      ],
+      "sha256": "ebf72ed5476a2d6f35748ef1d4195fb221ebb8f8f3126d6982d06bdb255963ae"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/east/frame_003.png",
+      "direction": "east",
+      "action": "Lie_Down",
+      "frame": 91,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        2,
+        16
+      ],
+      "sha256": "c8d313cf3044b88b192e7f9fd60513be164ca791a6acc8b211a5bb4b4165ae14"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/east/frame_004.png",
+      "direction": "east",
+      "action": "Lie_Down",
+      "frame": 92,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        2.5,
+        15
+      ],
+      "sha256": "2688013d89fe90e02c3b6a0d73564fda4f9651c176619d4f9875eed9487e764e"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/east/frame_005.png",
+      "direction": "east",
+      "action": "Lie_Down",
+      "frame": 93,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        2,
+        9
+      ],
+      "sha256": "96906f236d9028bb8007f33df7fa01332d8856ba642d6830b6ec473ed43da082"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/east/frame_006.png",
+      "direction": "east",
+      "action": "Lie_Down",
+      "frame": 94,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        3.5,
+        4
+      ],
+      "sha256": "bbd563b28e0e5d12de86d98346646fdcdf5c6d6c4ac30fa96fcc7fba5362219a"
+    },
+    {
+      "file": "Idle/animations/Lie_Down/east/frame_007.png",
+      "direction": "east",
+      "action": "Lie_Down",
+      "frame": 95,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        2.5,
+        2
+      ],
+      "sha256": "789aaf639eab6a9619e3748b961492a885c8f77f2db439f0c4f2b1dbfe752e65"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/south/frame_000.png",
+      "direction": "south",
+      "action": "Rest_Cycle",
+      "frame": 96,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -4,
+        -2
+      ],
+      "sha256": "57d0d9a3b34af4d8b78040345179d0558ee78259295ca92f4070c338087145eb"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/south/frame_001.png",
+      "direction": "south",
+      "action": "Rest_Cycle",
+      "frame": 97,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -4,
+        -2
+      ],
+      "sha256": "03eedeaad8970ac756c569edf5c2567d10f7179b73b2f3c4d8195cd3fe444dfd"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/south/frame_002.png",
+      "direction": "south",
+      "action": "Rest_Cycle",
+      "frame": 98,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -4,
+        -2
+      ],
+      "sha256": "bd7392a81bfdc9cad2913d3cd32ca91fa8c1cf40d4862d47ce41822fce7e34df"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/south/frame_003.png",
+      "direction": "south",
+      "action": "Rest_Cycle",
+      "frame": 99,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -4,
+        -2
+      ],
+      "sha256": "bf09eef271fc912786c93b0c6f7996221a6f47e114f9cf2f89254a46455eebf1"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/south/frame_004.png",
+      "direction": "south",
+      "action": "Rest_Cycle",
+      "frame": 100,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -4.5,
+        -2
+      ],
+      "sha256": "4c8abc3e04b4d92df5ca46e98aa31ad73beb6853cda816c47c54e2a3fa17e9a9"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/south/frame_005.png",
+      "direction": "south",
+      "action": "Rest_Cycle",
+      "frame": 101,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -4,
+        -2
+      ],
+      "sha256": "201d836103fd1d9d95d5dff868760c284631b37151ed88a91034be23ed41e587"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/south/frame_006.png",
+      "direction": "south",
+      "action": "Rest_Cycle",
+      "frame": 102,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -4,
+        -2
+      ],
+      "sha256": "aa4994cacffeaa011f8eeabfff7ab71ce455bcd770eafcebdf9227ee9369ba81"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/south/frame_007.png",
+      "direction": "south",
+      "action": "Rest_Cycle",
+      "frame": 103,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -4,
+        -2
+      ],
+      "sha256": "e931fbe66e3cd60942abf5b486fef3f0b596476ab0e5dde92b74147bc8e5c6f4"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/south/frame_008.png",
+      "direction": "south",
+      "action": "Rest_Cycle",
+      "frame": 104,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -4,
+        -2
+      ],
+      "sha256": "f224ffa5b299d47371db6a5c789cd8aab4b3c856b2dc6ea157afe2df4c300d5b"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/west/frame_000.png",
+      "direction": "west",
+      "action": "Rest_Cycle",
+      "frame": 105,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0.5,
+        -2
+      ],
+      "sha256": "1bf0dc5dc54d70a6a3138d1d8e73c86b6bfe7e1b1f92a623b9e1d112015c18de"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/west/frame_001.png",
+      "direction": "west",
+      "action": "Rest_Cycle",
+      "frame": 106,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0.5,
+        -2
+      ],
+      "sha256": "698c135d0aa913ebfa187abc5176e342ffef11bc4b8f7c3eabf05b4570b73811"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/west/frame_002.png",
+      "direction": "west",
+      "action": "Rest_Cycle",
+      "frame": 107,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0.5,
+        -1
+      ],
+      "sha256": "b8cbe583223d01cc70349f9ac86cdb90cc6902329bb3921e0dda62b2eb201893"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/west/frame_003.png",
+      "direction": "west",
+      "action": "Rest_Cycle",
+      "frame": 108,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        -1
+      ],
+      "sha256": "ea4f011854aaf12364ae36657561d6838d3f4e3628c2911fe8a3744618befc65"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/west/frame_004.png",
+      "direction": "west",
+      "action": "Rest_Cycle",
+      "frame": 109,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        -1
+      ],
+      "sha256": "860cba0036efcefd07a56104933f8b0cdc28101a340f8162c4196b8fc354b3d4"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/west/frame_005.png",
+      "direction": "west",
+      "action": "Rest_Cycle",
+      "frame": 110,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        -2
+      ],
+      "sha256": "c29ca53d90ae27a51abde62d8f9c2bd0159ee9b42647480a37b47504afc19467"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/west/frame_006.png",
+      "direction": "west",
+      "action": "Rest_Cycle",
+      "frame": 111,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        -2
+      ],
+      "sha256": "f8de53fb36807dd911b2ebd71aeb246972a3aac85c64f0cba64fa3d848d4b15d"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/west/frame_007.png",
+      "direction": "west",
+      "action": "Rest_Cycle",
+      "frame": 112,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0,
+        -2
+      ],
+      "sha256": "619bbf9adf7e52f359e365319505178ed2fa088cfa3465d2a1d41f02fcf9267c"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/west/frame_008.png",
+      "direction": "west",
+      "action": "Rest_Cycle",
+      "frame": 113,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0.5,
+        -2
+      ],
+      "sha256": "113e8e68fb11bb1eba82a7c01e782ad376f3cad251e0553eae18329b7d0edba4"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/east/frame_000.png",
+      "direction": "east",
+      "action": "Rest_Cycle",
+      "frame": 114,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -0.5,
+        -2
+      ],
+      "sha256": "9ccd8e38f930f7930508ee6da56b98f2035fa1ab3b79dfc75c46ffb63acead7d"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/east/frame_001.png",
+      "direction": "east",
+      "action": "Rest_Cycle",
+      "frame": 115,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -0.5,
+        -2
+      ],
+      "sha256": "f88eb1dc657f9be232c3e624e7b735d52a08528cd737721323ac49bb63fa4abc"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/east/frame_002.png",
+      "direction": "east",
+      "action": "Rest_Cycle",
+      "frame": 116,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -0.5,
+        -1
+      ],
+      "sha256": "c11f7e5b1678f8009b8020defa8a58567e770091119521cdd055fe6cb3fae424"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/east/frame_003.png",
+      "direction": "east",
+      "action": "Rest_Cycle",
+      "frame": 117,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -0.5,
+        -1
+      ],
+      "sha256": "ee300f0022cf000c219ebb552da7a7740cc03165722f8e90a4098e0e0f5f0108"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/east/frame_004.png",
+      "direction": "east",
+      "action": "Rest_Cycle",
+      "frame": 118,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -0.5,
+        -1
+      ],
+      "sha256": "dc413f48f04cb72dd5c9151cd44363e298dec65f46400c7d0e4dca4386cf4f62"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/east/frame_005.png",
+      "direction": "east",
+      "action": "Rest_Cycle",
+      "frame": 119,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -0.5,
+        -2
+      ],
+      "sha256": "b5b81e110c27a213b557d9fe292091f4bd71ffca0bd47e4e76222ebe565ee9c0"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/east/frame_006.png",
+      "direction": "east",
+      "action": "Rest_Cycle",
+      "frame": 120,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -0.5,
+        -2
+      ],
+      "sha256": "12a5ee9d588983887bb38b45ef7cc890f7a269a7ca89fd290bbcc2ac5dd8bea0"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/east/frame_007.png",
+      "direction": "east",
+      "action": "Rest_Cycle",
+      "frame": 121,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -0.5,
+        -2
+      ],
+      "sha256": "144a5a5833dc6b32ffa8e3ff9f6e14733d4b233dba38a6fc5619acc8346dd814"
+    },
+    {
+      "file": "Idle/animations/Rest_Cycle/east/frame_008.png",
+      "direction": "east",
+      "action": "Rest_Cycle",
+      "frame": 122,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -0.5,
+        -2
+      ],
+      "sha256": "ab4f4c453631a694060d311c0e77a79929536edc7f30436de16e16248b05b8b5"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/south/frame_000.png",
+      "direction": "south",
+      "action": "Stand_Up",
+      "frame": 123,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -4,
+        -4
+      ],
+      "sha256": "fe6fff2c72e531f7eb55c69435e430c0b151d3003063171d3f5b009dffc7c547"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/south/frame_001.png",
+      "direction": "south",
+      "action": "Stand_Up",
+      "frame": 124,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -4,
+        3
+      ],
+      "sha256": "38e1e1d9122fee2ed9c576b22eba5496f07c07a4fdddc935ef0a1c5cedbecf3d"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/south/frame_002.png",
+      "direction": "south",
+      "action": "Stand_Up",
+      "frame": 125,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -2.5,
+        7
+      ],
+      "sha256": "ccd1cbaf1ad6f7e4bb1931f2925071caabd7125958efc4b13ba5b79db083ee16"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/south/frame_003.png",
+      "direction": "south",
+      "action": "Stand_Up",
+      "frame": 126,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -3.5,
+        7
+      ],
+      "sha256": "dd02df8af8c764bab1a7a2609f31d17fa470bfba30a6672dce99f38f0285c7d2"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/south/frame_004.png",
+      "direction": "south",
+      "action": "Stand_Up",
+      "frame": 127,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -2.5,
+        7
+      ],
+      "sha256": "eac92c2148e4990389ce8fa6ff0c7951dc2bbb59c49274b173fb0889b5495683"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/south/frame_005.png",
+      "direction": "south",
+      "action": "Stand_Up",
+      "frame": 128,
+      "width": 144,
+      "height": 144,
+      "x": 24,
+      "y": 24,
+      "adjust": [
+        -1.5,
+        5
+      ],
+      "sha256": "b635b39bc65f5e05a877532bfbd81378a5aa118728583c1101284a8e3745df11"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/west/frame_000.png",
+      "direction": "west",
+      "action": "Stand_Up",
+      "frame": 129,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0.5,
+        2
+      ],
+      "sha256": "174568fd7c6e5fac01e00424a7b094394210b27f344b88c877fa4ba4b7e4379c"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/west/frame_001.png",
+      "direction": "west",
+      "action": "Stand_Up",
+      "frame": 130,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        0.5,
+        5
+      ],
+      "sha256": "ddd69f94b7275cce7f3f992416c719c85a89578680085e3dab3aaa8dc9218ca9"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/west/frame_002.png",
+      "direction": "west",
+      "action": "Stand_Up",
+      "frame": 131,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        2.5,
+        14
+      ],
+      "sha256": "5439fa1321a6c8b72d41c298539e4b076f6e04711ac57dbef20d68758591a685"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/west/frame_003.png",
+      "direction": "west",
+      "action": "Stand_Up",
+      "frame": 132,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        3,
+        16
+      ],
+      "sha256": "d877e4e2ead96a19a74616f92491f2e2e9ec2a53170eb750f7054c9f6f4f4863"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/west/frame_004.png",
+      "direction": "west",
+      "action": "Stand_Up",
+      "frame": 133,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        4.5,
+        15
+      ],
+      "sha256": "e6718385bdc5ec008e33a8d8aa321f56e1300b78decabe0381dbde1fa89f2cc0"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/west/frame_005.png",
+      "direction": "west",
+      "action": "Stand_Up",
+      "frame": 134,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        6,
+        12
+      ],
+      "sha256": "f6df40b12bbad4ee14208a918f0a0854c5f3b322d77ae3a9de4e5c4338901dfa"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/east/frame_000.png",
+      "direction": "east",
+      "action": "Stand_Up",
+      "frame": 135,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -0.5,
+        2
+      ],
+      "sha256": "c8f380b80fb48132797ca3304f2ae6e39e00a45a477d0a6293abb4bf42d83cab"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/east/frame_001.png",
+      "direction": "east",
+      "action": "Stand_Up",
+      "frame": 136,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -0.5,
+        5
+      ],
+      "sha256": "ccb21f509888e54f009bf335a826b7cefe7e00b5d1a106e21ea3e592b50e98cb"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/east/frame_002.png",
+      "direction": "east",
+      "action": "Stand_Up",
+      "frame": 137,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -2.5,
+        14
+      ],
+      "sha256": "bdb3675c84e0a89f1c3f7b8bb5966993ee85c672af34a1ef6f2840abb36ac650"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/east/frame_003.png",
+      "direction": "east",
+      "action": "Stand_Up",
+      "frame": 138,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -3,
+        16
+      ],
+      "sha256": "a8c9068454551be44c87c8593d2e29f848afc1ea4006ef40f83698510a5ec031"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/east/frame_004.png",
+      "direction": "east",
+      "action": "Stand_Up",
+      "frame": 139,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -4.5,
+        15
+      ],
+      "sha256": "3515621bb64f2034499f6eaa13db1010e6d279bf5355b10aabff7af594e032f5"
+    },
+    {
+      "file": "Idle/animations/Stand_Up/east/frame_005.png",
+      "direction": "east",
+      "action": "Stand_Up",
+      "frame": 140,
+      "width": 160,
+      "height": 160,
+      "x": 16,
+      "y": 16,
+      "adjust": [
+        -6,
+        12
+      ],
+      "sha256": "2546203312c7f084095f26ee3750a66d2866e2acf1abbf69894b029678e068f8"
     }
   ]
 }

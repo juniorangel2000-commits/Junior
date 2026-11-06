@@ -14,3 +14,6 @@ fs.writeFileSync(path.join(dir,'buildings.png'),PNG.sync.write(p));
 for(const kind of ['barn','silo']){const f=frames[kind+'-2'],o=new PNG({width:f.width,height:f.height});PNG.bitblt(p,o,f.x,f.y,f.width,f.height,0,0);fs.writeFileSync(path.join(dir,kind+'.png'),PNG.sync.write(o));}
 const open=PNG.sync.read(fs.readFileSync('/workspace/generated_images/exec-6f7df777-020f-4acd-8970-ccacd8ae1cbe.png'));for(let i=0;i<open.data.length;i+=4)if(open.data[i]>120&&open.data[i+1]<open.data[i]*.4&&open.data[i+2]<open.data[i]*.4)open.data[i+3]=0;
 fs.writeFileSync(path.join(dir,'coop.png'),PNG.sync.write(open));
+
+// The current item art is maintained with the authoring source in the repository.
+require('./prepare-hay-sprite.cjs');

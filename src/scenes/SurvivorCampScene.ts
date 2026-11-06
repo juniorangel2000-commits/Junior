@@ -1,3 +1,4 @@
+import {NpcPassageCollision} from '../systems/npc-collision';
 import {createGroundRuntime} from '../systems/ground-items';
 import {createMineMissionRuntime} from '../systems/mine-missions';
 import {bentoSceneWriter} from '../systems/bento-commit';
@@ -34,6 +35,7 @@ import {ensureSurvivorCamp,advanceSurvivorCamp,advanceHostileWarning,recruitCamp
 import {DEVELOPMENT_TOOLS} from '../development-tools';
 interface CampStart {save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 export class SurvivorCampScene extends Phaser.Scene {
+ private readonly passageCollision=new NpcPassageCollision();
  private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>'survivorCamp',(x,y)=>this.world.blockedPoint(x,y),()=>!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden,()=>{this.updateHUD();});
  getGroundItemRuntime(){return this.player?this.groundRuntime:undefined;}
  private mineMissionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player);
@@ -83,7 +85,7 @@ export class SurvivorCampScene extends Phaser.Scene {
   }
   for(const[id,a]of this.actors)if(!ids.has(id)){a.sprite.destroy();a.label.destroy();this.actors.delete(id);}
  }
- private blockedPoint=(x:number,y:number)=>this.world.blockedPoint(x,y)||this.people().some(p=>Math.abs(p.x-x)<10&&Math.abs(p.y-y)<6);
+ private blockedPoint=(x:number,y:number)=>this.world.blockedPoint(x,y)||this.people().some(p=>this.state.survivorCamp?.kind==='hostile'&&p.status!=='resident'?Math.abs(p.x-x)<10&&Math.abs(p.y-y)<6:this.passageCollision.blocks(p.id,p,this.player,x,y,this.time.now,'survivorCamp',{moving:p.status==='arriving'||p.status==='leaving'}));
  private blockedTile=(x:number,y:number)=>this.world.blockedPoint((x+.5)*32,(y+.5)*32);
  private updateHUD():void {
   const c=this.state.survivorCamp!,near=this.nearest(),hostile=c.kind==='hostile'&&!!near&&c.members.some(p=>p.id===near.id);

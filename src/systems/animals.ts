@@ -36,8 +36,13 @@ export class AnimalBrain {
   mode: AnimalMode = 'idle';
   distanceMoved = 0;
   moving = false;
-  readonly radius: number;
-  private readonly feet: readonly (readonly [number,number])[];
+  private readonly walkingRadius:number;
+  resting=false;
+  get radius():number{return this.resting&&this.kind==='cow'?20:this.walkingRadius;}
+  get footRadiusY():number{return this.resting&&this.kind==='cow'?7:this.radius*.6;}
+  private readonly walkingFeet:readonly(readonly[number,number])[];
+  private readonly restingFeet:readonly(readonly[number,number])[];
+  private get feet():readonly(readonly[number,number])[]{return this.resting?this.restingFeet:this.walkingFeet;}
   private seed: number;
   private timer: number;
   private rethink = 0;
@@ -48,14 +53,17 @@ export class AnimalBrain {
 
   constructor(readonly id: string, readonly kind: AnimalKind, x: number, y: number,
     readonly wild: boolean, private readonly blocked: AnimalBlocked, readonly playerSpeed = 84,
-    private readonly terrainCost:AnimalTerrainCost=()=>0) {
-    this.x=x;this.y=y;this.seed=idSeed(id);this.radius=kind==='cow'?8:kind==='chicken'||kind==='rabbit'?4:6;
-    const r=this.radius;this.feet=[[-r,-r*.6],[r,-r*.6],[-r,r*.6],[r,r*.6]];
+    private readonly terrainCost:AnimalTerrainCost=()=>0,private readonly pointBlocked?:(x:number,y:number)=>boolean) {
+    this.x=x;this.y=y;this.seed=idSeed(id);this.walkingRadius=kind==='cow'?12:kind==='chicken'||kind==='rabbit'?4:6;
+    const points=(r:number,y:number):readonly(readonly[number,number])[]=>{const result:[number,number][]=[],nx=Math.ceil(r*2/4),ny=Math.ceil(y*2/4);for(let row=0;row<=ny;row++)for(let col=0;col<=nx;col++)result.push([-r+col*r*2/nx,-y+row*y*2/ny]);return result;};
+    this.walkingFeet=points(this.walkingRadius,this.walkingRadius*.6);this.restingFeet=kind==='cow'?points(20,7):this.walkingFeet;
     this.timer=.2+this.random()*1.2;
   }
   private random(): number {this.seed=(Math.imul(this.seed,1664525)+1013904223)>>>0;return this.seed/4294967296;}
   canStand(x: number,y: number): boolean {
-    return this.feet.every(([ox,oy])=>!this.blocked(Math.floor((x+ox)/TILE),Math.floor((y+oy)/TILE)));
+    const rx=this.radius,ry=this.footRadiusY,left=Math.floor((x-rx)/TILE),right=Math.floor((x+rx)/TILE),top=Math.floor((y-ry)/TILE),bottom=Math.floor((y+ry)/TILE);
+    for(let ty=top;ty<=bottom;ty++)for(let tx=left;tx<=right;tx++)if(this.blocked(tx,ty))return false;
+    return !this.pointBlocked||this.feet.every(([ox,oy])=>!this.pointBlocked!(x+ox,y+oy));
   }
   occupiesTile(x:number,y:number):boolean {
     return this.feet.some(([ox,oy])=>Math.floor((this.x+ox)/TILE)===x&&Math.floor((this.y+oy)/TILE)===y);
@@ -63,8 +71,10 @@ export class AnimalBrain {
   lineClear(a: AnimalPoint,b: AnimalPoint): boolean {
     const steps=Math.max(1,Math.ceil(Math.hypot(a.x-b.x,a.y-b.y)/8));
     for(let i=1;i<steps;i++)if(this.blocked(Math.floor((a.x+(b.x-a.x)*i/steps)/TILE),Math.floor((a.y+(b.y-a.y)*i/steps)/TILE)))return false;
+    if(this.pointBlocked){for(let i=1;i<steps;i++)if(!this.canStand(a.x+(b.x-a.x)*i/steps,a.y+(b.y-a.y)*i/steps))return false;}
     return true;
   }
+  hold(direction=this.direction):void{this.direction=direction;this.moving=false;this.mode='idle';this.path=[];this.timer=.25;this.rethink=0;}
   private canTravel(a:AnimalPoint,b:AnimalPoint):boolean {
     const steps=Math.max(1,Math.ceil(Math.hypot(a.x-b.x,a.y-b.y)/4));
     for(let i=1;i<=steps;i++)if(!this.canStand(a.x+(b.x-a.x)*i/steps,a.y+(b.y-a.y)*i/steps))return false;
@@ -98,7 +108,7 @@ export class AnimalBrain {
       }
       for(const [dx,dy]of headings){
         const x=node.x+dx,y=node.y+dy,key=`${x},${y}`;
-        if(!this.canStand(x*TILE+16,y*TILE+16))continue;
+        if(!this.canStand(x*TILE+16,y*TILE+16)||this.pointBlocked&&!this.canTravel(point,{x:x*TILE+16,y:y*TILE+16}))continue;
         if(dx&&dy&&(!this.canStand(node.x*TILE+16+dx*TILE,py)||!this.canStand(px,node.y*TILE+16+dy*TILE)))continue;
         const nextDistance=node.distance+(dx&&dy?Math.SQRT2:1);if(fleeing&&nextDistance>10)continue;
         const cost=node.cost+(dx&&dy?Math.SQRT2:1)*(1+this.terrainCost(x,y)*2.5);
@@ -140,6 +150,7 @@ export class AnimalBrain {
         for(let n=0;n<24;n++){
           const angle=this.random()*Math.PI*2,distance=24+this.random()*(ANIMAL_BEHAVIOR.wanderRadius-24);
           const target={x:this.x+Math.cos(angle)*distance,y:this.y+Math.sin(angle)*distance};
+          if(n%3===0){target.x=Math.floor(target.x/TILE)*TILE+16;target.y=Math.floor(target.y/TILE)*TILE+16;}
           if(this.canStand(target.x,target.y)&&this.canTravel(this,target)){
             const score=this.terrainCost(Math.floor(target.x/TILE),Math.floor(target.y/TILE))*2+this.travelCost(this,target)/(distance/TILE)+this.random()*.15;
             if(!best||score<best.score)best={point:target,score};

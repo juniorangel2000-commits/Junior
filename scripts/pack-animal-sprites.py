@@ -36,9 +36,9 @@ def head_anchor(image, kind, direction):
         x,y=min(candidates,key=lambda p:(p[0]-x)**2+(p[1]-y)**2)
     return [x-image.width/2,y-image.height/2-(17 if kind=='chicken' else 34)]
 
-anchors={}
+anchors=json.loads((ROOT/'src/data/animal-head-anchors.json').read_text())
 
-for kind, animation, cell in [('chicken', 'Walking', 64), ('cow', 'Walk', 128)]:
+for kind, animation, cell in [('chicken', 'Walking', 64)]:
     source = BASE / kind
     atlas = Image.new('RGBA', (cell * 9, cell * 8))
     records = []
@@ -61,3 +61,7 @@ for kind, animation, cell in [('chicken', 'Walking', 64), ('cow', 'Walk', 128)]:
     print(f'{kind}: {len(records)} original frames, {atlas.width}x{atlas.height}, all pixels verified')
 
 (ROOT/'src/data/animal-head-anchors.json').write_text(json.dumps(anchors,separators=(',',':'))+'\n')
+
+# The replacement cow includes larger canvases and authored rest transitions.
+import subprocess
+subprocess.run(['node', str(ROOT/'scripts/import-cow-sprites.cjs'), str(BASE/'cow')], check=True)

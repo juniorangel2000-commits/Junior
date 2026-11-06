@@ -1,4 +1,6 @@
-import {farmAnimalHome,farmAnimalSettled,farmYard,farmHomePoint} from './systems/farm-construction';
+import {CowRestCycle} from './systems/cow-rest';
+import {FARM_BUILDINGS} from './data/farm-buildings';
+import {farmAnimalHome,farmAnimalSettled,farmYardPoint,farmPointBlocked,farmHomePoint} from './systems/farm-construction';
 import type Phaser from 'phaser';
 import {animalSprite} from './forest-art';
 import {updateAnimalSprite,animalRopeAnchor} from './animal-sprites';
@@ -9,6 +11,7 @@ import {TreeAvoidanceField} from './systems/tree-avoidance';
 
 export interface MovingAnimal {
  id:string; brain:AnimalBrain; sprite:Phaser.GameObjects.Sprite;
+ shadow?:Phaser.GameObjects.Ellipse;
  readonly x:number;readonly y:number;
 }
 /** Scene adapter; supplied directional sprites use the same navigation and transport rules. */
@@ -18,6 +21,8 @@ export class AnimalPopulation {
  private readonly rope:Phaser.GameObjects.Graphics;
  private readonly treeCover=new TreeAvoidanceField();
  private treeCheck=0;
+ private readonly homes=new Map<string,number>();
+ private readonly cowRest=new Map<string,CowRestCycle>();
  constructor(scene:Phaser.Scene,private readonly save:SaveData,readonly area:AnimalArea,
    private readonly blocked:AnimalBlocked,playerSpeed:number,private readonly trees:()=>readonly {x:number;y:number}[]=()=>[]){
   this.rope=scene.add.graphics();
@@ -30,11 +35,16 @@ export class AnimalPopulation {
    const saved=save.animalPositions?.[area].find(p=>p.id===definition.id);
    const x=area==='forest'?definition.x*32+16:(20+(index%8)*3)*32+16;
    const y=area==='forest'?definition.y*32+16:(44+Math.floor(index/8)*3)*32+16;index++;
-   const brain:AnimalBrain=new AnimalBrain(definition.id,definition.kind,saved?.x??x,saved?.y??y,!owned,(tx,ty)=>{if(blocked(tx,ty))return true;const h=farmAnimalHome(this.save,definition.id);return !!h&&this.save.animalEscort?.id!==definition.id&&farmAnimalSettled(h,brain,brain.radius)&&!farmYard(h,tx,ty);},playerSpeed,this.treeCover.cost);
+   const brain:AnimalBrain=new AnimalBrain(definition.id,definition.kind,saved?.x??x,saved?.y??y,!owned,blocked,playerSpeed,this.treeCover.cost,this.area==='property'?(px,py)=>{
+    if(this.area!=='property')return false;if(farmPointBlocked(this.save,px,py))return true;
+    const home=farmAnimalHome(this.save,definition.id);return !!home&&this.homes.get(definition.id)===home.id&&this.save.animalEscort?.id!==definition.id&&!farmYardPoint(home,px,py);
+   }:undefined);
    if(saved)brain.restore(saved);
    if(!this.placeSafely(brain))continue;
    const sprite=animalSprite(scene,definition.kind,brain.x,brain.y);
-   const view:MovingAnimal={id:brain.id,brain,sprite,get x(){return brain.x},get y(){return brain.y}};
+   const shadow=definition.kind==='cow'?scene.add.ellipse(brain.x,brain.y,42,12,0x29271d,.17).setDepth(brain.y-.2):undefined;
+   if(definition.kind==='cow')this.cowRest.set(brain.id,new CowRestCycle(brain.id));
+   const view:MovingAnimal={shadow,id:brain.id,brain,sprite,get x(){return brain.x},get y(){return brain.y}};
    this.brains.push(brain);this.animals.push(view);
   }
  }
@@ -49,6 +59,7 @@ export class AnimalPopulation {
   }
   return false;
  }
+ blocksPoint(x:number,y:number):boolean{return this.animals.some(a=>((x-a.x)/a.brain.radius)**2+((y-a.y)/a.brain.footRadiusY)**2<1);}
  get led():MovingAnimal|undefined {const id=this.save.animalEscort?.area===this.area?this.save.animalEscort.id:undefined;return this.animals.find(a=>a.id===id);}
  allowsPlayerCenter(x:number,y:number,owner:AnimalPoint):boolean {const led=this.led;if(!led)return true;const next=Math.hypot(x-led.x,y-led.y),current=Math.hypot(owner.x-led.x,owner.y-led.y);return !this.blocked(Math.floor(x/32),Math.floor(y/32))&&(next<=ANIMAL_BEHAVIOR.maxRopeLength||next<current-.001);}
  canLeave(player:AnimalPoint):boolean {const led=this.led;return !led||Math.hypot(led.x-player.x,led.y-player.y)<=ANIMAL_BEHAVIOR.portalDistance&&led.brain.lineClear(led,player);}
@@ -59,10 +70,20 @@ export class AnimalPopulation {
  update(delta:number,player:AnimalPoint&{readonly leftHandPosition:AnimalPoint}):void {
   this.treeCheck-=delta;if(this.treeCheck<=0){this.treeCover.refresh(this.trees());this.treeCheck=.5;}
   for(const a of this.animals){
-   if(!a.brain.canStand(a.x,a.y))this.placeSafely(a.brain);
-   const home=farmAnimalHome(this.save,a.id),homing=this.area==='property'&&!!home&&a!==this.led&&!farmAnimalSettled(home,a.brain,a.brain.radius);
-   a.brain.update(delta,homing?farmHomePoint(home!):player,this.brains,a===this.led||homing,homing?2:ANIMAL_BEHAVIOR.followDistance,!homing);
-   if(updateAnimalSprite(a.sprite,a.brain,delta))continue;
+   const home=this.area==='property'?farmAnimalHome(this.save,a.id):undefined,led=a===this.led;
+   if(!home||led)this.homes.delete(a.id);
+   else if(farmAnimalSettled(home,a.brain,a.brain.radius,a.brain.footRadiusY))this.homes.set(a.id,home.id);
+   const homing=!!home&&!led&&this.homes.get(a.id)!==home.id,rest=this.cowRest.get(a.id);
+   if(rest){
+    const wasResting=a.brain.resting;a.brain.resting=true;
+    const canLie=a.brain.canStand(a.x,a.y)&&this.brains.every(other=>other===a.brain||Math.hypot(a.x-other.x,a.y-other.y)>a.brain.radius+other.radius+3)&&(!home||Math.abs(a.x-farmHomePoint(home).x)>30||a.y<(home.y+FARM_BUILDINGS[home.kind].height)*32-42);
+    a.brain.resting=wasResting;
+    rest.update(delta,!!home&&!led&&!homing,canLie,a.brain.direction,!a.brain.moving&&a.brain.mode==='idle');a.brain.resting=rest.locked;
+   }
+   if(rest?.locked)a.brain.hold(rest.direction);
+   else a.brain.update(delta,homing?farmHomePoint(home!):player,this.brains,led||homing,homing?2:ANIMAL_BEHAVIOR.followDistance,!homing);
+   a.shadow?.setPosition(a.x,a.y).setDepth(a.y-.2).setScale(rest?.locked?1.12:1,1);
+   if(updateAnimalSprite(a.sprite,a.brain,delta,rest?.frame()))continue;
    const moving=a.brain.moving;
    // Temporary rigid-body locomotion, without stretching the authored animal art.
    const bob=moving?Math.abs(Math.sin(a.brain.distanceMoved/7))*(a.brain.mode==='flee'?.8:.4):0;
@@ -86,6 +107,6 @@ export class AnimalPopulation {
  store():void {
   this.save.animalPositions??={forest:[],property:[]};this.save.animalPositions[this.area]=this.animals.map(a=>a.brain.snapshot());
  }
- destroy():void {for(const a of this.animals)a.sprite.destroy();this.animals.length=0;this.brains.length=0;this.rope.destroy();}
+ destroy():void {for(const a of this.animals){a.sprite.destroy();a.shadow?.destroy();}this.cowRest.clear();this.homes.clear();this.animals.length=0;this.brains.length=0;this.rope.destroy();}
 }
 export type {AnimalPosition};

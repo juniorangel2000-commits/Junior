@@ -4,7 +4,7 @@ import headAnchors from './animal-head-anchors.json';
 
 export const ANIMAL_ART = {
   chicken:{cell:64,scale:.75,foot:17,stride:24,maxWalkFps:12},
-  cow:{cell:128,scale:.75,foot:34,stride:48,maxWalkFps:9},
+  cow:{cell:192,scale:.5,foot:46,stride:48,maxWalkFps:9},
 } as const;
 export type AnimatedAnimalKind=keyof typeof ANIMAL_ART;
 export const animatedAnimal=(kind:AnimalKind):kind is AnimatedAnimalKind=>kind in ANIMAL_ART;

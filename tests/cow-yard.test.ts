@@ -1,0 +1,13 @@
+import{it,expect}from'vitest';
+import{AnimalBrain}from'../src/systems/animals';
+import{farmSitePointBlocked,farmYardPoint,farmAnimalSettled,farmAnchor,type FarmSite}from'../src/systems/farm-construction';
+const site:FarmSite={id:1,kind:'barn',x:20,y:25,finished:true,delivered:{},animals:[],hay:0,gateOpen:true};
+it('walks through the front gate and then explores both dimensions of the full fenced floor',()=>{
+ const p=farmAnchor(site);let entered=false;const a=new AnimalBrain('forest-cow-1','cow',p.x,p.y+30,false,()=>false,84,()=>0,(x,y)=>farmSitePointBlocked(site,x,y)||entered&&!farmYardPoint(site,x,y));const positions=[];let previous={x:a.x,y:a.y};
+ for(let i=0;i<3000;i++){if(farmAnimalSettled(site,a,a.radius,a.footRadiusY))entered=true;a.update(.05,entered?{x:0,y:0}:{x:p.x,y:(site.y+4.5)*32},[a],!entered,2,false);expect(Math.hypot(a.x-previous.x,a.y-previous.y)).toBeLessThan(4.04);expect(a.canStand(a.x,a.y)).toBe(true);if(entered){expect(farmAnimalSettled(site,a,a.radius,a.footRadiusY)).toBe(true);positions.push({x:a.x,y:a.y});}previous={x:a.x,y:a.y};}
+ expect(entered).toBe(true);expect(Math.max(...positions.map(p=>p.x))-Math.min(...positions.map(p=>p.x))).toBeGreaterThan(80);expect(Math.max(...positions.map(p=>p.y))-Math.min(...positions.map(p=>p.y))).toBeGreaterThan(25);
+});
+it('keeps the physical cow on the correct side of every fence and only opens the central gate',()=>{
+ const bottom=(site.y+6)*32,mid=(site.x+3.5)*32,a=new AnimalBrain('collision','cow',mid,bottom+40,false,()=>false,84,()=>0,(x,y)=>farmSitePointBlocked(site,x,y));expect(a.canStand(mid,bottom-2)).toBe(true);expect(a.canStand(mid+30,bottom-2)).toBe(false);site.gateOpen=false;expect(a.canStand(mid,bottom-2)).toBe(false);site.gateOpen=true;a.x=mid;a.y=bottom-25;expect(a.canStand(a.x,a.y)).toBe(true);a.resting=true;expect(a.radius).toBe(20);expect(a.footRadiusY).toBe(7);expect(a.canStand(a.x,a.y)).toBe(true);expect(a.canStand(site.x*32+13,a.y)).toBe(false);
+});
+it('routes an off-center cow around the front fence instead of repeatedly cutting its corner',()=>{const p=farmAnchor(site);let entered=false;const a=new AnimalBrain('forest-cow-2','cow',p.x+44,p.y+65,false,()=>false,84,()=>0,(x,y)=>farmSitePointBlocked(site,x,y)||entered&&!farmYardPoint(site,x,y));for(let i=0;i<700&&!entered;i++){a.update(.05,{x:p.x,y:(site.y+4.5)*32},[a],true,2,false);entered=farmAnimalSettled(site,a,a.radius,a.footRadiusY);expect(a.canStand(a.x,a.y)).toBe(true);}expect(entered).toBe(true);});

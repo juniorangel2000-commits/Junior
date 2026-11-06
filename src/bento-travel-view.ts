@@ -1,3 +1,4 @@
+import {NpcPassageCollision} from './systems/npc-collision';
 import {showBentoExpedition,bentoExpeditionStatus} from './bento-expedition-menu';
 import type {BentoWorkRuntime} from './systems/bento-commit';
 import type Phaser from 'phaser';
@@ -13,6 +14,7 @@ import {bentoAvailability} from './systems/bento-schedule';
 export const preloadBentoTravel=(scene:Phaser.Scene)=>{if(!scene.textures.exists('village-npc-bento'))preloadBentoSprites(scene);preloadBentoWorkArt(scene);};
 /** Reuses the village's one Bento sprite there; other maps render the same saved identity. */
 export class BentoTravelView{
+ private readonly passageCollision=new NpcPassageCollision();
  readonly sprite:Phaser.GameObjects.Sprite;
  constructor(private scene:Phaser.Scene,private save:()=>SaveData,private player:()=>TilePoint,private area:()=>BentoTravelArea|undefined,private ui:GameUI,private existing?:Phaser.GameObjects.Sprite,private runtime?:BentoWorkRuntime){
   this.sprite=existing??scene.add.sprite(0,0,bentoTexture(scene),0).setOrigin(.5,1).setDisplaySize(BENTO_DISPLAY,CHARACTER_HEIGHT).setVisible(false).setData('bento-travel',true);
@@ -21,7 +23,7 @@ export class BentoTravelView{
  }
  get hud():Partial<Pick<HudData,'prompt'|'interactionKey'>>{return this.near&&!this.save().bentoTravel?.trip?.purpose?{prompt:'Conversar com Bento · expedição',interactionKey:'E'}:{};}
  get near():boolean{return!!this.save().bentoTravel?.trip&&this.sprite.visible&&Math.hypot(this.sprite.x-this.player().x,this.sprite.y-this.player().y)<78;}
- blocks(x:number,y:number):boolean{return!!this.save().bentoTravel?.trip&&this.sprite.visible&&Math.abs(this.sprite.x-x)<12&&Math.abs(this.sprite.y-y)<10;}
+ blocks(x:number,y:number):boolean{const trip=this.save().bentoTravel?.trip;return !!trip&&this.sprite.visible&&this.passageCollision.blocks('bento',this.sprite,this.player(),x,y,this.scene.time.now,String(this.area()),{halfWidth:12,halfHeight:10,moving:trip.moving||!!trip.transition});}
  private lastNotice?:string;
  update():void{
   const party=this.save().bentoExpedition?.party,notice=party?.status==='ended'?party.reason:undefined;if(notice&&this.lastNotice!==notice&&this.lastNotice!==undefined)this.ui.toast(bentoExpeditionStatus(this.save()));this.lastNotice=notice??'active';

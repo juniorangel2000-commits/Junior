@@ -35,7 +35,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   pickaxe: { name: 'Picareta', description: 'Quebra veios de pedra e recupera materiais.' },
   hoe: { name: 'Enxada', description: 'E ou clique prepara um canteiro no solo livre da propriedade. Shift + E ou Shift + clique desfaz o canteiro vazio e restaura o piso anterior.' },
   handsaw: { name: 'Serrote', description: 'Usado junto à bancada para serrar tábuas e preparar componentes das construções.' },
-  hay:{name:'Palha',description:'Palha seca para armazenar no silo. Prepare a partir de fibras vegetais no próprio silo.',iconFallback:'fiber'},
+  hay:{name:'Palha',description:'Palha seca para armazenar no silo. Prepare no silo: 3 fibras vegetais rendem 1 palha.',iconFallback:'fiber'},
   fiber: { name: 'Fibras vegetais', description: 'Recolha samambaias, flores brancas, arbustos e juncos das margens do rio para fazer cordas e preparar palha no silo.' },
   cord: { name: 'Cordas vegetais', description: 'Prendem as partes das ferramentas e permitem conduzir animais até a propriedade.' },
   flakedStone: { name: 'Pedras lascadas', description: 'Pedras preparadas para as cabeças da machadinha e da picareta.' },

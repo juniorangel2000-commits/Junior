@@ -1,3 +1,4 @@
+import {NpcPassageCollision} from '../systems/npc-collision';
 import {createGroundRuntime} from '../systems/ground-items';
 import {createSocialRuntime,openSocialConversation,respondSocial} from '../systems/npc-social';
 import {showMineMissionJournal} from '../mine-mission-journal';
@@ -90,6 +91,8 @@ type Villager={data:VillageNPC;sprite:Phaser.GameObjects.Sprite;frames:number};
  * outdoor position, crops, resource fields or animal population. */
 export class VillageScene extends Phaser.Scene {
  private socialRuntime=createSocialRuntime(()=>this.snapshotState(),saveGame,()=>this.state);
+ private readonly passageCollision=new NpcPassageCollision();
+ private npcBlocksPoint=(x:number,y:number):boolean=>this.villagers.some(n=>n.sprite.visible&&this.passageCollision.blocks(n.data.id,n.sprite,this.player,x,y,this.time.now,this.inCommunity?'community':this.inBlacksmith?'smith':this.merchantRoom??'village'));
  private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.inventory.data,()=>this.player,()=>this.inCommunity?'community':this.inBlacksmith?'blacksmith':this.merchantRoom?'shop:'+this.merchantRoom:'village',(x,y)=>this.blockedPoint(x,y)||this.swimmingPoint(x,y)>0,()=>!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden,()=>{this.updateHUD();});
  getGroundItemRuntime(){return this.player?this.groundRuntime:undefined;}
  private mineMissionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player,()=>this.inventory.data);
@@ -311,8 +314,8 @@ export class VillageScene extends Phaser.Scene {
    return {data:npc,sprite,frames};
   });
  }
- private blockedPoint=(x:number,y:number):boolean=>!!this.helpers?.blocked(x,y)||this.closedDoorAt(x,y)||(this.inCommunity?communityRoomBlocked(x,y):this.inBlacksmith?smithBlocked(this.smithLayout,x,y):this.merchantRoom?merchantRoomBlocked(this.merchantRoom,x,y,this.merchantLayouts.get(this.merchantRoom)):this.world.isBlockedPoint(x,y))||this.villagers.some(n=>n.sprite.visible&&Math.abs(n.sprite.x-x)<10&&Math.abs(n.sprite.y-y)<6);
- private movementBlockedPoint=(x:number,y:number):boolean=>this.inShop?this.blockedPoint(x,y):!!this.helpers?.blocked(x,y)||this.closedDoorAt(x,y)||this.world.isSolidPoint(x,y)||this.villagers.some(n=>n.sprite.visible&&Math.abs(n.sprite.x-x)<10&&Math.abs(n.sprite.y-y)<6);
+ private blockedPoint=(x:number,y:number):boolean=>!!this.helpers?.blocked(x,y)||this.closedDoorAt(x,y)||(this.inCommunity?communityRoomBlocked(x,y):this.inBlacksmith?smithBlocked(this.smithLayout,x,y):this.merchantRoom?merchantRoomBlocked(this.merchantRoom,x,y,this.merchantLayouts.get(this.merchantRoom)):this.world.isBlockedPoint(x,y))||this.npcBlocksPoint(x,y);
+ private movementBlockedPoint=(x:number,y:number):boolean=>this.inShop?this.blockedPoint(x,y):!!this.helpers?.blocked(x,y)||this.closedDoorAt(x,y)||this.world.isSolidPoint(x,y)||this.npcBlocksPoint(x,y);
  private movementBlocked=(x:number,y:number):boolean=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
  private allowPierStep=(x:number,y:number)=>this.inShop||villagePierAllowsStep(this.player,{x,y},this.world.waterPointAt);
  private swimmingPoint=(x:number,y:number):number=>this.inShop||villagePierDeckContains(x,y)?0:sampleWaterDepth(this.world.waterPointAt,x,y);

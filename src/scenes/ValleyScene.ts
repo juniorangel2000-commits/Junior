@@ -807,6 +807,7 @@ export class ValleyScene extends Phaser.Scene {
     this.resourceLifecycle=new ResourceLifecycle(this.state,'property',this.world,(x,y)=>!farmReserved(this.state,x,y)&&!wellSiteTile(x,y)&&!homesteadResourceReserved(x,y)&&!(this.state.petShelter&&shelterReserved(this.state.petShelter,x,y))&&!this.world.isBlocked(x,y)&&!this.world.resourceAt(x,y)&&!this.farming.isPrepared(x,y)&&!this.building.buildings.some(b=>buildingFootprint(b).some(p=>p.x===x&&p.y===y))&&Math.hypot(x-this.player.x/TILE,y-this.player.y/TILE)>3&&[this.state.mapEdits?.points?.entry,this.state.mapEdits?.points?.exit,{x:25,y:18}].every(p=>!p||Math.hypot(x-p.x,y-p.y)>3)&&(this.animals?.animals??this.state.animalPositions?.property??[]).every(a=>Math.hypot(x-a.x/TILE,y-a.y/TILE)>2));
     this.resources=new Resources(this.state.resourceProgress);
     this.animals=new AnimalPopulation(this,this.state,'property',this.animalBlocked,PLAYER_SPEED,()=>treeTiles(this.world.resources));
+    this.recoverPlayerPosition();
     this.world.updateOcclusion(this.player.x, this.player.y);
     this.selection = this.add.graphics().setDepth(4000);
     this.daylight = new Daylight(this, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE);
@@ -936,14 +937,14 @@ export class ValleyScene extends Phaser.Scene {
   private blocked = (x: number, y: number): boolean => this.inHome ? this.home.isBlocked(x, y)
     : farmBlocked(this.state,x,y)||this.world.isBlocked(x, y) || this.building.isBlocked(x, y);
 
-  private animalBlocked=(x:number,y:number):boolean=>farmBlocked(this.state,x,y)||this.world.isBlocked(x,y)||this.farming.isPrepared(x,y)||this.building.isBlocked(x,y);
+  private animalBlocked=(x:number,y:number):boolean=>this.world.isBlocked(x,y)||this.farming.isPrepared(x,y)||this.building.isBlocked(x,y);
   private allowLeashMovement=(x:number,y:number):boolean=>(this.inHome || bridgeAllowsStep(this.player.x,this.player.y,x,y,this.world.isSwimmingPoint)) && (this.animals?.allowsPlayerCenter(x,y,this.player)??true);
   private releaseRope():void {
     if(!this.state.animalEscort)return;Object.assign(this.state.inventory,this.inventory.data);
     if(releaseAnimalEscort(this.state)){Object.assign(this.inventory.data,this.state.inventory);this.animals?.store();this.animals?.destroy();this.animals=new AnimalPopulation(this,this.state,'property',this.animalBlocked,PLAYER_SPEED,()=>treeTiles(this.world.resources));this.updateHUD();this.persist();this.ui.toast('Corda solta e guardada.');}
   }
   private movementBlocked=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(x,y):farmBlocked(this.state,x,y)||invitationGateBlocked(this.state,'property',(x+.5)*TILE,(y+.5)*TILE)||this.world.isSolid(x,y)||this.building.isBlocked(x,y);
-  private movementBlockedPoint=(x:number,y:number):boolean=>!!this.bentoView?.blocks(x,y)||(this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):farmPointBlocked(this.state,x,y)||!!this.helpers?.blocked(x,y)||invitationGateBlocked(this.state,'property',x,y)||this.world.isSolidPoint(x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)));
+  private movementBlockedPoint=(x:number,y:number):boolean=>!!this.bentoView?.blocks(x,y)||(this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):!!this.animals?.blocksPoint(x,y)||farmPointBlocked(this.state,x,y)||!!this.helpers?.blocked(x,y)||invitationGateBlocked(this.state,'property',x,y)||this.world.isSolidPoint(x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)));
   private swimmingPoint=(x:number,y:number):number=>this.inHome||bridgeAtPoint(x,y)?0:sampleWaterDepth((px,py)=>!this.building.at(Math.floor(px/TILE),Math.floor(py/TILE),'floor')&&this.world.isWaterGroundPoint(px,py),x,y);
 
   private blockedPoint = (x: number, y: number): boolean => {

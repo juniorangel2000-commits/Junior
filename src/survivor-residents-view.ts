@@ -1,3 +1,4 @@
+import {NpcPassageCollision} from './systems/npc-collision';
 import {communityResidentPosition} from './data/community-room';
 import type Phaser from 'phaser';
 import type {SaveData} from './types';
@@ -11,6 +12,7 @@ import {saveGame} from './systems/save';
 interface Context {save:SaveData;area:SurvivorArea;player:{x:number;y:number};visible:boolean;interior?:boolean;blocked:(x:number,y:number)=>boolean}
 /** One renderer shared by every map along a recruit's journey. Simulation lives in the background clock. */
 export class SurvivorResidentsView {
+ private readonly passageCollision=new NpcPassageCollision();
  private sprites=new Map<string,{sprite:Phaser.GameObjects.Sprite;label:Phaser.GameObjects.Text;distance:number;cycle:number}>();
  private loading=false;
  private saved?:SaveData;
@@ -19,7 +21,7 @@ export class SurvivorResidentsView {
  private people():CampPerson[]{const c=this.get();return(c.save.survivorCamp?.residents??[]).flatMap((p,i)=>(p.area??'survivorCamp')!==c.area||!!p.homeInside!==!!c.interior?[]:[c.interior?{...p,...communityResidentPosition(i)}:p]);}
  nearest():CampPerson|undefined {const c=this.get();return c.visible?this.people().filter(p=>Math.hypot(p.x-c.player.x,p.y-c.player.y)<78).sort((a,b)=>Math.hypot(a.x-c.player.x,a.y-c.player.y)-Math.hypot(b.x-c.player.x,b.y-c.player.y))[0]:undefined;}
  interact():boolean{const p=this.nearest();if(!p||this.ui.isModalOpen())return false;showSurvivorHelp(this.ui,this.get().save,p.id,saveGame,this.onChange);return true;}
- blocked(x:number,y:number):boolean{return this.get().visible&&this.people().some(p=>Math.abs(p.x-x)<10&&Math.abs(p.y-y)<6);}
+ blocked(x:number,y:number):boolean{const c=this.get();return c.visible&&this.people().some(p=>this.passageCollision.blocks(p.id,p,c.player,x,y,this.scene.time.now,c.area+':'+!!c.interior,{moving:p.status==='arriving'||p.status==='leaving'||!!p.task&&p.task.phase!=='ready'&&p.task.phase!=='working'}));}
  private update():void {
   const c=this.get();if(!c.save||!c.player)return;
   if(!c.interior&&this.saved!==c.save){this.unregister?.();this.saved=c.save;this.unregister=registerSurvivorNavigation(c.save,c.area,c.blocked);}
