@@ -18,7 +18,7 @@ Para reconstruir: `python scripts/prepare-boss-assets.py courier` e `python scri
 
 Validação da integração inicial, anterior à retirada do zumbi original: 59 verificações integradas aprovadas no Chromium, sem erros JavaScript, HTTP ou WebGL registrados. Incluem as três aparências de zumbis, caminhada nos quatro lados, escala e âncora estáveis, chefes, cartas, drops, níveis contínuos, salvamento e retorno.
 
-[Zumbis no cenário](zumbis-variados.png) · [Validação](validacao.json)
+[Zumbis no cenário](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/zumbis-variados/zumbis-variados.png) · [Validação](validacao.json)
 
 ## Retirada do zumbi original
 

@@ -20,7 +20,7 @@ Acertos produzem lampejo breve no inimigo, números de dano flutuantes, pequenas
 - Sete testes novos cobrem pressão crescente, padrões e respiros, rodadas, curva de experiência, pausa, continuidade determinística do save e limite dos sinais de impacto.
 - TypeScript e build de produção aprovados; permanece o aviso de tamanho do bundle do Vite.
 - 20 verificações integradas no Chromium aprovadas, incluindo Arsenal, pets, pausa, save, vitória/derrota, falha de armazenamento, retorno e os novos efeitos visuais. Evidências em [validacao.json](validacao.json).
-- [Captura do impacto](impacto-combate.png) feita com inimigo preparado pelo teste. A carga de 240 inimigos também usa estados controlados. Essas verificações não substituem sessões completas de balanceamento nem medições de FPS em computadores Windows.
+- [Captura do impacto](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/ritmo-sobrevivencia/impacto-combate.png) feita com inimigo preparado pelo teste. A carga de 240 inimigos também usa estados controlados. Essas verificações não substituem sessões completas de balanceamento nem medições de FPS em computadores Windows.
 
 Uma tentativa inicial de verificação visual perdeu o menu durante a atualização dos arquivos em desenvolvimento. A execução final utilizou outro servidor, com os arquivos estáveis, e concluiu os 20 checks sem erros registrados.
 

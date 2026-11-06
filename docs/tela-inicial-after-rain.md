@@ -4,12 +4,12 @@
 
 O jogo passa a se chamar **After Rain**. A abertura acompanha a premissa definida pelo autor: uma chuva transformou pessoas em zumbis, e a vida precisa ser reconstruída depois da catástrofe. Essa narrativa orienta o visual; os sistemas de inimigos e combate continuam fora desta entrega.
 
-![Abertura chuvosa de After Rain](capturas/after-rain-inicio.png)
+![Abertura chuvosa de After Rain](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/after-rain-inicio.png)
 
-- [Abertura em 960×640](capturas/after-rain-inicio-960.png).
-- [Fundo chuvoso sem texto, para referência do Flow](capturas/after-rain-fundo.png).
-- [Cenário base sem interface](capturas/after-rain-cenario-base.png).
-- [Criação de personagem após sair do menu](capturas/after-rain-criacao.png).
+- [Abertura em 960×640](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/after-rain-inicio-960.png).
+- [Fundo chuvoso sem texto, para referência do Flow](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/after-rain-fundo.png).
+- [Cenário base sem interface](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/after-rain-cenario-base.png).
+- [Criação de personagem após sair do menu](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/after-rain-criacao.png).
 
 ## Implementado
 

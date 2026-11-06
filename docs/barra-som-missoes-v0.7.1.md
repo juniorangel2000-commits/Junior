@@ -6,9 +6,9 @@ A barra usa nove ilustrações originais combinando com a fazenda: mochila, mapa
 
 A aba **Missões** minimizada pode ser arrastada independentemente da janela aberta. Cada estado guarda sua posição. Um arraste não abre as missões por engano; clique ou Enter abre normalmente. Os elementos são mantidos dentro da tela ao redimensionar.
 
-![Barra superior com as novas artes](capturas/barra-pixel-v0.7.1.png)
+![Barra superior com as novas artes](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/barra-pixel-v0.7.1.png)
 
-![Painel Som do vale](capturas/painel-som-v0.7.1.png)
+![Painel Som do vale](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/painel-som-v0.7.1.png)
 
 Selecionar um slot vazio, por clique ou pelas teclas **1–9**, equipa as **mãos vazias** para coletar e interagir. O slot continua vazio e não abre a mochila. Use **I** ou Inventário na barra para preencher os atalhos.
 
@@ -16,7 +16,7 @@ A tela inicial acompanha a HUD atual: moldura de madeira, painel creme, placa co
 
 A abertura ganha raios ocasionais, música calma própria e som ambiente de chuva. O botão **Ouvir a chuva** inicia o som sem sair da tela inicial. Os volumes e o silêncio geral continuam centralizados em Música.
 
-![Tela inicial com a mesma identidade da HUD](capturas/inicio-cozy-v0.7.1.png)
+![Tela inicial com a mesma identidade da HUD](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/inicio-cozy-v0.7.1.png)
 
 ## Validação
 

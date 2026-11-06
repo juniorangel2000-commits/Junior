@@ -2,7 +2,7 @@
 
 As sete armas das dungeons receberam novas artes básicas e evoluídas, acompanhadas de efeitos próprios e animação no combate. As cartas de evolução e os espaços da HUD usam as artes correspondentes. Dano, alcance real, cadência, duração dos efeitos, evolução, recompensas e formato do save foram preservados.
 
-![Armas básicas e evoluídas](armas-basicas-e-evoluidas.png)
+![Armas básicas e evoluídas](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/remake-armas/armas-basicas-e-evoluidas.png)
 
 | Arma | Apresentação em combate |
 | --- | --- |
@@ -14,9 +14,9 @@ As sete armas das dungeons receberam novas artes básicas e evoluídas, acompanh
 | Lâmina giratória | Disco serrilhado, rastro orbital e faíscas de contato; dois discos na evolução. |
 | Escudo de Choque | Escudo de madeira/metal, indicação de cargas e onda radial de repulsão; escudo reforçado e duas cargas na evolução. |
 
-![Efeitos individuais básicos e evoluídos](efeitos-em-combate.png)
+![Efeitos individuais básicos e evoluídos](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/remake-armas/efeitos-em-combate.png)
 
-![Combate com armas evoluídas](combate-evoluido.png)
+![Combate com armas evoluídas](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/remake-armas/combate-evoluido.png)
 
 ## Arte e integração
 

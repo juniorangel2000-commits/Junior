@@ -43,4 +43,4 @@ Alterações preparadas para a próxima versão; ainda não publicadas.
 
 Quatro verificações adicionais de interface aprovadas: discriminação dos 100 XP no resultado, compra escolhida depois de duas tentativas, orientações em 390 px e ausência de erros JavaScript.
 
-[Resultado de uma primeira derrota qualificada](primeira-derrota.png)
+[Resultado de uma primeira derrota qualificada](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/primeiras-melhorias/primeira-derrota.png)

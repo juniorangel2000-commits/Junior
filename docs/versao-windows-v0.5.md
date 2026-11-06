@@ -15,7 +15,7 @@ Esta versão reúne todas as alterações implementadas depois da entrega 0.4.0.
 - Painel de administração por senha para buscar e conceder os 19 itens implementados. Minimizar permite testar no mapa; encerrar ou sair da partida revoga a sessão. A senha foi entregue separadamente e não está no repositório.
 - Mantém propriedade, Bosque do Pinheiro, Campos Abertos, personagem/editor, coleta, cultivo, NPC, ferramentas, corte/mineração, processamento de madeira, construção e saves anteriores.
 
-![Acesso alinhado e interface compacta incluídos no pacote](capturas/after-rain-entrada-hud.png)
+![Acesso alinhado e interface compacta incluídos no pacote](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/after-rain-entrada-hud.png)
 
 ## Distribuição
 

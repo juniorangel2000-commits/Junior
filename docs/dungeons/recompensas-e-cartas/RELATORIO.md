@@ -34,4 +34,4 @@ Dez partidas simuladas com o motor real e escolhas legais: três de cinco partid
 
 58 verificações integradas aprovadas no Chromium, sem erros JavaScript, HTTP ou WebGL registrados. Incluem descrições nas cartas de armas, drops por categoria, chefes nos cinco horários, níveis acima de 500 após todas as cartas, HUD, salvamento e retorno. [Validação](validacao.json).
 
-[Cartas de armas](armas-nivel-10.png) · [HUD](hud-ampla.png)
+[Cartas de armas](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/recompensas-e-cartas/armas-nivel-10.png) · [HUD](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/recompensas-e-cartas/hud-ampla.png)

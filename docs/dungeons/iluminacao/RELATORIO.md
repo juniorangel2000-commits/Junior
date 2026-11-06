@@ -6,9 +6,9 @@ As luzes não escurecem sprites nem a HUD. Sombras ficam abaixo dos avisos dos c
 
 As camadas estáticas são geradas uma vez e reutilizadas. Não há normal maps, emissores ou shaders novos. O cache é limitado a duas camadas por mapa e uma textura compartilhada para os halos; objetos de luz são removidos ao sair do mapa. Terreno e colisões não mudaram.
 
-![Praça em combate](abandoned-central-square-combate.jpg)
+![Praça em combate](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/iluminacao/abandoned-central-square-combate.jpg)
 
-![Estacionamento](mall-parking-mapa.jpg)
+![Estacionamento](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/iluminacao/mall-parking-mapa.jpg)
 
 Validação: 1.166 testes completos aprovados, build aprovado, 16 verificações específicas no navegador sem erros JavaScript, HTTP ou WebGL. Foram conferidos os dois mapas, combate com aviso de chefe, pausa, intensidade, desligamento dos efeitos e limpeza de objetos. A revisão dos companheiros também passou nas 27 verificações de mapas, comandos e ataques, considerando agora a maior distância e animações mais lentas.
 

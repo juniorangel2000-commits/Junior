@@ -10,5 +10,5 @@ Ao se aproximar e apertar E, usando as mãos ou o regador, o poço executa uma �
 
 Validação: TypeScript, 503 testes em 52 arquivos, build e teste real no Chromium. O navegador verificou localização, frame aos 180 ms, ausência de água antecipada, bloqueio de acionamento repetido, pausa, passagem por trás do telhado, colisão com a pedra, ícone cheio e salvamento/recarregamento. Relatório: `validacao.json`.
 
-- [Poço ao lado da casa](poco-ao-lado-casa.png)
-- [Poço em uso](poco-em-uso.png)
+- [Poço ao lado da casa](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/cenarios/poco/poco-ao-lado-casa.png)
+- [Poço em uso](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/cenarios/poco/poco-em-uso.png)

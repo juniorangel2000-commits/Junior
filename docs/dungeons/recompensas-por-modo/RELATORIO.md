@@ -48,4 +48,4 @@ O cenário anterior com 22 melhorias faltando foi revisado: cão comum, combina�
 
 Alterações preparadas para a próxima versão, sem nova publicação. Saves e compras permanentes anteriores são preservados.
 
-[Recibo do modo de rodadas](recibo-rodadas.png)
+[Recibo do modo de rodadas](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/recompensas-por-modo/recibo-rodadas.png)

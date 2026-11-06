@@ -4,13 +4,13 @@ O gato siamês e o cachorro enviados substituem as artes dos pets ativos e dos p
 
 Os companheiros aparecem na propriedade, casa, vila, nove comércios, ferraria, Floresta Antiga e Floresta de Acesso à Cidade. A navegação usa a colisão do mapa atual, com checagem por pequenos passos e sem criar o pet sobre a água. No gato, esperar usa a sequência de sentar e repousar; retomar usa levantar. O auxílio diário de coleta da floresta de acesso permanece limitado a uma vez por dia.
 
-![Menu de companheiros](menu-companheiros.jpg)
+![Menu de companheiros](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/companheiros-preview15/menu-companheiros.jpg)
 
-![Menu em tela estreita](menu-companheiros-estreito.jpg)
+![Menu em tela estreita](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/companheiros-preview15/menu-companheiros-estreito.jpg)
 
-![Gato esperando em casa](gato-esperando-em-casa.jpg)
+![Gato esperando em casa](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/companheiros-preview15/gato-esperando-em-casa.jpg)
 
-![Companheiro no comércio](pet-comercio.jpg)
+![Companheiro no comércio](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/companheiros-preview15/pet-comercio.jpg)
 
 ## Ataques e arte
 
@@ -18,15 +18,15 @@ O gato usa `Jump` e o cachorro usa `Jump_Attack`. Ataques básicos e especiais t
 
 Os ZIPs originais e suas metadatas estão em `docs/dungeons/animacoes-pet-cat` e `animacoes-pet-dog`. Foram conferidos os hashes dos arquivos e os pixels RGBA de todos os **368 frames** (212 do gato e 156 do cachorro) contra os recortes do atlas. Nenhum frame foi redesenhado ou redimensionado. O renderer ajusta origem e escala de exibição, compensando o padding diferente entre ações. Transparência original e filtro de vizinho mais próximo são preservados; os PNGs antigos continuam guardados, sem serem carregados para os pets em jogo.
 
-![Ataque do gato](ataque-cat-special.jpg)
+![Ataque do gato](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/companheiros-preview15/ataque-cat-special.jpg)
 
-![Ataque do cachorro](ataque-dog-special.jpg)
+![Ataque do cachorro](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/companheiros-preview15/ataque-dog-special.jpg)
 
 ## Caminho norte
 
 A conexão existente da vila com a estrada usa a mesma pedra das ruas junto à junção. Conforme se aproxima da saída norte, trechos de terra cobrem o pavimento e restam ilhas de pedra; as bordas também desaparecem gradualmente. O traçado, a largura disponível e as colisões foram preservados. O desenho é determinístico, gerado ao entrar no mapa, respeitando o terreno pintado pelo editor.
 
-![Transição de pedra para terra](caminho-norte-pedra-terra.jpg)
+![Transição de pedra para terra](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/companheiros-preview15/caminho-norte-pedra-terra.jpg)
 
 ## Validação
 

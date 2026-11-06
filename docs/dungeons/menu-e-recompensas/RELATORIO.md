@@ -27,4 +27,4 @@ Total: 142 verificações no Chromium aprovadas, sem erros registrados. As image
 
 Alterações preparadas para a próxima versão, sem publicação nesta etapa.
 
-[Menu de expedições](menu.png) · [Recompensas](recompensas.png)
+[Menu de expedições](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/menu-e-recompensas/menu.png) · [Recompensas](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/menu-e-recompensas/recompensas.png)

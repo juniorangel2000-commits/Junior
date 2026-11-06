@@ -1,0 +1,2291 @@
+{
+  "version": 1,
+  "baseCommit": "4fb2ffa41d7aaf881d7163165344ac2a95bc6981",
+  "restoreRef": "v0.10.0-preview.31",
+  "scope": "docs historical generated previews only; no runtime art, sources, original archives, JSON evidence or text instructions",
+  "files": [
+    {
+      "path": "docs/capturas/after-rain-admin.png",
+      "bytes": 507213,
+      "sha256": "5acdcb7394ab2d097a6bb217e96d4094dc4faf3e2dc595d9d45a1de97ae043e5",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/after-rain-barra-superior.png",
+      "bytes": 1057953,
+      "sha256": "2b359bae65cb6b0c59e35f7a7e90ed0b6b9969df87861393a91721d179e47e5b",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/after-rain-casa-fachada.png",
+      "bytes": 976002,
+      "sha256": "97b1617358d873e7bb47f5b9f1dfda06839a65eabee15a3c7b758fe88d121ea7",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/after-rain-casa-interior.png",
+      "bytes": 187820,
+      "sha256": "c46913596d5be44418b5b4a620708ea12eea5d53266f75d4f5906b522466b1ee",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/after-rain-casa-personalizar.png",
+      "bytes": 248392,
+      "sha256": "1fa7cfedb2f545e056a5f8c7097c27248dbe0f4b1304c19b54ff97fe28f5ebab",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/after-rain-cenario-base.png",
+      "bytes": 1144905,
+      "sha256": "9404805d7a132779d18de0e71ee51e2278d77670c77fa339f5d001a4a469a469",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/after-rain-criacao.png",
+      "bytes": 680079,
+      "sha256": "53a9efde49f2eb5801d99c392cca1567d72987054c626d1dba05736521a400af",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/after-rain-em-jogo.png",
+      "bytes": 984865,
+      "sha256": "c4f788a105621d28f92313a733bbb2fae9a950937e9f669921b473b49e99f0e8",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/after-rain-entrada-hud.png",
+      "bytes": 1088698,
+      "sha256": "13495ba068663e0ba6127dec9701cd53652223f1e291ec8735599c7c15ff1a66",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/after-rain-fachada-renovada.png",
+      "bytes": 1093253,
+      "sha256": "c1b60172d2681ef809763ce11c069036fd5d265877b463fd7fb55ae147b58896",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/after-rain-fundo.png",
+      "bytes": 1381989,
+      "sha256": "f47e44582a7117d2b7fc40dab258af870a9da2fb9764fb873da18097ea7d20b3",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/after-rain-inicio-1280.png",
+      "bytes": 1169434,
+      "sha256": "e076ede9bf42d35c49c573aa60485bf1b20404c048f3fd1666e8f931a03a9a47",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/after-rain-inicio-960.png",
+      "bytes": 772809,
+      "sha256": "630c5bc803c18cad9324fefa132a23f4209b307d8efc2699c79e1c97759db32c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/after-rain-inicio.png",
+      "bytes": 1430914,
+      "sha256": "c4f88ca5e840e21a6c8a7903341fd4aaae84eb1868806e1e40367d4a47d40b9c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/barra-pixel-v0.7.1.png",
+      "bytes": 752264,
+      "sha256": "b0cf6e173e0745b7b26578621a6c93e13def77c3f3c6cf17529831f146500281",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/decoracao-flores.png",
+      "bytes": 960893,
+      "sha256": "46861af9e333e4f8eaddb2c981dadb0fd560d9bd7d1eb35a93e770d90b866a02",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/decoracao-galeria.png",
+      "bytes": 69016,
+      "sha256": "277467ca265463b89d74ca22e9d47b0cc82be12c8c832d23746a824af0890462",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/decoracao-margem.png",
+      "bytes": 1001715,
+      "sha256": "418666b6987ef62ed8092a92db9238fd564e6c9f7100a37c058c2aa5f12ca187",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/decoracao-pedras.png",
+      "bytes": 97297,
+      "sha256": "4950d3572645a51bb62d235992fa00ff59c5508cf70c2198fdfc6c19ff100613",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/decoracao-propriedade.png",
+      "bytes": 953164,
+      "sha256": "8391efb0972730b33ee7cc524084d2eb23d4450785651a3c02881022a38a8f85",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/entrada-sem-pedras.png",
+      "bytes": 967728,
+      "sha256": "dd5aef50667fb1eda73e9200012cf7d4dcda5e4b75553c215397d18370ddf270",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/hud-fazenda-v0.7.png",
+      "bytes": 838467,
+      "sha256": "670da42ba5f441e4a0d5007d00d778dbb6e988ddcdeb74dcfdfc47d767c21c91",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/hud-jardim-leve-v0.6.png",
+      "bytes": 870608,
+      "sha256": "403baddf78ce51ba3cbec90d9a0976b053aff3f41214f6d49d584961a223577f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/inicio-cozy-v0.7.1.png",
+      "bytes": 1299834,
+      "sha256": "682414ec76488359820082479d69354dcf896c4a74530e0f3107ec8efd8f166f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/inicio-raios-v0.7.1.png",
+      "bytes": 1333770,
+      "sha256": "5dfc06447502744031ed45cb1ffd35b6b340d217afbfeb4623108c521ef5264c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/inventario-v0.6.1.png",
+      "bytes": 604812,
+      "sha256": "48c2acd3d280df0e00af980cf86152bb7a3e9474d344f74b0b3fc47dbcf8a35f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/mapa-real-v0.6.png",
+      "bytes": 1470889,
+      "sha256": "afa3ee096f3790ad47b5e0e44b7de1070c0e831430d2ac98287dce7785251011",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/missoes-livres-v0.7.1.png",
+      "bytes": 845673,
+      "sha256": "63165f9abd0a594ef6597df9bf2cab33b71225bec1a4b11613719183b512ecd0",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/mochila-fazenda-v0.7.png",
+      "bytes": 526076,
+      "sha256": "dd7272bc9610c401275d3c54f4c10a18a04d6cad1b174880253f956c0281e1d7",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/painel-som-v0.7.1.png",
+      "bytes": 704030,
+      "sha256": "72eda48802672863ddd09ce80c24c6b638132a9bbda9c167567c33b861a65051",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/personagem-arvores-v0.8.png",
+      "bytes": 779836,
+      "sha256": "8e182ba68d249db6dee4befb3f2dd185092f156e4d5e7e60c392fd8c4c379926",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/personagem-criacao-1280.png",
+      "bytes": 489220,
+      "sha256": "dd6ce56598deaaf3a41452784c5ff099dcdf9d2df9b9677caa1a0c31e5776213",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/personagem-criacao-960.png",
+      "bytes": 331217,
+      "sha256": "4a6e0345eb7533ee0488e659e9062d789081be2008ac41b5186077f807dce958",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/personagem-criacao.png",
+      "bytes": 680079,
+      "sha256": "53a9efde49f2eb5801d99c392cca1567d72987054c626d1dba05736521a400af",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/personagem-dialogo.png",
+      "bytes": 863868,
+      "sha256": "63a4f438e98405ae4d763f1d3ab51dd1c482c70c8789f1d6e4177aa3357a3bf0",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/personagem-editor-v0.8.png",
+      "bytes": 513645,
+      "sha256": "8ab9516d8a9b7ec72d091df75f16b1e6438ab7cdbcac905aed2d5fa1ba343a0d",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/personagem-galeria.png",
+      "bytes": 130268,
+      "sha256": "c2aef13d4b23871aee130906abcbb252f3a022bc8d6c1f02d4bd59b39292bb86",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/personagem-lateral.png",
+      "bytes": 680860,
+      "sha256": "dbe988e5f5e2104602e9542fdd066266d28039b7cafa2ed47a8b0929c86036fd",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/personagem-personalizacao.png",
+      "bytes": 489925,
+      "sha256": "8b0b6b4330e2e0f25c2b0eef172597d1911f1def4685e55b12858a03ae6662a1",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/personagem-propriedade-detalhe.png",
+      "bytes": 77512,
+      "sha256": "77b6f1a1a4a7547f4e407c0898e0b8d8a6ab28acb2913375548a338ff486b1b1",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/personagem-propriedade.png",
+      "bytes": 960875,
+      "sha256": "b0c7f03f0d809661f5ca3997d17e818307bc28714082e1544110e60b61a94f91",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/personagem-quadros-v0.8.png",
+      "bytes": 259504,
+      "sha256": "9fbd351f3d99374388a227ab071263de0c305c768870acfaa187f1b340a968a4",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/propriedade-v0.3.png",
+      "bytes": 332061,
+      "sha256": "8ac04366af2490abe82d8ce7bb94eb4a73b6bb6446eb551b9d5228c2ea5a591c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/recursos-arbustos.png",
+      "bytes": 1062400,
+      "sha256": "2dc633a54d733c39a83d7be3fe36376332808c3151047d6819a8e7c5783910ae",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/recursos-galeria.png",
+      "bytes": 45413,
+      "sha256": "ef30f7e1e723a1486627ae46b2972dc45ddba8a57abfa5129594dd0f22abaa52",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/recursos-margem.png",
+      "bytes": 963471,
+      "sha256": "694bedbee082d2cb89e9bdc319cda95ada227cab638e1598c498321edeb26ba1",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/recursos-pedras.png",
+      "bytes": 979015,
+      "sha256": "52864c415f11f25a3308065c833001a880c7d9d1831fb8e2f72b738f6b76cd3a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/recursos-ponte.png",
+      "bytes": 989194,
+      "sha256": "556018d3ee4b55047200bc6e6dc54e29764a8f2ceb5da2d8382e89ea11fbfd34",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/capturas/recursos-propriedade.png",
+      "bytes": 917551,
+      "sha256": "b0bbd2db1108e0cd60892f9207161dff108b9f2c200ba6aa356f5cdf414af117",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acabamento-vila-preview10/barricadas-leste.png",
+      "bytes": 3001136,
+      "sha256": "128dfc256feff75911bb7b2ea6c76666b8a15f0a9fd424f5ffed958d8a67408f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acabamento-vila-preview10/barricadas-norte.png",
+      "bytes": 3406311,
+      "sha256": "e892bc5ca98b71d734a18454b2a7667385be4823c48cebb2d273878fe1017ee3",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acabamento-vila-preview10/conversa-praca.png",
+      "bytes": 1394470,
+      "sha256": "551d3cdce47fb1422749bd6a4fef9bd67122096ca5e000b34be039bb07ae2f3b",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acabamento-vila-preview10/coreto-por-dentro.png",
+      "bytes": 2950305,
+      "sha256": "9b4c398666c721e7385303bef6be7abb8dbddf0baf9f286b1ead5cb9dc10e3c8",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acabamento-vila-preview10/entradas-quadradas.png",
+      "bytes": 2893298,
+      "sha256": "539dd8bf94a37018da0e257015ca42d9173e1eb7b1899cea76012c44d9f831a9",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acabamento-vila-preview10/escala-armazem.png",
+      "bytes": 3172436,
+      "sha256": "0f5cee8d11e568fe213798a949da55a7ac21413abe1ad571447210cd6f87dffe",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acabamento-vila-preview10/lago-sem-grama.png",
+      "bytes": 3157487,
+      "sha256": "a353f3e92a50422dff6530b088ef2d1f2ffc2142cf02d4f8c73876a57f5673fd",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acabamento-vila-preview10/marcenaria-e-armazem.png",
+      "bytes": 3681554,
+      "sha256": "3f7fa6d9f3c1678e13ce00ddd9685ba7067fe82f9659deaf0701a10f83a42cac",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acabamento-vila-preview10/moitas-entre-comercios.png",
+      "bytes": 3091165,
+      "sha256": "089a851c721c27be43657b03113f8d2fc75aa9baa90575c2d558395e8db5bbd1",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acabamento-vila-preview10/pier-e-pesca.png",
+      "bytes": 2769942,
+      "sha256": "896ea46d0f87a8db15b1f6240ccc9115509d88354f497fa59aba4f9f7afcc86a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acabamento-vila-preview10/transicao-casa-comunitaria.png",
+      "bytes": 3520797,
+      "sha256": "46beb4ff9ec0d9bf48807efe7c161fe800cb468a9850aa4be884dfe78018daf1",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acabamento-vila-preview10/trigo-e-moinho.png",
+      "bytes": 3861651,
+      "sha256": "4ea7ebd6887ae76e89462f1b8060a69aeac06f0dfe83fed0cf1ab19ed95c148a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acabamento-vila-preview10/vila-completa.png",
+      "bytes": 4232755,
+      "sha256": "c069467ce0ed3b8312eeb43084203177565751fb9b4690713a76e37948981b36",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acampamento-sobreviventes/Previa.png",
+      "bytes": 3200317,
+      "sha256": "b95ce3b860da28e38bdcaa5e69a54e6529d87c85df8cfdb8efd255b6421f2531",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acampamento-sobreviventes/Sobreviventes-8-Direcoes.png",
+      "bytes": 247300,
+      "sha256": "a47d91bfcf30190930ca2406b63a7b13d716fb960f416ce006b6f9f4fa36e657",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acampamento-sobreviventes/Sobreviventes-Caminhando.mp4",
+      "bytes": 2250501,
+      "sha256": "b5e17c893fbe7727444c326c63dbf40d0f32a46289ba0077603c1c3213f0a7cc",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/acampamento-sobreviventes/cercas-e-barreiras.png",
+      "bytes": 1132717,
+      "sha256": "ecd0cb6aa8402ec4d8dfb02721273d051e29858242fece7aff53c351ba4e3331",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/alto-da-serra/Agua-padronizada.png",
+      "bytes": 3038295,
+      "sha256": "8bbe377e39a5218d82b4d239f1eb407ebf7e559cf248d4ad393bd14d4f7ba4bb",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/alto-da-serra/Entrada-acessivel-no-jogo.png",
+      "bytes": 3105388,
+      "sha256": "f5a398f904c767d3f582b6a5c209786c51c0693a858392d46f75af47cafe0656",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/alto-da-serra/Escada-alinhada.png",
+      "bytes": 2339079,
+      "sha256": "f124fd4b5018f0481c1fca3c517ce41fcee76caa5cf84983260a66985d36fcd5",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/alto-da-serra/Mapa-no-jogo.png",
+      "bytes": 3788825,
+      "sha256": "9d9a2fad9bd70c249d2dd663ed70cde37fd22adc69f4cffd9b3fe29eccaf8c02",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/alto-da-serra/Mina-decorada.png",
+      "bytes": 3105388,
+      "sha256": "f5a398f904c767d3f582b6a5c209786c51c0693a858392d46f75af47cafe0656",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/alto-da-serra/Mina-na-rocha.png",
+      "bytes": 2616986,
+      "sha256": "bc03e4c8296dc9eb191f85cf6f3c9fc8215cc263fdc16e6ae92c78144f1d68d0",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/alto-da-serra/Nitidez-antes.png",
+      "bytes": 2453352,
+      "sha256": "604bd16720996e62c698f193e18dd17b7df61730648bc93d96601db9a78775a3",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/alto-da-serra/Nitidez-depois.png",
+      "bytes": 3218074,
+      "sha256": "c574c1e588cc1eac8c124ff3823e63fb96a14b20155f61aa5b2bc915833c697a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/animais-animados/galinha-andar-ajustado.gif",
+      "bytes": 1127336,
+      "sha256": "e77db861d142ca2508ff94c84741a1ac47d9913d45d53138f9c7088ea3acec3f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/animais-animados/vaca-andar-ajustado.gif",
+      "bytes": 1378110,
+      "sha256": "fe4ecc9381207b0e71f4147e7bc7dad1c13111fdec61ac5859ccd9c7b4297f71",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/animais-propriedade.png",
+      "bytes": 962240,
+      "sha256": "487db77b68622304aa655cd9eda8760ebcedc80fd24021af0fa7909f650cebf5",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/antiquario-nilo/antiquario-fachada.png",
+      "bytes": 2231640,
+      "sha256": "c41ecba4cd5f2c4059ea2560e11545d0872740e2943b571eab3c498444ca1aaa",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/antiquario-nilo/antiquario-interior.png",
+      "bytes": 1095962,
+      "sha256": "169bbf541fa68030d2419909c6826f4ba918d594d77130fcfa636a988ef95200",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/atelie-celina/atelie-fachada.png",
+      "bytes": 2221667,
+      "sha256": "13891140447daabff187596a8790b168ec4e41ff754c3b6ec64ae0fd2678bea4",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/atelie-celina/atelie-interior.png",
+      "bytes": 1061213,
+      "sha256": "7c7bcc937f8010acfaa0d1b78120b6a187200ee08fa1eb1ae79c18b0087f59fd",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/atelie-celina/celina-no-jogo.png",
+      "bytes": 1791354,
+      "sha256": "c0b73d4af4e7d4de9952c2d578f90a3cf99ccb68d743f66b79ea11cd562dc63c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/atelie-celina/celina-south-no-jogo.png",
+      "bytes": 51314,
+      "sha256": "e21718093f69acd3e169130ba7f7c4a5891b3e889b657b34c1e5bedab8e3e1da",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cabana-damiao/cabana-pesca-fachada.png",
+      "bytes": 2060011,
+      "sha256": "f0546edc839907d643bcc838ab3c50607f05ea1930976ec95e68db887385388d",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cabana-damiao/cabana-pesca-interior.png",
+      "bytes": 1093864,
+      "sha256": "6854fd798387a6218c9ab5449acbe7f3f78b1d70df4befd8f1316a56a47bb1f0",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cabana-damiao/damiao-no-jogo.png",
+      "bytes": 1792512,
+      "sha256": "f1d6b8324197632c8c42934316f2c41cb514cc23dcc7e4055a98fc40706571e9",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cabana-damiao/damiao-south-no-jogo.png",
+      "bytes": 53510,
+      "sha256": "9d925fcaa23b2244dd071b8dad282d14e25c1fef31976e66727bcaa647570fc5",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cabana-pesca-editada/cabana-pesca.png",
+      "bytes": 622435,
+      "sha256": "23abd8d49ea3dd5478b8d717669c17f87ed12375adad05a217a209e964914b0c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/carpintaria-tobias/rosa-interior-final.png",
+      "bytes": 1174262,
+      "sha256": "319687070a271c2393ec598968eb3ced6e02dc5dc5c8ebed96206fe03a4016e4",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/carpintaria-tobias/tobias-fachada.png",
+      "bytes": 2104381,
+      "sha256": "77fd07b7a45ca76e50390437a7a962d21619bcd1e350292af5ea9d021c488d8d",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/carpintaria-tobias/tobias-interior.png",
+      "bytes": 1118841,
+      "sha256": "7edc87d8e89ee9dfb70818b8c3006c4c59da486931129d883b9c55891dff9be4",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/carpintaria-tobias/tobias-south-andando.gif",
+      "bytes": 94976,
+      "sha256": "5f9606fbb8123bca100d8acddcf7ee6e69e1600c29684254dbe822d284c1c072",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/carpintaria-tobias/tobias-south-comparacao.png",
+      "bytes": 390117,
+      "sha256": "cbe17820d681a6f95284f49e889956e2ff2ba9114fb80ab6811705ce9e94abc2",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/casa-0.9.8/casa-horta-poco-dia.png",
+      "bytes": 1483763,
+      "sha256": "1c2a4f3242cd5a9c6ff07a7e2e8a5532c8784f56241f0f8b5144674b9a46b74c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/casa-0.9.8/casa-horta-poco-noite.png",
+      "bytes": 1362486,
+      "sha256": "a2aea35221e60817d4d198885b5683645f1c08b560c3d9ab4f39e35862520130",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercado-funcional/cercado-aberto.png",
+      "bytes": 1474670,
+      "sha256": "b0c7f6e3bccb72dd03d0fcaa9831425c8ff8cb11a55cf407b49a19a84d6e3322",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercado-funcional/cercado-fechado.png",
+      "bytes": 1477277,
+      "sha256": "354df6c96f4990933518ade7d1573b5035661c6bb55cb322b0e6f352d589651c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercado-funcional/direcoes-porteiras/porteiras-horizontais-abertas.png",
+      "bytes": 945583,
+      "sha256": "7d5b9ec702d7dfca6ee2b8fbbc7cdb288eddf8199a56d2cd3e4a8bf43b5e02e0",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercado-funcional/direcoes-porteiras/porteiras-horizontais-fechadas.png",
+      "bytes": 943609,
+      "sha256": "1bb16b49e44f69c238ba9866506d63d4bf03cadf76a6095f5dfdd32d1e19a74f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercado-funcional/encaixe-curto/porteira-horizontal-encaixe-medido.png",
+      "bytes": 947295,
+      "sha256": "13f61f6d4c4fc4a07d055ad3aead1d37a803481453cdf22b340ff7ed2ed7a96e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercado-funcional/encaixe-curto/porteiras-horizontais-abertas.png",
+      "bytes": 945167,
+      "sha256": "a5e970c07e0db1046e05009e7674470c549a6dfe11d7c3dc22ae0970b3694ccc",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercado-funcional/encaixe-curto/porteiras-horizontais-fechadas.png",
+      "bytes": 943609,
+      "sha256": "1bb16b49e44f69c238ba9866506d63d4bf03cadf76a6095f5dfdd32d1e19a74f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercado-funcional/ponta-corrigida/porteira-horizontal-encaixe-medido.png",
+      "bytes": 966610,
+      "sha256": "0ec14c57c536aa64d795011eb469da7b984135570c86f393419052aefb7767da",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercado-funcional/ponta-corrigida/porteiras-horizontais-abertas.png",
+      "bytes": 960437,
+      "sha256": "46fab3ec9642444639f8247c400939da9d17758a4ce93d0faf66a194a2ae4c8e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercado-funcional/ponta-corrigida/porteiras-horizontais-fechadas.png",
+      "bytes": 961251,
+      "sha256": "a1e58586eee879478110eeb5fab3dbf9f47b76df1cc4e208f0e75a58b978c478",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercado-funcional/porteira-horizontal-abertura-90-graus.png",
+      "bytes": 945583,
+      "sha256": "7d5b9ec702d7dfca6ee2b8fbbc7cdb288eddf8199a56d2cd3e4a8bf43b5e02e0",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercado-funcional/porteira-horizontal-no-jogo.png",
+      "bytes": 640672,
+      "sha256": "d4dab4fa2138b05d52ffc75c027ba4f4ff7660d0585e2f5dc1826c0f36c7ee78",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercado-funcional/porteira-vertical-90-graus.png",
+      "bytes": 847125,
+      "sha256": "a85d693f381c03b817324a416f8536fe84b077edd9f3fb9d4635e45fe8f85239",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercado-funcional/porteira-vertical-no-jogo.png",
+      "bytes": 847125,
+      "sha256": "a85d693f381c03b817324a416f8536fe84b077edd9f3fb9d4635e45fe8f85239",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercado-funcional/porteiras.png",
+      "bytes": 126230,
+      "sha256": "3f8e7fd18010fe1411cc999e2e83341412fd3341c6689e28decfe3e331012870",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercas/cercas-centralizadas-grade.png",
+      "bytes": 1054736,
+      "sha256": "8e0fa6a140c1e2661249b0aee7cfa5c6b9a4af1fbb7648eb8490bfffd1f00597",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercas/cercas-centralizadas-no-jogo.png",
+      "bytes": 992139,
+      "sha256": "70a5ef71b8f0defdaa4117e2948f90487f5523a83ea4136b47ddec90512d2593",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercas/cercas-finalizadas.png",
+      "bytes": 160119,
+      "sha256": "882dfe2ecd2f4c5205cb6c6b6e315517652f2cf6992986a25203836d5244769b",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercas/cercas-no-jogo.png",
+      "bytes": 1054063,
+      "sha256": "ef7f93a90a970ec68364905b805d4f392a044dfeb5d20823ff7aba39e4f2dbab",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercas/construcao.png",
+      "bytes": 499718,
+      "sha256": "cb76c842b807fd0127b0fdcea4eef5929d166cef3f1ab272ed6b3fa4c38298eb",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercas/detalhes-conexoes.png",
+      "bytes": 160119,
+      "sha256": "882dfe2ecd2f4c5205cb6c6b6e315517652f2cf6992986a25203836d5244769b",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercas/encaixes-centrais-travessas-caidas.png",
+      "bytes": 158718,
+      "sha256": "14cc2a50473b9b2e7fd5da9aeb5d58cce5e0bd4e29a2d538126d8b949060f519",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercas/musgo-e-encaixes-na-altura-dos-pregos.png",
+      "bytes": 161149,
+      "sha256": "2eba29052683b7ef40baf0a882df4c191beb6f0e0edc021c2705e779ecc7acb9",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercas/travessa-unica-pregos-cobertos.png",
+      "bytes": 188681,
+      "sha256": "419ec12b4170ab1e85ef57f29ad26c745c9e8cf8a8d3b5b1252c9d861f5b05bf",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercas/vertical-antes-travessa-unica.png",
+      "bytes": 186937,
+      "sha256": "3d5c1ff4cd3116621b8c05a807a3d087dc0bf78c02c5cbc8019c31997e75e7c3",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercas/vertical-estagios-1-e-2.png",
+      "bytes": 188762,
+      "sha256": "870f46318a80b89c136055c3400bd8b150f624fa560eb66879a75bbfdf3d3b37",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/cercas/vertical-sem-sobra-nas-pontas.png",
+      "bytes": 188762,
+      "sha256": "870f46318a80b89c136055c3400bd8b150f624fa560eb66879a75bbfdf3d3b37",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/clareira-coleta-animais/bordas-grama.png",
+      "bytes": 1339400,
+      "sha256": "63ff5f2710c91275eb8664b590dd55cfa59ccc6c91d8f7bca3538cfae623bb2c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/clareira-coleta-animais/depois.png",
+      "bytes": 1431600,
+      "sha256": "52faba688ef8f645b520caf03afacf5d662015b2036e3fe00c0c9d8c1cf3a6dd",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/colisao-propriedade/casa-e-poco-colisao.png",
+      "bytes": 669113,
+      "sha256": "6f4d3cfd35aa8bb56bfab4109ec2ef2625896c532d6aa3ef26c4c9a832442a89",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/contraste-pisos/moinho-e-trigo.png",
+      "bytes": 3746916,
+      "sha256": "3666cc7634d12d7c6e171ef620f755fc5a8521f73476898b1e6768023213f2f5",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/contraste-pisos/praca-noite.png",
+      "bytes": 2679574,
+      "sha256": "664de55d29803f32fd5c26a529b66ac283423848fcee5f7fbb8f411c81f3dbb9",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/contraste-pisos/vila-completa.png",
+      "bytes": 3996682,
+      "sha256": "d1283c8234e4e2219e0aa29ae4f88c3de2455418d268dd1e3d86d49ad15f2d4c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/corda-mao-esquerda/farmer-female-down.png",
+      "bytes": 108976,
+      "sha256": "d65af4179954641224b799b8abbf92d9392fa0d6aa238d352e890e4a724bfd76",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/corda-mao-esquerda/farmer-female-up.png",
+      "bytes": 106992,
+      "sha256": "77cc97f4cd0a387723a1a2fd2a3bb0979205bc98c5a959421e10ac8c814e2cb9",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/corda-mao-esquerda/farmer-male-down.png",
+      "bytes": 109273,
+      "sha256": "3cbd3b7410d8dcaa03c13ec586683df55b9b27f04c9642dc56395c24f719f139",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/corda-mao-esquerda/farmer-male-up.png",
+      "bytes": 107431,
+      "sha256": "d4f09cdb9a68bcf1a2e97e7e3e9fa019aed31207445b45c6a9f1ca8839acf75b",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/desempenho-vila/armazem-fachada-e-escala.png",
+      "bytes": 2184484,
+      "sha256": "c503ab2c559976e4296bb042da08db161d7bcbbae3c414f05ce281bcb6588ba2",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/desempenho-vila/ferraria-atualizada.png",
+      "bytes": 1132643,
+      "sha256": "c5b0448e31ca2b5c0116bf4af0724c9f17294152454acb4ea7138a8344727449",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/ecologia/estagios-arvores-refinados.png",
+      "bytes": 183327,
+      "sha256": "72f0f74ce0e54c6f9387e47ca8fb4d9666c598047551cbdbbab5e4524f9b0139",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/ecologia/estagios-arvores-tocos-baixos.png",
+      "bytes": 184633,
+      "sha256": "70c1d686bfbdfbed90d4ddc169516ed226caed8acf53faea4480dad739d1c4d2",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/ecologia/estagios-arvores.png",
+      "bytes": 187656,
+      "sha256": "8ef3f1ce68f75c25309d083493f006971ff50733e08786f20eb5a5d7243f812b",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/ecologia/terra-por-arvore.png",
+      "bytes": 352239,
+      "sha256": "52dbbcb78d0be9690651f0c42c6bbbc0c087df7bd12b04878aa5c86f095e7be3",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/ecologia/terra-primeiro-dia.png",
+      "bytes": 324875,
+      "sha256": "a0c9bed7d3161aa9f506f094b5f09a69c494daa5baaeb3fa886408d8fe24fa4d",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/editor-floresta.png",
+      "bytes": 1993705,
+      "sha256": "61c9774f4c023a4019bd6eacb48ee8539d7104311f500c013963e2925837a818",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/editor-troca-mapas.png",
+      "bytes": 1803783,
+      "sha256": "d77d593df388e6bafa4b9ea76d9a04d68fb3b6bb5ee7fc0511c961010aa4b463",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/fachadas-diversificadas/amelia.png",
+      "bytes": 2232637,
+      "sha256": "fc3e1eef1a1d14a0c63b2002d5763fe7067ba10750fb9ddee63d32fe4f1e056a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/fachadas-diversificadas/augusto.png",
+      "bytes": 1982172,
+      "sha256": "5ad214d971fbaf587cba17402685cc45b8dedaa864c46414f77705840476479c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/fachadas-diversificadas/celina.png",
+      "bytes": 2185247,
+      "sha256": "1bbbd90a1a258cabfc597f98ebdb7eef8199b6d82ab40b14f93cbe8317bea5e9",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/fachadas-diversificadas/damiao.png",
+      "bytes": 1987340,
+      "sha256": "0c385a83421366917dae11aaaa265c8202ec5aea09a04812bae81bc3430e59d2",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/fachadas-diversificadas/helena.png",
+      "bytes": 2160493,
+      "sha256": "0de992d6fc853a49ac3875ef503734dab8dd4946a60c70a14c8c9d8bcb11a507",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/fachadas-diversificadas/icaro.png",
+      "bytes": 2039467,
+      "sha256": "405412011e4c311a1dbaee5852ed48de367ffc275893691bc09e659e2b598f89",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/fachadas-diversificadas/nilo.png",
+      "bytes": 2083175,
+      "sha256": "e44566897baa6a62c45b8680c1d685d533d8d7d7d02cfa393857291db38138f7",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/fachadas-diversificadas/rosa.png",
+      "bytes": 2036091,
+      "sha256": "d03f6230f1c439a9a2202047334b0d162440ebc265fd11d00d8ea436159acfd1",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/floresta-acesso-cidade/cerca-e-passagem.png",
+      "bytes": 2793436,
+      "sha256": "7d42574a76091115aa84e13eca1d378d8cad9d763078b182a2cfca42dddaaf12",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/floresta-acesso-cidade/entrada-sul.png",
+      "bytes": 3154258,
+      "sha256": "2bb0f049e4df2d3b3c8123ae78c8301c6cdc14101f5f21db3a83861a248da60f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/floresta-acesso-cidade/estrada-em-L.png",
+      "bytes": 3415130,
+      "sha256": "414760625dc4d5f5d5c681c16cd5438d7fc17c0c685b05e8390967d065ce9d60",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/floresta-acesso-cidade/mapa-completo.png",
+      "bytes": 4370671,
+      "sha256": "1a89e0fd68871bcfe835be4e825d9f8dc3c43ec5503368881c5f12d6e3e7cbd8",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/floresta-acesso-cidade/placa-city.png",
+      "bytes": 2224234,
+      "sha256": "0e9b65dc40b26710211c383be894a3b165468cc131067b9dd13a5eee7f2fb7e1",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/floresta-acesso-cidade/trilha-neblina.png",
+      "bytes": 3717027,
+      "sha256": "16b997dfdccb4e6bc1ff4f6434649bd970494d0c9c358cb224f470428e97b247",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/floresta-animais.png",
+      "bytes": 735730,
+      "sha256": "14236513c8428e9e4116ad2414e4da13de609b7516820c79d64154c59e53c2b1",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/floresta-lago.png",
+      "bytes": 2243338,
+      "sha256": "304ac041a8e0b6fdc513cae4a214a18c3c165392866ae3d035102917920a91ef",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/floresta-mapa.png",
+      "bytes": 1335245,
+      "sha256": "c3dbc5e9e5c1454b8849fd480701139096c74563cd59503e95f2fa3773d5814f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/frentes-damiao-helena-icaro/damiao-no-jogo.png",
+      "bytes": 1788143,
+      "sha256": "b6217cc1fc6d6ac07bb34f3e3a44cef8f6c2d5dd5cf54c4993aacb687db7dff3",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/frentes-damiao-helena-icaro/damiao-south.png",
+      "bytes": 53510,
+      "sha256": "9d925fcaa23b2244dd071b8dad282d14e25c1fef31976e66727bcaa647570fc5",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/frentes-damiao-helena-icaro/helena-no-jogo.png",
+      "bytes": 1785752,
+      "sha256": "31aaaec57dcda40bc4618e781c957d84c6450b0546beadf218e68e56d5bdfb56",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/frentes-damiao-helena-icaro/helena-south.png",
+      "bytes": 58572,
+      "sha256": "267fc15744fb4166d7dc04c04a16cdf0a452176ff65e1684948a0286fafb045e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/frentes-damiao-helena-icaro/icaro-no-jogo.png",
+      "bytes": 1786241,
+      "sha256": "a348055721ee19630c18dad65e75fef629bafee2987fb06dbdadf951bc1d969b",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/frentes-damiao-helena-icaro/icaro-south.png",
+      "bytes": 52714,
+      "sha256": "eb683f7f9fa45553653ee7436921564576c3351dfa320f380972cb6101a64c67",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/herbalista-amelia/amelia-no-jogo.png",
+      "bytes": 1800593,
+      "sha256": "efd975338baa15dad77f2913a9c01085604179382ca53841102f1fe86d3d79dc",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/herbalista-amelia/amelia-south-andando.gif",
+      "bytes": 141871,
+      "sha256": "8b23c51eb1492ce8d63e760f0b054f67c62d6041665e5084b3ef26fab203b7e9",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/herbalista-amelia/herbalista-fachada.png",
+      "bytes": 2303023,
+      "sha256": "6cc4e167dcdd54e98c4dae6b2936b5f417d54116126a58d12fcd8dccf5937f9e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/herbalista-amelia/herbalista-interior.png",
+      "bytes": 1160312,
+      "sha256": "878deb17084ad92eb6565c9e9a07a9a08715e49d6895b0572b50a999982560e3",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/lago-zoom-afastado.png",
+      "bytes": 1672329,
+      "sha256": "c75630aa2864d52d16c0dc792c6badac4e735bcce276a54179a4811253f13fb5",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/loja-rosa/rochas-metalicas.png",
+      "bytes": 1408029,
+      "sha256": "087e38aff3b11c09361dc78a7a6f52f8fb615c6746671f96ebea60bdb2e5fcd6",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/loja-rosa/rosa-fachada.png",
+      "bytes": 2092377,
+      "sha256": "c72962802413bb7d42e1e85639c910777235fdd4508020ce6a2ef345b143af6b",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/loja-rosa/rosa-interior.png",
+      "bytes": 1149674,
+      "sha256": "fa713b016ab07f06a950275bbb84ef1e7b0970b1426a93b9c9557ab7b7802cd6",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/mapa-floresta-atualizado.png",
+      "bytes": 1803649,
+      "sha256": "04d54902c050792a4391517b07a2d48f9ab15d9e99a9bcf1ae32cc044dc8f020",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/mapas-finalizados-2026-10-25/previas/barra-superior.png",
+      "bytes": 1212085,
+      "sha256": "bb8b015e8e6056ad36a64f97b31d42180644ff59daeb0142419b2680c5eee28f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/mapas-finalizados-2026-10-25/previas/controles.png",
+      "bytes": 1025752,
+      "sha256": "50e119d7fd6b6d9b4ff76a952377fbed32ff9ccff7ced9664cf9f03d4e7571ad",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/mapas-finalizados-2026-10-25/previas/graficos.png",
+      "bytes": 1030981,
+      "sha256": "ad1694ed63a2868eb886f41b892cd9f37d2d80fa8d3afbe65ef2c769f059d3f0",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/mapas-finalizados-2026-10-25/previas/placa-floresta.png",
+      "bytes": 524708,
+      "sha256": "ae44784eefdae9ced5d52699dc732b9b72af69e62fc8962ed99c9563da0d81b8",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/mapas-finalizados-2026-10-25/previas/placa-propriedade.png",
+      "bytes": 840907,
+      "sha256": "1dc620f386d295836e37e04954bfbafb27db7a0f74a79afea11b02514ae2eb7a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/mapas-finalizados-2026-10-25/previas/ponte-north.png",
+      "bytes": 1297534,
+      "sha256": "eaa1000820a8b82d68be557f7908377749dc607cf166a56694077fadf01c90c9",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/mapas-finalizados-2026-10-25/previas/ponte-south.png",
+      "bytes": 980588,
+      "sha256": "057b5226c8d0b54893444a0f2ebc04736d79f4e7a875b8116d3522691d36b998",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/mina-antiga/Chegada.png",
+      "bytes": 2827137,
+      "sha256": "b1b01224a986126277cfbd2a9fea7cf89d1a436b758250df4589ce1f7fe77698",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/mina-antiga/Colisoes.png",
+      "bytes": 2829067,
+      "sha256": "39d69e64d39abe022e62a160229bf890c42def0114741cc65e9702695fdb46a7",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/mina-antiga/Dungeon-sem-menus-de-exploracao.png",
+      "bytes": 694050,
+      "sha256": "24368d6a07e748ea37e01a34a551173c227476a7d660a81a90c1e19b52d40e9f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/mina-antiga/Entrada-central.png",
+      "bytes": 1970504,
+      "sha256": "248ece11f1f6554455d3c60693c00ca2c5c9f4f6810cf7cfc42dd09c7555aaea",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/mina-antiga/HUD.png",
+      "bytes": 2552847,
+      "sha256": "7b1dd13d72ff3cc27955c425d699594860f06d14096d24e10e6259505d10d238",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/mina-antiga/Sala-no-jogo.png",
+      "bytes": 2828525,
+      "sha256": "9c49ce8a123e979dc094d9f77eb89bfc4c41a936c63ecd339e516023f612c8ab",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/nado-feminino-canvas.png",
+      "bytes": 217284,
+      "sha256": "d08b9c19d367f06db1f9982a575b31a81dce4bae0cda3ab1da1469533d4d53f1",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/nado-feminino.png",
+      "bytes": 232694,
+      "sha256": "fe1548cbcc3edc2b3d2b6aa68dcfff0590d6fb4ec2e62d4e2dcb0980a5ea19b9",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/nado-masculino-canvas.png",
+      "bytes": 221713,
+      "sha256": "780ee8fb8032a3cee18796450621f4d63d03c967a22a0bf6a623da8c59b952ba",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/nado-masculino.png",
+      "bytes": 233229,
+      "sha256": "2da6104d55bec6920eed721af334974f103ad935c4afb407551ca3770a1f8f3f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/oficina-icaro/icaro-no-jogo.png",
+      "bytes": 1790620,
+      "sha256": "d657b88cc5d8222b3d5ee7fb0c00172c66578d268f0ebb9b34ff3c8f9fa06adb",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/oficina-icaro/oficina-fachada.png",
+      "bytes": 2029055,
+      "sha256": "372ca4d0240a455ced978c339b03ccba994cb70e59157a96823ffa32f62d0999",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/oficina-icaro/oficina-interior.png",
+      "bytes": 1042102,
+      "sha256": "0150bb02e61c2302a91e2c5c63dc957561d4e78b68db2635618b9095021ae9bf",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/pisos-intertravados-zoom/acesso-vila-gramado.png",
+      "bytes": 2219847,
+      "sha256": "9d907a4bdc3e3f599b0fd742ec5ff14de7855558507b13b84429a547d98dc0a5",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/pisos-intertravados-zoom/moinho-e-trigo.png",
+      "bytes": 3717726,
+      "sha256": "7971d1c077c92b9fd2872015114ffcaf0700561248f31b748f2e66427f9f04bb",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/pisos-intertravados-zoom/vila-completa.png",
+      "bytes": 3999489,
+      "sha256": "d5885b2a1bb46bec88a4f34bda033c76f087e855a9e5c0c95d6301133ac84be7",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/pisos-intertravados-zoom/zoom-temporario.png",
+      "bytes": 1571690,
+      "sha256": "9f26ea5b48831155a1dc8d542d3dafbe21215002cc6279d5d8505e90ecd8591b",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/poco/poco-ao-lado-casa.png",
+      "bytes": 1105181,
+      "sha256": "433f72bbfeb7175571fbe2646c5225ae7e3fdee7d314b64a72d548c9147fc6b1",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/poco/poco-em-uso.png",
+      "bytes": 1103663,
+      "sha256": "3ace8bd35c52a2de978003474359ba11ae6f9b242ead904146ac55b471e91461",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/poco/previsualizacao.gif",
+      "bytes": 223274,
+      "sha256": "1bc1883ad3e641d244a3bafb6a8b3eca791f7d562217f634bfb780eb586b849f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/pousada-helena/pousada-fachada.png",
+      "bytes": 2213817,
+      "sha256": "fea473a0eaad90582ea59978aec685715efc9b5dcd0705e16ae5cf7873bef41e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/pousada-helena/pousada-interior.png",
+      "bytes": 1039917,
+      "sha256": "45898734b493b1bf98b699cfa0b098a67590f71e16739fd6bc17e8d6440a7803",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/praca-pedras-menores/praca-noite.png",
+      "bytes": 2673655,
+      "sha256": "a3d8b233b1a9156044cf6dfd5d0eb3dd3c240b6d33c894619af4b0d84927de18",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/praca-refino-preview10/caminhos-leste.png",
+      "bytes": 3032446,
+      "sha256": "2d6e6751ca720443f659bf3b5ab81d782240716e682ac603a1d094c05aa826d0",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/praca-refino-preview10/caminhos-norte.png",
+      "bytes": 2657205,
+      "sha256": "01db93ee1afde86d57320148d4a8ab99d7483e20ed95bc5e158bf95875a9138a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/praca-refino-preview10/caminhos-sul.png",
+      "bytes": 2800805,
+      "sha256": "598ae05217e48b649d7f13f7b6bd83ba6f4aed596f71b58a380d71c2103fcfd3",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/praca-refino-preview10/praca-dia.png",
+      "bytes": 2489446,
+      "sha256": "09c119856fd46bf808197689ec0adbf34a54504f500895dd6e37a2008bf532c2",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/praca-refino-preview10/praca-noite.png",
+      "bytes": 2281015,
+      "sha256": "806ec31bdf95be69192fe18b7760edd6d466bb3c11a5ec491f1ef843cebed55c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/praca-refino-preview10/praca-zoom-normal.png",
+      "bytes": 3620018,
+      "sha256": "274f1eabd4c8bc6f30db5f56e116087a340d00ddb958b8886c3f336569e8dfde",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/praca-renovada/moinho-e-trigo.png",
+      "bytes": 3754698,
+      "sha256": "6b4e63190842bf2424ad3404b1db00abcf30a0ac91a6102e09ed49d08e0ba267",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/praca-renovada/praca-noite.png",
+      "bytes": 2755922,
+      "sha256": "c7797397e5f760aa5763857ef494de15f84f4dcc70c4adcd9266d406845ed492",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/praca-renovada/vila-completa.png",
+      "bytes": 4002133,
+      "sha256": "c8dec13233f6de5608a5dfe67508220d2d2656fb16912c03656170e5d6bce857",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/recursos-renovaveis/recursos-novas-artes.png",
+      "bytes": 286944,
+      "sha256": "453533f03aa9332285f6a99a875c56718755c3c17dcf6b52fb4d282ac68c8b09",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/refino-lago-agua-sombra/agua-em-movimento.mp4",
+      "bytes": 1508242,
+      "sha256": "5ceac5d4c7a2ab6767ac63f960ebd199afbfec2aa4964832095fb0585da876f6",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/refino-lago-agua-sombra/borda-refinada.png",
+      "bytes": 749933,
+      "sha256": "b5e4fe4778b779333eca0c14ae38d503d707f8cfce30aaf535d31f06d0c25693",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/refino-lago-agua-sombra/lago-refinado.png",
+      "bytes": 1036753,
+      "sha256": "a62ae7eb72a288500888580511a5f76a508203a14d607bd0a166a9003f884d49",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/refino-lago-agua-sombra/sombra-aproximada.mp4",
+      "bytes": 748547,
+      "sha256": "b78f6f262ca7cd5dff18b8b14ae31a38db2092de0ee2de292e0555273c798901",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/refino-lago-agua-sombra/sombra-tres-posicoes.png",
+      "bytes": 135664,
+      "sha256": "e7b957eeb35412d5770e144f1e9f8521111de3207cdb92537410e1906f8b18ae",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/rotinas-comercios/conversa-no-comercio.png",
+      "bytes": 1141718,
+      "sha256": "8903983791f99073e8c0e32b650d1b82835f73ae65ae5145e63ef8938dc67d10",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/rotinas-vila/armazem-editado-hover.png",
+      "bytes": 762310,
+      "sha256": "670e4bdbce137659a67de1ec9e48767a197525568da10f723799530791703bc7",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/rotinas-vila/augusto-bento-conversa.png",
+      "bytes": 1747058,
+      "sha256": "637af7e7acaf59b152d62beb1be4adc1408723ce9076e32e6723008f20591b0d",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-comercios-interiores/armazem-interior.png",
+      "bytes": 1197693,
+      "sha256": "c307430f387205873ed56350510000fd5f0f92da98f2039c6d145659064e8dd4",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-comercios-interiores/editor-armazem.png",
+      "bytes": 1210148,
+      "sha256": "2b334c08beafb942c3a23e574c42a7ec3470755a62608fc8071f59fae4fb489c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-comercios-interiores/editor-vila.png",
+      "bytes": 1779991,
+      "sha256": "72c1f4ac79e5a2703b44de977abdd9d1bba7026802633647c51e64770612afbe",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-comercios-interiores/ferraria-luz-noite.png",
+      "bytes": 1823523,
+      "sha256": "4de29df01d6257775bfd06f373a3bca4f9088218b55b3f64d769e3d56923692a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-compacta/bairro-leste.png",
+      "bytes": 3229621,
+      "sha256": "504b7e981638306215f82e9eab70f0706e40c6ee52930fc5ab5e5c9425cc86ce",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-compacta/casa-comunitaria-e-coreto.png",
+      "bytes": 3849305,
+      "sha256": "218a22af46dd0c3aaae2a59c3798fbbfd19393ec7c5f82f46fd832f152a618b6",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-compacta/moinho-e-trigo.png",
+      "bytes": 3777260,
+      "sha256": "eb4295b113839feaf9401625e2126623b7af661d0c71ce3afd97e4dac8b40639",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-compacta/praca-noite.png",
+      "bytes": 2807993,
+      "sha256": "42d2e5799c2e0f0d2dd24ea34ea899781af4fdb4af840ef4c98e8ffc52d3d6fb",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-compacta/vila-completa.png",
+      "bytes": 4003133,
+      "sha256": "3653ff0cbdd0d7b20e51f63bdb5ae6dffcec7ed7fd4aca7111ddf2138a55153d",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-comunitaria/bairro-leste.png",
+      "bytes": 3013381,
+      "sha256": "7c61189d6684658c6d10772f0188aa1c8eaf89c1a730e001d20d0e1e826147aa",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-comunitaria/casa-comunitaria-e-coreto.png",
+      "bytes": 3832550,
+      "sha256": "8cd2705651434c2ee7c3b4e71d1072fbb03ca5adce0092746a423fd73520a0aa",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-comunitaria/moinho-e-trigo.png",
+      "bytes": 3379834,
+      "sha256": "61c35ba978ec0a6390277ae2b7ec17698be5a160d66f836e99eb2cc64231868a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-comunitaria/praca-noite.png",
+      "bytes": 2774619,
+      "sha256": "bce06bd609d202d75ff457a7cc206f24edba6626a87b644cc8f404d3240f264e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-comunitaria/vila-completa.png",
+      "bytes": 3945056,
+      "sha256": "17f24d1ab3e5c7a2049d554f95e8e22fc08dec09844c4e4ed52496b170aa78ca",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-cotidiano/comparar.html",
+      "bytes": 2225,
+      "sha256": "b202b86d4c14adcf9e19751408056da5087cfd03c43c442d5f3f081fff5a525b",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-cotidiano/costura-e-varal.png",
+      "bytes": 3332262,
+      "sha256": "888cccc44007a0d6e092dcbcffbfde0c3cdee3e3276661b2d92263e5c0079f7f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-cotidiano/lago-sem-grama.png",
+      "bytes": 3152039,
+      "sha256": "2d47c5d1132e167d66f552fbd2a49d0704a10027a7c94a2ad9c01119b6047607",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-cotidiano/moinho-animado.png",
+      "bytes": 3321927,
+      "sha256": "2efd1432339a4e58f75c4eb5dfadf665d73dc6efca7c75c6178444d503762c8e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-cotidiano/moitas-entre-comercios.png",
+      "bytes": 3238644,
+      "sha256": "5ec10bf84c1361049c8d534ab73e2d280c41d0c6862eedc0d358f34dd2765fa6",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-cotidiano/oficina-e-pecas.png",
+      "bytes": 3207174,
+      "sha256": "8cf007f0889d8125ddbf83e60824250ac6a0324b0ca88b08634ec19c29b792b9",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-cotidiano/pousada-e-avisos.png",
+      "bytes": 3151013,
+      "sha256": "6aac890e1cb0e9a31b26f582d6fa09b1b278541b1a1384b1419afede69af3f43",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-cotidiano/vila-completa.png",
+      "bytes": 4215442,
+      "sha256": "585da05b2726a6636ccd4e4ceee519124dbd1a41518d5c2ef143bb8980f60c01",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-refinada/ferraria-sala-final.png",
+      "bytes": 1003410,
+      "sha256": "7cb74040b2fe30df1ae4f7485b6a6ade57186f8b99c6d4d0d382610fd36b6f46",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-reforma-preview10/bairro-norte.png",
+      "bytes": 3925462,
+      "sha256": "e6d204c7abc4bbc2d7d5bd1ae4dde0a577c60267352c6cb7d6e762bbd947e16f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-reforma-preview10/bairro-sul.png",
+      "bytes": 3245335,
+      "sha256": "4335d9ecf4661fc18fbc1b532792dec4f658ee1687c293a69bed2ee40a186e22",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-reforma-preview10/conversa-praca.png",
+      "bytes": 1366297,
+      "sha256": "711ffe24a5ab1090fc3734375a1aa3d53ee4684ec0dba6bcbbdb757737bc8094",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-reforma-preview10/grama-e-descanso.png",
+      "bytes": 3222393,
+      "sha256": "9444e649c11a068bc9b929ae4ba3d3d02559a5e4932152434f6312fd9eaf5cd0",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-reforma-preview10/margem-e-pescador.png",
+      "bytes": 3630225,
+      "sha256": "9a17cb07df4bddb1f363356c77d56f01405d41b2d7a6b5edda85282f64367d76",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-reforma-preview10/praca-e-caminhos.png",
+      "bytes": 3677339,
+      "sha256": "155d14c8ae57f263f473d0b09e08f097e066b4e560fdcc6129bf095d10ab8a1f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/vila-reforma-preview10/vila-completa.png",
+      "bytes": 4047190,
+      "sha256": "9e79717f1fa3fb8f69eec36f816fd9da10b415456727829b86125bc632857524",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/cenarios/zoom-floresta-acesso/zoom-125.jpg",
+      "bytes": 224279,
+      "sha256": "715ed890c44e7f327ab72689182213fd9c43c39e3d3ff8def7cac6689b9b2e9d",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/alerta-pets/pet-fora-da-camera.png",
+      "bytes": 1390533,
+      "sha256": "03dd4fce3329c2d686121d809790b5fe2c24076f397a8468be99ae9d3983d43a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/alerta-pets/pet-proximo.png",
+      "bytes": 1397468,
+      "sha256": "159705411dc0c7b8a302dfc55a859bdd0560b8a53bab6f8c23b48e66a22fedf1",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/alerta-pets/pet-tela-estreita.png",
+      "bytes": 117991,
+      "sha256": "a18c5fa0a94ba584f60963392ef49cee81b03be2ddf0579967c5cd6b9380f192",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/armas-defesa/escudo-choque.png",
+      "bytes": 2840514,
+      "sha256": "532912abe9a52becc3694b236db28dd6beb2912325bad37d5bc03b4f52b5495e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/armas-defesa/lanca-martelo-laminas.png",
+      "bytes": 2874013,
+      "sha256": "0484cba713bc610caddd16cc47e8251d4693070544fc5466f92c8de10b618e5c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/cartas.png",
+      "bytes": 1095104,
+      "sha256": "0ffa988b36b60edc000a06f6527c84865516e2b9a54c2287c679f910e6e40525",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/chefes-e-balanceamento/chefe-10-aviso.png",
+      "bytes": 1778571,
+      "sha256": "8b8c2ecc2a2262225685463a83641ce53b03f637bcb9103203bd6c88b8f996e3",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/chefes-e-balanceamento/chefe-20-aviso.png",
+      "bytes": 1772217,
+      "sha256": "e393f7dc72818fd23e9fa80ca017f7fac942071d88d475bb126e4993f759cb7e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/chefes-e-balanceamento/chefe-30-aviso.png",
+      "bytes": 1781567,
+      "sha256": "1be3c3023f74a67008304ea2eaded9a4a157dc28402df4d5e159efaea6e68304",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/chefes-e-balanceamento/chefe-40-ativo.png",
+      "bytes": 1770428,
+      "sha256": "f51260c01703729ea05b0af0f99ac90c6a909bd1b5f886e3043ca06a619473bb",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/chefes-e-balanceamento/chefe-40-aviso.png",
+      "bytes": 1777791,
+      "sha256": "23ce9e18ea6d0d0d958574b4b57645fb01ed0412fc67d05655e33eabbe87ef0d",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/chefes-e-balanceamento/chefe-50-aviso.png",
+      "bytes": 1783915,
+      "sha256": "4bddb1ec1bcdf9345d00896ab8f6129b7286610f864cd4ad075fd56c74848a54",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/chefes-e-balanceamento/frentes-256/10-demolidor-south.png",
+      "bytes": 48103,
+      "sha256": "578e17b40a433960d9a2e1152ff587d9aaaa3753740f15256763c320eccb7f5c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/chefes-e-balanceamento/frentes-256/20-sentinela-south.png",
+      "bytes": 41647,
+      "sha256": "1038415671a36743e1907df7a231f852f8c92a8245dae76255626e2012dd98da",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/chefes-e-balanceamento/frentes-256/30-acorrentado-south.png",
+      "bytes": 38731,
+      "sha256": "6e09393e0cbe276c948304b7bca9ed7d5dba393468c7f322ead92f876126aef1",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/chefes-e-balanceamento/frentes-256/40-contaminado-south.png",
+      "bytes": 49281,
+      "sha256": "e8349692c1cd9ffabbf47c806875e81455bd6014e596810772b15afea218a55a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/chefes-e-balanceamento/frentes-256/50-devorador-south.png",
+      "bytes": 50011,
+      "sha256": "2320b982181f50b4da2783650da6d65d5eafb8ca8cad6733c6f2c2649b65a8e1",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/chefes-e-balanceamento/frentes-256/zumbi-entregador-south.png",
+      "bytes": 35048,
+      "sha256": "c6c9977f2d44563688c648889a5b5c8892c803c67e3c0893aee8b1e5a093d6de",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/chefes-e-balanceamento/frentes-256/zumbi-moradora-south.png",
+      "bytes": 34989,
+      "sha256": "ffa2e85e70ff59ea0d27c0d3ad2d990163b17cef2890617d37ab779b5745e12f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/chefes-e-balanceamento/hud-ampla.png",
+      "bytes": 1741337,
+      "sha256": "9dd05668ab4c71f89e27b4d0635a2f824aa67ef7306599e9f648212eded430cd",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/companheiros-colecao/caminhada-oito-direcoes.png",
+      "bytes": 101592,
+      "sha256": "ff47c45eff5b35b1148ede3fbdf0f10cba7806c0515065669f195a51128f29a5",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/companheiros-colecao/colecao-estreita.png",
+      "bytes": 283078,
+      "sha256": "2d753efee071a2d17ca11478a28717adba0f212330160aa116e13b7f9d1008b6",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/companheiros-colecao/colecao.png",
+      "bytes": 1021351,
+      "sha256": "c1842de3af6b325aa1859007ecb3e27258a1be4757ad5d1decd7b73f4957160a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/companheiros-preview15/ataque-cat-special.jpg",
+      "bytes": 147290,
+      "sha256": "b32f5a1b82b96321755fff0ca1c40fb28475105fa70662aeb0326c74f970fcf3",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/companheiros-preview15/ataque-dog-special.jpg",
+      "bytes": 147896,
+      "sha256": "2bd5ea838dc94b6e42a449218a09af0d98c49bdb56033ed7ae1e35c4f5875567",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/companheiros-preview15/caminho-norte-pedra-terra.jpg",
+      "bytes": 211739,
+      "sha256": "27cc864820a9934d3d6ef5930f27bdaba127ddcebf3a84396af5179bd0217aec",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/companheiros-preview15/gato-esperando-em-casa.jpg",
+      "bytes": 89343,
+      "sha256": "b9abdec1608507c3bbaf50054cc7ee0ef3d163d80f442abd0e1099fe2595f2c5",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/companheiros-preview15/menu-companheiros-estreito.jpg",
+      "bytes": 66209,
+      "sha256": "913a34cd4b3fe01cae50fefdb8f0ce932a494af280041fe68832c06b94bbc138",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/companheiros-preview15/menu-companheiros.jpg",
+      "bytes": 328891,
+      "sha256": "be1c3a4a10a9443f2461a438a8b5b464dea07302b3a210f5e7127f259bf1adbe",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/companheiros-preview15/pet-comercio.jpg",
+      "bytes": 118331,
+      "sha256": "9cd162dd25458be5369c6570a57c61f13c0ca4a8a66d8cc0ebee767d647f98b3",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/derrota.png",
+      "bytes": 1170241,
+      "sha256": "5176889ec2ebfa60696c30a54329ca149cfbcec134e4ee85e39adf1ef6a8e96e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/estabilizacao-e-cartas/armas-nivel-10.png",
+      "bytes": 1640323,
+      "sha256": "f39c06efd6c770a9ff8c7589b929c0787e77132b28ff51d43c0cad3d7cdb7e6b",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/estabilizacao-e-cartas/bonus-ativos.png",
+      "bytes": 2878081,
+      "sha256": "16b81ec1885df4273ee06c71f7e321206534c196ba9dd89a58abe9509884c299",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/estabilizacao-e-cartas/bonus-no-mapa.png",
+      "bytes": 2877455,
+      "sha256": "7e56728403c9255ca79a22134083399271a667133357b3f511bb34f78f322559",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/estabilizacao-e-cartas/chefe-final-rodada-50.png",
+      "bytes": 2552504,
+      "sha256": "478bc221b57422266f0a403d36fce5333572fd7861b623f2bcb6f245af67f04e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/estabilizacao-e-cartas/novas-cartas-super-raras.png",
+      "bytes": 1636891,
+      "sha256": "99e010e5e37cfa3e73d65071963cae13a8f527a9600a98ed3bb936906d88412a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/estacionamento-completo.png",
+      "bytes": 4073360,
+      "sha256": "2c5c9e280cbb50e861dbb442c06656a40714c096b6ebf3c27e2989f3cef88d1a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/evolucao-permanente.png",
+      "bytes": 110623,
+      "sha256": "31411e5fd26aae0af7f2a963ef2021ba191aaa15dda74c6373b89a4a617196e3",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/evolucao-permanente/evolucao-390.png",
+      "bytes": 71760,
+      "sha256": "8a53deebb5df55b48b7e8123dfe81d9c7a6ad2eef27eb6cd40eec7b049367e68",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/evolucao-permanente/evolucao-personagem.png",
+      "bytes": 254011,
+      "sha256": "d47783c48adf18367f84a260c9877d70466fe9f4f044d3620f7671e1db07bdbc",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/evolucao-permanente/evolucao-pet.png",
+      "bytes": 239759,
+      "sha256": "1964ab14507cd6f6e6d9de015b8927a4b9a5c2fc0063db35fb5221541dcd6c98",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/identidade-armas/armas-evoluidas.png",
+      "bytes": 2860685,
+      "sha256": "2fffba948360d05aa185e6c5e189c655b34ebc01951b3d81d058533ad2b4845f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/iluminacao/abandoned-central-square-combate.jpg",
+      "bytes": 210522,
+      "sha256": "df7a6b43cb0b1323537d4558b35144f6bde76a804ad1e5febd2b60aabeb59c79",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/iluminacao/abandoned-central-square-mapa.jpg",
+      "bytes": 196695,
+      "sha256": "d1bdccde0f14940fdbb4965b81726d5bab2411404c54875538e517567cd9de3e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/iluminacao/mall-parking-combate.jpg",
+      "bytes": 307378,
+      "sha256": "05df18b51f6d84e09ac2245ff0c6be4dce8683d344ca6c13092dd808b291492b",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/iluminacao/mall-parking-mapa.jpg",
+      "bytes": 217890,
+      "sha256": "a67981bfb479ba1c723037ad9ffc3f23c86b9e4ec600b5dad84d936f15419633",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/mapas-abertos/estacionamento-completo.png",
+      "bytes": 2439799,
+      "sha256": "8814becb5658690308655ca7bdb0af8634a949fd56a19b44f74712be99018a7e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/mapas-abertos/hud-390.png",
+      "bytes": 495246,
+      "sha256": "eff56d155d6ac25f537dfaf3452007dae686504c790b79d161914f341574645c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/mapas-abertos/hud-521.png",
+      "bytes": 699010,
+      "sha256": "09e5dde2c222fdcf186f24045181616d936771484a30e910957f27aad3a9fc3d",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/mapas-abertos/hud-680.png",
+      "bytes": 893428,
+      "sha256": "8c5bd2472a35db9730706ab5b6ad1f19650a02798de4eb40d777ce6b1b59fd85",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/mapas-abertos/hud-ampla.png",
+      "bytes": 2834065,
+      "sha256": "dc3bd52a4b019c74fe52bfa1eec8498c9d36a91c5dd9ec596b80fd0025100702",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/mapas-abertos/menu-cidade.png",
+      "bytes": 471654,
+      "sha256": "d4a867526f3dbe0b9a2f0ddd4aed492f000e7450351f3b5192f14da48afb34e0",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/mapas-abertos/praca-completa.png",
+      "bytes": 2131404,
+      "sha256": "4be3fc032ccb263494929b6323da7f2b73089056a0e8d44bdc441cbca3ef6d53",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/mapas-e-hud/chefe-final-rodada-50.png",
+      "bytes": 2904090,
+      "sha256": "6b1f0823412cf89eae58447a1e17dd02d125a519aa40efa60e5fb79a7c2134a3",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/mapas-e-hud/estacionamento-completo.png",
+      "bytes": 2609401,
+      "sha256": "9046e81d9879b487dbee8449de67b6c2065842aa697d0466692d9151def8478d",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/mapas-e-hud/hud-390.png",
+      "bytes": 494283,
+      "sha256": "7c0060218bb6802e6315fe830a545cc1d545f3f7b0d6aed0774978f434a7189d",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/mapas-e-hud/hud-680.png",
+      "bytes": 891561,
+      "sha256": "06b5b06a2b55386085849723fe336c2053b6a90a6015f548b18b51a813e48d98",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/mapas-e-hud/hud-ampla.png",
+      "bytes": 2907596,
+      "sha256": "faed71f4b2e5c2bb464c7d111dc2ae89395b6256dd966aff8f7e6d73e2c32a91",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/mapas-e-hud/menu-cidade.png",
+      "bytes": 531604,
+      "sha256": "a3254a18dc0082734bc7b624bc83c3cf379cd5e53f8f266518264002664dca03",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/mapas-e-hud/praca-completa.png",
+      "bytes": 2431568,
+      "sha256": "5d4ef1c3b9748420aaedef0af6860b530056b955a453f1338e97fc8096f3e7a2",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/menu-cidade.png",
+      "bytes": 280776,
+      "sha256": "afeb9fb241e1021df4d38469678eca1d77df1a558cd6feabb3aa8520d55bbeeb",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/menu-e-recompensas/menu.png",
+      "bytes": 722023,
+      "sha256": "a60f719de32ed11f56ef47f0acf89232495682c4d9d599dc2e2938ef6b8b2a59",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/menu-e-recompensas/recompensas.png",
+      "bytes": 84069,
+      "sha256": "fa0bd2f10aad587d7f37b5d51a8e0ff488f074dfc61c63bb296cf99be3066936",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/menu-e-recompensas/salvamento-pendente.png",
+      "bytes": 488740,
+      "sha256": "26ba85c82b8993a607b140ade59612594642028776ec142e0a807e03210bac8a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/menu-estreito.png",
+      "bytes": 244154,
+      "sha256": "56fd3aef7033b0e4127bf62729ee41d4e31a7fdb1fcdd87dc9913e3d5c6e182a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/pet-na-floresta.png",
+      "bytes": 3125772,
+      "sha256": "f08dd10a9609f7cb8adf136a5725433f7a6791afbb5b0f623b7ebf3909daf38e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/praca-completa.png",
+      "bytes": 3121255,
+      "sha256": "fb96029e0a292be3c74634dcb8adfb5dc9e7bacf14660c23ed226d3337a0e604",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/primeiras-melhorias/primeira-derrota.png",
+      "bytes": 882866,
+      "sha256": "26c9a8b27655d4ec9722a12e9ab11717cca114f7403c86acbb5ed77ebb86aa7c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/recompensas-e-cartas/armas-nivel-10.png",
+      "bytes": 1190997,
+      "sha256": "91fa824e0b85c3d8d1ff311769188dad0d5247f77f76d99348a2da66a3f8826d",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/recompensas-e-cartas/hud-ampla.png",
+      "bytes": 1601985,
+      "sha256": "99ccb742660fe3073e19234662e18d2c84fa3f1115f53282743d6e14dfb41a10",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/recompensas-por-modo/recibo-rodadas.png",
+      "bytes": 219357,
+      "sha256": "4d7785f4da71affdc58a1536710acc25877eccccc0b68f38cddb5373a4b52f0e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/remake-armas/armas-basicas-e-evoluidas.png",
+      "bytes": 353642,
+      "sha256": "fe0a7ea4c8edc05764710918438a9df19da6c41dfd1f3d734e103e02a6df818a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/remake-armas/combate-evoluido.png",
+      "bytes": 2454524,
+      "sha256": "f14adaa422f6696e5f80f912f85396478934aabcccd411a987e0475fc99ef7bd",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/remake-armas/efeitos-em-combate.png",
+      "bytes": 126960,
+      "sha256": "786c259a742eb84164259f5a49bc97e4addff464319e90efd838a05f2016f15f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/resultado.png",
+      "bytes": 2461614,
+      "sha256": "a83c0d699a5f70682f408e8095f647771db61a421dac3efd3534a64bd10fbff4",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/retorno-recompensas/retorno-abandoned.jpg",
+      "bytes": 514163,
+      "sha256": "c027a23b5fe40168f8f1600418b1c2b924c5c0b1794626d071f427fa676fdf76",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/retorno-recompensas/retorno-defeat.jpg",
+      "bytes": 514110,
+      "sha256": "038ebd2de58b0a9244af34630d16f2896fcf1187939e5ea56b31238d6f9d3b15",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/retorno-recompensas/retorno-victory.jpg",
+      "bytes": 513937,
+      "sha256": "b3d56822b60b5e4ec19aeb0bbf8d854ad389443b486fbb9649eea9377c959dac",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/ritmo-sobrevivencia/impacto-combate.png",
+      "bytes": 2828625,
+      "sha256": "3bcc63f420fe5946cd0bd3f213b7e5f0e1b54abdb9a1ad97c143fceb07526ffc",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/testes-preview18/menu.png",
+      "bytes": 721927,
+      "sha256": "1daad5880bc9b3849de5ec238e49caac1399bb2a053a6fdaccf0f30b5ef8b9f6",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/testes-preview18/recompensas.png",
+      "bytes": 84069,
+      "sha256": "fa0bd2f10aad587d7f37b5d51a8e0ff488f074dfc61c63bb296cf99be3066936",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/testes-preview18/salvamento-pendente.png",
+      "bytes": 488740,
+      "sha256": "26ba85c82b8993a607b140ade59612594642028776ec142e0a807e03210bac8a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/viagem-cidade/confirmacao.png",
+      "bytes": 1065622,
+      "sha256": "c2835dbfe4e320aca9eb5e37e31d15afb6ea3e22cffbb2ed0f17ab1a48dd98d9",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/viagem-cidade/video.png",
+      "bytes": 1464319,
+      "sha256": "677e6941c755c9d0885d61c34f99510f96ec523788aa32459fa42a80458451a8",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/viagem.png",
+      "bytes": 1440623,
+      "sha256": "f9092be54a9f38375bb4d63296e44ed64df35208f04261834e15b62acdf62399",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/dungeons/zumbis-variados/zumbis-variados.png",
+      "bytes": 1759787,
+      "sha256": "c8289b17a01756f9fcc536c00e156a44f8de81e98b2d3ed9c030c8a3396840f9",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/economia-6/arte/bento-novo.png",
+      "bytes": 673191,
+      "sha256": "78d7fd1645531f3075a3cf962aa77b21dae8eeeab3a3b05d7993b05e907885b0",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/economia-6/arte/comerciantes-no-jogo.png",
+      "bytes": 1141572,
+      "sha256": "a27795f760340bd46448dc6d38e1c31db7ee8d16447d5757997a79b8f61a51b9",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/economia-6/arte/ferramentas-na-ferraria.png",
+      "bytes": 717081,
+      "sha256": "c368f6f538393d37f6c0693a7d8d561a7c8b8ee416694fdbe6f8a981ac901ebb",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/economia-6/arte/foice-em-uso.png",
+      "bytes": 1333871,
+      "sha256": "9d141cfe7c47ea867b9c9c2724f0030ce162a16591d93ede44570c312dac4e1a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/economia-6/bloqueio-dia-1.png",
+      "bytes": 668091,
+      "sha256": "db3106af50c60f25bc21fcb3ef1f4a5df9aacb16a055fa20c7bcd37643d79ac8",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/economia-6/encomenda-pronta.png",
+      "bytes": 644271,
+      "sha256": "447a3d9a7f4ed1589cf6ccd9409a4105126d85a57d1991ff17edcca8672ef715",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/economia-6/estoque-metal-negro.png",
+      "bytes": 579399,
+      "sha256": "50bd3056022641866ed368c6b1b2467f668682485de07cd312bf898ccea6e179",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/economia-6/forja-propria.png",
+      "bytes": 731035,
+      "sha256": "fb731e78d1ac93f358af0eb7d14f38ff7aa322683a4943df69e530f1bb257880",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/economia-6/materiais-entregues.png",
+      "bytes": 649303,
+      "sha256": "3458938901f978e83a67b1fca238e707549e802382859a933c96116101b4a0d1",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/editor-do-mapa/aplicativo-desktop.png",
+      "bytes": 1185837,
+      "sha256": "2928c111373646ce8e9695f283dd3961eed269a02f76a4429cc7ef1664f149fb",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/editor-do-mapa/visao-geral.png",
+      "bytes": 1228708,
+      "sha256": "1806d0647d16fbeed4fb744a038bd62da55ada9c915399a3e5638632a0348557",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/ferramentas/balanco-0.9.8/farmer-female-machado-picareta.gif",
+      "bytes": 115911,
+      "sha256": "dbbd6d49f70b61db928acf3b5e03f86eb2a607d42acde92d91ac405651316864",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/ferramentas/balanco-0.9.8/farmer-female-preparacao-impacto-retorno.png",
+      "bytes": 90216,
+      "sha256": "e96d939be5f1b252fda62f2035ed35f0073d99f67a7640d9895558bf0aadc92a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/ferramentas/balanco-0.9.8/farmer-male-machado-picareta.gif",
+      "bytes": 119149,
+      "sha256": "fcbed0661c753b9871a8169ad6fc3111dd33dd7df4bd53d82f071c95d8cb5a5b",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/ferramentas/balanco-0.9.8/farmer-male-preparacao-impacto-retorno.png",
+      "bytes": 95391,
+      "sha256": "e1857542c84501c3dcfa6dfc669a7e99a004ade2c9b03874506debdc79d4921c",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/ferramentas/fazendeira-contato.png",
+      "bytes": 36322,
+      "sha256": "27598fef630b95adf714fbb04560406d95fe9f8b74fe6e68041f674ae7be1032",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/ferramentas/fazendeira-ferramentas.png",
+      "bytes": 218402,
+      "sha256": "84588e124f79423592625cb233f1a2edf2c5cb622e7fed64cb94ece6abf98aa9",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/ferramentas/fazendeiro-contato.png",
+      "bytes": 39745,
+      "sha256": "5fe3d00dcf1e3e36ee0f67a71331f44dc8446c85729b2457e6da6b7c89c07bc0",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/ferramentas/fazendeiro-ferramentas.png",
+      "bytes": 222303,
+      "sha256": "1157dc5dd9b55049059c1cdc8789f01a1701db4ed382df6f06bf4cf04a97e95a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/ferramentas/regador-direita.png",
+      "bytes": 940382,
+      "sha256": "74418d3ce7e706e7c22ecef9f6ed8ce04578be734ba4fc745f42456ac0f17e39",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/ferramentas/regador-esquerda.png",
+      "bytes": 907104,
+      "sha256": "34c74750886c6c113004bb1ac44adf7abe64b1595cbda110d079b712cf50bc9e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/personagens/augusto-south-128x128.png",
+      "bytes": 14590,
+      "sha256": "e07a36e3df7607b423805687ea76b1617396aa8a5e0f09933cd121fcafb0deeb",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/personagens/comparacao-qualidade.png",
+      "bytes": 39649,
+      "sha256": "4e782bbedfba9007c439d37903e149acdfe92ffc96084a45007cbba477ef6ceb",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/personagens/entrada-na-agua/entrada-nado-degrade.mp4",
+      "bytes": 3317516,
+      "sha256": "678f15a7d0ea82137d9f5927db6ad8a073cc495d6991e579084a9d0d0df6d69f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/personagens/fazendeira/no-jogo.png",
+      "bytes": 780172,
+      "sha256": "921686318493d9222c050d08ef061cb4d45e4c3a5a09faa5d70950b0746887ba",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/personagens/fazendeira/selecao.png",
+      "bytes": 497773,
+      "sha256": "8977fe3fdd6d835b698e6f61992ed52f261ab3c05d6a9b9b90a28d70a22e17de",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/personagens/fazendeira/zoom-200.png",
+      "bytes": 346203,
+      "sha256": "6c1310041acacd033820a25fc55595a22f3d04171fc5345dc084c43217f8c44e",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/personagens/fazendeiro/no-jogo.png",
+      "bytes": 779769,
+      "sha256": "5a7f2fea488bb33673dc0dd47134da37d90a2e1d5dbdba81ce3608a35f23ac50",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/personagens/fazendeiro/selecao.png",
+      "bytes": 498524,
+      "sha256": "7ce7f55909e6dbea8b2117800deff4b322e3025b426dfeffa0d839218b871a73",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/personagens/fazendeiro/zoom-200.png",
+      "bytes": 345911,
+      "sha256": "fec4197dab7a032b3d0cdfb6d9864430a0e333c97d3599cac0faac613a7a29da",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/personagens/nado-corpo/cabelo-e-degrade.gif",
+      "bytes": 5237019,
+      "sha256": "ecc0aad47447ad7fed5bc1b9b09c779e330b80cf0ccc161dc9e0cb0ef2f7136a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/previa-personagem/caminhada-01.png",
+      "bytes": 81911,
+      "sha256": "47c379dff0e97a44a05f5cbd9fbb250694cd0cdad30d899070d4ddcc14628a0a",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/previa-personagem/caminhada-02.png",
+      "bytes": 80442,
+      "sha256": "fa946831f3214722c25fdbd7fe4c98839437f3a2bdbe71bf47ade5701e9d1307",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/previa-personagem/caminhada-03.png",
+      "bytes": 82100,
+      "sha256": "200c82832c81f88f1e7f96fdf11c0867d4f9f835e3d83aeab842e097c3fbea63",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/previa-personagem/caminhada-04.png",
+      "bytes": 80358,
+      "sha256": "4dab4e26d26f72fdd01b9ec39d4c7a8be3908a44a78a9092e74e484ceb3a867f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/previa-personagem/caminhada-4-quadros.gif",
+      "bytes": 171414,
+      "sha256": "6d9341bc2d069b142e41db0faec196555da883ab5ba480b32d2a33b3203ae600",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/previa-personagem/caminhada-no-jogo.mp4",
+      "bytes": 9283611,
+      "sha256": "8b25f60ea7adb723998a1579b8c780e027a1dfcf36990f9c8dd534f6581cec8b",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/previa-personagem/zoom-100.png",
+      "bytes": 799835,
+      "sha256": "b104f8bc08100f125d3975dd9e8814c965c811d5e7fc2038b5368a80230a4204",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/previa-personagem/zoom-200.png",
+      "bytes": 299189,
+      "sha256": "abbc4f13a710b30ddd004317c46bcdd2367293e2b789840c6da4a86bf70f1c8f",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/previa-personagem/zoom-50.png",
+      "bytes": 1646364,
+      "sha256": "8c828503d340529df0f2f3a6dfbbc0933818444f776d1c7d4e5cd5544e085878",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/previa-personagem/zoom-casa-200.png",
+      "bytes": 156758,
+      "sha256": "99e0c5091d01e0a74858b3137abebce0028f3497bf0dd9ef4e77a56fd8138eba",
+      "reason": "captura ou prévia histórica regenerável"
+    },
+    {
+      "path": "docs/previa-personagem/zoom-casa-50.png",
+      "bytes": 146030,
+      "sha256": "9b337cb92f27ae200ef5771bc5b1a038951c3fda62a61ce9193757704e7ead9c",
+      "reason": "captura ou prévia histórica regenerável"
+    }
+  ],
+  "bytes": 540922132,
+  "preservedMediaCount": 79,
+  "preservedMediaBytes": 92432475
+}

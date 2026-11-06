@@ -4,7 +4,7 @@ Implementação local para avaliação visual, sem nova publicação. A praça, 
 
 ## Comparação visual
 
-A [comparação interativa](comparar.html) usa as capturas originais, com o mesmo enquadramento. A vista geral mostra clareiras e diferentes profundidades de bosque, no lugar das faixas regulares da preview.10. São 234 árvores de seis variedades. As copas completas respeitam fachadas, equipamentos externos e acessos.
+A [comparação interativa](https://github.com/juniorangel2000-commits/Junior/blob/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/cenarios/vila-cotidiano/comparar.html) usa as capturas originais, com o mesmo enquadramento. A vista geral mostra clareiras e diferentes profundidades de bosque, no lugar das faixas regulares da preview.10. São 234 árvores de seis variedades. As copas completas respeitam fachadas, equipamentos externos e acessos.
 
 As 195 moitas de grama alta aparecem em grupos mais densos, separados por áreas de grama baixa. Arbustos e flores soltos foram substituídos por pequenos conjuntos mistos. A proteção contra sobreposição considera os retângulos das plantas e a água/piso pintados no editor; não há juncos sobre o lago.
 

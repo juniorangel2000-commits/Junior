@@ -34,11 +34,11 @@ As árvores adultas em pé usam escala **1,6**, ficando 60% maiores. A posição
 
 ## Capturas do jogo
 
-![Editor simples com personagem detalhado](capturas/personagem-editor-v0.8.png)
+![Editor simples com personagem detalhado](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/personagem-editor-v0.8.png)
 
-![Pose parada e oito quadros de caminhada por direção](capturas/personagem-quadros-v0.8.png)
+![Pose parada e oito quadros de caminhada por direção](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/personagem-quadros-v0.8.png)
 
-![Personagem e árvores maiores no cenário](capturas/personagem-arvores-v0.8.png)
+![Personagem e árvores maiores no cenário](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/personagem-arvores-v0.8.png)
 
 ## Validação
 

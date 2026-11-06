@@ -20,4 +20,4 @@ Os nove slots aceitam referências estáveis `item:<id>` além dos atalhos antig
 
 Validação: TypeScript, 172 testes de sistemas, build e Chromium. A automação `scripts/qa-inventory.cjs` verifica 30 espaços, pilhas, arrastar itens, alternativa por clique, atalhos 1–9, substituição, remoção, esgotamento, salvamento/recarga sem duplicação e três tamanhos de janela. `scripts/qa-hud.cjs` foi atualizado para o novo fluxo da mochila e cobre as coletas, mapas e missões anteriores.
 
-![Mochila de 30 espaços](capturas/inventario-v0.6.1.png)
+![Mochila de 30 espaços](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/inventario-v0.6.1.png)

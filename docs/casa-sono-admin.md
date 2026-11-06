@@ -15,9 +15,9 @@ Esta entrega amplia o mesmo jogo Phaser e está incluída no [executável Window
 - Botão **X** para fechar todo o painel **Missões** e chip **Missões** para reabrir, com preferência local independente da partida.
 - Painel administrativo por senha, lista dos 19 itens reais, busca e quantidade. Minimizar retoma o jogo; expandir pausa. Nenhum item é concedido sem sessão autorizada e quantidade válida.
 
-![Interior jogável da casa](capturas/after-rain-casa-interior.png)
+![Interior jogável da casa](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/after-rain-casa-interior.png)
 
-![Personalização da planta](capturas/after-rain-casa-personalizar.png)
+![Personalização da planta](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/after-rain-casa-personalizar.png)
 
 ## Persistência e autorização
 

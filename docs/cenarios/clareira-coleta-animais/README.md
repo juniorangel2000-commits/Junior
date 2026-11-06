@@ -29,7 +29,7 @@ Testes de navegador e dados: `scripts/qa-glade-foraging-animals.cjs`, `validacao
 Prévias reais do jogo:
 
 - [Clareira antes](antes.png)
-- [Clareira atual](depois.png)
-- [Bordas entre as gramas, com os recursos ocultos no editor de desenvolvimento](bordas-grama.png)
+- [Clareira atual](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/cenarios/clareira-coleta-animais/depois.png)
+- [Bordas entre as gramas, com os recursos ocultos no editor de desenvolvimento](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/cenarios/clareira-coleta-animais/bordas-grama.png)
 
 Na amostra real de nova partida, a coleta manual passou de 39 para 63 pontos na propriedade e de 13 para 37 na floresta. Quantidades podem variar com o progresso; os limites se mantêm. A amostragem dos pisos encontrou zero pixels de grama com cobertura maior que 50% sobre pontos de nado em ambos os mapas. A regressão de passagens, corda e editor oculto em produção também passou (`transicoes-corda.json`).

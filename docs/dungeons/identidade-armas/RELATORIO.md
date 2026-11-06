@@ -38,4 +38,4 @@ Ainda falta avaliação manual de dificuldade e equilíbrio das combinações em
 
 A execução final concluiu **22 verificações integradas no Chromium**, sem erros JavaScript, HTTP ou WebGL registrados. Inclui as três evoluções em uso simultâneo, indicação no Arsenal, carga de 240 inimigos com pools limitados, pausa, retomada, pets e entrega de resultado. A medição de atualização JavaScript não representa FPS na GPU nem teste de hardware Windows.
 
-[Captura das evoluções](armas-evoluidas.png) · [Resultados integrados](validacao.json)
+[Captura das evoluções](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/identidade-armas/armas-evoluidas.png) · [Resultados integrados](validacao.json)

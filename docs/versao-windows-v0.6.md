@@ -28,5 +28,5 @@ O workflow existente gera o portátil em runner Windows x64, repete checks/teste
 
 A automação usada fica em `scripts/qa-hud.cjs`. Com Vite rodando, Playwright instalado no ambiente de QA e Chromium disponível, execute `node scripts/qa-hud.cjs`. Variáveis opcionais: `CHROMIUM_PATH`, `QA_URL` e `QA_OUTPUT`. O script usa acesso à cena para preparar posições, interage por teclado/mouse e recarrega a página entre coletas. Ele depende do servidor de desenvolvimento para inspecionar o módulo da cena; não é um teste do executável Windows.
 
-![HUD Jardim leve](capturas/hud-jardim-leve-v0.6.png)
-![Mapa real completo](capturas/mapa-real-v0.6.png)
+![HUD Jardim leve](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/hud-jardim-leve-v0.6.png)
+![Mapa real completo](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/mapa-real-v0.6.png)

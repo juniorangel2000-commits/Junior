@@ -2,7 +2,7 @@
 
 Esta etapa aplica a [direção artística aprovada pelo usuário](direcao-visual/proposta-arte-mapa.md) ao projeto existente. O foco é a propriedade, com elementos de terreno e vegetação compartilhados com o Bosque do Pinheiro e os Campos Abertos.
 
-![Captura real da propriedade após o primeiro polimento.](capturas/propriedade-v0.3.png)
+![Captura real da propriedade após o primeiro polimento.](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/propriedade-v0.3.png)
 
 ## O que mudou
 

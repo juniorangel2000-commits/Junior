@@ -2,18 +2,18 @@
 
 **Estado:** aplicado ao mesmo projeto e incluído no [executável Windows 0.4.0](versao-windows-v0.4.md).
 
-**Ajuste posterior:** a pedido do jogador, as três pedras de passagem em frente à casa foram retiradas. O acesso agora mantém o chão natural do caminho. As capturas abaixo registram a etapa anterior; a [entrada sem as pedras](capturas/entrada-sem-pedras.png) mostra o estado atualizado. A alteração afeta somente o desenho do terreno, sem modificar recursos, colisões ou partidas salvas.
+**Ajuste posterior:** a pedido do jogador, as três pedras de passagem em frente à casa foram retiradas. O acesso agora mantém o chão natural do caminho. As capturas abaixo registram a etapa anterior; a [entrada sem as pedras](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/entrada-sem-pedras.png) mostra o estado atualizado. A alteração afeta somente o desenho do terreno, sem modificar recursos, colisões ou partidas salvas.
 
 As pedras de passagem ainda tinham contornos retangulares, mesmo usando uma textura mineral no miolo. Esta etapa troca a silhueta inteira por três sprites de lajes naturais, com quinas gastas, fissuras e musgo discreto. As pedras decorativas das margens também recebem uma silhueta baixa e orgânica, distinta dos seixos coletáveis e das rochas mineráveis.
 
 Flores brancas, rosadas/lilases e amarelas passam a usar folhagem e pétalas desenhadas no mesmo estilo das árvores e recursos. Canteiros, vasos e floreiras da casa compartilham essa arte. Samambaias e capim baixo completam o conjunto.
 
-![Propriedade após o polimento da decoração.](capturas/decoracao-propriedade.png)
+![Propriedade após o polimento da decoração.](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/decoracao-propriedade.png)
 
-- [Prancha dos nove sprites efetivamente usados](capturas/decoracao-galeria.png).
-- [Detalhe das três pedras do caminho](capturas/decoracao-pedras.png).
-- [Flores e fachada](capturas/decoracao-flores.png).
-- [Decoração junto à margem](capturas/decoracao-margem.png).
+- [Prancha dos nove sprites efetivamente usados](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/decoracao-galeria.png).
+- [Detalhe das três pedras do caminho](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/decoracao-pedras.png).
+- [Flores e fachada](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/decoracao-flores.png).
+- [Decoração junto à margem](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/decoracao-margem.png).
 
 ## Integração
 

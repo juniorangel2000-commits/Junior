@@ -42,7 +42,7 @@ A suíte completa passou em 1.080 testes, em 117 arquivos. TypeScript e build de
 
 49 verificações integradas aprovadas no Chromium, sem erros JavaScript, HTTP ou WebGL registrados. Foram verificadas as cinco artes com 16 frames, avisos inofensivos, habilidades ativas, salvamento dos golpes, cartas, chefe final, HUD em telas de 1600/680/521/390 pixels e retorno da expedição. Os encontros individuais usam estados controlados para inspeção; as partidas completas estão registradas separadamente nas simulações.
 
-[Demolidor](chefe-10-aviso.png) · [Sentinela](chefe-20-aviso.png) · [Acorrentado](chefe-30-aviso.png) · [Contaminado](chefe-40-ativo.png) · [Devorador](chefe-50-aviso.png) · [Validação](validacao.json)
+[Demolidor](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/chefes-e-balanceamento/chefe-10-aviso.png) · [Sentinela](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/chefes-e-balanceamento/chefe-20-aviso.png) · [Acorrentado](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/chefes-e-balanceamento/chefe-30-aviso.png) · [Contaminado](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/chefes-e-balanceamento/chefe-40-ativo.png) · [Devorador](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/chefes-e-balanceamento/chefe-50-aviso.png) · [Validação](validacao.json)
 
 ## Frentes para animação
 

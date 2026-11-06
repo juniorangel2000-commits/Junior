@@ -2,11 +2,11 @@
 
 Continuação do projeto na branch `title-screen-0.5`, sobre a 0.6.1. A opção **02 — Fazenda aconchegante** orienta a HUD: madeira, papel claro, cantos dourados e relógio no alto à direita. A moldura SVG é original, aplicada em nove partes; o estudo conceitual não foi usado como textura de interface.
 
-![HUD em jogo](capturas/hud-fazenda-v0.7.png)
+![HUD em jogo](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/hud-fazenda-v0.7.png)
 
 A mochila mantém 30 espaços para pilhas de itens e nove atalhos preenchidos pelo jogador, por arraste ou seleção por clique/teclado. Menus de mapa, fabricação, construção, casa, controles e pausa acompanham o tema. Missões têm cabeçalho arrastável, rolagem, posição salva e X.
 
-![Inventário](capturas/mochila-fazenda-v0.7.png)
+![Inventário](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/mochila-fazenda-v0.7.png)
 
 ## Som do vale
 

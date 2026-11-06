@@ -12,7 +12,7 @@ O trecho de acesso de terra agora fica centralizado na soleira, em 24,5 tiles, e
 
 As cinco placas de direção/nome das regiões e a pequena seta da propriedade foram retiradas. Eram desenhos sem colisão; os caminhos e os 801 recursos do mundo não mudaram. O nome **Lia** continua visível sobre a NPC, com contorno discreto e fundo transparente. A conversa por E permanece disponível.
 
-![Acesso alinhado, missões com X e informações compactas](capturas/after-rain-entrada-hud.png)
+![Acesso alinhado, missões com X e informações compactas](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/after-rain-entrada-hud.png)
 
 ## Barra de opções
 
@@ -24,7 +24,7 @@ As cinco placas de direção/nome das regiões e a pequena seta da propriedade f
 - Um modal aberto oculta a barra e sua área de revelação. Os atalhos I/M/C/B/H/Esc continuam funcionando. Voltar ao início destrói o dock; continuar cria uma única barra recolhida.
 - Relógio e quatro contadores de recursos ficam em um cartão de **210×62 px** à esquerda, com dia/hora em uma linha e recursos na outra. A marca do jogo permanece na barra retrátil. O **X** das missões fecha o painel inteiro e deixa um pequeno botão para reabri-lo; o estado persiste. Mensagens aparecem abaixo da barra aberta para não cobrir as opções.
 
-![Barra superior aberta sobre o cenário](capturas/after-rain-barra-superior.png)
+![Barra superior aberta sobre o cenário](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/after-rain-barra-superior.png)
 
 ## Como conferir
 

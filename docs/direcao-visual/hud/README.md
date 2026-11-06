@@ -1,6 +1,6 @@
 # Propostas de HUD — After Rain
 
-Três estudos visuais gerados a partir da captura real [after-rain-entrada-hud.png](../../capturas/after-rain-entrada-hud.png), a pedido do responsável pelo jogo. São imagens conceituais para escolher materiais, cores e organização. Não são capturas de uma interface já implementada nem sprites prontos para recorte.
+Três estudos visuais gerados a partir da captura real [after-rain-entrada-hud.png](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/after-rain-entrada-hud.png), a pedido do responsável pelo jogo. São imagens conceituais para escolher materiais, cores e organização. Não são capturas de uma interface já implementada nem sprites prontos para recorte.
 
 O jogo mantém sua HUD atual na correção 0.5.1. Os estudos ficam somente na documentação, fora dos assets distribuídos. O estilo 03 — Jardim leve foi escolhido e implementado na 0.6.0, com nove slots configuráveis conforme a solicitação posterior.
 

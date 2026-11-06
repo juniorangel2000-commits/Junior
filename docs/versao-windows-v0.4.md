@@ -14,7 +14,7 @@ Esta versão reúne as alterações feitas após a entrega pública 0.3.0. Conti
 - Nome de Lia posicionado acima da cabeça e retrato de diálogo sem distorção.
 - Mantém propriedade, Bosque do Pinheiro, Campos Abertos, coleta, fabricação de ferramentas, corte/mineração, processamento da madeira, construção, cultivo e diálogo.
 
-![Entrada da casa na versão atual](capturas/entrada-sem-pedras.png)
+![Entrada da casa na versão atual](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/entrada-sem-pedras.png)
 
 ## Como abrir
 

@@ -6,6 +6,6 @@ Movimentos pequenos do trackpad são acumulados antes de aplicar um passo. Scrol
 
 Validação: build aprovado; seis testes de preferência de câmera aprovados; verificações de navegador em `validacao.json` cobrem teclado, scroll, limites, botões, ocultação, pausa, painéis, redimensionamento e viagem vila/floresta/vila sem perder a preferência.
 
-![Zoom em 125%](zoom-125.jpg)
+![Zoom em 125%](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/cenarios/zoom-floresta-acesso/zoom-125.jpg)
 
 Alteração local, posterior ao executável da preview.14.

@@ -4,13 +4,13 @@
 
 ## Imagens para revisão
 
-![Propriedade com recursos fora das trilhas.](capturas/recursos-propriedade.png)
+![Propriedade com recursos fora das trilhas.](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/recursos-propriedade.png)
 
-- [Prancha dos seis sprites finais](capturas/recursos-galeria.png).
-- [Pedras soltas e rochas mineráveis no mapa](capturas/recursos-pedras.png).
-- [Arbustos e fibras](capturas/recursos-arbustos.png).
-- [Margem arredondada](capturas/recursos-margem.png).
-- [Travessia da ponte](capturas/recursos-ponte.png).
+- [Prancha dos seis sprites finais](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/recursos-galeria.png).
+- [Pedras soltas e rochas mineráveis no mapa](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/recursos-pedras.png).
+- [Arbustos e fibras](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/recursos-arbustos.png).
+- [Margem arredondada](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/recursos-margem.png).
+- [Travessia da ponte](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/recursos-ponte.png).
 
 A propriedade foi capturada após Novo Jogo e caminhada pelo teclado até a porta. As imagens de pedras e arbustos usam posições de partida para mostrar recursos existentes. As aproximações da água e da ponte usam posições de save; a parada na margem e as travessias foram testadas por teclado. A prancha mostra os sprites efetivamente usados pelo jogo.
 

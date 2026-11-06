@@ -1,4 +1,6 @@
-> **Prévia atual 0.10.0-preview.28:** [Instalador Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.10.0-preview.28/After-Rain-0.10.0-preview.28-Setup-Windows-x64.exe) · [Notas da atualização](docs/cenarios/NOTAS-0.10.0-preview.28.md) · Platô da Nascente, Mina Antiga e HUD comum nos cenários de exploração.
+> **Prévia atual 0.10.0-preview.31:** [Instalador Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.10.0-preview.31/After-Rain-0.10.0-preview.31-Setup-Windows-x64.exe) · [Notas da atualização](docs/cenarios/NOTAS-0.10.0-preview.31.md) · Bases da fazenda, itens no chão e melhorias da mineração.
+
+> **Manutenção:** [Arquivo das prévias históricas e restauração](docs/manutencao/README.md). Os estudos e testes visuais antigos continuam disponíveis na versão publicada, sem ocupar a árvore atual.
 
 > **Atualização 0.8.0:** [Jogar no navegador (computador)](https://after-rain-junior-desktop.astralpeach256.chatgpt.site) · [Download Windows 11 x64](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.8.0) · [Personagem detalhado, oito direções e árvores maiores](docs/personagem-oito-direcoes-v0.8.md). O site usa acesso pela conta do ChatGPT.
 
@@ -14,7 +16,7 @@
 
 Uma pequena clareira, uma casa que resistiu e a chance de recomeçar. **After Rain**, anteriormente chamado Jardim Depois da Chuva, é um jogo original para navegador, single-player, com exploração, cultivo e construção em pixel art 2D top-down. Sua história se passa após uma chuva que transformou pessoas em zumbis. Continua no mesmo projeto, com TypeScript, Phaser 3 e Vite e aplicativo desktop em Electron.
 
-A versão atual é **0.8.0**. O personagem tem arte detalhada, oito direções e oito quadros de caminhada por direção a 10 fps, além da pose parada. A criação de personagem reúne nome, quatro tons de pele, dois penteados e quatro cores de roupa. As árvores adultas ficaram 60% maiores, mantendo seus troncos e colisões nos mesmos lugares.
+O registro histórico abaixo descreve a versão **0.8.0**. O personagem tem arte detalhada, oito direções e oito quadros de caminhada por direção a 10 fps, além da pose parada. A criação de personagem reúne nome, quatro tons de pele, dois penteados e quatro cores de roupa. As árvores adultas ficaram 60% maiores, mantendo seus troncos e colisões nos mesmos lugares.
 
 A HUD usa a opção aprovada **02 — Fazenda aconchegante**, com molduras de madeira, painéis claros e mochila de 30 espaços. A tela inicial acompanha as molduras de madeira, o painel creme e os ícones da HUD, e abre sempre com chuva animada, raios ocasionais e uma trilha chuvosa própria; o botão “Pausar fundo” vale apenas para a visita atual. **Ctrl + Alt** alterna a tela cheia. Música e efeitos originais funcionam offline, com ajustes no botão Música da barra superior. O botão “Ouvir a chuva” permite iniciar o som ainda na abertura. Selecionar um dos nove slots vazios deixa o personagem de mãos vazias; a mochila abre por I ou pela barra superior.
 
@@ -26,7 +28,7 @@ A [fachada redesenhada e a barra superior retrátil](docs/fachada-e-barra-retrat
 
 O acesso de terra foi centralizado na porta da casa. O cartão de dia, hora e recursos foi reduzido para **210×62 pixels**.
 
-![Abertura chuvosa de After Rain.](docs/capturas/after-rain-inicio.png)
+![Abertura chuvosa de After Rain.](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/after-rain-inicio.png)
 
 [Sprites de terreno reformulados](docs/terrenos-novos.md): onze materiais originais de grama, bosque, campos, estradas, cultivo, margens, água, madeira e pedra de passagem, acompanhando a arte das árvores.
 
@@ -36,7 +38,7 @@ O [polimento das pedras decorativas e flores](docs/decoracao-pedras-flores.md) s
 
 O [personagem e o editor da versão 0.8.0](docs/personagem-oito-direcoes-v0.8.md) usam sprites detalhados de 48×64, com prévia nas oito direções e caminhada. As poucas escolhas da criação simplificam a personalização. Saves anteriores conservam cabelo longo, cores e bolsa quando já escolhidos; as folhas anteriores continuam no repositório. A [documentação do editor anterior](docs/personagem-e-criacao.md) registra aquela entrega. As três pedras de passagem em frente à casa foram retiradas.
 
-![Captura real da propriedade com a entrada sem pedras.](docs/capturas/entrada-sem-pedras.png)
+![Captura real da propriedade com a entrada sem pedras.](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/entrada-sem-pedras.png)
 
 O mundo continua com a propriedade, o **Bosque do Pinheiro**, a leste, e os **Campos Abertos**, ao sul. A [documentação da expansão 0.2.0](docs/expansao-visual-v0.2.md) registra a criação dessas áreas e a compatibilidade com partidas anteriores.
 

@@ -29,15 +29,15 @@ Fontes, dimensões, ordem dos quadros e hashes estão em [assets de personagem](
 
 ## Capturas reais
 
-![Editor com aparência inicial](capturas/personagem-criacao.png)
+![Editor com aparência inicial](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/personagem-criacao.png)
 
-![Personagem na propriedade e nome de Lia acima da cabeça](capturas/personagem-propriedade.png)
+![Personagem na propriedade e nome de Lia acima da cabeça](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/personagem-propriedade.png)
 
-- [Doze vistas e três aparências](capturas/personagem-galeria.png).
-- [Prévia lateral](capturas/personagem-lateral.png).
-- [Personalização de cores e penteado](capturas/personagem-personalizacao.png).
-- [Editor em 960×640, com rolagem](capturas/personagem-criacao-960.png).
-- [Retrato de diálogo proporcional](capturas/personagem-dialogo.png).
+- [Doze vistas e três aparências](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/personagem-galeria.png).
+- [Prévia lateral](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/personagem-lateral.png).
+- [Personalização de cores e penteado](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/personagem-personalizacao.png).
+- [Editor em 960×640, com rolagem](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/personagem-criacao-960.png).
+- [Retrato de diálogo proporcional](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/capturas/personagem-dialogo.png).
 
 ## Validação executada
 

@@ -18,13 +18,13 @@ Validações: TypeScript, **482 testes em 48 arquivos**, build e Chromium. O nav
 
 Prévias reais do jogo:
 
-- [Controles](previas/controles.png)
-- [Barra superior](previas/barra-superior.png)
-- [Gráficos](previas/graficos.png)
-- [Ponte norte](previas/ponte-north.png)
-- [Ponte sul](previas/ponte-south.png)
-- [Placa da propriedade](previas/placa-propriedade.png)
-- [Placa da floresta](previas/placa-floresta.png)
+- [Controles](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/cenarios/mapas-finalizados-2026-10-25/previas/controles.png)
+- [Barra superior](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/cenarios/mapas-finalizados-2026-10-25/previas/barra-superior.png)
+- [Gráficos](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/cenarios/mapas-finalizados-2026-10-25/previas/graficos.png)
+- [Ponte norte](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/cenarios/mapas-finalizados-2026-10-25/previas/ponte-north.png)
+- [Ponte sul](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/cenarios/mapas-finalizados-2026-10-25/previas/ponte-south.png)
+- [Placa da propriedade](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/cenarios/mapas-finalizados-2026-10-25/previas/placa-propriedade.png)
+- [Placa da floresta](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/cenarios/mapas-finalizados-2026-10-25/previas/placa-floresta.png)
 
 O atlas original das novas artes está em `public/assets/ui/graphics-controls-signs.png`. A base anterior está preservada na tag v0.9.6.
 

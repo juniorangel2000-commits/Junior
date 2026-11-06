@@ -4,11 +4,11 @@ Quando há um pet aguardando resgate, um único marcador flutuante mostra sua es
 
 O estado vem dos pickups existentes da expedição: partidas retomadas também exibem o indicador. Não foram alterados os sorteios de aparecimento, a coleta, as recompensas ou o formato do save. Não há timers nem listeners adicionais; o elemento é reutilizado e destruído junto da interface da dungeon.
 
-![Pet na câmera](pet-proximo.png)
+![Pet na câmera](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/alerta-pets/pet-proximo.png)
 
-![Pet fora da câmera](pet-fora-da-camera.png)
+![Pet fora da câmera](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/alerta-pets/pet-fora-da-camera.png)
 
-![Tela estreita](pet-tela-estreita.png)
+![Tela estreita](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/alerta-pets/pet-tela-estreita.png)
 
 Validação: 1.139 testes aprovados em 125 arquivos; build de produção aprovado; 13 verificações de navegador aprovadas, com mudança de direção, limites da tela, pausa, retomada, restauração e resgate. Os resultados estão em `validacao.json`. O teste usa um pet inserido de forma controlada para não depender da chance de aparecimento de 2%.
 

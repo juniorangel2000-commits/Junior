@@ -37,8 +37,8 @@ Acesso: **Menu do jogo → Companheiros → Ver coleção de pets**. A coleção
 
 Resultados: compilação de produção aprovada; suíte completa com 1.189 testes em 132 arquivos aprovada antes do ajuste final de raridade. Depois do ajuste de 5% para 1%, os 18 testes específicos de bônus, raridade e coleção também passaram. Chromium: 20 verificações de jogo, 2 de layout e 17 de armas aprovadas. Nenhum erro JavaScript ou requisição falha nas verificações do jogo e das armas. A revisão visual corrigiu a sobreposição do painel de missões sobre a coleção em telas estreitas.
 
-- [Prévia dos quatro retratos](colecao.png)
-- [Coleção em tela estreita](colecao-estreita.png)
+- [Prévia dos quatro retratos](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/companheiros-colecao/colecao.png)
+- [Coleção em tela estreita](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/companheiros-colecao/colecao-estreita.png)
 - [Validação de jogo](validacao-jogo.json)
 - [Validação de layout](validacao-layout.json)
 - [Validação das armas](validacao-armas.json)
@@ -54,7 +54,7 @@ Foram adicionados 36 quadros por espécie (total atual: 192 no cão e 248 no gat
 Após a integração, a suíte completa passou com **1.195 testes em 133 arquivos**, e a compilação de produção foi aprovada.
 
 
-- [Caminhada nas oito direções, comuns e variantes](caminhada-oito-direcoes.png)
+- [Caminhada nas oito direções, comuns e variantes](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/companheiros-colecao/caminhada-oito-direcoes.png)
 - Validação final no Chromium: proporções, enquadramento responsivo e texturas de caminhada nas oito direções aprovadas.
 
 

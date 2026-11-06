@@ -18,6 +18,6 @@ Validação: 19 verificações de navegador aprovadas, sem erros JavaScript ou r
 
 Exemplo da vitória controlada: 550 XP permanente, 30 moedas, 3 sucatas, 2 tecidos, 1 peça metálica e 1 pet chegaram ao mapa normal e permaneceram no save. Resultados completos em `validacao.json`.
 
-![Retorno após vitória](retorno-victory.jpg)
+![Retorno após vitória](https://raw.githubusercontent.com/juniorangel2000-commits/Junior/4fb2ffa41d7aaf881d7163165344ac2a95bc6981/docs/dungeons/retorno-recompensas/retorno-victory.jpg)
 
 Correção local, ainda não incluída no executável publicado da preview.14.
