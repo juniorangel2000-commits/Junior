@@ -40,3 +40,5 @@ vende colheitas. Os valores abaixo são o equilíbrio inicial, sujeito a testes.
 
 O nabo conserva os ids `seeds` e `turnip` e os preços anteriores.
 A cesta da Helena e a domesticação do cavalo são as etapas seguintes.
+
+[Prévia das sementes, quatro fases e colheitas](qa-catalogo-cultivos/catalogo.png).

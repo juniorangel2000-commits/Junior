@@ -1,74 +1,52 @@
 # Passagem de trabalho
 
-<!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
-
 - **Atualizado em:** 2026-11-13
-- **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch (etapa 2 em `69bfe41`).
+- **Por:** Codex
+- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch; implementação dos cultivos em `ddc384c`.
 - **Última versão publicada:** `v0.10.0-preview.33`.
-- **Estado:** etapas 1 (calendário) e 2 (cultivos por dias regados) do plano de cultivos concluídas e validadas. Domesticação do cavalo pausada até a cesta de colheita. Não publicado.
+- **Estado:** etapas 1, 2 e 3 de cultivos implementadas. Calendário, crescimento diário e 19 plantas com arte e comércio. Sem nova publicação nesta rodada.
 
 ## Feito nesta rodada
 
-- **Plano** em `docs/planejamento/CULTIVOS-E-CALENDARIO.md`. Decisões do Junior nesta rodada:
-  - A comida do cavalo será uma cesta com vários itens de colheita.
-  - O catálogo terá mais que vegetais: legumes, verduras, grãos, frutas, flores, ervas e algodão.
-  - Mostrar o ano na interface.
-  - **Nenhuma loja vende colheitas; o comércio agrícola é só de sementes.**
-  - **NPCs específicos podem comprar colheitas do jogador.** Hoje o Augusto, a Rosa e o Nilo compram nabo; para cada planta nova, definir quem compra.
-  - **Sementes especiais** que crescem o ano todo, obtidas de formas diferentes, ficam para uma etapa futura.
-  - A missão "Primeira colheita" **só termina ao colher**.
-- **Etapa 1, calendário:** `src/systems/calendar.ts`. Estações de 28 dias calculadas de `SaveData.day`; a interface mostra "Primavera 5" e "Ano 1", com a data completa como dica; a lista de saves usa a data.
-- **Etapa 2, cultivos por catálogo:**
-  - `src/data/crops.ts` tem a ficha de cada planta. Por enquanto só o nabo: 4 dias, devolve 1 semente.
-  - Em `src/systems/farming.ts`, cada canteiro guarda `crop`, `days` (dias regados) e `day` (dia de referência). Cresce 1 dia por dia regado, e a rega vale só para o próprio dia.
-  - Planta fora de estação murcha na virada, com aviso na Propriedade. Planta com `regrow` fica no canteiro após colher. Plantar fora de estação é recusado, e há aviso quando faltam dias na estação.
-  - **O nabo cresce em todas as estações, provisoriamente**, até a etapa 3 trazer plantas para cada estação; depois fica só na Primavera.
-  - `Farming.update(segundos, dia)`: os 12 cenários passam o dia atual; sem dia, nada cresce.
-  - Adubo: +1 dia de crescimento e rega do dia.
-  - Saves antigos: canteiros sem `crop/days/day` continuam válidos e são convertidos na primeira atualização, preservando o progresso proporcional (por exemplo, 0,7 vira 2 de 4 dias).
-- README atualizado (não fala mais em 45 segundos).
+- 19 plantas do catálogo em `src/data/crop-catalog.ts` e `CROPS`: Nabo, Alface, Cenoura, Feijão, Tomate, Milho, Trigo, Melancia, Batata-doce, Abóbora, Aveia, Camomila, Couve, Repolho, Morango, Margarida, Girassol, Hortelã e Algodão.
+- 114 sprites: semente, quatro fases (incluindo madura) e colheita por espécie. Nabo refeito no mesmo padrão. Originais em `referencias/cultivos/`, recortes em `public/assets/visual/crops/`. Preparação reproduzível: `node scripts/prepare-crops.cjs`.
+- `src/crop-art.ts` carrega as fases. Propriedade e editor desenham a espécie correta, com raiz alinhada ao canteiro. A opção de ocultar recursos do editor reconhece os novos cultivos.
+- Sementes equipáveis pela mochila e barra rápida; plantio consome a semente escolhida. Prompt e custo exibem a espécie equipada; `selectedCrop` é opcional no save, validado e preservado. Ids antigos `seeds` e `turnip` mantidos.
+- Todas as sementes vendidas pela Rosa. **Nenhum comerciante vende colheitas.** Rosa e Helena compram colheitas comestíveis; Rosa compra flores, Amélia ervas, Celina algodão. Compradores anteriores de nabo preservados.
+- Descrições das sementes mostram estação, dias regados e rebrota. O nabo agora cresce só na Primavera. Estações, dias e rebrota seguem o plano.
+- Saves antigos recebem os 36 itens novos zerados pela migração existente; não mudou a versão do formato.
+- Tabela de preços iniciais, compradores e instruções da arte: `docs/planejamento/ARTE-DOS-CULTIVOS.md`. Preços novos são ponto inicial de equilíbrio; nabo conserva os valores anteriores do código.
 
 ## Em andamento e próximo passo exato
 
-- **Etapa 3, novas plantas (Codex, precisa de arte).** Para cada planta do catálogo: ícone da semente, 3 ou 4 fases no canteiro, planta madura e ícone da colheita. Refazer o nabo no mesmo padrão: hoje as fases são desenhadas em código em `src/art.ts` (`crop-0..2`), o ícone da semente é `public/assets/visual/icons/seeds.png` e o do nabo é um ícone vetorial em `src/ui.ts`.
-- Ao incluir cada planta:
-  - Acrescentar a ficha em `CROPS`.
-  - Criar os itens de semente e colheita em `src/data/items.ts` e em `VILLAGE_ITEM_IDS`.
-  - Sementes à venda na Rosa. Colheitas só compradas por NPCs específicos, nunca vendidas em lojas.
-  - Restringir o nabo à Primavera.
-  - Generalizar o desenho das fases, que hoje usa `crop-${stage}` só do nabo, em `ValleyScene` e `MapEditorScene`.
-  - Fazer o plantio escolher a semente equipada, já que `plant` aceita o id da planta.
-- Depois: etapa 4 (cesta da Helena: 3 colheitas diferentes + 20 C) e etapa 5 (cavalo).
+- **Etapa 4:** cesta da Helena com **3 colheitas distintas + 20 C**. Vegetais, grãos e frutas elegíveis; flores, ervas e fibra excluídos. Usar `CROP_CATALOG.group` para a seleção. Criar arte da cesta/cocho quando necessário.
+- Depois, **etapa 5: domesticação do cavalo**, dependente dessa cesta e do estábulo pronto. A corda só pode ser usada após a doma completa, nunca como método de aproximação.
+- O cavalo já foge rapidamente nos Campos Abertos e tem animação de alimentação. Preservar os intervalos das animações idle; não tocar em personagens/ferramentas nesta etapa sem necessidade.
 
 ## Pendências e ideias para depois
 
-- Domesticação do cavalo: a corda **só depois da doma completa**. Padrões adotados enquanto o Junior não decidir outra coisa:
-  - Cada virada de dia com comida no cocho conta.
-  - O cocho guarda 3 porções.
-  - Estábulo para 1 cavalo, com madeira nobre e arte do curral.
-- Contratos de entrega de nabo (Helena: 10 nabos; contrato da Rosa) seguem ativos.
-- Quadros de deitar, descansar e levantar do cavalo preservados e ainda não usados.
-- Ipês e madeira nobre: machadinha de Ferro ou melhor, 6 golpes, Ferro 1 / Ouro 2 / Metal Negro 3. Toda construção de animais exige madeira nobre.
-- Clima (chuva regando), peixes por estação, árvores frutíferas e estufa: etapa 6.
-- Produção animal, variedade visual dos campos, caça e editor F2 continuam pendentes; preservar os ids salvos das moitas.
+- Doma: sete dias alimentados; padrão proposto conta cada virada com comida no cocho, que guarda três porções. Estábulo para um cavalo, com madeira nobre e arte do curral.
+- Contratos de nabo da Helena e da Rosa continuam ativos. Primeira colheita só completa ao colher.
+- Sementes especiais para o ano todo ficam para uma etapa futura.
+- Clima/chuva regando, peixes por estação, árvores frutíferas e estufa: etapa 6.
+- Ipês: machadinha de Ferro ou melhor, seis golpes; Ferro 1 / Ouro 2 / Metal Negro 3. Construções de animais exigem madeira nobre.
+- Quadros de descanso/deitar/levantar do cavalo preservados e ainda sem uso.
+- Produção animal, variedade dos campos, caça e editor F2 continuam pendentes; preservar ids salvos das moitas.
 
 ## Problemas conhecidos
 
-- O pacote continua na preview.33 até a publicação autorizada da preview.34.
-- Até a etapa 3 só existe o nabo, que cresce o ano todo (provisório, ver acima).
-- Ritmo novo: o primeiro nabo leva 4 dias regados, cerca de 48 minutos reais, se o jogador regar todo dia.
-- O repositório se chama `Junior` (J maiúsculo); enviar para `https://github.com/juniorangel2000-commits/Junior.git`.
+- Pacote continua na preview.33 até publicação autorizada da preview.34. Não foi criada tag nem atualizada a main nesta rodada.
+- Todos os 19 pacotes de sementes ficam à venda na Rosa independentemente da estação; o plantio recusa a estação incompatível e informa o motivo.
+- Planta cresce um dia por dia regado; nabo leva quatro dias, aproximadamente 48 minutos reais. Sem rega automática de chuva nesta etapa.
+- `src/art.ts` conserva texturas procedurais legadas `crop-0..2`, mas os canteiros utilizam os novos PNGs por espécie.
+- Originais de arte permanecem fora de `public/` para não aumentar o instalador. Sprites de runtime somam aproximadamente 3 MiB.
+- Repositório: `https://github.com/juniorangel2000-commits/Junior.git`.
 
 ## Testes
 
-- `npm ci`: ok (com `ELECTRON_SKIP_BINARY_DOWNLOAD=1`).
-- `npm run check`: ok.
-- `npm test`: baseline 1.861; após a etapa 1, 1.866; após a etapa 2, **1.876 passaram, zero falhas, 213 arquivos**.
-  - Novos: `tests/calendar.test.ts` (5) e `tests/crops.test.ts` (10), este com plantas de teste para estação e rebrota.
-  - Testes antigos de cultivo, sono e recarga reescritos para dias regados.
-- `npm run build`: não executado (sem publicação).
-- Chromium:
-  - `scripts/qa-calendar.cjs`: "Primavera 1 / Ano 1" e "Verão 2 / Ano 2".
-  - `scripts/qa-crop-days.cjs`: plantio, "Nabo · faltam 4 dias regados · precisa de água", rega diária por 4 dias, "Colher nabo" no dia 5 e colheita +1 nabo. Um save antigo com canteiro 0,7 carregado e convertido para 2 de 4 dias.
-  - Nenhum erro de JavaScript.
+- Início: `npm ci`, `npm run check` e 1.876 testes / 213 arquivos passaram antes das alterações.
+- Novos: `tests/crop-catalog.test.ts`, 23 casos cobrindo as 19 plantas, dias, rebrota, estações, comerciantes, migração, seleção salva e recortes transparentes.
+- Conferência Chromium: `scripts/qa-crop-catalog.cjs` (Vite na porta 5190; `CHROMIUM_PATH` opcional). Equipa cenoura pela mochila, planta a espécie selecionada e monta jardim visual com as 76 fases. O jardim é uma fixture, não uma partida normal com estações misturadas.
+- Encerramento: `npm run check` passou; `npm test` passou com **1.899 testes em 214 arquivos**, zero falhas; `npm run build` passou. Aviso do Vite sobre tamanho de chunk permanece, sem impedir o build.
+- Prévia completa: `docs/planejamento/qa-catalogo-cultivos/catalogo.png`.
+- Chromium concluído: seleção de cenoura pela mochila e consumo da semente corretos; 76 fases renderizadas sem texturas ausentes; nenhum erro JavaScript. Captura: `docs/planejamento/qa-catalogo-cultivos/jardim-catalogo.png`.
