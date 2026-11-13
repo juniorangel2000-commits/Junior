@@ -1,8 +1,8 @@
 # Cultivos e calendário — plano aprovado
 
-Status: organização aprovada pelo Junior em 13/11/2026. O catálogo abaixo é a
-**proposta inicial**; nomes, estações e prazos ainda podem ser ajustados antes da
-etapa 3. Este documento retoma `docs/calendario-sazonal-planejado.md`.
+Status: etapas 1 a 4 implementadas no branch preview.34. O catálogo efetivo
+está em `src/data/crop-catalog.ts`; a receita da cesta foi revisada pelo Junior
+em 13/11/2026. Este documento retoma `docs/calendario-sazonal-planejado.md`.
 
 ## Ordem das etapas
 
@@ -25,7 +25,7 @@ etapa 3. Este documento retoma `docs/calendario-sazonal-planejado.md`.
 
 - **Nenhuma loja vende colheitas ao jogador.** Nas lojas, o comércio agrícola é **só de sementes**.
 - **NPCs específicos podem comprar as colheitas do jogador.** Hoje o Augusto, a Rosa
-  e o Nilo compram nabo (18 C). Para cada planta nova, definir quais NPCs compram e
+  e o Nilo compram nabo (8 C no balanço atual). Para cada planta nova, definir quais NPCs compram e
   por quanto. Sugestão: a Rosa compra legumes, grãos e frutas; a Amélia, ervas; a
   Celina, algodão; a Helena, ingredientes de cozinha.
 - Contratos de entrega de colheita (Helena: 10 nabos; contrato de colheita da Rosa)

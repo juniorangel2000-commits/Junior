@@ -20,7 +20,7 @@ fs.mkdirSync(out, { recursive: true });
     await page.waitForFunction(() => {document.querySelector('[data-skip-intro]:not([hidden]):not([disabled])')?.click();return document.querySelector('#ui')?.dataset.area === 'property';});console.log('propriedade');
     await page.evaluate(async()=>{
       window.game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;
-      const v=game.scene.getScene('Vale');v.state.day=40;v.state.time=600;v.state.villageEconomy.coins=100;
+      const v=game.scene.getScene('Vale');v.state.damiaoIntroduction=true;v.state.day=40;v.state.time=600;v.state.villageEconomy.coins=100;
       Object.assign(v.inventory.data,{carrot:3,strawberry:3,corn:3});v.enterVillage();
     });
     await page.waitForFunction(()=>document.querySelector('#ui')?.dataset.area==='village');

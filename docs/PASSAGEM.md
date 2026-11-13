@@ -2,11 +2,16 @@
 
 - **Atualizado em:** 2026-11-13
 - **Por:** Codex
-- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch; cultivos em `ddc384c`, prévia em terra arada em `d40764d`, alinhamento e estágio 0 em `58ab83d`.
+- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch; cultivos em `ddc384c`, alinhamento e estágio 0 em `58ab83d`, cesta da Helena em `b95ea2b`.
 - **Última versão publicada:** `v0.10.0-preview.33`.
-- **Estado:** etapas 1, 2 e 3 de cultivos implementadas. Calendário, crescimento diário e 19 plantas com arte e comércio. Sem nova publicação nesta rodada.
+- **Estado:** etapas 1, 2, 3 e 4 de cultivos implementadas. Calendário, crescimento diário e 19 plantas com arte e comércio. Cesta implementada; a doma do cavalo continua pendente. Sem nova publicação nesta rodada.
 
 ## Feito nesta rodada
+
+- **Etapa 4, cesta da Helena:** o Junior pediu somente a cesta nesta rodada, sem avançar a doma. Mudou a receita para dificultar o acesso: **cada cesta exige 1 cenoura + 1 morango (Primavera) + 1 milho (Verão) + 20 C**. Não aceita outras combinações. Guardar as colheitas da primeira estação e chegar à segunda faz parte da progressão.
+- Serviço `create-harvest-basket`, exclusivo da Helena. Mostra a receita, estações e quantidades na mochila; prepara uma unidade por solicitação. Item `harvestBasket`, empilhável, com arte própria em `public/assets/visual/crops/harvest-basket.png`. Disponível na mochila e no chão pelas rotinas gerais de itens.
+- Custos em `src/data/harvest-basket.ts`. A transação de ingredientes e entrega é única; só desconta moedas após confirmar espaço. Serviço usa o draft e a persistência existentes da Vila: recusas não perdem materiais/moedas. Saves antigos recebem `harvestBasket: 0` pela migração. Nenhuma loja vende a cesta pronta ou suas colheitas.
+- Nesta rodada a cesta fica guardada; **não implementar consumo automático, cocho, estábulo ou doma até a etapa 5**. O Junior vai continuar no Claude.
 
 - Correção após observação do Junior: a prévia do jardim deve mostrar todas as plantas em terra arada. O jogo já recusa plantar fora de canteiros preparados; a fixture visual anterior inseria plantas diretamente na grama. O script agora prepara os 95 canteiros e verifica também a recusa sem gastar sementes fora da terra arada.
 
@@ -24,9 +29,9 @@
 
 ## Em andamento e próximo passo exato
 
-- **Etapa 4:** cesta da Helena com **3 colheitas distintas + 20 C**. Vegetais, grãos e frutas elegíveis; flores, ervas e fibra excluídos. Usar `CROP_CATALOG.group` para a seleção. Criar arte da cesta/cocho quando necessário.
-- Depois, **etapa 5: domesticação do cavalo**, dependente dessa cesta e do estábulo pronto. A corda só pode ser usada após a doma completa, nunca como método de aproximação.
-- O cavalo já foge rapidamente nos Campos Abertos e tem animação de alimentação. Preservar os intervalos das animações idle; não tocar em personagens/ferramentas nesta etapa sem necessidade.
+- **Etapa 5: domesticação do cavalo**, quando o Junior pedir. A etapa 4 está pronta: usar o item `harvestBasket` da receita fixa da Helena; não voltar à regra anterior de quaisquer três colheitas.
+- Cavalo dependente da cesta e do estábulo pronto; sete dias alimentados. A corda só pode ser usada após a doma completa, nunca como método de aproximação.
+- O cavalo já foge rapidamente nos Campos Abertos e tem animação de alimentação. Preservar os intervalos das animações idle.
 
 ## Pendências e ideias para depois
 
@@ -49,9 +54,12 @@
 
 ## Testes
 
+- Cesta: `tests/harvest-basket.test.ts`, 7 casos; receita por unidade, recusa de substituição/ingredientes ausentes, carteira, serviço exclusivo da Helena, mochila cheia/liberação de espaço, limite de estoque e compatibilidade de saves. Passaram.
+- Conferência da cesta no navegador: `scripts/qa-harvest-basket.cjs` passou. Serviço real da Vila entregou 1 cesta, consumiu 1 cenoura, 1 morango, 1 milho e 20 C; ícone e descrição corretos na mochila, nenhum erro JavaScript. Capturas em `docs/planejamento/qa-cesta-helena/`. Fixture libera a Vila para testar apenas o serviço.
+
 - Início: `npm ci`, `npm run check` e 1.876 testes / 213 arquivos passaram antes das alterações.
 - Novos: `tests/crop-layout.test.ts` (4 casos: estágio 0 comum, transição das cinco fases, margens e apoio das maduras), além de `tests/crop-catalog.test.ts`, 23 casos cobrindo as 19 plantas, dias, rebrota, estações, comerciantes, migração, seleção salva e recortes transparentes.
 - Conferência Chromium: `scripts/qa-crop-catalog.cjs` (Vite na porta 5190; `CHROMIUM_PATH` opcional). Equipa cenoura pela mochila, planta a espécie selecionada e monta jardim visual com as 95 fases. O jardim é uma fixture, não uma partida normal com estações misturadas.
-- Encerramento: `npm run check` passou; `npm test` passou com **1.903 testes em 215 arquivos**, zero falhas; `npm run build` passou. Aviso do Vite sobre tamanho de chunk permanece, sem impedir o build.
+- Encerramento: `npm run check` passou; `npm test` passou com **1.910 testes em 216 arquivos**, zero falhas; `npm run build` passou. Aviso do Vite sobre tamanho de chunk permanece, sem impedir o build.
 - Prévia completa: `docs/planejamento/qa-catalogo-cultivos/catalogo.png`.
 - Chromium concluído: seleção de cenoura pela mochila e consumo da semente corretos; 95 fases renderizadas sem texturas ausentes, incluindo 19 marcas de semeadura iguais; nenhum erro JavaScript. Captura: `docs/planejamento/qa-catalogo-cultivos/jardim-catalogo.png`.
