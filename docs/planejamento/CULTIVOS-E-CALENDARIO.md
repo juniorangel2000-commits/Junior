@@ -16,7 +16,7 @@ etapa 3. Este documento retoma `docs/calendario-sazonal-planejado.md`.
    A arte de sementes, fases de crescimento e colheitas fica com o Codex. Hoje só o
    nabo tem arte (fases desenhadas em código em `src/art.ts` e ícone da semente);
    refazer o nabo no mesmo padrão das novas plantas.
-4. **Cesta de colheita (Helena):** usada na domesticação do cavalo.
+4. **Cesta de colheita (Helena):** receita fixa com colheitas da Primavera e do Verão, usada futuramente na domesticação do cavalo.
 5. **Domesticação do cavalo:** ver `DOMESTICACAO-CAVALO.md`.
 6. **Depois:** clima (chuva regando, frio), peixes por estação, árvores frutíferas
    e estufa.
@@ -83,9 +83,12 @@ e café, que são plantas perenes e ficam para a etapa 6.
 
 ## Cesta de colheita (etapa 4)
 
-- A Helena prepara **1 cesta = 3 colheitas diferentes + 20 C**.
-- Valem legumes, verduras, grãos e frutas; flores, ervas e fibras não entram.
-- Como qualquer combinação serve, sempre há como montar uma cesta, em qualquer estação.
+- Receita revisada pelo Junior em 13/11/2026 para dificultar o acesso: **cada cesta = 1 cenoura + 1 morango + 1 milho + 20 C**.
+- Cenoura e morango são colheitas da Primavera; milho é do Verão. O jogador deve guardar parte da colheita da primeira estação e chegar à segunda.
+- Não aceita substituições nem compra de cesta pronta só por moedas. Nenhuma loja vende as colheitas.
+- Serviço "Preparar cesta de colheita", exclusivo da Helena; ingredientes e quantidades disponíveis aparecem no painel. Cada pedido entrega uma cesta na mochila.
+- Mochila cheia, estoque no limite, falta de ingredientes ou de moedas recusam a operação sem perdas. A cesta permanece salva e pode ser empilhada.
+- Domesticação, cocho e estábulo continuam na etapa 5; a cesta fica guardada até essa integração.
 
 ## Arte necessária (Codex)
 

@@ -1,3 +1,5 @@
+import {HARVEST_BASKET_COST,HARVEST_BASKET_FEE,HARVEST_BASKET_DESCRIPTION} from '../data/harvest-basket';
+import {ITEMS} from '../data/items';
 import {bentoAvailability} from './bento-schedule';
 import {newFishingProgress,availableSpecimens,specimenPrice,fishingOrder,RODS,ROD_UPGRADES,rodControlLabel} from './fishing-progress';
 import {fishSpecies} from '../data/fishing-catches';
@@ -10,7 +12,7 @@ import {createVillageEconomy,MAX_COINS} from '../data/village-commerce';
 import {FOREST_ANIMALS} from '../data/ancient-forest';
 import {ECOLOGY_BALANCE as ECOLOGY} from '../data/ecology-balance';
 import {inventoryToolCondition,repairInventoryTool} from './tool-instances';
-export interface VillageServiceOffer{id:string;label:string;description:string;disabled?:boolean;actionLabel?:string}
+export interface VillageServiceOffer{id:string;label:string;description:string;item?:ItemId;disabled?:boolean;actionLabel?:string}
 type Service={npc:string;label:string;description:string;run:(s:SaveData,i:Inventory)=>void};
 const services:Record<string,Service>={};
 const add=(id:string,npc:string,label:string,description:string,run:Service['run'])=>{services[id]={npc,label,description,run};};
@@ -33,6 +35,12 @@ add('fishing-rod-upgrade','damiao','Melhorar vara','Reforçada: 100 C, 4 tábuas
 add('fishing-baits','damiao','Aprender novas iscas','40 C e 3 fibras. Aprenda massa caseira e isca de inseto. Escolha o preparo no diário; cada lançamento preparado usa 2 iscas.',(s,i)=>{const p=s.fishingProgress??=newFishingProgress();requireThat(!p.preparedBait,'Você já conhece estes preparos.');pay(s,i,40,{fiber:3});p.preparedBait=true;});
 add('fishing-specimens-sell','damiao','Vender capturas registradas','Vende os peixes identificados que ainda estão na mochila. O valor considera espécie, raridade e tamanho; consulte o total no diário.',(s,i)=>{const p=s.fishingProgress??=newFishingProgress(),basket=availableSpecimens(s);requireThat(basket.length,'Você não tem capturas registradas na mochila.');const cost={fish:0,rareFish:0};for(const f of basket)cost[fishSpecies(f.species).stock]++;pay(s,i,0,cost);reward(s,basket.reduce((n,f)=>n+specimenPrice(f),0));p.basket=[];});
 add('fishing-order','damiao','Encomenda de pesca do dia','Uma encomenda diferente por dia. Entregue a espécie solicitada para receber um pagamento especial. Veja a encomenda no diário.',(s,i)=>{const p=s.fishingProgress??=newFishingProgress(),order=fishingOrder(s.day),basket=availableSpecimens(s);requireThat(p.orderDay!==s.day,'A encomenda de hoje já foi entregue.');const selected=basket.filter(f=>f.species===order.species).slice(0,order.quantity);requireThat(selected.length===order.quantity,`Traga ${order.quantity} × ${fishSpecies(order.species).name} de suas capturas registradas.`);pay(s,i,0,{[fishSpecies(order.species).stock]:order.quantity});reward(s,order.reward);p.basket=basket.filter(f=>!selected.includes(f));p.orderDay=s.day;});
+add('create-harvest-basket','helena','Preparar cesta de colheita',HARVEST_BASKET_DESCRIPTION,(s,i)=>{
+ requireThat(s.villageEconomy!.coins>=HARVEST_BASKET_FEE,'São necessárias 20 Coroas para o preparo.');
+ requireThat(i.canAfford(HARVEST_BASKET_COST),'Traga 1 cenoura, 1 morango e 1 milho da sua colheita.');
+ requireThat(i.transact(HARVEST_BASKET_COST,{harvestBasket:1}),'Libere espaço na mochila antes de encomendar a cesta.');
+ s.villageEconomy!.coins-=HARVEST_BASKET_FEE;
+});
 add('inn-rest','helena','Hospedar até as 08:00','40 Coroas. Recupera todo o vigor e avança até a manhã seguinte.',(s,i)=>{requireThat(s.day<999999,'O calendário atingiu o limite.');pay(s,i,40);s.day++;s.time=480;s.villageProgress!.vigor=100;});
 add('inn-rumor','helena','Ouvir os rumores','Conheça pistas sobre a floresta e o acampamento de sobreviventes.',s=>{const p=s.villageProgress!;for(const id of ['forest-lake','survivor-camp'])if(!p.rumors.includes(id))p.rumors.push(id);});
 for(const survivor of ['marina','rui'])add(`welcome-${survivor}`,'helena',`Receber ${survivor==='marina'?'Marina':'Rui'}`,'Prepare uma base (projeto de Tobias), 4 refeições e 8 tábuas para acolher este sobrevivente.',(s,i)=>{requireThat(s.villageProgress!.plans.includes('survivor'),'Aprenda o projeto de base com Tobias.');requireThat(!s.villageSurvivors?.includes(survivor),'Este sobrevivente já foi acolhido.');pay(s,i,0,{meal:4,plank:8});s.villageSurvivors??=[];s.villageSurvivors.push(survivor);});
@@ -46,6 +54,11 @@ add('shelter-fittings','icaro','Preparar fixadores para a casinha','12 C e 4 suc
 export function listVillageServices(npc:string,save?:SaveData):VillageServiceOffer[]{
  return Object.entries(services).filter(([,s])=>s.npc===npc).map(([id,s])=>{
   const offer:VillageServiceOffer={id,label:s.label,description:s.description};if(!save)return offer;
+  if(id==='create-harvest-basket'){
+   offer.item='harvestBasket';offer.actionLabel='Preparar 1 cesta';
+   offer.description=HARVEST_BASKET_DESCRIPTION+' Na mochila: '+Object.entries(HARVEST_BASKET_COST).map(([item,amount])=>`${ITEMS[item as ItemId].name}: ${save.inventory[item as ItemId]}/${amount}`).join(' · ')+'.';
+   offer.disabled=(save.villageEconomy?.coins??0)<HARVEST_BASKET_FEE||!Object.entries(HARVEST_BASKET_COST).every(([item,amount])=>save.inventory[item as ItemId]>=amount);
+  }
   const tier=save.fishingProgress?.rodTier??0,basket=availableSpecimens(save),order=fishingOrder(save.day);
   if(id==='fishing-rod-upgrade'){
    offer.label=tier<2?`Melhorar para ${RODS[tier+1]}`:RODS[tier];offer.disabled=tier===2;

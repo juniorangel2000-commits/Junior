@@ -29,6 +29,7 @@ import { TOOL_ICON_URLS } from './data/tool-art';
 const BASE = 'assets/visual/';
 const ICON_IDS = new Set(['wood', 'stone', 'branch', 'log', 'plank', 'scrap', 'hatchet', 'pickaxe', 'handsaw', 'fiber', 'cord', 'flakedStone', 'handle', 'blade', 'board', 'hammer', 'water', 'workbench', 'seeds']);
 export function itemIconUrl(id: string, tier=0): string | undefined {
+  if(id==='harvestBasket')return 'assets/visual/crops/harvest-basket.png';
   const crop=CROP_CATALOG.find(c=>c.seed===id||c.harvest===id);if(crop)return `assets/visual/crops/${crop.id}/${crop.seed===id?'seed':'harvest'}.png`;
   if(id==='freshGrass')return 'assets/visual/open-fields/fresh-grass.png';
   if(id==='hardwood')return 'assets/visual/open-fields/hardwood.png';

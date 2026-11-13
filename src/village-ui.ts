@@ -188,7 +188,7 @@ export class VillageInteractionUI {
     this.body.replaceChildren();this.body.className='village-panel-body';
     for(const service of this.callbacks.getServices?.(this.npc!.id)??[]){
       const row=document.createElement('article');row.className='village-service';row.style.cssText='padding:14px;border-bottom:1px solid #b39a6d';
-      const title=document.createElement('h3');title.textContent=service.label;const text=document.createElement('p');text.textContent=service.description;
+      const title=document.createElement('h3');title.textContent=service.label;if(service.item)title.prepend(this.emblem(service.item));const text=document.createElement('p');text.textContent=service.description;
       const button=document.createElement('button');button.className='village-primary';button.textContent=service.actionLabel??'Solicitar';button.disabled=!!service.disabled;button.dataset.villageService=service.id;
       button.onclick=()=>{const result=this.callbacks.onService?.(service.id);this.balance.textContent=count(this.callbacks.getEconomy().coins);if(result){this.report(result.message,result.ok);if(result.ok){this.renderServices();const next=this.body.querySelector<HTMLButtonElement>(`[data-village-service="${service.id}"]`);(next&&!next.disabled?next:this.body.querySelector<HTMLButtonElement>('button:not(:disabled)'))?.focus();}}};
       row.append(title,text,button);this.body.append(row);

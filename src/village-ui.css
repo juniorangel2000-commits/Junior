@@ -54,3 +54,4 @@
 .village-social-note [data-social-memory]{padding-top:8px;border-top:1px solid #d5bf91;font-style:italic;}
 .village-social-choices{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;}
 .village-social-choices button{font-size:.86rem;}
+.village-service h3{display:flex;align-items:center;gap:12px}
