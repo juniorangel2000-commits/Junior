@@ -13,7 +13,7 @@ function texture(scene:Phaser.Scene,id:CharacterId,tier:number,work:Work):string
  const key=tier>0?source+'-'+tier:source;if(!scene.textures.exists(key)){
   const canvas=document.createElement('canvas');canvas.width=1536;canvas.height=1024;const c=canvas.getContext('2d')!;c.imageSmoothingEnabled=false;c.drawImage(scene.textures.get(source).getSourceImage()as HTMLImageElement,0,0);
   const pixels=c.getImageData(0,0,1536,1024);for(let row=0;row<4;row++)for(let frame=0;frame<6;frame++){
-   const [x,y,w,h]=PLAYER_PICKAXE_HEADS[row][frame];for(let dy=y;dy<Math.min(256,y+h);dy++)for(let dx=x;dx<Math.min(256,x+w);dx++){
+   const [x,y,w,h]=work==='chopping'&&frame===2&&row>=2?(row===2?[158,16,82,80]:[10,16,88,80]):PLAYER_PICKAXE_HEADS[row][frame];for(let dy=y;dy<Math.min(256,y+h);dy++)for(let dx=x;dx<Math.min(256,x+w);dx++){
     const i=((row*256+dy)*1536+frame*256+dx)*4;if(!pixels.data[i+3])continue;
     const rgb=playerMiningMetal(pixels.data[i],pixels.data[i+1],pixels.data[i+2],tier);for(let k=0;k<3;k++)pixels.data[i+k]=rgb[k];
    }

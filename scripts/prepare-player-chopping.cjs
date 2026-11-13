@@ -5,6 +5,8 @@ const frames={};
 function bounds(p,x,y,w,h,brown=false){let b=[w,h,0,0];for(let j=0;j<h;j++)for(let i=0;i<w;i++){const k=((y+j)*p.width+x+i)*4;if(p.data[k+3]>128&&(!brown||p.data[k]>p.data[k+1]*1.15&&p.data[k+1]>p.data[k+2]*1.1&&p.data[k]>30))b=[Math.min(b[0],i),Math.min(b[1],j),Math.max(b[2],i+1),Math.max(b[3],j+1)];}return b;}
 for(const[id,file]of Object.entries(sources)){
  const original=path.join(root,'referencias/personagens/corte',file),p=PNG.sync.read(fs.readFileSync(original));if(p.width!==1536||p.height!==1024)throw Error('Expected 24 authored 256px cells');
+ const lateral=PNG.sync.read(fs.readFileSync(path.join(root,'referencias/personagens/corte',id+'-laterais.png')));
+ for(const row of [2,3])PNG.bitblt(lateral,p,512,row*256,256,256,512,row*256);
  for(let i=3;i<p.data.length;i+=4)p.data[i]=p.data[i]>=128?255:0;
  fs.writeFileSync(path.join(folder,id,'work-chopping.png'),PNG.sync.write(p));
  const front=PNG.sync.read(fs.readFileSync(path.join(folder,id,'Idle/rotations/south.png'))),a=bounds(front,0,0,256,256),b=bounds(p,0,0,256,256),scale=(a[3]-a[1])/(b[3]-b[1])/4;
