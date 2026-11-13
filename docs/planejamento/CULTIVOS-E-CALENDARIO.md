@@ -13,11 +13,29 @@ etapa 3. Este documento retoma `docs/calendario-sazonal-planejado.md`.
    a contar por dias regados, não mais por segundos. O nabo entra no catálogo e as
    plantações dos saves atuais são convertidas.
 3. **Novas plantas:** os itens do catálogo abaixo, com sementes vendidas pela Rosa.
-   A arte de sementes, fases de crescimento e colheitas fica com o Codex.
+   A arte de sementes, fases de crescimento e colheitas fica com o Codex. Hoje só o
+   nabo tem arte (fases desenhadas em código em `src/art.ts` e ícone da semente);
+   refazer o nabo no mesmo padrão das novas plantas.
 4. **Cesta de colheita (Helena):** usada na domesticação do cavalo.
 5. **Domesticação do cavalo:** ver `DOMESTICACAO-CAVALO.md`.
 6. **Depois:** clima (chuva regando, frio), peixes por estação, árvores frutíferas
    e estufa.
+
+## Regras de comércio (decisões do Junior, 13/11/2026)
+
+- **Nenhuma loja vende colheitas ao jogador.** Nas lojas, o comércio agrícola é **só de sementes**.
+- **NPCs específicos podem comprar as colheitas do jogador.** Hoje o Augusto, a Rosa
+  e o Nilo compram nabo (18 C). Para cada planta nova, definir quais NPCs compram e
+  por quanto. Sugestão: a Rosa compra legumes, grãos e frutas; a Amélia, ervas; a
+  Celina, algodão; a Helena, ingredientes de cozinha.
+- Contratos de entrega de colheita (Helena: 10 nabos; contrato de colheita da Rosa)
+  continuam como estão.
+
+## Sementes especiais (etapa futura)
+
+O Junior quer elaborar **sementes especiais que crescem o ano todo**, obtidas de
+maneiras diferentes (não só compradas). As sementes comuns seguem as estações.
+Formas de obtenção e quais plantas ainda serão definidas.
 
 ## Calendário
 
@@ -40,7 +58,7 @@ etapa 3. Este documento retoma `docs/calendario-sazonal-planejado.md`.
 
 | Grupo | Planta | Estações | Dias | Rebrota | Usos principais |
 | --- | --- | --- | --- | --- | --- |
-| Legumes e verduras | Nabo (já existe) | Primavera | 4 | — | Cesta, refeições, contrato da Rosa |
+| Legumes e verduras | Nabo (já existe) | Primavera | 4 | — | Cesta, refeições, contratos |
 | | Alface | Primavera | 4 | — | Cesta, refeições |
 | | Cenoura | Primavera | 6 | — | Cesta (favorita dos cavalos) |
 | | Tomate | Verão | 7 | 3 | Cesta, refeições |
