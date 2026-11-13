@@ -1,0 +1,22 @@
+{
+  "phases": [
+    "turning",
+    "starting",
+    "eating",
+    "ending",
+    "waiting",
+    "shaking",
+    "waiting",
+    "turning",
+    "starting",
+    "eating"
+  ],
+  "starts": 2,
+  "frames": 31,
+  "positionStable": true,
+  "atlas": {
+    "width": 3072,
+    "height": 3840
+  },
+  "errors": []
+}
