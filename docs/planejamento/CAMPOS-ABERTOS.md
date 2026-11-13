@@ -1,19 +1,20 @@
-# Campos Abertos — expansão futura
+# Campos Abertos
 
-Ideia registrada a pedido do usuário, após a preview.31. Este cenário ainda não
-foi criado. A tarefa em andamento é integrar a nova vaca e melhorar o curral.
+Cenário ao sul da propriedade, com 96 × 72 blocos (3.072 × 2.304 pixels).
+O piso usa os mesmos materiais e a mesma escala de textura da propriedade,
+com transições contínuas entre grama e clareiras. O estudo ilustrado de terreno
+foi descartado a pedido do Junior; está preservado somente em referências.
 
-- Cenário separado, ao sul/abaixo da propriedade, chamado **Campos Abertos**.
-- Grandes áreas de grama alta, com distribuição natural e passagens legíveis.
-- Animais soltos, com foco em exploração e caça; definir espécies, recursos e
-  equilíbrio junto ao projeto do cenário.
-- A **foice** recolhe **palha diretamente da grama alta**, oferecendo uma fonte
-  natural de alimento para os animais da fazenda.
-- O silo continua armazenando palha. A transformação atual de 3 fibras em 1 palha
-  permanece como opção durante esta fase do projeto.
-- Planejar a continuidade do terreno e o acesso pelo limite sul da propriedade
-  antes de preparar a arte e suas colisões.
+- Acesso e retorno caminhando, com placa e corredor reservado na propriedade.
+- Capim alto separado do chão, com vento, corte pela foice e rebrota em três dias.
+- Cada moita fornece dois capins frescos no chão. A coleta desgasta apenas a foice usada.
+- No silo, um capim seca em uma palha após 24 horas do jogo. O espaço em secagem
+  conta na capacidade de 240; a receita de três fibras para uma palha continua disponível.
+- Ervas, cogumelos, árvores, pedras e abrigo rural com passagem frontal.
+- Vacas, galinhas e coelhos circulam respeitando os obstáculos; vacas usam as
+  animações existentes de descanso. Captura e caça ficam para uma etapa própria.
+- HUD, mochila, mapa, atalhos, companheiros, pássaros, relógio e salvamento integrados.
+- Migração de partidas anteriores adiciona capim fresco com estoque zero.
 
-Ao elaborar esse mapa, definir rendimento por moita, rebrota da grama cortada,
-distribuição dos animais e regras da caça. Primeiro preparar a prévia do cenário;
-depois integrar acesso, colisões e coleta com a foice.
+O editor F2 deste cenário ainda não está integrado. Produção de ovos/leite e
+alimentação dos animais continuam no plano de produção animal.

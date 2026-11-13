@@ -1,3 +1,4 @@
+import {FIELDS_ENTRY,PROPERTY_FIELDS_EXIT,propertyFieldsApproach} from '../data/open-fields';
 import {createGroundRuntime,resourceGroundSink} from '../systems/ground-items';
 import {FARM_BUILDINGS,isFarmTool,isLegacyHouseTool,type FarmKind} from '../data/farm-buildings';
 import {createFarmRuntime,farmReserved,farmBlocked,farmPointBlocked,farmFootprint,farmPlacementReason,placeFarmBase,nearFarmSite} from '../systems/farm-construction';
@@ -168,6 +169,7 @@ export class ValleyScene extends Phaser.Scene {
   private readonly villagePassage=new MapExitPassage();
   private readonly lakePassage=new MapExitPassage();
   private readonly exitPassage=new MapExitPassage();
+  private readonly fieldsPassage=new DoorwayPassage();
   private readonly homePassage=new DoorwayPassage();
   private homeTransitionActive=false;
   private homeTransitionToken=0;
@@ -315,6 +317,7 @@ export class ValleyScene extends Phaser.Scene {
     this.running = true;
     this.paused = false;
     this.ui.showHUD();
+    if(saved.activeArea==='openFields'){this.enterFields(saved);return;}
     if(saved.activeArea==='fishingLake'||saved.activeArea==='highland'){this.enterLake(saved);return;}
     if (saved.activeArea === 'forest'||saved.activeArea==='survivorCamp') { this.enterForest(saved); return; }
     if (saved.activeArea === 'village'||saved.activeArea==='cityForest') { this.enterVillage(saved); return; }
@@ -402,6 +405,21 @@ export class ValleyScene extends Phaser.Scene {
         else {this.ui.toast('Propriedade Abandonada');this.persist();}
       }});
     });
+  }
+
+  private enterFields(saved?:SaveData):void {
+    if(this.forestActive||this.villageActive||this.state.animalEscort)return;
+    this.world.well?.cancel();this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
+    const data=saved??this.snapshotState();data.activeArea='openFields';delete data.homePosition;
+    if(!saved)data.openFieldsPosition={...FIELDS_ENTRY};
+    if(!saveGame(data)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}
+    this.villageActive=true;this.paused=true;this.input.keyboard?.resetKeys();
+    this.cameras.main.fadeOut(SCENE_FADE_MS);
+    this.time.delayedCall(SCENE_FADE_MS,()=>{this.scene.sleep();this.scene.launch('Campos',{save:data,ui:this.ui,onReturn:(updated:SaveData,title=false)=>{
+      this.scene.wake();this.villageActive=false;this.loadState(updated);this.running=!title;this.paused=title;
+      document.querySelector<HTMLElement>('#ui')!.style.display='';
+      if(title)this.ui.showTitle(hasSave());else{this.ui.showHUD();this.updateHUD();this.persist();}this.cameras.main.fadeIn(SCENE_FADE_MS);
+    }});});
   }
 
   private enterLake(saved?:SaveData):void {
@@ -748,7 +766,7 @@ export class ValleyScene extends Phaser.Scene {
     data=structuredClone(data);initializeHomestead(data);initializePetShelter(data);
     this.rescueToken++;this.rescueStarting=false;this.rescueView?.destroy();this.rescueView=undefined;this.bentoView?.destroy();this.bentoView=undefined;this.unregisterBentoNavigation?.();
     this.homeTransitionActive=false;this.homeTransitionToken++;this.homePassage.reset();this.homeDoorWarningShown=false;
-    this.exitPassage.reset();this.villagePassage.reset();this.lakePassage.reset();this.exitWarningShown=false;
+    this.fieldsPassage.reset();this.exitPassage.reset();this.villagePassage.reset();this.lakePassage.reset();this.exitWarningShown=false;
     this.daylight?.destroy();
     this.toolUse.cancel(); this.toolVisual = undefined;
     this.craftJob = null;
@@ -806,7 +824,7 @@ export class ValleyScene extends Phaser.Scene {
     this.input.keyboard?.resetKeys();
     this.player.update(0, this.movementBlocked, this.movementBlockedPoint,true,this.swimmingPoint);
     this.recoverPlayerPosition();
-    this.resourceLifecycle=new ResourceLifecycle(this.state,'property',this.world,(x,y)=>!farmReserved(this.state,x,y)&&!wellSiteTile(x,y)&&!homesteadResourceReserved(x,y)&&!(this.state.petShelter&&shelterReserved(this.state.petShelter,x,y))&&!this.world.isBlocked(x,y)&&!this.world.resourceAt(x,y)&&!this.farming.isPrepared(x,y)&&!this.building.buildings.some(b=>buildingFootprint(b).some(p=>p.x===x&&p.y===y))&&Math.hypot(x-this.player.x/TILE,y-this.player.y/TILE)>3&&[this.state.mapEdits?.points?.entry,this.state.mapEdits?.points?.exit,{x:25,y:18}].every(p=>!p||Math.hypot(x-p.x,y-p.y)>3)&&(this.animals?.animals??this.state.animalPositions?.property??[]).every(a=>Math.hypot(x-a.x/TILE,y-a.y/TILE)>2));
+    this.resourceLifecycle=new ResourceLifecycle(this.state,'property',this.world,(x,y)=>!propertyFieldsApproach(x,y)&&!farmReserved(this.state,x,y)&&!wellSiteTile(x,y)&&!homesteadResourceReserved(x,y)&&!(this.state.petShelter&&shelterReserved(this.state.petShelter,x,y))&&!this.world.isBlocked(x,y)&&!this.world.resourceAt(x,y)&&!this.farming.isPrepared(x,y)&&!this.building.buildings.some(b=>buildingFootprint(b).some(p=>p.x===x&&p.y===y))&&Math.hypot(x-this.player.x/TILE,y-this.player.y/TILE)>3&&[this.state.mapEdits?.points?.entry,this.state.mapEdits?.points?.exit,{x:25,y:18}].every(p=>!p||Math.hypot(x-p.x,y-p.y)>3)&&(this.animals?.animals??this.state.animalPositions?.property??[]).every(a=>Math.hypot(x-a.x/TILE,y-a.y/TILE)>2));
     this.resources=new Resources(this.state.resourceProgress);
     this.animals=new AnimalPopulation(this,this.state,'property',this.animalBlocked,PLAYER_SPEED,()=>treeTiles(this.world.resources));
     this.recoverPlayerPosition();
@@ -1128,6 +1146,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private farmPlacementTileReason(x:number,y:number):string{
+    if(propertyFieldsApproach(x,y))return 'Deixe livre a passagem para os Campos Abertos.';
     if(this.world.isBlocked(x,y)||wellSiteTile(x,y)||x>=23&&x<=26&&y>=16&&y<=19||this.state.petShelter&&shelterReserved(this.state.petShelter,x,y))return 'Há obstáculos neste local.';
     if(this.world.resourceAt(x,y)||this.world.resources.some(r=>r.kind==='standingTree'&&Math.hypot(r.x-x,r.y-y)<1.6))return 'Limpe o terreno antes de colocar a base.';
     if(this.state.villageInstallations?.some(p=>Math.abs(p.x-x)<=1&&Math.abs(p.y-y)<=1))return 'Uma instalação já ocupa esta área.';
@@ -1589,6 +1608,7 @@ export class ValleyScene extends Phaser.Scene {
       if(!this.state.animalEscort){this.enterForest();return;}
       if(!this.exitWarningShown){this.ui.toast('Conclua a condução ou solte a corda com G antes de sair.');this.exitWarningShown=true;}
     }else this.exitWarningShown=false;
+    if(!this.inHome&&!this.player.isSwimming&&this.fieldsPassage.update({x:previousX,y:previousY},this.player,PROPERTY_FIELDS_EXIT)){if(!this.state.animalEscort){this.enterFields();return;}this.ui.toast('Solte a corda antes de seguir para os campos.');}
     if(!this.inHome&&!this.player.isSwimming&&this.lakePassage.update({x:previousX,y:previousY},this.player,PROPERTY_LAKE_EXIT,PROPERTY_LAKE_ENTRY)){if(!this.state.animalEscort){this.enterLake();return;}this.ui.toast('Solte a corda antes de seguir para o lago.');}
     if(!this.inHome&&!this.player.isSwimming&&this.villagePassage.update({x:previousX,y:previousY},this.player,PROPERTY_VILLAGE_EXIT,PROPERTY_VILLAGE_ENTRY)){
       if(!this.state.animalEscort){this.enterVillage();return;}

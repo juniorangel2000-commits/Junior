@@ -1,3 +1,4 @@
+import {validOpenFields} from './open-fields';
 import {validGroundItems} from './ground-items';
 import {syncToolInstances,validToolInventory,activeToolCopy,toolReference} from './tool-instances';
 import {TOOL_IDS} from '../data/economy-balance';
@@ -77,6 +78,8 @@ export function validateProfile(value: unknown): value is CharacterProfile {
 
 export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
+  if(value.openFields!==undefined&&!validOpenFields(value.openFields,typeof value.day==='number'?value.day:0))return false;
+  if(value.openFieldsPosition!==undefined&&(!isRecord(value.openFieldsPosition)||!finite(value.openFieldsPosition.x,32,3040)||!finite(value.openFieldsPosition.y,32,2272)||(value.openFieldsPosition.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(value.openFieldsPosition.direction as CharacterDirection))))return false;
   if(value.groundItems!==undefined&&!validGroundItems(value.groundItems))return false;
   if(value.farmConstruction!==undefined&&!validFarmConstruction(value.farmConstruction,value.recruitedAnimals))return false;
   if(value.npcSocial!==undefined&&!validNpcSocial(value.npcSocial,typeof value.day==='number'?value.day:999999))return false;
@@ -121,8 +124,8 @@ export function validateSave(value: unknown): value is SaveData {
   if (value.quickbar !== undefined && !validQuickbar(value.quickbar)) return false;
   if(value.dungeons!==undefined&&!validDungeonProgress(value.dungeons))return false;
   if(value.dungeonRun!==undefined&&(value.activeArea!=='cityForest'||!validDungeonSnapshot(value.dungeonRun)))return false;
-  if (value.activeArea !== undefined && value.activeArea !== 'property' && value.activeArea !== 'forest' && value.activeArea !== 'village' && value.activeArea !== 'cityForest' && value.activeArea !== 'fishingLake' && value.activeArea !== 'survivorCamp' && value.activeArea !== 'highland') return false;
-  if((value.activeArea==='village'||value.activeArea==='cityForest'||value.activeArea==='fishingLake'||value.activeArea==='survivorCamp'||value.activeArea==='highland')&&(value.homePosition!==undefined||value.animalEscort!==undefined))return false;
+  if (value.activeArea !== undefined && value.activeArea !== 'property' && value.activeArea !== 'forest' && value.activeArea !== 'village' && value.activeArea !== 'cityForest' && value.activeArea !== 'fishingLake' && value.activeArea !== 'survivorCamp' && value.activeArea !== 'highland' && value.activeArea !== 'openFields') return false;
+  if((value.activeArea==='village'||value.activeArea==='cityForest'||value.activeArea==='fishingLake'||value.activeArea==='survivorCamp'||value.activeArea==='highland'||value.activeArea==='openFields')&&(value.homePosition!==undefined||value.animalEscort!==undefined))return false;
   if(value.blacksmithScene!==undefined&&!validSmithLayout(value.blacksmithScene))return false;
   if(value.blacksmithHome!==undefined&&!validateBlacksmithHome(value.blacksmithHome))return false;
   if(value.shopResidents!==undefined&&!validShopResidents(value.shopResidents))return false;
@@ -160,7 +163,7 @@ export function validateSave(value: unknown): value is SaveData {
     }
     if(isRecord(value.animalEscort)&&!(value.animalPositions[value.animalEscort.area as string] as Array<{id:string}>).some(p=>p.id===(value.animalEscort as Record<string,unknown>).id))return false;
   }else if(value.animalEscort!==undefined)return false;
-  if((value.activeArea==='cityForest'||value.activeArea==='fishingLake'||value.activeArea==='survivorCamp'||value.activeArea==='highland')&&(value.merchantInterior!==undefined||value.blacksmithInterior!==undefined))return false;
+  if((value.activeArea==='cityForest'||value.activeArea==='fishingLake'||value.activeArea==='survivorCamp'||value.activeArea==='highland'||value.activeArea==='openFields')&&(value.merchantInterior!==undefined||value.blacksmithInterior!==undefined))return false;
   if(value.cityForestPosition!==undefined&&(!isRecord(value.cityForestPosition)||!finite(value.cityForestPosition.x,32,3040)||!finite(value.cityForestPosition.y,32,2272)||(value.cityForestPosition.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(value.cityForestPosition.direction as CharacterDirection))))return false;
   if (value.forestPosition !== undefined && (!isRecord(value.forestPosition) || !finite(value.forestPosition.x, 32, 3040) || !finite(value.forestPosition.y, 32, 2272) || (value.forestPosition.direction !== undefined && !CHARACTER_DIRECTIONS.includes(value.forestPosition.direction as CharacterDirection)))) return false;
   if (value.villagePosition !== undefined && (!isRecord(value.villagePosition) || !finite(value.villagePosition.x, 32, 3040) || !finite(value.villagePosition.y, 32, 2272) || (value.villagePosition.direction !== undefined && !CHARACTER_DIRECTIONS.includes(value.villagePosition.direction as CharacterDirection)))) return false;

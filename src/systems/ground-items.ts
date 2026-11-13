@@ -5,7 +5,7 @@ import {availableSpecimens} from './fishing-progress';
 import {fishSpecies,validFishingReward,type FishSpecimen} from '../data/fishing-catches';
 import {syncToolInstances,individualTool,activeToolCopy,validToolCopy,type ToolCopy} from './tool-instances';
 export const GROUND_ITEM_LIFETIME=2*1440;
-const SPACES=['property','home','forest','village','cityForest','fishingLake','survivorCamp','highland','mine','mining','blacksmith','community'];
+const SPACES=['openFields','property','home','forest','village','cityForest','fishingLake','survivorCamp','highland','mine','mining','blacksmith','community'];
 export const validGroundSpace=(s:unknown):s is string=>typeof s==='string'&&(SPACES.includes(s)||/^shop:[a-z]{2,24}$/.test(s));
 export interface GroundItem extends TilePoint{id:number;item:ItemId;amount:number;space:string;born:number;manual?:boolean;armed?:boolean;specimens?:FishSpecimen[];tool?:ToolCopy}
 export interface GroundItems{version:1;nextId:number;items:GroundItem[]}

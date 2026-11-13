@@ -25,7 +25,7 @@ export interface CharacterProfile {
   accessory?: CharacterAccessory;
 }
 export type ItemId = 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 'plank' | 'scrap' | 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw'
-  | 'hay' | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer'
+  | 'freshGrass' | 'hay' | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer'
   | 'herb' | 'rareHerb' | 'bandage' | 'herbalTonic' | 'fungalInfusion' | 'oakSeed' | 'pineSeed' | 'fertilizer' | 'fishingRod' | 'bait' | 'net' | 'fish' | 'rareFish' | 'meal'
   | 'ironShard' | 'ironOre' | 'ironIngot' | 'goldShard' | 'goldOre' | 'goldIngot' | 'blackMetalShard' | 'blackMetalOre' | 'blackMetalIngot' | 'sickle' | 'shovel' | 'furniture' | 'doorKit' | 'windowKit' | 'fenceKit' | 'forge' | 'mushroom'
   | 'sword' | 'lantern' | 'oldMap' | 'metalPart' | 'electronicPart' | 'waterPump' | 'lamp' | 'backpack' | 'boots' | 'cloth' | 'clothing' | 'accessory';
@@ -56,6 +56,8 @@ export interface VillageEconomy {
   stock?:Partial<Record<ItemId,StockRecord>>;
 }
 export interface SaveData {
+  openFields?:import('./systems/open-fields').OpenFieldsState;
+  openFieldsPosition?:TilePoint & {direction?:CharacterDirection};
   groundItems?:import('./systems/ground-items').GroundItems;
   farmConstruction?:import('./systems/farm-construction').FarmConstruction;
   npcSocial?:import('./systems/npc-social-state').NpcSocialState;
@@ -94,7 +96,7 @@ export interface SaveData {
   propertyShoreRevision?:number;
   /** One-time homestead layout; removed starter fences/beds are never recreated. */
   homesteadRevision?:1;
-  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake' | 'survivorCamp' | 'highland';
+  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake' | 'survivorCamp' | 'highland' | 'openFields';
   fishingLakePosition?: TilePoint & { direction?: CharacterDirection };
   fishingLakeMapEdits?:MapEditData;
   cityForestPosition?: TilePoint & { direction?: CharacterDirection };
@@ -162,7 +164,7 @@ export interface HudData {
   learnedRecipes?:string[];
   farmingProgress?: FarmingProgress;
   swimming?:boolean;
-  area?: 'property'|'forest'|'village'|'cityForest'|'fishingLake'|'survivorCamp'|'highland';
+  area?: 'property'|'forest'|'village'|'cityForest'|'fishingLake'|'survivorCamp'|'highland'|'openFields';
   coins?: number;
   vigor?: number;
   wateringCan?: boolean;

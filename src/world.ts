@@ -1,3 +1,4 @@
+import {propertyFieldsApproach} from './data/open-fields';
 import {propertyLakeApproach,withPropertyLakePath} from './data/property-lake-gate';
 import {PROPERTY_LAKE_EXIT,PROPERTY_LAKE_ENTRY} from './data/fishing-lake';
 import {mountainSolid,mountainSolidTile,mountainFits,onHomesteadPetPath} from './data/homestead-landscape';
@@ -123,7 +124,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
   };
   const bridgeAt = isBridgeTile;
   const treeReservations=new Set<string>();
-  const dryTreeCell=(x:number,y:number)=>!propertyLakeApproach(x,y)&&treeGroundClear(x,y,waterPointAt)&&!bridgeAt(x,y)&&!wellSiteTile(x,y)&&!homesteadResourceReserved(x,y)&&!petReserved(x,y);
+  const dryTreeCell=(x:number,y:number)=>!propertyFieldsApproach(x,y)&&!propertyLakeApproach(x,y)&&treeGroundClear(x,y,waterPointAt)&&!bridgeAt(x,y)&&!wellSiteTile(x,y)&&!homesteadResourceReserved(x,y)&&!petReserved(x,y);
   const shoreTreePosition=(x:number,y:number):{x:number;y:number}|undefined=>{
     for(let radius=1;radius<=8;radius++) {
       const candidates:Array<{x:number;y:number;distance:number}>=[];
@@ -393,13 +394,13 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     candidates.push({ id, x, y, kind });
   }
   const looseLayout = placeLooseResources(candidates, {
-    isStaticBlocked: (x, y) => propertyLakeApproach(x,y)||petReserved(x,y)||blocked.has(key(x, y))||wellSiteTile(x,y)||homesteadResourceReserved(x,y),
+    isStaticBlocked: (x, y) => propertyFieldsApproach(x,y)||propertyLakeApproach(x,y)||petReserved(x,y)||blocked.has(key(x, y))||wellSiteTile(x,y)||homesteadResourceReserved(x,y),
     isTreeTile: (x, y) => originalForestTiles.has(key(x, y))||forestTiles.has(key(x,y)), buildings,
   });
   const occupiedResources = new Set(forestTiles);
   const addLooseResource = (node: ResourceNode): void => {
     if(seamLayout&&seamPassage(node.x,node.y,'property'))return;
-    if(propertyLakeApproach(node.x,node.y))return;
+    if(propertyLakeApproach(node.x,node.y)||propertyFieldsApproach(node.x,node.y))return;
     if(villageGate&&!mapEdits?.objects[node.id]&&isPropertyVillagePassage(node.x,node.y))return;
     if(petReserved(node.x,node.y))return;
     if(wellSiteTile(node.x,node.y)||homesteadResourceReserved(node.x,node.y)&&!mapEdits?.objects[node.id])return;
@@ -486,6 +487,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
         if (editorIndex >= 0) Object.assign(editorObjects[editorIndex], { texture: 'tree-stump', depleted: true });
       } else if (editorIndex >= 0) editorObjects.splice(editorIndex, 1);
   };
+  drawExitSign(scene,{x:25,y:69},{x:25,y:67});
   const resourceAt = (x: number, y: number) => resources.find((node) => node.x === x && node.y === y);
   const solidTile = (x: number, y: number) => x < 1 || y < 1 || x >= WORLD_WIDTH - 1 || y >= WORLD_HEIGHT - 1 || blocked.has(key(x, y)) || resourceBlocked.has(key(x, y))||propertyHouseSolidTile(x,y)||cliffTiles.has(key(x,y))||!!petShelter&&shelterSolid(petShelter,x*32+16,y*32+16);
   const pointSolid=(x:number,y:number)=>{
@@ -510,7 +512,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     setNaturalResources:(nodes,preserve=[])=>{
       const keep=new Set([...preserve,...Object.keys(mapEdits?.objects??{})]),next=new Set(nodes.map(n=>n.id));
       for(const n of [...resources])if(n.id.startsWith('spawn-')||n.id.startsWith('growth-')?!next.has(n.id):n.kind!=='standingTree'&&!n.id.startsWith('editor-')&&!n.id.startsWith('shoreStones-')&&!keep.has(n.id))eraseResource(n.id);
-      for(const node of nodes)if(!resources.some(n=>n.id===node.id)&&!solidTile(node.x,node.y)&&!wellSiteTile(node.x,node.y)&&!homesteadResourceReserved(node.x,node.y)&&!(seamLayout&&seamPassage(node.x,node.y,'property'))&&!propertyLakeApproach(node.x,node.y)&&!(villageGate&&isPropertyVillagePassage(node.x,node.y))&&!waterAt(node.x,node.y)&&!((node.kind==='fiber'||node.kind==='seeds'||node.kind==='herb'||node.kind==='mushroom')&&!naturalPlantGround(mapEdits?.terrain[key(node.x,node.y)])))addLooseResource(node);
+      for(const node of nodes)if(!resources.some(n=>n.id===node.id)&&!solidTile(node.x,node.y)&&!wellSiteTile(node.x,node.y)&&!homesteadResourceReserved(node.x,node.y)&&!(seamLayout&&seamPassage(node.x,node.y,'property'))&&!propertyFieldsApproach(node.x,node.y)&&!propertyLakeApproach(node.x,node.y)&&!(villageGate&&isPropertyVillagePassage(node.x,node.y))&&!waterAt(node.x,node.y)&&!((node.kind==='fiber'||node.kind==='seeds'||node.kind==='herb'||node.kind==='mushroom')&&!naturalPlantGround(mapEdits?.terrain[key(node.x,node.y)])))addLooseResource(node);
     },
     isBlocked,
     isBlockedPoint,
@@ -521,7 +523,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     canPlantTree:dryTreeCell,
     isFarm,
     isWater: waterAt,
-    isBuildable: (x, y) => !isBlocked(x, y) && !waterTouchesTile(x, y) && !isFarm(x, y) && !resourceAt(x, y) && !bridgeAt(x, y) && !(x === 29 && y === 17),
+    isBuildable: (x, y) => !isBlocked(x, y) && !waterTouchesTile(x, y) && !isFarm(x, y) && !resourceAt(x, y) && !propertyFieldsApproach(x,y) && !bridgeAt(x, y) && !(x === 29 && y === 17),
     resourceAt,
     updateOcclusion: (playerX, playerY) => {
       const next = new Set<string>();

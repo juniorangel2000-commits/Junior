@@ -1,6 +1,6 @@
 import { isPetDirection } from "./pet-directions";
 import type { PetDirection } from "./pet-sprites";
-export type PetWorldArea = "property" | "forest" | "village" | "cityForest" | "fishingLake" | "survivorCamp" | "highland";
+export type PetWorldArea = "property" | "forest" | "village" | "cityForest" | "fishingLake" | "survivorCamp" | "highland" | "openFields";
 export interface WorldPetState {
   mode: "follow" | "stay" | "shelter";
   area: PetWorldArea;
@@ -10,6 +10,7 @@ export interface WorldPetState {
   direction: PetDirection;
 }
 export const PET_WORLD_AREAS: Record<PetWorldArea, string> = {
+  openFields:"Campos Abertos",
   property: "Propriedade",
   forest: "Floresta Antiga",
   village: "Vila",

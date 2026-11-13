@@ -37,7 +37,7 @@ describe('east property passage to the village',()=>{
   const data=defaultMap('property');expect(validateMapEdits(data)).toBe(true);
   expect(data.points).toEqual(previousProperty.points);
   createWorld(scene,[],[],data);
-  expect(drawExitSign).toHaveBeenCalledTimes(3);
+  expect(drawExitSign).toHaveBeenCalledTimes(4);
   expect(drawExitSign).toHaveBeenCalledWith(scene,PROPERTY_LAKE_EXIT,PROPERTY_LAKE_ENTRY);
   expect(drawExitSign).toHaveBeenCalledWith(scene,PROPERTY_VILLAGE_EXIT,PROPERTY_VILLAGE_ENTRY);
   expect(exitSignLayout(PROPERTY_VILLAGE_EXIT,PROPERTY_VILLAGE_ENTRY).direction).toBe('right');
