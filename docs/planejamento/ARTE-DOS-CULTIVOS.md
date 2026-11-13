@@ -12,6 +12,8 @@ broto, planta jovem, desenvolvimento, madura e colheita. O arquivo
 Os recortes finais têm 192 px, transparência binária e raiz na linha 180;
 o jogo usa essa raiz para alinhar a planta ao canteiro. Ícones centralizados.
 
+As plantas só podem ser plantadas em terra arada com a enxada. A captura do jardim demonstra as fases sobre canteiros preparados.
+
 Sementes podem ser equipadas na mochila ou na barra rápida. Rosa vende todas
 as sementes; a estação e o tempo aparecem na descrição. Nenhum comerciante
 vende colheitas. Os valores abaixo são o equilíbrio inicial, sujeito a testes.
