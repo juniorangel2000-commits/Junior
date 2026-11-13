@@ -1,0 +1,15 @@
+import {describe,it,expect} from 'vitest';
+import {createRequire} from 'node:module';
+import {readFileSync} from 'node:fs';
+import {PLAYER_PICKAXE_HEADS,playerMiningFrame,playerMiningMetal,playerMiningRow} from '../src/data/player-mining';
+import {CHARACTER_DIRECTIONS} from '../src/character-directions';
+import {ToolUse,TOOL_USE_DURATION} from '../src/systems/tool-use';
+import {TOOL_IMPACT_FRAME,TOOL_USE_FPS} from '../src/data/tool-art';
+import art from '../public/assets/visual/characters/player-chopping.json';
+const {PNG}=createRequire(import.meta.url)('pngjs');
+describe('authored player hatchet animation',()=>{
+ it('uses the contact pose at the existing single impact, with no change to action duration',()=>{for(const direction of CHARACTER_DIRECTIONS){const use=new ToolUse(),target={id:'mine-test',kind:'vein' as const,x:1,y:1};use.start({tool:'hatchet',direction,target});expect(playerMiningFrame(direction,use.frame)%6).toBe(0);expect(use.advance(TOOL_IMPACT_FRAME/TOOL_USE_FPS)?.target).toEqual(target);expect(playerMiningFrame(direction,use.frame)%6).toBe(3);expect(use.advance(.001)).toBeNull();expect(use.advance(TOOL_USE_DURATION)).toBeNull();expect(use.active).toBe(false);}});
+ it('keeps north and south in the authored rows instead of forcing horizontal tool sprites',()=>{expect(playerMiningRow('up')).toBe(1);expect(playerMiningRow('down')).toBe(0);expect(playerMiningRow('right')).toBe(2);expect(playerMiningRow('left')).toBe(3);expect(playerMiningFrame('up-right',8)).toBe(11);expect(playerMiningFrame('down-left',8)).toBe(5);});
+ it('preserves skin, wood, fabric and the base tool while giving metals distinct head colors',()=>{for(const rgb of [[173,98,42],[235,181,126],[71,110,159],[242,220,188]])for(let tier=0;tier<4;tier++)expect(playerMiningMetal(rgb[0],rgb[1],rgb[2],tier)).toEqual(rgb);const gray=[170,170,170]as const;expect(playerMiningMetal(...gray,0)).toEqual(gray);const gold=playerMiningMetal(...gray,2),iron=playerMiningMetal(...gray,1),black=playerMiningMetal(...gray,3);expect(gold[0]).toBeGreaterThan(gold[2]*2);expect(black[2]).toBeLessThan(iron[2]);expect(black[2]).toBeGreaterThan(black[0]);});
+ it('ships all 24 complete transparent frames for both identities at fixed per-row anchors',()=>{for(const[id,meta]of Object.entries(art.characters)){const p=PNG.sync.read(readFileSync('public/'+meta.file));expect([p.width,p.height]).toEqual([1536,1024]);expect(meta.rows).toHaveLength(4);expect(meta.scale).toBeGreaterThan(.2);expect(meta.scale).toBeLessThan(.26);for(let row=0;row<4;row++){expect(meta.rows[row].originX).toBeGreaterThan(.40);expect(meta.rows[row].originX).toBeLessThan(.58);for(let frame=0;frame<6;frame++){let visible=0,border=0;for(let y=0;y<256;y++)for(let x=0;x<256;x++){const alpha=p.data[((row*256+y)*1536+frame*256+x)*4+3];if(alpha>128){visible++;if(x===0||y===0||x===255||y===255)border++;}}expect(visible,id+row+frame).toBeGreaterThan(6000);expect(border,id+row+frame).toBe(0);const[x,y,w,h]=PLAYER_PICKAXE_HEADS[row][frame];expect(x+w).toBeLessThanOrEqual(256);expect(y+h).toBeLessThanOrEqual(256);}}}});
+});

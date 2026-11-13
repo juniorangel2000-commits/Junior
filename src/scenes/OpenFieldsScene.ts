@@ -61,7 +61,7 @@ export class OpenFieldsScene extends Phaser.Scene{
    const t=inventoryToolCondition(this.state.inventory,'hatchet');
    if(!this.state.inventory.hatchet||t.tier<1){this.ui.toast('Este ipê é duro demais. Você precisa de uma machadinha de ferro ou melhor.');return;}
    if(t.durability<=0){this.ui.toast('Repare esta machadinha antes de cortar o ipê.');return;}
-   const direction=directionFromVector(ipe.x-this.player.x,ipe.y-this.player.y);this.player.facing=directionVector(direction);this.swing={id:ipe.id,age:0,hit:false,ipe:true};this.toolVisual.playGather('hatchet',direction,this.player,t.tier);return;
+   const direction=directionFromVector(ipe.x-this.player.x,ipe.y-this.player.y);this.player.facing=directionVector(direction);this.swing={id:ipe.id,age:0,hit:false,ipe:true};this.toolVisual.playGather('hatchet',direction,this.player,t.tier,this.player.sprite);return;
   }
   const p=this.target();if(!p)return;
   if(p.kind==='grass'){

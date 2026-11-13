@@ -1,4 +1,4 @@
-import {preloadPlayerMiningArt,playerMiningPose} from './player-mining-art';
+import {preloadPlayerMiningArt,playerMiningPose,playerChoppingPose} from './player-mining-art';
 import Phaser from 'phaser';
 import { CHARACTER_DIRECTIONS, directionVector, type CharacterDirection } from './character-directions';
 import { toolIdleArt, toolUseArt, toolSwingAngle, TOOL_USE_FRAMES, TOOL_FRAME_SIZE, type AnimatedTool } from './data/tool-art';
@@ -53,8 +53,8 @@ export class ToolVisual {
 
   show(tool: AnimatedTool | 'sickle' | 'shovel', direction: CharacterDirection, x: number, y: number, use: Pick<ToolUse,'active'|'frame'>, tier=0,body?:Phaser.GameObjects.Sprite): void {
     if (!use.active) { this.hide(); return; }
-    if(tool==='pickaxe'&&body){
-      const pose=playerMiningPose(this.sprite.scene,this.profile,direction,use.frame,tier);
+    if((tool==='pickaxe'||tool==='hatchet')&&body){
+      const pose=(tool==='hatchet'?playerChoppingPose:playerMiningPose)(this.sprite.scene,this.profile,direction,use.frame,tier);
       if(pose){
         if(this.hiddenBody!==body){this.hideMiningPose();this.hiddenBody=body;this.bodyWasVisible=body.visible;}
         body.setVisible(false);this.sprite.setVisible(false);
@@ -95,12 +95,12 @@ export class ToolVisual {
   }
 
   /** The same rigid pivot swing is used for inventory-operated sickles and shovels. */
-  playGather(tool:EconomicTool,direction:CharacterDirection,player:{x:number;y:number},tier:number):void{
+  playGather(tool:EconomicTool,direction:CharacterDirection,player:{x:number;y:number},tier:number,body?:Phaser.GameObjects.Sprite):void{
     this.hide();
     this.sprite.setData('gathering',true);
-    this.show(tool,direction,player.x,player.y,{active:true,frame:0},tier);
+    this.show(tool,direction,player.x,player.y,{active:true,frame:0},tier,body);
     this.gatherTween=this.sprite.scene.tweens.addCounter({from:0,to:8,duration:450,onUpdate:tween=>{
-      this.show(tool,direction,player.x,player.y,{active:true,frame:Math.floor(tween.getValue()??0)},tier);
+      this.show(tool,direction,player.x,player.y,{active:true,frame:Math.floor(tween.getValue()??0)},tier,body);
     },onComplete:()=>{this.gatherTween=undefined;this.sprite.setData('gathering',false);this.hide();}});
   }
 }

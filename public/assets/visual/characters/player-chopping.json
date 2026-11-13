@@ -1,0 +1,60 @@
+{
+  "frameWidth": 256,
+  "frameHeight": 256,
+  "columns": 6,
+  "rows": 4,
+  "characters": {
+    "farmer-male": {
+      "file": "assets/visual/characters/farmer-male/work-chopping.png",
+      "scale": 0.2488479262672811,
+      "rows": [
+        {
+          "direction": "south",
+          "originX": 0.5293059172453703,
+          "originY": 1.0042317708333333
+        },
+        {
+          "direction": "north",
+          "originX": 0.5019802517361112,
+          "originY": 1.0003074363425926
+        },
+        {
+          "direction": "east",
+          "originX": 0.4511447482638889,
+          "originY": 0.9845920138888888
+        },
+        {
+          "direction": "west",
+          "originX": 0.5371636284722222,
+          "originY": 0.9845920138888888
+        }
+      ]
+    },
+    "farmer-female": {
+      "file": "assets/visual/characters/farmer-female/work-chopping.png",
+      "scale": 0.21555555555555556,
+      "rows": [
+        {
+          "direction": "south",
+          "originX": 0.50390625,
+          "originY": 0.9996778350515464
+        },
+        {
+          "direction": "north",
+          "originX": 0.5,
+          "originY": 1.0087387242268042
+        },
+        {
+          "direction": "east",
+          "originX": 0.43508376288659795,
+          "originY": 0.9996778350515464
+        },
+        {
+          "direction": "west",
+          "originX": 0.5388208762886598,
+          "originY": 0.9996778350515464
+        }
+      ]
+    }
+  }
+}
