@@ -1,3 +1,5 @@
+> Atualização: as folhas foram refinadas posteriormente. Consulte [o estado atual](../trabalho-refinado/README.md). A descrição abaixo registra a etapa anterior.
+
 # Corte com machadinha
 
 As duas folhas `work-chopping.png` têm 1536 × 1024 pixels: seis quadros por

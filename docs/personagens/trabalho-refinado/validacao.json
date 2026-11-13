@@ -1,0 +1,518 @@
+{
+  "poses": [
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "down",
+      "tier": 0,
+      "frame": 3,
+      "key": "player-chopping-source-farmer-male"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "down",
+      "tier": 1,
+      "frame": 3,
+      "key": "player-chopping-source-farmer-male-1"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "down",
+      "tier": 2,
+      "frame": 3,
+      "key": "player-chopping-source-farmer-male-2"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "down",
+      "tier": 3,
+      "frame": 3,
+      "key": "player-chopping-source-farmer-male-3"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "up",
+      "tier": 0,
+      "frame": 9,
+      "key": "player-chopping-source-farmer-male"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "up",
+      "tier": 1,
+      "frame": 9,
+      "key": "player-chopping-source-farmer-male-1"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "up",
+      "tier": 2,
+      "frame": 9,
+      "key": "player-chopping-source-farmer-male-2"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "up",
+      "tier": 3,
+      "frame": 9,
+      "key": "player-chopping-source-farmer-male-3"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "right",
+      "tier": 0,
+      "frame": 15,
+      "key": "player-chopping-source-farmer-male"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "right",
+      "tier": 1,
+      "frame": 15,
+      "key": "player-chopping-source-farmer-male-1"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "right",
+      "tier": 2,
+      "frame": 15,
+      "key": "player-chopping-source-farmer-male-2"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "right",
+      "tier": 3,
+      "frame": 15,
+      "key": "player-chopping-source-farmer-male-3"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "left",
+      "tier": 0,
+      "frame": 21,
+      "key": "player-chopping-source-farmer-male"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "left",
+      "tier": 1,
+      "frame": 21,
+      "key": "player-chopping-source-farmer-male-1"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "left",
+      "tier": 2,
+      "frame": 21,
+      "key": "player-chopping-source-farmer-male-2"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-male",
+      "direction": "left",
+      "tier": 3,
+      "frame": 21,
+      "key": "player-chopping-source-farmer-male-3"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "down",
+      "tier": 0,
+      "frame": 3,
+      "key": "player-chopping-source-farmer-female"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "down",
+      "tier": 1,
+      "frame": 3,
+      "key": "player-chopping-source-farmer-female-1"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "down",
+      "tier": 2,
+      "frame": 3,
+      "key": "player-chopping-source-farmer-female-2"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "down",
+      "tier": 3,
+      "frame": 3,
+      "key": "player-chopping-source-farmer-female-3"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "up",
+      "tier": 0,
+      "frame": 9,
+      "key": "player-chopping-source-farmer-female"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "up",
+      "tier": 1,
+      "frame": 9,
+      "key": "player-chopping-source-farmer-female-1"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "up",
+      "tier": 2,
+      "frame": 9,
+      "key": "player-chopping-source-farmer-female-2"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "up",
+      "tier": 3,
+      "frame": 9,
+      "key": "player-chopping-source-farmer-female-3"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "right",
+      "tier": 0,
+      "frame": 15,
+      "key": "player-chopping-source-farmer-female"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "right",
+      "tier": 1,
+      "frame": 15,
+      "key": "player-chopping-source-farmer-female-1"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "right",
+      "tier": 2,
+      "frame": 15,
+      "key": "player-chopping-source-farmer-female-2"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "right",
+      "tier": 3,
+      "frame": 15,
+      "key": "player-chopping-source-farmer-female-3"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "left",
+      "tier": 0,
+      "frame": 21,
+      "key": "player-chopping-source-farmer-female"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "left",
+      "tier": 1,
+      "frame": 21,
+      "key": "player-chopping-source-farmer-female-1"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "left",
+      "tier": 2,
+      "frame": 21,
+      "key": "player-chopping-source-farmer-female-2"
+    },
+    {
+      "tool": "hatchet",
+      "characterId": "farmer-female",
+      "direction": "left",
+      "tier": 3,
+      "frame": 21,
+      "key": "player-chopping-source-farmer-female-3"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "down",
+      "tier": 0,
+      "frame": 3,
+      "key": "player-mining-source-farmer-male"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "down",
+      "tier": 1,
+      "frame": 3,
+      "key": "player-mining-source-farmer-male-1"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "down",
+      "tier": 2,
+      "frame": 3,
+      "key": "player-mining-source-farmer-male-2"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "down",
+      "tier": 3,
+      "frame": 3,
+      "key": "player-mining-source-farmer-male-3"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "up",
+      "tier": 0,
+      "frame": 9,
+      "key": "player-mining-source-farmer-male"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "up",
+      "tier": 1,
+      "frame": 9,
+      "key": "player-mining-source-farmer-male-1"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "up",
+      "tier": 2,
+      "frame": 9,
+      "key": "player-mining-source-farmer-male-2"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "up",
+      "tier": 3,
+      "frame": 9,
+      "key": "player-mining-source-farmer-male-3"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "right",
+      "tier": 0,
+      "frame": 15,
+      "key": "player-mining-source-farmer-male"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "right",
+      "tier": 1,
+      "frame": 15,
+      "key": "player-mining-source-farmer-male-1"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "right",
+      "tier": 2,
+      "frame": 15,
+      "key": "player-mining-source-farmer-male-2"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "right",
+      "tier": 3,
+      "frame": 15,
+      "key": "player-mining-source-farmer-male-3"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "left",
+      "tier": 0,
+      "frame": 21,
+      "key": "player-mining-source-farmer-male"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "left",
+      "tier": 1,
+      "frame": 21,
+      "key": "player-mining-source-farmer-male-1"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "left",
+      "tier": 2,
+      "frame": 21,
+      "key": "player-mining-source-farmer-male-2"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-male",
+      "direction": "left",
+      "tier": 3,
+      "frame": 21,
+      "key": "player-mining-source-farmer-male-3"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "down",
+      "tier": 0,
+      "frame": 3,
+      "key": "player-mining-source-farmer-female"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "down",
+      "tier": 1,
+      "frame": 3,
+      "key": "player-mining-source-farmer-female-1"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "down",
+      "tier": 2,
+      "frame": 3,
+      "key": "player-mining-source-farmer-female-2"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "down",
+      "tier": 3,
+      "frame": 3,
+      "key": "player-mining-source-farmer-female-3"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "up",
+      "tier": 0,
+      "frame": 9,
+      "key": "player-mining-source-farmer-female"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "up",
+      "tier": 1,
+      "frame": 9,
+      "key": "player-mining-source-farmer-female-1"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "up",
+      "tier": 2,
+      "frame": 9,
+      "key": "player-mining-source-farmer-female-2"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "up",
+      "tier": 3,
+      "frame": 9,
+      "key": "player-mining-source-farmer-female-3"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "right",
+      "tier": 0,
+      "frame": 15,
+      "key": "player-mining-source-farmer-female"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "right",
+      "tier": 1,
+      "frame": 15,
+      "key": "player-mining-source-farmer-female-1"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "right",
+      "tier": 2,
+      "frame": 15,
+      "key": "player-mining-source-farmer-female-2"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "right",
+      "tier": 3,
+      "frame": 15,
+      "key": "player-mining-source-farmer-female-3"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "left",
+      "tier": 0,
+      "frame": 21,
+      "key": "player-mining-source-farmer-female"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "left",
+      "tier": 1,
+      "frame": 21,
+      "key": "player-mining-source-farmer-female-1"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "left",
+      "tier": 2,
+      "frame": 21,
+      "key": "player-mining-source-farmer-female-2"
+    },
+    {
+      "tool": "pickaxe",
+      "characterId": "farmer-female",
+      "direction": "left",
+      "tier": 3,
+      "frame": 21,
+      "key": "player-mining-source-farmer-female-3"
+    }
+  ],
+  "bodyRestored": true,
+  "errors": []
+}
