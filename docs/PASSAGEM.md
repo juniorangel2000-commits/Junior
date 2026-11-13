@@ -4,25 +4,25 @@
 
 - **Atualizado em:** 2026-11-13
 - **Por:** Codex
-- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, implementação `ccdd7da`; usar o HEAD com esta passagem.
+- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, implementação `b39c3b5`; usar o HEAD com esta passagem.
 - **Última versão publicada:** `v0.10.0-preview.33`.
 - **Estado:** concluído e validado; não publicado nesta rodada.
 
 ## Feito nesta rodada
 
-- Refinadas as quatro folhas de trabalho (machadinha/picareta, fazendeiro/fazendeira), usando as quatro vistas originais de cada personagem como referência de rosto, cabelo, roupa e proporções.
-- Mantidos o formato 1536 × 1024, células 256 × 256, seis quadros e quatro direções, relógio de impacto e integração nos três cenários.
-- Mantidos os levantamentos laterais da machadinha à frente do personagem. A pose traseira continua como o Junior preferiu, sem a tentativa centralizada.
-- Repouso e retorno agora usam exatamente os mesmos pixels para evitar mudança de aparência no fechamento do ciclo.
-- Recalculados escala e encaixes dos pés por personagem/atividade/direção.
-- Fontes refinadas preservadas em `referencias/personagens/trabalho-refinado/`; preparo compartilhado em `scripts/prepare-player-work.cjs`, chamado pelos dois comandos anteriores.
-- GIFs atuais e relatório em `docs/personagens/trabalho-refinado/`.
+- Adicionado um cavalo selvagem aos Campos Abertos (`field-horse-1`), usando o ZIP enviado pelo Junior, sem utilizar o estudo gerado anteriormente.
+- Preservados 180 PNGs originais; atlas com caminhada em oito direções e corrida quando foge. Animação de mexer a cabeça preservada para uso futuro.
+- Colisão maior para o cavalo, ponto inicial livre, posição salva no estado existente dos animais; carregar a partida não duplica o cavalo.
+- Testes de pixels/importação, movimento, colisão e compatibilidade; QA real no Chromium com screenshot e relatório em `docs/cenarios/cavalo-campos-abertos/`.
+- Refinamentos anteriores de personagens trabalhando e ipês permanecem preservados.
+- Registrada a ideia de domesticação proposta pelo Junior em `docs/planejamento/DOMESTICACAO-CAVALO.md`.
 
 ## Em andamento e próximo passo exato
 
-- Junior deve avaliar os GIFs refinados da machadinha e picareta. As folhas aproximam o original, mas não reutilizam a cabeça original pixel a pixel. Evitar prometer identidade perfeita antes da revisão visual dele.
-- Se pedir publicação, publicar preview.34 conforme AGENTS.md: build, versão do pacote, notas/LEIA, tag anotada, CI e main. Não criar preview.35 antes disso.
-- Nesta rodada não houve pedido de publicação; main e tags permaneceram na versão publicada.
+- Elaborar a domesticação com o Junior: estábulo pronto, comida de NPC exigindo vegetais da colheita, oferta nos Campos Abertos e confiança crescendo ao longo de sete dias.
+- Aumentar a fuga do cavalo para superar a corrida do jogador; ainda usa o fator genérico .9 dos animais. Definir NPC, vegetais, receita e estábulo antes de implementar a cadeia completa.
+- Cavalo já aparece no cenário, mas captura, condução e montaria ainda não existem.
+- Publicar preview.34 somente quando solicitado; main/tags continuam na preview.33.
 
 ## Pendências e ideias para depois
 
@@ -41,7 +41,7 @@
 
 - `npm ci`: ok.
 - `npm run check`: ok antes e depois.
-- `npm test`: baseline e final **1.854 passaram, zero falhas, 209 arquivos**.
-- Testes específicos das duas animações: oito passaram.
-- `npm run build`: não executado (sem publicação solicitada nesta rodada).
-- Conferido no jogo (Chromium): 64 combinações de personagem, ferramenta, direção e nível; todos os quadros e restauração do corpo, sem erros JavaScript. A primeira tentativa foi interrompida por HMR durante preparo das imagens; a execução final passou.
+- `npm test`: baseline 1.854 passaram; final **1.856 passaram, zero falhas, 210 arquivos**.
+- Testes específicos: 16 passaram (cavalo, animais e Campos Abertos).
+- `npm run build`: não executado (sem publicação nesta rodada).
+- Conferido no jogo (Chromium): cavalo com a sprite fornecida, movimento, salvamento, continuar sem duplicação e nenhum erro JavaScript.

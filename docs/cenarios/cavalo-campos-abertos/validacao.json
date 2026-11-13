@@ -1,0 +1,11 @@
+{
+  "horse": {
+    "id": "field-horse-1",
+    "x": 1873.529354585111,
+    "y": 1361.529354585111
+  },
+  "nativeSprite": true,
+  "saved": true,
+  "reloadWithoutDuplication": true,
+  "errors": []
+}
