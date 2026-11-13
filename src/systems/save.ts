@@ -2,7 +2,7 @@ import {validOpenFields} from './open-fields';
 import {validGroundItems} from './ground-items';
 import {syncToolInstances,validToolInventory,activeToolCopy,toolReference} from './tool-instances';
 import {TOOL_IDS} from '../data/economy-balance';
-import {isLegacyHouseTool} from '../data/farm-buildings';
+import {isLegacyHouseTool,FARM_KINDS,FARM_BUILDINGS,LATER_FARM_MATERIALS,type FarmKind} from '../data/farm-buildings';
 import {validFarmConstruction} from './farm-construction';
 import {validMineMissions} from './mine-mission-state';
 import {validBentoExpedition} from './bento-expedition-state';
@@ -312,6 +312,16 @@ export function migrateSave(value: unknown): SaveData | null {
       &&met.some(id=>Object.hasOwn(aliases,id))){
       value={...value,villageEconomy:{...economy,met:[...new Set(met.map(id=>Object.hasOwn(aliases,id)?aliases[id]:id))]}};
     }
+  }
+  // Animal buildings gained madeira nobre in preview.34. Finished ones were
+  // already built, so they count as supplied; work in progress still needs it.
+  if(isRecord(value)&&value.version===SAVE_VERSION&&isRecord(value.farmConstruction)&&Array.isArray(value.farmConstruction.sites)){
+    const sites=value.farmConstruction.sites.map(site=>{
+      if(!isRecord(site)||site.finished!==true||!isRecord(site.delivered)||!FARM_KINDS.includes(site.kind as FarmKind))return site;
+      const cost=FARM_BUILDINGS[site.kind as FarmKind].cost,missing=LATER_FARM_MATERIALS.filter(id=>cost[id]!==undefined&&site.delivered!==undefined&&(site.delivered as Record<string,unknown>)[id]===undefined);
+      return missing.length?{...site,delivered:{...site.delivered,...Object.fromEntries(missing.map(id=>[id,cost[id]]))}}:site;
+    });
+    if(sites.some((site,i)=>site!==(value as {farmConstruction:{sites:unknown[]}}).farmConstruction.sites[i]))value={...value,farmConstruction:{...value.farmConstruction,sites}};
   }
   if(validateSave(value)){
     const data=structuredClone(value);

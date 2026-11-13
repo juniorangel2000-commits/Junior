@@ -36,6 +36,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   hoe: { name: 'Enxada', description: 'E ou clique prepara um canteiro no solo livre da propriedade. Shift + E ou Shift + clique desfaz o canteiro vazio e restaura o piso anterior.' },
   handsaw: { name: 'Serrote', description: 'Usado junto à bancada para serrar tábuas e preparar componentes das construções.' },
   freshGrass:{name:'Capim fresco',description:'Cortado com a foice nos Campos Abertos. Guarde no silo: cada capim seca em uma palha após um dia.',iconFallback:'fiber'},
+  hardwood:{name:'Madeira nobre',description:'Cerne denso do ipê-amarelo, que só cresce nos Campos Abertos. Exige machadinha de ferro ou melhor: rende 1 com ferro, 2 com ouro e 3 com metal negro. Usada nas construções dos animais.',iconFallback:'log'},
   hay:{name:'Palha',description:'Palha seca para armazenar no silo. Prepare no silo: 3 fibras vegetais rendem 1 palha.',iconFallback:'fiber'},
   fiber: { name: 'Fibras vegetais', description: 'Recolha samambaias, flores brancas, arbustos e juncos das margens do rio para fazer cordas e preparar palha no silo.' },
   cord: { name: 'Cordas vegetais', description: 'Prendem as partes das ferramentas e permitem conduzir animais até a propriedade.' },
@@ -72,7 +73,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
 
 /** Only these stock fields may be absent in a save from before the village
  * services update. Missing any older field still indicates a corrupt save. */
-export const VILLAGE_ITEM_IDS=['freshGrass','hay',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
+export const VILLAGE_ITEM_IDS=['freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
 
 export const ITEM_IDS = Object.keys(ITEMS) as ItemId[];
 export const ITEM_NAMES = Object.fromEntries(ITEM_IDS.map(id => [id, ITEMS[id].name])) as Record<ItemId, string>;

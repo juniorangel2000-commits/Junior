@@ -22,7 +22,8 @@ for(let i=0;i<96;i++){let x=0,y=0;const edge=i%4;if(edge===0){x=60+random()*2950
 for(const [i,[x,y]]of [[430,420],[540,510],[610,400],[2460,390],[2570,490],[2490,560],[320,1410],[460,1480],[2440,1680],[2610,1770],[2510,1880],[1770,1880],[1840,2000],[1660,2040],[680,970],[740,1080]].entries())tree(x,y,i+100);
 for(let i=0;i<35;i++){const x=210+random()*2640,y=260+random()*1810;if(fieldsPathDistance(x,y)<100||Math.hypot(x-FIELDS_SHED.x,y-FIELDS_SHED.y)<210)continue;FIELDS_PROPS.push({id:`rock-${i}`,x,y,texture:'lake-rock-'+(i%3),width:42+i%3*13,height:42+i%3*13,rx:18+i%3*5,ry:10+i%3*3});}
 const propCells=new Map<string,FieldProp[]>();
-for(const p of FIELDS_PROPS)for(let y=Math.floor((p.y-p.ry)/128);y<=Math.floor((p.y+p.ry)/128);y++)for(let x=Math.floor((p.x-p.rx)/128);x<=Math.floor((p.x+p.rx)/128);x++){const k=`${x},${y}`;if(!propCells.has(k))propCells.set(k,[]);propCells.get(k)!.push(p);}
+const indexProp=(p:FieldProp)=>{for(let y=Math.floor((p.y-p.ry)/128);y<=Math.floor((p.y+p.ry)/128);y++)for(let x=Math.floor((p.x-p.rx)/128);x<=Math.floor((p.x+p.rx)/128);x++){const k=`${x},${y}`;if(!propCells.has(k))propCells.set(k,[]);propCells.get(k)!.push(p);}};
+for(const p of FIELDS_PROPS)indexProp(p);
 export function fieldsBlocked(x:number,y:number):boolean{
  if(x<32||y<32||x>3040||y>2272)return true;
  const s=FIELDS_SHED;
@@ -42,3 +43,12 @@ for(const [i,p]of FIELDS_PROPS.filter(p=>p.tree&&p.y>280&&p.y<2100).entries())if
 export const FIELDS_ANIMALS=[{id:'field-cow-1',kind:'cow',x:1020,y:1690},{id:'field-cow-2',kind:'cow',x:1150,y:1790},{id:'field-hen-1',kind:'chicken',x:2240,y:990},{id:'field-hen-2',kind:'chicken',x:2310,y:1080},{id:'field-hen-3',kind:'chicken',x:2160,y:1150},{id:'field-rabbit-1',kind:'rabbit',x:600,y:700},{id:'field-rabbit-2',kind:'rabbit',x:2600,y:1550}] as const;
 export const fieldPatch=(id:string)=>MEADOW_PATCHES.find(p=>p.id===id);
 export const fieldsSafe=(p:TilePoint)=>[[-8,-5],[8,-5],[-8,4],[8,4]].every(([dx,dy])=>!fieldsBlocked(p.x+dx,p.y+dy));
+/** Rare golden ipês, unique to the fields. Spots sit in existing clearings, and
+ * their trunks are indexed only after every meadow patch exists, so patch ids
+ * and saved cuts from earlier versions stay unchanged. */
+export const IPE_HITS=6;
+export const IPE_REGROW_DAYS=7;
+export const IPE_REACH=78;
+export const FIELDS_IPES:FieldProp[]=[[1240,440],[1720,720],[1940,1140],[760,1370],[2490,1400],[2120,1720]].map(([x,y],i)=>({id:`ipe-${i}`,x,y,texture:'fields-ipe',width:178,height:226,rx:14,ry:9,tree:true}));
+for(const p of FIELDS_IPES)indexProp(p);
+export const fieldIpe=(id:string)=>FIELDS_IPES.find(p=>p.id===id);

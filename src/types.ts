@@ -25,7 +25,7 @@ export interface CharacterProfile {
   accessory?: CharacterAccessory;
 }
 export type ItemId = 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 'plank' | 'scrap' | 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw'
-  | 'freshGrass' | 'hay' | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer'
+  | 'freshGrass' | 'hay' | 'hardwood' | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer'
   | 'herb' | 'rareHerb' | 'bandage' | 'herbalTonic' | 'fungalInfusion' | 'oakSeed' | 'pineSeed' | 'fertilizer' | 'fishingRod' | 'bait' | 'net' | 'fish' | 'rareFish' | 'meal'
   | 'ironShard' | 'ironOre' | 'ironIngot' | 'goldShard' | 'goldOre' | 'goldIngot' | 'blackMetalShard' | 'blackMetalOre' | 'blackMetalIngot' | 'sickle' | 'shovel' | 'furniture' | 'doorKit' | 'windowKit' | 'fenceKit' | 'forge' | 'mushroom'
   | 'sword' | 'lantern' | 'oldMap' | 'metalPart' | 'electronicPart' | 'waterPump' | 'lamp' | 'backpack' | 'boots' | 'cloth' | 'clothing' | 'accessory';

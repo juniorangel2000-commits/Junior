@@ -21,13 +21,13 @@ import {bentoSceneWriter} from '../systems/bento-commit';
 import {installWorldCompanion} from '../dungeons/world-pet-controller';
 import {preloadPetArt} from '../dungeons/pet-sprites';
 import {inventoryToolCondition} from '../systems/tool-instances';
-import {harvestMeadow,meadowGrowth} from '../systems/open-fields';
+import {harvestMeadow,meadowGrowth,chopIpe,ipeStanding} from '../systems/open-fields';
 import {OpenFieldsWorld,preloadOpenFields} from '../open-fields-world';
-import {FIELDS_SIZE,FIELDS_ENTRY,FIELDS_EXIT,PROPERTY_FIELDS_RETURN,MEADOW_PATCHES,fieldsBlocked,fieldsSafe} from '../data/open-fields';
+import {FIELDS_SIZE,FIELDS_ENTRY,FIELDS_EXIT,PROPERTY_FIELDS_RETURN,MEADOW_PATCHES,FIELDS_IPES,IPE_REACH,fieldsBlocked,fieldsSafe} from '../data/open-fields';
 interface FieldsStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 export class OpenFieldsScene extends Phaser.Scene{
  private state!:SaveData;private ui!:GameUI;private player!:Player;private world!:OpenFieldsWorld;private daylight!:Daylight;private farming!:Farming;private toolVisual!:ToolVisual;
- private onReturn!:FieldsStart['onReturn'];private paused=false;private leaving=false;private zoom=1;private elapsed=0;private passage=new DoorwayPassage();private swing?:{id:string;age:number;hit:boolean};
+ private onReturn!:FieldsStart['onReturn'];private paused=false;private leaving=false;private zoom=1;private elapsed=0;private passage=new DoorwayPassage();private swing?:{id:string;age:number;hit:boolean;ipe?:boolean};
  private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>'openFields',fieldsBlocked,()=>!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden,()=>this.updateHUD());
  private missionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player);
  private bentoRuntime={missions:this.missionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
@@ -50,9 +50,20 @@ export class OpenFieldsScene extends Phaser.Scene{
  }
  private blockedTile=(x:number,y:number)=>fieldsBlocked(x*32+16,y*32+16);
  private target(){return MEADOW_PATCHES.filter(p=>Math.hypot(p.x-this.player.x,p.y-this.player.y)<66&&meadowGrowth(this.state,p)>=1).sort((a,b)=>Math.hypot(a.x-this.player.x,a.y-this.player.y)-Math.hypot(b.x-this.player.x,b.y-this.player.y))[0];}
- private updateHUD():void{if(!this.player)return;const p=this.target();this.ui.updateHUD({area:'openFields',worldMapSize:{width:96,height:72},worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',inHome:false,swimming:false,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:p?'E':null,prompt:p?p.kind==='grass'?'Cortar capim com a foice':'Colher '+(p.kind==='herb'?'ervas':'cogumelos'):this.player.y<230?'Propriedade ao norte':'Explore as clareiras · leve capim ao silo para preparar palha',location:'Campos Abertos',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});this.ui.updateCameraZoom(this.shownZoom,!this.paused);}
+ /** Standing ipês take priority: their trunks sit in clearings away from the capim. */
+ private ipeTarget(){return FIELDS_IPES.filter(p=>ipeStanding(this.state,p.id)&&Math.hypot(p.x-this.player.x,p.y-this.player.y)<=IPE_REACH).sort((a,b)=>Math.hypot(a.x-this.player.x,a.y-this.player.y)-Math.hypot(b.x-this.player.x,b.y-this.player.y))[0];}
+ private ipePrompt():string{if(!this.state.inventory.hatchet)return'Ipê-amarelo · precisa de machadinha de ferro ou melhor';const t=inventoryToolCondition(this.state.inventory,'hatchet');return t.tier<1?'Ipê-amarelo · sua machadinha de pedra não corta este tronco':'Cortar ipê-amarelo com a machadinha';}
+ private updateHUD():void{if(!this.player)return;const ipe=this.ipeTarget(),p=ipe?undefined:this.target();this.ui.updateHUD({area:'openFields',worldMapSize:{width:96,height:72},worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',inHome:false,swimming:false,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:ipe||p?'E':null,prompt:ipe?this.ipePrompt():p?p.kind==='grass'?'Cortar capim com a foice':'Colher '+(p.kind==='herb'?'ervas':'cogumelos'):this.player.y<230?'Propriedade ao norte':'Explore as clareiras · leve capim ao silo para preparar palha',location:'Campos Abertos',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});this.ui.updateCameraZoom(this.shownZoom,!this.paused);}
  private interact():void{
-  if(this.swing||this.paused||this.leaving||this.ui.isModalOpen())return;const p=this.target();if(!p)return;
+  if(this.swing||this.paused||this.leaving||this.ui.isModalOpen())return;
+  const ipe=this.ipeTarget();
+  if(ipe){
+   const t=inventoryToolCondition(this.state.inventory,'hatchet');
+   if(!this.state.inventory.hatchet||t.tier<1){this.ui.toast('Este ipê é duro demais. Você precisa de uma machadinha de ferro ou melhor.');return;}
+   if(t.durability<=0){this.ui.toast('Repare esta machadinha antes de cortar o ipê.');return;}
+   const direction=directionFromVector(ipe.x-this.player.x,ipe.y-this.player.y);this.player.facing=directionVector(direction);this.swing={id:ipe.id,age:0,hit:false,ipe:true};this.toolVisual.playGather('hatchet',direction,this.player,t.tier);return;
+  }
+  const p=this.target();if(!p)return;
   if(p.kind==='grass'){
    if(!this.state.inventory.sickle||inventoryToolCondition(this.state.inventory,'sickle').durability<=0){this.ui.toast('Leve uma foice em boas condições para cortar o capim.');return;}
    const direction=directionFromVector(p.x-this.player.x,p.y-this.player.y);this.player.facing=directionVector(direction);this.swing={id:p.id,age:0,hit:false};this.toolVisual.playGather('sickle',direction,this.player,inventoryToolCondition(this.state.inventory,'sickle').tier);
@@ -65,9 +76,9 @@ export class OpenFieldsScene extends Phaser.Scene{
  private applyCamera=()=>{this.cameras.main.setZoom(2*this.shownZoom).startFollow(this.player,true,.12,.12).setRoundPixels(true);this.ui?.updateCameraZoom(this.shownZoom,!this.paused);};
  changeCameraZoom(d:-1|0|1):void{if(this.paused)return;this.zoom=stepCameraZoom(this.shownZoom,d);saveCameraZoom(this.zoom);this.applyCamera();}
  setPaused(v:boolean):void{this.paused=v;this.input.keyboard?.resetKeys();if(v){this.swing=undefined;this.toolVisual?.hide();this.persist();}}
- selectTool(_tool:Tool):void{this.ui.toast('Use a foice da mochila ou pressione E perto do capim.');}
+ selectTool(tool:Tool):void{if(tool==='hatchet'){this.interact();return;}this.ui.toast('Use a foice da mochila ou pressione E perto do capim.');}
  craftRecipe(id:string):void{const r=craftInField(this.state,id,saveGame);this.ui.toast(r.message);this.updateHUD();this.ui.refreshCrafting(this.state.inventory,false);}
- async useVillageItem(item:ItemId):Promise<void>{if(item==='sickle'){this.interact();return;}if(item==='fishingRod'||item==='net'){this.ui.toast('Procure um lago ou rio para pescar.');return;}const r=consumeInField(this.state,item,saveGame);this.ui.toast(r.message);this.updateHUD();}
+ async useVillageItem(item:ItemId):Promise<void>{if(item==='sickle'||item==='hatchet'){this.interact();return;}if(item==='fishingRod'||item==='net'){this.ui.toast('Procure um lago ou rio para pescar.');return;}const r=consumeInField(this.state,item,saveGame);this.ui.toast(r.message);this.updateHUD();}
  openMapEditor():void{this.ui.toast('O mapa dos Campos Abertos está disponível na tecla M.');}
  async captureMap():Promise<string>{const rt=this.make.renderTexture({width:1024,height:768},false);rt.camera.setZoom(1/3).setScroll(0,0).setOrigin(0,0);const visible=[...this.world.patches.values()].map(p=>p.visible);for(const p of this.world.patches.values())p.setVisible(true);this.children.depthSort();rt.draw(this.children.list.filter(o=>o!==this.player.sprite&&!this.daylight.contains(o)&&'visible'in o&&o.visible));let i=0;for(const p of this.world.patches.values())p.setVisible(visible[i++]);return new Promise(resolve=>rt.snapshot(img=>{const url=img instanceof HTMLImageElement?img.src:'';rt.destroy();resolve(url);}));}
  persist():boolean{return this.save();}
@@ -81,7 +92,7 @@ export class OpenFieldsScene extends Phaser.Scene{
   if(!this.player||this.leaving)return;this.daylight.update(this.state.time,false,this.state.day);if(this.paused||this.ui.isModalOpen()||document.hidden)return;
   const dt=Math.min(.1,ms/1000),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(dt,this.blockedTile,fieldsBlocked,!this.swing);this.player.sprite.setDepth(this.player.y);
   if(this.passage.update(before,this.player,FIELDS_EXIT)){this.leave();return;}
-  if(this.swing){this.swing.age+=dt;if(this.swing.age>=.22&&!this.swing.hit){this.swing.hit=true;this.snapshotState();const r=harvestMeadow(this.state,this.swing.id,this.player,saveGame);if(r.ok)gameAudio.play('plant');else this.ui.toast(r.message);}if(this.swing.age>=.5){this.swing=undefined;this.toolVisual.hide();}}
+  if(this.swing){this.swing.age+=dt;if(this.swing.age>=.22&&!this.swing.hit){this.swing.hit=true;this.snapshotState();if(this.swing.ipe){const r=chopIpe(this.state,this.swing.id,this.player,saveGame);if(r.ok){gameAudio.play('wood');this.world.shakeIpe(this.swing.id);if(r.felled)this.ui.toast(r.message);}else this.ui.toast(r.message);}else{const r=harvestMeadow(this.state,this.swing.id,this.player,saveGame);if(r.ok)gameAudio.play('plant');else this.ui.toast(r.message);}}if(this.swing.age>=.5){this.swing=undefined;this.toolVisual.hide();}}
   this.farming.update(dt);Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state,dt,this.player,this.bentoRuntime);this.world.update(dt,this.player);this.updateHUD();this.elapsed+=dt;if(this.elapsed>=5){this.elapsed=0;this.persist();}
  }
 }
