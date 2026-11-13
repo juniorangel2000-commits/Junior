@@ -6,7 +6,7 @@ export const COW_REST_TIMING={turn:.45,lieFps:6,restFps:2.5,riseFps:5}as const;
 /** Complete authored transitions. Rest never advances the physical cow's position. */
 export class CowRestCycle{
  phase:CowRestPhase='awake';direction:'down'|'left'|'right'='down';private elapsed=0;private idle=0;private delay:number;private wakeRequested=false;private readonly restDuration:number;
- constructor(id:string,firstRestSeconds?:number){let seed=0;for(const c of id)seed=(Math.imul(seed,31)+c.charCodeAt(0))>>>0;this.delay=firstRestSeconds??8+seed%9;this.restDuration=10+seed%7;}
+ constructor(id:string,firstRestSeconds?:number){let seed=0;for(const c of id)seed=(Math.imul(seed,31)+c.charCodeAt(0))>>>0;this.delay=firstRestSeconds??8+seed%8;this.restDuration=10+seed%7;}
  get locked():boolean{return this.phase!=='awake';}
  private transition(phase:CowRestPhase){this.phase=phase;this.elapsed=0;}
  update(delta:number,eligible:boolean,canLie:boolean,direction:CharacterDirection,standingStill:boolean):void{

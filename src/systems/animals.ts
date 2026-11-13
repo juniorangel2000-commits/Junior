@@ -172,7 +172,7 @@ export class AnimalBrain {
     const target=this.path[0];
     if(!target){if(this.mode==='wander'){this.mode='idle';this.timer=1+this.random()*2;}return;}
     const dx=target.x-this.x,dy=target.y-this.y,length=Math.hypot(dx,dy);
-    const speed=this.playerSpeed*(this.mode==='flee'?ANIMAL_BEHAVIOR.fleeSpeedFactor:this.mode==='led'?ANIMAL_BEHAVIOR.leadSpeedFactor:ANIMAL_BEHAVIOR.wanderSpeedFactor);
+    const speed=this.playerSpeed*(this.mode==='flee'?(this.kind==='horse'?2.2:ANIMAL_BEHAVIOR.fleeSpeedFactor):this.mode==='led'?ANIMAL_BEHAVIOR.leadSpeedFactor:ANIMAL_BEHAVIOR.wanderSpeedFactor);
     const amount=Math.min(speed*dt,length),steps=Math.max(1,Math.ceil(amount/3)),oldX=this.x,oldY=this.y;
     const fits=(x:number,y:number)=>this.canStand(x,y)&&(!led||!ropeLimit||Math.hypot(x-player.x,y-player.y)<=ANIMAL_BEHAVIOR.maxRopeLength||Math.hypot(x-player.x,y-player.y)<range)&&neighbors.every(other=>other===this||Math.hypot(x-other.x,y-other.y)>=this.radius+other.radius+3);
     for(let i=0;i<steps;i++){

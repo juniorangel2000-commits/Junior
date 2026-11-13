@@ -1,3 +1,4 @@
+import {HorseIdleCycle} from './systems/horse-idle';
 import {readTerrainSprites} from './terrain-sprites';
 import {paintFieldsFloor} from './open-fields-ground';
 import {drawExitSign} from './exit-signs';
@@ -34,7 +35,7 @@ export class OpenFieldsWorld{
  readonly ipes=new Map<string,Phaser.GameObjects.Image>();
  readonly ipeStumps=new Map<string,Phaser.GameObjects.Image>();
  readonly patches=new Map<string,Phaser.GameObjects.Image>();
- readonly animals:{brain:AnimalBrain;sprite:Phaser.GameObjects.Sprite;rest?:CowRestCycle;shadow:Phaser.GameObjects.Ellipse}[]=[];
+ readonly animals:{brain:AnimalBrain;sprite:Phaser.GameObjects.Sprite;rest?:CowRestCycle;idle?:HorseIdleCycle;shadow:Phaser.GameObjects.Ellipse}[]=[];
  private roof:Phaser.GameObjects.Image;
  private elapsed=0;
  constructor(private scene:Phaser.Scene,private state:()=>SaveData){
@@ -59,7 +60,7 @@ export class OpenFieldsWorld{
   for(const d of FIELDS_ANIMALS){const saved=state().openFields?.animals?.find(a=>a.id===d.id),p=saved&&fieldsSafe(saved)?saved:d;
    const brain=new AnimalBrain(d.id,d.kind,p.x,p.y,d.kind==='rabbit'||d.kind==='horse',(tx,ty)=>fieldsBlocked(tx*32+16,ty*32+16),84,()=>0,fieldsBlocked);if(saved&&p===saved)brain.restore(saved);
    const sprite=animalSprite(scene,d.kind,brain.x,brain.y),shadow=scene.add.ellipse(brain.x,brain.y,d.kind==='horse'?56:d.kind==='cow'?42:17,d.kind==='horse'?15:d.kind==='cow'?12:5,0x29271d,.16);
-   this.animals.push({brain,sprite,shadow,...(d.kind==='cow'?{rest:new CowRestCycle(d.id)}:{})});
+   this.animals.push({brain,sprite,shadow,...(d.kind==='horse'?{idle:new HorseIdleCycle(d.id)}:{}),...(d.kind==='cow'?{rest:new CowRestCycle(d.id)}:{})});
   }
   this.update(0,{x:0,y:0});
  }
@@ -80,9 +81,11 @@ export class OpenFieldsWorld{
   const brains=this.animals.map(a=>a.brain);
   for(const a of this.animals){const near=Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<85;
    a.rest?.update(dt,!near,a.brain.canStand(a.brain.x,a.brain.y),a.brain.direction,!a.brain.moving&&a.brain.mode==='idle');a.brain.resting=!!a.rest?.locked;
-   if(a.rest?.locked)a.brain.hold(a.rest.direction);else a.brain.update(dt,player,brains);
+   a.idle?.update(dt,!a.brain.moving&&a.brain.mode==='idle',Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<196,a.brain.direction,MEADOW_PATCHES.some(p=>p.kind==='grass'&&Math.hypot(p.x-a.brain.x,p.y-a.brain.y)<56&&meadowGrowth(s,p)>=1));
+   if(a.idle?.locked)a.brain.resting=true;
+   if(a.idle?.locked)a.brain.hold(a.idle.direction);else if(a.rest?.locked)a.brain.hold(a.rest.direction);else a.brain.update(dt,player,brains);
    a.shadow.setPosition(a.brain.x,a.brain.y).setDepth(a.brain.y-.2);
-   if(!updateAnimalSprite(a.sprite,a.brain,dt,a.rest?.frame()))a.sprite.setPosition(a.brain.x,a.brain.y).setDepth(a.brain.y).setFlipX(a.brain.direction.includes('left'));
+   if(!updateAnimalSprite(a.sprite,a.brain,dt,a.idle?.frame()??a.rest?.frame()))a.sprite.setPosition(a.brain.x,a.brain.y).setDepth(a.brain.y).setFlipX(a.brain.direction.includes('left'));
   }
  }
 }
