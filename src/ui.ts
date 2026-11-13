@@ -1,3 +1,4 @@
+import {cropFromSeed,cropDefinition} from './data/crops';
 import {FARM_KINDS,FARM_BUILDINGS,FARM_BASE_COST,isFarmTool} from './data/farm-buildings';
 import {shortCalendarLabel,fullCalendarLabel,calendarDate} from './systems/calendar';
 import {mountMineMissionJournal,mineMissionSummary} from './mine-mission-journal';
@@ -200,6 +201,7 @@ export class GameUI {
     this.activeSlot = index;
     if(quickItem(slot)==='sword'){this.callbacks.onTool('hand');if(this.latest?.worldWeapon!=='sword')this.callbacks.onUseItem('sword');else this.toast('Espada já equipada · E ou clique contra hostis no acampamento.');this.updateQuickbar();return;}
     const copy=toolReferenceParts(slot);
+    const seed=quickItem(slot);if(cropFromSeed(seed)){this.callbacks.onUseItem(seed as ItemId);this.updateQuickbar();return;}
     this.callbacks.onTool(quickAction(slot),copy?.id);
     if(copy&&quickAction(slot)==='hand'&&USABLE_VILLAGE_ITEMS.includes(copy.kind))this.callbacks.onUseItem(copy.kind,copy.id);
     else if (quickItem(slot) && quickAction(slot) === 'hand') this.toast(`${this.slotInfo(slot).label}: material disponível na mochila para fabricar e construir.`);
@@ -738,7 +740,7 @@ export class GameUI {
     this.updateQuickbar();
     const selectedTool = tools.find(tool => tool.id === data.tool) ?? tools[0];
     const buildingKind = data.tool in BUILD_COSTS ? data.tool as BuildingData['kind'] : null;
-    const cost = isFarmTool(data.tool)?FARM_BASE_COST:data.tool === 'blueprint' ? BLUEPRINT_COST : buildingKind ? BUILD_COSTS[buildingKind] : data.tool === 'plant' ? { seeds: 1 } : data.tool==='repair'?{fenceKit:1}:{};
+    const cost = isFarmTool(data.tool)?FARM_BASE_COST:data.tool === 'blueprint' ? BLUEPRINT_COST : buildingKind ? BUILD_COSTS[buildingKind] : data.tool === 'plant' ? { [cropDefinition(data.selectedCrop).seed]: 1 } : data.tool==='repair'?{fenceKit:1}:{};
     const entries = Object.entries(cost) as [ItemId, number][];
     const missingMaterials = entries.some(([item, amount]) => data.inventory[item] < amount);
     const requirements = data.tool === 'blueprint' ? BUILD_REQUIREMENTS.wall : buildingKind ? BUILD_REQUIREMENTS[buildingKind] : null;
@@ -873,7 +875,7 @@ export class GameUI {
         const id=quickItem(item) as ItemId|undefined;
         if(id&&this.callbacks.onDropItem){const actions=document.createElement('div');actions.dataset.dropItem=id;const amount=document.createElement('input');amount.type='number';amount.min='1';amount.max=String(copy?1:inventory[id]);amount.value='1';amount.setAttribute('aria-label','Quantidade para soltar');amount.style.width='65px';const drop=document.createElement('button');drop.className='button button-light';drop.textContent='Soltar no chão';drop.onclick=()=>{const n=Number(amount.value);if(!Number.isSafeInteger(n)||n<1||n>(copy?1:inventory[id])){this.toast('Escolha uma quantidade disponível na mochila.');return;}this.callbacks.onDropItem?.(id,n,copy?.id);this.closeModal();};actions.append(amount,drop);panel.querySelector('.backpack-detail')!.append(actions);}
         if(copy&&quickAction(item)!=='hand'){const equip=document.createElement('button');equip.dataset.useItem=copy.kind;equip.className='button button-light';equip.textContent='Equipar esta ferramenta';equip.onclick=()=>{this.callbacks.onTool(quickAction(item),copy.id);this.closeModal();};panel.querySelector('.backpack-detail')!.append(equip);}
-        else if(id&&USABLE_VILLAGE_ITEMS.includes(id)){const use=document.createElement('button');use.dataset.useItem=id;use.className='button button-light';use.textContent=id==='sword'?(this.latest?.worldWeapon==='sword'?'Guardar espada':'Equipar espada'):'Usar / instalar';use.onclick=()=>{this.closeModal();this.callbacks.onUseItem(id,copy?.id);};panel.querySelector('.backpack-detail')!.append(use);}
+        else if(id&&(!!cropFromSeed(id)||USABLE_VILLAGE_ITEMS.includes(id))){const use=document.createElement('button');use.dataset.useItem=id;use.className='button button-light';use.textContent=cropFromSeed(id)?'Equipar sementes':id==='sword'?(this.latest?.worldWeapon==='sword'?'Guardar espada':'Equipar espada'):'Usar / instalar';use.onclick=()=>{this.closeModal();this.callbacks.onUseItem(id,copy?.id);};panel.querySelector('.backpack-detail')!.append(use);}
         panel.querySelectorAll('[data-bag-item]').forEach(cell => cell.classList.toggle('chosen', cell === button));
       };
       button.onclick = select;

@@ -81,6 +81,7 @@ export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value) || value.version !== SAVE_VERSION || !validateProfile(value.profile)) return false;
   if(value.openFields!==undefined&&!validOpenFields(value.openFields,typeof value.day==='number'?value.day:0))return false;
   if(value.openFieldsPosition!==undefined&&(!isRecord(value.openFieldsPosition)||!finite(value.openFieldsPosition.x,32,3040)||!finite(value.openFieldsPosition.y,32,2272)||(value.openFieldsPosition.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(value.openFieldsPosition.direction as CharacterDirection))))return false;
+  if(value.selectedCrop!==undefined&&!isCropId(value.selectedCrop))return false;
   if(value.groundItems!==undefined&&!validGroundItems(value.groundItems))return false;
   if(value.farmConstruction!==undefined&&!validFarmConstruction(value.farmConstruction,value.recruitedAnimals))return false;
   if(value.npcSocial!==undefined&&!validNpcSocial(value.npcSocial,typeof value.day==='number'?value.day:999999))return false;

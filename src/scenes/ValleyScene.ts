@@ -1,3 +1,4 @@
+import {cropDefinition,cropFromSeed,cropTexture,cropStage} from '../data/crops';
 import {FIELDS_ENTRY,PROPERTY_FIELDS_EXIT,propertyFieldsApproach} from '../data/open-fields';
 import {createGroundRuntime,resourceGroundSink} from '../systems/ground-items';
 import {FARM_BUILDINGS,isFarmTool,isLegacyHouseTool,type FarmKind} from '../data/farm-buildings';
@@ -688,6 +689,7 @@ export class ValleyScene extends Phaser.Scene {
 
   async useVillageItem(item:import('../types').ItemId):Promise<void>{
     if(!this.canPlay()||this.player.isSwimming||this.toolUse.active||this.time.now<this.nextInteractionAt)return;
+    const cropId=cropFromSeed(item);if(cropId){if(!this.inventory.has(item))return;this.state.selectedCrop=cropId;this.selectTool('plant');this.ui.toast('Sementes de '+cropDefinition(cropId).name.toLowerCase()+' equipadas. Escolha um canteiro e use E ou clique.');return;}
     if((item==='sickle'||item==='shovel')&&!this.inventory.has(item))return;
     this.state.inventory={...this.inventory.data};
     if(item==='sword'){const result=equipWorldSword(this.state,this.state.worldWeapon!=='sword',saveGame);this.ui.toast(result.message);this.updateHUD();return;}this.state.crops=this.farming.crops.map(c=>({...c}));
@@ -1309,7 +1311,7 @@ export class ValleyScene extends Phaser.Scene {
     if (this.tool === 'plant') {
       const reason = soilGroundReason(tile.x, tile.y, this.soilGround());
       if (reason) { this.ui.toast(reason); return; }
-      const result = this.farming.plant(tile.x, tile.y, this.inventory, this.state.day);
+      const result = this.farming.plant(tile.x, tile.y, this.inventory, this.state.day,this.state.selectedCrop??'turnip');
       if (result.ok) gameAudio.play(this.tool);
       this.ui.toast(result.message);
     } else if (this.tool === 'remove') {
@@ -1433,14 +1435,12 @@ export class ValleyScene extends Phaser.Scene {
       this.soilSignature = soilSignature;
     }
     const crops = this.farming.crops;
-    const cropSignature = crops.map(c => `${c.x},${c.y},${c.growth >= 1 ? 2 : c.growth >= 0.45 ? 1 : 0},${c.watered}`).join(';');
+    const cropSignature = crops.map(c => `${c.x},${c.y},${c.crop??'turnip'},${cropStage(c.growth)},${c.watered}`).join(';');
     if (cropSignature !== this.cropSignature) {
       this.cropSprites.forEach(sprite => sprite.destroy());
       this.cropSoil.clear();
       this.cropSprites = crops.map(c => {
-
-        const stage = c.growth >= 1 ? 2 : c.growth >= 0.45 ? 1 : 0;
-        const sprite = this.add.sprite(c.x * TILE + 16, c.y * TILE + 29, `crop-${stage}`).setOrigin(0.5, 1).setDepth(c.y * TILE + 25);
+        const sprite = this.add.sprite(c.x * TILE + 16, c.y * TILE + 29, cropTexture(c)).setOrigin(0.5,180/192).setDisplaySize(38,38).setDepth(c.y * TILE + 25);
         if (!c.watered) sprite.setTint(0xd5ba86);
         return sprite;
       });
@@ -1537,7 +1537,7 @@ export class ValleyScene extends Phaser.Scene {
       ? this.farming.restoreReason(tile.x,tile.y,this.inventory) || 'Desfazer canteiro · Shift + E ou clique'
       : 'E: preparar · Shift + E: desfazer canteiro';
     else if (this.tool === 'repair') prompt = 'Reparar cerca desgastada · 1 módulo de cerca · E ou clique';
-    else if (this.tool === 'plant') prompt = 'Plantar nabo · 1 semente';
+    else if (this.tool === 'plant') prompt = 'Plantar '+cropDefinition(this.state.selectedCrop).name.toLowerCase()+' · 1 semente';
     else if (this.tool === 'water') prompt = `Regador: ${this.state.wateringCanWater ?? 0}/8 · E junto à água para encher`;
     else if (this.tool === 'blueprint') prompt = this.blueprintReason(tile) || `Montar ${BLUEPRINT_LABEL} · clique ou E`;
     else if(isFarmTool(this.tool))prompt=farmPlacementReason(this.state,this.tool.slice(5)as FarmKind,tile.x,tile.y,(x,y)=>this.farmPlacementTileReason(x,y))||'Colocar base de '+FARM_BUILDINGS[this.tool.slice(5)as FarmKind].name+' · clique ou E';
@@ -1567,7 +1567,7 @@ export class ValleyScene extends Phaser.Scene {
     if(!villageAccessUnlocked(this.state)&&Math.abs(this.player.x-93.5*TILE)<96&&Math.abs(this.player.y-52.5*TILE)<64)prompt=VILLAGE_LOCK_MESSAGE;
     if(this.tool==='hand'&&this.state.petShelter&&Math.hypot(this.player.x-this.state.petShelter.x,this.player.y-this.state.petShelter.y)<90)prompt='Casinha dos companheiros · E';
     this.ui.updateHUD({worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100, coins:this.state.villageEconomy?.coins??0,farmingProgress: this.farming.progress, wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, swimming:this.player.isSwimming, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
-      tool: this.tool, prompt:this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:prompt, interactionKey:nearPassage||nearHouse?null:undefined, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
+      selectedCrop:this.state.selectedCrop, tool: this.tool, prompt:this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:prompt, interactionKey:nearPassage||nearHouse?null:undefined, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
       playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
       harvests: this.inventory.data.turnip, metLia: this.state.metLia,
       nearWorkbench: this.nearWorkbench(), sheltered: this.shelter.sheltered, shelterReason: this.shelter.reason,
@@ -1639,7 +1639,7 @@ export class ValleyScene extends Phaser.Scene {
       const crop = this.farming.cropAt(tile.x, tile.y);
       const valid = this.clearReach(tile) && (kind ? !this.placementReason(tile, kind) : this.tool === 'blueprint' ? !this.blueprintReason(tile)
         : this.tool === 'hoe' ? !(this.restoreSoilHeld ? this.farming.restoreReason(tile.x,tile.y,this.inventory) : this.farming.prepareReason(tile.x,tile.y,this.inventory,this.soilGround()))
-        : this.tool === 'plant' ? this.farming.isPrepared(tile.x, tile.y) && !soilGroundReason(tile.x,tile.y,this.soilGround()) && !crop && this.inventory.has('seeds')
+        : this.tool === 'plant' ? this.farming.isPrepared(tile.x, tile.y) && !soilGroundReason(tile.x,tile.y,this.soilGround()) && !crop && this.inventory.has(cropDefinition(this.state.selectedCrop).seed)
         : this.tool === 'water' ? !!crop && !crop.watered : this.tool === 'remove' ? !!this.building.at(tile.x, tile.y) : !!this.world.resourceAt(tile.x, tile.y));
       const footprint = this.tool === 'blueprint' ? Array.from({ length: 9 }, (_, i) => ({ x: tile.x + i % 3, y: tile.y + Math.floor(i / 3) }))
         : kind ? buildingFootprint({ ...tile, kind, rotation: this.rotation }) : [tile];

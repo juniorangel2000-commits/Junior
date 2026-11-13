@@ -1,3 +1,5 @@
+import {CROP_CATALOG} from './data/crop-catalog';
+import {preloadCropArt,setupCropArt} from './crop-art';
 import {preloadFarmConstructionArt} from './farm-construction-view';
 import {fishingSupplyIcon} from './data/fishing-supplies';
 import {preloadFishingArt} from './fishing-cast';
@@ -27,6 +29,7 @@ import { TOOL_ICON_URLS } from './data/tool-art';
 const BASE = 'assets/visual/';
 const ICON_IDS = new Set(['wood', 'stone', 'branch', 'log', 'plank', 'scrap', 'hatchet', 'pickaxe', 'handsaw', 'fiber', 'cord', 'flakedStone', 'handle', 'blade', 'board', 'hammer', 'water', 'workbench', 'seeds']);
 export function itemIconUrl(id: string, tier=0): string | undefined {
+  const crop=CROP_CATALOG.find(c=>c.seed===id||c.harvest===id);if(crop)return `assets/visual/crops/${crop.id}/${crop.seed===id?'seed':'harvest'}.png`;
   if(id==='freshGrass')return 'assets/visual/open-fields/fresh-grass.png';
   if(id==='hardwood')return 'assets/visual/open-fields/hardwood.png';
   if(id==='hay')return 'assets/visual/farm/hay.png';
@@ -72,7 +75,7 @@ export function preloadVisualAssets(scene: Phaser.Scene): void {
   preloadPropertyWell(scene);
   preloadCharacterSprites(scene);
   preloadToolArt(scene);
-  preloadAnimalSprites(scene);
+  preloadAnimalSprites(scene);preloadCropArt(scene);
   scene.load.image('lake-rocks-source', 'assets/visual/nature/lake-rocks.png');
   scene.load.image('reference-trees-source', 'assets/visual/nature/reference-trees.png');
   scene.load.image('reference-details-source', 'assets/visual/nature/reference-details.png');
@@ -256,6 +259,7 @@ function createHouse(scene: Phaser.Scene): void {
 }
 
 export function setupVisualAssets(scene: Phaser.Scene): void {
+  setupCropArt(scene);
   setupEcologyArt(scene);
   setupTreeWind(scene);
   setupCharacterSprites(scene);

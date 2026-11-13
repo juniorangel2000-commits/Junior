@@ -1,8 +1,12 @@
+import {CROP_CATALOG,NEW_CROP_ITEM_IDS} from './crop-catalog';
+import {SEASON_NAMES} from '../systems/calendar';
 import {ECONOMY_ITEM_IDS} from './economy-balance';
 import type { ItemId } from '../types';
 
 // IDs de saves são estáveis. Madeira legada continua distinta de troncos e tábuas.
+const cropItems=Object.fromEntries(CROP_CATALOG.filter(c=>c.id!=='turnip').flatMap(c=>[[c.seed,{name:'Sementes de '+c.name.toLowerCase(),description:c.seasons.map(s=>SEASON_NAMES[s]).join(' / ')+' · '+c.days+' dias regados até colher.'+('regrow' in c?' Produz novamente a cada '+c.regrow+' dias regados.':''),iconFallback:'seeds'}],[c.harvest,{name:c.name,description:'Colheita de '+c.name.toLowerCase()+'. Pode ser vendida a comerciantes interessados.',iconFallback:'turnip'}]])) as Record<import('./crop-catalog').CropItemId,{name:string;description:string;iconFallback?:string}>;
 export const ITEMS: Record<ItemId, { name: string; description: string;iconFallback?:string }> = {
+  ...cropItems,
   ironShard: {name:'Fragmento bruto de Ferro',description:'Material metálico para a ferraria.',iconFallback:'scrap'},
   ironOre: {name:'Minério bruto inteiro de Ferro',description:'Equivale a nove fragmentos, não é um lingote.',iconFallback:'scrap'},
   ironIngot: {name:'Lingote de Ferro',description:'Material metálico para a ferraria.',iconFallback:'scrap'},
@@ -25,7 +29,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   pineSeed:{name:'Sementes de pinheiro',description:'Plante em terra livre. O pinheiro cresce em sete dias e fornece novas sementes ao ser cortado.',iconFallback:'seeds'},
   wood: { name: 'Madeira', description: 'Lenha e madeira reaproveitada, usada nas cercas e nos bancos.' },
   stone: { name: 'Pedra', description: 'Pedras pequenas para ferramentas e construção.' },
-  seeds: { name: 'Sementes', description: 'Sementes de nabo para a horta.' },
+  seeds: { name: 'Sementes', description: 'Primavera · 4 dias regados até colher. Devolve uma semente na colheita.' },
   turnip: { name: 'Nabos', description: 'Sua primeira colheita.' },
   branch: { name: 'Galhos', description: 'Recolha os feixes de madeira no chão para fabricar cabos.' },
   log: { name: 'Troncos', description: 'Use a machadinha em árvores, troncos caídos e tocos; transforme os troncos obtidos em tábuas.' },
@@ -73,7 +77,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
 
 /** Only these stock fields may be absent in a save from before the village
  * services update. Missing any older field still indicates a corrupt save. */
-export const VILLAGE_ITEM_IDS=['freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
+export const VILLAGE_ITEM_IDS=[...NEW_CROP_ITEM_IDS,'freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
 
 export const ITEM_IDS = Object.keys(ITEMS) as ItemId[];
 export const ITEM_NAMES = Object.fromEntries(ITEM_IDS.map(id => [id, ITEMS[id].name])) as Record<ItemId, string>;

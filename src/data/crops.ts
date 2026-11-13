@@ -1,5 +1,5 @@
 import type {ItemId} from '../types';
-import {SEASONS,type Season} from '../systems/calendar';
+import {type Season} from '../systems/calendar';
 /** Ficha de cada planta cultivável. Ver docs/planejamento/CULTIVOS-E-CALENDARIO.md. */
 export interface CropDefinition{
  name:string;
@@ -15,12 +15,12 @@ export interface CropDefinition{
  /** Sementes devolvidas na colheita. */
  seedReturn?:number;
 }
-export const CROPS={
- // Provisório: o nabo cresce em todas as estações até a etapa 3 trazer plantas para
- // cada estação; depois ele fica restrito à Primavera.
- turnip:{name:'Nabo',seasons:SEASONS,days:4,seed:'seeds',harvest:'turnip',yield:1,seedReturn:1},
-} as const satisfies Record<string,CropDefinition>;
-export type CropId=keyof typeof CROPS;
+import {CROP_CATALOG,type CatalogCropId} from './crop-catalog';
+export const CROPS=Object.fromEntries(CROP_CATALOG.map(c=>[c.id,{...c,yield:c.yieldCount}])) as unknown as Record<CatalogCropId,CropDefinition>;
+export type CropId=CatalogCropId;
 export const CROP_IDS=Object.keys(CROPS) as CropId[];
 export const isCropId=(v:unknown):v is CropId=>typeof v==='string'&&Object.hasOwn(CROPS,v);
 export const cropDefinition=(id:CropId|undefined):CropDefinition=>CROPS[id??'turnip'];
+export const cropFromSeed=(item:unknown):CropId|undefined=>CROP_CATALOG.find(c=>c.seed===item)?.id;
+export const cropStage=(growth:number)=>growth>=1?3:growth>=2/3?2:growth>=1/3?1:0;
+export const cropTexture=(crop:{crop?:CropId;growth:number})=>`crop-${crop.crop??'turnip'}-${cropStage(crop.growth)}`;

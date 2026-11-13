@@ -15,7 +15,7 @@ describe('recursos ocultos no editor',()=>{
  });
  it('inclui recursos, todas as plantas e decoração rasteira, mantendo pisos e casa',()=>{
   const resources=new Set(['asset-scrap','custom-resource']);
-  for(const key of ['asset-tree-0','lake-rock-2','forest-detail-fern','forest-detail-log','forest-detail-stump','asset-scrap','custom-resource','editor-property-ground-details','crop-2'])expect(editorResourceTexture(key,resources),key).toBe(true);
+  for(const key of ['asset-tree-0','lake-rock-2','forest-detail-fern','forest-detail-log','forest-detail-stump','asset-scrap','custom-resource','editor-property-ground-details','crop-2','crop-turnip-0','crop-sweetPotato-3'])expect(editorResourceTexture(key,resources),key).toBe(true);
   for(const key of ['world-ground-sandy-river-v3','forest-ground-sandy-shore','asset-house','bridge-v2:north:deck','lia'])expect(editorResourceTexture(key,resources),key).toBe(false);
  });
 });

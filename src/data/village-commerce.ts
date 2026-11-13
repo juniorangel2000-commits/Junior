@@ -1,3 +1,4 @@
+import {CROP_CATALOG} from './crop-catalog';
 import {ECONOMY_BALANCE as B,NON_COMMERCIAL} from './economy-balance';
 import {ECOLOGY_BALANCE as ECOLOGY} from './ecology-balance';
 import type {ItemId,VillageEconomy} from '../types';
@@ -114,6 +115,15 @@ for(const merchant of Object.values(MERCHANTS)){
 }
 for(const item of ['ironShard','ironIngot','goldShard','goldIngot','blackMetalIngot'] as ItemId[])MERCHANTS.blacksmith.buy[item]=B.prices[item]![0];
 for(const item of ['ironShard','ironIngot','goldShard','goldIngot','blackMetalShard','blackMetalIngot'] as ItemId[])MERCHANTS.blacksmith.sell[item]=B.prices[item]![1];
+// O comércio agrícola vende somente sementes; colheitas vêm do cultivo.
+for(const c of CROP_CATALOG){
+ for(const merchant of Object.values(MERCHANTS))delete merchant.buy[c.harvest];
+ MERCHANTS.seeds.buy[c.seed]=c.seedPrice;
+ if(c.id==='turnip')continue;
+ if(c.group==='herb')MERCHANTS.herbalist.sell[c.harvest]=c.salePrice;
+ else if(c.group==='fiber')MERCHANTS.tailor.sell[c.harvest]=c.salePrice;
+ else{MERCHANTS.seeds.sell[c.harvest]=c.salePrice;if(c.group!=='flower')MERCHANTS.inn.sell[c.harvest]=c.salePrice;}
+}
 const validDay=(day:number):boolean=>Number.isSafeInteger(day)&&day>=1&&day<=999_999;
 
 /** The calendar, not wall-clock randomness, controls availability and stock.

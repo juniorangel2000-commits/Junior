@@ -1,3 +1,4 @@
+import {cropTexture} from '../data/crops';
 import {HighlandWorld,preloadHighland} from '../highland-world';
 import {highlandBlockedPoint,highlandWaterPoint} from '../data/highland';
 import {campApproachDistance} from '../data/forest-camp-access';
@@ -93,7 +94,7 @@ export class MapEditorScene extends Phaser.Scene {
      else this.add.sprite(b.x*TILE+16,b.y*TILE+29,b.kind==='door'&&b.open?'door-open':b.kind).setOrigin(.5,1).setDepth(b.y*TILE+30);
     }
     drawPreparedSoil(this,farming.soilTiles,save.crops);
-    for(const c of save.crops)this.add.sprite(c.x*TILE+16,c.y*TILE+29,`crop-${c.growth>=1?2:c.growth>=.45?1:0}`).setOrigin(.5,1).setDepth(c.y*TILE+25);
+    for(const c of save.crops)this.add.sprite(c.x*TILE+16,c.y*TILE+29,cropTexture(c)).setOrigin(.5,180/192).setDisplaySize(38,38).setDepth(c.y*TILE+25);
    }
    this.resourceTextures=new Set((property?.editorObjects??village?.editorObjects??forest?.editorObjects??this.extraView!.editorObjects).map(o=>o.texture));
    this.updateResourceVisibility();

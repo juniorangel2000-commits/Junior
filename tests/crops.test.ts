@@ -21,8 +21,8 @@ const growFor=(f:Farming,x:number,y:number,from:number,days:number)=>{for(let d=
 describe('catálogo de cultivos',()=>{
  it('registra o nabo com 4 dias regados, semente e colheita atuais',()=>{
   expect(CROPS.turnip).toMatchObject({name:'Nabo',days:4,seed:'seeds',harvest:'turnip',yield:1,seedReturn:1});
-  // Provisório até a etapa 3: o nabo pode ser plantado em qualquer estação.
-  expect(CROPS.turnip.seasons).toEqual(['spring','summer','autumn','winter']);
+  // Etapa 3: o nabo passa a ser um cultivo de Primavera.
+  expect(CROPS.turnip.seasons).toEqual(['spring']);
  });
 });
 
@@ -57,7 +57,7 @@ describe('crescimento por dias regados',()=>{
  });
  it('processa saltos enormes de calendário sem travar',()=>{
   const crop:CropData={x:1,y:1,growth:0,watered:true,crop:'turnip',days:0,day:1};
-  expect(advanceCrop(crop,CROPS.turnip,999999)).toBe(true);expect(crop).toMatchObject({days:1,day:999999,watered:false});
+  expect(advanceCrop(crop,{...CROPS.turnip,seasons:['spring','summer','autumn','winter']},999999)).toBe(true);expect(crop).toMatchObject({days:1,day:999999,watered:false});
  });
  it('o adubo dá um dia extra de crescimento e rega o canteiro',()=>{
   const crop:CropData={x:1,y:1,growth:0,watered:false,crop:'turnip',days:0,day:1};

@@ -1,3 +1,4 @@
+import {cropFromSeed} from '../data/crops';
 import type { InventoryData, ItemId, QuickSlot, Tool } from '../types';
 import { ITEM_IDS } from '../data/items';
 import {toolReferenceParts,toolReference,referencedTool,individualTool,syncToolInstances} from './tool-instances';
@@ -16,7 +17,7 @@ export function quickItem(slot: QuickSlot): ItemId | 'wateringCan' | null {
 export function quickAction(slot: QuickSlot): Tool {
   const item = quickItem(slot);
   if (!item) return slot as Tool || 'hand';
-  return item === 'wateringCan' ? 'water' : item === 'seeds' ? 'plant'
+  return item === 'wateringCan' ? 'water' : cropFromSeed(item) ? 'plant'
     : item === 'hatchet' || item === 'pickaxe' || item === 'hoe' ? item : 'hand';
 }
 export function quickQuantity(slot: QuickSlot, inventory: InventoryData, wateringCan: boolean): number | null {

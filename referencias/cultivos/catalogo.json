@@ -1,0 +1,318 @@
+[
+  {
+    "id": "turnip",
+    "name": "Nabo",
+    "group": "vegetable",
+    "seasons": [
+      "spring"
+    ],
+    "days": 4,
+    "seed": "seeds",
+    "harvest": "turnip",
+    "yieldCount": 1,
+    "seedReturn": 1,
+    "seedPrice": 8,
+    "salePrice": 8,
+    "batch": "spring",
+    "row": 0
+  },
+  {
+    "id": "lettuce",
+    "name": "Alface",
+    "group": "vegetable",
+    "seasons": [
+      "spring"
+    ],
+    "days": 4,
+    "seed": "lettuceSeeds",
+    "harvest": "lettuce",
+    "yieldCount": 1,
+    "seedPrice": 8,
+    "salePrice": 18,
+    "batch": "spring",
+    "row": 1
+  },
+  {
+    "id": "carrot",
+    "name": "Cenoura",
+    "group": "vegetable",
+    "seasons": [
+      "spring"
+    ],
+    "days": 6,
+    "seed": "carrotSeeds",
+    "harvest": "carrot",
+    "yieldCount": 1,
+    "seedPrice": 12,
+    "salePrice": 26,
+    "batch": "spring",
+    "row": 2
+  },
+  {
+    "id": "bean",
+    "name": "Feijão",
+    "group": "grain",
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "days": 7,
+    "regrow": 3,
+    "seed": "beanSeeds",
+    "harvest": "bean",
+    "yieldCount": 1,
+    "seedPrice": 18,
+    "salePrice": 22,
+    "batch": "spring",
+    "row": 3
+  },
+  {
+    "id": "tomato",
+    "name": "Tomate",
+    "group": "vegetable",
+    "seasons": [
+      "summer"
+    ],
+    "days": 7,
+    "regrow": 3,
+    "seed": "tomatoSeeds",
+    "harvest": "tomato",
+    "yieldCount": 1,
+    "seedPrice": 20,
+    "salePrice": 24,
+    "batch": "summer",
+    "row": 0
+  },
+  {
+    "id": "corn",
+    "name": "Milho",
+    "group": "grain",
+    "seasons": [
+      "summer"
+    ],
+    "days": 8,
+    "regrow": 4,
+    "seed": "cornSeeds",
+    "harvest": "corn",
+    "yieldCount": 1,
+    "seedPrice": 22,
+    "salePrice": 28,
+    "batch": "summer",
+    "row": 1
+  },
+  {
+    "id": "wheat",
+    "name": "Trigo",
+    "group": "grain",
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "days": 6,
+    "seed": "wheatSeeds",
+    "harvest": "wheat",
+    "yieldCount": 1,
+    "seedPrice": 10,
+    "salePrice": 24,
+    "batch": "summer",
+    "row": 2
+  },
+  {
+    "id": "watermelon",
+    "name": "Melancia",
+    "group": "fruit",
+    "seasons": [
+      "summer"
+    ],
+    "days": 12,
+    "seed": "watermelonSeeds",
+    "harvest": "watermelon",
+    "yieldCount": 1,
+    "seedPrice": 30,
+    "salePrice": 80,
+    "batch": "summer",
+    "row": 3
+  },
+  {
+    "id": "sweetPotato",
+    "name": "Batata-doce",
+    "group": "vegetable",
+    "seasons": [
+      "autumn"
+    ],
+    "days": 8,
+    "seed": "sweetPotatoSeeds",
+    "harvest": "sweetPotato",
+    "yieldCount": 1,
+    "seedPrice": 16,
+    "salePrice": 38,
+    "batch": "autumn",
+    "row": 0
+  },
+  {
+    "id": "pumpkin",
+    "name": "Abóbora",
+    "group": "vegetable",
+    "seasons": [
+      "autumn"
+    ],
+    "days": 10,
+    "seed": "pumpkinSeeds",
+    "harvest": "pumpkin",
+    "yieldCount": 1,
+    "seedPrice": 25,
+    "salePrice": 65,
+    "batch": "autumn",
+    "row": 1
+  },
+  {
+    "id": "oat",
+    "name": "Aveia",
+    "group": "grain",
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "days": 6,
+    "seed": "oatSeeds",
+    "harvest": "oat",
+    "yieldCount": 1,
+    "seedPrice": 10,
+    "salePrice": 24,
+    "batch": "autumn",
+    "row": 2
+  },
+  {
+    "id": "chamomile",
+    "name": "Camomila",
+    "group": "herb",
+    "seasons": [
+      "autumn"
+    ],
+    "days": 6,
+    "seed": "chamomileSeeds",
+    "harvest": "chamomile",
+    "yieldCount": 1,
+    "seedPrice": 12,
+    "salePrice": 28,
+    "batch": "autumn",
+    "row": 3
+  },
+  {
+    "id": "kale",
+    "name": "Couve",
+    "group": "vegetable",
+    "seasons": [
+      "winter"
+    ],
+    "days": 5,
+    "seed": "kaleSeeds",
+    "harvest": "kale",
+    "yieldCount": 1,
+    "seedPrice": 10,
+    "salePrice": 22,
+    "batch": "winter",
+    "row": 0
+  },
+  {
+    "id": "cabbage",
+    "name": "Repolho",
+    "group": "vegetable",
+    "seasons": [
+      "winter"
+    ],
+    "days": 9,
+    "seed": "cabbageSeeds",
+    "harvest": "cabbage",
+    "yieldCount": 1,
+    "seedPrice": 20,
+    "salePrice": 48,
+    "batch": "winter",
+    "row": 1
+  },
+  {
+    "id": "strawberry",
+    "name": "Morango",
+    "group": "fruit",
+    "seasons": [
+      "spring"
+    ],
+    "days": 8,
+    "regrow": 4,
+    "seed": "strawberrySeeds",
+    "harvest": "strawberry",
+    "yieldCount": 1,
+    "seedPrice": 24,
+    "salePrice": 30,
+    "batch": "winter",
+    "row": 2
+  },
+  {
+    "id": "daisy",
+    "name": "Margarida",
+    "group": "flower",
+    "seasons": [
+      "spring"
+    ],
+    "days": 5,
+    "seed": "daisySeeds",
+    "harvest": "daisy",
+    "yieldCount": 1,
+    "seedPrice": 10,
+    "salePrice": 24,
+    "batch": "winter",
+    "row": 3
+  },
+  {
+    "id": "sunflower",
+    "name": "Girassol",
+    "group": "flower",
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "days": 8,
+    "seed": "sunflowerSeeds",
+    "harvest": "sunflower",
+    "yieldCount": 1,
+    "seedPrice": 18,
+    "salePrice": 38,
+    "batch": "special",
+    "row": 0
+  },
+  {
+    "id": "mint",
+    "name": "Hortelã",
+    "group": "herb",
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "days": 5,
+    "regrow": 3,
+    "seed": "mintSeeds",
+    "harvest": "mint",
+    "yieldCount": 1,
+    "seedPrice": 16,
+    "salePrice": 18,
+    "batch": "special",
+    "row": 1
+  },
+  {
+    "id": "cotton",
+    "name": "Algodão",
+    "group": "fiber",
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "days": 10,
+    "seed": "cottonSeeds",
+    "harvest": "cotton",
+    "yieldCount": 1,
+    "seedPrice": 22,
+    "salePrice": 56,
+    "batch": "special",
+    "row": 2
+  }
+]
