@@ -3,56 +3,46 @@
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
 - **Atualizado em:** 2026-11-13
-- **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch (implementação `a712469`).
-- **Última versão publicada:** `v0.10.0-preview.33`: Release pública com instalador e portátil Windows x64; workflow `43475543958` aprovado, confirmado pelo Codex na `main`.
-- **Estado:** concluído (ipês e madeira nobre implementados e validados); **não publicado**, o Junior não pediu publicação.
+- **Por:** Codex
+- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, implementação `a85756d`; usar o HEAD, que inclui documentação e esta passagem.
+- **Última versão publicada:** `v0.10.0-preview.33`.
+- **Estado:** concluído e validado; não publicado nesta rodada.
 
 ## Feito nesta rodada
 
-- **Ipês-amarelos** exclusivos dos Campos Abertos: 6 árvores em clareiras (`FIELDS_IPES` em `src/data/open-fields.ts`), com copa dourada gerada em memória a partir de `asset-tree-1`.
-- Corte só com **machadinha de Ferro ou melhor**; a de Pedra é recusada sem golpe e sem desgaste. São 6 golpes salvos (`openFields.hits`), e cada golpe gasta 1 de durabilidade da cópia usada.
-- **Madeira nobre** (`hardwood`) por árvore: Ferro 1, Ouro 2, Metal Negro 3, mais 2 galhos. O ipê vira toco e rebrota em 7 dias (`openFields.felled`). Pedido expresso do Junior: 1 madeira com ferro, aumentando nas machadinhas melhores.
-- **Construções de animais** passam a pedir madeira nobre: Galinheiro +6, Curral +10.
-- **Regra permanente:** toda construção de animais futura também deve pedir madeira nobre (`ANIMAL_BUILDING_MATERIAL`). O teste `tests/ipe-trees.test.ts` falha se não pedir.
-- **Compatibilidade de saves:**
-  - Os ids das moitas não mudam: os troncos dos ipês são indexados depois de gerar as moitas.
-  - Saves antigos recebem a madeira nobre com estoque zero.
-  - Galinheiros e currais já concluídos são migrados como abastecidos; obras em andamento precisam da madeira nobre.
-- Ícone `public/assets/visual/open-fields/hardwood.png`, recolorido a partir do ícone de troncos.
-- Documentação, prévias e QA de navegador: `docs/cenarios/ipes-campos-abertos/` e `scripts/qa-ipe-trees.cjs`.
+- Continuado o trabalho do Claude com ipês exclusivos dos Campos Abertos, madeira nobre e custos de construções de animais, sem alterar essas regras.
+- Gerados `work-chopping.png` para farmer-male e farmer-female: folhas 1536 × 1024, seis colunas e quatro linhas de células 256 × 256, na ordem frente, costas, direita e esquerda.
+- Corte de corpo inteiro integrado ao preparador da mineração (`src/player-mining-art.ts`) e `ToolVisual.show`, com texturas independentes e metal por nível.
+- Propriedade e Floresta usam as novas poses pelo fluxo existente. Campos Abertos passa o corpo do jogador ao `playGather` para usar a mesma animação.
+- Pés alinhados por direção; corpo normal restaurado ao terminar/cancelar. Originais e script reproduzível em `referencias/personagens/corte` e `scripts/prepare-player-chopping.cjs`.
+- Junior apontou o levantamento da ferramenta do lado errado nas vistas direita/esquerda. Corrigidos somente esses dois quadros em cada personagem.
+- Junior pediu para voltar à vista traseira anterior: ela foi preservada integralmente. As tentativas posteriores de refazer as costas NÃO foram integradas. Conferência pixel a pixel confirmou os outros 22 quadros iguais à folha base.
+- Documentação e relatório nativo em `docs/personagens/corte/`.
 
 ## Em andamento e próximo passo exato
 
-- **Animação de corte de corpo inteiro (pedido do Junior):** a machadinha deve ter animação igual à da picareta.
-  - A picareta usa folhas `public/assets/visual/characters/<personagem>/work-mining.png`: 6 quadros × 4 linhas de 256 px, na ordem frente, costas, direita, esquerda. Elas são preparadas por `scripts/prepare-player-mining.cjs` e desenhadas por `src/player-mining-art.ts` e `ToolVisual.show` quando `tool==='pickaxe'&&body`.
-  - Para a machadinha: gerar `work-chopping.png` para `farmer-male` e `farmer-female` no mesmo formato, com uma machadinha no lugar da picareta. Depois registrar as caixas do metal (como `PLAYER_PICKAXE_HEADS`) e usar a pose quando `tool==='hatchet'&&body`. O Claude Code não gera imagens; esta etapa é para o Codex.
-  - Nos Campos Abertos, `playGather('hatchet', …)` não passa o corpo. Ao integrar, passe `this.player.sprite`, como faz o `ForestScene`.
-- Se o Junior aprovar, publicar como preview.34.
+- Aguardar revisão do Junior sobre as animações. Se pedir publicação, publicar preview.34 seguindo AGENTS.md; não criar preview.35 antes disso.
+- Não publicar nem atualizar main automaticamente nesta rodada: foi solicitada implementação, sem novo pedido de publicação.
+- Antes de publicar: executar build, atualizar versão do pacote e notas/LEIA, incluir esta passagem, criar tag anotada e acompanhar CI Windows.
 
 ## Pendências e ideias para depois
 
-- **Visual dos Campos Abertos:** comparado à Propriedade e à Floresta Antiga, o cenário está uniforme.
-  - O capim está espalhado por igual, o piso é um verde só e as árvores formam só uma parede na borda.
-  - Os ipês já criam pontos de destaque, mas faltam bosques no meio do mapa, manchas de flores e de terra e talvez água.
-  - Cuidado: mudar a geração das moitas altera os ids salvos em `openFields.cut`. É preciso migrar ou manter os ids.
-- Produção animal (cochos, ovos, balde e ordenha), seguindo `docs/construcoes/PRODUCAO-ANIMAL-PLANO.md`. Lembrar da regra da madeira nobre nas novas construções.
-- Captura/caça dos animais dos campos; editor F2 dos Campos ainda não integrado.
-- Calendário sazonal continua adiado até concluir os cenários, por decisão do Junior.
+- Os ipês do Claude exigem machadinha de Ferro ou melhor e seis golpes. Cada árvore fornece madeira nobre: Ferro 1, Ouro 2, Metal Negro 3, mais dois galhos. Rebrota em sete dias.
+- Galinheiro pede seis madeiras nobres, curral dez. Toda construção futura de animais também deve exigir madeira nobre (`ANIMAL_BUILDING_MATERIAL` e teste de ipês).
+- Melhorar variedade visual dos Campos Abertos sem mudar os IDs salvos das moitas.
+- Produção animal (cochos, alimentação, ovos, balde e ordenha), captura/caça e editor F2 dos campos continuam pendentes.
+- Calendário sazonal continua adiado a pedido do Junior até concluir os cenários.
 
 ## Problemas conhecidos
 
-- Com 1 madeira por ipê (machadinha de ferro) e rebrota em 7 dias, o ritmo é de até 6 madeiras nobres por semana do jogo. Um galinheiro leva cerca de 1 semana e um curral cerca de 2. Ajuste `IPE_REGROW_DAYS` ou os custos se o Junior achar lento.
-- A animação atual da machadinha é a ferramenta desenhada ao lado do corpo parado, sempre virada para a esquerda ou a direita, mesmo de costas (ver próximo passo).
+- O pacote continua com versão preview.33 até a publicação autorizada da preview.34; o branch contém trabalho ainda não distribuído no instalador.
+- Manter a vista traseira atual: Junior preferiu essa versão à tentativa de levantar a ferramenta centralizada.
 
 ## Testes
 
-- `npm ci`: ok (com `ELECTRON_SKIP_BINARY_DOWNLOAD=1`, sem o Electron).
-- `npm run check`: ok, antes e depois.
-- `npm test`: antes, 1.839 passaram; depois, **1.850 passaram, zero falhas, 208 arquivos**. O teste da construção da fazenda foi ajustado: o jogador do teste agora carrega madeira nobre.
-- `npm run build`: não executado (não houve publicação).
-- Conferido no jogo (Chromium):
-  - A machadinha de pedra é recusada e a de ferro derruba o ipê em 6 golpes.
-  - Aparecem o toco e a madeira nobre na mochila, com ícone próprio.
-  - O mapa M mostra os ipês, e o toco se mantém ao continuar o jogo.
-  - Nenhum erro de JavaScript.
+- `npm ci`: ok.
+- `npm run check`: ok antes e depois.
+- `npm test`: baseline 1.850 passaram; final após correções, **1.854 passaram, zero falhas, 209 arquivos**.
+- `npm run build`: não executado (sem publicação solicitada nesta rodada).
+- Conferido no jogo (Chromium): 32 combinações de personagem, direção e nível, todos os quadros de corte, troca de corpo e restauração; nenhum erro JavaScript. Repetido após a correção lateral.
+- Conferência de pixels: os 22 quadros fora dos dois levantamentos laterais foram preservados em cada personagem, incluindo todas as costas.
