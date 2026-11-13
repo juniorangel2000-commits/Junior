@@ -6,53 +6,53 @@
   "characters": {
     "farmer-male": {
       "file": "assets/visual/characters/farmer-male/work-chopping.png",
-      "scale": 0.2488479262672811,
+      "scale": 0.24107142857142858,
       "rows": [
         {
           "direction": "south",
-          "originX": 0.5293059172453703,
-          "originY": 1.0042317708333333
+          "originX": 0.5235098379629629,
+          "originY": 1.0143229166666667
         },
         {
           "direction": "north",
-          "originX": 0.5019802517361112,
-          "originY": 1.0003074363425926
+          "originX": 0.5099826388888888,
+          "originY": 1.0063657407407407
         },
         {
           "direction": "east",
-          "originX": 0.4511447482638889,
-          "originY": 0.9845920138888888
+          "originX": 0.4450954861111111,
+          "originY": 0.9900173611111112
         },
         {
           "direction": "west",
-          "originX": 0.5371636284722222,
-          "originY": 0.9845920138888888
+          "originX": 0.5394965277777778,
+          "originY": 0.9900173611111112
         }
       ]
     },
     "farmer-female": {
       "file": "assets/visual/characters/farmer-female/work-chopping.png",
-      "scale": 0.21555555555555556,
+      "scale": 0.22146118721461186,
       "rows": [
         {
           "direction": "south",
-          "originX": 0.50390625,
-          "originY": 0.9996778350515464
+          "originX": 0.5,
+          "originY": 1.0021343427835052
         },
         {
           "direction": "north",
-          "originX": 0.5,
-          "originY": 1.0087387242268042
+          "originX": 0.498046875,
+          "originY": 1.0109536082474226
         },
         {
           "direction": "east",
-          "originX": 0.43508376288659795,
-          "originY": 0.9996778350515464
+          "originX": 0.4398356958762887,
+          "originY": 1.0021343427835052
         },
         {
           "direction": "west",
-          "originX": 0.5388208762886598,
-          "originY": 0.9996778350515464
+          "originX": 0.5299210695876289,
+          "originY": 1.0021343427835052
         }
       ]
     }

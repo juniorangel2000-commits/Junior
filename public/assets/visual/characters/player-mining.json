@@ -10,49 +10,49 @@
       "rows": [
         {
           "direction": "south",
-          "originX": 0.5000090422453703,
-          "originY": 1.0042317708333333
+          "originX": 0.5175871672453703,
+          "originY": 1.0120442708333333
         },
         {
           "direction": "north",
-          "originX": 0.5058865017361112,
-          "originY": 1.0003074363425926
+          "originX": 0.5117458767361112,
+          "originY": 1.0042136863425926
         },
         {
           "direction": "east",
-          "originX": 0.5038791232638888,
-          "originY": 0.9845920138888888
+          "originX": 0.4570041232638889,
+          "originY": 0.9884982638888888
         },
         {
           "direction": "west",
-          "originX": 0.4824761284722222,
-          "originY": 0.9845920138888888
+          "originX": 0.5449761284722222,
+          "originY": 0.9884982638888888
         }
       ]
     },
     "farmer-female": {
       "file": "assets/visual/characters/farmer-female/work-mining.png",
-      "scale": 0.21555555555555556,
+      "scale": 0.22877358490566038,
       "rows": [
         {
           "direction": "south",
-          "originX": 0.50390625,
-          "originY": 0.9996778350515464
+          "originX": 0.505859375,
+          "originY": 0.9965367268041238
         },
         {
           "direction": "north",
           "originX": 0.501953125,
-          "originY": 1.0087387242268042
+          "originY": 1.0050740979381443
         },
         {
           "direction": "east",
-          "originX": 0.48781813788659795,
-          "originY": 0.9996778350515464
+          "originX": 0.47793170103092786,
+          "originY": 0.9965367268041238
         },
         {
           "direction": "west",
-          "originX": 0.4938990012886598,
-          "originY": 1.0035840850515463
+          "originX": 0.5442775451030928,
+          "originY": 0.9965367268041238
         }
       ]
     }
