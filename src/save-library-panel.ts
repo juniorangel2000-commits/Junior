@@ -1,3 +1,4 @@
+import {fullCalendarLabel} from './systems/calendar';
 import {activateSavedGame,deleteSavedGame,listSavedGames,renameSavedGame} from './systems/save-library';
 import './save-library.css';
 
@@ -36,7 +37,7 @@ export function createSaveLibraryPanel(host:HTMLElement,callbacks:{close():void;
    const title=document.createElement('h3');title.textContent=game.name;
    const info=document.createElement('p'),data=game.read.data;
    const areas={property:'Propriedade',forest:'Floresta Antiga',village:'Vila',cityForest:'Estrada da cidade',fishingLake:'Lago entre as Serras',openFields:'Campos Abertos',highland:'Platô da Nascente',survivorCamp:'Acampamento de Sobreviventes'};
-   info.textContent=data?`${data.profile.name} · Dia ${data.day} · ${data.mineInterior?'Mina Antiga':areas[data.activeArea??'property']}${game.active?' · Última selecionada':''}`:'O arquivo foi mantido para que seu progresso não seja substituído.';
+   info.textContent=data?`${data.profile.name} · ${fullCalendarLabel(data.day)} · ${data.mineInterior?'Mina Antiga':areas[data.activeArea??'property']}${game.active?' · Última selecionada':''}`:'O arquivo foi mantido para que seu progresso não seja substituído.';
    const state=document.createElement('small');
    state.textContent=game.read.status==='recovered'?'Uma cópia de segurança está disponível.':game.read.status==='future'?'Criada em uma versão mais recente do jogo.':game.read.status==='valid'?'Pronta para continuar.':game.read.status==='unavailable'?'Armazenamento indisponível.':'Não foi possível ler esta partida.';
    const actions=document.createElement('div');actions.className='saved-game-actions';

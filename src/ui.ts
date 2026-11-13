@@ -1,4 +1,5 @@
 import {FARM_KINDS,FARM_BUILDINGS,FARM_BASE_COST,isFarmTool} from './data/farm-buildings';
+import {shortCalendarLabel,fullCalendarLabel,calendarDate} from './systems/calendar';
 import {mountMineMissionJournal,mineMissionSummary} from './mine-mission-journal';
 import type {MineMissionRuntime} from './systems/mine-missions';
 import {UNIQUE_CRAFT_ITEMS} from './systems/crafting';
@@ -461,7 +462,7 @@ export class GameUI {
     this.overlay.classList.remove('active');
     this.lastHudKey = '';
     this.base.innerHTML = `<div class="hud">
-      <header class="hud-header hud-status" aria-label="Dia, hora e recursos"><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><strong id="hud-day">Dia 1</strong><span class="status-time"><b id="hud-time">08:00</b><small id="hud-day-phase">Manhã</small></span></div><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}<div class="resource" title="Coroas (C) para comprar nas lojas da vila">${icon('crown')}<strong id="hud-coins">0</strong></div><div class="resource" title="Vigor — refeições e preparados medicinais recuperam o vigor"><strong id="hud-vigor">100</strong><small>vigor</small></div><div class="mine-health" id="hud-health" hidden><span><span id="hud-health-label">Vida</span> <b id="hud-health-value">100</b></span><meter id="hud-health-meter" min="0" max="100" value="100" aria-label="Vida na mina"></meter></div></div></header>
+      <header class="hud-header hud-status" aria-label="Dia, hora e recursos"><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><span class="season-date"><strong id="hud-day">Primavera 1</strong><small id="hud-year">Ano 1</small></span><span class="status-time"><b id="hud-time">08:00</b><small id="hud-day-phase">Manhã</small></span></div><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}<div class="resource" title="Coroas (C) para comprar nas lojas da vila">${icon('crown')}<strong id="hud-coins">0</strong></div><div class="resource" title="Vigor — refeições e preparados medicinais recuperam o vigor"><strong id="hud-vigor">100</strong><small>vigor</small></div><div class="mine-health" id="hud-health" hidden><span><span id="hud-health-label">Vida</span> <b id="hud-health-value">100</b></span><meter id="hud-health-meter" min="0" max="100" value="100" aria-label="Vida na mina"></meter></div></div></header>
       <div class="camera-zoom" role="group" aria-label="Zoom da câmera" hidden>
         <button type="button" data-zoom="-1" aria-label="Diminuir zoom" title="Afastar a câmera · − ou roda do mouse">−</button>
         <button type="button" data-zoom="0" aria-label="Restaurar zoom padrão" title="Restaurar para 100% · Home"><span class="camera-zoom-value" aria-live="polite">100%</span></button>
@@ -697,7 +698,8 @@ export class GameUI {
       const element = this.base.querySelector(selector);
       if (element && element.textContent !== value) element.textContent = value;
     };
-    set('#hud-day', `Dia ${data.day}`);
+    set('#hud-day', shortCalendarLabel(data.day));set('#hud-year',`Ano ${calendarDate(data.day).year}`);
+    const dayLabel=`${fullCalendarLabel(data.day)} · ${data.day}º dia da jornada`,seasonDate=this.base.querySelector<HTMLElement>('.season-date');if(seasonDate&&seasonDate.title!==dayLabel)seasonDate.title=dayLabel;
     const minutes = Math.floor(data.time) % 1440;
     set('#hud-time', `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`);
     for (const item of items) set(`#count-${item.id}`, String(data.inventory[item.id]));
