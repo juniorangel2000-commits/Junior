@@ -4,8 +4,9 @@ O cavalo selvagem e suas animações estão no cenário. A cadeia de domesticaç
 abaixo ainda precisa ser implementada.
 
 - Estábulo concluído é pré-requisito.
-- NPC prepara/vende comida especial cobrando moedas e vegetais da colheita do jogador. Helena foi sugerida para o preparo; vegetais, quantidades e preço ainda devem ser definidos. Hoje o cultivo disponível é nabo.
+- Comida especial: **cesta de colheita** preparada pela Helena, com 3 colheitas diferentes (legumes, verduras, grãos ou frutas) + 20 C. Decisão do Junior em 13/11/2026: cesta com vários itens, não só nabos. Depende das etapas 1–4 de `CULTIVOS-E-CALENDARIO.md`.
 - Um ponto/cocho nos Campos Abertos recebe a comida, permitindo estoque para alguns dias.
+- Padrões adotados enquanto o Junior não decidir outra coisa: cada virada de dia com comida no cocho conta (mesmo com o jogador em outro cenário); o cocho guarda 3 porções; o estábulo é uma nova construção para 1 cavalo, com madeira nobre, usando a arte do curral até haver arte própria.
 - Barra de **Confiança**, com no máximo um avanço por dia alimentado; são sete dias.
 - Dias sem comida pausam a confiança, sem apagar o progresso conquistado.
 - Dias 1–2: observa de longe e só come com jogador afastado. Dias 3–4: reconhece o jogador e tolera distância menor. Dias 5–6: aproxima-se do alimento na presença do jogador. Dia 7: aproximação voluntária, nome e condução ao estábulo.

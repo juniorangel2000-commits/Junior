@@ -1,6 +1,6 @@
 # Calendário sazonal — ideia guardada
 
-Status: adiado por decisão do jogador em 01/11/2026. Priorizar a conclusão dos cenários restantes, conexões, colisões, transições e atividades. Este documento é planejamento, não indica funcionalidade implementada.
+Status: **retomado em 13/11/2026**; o plano atual está em `docs/planejamento/CULTIVOS-E-CALENDARIO.md`. Antes: adiado por decisão do jogador em 01/11/2026. Priorizar a conclusão dos cenários restantes, conexões, colisões, transições e atividades. Este documento é planejamento, não indica funcionalidade implementada.
 
 ## Objetivo
 
