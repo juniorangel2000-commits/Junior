@@ -3,50 +3,57 @@
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
 - **Atualizado em:** 2026-11-13
-- **Por:** Codex
-- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, implementação `881ab9f`; usar o HEAD com esta passagem e ajuste do QA.
+- **Por:** Claude Code
+- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch (etapa 1 do calendário em `79b6d4d`).
 - **Última versão publicada:** `v0.10.0-preview.33`.
-- **Estado:** concluído e validado; não publicado nesta rodada.
+- **Estado:** etapa 1 do calendário concluída e validada; domesticação do cavalo **pausada** até haver cesta de colheita. Não publicado.
 
 ## Feito nesta rodada
 
-- Integrado o segundo ZIP do cavalo enviado pelo Junior, preservado em `referencias/animais/create_a_horse_with_medium_details-v2.zip`.
-- 308 quadros originais preservados; os 180 anteriores são idênticos. Atlas reorganizado em 16 colunas, 3.072 × 3.840 pixels, abaixo de 4.096 por eixo. Índices anteriores preservados.
-- `HorseIdleCycle`: ações especiais finitas com intervalos individuais de 8–15 segundos; começar a comer → comer por 4–7 segundos → terminar. Movimento de cabeça toca uma vez e retorna ao repouso. Pausa congela o ciclo.
-- Alimentação inicia perto de capim crescido e com jogador afastado; transições completam antes de fugir quando o jogador se aproxima. Corpo físico permanece parado.
-- Fuga do cavalo agora é 2,2 vezes a velocidade básica, superior ao jogador correndo com botas. Outros animais preservam sua velocidade.
-- Intervalo inicial das vacas ajustado para 8–15 segundos; descanso já era finito. Demais animais têm poses estáticas no repouso.
-- GIF e validação em `docs/cenarios/cavalo-campos-abertos/alimentacao/`.
-- Atualizado o plano de doma com as ideias aceitas e a regra expressa do Junior: corda SOMENTE depois de domado.
+- O Junior pediu a domesticação do cavalo, mas decidiu que a comida será uma **cesta com vários itens de colheita**, não só nabos. Pediu também novas plantas com calendário. A ordem foi reorganizada e aprovada:
+  - `docs/planejamento/CULTIVOS-E-CALENDARIO.md`: etapas 1–6 e catálogo inicial de 19 plantas (legumes, verduras, grãos, frutas, flores, ervas e algodão), mais a regra da cesta.
+  - `docs/planejamento/DOMESTICACAO-CAVALO.md`: comida = cesta da Helena (3 colheitas diferentes + 20 C) e padrões adotados para o cocho, a contagem dos dias e o estábulo.
+  - `docs/calendario-sazonal-planejado.md`: marcado como retomado.
+- **Etapa 1, calendário:** `src/systems/calendar.ts`.
+  - Quatro estações de 28 dias (ano de 112 dias), calculadas a partir de `SaveData.day`, sem migração.
+  - A interface mostra "Primavera 5" com "Ano 1" logo abaixo; ao passar o mouse aparece "Primavera, dia 5 · Ano 1 · 5º dia da jornada".
+  - A lista de saves usa a data completa. Pedido expresso do Junior: mostrar o ano (Ano 1 no primeiro ciclo, Ano 2 no seguinte…).
+- Nada do cavalo foi alterado nesta rodada.
 
 ## Em andamento e próximo passo exato
 
-- Implementar a cadeia de domesticação em uma etapa própria, seguindo `docs/planejamento/DOMESTICACAO-CAVALO.md`: estábulo pronto, comida de NPC exigindo vegetais da colheita, cocho nos campos e confiança por sete dias alimentados, no máximo um avanço por dia; dia sem comida pausa sem perda.
-- Helena foi sugerida para preparar a mistura. Definir vegetais, quantidades, preço e estábulo; hoje o cultivo disponível é nabo.
-- Dias 1–2 afastado, 3–4 tolerância menor à distância, 5–6 come na presença do jogador, dia 7 aproximação voluntária, nome e corda para conduzir ao estábulo. Captura direta antes da doma é proibida.
-- Pastar nesta versão é visual e NÃO concede confiança. Cocho, comida especial, barra de confiança, estábulo de cavalo, corda para cavalo e montaria ainda não estão implementados.
-- Publicar preview.34 somente quando solicitado; main e tags continuam na preview.33.
-- Junior alternará para Claude quando seus créditos chegarem perto de 10%; ao receber “limite”, encerrar imediatamente com WIP e passagem. Não temos leitura do saldo de créditos.
+- **Etapa 2, cultivos por catálogo.** Antes de implementar, confirmar com o Junior:
+  - Com crescimento por dias regados, o nabo deixa de levar 45 segundos e passa a levar 4 dias do jogo, cerca de 48 minutos reais.
+  - Isso alonga a missão inicial "Primeira colheita" (plantar, regar, colher). Opções:
+    1. A primeira plantação da missão cresce mais rápido.
+    2. A missão aceita "planta regada" como passo final.
+    3. O nabo cresce em 1 dia.
+- Implementação prevista da etapa 2:
+  - Campo `crop` em `CropData`, com o nabo como padrão para saves antigos.
+  - Crescimento diário somente nos dias regados, rega reiniciada a cada dia e plantas fora de estação murchando na virada.
+  - Migração das plantações atuais preservando o progresso proporcional.
+- Depois: etapa 3 (arte das plantas pelo Codex), etapa 4 (cesta da Helena) e etapa 5 (cavalo).
 
 ## Pendências e ideias para depois
 
-- Quadros de deitar, descansar e levantar do cavalo estão preservados, mas ainda não usados.
-- Ipês exigem machadinha de Ferro ou melhor e seis golpes; madeira nobre: Ferro 1, Ouro 2, Metal Negro 3, mais dois galhos; rebrota em sete dias.
-- Galinheiro exige seis madeiras nobres, curral dez; novas construções de animais também exigem madeira nobre.
-- Refinamento anterior dos personagens trabalhando permanece em `docs/personagens/trabalho-refinado/`.
-- Produção animal, variedade visual dos campos, caça e editor F2 continuam pendentes; preservar IDs salvos das moitas.
-- Calendário sazonal adiado até concluir os cenários.
+- Domesticação do cavalo: a corda **só depois da doma completa**. Padrões adotados enquanto o Junior não decidir outra coisa:
+  - Cada virada de dia com comida no cocho conta.
+  - O cocho guarda 3 porções.
+  - Estábulo para 1 cavalo, com madeira nobre e arte do curral.
+- Quadros de deitar, descansar e levantar do cavalo preservados e ainda não usados.
+- Ipês e madeira nobre: machadinha de Ferro ou melhor, 6 golpes, Ferro 1 / Ouro 2 / Metal Negro 3. Galinheiro 6 e curral 10 madeiras nobres; toda construção de animais futura exige madeira nobre.
+- Clima, peixes por estação, árvores frutíferas e estufa ficam para a etapa 6 do plano de cultivos.
+- Produção animal, variedade visual dos campos, caça e editor F2 continuam pendentes; preservar os ids salvos das moitas.
 
 ## Problemas conhecidos
 
-- Pacote ainda usa preview.33 até publicação autorizada da preview.34.
-- A primeira execução do QA importou uma segunda instância do renderer e perdeu o WeakMap de sprites. O QA foi corrigido para usar `world.update` do próprio cenário; a execução final passou. Não confundir com erro na execução normal do jogo.
+- O pacote continua na preview.33 até a publicação autorizada da preview.34.
+- O GitHub informa que o repositório se chama `Junior` (com J maiúsculo). O endereço remoto local foi ajustado; enviar para `https://github.com/juniorangel2000-commits/Junior.git`.
 
 ## Testes
 
-- `npm ci`: ok.
-- `npm run check`: ok antes e depois.
-- `npm test`: baseline 1.856 passaram; final **1.861 passaram, zero falhas, 211 arquivos**.
-- Testes específicos: 16 passaram, cobrindo ordem, duração, cooldown, pausa, interrupção, quadros, colisão, persistência e fuga mais rápida que corrida.
-- `npm run build`: não executado (sem publicação nesta rodada).
-- Chromium: sequência completa e movimento de cabeça com intervalos, 31 quadros distintos, posição física estável, atlas dentro do limite, nenhum erro JavaScript.
+- `npm ci`: ok (com `ELECTRON_SKIP_BINARY_DOWNLOAD=1`).
+- `npm run check`: ok, antes e depois.
+- `npm test`: antes, 1.861 passaram; depois, **1.866 passaram, zero falhas, 212 arquivos** (5 novos em `tests/calendar.test.ts`).
+- `npm run build`: não executado (sem publicação).
+- Chromium (`scripts/qa-calendar.cjs`): a interface mostrou "Primavera 1 / Ano 1" no início e "Verão 2 / Ano 2" no dia 142, com a dica completa. Nenhum erro de JavaScript.
