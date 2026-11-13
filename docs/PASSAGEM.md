@@ -4,41 +4,44 @@
 
 - **Atualizado em:** 2026-11-13
 - **Por:** Codex
-- **Continuar a partir de:** branch `release/v0.10.0-preview.33`, base `3401715`; integração dos Campos Abertos em andamento nesta rodada.
-- **Última versão publicada:** `v0.10.0-preview.32`
-- **Estado:** em andamento (WIP)
+- **Continuar a partir de:** branch `release/v0.10.0-preview.33`, implementação `64079b3`; usar o HEAD do branch, que inclui esta passagem e os metadados da publicação.
+- **Última versão publicada:** `v0.10.0-preview.32`; preview.33 autorizada e preparada nesta rodada, conferir o workflow da tag `v0.10.0-preview.33` antes de assumir publicação concluída.
+- **Estado:** concluído (implementação e validação); publicação da preview.33 em processamento.
 
 ## Feito nesta rodada
 
-- Protocolo de revezamento criado exatamente como solicitado, com `CLAUDE.md` apontando para `AGENTS.md`.
-- Branch da próxima versão criado a partir da preview.32, preservando o trabalho iniciado em `feature/limpeza-vacas-curral`.
-- Criados terreno, abrigo rural e sprite de capim para Campos Abertos, ao sul da propriedade. Dimensão solicitada: 96 × 72 blocos (3.072 × 2.304), igual à propriedade.
-- Integração local em validação: entrada/saída caminhando, capim cortado com a foice, rebrota em três dias, coleta no chão, ervas/cogumelos, vacas/galinhas/coelhos, pássaros, HUD e inventário.
-- Capim fresco seca no silo em um dia do jogo; cada capim rende uma palha, mantendo 3 fibras → 1 palha.
+- AGENTS.md criado com o texto exato enviado pelo Junior; CLAUDE.md contém somente `@AGENTS.md`.
+- Campos Abertos ao sul da propriedade: 96 × 72 blocos, igual à propriedade. O piso usa os mesmos materiais e a escala nativa da propriedade, conforme correção expressa do Junior. O estudo ilustrado NÃO é usado no jogo.
+- Acesso/retorno caminhando, passagem sul reservada, placas, HUD, inventário, mapa, atalhos, companheiros, pássaros e salvamento.
+- Capim alto ao vento, corte com foice, dois capins frescos no chão por moita, desgaste somente da ferramenta utilizada e rebrota em três dias.
+- Silo seca um capim em uma palha após 24 horas do jogo; secagem ocupa capacidade. Receita 3 fibras → 1 palha preservada.
+- Ervas, cogumelos, árvores, pedras, abrigo com entrada frontal e colisão nas paredes; vacas/galinhas/coelhos com navegação e animações existentes.
+- Migração de partidas anteriores adiciona o capim fresco com estoque zero.
+- Prévia real do mapa e relatório: `docs/cenarios/campos-abertos/`.
 
 ## Em andamento e próximo passo exato
 
-- Concluir a conferência visual e os testes dos Campos Abertos antes de fazer commit da implementação. A máquina reiniciou durante a primeira execução completa; os arquivos persistiram.
-- `npm ci` e `npm run check` passaram após a retomada; `npm test` está rodando novamente. Consultar logs em `/workspace/campos-abertos-qa` nesta máquina, sem depender deles no próximo ambiente.
-- Executar `node scripts/qa-open-fields.cjs` com Vite na porta 5190, conferir mapa/abrigo, ida e volta e save/continue; concluir `npm run check` e `npm test`; enviar implementação ao GitHub e reescrever esta passagem com os resultados reais.
-- Junior NÃO pediu publicação nesta rodada. Não criar tag nem subir versão do pacote. Próxima publicação, quando solicitada: preview.33.
+- Publicação autorizada: a tag preview.33 dispara o workflow Windows. Conferir sucesso e os dois executáveis na Release; a main deve apontar para o mesmo commit da tag, sem force-push.
+- Depois da publicação, continuar do HEAD de main/tag preview.33. Próxima rodada de implementação usa `release/v0.10.0-preview.34`.
+- Próxima entrega sugerida: produção animal (cochos/alimentação, ovos, balde e ordenha), seguindo `docs/construcoes/PRODUCAO-ANIMAL-PLANO.md`, após retorno do Junior sobre os campos.
 
 ## Pendências e ideias para depois
 
-- Produção animal: alimentação/cochos, ovos, balde e ordenha ainda não implementados. Plano em `docs/construcoes/PRODUCAO-ANIMAL-PLANO.md`.
-- Captura e caça dos animais dos novos campos ficam para uma etapa própria; nesta primeira versão eles circulam no cenário.
-- Calendário sazonal adiado pelo Junior até terminar os cenários (`docs/calendario-sazonal-planejado.md`).
-- Compatibilidade de partidas antigas e durabilidade individual das ferramentas precisam continuar preservadas.
+- Captura/caça dos animais dos campos; atualmente circulam pelo cenário.
+- Editor F2 dos Campos Abertos ainda não integrado; mapa M disponível.
+- Produção de ovos/leite e alimentação ainda não implementadas.
+- Calendário sazonal continua adiado até concluir os cenários, por decisão do Junior.
 
 ## Problemas conhecidos
 
-- Preview.32 é a última versão publicada. Não confundir arquivos em desenvolvimento com conteúdo do instalador existente.
-- O editor F2 dos Campos Abertos ainda não está integrado; o mapa M e a exploração são o escopo atual.
-- No primeiro teste de navegação havia uma erva muito perto de uma árvore; corrigido. Os nove testes específicos passaram depois da correção.
+- Primeira suíte desta rodada teve uma falha por esperar três placas na propriedade. A nova saída adiciona a quarta placa; teste ajustado. Não era falha da preview.32.
+- A máquina reiniciou durante a validação inicial. Dependências reinstaladas com npm ci; validações finais refeitas.
+- Não confundir esta versão com sistemas futuros de caça, alimentação ou produção animal.
 
 ## Testes
 
-- `npm run check`: ok após a retomada.
-- `npm test`: em execução. Antes da retomada, 9 testes dos Campos Abertos passaram; 38 testes de construção/migração também passaram. Não há resultado completo desta rodada ainda.
-- `npm run build`: não executado nesta rodada.
-- Conferido no jogo: entrada a pé, corte com a foice, coleta de capim e inventário. Conferência do mapa, retorno e recarga em andamento.
+- `npm ci`: ok.
+- `npm run check`: ok.
+- `npm test`: 1.839 passaram, zero falhas, 207 arquivos.
+- `npm run build`: ok (aviso existente de tamanho do bundle).
+- Conferido no jogo: acesso e retorno a pé, foice, coleta, inventário, captura do mapa, salvar e continuar nos campos. Nenhum erro JavaScript.

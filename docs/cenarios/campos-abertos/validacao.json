@@ -1,0 +1,14 @@
+{
+  "size": {
+    "width": 3072,
+    "height": 2304
+  },
+  "walkingEntry": true,
+  "harvest": true,
+  "pickup": true,
+  "inventory": true,
+  "map": true,
+  "reload": true,
+  "walkingReturn": true,
+  "errors": []
+}

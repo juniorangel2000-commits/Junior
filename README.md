@@ -1,4 +1,4 @@
-> **Prévia atual 0.10.0-preview.32:** [Instalador Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.10.0-preview.32/After-Rain-0.10.0-preview.32-Setup-Windows-x64.exe) · [Notas da atualização](docs/cenarios/NOTAS-0.10.0-preview.32.md) · Ferramentas individuais, novas vacas, palha e passagem pelos NPCs.
+> **Prévia atual 0.10.0-preview.33:** [Instalador Windows x64](https://github.com/juniorangel2000-commits/Junior/releases/download/v0.10.0-preview.33/After-Rain-0.10.0-preview.33-Setup-Windows-x64.exe) · [Notas da atualização](docs/cenarios/NOTAS-0.10.0-preview.33.md) · Campos Abertos, coleta de capim com a foice, secagem no silo e protocolo de revezamento.
 
 > **Manutenção:** [Arquivo das prévias históricas e restauração](docs/manutencao/README.md). Os estudos e testes visuais antigos continuam disponíveis na versão publicada, sem ocupar a árvore atual.
 
