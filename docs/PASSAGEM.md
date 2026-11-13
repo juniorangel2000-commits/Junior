@@ -5,7 +5,7 @@
 - **Atualizado em:** 2026-11-13
 - **Por:** Claude Code
 - **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch (implementação `a712469`).
-- **Última versão publicada:** `v0.10.0-preview.33`
+- **Última versão publicada:** `v0.10.0-preview.33`: Release pública com instalador e portátil Windows x64; workflow `43475543958` aprovado, confirmado pelo Codex na `main`.
 - **Estado:** concluído (ipês e madeira nobre implementados e validados); **não publicado**, o Junior não pediu publicação.
 
 ## Feito nesta rodada
