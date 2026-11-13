@@ -308,7 +308,7 @@ export class ForestScene extends Phaser.Scene {
     this.daylight?.update(this.state.time,false,this.state.day);
     if(!this.player||this.paused||this.leaving||this.mapEditor||document.hidden)return;
     const previous={x:this.player.x,y:this.player.y};
-    const delta=Math.min(ms/1000,.1);this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta,this.movementBlockedAt,undefined,!this.toolUse.active,this.swimmingPoint,this.allowLeashMovement);this.wildlife?.update(delta,this.player);this.farming.update(delta);if(this.player.isSwimming){this.state.equippedTool='hand';this.toolUse.cancel();this.toolVisual?.hide();}
+    const delta=Math.min(ms/1000,.1);this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta,this.movementBlockedAt,undefined,!this.toolUse.active,this.swimmingPoint,this.allowLeashMovement);this.wildlife?.update(delta,this.player);this.farming.update(delta,this.state.day);if(this.player.isSwimming){this.state.equippedTool='hand';this.toolUse.cancel();this.toolVisual?.hide();}
     if(!this.player.isSwimming&&this.exitPassage.update(previous,this.player,this.exit(),this.entry())){
       if(this.wildlife?.canLeave(this.player)??true){this.leave();return;}
       if(!this.exitWarningShown){this.ui.toast('Traga o animal para perto da saída.');this.exitWarningShown=true;}

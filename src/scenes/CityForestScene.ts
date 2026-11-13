@@ -227,7 +227,7 @@ export class CityForestScene extends Phaser.Scene{
   if(distance>4)this.cityPromptArmed=true;
   if(this.cityPromptArmed&&distance<3){this.askCityTravel();return;}
   if(this.passage.update(before,this.player,this.state.cityForestMapEdits?.points?.exit??CITY_FOREST_EXIT,this.state.cityForestMapEdits?.points?.entry??CITY_FOREST_ENTRY)){this.leave();return;}
-  this.farming.update(dt);
+  this.farming.update(dt,this.state.day);
   Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));
     this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state, dt,this.player,this.bentoWorkRuntime);this.bentoTravelView?.update();
   for(const tree of this.world.trees)tree.setAlpha(this.player.y<tree.y&&Math.abs(this.player.x-tree.x)<65&&this.player.y>tree.y-170?.45:1);

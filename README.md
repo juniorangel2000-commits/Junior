@@ -173,7 +173,7 @@ A desmontagem das peças novas recupera **60% de cada componente, arredondado pa
 
 ## Cultivo e convivência
 
-Lia fica perto da horta; converse usando as mãos. Recolha sementes, caminhe até a terra preparada ao sul da casa, selecione **2** e plante; selecione **3** e regue. O nabo precisa de **45 segundos de simulação** após regar. Colha com as mãos para receber um nabo e uma semente.
+Lia fica perto da horta; converse usando as mãos. Recolha sementes, caminhe até a terra preparada ao sul da casa, selecione **2** e plante; selecione **3** e regue. O nabo cresce **um dia a cada dia em que foi regado** e fica pronto após 4 dias regados; regue de novo a cada dia. Colha com as mãos para receber um nabo e uma semente. A interface mostra a estação, o dia e o ano (estações de 28 dias).
 
 O regador não precisa ser reabastecido nesta versão. Plantas não crescem sem a primeira rega e não murcham. O dia/noite dura aproximadamente **12 minutos de simulação**, com mudança de iluminação. Não há crescimento enquanto o jogo estiver fechado.
 

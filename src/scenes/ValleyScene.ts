@@ -66,7 +66,7 @@ import { isPathTile, isBridgeTile, locationAt, getRegionAt } from '../data/regio
 import { createWorld, TILE, WORLD_WIDTH, WORLD_HEIGHT } from '../world';
 import type { WorldView, ResourceNode } from '../world';
 import { Inventory, ITEM_NAMES } from '../systems/inventory';
-import { Farming, soilGroundReason, type SoilGround } from '../systems/farming';
+import { Farming, soilGroundReason, cropStatus, type SoilGround } from '../systems/farming';
 import { drawPreparedSoil } from '../farming-art';
 import { Building, BUILD_COSTS, BUILD_NAMES, BUILD_REQUIREMENTS, buildingFootprint, buildingLayer } from '../systems/building';
 import { BLUEPRINT_COST, BLUEPRINT_LABEL, BLUEPRINT_SHELTER } from '../data/blueprints';
@@ -582,7 +582,7 @@ export class ValleyScene extends Phaser.Scene {
         if (!result.ok) { this.ui.toast(result.message); return; }
         this.state.day = result.day;
         this.state.time = result.time;
-        this.farming.update(result.elapsedMinutes / GAME_MINUTES_PER_SECOND);
+        this.farming.update(result.elapsedMinutes / GAME_MINUTES_PER_SECOND, this.state.day);
         this.nextInteractionAt = this.time.now + 400;
         this.updateNight(); this.updateHUD(); this.persist();
         this.ui.toast(result.message);
@@ -1309,7 +1309,7 @@ export class ValleyScene extends Phaser.Scene {
     if (this.tool === 'plant') {
       const reason = soilGroundReason(tile.x, tile.y, this.soilGround());
       if (reason) { this.ui.toast(reason); return; }
-      const result = this.farming.plant(tile.x, tile.y, this.inventory);
+      const result = this.farming.plant(tile.x, tile.y, this.inventory, this.state.day);
       if (result.ok) gameAudio.play(this.tool);
       this.ui.toast(result.message);
     } else if (this.tool === 'remove') {
@@ -1549,7 +1549,7 @@ export class ValleyScene extends Phaser.Scene {
     else if (this.building.at(tile.x, tile.y, 'structure')?.kind === 'workbench' && this.tool === 'hand') prompt = 'Usar bancada · fabricação';
     else if (this.farming.cropAt(tile.x, tile.y)) {
       const crop = this.farming.cropAt(tile.x, tile.y)!;
-      prompt = crop.growth >= 1 ? 'Colher nabo' : !crop.watered ? 'Precisa de água · equipe o regador' : `Nabo crescendo · ${Math.floor(crop.growth * 100)}%`;
+      prompt = cropStatus(crop);
     } else if (resource) {
       const definition = RESOURCE_DEFINITIONS[resource.kind];
       const hits = this.resources.progress.find(entry => entry.id === resource.id)?.hits ?? 0;
@@ -1619,7 +1619,8 @@ export class ValleyScene extends Phaser.Scene {
     if (impact) this.applyToolImpact(impact);
     this.updateToolVisual();
     if (!this.inHome) this.world.updateOcclusion(this.player.x, this.player.y);
-    this.farming.update(delta);
+    const withered = this.farming.update(delta,this.state.day);
+    if (withered.length) this.ui.toast(`A estação mudou: ${[...new Set(withered)].join(', ').toLowerCase()} fora de época murchou.`);
     const previousDay = this.state.day;
     Object.assign(this.state, advanceClock(this.state, delta * GAME_MINUTES_PER_SECOND));
     this.state.crops=this.farming.crops;this.state.homePosition=this.inHome?this.playerPosition():undefined;this.state.home=this.home.data;this.state.buildings=this.building.buildings;advanceBackgroundVillage(this.state, delta,this.player,this.bentoWorkRuntime);this.bentoView?.update();

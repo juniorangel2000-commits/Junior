@@ -1,4 +1,5 @@
 import {validOpenFields} from './open-fields';
+import {CROPS,isCropId} from '../data/crops';
 import {validGroundItems} from './ground-items';
 import {syncToolInstances,validToolInventory,activeToolCopy,toolReference} from './tool-instances';
 import {TOOL_IDS} from '../data/economy-balance';
@@ -222,7 +223,11 @@ export function validateSave(value: unknown): value is SaveData {
   for (const crop of value.crops) {
     if (!isRecord(crop) || !integer(crop.x, 1, WORLD_WIDTH - 2) || !integer(crop.y, 1, WORLD_HEIGHT - 2) || !validSoilTile(crop.x, crop.y)
       || !(isFarmTile(crop.x, crop.y) && !restored.has(`${crop.x},${crop.y}`) || soil.has(`${crop.x},${crop.y}`))
-      || !finite(crop.growth, 0, 1) || typeof crop.watered !== 'boolean' || (!crop.watered && crop.growth > 0)) return false;
+      || !finite(crop.growth, 0, 1) || typeof crop.watered !== 'boolean') return false;
+    // Formato antigo (crescimento por segundos): só cresce depois de regado.
+    if (crop.day === undefined && crop.days === undefined && crop.crop === undefined) { if (!crop.watered && crop.growth > 0) return false; }
+    // Formato por dias regados: planta conhecida, dias dentro da ficha e dia de referência até hoje.
+    else if (!isCropId(crop.crop) || !integer(crop.days, 0, CROPS[crop.crop].days) || !integer(crop.day, 1, typeof value.day === 'number' ? value.day : 1)) return false;
     const key = String(crop.x) + ',' + String(crop.y);
     if (occupied.has(key)) return false;
     occupied.add(key);

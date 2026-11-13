@@ -34,7 +34,10 @@ export type OwnedTool = 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw' | 'hammer';
 export type Tool = 'hand' | 'plant' | 'water' | 'gate' | 'repair' | 'fence' | 'bench' | 'remove' | 'hatchet' | 'pickaxe' | 'hoe' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof' | 'blueprint' | 'farm-coop' | 'farm-barn' | 'farm-silo';
 export type QuickSlot = Tool | `item:${ItemId}` | `tool:${import('./systems/tool-instances').IndividualTool}:${number}` | 'item:wateringCan' | null;
 export interface TilePoint { x: number; y: number }
-export interface CropData extends TilePoint { growth: number; watered: boolean }
+/** growth: fração 0–1 derivada de days, mantida para o desenho e saves antigos.
+ * watered: regada no dia `day`. Canteiros de saves antigos não têm crop/days/day e
+ * são convertidos na primeira atualização (nabo, progresso proporcional). */
+export interface CropData extends TilePoint { growth: number; watered: boolean; crop?: import('./data/crops').CropId; days?: number; day?: number }
 export interface FarmingProgress { prepared: boolean; planted: boolean; watered: boolean; harvested: boolean }
 export interface BuildingData extends TilePoint { kind: 'gate' | 'fence' | 'bench' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof'; open?: boolean; rotation?: 0 | 1 | 2 | 3; gateFlip?: boolean; fenceBuiltDay?: number }
 export type ResourceKind = 'tree' | 'stone' | 'seeds' | 'scrap' | 'standingTree' | 'vein' | 'fiber' | 'fallenLog' | 'stump' | 'herb' | 'mushroom';

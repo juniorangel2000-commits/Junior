@@ -589,7 +589,7 @@ export class VillageScene extends Phaser.Scene {
   else if(!this.inShop){const near=VILLAGE_NPCS.find(n=>n.id!=='bento'&&Math.hypot(this.player.x-merchantDoor(n.id).x,this.player.y-merchantDoor(n.id).y)<80);if(near){if(this.merchantPassage.update(previous,this.player,merchantDoor(near.id))){this.changeMerchantRoom(near.id);return;}}else this.merchantPassage.reset();}
   if(!this.inShop&&this.northPassage.update(previous,this.player,VILLAGE_NORTH_GATE,VILLAGE_NORTH_ARRIVAL)){this.enterCityForest();return;}
   if(!this.inShop&&this.exitPassage.update(previous,this.player,this.world.exit(),this.world.entry())){this.leave();return;}
-  this.farming.update(delta);Object.assign(this.state,advanceClock(this.state,delta*GAME_MINUTES_PER_SECOND));
+  this.farming.update(delta,this.state.day);Object.assign(this.state,advanceClock(this.state,delta*GAME_MINUTES_PER_SECOND));
   for(const tree of this.world.trees)tree.setAlpha(this.player.y<tree.y&&Math.abs(this.player.x-tree.x)<tree.displayWidth*.4&&this.player.y>tree.y-tree.displayHeight*.85?.42:1);
   this.state.crops=this.farming.crops;advanceSurvivorCamp(this.state,delta);
   this.updateDailyRoutines(delta);

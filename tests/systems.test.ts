@@ -2,7 +2,7 @@ import type {ItemId} from '../src/types';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { CharacterProfile } from '../src/types';
 import { Building, BUILD_COSTS } from '../src/systems/building';
-import { Farming, GROWTH_SECONDS } from '../src/systems/farming';
+import { Farming } from '../src/systems/farming';
 import { EMPTY_INVENTORY, Inventory } from '../src/systems/inventory';
 import { createNewSave, hasSave, loadSave, SAVE_KEY, saveGame, validateSave } from '../src/systems/save';
 
@@ -38,30 +38,37 @@ describe('mochila', () => {
 });
 
 describe('horta', () => {
-  it('executa plantar, regar, crescer e colher com devolução de semente', () => {
+  it('executa plantar, regar, crescer por dias regados e colher com devolução de semente', () => {
     const inventory = new Inventory(legacyStock);
     const farming = new Farming();
-    expect(farming.plant(21, 20, inventory).ok).toBe(true);
+    expect(farming.plant(21, 20, inventory, 1).ok).toBe(true);
     expect(inventory.data.seeds).toBe(7);
-    farming.update(GROWTH_SECONDS);
+    farming.update(0, 2);
     expect(farming.cropAt(21, 20)?.growth).toBe(0);
-    expect(farming.water(21, 20).ok).toBe(true);
-    farming.update(GROWTH_SECONDS / 2);
-    expect(farming.harvest(21, 20, inventory).ok).toBe(false);
-    farming.update(GROWTH_SECONDS / 2);
+    for (let day = 2; day <= 5; day++) {
+      expect(farming.harvest(21, 20, inventory).ok).toBe(false);
+      expect(farming.water(21, 20).ok).toBe(true);
+      expect(farming.water(21, 20).ok).toBe(false);
+      farming.update(0, day + 1);
+    }
+    expect(farming.cropAt(21, 20)?.growth).toBe(1);
     expect(farming.harvest(21, 20, inventory).ok).toBe(true);
     expect(inventory.data.turnip).toBe(1);
     expect(inventory.data.seeds).toBe(8);
     expect(farming.crops).toEqual([]);
   });
 
-  it('mantém a mesma duração com diferentes taxas de quadros', () => {
+  it('cresce um dia por dia regado, sem depender do tempo em segundos nem da taxa de quadros', () => {
     const fast = new Farming([{ x: 21, y: 20, watered: true, growth: 0 }]);
     const slow = new Farming([{ x: 21, y: 20, watered: true, growth: 0 }]);
-    for (let i = 0; i < 30 * 60; i++) fast.update(1 / 60);
-    for (let i = 0; i < 30 * 20; i++) slow.update(1 / 20);
-    expect(fast.crops[0].growth).toBeCloseTo(slow.crops[0].growth, 9);
-    expect(fast.crops[0].growth).toBeCloseTo(2 / 3, 9);
+    fast.update(1 / 60, 1);slow.update(1 / 20, 1);
+    for (let i = 0; i < 30 * 60; i++) fast.update(1 / 60, 1);
+    for (let i = 0; i < 30 * 20; i++) slow.update(1 / 20, 1);
+    expect(fast.crops[0].growth).toBe(0);
+    fast.update(1 / 60, 2);slow.update(1 / 20, 2);
+    expect(fast.crops[0]).toEqual(slow.crops[0]);
+    expect(fast.crops[0].growth).toBe(1 / 4);
+    expect(fast.crops[0].watered).toBe(false);
   });
 
   it('recusa sobreposição e plantio fora do canteiro sem consumir sementes', () => {
@@ -74,15 +81,18 @@ describe('horta', () => {
     expect(inventory.data.seeds).toBe(7);
   });
 
-  it('não muda o save original nem progride sem update da simulação', () => {
+  it('não muda o save original nem progride sem um novo dia válido', () => {
     const saved = [{ x: 22, y: 22, growth: 0.5, watered: true }];
     const farming = new Farming(saved);
     expect(farming.crops[0].growth).toBe(0.5);
     farming.update(-1);
     farming.update(Number.POSITIVE_INFINITY);
+    farming.update(2, Number.NaN);
+    farming.update(2, 0);
     expect(farming.crops[0].growth).toBe(0.5);
-    farming.update(2);
-    expect(saved[0].growth).toBe(0.5);
+    farming.update(2, 10);
+    expect(farming.crops[0]).toMatchObject({ crop: 'turnip', days: 2, day: 10, growth: 0.5 });
+    expect(saved[0]).toEqual({ x: 22, y: 22, growth: 0.5, watered: true });
   });
 });
 

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { Farming, GROWTH_SECONDS, soilGroundReason, type SoilGround } from '../src/systems/farming';
+import { Farming, soilGroundReason, type SoilGround } from '../src/systems/farming';
 import { Inventory, MAX_ITEM_COUNT } from '../src/systems/inventory';
 import { craft } from '../src/systems/crafting';
 import { createNewSave, migrateSave, saveGame, loadSave, SAVE_KEY, validateSave } from '../src/systems/save';
@@ -48,7 +48,8 @@ describe('enxada e novos canteiros', () => {
     expect(farming.plant(40,40,inventory).ok).toBe(true);
     expect(farming.prepare(40,40,inventory,ground).ok).toBe(false);
     expect(farming.water(40,40).ok).toBe(true);
-    farming.update(GROWTH_SECONDS);
+    farming.update(0,2);
+    for (let day=2; day<=4; day++) { expect(farming.harvest(40,40,inventory).ok).toBe(false); farming.water(40,40); farming.update(0,day+1); }
     expect(farming.harvest(40,40,inventory).ok).toBe(true);
     expect(inventory.data).toMatchObject({hoe:1,turnip:1,seeds:1});
     inventory.spend({turnip:1});
@@ -127,17 +128,18 @@ describe('continuidade do cultivo', () => {
   it('salva e recarrega após preparar, plantar, regar e colher, sem repetir colheitas', () => {
     const slots=new Map<string,string>();
     vi.stubGlobal('localStorage',{getItem:(k:string)=>slots.get(k)??null,setItem:(k:string,v:string)=>slots.set(k,v)});
-    let state=createNewSave(profile), inventory=new Inventory({hoe:1,seeds:1}), farming=new Farming();
+    let state=createNewSave(profile), inventory=new Inventory({hoe:1,seeds:1}), farming=new Farming(), day=1;
+    const grow=()=>{farming.water(40,40);day++;farming.update(0,day);};
     const reload=()=>{
-      state={...state,inventory:{...inventory.data},preparedSoil:farming.preparedSoil,crops:farming.crops,farmingProgress:farming.progress,equippedTool:'hoe'};
+      state={...state,day,inventory:{...inventory.data},preparedSoil:farming.preparedSoil,crops:farming.crops,farmingProgress:farming.progress,equippedTool:'hoe'};
       expect(saveGame(state)).toBe(true);
       state=loadSave()!; expect(validateSave(state)).toBe(true);
       inventory=new Inventory(state.inventory);farming=new Farming(state.crops,state.preparedSoil,state.farmingProgress);
     };
     farming.prepare(40,40,inventory,ground);reload();expect(farming.isPrepared(40,40)).toBe(true);
-    farming.plant(40,40,inventory);reload();expect(inventory.data.seeds).toBe(0);
-    farming.water(40,40);farming.update(GROWTH_SECONDS/2);reload();expect(farming.cropAt(40,40)?.growth).toBe(.5);
-    farming.update(GROWTH_SECONDS/2);farming.harvest(40,40,inventory);reload();
+    farming.plant(40,40,inventory,day);reload();expect(inventory.data.seeds).toBe(0);
+    grow();grow();reload();expect(farming.cropAt(40,40)?.growth).toBe(.5);expect(farming.cropAt(40,40)).toMatchObject({crop:'turnip',days:2,day:3});
+    grow();grow();farming.harvest(40,40,inventory);reload();
     expect(farming.harvest(40,40,inventory).ok).toBe(false);expect(inventory.data.turnip).toBe(1);
     expect(farming.progress.harvested).toBe(true);expect(slots.has(SAVE_KEY)).toBe(true);
     farming.restore(40,40,inventory);reload();

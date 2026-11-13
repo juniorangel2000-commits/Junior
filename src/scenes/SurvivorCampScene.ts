@@ -142,7 +142,7 @@ export class SurvivorCampScene extends Phaser.Scene {
   if(this.paused||this.leaving||this.ui.isModalOpen()||document.hidden){this.combatArt.update(0);this.renderPeople();return;}
   const dt=Math.min(.1,ms/1000);this.combatArt.update(dt);const before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(dt,this.blockedTile,this.blockedPoint,true);this.player.sprite.setDepth(this.player.y);
   if(this.passage.update(before,this.player,this.state.survivorCampMapEdits?.points?.exit??CAMP_EXIT,this.state.survivorCampMapEdits?.points?.entry??CAMP_ENTRY)){this.leave();return;}
-  Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));this.farming.update(dt);this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state,dt,undefined,this.bentoWorkRuntime);advanceSurvivorCamp(this.state,dt,this.player);this.renderPeople();
+  Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));this.farming.update(dt,this.state.day);this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state,dt,undefined,this.bentoWorkRuntime);advanceSurvivorCamp(this.state,dt,this.player);this.renderPeople();
   const c=this.state.survivorCamp!,enemies=c.members.filter(p=>p.status!=='gone'&&p.status!=='leaving'&&p.hp>0),near=enemies.find(p=>Math.hypot(p.x-this.player.x,p.y-this.player.y)<210);
   if(c.kind==='hostile'&&near&&!c.warned){this.warning();return;}
   const nearestEnemy=enemies.reduce((best,p)=>Math.min(best,Math.hypot(p.x-this.player.x,p.y-this.player.y)),Infinity);advanceHostileWarning(c,dt,nearestEnemy,near?Math.hypot(near.x-this.player.x,near.y-this.player.y)<Math.hypot(near.x-before.x,near.y-before.y)-.05:false);

@@ -13,12 +13,14 @@ describe('noite e descanso', () => {
   it.each([480, 700, 1139.99])('recusa sono diurno em %s sem alterar o relógio', time => {
     expect(sleepUntilMorning({ day: 1, time })).toMatchObject({ ok: false, day: 1, time, elapsedMinutes: 0 });
   });
-  it('avança cultivos regados durante o sono sem regar os secos', () => {
+  it('ao dormir, conta um dia para os cultivos regados e não rega os secos', () => {
     const clock = { day: 1, time: 1140 };
     const crops = new Farming([{ x: 21, y: 20, growth: 0, watered: true }, { x: 22, y: 20, growth: 0, watered: false }]);
+    crops.update(0, clock.day);
     const rest = sleepUntilMorning(clock);
-    crops.update(rest.elapsedMinutes / GAME_MINUTES_PER_SECOND);
-    expect(crops.crops.map(c => c.growth)).toEqual([1, 0]);
+    crops.update(rest.elapsedMinutes / GAME_MINUTES_PER_SECOND, rest.day);
+    expect(crops.crops.map(c => c.growth)).toEqual([0.25, 0]);
+    expect(crops.crops.map(c => c.watered)).toEqual([false, false]);
   });
   it('mantém calendário válido no limite e no rollover normal', () => {
     expect(advanceClock({ day: 2, time: 1439.8 }, .5).day).toBe(3);

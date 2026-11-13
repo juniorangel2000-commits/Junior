@@ -16,7 +16,7 @@ export function recoverMineDefeat(save:SaveData,write:(draft:SaveData)=>boolean)
  if(rescuePending(save)||!save.underground?.hazards||save.underground.hazards.hp>0)return false;
  const draft=structuredClone(save),home=new Home(draft.home),placement=rescueHomePlacement(home);if(!placement)return false;
  const before=(draft.day-1)*1440+draft.time;Object.assign(draft,advanceClock(draft,120));
- const elapsedMinutes=Math.max(0,(draft.day-1)*1440+draft.time-before),farm=new Farming(draft.crops,draft.preparedSoil,draft.farmingProgress,draft.restoredFarmSoil);farm.update(elapsedMinutes/GAME_MINUTES_PER_SECOND);draft.crops=farm.crops;draft.farmingProgress=farm.progress;
+ const elapsedMinutes=Math.max(0,(draft.day-1)*1440+draft.time-before),farm=new Farming(draft.crops,draft.preparedSoil,draft.farmingProgress,draft.restoredFarmSoil);farm.update(elapsedMinutes/GAME_MINUTES_PER_SECOND,draft.day);draft.crops=farm.crops;draft.farmingProgress=farm.progress;
  draft.home=home.data;draft.activeArea='property';draft.homePosition={...placement.player,direction:'down'};
  for(const id of ITEM_IDS)if(!EQUIPMENT.has(id))draft.inventory[id]=0;
  if(draft.fishingProgress)draft.fishingProgress.basket=[];
