@@ -4,9 +4,9 @@
 
 - **Atualizado em:** 2026-11-13
 - **Por:** Codex
-- **Continuar a partir de:** branch `release/v0.10.0-preview.33`, implementação `64079b3`; usar o HEAD do branch, que inclui esta passagem e os metadados da publicação.
-- **Última versão publicada:** `v0.10.0-preview.32`; preview.33 autorizada e preparada nesta rodada, conferir o workflow da tag `v0.10.0-preview.33` antes de assumir publicação concluída.
-- **Estado:** concluído (implementação e validação); publicação da preview.33 em processamento.
+- **Continuar a partir de:** `main` / branch `release/v0.10.0-preview.33`, versão publicada no commit `0a70b64`; o HEAD acrescenta esta confirmação de publicação.
+- **Última versão publicada:** `v0.10.0-preview.33` — Release pública com instalador e portátil Windows x64.
+- **Estado:** concluído e publicado.
 
 ## Feito nesta rodada
 
@@ -21,7 +21,7 @@
 
 ## Em andamento e próximo passo exato
 
-- Publicação autorizada: a tag preview.33 dispara o workflow Windows. Conferir sucesso e os dois executáveis na Release; a main deve apontar para o mesmo commit da tag, sem force-push.
+- Publicação concluída: workflow `43475543958` passou no Windows. Release: https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.10.0-preview.33 . A main recebeu o commit da versão e esta passagem final, sem alterar a tag publicada.
 - Depois da publicação, continuar do HEAD de main/tag preview.33. Próxima rodada de implementação usa `release/v0.10.0-preview.34`.
 - Próxima entrega sugerida: produção animal (cochos/alimentação, ovos, balde e ordenha), seguindo `docs/construcoes/PRODUCAO-ANIMAL-PLANO.md`, após retorno do Junior sobre os campos.
 
@@ -44,4 +44,5 @@
 - `npm run check`: ok.
 - `npm test`: 1.839 passaram, zero falhas, 207 arquivos.
 - `npm run build`: ok (aviso existente de tamanho do bundle).
+- CI Windows: check, testes, build, instalador, portátil e publicação concluídos com sucesso.
 - Conferido no jogo: acesso e retorno a pé, foice, coleta, inventário, captura do mapa, salvar e continuar nos campos. Nenhum erro JavaScript.
