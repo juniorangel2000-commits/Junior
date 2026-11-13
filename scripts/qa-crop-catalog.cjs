@@ -1,4 +1,4 @@
-// Conferência das sementes na mochila e das 76 fases no cenário.
+// Conferência das sementes na mochila e das 95 fases no cenário.
 // Servidor Vite em 127.0.0.1:5190; CHROMIUM_PATH pode indicar outro Chromium.
 const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
@@ -10,7 +10,7 @@ fs.mkdirSync(out, { recursive: true });
   const browser = await chromium.launch({ executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args: ['--no-sandbox', '--disable-dev-shm-usage', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   const errors = [];
   try {
-    const page = await browser.newPage({ viewport: { width: 1600, height: 1200 } });
+    const page = await browser.newPage({ viewport: { width: 1600, height: 1440 } });
     page.setDefaultTimeout(180000);
     page.on('pageerror', (e) => { errors.push(e.message); console.log('JSERROR', e.message); });
     await page.goto('http://127.0.0.1:5190');console.log('titulo');
@@ -37,19 +37,21 @@ fs.mkdirSync(out, { recursive: true });
     const report=await page.evaluate(async()=>{
       const {CROP_CATALOG}=await import('/src/data/crop-catalog.ts');
       v.farming.crops.splice(0);v.state.selectedCrop='carrot';
-      CROP_CATALOG.forEach((c,i)=>{for(let stage=0;stage<4;stage++){
-        const x=20+i%10,y=18+Math.floor(i/10)*5+stage;
+      // Limpa apenas a área da fixture antes de arar, sem gravar a partida.
+      for(const node of [...v.world.resources])if(node.x>=19&&node.x<=30&&node.y>=17&&node.y<=29)v.world.removeResource(node.id);
+      CROP_CATALOG.forEach((c,i)=>{for(let stage=0;stage<5;stage++){
+        const x=20+i%10,y=18+Math.floor(i/10)*6+stage;
         if(!v.farming.isPrepared(x,y)){const result=v.farming.prepare(x,y,v.inventory,{area:'property',terrainAt:()=> 'grass',occupied:()=>false,reserved:()=>false});if(!result.ok)throw Error(result.message);}
-        v.farming.crops.push({x,y,crop:c.id,days:Math.floor(c.days*stage/3),day:v.state.day,growth:stage/3,watered:true});
+        v.farming.crops.push({x,y,crop:c.id,days:Math.floor(c.days*stage/4),day:v.state.day,growth:stage/4,watered:true});
       }});
       if(v.farming.crops.some(c=>!v.farming.isPrepared(c.x,c.y)))throw Error('Planta sem terra arada na prévia');
-      v.syncSprites();v.player.x=25*32;v.player.y=22*32;
+      v.syncSprites();v.player.x=25*32;v.player.y=23.5*32;
       v.cameras.main.setZoom(2);v.updateHUD();
       
-      return {plants:CROP_CATALOG.length,sprites:v.cropSprites.length,missing:v.cropSprites.filter(s=>s.texture.key==='__MISSING').length};
+      return {plants:CROP_CATALOG.length,sprites:v.cropSprites.length,missing:v.cropSprites.filter(s=>s.texture.key==='__MISSING').length,seeds:v.cropSprites.filter(s=>s.texture.key==='crop-planted-seed').length};
     });
-    assert.deepEqual(report,{plants:19,sprites:76,missing:0});
+    assert.deepEqual(report,{plants:19,sprites:95,missing:0,seeds:19});
     await page.waitForTimeout(400);await page.screenshot({path:`${out}/jardim-catalogo.png`});
-    assert.deepEqual(errors,[]);console.log('QA OK: semente equipada pela mochila, plantio recusado fora da terra arada, cenoura e 76 fases em canteiros arados; nenhum erro JS');
+    assert.deepEqual(errors,[]);console.log('QA OK: semente equipada pela mochila, plantio recusado fora da terra arada, cenoura e 95 fases em canteiros arados; nenhum erro JS');
   }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -2,8 +2,8 @@ import { NATURE_ART } from './data/nature-catalog';
 
 const NATURE_TEXTURES = new Set(Object.values(NATURE_ART).map(a=>a.texture));
 export function editorResourceTexture(texture: string, resourceTextures: ReadonlySet<string>): boolean {
-  return resourceTextures.has(texture) || NATURE_TEXTURES.has(texture) || texture === 'tree-stump'
-    || texture.endsWith('-ground-details') || /^crop-(?:\d+|[a-zA-Z]+-[0-3])$/.test(texture);
+  return resourceTextures.has(texture) || NATURE_TEXTURES.has(texture) || texture === 'tree-stump' || texture === 'crop-planted-seed'
+    || texture.endsWith('-ground-details') || /^crop-(?:\d+|[a-zA-Z]+-[1-4])$/.test(texture);
 }
 
 interface VisibleObject { visible: boolean; setVisible(value: boolean): unknown }

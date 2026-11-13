@@ -1,0 +1,695 @@
+{
+  "crop-turnip-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 154,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 96
+  },
+  "crop-turnip-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 130,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-turnip-3": {
+    "width": 192,
+    "height": 192,
+    "left": 40,
+    "top": 97,
+    "right": 151,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-turnip-4": {
+    "width": 192,
+    "height": 192,
+    "left": 16,
+    "top": 46,
+    "right": 175,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-lettuce-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 156,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-lettuce-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 135,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 96
+  },
+  "crop-lettuce-3": {
+    "width": 192,
+    "height": 192,
+    "left": 40,
+    "top": 107,
+    "right": 151,
+    "bottom": 179,
+    "rootX": 96
+  },
+  "crop-lettuce-4": {
+    "width": 192,
+    "height": 192,
+    "left": 16,
+    "top": 64,
+    "right": 175,
+    "bottom": 179,
+    "rootX": 100
+  },
+  "crop-carrot-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 153,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 96
+  },
+  "crop-carrot-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 126,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-carrot-3": {
+    "width": 192,
+    "height": 192,
+    "left": 40,
+    "top": 84,
+    "right": 151,
+    "bottom": 179,
+    "rootX": 95
+  },
+  "crop-carrot-4": {
+    "width": 192,
+    "height": 192,
+    "left": 16,
+    "top": 35,
+    "right": 175,
+    "bottom": 179,
+    "rootX": 95
+  },
+  "crop-bean-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 150,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 95
+  },
+  "crop-bean-2": {
+    "width": 192,
+    "height": 192,
+    "left": 64,
+    "top": 108,
+    "right": 127,
+    "bottom": 179,
+    "rootX": 100
+  },
+  "crop-bean-3": {
+    "width": 192,
+    "height": 192,
+    "left": 40,
+    "top": 69,
+    "right": 151,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-bean-4": {
+    "width": 192,
+    "height": 192,
+    "left": 16,
+    "top": 36,
+    "right": 175,
+    "bottom": 179,
+    "rootX": 94
+  },
+  "crop-tomato-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 155,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 96
+  },
+  "crop-tomato-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 117,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 101
+  },
+  "crop-tomato-3": {
+    "width": 192,
+    "height": 192,
+    "left": 40,
+    "top": 68,
+    "right": 150,
+    "bottom": 179,
+    "rootX": 102
+  },
+  "crop-tomato-4": {
+    "width": 192,
+    "height": 192,
+    "left": 16,
+    "top": 21,
+    "right": 175,
+    "bottom": 179,
+    "rootX": 102
+  },
+  "crop-corn-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 142,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 98
+  },
+  "crop-corn-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 111,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-corn-3": {
+    "width": 192,
+    "height": 192,
+    "left": 47,
+    "top": 68,
+    "right": 143,
+    "bottom": 179,
+    "rootX": 96
+  },
+  "crop-corn-4": {
+    "width": 192,
+    "height": 192,
+    "left": 27,
+    "top": 20,
+    "right": 163,
+    "bottom": 179,
+    "rootX": 94
+  },
+  "crop-wheat-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 141,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-wheat-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 110,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 98
+  },
+  "crop-wheat-3": {
+    "width": 192,
+    "height": 192,
+    "left": 49,
+    "top": 68,
+    "right": 142,
+    "bottom": 179,
+    "rootX": 96
+  },
+  "crop-wheat-4": {
+    "width": 192,
+    "height": 192,
+    "left": 25,
+    "top": 20,
+    "right": 166,
+    "bottom": 179,
+    "rootX": 98
+  },
+  "crop-watermelon-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 156,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-watermelon-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 129,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 106
+  },
+  "crop-watermelon-3": {
+    "width": 192,
+    "height": 192,
+    "left": 40,
+    "top": 95,
+    "right": 151,
+    "bottom": 179,
+    "rootX": 91
+  },
+  "crop-watermelon-4": {
+    "width": 192,
+    "height": 192,
+    "left": 16,
+    "top": 64,
+    "right": 175,
+    "bottom": 179,
+    "rootX": 104
+  },
+  "crop-sweetPotato-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 148,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 98
+  },
+  "crop-sweetPotato-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 132,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 93
+  },
+  "crop-sweetPotato-3": {
+    "width": 192,
+    "height": 192,
+    "left": 40,
+    "top": 87,
+    "right": 151,
+    "bottom": 179,
+    "rootX": 92
+  },
+  "crop-sweetPotato-4": {
+    "width": 192,
+    "height": 192,
+    "left": 16,
+    "top": 42,
+    "right": 175,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-pumpkin-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 154,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 96
+  },
+  "crop-pumpkin-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 130,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 91
+  },
+  "crop-pumpkin-3": {
+    "width": 192,
+    "height": 192,
+    "left": 40,
+    "top": 107,
+    "right": 136,
+    "bottom": 179,
+    "rootX": 83
+  },
+  "crop-pumpkin-4": {
+    "width": 192,
+    "height": 192,
+    "left": 16,
+    "top": 53,
+    "right": 175,
+    "bottom": 179,
+    "rootX": 102
+  },
+  "crop-oat-1": {
+    "width": 192,
+    "height": 192,
+    "left": 78,
+    "top": 140,
+    "right": 112,
+    "bottom": 179,
+    "rootX": 94
+  },
+  "crop-oat-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 110,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-oat-3": {
+    "width": 192,
+    "height": 192,
+    "left": 40,
+    "top": 69,
+    "right": 151,
+    "bottom": 179,
+    "rootX": 98
+  },
+  "crop-oat-4": {
+    "width": 192,
+    "height": 192,
+    "left": 16,
+    "top": 31,
+    "right": 175,
+    "bottom": 179,
+    "rootX": 94
+  },
+  "crop-chamomile-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 156,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 95
+  },
+  "crop-chamomile-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 133,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 96
+  },
+  "crop-chamomile-3": {
+    "width": 192,
+    "height": 192,
+    "left": 40,
+    "top": 91,
+    "right": 151,
+    "bottom": 179,
+    "rootX": 100
+  },
+  "crop-chamomile-4": {
+    "width": 192,
+    "height": 192,
+    "left": 16,
+    "top": 37,
+    "right": 175,
+    "bottom": 179,
+    "rootX": 101
+  },
+  "crop-kale-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 153,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-kale-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 125,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 94
+  },
+  "crop-kale-3": {
+    "width": 192,
+    "height": 192,
+    "left": 40,
+    "top": 89,
+    "right": 151,
+    "bottom": 179,
+    "rootX": 89
+  },
+  "crop-kale-4": {
+    "width": 192,
+    "height": 192,
+    "left": 16,
+    "top": 47,
+    "right": 175,
+    "bottom": 179,
+    "rootX": 82
+  },
+  "crop-cabbage-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 157,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-cabbage-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 131,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 96
+  },
+  "crop-cabbage-3": {
+    "width": 192,
+    "height": 192,
+    "left": 40,
+    "top": 91,
+    "right": 151,
+    "bottom": 179,
+    "rootX": 94
+  },
+  "crop-cabbage-4": {
+    "width": 192,
+    "height": 192,
+    "left": 16,
+    "top": 52,
+    "right": 175,
+    "bottom": 179,
+    "rootX": 95
+  },
+  "crop-strawberry-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 151,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-strawberry-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 123,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 98
+  },
+  "crop-strawberry-3": {
+    "width": 192,
+    "height": 192,
+    "left": 40,
+    "top": 93,
+    "right": 151,
+    "bottom": 179,
+    "rootX": 87
+  },
+  "crop-strawberry-4": {
+    "width": 192,
+    "height": 192,
+    "left": 16,
+    "top": 52,
+    "right": 175,
+    "bottom": 179,
+    "rootX": 81
+  },
+  "crop-daisy-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 154,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 96
+  },
+  "crop-daisy-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 120,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 96
+  },
+  "crop-daisy-3": {
+    "width": 192,
+    "height": 192,
+    "left": 40,
+    "top": 94,
+    "right": 151,
+    "bottom": 179,
+    "rootX": 95
+  },
+  "crop-daisy-4": {
+    "width": 192,
+    "height": 192,
+    "left": 16,
+    "top": 32,
+    "right": 175,
+    "bottom": 179,
+    "rootX": 103
+  },
+  "crop-sunflower-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 152,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 98
+  },
+  "crop-sunflower-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 122,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-sunflower-3": {
+    "width": 192,
+    "height": 192,
+    "left": 44,
+    "top": 68,
+    "right": 146,
+    "bottom": 179,
+    "rootX": 107
+  },
+  "crop-sunflower-4": {
+    "width": 192,
+    "height": 192,
+    "left": 34,
+    "top": 20,
+    "right": 156,
+    "bottom": 179,
+    "rootX": 95
+  },
+  "crop-mint-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 152,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-mint-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 111,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-mint-3": {
+    "width": 192,
+    "height": 192,
+    "left": 47,
+    "top": 68,
+    "right": 143,
+    "bottom": 179,
+    "rootX": 94
+  },
+  "crop-mint-4": {
+    "width": 192,
+    "height": 192,
+    "left": 24,
+    "top": 20,
+    "right": 166,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-cotton-1": {
+    "width": 192,
+    "height": 192,
+    "left": 76,
+    "top": 150,
+    "right": 115,
+    "bottom": 179,
+    "rootX": 96
+  },
+  "crop-cotton-2": {
+    "width": 192,
+    "height": 192,
+    "left": 60,
+    "top": 113,
+    "right": 131,
+    "bottom": 179,
+    "rootX": 97
+  },
+  "crop-cotton-3": {
+    "width": 192,
+    "height": 192,
+    "left": 44,
+    "top": 68,
+    "right": 146,
+    "bottom": 179,
+    "rootX": 90
+  },
+  "crop-cotton-4": {
+    "width": 192,
+    "height": 192,
+    "left": 16,
+    "top": 28,
+    "right": 175,
+    "bottom": 179,
+    "rootX": 88
+  },
+  "crop-planted-seed": {
+    "width": 1983,
+    "height": 793,
+    "left": 730,
+    "top": 340,
+    "right": 1250,
+    "bottom": 508,
+    "rootX": 966
+  }
+}

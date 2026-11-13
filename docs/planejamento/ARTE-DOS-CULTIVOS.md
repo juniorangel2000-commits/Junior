@@ -1,6 +1,6 @@
 # Arte dos cultivos — etapa 3
 
-19 plantas, com seis sprites por espécie: semente, quatro fases de crescimento
+19 plantas, com uma sprite comum de semente plantada (estágio 0) e seis sprites por espécie: semente, quatro fases de crescimento
 (a última é a planta madura) e colheita. Os atlas originais estão em
 `referencias/cultivos/`; os PNGs utilizados pelo jogo estão em
 `public/assets/visual/crops/<id>/`.
@@ -9,8 +9,16 @@ Para preparar novamente os recortes: `node scripts/prepare-crops.cjs`.
 Cada atlas tem 6 colunas × 4 linhas de 256 px. Ordem das colunas: semente,
 broto, planta jovem, desenvolvimento, madura e colheita. O arquivo
 `referencias/cultivos/catalogo.json` registra atlas e linha de cada planta.
-Os recortes finais têm 192 px, transparência binária e raiz na linha 180;
-o jogo usa essa raiz para alinhar a planta ao canteiro. Ícones centralizados.
+Os recortes das espécies têm 192 px e transparência binária. O estágio 0 usa
+`planted-seed.png`, sem broto, comum a todas as plantas. Os arquivos
+`stage-0..3.png` são carregados como fases vegetativas 1..4; a fase 4 é madura.
+
+`scripts/measure-crop-layout.cjs` mede a parte visível dos PNGs sem alterar a arte
+e grava `src/data/crop-sprite-layout.json`. O preparo dos recortes também chama
+essa medição. `src/crop-layout.ts` utiliza esses limites: rasteiras centralizadas
+no canteiro, caules apoiados pela raiz, maduras com largura máxima de 26 px e
+margem lateral de pelo menos 2 px. Jogo e editor compartilham o mesmo alinhamento.
+Ícones de sementes e colheitas continuam centralizados.
 
 As plantas só podem ser plantadas em terra arada com a enxada. A captura do jardim demonstra as fases sobre canteiros preparados.
 

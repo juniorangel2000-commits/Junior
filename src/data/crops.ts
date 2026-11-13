@@ -22,5 +22,5 @@ export const CROP_IDS=Object.keys(CROPS) as CropId[];
 export const isCropId=(v:unknown):v is CropId=>typeof v==='string'&&Object.hasOwn(CROPS,v);
 export const cropDefinition=(id:CropId|undefined):CropDefinition=>CROPS[id??'turnip'];
 export const cropFromSeed=(item:unknown):CropId|undefined=>CROP_CATALOG.find(c=>c.seed===item)?.id;
-export const cropStage=(growth:number)=>growth>=1?3:growth>=2/3?2:growth>=1/3?1:0;
-export const cropTexture=(crop:{crop?:CropId;growth:number})=>`crop-${crop.crop??'turnip'}-${cropStage(crop.growth)}`;
+export const cropStage=(growth:number)=>growth<=0?0:growth>=1?4:growth>=2/3?3:growth>=1/3?2:1;
+export const cropTexture=(crop:{crop?:CropId;growth:number})=>crop.growth<=0?'crop-planted-seed':`crop-${crop.crop??'turnip'}-${cropStage(crop.growth)}`;

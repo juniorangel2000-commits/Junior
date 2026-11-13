@@ -1,4 +1,4 @@
-import {cropDefinition,cropFromSeed,cropTexture,cropStage} from '../data/crops';
+import {cropDefinition,cropFromSeed,cropStage} from '../data/crops';
 import {FIELDS_ENTRY,PROPERTY_FIELDS_EXIT,propertyFieldsApproach} from '../data/open-fields';
 import {createGroundRuntime,resourceGroundSink} from '../systems/ground-items';
 import {FARM_BUILDINGS,isFarmTool,isLegacyHouseTool,type FarmKind} from '../data/farm-buildings';
@@ -68,6 +68,7 @@ import { createWorld, TILE, WORLD_WIDTH, WORLD_HEIGHT } from '../world';
 import type { WorldView, ResourceNode } from '../world';
 import { Inventory, ITEM_NAMES } from '../systems/inventory';
 import { Farming, soilGroundReason, cropStatus, type SoilGround } from '../systems/farming';
+import {cropSpriteLayout} from '../crop-layout';
 import { drawPreparedSoil } from '../farming-art';
 import { Building, BUILD_COSTS, BUILD_NAMES, BUILD_REQUIREMENTS, buildingFootprint, buildingLayer } from '../systems/building';
 import { BLUEPRINT_COST, BLUEPRINT_LABEL, BLUEPRINT_SHELTER } from '../data/blueprints';
@@ -1440,7 +1441,8 @@ export class ValleyScene extends Phaser.Scene {
       this.cropSprites.forEach(sprite => sprite.destroy());
       this.cropSoil.clear();
       this.cropSprites = crops.map(c => {
-        const sprite = this.add.sprite(c.x * TILE + 16, c.y * TILE + 29, cropTexture(c)).setOrigin(0.5,180/192).setDisplaySize(38,38).setDepth(c.y * TILE + 25);
+        const art=cropSpriteLayout(c);
+        const sprite = this.add.sprite(c.x*TILE+art.x,c.y*TILE+art.y,art.texture).setOrigin(art.originX,art.originY).setDisplaySize(art.width,art.height).setDepth(c.y*TILE+art.depth);
         if (!c.watered) sprite.setTint(0xd5ba86);
         return sprite;
       });

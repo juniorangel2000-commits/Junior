@@ -9,3 +9,5 @@ for(const p of catalog){if(!sources.has(p.batch))sources.set(p.batch,PNG.sync.re
   fs.writeFileSync(path.join(dir,col===0?'seed.png':col===5?'harvest.png':`stage-${col-1}.png`),PNG.sync.write(out));
  }
 }console.log(catalog.length+' plantas, '+catalog.length*6+' sprites preparados');
+
+require('./measure-crop-layout.cjs');

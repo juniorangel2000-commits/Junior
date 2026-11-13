@@ -22,7 +22,7 @@ describe('integração das 19 plantas',()=>{
   const def=CROPS[c.id],day=SEASONS.indexOf(def.seasons[0])*28+1,inv=new Inventory({[c.seed]:2}),f=new Farming();
   expect(f.plant(21,20,inv,day,c.id).ok).toBe(true);expect(inv.data[c.seed]).toBe(1);
   for(let d=day;d<day+def.days;d++){expect(f.water(21,20).ok).toBe(true);f.update(0,d+1);}
-  expect(cropTexture(f.cropAt(21,20)!)).toBe(`crop-${c.id}-3`);
+  expect(cropTexture(f.cropAt(21,20)!)).toBe(`crop-${c.id}-4`);
   expect(f.harvest(21,20,inv).ok).toBe(true);expect(inv.data[c.harvest]).toBe(def.yield);
   if(def.regrow){expect(f.cropAt(21,20)?.growth).toBeLessThan(1);for(let d=day+def.days;d<day+def.days+def.regrow;d++){f.water(21,20);f.update(0,d+1);}expect(f.harvest(21,20,inv).ok).toBe(true);expect(inv.data[c.harvest]).toBe(2*def.yield);}
   else expect(f.cropAt(21,20)).toBeUndefined();
