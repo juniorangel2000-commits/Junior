@@ -3,6 +3,7 @@ import {CHARACTER_DIRECTIONS,type CharacterDirection} from '../character-directi
 import headAnchors from './animal-head-anchors.json';
 
 export const ANIMAL_ART = {
+  horse:{cell:192,scale:.65,foot:56,stride:58,maxWalkFps:10},
   chicken:{cell:64,scale:.75,foot:17,stride:24,maxWalkFps:12},
   cow:{cell:192,scale:.5,foot:46,stride:48,maxWalkFps:9},
 } as const;

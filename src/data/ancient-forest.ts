@@ -5,8 +5,9 @@ export const FOREST_WIDTH = 96, FOREST_HEIGHT = 72;
 export const FOREST_ENTRY = { x: 48, y: 66 };
 export const PROPERTY_FOREST_GATE = { x: 75, y: 18 };
 export const ANIMAL_KINDS = ['chicken', 'sheep', 'goat', 'cow', 'rabbit', 'deer'] as const;
-export type AnimalKind = typeof ANIMAL_KINDS[number];
-export const ANIMAL_NAMES: Record<AnimalKind, string> = { chicken: 'Galinha', sheep: 'Ovelha', goat: 'Cabra', cow: 'Vaca', rabbit: 'Coelho', deer: 'Cervo' };
+// The legacy six-animal atlas keeps its original indices; horse has its own atlas.
+export type AnimalKind = typeof ANIMAL_KINDS[number] | 'horse';
+export const ANIMAL_NAMES: Record<AnimalKind, string> = { horse:'Cavalo', chicken: 'Galinha', sheep: 'Ovelha', goat: 'Cabra', cow: 'Vaca', rabbit: 'Coelho', deer: 'Cervo' };
 export const FOREST_ANIMALS = [
   { id: 'forest-chicken-1', kind: 'chicken', x: 22, y: 55 }, { id: 'forest-chicken-2', kind: 'chicken', x: 25, y: 57 },
   { id: 'forest-sheep-1', kind: 'sheep', x: 21, y: 35 }, { id: 'forest-sheep-2', kind: 'sheep', x: 24, y: 37 },

@@ -54,7 +54,7 @@ export class AnimalBrain {
   constructor(readonly id: string, readonly kind: AnimalKind, x: number, y: number,
     readonly wild: boolean, private readonly blocked: AnimalBlocked, readonly playerSpeed = 84,
     private readonly terrainCost:AnimalTerrainCost=()=>0,private readonly pointBlocked?:(x:number,y:number)=>boolean) {
-    this.x=x;this.y=y;this.seed=idSeed(id);this.walkingRadius=kind==='cow'?12:kind==='chicken'||kind==='rabbit'?4:6;
+    this.x=x;this.y=y;this.seed=idSeed(id);this.walkingRadius=kind==='horse'?18:kind==='cow'?12:kind==='chicken'||kind==='rabbit'?4:6;
     const points=(r:number,y:number):readonly(readonly[number,number])[]=>{const result:[number,number][]=[],nx=Math.ceil(r*2/4),ny=Math.ceil(y*2/4);for(let row=0;row<=ny;row++)for(let col=0;col<=nx;col++)result.push([-r+col*r*2/nx,-y+row*y*2/ny]);return result;};
     this.walkingFeet=points(this.walkingRadius,this.walkingRadius*.6);this.restingFeet=kind==='cow'?points(20,7):this.walkingFeet;
     this.timer=.2+this.random()*1.2;

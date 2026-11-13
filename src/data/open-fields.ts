@@ -40,7 +40,7 @@ for(let y=230;y<2160;y+=41)for(let x=220;x<2860;x+=44){const px=x+(random()-.5)*
  MEADOW_PATCHES.push({id:`grass-${MEADOW_PATCHES.length}`,x:px,y:py,variant:Math.floor(random()*3),size:42+random()*14,kind:'grass',regrow:3});
 }
 for(const [i,p]of FIELDS_PROPS.filter(p=>p.tree&&p.y>280&&p.y<2100).entries())if(i%2===0&&p.x>180&&p.x<2840&&[[-16,-16],[16,-16],[-16,16],[16,16],[0,0]].every(([dx,dy])=>!fieldsBlocked(p.x+42+dx,p.y+26+dy)))MEADOW_PATCHES.push({id:`herb-${i}`,x:p.x+42,y:p.y+26,variant:0,size:28,kind:i%4===0?'herb':'mushroom',regrow:4});
-export const FIELDS_ANIMALS=[{id:'field-cow-1',kind:'cow',x:1020,y:1690},{id:'field-cow-2',kind:'cow',x:1150,y:1790},{id:'field-hen-1',kind:'chicken',x:2240,y:990},{id:'field-hen-2',kind:'chicken',x:2310,y:1080},{id:'field-hen-3',kind:'chicken',x:2160,y:1150},{id:'field-rabbit-1',kind:'rabbit',x:600,y:700},{id:'field-rabbit-2',kind:'rabbit',x:2600,y:1550}] as const;
+export const FIELDS_ANIMALS=[{id:'field-horse-1',kind:'horse',x:1904,y:1392},{id:'field-cow-1',kind:'cow',x:1020,y:1690},{id:'field-cow-2',kind:'cow',x:1150,y:1790},{id:'field-hen-1',kind:'chicken',x:2240,y:990},{id:'field-hen-2',kind:'chicken',x:2310,y:1080},{id:'field-hen-3',kind:'chicken',x:2160,y:1150},{id:'field-rabbit-1',kind:'rabbit',x:600,y:700},{id:'field-rabbit-2',kind:'rabbit',x:2600,y:1550}] as const;
 export const fieldPatch=(id:string)=>MEADOW_PATCHES.find(p=>p.id===id);
 export const fieldsSafe=(p:TilePoint)=>[[-8,-5],[8,-5],[-8,4],[8,4]].every(([dx,dy])=>!fieldsBlocked(p.x+dx,p.y+dy));
 /** Rare golden ipês, unique to the fields. Spots sit in existing clearings, and

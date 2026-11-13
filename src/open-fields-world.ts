@@ -57,8 +57,8 @@ export class OpenFieldsWorld{
   for(const p of MEADOW_PATCHES){const texture=p.kind==='grass'?`nature-tall-grass-${p.variant}`:p.kind==='herb'?'ecology-herbs':'forest-detail-mushrooms';this.patches.set(p.id,scene.add.image(p.x,p.y,texture).setOrigin(.5,1).setDisplaySize(p.size,p.kind==='grass'?p.size*.8:p.size).setDepth(p.y));}
   setupAnimalArt(scene);
   for(const d of FIELDS_ANIMALS){const saved=state().openFields?.animals?.find(a=>a.id===d.id),p=saved&&fieldsSafe(saved)?saved:d;
-   const brain=new AnimalBrain(d.id,d.kind,p.x,p.y,d.kind==='rabbit',(tx,ty)=>fieldsBlocked(tx*32+16,ty*32+16),84,()=>0,fieldsBlocked);if(saved&&p===saved)brain.restore(saved);
-   const sprite=animalSprite(scene,d.kind,brain.x,brain.y),shadow=scene.add.ellipse(brain.x,brain.y,d.kind==='cow'?42:17,d.kind==='cow'?12:5,0x29271d,.16);
+   const brain=new AnimalBrain(d.id,d.kind,p.x,p.y,d.kind==='rabbit'||d.kind==='horse',(tx,ty)=>fieldsBlocked(tx*32+16,ty*32+16),84,()=>0,fieldsBlocked);if(saved&&p===saved)brain.restore(saved);
+   const sprite=animalSprite(scene,d.kind,brain.x,brain.y),shadow=scene.add.ellipse(brain.x,brain.y,d.kind==='horse'?56:d.kind==='cow'?42:17,d.kind==='horse'?15:d.kind==='cow'?12:5,0x29271d,.16);
    this.animals.push({brain,sprite,shadow,...(d.kind==='cow'?{rest:new CowRestCycle(d.id)}:{})});
   }
   this.update(0,{x:0,y:0});

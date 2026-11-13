@@ -1,3 +1,5 @@
+import horsePoses from './data/horse-poses.json';
+import {CHARACTER_DIRECTIONS} from './character-directions';
 import cowPoses from './data/cow-poses.json';
 import type Phaser from 'phaser';
 import type {AnimalKind} from './data/ancient-forest';
@@ -23,7 +25,9 @@ export function createAnimalSprite(scene:Phaser.Scene,kind:AnimalKind,x:number,y
 export function updateAnimalSprite(sprite:Phaser.GameObjects.Sprite,brain:AnimalBrain,delta:number,pose?:number):boolean {
   if(!animatedAnimal(brain.kind)||sprite.texture.key!==animalTexture(brain.kind))return false;
   const cycle=walkCycles.get(sprite)!;cycle.advance(delta,brain.moving,brain.distanceMoved);
-  const frame=pose??cycle.frame(brain.direction),adjust=brain.kind==='cow'?cowPoses.adjustments[frame]:[0,0],scale=ANIMAL_ART[brain.kind].scale;
+  let frame=pose??cycle.frame(brain.direction);
+  if(brain.kind==='horse'&&brain.mode==='flee'&&brain.moving){const d=['south','west','east','north','south-west','south-east','north-west','north-east'][CHARACTER_DIRECTIONS.indexOf(brain.direction)]as keyof typeof horsePoses.Run;frame=horsePoses.Run[d][Math.max(0,frame%9-1)];}
+  const adjust=brain.kind==='cow'?cowPoses.adjustments[frame]:[0,0],scale=ANIMAL_ART[brain.kind].scale;
   sprite.setFlipX(false).setFrame(frame).setPosition(brain.x+adjust[0]*scale,brain.y+adjust[1]*scale).setDepth(brain.y);
   return true;
 }
