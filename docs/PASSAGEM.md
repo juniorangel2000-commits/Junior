@@ -2,20 +2,25 @@
 
 - **Atualizado em:** 2026-11-13
 - **Por:** Codex
-- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch; implementação dos cultivos em `ddc384c`.
+- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch; cultivos em `ddc384c`, prévia em terra arada em `d40764d`, alinhamento e estágio 0 em `58ab83d`.
 - **Última versão publicada:** `v0.10.0-preview.33`.
 - **Estado:** etapas 1, 2 e 3 de cultivos implementadas. Calendário, crescimento diário e 19 plantas com arte e comércio. Sem nova publicação nesta rodada.
 
 ## Feito nesta rodada
 
+- Correção após observação do Junior: a prévia do jardim deve mostrar todas as plantas em terra arada. O jogo já recusa plantar fora de canteiros preparados; a fixture visual anterior inseria plantas diretamente na grama. O script agora prepara os 95 canteiros e verifica também a recusa sem gastar sementes fora da terra arada.
+
 - 19 plantas do catálogo em `src/data/crop-catalog.ts` e `CROPS`: Nabo, Alface, Cenoura, Feijão, Tomate, Milho, Trigo, Melancia, Batata-doce, Abóbora, Aveia, Camomila, Couve, Repolho, Morango, Margarida, Girassol, Hortelã e Algodão.
-- 114 sprites: semente, quatro fases (incluindo madura) e colheita por espécie. Nabo refeito no mesmo padrão. Originais em `referencias/cultivos/`, recortes em `public/assets/visual/crops/`. Preparação reproduzível: `node scripts/prepare-crops.cjs`.
-- `src/crop-art.ts` carrega as fases. Propriedade e editor desenham a espécie correta, com raiz alinhada ao canteiro. A opção de ocultar recursos do editor reconhece os novos cultivos.
+- 114 sprites das espécies + 1 sprite comum de semeadura: semente, quatro fases (incluindo madura) e colheita por espécie. Nabo refeito no mesmo padrão. Originais em `referencias/cultivos/`, recortes em `public/assets/visual/crops/`. Preparação reproduzível: `node scripts/prepare-crops.cjs`.
+- `src/crop-art.ts` carrega as fases. Propriedade e editor desenham a espécie correta usando o mesmo alinhamento por limites visíveis (`src/crop-layout.ts` e `src/data/crop-sprite-layout.json`). Rasteiras se centralizam na terra arada; caules se apoiam pela raiz. Maduras limitadas a 26 px de largura e margem lateral mínima de 2 px. A opção de ocultar recursos do editor reconhece os novos cultivos.
 - Sementes equipáveis pela mochila e barra rápida; plantio consome a semente escolhida. Prompt e custo exibem a espécie equipada; `selectedCrop` é opcional no save, validado e preservado. Ids antigos `seeds` e `turnip` mantidos.
 - Todas as sementes vendidas pela Rosa. **Nenhum comerciante vende colheitas.** Rosa e Helena compram colheitas comestíveis; Rosa compra flores, Amélia ervas, Celina algodão. Compradores anteriores de nabo preservados.
 - Descrições das sementes mostram estação, dias regados e rebrota. O nabo agora cresce só na Primavera. Estações, dias e rebrota seguem o plano.
 - Saves antigos recebem os 36 itens novos zerados pela migração existente; não mudou a versão do formato.
 - Tabela de preços iniciais, compradores e instruções da arte: `docs/planejamento/ARTE-DOS-CULTIVOS.md`. Preços novos são ponto inicial de equilíbrio; nabo conserva os valores anteriores do código.
+
+- Novo estágio 0 padrão para todas as espécies: `public/assets/visual/crops/planted-seed.png`, pequenas sementes parcialmente cobertas, sem broto. Em seguida aparecem broto, jovem, desenvolvimento e madura (fases 1..4). Os arquivos das quatro fases vegetativas mantêm `stage-0..3.png` no disco; as chaves de runtime são `crop-<id>-1..4`.
+- `scripts/measure-crop-layout.cjs` mede os PNGs; `prepare-crops.cjs` chama essa medição após preparar os recortes. Reexecutar a medição se a arte mudar.
 
 ## Em andamento e próximo passo exato
 
@@ -45,8 +50,8 @@
 ## Testes
 
 - Início: `npm ci`, `npm run check` e 1.876 testes / 213 arquivos passaram antes das alterações.
-- Novos: `tests/crop-catalog.test.ts`, 23 casos cobrindo as 19 plantas, dias, rebrota, estações, comerciantes, migração, seleção salva e recortes transparentes.
-- Conferência Chromium: `scripts/qa-crop-catalog.cjs` (Vite na porta 5190; `CHROMIUM_PATH` opcional). Equipa cenoura pela mochila, planta a espécie selecionada e monta jardim visual com as 76 fases. O jardim é uma fixture, não uma partida normal com estações misturadas.
-- Encerramento: `npm run check` passou; `npm test` passou com **1.899 testes em 214 arquivos**, zero falhas; `npm run build` passou. Aviso do Vite sobre tamanho de chunk permanece, sem impedir o build.
+- Novos: `tests/crop-layout.test.ts` (4 casos: estágio 0 comum, transição das cinco fases, margens e apoio das maduras), além de `tests/crop-catalog.test.ts`, 23 casos cobrindo as 19 plantas, dias, rebrota, estações, comerciantes, migração, seleção salva e recortes transparentes.
+- Conferência Chromium: `scripts/qa-crop-catalog.cjs` (Vite na porta 5190; `CHROMIUM_PATH` opcional). Equipa cenoura pela mochila, planta a espécie selecionada e monta jardim visual com as 95 fases. O jardim é uma fixture, não uma partida normal com estações misturadas.
+- Encerramento: `npm run check` passou; `npm test` passou com **1.903 testes em 215 arquivos**, zero falhas; `npm run build` passou. Aviso do Vite sobre tamanho de chunk permanece, sem impedir o build.
 - Prévia completa: `docs/planejamento/qa-catalogo-cultivos/catalogo.png`.
-- Chromium concluído: seleção de cenoura pela mochila e consumo da semente corretos; 76 fases renderizadas sem texturas ausentes; nenhum erro JavaScript. Captura: `docs/planejamento/qa-catalogo-cultivos/jardim-catalogo.png`.
+- Chromium concluído: seleção de cenoura pela mochila e consumo da semente corretos; 95 fases renderizadas sem texturas ausentes, incluindo 19 marcas de semeadura iguais; nenhum erro JavaScript. Captura: `docs/planejamento/qa-catalogo-cultivos/jardim-catalogo.png`.
