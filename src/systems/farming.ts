@@ -2,7 +2,7 @@ import type { CropData, FarmingProgress, TilePoint } from '../types';
 import { WORLD_WIDTH, WORLD_HEIGHT } from '../data/regions';
 import { Inventory } from './inventory';
 import { CROPS, cropDefinition, type CropDefinition, type CropId } from '../data/crops';
-import { calendarDate, daysLeftInSeason, SEASON_NAMES } from './calendar';
+import { calendarDate, daysLeftInSeason, IN_SEASON } from './calendar';
 
 export interface ActionResult { ok: boolean; message: string }
 /** Limite de dias processados de uma vez; protege saves com datas absurdas. */
@@ -156,7 +156,7 @@ export class Farming {
     if (!this.isPrepared(x, y)) return { ok: false, message: 'Prepare este solo com a enxada antes de plantar.' };
     if (this.cropAt(x, y)) return { ok: false, message: 'Já existe uma plantinha aqui.' };
     const season = calendarDate(day).season;
-    if (!def.seasons.includes(season)) return { ok: false, message: `${def.name} não cresce no ${SEASON_NAMES[season]}. Guarde a semente para a estação certa.` };
+    if (!def.seasons.includes(season)) return { ok: false, message: `${def.name} não cresce ${IN_SEASON[season]}. Guarde a semente para a estação certa.` };
     if (!inventory.spend({ [def.seed]: 1 })) return { ok: false, message: 'Faltam sementes. Procure arbustos pela clareira.' };
     this.crops.push({ x, y, growth: 0, watered: false, crop: id, days: 0, day });
     this.progress.planted = true;
