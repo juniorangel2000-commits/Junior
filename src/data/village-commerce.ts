@@ -183,3 +183,6 @@ export function meetVillager(economy:VillageEconomy,npcId:string):boolean {
   if(!validateVillageEconomy(economy)||!(VILLAGE_NPC_IDS as readonly string[]).includes(npcId)||economy.met.includes(npcId))return false;
   economy.met.push(npcId);return true;
 }
+
+// Produtos do aprisco vêm da criação do jogador; os moradores apenas compram.
+Object.assign(MERCHANTS.inn.sell,{goatMilk:20});Object.assign(MERCHANTS.tailor.sell,{wool:36});

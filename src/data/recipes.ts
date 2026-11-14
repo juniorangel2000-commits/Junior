@@ -98,7 +98,8 @@ RECIPES.push(
  {id:'furniture',name:'Banco de madeira',description:'Monte o banco com as novas peças de madeira. Depois escolha sua posição e gire com R antes de colocar.',cost:{wood:10,board:4},output:{furniture:1},requiresWorkbench:true,requiresTool:'hammer',durationSeconds:3},
  {id:'doorKit',name:'Porta pronta',description:'Componente de construção.',cost:{board:4,peg:4},output:{doorKit:1}},
  {id:'windowKit',name:'Janela pronta',description:'Componente de construção.',cost:{board:3,peg:2},output:{windowKit:1}},
- {id:'milkPail',name:'Balde de ordenha',description:'Balde de tábuas com aros de ferro, para ordenhar as vacas dentro do curral.',cost:{board:4,ironShard:2},output:{milkPail:1},requiresWorkbench:true,requiresTool:'hammer',durationSeconds:2},
+ {id:'shears',name:'Tesoura de tosquia',description:'Tesoura de ferro para recolher a lã das ovelhas no aprisco.',cost:{ironIngot:2,handle:1},output:{shears:1},requiresWorkbench:true,requiresTool:'hammer',durationSeconds:2},
+ {id:'milkPail',name:'Balde de ordenha',description:'Balde de tábuas com aros de ferro, para ordenhar vacas e cabras nos seus abrigos.',cost:{board:4,ironShard:2},output:{milkPail:1},requiresWorkbench:true,requiresTool:'hammer',durationSeconds:2},
  {id:'fenceKit',name:'Módulo de cerca',description:'Prepare um trecho de cerca na bancada. Os módulos se conectam automaticamente ao serem colocados.',cost:{wood:3},output:{fenceKit:1},requiresWorkbench:true,requiresTool:'hammer',durationSeconds:1.5}
 );
 

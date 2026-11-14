@@ -1,0 +1,27 @@
+{
+  "source": "aprisco-source.png",
+  "sha256": "408f8d585b49bc7e1ffb0d7e5d32c4f49700a5ec90d9fca1852e7ff750f21165",
+  "frames": [
+    {
+      "name": "shears",
+      "x": 102,
+      "y": 82,
+      "width": 536,
+      "height": 574
+    },
+    {
+      "name": "wool",
+      "x": 772,
+      "y": 134,
+      "width": 617,
+      "height": 495
+    },
+    {
+      "name": "goat-milk",
+      "x": 1598,
+      "y": 102,
+      "width": 465,
+      "height": 546
+    }
+  ]
+}

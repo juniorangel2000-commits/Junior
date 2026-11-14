@@ -36,6 +36,9 @@ export function itemIconUrl(id: string, tier=0): string | undefined {
   if(id==='hay')return 'assets/visual/farm/hay.png';
   if(id==='egg')return 'assets/visual/farm/products/egg.png';
   if(id==='milk')return 'assets/visual/farm/products/milk.png';
+  if(id==='goatMilk')return 'assets/visual/farm/products/goat-milk.png';
+  if(id==='wool')return 'assets/visual/farm/products/wool.png';
+  if(id==='shears')return 'assets/visual/farm/products/shears.png';
   if(id==='milkPail')return 'assets/visual/farm/products/milk-pail.png';
   if(id.startsWith('farm-'))return 'assets/visual/farm/'+id.slice(5)+'.png';
   if(id==='fishingRod')return 'assets/visual/fishing/fishing-rod.png';

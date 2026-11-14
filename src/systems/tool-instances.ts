@@ -1,6 +1,6 @@
 import type {InventoryData} from '../types';
 import {TOOL_IDS,ECONOMY_BALANCE as B,type EconomicTool} from '../data/economy-balance';
-export const INDIVIDUAL_TOOLS=[...TOOL_IDS,'hammer','handsaw','fishingRod','net','sword'] as const;
+export const INDIVIDUAL_TOOLS=[...TOOL_IDS,'hammer','handsaw','fishingRod','net','sword','shears'] as const;
 export type IndividualTool=typeof INDIVIDUAL_TOOLS[number];
 export interface ToolCopy {id:number;kind:IndividualTool;condition:{tier:number;durability:number;work?:number}}
 export interface ToolInventory {version:1;nextId:number;items:ToolCopy[];active:Partial<Record<IndividualTool,number>>}

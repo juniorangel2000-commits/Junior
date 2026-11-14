@@ -14,6 +14,7 @@ const SOURCES:Record<string,string>={
  'interior-trough-64':'trough-64.png','interior-trough-96':'trough-96.png',
  'interior-stall-96x96':'stall.png','interior-divider-88':'divider.png',
  'interior-nest-egg':'nest-egg.png','interior-trough-64-empty':'trough-64-empty.png','interior-trough-96-empty':'trough-96-empty.png',
+ 'interior-wool-ready':'../products/wool.png','interior-shears':'../products/shears.png',
  'interior-milk-ready':'../products/milk.png','interior-milk-pail':'../products/milk-pail.png',
 };
 export const FARM_INTERIOR_ART_FILES=Object.values(SOURCES).map(f=>DIR+f);

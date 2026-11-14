@@ -16,6 +16,12 @@ export const FARM_INTERIORS:Partial<Record<FarmKind,FarmInteriorLayout>>={
   fixture('trough','trough',1,1,2,1,'Cocho'),fixture('water','water',4,1,1,1,'Bebedouro'),
   ...Array.from({length:6},(_,i)=>fixture(`nest-${i+1}`,'nest',8,1+i,1,1,'Ninho')),
  ]},
+ // Aprisco 12×9: área de tosquia aberta pela frente e corredor livre até a porta.
+ aprisco:{width:12,height:9,doorX:5,doorWidth:2,floor:'straw',fixtures:[
+  fixture('trough','trough',1,1,3,1,'Cocho'),fixture('water','water',10,1,1,1,'Bebedouro'),
+  fixture('shearing-pen','stall',8,4,3,3,'Área de tosquia',false),
+  {id:'stall-divider-shearing',kind:'stall',x:8*T-3,y:4*T,w:6,h:3*T-8,solid:true,label:'Divisória da tosquia'},
+ ]},
  // Curral 14×10: quatro baias no alto, separadas por divisórias; cocho e bebedouro embaixo.
  barn:{width:14,height:10,doorX:6,doorWidth:2,floor:'planks',fixtures:[
   ...Array.from({length:4},(_,i)=>fixture(`stall-${i+1}`,'stall',1+i*3,1,3,3,'Baia',false)),

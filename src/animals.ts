@@ -46,7 +46,7 @@ export class AnimalPopulation {
    if(saved)brain.restore(saved);
    if(!this.placeSafely(brain))continue;
    const sprite=animalSprite(scene,definition.kind,brain.x,brain.y);
-   const shadow=definition.kind==='cow'||definition.kind==='horse'?scene.add.ellipse(brain.x,brain.y,definition.kind==='horse'?56:42,definition.kind==='horse'?15:12,0x29271d,.17).setDepth(brain.y-.2):undefined;
+   const shadow=['cow','horse','sheep','goat'].includes(definition.kind)?scene.add.ellipse(brain.x,brain.y,definition.kind==='horse'?56:definition.kind==='cow'?42:30,definition.kind==='horse'?15:definition.kind==='cow'?12:9,0x29271d,.17).setDepth(brain.y-.2):undefined;
    if(definition.kind==='cow')this.cowRest.set(brain.id,new CowRestCycle(brain.id));
    const view:MovingAnimal={shadow,id:brain.id,brain,sprite,get x(){return brain.x},get y(){return brain.y}};
    this.brains.push(brain);this.animals.push(view);

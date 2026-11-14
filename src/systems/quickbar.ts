@@ -2,7 +2,7 @@ import {cropFromSeed} from '../data/crops';
 import type { InventoryData, ItemId, QuickSlot, Tool } from '../types';
 import { ITEM_IDS } from '../data/items';
 import {toolReferenceParts,toolReference,referencedTool,individualTool,syncToolInstances} from './tool-instances';
-export const QUICK_TOOLS: Tool[] = ['farm-coop','farm-barn','farm-silo','farm-stable','hand', 'plant', 'water', 'gate', 'repair', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'hoe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
+export const QUICK_TOOLS: Tool[] = ['farm-coop','farm-barn','farm-silo','farm-stable','farm-aprisco','hand', 'plant', 'water', 'gate', 'repair', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'hoe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
 export const emptyQuickbar = (): QuickSlot[] => Array.from({ length: 9 }, () => null);
 export function isQuickSlot(value: unknown): value is Exclude<QuickSlot, null> {
   return typeof value === 'string' && (!!toolReferenceParts(value)||QUICK_TOOLS.includes(value as Tool) || value === 'item:wateringCan'

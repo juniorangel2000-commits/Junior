@@ -25,13 +25,13 @@ export interface CharacterProfile {
   accessory?: CharacterAccessory;
 }
 export type ItemId = import('./data/crop-catalog').CropItemId | 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 'plank' | 'scrap' | 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw'
-  | 'harvestBasket' | 'freshGrass' | 'hay' | 'egg' | 'milk' | 'milkPail' | 'hardwood' | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer'
+  | 'harvestBasket' | 'freshGrass' | 'hay' | 'egg' | 'milk' | 'milkPail' | 'goatMilk' | 'wool' | 'shears' | 'hardwood' | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer'
   | 'herb' | 'rareHerb' | 'bandage' | 'herbalTonic' | 'fungalInfusion' | 'oakSeed' | 'pineSeed' | 'fertilizer' | 'fishingRod' | 'bait' | 'net' | 'fish' | 'rareFish' | 'meal'
   | 'ironShard' | 'ironOre' | 'ironIngot' | 'goldShard' | 'goldOre' | 'goldIngot' | 'blackMetalShard' | 'blackMetalOre' | 'blackMetalIngot' | 'sickle' | 'shovel' | 'furniture' | 'doorKit' | 'windowKit' | 'fenceKit' | 'forge' | 'mushroom'
   | 'sword' | 'lantern' | 'oldMap' | 'metalPart' | 'electronicPart' | 'waterPump' | 'lamp' | 'backpack' | 'boots' | 'cloth' | 'clothing' | 'accessory';
 export type InventoryData = Record<ItemId, number> & {toolInstances?:import('./systems/tool-instances').ToolInventory};
 export type OwnedTool = 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw' | 'hammer';
-export type Tool = 'hand' | 'plant' | 'water' | 'gate' | 'repair' | 'fence' | 'bench' | 'remove' | 'hatchet' | 'pickaxe' | 'hoe' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof' | 'blueprint' | 'farm-coop' | 'farm-barn' | 'farm-silo' | 'farm-stable';
+export type Tool = 'hand' | 'plant' | 'water' | 'gate' | 'repair' | 'fence' | 'bench' | 'remove' | 'hatchet' | 'pickaxe' | 'hoe' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof' | 'blueprint' | 'farm-coop' | 'farm-barn' | 'farm-silo' | 'farm-stable' | 'farm-aprisco';
 export type QuickSlot = Tool | `item:${ItemId}` | `tool:${import('./systems/tool-instances').IndividualTool}:${number}` | 'item:wateringCan' | null;
 export interface TilePoint { x: number; y: number }
 /** growth: fração 0–1 derivada de days, mantida para o desenho e saves antigos.
