@@ -37,6 +37,18 @@
   - Depois, estender `scripts/qa-horse-taming.cjs` para cobrir corda, travessia e "Alojar".
 - Para o Junior confirmar: o estábulo é exigido para a **corda**, não para o cavalo comer, para a doma poder ser testada antes do estábulo existir. Se preferir exigir já para comer, mudar em `OpenFieldsWorld.basketFor` e em `settleHorseTaming`.
 
+- **Depois do estábulo:**
+  1. O Claude Code confere a doma completa, com corda, travessia e "Alojar".
+  2. Publicar a preview.34 se o Junior pedir, corrigindo antes o texto da missão "Primeira colheita".
+  3. Seguir a ordem de `docs/planejamento/ANIMAIS-E-RECEITAS.md`, plano aprovado pelo Junior em 14/11/2026:
+     - interiores das construções de animais, com a opção "Recolher os animais";
+     - ovos e leite;
+     - ovelha e cabra com aprisco;
+     - máquinas, colocadas como a cesta, dentro e fora das construções;
+     - cozinha;
+     - porco (com sobras da horta), pato e abelhas (colmeia comprada na Vila, enxame nos ipês).
+  4. A arte dos animais novos, das construções, das máquinas e dos ícones fica com o Codex ou com pacotes gerados pelo Junior.
+
 ## Pendências e ideias para depois
 
 - Chamar o cavalo de longe, montaria (sela) e quadros de deitar, descansar e levantar.
