@@ -94,10 +94,18 @@ jobs:
           $tag = "v$version"
           $previewFlag = if ($version.Contains('-')) { '--prerelease' } else { '--prerelease=false' }
           $latestFlag = if ($version.Contains('-')) { '--latest=false' } else { '--latest' }
-          gh release create $tag --draft $previewFlag --target $env:RELEASE_COMMIT --repo $env:RELEASE_REPOSITORY --title "After Rain $tag — Windows x64" --notes-file "docs/cenarios/NOTAS-$version.md"
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          # A Release pode já existir quando a tag é criada pela página do GitHub
+          # (sessões do agente na nuvem não podem criar tags).
+          gh release view $tag --repo $env:RELEASE_REPOSITORY *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag --draft $previewFlag --target $env:RELEASE_COMMIT --repo $env:RELEASE_REPOSITORY --title "After Rain $tag — Windows x64" --notes-file "docs/cenarios/NOTAS-$version.md"
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          } else {
+            gh release edit $tag --title "After Rain $tag — Windows x64" --notes-file "docs/cenarios/NOTAS-$version.md" --repo $env:RELEASE_REPOSITORY
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
           $assets = @((Get-ChildItem release/*.exe).FullName) + @('release/SHA256SUMS.txt', 'release/LEIA.md')
-          gh release upload $tag @assets --repo $env:RELEASE_REPOSITORY
+          gh release upload $tag @assets --clobber --repo $env:RELEASE_REPOSITORY
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           gh release edit $tag --draft=false $previewFlag $latestFlag --repo $env:RELEASE_REPOSITORY
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
