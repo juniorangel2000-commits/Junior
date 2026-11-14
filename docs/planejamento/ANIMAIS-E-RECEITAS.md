@@ -32,12 +32,38 @@ Os valores são pontos de partida para ajustar. Complementa `docs/construcoes/PR
 - **Abelhas sem alimentação:** colmeias não comem palha. Elas produzem de março a novembro do jogo (Primavera a Outono) e param no Inverno.
 - **Enxame:** sugestão de que apareça nos ipês floridos dos Campos Abertos, coletado com uma caixa de abelhas feita na bancada. Alternativa: comprar a colmeia pronta.
 
+## Ambientes internos das construções de animais
+
+Pedido do Junior: galinheiro, curral e as próximas construções de animais (aprisco, chiqueiro, estábulo) ganham **interior**, e as **máquinas podem ser colocadas lá dentro**. O modelo é o mesmo da casa e da ferraria: grade de 32 px, objetos com tamanho e colisão, e edição para posicionar e recolher (`src/systems/home.ts`).
+
+**Entrada:** E na porta da construção pronta abre o interior, com transição como a da casa. A saída fica pela mesma porta.
+
+**Tamanhos propostos:**
+
+| Construção | Interior | Fixos |
+| --- | --- | --- |
+| Galinheiro | 10×8 | Cocho, bebedouro e 6 ninhos (os ovos aparecem nos ninhos) |
+| Curral | 14×10 | Cocho, bebedouro e 4 baias (ordenha na baia) |
+| Aprisco | 12×9 | Cocho, bebedouro e cercadinho de tosquia |
+| Chiqueiro | 10×8 | Cocho e lamaçal |
+| Estábulo | 8×7 | Baia, cocho e suporte da sela (para a montaria futura) |
+
+**Animais:** de dia (06:00–18:00) ficam no cercado externo, com a porteira aberta; à noite entram e aparecem lá dentro, onde também dá para alimentar, ordenhar, tosquiar e recolher ovos. Mais tarde, a chuva também pode levá-los para dentro.
+
+**Máquinas:** cada interior tem área livre para colocar máquinas, que usam o mesmo editor e seguem o mesmo funcionamento descrito abaixo.
+
+**Save:** o interior de cada construção é salvo pelo id da obra, com as máquinas, as cargas e os produtos prontos. Construções já prontas recebem um interior vazio, só com os fixos.
+
+**Arte:**
+- Piso e paredes de cada construção (palha, terra batida e tábuas).
+- Cocho (vazio e cheio), bebedouro, ninhos (vazio e com ovo), baias e lamaçal.
+
 ## Máquinas de processamento
 
 Pedido do Junior: o processamento é feito em **máquinas**, e não na bancada. A arte, os nomes e os detalhes são nossos, sem copiar outro jogo.
 
 **Como funcionam**
-- A máquina fica no chão da Propriedade, como objeto com colisão.
+- A máquina fica **dentro das construções de animais** (ver acima) e, se o Junior quiser, também ao ar livre na Propriedade, como objeto com colisão.
 - **E com a matéria-prima** coloca uma carga.
 - A máquina trabalha sozinha com o tempo do jogo, mesmo com você em outro cenário ou dormindo, e mostra uma animação enquanto trabalha.
 - Quando termina, aparece um **ícone do produto** sobre ela; **E retira** o produto.
@@ -112,17 +138,19 @@ Alguns pratos podem dar efeitos além do vigor (por exemplo, andar mais rápido 
 
 ## Ordem sugerida
 
-1. Produção básica: alimentação, ovo e leite (`PRODUCAO-ANIMAL-PLANO.md`).
-2. Ovelha e cabra: arte animada, aprisco, lã, leite de cabra e tesoura.
-3. Sistema de máquinas e as primeiras: queijeira, batedeira, roca, tear e moinho.
-4. Fogão a lenha e as receitas de cozinha.
-5. Porco (chiqueiro, esterco e composteira), pato e abelhas (colmeia, mel e cera).
-6. Barril de conservas, prensa de cera, efeitos dos pratos e equilíbrio de preços.
+1. Interiores do galinheiro e do curral, com cocho e ninhos dentro e a rotina dia/noite dos animais.
+2. Produção básica: alimentação, ovo nos ninhos e leite (`PRODUCAO-ANIMAL-PLANO.md`).
+3. Ovelha e cabra: arte animada, aprisco com interior, lã, leite de cabra e tesoura.
+4. Sistema de máquinas, colocáveis nos interiores, e as primeiras: queijeira, batedeira, roca, tear e moinho.
+5. Fogão a lenha e as receitas de cozinha.
+6. Porco (chiqueiro com interior, esterco e composteira), pato e abelhas (colmeia, mel e cera).
+7. Barril de conservas, prensa de cera, efeitos dos pratos e equilíbrio de preços.
 
 ## Decisões em aberto
 
 - ~~Equipamentos ou serviços de NPC~~: decidido, **máquinas** na Propriedade.
-- As máquinas ficam só ao ar livre na Propriedade, ou também dentro de casa e no galpão?
+- ~~Onde ficam as máquinas~~: decidido, **dentro das construções de animais**. Também ao ar livre na Propriedade?
+- Rotina dos animais: no cercado de dia e dentro à noite, está bom?
 - O porco produz esterco (que vira fertilizante)? Ou prefere outro produto?
 - Cozinhar no **fogão a lenha de casa**?
 - Abelhas: enxame nos ipês ou colmeia comprada?
