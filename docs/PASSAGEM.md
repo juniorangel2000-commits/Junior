@@ -3,69 +3,93 @@
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
 - **Atualizado em:** 2026-11-14
-- **Por:** Codex
-- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD do branch. Etapa 3 em `e00c675`, concluída e validada em `a13381b`.
+- **Por:** Codex — encerramento de emergência, Junior vai continuar no Claude por limite de créditos.
+- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Máquinas em `7d38fc8`; animais/habitat em **`4178e7e` (WIP)**.
 - **Última versão publicada:** `v0.10.0-preview.34`, https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.10.0-preview.34
-- **Estado:** etapas 1–3 dos animais concluídas: interiores, ovos/leite e agora aprisco, ovelha/cabra animadas, lã, leite de cabra e tesoura. Branch enviado ao GitHub. **Não publicado; main, tags e versão do pacote permanecem inalteradas.**
+- **Estado:** máquinas implementadas e aprovadas no QA de navegador. Arte dos próximos animais pronta, coelho/cervo integrados; patos da floresta e afastamento nos Campos em validação. **Há um teste falhando. Nada foi publicado; main, tags e versão do pacote inalteradas.**
 
 ## Feito nesta rodada
 
-- Junior pediu implementar a próxima etapa (ovelha/cabra/aprisco), adicionar animações no padrão dos outros animais e conferir a proporção.
-- **Aprisco:** construção própria no menu B, base no terreno limpo, entrega de materiais e conclusão com martelo. Custo final: 60 madeiras, 24 pedras, 18 tábuas regulares, 8 madeiras nobres, 1 módulo de porta e 1 de janela; base de 4 madeiras + 4 pedras. Área 7×6, capacidade **4 animais ao todo**, misturando ovelhas e cabras.
-  - `farmAcceptsAnimal` centraliza a compatibilidade no alojamento, painel e validação. Vacas/galinhas/cavalo mantêm suas moradias.
-  - Interior 12×9 com palha, cocho de 8, bebedouro e área de tosquia aberta pela frente. Reutiliza os objetos definitivos do SpriteCook em resolução original.
-  - Rotina existente: cercado 06:00–18:00, dentro à noite; painel permite recolher/soltar. Entrada com E e saída andando.
-- **Produção:** cada animal come 1 palha às 06:00, com a prioridade já existente para quem ficou mais tempo sem comer.
-  - Cabra alimentada: 1 leite de cabra disponível por manhã, com balde e ordenha de 1 segundo.
-  - Ovelha: 1 lã após **3 manhãs alimentadas**, sem exigir dias consecutivos. Sem alimento, pausa. Lã pronta e leite pendente não acumulam várias cargas por animal.
-  - Registros opcionais `woolDays`/`wool` no `animalCare`; saves antigos continuam válidos. Trocar de moradia/recarregar não reinicia nem duplica a produção.
-  - `canShear`/`shearSheep` fazem validação e gravação antes de aplicar. `milkCow` preserva o nome antigo, mas reconhece cabras e entrega o produto correto.
-  - Cena usa uma ação comum de cuidado para ordenha/tosquia, com ferramenta visível, jogador e animal parados. Afastar o jogador cancela sem consumir o produto. Indicadores de leite/lã prontos.
-  - Corrigida prioridade de interação: animal próximo do cocho não deve interceptar o E quando o cocho está mais perto.
-- **Tesoura:** bancada, 2 lingotes de ferro + 1 cabo, com martelo. Integra ferramentas individuais: não empilha; cada cópia tem 100 de durabilidade e só a selecionada gasta 1 por tosquia concluída. Bento repara a selecionada por 20 C.
-- **Comércio:** Helena compra leite de cabra por 20 C; Celina compra lã por 36 C. Nenhuma loja vende os produtos. Valores iniciais.
-- **Arte própria:** aprisco, ícones e animais gerados por imagegen, preservando originais. O SpriteCook não está disponível nesta sessão; os fixos anteriores não foram refeitos.
-  - Ovelha e cabra em oito direções, quatro poses desenhadas de caminhada por direção distribuídas nos oito passos do `AnimalWalkCycle`. Usam cadência por distância e limite de FPS, como vaca/cavalo. Nas pausas ficam em pose parada; sem descanso animado em repetição contínua.
-  - A cabra foi refinada para manter patas de apoio no chão nas poses de passagem.
-  - Escala final em `ANIMAL_ART`: ovelha `.28`, cabra `.27` (células de 224 px). Vista lateral: ovelha ~40 px, cabra ~45, vaca ~56. Conferidas junto à galinha e ao jogador.
-  - `scripts/pack-aprisco-art.cjs` recorta/empacota sem redimensionar os pixels dos animais; hashes/retângulos em `public/assets/animals/{sheep,goat}/atlas.json`. Originais nos respectivos `source.png`.
-  - A arte externa mantém o PNG original; o pátio é compactado em memória para alinhar o corpo, cercas e entrada à colisão existente.
-- **QA real:** construiu base, entregou materiais, concluiu a obra, alojou duas ovelhas e duas cabras, entrou andando, abasteceu, ordenhou, tosquiou, saiu e recarregou. Estoque final: 1 leite de cabra, 1 lã, tesoura 99/100. Sem duplicação e sem erros JS.
-  - `scripts/qa-aprisco.cjs` aceita diretório de saída e `QA_URL`; Vite padrão 5190, Playwright/Chromium externos.
-  - `scripts/capture-aprisco-preview.cjs` usa sprites reais na mesma câmera e escala e gera o GIF com ffmpeg.
-  - Evidências em `docs/planejamento/qa-aprisco/`: exterior, ordenha, tosquia, comparação estática, GIF e JSON de validação. A comparação foi mostrada ao Junior.
-- Documentação atual em `docs/construcoes/APRISCO.md`; plano geral atualizado em `docs/planejamento/ANIMAIS-E-RECEITAS.md`.
+### Máquinas (`7d38fc8`)
+
+- Cinco primeiras do plano `docs/planejamento/ANIMAIS-E-RECEITAS.md`: **queijeira, batedeira de manteiga, roca, tear e moinho de pedra**.
+- Projetos aprendidos em serviços dos NPCs, seguindo o sistema existente:
+  - Bento: queijeira (60 C), batedeira (50 C).
+  - Tobias: roca (40 C), tear (50 C).
+  - Ícaro: moinho (60 C).
+  - Receitas aprendidas persistem em `villageProgress.recipes` e foram incluídas no whitelist. Montagem exige bancada e martelo; custos em `src/data/machines.ts`.
+- Máquina pronta é item da mochila. **Usar / instalar** ou ativar o slot na barra coloca na frente do jogador. Vale na Propriedade e nos interiores de galinheiro, curral e aprisco; não na casa, dungeons ou outros mapas.
+- Use matéria-prima pela mochila/barra, ou E com ela selecionada, para carregar uma máquina próxima. E na vazia guarda na mochila; trabalhando não pode ser recolhida; pronta entrega só o produto, mantendo a máquina instalada.
+- Receitas:
+  - 1 leite → 1 queijo; 1 leite de cabra → 1 queijo de cabra (1 dia).
+  - 2 leites → 1 manteiga (meio dia).
+  - 1 lã → 1 novelo; 2 novelos → 1 tecido (1 dia cada).
+  - 2 trigos → 1 farinha; 2 milhos → 1 fubá; 2 aveias → 1 aveia em flocos (meio dia).
+- Junior pediu **balão sobre a máquina com o item pronto**. Implementado no estilo da HUD: moldura marrom, fundo claro, ponteiro e sprite do produto. Fica até a coleta. Durante trabalho há duas poses mecânicas e barra discreta.
+- `src/systems/machines.ts`:
+  - `save.machines` opcional, com instâncias por ID, espaço (`property` / `farm:<id>`), posição e carga `{recipe,startedAt,readyAt}`.
+  - Prazos usam relógio absoluto do jogo; viagens/sono/recarregamento não reiniciam nem duplicam. Não escreve/copía o save a cada quadro.
+  - Instalação/carga/coleta/recolhimento são atômicos: salva antes de aplicar. Mochila cheia e falha de gravação preservam itens/cargas.
+  - Colisão e proteção contra sobreposição, água, recursos, construções, plantações, atores e portas. Em interiores verifica circulação do piso; na Propriedade, corredores locais. A busca só roda ao instalar.
+  - Validação de IDs, espaços, moradias, posições, sobreposição, receita e prazo. Saves antigos não recebem máquinas instaladas.
+- Integração nas duas cenas, em `GameUI` (item ativo/ativação de ingredientes e máquinas), navegação dos NPCs, animais, cultivo, construção e crescimento de recursos. `MachineView` atualiza arte a 10 Hz, sem renderizar balões fora da câmera.
+- Itens novos: cinco máquinas + queijo, queijo de cabra, manteiga, novelo, farinha, fubá e aveia em flocos. Tecido usa o item existente, com ícone novo; estoque e regras anteriores do tecido foram preservados.
+- Helena compra queijo (40), queijo de cabra (52), manteiga (48), farinha (24), fubá (26), aveia em flocos (22); Celina compra novelo (54). Lojas não vendem esses **produtos novos**. Preços iniciais.
+- Arte própria gerada por imagegen em `public/assets/visual/machines/`. Originais `source.png` e `products-source.png` preservados; `scripts/pack-machine-art.cjs` gera recortes/ícones sem reduzir os pixels. Hashes em `art.json`.
+- **26 testes novos** em `tests/machines.test.ts` passaram: todas as receitas, prazos, circulação, ações, falha de save, estoque cheio, migração, serviços, moradias diferentes e rascunho antigo de Bento.
+- **`scripts/qa-machines.cjs` passou no Chromium**: aprende cinco projetos, monta as máquinas, instala uma na Propriedade e quatro no curral, usa barra rápida, processa lã → novelos → tecido, leite → manteiga e trigo → farinha; confere balões corretos; queijeira termina enquanto está em outro cenário; recolhe máquina vazia e recarrega sem duplicação.
+- Evidências portáteis em `docs/planejamento/qa-maquinas/`: balões, novelo pronto e `validacao.json`.
+- Um teste inicial de navegador caiu por retornar o objeto Camera do Phaser em `page.evaluate`; corrigido para retornar void. O QA completo acima foi repetido e passou. Não era crash confirmado do jogo.
+
+### Animais e pedidos adicionais (`4178e7e`, WIP)
+
+- Depois das máquinas, Junior pediu preparar sprites/animações dos outros animais. Confirmou incluir **porco, pato, abelhas, coelho e cervo**.
+- Geradas artes próprias de todos, oito direções × (parado + quatro poses de movimento), com fontes preservadas em `public/assets/animals/<tipo>/source.png`, recortes/hashes em `atlas.json` e atlas compacto de **5 colunas × 8 linhas**, célula 224.
+- `scripts/pack-next-animal-sprites.cjs` empacota sem reduzir pixels; aceita diretório raiz como argumento.
+- `ANIMAL_ART` e `animalFrame` reconhecem atlas compactos. Escalas iniciais: porco `.28`, pato `.18`, coelho `.16`, cervo `.28`, abelha `.08`. Ainda falta comparação visual final no jogo/GIF.
+- Coelho/cervo já entram nas cenas existentes através do controlador `AnimalWalkCycle`, sem mudar seus IDs salvos. Coelho dá pequenos saltos; cervo anda em quatro patas.
+- Porco e abelhas **só preparados**, sem spawn/criação/produção. Não são carregados automaticamente, para evitar memória de texturas sem uso. `preloadAnimalSprites(scene, tipos)` permite carga explícita. `beeFlightFrame` fornece ciclo de asas independente dos passos.
+- Pato foi ativado porque Junior pediu em seguida **entrar na água da Floresta Antiga, como habitat**:
+  - `src/systems/forest-ducks.ts`: habitat em água e até uma faixa curta da margem, respeitando sólidos, busca de nascimento no lago.
+  - `src/forest-waterfowl.ts`: dois patos ambientais perto do lago, animação compartilhada, pés recortados ao nadar, ondulações leves, sombra apenas em terra. `ForestScene` cria/atualiza/destrói junto ao ambiente.
+  - São fauna ambiental separada de `AnimalPopulation`/`DOMESTIC_ANIMALS`: não há captura, alojamento ou ovo de pato nesta etapa. Posições não persistem ao sair da cena, como fauna ambiente.
+- Junior também pediu manter distanciamento nos Campos Abertos e esclareceu: **afastar do jogador**, não distância entre animais.
+  - `createFieldAnimalBrain` centraliza a criação com comportamento selvagem para todos os animais soltos. Raio da doma do cavalo continua ajustado pelo controlador existente: domado não foge.
+  - Vacas deitadas consideram a aproximação no raio de detecção para levantar e fugir, em vez de esperar o jogador encostar.
 
 ## Em andamento e próximo passo exato
 
-- Não há código WIP restante desta rodada. O primeiro commit `e00c675` tem prefixo WIP porque a validação no navegador ainda estava em curso; ela foi concluída em `a13381b`.
-- Próxima implementação, **quando solicitada:** máquinas colocáveis como a cesta, dentro dos abrigos e ao ar livre na Propriedade. Plano já aprovado em `docs/planejamento/ANIMAIS-E-RECEITAS.md`: queijeira, batedeira, roca, tear e moinho primeiro; cozinha depois.
-- Máquina pronta deve ser item da mochila, colocada à frente com colisão, sem bloquear entrada/cocho/passagem. Vazia pode ser recolhida; carregada trabalha pelo relógio geral, com save atômico e produto pronto visível. Não foi implementado nesta rodada.
-- Junior ainda não pediu publicar esta rodada. O pacote continua preview.34; o trabalho está no branch preview.35. Não criar tag nem atualizar main sem pedido.
-- As sugestões anteriores de distribuir etapas pelas previews .35–.39 eram apenas proposta; agora as três primeiras etapas estão juntas no branch .35 não publicado.
+1. **Corrigir o teste falhando de patos**, antes de publicar ou afirmar que essa parte terminou:
+   - Arquivo: `tests/forest-ducks.test.ts`, teste **"entra na água a partir da margem por movimento contínuo ao fugir do jogador"**, linha 15.
+   - Resultado atual: o pato continua em área de margem e `entered` fica `false` (esperado true). Os outros três testes desse arquivo passaram.
+   - Hipótese a investigar: `AnimalBrain.lineClear` usa o bloqueio do habitat como se fosse obstáculo visual; um jogador em terra fora da faixa pode ficar "invisível" para o pato. Distinguir visibilidade/sólidos de limite de habitat ou orientar o retorno à água, **sem teletransportar**.
+   - A simulação do teste usa água retangular `400<x<800,300<y<700`, pato colocado em `(384,500)` (margem) e jogador `(280,500)`. Ver se o modelo está detectando o jogador e gerando percurso para a água.
+2. Conferir no navegador os patos nadando/entrando pela margem e a fuga dos animais nos Campos. Testar cavalo domado para não regredir a doma. Ainda **não foi feito** esse QA dos pedidos adicionais.
+3. Gerar uma comparação/GIF dos cinco animais novos em escala real (com vaca/galinha/jogador como referência), incluindo voo da abelha. As artes existem e os testes de atlas passaram; a prévia final ainda não foi feita.
+4. Rodar `npm run check`, **suite inteira `npm test`** e build. A suite inteira e o build **não foram executados após as alterações desta rodada**, por encerramento de emergência.
+5. Atualizar plano geral e documentação de máquinas/animais, concluir os commits WIP e reescrever esta passagem. O plano geral ainda está com etapas 1–3 marcadas como prontas; a etapa de máquinas já tem implementação/QA mas falta fechar documentação.
+- Não publicar sem pedido atual. O pacote continua preview.34, tudo no branch preview.35.
 
 ## Pendências e ideias para depois
 
-- Máquinas → cozinha → porco/pato/abelhas, conforme plano geral. Produção por amizade/qualidade e preços finais ficam para depois.
-- Confirmar com Junior a regra do estábulo para a corda do cavalo, não para ele comer. Chamar de longe, montaria e poses de deitar/descansar.
-- Sementes especiais, clima/peixes por estação, frutíferas e estufa.
-- Há um stash local antigo do branch preview.34 com evidências/documentação do estábulo aberto. **Não aplicar por cima desta PASSAGEM nem desfazer os interiores atuais.** O trabalho atual está enviado no branch preview.35.
+- Após fechar máquinas e arte: cozinha (fogão/receitas/caderno), depois criação/produção de porco, pato e abelhas, conforme `docs/planejamento/ANIMAIS-E-RECEITAS.md`. Não confundir arte pronta com sistema de criação pronto.
+- Produção por amizade/qualidade e preços finais ficam para depois. Estábulo/corda, montaria e calendário seguem planos anteriores.
+- Há stash antigo do branch preview.34 com evidências/documentação do estábulo aberto. **Não aplicar sobre esta PASSAGEM nem desfazer os interiores atuais.**
 
 ## Problemas conhecidos
 
-- Animais no interior reaparecem em posições iniciais a cada entrada; posição interna individual não é persistida. Interiores ficam sempre claros à noite.
-- **Travamentos nos Campos Abertos:** na rodada anterior foram reduzidos trabalho da vegetação (índice espacial), cópias desnecessárias do save na coleta, atualização da HUD e uso do shader das janelas em mapas sem janelas (`f28f27c`). Capim próprio e animado integrado em `5424eee`.
-  - Medição anterior da HUD: Campos 0,93 → 0,40 ms; Lago 2,78 → 0,26; Vila 2,36 → 0,54. Evidências em `docs/planejamento/qa-campos-abertos/`.
-  - **Não afirmar ganho de FPS nem que travamentos foram resolvidos:** o navegador usa SwiftShader (vídeo emulado), sem melhora consistente dos tempos de quadro. Falta conferir no PC do Junior.
-  - `scripts/qa-world-performance.cjs` compara dez cenários; `QA_SCENES` filtra, `QA_CPU_PROFILE=1` grava perfis. Rodada atual não ampliou essa medição.
-- A entrada do curral após sair do galinheiro foi corrigida em `88dd14c`: vaca recolhida nascia visível antes do primeiro update e afastava o jogador. Ocultação inicial e colisão respeitam o recolhimento imediatamente. O alcance da porta continua 30 px.
-- Build avisa sobre tamanho do chunk principal, sem falhar.
-- **Arte dos interiores:** manter PNGs originais, `setScale`/`setDisplaySize` e piso `FLOOR_SCALE=2`; o Junior já rejeitou redução em disco. Prompts futuros do SpriteCook: "front-facing, axis-aligned, NOT isometric".
+- Falha atual de entrada do pato na água descrita acima.
+- Interiores dos animais não persistem posição interna individual e ficam claros à noite.
+- Travamentos nos Campos ainda precisam ser medidos no PC do Junior: otimizações anteriores estão em `f28f27c`, capim em `5424eee`; o navegador aqui usa SwiftShader. **Não afirmar que o problema de FPS foi resolvido.**
+- Galinheiro/curral/aprisco, ovos/leite/lã e tesoura estavam validados antes desta rodada (`e00c675`, `a13381b`, `011516c`). Ver `docs/construcoes/APRISCO.md` e evidências em `docs/planejamento/qa-aprisco/`.
+- Arte definitiva dos interiores do SpriteCook deve permanecer em resolução original (`setScale`/`setDisplaySize`, piso `FLOOR_SCALE=2`); o Junior rejeitou redução dos PNGs. Fontes de novas artes desta rodada foram geradas por imagegen.
 
 ## Testes
 
-- Baseline desta rodada: `npm ci`, `npm run check`, `npm test`: **1.962 testes / 223 arquivos**, zero falhas.
-- Final: `npm run check` ok; `npm test`: **1.978 testes / 225 arquivos**, zero falhas; `npm run build` ok.
-- Novos: `tests/aprisco.test.ts` (14: ciclo, alimentação parcial, pausa, mudança de moradia, ferramentas individuais, falha de save, estoque cheio, migração, comércio, circulação) e `tests/aprisco-art.test.ts` (2: fontes originais, recortes, direções e caminhada).
-- `scripts/qa-aprisco.cjs`: passou, incluindo ciclo completo e recarregamento, mais comparação de escala e GIF dos sprites usados no jogo. `docs/planejamento/qa-aprisco/validacao.json` registra o resultado.
-- O QA anterior de ovos/leite também passou nesta branch; suas evidências continuam em `docs/planejamento/qa-producao/`.
+- Baseline: `npm ci`, `npm run check`, suite completa **1.978 testes / 225 arquivos**, zero falhas.
+- Último `npm run check`: **ok**, em `/tmp/animals-check3.log` (log local, pode não existir em outra sessão).
+- Máquinas: 26 testes novos passaram; regressões direcionadas de aprisco, serviços, quickbar e migração (50 testes) também passaram. QA completo das máquinas passou no navegador e suas evidências estão no repositório.
+- Última rodada direcionada, após animais/habitat: **62 passaram, 1 falhou / 5 arquivos**. Falha de entrada do pato na água em `tests/forest-ducks.test.ts`; detalhe acima. Log local `/tmp/animals-target3.log`.
+- `tests/next-animal-art.test.ts` (7) passou: hashes, recortes, oito direções, controle de poses, escala e carregamento sob demanda. Testes anteriores de animais/arte também passaram antes do habitat.
+- **Suite inteira final e build não concluídos nesta rodada.** Encerramento por limite do Junior; trabalho enviado como WIP.
+- Para QAs: iniciar Vite com `npm run dev -- --host 0.0.0.0 --port 5190`. Scripts usam Playwright externo e `/usr/bin/chromium`; o QA das máquinas aceita `QA_URL` e diretório de saída.
