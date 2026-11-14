@@ -26,7 +26,7 @@ Os valores são pontos de partida para ajustar. Complementa `docs/construcoes/PR
 | Ovelha | Aprisco (novo) | Floresta (já existe) | Lã | A cada 3 dias | Tosquia com tesoura (nova ferramenta) |
 | Porco (novo) | Chiqueiro (novo) | Rosa | Esterco | 1 por dia | Aparece no chão do chiqueiro |
 
-- **Porco (sugestão do Claude):** come **sobras da horta** no cocho, aceitas no lugar da palha (qualquer legume ou fruta colhida), e devolve esterco, que vira fertilizante na composteira. Isso dá destino às colheitas que sobram e fecha o ciclo horta → porco → fertilizante → horta.
+- **Porco (aprovado pelo Junior):** come **sobras da horta** no cocho, aceitas no lugar da palha (qualquer legume ou fruta colhida), e devolve esterco, que vira fertilizante na composteira. Isso dá destino às colheitas que sobram e fecha o ciclo horta → porco → fertilizante → horta.
 | Abelhas (novo) | Colmeia (objeto, sem cercado) | Colmeia artificial comprada na Vila + enxame dos ipês (ver abaixo) | Mel; cera | Mel a cada 4 dias; cera 1 em 3 coletas | E na colmeia |
 | Cavalo | Estábulo | Doma | — | — | Montaria no futuro |
 
@@ -110,7 +110,34 @@ Você aprende o projeto com um NPC, no mesmo padrão de "Aprender adubo" (Rosa) 
 
 ## Cozinha: receitas que misturam matérias-primas
 
-Sugestão: um **fogão a lenha** dentro de casa, montado como mobília. Cada prato gasta 1 lenha (madeira comum) e recupera vigor; alguns NPCs compram ou pedem em missões.
+Aprovado pelo Junior em 14/11/2026.
+
+**Onde cozinhar**
+- **Fogão a lenha** dentro de casa, para os pratos do dia a dia. Cada prato gasta 1 lenha (madeira comum).
+- **Forno de barro** ao ar livre na Propriedade, que é uma das máquinas (colocado como a cesta), para pães, broas e bolos.
+- **Fogueira portátil**, montada em qualquer cenário, para pratos simples na hora, como peixe assado.
+
+**Como aprender**
+- A **Helena ensina** receitas da pousada, uma por vez, como serviço.
+- **Receitas escondidas** são descobertas explorando: na Mina, com os sobreviventes, em mapas antigos.
+- **Caderno de receitas** na interface, com as receitas aprendidas e os ingredientes que faltam.
+
+**Para que servem**
+- **Vigor**, como as refeições atuais.
+- **Efeitos por algumas horas**, por exemplo:
+  - café da manhã reforçado: mais vigor máximo;
+  - peixe assado: pesca mais fácil;
+  - feijão tropeiro: minerar gasta menos vigor;
+  - suco de melancia: andar mais rápido.
+- **Pedidos:** "prato do dia" da pousada da Helena, que paga mais; NPCs pedem pratos em missões e aniversários.
+- **Qualidade (depois):** produtos de animais bem cuidados têm qualidade melhor, e o prato herda essa qualidade (vale mais e dá mais vigor).
+
+**Ordem dentro da cozinha:**
+1. Fogão a lenha, receitas da Helena e caderno.
+2. Forno de barro, fogueira portátil, efeitos e pedidos.
+3. Qualidade.
+
+**Receitas iniciais**
 
 | Prato | Ingredientes | Vigor |
 | --- | --- | --- |
@@ -129,7 +156,6 @@ Sugestão: um **fogão a lenha** dentro de casa, montado como mobília. Cada pra
 | Suco de melancia | 1 melancia + 1 hortelã | 30 |
 | Chá de camomila com mel | 1 camomila + 1 mel | 35 |
 
-Alguns pratos podem dar efeitos além do vigor (por exemplo, andar mais rápido ou pescar melhor por algumas horas). Isso fica para uma etapa posterior.
 
 ## Quem compra
 
@@ -158,7 +184,7 @@ Alguns pratos podem dar efeitos além do vigor (por exemplo, andar mais rápido 
 2. Produção básica: alimentação, ovo nos ninhos e leite (`PRODUCAO-ANIMAL-PLANO.md`).
 3. Ovelha e cabra: arte animada, aprisco com interior, lã, leite de cabra e tesoura.
 4. Sistema de máquinas, colocáveis nos interiores, e as primeiras: queijeira, batedeira, roca, tear e moinho.
-5. Fogão a lenha e as receitas de cozinha.
+5. Cozinha: fogão a lenha, receitas da Helena e caderno; depois forno de barro, fogueira, efeitos e pedidos.
 6. Porco (chiqueiro com interior, esterco e composteira), pato e abelhas (colmeia, mel e cera).
 7. Barril de conservas, prensa de cera, efeitos dos pratos e equilíbrio de preços.
 
@@ -167,7 +193,7 @@ Alguns pratos podem dar efeitos além do vigor (por exemplo, andar mais rápido 
 - ~~Equipamentos ou serviços de NPC~~: decidido, **máquinas** na Propriedade.
 - ~~Onde ficam as máquinas~~: decidido, dentro das construções de animais **e** ao ar livre na Propriedade.
 - ~~Rotina dos animais~~: decidido, cercado de dia e dentro à noite, com a opção "Recolher os animais" no painel.
-- O porco produz esterco (que vira fertilizante)? Ou prefere outro produto?
-- Cozinhar no **fogão a lenha de casa**?
+- ~~Porco~~: decidido, come sobras da horta e produz esterco (fertilizante).
+- ~~Cozinha~~: decidido, fogão a lenha, forno de barro, fogueira, receitas da Helena e escondidas, caderno, efeitos, pedidos e, depois, qualidade.
 - ~~Abelhas~~: decidido, colmeia artificial comprada na Vila e enxame nos ipês, com chance a cada 5 dias.
 - Preços de venda de cada produto.
