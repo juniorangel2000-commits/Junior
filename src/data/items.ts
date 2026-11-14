@@ -2,6 +2,7 @@ import {CROP_CATALOG,NEW_CROP_ITEM_IDS} from './crop-catalog';
 import {SEASON_NAMES} from '../systems/calendar';
 import {ECONOMY_ITEM_IDS} from './economy-balance';
 import type { ItemId } from '../types';
+import {DISH_RECIPES,DISH_IDS} from './kitchen';
 
 // IDs de saves são estáveis. Madeira legada continua distinta de troncos e tábuas.
 const cropItems=Object.fromEntries(CROP_CATALOG.filter(c=>c.id!=='turnip').flatMap(c=>[[c.seed,{name:'Sementes de '+c.name.toLowerCase(),description:c.seasons.map(s=>SEASON_NAMES[s]).join(' / ')+' · '+c.days+' dias regados até colher.'+('regrow' in c?' Produz novamente a cada '+c.regrow+' dias regados.':''),iconFallback:'seeds'}],[c.harvest,{name:c.name,description:'Colheita de '+c.name.toLowerCase()+'. Pode ser vendida a comerciantes interessados.',iconFallback:'turnip'}]])) as Record<import('./crop-catalog').CropItemId,{name:string;description:string;iconFallback?:string}>;
@@ -52,6 +53,9 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   flour:{name:'Farinha',description:'Trigo moído no moinho de pedra. Helena compra.'},
   cornmeal:{name:'Fubá',description:'Milho moído no moinho de pedra. Helena compra.'},
   oatFlakes:{name:'Aveia em flocos',description:'Aveia preparada no moinho de pedra. Helena compra.'},
+  honey:{name:'Mel',description:'Ingrediente de várias receitas. Ainda não há colmeias: o mel chega com as abelhas.'},
+  duckEgg:{name:'Ovo de pato',description:'Ingrediente da torta de morango. Ainda não há criação de patos.'},
+  ...Object.fromEntries(DISH_RECIPES.map(r=>[r.id,{name:r.name,description:`Prato do fogão a lenha. Recupera ${r.vigor} de vigor. Helena compra.`}])) as Record<import('./kitchen').DishId,{name:string;description:string}>,
   egg:{name:'Ovo',description:'Posto pelas galinhas alimentadas. Recolha nos ninhos do galinheiro. Helena e Rosa compram.'},
   milk:{name:'Leite',description:'Ordenhado das vacas alimentadas, dentro do curral, com o balde. Helena compra.'},
   goatMilk:{name:'Leite de cabra',description:'Ordenhado das cabras alimentadas no aprisco, com o balde. Helena compra.'},
@@ -96,7 +100,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
 
 /** Only these stock fields may be absent in a save from before the village
  * services update. Missing any older field still indicates a corrupt save. */
-export const VILLAGE_ITEM_IDS=['harvestBasket',...NEW_CROP_ITEM_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
+export const VILLAGE_ITEM_IDS=['harvestBasket','honey','duckEgg',...DISH_IDS,...NEW_CROP_ITEM_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
 
 export const ITEM_IDS = Object.keys(ITEMS) as ItemId[];
 export const ITEM_NAMES = Object.fromEntries(ITEM_IDS.map(id => [id, ITEMS[id].name])) as Record<ItemId, string>;

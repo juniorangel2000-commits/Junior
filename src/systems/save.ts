@@ -42,13 +42,14 @@ import { EMPTY_INVENTORY, INITIAL_INVENTORY, ITEM_IDS, MAX_ITEM_COUNT } from './
 import { RESOURCE_DEFINITIONS } from './resources';
 import { buildingFootprint, buildingLayer } from './building';
 import { TILE, WORLD_HEIGHT, WORLD_WIDTH } from '../data/regions';
-import { Home, HOME_WIDTH, HOME_HEIGHT, validateHome } from './home';
+import { Home, HOME_WIDTH, HOME_HEIGHT, validateHome, createDefaultHome, type HomeData } from './home';
 import { validateMapEdits } from './map-editor';
 import { isCharacterId } from '../data/characters';
 import {createVillageEconomy,validateVillageEconomy} from '../data/village-commerce';
 import {createVillageProgress,validateVillageProgress,validateVillageInstallations,validateVillageSurvivors} from '../data/village-progress';
 import {VILLAGE_ITEM_IDS} from '../data/items';
 import {validAnimalCare} from './animal-production';
+import {withWoodStove} from './kitchen';
 import {blacksmithRoomPosition,previousBlacksmithPosition,BLACKSMITH_INSIDE,validateBlacksmithHome,BLACKSMITH_ROOM} from '../data/blacksmith-interior';
 import {validBentoRoutine} from './bento-routine';
 import {validMerchantRoutines} from './merchant-routine';
@@ -338,6 +339,18 @@ export function migrateSave(value: unknown): SaveData | null {
       return missing.length?{...site,delivered:{...site.delivered,...Object.fromEntries(missing.map(id=>[id,cost[id]]))}}:site;
     });
     if(sites.some((site,i)=>site!==(value as {farmConstruction:{sites:unknown[]}}).farmConstruction.sites[i]))value={...value,farmConstruction:{...value.farmConstruction,sites}};
+  }
+  // Sem `home`, o save usa a casa padrão, que agora tem o fogão. Se o jogador salvou dentro
+  // de casa no lugar do fogão, a casa antiga (sem fogão) passa a ser explícita.
+  if(isRecord(value)&&value.version===SAVE_VERSION&&value.home===undefined&&value.homePosition!==undefined&&!validateSave(value)){
+    const legacy=createDefaultHome();legacy.furniture=legacy.furniture.filter(p=>p.kind!=='woodStove');
+    if(validateSave({...value,home:legacy}))value={...value,home:legacy};
+  }
+  // Cozinha (preview.35): casas salvas antes recebem o fogão a lenha num lugar livre.
+  // Cada lugar é testado com o save inteiro, para não cair sobre o jogador dentro de casa.
+  if(isRecord(value)&&value.version===SAVE_VERSION&&value.home!==undefined&&validateHome(value.home)&&!(value.home as HomeData).furniture.some(p=>p.kind==='woodStove')&&validateSave(value)){
+    const base=value;const home=withWoodStove(value.home as HomeData,next=>validateSave({...base,home:next}));
+    if(home!==value.home)value={...value,home};
   }
   if(validateSave(value)){
     const data=structuredClone(value);

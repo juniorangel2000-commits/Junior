@@ -12,8 +12,8 @@ export const HOME_OUTDOOR_DOORWAY = { ...HOME_ENTRANCE_WORLD, halfWidth: 18, dep
 export const HOME_INTERIOR_DOORWAY = { x: 6 * HOME_TILE, y: 9 * HOME_TILE, halfWidth: HOME_TILE, depth: HOME_TILE, direction: 'down' } as const;
 
 export type FurnitureKind = 'bed' | 'table' | 'chair' | 'shelf' | 'rug' | 'plant'
- | 'armorStand' | 'partsShelf' | 'smithWorkbench' | 'counter' | 'anvil' | 'ironStock' | 'grindstone' | 'weaponRack' | 'bellows' | 'coalBin' | 'fireplace' | 'toolRack' | 'tongs';
-export const RESIDENTIAL_FURNITURE_KINDS:readonly FurnitureKind[]=['bed','table','chair','shelf','rug','plant'];
+ | 'armorStand' | 'partsShelf' | 'smithWorkbench' | 'counter' | 'anvil' | 'ironStock' | 'grindstone' | 'weaponRack' | 'bellows' | 'coalBin' | 'fireplace' | 'toolRack' | 'tongs' | 'woodStove';
+export const RESIDENTIAL_FURNITURE_KINDS:readonly FurnitureKind[]=['bed','table','chair','shelf','rug','plant','woodStove'];
 export type FloorStyle = 'oak' | 'dark' | 'stone';
 export type WallStyle = 'cream' | 'sage' | 'clay';
 export interface HomeFurniture extends TilePoint { id: string; kind: FurnitureKind }
@@ -55,6 +55,8 @@ export const FURNITURE_CATALOG: Record<FurnitureKind, {
   fireplace:{name:'Lareira de pedra',width:2,height:2,blocking:true,limit:2},
   toolRack:{name:'Painel de ferramentas',width:3,height:2,blocking:false,limit:3,surface:'wall'},
   tongs:{name:'Tenaz de bancada',width:1,height:1,blocking:false,limit:6,surface:'tabletop'},
+  /** Fogão a lenha da cozinha: já vem na casa; E abre o caderno de receitas. */
+  woodStove:{name:'Fogão a lenha',width:2,height:2,blocking:true,limit:1},
 };
 export const FURNITURE_KINDS = Object.keys(FURNITURE_CATALOG) as FurnitureKind[];
 
@@ -68,6 +70,7 @@ export function createDefaultHome(): HomeData {
       { id: 'home-chair-4', kind: 'chair', x: 6, y: 4 },
       { id: 'home-rug-5', kind: 'rug', x: 4, y: 5 },
       { id: 'home-plant-6', kind: 'plant', x: 2, y: 6 },
+      { id: 'home-woodStove-7', kind: 'woodStove', x: 4, y: 2 },
     ],
   };
 }
@@ -166,7 +169,11 @@ export class Home {
   }
 
   bedNear(tile: TilePoint, radius = 1.6): HomeFurniture | undefined {
-    return this.data.furniture.find(piece => piece.kind === 'bed'
+    return this.furnitureNear('bed', tile, radius);
+  }
+
+  furnitureNear(kind: FurnitureKind, tile: TilePoint, radius = 1.6): HomeFurniture | undefined {
+    return this.data.furniture.find(piece => piece.kind === kind
       && furnitureFootprint(piece).some(occupied => Math.hypot(occupied.x - tile.x, occupied.y - tile.y) <= radius));
   }
 

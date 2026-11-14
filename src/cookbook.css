@@ -1,0 +1,20 @@
+.cookbook-card{width:760px;max-width:100%;max-height:calc(100dvh - 40px);overflow:auto;padding:24px}
+.cookbook-card .modal-heading{margin-bottom:14px}
+.cookbook-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.cookbook-recipe{display:flex;flex-direction:column;gap:9px;padding:11px;background:#ecebd8;border:1px solid #c3c7ac;border-radius:4px}
+.cookbook-recipe.is-ready{border-color:#7d9a6b;box-shadow:inset 0 0 0 1px #7d9a6b55}
+.cookbook-title{display:flex;align-items:center;gap:10px}
+.cookbook-title h3{font:16px Georgia,serif;color:#3f543e;margin:0}
+.cookbook-title small{font-size:10px;color:#6c7660}
+.cookbook-dish{width:40px;height:40px;object-fit:contain;image-rendering:pixelated;flex:none}
+.cookbook-ingredients{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+.cookbook-ingredients li{display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:6px;font-size:11px;color:#4d6048}
+.cookbook-ingredients li.missing{color:#8b5136}
+.cookbook-ingredients li em{grid-column:2/4;font-size:9px;font-style:normal;color:#9a7a52}
+.cookbook-icon{width:18px;height:18px;object-fit:contain;image-rendering:pixelated}
+.cookbook-recipe .button{min-height:32px;font-size:11px;padding:6px 12px;margin-top:auto}
+.cookbook-empty,.cookbook-more{font-size:12px;line-height:1.6;color:#63705a}
+.cookbook-more{margin-top:12px}
+.cookbook-status{margin-top:12px;padding:10px 12px;background:#e2e6d1;border:1px solid #bcc7a5;border-radius:4px;font-size:12px;color:#435a3d}
+.cookbook-status.is-error{background:#f0d9c3;border-color:#cfaa89;color:#87472e}
+@media(max-width:520px){.cookbook-card{padding:16px}.cookbook-list{grid-template-columns:1fr}}

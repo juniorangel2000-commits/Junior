@@ -253,6 +253,7 @@ export function createHomeArt(scene: Phaser.Scene): void {
     }
   }
   for (const kind of RESIDENTIAL_FURNITURE_KINDS) {
+    if (FURNITURE_IMAGES[kind]) continue;
     const definition = FURNITURE_CATALOG[kind];
     const height = kind === 'bed' ? 88 : kind === 'table' ? 80 : kind === 'shelf' ? 70 : kind === 'rug' ? 64 : kind === 'plant' ? 60 : 56;
     texture(scene, `home-furniture-${kind}`, definition.width * HOME_TILE, height,
@@ -265,6 +266,10 @@ export interface HomeView {
   destroy(): void;
 }
 
+/** Móveis com arte em PNG, carregada em `preloadVisualAssets`, na resolução original:
+ * só a exibição é reduzida para a largura do móvel. */
+export const FURNITURE_IMAGES:Partial<Record<FurnitureKind,{file:string}>>={woodStove:{file:'assets/visual/kitchen/wood-stove.png'}};
+export function preloadFurnitureImages(scene:Phaser.Scene):void{for(const [kind,a] of Object.entries(FURNITURE_IMAGES))if(!scene.textures.exists(`home-furniture-${kind}`))scene.load.image(`home-furniture-${kind}`,a!.file);}
 export interface HomeFurnitureArt {key:string;w:number;h:number;offsetX?:number;offsetY?:number;depth?:number}
 export function drawHome(scene: Phaser.Scene, data: HomeData, resolveArt?:(piece:HomeFurniture)=>HomeFurnitureArt): HomeView {
   createHomeArt(scene);
@@ -276,6 +281,7 @@ export function drawHome(scene: Phaser.Scene, data: HomeData, resolveArt?:(piece
     const image = scene.add.image(piece.x * HOME_TILE, bottom, art?.key??`home-furniture-${piece.kind}`)
       .setOrigin(0, 1).setDepth(definition.blocking ? bottom - 1 : -500);
     if(art)image.setPosition((piece.x+definition.width/2)*HOME_TILE+(art.offsetX??0),bottom+(art.offsetY??0)).setOrigin(.5,1).setDisplaySize(art.w,art.h).setDepth(art.depth??(definition.blocking?bottom-1:-500));
+    if(!art&&FURNITURE_IMAGES[piece.kind]){const w=definition.width*HOME_TILE;image.setPosition((piece.x+definition.width/2)*HOME_TILE,bottom).setOrigin(.5,1).setDisplaySize(w,w*image.height/image.width);}
     image.setData('homeFurnitureId', piece.id);
     objects.push(image);
   }

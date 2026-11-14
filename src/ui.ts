@@ -37,6 +37,7 @@ import { TopToolbar } from './top-toolbar';
 import type { ToolbarAction } from './top-toolbar';
 import type { TitleBackgroundMode } from './title-screen';
 import { itemIconUrl } from './visual-assets';
+import { renderCookbook } from './cookbook-ui';
 import { HOME_WIDTH, HOME_HEIGHT } from './systems/home';
 import { emptyQuickbar, assignQuickSlot, quickItem, quickAction, quickQuantity, isQuickSlot, inventoryEntries } from './systems/quickbar';
 import {referencedTool,toolReferenceParts,syncToolInstances,durableTool,wearsOut,individualTool,activeToolCopy} from './systems/tool-instances';
@@ -156,7 +157,7 @@ export class GameUI {
   private notifications = document.createElement('div');
   private companionQuickPanel?: CompanionQuickPanel;
   private mode: 'title' | 'creation' | 'opening' | 'hud' | 'expedition' = 'title';
-  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'fishingJournal' | 'mineJournal' | 'pets' | 'text' | null = null;
+  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'fishingJournal' | 'mineJournal' | 'pets' | 'text' | 'cookbook' | null = null;
   private focusBeforeModal?: HTMLElement;
   private onModalClose?: () => void;
   private existingSave = false;
@@ -1247,6 +1248,20 @@ export class GameUI {
     panel.querySelector<HTMLButtonElement>('[data-sleep-cancel]')!.focus();
   }
 
+  /** Caderno de receitas do fogão a lenha. */
+  showCookbook(save: () => SaveData, onCook: (id: string) => { ok: boolean; message: string }): void {
+    if (this.mode !== 'hud' || this.modal) return;
+    this.openModal('cookbook');
+    const panel = document.createElement('section');
+    panel.className = 'cookbook-card panel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    panel.setAttribute('aria-label', 'Caderno de receitas');
+    this.overlay.append(panel);
+    renderCookbook(panel, save, onCook, () => this.closeModal());
+    panel.querySelector<HTMLButtonElement>('[data-cook]:not([disabled]), [data-cook-close]')?.focus();
+  }
+
   isCraftingOpen(): boolean { return this.modal === 'crafting'; }
 
   isModalOpen(): boolean { return fishingActive() || this.gameplayLocked || this.mode !== 'hud' || this.modal !== null || this.topToolbar?.isOpen === true; }
@@ -1274,7 +1289,7 @@ export class GameUI {
     callback?.();
   }
 
-  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'fishingJournal' | 'mineJournal' | 'pets' | 'text'): void {
+  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'fishingJournal' | 'mineJournal' | 'pets' | 'text' | 'cookbook'): void {
     this.topToolbar?.setOpen(false, false);
     this.topToolbar?.setEnabled(false);
     this.focusBeforeModal = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;

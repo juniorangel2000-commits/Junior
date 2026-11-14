@@ -91,6 +91,7 @@ import { Home, HOME_SPAWN, HOME_EXIT, HOME_ENTRANCE_WORLD, HOME_OUTDOOR_SPAWN, H
 import { createHomeArt, drawHome } from '../home-art';
 import { GAME_MINUTES_PER_SECOND, advanceClock, sleepUntilMorning } from '../systems/clock';
 import { processAnimalProduction } from '../systems/animal-production';
+import { cookDish } from '../systems/kitchen';
 import { AdminAccess, grantAdminItem } from '../systems/admin';
 import { AdminMenu } from '../admin-menu';
 import type { HomeEditAction } from '../home-ui';
@@ -598,6 +599,15 @@ export class ValleyScene extends Phaser.Scene {
       return;
     }
     const playerTile = { x: Math.floor(this.player.x / TILE), y: Math.floor(this.player.y / TILE) };
+    const stove = this.home.furnitureNear('woodStove', playerTile, 1.1);
+    if (stove && !this.home.bedNear(playerTile, 1.1) && (!tile || this.home.at(tile.x, tile.y)?.id === stove.id)) {
+      this.ui.showCookbook(() => this.snapshotState(), id => {
+        const draft = this.snapshotState(), result = cookDish(draft, id, saveGame);
+        if (result.ok) { Object.assign(this.inventory.data, draft.inventory); this.state.inventory = this.inventory.data; gameAudio.play('craft'); this.updateHUD(); }
+        return result;
+      });
+      return;
+    }
     const bed = this.home.bedNear(playerTile, 1.1);
     if (bed && (!tile || this.home.at(tile.x, tile.y)?.id === bed.id)) {
       const preview = sleepUntilMorning(this.state);
@@ -1551,13 +1561,14 @@ export class ValleyScene extends Phaser.Scene {
     if (this.inHome) {
       const playerTile = { x: Math.floor(this.player.x / TILE), y: Math.floor(this.player.y / TILE) };
       const bed = this.home.bedNear(playerTile, 1.1);
+      const stove = !bed && this.home.furnitureNear('woodStove', playerTile, 1.1);
       const nearExit = this.nearHomeExit();
       const supply = HOME_SUPPLIES.find(s => !this.state.homeSupplies?.[s.id] && this.tileDistance(s) <= 48);
     this.ui.updateHUD({worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100, coins:this.state.villageEconomy?.coins??0,farmingProgress: this.farming.progress, wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: true, name: this.state.profile.name, day: this.state.day, time: this.state.time,
         inventory: this.inventory.data, tool: this.tool,
         playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
-        interactionKey: nearExit ? null : bed || supply ? 'E' : 'H',
-        prompt: nearExit ? 'Caminhe pela porta para sair' : supply ? supply.label : bed ? 'Dormir até as 08:00 · disponível à noite' : 'Personalizar sua casa',
+        interactionKey: nearExit ? null : bed || stove || supply ? 'E' : 'H',
+        prompt: nearExit ? 'Caminhe pela porta para sair' : supply ? supply.label : bed ? 'Dormir até as 08:00 · disponível à noite' : stove ? 'Fogão a lenha · E abre o caderno de receitas' : 'Personalizar sua casa',
         location: 'Minha casa', harvests: this.inventory.data.turnip, metLia: this.state.metLia,
         nearWorkbench: false, sheltered: true, shelterReason: 'Interior da casa da propriedade.', resourceProgress: '', progress: this.state.progress });
       return;

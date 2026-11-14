@@ -1,3 +1,4 @@
+import {DISH_RECIPES} from './kitchen';
 import {CROP_CATALOG} from './crop-catalog';
 import {ECONOMY_BALANCE as B,NON_COMMERCIAL} from './economy-balance';
 import {ECOLOGY_BALANCE as ECOLOGY} from './ecology-balance';
@@ -187,4 +188,6 @@ export function meetVillager(economy:VillageEconomy,npcId:string):boolean {
 // Produtos do aprisco vêm da criação do jogador; os moradores apenas compram.
 Object.assign(MERCHANTS.inn.sell,{goatMilk:20});Object.assign(MERCHANTS.tailor.sell,{wool:36});
 
+// Pratos da cozinha: Helena compra; nenhuma loja vende.
+for(const r of DISH_RECIPES)MERCHANTS.inn.sell[r.id]=r.price;
 Object.assign(MERCHANTS.inn.sell,{cheese:40,goatCheese:52,butter:48,flour:24,cornmeal:26,oatFlakes:22});Object.assign(MERCHANTS.tailor.sell,{yarn:54});

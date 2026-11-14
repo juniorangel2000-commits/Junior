@@ -1,3 +1,5 @@
+import {learnNextDish,nextDishLesson,knownDishes} from './kitchen';
+import {DISH_RECIPES} from '../data/kitchen';
 import {MACHINE_IDS,MACHINES} from '../data/machines';
 import {HARVEST_BASKET_COST,HARVEST_BASKET_FEE,HARVEST_BASKET_DESCRIPTION} from '../data/harvest-basket';
 import {ITEMS} from '../data/items';
@@ -53,9 +55,15 @@ add('shelter-carpentry','tobias','Preparar peças para a casinha','30 C, 2 tronc
 add('shelter-textiles','celina','Preparar tecidos para os pets','20 C e 8 fibras: recebe 4 tecidos e 2 cordas.',(s,i)=>{pay(s,i,20,{fiber:8});requireThat(i.transact({},{cloth:4,cord:2}),'Libere espaço na mochila.');});
 add('shelter-fittings','icaro','Preparar fixadores para a casinha','12 C e 4 sucatas: recebe 2 peças metálicas.',(s,i)=>{pay(s,i,12,{scrap:4});requireThat(i.transact({},{metalPart:2}),'Libere espaço na mochila.');});
 for(const id of MACHINE_IDS){const d=MACHINES[id];add(`learn-${id}`,d.npc,`Aprender ${d.name.toLowerCase()}`,`${d.learnFee} C. Aprenda o projeto para montar na bancada e instalar na fazenda.`,(s,i)=>{requireThat(!s.villageProgress!.recipes.includes(id),'Você já conhece este projeto.');pay(s,i,d.learnFee);s.villageProgress!.recipes.push(id);});}
+add('learn-dish','helena','Aprender receita da pousada','Helena ensina uma receita por vez, para cozinhar no fogão a lenha de casa.',(s,i)=>{learnNextDish(s,coins=>pay(s,i,coins));});
 export function listVillageServices(npc:string,save?:SaveData):VillageServiceOffer[]{
  return Object.entries(services).filter(([,s])=>s.npc===npc).map(([id,s])=>{
   const offer:VillageServiceOffer={id,label:s.label,description:s.description};if(!save)return offer;
+  if(id==='learn-dish'){
+   const r=nextDishLesson(save),known=knownDishes(save).length;
+   offer.label=r?`Aprender: ${r.name.toLowerCase()}`:'Receitas da pousada';offer.disabled=!r||(save.villageEconomy?.coins??0)<r.learnFee;offer.actionLabel=r?`Aprender (${r.learnFee} C)`:'Todas aprendidas';
+   offer.description=r?`${r.learnFee} C. Ingredientes: ${Object.entries(r.ingredients).map(([item,n])=>`${n} ${ITEMS[item as ItemId].name.toLowerCase()}`).join(', ')}, mais 1 madeira de lenha. Recupera ${r.vigor} de vigor. Receitas conhecidas: ${known}/${DISH_RECIPES.length}.`:`Você conhece as ${DISH_RECIPES.length} receitas. Cozinhe no fogão a lenha de casa.`;
+  }
   if(id==='create-harvest-basket'){
    offer.item='harvestBasket';offer.actionLabel='Preparar 1 cesta';
    offer.description=HARVEST_BASKET_DESCRIPTION+' Na mochila: '+Object.entries(HARVEST_BASKET_COST).map(([item,amount])=>`${ITEMS[item as ItemId].name}: ${save.inventory[item as ItemId]}/${amount}`).join(' · ')+'.';

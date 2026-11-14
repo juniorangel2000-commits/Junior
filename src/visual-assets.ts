@@ -1,3 +1,5 @@
+import {preloadFurnitureImages} from './home-art';
+import {isDish} from './data/kitchen';
 import {preloadMachineArt} from './machine-view';
 import {MACHINE_IDS,MACHINE_PRODUCTS} from './data/machines';
 import {CROP_CATALOG} from './data/crop-catalog';
@@ -39,6 +41,9 @@ export function itemIconUrl(id: string, tier=0): string | undefined {
   if(id==='hardwood')return 'assets/visual/open-fields/hardwood.png';
   if(id==='hay')return 'assets/visual/farm/hay.png';
   if(id==='egg')return 'assets/visual/farm/products/egg.png';
+  if(id==='honey')return 'assets/visual/kitchen/honey.png';
+  if(id==='duckEgg')return 'assets/visual/kitchen/duck-egg.png';
+  if(isDish(id))return `assets/visual/kitchen/dishes/${id}.png`;
   if(id==='milk')return 'assets/visual/farm/products/milk.png';
   if(id==='goatMilk')return 'assets/visual/farm/products/goat-milk.png';
   if(id==='wool')return 'assets/visual/farm/products/wool.png';
@@ -71,6 +76,7 @@ const WORLD_SOURCES: Record<string, string> = {
 const MODULES = ['parede_creme', 'parede_janela_floreira', 'parede_trepadeira', 'parede_porta', 'porta_madeira', 'janela_turquesa', 'telha_lisa', 'telha_variante', 'chamine', 'floreira', 'cerca_natural', 'banco_jardim', 'barril', 'vaso_flor', 'piso_tabuas', 'piso_pedra', 'terra', 'caminho', 'planta'];
 export function preloadVisualAssets(scene: Phaser.Scene): void {
   preloadFarmConstructionArt(scene);
+  preloadFurnitureImages(scene);
   preloadMachineArt(scene);preloadFishingArt(scene);
   preloadEcologyArt(scene);
   preloadEconomyArt(scene);

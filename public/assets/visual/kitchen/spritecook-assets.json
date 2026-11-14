@@ -1,0 +1,23 @@
+{
+  "fonte": "SpriteCook (gemini-nano-banana-2.1, pixel art). Guia de estilo dos ícones: ovo e leite (products/); do fogão: captura do interior da casa.",
+  "estilo-casa": "fd5bbf0e-15c9-4aa7-9ad3-b9422b9cfb0a",
+  "arquivos": {
+    "wood-stove.png": "c50118e9-8334-462c-b373-96441b995572",
+    "honey.png": "8f8922b0-2dfb-4bc1-aa0d-7134441cd907",
+    "duck-egg.png": "aa8f75f7-7e97-49ef-bda8-281b7dd040c4",
+    "dishes/kaleOmelette.png": "acb253cc-5aa1-4a12-9933-2d7937550d65",
+    "dishes/gardenSalad.png": "1d53ef48-5abe-4c1a-beb2-0058b0352bcf",
+    "dishes/homemadeBread.png": "57513a11-5d63-4795-902c-e9d4de053a07",
+    "dishes/cornBroa.png": "dc2cc4e2-0abc-4f33-979c-ffba12e481c3",
+    "dishes/carrotCake.png": "82e97aa1-0f58-4f7d-9a6d-ad1e69d50ce5",
+    "dishes/pamonha.png": "431c230c-a57a-4509-879b-c0b174a09d0c",
+    "dishes/oatPorridge.png": "25c0045d-a1ed-4624-927b-5f21b27b763a",
+    "dishes/pumpkinSoup.png": "94595e12-4095-423b-99d2-f6f220839afe",
+    "dishes/beanTropeiro.png": "cccf1480-7b22-4cdf-91df-a560db01a10e",
+    "dishes/strawberryPie.png": "faa606ad-a1d0-4d23-a5ab-00ab7794d473",
+    "dishes/dulceDeLeche.png": "cde1f844-836e-4663-aaea-3d7a361a28cd",
+    "dishes/cheeseHoneyBread.png": "953cf5fe-9db5-4e53-a4f2-941bf9c0807d",
+    "dishes/watermelonJuice.png": "9faac826-2ce9-4604-b246-0353c71c4fb1",
+    "dishes/chamomileTea.png": "3e558463-aa9c-4da3-a7f7-c5d75521dd8f"
+  }
+}

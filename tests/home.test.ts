@@ -3,11 +3,11 @@ import { createDefaultHome, furnitureFootprint, Home, HOME_EXIT, HOME_HEIGHT, HO
 import type { FloorStyle, HomeData, HomeFurniture } from '../src/systems/home';
 
 describe('interior da casa inicial', () => {
-  it('começa com cama, mesa, cadeira, estante, tapete e vaso, sem bloquear a entrada', () => {
+  it('começa com cama, mesa, cadeira, estante, tapete, vaso e fogão a lenha, sem bloquear a entrada', () => {
     const data = createDefaultHome();
     const home = new Home(data);
     expect(validateHome(data)).toBe(true);
-    expect(new Set(data.furniture.map(piece => piece.kind)).size).toBe(6);
+    expect(new Set(data.furniture.map(piece => piece.kind)).size).toBe(7);
     expect(home.isBlocked(HOME_EXIT.x, HOME_EXIT.y)).toBe(false);
     expect(home.isBlocked(HOME_EXIT.x, HOME_EXIT.y - 1)).toBe(false);
     expect(home.isBlocked(0, 4)).toBe(true);
