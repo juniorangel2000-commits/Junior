@@ -789,9 +789,9 @@ export class GameUI {
     const farmingSteps: [string, string, boolean][] = [
       ['hoe', 'Fabricar uma enxada · C', data.inventory.hoe > 0],
       ['prepared', 'Preparar um novo canteiro · enxada + E', !!farming?.prepared],
-      ['planted', 'Plantar nabo · sementes + E', !!farming?.planted],
+      ['planted', 'Plantar uma semente da estação · E', !!farming?.planted],
       ['watered', 'Regar a plantinha · regador + E', !!farming?.watered],
-      ['harvested', 'Colher o primeiro nabo · mãos vazias + E', !!farming?.harvested || data.harvests > 0],
+      ['harvested', 'Colher a primeira plantação · mãos vazias + E', !!farming?.harvested || data.harvests > 0],
     ];
     const farmingQuest = this.base.querySelector('#farming-quest');
     const farmingKey = farmingSteps.map(step => step[2]).join(',');
