@@ -9,9 +9,9 @@ import {paintFieldsFloor} from './open-fields-ground';
 import {drawExitSign} from './exit-signs';
 import Phaser from 'phaser';
 import type {SaveData} from './types';
-import {FIELDS_SIZE,FIELDS_PROPS,FIELDS_SHED,FIELDS_ANIMALS,MEADOW_PATCHES,FIELDS_IPES,fieldsBlocked,fieldsSafe} from './data/open-fields';
-import {meadowGrowth,ipeStanding} from './systems/open-fields';
-import {AnimalBrain} from './systems/animals';
+import {FIELDS_SIZE,FIELDS_PROPS,FIELDS_SHED,FIELDS_ANIMALS,MEADOW_PATCHES,FIELDS_IPES,fieldsSafe} from './data/open-fields';
+import {meadowGrowth,ipeStanding,createFieldAnimalBrain} from './systems/open-fields';
+import type {AnimalBrain} from './systems/animals';
 import {animalSprite,setupAnimalArt} from './forest-art';
 import {preloadAnimalSprites,updateAnimalSprite,animalRopeAnchor} from './animal-sprites';
 import {CowRestCycle} from './systems/cow-rest';
@@ -64,7 +64,7 @@ export class OpenFieldsWorld{
   for(const p of MEADOW_PATCHES){const texture=p.kind==='grass'?MEADOW_GRASS_TEXTURE:p.kind==='herb'?'ecology-herbs':'forest-detail-mushrooms';this.patches.set(p.id,scene.add.image(p.x,p.y,texture,p.kind==='grass'?p.variant*4:undefined).setVisible(false).setOrigin(.5,1).setDisplaySize(p.size,p.kind==='grass'?p.size*MEADOW_GRASS_RATIO:p.size).setDepth(p.y));}
   setupAnimalArt(scene);
   for(const d of FIELDS_ANIMALS){if(d.id===HORSE_ID&&horseLeftFields(state()))continue;const saved=state().openFields?.animals?.find(a=>a.id===d.id),p=saved&&fieldsSafe(saved)?saved:d;
-   const brain=new AnimalBrain(d.id,d.kind,p.x,p.y,d.kind==='rabbit'||d.kind==='horse',(tx,ty)=>fieldsBlocked(tx*32+16,ty*32+16),84,()=>0,fieldsBlocked);if(saved&&p===saved)brain.restore(saved);
+   const brain=createFieldAnimalBrain(d,p);if(saved&&p===saved)brain.restore(saved);
    const sprite=animalSprite(scene,d.kind,brain.x,brain.y),shadow=scene.add.ellipse(brain.x,brain.y,d.kind==='horse'?56:d.kind==='cow'?42:17,d.kind==='horse'?15:d.kind==='cow'?12:5,0x29271d,.16);
    this.animals.push({brain,sprite,shadow,...(d.kind==='horse'?{idle:new HorseIdleCycle(d.id)}:{}),...(d.kind==='cow'?{rest:new CowRestCycle(d.id)}:{})});
   }
@@ -128,7 +128,7 @@ export class OpenFieldsWorld{
   for(const t of this.trees)t.setAlpha(player.y<t.y&&player.y>t.y-t.displayHeight*.75&&Math.abs(player.x-t.x)<t.displayWidth*.38?.45:1);
   const brains=this.animals.map(a=>a.brain);
   const grassNear=(b:AnimalBrain)=>meadowPatchesInRect(b.x-56,b.y-56,b.x+56,b.y+56).some(p=>p.kind==='grass'&&Math.hypot(p.x-b.x,p.y-b.y)<56&&meadowGrowth(s,p)>=1);
-  for(const a of this.animals){if(a.brain.id===HORSE_ID){this.updateHorse(a,dt,player,brains,s,grassNear(a.brain));continue;}const near=Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<85;
+  for(const a of this.animals){if(a.brain.id===HORSE_ID){this.updateHorse(a,dt,player,brains,s,grassNear(a.brain));continue;}const near=Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<ANIMAL_BEHAVIOR.detectionRadius;
    a.rest?.update(dt,!near,a.brain.canStand(a.brain.x,a.brain.y),a.brain.direction,!a.brain.moving&&a.brain.mode==='idle');a.brain.resting=!!a.rest?.locked;
    a.idle?.update(dt,!a.brain.moving&&a.brain.mode==='idle',Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<196,a.brain.direction,grassNear(a.brain));
    if(a.idle?.locked)a.brain.resting=true;

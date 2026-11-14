@@ -1,3 +1,4 @@
+import {ForestWaterfowl} from '../forest-waterfowl';
 import {createGroundRuntime,resourceGroundSink} from '../systems/ground-items';
 import {createMineMissionRuntime} from '../systems/mine-missions';
 import {bentoSceneWriter} from '../systems/bento-commit';
@@ -69,6 +70,7 @@ export class ForestScene extends Phaser.Scene {
   private world!:ForestWorld;
   private get trees(){return this.world.trees;}
   private wildlife?:AnimalPopulation;
+  private waterfowl?:ForestWaterfowl;
   private get animals(){return this.wildlife?.animals??[];}
   private paused=false;
   private leaving=false;
@@ -114,7 +116,7 @@ export class ForestScene extends Phaser.Scene {
     this.scale.on('resize',this.applyCamera,this);
     window.addEventListener('pagehide',this.save);window.addEventListener('beforeunload',this.save);window.addEventListener('blur',this.blur);
     document.addEventListener('visibilitychange',this.visibility);
-    this.events.once('shutdown',()=>{this.daylight?.destroy();this.wildlife?.destroy();this.wildlife=undefined;this.input.keyboard?.off('keydown',this.key,this);this.input.off('wheel',this.wheel,this);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
+    this.events.once('shutdown',()=>{this.daylight?.destroy();this.wildlife?.destroy();this.wildlife=undefined;this.waterfowl?.destroy();this.waterfowl=undefined;this.input.keyboard?.off('keydown',this.key,this);this.input.off('wheel',this.wheel,this);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
     installWorldCompanion(
       this,
       () => ({
@@ -159,7 +161,7 @@ export class ForestScene extends Phaser.Scene {
   }
   private animalBlocked=(x:number,y:number):boolean=>this.movementBlockedAt(x,y)||this.waterContains(x*32+16,y*32+16);
   private allowLeashMovement=(x:number,y:number):boolean=>this.wildlife?.allowsPlayerCenter(x,y,this.player)??true;
-  private rebuildAnimals():void {this.wildlife?.destroy();this.wildlife=new AnimalPopulation(this,this.state,'forest',this.animalBlocked,PLAYER_SPEED,()=>treeTiles(this.world.resources));}
+  private rebuildAnimals():void {this.waterfowl?.destroy();this.waterfowl=new ForestWaterfowl(this,this.world.waterPointAt,(x,y)=>this.world.solid.has(`${Math.floor(x/32)},${Math.floor(y/32)}`));this.wildlife?.destroy();this.wildlife=new AnimalPopulation(this,this.state,'forest',this.animalBlocked,PLAYER_SPEED,()=>treeTiles(this.world.resources));}
   private releaseRope():void {
     if(!this.state.animalEscort)return;
     if(releaseAnimalEscort(this.state)){this.ui.toast('Animal solto. A corda voltou para você.');this.updateHUD();this.save();}
@@ -308,7 +310,7 @@ export class ForestScene extends Phaser.Scene {
     this.daylight?.update(this.state.time,false,this.state.day);
     if(!this.player||this.paused||this.leaving||this.mapEditor||document.hidden)return;
     const previous={x:this.player.x,y:this.player.y};
-    const delta=Math.min(ms/1000,.1);this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta,this.movementBlockedAt,undefined,!this.toolUse.active,this.swimmingPoint,this.allowLeashMovement);this.wildlife?.update(delta,this.player);this.farming.update(delta,this.state.day);if(this.player.isSwimming){this.state.equippedTool='hand';this.toolUse.cancel();this.toolVisual?.hide();}
+    const delta=Math.min(ms/1000,.1);this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta,this.movementBlockedAt,undefined,!this.toolUse.active,this.swimmingPoint,this.allowLeashMovement);this.wildlife?.update(delta,this.player);this.waterfowl?.update(delta,this.player);this.farming.update(delta,this.state.day);if(this.player.isSwimming){this.state.equippedTool='hand';this.toolUse.cancel();this.toolVisual?.hide();}
     if(!this.player.isSwimming&&this.exitPassage.update(previous,this.player,this.exit(),this.entry())){
       if(this.wildlife?.canLeave(this.player)??true){this.leave();return;}
       if(!this.exitWarningShown){this.ui.toast('Traga o animal para perto da saída.');this.exitWarningShown=true;}

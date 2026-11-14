@@ -1,7 +1,8 @@
 import type {SaveData,TilePoint} from '../types';
 import {CHARACTER_DIRECTIONS} from '../character-directions';
 import {fieldPatch,fieldIpe,FIELDS_ANIMALS,fieldsBlocked,IPE_HITS,IPE_REGROW_DAYS,IPE_REACH,type MeadowPatch} from '../data/open-fields';
-import type {AnimalPosition} from './animals';
+import {AnimalBrain,type AnimalPosition,type AnimalPoint} from './animals';
+import type {AnimalKind} from '../data/ancient-forest';
 import {addGroundItems} from './ground-items';
 import {inventoryToolCondition,wearInventoryTool} from './tool-instances';
 /** felled: day each ipê was cut down; hits: blows already given to a standing ipê. */
@@ -53,3 +54,7 @@ export function validOpenFields(v:unknown,day:number):v is OpenFieldsState{
  if(s.hits!==undefined&&(!s.hits||typeof s.hits!=='object'||Array.isArray(s.hits)||Object.entries(s.hits).some(([id,n])=>!fieldIpe(id)||!Number.isInteger(n)||n<1||n>=IPE_HITS)))return false;
  return true;
 }
+
+/** Todos os animais soltos dos Campos têm reação selvagem. A doma do cavalo
+ * ajusta seu raio de fuga no controlador próprio, preservando a aproximação. */
+export function createFieldAnimalBrain(d:{id:string;kind:AnimalKind},p:AnimalPoint):AnimalBrain{return new AnimalBrain(d.id,d.kind,p.x,p.y,true,(x,y)=>fieldsBlocked(x*32+16,y*32+16),84,()=>0,fieldsBlocked);}

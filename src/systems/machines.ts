@@ -99,7 +99,7 @@ export function interactMachine(rt:MachineRuntime,item?:ItemId|null):{ok:boolean
 }
 export function machineHint(s:SaveData,m:PlacedMachine):string{
  const name=MACHINES[m.kind].name;
- if(m.job){const r=MACHINE_RECIPES.find(r=>r.id===m.job!.recipe)!;if(machineReady(s,m))return `${ITEM_NAMES[r.output]} pronto · E recolher`;
+ if(m.job){const r=MACHINE_RECIPES.find(r=>r.id===m.job!.recipe)!;if(machineReady(s,m))return `${ITEM_NAMES[r.output]} · E recolher`;
  const minutes=Math.max(1,Math.ceil(m.job.readyAt-groundClock(s)));return `${name} trabalhando · ${Math.floor(minutes/60)}h ${minutes%60}min`;
  }
  return name+' · use '+MACHINE_RECIPES.filter(r=>r.machine===m.kind).map(r=>`${r.amount} ${ITEM_NAMES[r.input].toLowerCase()}`).join(' ou ')+' · E guardar máquina';

@@ -1,0 +1,29 @@
+{
+  "setup": {
+    "learned": [
+      "cheesePress",
+      "butterChurn",
+      "spinningWheel",
+      "loom",
+      "stoneMill"
+    ],
+    "machines": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "result": {
+    "cheese": 1,
+    "butter": 1,
+    "flour": 1,
+    "cloth": 1,
+    "yarn": 0,
+    "spinningWheel": 1,
+    "machines": 4,
+    "jobs": 0
+  },
+  "errors": []
+}
