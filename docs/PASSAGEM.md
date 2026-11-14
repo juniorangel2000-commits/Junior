@@ -4,9 +4,9 @@
 
 - **Atualizado em:** 2026-11-14
 - **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch (doma em `ebfa13a`).
+- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch (doma em `ebfa13a`, estábulo do Codex em `64dab91`, conferência completa em `1b88877`).
 - **Última versão publicada:** `v0.10.0-preview.33`.
-- **Estado:** doma do cavalo implementada e validada, **faltando só o estábulo, que o Junior vai fazer pelo Codex**. Não publicado.
+- **Estado:** doma do cavalo **completa**, com o estábulo do Codex, e conferida no jogo do dia 1 até "Alojar Trovão". Não publicado.
 
 ## Feito nesta rodada
 
@@ -30,15 +30,13 @@
 
 ## Em andamento e próximo passo exato
 
-- **Estábulo (Codex)**, conforme a seção "Encaixe do estábulo" de `docs/planejamento/DOMESTICACAO-CAVALO.md`:
-  - Nova construção em `FARM_KINDS`/`FARM_BUILDINGS` com `animal:'horse'`, capacidade 1 e madeira nobre no custo.
-  - Arte, ícone `farm-<tipo>` e ferramenta `farm-<tipo>` (em `Tool`, `TOOLS` e `QUICK_TOOLS`).
-  - A doma não precisa mudar.
-  - Depois, estender `scripts/qa-horse-taming.cjs` para cobrir corda, travessia e "Alojar".
-- Para o Junior confirmar: o estábulo é exigido para a **corda**, não para o cavalo comer, para a doma poder ser testada antes do estábulo existir. Se preferir exigir já para comer, mudar em `OpenFieldsWorld.basketFor` e em `settleHorseTaming`.
+- **Estábulo: feito pelo Codex** (`64dab91`): abrigo aberto, sem porteira, para 1 cavalo, com 12 madeiras nobres.
+  - O Claude Code estendeu `scripts/qa-horse-taming.cjs` até o fim: corda, travessia, soltar e "Alojar Trovão". Passou no Chromium.
+  - `npm test`: 1.929 passaram, 218 arquivos.
+- Para o Junior confirmar: o estábulo é exigido para a **corda**, não para o cavalo comer. Se preferir exigir já para comer, mudar em `OpenFieldsWorld.basketFor` e `settleHorseTaming`.
 
-- **Depois do estábulo:**
-  1. O Claude Code confere a doma completa, com corda, travessia e "Alojar".
+- **Próximos passos:**
+  1. ~~Conferir a doma completa~~ (feito).
   2. Publicar a preview.34 se o Junior pedir, corrigindo antes o texto da missão "Primeira colheita".
   3. Seguir a ordem de `docs/planejamento/ANIMAIS-E-RECEITAS.md`, plano aprovado pelo Junior em 14/11/2026:
      - interiores das construções de animais, com a opção "Recolher os animais";
