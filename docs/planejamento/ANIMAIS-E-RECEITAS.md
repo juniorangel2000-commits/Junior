@@ -25,12 +25,18 @@ Os valores são pontos de partida para ajustar. Complementa `docs/construcoes/PR
 | Cabra | Aprisco (novo) | Floresta (já existe) | Leite de cabra | 1 por dia | Ordenha com balde |
 | Ovelha | Aprisco (novo) | Floresta (já existe) | Lã | A cada 3 dias | Tosquia com tesoura (nova ferramenta) |
 | Porco (novo) | Chiqueiro (novo) | Rosa | Esterco | 1 por dia | Aparece no chão do chiqueiro |
-| Abelhas (novo) | Colmeia (objeto, sem cercado) | Enxame (ver abaixo) | Mel; cera | Mel a cada 4 dias; cera 1 em 3 coletas | E na colmeia |
+| Abelhas (novo) | Colmeia (objeto, sem cercado) | Colmeia artificial comprada na Vila + enxame dos ipês (ver abaixo) | Mel; cera | Mel a cada 4 dias; cera 1 em 3 coletas | E na colmeia |
 | Cavalo | Estábulo | Doma | — | — | Montaria no futuro |
 
 - **Mel conforme as flores:** com margaridas ou girassóis plantados perto da colmeia, o mel vira "mel de margarida" ou "mel de girassol", que valem mais. Isso dá uso às flores do catálogo.
 - **Abelhas sem alimentação:** colmeias não comem palha. Elas produzem de março a novembro do jogo (Primavera a Outono) e param no Inverno.
-- **Enxame:** sugestão de que apareça nos ipês floridos dos Campos Abertos, coletado com uma caixa de abelhas feita na bancada. Alternativa: comprar a colmeia pronta.
+- **Enxame (decisão do Junior):**
+  1. A **colmeia artificial vazia é comprada na Vila**; sugestão: Armazém do Augusto.
+  2. Você a coloca perto de um **ipê** nos Campos Abertos, como a cesta (até 2 blocos do tronco).
+  3. **A cada 5 dias** há uma chance de um enxame ocupá-la (proposta: 40%, ajustável).
+  4. Com o enxame dentro, E recolhe a **colmeia povoada**, que é colocada na Propriedade e passa a produzir.
+  5. Sem enxame, a colmeia continua esperando; E recolhe a colmeia vazia de volta.
+  - Por ser comprada e não construída, a colmeia fica **fora da regra da madeira nobre**, a menos que o Junior queira incluí-la no preço.
 
 ## Ambientes internos das construções de animais
 
@@ -158,5 +164,5 @@ Alguns pratos podem dar efeitos além do vigor (por exemplo, andar mais rápido 
 - Rotina dos animais: no cercado de dia e dentro à noite, está bom?
 - O porco produz esterco (que vira fertilizante)? Ou prefere outro produto?
 - Cozinhar no **fogão a lenha de casa**?
-- Abelhas: enxame nos ipês ou colmeia comprada?
+- ~~Abelhas~~: decidido, colmeia artificial comprada na Vila e enxame nos ipês, com chance a cada 5 dias.
 - Preços de venda de cada produto.
