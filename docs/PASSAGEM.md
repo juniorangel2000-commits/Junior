@@ -4,70 +4,68 @@
 
 - **Atualizado em:** 2026-11-14
 - **Por:** Codex
-- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD do branch. Implementação desta rodada em `88dd14c`, `f28f27c` e `5424eee`.
+- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD do branch. Etapa 3 em `e00c675`, concluída e validada em `a13381b`.
 - **Última versão publicada:** `v0.10.0-preview.34`, https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.10.0-preview.34
-- **Estado:** interiores, ovos e leite validados, inclusive ordenha no navegador. Otimizações de desempenho e novo capim animado nos Campos Abertos concluídos. Branch enviado ao GitHub. **Não publicado; main, tags e versão do pacote não foram alteradas.**
+- **Estado:** etapas 1–3 dos animais concluídas: interiores, ovos/leite e agora aprisco, ovelha/cabra animadas, lã, leite de cabra e tesoura. Branch enviado ao GitHub. **Não publicado; main, tags e versão do pacote permanecem inalteradas.**
 
 ## Feito nesta rodada
 
-- **Entrada no curral corrigida** (`88dd14c`):
-  - Reproduzido o deslocamento de 32 px. Instrumentação confirmou que o terreno estava livre e a segunda chamada de `recoverPlayerPosition` encontrava a vaca como obstáculo.
-  - A vaca estava recolhida, mas seu sprite nascia visível até o primeiro `AnimalPopulation.update`. Ao restaurar a partida, isso afastava o jogador da porta.
-  - Animais recolhidos agora já nascem ocultos, e `blocksPoint` consulta o estado de recolhimento imediatamente. Animais soltos e conduzidos pela corda continuam colidindo. O alcance da porta continua 30 px.
-  - Três testes de regressão em `tests/animal-population.test.ts`; o QA de produção também exige que carregar não afaste o jogador da porta.
-- **Ovos e leite** (implementação anterior do Claude preservada):
-  - Cocho interno por construção: galinheiro 12, curral 8 palhas. Cada animal alojado come 1 palha às 06:00, com prioridade para quem está há mais tempo sem comer.
-  - Galinhas alimentadas põem ovos nos seis ninhos; E recolhe. Vacas alimentadas exibem a gota de leite; E perto delas com o balde inicia 1 s de ordenha.
-  - Balde na bancada: 4 tábuas regulares + 2 fragmentos de ferro, exigindo martelo.
-  - Helena compra ovo (8) e leite (16); Rosa compra ovo (8). Não há venda desses produtos pelas lojas.
-  - `animal-production.ts` faz ações com gravação antes de aplicar, recuperação de até 7 manhãs usando estoque real e migração sem produção retroativa.
-  - QA completo passou: abastecer ambos os cochos, produzir 2 ovos, recolher ovo, sair do galinheiro, entrar no curral, mostrar a gota e ordenhar 1 leite. Capturas em `docs/planejamento/qa-producao/`.
-- **Desempenho** (`f28f27c`):
-  - Junior confirmou que o travamento percebido era nos **Campos Abertos**, e pediu também conferir os outros mapas.
-  - `meadow-visibility.ts`: índice espacial das moitas. A atualização visual consulta só a região da câmera; a busca de grama pelos animais usa células próximas. Mantidas as mesmas margens de visibilidade, crescimento, posições e colisões.
-  - Coleta automática não copia o save inteiro quando `read()` está disponível e ainda não há `groundItems`. Antes, o `??` no campo ausente caía em `snapshot()` a cada consulta.
-  - A HUD guarda os dados atuais, mas não refaz seus textos por frações de minuto ou pixels de caminhada; o marcador do mapa continua com a posição exata. Controles de zoom evitam alterações de DOM sem mudança de valor.
-  - `Daylight` só cria o shader das janelas em mapas que realmente possuem essas janelas, usando camadas simples de cor quando não há luz de janela. Sombras solares, clima e luzes locais preservados.
-  - Novo `scripts/qa-world-performance.cjs`: amostra Propriedade, galinheiro, curral, Campos, Floresta, Lago, Platô, Mina Antiga, Acesso à Cidade e Vila. `QA_SCENES=Campos,Floresta` filtra; `QA_CPU_PROFILE=1` grava perfis; aceita `QA_URL` e diretório de saída como argumento.
-  - Comparação em `docs/planejamento/qa-campos-abertos/desempenho.json`, feita antes da troca de arte do capim: HUD média Campos 0,93 → 0,40 ms; Lago 2,78 → 0,26; Vila 2,36 → 0,54. Todos os mapas amostrados sem erros JS.
-  - **Não afirmar ganho de FPS:** o ambiente usa SwiftShader (GPU emulada). Os tempos de quadro não demonstraram melhora consistente e não estimam o desempenho do executável no PC do Junior. Ainda falta ele conferir a fluidez em hardware real.
-- **Capim novo** (`5424eee`):
-  - Junior não gostou do capim anterior nem da rotação da moita inteira; pediu inspiração no capim de Stardew Valley e para ver o resultado.
-  - Arte própria gerada por imagegen: `public/assets/visual/open-fields/meadow-grass.png`, três variantes × quatro poses de brisa. PNG original preservado; recortes, hash e raízes alinhadas em `meadow-grass.json`.
-  - `meadow-grass-art.ts` prepara os recortes em resolução original e remove o halo semitransparente em memória, seguindo o corte de alfa já usado na vegetação. Nenhuma redução do PNG em disco.
-  - Nos Campos, tufos mais baixos e abertos, com proporção própria. Animação lenta das folhas em fases diferentes, sem girar a base e somente nas moitas visíveis. Capim cortado mantém a pose de rebrota.
-  - As sprites compartilhadas de vegetação nos outros mapas não foram substituídas.
-  - Captura mostrada ao Junior: `docs/planejamento/qa-campos-abertos/capim-novo.png`.
-  - `scripts/qa-open-fields.cjs` atualizado para pular a introdução, iniciar a caminhada fora do gatilho da passagem e capturar o capim novo. Entrada andando, corte, recolhimento, mochila, mapa, recarregamento e volta andando passaram; `validacao.json` registra o resultado.
-- **Arte definitiva dos interiores preservada** (SpriteCook, `a397d2d`): não reduzir os PNGs. Usar `setScale`/`setDisplaySize`; piso com `FLOOR_SCALE=2`. Manifesto em `public/assets/visual/farm/interior/spritecook-assets.json`. Prompts futuros: "front-facing, axis-aligned, NOT isometric".
+- Junior pediu implementar a próxima etapa (ovelha/cabra/aprisco), adicionar animações no padrão dos outros animais e conferir a proporção.
+- **Aprisco:** construção própria no menu B, base no terreno limpo, entrega de materiais e conclusão com martelo. Custo final: 60 madeiras, 24 pedras, 18 tábuas regulares, 8 madeiras nobres, 1 módulo de porta e 1 de janela; base de 4 madeiras + 4 pedras. Área 7×6, capacidade **4 animais ao todo**, misturando ovelhas e cabras.
+  - `farmAcceptsAnimal` centraliza a compatibilidade no alojamento, painel e validação. Vacas/galinhas/cavalo mantêm suas moradias.
+  - Interior 12×9 com palha, cocho de 8, bebedouro e área de tosquia aberta pela frente. Reutiliza os objetos definitivos do SpriteCook em resolução original.
+  - Rotina existente: cercado 06:00–18:00, dentro à noite; painel permite recolher/soltar. Entrada com E e saída andando.
+- **Produção:** cada animal come 1 palha às 06:00, com a prioridade já existente para quem ficou mais tempo sem comer.
+  - Cabra alimentada: 1 leite de cabra disponível por manhã, com balde e ordenha de 1 segundo.
+  - Ovelha: 1 lã após **3 manhãs alimentadas**, sem exigir dias consecutivos. Sem alimento, pausa. Lã pronta e leite pendente não acumulam várias cargas por animal.
+  - Registros opcionais `woolDays`/`wool` no `animalCare`; saves antigos continuam válidos. Trocar de moradia/recarregar não reinicia nem duplica a produção.
+  - `canShear`/`shearSheep` fazem validação e gravação antes de aplicar. `milkCow` preserva o nome antigo, mas reconhece cabras e entrega o produto correto.
+  - Cena usa uma ação comum de cuidado para ordenha/tosquia, com ferramenta visível, jogador e animal parados. Afastar o jogador cancela sem consumir o produto. Indicadores de leite/lã prontos.
+  - Corrigida prioridade de interação: animal próximo do cocho não deve interceptar o E quando o cocho está mais perto.
+- **Tesoura:** bancada, 2 lingotes de ferro + 1 cabo, com martelo. Integra ferramentas individuais: não empilha; cada cópia tem 100 de durabilidade e só a selecionada gasta 1 por tosquia concluída. Bento repara a selecionada por 20 C.
+- **Comércio:** Helena compra leite de cabra por 20 C; Celina compra lã por 36 C. Nenhuma loja vende os produtos. Valores iniciais.
+- **Arte própria:** aprisco, ícones e animais gerados por imagegen, preservando originais. O SpriteCook não está disponível nesta sessão; os fixos anteriores não foram refeitos.
+  - Ovelha e cabra em oito direções, quatro poses desenhadas de caminhada por direção distribuídas nos oito passos do `AnimalWalkCycle`. Usam cadência por distância e limite de FPS, como vaca/cavalo. Nas pausas ficam em pose parada; sem descanso animado em repetição contínua.
+  - A cabra foi refinada para manter patas de apoio no chão nas poses de passagem.
+  - Escala final em `ANIMAL_ART`: ovelha `.28`, cabra `.27` (células de 224 px). Vista lateral: ovelha ~40 px, cabra ~45, vaca ~56. Conferidas junto à galinha e ao jogador.
+  - `scripts/pack-aprisco-art.cjs` recorta/empacota sem redimensionar os pixels dos animais; hashes/retângulos em `public/assets/animals/{sheep,goat}/atlas.json`. Originais nos respectivos `source.png`.
+  - A arte externa mantém o PNG original; o pátio é compactado em memória para alinhar o corpo, cercas e entrada à colisão existente.
+- **QA real:** construiu base, entregou materiais, concluiu a obra, alojou duas ovelhas e duas cabras, entrou andando, abasteceu, ordenhou, tosquiou, saiu e recarregou. Estoque final: 1 leite de cabra, 1 lã, tesoura 99/100. Sem duplicação e sem erros JS.
+  - `scripts/qa-aprisco.cjs` aceita diretório de saída e `QA_URL`; Vite padrão 5190, Playwright/Chromium externos.
+  - `scripts/capture-aprisco-preview.cjs` usa sprites reais na mesma câmera e escala e gera o GIF com ffmpeg.
+  - Evidências em `docs/planejamento/qa-aprisco/`: exterior, ordenha, tosquia, comparação estática, GIF e JSON de validação. A comparação foi mostrada ao Junior.
+- Documentação atual em `docs/construcoes/APRISCO.md`; plano geral atualizado em `docs/planejamento/ANIMAIS-E-RECEITAS.md`.
 
 ## Em andamento e próximo passo exato
 
-- Não há código WIP desta rodada. Aguardar a avaliação visual do Junior sobre o capim e o teste de fluidez no PC dele. Caso ainda trave, medir especificamente a região/zoom e o save afetados em hardware real; não interpretar os FPS do SwiftShader como confirmação de solução.
-- Etapa 2 de animais concluída tecnicamente. Próximo conteúdo do plano: **ovelha e cabra com aprisco**, quando solicitado. Acabamentos opcionais: ajustar preços jogando e som próprio de ordenha.
-- **Versões são apenas proposta, ainda não confirmada:** preview.35 interiores/ovos/leite; .36 ovelha/cabra; .37 máquinas; .38 cozinha; .39 porco/pato/abelhas.
-- Não publicar sem pedido atual do Junior. O `package.json` continua em preview.34 até a publicação autorizada.
-- O SpriteCook está autorizado na conta do Junior; o Codex não tem esse conector nesta sessão. A arte do capim desta rodada foi gerada por imagegen.
+- Não há código WIP restante desta rodada. O primeiro commit `e00c675` tem prefixo WIP porque a validação no navegador ainda estava em curso; ela foi concluída em `a13381b`.
+- Próxima implementação, **quando solicitada:** máquinas colocáveis como a cesta, dentro dos abrigos e ao ar livre na Propriedade. Plano já aprovado em `docs/planejamento/ANIMAIS-E-RECEITAS.md`: queijeira, batedeira, roca, tear e moinho primeiro; cozinha depois.
+- Máquina pronta deve ser item da mochila, colocada à frente com colisão, sem bloquear entrada/cocho/passagem. Vazia pode ser recolhida; carregada trabalha pelo relógio geral, com save atômico e produto pronto visível. Não foi implementado nesta rodada.
+- Junior ainda não pediu publicar esta rodada. O pacote continua preview.34; o trabalho está no branch preview.35. Não criar tag nem atualizar main sem pedido.
+- As sugestões anteriores de distribuir etapas pelas previews .35–.39 eram apenas proposta; agora as três primeiras etapas estão juntas no branch .35 não publicado.
 
 ## Pendências e ideias para depois
 
-- Plano completo em `docs/planejamento/ANIMAIS-E-RECEITAS.md`; produção em `docs/construcoes/PRODUCAO-ANIMAL-PLANO.md`.
-- Confirmar com Junior a regra do estábulo para a corda do cavalo, não para ele comer.
-- Chamar cavalo de longe, montaria e quadros de deitar/descansar.
-- Sementes especiais, clima e peixes por estação, árvores frutíferas e estufa.
-- Há um stash local antigo do branch preview.34 com evidências/documentação do estábulo aberto. **Não aplicar por cima desta PASSAGEM nem desfazer os interiores atuais.** O trabalho atual está todo no branch preview.35 enviado.
+- Máquinas → cozinha → porco/pato/abelhas, conforme plano geral. Produção por amizade/qualidade e preços finais ficam para depois.
+- Confirmar com Junior a regra do estábulo para a corda do cavalo, não para ele comer. Chamar de longe, montaria e poses de deitar/descansar.
+- Sementes especiais, clima/peixes por estação, frutíferas e estufa.
+- Há um stash local antigo do branch preview.34 com evidências/documentação do estábulo aberto. **Não aplicar por cima desta PASSAGEM nem desfazer os interiores atuais.** O trabalho atual está enviado no branch preview.35.
 
 ## Problemas conhecidos
 
-- Animais no interior não guardam sua posição; ao entrar reaparecem nas baias (vacas) ou posições iniciais (galinhas).
-- Interiores dos animais ficam sempre claros à noite.
-- Build avisa sobre o tamanho do chunk principal, sem falhar. Separar módulos só se nova medição justificar.
-- FPS em hardware real ainda não conferido; ver ressalva da medição acima.
+- Animais no interior reaparecem em posições iniciais a cada entrada; posição interna individual não é persistida. Interiores ficam sempre claros à noite.
+- **Travamentos nos Campos Abertos:** na rodada anterior foram reduzidos trabalho da vegetação (índice espacial), cópias desnecessárias do save na coleta, atualização da HUD e uso do shader das janelas em mapas sem janelas (`f28f27c`). Capim próprio e animado integrado em `5424eee`.
+  - Medição anterior da HUD: Campos 0,93 → 0,40 ms; Lago 2,78 → 0,26; Vila 2,36 → 0,54. Evidências em `docs/planejamento/qa-campos-abertos/`.
+  - **Não afirmar ganho de FPS nem que travamentos foram resolvidos:** o navegador usa SwiftShader (vídeo emulado), sem melhora consistente dos tempos de quadro. Falta conferir no PC do Junior.
+  - `scripts/qa-world-performance.cjs` compara dez cenários; `QA_SCENES` filtra, `QA_CPU_PROFILE=1` grava perfis. Rodada atual não ampliou essa medição.
+- A entrada do curral após sair do galinheiro foi corrigida em `88dd14c`: vaca recolhida nascia visível antes do primeiro update e afastava o jogador. Ocultação inicial e colisão respeitam o recolhimento imediatamente. O alcance da porta continua 30 px.
+- Build avisa sobre tamanho do chunk principal, sem falhar.
+- **Arte dos interiores:** manter PNGs originais, `setScale`/`setDisplaySize` e piso `FLOOR_SCALE=2`; o Junior já rejeitou redução em disco. Prompts futuros do SpriteCook: "front-facing, axis-aligned, NOT isometric".
 
 ## Testes
 
-- Antes de alterar: `npm ci`, `npm run check` e `npm test`: **1.954 passaram / 220 arquivos**, zero falhas.
-- Final: `npm run check`: ok; `npm test`: **1.962 passaram / 223 arquivos**, zero falhas; `npm run build`: ok.
-- Testes novos: colisão inicial/recolhimento/corda, ausência de cópia do save com chão vazio, seleção espacial das moitas, integridade e fases do atlas do capim.
-- Chromium: produção de ovos/leite completa; dez amostras de cenários sem erros JS; Campos Abertos com entrada, corte, coleta, inventário, mapa, recarregamento e retorno aprovados.
-- Execução dos QAs: Vite em 5190, Playwright externo e `CHROMIUM_PATH=/usr/bin/chromium` onde necessário. Evidências em `docs/planejamento/qa-producao/` e `docs/planejamento/qa-campos-abertos/`.
+- Baseline desta rodada: `npm ci`, `npm run check`, `npm test`: **1.962 testes / 223 arquivos**, zero falhas.
+- Final: `npm run check` ok; `npm test`: **1.978 testes / 225 arquivos**, zero falhas; `npm run build` ok.
+- Novos: `tests/aprisco.test.ts` (14: ciclo, alimentação parcial, pausa, mudança de moradia, ferramentas individuais, falha de save, estoque cheio, migração, comércio, circulação) e `tests/aprisco-art.test.ts` (2: fontes originais, recortes, direções e caminhada).
+- `scripts/qa-aprisco.cjs`: passou, incluindo ciclo completo e recarregamento, mais comparação de escala e GIF dos sprites usados no jogo. `docs/planejamento/qa-aprisco/validacao.json` registra o resultado.
+- O QA anterior de ovos/leite também passou nesta branch; suas evidências continuam em `docs/planejamento/qa-producao/`.
