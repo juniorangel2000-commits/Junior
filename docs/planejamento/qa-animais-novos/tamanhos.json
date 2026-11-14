@@ -1,0 +1,42 @@
+{
+ "chicken": {
+  "altura": 48,
+  "largura": 48
+ },
+ "duck": {
+  "altura": 40,
+  "largura": 40
+ },
+ "rabbit": {
+  "altura": 36,
+  "largura": 36
+ },
+ "bee": {
+  "altura": 18,
+  "largura": 18
+ },
+ "pig": {
+  "altura": 63,
+  "largura": 63
+ },
+ "sheep": {
+  "altura": 63,
+  "largura": 63
+ },
+ "goat": {
+  "altura": 60,
+  "largura": 60
+ },
+ "cow": {
+  "altura": 96,
+  "largura": 96
+ },
+ "deer": {
+  "altura": 63,
+  "largura": 63
+ },
+ "horse": {
+  "altura": 125,
+  "largura": 125
+ }
+}
