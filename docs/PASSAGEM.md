@@ -19,7 +19,12 @@
 - **Prensa de cera** (`waxPress`, projeto do Bento, 50 C):
   - 2 ceras viram 1 vela em meio dia;
   - a Amélia compra a vela por 80.
-- **Porteira do chiqueiro:** o vão aberto para a porteira mostrava a grama do terreno. Agora ele é preenchido com um trecho de terra e palha do próprio cercado (`farm-construction-view.ts`). A textura conferida está em `docs/planejamento/qa-porcos/chiqueiro-textura.png`.
+- **Porteira do chiqueiro:** o Junior achou a entrada ruim e pediu que tudo ficasse natural.
+  - O chiqueiro não usa mais a porteira desenhada em código (`drawGate`). Ele usa a porteira da própria arte (`pigstyGate` em `farm-construction-view.ts`).
+  - Fechada, a arte fica como foi desenhada.
+  - Aberta, a folha aparece de lado, como uma tábua junto às dobradiças, e o vão mostra a terra do cercado, misturada à de cima sem emenda.
+  - Colisão e porteira continuam as mesmas.
+  - Texturas conferidas em `docs/planejamento/qa-porcos/chiqueiro-porteira-fechada.png` e `chiqueiro-porteira-aberta.png`.
 - Com isso, a etapa 7 do plano tem as duas máquinas prontas; falta o equilíbrio de preços.
 
 

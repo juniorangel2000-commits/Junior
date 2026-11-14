@@ -13,11 +13,26 @@ function texture(scene:Phaser.Scene,kind:FarmKind,stage:0|1|2):string{
  const frame=stable??(separate?{x:0,y:0,width:source.width,height:source.height}:atlas.frames[`${kind==='aprisco'?'barn':kind==='pigsty'?'coop':kind}-${stage}` as keyof typeof atlas.frames]),canvas=document.createElement('canvas');canvas.width=frame.width;canvas.height=kind==='aprisco'&&stage===2?930+Math.round((FARM_BUILDINGS[kind].height-FARM_BUILDINGS[kind].bodyRows)*32*frame.width/(FARM_BUILDINGS[kind].width*32)):frame.height;
  const ctx=canvas.getContext('2d')!;ctx.imageSmoothingEnabled=false;if(kind==='aprisco'&&stage===2){ctx.drawImage(source,0,0,frame.width,930,0,0,frame.width,930);ctx.drawImage(source,0,930,frame.width,frame.height-930,0,930,frame.width,canvas.height-930);}else ctx.drawImage(source,frame.x,frame.y,frame.width,frame.height,0,0,frame.width,frame.height);
  // The opening has its own native gate, so its picture and collision agree.
- if(stage===2&&kind!=='silo'&&!FARM_BUILDINGS[kind].openYard){const scale=FARM_BUILDINGS[kind].width*32/frame.width;const hw=34/scale,hh=35/scale,hx=(frame.width-hw)/2,hy=frame.height-hh;ctx.clearRect(hx,hy,hw,hh);
-  // No chiqueiro, o vão da porteira continua com a terra e a palha do cercado (um trecho
-  // limpo à direita e acima), em vez de mostrar a grama do terreno.
-  if(kind==='pigsty')ctx.drawImage(canvas,hx+hw*.98,hy-hh*1.22,hw,hh,hx,hy,hw,hh);}
+ if(stage===2&&kind!=='silo'&&kind!=='pigsty'&&!FARM_BUILDINGS[kind].openYard){const scale=FARM_BUILDINGS[kind].width*32/frame.width;const hw=34/scale,hh=35/scale,hx=(frame.width-hw)/2,hy=frame.height-hh;ctx.clearRect(hx,hy,hw,hh);}
  scene.textures.addCanvas(key,canvas)?.setFilter(Phaser.Textures.FilterMode.NEAREST);return key;
+}
+/** Chiqueiro com a porteira da própria arte. Fechada, a arte fica como foi desenhada; aberta,
+ * a folha aparece dobrada junto às dobradiças e o vão mostra a terra do cercado.
+ * Coordenadas em pixels de `pigsty.png` (816×967). */
+function pigstyGate(scene:Phaser.Scene,key:string,open:boolean):string{
+ if(!open)return key;const out=key+'-open';if(scene.textures.exists(out))return out;
+ const src=scene.textures.get(key).getSourceImage()as HTMLCanvasElement,c=document.createElement('canvas');c.width=src.width;c.height=src.height;
+ const x=c.getContext('2d')!;x.imageSmoothingEnabled=false;x.drawImage(src,0,0);
+ x.clearRect(342,778,142,177);x.drawImage(src,500,580,142,177,342,778,142,177);
+ // Topo do vão misturado à terra logo acima, para não deixar emenda.
+ const fade=document.createElement('canvas');fade.width=142;fade.height=28;const f=fade.getContext('2d')!;
+ f.drawImage(src,342,740,142,38,0,0,142,28);f.globalCompositeOperation='destination-in';
+ const g=f.createLinearGradient(0,0,0,28);g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(1,'rgba(0,0,0,0)');f.fillStyle=g;f.fillRect(0,0,142,28);
+ x.drawImage(fade,342,778);
+ // Folha aberta vista de lado: a tábua da borda, presa às dobradiças.
+ x.drawImage(src,322,780,16,172,338,780,16,172);x.fillStyle='#2d1c10';x.fillRect(354,780,2,172);
+ x.drawImage(src,295,815,47,130,295,815,47,130);
+ scene.textures.addCanvas(out,c)?.setFilter(Phaser.Textures.FilterMode.NEAREST);return out;
 }
 function buildingLayer(scene:Phaser.Scene,key:string,kind:FarmKind,front:boolean):string{
  const layer=key+(front?'-front':'-back');if(scene.textures.exists(layer))return layer;
@@ -46,6 +61,10 @@ export class FarmConstructionView{
     image(stableLayer(this.scene,key,'body'),(s.y+d.bodyRows)*32-1);
     image(stableLayer(this.scene,key,'posts'),(s.y+d.height)*32);
     this.roofs.push({site:s,image:image(stableLayer(this.scene,key,'roof'),(s.y+d.height)*32+1)});
+   }else if(s.finished&&s.kind==='pigsty'){
+    const art=pigstyGate(this.scene,key,s.gateOpen);
+    image(buildingLayer(this.scene,art,s.kind,false),(s.y+d.bodyRows)*32-1);
+    image(buildingLayer(this.scene,art,s.kind,true),(s.y+d.height)*32-1);
    }else if(s.finished&&s.kind!=='silo'){
     image(buildingLayer(this.scene,key,s.kind,false),(s.y+d.bodyRows)*32-1);
     image(buildingLayer(this.scene,key,s.kind,true),(s.y+d.height)*32-1);
