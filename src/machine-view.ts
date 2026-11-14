@@ -8,6 +8,7 @@ export function preloadMachineArt(scene:Phaser.Scene):void{
  for(const kind of MACHINE_IDS){const f=art.frames[kind],key='machine-'+kind;if(!scene.textures.exists(key))scene.load.spritesheet(key,`assets/visual/machines/${kind}.png`,{frameWidth:f.width,frameHeight:f.height});}
  for(const item of MACHINE_PRODUCTS)if(!scene.textures.exists('machine-product-'+item))scene.load.image('machine-product-'+item,`assets/visual/machines/${item}.png`);
  // Pães e bolos do forno usam o ícone do prato no balão.
+ if(!scene.textures.exists('machine-product-fertilizer'))scene.load.image('machine-product-fertilizer','assets/visual/kitchen/fertilizer.png');
  if(!scene.textures.exists('machine-product-honey'))scene.load.image('machine-product-honey','assets/visual/kitchen/honey.png');
  for(const r of MACHINE_RECIPES)if(r.machine==='clayOven'&&!scene.textures.exists('machine-product-'+r.output))scene.load.image('machine-product-'+r.output,`assets/visual/kitchen/dishes/${r.output}.png`);
 }
