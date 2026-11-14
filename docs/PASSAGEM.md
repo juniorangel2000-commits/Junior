@@ -4,9 +4,9 @@
 
 - **Atualizado em:** 2026-11-14
 - **Por:** Claude Code
-- **Continuar a partir de:** `main` = commit de versão `227cda5` ("Release preview.34"). Próxima rodada: branch `release/v0.10.0-preview.35`.
-- **Última versão publicada:** `v0.10.0-preview.33`. A preview.34 está pronta na `main` (`227cda5`), mas **falta a tag**.
-- **Estado:** publicação da preview.34 pedida pelo Junior. Branch e `main` enviados; a tag `v0.10.0-preview.34` **não pôde ser enviada desta sessão do Claude Code**, porque o serviço de git recusou o envio de tags ("unexpected disconnect") e a criação pela API foi bloqueada.
+- **Continuar a partir de:** `main` / tag `v0.10.0-preview.34` (`f2ec90c`). Próxima rodada: branch `release/v0.10.0-preview.35`.
+- **Última versão publicada:** `v0.10.0-preview.34`, Release pública com instalador e portátil para Windows x64: https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.10.0-preview.34
+- **Estado:** preview.34 publicada. O workflow `43547628017` passou em todas as etapas e anexou o instalador, o portátil, o `SHA256SUMS.txt` e o `LEIA.md`.
 
 ## Feito nesta rodada
 
@@ -21,7 +21,12 @@
 
 ## Em andamento e próximo passo exato
 
-- **Codex: criar a tag anotada `v0.10.0-preview.34` no HEAD da `main` (commit com o LEIA da preview.34) e enviar** (`git tag -a v0.10.0-preview.34 origin/main -m "After Rain preview.34"` e `git push origin v0.10.0-preview.34`). Depois, conferir o workflow do Windows e os executáveis na Release.
+- **Como publicar a partir do Claude Code:** sessões do Claude Code na nuvem **não podem criar tags** (o git e a API do GitHub respondem 403 a tags). O caminho é:
+  1. O Claude Code envia a versão para a `main` (versão, `NOTAS-` e `LEIA-<versão>.md`, que o workflow exige).
+  2. O Junior cria a Release pela página do GitHub: tag nova `v<versão>` e target `main`, marcando pre-release.
+  3. A tag dispara o workflow, que agora aceita a Release já existente: atualiza título e notas e anexa os arquivos.
+  - Plano B: em Actions → "Run workflow", escolher a tag.
+  - O Codex continua podendo criar e enviar tags normalmente.
 - Próxima rodada (`release/v0.10.0-preview.35`), seguindo a ordem de `docs/planejamento/ANIMAIS-E-RECEITAS.md`:
   1. Interiores do galinheiro e do curral, com a opção "Recolher os animais".
   2. Ovos e leite (`docs/construcoes/PRODUCAO-ANIMAL-PLANO.md`).
