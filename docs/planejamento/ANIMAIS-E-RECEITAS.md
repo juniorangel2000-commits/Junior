@@ -34,7 +34,7 @@ Os valores são pontos de partida para ajustar. Complementa `docs/construcoes/PR
 
 ## Ambientes internos das construções de animais
 
-Pedido do Junior: galinheiro, curral e as próximas construções de animais (aprisco, chiqueiro, estábulo) ganham **interior**, e as **máquinas podem ser colocadas lá dentro**. O modelo é o mesmo da casa e da ferraria: grade de 32 px, objetos com tamanho e colisão, e edição para posicionar e recolher (`src/systems/home.ts`).
+Pedido do Junior: galinheiro, curral e as próximas construções de animais (aprisco, chiqueiro, estábulo) ganham **interior**, e as **máquinas podem ser colocadas lá dentro**. O cenário segue o modelo de interior da casa e da ferraria (grade de 32 px, objetos com colisão), mas **as máquinas não usam editor**: são colocadas como a cesta do cavalo (ver abaixo).
 
 **Entrada:** E na porta da construção pronta abre o interior, com transição como a da casa. A saída fica pela mesma porta.
 
@@ -50,7 +50,7 @@ Pedido do Junior: galinheiro, curral e as próximas construções de animais (ap
 
 **Animais:** de dia (06:00–18:00) ficam no cercado externo, com a porteira aberta; à noite entram e aparecem lá dentro, onde também dá para alimentar, ordenhar, tosquiar e recolher ovos. Mais tarde, a chuva também pode levá-los para dentro.
 
-**Máquinas:** cada interior tem área livre para colocar máquinas, que usam o mesmo editor e seguem o mesmo funcionamento descrito abaixo.
+**Máquinas:** cada interior tem área livre onde as máquinas podem ser colocadas como a cesta (ver abaixo).
 
 **Save:** o interior de cada construção é salvo pelo id da obra, com as máquinas, as cargas e os produtos prontos. Construções já prontas recebem um interior vazio, só com os fixos.
 
@@ -62,13 +62,18 @@ Pedido do Junior: galinheiro, curral e as próximas construções de animais (ap
 
 Pedido do Junior: o processamento é feito em **máquinas**, e não na bancada. A arte, os nomes e os detalhes são nossos, sem copiar outro jogo.
 
+**Como colocar** (decisão do Junior: igual à cesta do cavalo, sem editor)
+- A máquina pronta é um **item da mochila**.
+- **Usar** o item (pela mochila ou pela barra rápida) coloca a máquina no chão **à sua frente**, como objeto com colisão.
+- O jogo recusa um lugar sem espaço ou que bloqueie porta, cocho, ninhos ou passagem.
+- Vale **dentro das construções de animais** e, se o Junior quiser, também ao ar livre na Propriedade.
+- **E na máquina vazia** recolhe de volta para a mochila; uma máquina trabalhando não pode ser recolhida.
+
 **Como funcionam**
-- A máquina fica **dentro das construções de animais** (ver acima) e, se o Junior quiser, também ao ar livre na Propriedade, como objeto com colisão.
-- **E com a matéria-prima** coloca uma carga.
+- **Usar a matéria-prima** de frente para a máquina (ou E com ela na mão) coloca uma carga.
 - A máquina trabalha sozinha com o tempo do jogo, mesmo com você em outro cenário ou dormindo, e mostra uma animação enquanto trabalha.
 - Quando termina, aparece um **ícone do produto** sobre ela; **E retira** o produto.
 - Cada máquina processa **uma carga por vez**.
-- Uma máquina vazia pode ser recolhida e mudada de lugar; uma trabalhando, não.
 - Carga, tempo restante e produto pronto ficam no save. Uma falha ao salvar não perde a matéria-prima.
 
 **Como conseguir**
