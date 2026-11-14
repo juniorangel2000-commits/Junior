@@ -1,9 +1,18 @@
 # Ipês-amarelos e madeira nobre (preview.34, em andamento)
 
 Seis ipês-amarelos existem somente nos Campos Abertos, em clareiras longe dos
-caminhos, do abrigo e dos animais. A copa dourada é gerada em memória a partir
-da árvore `asset-tree-1` do projeto: a folhagem é remapeada para tons de amarelo
-pela luminosidade, e tronco, contorno e sombra mantêm as cores originais.
+caminhos, do abrigo e dos animais. Agora usam arte própria de ipê-amarelo em
+`public/assets/visual/open-fields/ipe-yellow.png`, com copa florida irregular,
+galhos visíveis e tronco retorcido. A recoloração da árvore comum foi removida.
+
+A árvore tem 300 px de altura e aproximadamente 303 px de largura no mundo,
+preservando a proporção da arte. As árvores comuns dos Campos têm até 220 px
+de altura. O recorte e o apoio na raiz estão em `src/data/ipe-art.ts`; a margem
+transparente é removida por um frame de textura, sem modificar os pixels originais.
+
+Posições, ids dos seis ipês, colisão dos troncos, golpes, rendimentos, rebrota e
+saves foram preservados. A copa continua translúcida ao passar por trás, e a
+árvore balança pelo ponto de apoio ao receber um golpe.
 
 | Regra | Valor |
 | --- | --- |
@@ -30,6 +39,10 @@ Conferência no navegador: `scripts/qa-ipe-trees.cjs` (servidor Vite em
 `127.0.0.1:5190`). Ela verifica a recusa da machadinha de pedra, os seis golpes com
 ferro, o toco, a madeira na mochila, o mapa e o toco mantido ao continuar o jogo.
 
-- [Ipê de pé](ipe-de-pe.png)
-- [Mapa dos Campos com os ipês](mapa-campos-ipes.png) (o do canto superior
+- [Ipê com a arte nova](qa/ipe-de-pe.png)
+- [Golpe de machadinha](qa/ipe-golpe.png)
+- [Toco após o corte](qa/ipe-toco.png)
+- [Madeira na mochila](qa/mochila-madeira-nobre.png)
+- [Referência antiga, recolorida](ipe-de-pe.png)
+- [Mapa atualizado dos Campos com os ipês](qa/mapa-campos-ipes.png) (o do canto superior
   esquerdo aparece como toco porque foi derrubado na conferência)

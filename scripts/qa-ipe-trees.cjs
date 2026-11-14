@@ -6,7 +6,7 @@ const out = process.argv[2] || 'docs/cenarios/ipes-campos-abertos/qa';
 fs.mkdirSync(out, { recursive: true });
 
 (async () => {
-  const browser = await chromium.launch({ args: ['--no-sandbox', '--disable-dev-shm-usage', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  const browser = await chromium.launch({ executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args: ['--no-sandbox', '--disable-dev-shm-usage', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   const errors = [];
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
@@ -16,7 +16,7 @@ fs.mkdirSync(out, { recursive: true });
     await page.locator('#new-game').click();
     await page.locator('#character-name').fill('Ipê QA');
     await page.getByRole('button', { name: 'Começar minha história' }).click();
-    await page.waitForFunction(() => document.querySelector('#ui')?.dataset.area === 'property');
+    await page.waitForFunction(() => {document.querySelector('[data-skip-intro]:not([hidden]):not([disabled])')?.click();return document.querySelector('#ui')?.dataset.area === 'property';});
     await page.evaluate(async () => {
       window.game = (await import(document.querySelector('script[src*="main.ts"]').src)).game;
       const v = game.scene.getScene('Vale');
@@ -32,7 +32,7 @@ fs.mkdirSync(out, { recursive: true });
     await page.evaluate(async () => {
       window.s = game.scene.getScene('Campos');
       window.d = await import('/src/data/open-fields.ts');
-      const ipe = d.FIELDS_IPES[0]; s.player.x = ipe.x; s.player.y = ipe.y + 44; s.state.time = 720;
+      const ipe = d.FIELDS_IPES[0]; s.player.x = ipe.x; s.player.y = ipe.y + 44; s.state.time = 720;s.cameras.main.stopFollow().setZoom(1.4).centerOn(ipe.x,ipe.y-110);
     });
     await page.waitForTimeout(1500);
     await page.screenshot({ path: `${out}/ipe-de-pe.png` });
@@ -50,10 +50,11 @@ fs.mkdirSync(out, { recursive: true });
     await page.evaluate(async () => { const eco = await import('/src/systems/economy.ts'); eco.configureTool(s.state, 'hatchet', 1); s.updateHUD(); });
     for (let i = 0; i < 6; i++) {
       await page.keyboard.press('e');
-      if (i === 2) { await page.waitForTimeout(250); await page.screenshot({ path: `${out}/ipe-golpe.png` }); await page.waitForTimeout(450); }
-      else await page.waitForTimeout(700);
+      await page.waitForFunction(()=>s.swing?.hit||s.state.openFields?.felled?.['ipe-0']!==undefined);
+      if(i===2)await page.screenshot({path:`${out}/ipe-golpe.png`});
+      await page.waitForFunction(()=>!s.swing);
     }
-    const after = await page.evaluate(() => ({ felled: s.state.openFields?.felled?.['ipe-0'], hits: s.state.openFields?.hits, drops: s.state.groundItems.items.filter((i) => i.space === 'openFields').map((i) => [i.item, i.amount]), hardwood: s.state.inventory.hardwood, branch: s.state.inventory.branch }));
+    const after = await page.evaluate(() => ({ felled: s.state.openFields?.felled?.['ipe-0'], hits: s.state.openFields?.hits, drops: (s.state.groundItems?.items??[]).filter((i) => i.space === 'openFields').map((i) => [i.item, i.amount]), hardwood: s.state.inventory.hardwood, branch: s.state.inventory.branch }));
     console.log(JSON.stringify(after));
     assert.equal(after.felled, 1);
     const has = (id) => after[id] + after.drops.filter(([i]) => i === id).reduce((n, [, a]) => n + a, 0);
