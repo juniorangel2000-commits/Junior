@@ -3,6 +3,8 @@
 export const SEASONS=['spring','summer','autumn','winter'] as const;
 export type Season=typeof SEASONS[number];
 export const SEASON_NAMES:Record<Season,string>={spring:'Primavera',summer:'Verão',autumn:'Outono',winter:'Inverno'};
+/** Com preposição: "na Primavera", "no Verão"… */
+export const IN_SEASON:Record<Season,string>={spring:'na Primavera',summer:'no Verão',autumn:'no Outono',winter:'no Inverno'};
 export const DAYS_PER_SEASON=28;
 export const DAYS_PER_YEAR=DAYS_PER_SEASON*SEASONS.length;
 export interface CalendarDate{season:Season;seasonIndex:number;dayOfSeason:number;year:number}
