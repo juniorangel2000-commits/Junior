@@ -840,7 +840,7 @@ export class ValleyScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.player, false, 0.12, 0.12);
     this.cameras.main.centerOn(this.player.x, this.player.y);
     this.tool = isLegacyHouseTool(data.equippedTool)?'hand':data.equippedTool;
-    this.farmView=new FarmConstructionView(this,()=>this.state);
+    this.farmView=new FarmConstructionView(this,()=>this.state,()=>[this.player,...(this.animals?.animals??[])]);
     this.lastAim = null;
     this.saveTimer = 0;
     this.saveWarningShown = false;

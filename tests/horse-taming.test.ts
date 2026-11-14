@@ -1,10 +1,5 @@
-import {describe,it,expect,vi} from 'vitest';
-// O estábulo será feito pelo Codex; aqui um estábulo de teste representa qualquer
-// construção pronta com animal 'horse'.
-vi.mock('../src/data/farm-buildings',async importOriginal=>{
- const real=await importOriginal<typeof import('../src/data/farm-buildings')>();
- return{...real,FARM_KINDS:[...real.FARM_KINDS,'stable'],FARM_BUILDINGS:{...real.FARM_BUILDINGS,stable:{name:'Estábulo',width:7,height:6,bodyRows:4,cost:{wood:1},capacity:1,animal:'horse',description:''}}};
-});
+import {describe,it,expect} from 'vitest';
+import {FARM_BUILDINGS} from '../src/data/farm-buildings';
 import {createNewSave,validateSave,migrateSave} from '../src/systems/save';
 import {createCharacterProfile} from '../src/data/characters';
 import {HORSE_ID,TAMING_DAYS,feedHorse,applyTamingLoss,feedingDay,settleHorseTaming,tamingPhase,nameHorse,startHorseEscort,transferHorseToProperty,validHorseName,horseTaming,placeBasket,pickUpBasket,stableReady} from '../src/systems/horse-taming';
@@ -13,7 +8,7 @@ import {assignFarmAnimal,farmAnchor,type FarmRuntime} from '../src/systems/farm-
 import {PROPERTY_FIELDS_RETURN} from '../src/data/open-fields';
 import type {SaveData} from '../src/types';
 
-const withStable=(s:SaveData)=>{s.farmConstruction={version:1,nextId:2,sites:[{id:1,kind:'stable' as never,x:20,y:30,delivered:{wood:1},finished:true,animals:[],hay:0,gateOpen:true}]};return s;};
+const withStable=(s:SaveData)=>{s.farmConstruction={version:1,nextId:2,sites:[{id:1,kind:'stable',x:20,y:30,delivered:{...FARM_BUILDINGS.stable.cost},finished:true,animals:[],hay:0,gateOpen:true}]};return s;};
 const setup=(stable=false)=>{const s=createNewSave(createCharacterProfile('Doma'));s.activeArea='openFields';s.inventory.harvestBasket=3;if(stable)withStable(s);return s;};
 const spot={x:1500,y:1200};
 const tame=(s:SaveData)=>{for(let d=1;d<=TAMING_DAYS;d++){s.day=d;feedHorse(s,d);}return s;};

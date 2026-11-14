@@ -40,7 +40,7 @@ export class AnimalPopulation {
    const y=area==='forest'&&forest?forest.y*32+16:(44+Math.floor(index/8)*3)*32+16;index++;
    const brain:AnimalBrain=new AnimalBrain(definition.id,definition.kind,saved?.x??x,saved?.y??y,!owned,blocked,playerSpeed,this.treeCover.cost,this.area==='property'?(px,py)=>{
     if(this.area!=='property')return false;if(farmPointBlocked(this.save,px,py))return true;
-    const home=farmAnimalHome(this.save,definition.id);return !!home&&this.homes.get(definition.id)===home.id&&this.save.animalEscort?.id!==definition.id&&!farmYardPoint(home,px,py);
+    const home=farmAnimalHome(this.save,definition.id);return !!home&&!FARM_BUILDINGS[home.kind].openYard&&this.homes.get(definition.id)===home.id&&this.save.animalEscort?.id!==definition.id&&!farmYardPoint(home,px,py);
    }:undefined);
    if(saved)brain.restore(saved);
    if(!this.placeSafely(brain))continue;
@@ -74,7 +74,7 @@ export class AnimalPopulation {
   this.treeCheck-=delta;if(this.treeCheck<=0){this.treeCover.refresh(this.trees());this.treeCheck=.5;}
   for(const a of this.animals){
    const home=this.area==='property'?farmAnimalHome(this.save,a.id):undefined,led=a===this.led;
-   if(!home||led)this.homes.delete(a.id);
+   if(!home||led||FARM_BUILDINGS[home.kind].openYard&&Math.hypot(a.x-farmHomePoint(home).x,a.y-farmHomePoint(home).y)>128)this.homes.delete(a.id);
    else if(farmAnimalSettled(home,a.brain,a.brain.radius,a.brain.footRadiusY))this.homes.set(a.id,home.id);
    const homing=!!home&&!led&&this.homes.get(a.id)!==home.id,rest=this.cowRest.get(a.id);
    if(rest){

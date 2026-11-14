@@ -1,0 +1,25 @@
+{
+  "frames": {
+    "stable-0": {
+      "file": "stable-stages.png",
+      "x": 67,
+      "y": 341,
+      "width": 527,
+      "height": 243
+    },
+    "stable-1": {
+      "file": "stable-stages.png",
+      "x": 656,
+      "y": 86,
+      "width": 552,
+      "height": 496
+    },
+    "stable-2": {
+      "file": "stable.png",
+      "x": 96,
+      "y": 145,
+      "width": 1062,
+      "height": 950
+    }
+  }
+}
