@@ -4,71 +4,50 @@
 
 - **Atualizado em:** 2026-11-14
 - **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch (doma em `ebfa13a`, estábulo do Codex em `64dab91`, conferência completa em `1b88877`).
-- **Última versão publicada:** `v0.10.0-preview.33`.
-- **Estado:** doma do cavalo **completa**, com o estábulo do Codex, e conferida no jogo do dia 1 até "Alojar Trovão". Não publicado.
+- **Continuar a partir de:** `main` / tag `v0.10.0-preview.34` (mesmo commit do branch `release/v0.10.0-preview.34`). Próxima rodada: branch `release/v0.10.0-preview.35`.
+- **Última versão publicada:** `v0.10.0-preview.34`; a tag dispara o workflow do Windows, e convém conferir a Release.
+- **Estado:** preview.34 publicada a pedido do Junior.
 
 ## Feito nesta rodada
 
-- **Conferência da cadeia até a cesta** (`scripts/qa-harvest-chain.cjs`): dia 1 → sementes da Rosa → cenoura e morango na Primavera → guardados até o Verão → milho → cesta da Helena. Correção do aviso "não cresce **na** Primavera" (`IN_SEASON`).
-- **Doma do cavalo** (`src/systems/horse-taming.ts`), com as decisões do Junior desta rodada:
-  - **Sem cocho.** O jogador **usa** a cesta e ela **fica no chão** como objeto do cenário, não como item solto; o cavalo vai até ela.
-  - **Dia sem cesta zera a confiança.** São 7 dias seguidos.
-  - Fases: dias 1–2 com o jogador a 300 px da cesta; dias 3–4 a 170 px; dias 5–7 a 56 px. O raio de fuga diminui junto.
-  - Barra de confiança (7 quadrinhos) sobre o cavalo.
-  - Domado: ele vem até você, E abre a janela do nome (`GameUI.askText`) e depois faz carinho.
-  - **Corda (G) só depois da doma, do nome e com o estábulo pronto.**
-  - Travessia com o cavalo para a Propriedade; G solta a corda e o cavalo vira do jogador.
-- Detalhes da doma:
-  - A cesta é guardada em `horseTaming.basket`; com E perto dela, volta para a mochila.
-  - Lugares apertados para a cesta são recusados.
-  - Com o jogador fora dos Campos, o cavalo come a cesta do dia, e o efeito é aplicado ao voltar (`settleHorseTaming`).
-- **O cavalo como animal do jogador:** `src/data/domestic-animals.ts` (Floresta + cavalo) é usado na corda, na entrega, em `assignFarmAnimal`, no painel ("Alojar <nome>"), na Propriedade (`src/animals.ts`) e na validação do save. A corda pode sair dos Campos (`AnimalEscort.area` aceita `'openFields'`).
-- `AnimalBrain.fleeRadius` ajustável por fase (0 = não foge); os outros animais seguem o padrão.
-- `HorseIdleCycle.eatBasket` reaproveita a animação de comer.
-- Um estábulo provisório chegou a ser criado e **foi removido** a pedido do Junior. Só ficou `animal:'horse'` permitido em `FARM_BUILDINGS`.
+- **Publicação da preview.34** (notas em `docs/cenarios/NOTAS-0.10.0-preview.34.md`): calendário com estações e ano, cultivo por dias regados, 19 plantas com arte, ipês e madeira nobre, machadinha de corpo inteiro, cavalo nos Campos, cesta da Helena, doma completa e estábulo do Codex.
+- Missão "Primeira colheita": agora pede "Plantar uma semente da estação" e "Colher a primeira plantação", porque o nabo só cresce na Primavera.
+- Doma conferida do dia 1 até "Alojar Trovão" (`scripts/qa-horse-taming.cjs`); cadeia até a cesta conferida em `scripts/qa-harvest-chain.cjs`.
+- **Plano aprovado** de animais, máquinas e cozinha em `docs/planejamento/ANIMAIS-E-RECEITAS.md`:
+  - ovelha e cabra completas, porco (come sobras da horta e produz esterco), pato e abelhas (colmeia comprada na Vila, enxame nos ipês a cada 5 dias);
+  - interiores das construções de animais, com "Recolher os animais";
+  - máquinas colocadas como a cesta, dentro e fora das construções, com projetos aprendidos com Tobias, Bento e Ícaro;
+  - cozinha com fogão a lenha, forno de barro e fogueira, receitas da Helena e escondidas, caderno, efeitos, pedidos e qualidade.
 
 ## Em andamento e próximo passo exato
 
-- **Estábulo: feito pelo Codex** (`64dab91`): abrigo aberto, sem porteira, para 1 cavalo, com 12 madeiras nobres.
-  - O Claude Code estendeu `scripts/qa-horse-taming.cjs` até o fim: corda, travessia, soltar e "Alojar Trovão". Passou no Chromium.
-  - `npm test`: 1.929 passaram, 218 arquivos.
-- Para o Junior confirmar: o estábulo é exigido para a **corda**, não para o cavalo comer. Se preferir exigir já para comer, mudar em `OpenFieldsWorld.basketFor` e `settleHorseTaming`.
-
-- **Próximos passos:**
-  1. ~~Conferir a doma completa~~ (feito).
-  2. Publicar a preview.34 se o Junior pedir, corrigindo antes o texto da missão "Primeira colheita".
-  3. Seguir a ordem de `docs/planejamento/ANIMAIS-E-RECEITAS.md`, plano aprovado pelo Junior em 14/11/2026:
-     - interiores das construções de animais, com a opção "Recolher os animais";
-     - ovos e leite;
-     - ovelha e cabra com aprisco;
-     - máquinas, colocadas como a cesta, dentro e fora das construções;
-     - cozinha;
-     - porco (com sobras da horta), pato e abelhas (colmeia comprada na Vila, enxame nos ipês).
-  4. A arte dos animais novos, das construções, das máquinas e dos ícones fica com o Codex ou com pacotes gerados pelo Junior.
+- Conferir o workflow do Windows da tag `v0.10.0-preview.34` e os executáveis na Release.
+- Próxima rodada (`release/v0.10.0-preview.35`), seguindo a ordem de `docs/planejamento/ANIMAIS-E-RECEITAS.md`:
+  1. Interiores do galinheiro e do curral, com a opção "Recolher os animais".
+  2. Ovos e leite (`docs/construcoes/PRODUCAO-ANIMAL-PLANO.md`).
+  3. Ovelha e cabra com aprisco.
+  4. Máquinas.
+  5. Cozinha.
+  6. Porco, pato e abelhas.
+- A arte (animais animados, aprisco, chiqueiro, colmeia, interiores, máquinas e uns 40 ícones) fica com o Codex, com pacotes gerados pelo Junior ou com um plugin de geração de sprites, se o Junior instalar.
 
 ## Pendências e ideias para depois
 
+- Para o Junior confirmar: o estábulo é exigido para a **corda**, não para o cavalo comer (`OpenFieldsWorld.basketFor` e `settleHorseTaming`).
 - Chamar o cavalo de longe, montaria (sela) e quadros de deitar, descansar e levantar.
-- Texto da missão "Primeira colheita" diz "nabo", mas aceita qualquer plantação.
-- Sementes especiais para o ano todo; clima, peixes por estação, árvores frutíferas e estufa (etapa 6).
-- Ipês: machadinha de Ferro ou melhor; toda construção de animais exige madeira nobre.
-- Produção animal, variedade dos campos, caça e editor F2 pendentes; preservar ids das moitas.
+- Sementes especiais para o ano todo; clima, peixes por estação, árvores frutíferas e estufa (etapa 6 de cultivos).
+- Preços dos produtos animais e dos pratos, a definir jogando.
+- Variedade visual dos Campos, caça e editor F2 pendentes; preservar os ids das moitas.
 
 ## Problemas conhecidos
 
-- O pacote continua na preview.33 até a publicação autorizada da preview.34.
-- Se o jogador ficar perto da cesta o dia todo nas fases iniciais e sair do cenário só no dia seguinte, a cesta do dia anterior é creditada ao voltar (regra de "fora dos Campos"). Efeito pequeno, documentado.
+- Aviso do Vite sobre o tamanho do pacote JavaScript (já existia); não impede o build.
+- Se o jogador ficar perto da cesta o dia todo nas fases iniciais e sair do cenário só no dia seguinte, a cesta do dia anterior é creditada ao voltar. Efeito pequeno, documentado.
 - Repositório: `https://github.com/juniorangel2000-commits/Junior.git`.
 
 ## Testes
 
 - `npm run check`: ok.
-- `npm test`: antes, 1.910; depois, **1.926 passaram, zero falhas, 217 arquivos**. Os 16 novos estão em `tests/horse-taming.test.ts`, com um estábulo de teste simulado só nesse arquivo.
-- `npm run build`: não executado (sem publicação).
-- Chromium, `scripts/qa-horse-taming.cjs`:
-  - Dia sem cesta zera a confiança.
-  - 7 dias seguidos com 420, 230 e 95 px de distância conforme a fase.
-  - O cavalo domado vem até você, o nome "Trovão" é dado pela janela, a corda é recusada sem estábulo e a doma é preservada ao recarregar.
-  - Nenhum erro de JavaScript. Capturas em `docs/planejamento/qa-doma-cavalo/`.
-- Chromium, `scripts/qa-harvest-chain.cjs`: cadeia até a cesta ok.
+- `npm test`: **1.929 passaram, zero falhas, 218 arquivos**.
+- `npm run build`: ok (aviso de tamanho do pacote).
+- Chromium: `scripts/qa-horse-taming.cjs` (doma completa com estábulo) e `scripts/qa-harvest-chain.cjs` (cadeia até a cesta) passaram, sem erros de JavaScript.
