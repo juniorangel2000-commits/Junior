@@ -4,11 +4,20 @@
 
 - **Atualizado em:** 2026-11-14
 - **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Porcos em `a3eb5c8`; barril de conservas e prensa de cera em `535fdbe`.
-- **Última versão publicada:** `v0.10.0-preview.34`, https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.10.0-preview.34
-- **Estado:** casa do jogador com móveis, fogão, paredes e piso no mesmo conjunto rústico. Cozinha, máquinas, patos e distanciamento permanecem integrados. Nada publicado; `main`, tags e versão do pacote continuam na preview.34.
+- **Continuar a partir de:** `main` / commit `f6f39cb` (Release preview.35). Próxima rodada: branch `release/v0.10.0-preview.36`.
+- **Última versão publicada:** `v0.10.0-preview.35` enviada à `main` (`f6f39cb`). **Falta o Junior criar a Release** no GitHub: tag `v0.10.0-preview.35`, target `main`, pre-release. A preview.34 continua sendo a última Release com executável até isso acontecer.
+- **Estado:** preview.35 pronta e enviada à `main`, com versão do pacote, `NOTAS-0.10.0-preview.35.md` e `LEIA-0.10.0-preview.35.md`. Esta sessão não consegue criar tags (o push da tag é recusado); por isso o Junior cria a Release pela página do GitHub.
 
 ## Feito nesta rodada
+
+### Publicação da preview.35 (Claude Code)
+
+- Antes de publicar, o Chromium conferiu o que ainda faltava: composteira, barril, prensa e mel de flor (`scripts/qa-preserves.cjs`, capturas em `docs/planejamento/qa-conservas/`).
+- **Defeito corrigido:** o balão da composteira mostrava um quadrado vazio, porque o adubo não tinha ícone. Agora ele tem ícone desenhado por script (`public/assets/visual/kitchen/fertilizer.png`), usado na mochila e no balão.
+- `npm version 0.10.0-preview.35`, notas e LEIA criados e commit `Release preview.35`.
+- `main` avançou direto para `f6f39cb`.
+- A tag foi recusada pelo GitHub nesta sessão, como na preview.34. A tag local foi apagada; ela nunca chegou ao GitHub.
+
 
 ### Barril de conservas, prensa de cera e porteira do chiqueiro (Claude Code)
 
@@ -230,10 +239,9 @@
 
 ## Em andamento e próximo passo exato
 
-1. **Equilíbrio de preços** dos produtos, máquinas e pratos, jogando (etapa 7 do plano).
-2. **Qualidade** dos produtos e pratos (cozinha, etapa 3).
-3. **Não conferido no navegador:** composteira, barril de conservas, prensa de cera e mel de flor (todos cobertos por testes unitários; os testes genéricos de máquinas incluem a prensa).
-- Não publicar sem pedido do Junior. O pacote continua preview.34; tudo está no branch preview.35.
+1. **Junior:** criar a Release no GitHub. Em Releases, escolha "Draft a new release" e crie a tag nova `v0.10.0-preview.35` com target `main`, marcando pre-release. A tag dispara o workflow do Windows, que já aceita uma Release existente e anexa instalador, portátil, `SHA256SUMS.txt` e `LEIA.md`.
+2. Depois de publicada, conferir no GitHub Actions se o workflow passou, e então atualizar esta passagem.
+3. Próxima rodada (`release/v0.10.0-preview.36`): equilíbrio de preços jogando e qualidade dos produtos e pratos.
 
 ## Pendências e ideias para depois
 
@@ -251,9 +259,10 @@
 ## Testes
 
 - `npm run check`: ok.
-- `npm test`: **2.076 passaram, zero falhas, 234 arquivos**. Inclui `tests/pigs.test.ts` (5) e os testes genéricos de máquinas, que agora cobrem a prensa de cera.
-- `npm run build`: não repetido desde a rodada do Codex.
+- `npm test`: **2.076 passaram, zero falhas, 234 arquivos**.
+- `npm run build`: ok (aviso de tamanho do pacote, que já existia).
 - Chromium, nesta rodada:
-  - `scripts/qa-pigs.cjs`: OK. O chiqueiro aparece na Propriedade, num lugar escolhido pela mesma regra de colocação do jogo. O porco aparece dentro à noite, o cocho recebe 6 sobras, e de manhã aparece esterco, que é recolhido.
-  - `scripts/qa-beekeeping.cjs` e `scripts/qa-ducks.cjs`: OK.
+  - `scripts/qa-preserves.cjs`: OK.
+  - `scripts/qa-pigs.cjs`: OK, com as texturas da porteira fechada e aberta.
+  - Também passaram, em rodadas anteriores desta versão: `qa-beekeeping`, `qa-ducks`, `qa-kitchen`, `qa-kitchen-stage2`, `qa-forest-ducks`, `qa-fields-distance`, `qa-farm-interior`, `qa-machines`, `qa-home-furniture` e as do aprisco.
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.
