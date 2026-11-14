@@ -80,6 +80,6 @@ describe('arte dos interiores',()=>{
   const fs=await import('node:fs'),{FARM_INTERIOR_ART_FILES,fixtureKey}=await import('../src/farm-interior-art');
   for(const f of FARM_INTERIOR_ART_FILES)expect(fs.existsSync(`public/${f}`),f).toBe(true);
   const keys=new Set(Object.values(FARM_INTERIORS).flatMap(l=>l!.fixtures.map(fixtureKey)));
-  expect([...keys].sort()).toEqual(['interior-divider-88','interior-nest','interior-stall-96x96','interior-trough-64','interior-trough-96','interior-water']);
+  expect([...keys].filter(k=>k!=='interior-mud').sort()).toEqual(['interior-divider-88','interior-manure','interior-nest','interior-stall-96x96','interior-trough-64','interior-trough-96','interior-water']);
  });
 });

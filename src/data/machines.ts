@@ -1,7 +1,7 @@
 import {DISH_RECIPES,dishStation,STOVE_FUEL} from './kitchen';
 import type {ItemId} from '../types';
 import type {ItemCost} from '../systems/inventory';
-export const MACHINE_IDS=['cheesePress','butterChurn','spinningWheel','loom','stoneMill','clayOven','beehive'] as const;
+export const MACHINE_IDS=['cheesePress','butterChurn','spinningWheel','loom','stoneMill','clayOven','beehive','composter'] as const;
 export type MachineKind=typeof MACHINE_IDS[number];
 export const MACHINE_PRODUCTS=['cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','cloth'] as const;
 export const isMachine=(v:unknown):v is MachineKind=>MACHINE_IDS.includes(v as MachineKind);
@@ -13,11 +13,15 @@ export const MACHINES:Record<MachineKind,{name:string;width:number;npc:'bento'|'
  clayOven:{name:'Forno de barro',width:2,npc:'helena',learnFee:60,cost:{stone:24,wood:10,board:4,ironShard:2}},
  /** Colmeia povoada: não se monta nem se aprende; vem do enxame dos ipês (beekeeping.ts). */
  beehive:{name:'Colmeia',width:1,npc:'augusto',learnFee:0,cost:{}},
+ composter:{name:'Composteira',width:2,npc:'tobias',learnFee:40,cost:{board:6,peg:4,stone:6}},
  stoneMill:{name:'Moinho de pedra',width:2,npc:'icaro',learnFee:60,cost:{stone:20,ironIngot:2,board:6,metalPart:1}},
 };
 /** `ingredients`: receita de vários itens (forno), carregada pelo caderno, não pelo item solto. */
-export interface MachineRecipe{id:string;machine:MachineKind;input:ItemId;amount:number;output:ItemId;quantity:number;minutes:number;ingredients?:Partial<Record<ItemId,number>>}
+/** `extra`: itens gastos junto com a carga (composteira: capim ou fibras). */
+export interface MachineRecipe{id:string;machine:MachineKind;input:ItemId;amount:number;output:ItemId;quantity:number;minutes:number;ingredients?:Partial<Record<ItemId,number>>;extra?:Partial<Record<ItemId,number>>}
 export const MACHINE_RECIPES:readonly MachineRecipe[]=[
+ {id:'compost-grass',machine:'composter',input:'manure',amount:2,extra:{freshGrass:3},output:'fertilizer',quantity:2,minutes:2*1440},
+ {id:'compost-fiber',machine:'composter',input:'manure',amount:2,extra:{fiber:3},output:'fertilizer',quantity:2,minutes:2*1440},
  {id:'cheese',machine:'cheesePress',input:'milk',amount:1,output:'cheese',quantity:1,minutes:1440},
  {id:'goatCheese',machine:'cheesePress',input:'goatMilk',amount:1,output:'goatCheese',quantity:1,minutes:1440},
  {id:'butter',machine:'butterChurn',input:'milk',amount:2,output:'butter',quantity:1,minutes:720},

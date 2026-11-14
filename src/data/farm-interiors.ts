@@ -4,7 +4,7 @@ import type {FarmKind} from './farm-buildings';
  * Grade de 32 px. Paredes na borda; a porta fica no meio da parede de baixo. Os
  * objetos fixos aparecem já nesta etapa e ganham uso na produção de ovos e leite. */
 export const INTERIOR_TILE=32;
-export type InteriorFixtureKind='trough'|'water'|'nest'|'stall';
+export type InteriorFixtureKind='trough'|'water'|'nest'|'stall'|'mud'|'manure';
 /** Retângulo em pixels dentro do interior; `solid` bloqueia a passagem. */
 export interface InteriorFixture{id:string;kind:InteriorFixtureKind;x:number;y:number;w:number;h:number;solid:boolean;label:string}
 export interface FarmInteriorLayout{width:number;height:number;doorX:number;doorWidth:number;fixtures:InteriorFixture[];floor:'straw'|'planks'}
@@ -21,6 +21,12 @@ export const FARM_INTERIORS:Partial<Record<FarmKind,FarmInteriorLayout>>={
   fixture('trough','trough',1,1,3,1,'Cocho'),fixture('water','water',10,1,1,1,'Bebedouro'),
   fixture('shearing-pen','stall',8,4,3,3,'Área de tosquia',false),
   {id:'stall-divider-shearing',kind:'stall',x:8*T-3,y:4*T,w:6,h:3*T-8,solid:true,label:'Divisória da tosquia'},
+ ]},
+ // Chiqueiro 10×8: cocho e bebedouro no alto, lamaçal no meio e quatro cantos onde aparece esterco.
+ pigsty:{width:10,height:8,doorX:4,doorWidth:2,floor:'straw',fixtures:[
+  fixture('trough','trough',1,1,2,1,'Cocho'),fixture('water','water',7,1,1,1,'Bebedouro'),
+  fixture('mud','mud',3,3,3,2,'Lamaçal',false),
+  ...[[1,4],[8,3],[1,6],[8,6]].map(([x,y],i)=>fixture(`manure-${i+1}`,'manure',x,y,1,1,'Esterco',false)),
  ]},
  // Curral 14×10: quatro baias no alto, separadas por divisórias; cocho e bebedouro embaixo.
  barn:{width:14,height:10,doorX:6,doorWidth:2,floor:'planks',fixtures:[

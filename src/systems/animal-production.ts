@@ -5,6 +5,7 @@ import {domesticAnimal} from '../data/domestic-animals';
 import {Inventory} from './inventory';
 import {inventoryToolCondition,wearInventoryTool} from './tool-instances';
 import {DAY_START} from './farm-interior';
+import {CROP_CATALOG} from '../data/crop-catalog';
 /** Produção animal (docs/construcoes/PRODUCAO-ANIMAL-PLANO.md, etapa 2 de
  * docs/planejamento/ANIMAIS-E-RECEITAS.md).
  * - O cocho de cada galinheiro e curral guarda palha (`site.trough`).
@@ -16,7 +17,11 @@ import {DAY_START} from './farm-interior';
  *   `MAX_CATCH_UP` manhãs; o ovo e o leite pendentes não se acumulam. */
 export interface AnimalCareRecord{fed?:number;milk?:boolean;woolDays?:number;wool?:boolean;duckDays?:number}
 export interface AnimalCare{day:number;animals:Record<string,AnimalCareRecord>}
-export const TROUGH_CAPACITY:Partial<Record<FarmSite['kind'],number>>={coop:12,barn:8,aprisco:8};
+export const TROUGH_CAPACITY:Partial<Record<FarmSite['kind'],number>>={coop:12,barn:8,aprisco:8,pigsty:8};
+/** Lugares do chão do chiqueiro onde aparece esterco. */
+export const MANURE_SPOTS=4;
+/** O porco come sobras da horta: legumes, frutas e grãos colhidos (não flores, ervas ou algodão). */
+export const PIG_FOOD=CROP_CATALOG.filter(c=>['vegetable','fruit','grain'].includes(c.group)).map(c=>c.harvest as ItemId);
 export const NEST_COUNT=6;
 export const MAX_CATCH_UP=7;
 export const MILKING_SECONDS=1;
@@ -37,10 +42,11 @@ function morning(save:SaveData,care:AnimalCare,day:number):void{
   const queue=[...site.animals].sort((a,b)=>(care.animals[a]?.fed??-1)-(care.animals[b]?.fed??-1));
   for(const id of queue){
    if((site.trough??0)<1)break;
-   const kind=domesticAnimal(id)?.kind;if(kind!=='chicken'&&kind!=='cow'&&kind!=='goat'&&kind!=='sheep'&&kind!=='duck')continue;
+   const kind=domesticAnimal(id)?.kind;if(kind!=='chicken'&&kind!=='cow'&&kind!=='goat'&&kind!=='sheep'&&kind!=='duck'&&kind!=='pig')continue;
    site.trough=(site.trough??0)-1;const rec=care.animals[id]??={};rec.fed=day;
    if(kind==='cow'||kind==='goat')rec.milk=true;
    else if(kind==='sheep'){if(!rec.wool){const days=(rec.woolDays??0)+1;if(days>=WOOL_FED_DAYS){rec.wool=true;rec.woolDays=0;}else rec.woolDays=days;}}
+   else if(kind==='pig'){const spot=Array.from({length:MANURE_SPOTS},(_,i)=>i).find(i=>!site.manure?.includes(i));if(spot!==undefined)(site.manure??=[]).push(spot);}
    else if(kind==='duck'){const days=(rec.duckDays??0)+1;const free=freeNest(site);if(days>=DUCK_FED_DAYS&&free!==undefined){(site.duckEggs??=[]).push(free);rec.duckDays=0;}else rec.duckDays=Math.min(days,DUCK_FED_DAYS-1);}
    else{const free=freeNest(site);if(free!==undefined)(site.eggs??=[]).push(free);}
   }
@@ -61,9 +67,9 @@ export function processAnimalProduction(save:SaveData):boolean{
 export const woolReady=(save:SaveData,id:string)=>domesticAnimal(id)?.kind==='sheep'&&!!save.animalCare?.animals[id]?.wool;
 export const milkReady=(save:SaveData,id:string)=>!!save.animalCare?.animals[id]?.milk;
 export const fedToday=(save:SaveData,id:string)=>save.animalCare?.animals[id]?.fed===productionDay(save);
-export interface ProductionSummary{trough:number;capacity:number;animals:number;fed:number;eggs:number;milk:number;wool:number}
+export interface ProductionSummary{trough:number;capacity:number;animals:number;fed:number;eggs:number;milk:number;wool:number;manure:number}
 export function productionSummary(save:SaveData,site:FarmSite):ProductionSummary{
- return{trough:site.trough??0,capacity:TROUGH_CAPACITY[site.kind]??0,animals:site.animals.length,fed:site.animals.filter(id=>fedToday(save,id)).length,eggs:(site.eggs?.length??0)+(site.duckEggs?.length??0),milk:site.animals.filter(id=>milkReady(save,id)).length,wool:site.animals.filter(id=>woolReady(save,id)).length};
+ return{trough:site.trough??0,capacity:TROUGH_CAPACITY[site.kind]??0,animals:site.animals.length,fed:site.animals.filter(id=>fedToday(save,id)).length,eggs:(site.eggs?.length??0)+(site.duckEggs?.length??0),milk:site.animals.filter(id=>milkReady(save,id)).length,wool:site.animals.filter(id=>woolReady(save,id)).length,manure:site.manure?.length??0};
 }
 
 type Result={ok:boolean;message:string};
@@ -80,6 +86,13 @@ function commit(save:SaveData,write:Writer,change:(d:SaveData,site:FarmSite)=>Re
 export function fillTrough(save:SaveData,siteId:number,write:Writer):Result{
  return commit(save,write,(d,site)=>{
   const cap=TROUGH_CAPACITY[site.kind]!,space=cap-(site.trough??0);
+  if(site.kind==='pigsty'){
+   if(space<=0)return fail(`O cocho está cheio (${cap} porções).`);
+   let n=0;for(const id of PIG_FOOD){const take=Math.min(space-n,d.inventory[id]);if(take>0){d.inventory[id]-=take;n+=take;}if(n>=space)break;}
+   if(!n)return fail('Traga sobras da horta: legumes, frutas ou grãos colhidos.');
+   site.trough=(site.trough??0)+n;
+   return{ok:true,message:`${n} ${n===1?'sobra colocada':'sobras colocadas'} no cocho (${site.trough}/${cap}). Cada porco come 1 por dia, às 06:00, e deixa esterco.`};
+  }
   if(space<=0)return fail(`O cocho está cheio (${cap} palhas).`);
   const n=Math.min(space,d.inventory.hay);if(n<=0)return fail('Traga palha na mochila. Retire no silo ou prepare com fibras.');
   d.inventory.hay-=n;site.trough=(site.trough??0)+n;
@@ -98,6 +111,14 @@ export function collectEgg(save:SaveData,siteId:number,nest:number,write:Writer)
   const i=new Inventory(d.inventory);if(!i.transact({},{egg:1}))return fail('Libere espaço na mochila para guardar o ovo.');
   d.inventory=i.data;site.eggs=site.eggs.filter(n=>n!==nest);if(!site.eggs.length)delete site.eggs;
   return{ok:true,message:'Você recolheu 1 ovo.'};
+ },siteId);
+}
+export function collectManure(save:SaveData,siteId:number,spot:number,write:Writer):Result{
+ return commit(save,write,(d,site)=>{
+  if(!site.manure?.includes(spot))return fail('Nada aqui. Porcos alimentados deixam esterco pela manhã.');
+  const i=new Inventory(d.inventory);if(!i.transact({},{manure:1}))return fail('Libere espaço na mochila para o esterco.');
+  d.inventory=i.data;site.manure=site.manure.filter(n=>n!==spot);if(!site.manure.length)delete site.manure;
+  return{ok:true,message:'Você recolheu 1 esterco. Leve à composteira para fazer adubo.'};
  },siteId);
 }
 export function canMilk(save:SaveData,id:string):Result{
@@ -153,6 +174,7 @@ export function validSiteProduction(s:FarmSite):boolean{
  if(s.trough!==undefined&&(cap===undefined||!s.finished||!Number.isSafeInteger(s.trough)||s.trough<0||s.trough>cap))return false;
  const nests=(v:number[]|undefined)=>v===undefined||s.kind==='coop'&&s.finished&&Array.isArray(v)&&v.length<=NEST_COUNT&&new Set(v).size===v.length&&v.every(n=>Number.isInteger(n)&&n>=0&&n<NEST_COUNT);
  if(!nests(s.eggs)||!nests(s.duckEggs)||s.eggs?.some(n=>s.duckEggs?.includes(n)))return false;
+ if(s.manure!==undefined&&(s.kind!=='pigsty'||!s.finished||!Array.isArray(s.manure)||s.manure.length>MANURE_SPOTS||new Set(s.manure).size!==s.manure.length||s.manure.some(n=>!Number.isInteger(n)||n<0||n>=MANURE_SPOTS)))return false;
  if(s.duckCollected!==undefined&&(s.kind!=='coop'||!Number.isSafeInteger(s.duckCollected)||s.duckCollected<0||s.duckCollected>1e6))return false;
  return true;
 }

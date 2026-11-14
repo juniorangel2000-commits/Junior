@@ -4,7 +4,7 @@ import headAnchors from './animal-head-anchors.json';
 
 /** Atlas compactos reservam só cinco imagens por direção, sem duplicar poses na GPU. */
 export const COMPACT_ANIMAL_KINDS=['pig','duck','rabbit','deer','bee'] as const;
-export const PREPARED_ANIMAL_KINDS=['pig','bee'] as const;
+export const PREPARED_ANIMAL_KINDS=['bee'] as const;
 export const compactAnimal=(kind:AnimalKind)=>COMPACT_ANIMAL_KINDS.includes(kind as typeof COMPACT_ANIMAL_KINDS[number]);
 export const animalColumns=(kind:AnimalKind)=>compactAnimal(kind)?5:9;
 export const ANIMAL_ART = {

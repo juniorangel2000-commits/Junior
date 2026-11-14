@@ -82,8 +82,10 @@ function accessible(rt:MachineRuntime,s:SaveData,id:number){const m=s.machines?.
 export function loadMachine(rt:MachineRuntime,id:number,item:ItemId){return commit(rt,s=>{
  const m=accessible(rt,s,id);if(!m)return fail('Aproxime-se da máquina pelo lado livre.');
  if(m.job)return fail(machineReady(s,m)?'Recolha o produto pronto antes de colocar outra carga.':'A máquina já está trabalhando.');
- const recipe=MACHINE_RECIPES.find(r=>!r.ingredients&&r.machine===m.kind&&r.input===item);if(!recipe)return fail('Esta máquina não trabalha com esse ingrediente.');
- const i=new Inventory(s.inventory);if(!i.spend({[item]:recipe.amount}))return fail(`Leve ${recipe.amount} × ${ITEM_NAMES[item]} para carregar.`);
+ const options=MACHINE_RECIPES.filter(r=>!r.ingredients&&r.machine===m.kind&&r.input===item);if(!options.length)return fail('Esta máquina não trabalha com esse ingrediente.');
+ const has=(r:typeof options[number])=>Object.entries({[item]:r.amount,...r.extra}).every(([k,n])=>(s.inventory[k as ItemId]??0)>=(n??0));
+ const recipe=options.find(has)??options[0];
+ const i=new Inventory(s.inventory);if(!i.spend({[item]:recipe.amount,...recipe.extra}))return fail(`Leve ${recipe.amount} × ${ITEM_NAMES[item]}`+(options.some(r=>r.extra)?' e '+options.map(r=>Object.entries(r.extra??{}).map(([k,n])=>`${n} × ${ITEM_NAMES[k as ItemId]}`).join(', ')).join(' ou '):'')+' para carregar.');
  const startedAt=groundClock(s);m.job={recipe:recipe.id,startedAt,readyAt:startedAt+recipe.minutes};s.inventory=i.data;
  return{ok:true,message:MACHINES[m.kind].name+' trabalhando.'};
 });}
@@ -129,6 +131,7 @@ export function machineHint(s:SaveData,m:PlacedMachine):string{
  }
  if(m.kind==='clayOven')return name+' · E escolher a fornada no caderno';
  if(m.kind==='beehive')return name+' · as abelhas fazem mel';
+ if(m.kind==='composter')return name+' · use 2 estercos com 3 capins ou 3 fibras · E guardar';
  return name+' · use '+MACHINE_RECIPES.filter(r=>r.machine===m.kind).map(r=>`${r.amount} ${ITEM_NAMES[r.input].toLowerCase()}`).join(' ou ')+' · E guardar máquina';
 }
 export function validMachineState(value:unknown,save:SaveData):value is MachineState{

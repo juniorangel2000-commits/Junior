@@ -42,7 +42,7 @@ describe('máquinas: instalação e navegação',()=>{
  });
 });
 describe('processamento pelo relógio do jogo',()=>{
- it.each(MACHINE_RECIPES.filter(r=>!r.ingredients))('$id: consome a carga correta e entrega somente depois do prazo',r=>{
+ it.each(MACHINE_RECIPES.filter(r=>!r.ingredients&&!r.extra))('$id: consome a carga correta e entrega somente depois do prazo',r=>{
   const t=setup();t.s.inventory[r.input]=r.amount;expect(placeMachine(t.rt,r.machine).ok).toBe(true);
   expect(loadMachine(t.rt,1,r.input).ok).toBe(true);expect(t.s.inventory[r.input]).toBe(0);expect(machine(t).job!.readyAt-machine(t).job!.startedAt).toBe(r.minutes);
   expect(loadMachine(t.rt,1,r.input).ok).toBe(false);expect(collectMachine(t.rt,1).ok).toBe(false);

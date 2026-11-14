@@ -48,6 +48,8 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   clayOven:{name:'Forno de barro',description:'Instale ao ar livre, na Propriedade. E abre o caderno: pães e bolos assam em meio dia, com 1 madeira de lenha.'},
   emptyHive:{name:'Colmeia vazia',description:'Do armazém do Augusto. Coloque nos Campos Abertos, a até 2 passos de um ipê: a cada 5 dias um enxame pode ocupá-la.'},
   beehive:{name:'Colmeia povoada',description:'Com um enxame dos ipês. Instale na Propriedade: dá mel a cada 4 dias, e cera a cada 3 coletas. Descansa no Inverno.'},
+  manure:{name:'Esterco',description:'Deixado pelos porcos alimentados no chão do chiqueiro. Na composteira, vira adubo.'},
+  composter:{name:'Composteira',description:'Instale na Propriedade: 2 estercos e 3 capins ou fibras viram 2 adubos em 2 dias.'},
   feather:{name:'Pena de pato',description:'Sai do ninho a cada 4 ovos de pato recolhidos. Celina compra.'},
   beeswax:{name:'Cera de abelha',description:'Sai da colmeia a cada 3 coletas de mel. Amélia compra.'},
   daisyHoney:{name:'Mel de margarida',description:'Mel de colmeia com margaridas maduras por perto. Vale mais que o mel comum.'},
@@ -108,7 +110,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
 
 /** Only these stock fields may be absent in a save from before the village
  * services update. Missing any older field still indicates a corrupt save. */
-export const VILLAGE_ITEM_IDS=['harvestBasket','honey','duckEgg',...DISH_IDS,...NEW_CROP_ITEM_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','clayOven','campfire','beehive','emptyHive','feather','beeswax','daisyHoney','sunflowerHoney','cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
+export const VILLAGE_ITEM_IDS=['harvestBasket','honey','duckEgg',...DISH_IDS,...NEW_CROP_ITEM_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','clayOven','campfire','beehive','emptyHive','feather','manure','composter','beeswax','daisyHoney','sunflowerHoney','cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
 
 export const ITEM_IDS = Object.keys(ITEMS) as ItemId[];
 export const ITEM_NAMES = Object.fromEntries(ITEM_IDS.map(id => [id, ITEMS[id].name])) as Record<ItemId, string>;

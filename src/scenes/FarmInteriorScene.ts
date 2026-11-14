@@ -27,7 +27,7 @@ import {FARM_INTERIORS,interiorBlocked,interiorSafe,interiorSpawn,interiorExit,i
 import {animalsInside,farmDoorExit} from '../systems/farm-interior';
 import type {FarmSite} from '../systems/farm-construction';
 import {drawFarmInterior,preloadFarmInteriorArt,type InteriorView} from '../farm-interior-art';
-import {processAnimalProduction,productionSummary,fillTrough,collectEgg,canMilk,milkCow,milkReady,woolReady,canShear,shearSheep,SHEARING_SECONDS,MILKING_SECONDS,TROUGH_CAPACITY} from '../systems/animal-production';
+import {processAnimalProduction,productionSummary,fillTrough,collectEgg,collectManure,canMilk,milkCow,milkReady,woolReady,canShear,shearSheep,SHEARING_SECONDS,MILKING_SECONDS,TROUGH_CAPACITY} from '../systems/animal-production';
 import {playerSpeedFactor} from '../systems/food-effects';
 interface InteriorStart{save:SaveData;ui:GameUI;siteId:number;onReturn:(save:SaveData,title?:boolean)=>void}
 interface InteriorAnimal{id:string;brain:AnimalBrain;sprite:Phaser.GameObjects.Sprite;shadow:Phaser.GameObjects.Ellipse;badge?:Phaser.GameObjects.Image}
@@ -77,7 +77,7 @@ export class FarmInteriorScene extends Phaser.Scene{
  private blocked=(x:number,y:number)=>interiorBlocked(this.layout,x,y)||machinePointBlocked(this.state,this.machineSpace(),x,y);
  private blockedTile=(x:number,y:number)=>interiorBlocked(this.layout,x*32+16,y*32+16);
  private clearAnimals():void{this.stopAnimalCare();for(const a of this.animals){a.sprite.destroy();a.shadow.destroy();a.badge?.destroy();}this.animals=[];}
- private refreshFixtures():void{const s=this.site;if(s)this.view?.refresh({eggs:s.eggs??[],duckEggs:s.duckEggs??[],trough:s.trough??0});}
+ private refreshFixtures():void{const s=this.site;if(s)this.view?.refresh({eggs:s.eggs??[],duckEggs:s.duckEggs??[],manure:s.manure??[],trough:s.trough??0});}
  /** Produto pronto: gota de leite ou mecha de lã acima do animal. */
  private refreshBadges():void{for(const a of this.animals){const ready=milkReady(this.state,a.id)||woolReady(this.state,a.id),texture=domesticAnimal(a.id)?.kind==='sheep'?'interior-wool-ready':'interior-milk-ready';if(ready&&!a.badge)a.badge=this.add.image(a.brain.x,a.brain.y-44,texture).setOrigin(.5,1);if(!ready&&a.badge){a.badge.destroy();a.badge=undefined;}if(a.badge)a.badge.setDisplaySize(10,13);}}
  /** Os animais aparecem aqui dentro à noite ou quando foram recolhidos; de dia, ficam no cercado. */
@@ -94,10 +94,12 @@ export class FarmInteriorScene extends Phaser.Scene{
   });
   this.refreshBadges();
  }
- private fixtureNear(){const p=this.player;return this.layout.fixtures.filter(f=>!f.id.startsWith('stall-divider')).map(f=>({f,d:Math.hypot(Math.max(f.x-p.x,0,p.x-(f.x+f.w)),Math.max(f.y-p.y,0,p.y-(f.y+f.h)))})).filter(x=>x.d<26).sort((a,b)=>a.d-b.d)[0]?.f;}
+ private fixtureNear(){const p=this.player;return this.layout.fixtures.filter(f=>!f.id.startsWith('stall-divider')&&(f.kind!=='manure'||!!this.site?.manure?.includes(Number(f.id.slice(7))-1))).map(f=>({f,d:Math.hypot(Math.max(f.x-p.x,0,p.x-(f.x+f.w)),Math.max(f.y-p.y,0,p.y-(f.y+f.h)))})).filter(x=>x.d<26).sort((a,b)=>a.d-b.d)[0]?.f;}
  private fixturePrompt(kind:string,label:string,id=''):string{
   const site=this.site;
-  if(kind==='trough'&&site){const cap=TROUGH_CAPACITY[site.kind]??0,n=site.trough??0;return`${label} · ${n}/${cap} palhas${n<cap?' · E coloca a palha da mochila':''}`;}
+  if(kind==='trough'&&site){const cap=TROUGH_CAPACITY[site.kind]??0,n=site.trough??0;return site.kind==='pigsty'?`${label} · ${n}/${cap} sobras${n<cap?' · E coloca legumes, frutas ou grãos da mochila':''}`:`${label} · ${n}/${cap} palhas${n<cap?' · E coloca a palha da mochila':''}`;}
+  if(kind==='mud')return`${label} · os porcos adoram se refrescar aqui`;
+  if(kind==='manure')return`${label} · E recolhe para a composteira`;
   if(kind==='water')return`${label} · água fresca para os animais`;
   if(kind==='nest'){const n=Number(id.slice(5))-1;return site?.duckEggs?.includes(n)?`${label} · E recolhe o ovo de pato`:site?.eggs?.includes(n)?`${label} · E recolhe o ovo`:`${label} · vazio; galinhas e patos alimentados botam pela manhã`;}
   return site?.kind==='aprisco'?`${label} · aproxime-se da ovelha com a tesoura ou da cabra com o balde`:`${label} · leve a vaca até aqui e use o balde para ordenhar`;
@@ -113,7 +115,7 @@ export class FarmInteriorScene extends Phaser.Scene{
  private careAnimalPrompt(a:InteriorAnimal):string{const name=farmAnimalLabel(a.id),sheep=a.brain.kind==='sheep',c=sheep?canShear(this.state,a.id):canMilk(this.state,a.id);return c.ok?`${name} · E ${sheep?'tosquia com a tesoura':'ordenha com o balde'}`:`${name} · ${c.message}`;}
  private updateHUD():void{if(!this.player)return;const f=this.fixtureNear(),machine=this.careAction?undefined:this.machineTarget(),site=this.site,count=site?.animals.length??0;
   const sum=site?productionSummary(this.state,site):undefined,cow=this.careAction?undefined:this.careAnimalNear();
-  const status=sum&&count?` · cocho ${sum.trough}/${sum.capacity} · ${sum.fed}/${count} ${sum.fed===1?'alimentado':'alimentados'} hoje${site!.kind==='coop'?` · ${sum.eggs} ${sum.eggs===1?'ovo':'ovos'} nos ninhos`:` · ${sum.milk} para ordenhar${site!.kind==='aprisco'?` · ${sum.wool} para tosquiar`:''}`}`:'';
+  const status=sum&&count?` · cocho ${sum.trough}/${sum.capacity} · ${sum.fed}/${count} ${sum.fed===1?'alimentado':'alimentados'} hoje${site!.kind==='pigsty'?` · ${sum.manure} de esterco no chão`:site!.kind==='coop'?` · ${sum.eggs} ${sum.eggs===1?'ovo':'ovos'} nos ninhos`:` · ${sum.milk} para ordenhar${site!.kind==='aprisco'?` · ${sum.wool} para tosquiar`:''}`}`:'';
   const hint=!count?`${this.name} vazio · conduza seus animais até a entrada pelo cercado`:this.animalsShown?`${count} ${count===1?'animal':'animais'} aqui dentro${status}`:`De dia os animais ficam no cercado · use "Recolher os animais" no painel${status}`;
   this.ui.updateHUD({area:'property',worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',inHome:true,swimming:false,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:this.careAction?null:machine||cow||f?'E':null,prompt:this.careAction?(this.careAction.kind==='shear'?'Tosquiando…':'Ordenhando…'):machine?machineHint(this.state,machine):cow?this.careAnimalPrompt(cow):f?this.fixturePrompt(f.kind,f.label,f.id):hint,location:this.name,harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:true,shelterReason:this.name,resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});this.ui.updateCameraZoom(this.shownZoom,!this.paused);}
  private interact():void{if(this.paused||this.leaving||this.careAction||this.ui.isModalOpen())return;
@@ -121,6 +123,8 @@ export class FarmInteriorScene extends Phaser.Scene{
   const cow=this.careAnimalNear();if(cow){this.startAnimalCare(cow);return;}
   const f=this.fixtureNear();if(!f)return;
   if(f.kind==='trough'){const r=fillTrough(this.state,this.siteId,saveGame);this.ui.toast(r.message);if(r.ok){gameAudio.play('plant');this.refreshFixtures();}return;}
+  if(f.kind==='manure'){const r=collectManure(this.state,this.siteId,Number(f.id.slice(7))-1,saveGame);this.ui.toast(r.message);if(r.ok){gameAudio.play('pickup');this.refreshFixtures();}return;}
+  if(f.kind==='mud'){this.ui.toast(this.fixturePrompt(f.kind,f.label,f.id));return;}
   if(f.kind==='nest'){const r=collectEgg(this.state,this.siteId,Number(f.id.slice(5))-1,saveGame);this.ui.toast(r.message);if(r.ok){gameAudio.play('pickup');this.refreshFixtures();}return;}
   this.ui.toast(this.fixturePrompt(f.kind,f.label,f.id));
  }

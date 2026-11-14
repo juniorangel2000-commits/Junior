@@ -32,6 +32,9 @@
     "beeswax.png": "1187194f-64f5-4ebd-b437-995eeff6090d",
     "empty-hive.png": "6c65dd6c-4704-43aa-b834-c1c91c6937ab (desbotada)",
     "daisy-honey.png": "honey.png com tom mais claro",
-    "sunflower-honey.png": "honey.png com tom mais âmbar"
+    "sunflower-honey.png": "honey.png com tom mais âmbar",
+    "../farm/pigsty.png": "7db90d3d-d0b3-434f-a3ce-e89a4464e523 (versão raw, fundo branco removido por script)",
+    "../machines/composter.png": "30e21309-7092-4d03-ae4b-4ad356b25631",
+    "manure.png": "desenhado por script (sem créditos)"
   }
 }

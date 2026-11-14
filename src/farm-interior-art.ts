@@ -13,7 +13,7 @@ const SOURCES:Record<string,string>={
  'interior-nest':'nest.png','interior-water':'water.png',
  'interior-trough-64':'trough-64.png','interior-trough-96':'trough-96.png',
  'interior-stall-96x96':'stall.png','interior-divider-88':'divider.png',
- 'interior-nest-egg':'nest-egg.png','interior-nest-duck-egg':'nest-duck-egg.png','interior-trough-64-empty':'trough-64-empty.png','interior-trough-96-empty':'trough-96-empty.png',
+ 'interior-nest-egg':'nest-egg.png','interior-nest-duck-egg':'nest-duck-egg.png','interior-manure':'../../kitchen/manure.png','interior-trough-64-empty':'trough-64-empty.png','interior-trough-96-empty':'trough-96-empty.png',
  'interior-wool-ready':'../products/wool.png','interior-shears':'../products/shears.png',
  'interior-milk-ready':'../products/milk.png','interior-milk-pail':'../products/milk-pail.png',
 };
@@ -23,6 +23,8 @@ export function preloadFarmInteriorArt(scene:Phaser.Scene):void{
 }
 /** Chave da textura de cada objeto fixo (a mesma da arte provisória). */
 export function fixtureKey(f:InteriorFixture):string{
+ if(f.kind==='mud')return 'interior-mud';
+ if(f.kind==='manure')return 'interior-manure';
  if(f.kind==='trough')return `interior-trough-${f.w}`;
  if(f.kind==='water')return 'interior-water';
  if(f.kind==='nest')return 'interior-nest';
@@ -64,12 +66,25 @@ function floor(scene:Phaser.Scene,kind:FarmKind,l:FarmInteriorLayout):string{
  scene.textures.addCanvas(key,canvas)?.setFilter(0);return key;
 }
 /** Estado visível dos objetos: ovos nos ninhos (índices 0–5) e cocho com ou sem palha. */
-export interface InteriorFixtureState{eggs:readonly number[];duckEggs?:readonly number[];trough:number}
+export interface InteriorFixtureState{eggs:readonly number[];duckEggs?:readonly number[];manure?:readonly number[];trough:number}
 export interface InteriorView{fixtures:Map<string,Phaser.GameObjects.Image>;refresh(state:InteriorFixtureState):void;destroy():void}
+/** Lamaçal do chiqueiro, desenhado em pixel art (terra molhada com poças e reflexos). */
+function mudTexture(scene:Phaser.Scene,w:number,h:number):void{
+ if(scene.textures.exists('interior-mud'))return;
+ const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d')!;
+ let seed=7;const r=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
+ const blob=(cx:number,cy:number,rx:number,ry:number,col:string)=>{x.fillStyle=col;for(let yy=-ry;yy<=ry;yy++){const half=Math.round(rx*Math.sqrt(1-(yy/ry)**2));x.fillRect(Math.round(cx-half),Math.round(cy+yy),half*2,1);}};
+ blob(w/2,h/2,w/2-2,h/2-3,'#4a3420');blob(w/2,h/2,w/2-5,h/2-6,'#5e4229');
+ for(let i=0;i<5;i++)blob(10+r()*(w-20),8+r()*(h-16),6+r()*10,3+r()*4,'#3e2a18');
+ for(let i=0;i<4;i++){const px=12+r()*(w-24),py=10+r()*(h-20);blob(px,py,5+r()*6,2+r()*2,'#6f5a3e');x.fillStyle='#a08a66';x.fillRect(Math.round(px-2),Math.round(py-1),3,1);}
+ for(let i=0;i<40;i++){x.fillStyle=r()<.5?'#735131':'#2f2013';x.fillRect(Math.round(8+r()*(w-16)),Math.round(6+r()*(h-12)),2,1);}
+ scene.textures.addCanvas('interior-mud',c);
+}
 export function drawFarmInterior(scene:Phaser.Scene,kind:FarmKind):InteriorView{
  const l=FARM_INTERIORS[kind]!,objects:Phaser.GameObjects.GameObject[]=[],fixtures=new Map<string,Phaser.GameObjects.Image>();
  objects.push(scene.add.image(0,0,floor(scene,kind,l)).setOrigin(0).setScale(1/FLOOR_SCALE).setDepth(-100));
  for(const f of l.fixtures){
+  if(f.kind==='mud')mudTexture(scene,f.w,f.h);
   const key=fixtureKey(f),divider=f.kind==='stall'&&f.solid,img=scene.add.image(f.x+f.w/2,f.y+f.h+(divider?4:0),key).setOrigin(.5,1).setDepth(f.solid?f.y+f.h:-50);
   // A arte fica na resolução original e é reduzida só na exibição. A baia ocupa o retângulo
   // inteiro; os outros objetos mantêm a proporção, apoiados na base. A divisória é fina
@@ -82,6 +97,7 @@ export function drawFarmInterior(scene:Phaser.Scene,kind:FarmKind):InteriorView{
   let key=fixtureKey(f);
   if(f.kind==='nest'&&state.eggs.includes(Number(f.id.slice(5))-1))key='interior-nest-egg';
   if(f.kind==='nest'&&state.duckEggs?.includes(Number(f.id.slice(5))-1))key='interior-nest-duck-egg';
+  if(f.kind==='manure'){img.setVisible(!!state.manure?.includes(Number(f.id.slice(7))-1));continue;}
   if(f.kind==='trough'&&state.trough<=0)key+='-empty';
   if(img.texture.key!==key&&scene.textures.exists(key)){const w=img.displayWidth,h=img.displayHeight;img.setTexture(key).setDisplaySize(w,h);}
  }};
