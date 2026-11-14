@@ -99,6 +99,8 @@ export function preloadVisualAssets(scene: Phaser.Scene): void {
   scene.load.image('forest-animals-source', 'assets/visual/forest/animals.png');
   scene.load.image('icon-water-empty', WATER_EMPTY_ICON);
   for (const id of ['water', 'seeds']) scene.load.image(`icon-${id}`, `${BASE}icons/${id}.png`);
+  // Pacote de sementes no chão da casa: a mesma arte da semente de nabo na mochila.
+  scene.load.image('home-seed-packet', `${BASE}crops/turnip/seed.png`);
   scene.load.image('nature-trees-source', `${BASE}nature/trees-approved.png`);
   scene.load.image('terrain-materials-source', `${BASE}terrain/ground-materials.png`);
   scene.load.image('terrain-finishes-source', `${BASE}terrain/floor-finishes.png`);

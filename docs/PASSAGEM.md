@@ -29,6 +29,11 @@
   - O Junior apontou que o pote de mel estava fechado com a colher atravessando a tampa. Mel e doce de leite foram refeitos com o pote aberto.
 - **SpriteCook:** sobram cerca de 230 créditos.
 
+### Sementes na casa do início
+
+- O pacote de 7 sementes no chão da casa usava o ícone antigo `icons/seeds.png`, uma moita com flores brancas. Agora usa a semente de nabo nova (`crops/turnip/seed.png`, textura `home-seed-packet`), a mesma da mochila.
+- Captura em `docs/planejamento/qa-cozinha/casa-inicio-sementes.png`.
+
 ### Comparação de escala dos animais novos (`09d3bda`)
 
 - `scripts/capture-new-animals.cjs` monta, na Propriedade e no zoom normal, a fileira: jogador, galinha, pato, coelho, abelha, porco, ovelha, cabra, vaca, cervo e cavalo.
