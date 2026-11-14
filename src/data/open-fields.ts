@@ -1,3 +1,4 @@
+import {IPE_ART} from './ipe-art';
 import type {TilePoint} from '../types';
 export const FIELDS_SIZE={width:3072,height:2304};
 export const FIELDS_ENTRY={x:1536,y:140,direction:'down' as const};
@@ -49,6 +50,6 @@ export const fieldsSafe=(p:TilePoint)=>[[-8,-5],[8,-5],[-8,4],[8,4]].every(([dx,
 export const IPE_HITS=6;
 export const IPE_REGROW_DAYS=7;
 export const IPE_REACH=78;
-export const FIELDS_IPES:FieldProp[]=[[1240,440],[1720,720],[1940,1140],[760,1370],[2490,1400],[2120,1720]].map(([x,y],i)=>({id:`ipe-${i}`,x,y,texture:'fields-ipe',width:178,height:226,rx:14,ry:9,tree:true}));
+export const FIELDS_IPES:FieldProp[]=[[1240,440],[1720,720],[1940,1140],[760,1370],[2490,1400],[2120,1720]].map(([x,y],i)=>({id:`ipe-${i}`,x,y,texture:'fields-ipe',width:IPE_ART.width,height:IPE_ART.height,rx:14,ry:9,tree:true}));
 for(const p of FIELDS_IPES)indexProp(p);
 export const fieldIpe=(id:string)=>FIELDS_IPES.find(p=>p.id===id);

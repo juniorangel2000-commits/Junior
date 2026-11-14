@@ -1,3 +1,4 @@
+import {IPE_ART} from './data/ipe-art';
 import {HorseIdleCycle} from './systems/horse-idle';
 import {readTerrainSprites} from './terrain-sprites';
 import {paintFieldsFloor} from './open-fields-ground';
@@ -11,24 +12,17 @@ import {animalSprite,setupAnimalArt} from './forest-art';
 import {preloadAnimalSprites,updateAnimalSprite} from './animal-sprites';
 import {CowRestCycle} from './systems/cow-rest';
 export function preloadOpenFields(scene:Phaser.Scene){
+ if(!scene.textures.exists('fields-ipe'))scene.load.image('fields-ipe','assets/visual/open-fields/ipe-yellow.png');
  for(const key of ['shed'])if(!scene.textures.exists('fields-'+key))scene.load.image('fields-'+key,`assets/visual/open-fields/${key}.png`);
  if(!scene.textures.exists('forest-animals-source'))scene.load.image('forest-animals-source','assets/visual/forest/animals.png');
  preloadAnimalSprites(scene);
 }
-/** Golden ipê canopy: foliage of an existing tree is remapped to a warm yellow
- * ramp by luminance; trunk, outline and shadow pixels keep their colours. */
+/** A arte mantém seus pixels originais; o recorte remove só a margem transparente. */
 export function ensureIpeTexture(scene:Phaser.Scene):void{
- if(scene.textures.exists('fields-ipe')||!scene.textures.exists('asset-tree-1'))return;
- const source=scene.textures.get('asset-tree-1').getSourceImage() as HTMLCanvasElement|HTMLImageElement,canvas=document.createElement('canvas');
- canvas.width=source.width;canvas.height=source.height;const c=canvas.getContext('2d')!;c.imageSmoothingEnabled=false;c.drawImage(source,0,0);
- const img=c.getImageData(0,0,canvas.width,canvas.height),d=img.data,ramp=[[92,52,14],[168,104,18],[226,162,30],[250,206,72],[255,236,150]];
- for(let i=0;i<d.length;i+=4){const r=d[i],g=d[i+1],b=d[i+2];if(!d[i+3]||g<=r*1.04||g<=b*1.08)continue;
-  const l=Math.min(.999,Math.max(0,(.3*r+.59*g+.11*b)/200)),k=l*(ramp.length-1),j=Math.floor(k),t=k-j;
-  for(let n=0;n<3;n++)d[i+n]=Math.round(ramp[j][n]*(1-t)+ramp[Math.min(ramp.length-1,j+1)][n]*t);
-  // Sparse blossoms brighten the canopy without changing its silhouette.
-  if(((i>>2)*2654435761>>>0)%23===0&&l>.35){d[i]=255;d[i+1]=242;d[i+2]=178;}
- }
- c.putImageData(img,0,0);scene.textures.addCanvas('fields-ipe',canvas)!.setFilter(0);
+ if(!scene.textures.exists('fields-ipe'))return;
+ const texture=scene.textures.get('fields-ipe'),f=IPE_ART.frame;
+ if(!texture.has('tree'))texture.add('tree',0,f.x,f.y,f.width,f.height);
+ texture.setFilter(0);
 }
 export class OpenFieldsWorld{
  readonly trees:Phaser.GameObjects.Image[]=[];
@@ -45,7 +39,7 @@ export class OpenFieldsWorld{
   ensureIpeTexture(scene);
   for(const p of FIELDS_IPES){
    this.ipeStumps.set(p.id,scene.add.image(p.x,p.y+4,'forest-detail-stump').setOrigin(.5,1).setDisplaySize(46,34).setDepth(p.y));
-   const image=scene.add.image(p.x,p.y,'fields-ipe').setOrigin(.5,1).setDisplaySize(p.width,p.height).setDepth(p.y);this.ipes.set(p.id,image);this.trees.push(image);
+   const image=scene.add.image(p.x,p.y,'fields-ipe','tree').setOrigin(IPE_ART.originX,1).setDisplaySize(p.width,p.height).setDepth(p.y);this.ipes.set(p.id,image);this.trees.push(image);
   }
   for(const p of FIELDS_PROPS){const image=scene.add.image(p.x,p.y,p.texture).setOrigin(.5,1).setDisplaySize(p.width,p.height).setDepth(p.y);if(p.tree)this.trees.push(image);}
   // Crop in texture coordinates; keep original generated pixels unchanged on disk.
