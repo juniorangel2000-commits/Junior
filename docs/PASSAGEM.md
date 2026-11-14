@@ -3,14 +3,38 @@
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
 - **Atualizado em:** 2026-11-14
-- **Por:** Codex — encerramento de emergência, Junior vai continuar no Claude por limite de créditos.
-- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Máquinas em `7d38fc8`; animais/habitat em **`4178e7e` (WIP)**.
+- **Por:** Claude Code
+- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Patos e distanciamento nos Campos corrigidos e conferidos em `ec3ec4f`.
 - **Última versão publicada:** `v0.10.0-preview.34`, https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.10.0-preview.34
-- **Estado:** máquinas implementadas e aprovadas no QA de navegador. Arte dos próximos animais pronta, coelho/cervo integrados; patos da floresta e afastamento nos Campos em validação. **Há um teste falhando. Nada foi publicado; main, tags e versão do pacote inalteradas.**
+- **Estado:** máquinas aprovadas no QA de navegador. Patos da Floresta Antiga e distanciamento nos Campos corrigidos e conferidos no navegador. **Suíte inteira passando e build ok.** Nada foi publicado; `main`, tags e versão do pacote estão inalteradas.
 
 ## Feito nesta rodada
 
-### Máquinas (`7d38fc8`)
+### Patos e distanciamento nos Campos (Claude Code, `ec3ec4f`)
+
+- **Causa da falha dos patos:** a detecção do jogador usava `lineClear`, que testa o mesmo bloqueio do caminho, inclusive o limite do habitat. Um jogador em terra, fora da faixa da margem, ficava invisível para o pato, que não fugia.
+  - Correção: `AnimalBrain` ganhou um parâmetro opcional `sightBlocked` e o método `canSee`. A detecção usa `canSee`.
+  - Sem `sightBlocked`, nada muda para os outros animais (continua `lineClear`). Os patos passam só os sólidos como bloqueio de visão.
+- **O teste também estava errado:** o ponto `(384,500)` não é válido para o pato (`canStand` falso, o tile 11 fica fora da faixa), então ele não podia dar nenhum passo.
+  - Agora o teste procura o ponto de margem mais distante em que o pato pode ficar.
+  - Também confere que `lineClear` é falso e `canSee` é verdadeiro para o jogador em terra.
+  - Os passos continuam limitados a 8 px.
+- `scripts/qa-forest-ducks.cjs` (Chromium) passou duas vezes seguidas:
+  - os dois patos nascem no lago;
+  - um pato posto na margem, com o jogador em terra, foge e entra na água;
+  - passo máximo por quadro de 2–5 px, sem saltos;
+  - nenhum erro de JavaScript.
+  - A porteira da floresta agora é atravessada a pé; o script caminha até a cena abrir.
+  - Evidências em `docs/planejamento/qa-patos/`.
+- **Distanciamento nos Campos:** no código, todos os animais soltos (cavalo, 2 vacas, 3 galinhas e 2 coelhos) já eram selvagens, via `createFieldAnimalBrain`. Faltava conferir no jogo.
+  - `scripts/qa-fields-distance.cjs` passou. Com o jogador a 90 px, cada um se afasta em 2 s: o cavalo vai a 146 px, as vacas a 170–180, as galinhas a 211–217 e os coelhos a 235–244.
+  - Uma vaca forçada a deitar levanta e foge.
+  - Evidências em `docs/planejamento/qa-campos-distancia/`.
+
+### Máquinas e animais (Codex, antes desta rodada)
+
+#### Máquinas (`7d38fc8`)
+
 
 - Cinco primeiras do plano `docs/planejamento/ANIMAIS-E-RECEITAS.md`: **queijeira, batedeira de manteiga, roca, tear e moinho de pedra**.
 - Projetos aprendidos em serviços dos NPCs, seguindo o sistema existente:
@@ -41,7 +65,7 @@
 - Evidências portáteis em `docs/planejamento/qa-maquinas/`: balões, novelo pronto e `validacao.json`.
 - Um teste inicial de navegador caiu por retornar o objeto Camera do Phaser em `page.evaluate`; corrigido para retornar void. O QA completo acima foi repetido e passou. Não era crash confirmado do jogo.
 
-### Animais e pedidos adicionais (`4178e7e`, WIP)
+#### Animais e pedidos adicionais (`4178e7e`)
 
 - Depois das máquinas, Junior pediu preparar sprites/animações dos outros animais. Confirmou incluir **porco, pato, abelhas, coelho e cervo**.
 - Geradas artes próprias de todos, oito direções × (parado + quatro poses de movimento), com fontes preservadas em `public/assets/animals/<tipo>/source.png`, recortes/hashes em `atlas.json` e atlas compacto de **5 colunas × 8 linhas**, célula 224.
@@ -59,16 +83,10 @@
 
 ## Em andamento e próximo passo exato
 
-1. **Corrigir o teste falhando de patos**, antes de publicar ou afirmar que essa parte terminou:
-   - Arquivo: `tests/forest-ducks.test.ts`, teste **"entra na água a partir da margem por movimento contínuo ao fugir do jogador"**, linha 15.
-   - Resultado atual: o pato continua em área de margem e `entered` fica `false` (esperado true). Os outros três testes desse arquivo passaram.
-   - Hipótese a investigar: `AnimalBrain.lineClear` usa o bloqueio do habitat como se fosse obstáculo visual; um jogador em terra fora da faixa pode ficar "invisível" para o pato. Distinguir visibilidade/sólidos de limite de habitat ou orientar o retorno à água, **sem teletransportar**.
-   - A simulação do teste usa água retangular `400<x<800,300<y<700`, pato colocado em `(384,500)` (margem) e jogador `(280,500)`. Ver se o modelo está detectando o jogador e gerando percurso para a água.
-2. Conferir no navegador os patos nadando/entrando pela margem e a fuga dos animais nos Campos. Testar cavalo domado para não regredir a doma. Ainda **não foi feito** esse QA dos pedidos adicionais.
-3. Gerar uma comparação/GIF dos cinco animais novos em escala real (com vaca/galinha/jogador como referência), incluindo voo da abelha. As artes existem e os testes de atlas passaram; a prévia final ainda não foi feita.
-4. Rodar `npm run check`, **suite inteira `npm test`** e build. A suite inteira e o build **não foram executados após as alterações desta rodada**, por encerramento de emergência.
-5. Atualizar plano geral e documentação de máquinas/animais, concluir os commits WIP e reescrever esta passagem. O plano geral ainda está com etapas 1–3 marcadas como prontas; a etapa de máquinas já tem implementação/QA mas falta fechar documentação.
-- Não publicar sem pedido atual. O pacote continua preview.34, tudo no branch preview.35.
+1. Gerar uma comparação ou GIF dos cinco animais novos (porco, pato, abelha, coelho e cervo) em escala real, com vaca, galinha e jogador como referência, incluindo o voo da abelha. As escalas iniciais estão em `ANIMAL_ART`; ainda falta a conferência visual.
+2. Atualizar o plano geral (`docs/planejamento/ANIMAIS-E-RECEITAS.md`): as máquinas já têm implementação e QA; falta fechar a documentação.
+3. Próxima etapa do plano: **cozinha** (fogão a lenha, receitas da Helena e caderno); depois a criação e a produção de porco, pato e abelhas. A arte deles existe, mas o sistema de criação não.
+- Não publicar sem pedido do Junior. O pacote continua preview.34; tudo está no branch preview.35.
 
 ## Pendências e ideias para depois
 
@@ -78,7 +96,6 @@
 
 ## Problemas conhecidos
 
-- Falha atual de entrada do pato na água descrita acima.
 - Interiores dos animais não persistem posição interna individual e ficam claros à noite.
 - Travamentos nos Campos ainda precisam ser medidos no PC do Junior: otimizações anteriores estão em `f28f27c`, capim em `5424eee`; o navegador aqui usa SwiftShader. **Não afirmar que o problema de FPS foi resolvido.**
 - Galinheiro/curral/aprisco, ovos/leite/lã e tesoura estavam validados antes desta rodada (`e00c675`, `a13381b`, `011516c`). Ver `docs/construcoes/APRISCO.md` e evidências em `docs/planejamento/qa-aprisco/`.
@@ -86,10 +103,13 @@
 
 ## Testes
 
-- Baseline: `npm ci`, `npm run check`, suite completa **1.978 testes / 225 arquivos**, zero falhas.
-- Último `npm run check`: **ok**, em `/tmp/animals-check3.log` (log local, pode não existir em outra sessão).
-- Máquinas: 26 testes novos passaram; regressões direcionadas de aprisco, serviços, quickbar e migração (50 testes) também passaram. QA completo das máquinas passou no navegador e suas evidências estão no repositório.
-- Última rodada direcionada, após animais/habitat: **62 passaram, 1 falhou / 5 arquivos**. Falha de entrada do pato na água em `tests/forest-ducks.test.ts`; detalhe acima. Log local `/tmp/animals-target3.log`.
-- `tests/next-animal-art.test.ts` (7) passou: hashes, recortes, oito direções, controle de poses, escala e carregamento sob demanda. Testes anteriores de animais/arte também passaram antes do habitat.
-- **Suite inteira final e build não concluídos nesta rodada.** Encerramento por limite do Junior; trabalho enviado como WIP.
-- Para QAs: iniciar Vite com `npm run dev -- --host 0.0.0.0 --port 5190`. Scripts usam Playwright externo e `/usr/bin/chromium`; o QA das máquinas aceita `QA_URL` e diretório de saída.
+- `npm run check`: ok.
+- `npm test`: **2.015 passaram, zero falhas, 228 arquivos** (`ec3ec4f`).
+- `npm run build`: ok (aviso de tamanho do pacote, que já existia).
+- Chromium, nesta rodada:
+  - `scripts/qa-forest-ducks.cjs`: OK.
+  - `scripts/qa-fields-distance.cjs`: OK.
+- Antes, com o Codex:
+  - QA das máquinas (`scripts/qa-machines.cjs`) passou;
+  - 26 testes de máquinas e 7 de arte dos animais novos.
+- Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`. Os scripts usam o Playwright instalado; `CHROMIUM_PATH` é opcional.
