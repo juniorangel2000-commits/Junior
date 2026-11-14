@@ -1,6 +1,6 @@
 # Animais, produtos e receitas — proposta
 
-Status: plano de 14/11/2026. Etapas 1–3 implementadas no branch preview.35, sem publicação; detalhes do aprisco em `docs/construcoes/APRISCO.md`. Restante continua planejado, a partir do pedido do Junior:
+Status: plano de 14/11/2026. Etapas 1–4 implementadas no branch preview.35, sem publicação. Detalhes em `docs/construcoes/APRISCO.md` (aprisco) e `docs/construcoes/MAQUINAS.md` (máquinas). A arte animada de porco, pato, coelho, cervo e abelha está pronta (comparação de escala em `docs/planejamento/qa-animais-novos/`), mas a criação de porco, pato e abelhas ainda não. Restante continua planejado, a partir do pedido do Junior:
 - ovelha e cabra completas;
 - porco, pato e abelhas novos;
 - cada animal com seu produto e receitas;
@@ -72,6 +72,8 @@ Pedido do Junior: galinheiro, curral e as próximas construções de animais (ap
 ## Máquinas de processamento
 
 Pedido do Junior: o processamento é feito em **máquinas**, e não na bancada. A arte, os nomes e os detalhes são nossos, sem copiar outro jogo.
+
+**Andamento:** queijeira, batedeira, roca, tear e moinho estão implementados, com custos, preços e regras em `docs/construcoes/MAQUINAS.md`. Composteira, barril de conservas e prensa de cera dependem de porco e abelhas e ficam para as etapas 6 e 7.
 
 **Como colocar** (decisão do Junior: igual à cesta do cavalo, sem editor)
 - A máquina pronta é um **item da mochila**.
@@ -180,12 +182,12 @@ Aprovado pelo Junior em 14/11/2026.
 
 ## Ordem sugerida
 
-1. Interiores do galinheiro e do curral, com cocho e ninhos dentro e a rotina dia/noite dos animais.
-2. Produção básica: alimentação, ovo nos ninhos e leite (`PRODUCAO-ANIMAL-PLANO.md`).
-3. Ovelha e cabra: arte animada, aprisco com interior, lã, leite de cabra e tesoura.
-4. Sistema de máquinas, colocáveis nos interiores, e as primeiras: queijeira, batedeira, roca, tear e moinho.
-5. Cozinha: fogão a lenha, receitas da Helena e caderno; depois forno de barro, fogueira, efeitos e pedidos.
-6. Porco (chiqueiro com interior, esterco e composteira), pato e abelhas (colmeia, mel e cera).
+1. ✅ Interiores do galinheiro e do curral, com cocho e ninhos dentro e a rotina dia/noite dos animais.
+2. ✅ Produção básica: alimentação, ovo nos ninhos e leite (`PRODUCAO-ANIMAL-PLANO.md`).
+3. ✅ Ovelha e cabra: arte animada, aprisco com interior, lã, leite de cabra e tesoura.
+4. ✅ Sistema de máquinas, colocáveis nos interiores, e as primeiras: queijeira, batedeira, roca, tear e moinho.
+5. **Próxima:** cozinha: fogão a lenha, receitas da Helena e caderno; depois forno de barro, fogueira, efeitos e pedidos.
+6. Porco (chiqueiro com interior, esterco e composteira), pato e abelhas (colmeia, mel e cera). A arte animada dos três já existe; os patos da Floresta Antiga já vivem no lago como fauna ambiente, sem criação.
 7. Barril de conservas, prensa de cera, efeitos dos pratos e equilíbrio de preços.
 
 ## Decisões em aberto
