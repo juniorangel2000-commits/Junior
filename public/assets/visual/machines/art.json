@@ -4,6 +4,8 @@
   "productsSha256": "f68b2fdcd91b59a213068677a3495290482d2296e2a7244b4c3c25a6f5c3a096",
   "frames": {
     "clayOven":{"width":150,"height":146,"cuts":[]},
+    "preserveKeg":{"width":631,"height":627,"cuts":[]},
+    "waxPress":{"width":588,"height":688,"cuts":[]},
     "composter":{"width":212,"height":192,"cuts":[]},
     "beehive":{"width":150,"height":200,"cuts":[]},
     "cheesePress": {

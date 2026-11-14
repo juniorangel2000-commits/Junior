@@ -132,6 +132,7 @@ export function machineHint(s:SaveData,m:PlacedMachine):string{
  if(m.kind==='clayOven')return name+' · E escolher a fornada no caderno';
  if(m.kind==='beehive')return name+' · as abelhas fazem mel';
  if(m.kind==='composter')return name+' · use 2 estercos com 3 capins ou 3 fibras · E guardar';
+ if(m.kind==='preserveKeg')return name+' · use 3 morangos ou 3 melancias, com 1 mel · E guardar';
  return name+' · use '+MACHINE_RECIPES.filter(r=>r.machine===m.kind).map(r=>`${r.amount} ${ITEM_NAMES[r.input].toLowerCase()}`).join(' ou ')+' · E guardar máquina';
 }
 export function validMachineState(value:unknown,save:SaveData):value is MachineState{
