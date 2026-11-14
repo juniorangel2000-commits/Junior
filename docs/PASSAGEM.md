@@ -31,10 +31,16 @@
     - `interior-nest`
     - `interior-stall-<l>x<a>`
     - `interior-divider-<a>`
-- O Junior conectou o **SpriteCook** no claude.ai. Ele só aparece em sessões novas, porque os conectores são carregados quando a sessão começa.
+- **SpriteCook** (sessão seguinte, 2026-11-14): o plugin (`github.com/SpriteCook/claude-plugin`, v0.1.8) carregou, mas o servidor `mcp.spritecook.ai/mcp/claude` pediu login (OAuth). Uma sessão do Claude Code na nuvem não consegue abrir esse login, então nenhuma arte foi gerada. Nada de código mudou nessa sessão; `npm run check` ok e 1.939 testes passando.
 
 ## Em andamento e próximo passo exato
 
+- **Antes de tudo, o SpriteCook precisa estar autorizado:**
+  - O Junior entra em https://claude.ai/customize/connectors, clica em **Conectar** no SpriteCook e faz o login da conta SpriteCook.
+  - Depois disso, uma sessão **nova** já carrega as ferramentas. Para conferir, peça o saldo de créditos (`get_credit_balance`).
+  - Se o SpriteCook não aparecer nessa lista, há duas alternativas:
+    - rodar o Claude Code no computador do Junior, onde o plugin abre o login no navegador;
+    - guardar uma API key `sc_live_` como segredo de rede do host `api.spritecook.ai` (servidor `https://api.spritecook.ai/mcp/`). O Junior preferiu não usar a chave por enquanto.
 - **Arte definitiva dos interiores com o SpriteCook**, numa sessão nova:
   - piso de palha (galinheiro) e de tábuas com palha (curral);
   - paredes de tábua;
