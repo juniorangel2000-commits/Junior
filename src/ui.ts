@@ -155,7 +155,7 @@ export class GameUI {
   private notifications = document.createElement('div');
   private companionQuickPanel?: CompanionQuickPanel;
   private mode: 'title' | 'creation' | 'opening' | 'hud' | 'expedition' = 'title';
-  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'fishingJournal' | 'mineJournal' | 'pets' | null = null;
+  private modal: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'fishingJournal' | 'mineJournal' | 'pets' | 'text' | null = null;
   private focusBeforeModal?: HTMLElement;
   private onModalClose?: () => void;
   private existingSave = false;
@@ -1192,6 +1192,36 @@ export class GameUI {
     panel.querySelector<HTMLButtonElement>('[data-city-cancel]')!.focus();
   }
 
+  /** Janela com um campo de texto (por exemplo, o nome do cavalo domado). `onConfirm`
+   * devolve uma mensagem de erro para manter a janela aberta, ou nada para fechar. */
+  askText(o:{eyebrow:string;title:string;text:string;label:string;maxLength:number;confirm:string;onConfirm:(value:string)=>string|void}): void {
+    if (this.mode !== 'hud' || this.modal) return;
+    this.openModal('text');
+    const panel = document.createElement('section');
+    panel.className = 'sleep-card panel text-prompt-card';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    panel.setAttribute('aria-label', o.title);
+    const eyebrow = document.createElement('span'); eyebrow.className = 'eyebrow'; eyebrow.textContent = o.eyebrow;
+    const title = document.createElement('h2'); title.textContent = o.title;
+    const text = document.createElement('p'); text.textContent = o.text;
+    const label = document.createElement('label'); label.className = 'text-prompt-label'; label.textContent = o.label;
+    const input = document.createElement('input'); input.type = 'text'; input.maxLength = o.maxLength; input.autocomplete = 'off'; input.spellcheck = false; input.dataset.textPrompt = ''; label.append(input);
+    const error = document.createElement('p'); error.className = 'text-prompt-error'; error.setAttribute('role', 'alert');
+    const actions = document.createElement('div'); actions.className = 'pause-actions';
+    const ok = document.createElement('button'); ok.className = 'button button-primary'; ok.dataset.textPromptConfirm = ''; ok.textContent = o.confirm;
+    const cancel = document.createElement('button'); cancel.className = 'button'; cancel.dataset.textPromptCancel = ''; cancel.textContent = 'Agora não';
+    actions.append(ok, cancel);
+    const submit = () => { const reason = o.onConfirm(input.value); if (reason) { error.textContent = reason; input.focus(); return; } this.closeModal(); };
+    ok.addEventListener('click', submit);
+    cancel.addEventListener('click', () => this.closeModal());
+    // As teclas digitadas não chegam ao jogo; Enter confirma e Esc cancela.
+    input.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); submit(); } else if (e.key === 'Escape') { e.preventDefault(); this.closeModal(); } });
+    panel.append(eyebrow, title, text, label, error, actions);
+    this.overlay.append(panel);
+    input.focus();
+  }
+
   showSleep(onSleep: () => void): void {
     if (this.mode !== 'hud' || this.modal) return;
     this.openModal('sleep');
@@ -1237,7 +1267,7 @@ export class GameUI {
     callback?.();
   }
 
-  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'fishingJournal' | 'mineJournal' | 'pets'): void {
+  private openModal(type: 'pause' | 'inventory' | 'dialogue' | 'crafting' | 'building' | 'map' | 'home' | 'sleep' | 'slots' | 'controls' | 'audio' | 'graphics' | 'fishingJournal' | 'mineJournal' | 'pets' | 'text'): void {
     this.topToolbar?.setOpen(false, false);
     this.topToolbar?.setEnabled(false);
     this.focusBeforeModal = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;

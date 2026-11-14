@@ -1,4 +1,6 @@
 import {validOpenFields} from './open-fields';
+import {HORSE_ID,validHorseTaming} from './horse-taming';
+import {DOMESTIC_ANIMALS,isDomesticAnimal} from '../data/domestic-animals';
 import {CROPS,isCropId} from '../data/crops';
 import {validGroundItems} from './ground-items';
 import {syncToolInstances,validToolInventory,activeToolCopy,toolReference} from './tool-instances';
@@ -31,7 +33,6 @@ import {repairPropertyShore,PROPERTY_SHORE_REVISION} from '../data/property-shor
 import {collectibleKind} from '../data/nature-catalog';
 import {editorObjectKind} from './map-editor';
 import {MAP_BASE_REVISION,defaultMap,mergeDefaultMap,upgradeAuthorMap} from '../data/default-maps';
-import { FOREST_ANIMALS } from '../data/ancient-forest';
 import { validQuickbar, emptyQuickbar } from './quickbar';
 import { CHARACTER_DIRECTIONS, type CharacterDirection } from '../character-directions';
 import type { CharacterProfile, ProgressData, SaveData, Tool } from '../types';
@@ -127,7 +128,7 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.dungeons!==undefined&&!validDungeonProgress(value.dungeons))return false;
   if(value.dungeonRun!==undefined&&(value.activeArea!=='cityForest'||!validDungeonSnapshot(value.dungeonRun)))return false;
   if (value.activeArea !== undefined && value.activeArea !== 'property' && value.activeArea !== 'forest' && value.activeArea !== 'village' && value.activeArea !== 'cityForest' && value.activeArea !== 'fishingLake' && value.activeArea !== 'survivorCamp' && value.activeArea !== 'highland' && value.activeArea !== 'openFields') return false;
-  if((value.activeArea==='village'||value.activeArea==='cityForest'||value.activeArea==='fishingLake'||value.activeArea==='survivorCamp'||value.activeArea==='highland'||value.activeArea==='openFields')&&(value.homePosition!==undefined||value.animalEscort!==undefined))return false;
+  if((value.activeArea==='village'||value.activeArea==='cityForest'||value.activeArea==='fishingLake'||value.activeArea==='survivorCamp'||value.activeArea==='highland'||value.activeArea==='openFields')&&(value.homePosition!==undefined||value.animalEscort!==undefined&&!(value.activeArea==='openFields'&&isRecord(value.animalEscort)&&value.animalEscort.id===HORSE_ID&&value.animalEscort.area==='openFields')))return false;
   if(value.blacksmithScene!==undefined&&!validSmithLayout(value.blacksmithScene))return false;
   if(value.blacksmithHome!==undefined&&!validateBlacksmithHome(value.blacksmithHome))return false;
   if(value.shopResidents!==undefined&&!validShopResidents(value.shopResidents))return false;
@@ -146,25 +147,30 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.villageProgress!==undefined&&!validateVillageProgress(value.villageProgress))return false;
   if(value.villageInstallations!==undefined&&!validateVillageInstallations(value.villageInstallations))return false;
   if(value.villageSurvivors!==undefined&&!validateVillageSurvivors(value.villageSurvivors))return false;
-  if (value.recruitedAnimals !== undefined && (!Array.isArray(value.recruitedAnimals) || new Set(value.recruitedAnimals).size !== value.recruitedAnimals.length || !value.recruitedAnimals.every(id => FOREST_ANIMALS.some(a => a.id === id)))) return false;
+  if (value.recruitedAnimals !== undefined && (!Array.isArray(value.recruitedAnimals) || new Set(value.recruitedAnimals).size !== value.recruitedAnimals.length || !value.recruitedAnimals.every(id => isDomesticAnimal(id)))) return false;
+  if(value.horseTaming!==undefined&&!validHorseTaming(value.horseTaming,typeof value.day==='number'?value.day:0))return false;
+  // O cavalo só sai dos Campos domado e com nome.
+  const horseOut=(value.recruitedAnimals as string[]|undefined)?.includes(HORSE_ID)||isRecord(value.animalEscort)&&value.animalEscort.id===HORSE_ID;
+  if(horseOut&&(!isRecord(value.horseTaming)||value.horseTaming.tamed!==true||typeof value.horseTaming.name!=='string'))return false;
   if(value.animalEscort!==undefined){
     const escort=value.animalEscort;
-    if(!isRecord(escort)||!FOREST_ANIMALS.some(a=>a.id===escort.id)||!['forest','property'].includes(escort.area as string)||escort.area!==(value.activeArea??'property')||escort.area==='forest'&&(value.recruitedAnimals as string[]|undefined)?.includes(escort.id as string))return false;
+    if(!isRecord(escort)||!isDomesticAnimal(escort.id)||!['forest','property','openFields'].includes(escort.area as string)||escort.area!==(value.activeArea??'property')||escort.area==='forest'&&((value.recruitedAnimals as string[]|undefined)?.includes(escort.id as string)||escort.id===HORSE_ID))return false;
+    if(escort.area==='openFields'&&(escort.id!==HORSE_ID||(value.recruitedAnimals as string[]|undefined)?.includes(HORSE_ID)||!isRecord(value.openFields)||!Array.isArray(value.openFields.animals)||!value.openFields.animals.some(a=>isRecord(a)&&a.id===HORSE_ID)))return false;
   }
   if(value.animalPositions!==undefined){
     if(!isRecord(value.animalPositions))return false;
     const ids=new Set<string>();
     for(const area of ['forest','property']){
-      const list=value.animalPositions[area];if(!Array.isArray(list)||list.length>FOREST_ANIMALS.length)return false;
+      const list=value.animalPositions[area];if(!Array.isArray(list)||list.length>DOMESTIC_ANIMALS.length)return false;
       for(const p of list){
-        if(!isRecord(p)||typeof p.id!=='string'||ids.has(p.id)||!FOREST_ANIMALS.some(a=>a.id===p.id)||!finite(p.x,16,WORLD_WIDTH*TILE-16)||!finite(p.y,16,WORLD_HEIGHT*TILE-16)||!CHARACTER_DIRECTIONS.includes(p.direction as CharacterDirection))return false;
+        if(!isRecord(p)||typeof p.id!=='string'||ids.has(p.id)||!isDomesticAnimal(p.id)||area==='forest'&&p.id===HORSE_ID||!finite(p.x,16,WORLD_WIDTH*TILE-16)||!finite(p.y,16,WORLD_HEIGHT*TILE-16)||!CHARACTER_DIRECTIONS.includes(p.direction as CharacterDirection))return false;
         const owned=(value.recruitedAnimals as string[]|undefined)?.includes(p.id)??false;
         if(area==='forest'&&owned||area==='property'&&!owned&&(!isRecord(value.animalEscort)||value.animalEscort.id!==p.id||value.animalEscort.area!=='property'))return false;
         ids.add(p.id);
       }
     }
-    if(isRecord(value.animalEscort)&&!(value.animalPositions[value.animalEscort.area as string] as Array<{id:string}>).some(p=>p.id===(value.animalEscort as Record<string,unknown>).id))return false;
-  }else if(value.animalEscort!==undefined)return false;
+    if(isRecord(value.animalEscort)&&value.animalEscort.area!=='openFields'&&!(value.animalPositions[value.animalEscort.area as string] as Array<{id:string}>).some(p=>p.id===(value.animalEscort as Record<string,unknown>).id))return false;
+  }else if(value.animalEscort!==undefined&&!(isRecord(value.animalEscort)&&value.animalEscort.area==='openFields'))return false;
   if((value.activeArea==='cityForest'||value.activeArea==='fishingLake'||value.activeArea==='survivorCamp'||value.activeArea==='highland'||value.activeArea==='openFields')&&(value.merchantInterior!==undefined||value.blacksmithInterior!==undefined))return false;
   if(value.cityForestPosition!==undefined&&(!isRecord(value.cityForestPosition)||!finite(value.cityForestPosition.x,32,3040)||!finite(value.cityForestPosition.y,32,2272)||(value.cityForestPosition.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(value.cityForestPosition.direction as CharacterDirection))))return false;
   if (value.forestPosition !== undefined && (!isRecord(value.forestPosition) || !finite(value.forestPosition.x, 32, 3040) || !finite(value.forestPosition.y, 32, 2272) || (value.forestPosition.direction !== undefined && !CHARACTER_DIRECTIONS.includes(value.forestPosition.direction as CharacterDirection)))) return false;

@@ -5,6 +5,7 @@ import type Phaser from 'phaser';
 import {animalSprite} from './forest-art';
 import {updateAnimalSprite,animalRopeAnchor} from './animal-sprites';
 import {FOREST_ANIMALS} from './data/ancient-forest';
+import {DOMESTIC_ANIMALS} from './data/domestic-animals';
 import {AnimalBrain,ANIMAL_BEHAVIOR,type AnimalArea,type AnimalBlocked,type AnimalPoint,type AnimalPosition} from './systems/animals';
 import type {SaveData} from './types';
 import {TreeAvoidanceField} from './systems/tree-avoidance';
@@ -29,12 +30,14 @@ export class AnimalPopulation {
   this.treeCover.refresh(this.trees());
   const escort=save.animalEscort?.area===area?save.animalEscort.id:undefined;
   let index=0;
-  for(const definition of FOREST_ANIMALS){
+  // Na Propriedade também aparece o cavalo domado dos Campos Abertos.
+  for(const definition of area==='forest'?FOREST_ANIMALS:DOMESTIC_ANIMALS){
    const owned=save.recruitedAnimals?.includes(definition.id)??false;
    if(area==='forest'?owned:!owned&&definition.id!==escort)continue;
    const saved=save.animalPositions?.[area].find(p=>p.id===definition.id);
-   const x=area==='forest'?definition.x*32+16:(20+(index%8)*3)*32+16;
-   const y=area==='forest'?definition.y*32+16:(44+Math.floor(index/8)*3)*32+16;index++;
+   const forest='x' in definition?definition as typeof FOREST_ANIMALS[number]:undefined;
+   const x=area==='forest'&&forest?forest.x*32+16:(20+(index%8)*3)*32+16;
+   const y=area==='forest'&&forest?forest.y*32+16:(44+Math.floor(index/8)*3)*32+16;index++;
    const brain:AnimalBrain=new AnimalBrain(definition.id,definition.kind,saved?.x??x,saved?.y??y,!owned,blocked,playerSpeed,this.treeCover.cost,this.area==='property'?(px,py)=>{
     if(this.area!=='property')return false;if(farmPointBlocked(this.save,px,py))return true;
     const home=farmAnimalHome(this.save,definition.id);return !!home&&this.homes.get(definition.id)===home.id&&this.save.animalEscort?.id!==definition.id&&!farmYardPoint(home,px,py);
@@ -42,7 +45,7 @@ export class AnimalPopulation {
    if(saved)brain.restore(saved);
    if(!this.placeSafely(brain))continue;
    const sprite=animalSprite(scene,definition.kind,brain.x,brain.y);
-   const shadow=definition.kind==='cow'?scene.add.ellipse(brain.x,brain.y,42,12,0x29271d,.17).setDepth(brain.y-.2):undefined;
+   const shadow=definition.kind==='cow'||definition.kind==='horse'?scene.add.ellipse(brain.x,brain.y,definition.kind==='horse'?56:42,definition.kind==='horse'?15:12,0x29271d,.17).setDepth(brain.y-.2):undefined;
    if(definition.kind==='cow')this.cowRest.set(brain.id,new CowRestCycle(brain.id));
    const view:MovingAnimal={shadow,id:brain.id,brain,sprite,get x(){return brain.x},get y(){return brain.y}};
    this.brains.push(brain);this.animals.push(view);

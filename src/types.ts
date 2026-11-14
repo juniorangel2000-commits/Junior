@@ -60,6 +60,7 @@ export interface VillageEconomy {
 }
 export interface SaveData {
   openFields?:import('./systems/open-fields').OpenFieldsState;
+  horseTaming?:import('./systems/horse-taming').HorseTamingState;
   openFieldsPosition?:TilePoint & {direction?:CharacterDirection};
   groundItems?:import('./systems/ground-items').GroundItems;
   farmConstruction?:import('./systems/farm-construction').FarmConstruction;

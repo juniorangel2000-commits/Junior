@@ -14,6 +14,7 @@ export function craftInField(save:SaveData,id:string,write:Writer):Result{
 }
 export function consumeInField(save:SaveData,item:ItemId,write:Writer):Result{
  if(item==='sword')return equipWorldSword(save,save.worldWeapon!=='sword',write);
+ if(item==='harvestBasket')return{ok:false,message:'Use a cesta nos Campos Abertos: ela fica no chão para o cavalo selvagem.'};
  if(!['herb','bandage','herbalTonic','fungalInfusion','meal','oldMap'].includes(item))return{ok:false,message:'Este item é usado na propriedade ou funciona ao ser carregado na mochila.'};
  const draft=structuredClone(save),result=useConsumable(draft,item);if(!result.ok)return result;
  if(!persist(write,draft))return{ok:false,message:'Não foi possível salvar. O item foi preservado.'};

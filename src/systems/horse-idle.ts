@@ -9,6 +9,8 @@ export class HorseIdleCycle{
  private random(){this.seed=(Math.imul(this.seed,1664525)+1013904223)>>>0;return this.seed/4294967296;}
  private reset(){this.phase='waiting';this.age=0;this.stopRequested=false;this.cooldown=8+this.random()*7;}
  get locked(){return this.phase!=='waiting';}
+ /** Come a cesta da doma: mesma sequência de comer do capim (começar, comer 4–7 s e terminar). */
+ eatBasket(direction:CharacterDirection):void{this.direction=direction.includes('up')?'up':'down';this.meal=4+this.random()*3;this.stopRequested=false;this.nextMeal=false;this.set('turning');}
  get waitSeconds(){return this.cooldown;}
  private set(p:HorseIdlePhase){this.phase=p;this.age=0;}
  update(delta:number,idle:boolean,unsafe:boolean,direction:CharacterDirection,grass:boolean):void{

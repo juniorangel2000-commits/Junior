@@ -1,12 +1,14 @@
 import {type CharacterDirection} from '../character-directions';
 import {FOREST_ANIMALS, recruitAnimal, type AnimalKind} from '../data/ancient-forest';
+import {isDomesticAnimal} from '../data/domestic-animals';
 import type {SaveData} from '../types';
 import {Inventory} from './inventory';
 
 export type AnimalArea = 'forest' | 'property';
 export type AnimalMode = 'idle' | 'wander' | 'flee' | 'led';
 export interface AnimalPosition {id: string; x: number; y: number; direction: CharacterDirection}
-export interface AnimalEscort {id: string; area: AnimalArea}
+/** O cavalo domado sai dos Campos Abertos conduzido pela corda. */
+export interface AnimalEscort {id: string; area: AnimalArea | 'openFields'}
 export interface AnimalPoint {x: number; y: number}
 export type AnimalBlocked = (tileX: number, tileY: number) => boolean;
 export type AnimalTerrainCost = (tileX:number,tileY:number)=>number;
@@ -38,6 +40,8 @@ export class AnimalBrain {
   moving = false;
   private readonly walkingRadius:number;
   resting=false;
+  /** Raio de fuga próprio (doma do cavalo); sem valor, usa o padrão dos animais. 0 = não foge. */
+  fleeRadius?:number;
   get radius():number{return this.resting&&this.kind==='cow'?20:this.walkingRadius;}
   get footRadiusY():number{return this.resting&&this.kind==='cow'?7:this.radius*.6;}
   private readonly walkingFeet:readonly(readonly[number,number])[];
@@ -131,9 +135,9 @@ export class AnimalBrain {
     if(led){if(this.mode!=='led'){this.mode='led';this.path=[];this.rethink=0;this.following=false;}}
     else if(this.mode==='led'){this.mode='idle';this.path=[];this.timer=.1;}
     if(!led&&this.wild){
-      if(this.mode!=='flee'&&range<=ANIMAL_BEHAVIOR.detectionRadius&&this.lineClear(this,player)){this.mode='flee';this.rethink=0;this.path=[];this.safeFor=0;}
+      if(this.mode!=='flee'&&range<=(this.fleeRadius??ANIMAL_BEHAVIOR.detectionRadius)&&(this.fleeRadius??1)>0&&this.lineClear(this,player)){this.mode='flee';this.rethink=0;this.path=[];this.safeFor=0;}
       if(this.mode==='flee'){
-        this.safeFor=range>ANIMAL_BEHAVIOR.calmRadius?this.safeFor+dt:0;
+        this.safeFor=range>(this.fleeRadius!==undefined?this.fleeRadius*1.55:ANIMAL_BEHAVIOR.calmRadius)?this.safeFor+dt:0;
         if(this.safeFor>=ANIMAL_BEHAVIOR.calmDelay){this.mode='idle';this.timer=.6+this.random();this.path=[];}
       }
     }
@@ -188,7 +192,7 @@ export class AnimalBrain {
 
 function positions(save: SaveData) {return save.animalPositions??= {forest:[],property:[]};}
 export function startAnimalEscort(save: SaveData,animal: AnimalPosition): boolean {
-  if(save.activeArea==='openFields'||save.activeArea==='village'||save.activeArea==='cityForest'||save.activeArea==='fishingLake'||(save.activeArea==='survivorCamp'||save.activeArea==='highland')||save.animalEscort||!FOREST_ANIMALS.some(a=>a.id===animal.id))return false;
+  if(save.activeArea==='openFields'||save.activeArea==='village'||save.activeArea==='cityForest'||save.activeArea==='fishingLake'||(save.activeArea==='survivorCamp'||save.activeArea==='highland')||save.animalEscort||!isDomesticAnimal(animal.id)||save.activeArea==='forest'&&!FOREST_ANIMALS.some(a=>a.id===animal.id))return false;
   const area=save.activeArea??'property',owned=save.recruitedAnimals?.includes(animal.id)??false;
   if(area==='forest'?owned:!owned)return false;
   const inventory=new Inventory(save.inventory);if(!inventory.spend({cord:1}))return false;
@@ -209,7 +213,7 @@ export function transferAnimalEscort(save: SaveData,arrival: AnimalPoint): void 
   escort.area='property';save.activeArea='property';
 }
 export function deliverAnimalEscort(save: SaveData): boolean {
-  const escort=save.animalEscort;if(!escort||escort.area!=='property'||save.activeArea!=='property'||save.recruitedAnimals?.includes(escort.id)||!FOREST_ANIMALS.some(a=>a.id===escort.id))return false;
+  const escort=save.animalEscort;if(!escort||escort.area!=='property'||save.activeArea!=='property'||save.recruitedAnimals?.includes(escort.id)||!isDomesticAnimal(escort.id))return false;
   const inventory=new Inventory(save.inventory);if(!inventory.transact({}, {cord:1}))return false;
   Object.assign(save.inventory,inventory.data);save.recruitedAnimals=recruitAnimal(save.recruitedAnimals??[],escort.id);delete save.animalEscort;return true;
 }

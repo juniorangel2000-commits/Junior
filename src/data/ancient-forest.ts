@@ -49,7 +49,7 @@ export function forestBlocked(x:number,y:number):boolean {
   return x<1||y<1||x>=95||y>=71||forestWater(x,y)||trunks.has(`${x},${y}`);
 }
 export function recruitAnimal(ids: readonly string[], id: string): string[] {
-  return !FOREST_ANIMALS.some(a=>a.id===id)||ids.includes(id)?[...ids]:[...ids,id];
+  return !(FOREST_ANIMALS.some(a=>a.id===id)||id==='field-horse-1')||ids.includes(id)?[...ids]:[...ids,id];
 }
 
 /** Stable art variation independent of the three-tile placement grid. */

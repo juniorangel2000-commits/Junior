@@ -1,18 +1,60 @@
-# Domesticação do cavalo — direção definida com o Junior
+# Domesticação do cavalo
 
-O cavalo selvagem e suas animações estão no cenário. A cadeia de domesticação
-abaixo ainda precisa ser implementada.
+Implementada em 14/11/2026 (Claude Code), exceto o estábulo, que o Junior vai fazer pelo
+Codex. Código em `src/systems/horse-taming.ts`; testes em `tests/horse-taming.test.ts`;
+conferência no navegador em `scripts/qa-horse-taming.cjs`.
 
-- Estábulo concluído é pré-requisito.
-- Comida especial: **cesta de colheita** preparada pela Helena, com 3 colheitas diferentes (legumes, verduras, grãos ou frutas) + 20 C. Decisão do Junior em 13/11/2026: cesta com vários itens, não só nabos. Depende das etapas 1–4 de `CULTIVOS-E-CALENDARIO.md`.
-- Um ponto/cocho nos Campos Abertos recebe a comida, permitindo estoque para alguns dias.
-- Padrões adotados enquanto o Junior não decidir outra coisa: cada virada de dia com comida no cocho conta (mesmo com o jogador em outro cenário); o cocho guarda 3 porções; o estábulo é uma nova construção para 1 cavalo, com madeira nobre, usando a arte do curral até haver arte própria.
-- Barra de **Confiança**, com no máximo um avanço por dia alimentado; são sete dias.
-- Dias sem comida pausam a confiança, sem apagar o progresso conquistado.
-- Dias 1–2: observa de longe e só come com jogador afastado. Dias 3–4: reconhece o jogador e tolera distância menor. Dias 5–6: aproxima-se do alimento na presença do jogador. Dia 7: aproximação voluntária, nome e condução ao estábulo.
-- **A corda só pode ser colocada DEPOIS da doma completa.** Não permitir captura/condução antes dos sete dias; proximidade não deve domar o cavalo.
-- Após domar: carinho, chamado e condução. Montaria pode exigir sela fabricada em uma etapa posterior.
-- Salvar/carregar e trocar de cenário devem preservar confiança, consumo e dia contado, sem duplicação.
+## Regras em vigor (decisões do Junior)
+
+- **Comida:** cesta de colheita da Helena, com **1 cenoura + 1 morango (Primavera) + 1 milho (Verão) + 20 C**.
+- **Sem cocho.** O jogador **usa** a cesta (mochila ou barra rápida) nos Campos Abertos e ela
+  **fica no chão** à frente dele, como objeto do cenário, não como item solto. O cavalo vai até ela.
+  - Uma cesta de cada vez.
+  - Com E perto dela, a cesta volta para a mochila enquanto o cavalo não comeu.
+  - Lugares apertados (colados em tronco, pedra ou parede) são recusados, porque o cavalo é largo e não alcançaria.
+  - Usar a cesta fora dos Campos mostra um aviso, e a cesta continua na mochila.
+- **Confiança:** +1 por dia em que o cavalo come a cesta, no máximo uma vez por dia; são 7 dias.
+  **Um dia inteiro sem cesta faz a confiança voltar a zero** (os 7 dias precisam ser seguidos).
+  A doma completa não se perde.
+- Barra de confiança (7 quadrinhos) sobre o cavalo selvagem; nome sobre o cavalo domado.
+- **Fases:**
+
+  | Dia de alimentação | Distância que você precisa manter da cesta | Raio de fuga |
+  | --- | --- | --- |
+  | 1–2 | 300 px | 196 px |
+  | 3–4 | 170 px | 120 px |
+  | 5–7 | 56 px | 56 px |
+
+- **Fora dos Campos:** se você deixa a cesta e sai do cenário, o cavalo come sozinho naquele dia,
+  e o efeito é aplicado quando você volta. Com você nos Campos, ele vai até a cesta na própria cena.
+- **Domado (dia 7):** não foge mais e vem até você. Com E, você dá o nome numa janela: até
+  16 letras, com espaço, hífen e apóstrofo. Depois do nome, E faz carinho.
+- **A corda só depois da doma completa**, do nome e **com o estábulo pronto**. É na tecla G e
+  gasta 1 corda; G de novo solta, e a corda volta.
+  - Com o cavalo ao lado, você atravessa a passagem norte e ele chega na Propriedade.
+  - Lá, G solta a corda e ele passa a ser seu.
+  - O painel da construção mostra "Alojar <nome>".
+- O estábulo passou a ser exigido para a corda, e não para o cavalo comer, porque o estábulo ainda
+  não existe e a doma precisa ser testável. Se o Junior preferir, a exigência pode voltar a valer
+  para comer, em `OpenFieldsWorld.basketFor`.
+
+## Encaixe do estábulo (para o Codex)
+
+- Criar o estábulo em `FARM_KINDS` e `FARM_BUILDINGS` (`src/data/farm-buildings.ts`) com
+  **`animal:'horse'`**, capacidade 1 e **madeira nobre** no custo. O teste em
+  `tests/ipe-trees.test.ts` exige madeira nobre em toda construção com animal.
+- Nada mais na doma precisa mudar: `stableReady` reconhece qualquer construção pronta com
+  `animal:'horse'`, e `assignFarmAnimal` e o painel já aceitam o cavalo (`src/data/domestic-animals.ts`).
+- Também é preciso: arte em `src/farm-construction-view.ts` (o atlas usa `<tipo>-<estágio>`), ícone
+  `farm-<tipo>` em `src/visual-assets.ts`, ferramenta `farm-<tipo>` em `Tool` (`src/types.ts`),
+  `TOOLS` (`src/systems/save.ts`) e `QUICK_TOOLS` (`src/systems/quickbar.ts`).
+- Ao terminar, rodar `scripts/qa-horse-taming.cjs` e completar a corda, a travessia e "Alojar"
+  (hoje o roteiro para em "corda recusada sem estábulo").
+
+## Depois
+
+- Chamar o cavalo de longe, montaria (pode exigir sela fabricada) e usar os quadros de deitar,
+  descansar e levantar.
 
 ## Animações e fuga já integradas
 
