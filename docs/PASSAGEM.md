@@ -3,12 +3,28 @@
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
 - **Atualizado em:** 2026-11-14
-- **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Cozinha (etapa 1) em `5ef5287`–`b7d816d`.
+- **Por:** Codex
+- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Casa refeita em `09d6954` e `c037244`, sobre a cozinha do Claude.
 - **Última versão publicada:** `v0.10.0-preview.34`, https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.10.0-preview.34
-- **Estado:** cozinha (etapa 1) implementada e conferida no navegador, sobre máquinas, patos e distanciamento já validados. **Suíte inteira passando.** Nada foi publicado; `main`, tags e versão do pacote estão inalteradas.
+- **Estado:** casa do jogador com móveis, fogão, paredes e piso no mesmo conjunto rústico. Cozinha, máquinas, patos e distanciamento permanecem integrados. Nada publicado; `main`, tags e versão do pacote continuam na preview.34.
 
 ## Feito nesta rodada
+
+### Casa do jogador — conjunto rústico (Codex)
+
+- Pedido atual: refazer os móveis; depois o Junior pediu fogão combinando e embutido junto à parede, proporções padronizadas, piso e paredes combinando, janelas livres exceto a cama e cadeira menor.
+- Artes próprias geradas por imagegen: cama, mesa, cadeira, estante, tapete, vaso, fogão e sala vazia. Fontes originais preservadas em `public/assets/visual/home-furniture/`, com hashes e recortes em `art.json`. `scripts/pack-home-furniture.cjs` empacota sem reduzir PNGs; o Phaser dimensiona a exibição.
+- `src/home-art.ts`: imagens no lugar dos móveis procedurais, escala uniforme (sem esticar), base inferior centralizada e profundidade existente. Cadeira limitada a 42 px de altura. Fogão de 64 px de largura, recuado 12 px para encaixar a traseira no rodapé, entre as janelas. Fonte antiga do fogão preservada em `visual/kitchen`, sem uso em jogo.
+- `src/home-room-art.ts`: piso de tábuas e parede com reboco, vigas, duas janelas, quadro e luminária do mesmo estilo. Parede termina em y=64; piso x=32..352 e y=64..288; porta sul x=160..224. Abertura desenhada corresponde à circulação real. Luz da luminária ajustada ao novo lugar.
+- As nove combinações de acabamento continuam disponíveis: madeira clara/escura/pedra e creme/sálvia/argila. Escuro usa tingimento da madeira; reboco é tingido preservando detalhes; pedra usa a textura anterior entre as vigas novas. Texturas são montadas uma vez, sem trabalho por quadro.
+- Estante padrão mudou de (8,2), na frente da janela, para (9,7), na lateral inferior direita. A cama é o único móvel sob uma janela.
+- Compatibilidade: `migrateSave` reposiciona somente a estante original ainda em (8,2), testando casa e save inteiros. Se o destino tiver jogador/obstáculo, tenta (8,6) e (1,7). Se nada couber, preserva o save. Móveis já reorganizados são mantidos. Casa implícita antiga é recuperada quando a nova base da estante coincidir com jogador salvo. Quatro testes cobrem isso, incluindo idempotência e entrada não modificada.
+- Editor H, cama, fogão, colisões e IDs das peças continuam funcionando. `tests/home.test.ts` usa um espaço livre novo para testar reposicionamento/limite, e `tests/home-save.test.ts` instala sua cadeira de teste fora da nova estante. As verificações de acesso e persistência foram mantidas.
+- `scripts/qa-home-furniture.cjs` passou no Chromium: sete artes, proporções, cadeira menor, estante, troca de acabamentos via editor, mover vaso, colisão anterior/nova, acesso à cama e saída, persistência ao sair/voltar, sem erros JS. Evidências em `docs/planejamento/qa-moveis/`.
+- `scripts/qa-kitchen.cjs` repetido com a casa final: caderno abre, omelete preparada e salva, salada indisponível sem cenoura, consumo recupera vigor de 20 a 60. Capturas desta repetição em `/tmp/qa-cozinha-final`; o QA anterior está no repositório.
+- Houve tentativas de QA interrompidas por reload do Vite durante os ajustes; a conferência final acima foi repetida com as fontes estáveis.
+- Integrei por merge os commits do Claude `3821c62` e `2bf19ec` que chegaram durante a rodada, preservando a semente nova no chão da casa e a documentação da cozinha.
+
 
 ### Cozinha, etapa 1 (Claude Code, `5ef5287`, `c377838`, `b7d816d`)
 
@@ -101,7 +117,7 @@
 - Depois das máquinas, Junior pediu preparar sprites/animações dos outros animais. Confirmou incluir **porco, pato, abelhas, coelho e cervo**.
 - Geradas artes próprias de todos, oito direções × (parado + quatro poses de movimento), com fontes preservadas em `public/assets/animals/<tipo>/source.png`, recortes/hashes em `atlas.json` e atlas compacto de **5 colunas × 8 linhas**, célula 224.
 - `scripts/pack-next-animal-sprites.cjs` empacota sem reduzir pixels; aceita diretório raiz como argumento.
-- `ANIMAL_ART` e `animalFrame` reconhecem atlas compactos. Escalas iniciais: porco `.28`, pato `.18`, coelho `.16`, cervo `.28`, abelha `.08`. Ainda falta comparação visual final no jogo/GIF.
+- `ANIMAL_ART` e `animalFrame` reconhecem atlas compactos. Escalas iniciais: porco `.28`, pato `.18`, coelho `.16`, cervo `.28`, abelha `.08`. Comparação visual concluída pelo Claude em `09d3bda`, em `docs/planejamento/qa-animais-novos/`.
 - Coelho/cervo já entram nas cenas existentes através do controlador `AnimalWalkCycle`, sem mudar seus IDs salvos. Coelho dá pequenos saltos; cervo anda em quatro patas.
 - Porco e abelhas **só preparados**, sem spawn/criação/produção. Não são carregados automaticamente, para evitar memória de texturas sem uso. `preloadAnimalSprites(scene, tipos)` permite carga explícita. `beeFlightFrame` fornece ciclo de asas independente dos passos.
 - Pato foi ativado porque Junior pediu em seguida **entrar na água da Floresta Antiga, como habitat**:
@@ -125,7 +141,7 @@
 
 ## Pendências e ideias para depois
 
-- Após fechar máquinas e arte: cozinha (fogão/receitas/caderno), depois criação/produção de porco, pato e abelhas, conforme `docs/planejamento/ANIMAIS-E-RECEITAS.md`. Não confundir arte pronta com sistema de criação pronto.
+- Cozinha etapa 1 concluída; continuar etapa 2 e depois criação/produção de porco, pato e abelhas, conforme `docs/planejamento/ANIMAIS-E-RECEITAS.md`. Não confundir arte pronta com sistema de criação pronto.
 - Produção por amizade/qualidade e preços finais ficam para depois. Estábulo/corda, montaria e calendário seguem planos anteriores.
 - Há stash antigo do branch preview.34 com evidências/documentação do estábulo aberto. **Não aplicar sobre esta PASSAGEM nem desfazer os interiores atuais.**
 
@@ -139,9 +155,10 @@
 ## Testes
 
 - `npm run check`: ok.
-- `npm test`: **2.027 passaram, zero falhas, 229 arquivos**. Teste novo: `tests/kitchen.test.ts` (12). `tests/home.test.ts` agora espera 7 tipos de móveis na casa inicial.
-- `npm run build`: ok na rodada anterior (`ec3ec4f`); não repetido depois da cozinha.
+- `npm test`: **2.031 passaram, zero falhas, 230 arquivos**. Inclui os quatro novos testes da mudança de disposição em saves antigos. Base anterior desta rodada: 2.027 passaram.
+- `npm run build`: ok nesta rodada, com aviso anterior de tamanho do pacote.
 - Chromium, nesta rodada:
+  - `scripts/qa-home-furniture.cjs`: OK; evidências em `docs/planejamento/qa-moveis/`.
   - `scripts/qa-kitchen.cjs`: OK. O fogão aparece com 64 px de largura, a dica "Fogão a lenha · E abre o caderno de receitas" aparece, o caderno mostra 2 receitas aprendidas pela Helena, a salada fica desabilitada sem cenoura, a omelete é cozida, o save guarda o prato e comer leva o vigor de 20 a 60. Capturas em `docs/planejamento/qa-cozinha/`.
   - `scripts/qa-forest-ducks.cjs` e `scripts/qa-fields-distance.cjs`: OK.
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.
