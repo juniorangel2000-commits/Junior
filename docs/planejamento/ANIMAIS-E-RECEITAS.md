@@ -187,7 +187,7 @@ Aprovado pelo Junior em 14/11/2026.
 3. ✅ Ovelha e cabra: arte animada, aprisco com interior, lã, leite de cabra e tesoura.
 4. ✅ Sistema de máquinas, colocáveis nos interiores, e as primeiras: queijeira, batedeira, roca, tear e moinho.
 5. ✅ Cozinha: etapas 1 e 2 prontas (fogão a lenha, receitas da Helena, caderno, forno de barro, fogueira portátil, efeitos, prato do dia e receitas escondidas). Falta só a qualidade. Detalhes em `docs/construcoes/COZINHA.md`.
-6. Porco (chiqueiro com interior, esterco e composteira), pato e abelhas (colmeia, mel e cera). A arte animada dos três já existe; os patos da Floresta Antiga já vivem no lago como fauna ambiente, sem criação.
+6. 🟡 Abelhas e pato prontos (`docs/construcoes/ABELHAS-E-PATOS.md`). Falta o **porco** (chiqueiro com interior, esterco e composteira), que precisa de arte nova.
 7. Barril de conservas, prensa de cera, efeitos dos pratos e equilíbrio de preços.
 
 ## Decisões em aberto

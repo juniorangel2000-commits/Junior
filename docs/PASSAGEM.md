@@ -4,11 +4,28 @@
 
 - **Atualizado em:** 2026-11-14
 - **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Cozinha, etapa 2, em `8089263` e no commit de QA seguinte.
+- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Abelhas em `61fbd2e`/`becdb22`; patos em `5ee1bb4`.
 - **Última versão publicada:** `v0.10.0-preview.34`, https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.10.0-preview.34
 - **Estado:** casa do jogador com móveis, fogão, paredes e piso no mesmo conjunto rústico. Cozinha, máquinas, patos e distanciamento permanecem integrados. Nada publicado; `main`, tags e versão do pacote continuam na preview.34.
 
 ## Feito nesta rodada
+
+### Abelhas e patos da criação (Claude Code)
+
+- Tudo detalhado em **`docs/construcoes/ABELHAS-E-PATOS.md`**.
+- **Abelhas** (`src/systems/beekeeping.ts`):
+  - colmeia vazia comprada com o Augusto e colocada junto a um ipê dos Campos;
+  - enxame com 40% de chance a cada 5 dias, pelo calendário;
+  - a colmeia povoada vira a máquina `beehive` na Propriedade: mel a cada 4 dias, cera a cada 3 coletas, pausa no Inverno e mel de flor com margaridas ou girassóis maduros por perto.
+  - A dica da colmeia passou a ter prioridade sobre a do ipê, como o E.
+- **Patos** (`FARM_DUCKS` em `src/data/domestic-animals.ts`):
+  - a Rosa vende; o pato mora no galinheiro;
+  - ovo de pato a cada 2 manhãs alimentado (`site.duckEggs`);
+  - pena a cada 4 ovos recolhidos.
+- **Cozinha:** mel e ovo de pato agora têm fonte, então nenhuma receita fica travada (`FUTURE_INGREDIENTS` está vazio).
+- **Máquinas:** `CRAFTED_MACHINE_IDS` separa as máquinas que se aprendem e se montam. A colmeia não entra.
+- **SpriteCook: restam só 4 créditos.**
+
 
 ### Cozinha, etapa 2 (Claude Code)
 
@@ -184,8 +201,13 @@
 
 ## Em andamento e próximo passo exato
 
-1. Próxima etapa do plano: **porco** (chiqueiro com interior, esterco e composteira), **pato** (criação e ovo de pato) e **abelhas** (colmeia, mel e cera). Isso dá fonte ao mel e ao ovo de pato, que hoje travam 6 receitas (mingau, chá, doce de leite, torta de morango, pão com queijo e mel, e bolo de mel). A arte animada dos três já existe.
-2. Depois: qualidade dos pratos, barril de conservas, prensa de cera e equilíbrio de preços.
+1. **Porco:**
+   - o que falta: chiqueiro com interior, porco comprado com a Rosa, come sobras da horta no cocho, esterco no chão e composteira (2 estercos + 3 capins ou fibras = 2 fertilizantes, em 2 dias);
+   - **bloqueio:** precisa de arte nova (chiqueiro externo com estágios de obra e composteira), e o SpriteCook tem só 4 créditos;
+   - o Junior precisa recarregar os créditos, ou a arte fica com o Codex (imagegen).
+   - O interior do chiqueiro pode reaproveitar o piso de palha e o cocho dos interiores.
+   - A arte animada do porco já existe (`preloadAnimalSprites(scene,['pig'])`).
+2. **Depois:** qualidade dos pratos, barril de conservas, prensa de cera e equilíbrio de preços.
 - Não publicar sem pedido do Junior. O pacote continua preview.34; tudo está no branch preview.35.
 
 ## Pendências e ideias para depois
@@ -204,13 +226,11 @@
 ## Testes
 
 - `npm run check`: ok.
-- `npm test`: **2.051 passaram, zero falhas, 231 arquivos**.
-  - Novos: `tests/kitchen-stage2.test.ts` (15).
-  - `tests/machines.test.ts`: o teste genérico por item agora pula as fornadas.
-  - `tests/kitchen.test.ts`: considera que os pratos da fogueira já vêm conhecidos e que a Helena tem 15 receitas.
+- `npm test`: **2.067 passaram, zero falhas, 233 arquivos**. Novos: `tests/beekeeping.test.ts` (10) e `tests/ducks.test.ts` (6).
 - `npm run build`: não repetido nesta rodada.
-- Chromium:
-  - `scripts/qa-kitchen-stage2.cjs`: OK. Instala o forno, abre a fornada pelo E, mostra o forno aceso, mostra o balão com o pão pronto em meio dia e recolhe. A fogueira assa o peixe. O suco dá velocidade 1,15. Sem erros de JavaScript. Capturas em `docs/planejamento/qa-cozinha/`.
-  - `scripts/qa-kitchen.cjs`: OK na rodada anterior.
-- **Não conferido no navegador:** o efeito do feijão tropeiro na Mina (só pelo código) e as receitas escondidas da Mina e dos sobreviventes (cobertas por teste unitário).
+- Chromium, nesta rodada:
+  - `scripts/qa-beekeeping.cjs`: OK. Colmeia instalada, mel em 4 dias com balão, colmeia vazia no ipê, enxame e colmeia povoada recolhida.
+  - `scripts/qa-ducks.cjs`: OK. Pato e galinha no galinheiro, ninho com ovo de pato e coleta.
+  - `scripts/qa-kitchen-stage2.cjs`: OK na rodada anterior.
+- **Não conferido no navegador:** o mel de flor (coberto por teste unitário).
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.
