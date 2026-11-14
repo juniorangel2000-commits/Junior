@@ -186,7 +186,7 @@ Aprovado pelo Junior em 14/11/2026.
 2. ✅ Produção básica: alimentação, ovo nos ninhos e leite (`PRODUCAO-ANIMAL-PLANO.md`).
 3. ✅ Ovelha e cabra: arte animada, aprisco com interior, lã, leite de cabra e tesoura.
 4. ✅ Sistema de máquinas, colocáveis nos interiores, e as primeiras: queijeira, batedeira, roca, tear e moinho.
-5. **Próxima:** cozinha: fogão a lenha, receitas da Helena e caderno; depois forno de barro, fogueira, efeitos e pedidos.
+5. 🟡 Cozinha (etapa 1 pronta: fogão a lenha na casa, 14 receitas da Helena, uma por vez, e caderno; mel e ovo de pato já existem como itens, sem fonte; detalhes em `docs/construcoes/COZINHA.md`). Falta: fogão a lenha, receitas da Helena e caderno; depois forno de barro, fogueira, efeitos e pedidos.
 6. Porco (chiqueiro com interior, esterco e composteira), pato e abelhas (colmeia, mel e cera). A arte animada dos três já existe; os patos da Floresta Antiga já vivem no lago como fauna ambiente, sem criação.
 7. Barril de conservas, prensa de cera, efeitos dos pratos e equilíbrio de preços.
 
