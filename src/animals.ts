@@ -1,6 +1,7 @@
 import {CowRestCycle} from './systems/cow-rest';
 import {FARM_BUILDINGS} from './data/farm-buildings';
 import {farmAnimalHome,farmAnimalSettled,farmYardPoint,farmPointBlocked,farmHomePoint} from './systems/farm-construction';
+import {animalsInside} from './systems/farm-interior';
 import type Phaser from 'phaser';
 import {animalSprite} from './forest-art';
 import {updateAnimalSprite,animalRopeAnchor} from './animal-sprites';
@@ -62,17 +63,22 @@ export class AnimalPopulation {
   }
   return false;
  }
- blocksPoint(x:number,y:number):boolean{return this.animals.some(a=>((x-a.x)/a.brain.radius)**2+((y-a.y)/a.brain.footRadiusY)**2<1);}
+ /** À noite (ou quando recolhidos) os animais ficam dentro da construção e somem do cercado. */
+ private indoors(a:MovingAnimal):boolean{if(this.area!=='property'||a===this.led)return false;const home=farmAnimalHome(this.save,a.id);return !!home&&animalsInside(home,this.save);}
+ blocksPoint(x:number,y:number):boolean{return this.animals.some(a=>a.sprite.visible&&((x-a.x)/a.brain.radius)**2+((y-a.y)/a.brain.footRadiusY)**2<1);}
  get led():MovingAnimal|undefined {const id=this.save.animalEscort?.area===this.area?this.save.animalEscort.id:undefined;return this.animals.find(a=>a.id===id);}
  allowsPlayerCenter(x:number,y:number,owner:AnimalPoint):boolean {const led=this.led;if(!led)return true;const next=Math.hypot(x-led.x,y-led.y),current=Math.hypot(owner.x-led.x,owner.y-led.y);return !this.blocked(Math.floor(x/32),Math.floor(y/32))&&(next<=ANIMAL_BEHAVIOR.maxRopeLength||next<current-.001);}
  canLeave(player:AnimalPoint):boolean {const led=this.led;return !led||Math.hypot(led.x-player.x,led.y-player.y)<=ANIMAL_BEHAVIOR.portalDistance&&led.brain.lineClear(led,player);}
  nearest(player:AnimalPoint):MovingAnimal|undefined {
-  return this.animals.filter(a=>a!==this.led&&Math.hypot(a.x-player.x,a.y-player.y)<=ANIMAL_BEHAVIOR.catchRadius&&a.brain.lineClear(a,player))
+  return this.animals.filter(a=>a!==this.led&&a.sprite.visible&&Math.hypot(a.x-player.x,a.y-player.y)<=ANIMAL_BEHAVIOR.catchRadius&&a.brain.lineClear(a,player))
     .sort((a,b)=>Math.hypot(a.x-player.x,a.y-player.y)-Math.hypot(b.x-player.x,b.y-player.y))[0];
  }
  update(delta:number,player:AnimalPoint&{readonly leftHandPosition:AnimalPoint}):void {
   this.treeCheck-=delta;if(this.treeCheck<=0){this.treeCover.refresh(this.trees());this.treeCheck=.5;}
   for(const a of this.animals){
+   // Dentro da construção: some do cercado e volta pela porta quando for solto.
+   if(this.indoors(a)){const home=farmAnimalHome(this.save,a.id)!,door=farmHomePoint(home);a.brain.x=door.x;a.brain.y=door.y;a.brain.hold();this.homes.set(a.id,home.id);a.sprite.setVisible(false);a.shadow?.setVisible(false);continue;}
+   if(!a.sprite.visible){a.sprite.setVisible(true);a.shadow?.setVisible(true);}
    const home=this.area==='property'?farmAnimalHome(this.save,a.id):undefined,led=a===this.led;
    if(!home||led||FARM_BUILDINGS[home.kind].openYard&&Math.hypot(a.x-farmHomePoint(home).x,a.y-farmHomePoint(home).y)>128)this.homes.delete(a.id);
    else if(farmAnimalSettled(home,a.brain,a.brain.radius,a.brain.footRadiusY))this.homes.set(a.id,home.id);

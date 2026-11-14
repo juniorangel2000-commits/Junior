@@ -1,4 +1,5 @@
 import {cropDefinition,cropFromSeed,cropStage} from '../data/crops';
+import {nearFarmDoor} from '../systems/farm-interior';
 import {FIELDS_ENTRY,PROPERTY_FIELDS_EXIT,propertyFieldsApproach} from '../data/open-fields';
 import {createGroundRuntime,resourceGroundSink} from '../systems/ground-items';
 import {FARM_BUILDINGS,isFarmTool,isLegacyHouseTool,type FarmKind} from '../data/farm-buildings';
@@ -409,6 +410,18 @@ export class ValleyScene extends Phaser.Scene {
     });
   }
 
+  /** Entra no interior do galinheiro ou do curral (cena 'Interior'); na volta, recarrega o estado. */
+  private enterFarmInterior(siteId:number):void {
+    if(this.forestActive||this.villageActive||this.state.animalEscort||this.inHome){if(this.state.animalEscort)this.ui.toast('Solte a corda antes de entrar.');return;}
+    this.world.well?.cancel();this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
+    const data=this.snapshotState();if(!saveGame(data)){this.ui.toast('Não foi possível salvar. A entrada foi cancelada.');return;}
+    this.villageActive=true;this.paused=true;this.input.keyboard?.resetKeys();this.cameras.main.fadeOut(SCENE_FADE_MS);
+    this.time.delayedCall(SCENE_FADE_MS,()=>{this.scene.sleep();this.scene.launch('Interior',{save:data,ui:this.ui,siteId,onReturn:(updated:SaveData,title=false)=>{
+      this.scene.wake();this.villageActive=false;this.loadState(updated);this.running=!title;this.paused=title;
+      document.querySelector<HTMLElement>('#ui')!.style.display='';
+      if(title)this.ui.showTitle(hasSave());else{this.ui.showHUD();this.updateHUD();this.persist();}this.cameras.main.fadeIn(SCENE_FADE_MS);
+    }});});
+  }
   private enterFields(saved?:SaveData):void {
     if(this.forestActive||this.villageActive||this.state.animalEscort)return;
     this.world.well?.cancel();this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
@@ -1166,7 +1179,8 @@ export class ValleyScene extends Phaser.Scene {
       const p=explicitTile??this.targetTile(),result=placeFarmBase(this.farmRuntime,this.tool.slice(5)as FarmKind,p.x,p.y);this.ui.toast(result.message);if(result.ok){gameAudio.play('build');this.selectTool('hand');}return;
     }
     if(this.canPlay()&&!this.inHome&&!this.player.isSwimming&&this.tool==='hand'){
-      const site=nearFarmSite(this.state,this.player);if(site){showFarmConstruction(this.ui,this.farmRuntime,site.id);return;}
+      const door=nearFarmDoor(this.state,this.player);if(door){this.enterFarmInterior(door.id);return;}
+      const site=nearFarmSite(this.state,this.player);if(site){showFarmConstruction(this.ui,this.farmRuntime,site.id,id=>this.enterFarmInterior(id));return;}
     }
     if(isFarmTool(this.tool))return;
 
@@ -1543,6 +1557,7 @@ export class ValleyScene extends Phaser.Scene {
     else if (this.tool === 'water') prompt = `Regador: ${this.state.wateringCanWater ?? 0}/8 · E junto à água para encher`;
     else if (this.tool === 'blueprint') prompt = this.blueprintReason(tile) || `Montar ${BLUEPRINT_LABEL} · clique ou E`;
     else if(isFarmTool(this.tool))prompt=farmPlacementReason(this.state,this.tool.slice(5)as FarmKind,tile.x,tile.y,(x,y)=>this.farmPlacementTileReason(x,y))||'Colocar base de '+FARM_BUILDINGS[this.tool.slice(5)as FarmKind].name+' · clique ou E';
+    else if(this.tool==='hand'&&nearFarmDoor(this.state,this.player))prompt=`Entrar no ${FARM_BUILDINGS[nearFarmDoor(this.state,this.player)!.kind].name.toLowerCase()} · E`;
     else if(this.tool==='hand'&&nearFarmSite(this.state,this.player))prompt='E · Materiais e cuidados da construção';
     else if (this.tool in BUILD_COSTS) prompt = this.placementReason(tile, this.tool as BuildingData['kind']) || (this.tool==='bench'?`Banco · ${['sul','oeste','norte','leste'][this.rotation]} · R girar · clique ou E colocar`:this.tool==='gate'?`${gatePlacementLabel({rotation:this.rotation,gateFlip:this.gateFlip})} · R girar · F inverter · E colocar`:`Colocar ${BUILD_NAMES[this.tool as BuildingData['kind']]} · clique ou E`);
     else if (this.tool === 'remove') prompt = 'Desmontar peça · novas peças devolvem 60%';

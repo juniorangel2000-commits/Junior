@@ -1,4 +1,5 @@
 import {OpenFieldsScene} from './scenes/OpenFieldsScene';
+import {FarmInteriorScene} from './scenes/FarmInteriorScene';
 import {GroundItemsView} from './ground-items-view';
 import {dropInventoryItem} from './systems/ground-items';
 import {equipToolCopy} from './systems/economy';
@@ -25,7 +26,7 @@ import './character-studio.css';
 
 gameAudio.init();
 const scene = new ValleyScene();
-const activeForest=():OpenFieldsScene|ForestScene|VillageScene|CityForestScene|FishingLakeScene|SurvivorCampScene|HighlandScene|MineScene|DungeonScene|undefined=>scene.scene?.isActive('Campos')?scene.scene.get('Campos') as OpenFieldsScene:scene.scene?.isActive('Mineracao')?scene.scene.get('Mineracao') as MineScene:scene.scene?.isActive('Mina')?scene.scene.get('Mina') as MineScene:scene.scene?.isActive('Serra')?scene.scene.get('Serra') as HighlandScene:scene.scene?.isActive('Acampamento')?scene.scene.get('Acampamento') as SurvivorCampScene:scene.scene?.isActive('Lago')?scene.scene.get('Lago') as FishingLakeScene:scene.scene?.isActive('Dungeons')?scene.scene.get('Dungeons') as DungeonScene:scene.scene?.isActive('AcessoCidade')?scene.scene.get('AcessoCidade') as CityForestScene:scene.scene?.isActive('Vila')?scene.scene.get('Vila') as VillageScene:scene.scene?.isActive('Floresta')?scene.scene.get('Floresta') as ForestScene:undefined;
+const activeForest=():FarmInteriorScene|OpenFieldsScene|ForestScene|VillageScene|CityForestScene|FishingLakeScene|SurvivorCampScene|HighlandScene|MineScene|DungeonScene|undefined=>scene.scene?.isActive('Interior')?scene.scene.get('Interior') as FarmInteriorScene:scene.scene?.isActive('Campos')?scene.scene.get('Campos') as OpenFieldsScene:scene.scene?.isActive('Mineracao')?scene.scene.get('Mineracao') as MineScene:scene.scene?.isActive('Mina')?scene.scene.get('Mina') as MineScene:scene.scene?.isActive('Serra')?scene.scene.get('Serra') as HighlandScene:scene.scene?.isActive('Acampamento')?scene.scene.get('Acampamento') as SurvivorCampScene:scene.scene?.isActive('Lago')?scene.scene.get('Lago') as FishingLakeScene:scene.scene?.isActive('Dungeons')?scene.scene.get('Dungeons') as DungeonScene:scene.scene?.isActive('AcessoCidade')?scene.scene.get('AcessoCidade') as CityForestScene:scene.scene?.isActive('Vila')?scene.scene.get('Vila') as VillageScene:scene.scene?.isActive('Floresta')?scene.scene.get('Floresta') as ForestScene:undefined;
 const ui = new GameUI({
   getMineMissionRuntime:()=>{const current=activeForest()??scene;return current instanceof DungeonScene?undefined:current.getMineMissionRuntime();},
   getFishingState: () => {const current=activeForest()??scene;return current instanceof DungeonScene?undefined:current.getFishingState();},
@@ -58,7 +59,7 @@ export const game = new Phaser.Game({
   roundPixels: true,
   render: { antialias: false, powerPreference: 'high-performance' },
   scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight },
-  scene: [scene,new OpenFieldsScene(), new ForestScene(),new VillageScene(),new CityForestScene(),new FishingLakeScene(),new SurvivorCampScene(),new HighlandScene(),new MineScene(),new MineScene('Mineracao'),new DungeonScene(),new MapEditorScene()],
+  scene: [scene,new FarmInteriorScene(),new OpenFieldsScene(), new ForestScene(),new VillageScene(),new CityForestScene(),new FishingLakeScene(),new SurvivorCampScene(),new HighlandScene(),new MineScene(),new MineScene('Mineracao'),new DungeonScene(),new MapEditorScene()],
   audio: { noAudio: true },
   banner: false,
 });
