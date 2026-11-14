@@ -13,7 +13,10 @@ function texture(scene:Phaser.Scene,kind:FarmKind,stage:0|1|2):string{
  const frame=stable??(separate?{x:0,y:0,width:source.width,height:source.height}:atlas.frames[`${kind==='aprisco'?'barn':kind==='pigsty'?'coop':kind}-${stage}` as keyof typeof atlas.frames]),canvas=document.createElement('canvas');canvas.width=frame.width;canvas.height=kind==='aprisco'&&stage===2?930+Math.round((FARM_BUILDINGS[kind].height-FARM_BUILDINGS[kind].bodyRows)*32*frame.width/(FARM_BUILDINGS[kind].width*32)):frame.height;
  const ctx=canvas.getContext('2d')!;ctx.imageSmoothingEnabled=false;if(kind==='aprisco'&&stage===2){ctx.drawImage(source,0,0,frame.width,930,0,0,frame.width,930);ctx.drawImage(source,0,930,frame.width,frame.height-930,0,930,frame.width,canvas.height-930);}else ctx.drawImage(source,frame.x,frame.y,frame.width,frame.height,0,0,frame.width,frame.height);
  // The opening has its own native gate, so its picture and collision agree.
- if(stage===2&&kind!=='silo'&&!FARM_BUILDINGS[kind].openYard){const scale=FARM_BUILDINGS[kind].width*32/frame.width;ctx.clearRect((frame.width-34/scale)/2,frame.height-35/scale,34/scale,35/scale);}
+ if(stage===2&&kind!=='silo'&&!FARM_BUILDINGS[kind].openYard){const scale=FARM_BUILDINGS[kind].width*32/frame.width;const hw=34/scale,hh=35/scale,hx=(frame.width-hw)/2,hy=frame.height-hh;ctx.clearRect(hx,hy,hw,hh);
+  // No chiqueiro, o vão da porteira continua com a terra e a palha do cercado (um trecho
+  // limpo à direita e acima), em vez de mostrar a grama do terreno.
+  if(kind==='pigsty')ctx.drawImage(canvas,hx+hw*.98,hy-hh*1.22,hw,hh,hx,hy,hw,hh);}
  scene.textures.addCanvas(key,canvas)?.setFilter(Phaser.Textures.FilterMode.NEAREST);return key;
 }
 function buildingLayer(scene:Phaser.Scene,key:string,kind:FarmKind,front:boolean):string{

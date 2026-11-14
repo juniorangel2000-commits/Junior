@@ -29,6 +29,9 @@ fs.mkdirSync(out, { recursive: true });
     });
     await page.waitForTimeout(1500);
     await page.screenshot({ path: `${out}/chiqueiro-propriedade.png` });
+    // Textura pronta do chiqueiro, sem árvores na frente: confere o vão da porteira.
+    const tex = await page.evaluate(() => game.textures.getBase64('farm-building-pigsty-2'));
+    fs.writeFileSync(`${out}/chiqueiro-textura.png`, Buffer.from(tex.split(',')[1], 'base64'));
     // Interior, à noite, com o porco dentro.
     await page.evaluate(async () => { const { farmDoorPoint } = await import('/src/systems/farm-interior.ts'); const st = v.snapshotState(); st.time = 20 * 60; const d = farmDoorPoint(st.farmConstruction.sites[0]); st.player = { x: d.x, y: d.y + 6, direction: 'up' }; v.loadState(st); });
     await page.waitForTimeout(800); await page.keyboard.press('e');

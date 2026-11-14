@@ -4,11 +4,24 @@
 
 - **Atualizado em:** 2026-11-14
 - **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Abelhas em `61fbd2e`/`becdb22`; patos em `5ee1bb4`; porcos em `a3eb5c8`.
+- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Porcos em `a3eb5c8`; barril de conservas e prensa de cera em `535fdbe`.
 - **Última versão publicada:** `v0.10.0-preview.34`, https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.10.0-preview.34
 - **Estado:** casa do jogador com móveis, fogão, paredes e piso no mesmo conjunto rústico. Cozinha, máquinas, patos e distanciamento permanecem integrados. Nada publicado; `main`, tags e versão do pacote continuam na preview.34.
 
 ## Feito nesta rodada
+
+### Barril de conservas, prensa de cera e porteira do chiqueiro (Claude Code)
+
+- **Arte do ChatGPT feita pelo Junior:** originais em `docs/arte-recebida/`. O fundo branco foi removido por script e as imagens foram separadas em 3 quadros (parado, trabalhando e variação) e 3 ícones, na resolução original.
+- **Barril de conservas** (`preserveKeg`, projeto do Tobias, 50 C):
+  - 3 morangos ou 3 melancias, com 1 mel (`extra`), viram geleia em 3 dias;
+  - o Nilo compra a geleia de morango por 170 e a de melancia por 330.
+- **Prensa de cera** (`waxPress`, projeto do Bento, 50 C):
+  - 2 ceras viram 1 vela em meio dia;
+  - a Amélia compra a vela por 80.
+- **Porteira do chiqueiro:** o vão aberto para a porteira mostrava a grama do terreno. Agora ele é preenchido com um trecho de terra e palha do próprio cercado (`farm-construction-view.ts`). A textura conferida está em `docs/planejamento/qa-porcos/chiqueiro-textura.png`.
+- Com isso, a etapa 7 do plano tem as duas máquinas prontas; falta o equilíbrio de preços.
+
 
 ### Porcos, chiqueiro e composteira (Claude Code)
 
@@ -212,9 +225,9 @@
 
 ## Em andamento e próximo passo exato
 
-1. Próxima etapa do plano (7): **barril de conservas** (geleias de morango e melancia, com mel) e **prensa de cera** (cera vira vela), mais o equilíbrio de preços. A arte dessas duas máquinas ainda não existe.
-2. Qualidade dos produtos e pratos (cozinha, etapa 3).
-3. Não conferido no navegador: a composteira (coberta por teste unitário) e o mel de flor.
+1. **Equilíbrio de preços** dos produtos, máquinas e pratos, jogando (etapa 7 do plano).
+2. **Qualidade** dos produtos e pratos (cozinha, etapa 3).
+3. **Não conferido no navegador:** composteira, barril de conservas, prensa de cera e mel de flor (todos cobertos por testes unitários; os testes genéricos de máquinas incluem a prensa).
 - Não publicar sem pedido do Junior. O pacote continua preview.34; tudo está no branch preview.35.
 
 ## Pendências e ideias para depois
@@ -233,7 +246,7 @@
 ## Testes
 
 - `npm run check`: ok.
-- `npm test`: **2.073 passaram, zero falhas, 234 arquivos**. Novo: `tests/pigs.test.ts` (5).
+- `npm test`: **2.076 passaram, zero falhas, 234 arquivos**. Inclui `tests/pigs.test.ts` (5) e os testes genéricos de máquinas, que agora cobrem a prensa de cera.
 - `npm run build`: não repetido desde a rodada do Codex.
 - Chromium, nesta rodada:
   - `scripts/qa-pigs.cjs`: OK. O chiqueiro aparece na Propriedade, num lugar escolhido pela mesma regra de colocação do jogo. O porco aparece dentro à noite, o cocho recebe 6 sobras, e de manhã aparece esterco, que é recolhido.
