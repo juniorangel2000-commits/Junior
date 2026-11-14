@@ -1,3 +1,4 @@
+import {isMachine,machineIngredient} from './data/machines';
 import {cropFromSeed,cropDefinition} from './data/crops';
 import {FARM_KINDS,FARM_BUILDINGS,FARM_BASE_COST,isFarmTool} from './data/farm-buildings';
 import {shortCalendarLabel,fullCalendarLabel,calendarDate} from './systems/calendar';
@@ -176,6 +177,7 @@ export class GameUI {
   private locationTimer?: ReturnType<typeof setTimeout>;
 
   setQuickbar(slots: QuickSlot[]): void { this.quickbar = [...slots]; this.activeSlot = -1; }
+  getActiveItem(){const item=quickItem(this.quickbar[this.activeSlot]??null);return item==='wateringCan'?null:item;}
   getQuickbar(): QuickSlot[] { return [...this.quickbar]; }
   private cameraZoomFactor = 1;
   private cameraZoomEnabled = false;
@@ -203,7 +205,8 @@ export class GameUI {
     const copy=toolReferenceParts(slot);
     const seed=quickItem(slot);if(cropFromSeed(seed)){this.callbacks.onUseItem(seed as ItemId);this.updateQuickbar();return;}
     this.callbacks.onTool(quickAction(slot),copy?.id);
-    if(copy&&quickAction(slot)==='hand'&&USABLE_VILLAGE_ITEMS.includes(copy.kind))this.callbacks.onUseItem(copy.kind,copy.id);
+    if(seed&&(isMachine(seed)||machineIngredient(seed)))this.callbacks.onUseItem(seed as ItemId);
+    else if(copy&&quickAction(slot)==='hand'&&USABLE_VILLAGE_ITEMS.includes(copy.kind))this.callbacks.onUseItem(copy.kind,copy.id);
     else if (quickItem(slot) && quickAction(slot) === 'hand') this.toast(`${this.slotInfo(slot).label}: material disponível na mochila para fabricar e construir.`);
     this.updateQuickbar();
   }

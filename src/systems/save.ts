@@ -1,3 +1,4 @@
+import {validMachineState} from './machines';
 import {validOpenFields} from './open-fields';
 import {HORSE_ID,validHorseTaming} from './horse-taming';
 import {DOMESTIC_ANIMALS,isDomesticAnimal} from '../data/domestic-animals';
@@ -86,6 +87,7 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.selectedCrop!==undefined&&!isCropId(value.selectedCrop))return false;
   if(value.groundItems!==undefined&&!validGroundItems(value.groundItems))return false;
   if(value.farmConstruction!==undefined&&!validFarmConstruction(value.farmConstruction,value.recruitedAnimals))return false;
+  if(value.machines!==undefined&&!validMachineState(value.machines,value as unknown as SaveData))return false;
   if(value.animalCare!==undefined&&!validAnimalCare(value.animalCare,typeof value.day==='number'?value.day:0))return false;
   if(value.npcSocial!==undefined&&!validNpcSocial(value.npcSocial,typeof value.day==='number'?value.day:999999))return false;
   if(value.bentoTravel!==undefined&&!validBentoTravel(value.bentoTravel,typeof value.day==='number'?value.day:999999))return false;

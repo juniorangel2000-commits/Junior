@@ -40,6 +40,18 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   pickaxe: { name: 'Picareta', description: 'Quebra veios de pedra e recupera materiais.' },
   hoe: { name: 'Enxada', description: 'E ou clique prepara um canteiro no solo livre da propriedade. Shift + E ou Shift + clique desfaz o canteiro vazio e restaura o piso anterior.' },
   handsaw: { name: 'Serrote', description: 'Usado junto à bancada para serrar tábuas e preparar componentes das construções.' },
+  cheesePress:{name:'Queijeira',description:'Instale na propriedade ou nos abrigos. Transforma leite em queijo em um dia.'},
+  butterChurn:{name:'Batedeira de manteiga',description:'Instale e carregue 2 leites para preparar manteiga em meio dia.'},
+  spinningWheel:{name:'Roca',description:'Instale e use 1 lã para fiar um novelo em um dia.'},
+  loom:{name:'Tear',description:'Instale e use 2 novelos para tecer 1 tecido em um dia.'},
+  stoneMill:{name:'Moinho de pedra',description:'Instale e moa 2 trigos, milhos ou aveias em meio dia.'},
+  cheese:{name:'Queijo',description:'Preparado na queijeira com leite. Helena compra.'},
+  goatCheese:{name:'Queijo de cabra',description:'Preparado na queijeira com leite de cabra. Helena compra.'},
+  butter:{name:'Manteiga',description:'Preparada na batedeira com 2 leites. Helena compra.'},
+  yarn:{name:'Novelo',description:'Fiado na roca com lã. Use 2 no tear para fazer tecido; Celina compra.'},
+  flour:{name:'Farinha',description:'Trigo moído no moinho de pedra. Helena compra.'},
+  cornmeal:{name:'Fubá',description:'Milho moído no moinho de pedra. Helena compra.'},
+  oatFlakes:{name:'Aveia em flocos',description:'Aveia preparada no moinho de pedra. Helena compra.'},
   egg:{name:'Ovo',description:'Posto pelas galinhas alimentadas. Recolha nos ninhos do galinheiro. Helena e Rosa compram.'},
   milk:{name:'Leite',description:'Ordenhado das vacas alimentadas, dentro do curral, com o balde. Helena compra.'},
   goatMilk:{name:'Leite de cabra',description:'Ordenhado das cabras alimentadas no aprisco, com o balde. Helena compra.'},
@@ -84,7 +96,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
 
 /** Only these stock fields may be absent in a save from before the village
  * services update. Missing any older field still indicates a corrupt save. */
-export const VILLAGE_ITEM_IDS=['harvestBasket',...NEW_CROP_ITEM_IDS,'egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
+export const VILLAGE_ITEM_IDS=['harvestBasket',...NEW_CROP_ITEM_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
 
 export const ITEM_IDS = Object.keys(ITEMS) as ItemId[];
 export const ITEM_NAMES = Object.fromEntries(ITEM_IDS.map(id => [id, ITEMS[id].name])) as Record<ItemId, string>;

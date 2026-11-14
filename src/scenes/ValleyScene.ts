@@ -1,3 +1,5 @@
+import {MachineView} from '../machine-view';
+import {machinePointBlocked,machineReserved,nearMachine,machineHint,useMachineItem,interactMachine,type MachineRuntime} from '../systems/machines';
 import {cropDefinition,cropFromSeed,cropStage} from '../data/crops';
 import {nearFarmDoor} from '../systems/farm-interior';
 import {FIELDS_ENTRY,PROPERTY_FIELDS_EXIT,propertyFieldsApproach} from '../data/open-fields';
@@ -104,6 +106,15 @@ const DEFAULT_PROFILE: CharacterProfile = { name: 'Viajante', skin: '#d9a276', h
 export class ValleyScene extends Phaser.Scene {
  private farmView?:FarmConstructionView;
  private farmRuntime=createFarmRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.inventory.data,()=>this.player,(x,y)=>this.farmPlacementTileReason(x,y),()=>{this.farmView?.refresh();this.updateHUD();});
+ private machineView?:MachineView;
+ private machineRuntime:MachineRuntime={
+  read:()=>this.state,snapshot:()=>this.snapshotState(),write:saveGame,
+  apply:d=>{this.state.machines=d.machines;this.state.inventory=d.inventory;Object.assign(this.inventory.data,d.inventory);this.updateHUD();},
+  player:()=>this.player,space:()=>this.inHome?undefined:'property',bounds:()=>({width:WORLD_WIDTH*TILE,height:WORLD_HEIGHT*TILE}),
+  blocked:(x,y)=>this.world.isSolidPoint(x,y)||farmPointBlocked(this.state,x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)),
+  placement:(x,y)=>this.farmPlacementTileReason(x,y),actors:()=>[...(this.animals?.animals.filter(a=>a.sprite.visible)??[]),...(this.state.bentoTravel?.trip?.area==='property'?[this.state.bentoTravel.trip]:[])],
+  enabled:()=>this.canPlay()&&!this.inHome&&!this.player.isSwimming&&!this.toolUse.active,
+ };
  private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.inventory.data,()=>this.player,()=>this.inHome?'home':'property',(x,y)=>this.blockedPoint(x,y)||this.swimmingPoint(x,y)>0,()=>this.canPlay(),()=>{this.tool=this.state.equippedTool;this.updateToolVisual();this.updateHUD();});
  getGroundItemRuntime(){return this.player?this.groundRuntime:undefined;}
  private mineMissionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player,()=>this.inventory.data);
@@ -704,6 +715,7 @@ export class ValleyScene extends Phaser.Scene {
 
   async useVillageItem(item:import('../types').ItemId):Promise<void>{
     if(!this.canPlay()||this.player.isSwimming||this.toolUse.active||this.time.now<this.nextInteractionAt)return;
+    const machineResult=useMachineItem(this.machineRuntime,item);if(machineResult){this.ui.toast(machineResult.message);return;}
     const cropId=cropFromSeed(item);if(cropId){if(!this.inventory.has(item))return;this.state.selectedCrop=cropId;this.selectTool('plant');this.ui.toast('Sementes de '+cropDefinition(cropId).name.toLowerCase()+' equipadas. Escolha um canteiro e use E ou clique.');return;}
     if((item==='sickle'||item==='shovel')&&!this.inventory.has(item))return;
     this.state.inventory={...this.inventory.data};
@@ -729,7 +741,7 @@ export class ValleyScene extends Phaser.Scene {
     if(item==='fishingRod'||item==='net'){
       if(this.player.isSwimming||!near){this.ui.toast('Fique em terra firme, perto da água, para pescar.');return;}
       this.setPaused(true);const message=await fishAtBank(this.state,item==='net',()=>{Object.assign(this.inventory.data,this.state.inventory);this.updateHUD();},createFishingCast(this,this.player,(x,y)=>this.swimmingPoint(x,y)>0,(x,y)=>!this.movementBlockedPoint(x,y),item==='net'));this.setPaused(false);this.ui.toast(message);
-    }else{const result=useConsumable(this.state,item,point,(x,y)=>this.world.isBlocked(x,y)||this.building.isBlocked(x,y)||planting&&(farmReserved(this.state,x,y)||!this.world.canPlantTree(x,y)||!naturalPlantGround(this.state.mapEdits?.terrain[`${x},${y}`])||this.farming.isPrepared(x,y)||!!this.world.resourceAt(x,y)||this.world.resources.some(n=>n.kind==='standingTree'&&Math.hypot(n.x-x,n.y-y)<2)));if(result.ok){Object.assign(this.inventory.data,this.state.inventory);if(planting)this.resourceLifecycle?.tick(true);this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);this.persist();}this.ui.toast(result.message);}
+    }else{const result=useConsumable(this.state,item,point,(x,y)=>machineReserved(this.state,'property',x,y)||this.world.isBlocked(x,y)||this.building.isBlocked(x,y)||planting&&((farmReserved(this.state,x,y)||machineReserved(this.state,'property',x,y))||!this.world.canPlantTree(x,y)||!naturalPlantGround(this.state.mapEdits?.terrain[`${x},${y}`])||this.farming.isPrepared(x,y)||!!this.world.resourceAt(x,y)||this.world.resources.some(n=>n.kind==='standingTree'&&Math.hypot(n.x-x,n.y-y)<2)));if(result.ok){Object.assign(this.inventory.data,this.state.inventory);if(planting)this.resourceLifecycle?.tick(true);this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);this.persist();}this.ui.toast(result.message);}
     this.updateHUD();
   }
 
@@ -790,6 +802,7 @@ export class ValleyScene extends Phaser.Scene {
     this.inHome = false;
     this.homeView = undefined;
     this.outdoorVisibility.clear();
+    this.machineView?.destroy();this.machineView=undefined;
     this.farmView?.destroy();this.farmView=undefined;
     this.animals?.destroy();this.animals=undefined;
 
@@ -834,14 +847,14 @@ export class ValleyScene extends Phaser.Scene {
     this.cropSoil = this.add.graphics().setDepth(-49);
     this.damageMarks = this.add.graphics().setDepth(3500);
     this.player = new Player(this, data.profile, data.player.x, data.player.y);
-    this.helpers=new SurvivorResidentsView(this,()=>{this.state.inventory={...this.inventory.data};return{save:this.state,area:'property',player:this.player,visible:this.running&&!this.inHome&&this.titleBackgroundMode==='off',blocked:(x,y)=>farmBlocked(this.state,x,y)||this.world.isBlocked(x,y)||this.building.isBlocked(x,y)};},this.ui,()=>{Object.assign(this.inventory.data,this.state.inventory);this.updateHUD();});
+    this.helpers=new SurvivorResidentsView(this,()=>{this.state.inventory={...this.inventory.data};return{save:this.state,area:'property',player:this.player,visible:this.running&&!this.inHome&&this.titleBackgroundMode==='off',blocked:(x,y)=>(farmBlocked(this.state,x,y)||machineReserved(this.state,'property',x,y))||this.world.isBlocked(x,y)||this.building.isBlocked(x,y)};},this.ui,()=>{Object.assign(this.inventory.data,this.state.inventory);this.updateHUD();});
     this.toolVisual = new ToolVisual(this, data.profile);
     const direction = data.player.direction;
     this.player.facing = directionVector(direction ?? 'down');
     this.input.keyboard?.resetKeys();
     this.player.update(0, this.movementBlocked, this.movementBlockedPoint,true,this.swimmingPoint);
     this.recoverPlayerPosition();
-    this.resourceLifecycle=new ResourceLifecycle(this.state,'property',this.world,(x,y)=>!propertyFieldsApproach(x,y)&&!farmReserved(this.state,x,y)&&!wellSiteTile(x,y)&&!homesteadResourceReserved(x,y)&&!(this.state.petShelter&&shelterReserved(this.state.petShelter,x,y))&&!this.world.isBlocked(x,y)&&!this.world.resourceAt(x,y)&&!this.farming.isPrepared(x,y)&&!this.building.buildings.some(b=>buildingFootprint(b).some(p=>p.x===x&&p.y===y))&&Math.hypot(x-this.player.x/TILE,y-this.player.y/TILE)>3&&[this.state.mapEdits?.points?.entry,this.state.mapEdits?.points?.exit,{x:25,y:18}].every(p=>!p||Math.hypot(x-p.x,y-p.y)>3)&&(this.animals?.animals??this.state.animalPositions?.property??[]).every(a=>Math.hypot(x-a.x/TILE,y-a.y/TILE)>2));
+    this.resourceLifecycle=new ResourceLifecycle(this.state,'property',this.world,(x,y)=>!propertyFieldsApproach(x,y)&&!(farmReserved(this.state,x,y)||machineReserved(this.state,'property',x,y))&&!wellSiteTile(x,y)&&!homesteadResourceReserved(x,y)&&!(this.state.petShelter&&shelterReserved(this.state.petShelter,x,y))&&!this.world.isBlocked(x,y)&&!this.world.resourceAt(x,y)&&!this.farming.isPrepared(x,y)&&!this.building.buildings.some(b=>buildingFootprint(b).some(p=>p.x===x&&p.y===y))&&Math.hypot(x-this.player.x/TILE,y-this.player.y/TILE)>3&&[this.state.mapEdits?.points?.entry,this.state.mapEdits?.points?.exit,{x:25,y:18}].every(p=>!p||Math.hypot(x-p.x,y-p.y)>3)&&(this.animals?.animals??this.state.animalPositions?.property??[]).every(a=>Math.hypot(x-a.x/TILE,y-a.y/TILE)>2));
     this.resources=new Resources(this.state.resourceProgress);
     this.animals=new AnimalPopulation(this,this.state,'property',this.animalBlocked,PLAYER_SPEED,()=>treeTiles(this.world.resources));
     this.recoverPlayerPosition();
@@ -854,6 +867,7 @@ export class ValleyScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.player, false, 0.12, 0.12);
     this.cameras.main.centerOn(this.player.x, this.player.y);
     this.tool = isLegacyHouseTool(data.equippedTool)?'hand':data.equippedTool;
+    this.machineView=new MachineView(this,()=>this.state,()=>this.inHome?undefined:'property');
     this.farmView=new FarmConstructionView(this,()=>this.state,()=>[this.player,...(this.animals?.animals??[])]);
     this.lastAim = null;
     this.saveTimer = 0;
@@ -865,7 +879,7 @@ export class ValleyScene extends Phaser.Scene {
     this.updateNight();
     this.updateShelter();
     if (data.homePosition) this.enterHome(data.homePosition, false);
-    this.unregisterBentoNavigation=registerBentoPropertyNavigation(this.state,{fits:p=>[[-7,-5],[7,-5],[-7,3],[7,3]].every(([x,y])=>!farmPointBlocked(this.state,p.x+x,p.y+y)&&!this.world.isBlockedPoint(p.x+x,p.y+y)&&!this.building.isBlocked(Math.floor((p.x+x)/32),Math.floor((p.y+y)/32))),allows:(a,b)=>bridgeAllowsStep(a.x,a.y,b.x,b.y,this.world.isSwimmingPoint)});
+    this.unregisterBentoNavigation=registerBentoPropertyNavigation(this.state,{fits:p=>[[-7,-5],[7,-5],[-7,3],[7,3]].every(([x,y])=>!machinePointBlocked(this.state,'property',p.x+x,p.y+y)&&!farmPointBlocked(this.state,p.x+x,p.y+y)&&!this.world.isBlockedPoint(p.x+x,p.y+y)&&!this.building.isBlocked(Math.floor((p.x+x)/32),Math.floor((p.y+y)/32))),allows:(a,b)=>bridgeAllowsStep(a.x,a.y,b.x,b.y,this.world.isSwimmingPoint)});
     this.bentoView=new BentoTravelView(this,()=>this.state,()=>this.player,()=>this.inHome?'home':'property',this.ui,undefined,this.bentoWorkRuntime);
     if(this.state.animalEscort)this.ui.toast('Leve o animal ao cercado e aperte G para soltá-lo.');
   }
@@ -972,16 +986,16 @@ export class ValleyScene extends Phaser.Scene {
 
   private canPlay(): boolean { return !rescuePending(this.state) && !this.rescueStarting && !this.homeTransitionActive && !this.forestActive && !this.villageActive && !this.editingMap && this.running && !this.paused && !this.ui.isModalOpen() && !this.adminMenu?.isOpen && !document.hidden; }
   private blocked = (x: number, y: number): boolean => this.inHome ? this.home.isBlocked(x, y)
-    : farmBlocked(this.state,x,y)||this.world.isBlocked(x, y) || this.building.isBlocked(x, y);
+    : (farmBlocked(this.state,x,y)||machineReserved(this.state,'property',x,y))||this.world.isBlocked(x, y) || this.building.isBlocked(x, y);
 
-  private animalBlocked=(x:number,y:number):boolean=>this.world.isBlocked(x,y)||this.farming.isPrepared(x,y)||this.building.isBlocked(x,y);
+  private animalBlocked=(x:number,y:number):boolean=>machineReserved(this.state,'property',x,y)||this.world.isBlocked(x,y)||this.farming.isPrepared(x,y)||this.building.isBlocked(x,y);
   private allowLeashMovement=(x:number,y:number):boolean=>(this.inHome || bridgeAllowsStep(this.player.x,this.player.y,x,y,this.world.isSwimmingPoint)) && (this.animals?.allowsPlayerCenter(x,y,this.player)??true);
   private releaseRope():void {
     if(!this.state.animalEscort)return;Object.assign(this.state.inventory,this.inventory.data);
     if(releaseAnimalEscort(this.state)){Object.assign(this.inventory.data,this.state.inventory);this.animals?.store();this.animals?.destroy();this.animals=new AnimalPopulation(this,this.state,'property',this.animalBlocked,PLAYER_SPEED,()=>treeTiles(this.world.resources));this.updateHUD();this.persist();this.ui.toast('Corda solta e guardada.');}
   }
-  private movementBlocked=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(x,y):farmBlocked(this.state,x,y)||invitationGateBlocked(this.state,'property',(x+.5)*TILE,(y+.5)*TILE)||this.world.isSolid(x,y)||this.building.isBlocked(x,y);
-  private movementBlockedPoint=(x:number,y:number):boolean=>!!this.bentoView?.blocks(x,y)||(this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):!!this.animals?.blocksPoint(x,y)||farmPointBlocked(this.state,x,y)||!!this.helpers?.blocked(x,y)||invitationGateBlocked(this.state,'property',x,y)||this.world.isSolidPoint(x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)));
+  private movementBlocked=(x:number,y:number):boolean=>this.inHome?this.home.isBlocked(x,y):(farmBlocked(this.state,x,y)||machineReserved(this.state,'property',x,y))||invitationGateBlocked(this.state,'property',(x+.5)*TILE,(y+.5)*TILE)||this.world.isSolid(x,y)||this.building.isBlocked(x,y);
+  private movementBlockedPoint=(x:number,y:number):boolean=>!!this.bentoView?.blocks(x,y)||(this.inHome?this.home.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)):!!this.animals?.blocksPoint(x,y)||(farmPointBlocked(this.state,x,y)||machinePointBlocked(this.state,'property',x,y))||!!this.helpers?.blocked(x,y)||invitationGateBlocked(this.state,'property',x,y)||this.world.isSolidPoint(x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)));
   private swimmingPoint=(x:number,y:number):number=>this.inHome||bridgeAtPoint(x,y)?0:sampleWaterDepth((px,py)=>!this.building.at(Math.floor(px/TILE),Math.floor(py/TILE),'floor')&&this.world.isWaterGroundPoint(px,py),x,y);
 
   private blockedPoint = (x: number, y: number): boolean => {
@@ -990,7 +1004,7 @@ export class ValleyScene extends Phaser.Scene {
     // A floor already saved on dry land covers a newly rounded shoreline sliver.
     // It never overrides solid obstacles or an original water cell.
     const savedFloor = this.building.at(tx, ty, 'floor')?.kind === 'floor' && !this.world.isBlocked(tx, ty);
-    return farmPointBlocked(this.state,x,y)||(this.world.isBlockedPoint(x, y) && !savedFloor) || this.building.isBlocked(tx, ty);
+    return (farmPointBlocked(this.state,x,y)||machinePointBlocked(this.state,'property',x,y))||(this.world.isBlockedPoint(x, y) && !savedFloor) || this.building.isBlocked(tx, ty);
   };
 
   private handleKey = (event: KeyboardEvent): void => {
@@ -1112,7 +1126,7 @@ export class ValleyScene extends Phaser.Scene {
       area: 'property',
       terrainAt: (x,y) => this.state.mapEdits?.terrain[`${x},${y}`]
         ?? (this.world.isWater(x,y) ? 'water' : isBridgeTile(x,y) ? 'wood' : this.world.isFarm(x,y) ? 'soil' : isPathTile(x,y) ? 'path' : 'grass'),
-      occupied: (x,y) => farmReserved(this.state,x,y)||this.world.isBlocked(x,y) || (!this.world.isFarm(x,y) && !this.world.isBuildable(x,y))
+      occupied: (x,y) => (farmReserved(this.state,x,y)||machineReserved(this.state,'property',x,y))||this.world.isBlocked(x,y) || (!this.world.isFarm(x,y) && !this.world.isBuildable(x,y))
         || !!this.world.resourceAt(x,y) || this.building.buildings.some(b => buildingFootprint(b).some(p => p.x===x && p.y===y))
         || (this.animals?.animals.some(a => Math.floor(a.x/TILE)===x && Math.floor(a.y/TILE)===y) ?? false),
       reserved: (x,y) => !!this.state.petShelter&&shelterReserved(this.state.petShelter,x,y) || (x>=20 && x<=28 && y>=9 && y<=17) || (x>=24 && x<=26 && y>=18 && y<=19)
@@ -1125,7 +1139,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private freeForBuilding(x: number, y: number, kind: BuildingData['kind']): boolean {
-    if (farmReserved(this.state,x,y)||this.state.petShelter && shelterReserved(this.state.petShelter,x,y)) return false;
+    if ((farmReserved(this.state,x,y)||machineReserved(this.state,'property',x,y))||this.state.petShelter && shelterReserved(this.state.petShelter,x,y)) return false;
     if (!this.world.isBuildable(x, y) || this.farming.isPrepared(x, y) || this.farming.cropAt(x, y)) return false;
     if (buildingLayer(kind) === 'structure') {
       if (this.feetTiles().some(point => point.x === x && point.y === y) || this.animalOccupies(x,y)) return false;
@@ -1163,6 +1177,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private farmPlacementTileReason(x:number,y:number):string{
+    if(machineReserved(this.state,'property',x,y))return 'Uma máquina ocupa esse espaço.';
     if(propertyFieldsApproach(x,y))return 'Deixe livre a passagem para os Campos Abertos.';
     if(this.world.isBlocked(x,y)||wellSiteTile(x,y)||x>=23&&x<=26&&y>=16&&y<=19||this.state.petShelter&&shelterReserved(this.state.petShelter,x,y))return 'Há obstáculos neste local.';
     if(this.world.resourceAt(x,y)||this.world.resources.some(r=>r.kind==='standingTree'&&Math.hypot(r.x-x,r.y-y)<1.6))return 'Limpe o terreno antes de colocar a base.';
@@ -1180,6 +1195,7 @@ export class ValleyScene extends Phaser.Scene {
       const p=explicitTile??this.targetTile(),result=placeFarmBase(this.farmRuntime,this.tool.slice(5)as FarmKind,p.x,p.y);this.ui.toast(result.message);if(result.ok){gameAudio.play('build');this.selectTool('hand');}return;
     }
     if(this.canPlay()&&!this.inHome&&!this.player.isSwimming&&this.tool==='hand'){
+      const result=interactMachine(this.machineRuntime,this.ui.getActiveItem());if(result){this.ui.toast(result.message);return;}
       const door=nearFarmDoor(this.state,this.player);if(door){this.enterFarmInterior(door.id);return;}
       const site=nearFarmSite(this.state,this.player);if(site){showFarmConstruction(this.ui,this.farmRuntime,site.id,id=>this.enterFarmInterior(id));return;}
     }
@@ -1537,7 +1553,7 @@ export class ValleyScene extends Phaser.Scene {
       const bed = this.home.bedNear(playerTile, 1.1);
       const nearExit = this.nearHomeExit();
       const supply = HOME_SUPPLIES.find(s => !this.state.homeSupplies?.[s.id] && this.tileDistance(s) <= 48);
-      this.ui.updateHUD({worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100, coins:this.state.villageEconomy?.coins??0,farmingProgress: this.farming.progress, wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: true, name: this.state.profile.name, day: this.state.day, time: this.state.time,
+    this.ui.updateHUD({worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100, coins:this.state.villageEconomy?.coins??0,farmingProgress: this.farming.progress, wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: true, name: this.state.profile.name, day: this.state.day, time: this.state.time,
         inventory: this.inventory.data, tool: this.tool,
         playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
         interactionKey: nearExit ? null : bed || supply ? 'E' : 'H',
@@ -1584,8 +1600,9 @@ export class ValleyScene extends Phaser.Scene {
     if(nearPassage&&!this.player.isSwimming)prompt=this.state.animalEscort?'Conclua a condução ou solte a corda antes de sair':'Siga a seta e ultrapasse a placa para continuar';
     if(!villageAccessUnlocked(this.state)&&Math.abs(this.player.x-93.5*TILE)<96&&Math.abs(this.player.y-52.5*TILE)<64)prompt=VILLAGE_LOCK_MESSAGE;
     if(this.tool==='hand'&&this.state.petShelter&&Math.hypot(this.player.x-this.state.petShelter.x,this.player.y-this.state.petShelter.y)<90)prompt='Casinha dos companheiros · E';
+    const machine=this.tool==='hand'&&!this.player.isSwimming?nearMachine(this.machineRuntime):undefined;if(machine)prompt=machineHint(this.state,machine);
     this.ui.updateHUD({worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100, coins:this.state.villageEconomy?.coins??0,farmingProgress: this.farming.progress, wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, swimming:this.player.isSwimming, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
-      selectedCrop:this.state.selectedCrop, tool: this.tool, prompt:this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:prompt, interactionKey:nearPassage||nearHouse?null:undefined, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
+      selectedCrop:this.state.selectedCrop, tool: this.tool, prompt:machine?prompt:this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:prompt, interactionKey:nearPassage||nearHouse?null:undefined, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
       playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
       harvests: this.inventory.data.turnip, metLia: this.state.metLia,
       nearWorkbench: this.nearWorkbench(), sheltered: this.shelter.sheltered, shelterReason: this.shelter.reason,
@@ -1596,7 +1613,7 @@ export class ValleyScene extends Phaser.Scene {
     if (!this.state) return;
     const delta = Math.min(deltaMs / 1000, 0.25);
     if (this.titleBackgroundMode !== 'off') { this.updateTitleBackground(delta); return; }
-    this.updateNight();
+    this.updateNight();this.machineView?.update(_time);
     if (this.craftJob) {
       if (!this.ui.isCraftingOpen() || document.hidden) this.cancelCrafting();
       else {

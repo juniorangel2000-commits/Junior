@@ -186,3 +186,5 @@ export function meetVillager(economy:VillageEconomy,npcId:string):boolean {
 
 // Produtos do aprisco vêm da criação do jogador; os moradores apenas compram.
 Object.assign(MERCHANTS.inn.sell,{goatMilk:20});Object.assign(MERCHANTS.tailor.sell,{wool:36});
+
+Object.assign(MERCHANTS.inn.sell,{cheese:40,goatCheese:52,butter:48,flour:24,cornmeal:26,oatFlakes:22});Object.assign(MERCHANTS.tailor.sell,{yarn:54});

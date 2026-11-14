@@ -1,3 +1,5 @@
+import {preloadMachineArt} from './machine-view';
+import {MACHINE_IDS,MACHINE_PRODUCTS} from './data/machines';
 import {CROP_CATALOG} from './data/crop-catalog';
 import {preloadCropArt,setupCropArt} from './crop-art';
 import {preloadFarmConstructionArt} from './farm-construction-view';
@@ -29,6 +31,8 @@ import { TOOL_ICON_URLS } from './data/tool-art';
 const BASE = 'assets/visual/';
 const ICON_IDS = new Set(['wood', 'stone', 'branch', 'log', 'plank', 'scrap', 'hatchet', 'pickaxe', 'handsaw', 'fiber', 'cord', 'flakedStone', 'handle', 'blade', 'board', 'hammer', 'water', 'workbench', 'seeds']);
 export function itemIconUrl(id: string, tier=0): string | undefined {
+  if((MACHINE_IDS as readonly string[]).includes(id))return `assets/visual/machines/${id}-icon.png`;
+  if((MACHINE_PRODUCTS as readonly string[]).includes(id))return `assets/visual/machines/${id}.png`;
   if(id==='harvestBasket')return 'assets/visual/crops/harvest-basket.png';
   const crop=CROP_CATALOG.find(c=>c.seed===id||c.harvest===id);if(crop)return `assets/visual/crops/${crop.id}/${crop.seed===id?'seed':'harvest'}.png`;
   if(id==='freshGrass')return 'assets/visual/open-fields/fresh-grass.png';
@@ -67,7 +71,7 @@ const WORLD_SOURCES: Record<string, string> = {
 const MODULES = ['parede_creme', 'parede_janela_floreira', 'parede_trepadeira', 'parede_porta', 'porta_madeira', 'janela_turquesa', 'telha_lisa', 'telha_variante', 'chamine', 'floreira', 'cerca_natural', 'banco_jardim', 'barril', 'vaso_flor', 'piso_tabuas', 'piso_pedra', 'terra', 'caminho', 'planta'];
 export function preloadVisualAssets(scene: Phaser.Scene): void {
   preloadFarmConstructionArt(scene);
-  preloadFishingArt(scene);
+  preloadMachineArt(scene);preloadFishingArt(scene);
   preloadEcologyArt(scene);
   preloadEconomyArt(scene);
   preloadVillageScenery(scene);

@@ -1,0 +1,177 @@
+{
+  "alphaCutoff": 200,
+  "sourceSha256": "9ada6914e0b4d14d281b8b87ee10a8b82681f9466b2d672817f046e801bb0460",
+  "productsSha256": "f68b2fdcd91b59a213068677a3495290482d2296e2a7244b4c3c25a6f5c3a096",
+  "frames": {
+    "cheesePress": {
+      "width": 248,
+      "height": 299,
+      "cuts": [
+        {
+          "x": 57,
+          "y": 17,
+          "width": 240,
+          "height": 291
+        },
+        {
+          "x": 57,
+          "y": 339,
+          "width": 240,
+          "height": 290
+        },
+        {
+          "x": 57,
+          "y": 663,
+          "width": 240,
+          "height": 290
+        }
+      ]
+    },
+    "butterChurn": {
+      "width": 220,
+      "height": 288,
+      "cuts": [
+        {
+          "x": 397,
+          "y": 25,
+          "width": 212,
+          "height": 280
+        },
+        {
+          "x": 397,
+          "y": 368,
+          "width": 182,
+          "height": 258
+        },
+        {
+          "x": 365,
+          "y": 691,
+          "width": 209,
+          "height": 258
+        }
+      ]
+    },
+    "spinningWheel": {
+      "width": 286,
+      "height": 288,
+      "cuts": [
+        {
+          "x": 654,
+          "y": 23,
+          "width": 277,
+          "height": 278
+        },
+        {
+          "x": 654,
+          "y": 345,
+          "width": 278,
+          "height": 280
+        },
+        {
+          "x": 654,
+          "y": 668,
+          "width": 278,
+          "height": 280
+        }
+      ]
+    },
+    "loom": {
+      "width": 332,
+      "height": 275,
+      "cuts": [
+        {
+          "x": 971,
+          "y": 37,
+          "width": 282,
+          "height": 266
+        },
+        {
+          "x": 971,
+          "y": 358,
+          "width": 282,
+          "height": 267
+        },
+        {
+          "x": 971,
+          "y": 682,
+          "width": 324,
+          "height": 266
+        }
+      ]
+    },
+    "stoneMill": {
+      "width": 286,
+      "height": 262,
+      "cuts": [
+        {
+          "x": 1299,
+          "y": 50,
+          "width": 276,
+          "height": 253
+        },
+        {
+          "x": 1299,
+          "y": 371,
+          "width": 273,
+          "height": 254
+        },
+        {
+          "x": 1295,
+          "y": 694,
+          "width": 278,
+          "height": 254
+        }
+      ]
+    }
+  },
+  "icons": {
+    "cheese": {
+      "x": 54,
+      "y": 85,
+      "width": 342,
+      "height": 293
+    },
+    "goatCheese": {
+      "x": 491,
+      "y": 85,
+      "width": 345,
+      "height": 290
+    },
+    "butter": {
+      "x": 917,
+      "y": 108,
+      "width": 388,
+      "height": 266
+    },
+    "yarn": {
+      "x": 1382,
+      "y": 67,
+      "width": 346,
+      "height": 337
+    },
+    "flour": {
+      "x": 52,
+      "y": 506,
+      "width": 338,
+      "height": 323
+    },
+    "cornmeal": {
+      "x": 496,
+      "y": 506,
+      "width": 338,
+      "height": 323
+    },
+    "oatFlakes": {
+      "x": 925,
+      "y": 526,
+      "width": 365,
+      "height": 296
+    },
+    "cloth": {
+      "x": 1354,
+      "y": 518,
+      "width": 386,
+      "height": 310
+    }
+  }
+}

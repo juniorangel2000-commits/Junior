@@ -1,3 +1,4 @@
+import {MACHINE_IDS,MACHINES} from '../data/machines';
 import {HARVEST_BASKET_COST,HARVEST_BASKET_FEE,HARVEST_BASKET_DESCRIPTION} from '../data/harvest-basket';
 import {ITEMS} from '../data/items';
 import {bentoAvailability} from './bento-schedule';
@@ -51,6 +52,7 @@ for(const tool of ['hammer','handsaw','fishingRod','net','shears'] as const)add(
 add('shelter-carpentry','tobias','Preparar peças para a casinha','30 C, 2 troncos e 6 madeiras: recebe 6 tábuas regulares e 6 cavilhas.',(s,i)=>{pay(s,i,30,{log:2,wood:6});requireThat(i.transact({},{board:6,peg:6}),'Libere espaço na mochila.');});
 add('shelter-textiles','celina','Preparar tecidos para os pets','20 C e 8 fibras: recebe 4 tecidos e 2 cordas.',(s,i)=>{pay(s,i,20,{fiber:8});requireThat(i.transact({},{cloth:4,cord:2}),'Libere espaço na mochila.');});
 add('shelter-fittings','icaro','Preparar fixadores para a casinha','12 C e 4 sucatas: recebe 2 peças metálicas.',(s,i)=>{pay(s,i,12,{scrap:4});requireThat(i.transact({},{metalPart:2}),'Libere espaço na mochila.');});
+for(const id of MACHINE_IDS){const d=MACHINES[id];add(`learn-${id}`,d.npc,`Aprender ${d.name.toLowerCase()}`,`${d.learnFee} C. Aprenda o projeto para montar na bancada e instalar na fazenda.`,(s,i)=>{requireThat(!s.villageProgress!.recipes.includes(id),'Você já conhece este projeto.');pay(s,i,d.learnFee);s.villageProgress!.recipes.push(id);});}
 export function listVillageServices(npc:string,save?:SaveData):VillageServiceOffer[]{
  return Object.entries(services).filter(([,s])=>s.npc===npc).map(([id,s])=>{
   const offer:VillageServiceOffer={id,label:s.label,description:s.description};if(!save)return offer;
