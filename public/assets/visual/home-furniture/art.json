@@ -1,0 +1,49 @@
+{
+  "sourceSha256": "9920df85a511d67ff9c84e206437e0d19dc06efb833a11e344ead8d9f001a109",
+  "alphaCutoff": 200,
+  "cuts": {
+    "bed": {
+      "x": 72,
+      "y": 48,
+      "width": 403,
+      "height": 453
+    },
+    "table": {
+      "x": 605,
+      "y": 128,
+      "width": 347,
+      "height": 357
+    },
+    "chair": {
+      "x": 1177,
+      "y": 100,
+      "width": 206,
+      "height": 386
+    },
+    "shelf": {
+      "x": 56,
+      "y": 590,
+      "width": 432,
+      "height": 377
+    },
+    "rug": {
+      "x": 567,
+      "y": 646,
+      "width": 421,
+      "height": 254
+    },
+    "plant": {
+      "x": 1114,
+      "y": 594,
+      "width": 310,
+      "height": 362
+    }
+  },
+  "stove": {
+    "sourceSha256": "26de015b12e12aa776177b1cb00958777f2093733e70c5ea6f6a7d74bc96a42c",
+    "x": 279,
+    "y": 21,
+    "width": 752,
+    "height": 1148
+  }
+}

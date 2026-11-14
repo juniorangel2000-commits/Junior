@@ -268,7 +268,15 @@ export interface HomeView {
 
 /** Móveis com arte em PNG, carregada em `preloadVisualAssets`, na resolução original:
  * só a exibição é reduzida para a largura do móvel. */
-export const FURNITURE_IMAGES:Partial<Record<FurnitureKind,{file:string}>>={woodStove:{file:'assets/visual/kitchen/wood-stove.png'}};
+export const FURNITURE_IMAGES: Partial<Record<FurnitureKind, { file: string; maxHeight?: number; offsetY?: number }>> = {
+  bed: { file: 'assets/visual/home-furniture/bed.png', maxHeight: 76 },
+  table: { file: 'assets/visual/home-furniture/table.png', maxHeight: 66 },
+  chair: { file: 'assets/visual/home-furniture/chair.png', maxHeight: 52 },
+  shelf: { file: 'assets/visual/home-furniture/shelf.png', maxHeight: 56 },
+  rug: { file: 'assets/visual/home-furniture/rug.png', maxHeight: 64 },
+  plant: { file: 'assets/visual/home-furniture/plant.png', maxHeight: 48 },
+  woodStove: { file: 'assets/visual/home-furniture/wood-stove.png', maxHeight: 100, offsetY: -4 },
+};
 export function preloadFurnitureImages(scene:Phaser.Scene):void{for(const [kind,a] of Object.entries(FURNITURE_IMAGES))if(!scene.textures.exists(`home-furniture-${kind}`))scene.load.image(`home-furniture-${kind}`,a!.file);}
 export interface HomeFurnitureArt {key:string;w:number;h:number;offsetX?:number;offsetY?:number;depth?:number}
 export function drawHome(scene: Phaser.Scene, data: HomeData, resolveArt?:(piece:HomeFurniture)=>HomeFurnitureArt): HomeView {
@@ -281,7 +289,15 @@ export function drawHome(scene: Phaser.Scene, data: HomeData, resolveArt?:(piece
     const image = scene.add.image(piece.x * HOME_TILE, bottom, art?.key??`home-furniture-${piece.kind}`)
       .setOrigin(0, 1).setDepth(definition.blocking ? bottom - 1 : -500);
     if(art)image.setPosition((piece.x+definition.width/2)*HOME_TILE+(art.offsetX??0),bottom+(art.offsetY??0)).setOrigin(.5,1).setDisplaySize(art.w,art.h).setDepth(art.depth??(definition.blocking?bottom-1:-500));
-    if(!art&&FURNITURE_IMAGES[piece.kind]){const w=definition.width*HOME_TILE;image.setPosition((piece.x+definition.width/2)*HOME_TILE,bottom).setOrigin(.5,1).setDisplaySize(w,w*image.height/image.width);}
+    if (!art && FURNITURE_IMAGES[piece.kind]) {
+      const w = definition.width * HOME_TILE;
+      const style = FURNITURE_IMAGES[piece.kind]!;
+      // Fit the original silhouette uniformly: cushions, circles and planks must
+      // keep their proportions even when the collision base is rectangular.
+      const scale = Math.min(w / image.width, (style.maxHeight ?? Infinity) / image.height);
+      image.setPosition((piece.x + definition.width / 2) * HOME_TILE, bottom + (style.offsetY ?? 0))
+        .setOrigin(.5, 1).setScale(scale);
+    }
     image.setData('homeFurnitureId', piece.id);
     objects.push(image);
   }
