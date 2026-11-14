@@ -4,62 +4,61 @@
 
 - **Atualizado em:** 2026-11-14
 - **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch (revisão em `ad98016`).
+- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch (doma em `a9739fd`).
 - **Última versão publicada:** `v0.10.0-preview.33`.
-- **Estado:** etapas 1–4 de cultivos prontas e conferidas de ponta a ponta. **Etapa 5 (doma do cavalo) ainda não implementada.** Não publicado.
+- **Estado:** doma do cavalo implementada e validada, **faltando só o estábulo, que o Junior vai fazer pelo Codex**. Não publicado.
 
 ## Feito nesta rodada
 
-- O Junior pediu para verificar a doma desde o dia 1. Constatado: **não existe cocho, confiança, estábulo nem uso da cesta**; a cesta só fica guardada. A cadeia até a cesta foi verificada no jogo.
-- Novo roteiro `scripts/qa-harvest-chain.cjs` (Chromium, Vite em 5190), usando a loja real da Rosa e o serviço real da Helena:
-  1. Primavera 1, Ano 1 na interface.
-  2. Compra de sementes de cenoura, morango e milho; a Rosa não oferece colheitas.
-  3. Na Primavera: cenoura e morango plantados; milho recusado sem gastar a semente.
-  4. Rega diária: cenoura colhida no dia 7, morango no dia 9.
-  5. Na virada para o Verão 1, o pé de morango murcha e a colheita guardada continua na mochila.
-  6. Milho plantado no Verão e colhido no dia 37 (Verão 9); o pé fica para rebrotar.
-  7. A Helena preparou 1 cesta: −1 cenoura, −1 morango, −1 milho, −20 C.
-  8. Nenhum erro de JavaScript.
-- Revisão do trabalho do Codex (etapas 3 e 4): 1.910 testes passaram.
-  - Nenhuma loja vende colheitas.
-  - A Rosa vende as sementes; o Augusto continua com a de nabo e a Amélia vende ervas.
-  - A Rosa, a Helena, a Celina e o Augusto compram colheitas.
-  - A cesta pede exatamente 1 cenoura + 1 morango + 1 milho + 20 C.
-  - Os nomes com acento estão corretos no jogo; a falha de acentos é só nos rótulos da imagem `docs/planejamento/qa-catalogo-cultivos/catalogo.png`.
-- Correção: o aviso de plantio fora de estação dizia "não cresce no Primavera"; agora usa `IN_SEASON` ("na Primavera", "no Verão", "no Outono", "no Inverno").
+- **Conferência da cadeia até a cesta** (`scripts/qa-harvest-chain.cjs`): dia 1 → sementes da Rosa → cenoura e morango na Primavera → guardados até o Verão → milho → cesta da Helena. Correção do aviso "não cresce **na** Primavera" (`IN_SEASON`).
+- **Doma do cavalo** (`src/systems/horse-taming.ts`), com as decisões do Junior desta rodada:
+  - **Sem cocho.** O jogador **usa** a cesta e ela **fica no chão** como objeto do cenário, não como item solto; o cavalo vai até ela.
+  - **Dia sem cesta zera a confiança.** São 7 dias seguidos.
+  - Fases: dias 1–2 com o jogador a 300 px da cesta; dias 3–4 a 170 px; dias 5–7 a 56 px. O raio de fuga diminui junto.
+  - Barra de confiança (7 quadrinhos) sobre o cavalo.
+  - Domado: ele vem até você, E abre a janela do nome (`GameUI.askText`) e depois faz carinho.
+  - **Corda (G) só depois da doma, do nome e com o estábulo pronto.**
+  - Travessia com o cavalo para a Propriedade; G solta a corda e o cavalo vira do jogador.
+- Detalhes da doma:
+  - A cesta é guardada em `horseTaming.basket`; com E perto dela, volta para a mochila.
+  - Lugares apertados para a cesta são recusados.
+  - Com o jogador fora dos Campos, o cavalo come a cesta do dia, e o efeito é aplicado ao voltar (`settleHorseTaming`).
+- **O cavalo como animal do jogador:** `src/data/domestic-animals.ts` (Floresta + cavalo) é usado na corda, na entrega, em `assignFarmAnimal`, no painel ("Alojar <nome>"), na Propriedade (`src/animals.ts`) e na validação do save. A corda pode sair dos Campos (`AnimalEscort.area` aceita `'openFields'`).
+- `AnimalBrain.fleeRadius` ajustável por fase (0 = não foge); os outros animais seguem o padrão.
+- `HorseIdleCycle.eatBasket` reaproveita a animação de comer.
+- Um estábulo provisório chegou a ser criado e **foi removido** a pedido do Junior. Só ficou `animal:'horse'` permitido em `FARM_BUILDINGS`.
 
 ## Em andamento e próximo passo exato
 
-- **Etapa 5: domesticação do cavalo** (pedido original do Junior), seguindo `docs/planejamento/DOMESTICACAO-CAVALO.md`:
-  - Estábulo para 1 cavalo, com madeira nobre, usando a arte do curral até haver arte própria.
-  - Cocho nos Campos Abertos que recebe o item `harvestBasket` e guarda até 3 cestas.
-  - Confiança: +1 por virada de dia com cesta no cocho, no máximo 1 por dia, 7 dias; dia sem cesta pausa sem perder progresso.
-  - Comportamento por fase: dias 1–2 de longe; 3–4 tolera menos distância; 5–6 come com o jogador perto; dia 7 se aproxima.
-  - Nome, e **corda só depois da doma completa**; condução até o estábulo na Propriedade.
-  - Persistência sem duplicação.
-- Pontos técnicos: a corda hoje só aceita `FOREST_ANIMALS` e transfere da Floresta para a Propriedade (`src/systems/animals.ts`, `src/animals.ts`). O cavalo (`field-horse-1`, em `FIELDS_ANIMALS`) precisa de transferência dos Campos para a Propriedade e de representação na Propriedade. `assignFarmAnimal` também só conhece `FOREST_ANIMALS`.
+- **Estábulo (Codex)**, conforme a seção "Encaixe do estábulo" de `docs/planejamento/DOMESTICACAO-CAVALO.md`:
+  - Nova construção em `FARM_KINDS`/`FARM_BUILDINGS` com `animal:'horse'`, capacidade 1 e madeira nobre no custo.
+  - Arte, ícone `farm-<tipo>` e ferramenta `farm-<tipo>` (em `Tool`, `TOOLS` e `QUICK_TOOLS`).
+  - A doma não precisa mudar.
+  - Depois, estender `scripts/qa-horse-taming.cjs` para cobrir corda, travessia e "Alojar".
+- Para o Junior confirmar: o estábulo é exigido para a **corda**, não para o cavalo comer, para a doma poder ser testada antes do estábulo existir. Se preferir exigir já para comer, mudar em `OpenFieldsWorld.basketFor` e em `settleHorseTaming`.
 
 ## Pendências e ideias para depois
 
-- Texto da missão "Primeira colheita": diz "Plantar nabo"/"Colher o primeiro nabo", mas aceita qualquer plantação. Em saves que estejam fora da Primavera, o nabo não pode ser plantado; trocar o texto por "uma semente da estação"?
-- Sementes especiais para o ano todo: etapa futura.
-- Contratos de nabo da Helena e da Rosa continuam ativos.
-- Clima/chuva regando, peixes por estação, árvores frutíferas e estufa: etapa 6.
-- Ipês: machadinha de Ferro ou melhor, 6 golpes, Ferro 1 / Ouro 2 / Metal Negro 3. Construções de animais exigem madeira nobre.
-- Quadros de deitar, descansar e levantar do cavalo preservados e ainda sem uso.
-- Produção animal, variedade dos campos, caça e editor F2 pendentes; preservar ids salvos das moitas.
+- Chamar o cavalo de longe, montaria (sela) e quadros de deitar, descansar e levantar.
+- Texto da missão "Primeira colheita" diz "nabo", mas aceita qualquer plantação.
+- Sementes especiais para o ano todo; clima, peixes por estação, árvores frutíferas e estufa (etapa 6).
+- Ipês: machadinha de Ferro ou melhor; toda construção de animais exige madeira nobre.
+- Produção animal, variedade dos campos, caça e editor F2 pendentes; preservar ids das moitas.
 
 ## Problemas conhecidos
 
 - O pacote continua na preview.33 até a publicação autorizada da preview.34.
-- Todas as sementes ficam à venda o ano todo; o plantio recusa fora de estação e explica o motivo.
-- Ritmo: cenoura em 6 dias regados, morango em 8 e milho em 8. A primeira cesta só sai no Verão (dia 37 no melhor caso), por decisão do Junior.
-- `src/art.ts` mantém as texturas antigas `crop-0..2`, sem uso nos canteiros.
+- Se o jogador ficar perto da cesta o dia todo nas fases iniciais e sair do cenário só no dia seguinte, a cesta do dia anterior é creditada ao voltar (regra de "fora dos Campos"). Efeito pequeno, documentado.
 - Repositório: `https://github.com/juniorangel2000-commits/Junior.git`.
 
 ## Testes
 
 - `npm run check`: ok.
-- `npm test`: **1.910 passaram, zero falhas, 216 arquivos** (estado deixado pelo Codex). Depois da correção, os testes de cultivo, catálogo, calendário e cesta passaram (45).
+- `npm test`: antes, 1.910; depois, **1.926 passaram, zero falhas, 217 arquivos**. Os 16 novos estão em `tests/horse-taming.test.ts`, com um estábulo de teste simulado só nesse arquivo.
 - `npm run build`: não executado (sem publicação).
-- Chromium: `scripts/qa-harvest-chain.cjs` passou do início ao fim, como descrito acima.
+- Chromium, `scripts/qa-horse-taming.cjs`:
+  - Dia sem cesta zera a confiança.
+  - 7 dias seguidos com 420, 230 e 95 px de distância conforme a fase.
+  - O cavalo domado vem até você, o nome "Trovão" é dado pela janela, a corda é recusada sem estábulo e a doma é preservada ao recarregar.
+  - Nenhum erro de JavaScript. Capturas em `docs/planejamento/qa-doma-cavalo/`.
+- Chromium, `scripts/qa-harvest-chain.cjs`: cadeia até a cesta ok.
