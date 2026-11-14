@@ -57,7 +57,10 @@ export class AnimalBrain {
 
   constructor(readonly id: string, readonly kind: AnimalKind, x: number, y: number,
     readonly wild: boolean, private readonly blocked: AnimalBlocked, readonly playerSpeed = 84,
-    private readonly terrainCost:AnimalTerrainCost=()=>0,private readonly pointBlocked?:(x:number,y:number)=>boolean) {
+    private readonly terrainCost:AnimalTerrainCost=()=>0,private readonly pointBlocked?:(x:number,y:number)=>boolean,
+    /** O que impede o animal de VER o jogador. Sem valor, vale o mesmo bloqueio do caminho.
+     * Animais com habitat restrito (patos) enxergam além de onde podem pisar. */
+    private readonly sightBlocked?:(x:number,y:number)=>boolean) {
     this.x=x;this.y=y;this.seed=idSeed(id);this.walkingRadius=kind==='horse'?18:kind==='cow'?12:kind==='chicken'||kind==='rabbit'?4:6;
     const points=(r:number,y:number):readonly(readonly[number,number])[]=>{const result:[number,number][]=[],nx=Math.ceil(r*2/4),ny=Math.ceil(y*2/4);for(let row=0;row<=ny;row++)for(let col=0;col<=nx;col++)result.push([-r+col*r*2/nx,-y+row*y*2/ny]);return result;};
     this.walkingFeet=points(this.walkingRadius,this.walkingRadius*.6);this.restingFeet=kind==='cow'?points(20,7):this.walkingFeet;
@@ -76,6 +79,13 @@ export class AnimalBrain {
     const steps=Math.max(1,Math.ceil(Math.hypot(a.x-b.x,a.y-b.y)/8));
     for(let i=1;i<steps;i++)if(this.blocked(Math.floor((a.x+(b.x-a.x)*i/steps)/TILE),Math.floor((a.y+(b.y-a.y)*i/steps)/TILE)))return false;
     if(this.pointBlocked){for(let i=1;i<steps;i++)if(!this.canStand(a.x+(b.x-a.x)*i/steps,a.y+(b.y-a.y)*i/steps))return false;}
+    return true;
+  }
+  /** Linha de visão para notar o jogador: só obstáculos de visão, não o limite do habitat. */
+  canSee(a:AnimalPoint,b:AnimalPoint):boolean {
+    if(!this.sightBlocked)return this.lineClear(a,b);
+    const steps=Math.max(1,Math.ceil(Math.hypot(a.x-b.x,a.y-b.y)/8));
+    for(let i=1;i<steps;i++)if(this.sightBlocked(a.x+(b.x-a.x)*i/steps,a.y+(b.y-a.y)*i/steps))return false;
     return true;
   }
   hold(direction=this.direction):void{this.direction=direction;this.moving=false;this.mode='idle';this.path=[];this.timer=.25;this.rethink=0;}
@@ -135,7 +145,7 @@ export class AnimalBrain {
     if(led){if(this.mode!=='led'){this.mode='led';this.path=[];this.rethink=0;this.following=false;}}
     else if(this.mode==='led'){this.mode='idle';this.path=[];this.timer=.1;}
     if(!led&&this.wild){
-      if(this.mode!=='flee'&&range<=(this.fleeRadius??ANIMAL_BEHAVIOR.detectionRadius)&&(this.fleeRadius??1)>0&&this.lineClear(this,player)){this.mode='flee';this.rethink=0;this.path=[];this.safeFor=0;}
+      if(this.mode!=='flee'&&range<=(this.fleeRadius??ANIMAL_BEHAVIOR.detectionRadius)&&(this.fleeRadius??1)>0&&this.canSee(this,player)){this.mode='flee';this.rethink=0;this.path=[];this.safeFor=0;}
       if(this.mode==='flee'){
         this.safeFor=range>(this.fleeRadius!==undefined?this.fleeRadius*1.55:ANIMAL_BEHAVIOR.calmRadius)?this.safeFor+dt:0;
         if(this.safeFor>=ANIMAL_BEHAVIOR.calmDelay){this.mode='idle';this.timer=.6+this.random();this.path=[];}

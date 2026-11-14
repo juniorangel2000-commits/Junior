@@ -1,0 +1,69 @@
+[
+ {
+  "id": "field-horse-1",
+  "kind": "horse",
+  "before": 90,
+  "after": 146,
+  "mode": "flee"
+ },
+ {
+  "id": "field-cow-1",
+  "kind": "cow",
+  "before": 90,
+  "after": 170,
+  "mode": "flee",
+  "phase": "awake"
+ },
+ {
+  "id": "field-cow-2",
+  "kind": "cow",
+  "before": 90,
+  "after": 180,
+  "mode": "flee",
+  "phase": "awake"
+ },
+ {
+  "id": "field-hen-1",
+  "kind": "chicken",
+  "before": 90,
+  "after": 217,
+  "mode": "flee"
+ },
+ {
+  "id": "field-hen-2",
+  "kind": "chicken",
+  "before": 90,
+  "after": 211,
+  "mode": "flee"
+ },
+ {
+  "id": "field-hen-3",
+  "kind": "chicken",
+  "before": 90,
+  "after": 214,
+  "mode": "flee"
+ },
+ {
+  "id": "field-rabbit-1",
+  "kind": "rabbit",
+  "before": 90,
+  "after": 244,
+  "mode": "flee"
+ },
+ {
+  "id": "field-rabbit-2",
+  "kind": "rabbit",
+  "before": 90,
+  "after": 235,
+  "mode": "flee"
+ },
+ {
+  "id": "field-cow-1",
+  "kind": "cow",
+  "before": 90,
+  "after": 112,
+  "mode": "flee",
+  "phase": "awake",
+  "deitada": true
+ }
+]

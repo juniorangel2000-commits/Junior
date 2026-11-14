@@ -10,7 +10,11 @@ it('nasce no lago e não ignora sólidos nem sai para o interior da floresta',()
  expect(duckHabitatBlocked(100,100,water,solid)).toBe(true);expect(duckHabitatBlocked(575,500,water,solid)).toBe(true);
 });
 it('entra na água a partir da margem por movimento contínuo ao fugir do jogador',()=>{
- const duck=createForestDuck('duck-shore',480,500,water,()=>false)!;duck.x=384;duck.y=500;let entered=false;
+ // Ponto mais distante da água em que o pato ainda pode ficar (faixa da margem).
+ const duck=createForestDuck('duck-shore',480,500,water,()=>false)!,shore=[...Array(40).keys()].map(i=>360+i).find(x=>!water(x,500)&&duck.canStand(x,500))!;
+ expect(shore).toBeDefined();expect(water(shore,500)).toBe(false);duck.x=shore;duck.y=500;let entered=false;
+ // O jogador está em terra, fora do habitat do pato: ele precisa notar mesmo assim.
+ expect(duck.lineClear(duck,{x:280,y:500})).toBe(false);expect(duck.canSee(duck,{x:280,y:500})).toBe(true);
  for(let t=0;t<180;t++){const previous={x:duck.x,y:duck.y};duck.update(.1,{x:280,y:500},[duck]);expect(Math.hypot(duck.x-previous.x,duck.y-previous.y)).toBeLessThanOrEqual(8);entered ||= water(duck.x,duck.y);}
  expect(entered).toBe(true);
 });

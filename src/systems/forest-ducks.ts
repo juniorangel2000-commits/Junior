@@ -8,7 +8,7 @@ export function duckHabitatBlocked(x:number,y:number,water:(x:number,y:number)=>
 }
 export function createForestDuck(id:string,x:number,y:number,water:(x:number,y:number)=>boolean,solid:(x:number,y:number)=>boolean):AnimalBrain|undefined{
  const blockedPoint=(px:number,py:number)=>duckHabitatBlocked(px,py,water,solid);
- const brain=new AnimalBrain(id,'duck',x,y,true,(tx,ty)=>blockedPoint(tx*32+16,ty*32+16),84,(tx,ty)=>water(tx*32+16,ty*32+16)?0:6,blockedPoint);
+ const brain=new AnimalBrain(id,'duck',x,y,true,(tx,ty)=>blockedPoint(tx*32+16,ty*32+16),84,(tx,ty)=>water(tx*32+16,ty*32+16)?0:6,blockedPoint,solid);
  if(water(x,y)&&brain.canStand(x,y))return brain;
  for(let r=1;r<=6;r++)for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){
   if(Math.abs(dx)!==r&&Math.abs(dy)!==r)continue;const px=x+dx*32,py=y+dy*32;if(water(px,py)&&brain.canStand(px,py)){brain.x=px;brain.y=py;return brain;}

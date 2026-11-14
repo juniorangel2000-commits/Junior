@@ -1,0 +1,30 @@
+{
+ "ducks": [
+  {
+   "id": "forest-water-duck-1",
+   "x": 1648,
+   "y": 560,
+   "swimming": true
+  },
+  {
+   "id": "forest-water-duck-2",
+   "x": 1872,
+   "y": 491,
+   "swimming": true
+  }
+ ],
+ "margem": {
+  "found": true,
+  "shore": {
+   "x": 1548,
+   "y": 710
+  },
+  "mode": "flee",
+  "entered": true,
+  "maxStep": 5,
+  "now": {
+   "x": 1581,
+   "y": 679
+  }
+ }
+}
