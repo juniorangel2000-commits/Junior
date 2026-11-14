@@ -25,6 +25,8 @@ Os valores são pontos de partida para ajustar. Complementa `docs/construcoes/PR
 | Cabra | Aprisco (novo) | Floresta (já existe) | Leite de cabra | 1 por dia | Ordenha com balde |
 | Ovelha | Aprisco (novo) | Floresta (já existe) | Lã | A cada 3 dias | Tosquia com tesoura (nova ferramenta) |
 | Porco (novo) | Chiqueiro (novo) | Rosa | Esterco | 1 por dia | Aparece no chão do chiqueiro |
+
+- **Porco (sugestão do Claude):** come **sobras da horta** no cocho, aceitas no lugar da palha (qualquer legume ou fruta colhida), e devolve esterco, que vira fertilizante na composteira. Isso dá destino às colheitas que sobram e fecha o ciclo horta → porco → fertilizante → horta.
 | Abelhas (novo) | Colmeia (objeto, sem cercado) | Colmeia artificial comprada na Vila + enxame dos ipês (ver abaixo) | Mel; cera | Mel a cada 4 dias; cera 1 em 3 coletas | E na colmeia |
 | Cavalo | Estábulo | Doma | — | — | Montaria no futuro |
 
@@ -54,7 +56,10 @@ Pedido do Junior: galinheiro, curral e as próximas construções de animais (ap
 | Chiqueiro | 10×8 | Cocho e lamaçal |
 | Estábulo | 8×7 | Baia, cocho e suporte da sela (para a montaria futura) |
 
-**Animais:** de dia (06:00–18:00) ficam no cercado externo, com a porteira aberta; à noite entram e aparecem lá dentro, onde também dá para alimentar, ordenhar, tosquiar e recolher ovos. Mais tarde, a chuva também pode levá-los para dentro.
+**Animais (decisão do Junior):**
+- De dia (06:00–18:00) ficam no cercado externo, com a porteira aberta; à noite entram e aparecem lá dentro.
+- **O painel da construção tem a opção "Recolher os animais"**, que leva todos para dentro a qualquer hora, para ordenhar, tosquiar, pegar ovos e assim por diante. Uma opção "Soltar no cercado" faz o caminho inverso.
+- Mais tarde, a chuva também pode levá-los para dentro.
 
 **Máquinas:** cada interior tem área livre onde as máquinas podem ser colocadas como a cesta (ver abaixo).
 
@@ -72,7 +77,7 @@ Pedido do Junior: o processamento é feito em **máquinas**, e não na bancada. 
 - A máquina pronta é um **item da mochila**.
 - **Usar** o item (pela mochila ou pela barra rápida) coloca a máquina no chão **à sua frente**, como objeto com colisão.
 - O jogo recusa um lugar sem espaço ou que bloqueie porta, cocho, ninhos ou passagem.
-- Vale **dentro das construções de animais** e, se o Junior quiser, também ao ar livre na Propriedade.
+- Vale **dentro das construções de animais** e **também ao ar livre na Propriedade** (decisão do Junior).
 - **E na máquina vazia** recolhe de volta para a mochila; uma máquina trabalhando não pode ser recolhida.
 
 **Como funcionam**
@@ -160,8 +165,8 @@ Alguns pratos podem dar efeitos além do vigor (por exemplo, andar mais rápido 
 ## Decisões em aberto
 
 - ~~Equipamentos ou serviços de NPC~~: decidido, **máquinas** na Propriedade.
-- ~~Onde ficam as máquinas~~: decidido, **dentro das construções de animais**. Também ao ar livre na Propriedade?
-- Rotina dos animais: no cercado de dia e dentro à noite, está bom?
+- ~~Onde ficam as máquinas~~: decidido, dentro das construções de animais **e** ao ar livre na Propriedade.
+- ~~Rotina dos animais~~: decidido, cercado de dia e dentro à noite, com a opção "Recolher os animais" no painel.
 - O porco produz esterco (que vira fertilizante)? Ou prefere outro produto?
 - Cozinhar no **fogão a lenha de casa**?
 - ~~Abelhas~~: decidido, colmeia artificial comprada na Vila e enxame nos ipês, com chance a cada 5 dias.
