@@ -1,7 +1,6 @@
 # Domesticação do cavalo
 
-Implementada em 14/11/2026 (Claude Code), exceto o estábulo, que o Junior vai fazer pelo
-Codex. Código em `src/systems/horse-taming.ts`; testes em `tests/horse-taming.test.ts`;
+Implementada em 14/11/2026 (Claude Code). O estábulo foi feito pelo Codex (commit `64dab91`): abrigo **aberto**, sem cerca nem porteira, para 1 cavalo, com 12 madeiras nobres no custo. A doma completa foi conferida no jogo, do primeiro dia até "Alojar Trovão". Código em `src/systems/horse-taming.ts`; testes em `tests/horse-taming.test.ts`;
 conferência no navegador em `scripts/qa-horse-taming.cjs`.
 
 ## Regras em vigor (decisões do Junior)
@@ -48,8 +47,7 @@ conferência no navegador em `scripts/qa-horse-taming.cjs`.
 - Também é preciso: arte em `src/farm-construction-view.ts` (o atlas usa `<tipo>-<estágio>`), ícone
   `farm-<tipo>` em `src/visual-assets.ts`, ferramenta `farm-<tipo>` em `Tool` (`src/types.ts`),
   `TOOLS` (`src/systems/save.ts`) e `QUICK_TOOLS` (`src/systems/quickbar.ts`).
-- Ao terminar, rodar `scripts/qa-horse-taming.cjs` e completar a corda, a travessia e "Alojar"
-  (hoje o roteiro para em "corda recusada sem estábulo").
+- **Feito.** `scripts/qa-horse-taming.cjs` agora segue até o fim: corda recusada sem estábulo, estábulo pronto, corda (G), travessia para a Propriedade, soltar (o cavalo vira do jogador) e "Alojar Trovão".
 
 ## Depois
 

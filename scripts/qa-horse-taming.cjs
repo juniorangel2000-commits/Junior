@@ -99,15 +99,58 @@ const log = (...a) => console.log('·', ...a);
     await page.waitForTimeout(400);
     const rope = await page.evaluate(() => ({ escort: s.state.animalEscort ?? null, cord: s.state.inventory.cord, text: document.body.innerText.includes('estábulo') }));
     assert.equal(rope.escort, null); assert.equal(rope.cord, 2); assert.equal(rope.text, true);
-    log('corda recusada sem estábulo (aguardando o estábulo do Codex)');
+    log('corda recusada sem estábulo');
 
     // Salvar e continuar mantém a doma.
     await page.evaluate(() => s.mainMenu());
     await page.locator('#continue-game').click();
     await page.waitForFunction(() => document.querySelector('#ui')?.dataset.area === 'openFields');
-    const kept = await page.evaluate(() => game.scene.getScene('Campos').state.horseTaming);
+    await page.evaluate(() => { window.s = game.scene.getScene('Campos'); });
+    const kept = await page.evaluate(() => s.state.horseTaming);
     assert.equal(kept.tamed, true); assert.equal(kept.name, 'Trovão');
     log('recarregado: doma e nome preservados');
+
+    // Estábulo pronto na Propriedade (perto da chegada dos Campos): a corda passa a valer.
+    await page.evaluate(async () => {
+      const { FARM_BUILDINGS } = await import('/src/data/farm-buildings.ts');
+      s.state.farmConstruction = { version: 1, nextId: 2, sites: [{ id: 1, kind: 'stable', x: 22, y: 58, delivered: { ...FARM_BUILDINGS.stable.cost }, finished: true, animals: [], hay: 0, gateOpen: true }] };
+      const h = s.world.horse.brain; s.player.x = h.x - 40; s.player.y = h.y; s.updateHUD();
+    });
+    await page.waitForTimeout(300);
+    await page.keyboard.press('g');
+    await page.waitForFunction(() => s.state.animalEscort?.id === 'field-horse-1');
+    assert.equal(await page.evaluate(() => s.state.inventory.cord), 1);
+    log('corda colocada no Trovão (gastou 1 corda)');
+    // Caminha até a passagem norte com o cavalo ao lado e atravessa.
+    await page.evaluate(() => { s.player.x = 1536; s.player.y = 150; const h = s.world.horse.brain; h.x = 1536 + 30; h.y = 180; });
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: `${out}/6-corda-campos.png` });
+    await page.keyboard.down('w');
+    await page.waitForFunction(() => document.querySelector('#ui')?.dataset.area === 'property');
+    await page.keyboard.up('w');
+    await page.waitForTimeout(1200);
+    const arrived = await page.evaluate(() => { window.v = game.scene.getScene('Vale'); const a = v.animals?.animals.find((x) => x.id === 'field-horse-1'); return { escort: v.state.animalEscort, horse: a ? { x: Math.round(a.x), y: Math.round(a.y) } : null }; });
+    assert.deepEqual(arrived.escort, { id: 'field-horse-1', area: 'property' }); assert.ok(arrived.horse, 'o Trovão deveria aparecer na Propriedade');
+    await page.screenshot({ path: `${out}/7-chegada-propriedade.png` });
+    log(`travessia: Trovão chegou na Propriedade em ${JSON.stringify(arrived.horse)}`);
+    // Solta a corda: o cavalo passa a ser do jogador e a corda volta.
+    await page.keyboard.press('g');
+    await page.waitForFunction(() => v.state.recruitedAnimals?.includes('field-horse-1'));
+    assert.equal(await page.evaluate(() => v.state.animalEscort ?? null), null);
+    log('corda solta na Propriedade: Trovão agora é seu');
+    // Alojar no estábulo pelo painel da construção.
+    await page.evaluate(async () => {
+      const { farmAnchor } = await import('/src/systems/farm-construction.ts');
+      const site = v.state.farmConstruction.sites[0], p = farmAnchor(site), a = v.animals.animals.find((x) => x.id === 'field-horse-1');
+      v.player.x = p.x; v.player.y = p.y + 20; a.brain.x = p.x + 30; a.brain.y = p.y + 10;
+      const { showFarmConstruction } = await import('/src/farm-construction-panel.ts'); showFarmConstruction(v.ui, v.farmRuntime, site.id);
+    });
+    await page.getByRole('button', { name: 'Alojar Trovão' }).click();
+    await page.waitForFunction(() => v.state.farmConstruction.sites[0].animals.includes('field-horse-1'));
+    await page.evaluate(() => v.ui.closeModal());
+    await page.waitForTimeout(2500);
+    await page.screenshot({ path: `${out}/8-trovao-no-estabulo.png` });
+    log('Alojar Trovão: morando no estábulo');
     assert.deepEqual(errors, []);
     console.log('QA da doma: OK');
   } finally { await browser.close(); }
