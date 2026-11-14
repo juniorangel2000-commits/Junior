@@ -29,6 +29,8 @@ fs.mkdirSync(out, { recursive: true });
           s.animalPositions = { forest: [], property: [] }; s.inventory.hay = 20; s.inventory.milkPail = 1;
         }
         const door = farmDoorPoint(s.farmConstruction.sites[siteId - 1]); s.player = { x: door.x, y: door.y + 6, direction: 'up' }; v.loadState(s);
+        // O carregamento não pode tratar a vaca recolhida como obstáculo e afastar o jogador.
+        if (Math.hypot(v.player.x - door.x, v.player.y - door.y) > 30) throw new Error('Jogador deslocado para fora do alcance da porta ao carregar');
       }, siteId);
       await page.waitForTimeout(800); await page.keyboard.press('e');
       await page.waitForFunction(() => game.scene.isActive('Interior')); await page.waitForTimeout(1200);

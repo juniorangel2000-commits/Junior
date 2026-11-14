@@ -50,6 +50,9 @@ export class AnimalPopulation {
    if(definition.kind==='cow')this.cowRest.set(brain.id,new CowRestCycle(brain.id));
    const view:MovingAnimal={shadow,id:brain.id,brain,sprite,get x(){return brain.x},get y(){return brain.y}};
    this.brains.push(brain);this.animals.push(view);
+   // A recuperação da posição do jogador roda antes do primeiro update.
+   // Animais já recolhidos não podem nascer visíveis e bloquear a porta nesse intervalo.
+   if(this.indoors(view)){sprite.setVisible(false);shadow?.setVisible(false);}
   }
  }
  private placeSafely(brain:AnimalBrain):boolean {
@@ -65,7 +68,7 @@ export class AnimalPopulation {
  }
  /** À noite (ou quando recolhidos) os animais ficam dentro da construção e somem do cercado. */
  private indoors(a:MovingAnimal):boolean{if(this.area!=='property'||a===this.led)return false;const home=farmAnimalHome(this.save,a.id);return !!home&&animalsInside(home,this.save);}
- blocksPoint(x:number,y:number):boolean{return this.animals.some(a=>a.sprite.visible&&((x-a.x)/a.brain.radius)**2+((y-a.y)/a.brain.footRadiusY)**2<1);}
+ blocksPoint(x:number,y:number):boolean{return this.animals.some(a=>a.sprite.visible&&!this.indoors(a)&&((x-a.x)/a.brain.radius)**2+((y-a.y)/a.brain.footRadiusY)**2<1);}
  get led():MovingAnimal|undefined {const id=this.save.animalEscort?.area===this.area?this.save.animalEscort.id:undefined;return this.animals.find(a=>a.id===id);}
  allowsPlayerCenter(x:number,y:number,owner:AnimalPoint):boolean {const led=this.led;if(!led)return true;const next=Math.hypot(x-led.x,y-led.y),current=Math.hypot(owner.x-led.x,owner.y-led.y);return !this.blocked(Math.floor(x/32),Math.floor(y/32))&&(next<=ANIMAL_BEHAVIOR.maxRopeLength||next<current-.001);}
  canLeave(player:AnimalPoint):boolean {const led=this.led;return !led||Math.hypot(led.x-player.x,led.y-player.y)<=ANIMAL_BEHAVIOR.portalDistance&&led.brain.lineClear(led,player);}
