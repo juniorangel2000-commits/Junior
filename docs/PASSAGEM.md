@@ -4,11 +4,22 @@
 
 - **Atualizado em:** 2026-11-14
 - **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Abelhas em `61fbd2e`/`becdb22`; patos em `5ee1bb4`.
+- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Abelhas em `61fbd2e`/`becdb22`; patos em `5ee1bb4`; porcos em `a3eb5c8`.
 - **Última versão publicada:** `v0.10.0-preview.34`, https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.10.0-preview.34
 - **Estado:** casa do jogador com móveis, fogão, paredes e piso no mesmo conjunto rústico. Cozinha, máquinas, patos e distanciamento permanecem integrados. Nada publicado; `main`, tags e versão do pacote continuam na preview.34.
 
 ## Feito nesta rodada
+
+### Porcos, chiqueiro e composteira (Claude Code)
+
+- A etapa 6 do plano está completa; detalhes em `docs/construcoes/ABELHAS-E-PATOS.md`.
+- **Construção:** `pigsty` (Chiqueiro) com interior; nos estágios de obra usa a arte do galinheiro (`farm-construction-view.ts`).
+- **Cocho:** aceita `PIG_FOOD` (legumes, frutas e grãos).
+- **Esterco:** fica em `site.manure`, com quatro lugares no chão, e é recolhido com `collectManure`.
+- **Composteira:** máquina `composter` com `extra` nas receitas (capim ou fibras); `loadMachine` escolhe a receita conforme a mochila.
+- **Porco:** saiu de `PREPARED_ANIMAL_KINDS`, então agora é carregado em todos os cenários.
+- **SpriteCook sem créditos (0).** O chiqueiro e a composteira usaram os últimos 4. Arte nova daqui em diante fica com o Codex (imagegen) ou com uma recarga.
+
 
 ### Abelhas e patos da criação (Claude Code)
 
@@ -201,13 +212,9 @@
 
 ## Em andamento e próximo passo exato
 
-1. **Porco:**
-   - o que falta: chiqueiro com interior, porco comprado com a Rosa, come sobras da horta no cocho, esterco no chão e composteira (2 estercos + 3 capins ou fibras = 2 fertilizantes, em 2 dias);
-   - **bloqueio:** precisa de arte nova (chiqueiro externo com estágios de obra e composteira), e o SpriteCook tem só 4 créditos;
-   - o Junior precisa recarregar os créditos, ou a arte fica com o Codex (imagegen).
-   - O interior do chiqueiro pode reaproveitar o piso de palha e o cocho dos interiores.
-   - A arte animada do porco já existe (`preloadAnimalSprites(scene,['pig'])`).
-2. **Depois:** qualidade dos pratos, barril de conservas, prensa de cera e equilíbrio de preços.
+1. Próxima etapa do plano (7): **barril de conservas** (geleias de morango e melancia, com mel) e **prensa de cera** (cera vira vela), mais o equilíbrio de preços. A arte dessas duas máquinas ainda não existe.
+2. Qualidade dos produtos e pratos (cozinha, etapa 3).
+3. Não conferido no navegador: a composteira (coberta por teste unitário) e o mel de flor.
 - Não publicar sem pedido do Junior. O pacote continua preview.34; tudo está no branch preview.35.
 
 ## Pendências e ideias para depois
@@ -226,11 +233,9 @@
 ## Testes
 
 - `npm run check`: ok.
-- `npm test`: **2.067 passaram, zero falhas, 233 arquivos**. Novos: `tests/beekeeping.test.ts` (10) e `tests/ducks.test.ts` (6).
-- `npm run build`: não repetido nesta rodada.
+- `npm test`: **2.073 passaram, zero falhas, 234 arquivos**. Novo: `tests/pigs.test.ts` (5).
+- `npm run build`: não repetido desde a rodada do Codex.
 - Chromium, nesta rodada:
-  - `scripts/qa-beekeeping.cjs`: OK. Colmeia instalada, mel em 4 dias com balão, colmeia vazia no ipê, enxame e colmeia povoada recolhida.
-  - `scripts/qa-ducks.cjs`: OK. Pato e galinha no galinheiro, ninho com ovo de pato e coleta.
-  - `scripts/qa-kitchen-stage2.cjs`: OK na rodada anterior.
-- **Não conferido no navegador:** o mel de flor (coberto por teste unitário).
+  - `scripts/qa-pigs.cjs`: OK. O chiqueiro aparece na Propriedade, num lugar escolhido pela mesma regra de colocação do jogo. O porco aparece dentro à noite, o cocho recebe 6 sobras, e de manhã aparece esterco, que é recolhido.
+  - `scripts/qa-beekeeping.cjs` e `scripts/qa-ducks.cjs`: OK.
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.

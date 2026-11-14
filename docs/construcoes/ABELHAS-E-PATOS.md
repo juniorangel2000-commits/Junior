@@ -1,4 +1,4 @@
-# Abelhas e patos da criação
+# Abelhas, patos e porcos da criação
 
 Implementado no branch `release/v0.10.0-preview.35`, ainda sem publicação. Segue o plano
 aprovado em `docs/planejamento/ANIMAIS-E-RECEITAS.md`.
@@ -34,16 +34,31 @@ Os patos do lago da Floresta continuam sendo fauna ambiente. Os da criação sã
 
 Com o mel e o ovo de pato, nenhuma receita da cozinha fica mais sem fonte.
 
+## Porcos e composteira
+
+- **Compra:** a Rosa vende cada porco por 400 C, no serviço "Acolher um porco" (`farm-pig-1` a `farm-pig-4`).
+- **Chiqueiro:** construção nova (`pigsty`), 5×5, com o mesmo funcionamento do galinheiro. Custa 40 madeiras, 20 pedras, 12 tábuas, 6 madeiras nobres e 1 porta. Abriga até 4 porcos e usa os estágios de obra do galinheiro.
+- **Interior 10×8:** cocho, bebedouro, lamaçal e quatro cantos onde aparece o esterco.
+- **Cocho:** aceita **sobras da horta** (legumes, frutas e grãos colhidos), não palha nem flores, até 8 porções.
+- **Esterco:** às 06:00, cada porco alimentado come 1 porção e deixa **1 esterco** num canto livre. E recolhe.
+- **Composteira:** máquina com projeto do **Tobias** (40 C), montada na bancada com 6 tábuas, 4 cavilhas e 6 pedras.
+  - Receita: **2 estercos + 3 capins frescos ou 3 fibras** viram **2 adubos** em 2 dias.
+  - Usar o esterco perto dela carrega a máquina; ela escolhe o capim ou as fibras conforme o que houver na mochila.
+- **Arte:** a do porco animado já existia e agora é carregada em todos os cenários.
+
 ## Arte (SpriteCook)
 
 - Colmeia: a colmeia povoada é a arte com abelhas desenhadas por script; a colmeia vazia é a mesma arte, desbotada.
 - Cera, ninho com ovo de pato e pena.
 - Méis de flor: o ícone do mel em outro tom.
+- Chiqueiro e composteira foram gerados com os últimos 4 créditos (GPT-Image-2, qualidade baixa). O fundo branco do chiqueiro foi removido por script.
+- O lamaçal do interior e o ícone do esterco foram desenhados por script.
 - Os ids estão em `public/assets/visual/kitchen/spritecook-assets.json` e em `public/assets/visual/farm/interior/spritecook-assets.json`.
 
 ## Verificação
 
-- Testes: `tests/beekeeping.test.ts` (10) e `tests/ducks.test.ts` (6).
+- Testes: `tests/beekeeping.test.ts` (10), `tests/ducks.test.ts` (6) e `tests/pigs.test.ts` (5).
 - Navegador:
   - `scripts/qa-beekeeping.cjs`, com capturas em `docs/planejamento/qa-abelhas/`;
-  - `scripts/qa-ducks.cjs`, com capturas em `docs/planejamento/qa-patos/`.
+  - `scripts/qa-ducks.cjs`, com capturas em `docs/planejamento/qa-patos/`;
+  - `scripts/qa-pigs.cjs`, com capturas em `docs/planejamento/qa-porcos/`.
