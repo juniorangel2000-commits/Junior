@@ -1,0 +1,16 @@
+{
+  "fonte": "SpriteCook (gemini-nano-banana-2.1, pixel art), com public/assets/visual/farm/coop.png como guia de estilo",
+  "estilo": "19a37d0a-a42b-4de5-841a-dab0bf97dfab",
+  "arquivos": {
+    "nest.png": "ded05a5b-df94-419a-be8c-13b3d72032ea",
+    "water.png": "09527be1-9225-4861-93c4-6d60033d0faa",
+    "trough-64.png": "89831a64-8039-4134-810c-117ca6d15da1",
+    "trough-96.png": "409797f3-b6f9-4824-9883-1e18a8e55416",
+    "stall.png": "d47815d4-4c14-4a51-94ff-03b5c6308541",
+    "divider.png": "110d36ec-7639-4abe-8071-ac4110003ccb",
+    "floor-straw.png": "2c26fd99-2615-4948-aaaf-dc4197b0bc58",
+    "floor-planks.png": "f17bc7b7-76b8-48a8-82c8-5f3e9f11718c",
+    "wall.png": "796b722e-07fd-4f01-8e3f-fd30ae2add57",
+    "wall-top.png": "f50cf211-982f-4a6e-a0d4-f71022b2d24b"
+  }
+}

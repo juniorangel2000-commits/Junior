@@ -45,6 +45,26 @@ fs.mkdirSync(out, { recursive: true });
     await page.waitForTimeout(800);
     const back = await page.evaluate(() => ({ area: document.querySelector('#ui')?.dataset.area, y: Math.round(game.scene.getScene('Vale').player.y) }));
     assert.equal(back.area, 'property'); console.log('· saiu pela porta e voltou à Propriedade');
+    // Curral: arte do piso de tábuas, baias, divisórias, cocho e bebedouro.
+    await page.evaluate(async () => {
+      const { FARM_BUILDINGS } = await import('/src/data/farm-buildings.ts');
+      const { farmDoorPoint } = await import('/src/systems/farm-interior.ts');
+      const s = v.snapshotState(); s.time = 20 * 60;
+      s.farmConstruction = { version: 1, nextId: 3, sites: [...s.farmConstruction.sites, { id: 2, kind: 'barn', x: 40, y: 30, delivered: { ...FARM_BUILDINGS.barn.cost }, finished: true, animals: [], hay: 0, gateOpen: true }] };
+      const door = farmDoorPoint(s.farmConstruction.sites[1]); s.player = { x: door.x, y: door.y + 6, direction: 'up' }; v.loadState(s);
+    });
+    await page.waitForTimeout(800);
+    await page.keyboard.press('e');
+    await page.waitForFunction(() => game.scene.isActive('Interior'));
+    await page.waitForTimeout(1500);
+    assert.equal(await page.evaluate(() => document.body.innerText.includes('Curral')), true);
+    await page.screenshot({ path: `${out}/curral-noite.png` });
+    // Planta inteira (piso, paredes e porta), para conferir a arte sem o corte da câmera.
+    for (const kind of ['coop', 'barn']) {
+      const png = await page.evaluate((k) => game.textures.getBase64(`interior-${k}-floor`), kind);
+      fs.writeFileSync(`${out}/piso-${kind}.png`, Buffer.from(png.split(',')[1], 'base64'));
+    }
+    console.log('· dentro do curral');
     assert.deepEqual(errors, []); console.log('QA do interior: OK');
   } finally { await browser.close(); }
 })().catch((e) => { console.error(e); process.exitCode = 1; });

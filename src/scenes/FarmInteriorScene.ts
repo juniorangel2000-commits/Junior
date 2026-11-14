@@ -24,7 +24,7 @@ import {FARM_BUILDINGS} from '../data/farm-buildings';
 import {FARM_INTERIORS,interiorBlocked,interiorSafe,interiorSpawn,interiorExit,interiorSize,type FarmInteriorLayout} from '../data/farm-interiors';
 import {animalsInside,farmDoorExit} from '../systems/farm-interior';
 import type {FarmSite} from '../systems/farm-construction';
-import {drawFarmInterior,type InteriorView} from '../farm-interior-art';
+import {drawFarmInterior,preloadFarmInteriorArt,type InteriorView} from '../farm-interior-art';
 interface InteriorStart{save:SaveData;ui:GameUI;siteId:number;onReturn:(save:SaveData,title?:boolean)=>void}
 interface InteriorAnimal{brain:AnimalBrain;sprite:Phaser.GameObjects.Sprite;shadow:Phaser.GameObjects.Ellipse}
 /** Interior do galinheiro ou do curral. A Propriedade fica dormindo enquanto você está aqui;
@@ -36,6 +36,7 @@ export class FarmInteriorScene extends Phaser.Scene{
  private missionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player);
  private bentoRuntime={missions:this.missionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
  constructor(){super('Interior');}
+ preload():void{preloadFarmInteriorArt(this);}
  getGroundItemRuntime(){return undefined;}
  getMineMissionRuntime=()=>this.missionRuntime;
  getFishingState=()=>this.state;
