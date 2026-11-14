@@ -25,7 +25,7 @@ export interface CharacterProfile {
   accessory?: CharacterAccessory;
 }
 export type ItemId = import('./data/crop-catalog').CropItemId | 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 'plank' | 'scrap' | 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw'
-  | 'harvestBasket' | 'freshGrass' | 'hay' | 'hardwood' | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer'
+  | 'harvestBasket' | 'freshGrass' | 'hay' | 'egg' | 'milk' | 'milkPail' | 'hardwood' | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer'
   | 'herb' | 'rareHerb' | 'bandage' | 'herbalTonic' | 'fungalInfusion' | 'oakSeed' | 'pineSeed' | 'fertilizer' | 'fishingRod' | 'bait' | 'net' | 'fish' | 'rareFish' | 'meal'
   | 'ironShard' | 'ironOre' | 'ironIngot' | 'goldShard' | 'goldOre' | 'goldIngot' | 'blackMetalShard' | 'blackMetalOre' | 'blackMetalIngot' | 'sickle' | 'shovel' | 'furniture' | 'doorKit' | 'windowKit' | 'fenceKit' | 'forge' | 'mushroom'
   | 'sword' | 'lantern' | 'oldMap' | 'metalPart' | 'electronicPart' | 'waterPump' | 'lamp' | 'backpack' | 'boots' | 'cloth' | 'clothing' | 'accessory';
@@ -64,6 +64,8 @@ export interface SaveData {
   openFieldsPosition?:TilePoint & {direction?:CharacterDirection};
   groundItems?:import('./systems/ground-items').GroundItems;
   farmConstruction?:import('./systems/farm-construction').FarmConstruction;
+  /** Alimentação e produção dos animais alojados (ovos e leite). */
+  animalCare?:import('./systems/animal-production').AnimalCare;
   npcSocial?:import('./systems/npc-social-state').NpcSocialState;
   mineMissions?:import('./systems/mine-mission-state').MineMissionsState;
   mineRescue?:import('./systems/mine-rescue-state').MineRescueState;

@@ -40,6 +40,9 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   pickaxe: { name: 'Picareta', description: 'Quebra veios de pedra e recupera materiais.' },
   hoe: { name: 'Enxada', description: 'E ou clique prepara um canteiro no solo livre da propriedade. Shift + E ou Shift + clique desfaz o canteiro vazio e restaura o piso anterior.' },
   handsaw: { name: 'Serrote', description: 'Usado junto à bancada para serrar tábuas e preparar componentes das construções.' },
+  egg:{name:'Ovo',description:'Posto pelas galinhas alimentadas. Recolha nos ninhos do galinheiro. Helena e Rosa compram.'},
+  milk:{name:'Leite',description:'Ordenhado das vacas alimentadas, dentro do curral, com o balde. Helena compra.'},
+  milkPail:{name:'Balde de ordenha',description:'Feito na bancada. Leve na mochila e use E perto de uma vaca pronta, dentro do curral.'},
   freshGrass:{name:'Capim fresco',description:'Cortado com a foice nos Campos Abertos. Guarde no silo: cada capim seca em uma palha após um dia.',iconFallback:'fiber'},
   hardwood:{name:'Madeira nobre',description:'Cerne denso do ipê-amarelo, que só cresce nos Campos Abertos. Exige machadinha de ferro ou melhor: rende 1 com ferro, 2 com ouro e 3 com metal negro. Usada nas construções dos animais.',iconFallback:'log'},
   hay:{name:'Palha',description:'Palha seca para armazenar no silo. Prepare no silo: 3 fibras vegetais rendem 1 palha.',iconFallback:'fiber'},
@@ -78,7 +81,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
 
 /** Only these stock fields may be absent in a save from before the village
  * services update. Missing any older field still indicates a corrupt save. */
-export const VILLAGE_ITEM_IDS=['harvestBasket',...NEW_CROP_ITEM_IDS,'freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
+export const VILLAGE_ITEM_IDS=['harvestBasket',...NEW_CROP_ITEM_IDS,'egg','milk','milkPail','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
 
 export const ITEM_IDS = Object.keys(ITEMS) as ItemId[];
 export const ITEM_NAMES = Object.fromEntries(ITEM_IDS.map(id => [id, ITEMS[id].name])) as Record<ItemId, string>;

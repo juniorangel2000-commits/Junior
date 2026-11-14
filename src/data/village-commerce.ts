@@ -124,6 +124,9 @@ for(const c of CROP_CATALOG){
  else if(c.group==='fiber')MERCHANTS.tailor.sell[c.harvest]=c.salePrice;
  else{MERCHANTS.seeds.sell[c.harvest]=c.salePrice;if(c.group!=='flower')MERCHANTS.inn.sell[c.harvest]=c.salePrice;}
 }
+// Produtos animais: nenhuma loja vende; Helena e Rosa compram do jogador.
+Object.assign(MERCHANTS.inn.sell,{egg:8,milk:16});Object.assign(MERCHANTS.seeds.sell,{egg:8});
+MERCHANTS.inn.description='Helena compra colheitas, ovos e leite para abastecer a cozinha da pousada.';
 const validDay=(day:number):boolean=>Number.isSafeInteger(day)&&day>=1&&day<=999_999;
 
 /** The calendar, not wall-clock randomness, controls availability and stock.

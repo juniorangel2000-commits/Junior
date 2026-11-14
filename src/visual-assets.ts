@@ -34,6 +34,9 @@ export function itemIconUrl(id: string, tier=0): string | undefined {
   if(id==='freshGrass')return 'assets/visual/open-fields/fresh-grass.png';
   if(id==='hardwood')return 'assets/visual/open-fields/hardwood.png';
   if(id==='hay')return 'assets/visual/farm/hay.png';
+  if(id==='egg')return 'assets/visual/farm/products/egg.png';
+  if(id==='milk')return 'assets/visual/farm/products/milk.png';
+  if(id==='milkPail')return 'assets/visual/farm/products/milk-pail.png';
   if(id.startsWith('farm-'))return 'assets/visual/farm/'+id.slice(5)+'.png';
   if(id==='fishingRod')return 'assets/visual/fishing/fishing-rod.png';
   if(id==='fish')return 'assets/visual/fishing/catches/fish.svg#tilapia';

@@ -88,6 +88,7 @@ import { titleCameraPose } from '../title-camera';
 import { Home, HOME_SPAWN, HOME_EXIT, HOME_ENTRANCE_WORLD, HOME_OUTDOOR_SPAWN, HOME_OUTDOOR_DOORWAY, HOME_INTERIOR_DOORWAY, HOME_WIDTH, HOME_HEIGHT } from '../systems/home';
 import { createHomeArt, drawHome } from '../home-art';
 import { GAME_MINUTES_PER_SECOND, advanceClock, sleepUntilMorning } from '../systems/clock';
+import { processAnimalProduction } from '../systems/animal-production';
 import { AdminAccess, grantAdminItem } from '../systems/admin';
 import { AdminMenu } from '../admin-menu';
 import type { HomeEditAction } from '../home-ui';
@@ -1640,6 +1641,7 @@ export class ValleyScene extends Phaser.Scene {
     if (withered.length) this.ui.toast(`A estação mudou: ${[...new Set(withered)].join(', ').toLowerCase()} fora de época murchou.`);
     const previousDay = this.state.day;
     Object.assign(this.state, advanceClock(this.state, delta * GAME_MINUTES_PER_SECOND));
+    processAnimalProduction(this.state);
     this.state.crops=this.farming.crops;this.state.homePosition=this.inHome?this.playerPosition():undefined;this.state.home=this.home.data;this.state.buildings=this.building.buildings;advanceBackgroundVillage(this.state, delta,this.player,this.bentoWorkRuntime);this.bentoView?.update();
     if (this.state.day !== previousDay) this.ui.toast(`Dia ${this.state.day}. A terra espera por você.`);
     if(!this.inHome)this.resourceLifecycle?.tick();

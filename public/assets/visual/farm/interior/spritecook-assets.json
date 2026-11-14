@@ -11,6 +11,12 @@
     "floor-straw.png": "2c26fd99-2615-4948-aaaf-dc4197b0bc58",
     "floor-planks.png": "f17bc7b7-76b8-48a8-82c8-5f3e9f11718c",
     "wall.png": "796b722e-07fd-4f01-8e3f-fd30ae2add57",
-    "wall-top.png": "f50cf211-982f-4a6e-a0d4-f71022b2d24b"
+    "wall-top.png": "f50cf211-982f-4a6e-a0d4-f71022b2d24b",
+    "nest-egg.png": "47c29982-a099-4bc6-9c47-642edddee7c4",
+    "trough-96-empty.png": "e4f4d6fc-7c48-4d59-94af-ba1b8448db94",
+    "trough-64-empty.png": "61ef28a7-b20d-4de2-893b-7edb484ad958",
+    "../products/egg.png": "2c54fc42-1894-4e4e-b6dc-6ba2f90c725c",
+    "../products/milk.png": "d8baa8cf-4606-4dfe-8ea2-41d1b078b78f",
+    "../products/milk-pail.png": "95b4ec8f-1802-4254-b4a8-89c723cab77f"
   }
 }

@@ -13,6 +13,8 @@ const SOURCES:Record<string,string>={
  'interior-nest':'nest.png','interior-water':'water.png',
  'interior-trough-64':'trough-64.png','interior-trough-96':'trough-96.png',
  'interior-stall-96x96':'stall.png','interior-divider-88':'divider.png',
+ 'interior-nest-egg':'nest-egg.png','interior-trough-64-empty':'trough-64-empty.png','interior-trough-96-empty':'trough-96-empty.png',
+ 'interior-milk-ready':'../products/milk.png','interior-milk-pail':'../products/milk-pail.png',
 };
 export const FARM_INTERIOR_ART_FILES=Object.values(SOURCES).map(f=>DIR+f);
 export function preloadFarmInteriorArt(scene:Phaser.Scene):void{
@@ -60,7 +62,9 @@ function floor(scene:Phaser.Scene,kind:FarmKind,l:FarmInteriorLayout):string{
  c.fillStyle=door;c.fillRect(l.doorX*T,(l.height-1)*T,l.doorWidth*T,T);
  scene.textures.addCanvas(key,canvas)?.setFilter(0);return key;
 }
-export interface InteriorView{fixtures:Map<string,Phaser.GameObjects.Image>;destroy():void}
+/** Estado visível dos objetos: ovos nos ninhos (índices 0–5) e cocho com ou sem palha. */
+export interface InteriorFixtureState{eggs:readonly number[];trough:number}
+export interface InteriorView{fixtures:Map<string,Phaser.GameObjects.Image>;refresh(state:InteriorFixtureState):void;destroy():void}
 export function drawFarmInterior(scene:Phaser.Scene,kind:FarmKind):InteriorView{
  const l=FARM_INTERIORS[kind]!,objects:Phaser.GameObjects.GameObject[]=[],fixtures=new Map<string,Phaser.GameObjects.Image>();
  objects.push(scene.add.image(0,0,floor(scene,kind,l)).setOrigin(0).setScale(1/FLOOR_SCALE).setDepth(-100));
@@ -73,5 +77,11 @@ export function drawFarmInterior(scene:Phaser.Scene,kind:FarmKind):InteriorView{
   else img.setScale(divider?(f.h+6)/img.height:Math.min(f.w/img.width,f.h/img.height));
   fixtures.set(f.id,img);objects.push(img);
  }
- return{fixtures,destroy:()=>{for(const o of objects)o.destroy();fixtures.clear();}};
+ const refresh=(state:InteriorFixtureState)=>{for(const f of l.fixtures){const img=fixtures.get(f.id);if(!img)continue;
+  let key=fixtureKey(f);
+  if(f.kind==='nest'&&state.eggs.includes(Number(f.id.slice(5))-1))key='interior-nest-egg';
+  if(f.kind==='trough'&&state.trough<=0)key+='-empty';
+  if(img.texture.key!==key&&scene.textures.exists(key)){const w=img.displayWidth,h=img.displayHeight;img.setTexture(key).setDisplaySize(w,h);}
+ }};
+ return{fixtures,refresh,destroy:()=>{for(const o of objects)o.destroy();fixtures.clear();}};
 }
