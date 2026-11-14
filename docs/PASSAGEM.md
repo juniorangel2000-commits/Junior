@@ -4,7 +4,7 @@
 
 - **Atualizado em:** 2026-11-14
 - **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch (doma em `a9739fd`).
+- **Continuar a partir de:** branch `release/v0.10.0-preview.34`, HEAD do branch (doma em `ebfa13a`).
 - **Última versão publicada:** `v0.10.0-preview.33`.
 - **Estado:** doma do cavalo implementada e validada, **faltando só o estábulo, que o Junior vai fazer pelo Codex**. Não publicado.
 
