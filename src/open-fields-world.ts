@@ -15,11 +15,14 @@ import type {AnimalBrain} from './systems/animals';
 import {animalSprite,setupAnimalArt} from './forest-art';
 import {preloadAnimalSprites,updateAnimalSprite,animalRopeAnchor} from './animal-sprites';
 import {CowRestCycle} from './systems/cow-rest';
+import {trapSwarmed} from './systems/beekeeping';
 export function preloadOpenFields(scene:Phaser.Scene){
  preloadMeadowGrass(scene);
  if(!scene.textures.exists('fields-ipe'))scene.load.image('fields-ipe','assets/visual/open-fields/ipe-yellow.png');
  for(const key of ['shed'])if(!scene.textures.exists('fields-'+key))scene.load.image('fields-'+key,`assets/visual/open-fields/${key}.png`);
  if(!scene.textures.exists('fields-harvest-basket'))scene.load.image('fields-harvest-basket','assets/visual/crops/harvest-basket.png');
+ if(!scene.textures.exists('fields-empty-hive'))scene.load.image('fields-empty-hive','assets/visual/kitchen/empty-hive.png');
+ if(!scene.textures.exists('fields-swarmed-hive'))scene.load.image('fields-swarmed-hive','assets/visual/machines/beehive-icon.png');
  if(!scene.textures.exists('forest-animals-source'))scene.load.image('forest-animals-source','assets/visual/forest/animals.png');
  preloadAnimalSprites(scene);
 }
@@ -40,6 +43,8 @@ export class OpenFieldsWorld{
  readonly animals:FieldAnimal[]=[];
  private horseUi:Phaser.GameObjects.Graphics;
  private basket:Phaser.GameObjects.Image;
+ /** Colmeias junto aos ipês, por id. */
+ private hives=new Map<number,Phaser.GameObjects.Image>();
  private horseLabel:Phaser.GameObjects.Text;
  private roof:Phaser.GameObjects.Image;
  private elapsed=0;
@@ -123,6 +128,11 @@ export class OpenFieldsWorld{
    if(p.kind==='grass'&&Math.abs(player.x-p.x)<25&&Math.abs(player.y-p.y)<20)img.setAlpha(.65);
   }
   const placed=horseTaming(s).basket;this.basket.setVisible(!!placed);if(placed)this.basket.setPosition(placed.x,placed.y).setDepth(placed.y);
+  const traps=s.beekeeping?.traps??[],live=new Set(traps.map(t=>t.id));
+  for(const[id,img]of this.hives)if(!live.has(id)){img.destroy();this.hives.delete(id);}
+  for(const t of traps){const key=trapSwarmed(t,s.day)?'fields-swarmed-hive':'fields-empty-hive';let img=this.hives.get(t.id);
+   if(!img){img=this.scene.add.image(t.x,t.y,key).setOrigin(.5,.9);this.hives.set(t.id,img);}
+   if(img.texture.key!==key)img.setTexture(key);img.setDisplaySize(22,22*img.height/img.width).setPosition(t.x,t.y).setDepth(t.y);}
   for(const p of FIELDS_IPES){const standing=ipeStanding(s,p.id);this.ipes.get(p.id)!.setVisible(standing);this.ipeStumps.get(p.id)!.setVisible(!standing);}
   this.roof.setAlpha(player.x>FIELDS_SHED.x-62&&player.x<FIELDS_SHED.x+62&&player.y>FIELDS_SHED.y-70&&player.y<FIELDS_SHED.y+3?.32:1);
   for(const t of this.trees)t.setAlpha(player.y<t.y&&player.y>t.y-t.displayHeight*.75&&Math.abs(player.x-t.x)<t.displayWidth*.38?.45:1);

@@ -1,13 +1,16 @@
 import type {SaveData,ItemId,TilePoint} from '../types';
 import {MACHINES,MACHINE_RECIPES,isMachine,machineIngredient,type MachineKind} from '../data/machines';
 import {cookCheck} from './kitchen';
+import {startHive,hiveHarvest,nextHoneyReady} from './beekeeping';
+import {calendarDate} from './calendar';
 import {FARM_INTERIORS,hasInterior} from '../data/farm-interiors';
 import {farmReserved} from './farm-construction';
 import {Inventory} from './inventory';
 import {ITEM_NAMES} from '../data/items';
 import {groundClock} from './ground-items';
 export type MachineSpace='property'|`farm:${number}`;
-export interface PlacedMachine extends TilePoint{id:number;kind:MachineKind;space:MachineSpace;job?:{recipe:string;startedAt:number;readyAt:number}}
+/** `harvests`: coletas de mel da colmeia (a cera sai a cada 3). */
+export interface PlacedMachine extends TilePoint{id:number;kind:MachineKind;space:MachineSpace;job?:{recipe:string;startedAt:number;readyAt:number};harvests?:number}
 export interface MachineState{version:1;nextId:number;items:PlacedMachine[]}
 export interface MachineRuntime{
  read:()=>SaveData;snapshot:()=>SaveData;write:(d:SaveData)=>boolean;apply:(d:SaveData)=>void;
@@ -65,12 +68,14 @@ export function machinePlacementReason(rt:MachineRuntime,s:SaveData,m:PlacedMach
 }
 export function placeMachine(rt:MachineRuntime,kind:MachineKind){return commit(rt,s=>{
  if(kind==='clayOven'&&rt.space()!=='property')return fail('O forno de barro fica ao ar livre, na Propriedade.');
+ if(kind==='beehive'&&rt.space()!=='property')return fail('Instale a colmeia ao ar livre, na Propriedade.');
  const p=rt.player(),dx=Math.sign(p.facing.x),dy=Math.sign(p.facing.y),width=MACHINES[kind].width;
  const m:PlacedMachine={id:s.machines?.nextId??1,kind,space:rt.space()!,x:Math.floor(p.x/32)+dx-(dx<0?width-1:0),y:Math.floor(p.y/32)+dy};
  const reason=machinePlacementReason(rt,s,m);if(reason)return fail(reason);
  if((s.machines?.items.length??0)>=128||m.id>=1e9)return fail('Não há espaço para registrar outra máquina.');
  const i=new Inventory(s.inventory);if(!i.spend({[kind]:1}))return fail('Você não tem esta máquina na mochila.');
  s.inventory=i.data;const state=s.machines??={version:1,nextId:1,items:[]};state.items.push(m);state.nextId++;
+ if(kind==='beehive'){startHive(s,m);return{ok:true,message:'Colmeia instalada. As abelhas fazem mel a cada 4 dias; margaridas ou girassóis por perto dão mel de flor.'};}
  return{ok:true,message:MACHINES[kind].name+' instalada. Use a matéria-prima perto dela para carregar.'};
 });}
 function accessible(rt:MachineRuntime,s:SaveData,id:number){const m=s.machines?.items.find(m=>m.id===id);return m&&m.space===rt.space()&&nearMachine(rt)?.id===id?m:undefined;}
@@ -85,6 +90,12 @@ export function loadMachine(rt:MachineRuntime,id:number,item:ItemId){return comm
 export function collectMachine(rt:MachineRuntime,id:number){return commit(rt,s=>{
  const m=accessible(rt,s,id);if(!m)return fail('Aproxime-se da máquina pelo lado livre.');
  const i=new Inventory(s.inventory);
+ if(m.kind==='beehive'){
+  if(!m.job||!machineReady(s,m))return fail(calendarDate(s.day).season==='winter'?'As abelhas descansam no Inverno. O mel volta na Primavera.':'As abelhas estão fazendo mel. Volte quando o pote aparecer.');
+  const out=hiveHarvest(s,m);if(!i.transact({},out))return fail('Libere espaço na mochila para recolher o mel.');
+  s.inventory=i.data;m.harvests=(m.harvests??0)+1;startHive(s,m);
+  return{ok:true,message:'Você recolheu '+Object.entries(out).map(([k,n])=>`${n} × ${ITEM_NAMES[k as ItemId]}`).join(' e ')+'.'};
+ }
  if(m.job){if(!machineReady(s,m))return fail('A máquina está trabalhando. Aguarde o produto ficar pronto.');const r=MACHINE_RECIPES.find(r=>r.id===m.job!.recipe)!;
   if(!i.transact({},{[r.output]:r.quantity}))return fail('Libere espaço na mochila para recolher o produto.');delete m.job;s.inventory=i.data;return{ok:true,message:`Você recolheu ${r.quantity} × ${ITEM_NAMES[r.output]}.`};
  }
@@ -117,6 +128,7 @@ export function machineHint(s:SaveData,m:PlacedMachine):string{
  const minutes=Math.max(1,Math.ceil(m.job.readyAt-groundClock(s)));return `${name} trabalhando · ${Math.floor(minutes/60)}h ${minutes%60}min`;
  }
  if(m.kind==='clayOven')return name+' · E escolher a fornada no caderno';
+ if(m.kind==='beehive')return name+' · as abelhas fazem mel';
  return name+' · use '+MACHINE_RECIPES.filter(r=>r.machine===m.kind).map(r=>`${r.amount} ${ITEM_NAMES[r.input].toLowerCase()}`).join(' ou ')+' · E guardar máquina';
 }
 export function validMachineState(value:unknown,save:SaveData):value is MachineState{
@@ -135,7 +147,9 @@ export function validMachineState(value:unknown,save:SaveData):value is MachineS
   }
   if(m.x+MACHINES[m.kind].width>=width||m.y+1>=height)return false;
   for(const t of machineFootprint(m)){const key=`${m.space}:${t.x},${t.y}`;if(cells.has(key)||m.space==='property'&&farmReserved(save,t.x,t.y))return false;cells.add(key);}
-  if(m.job){const r=MACHINE_RECIPES.find(r=>r.id===m.job!.recipe&&r.machine===m.kind);if(!r||!Number.isFinite(m.job.startedAt)||m.job.startedAt<0||m.job.startedAt>groundClock(save)||!Number.isFinite(m.job.readyAt)||Math.abs(m.job.readyAt-m.job.startedAt-r.minutes)>.00001)return false;}
+  if(m.job){const r=MACHINE_RECIPES.find(r=>r.id===m.job!.recipe&&r.machine===m.kind);if(!r||!Number.isFinite(m.job.startedAt)||m.job.startedAt<0||m.job.startedAt>groundClock(save)||!Number.isFinite(m.job.readyAt)||Math.abs(m.job.readyAt-(r.machine==='beehive'?nextHoneyReady(m.job.startedAt):m.job.startedAt+r.minutes))>.00001)return false;}
+  if(m.harvests!==undefined&&(m.kind!=='beehive'||!Number.isSafeInteger(m.harvests)||m.harvests<0||m.harvests>1e6))return false;
+  if(m.kind==='beehive'&&(m.space!=='property'||!m.job))return false;
   return true;
  });
 }

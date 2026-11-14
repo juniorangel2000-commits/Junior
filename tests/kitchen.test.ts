@@ -59,12 +59,13 @@ describe('cozinha: fogão a lenha',()=>{
   expect(cookDish(s,'kaleOmelette',()=>false).ok).toBe(false);expect(cookDish(s,'kaleOmelette',()=>{throw Error('x');}).ok).toBe(false);
   expect(s.inventory).toEqual(before);
  });
- it('mel e ovo de pato aparecem com o aviso de que ainda não têm fonte',()=>{
-  const s=fresh();const tea=DISH_RECIPES.find(r=>r.id==='chamomileTea')!;
-  expect(dishIngredients(s,tea).find(i=>i.item==='honey')!.future).toContain('abelhas');
+ it('ovo de pato aparece com o aviso de que ainda não tem fonte; o mel já tem (abelhas)',()=>{
+  const s=fresh();const tea=DISH_RECIPES.find(r=>r.id==='chamomileTea')!,pie=DISH_RECIPES.find(r=>r.id==='strawberryPie')!;
+  expect(dishIngredients(s,tea).find(i=>i.item==='honey')!.future).toBeUndefined();
+  expect(dishIngredients(s,pie).find(i=>i.item==='duckEgg')!.future).toContain('patos');
   expect(dishIngredients(s,tea).find(i=>i.item===STOVE_FUEL)!.need).toBe(1);
   s.villageProgress!.recipes.push('chamomileTea');s.inventory.chamomile=1;s.inventory.wood=1;
-  expect(cookDish(s,'chamomileTea',()=>true).message).toContain('mel chega com as abelhas');
+  expect(cookDish(s,'chamomileTea',()=>true).message).toContain('1 mel');
  });
  it('Helena compra todos os pratos; nenhuma loja vende',()=>{
   for(const r of DISH_RECIPES){expect(MERCHANTS.inn.sell[r.id]).toBe(r.price);for(const m of Object.values(MERCHANTS))expect(m.buy[r.id]).toBeUndefined();}

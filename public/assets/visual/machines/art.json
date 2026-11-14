@@ -4,6 +4,7 @@
   "productsSha256": "f68b2fdcd91b59a213068677a3495290482d2296e2a7244b4c3c25a6f5c3a096",
   "frames": {
     "clayOven":{"width":150,"height":146,"cuts":[]},
+    "beehive":{"width":150,"height":200,"cuts":[]},
     "cheesePress": {
       "width": 248,
       "height": 299,

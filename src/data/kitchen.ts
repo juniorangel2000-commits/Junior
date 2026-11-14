@@ -46,4 +46,4 @@ export const HELENA_DISHES=DISH_RECIPES.filter(r=>dishSource(r)==='helena');
 export const HIDDEN_DISH_HINTS:Partial<Record<DishSource,string>>={mine:'anotação perdida na Mina',survivors:'receita dos sobreviventes do acampamento',oldMap:'segredo do mapa antigo'};
 export const isDish=(id:unknown):id is DishId=>DISH_IDS.includes(id as DishId);
 /** Ingredientes que ainda não têm fonte no jogo: o caderno avisa em vez de esconder a receita. */
-export const FUTURE_INGREDIENTS:Partial<Record<ItemId,string>>={honey:'mel chega com as abelhas',duckEgg:'ovo de pato chega com a criação de patos'};
+export const FUTURE_INGREDIENTS:Partial<Record<ItemId,string>>={duckEgg:'ovo de pato chega com a criação de patos'};

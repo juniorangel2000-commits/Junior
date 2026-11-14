@@ -1,7 +1,7 @@
 import {describe,it,expect,vi} from 'vitest';
 import {createNewSave,migrateSave,validateSave} from '../src/systems/save';
 import {createCharacterProfile} from '../src/data/characters';
-import {MACHINE_IDS,MACHINES,MACHINE_RECIPES} from '../src/data/machines';
+import {MACHINE_IDS,MACHINES,MACHINE_RECIPES,CRAFTED_MACHINE_IDS} from '../src/data/machines';
 import {placeMachine,loadMachine,collectMachine,machineReady,machinePointBlocked,nearMachine,interactMachine,validMachineState,type MachineRuntime,type MachineSpace} from '../src/systems/machines';
 import {Inventory,MAX_ITEM_COUNT} from '../src/systems/inventory';
 import {craft} from '../src/systems/crafting';
@@ -68,7 +68,7 @@ describe('processamento pelo relógio do jogo',()=>{
  });
 });
 describe('projetos e compatibilidade',()=>{
- it.each(MACHINE_IDS)('%s é aprendida com o morador correto e montada apenas na bancada',kind=>{
+ it.each(CRAFTED_MACHINE_IDS)('%s é aprendida com o morador correto e montada apenas na bancada',kind=>{
   const t=setup(),d=MACHINES[kind];t.s.villageEconomy!.coins=1000;expect(listVillageServices(d.npc).some(s=>s.id==='learn-'+kind)).toBe(true);
   const inventory=new Inventory({...d.cost,hammer:1});expect(craft(kind,inventory,true,t.s.villageProgress).ok).toBe(false);
   expect(performVillageService(t.s,'learn-'+kind).ok).toBe(true);expect(t.s.villageEconomy!.coins).toBe(1000-d.learnFee);expect(performVillageService(t.s,'learn-'+kind).ok).toBe(false);

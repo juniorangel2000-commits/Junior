@@ -188,6 +188,8 @@ export function meetVillager(economy:VillageEconomy,npcId:string):boolean {
 // Produtos do aprisco vêm da criação do jogador; os moradores apenas compram.
 Object.assign(MERCHANTS.inn.sell,{goatMilk:20});Object.assign(MERCHANTS.tailor.sell,{wool:36});
 
+// Abelhas: Amélia compra mel e cera; Nilo leva o mel de flor para outras regiões.
+Object.assign(MERCHANTS.herbalist.sell,{honey:40,beeswax:30,daisyHoney:70,sunflowerHoney:75});Object.assign(MERCHANTS.traveler.sell,{daisyHoney:85,sunflowerHoney:90});
 // Pratos da cozinha: Helena compra; nenhuma loja vende.
 for(const r of DISH_RECIPES)MERCHANTS.inn.sell[r.id]=r.price;
 Object.assign(MERCHANTS.inn.sell,{cheese:40,goatCheese:52,butter:48,flour:24,cornmeal:26,oatFlakes:22});Object.assign(MERCHANTS.tailor.sell,{yarn:54});

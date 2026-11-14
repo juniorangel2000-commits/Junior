@@ -27,6 +27,11 @@
     "dishes/minerBroth.png": "e60de9d8-40d0-4d36-8a39-bba55ece1a0e",
     "dishes/fishStew.png": "fdf44680-1a3d-4369-b87d-0aae6cd1687d",
     "dishes/honeyCake.png": "c174e9ba-e0ae-491e-b7ed-0be54c59a3f7",
-    "../machines/clayOven.png": "84331b76-e95d-48dc-8722-190ce1a730bd + 709e6800-39cd-4fc9-a449-1a5f6218d9c4 (aceso)"
+    "../machines/clayOven.png": "84331b76-e95d-48dc-8722-190ce1a730bd + 709e6800-39cd-4fc9-a449-1a5f6218d9c4 (aceso)",
+    "../machines/beehive.png": "6c65dd6c-4704-43aa-b834-c1c91c6937ab (abelhas e desbotado desenhados por script)",
+    "beeswax.png": "1187194f-64f5-4ebd-b437-995eeff6090d",
+    "empty-hive.png": "6c65dd6c-4704-43aa-b834-c1c91c6937ab (desbotada)",
+    "daisy-honey.png": "honey.png com tom mais claro",
+    "sunflower-honey.png": "honey.png com tom mais âmbar"
   }
 }

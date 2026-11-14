@@ -1,6 +1,6 @@
 import {learnNextDish,nextDishLesson,knownDishes,dishOfDay,sellDishOfDay,DISH_OF_DAY_FACTOR} from './kitchen';
 import {HELENA_DISHES} from '../data/kitchen';
-import {MACHINE_IDS,MACHINES} from '../data/machines';
+import {MACHINES,CRAFTED_MACHINE_IDS} from '../data/machines';
 import {HARVEST_BASKET_COST,HARVEST_BASKET_FEE,HARVEST_BASKET_DESCRIPTION} from '../data/harvest-basket';
 import {ITEMS} from '../data/items';
 import {bentoAvailability} from './bento-schedule';
@@ -54,7 +54,8 @@ for(const tool of ['hammer','handsaw','fishingRod','net','shears'] as const)add(
 add('shelter-carpentry','tobias','Preparar peças para a casinha','30 C, 2 troncos e 6 madeiras: recebe 6 tábuas regulares e 6 cavilhas.',(s,i)=>{pay(s,i,30,{log:2,wood:6});requireThat(i.transact({},{board:6,peg:6}),'Libere espaço na mochila.');});
 add('shelter-textiles','celina','Preparar tecidos para os pets','20 C e 8 fibras: recebe 4 tecidos e 2 cordas.',(s,i)=>{pay(s,i,20,{fiber:8});requireThat(i.transact({},{cloth:4,cord:2}),'Libere espaço na mochila.');});
 add('shelter-fittings','icaro','Preparar fixadores para a casinha','12 C e 4 sucatas: recebe 2 peças metálicas.',(s,i)=>{pay(s,i,12,{scrap:4});requireThat(i.transact({},{metalPart:2}),'Libere espaço na mochila.');});
-for(const id of MACHINE_IDS){const d=MACHINES[id];add(`learn-${id}`,d.npc,`Aprender ${d.name.toLowerCase()}`,`${d.learnFee} C. Aprenda o projeto para montar na bancada e instalar na fazenda.`,(s,i)=>{requireThat(!s.villageProgress!.recipes.includes(id),'Você já conhece este projeto.');pay(s,i,d.learnFee);s.villageProgress!.recipes.push(id);});}
+for(const id of CRAFTED_MACHINE_IDS){const d=MACHINES[id];add(`learn-${id}`,d.npc,`Aprender ${d.name.toLowerCase()}`,`${d.learnFee} C. Aprenda o projeto para montar na bancada e instalar na fazenda.`,(s,i)=>{requireThat(!s.villageProgress!.recipes.includes(id),'Você já conhece este projeto.');pay(s,i,d.learnFee);s.villageProgress!.recipes.push(id);});}
+add('buy-empty-hive','augusto','Colmeia vazia','120 Coroas. Coloque nos Campos Abertos, junto a um ipê: a cada 5 dias um enxame pode ocupá-la.',(s,i)=>{pay(s,i,120);requireThat(i.transact({},{emptyHive:1}),'Libere espaço na mochila para a colmeia.');});
 add('dish-of-day','helena','Prato do dia','A Helena paga o dobro por 1 unidade do prato do dia, uma vez por dia.',(s,i)=>{sellDishOfDay(s,i,coins=>reward(s,coins));});
 add('learn-dish','helena','Aprender receita da pousada','Helena ensina uma receita por vez, para cozinhar no fogão a lenha de casa.',(s,i)=>{learnNextDish(s,coins=>pay(s,i,coins));});
 export function listVillageServices(npc:string,save?:SaveData):VillageServiceOffer[]{

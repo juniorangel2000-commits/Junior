@@ -1,4 +1,4 @@
-import {MACHINE_IDS,MACHINES} from './machines';
+import {MACHINES,CRAFTED_MACHINE_IDS} from './machines';
 import type { ItemCost } from '../systems/inventory';
 import type { OwnedTool } from '../types';
 import {ECOLOGY_BALANCE as ECOLOGY} from './ecology-balance';
@@ -107,4 +107,4 @@ RECIPES.push(
 
 RECIPES.push({id:'pet-bedding-cloth',name:'Tecer tecido',description:'Costura aprendida com Celina; serve para as camas da casinha dos pets.',cost:{fiber:4,cord:1},output:{cloth:2},unlock:'backpack'});
 
-for(const id of MACHINE_IDS)RECIPES.push({id,name:MACHINES[id].name,description:'Monte na bancada e instale pela mochila, na Propriedade ou dentro dos abrigos.',cost:MACHINES[id].cost,output:{[id]:1},requiresWorkbench:true,requiresTool:'hammer',durationSeconds:3,unlock:id});
+for(const id of CRAFTED_MACHINE_IDS)RECIPES.push({id,name:MACHINES[id].name,description:'Monte na bancada e instale pela mochila, na Propriedade ou dentro dos abrigos.',cost:MACHINES[id].cost,output:{[id]:1},requiresWorkbench:true,requiresTool:'hammer',durationSeconds:3,unlock:id});

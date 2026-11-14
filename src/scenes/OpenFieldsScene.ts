@@ -27,6 +27,7 @@ import {releaseAnimalEscort,ANIMAL_BEHAVIOR} from '../systems/animals';
 import {OpenFieldsWorld,preloadOpenFields} from '../open-fields-world';
 import {FIELDS_SIZE,FIELDS_ENTRY,FIELDS_EXIT,PROPERTY_FIELDS_RETURN,MEADOW_PATCHES,FIELDS_IPES,IPE_REACH,fieldsBlocked,fieldsSafe} from '../data/open-fields';
 import {playerSpeedFactor} from '../systems/food-effects';
+import {placeHiveTrap,collectHiveTrap,nearTrap,trapHint} from '../systems/beekeeping';
 interface FieldsStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 export class OpenFieldsScene extends Phaser.Scene{
  private state!:SaveData;private ui!:GameUI;private player!:Player;private world!:OpenFieldsWorld;private daylight!:Daylight;private farming!:Farming;private toolVisual!:ToolVisual;
@@ -74,6 +75,13 @@ export class OpenFieldsScene extends Phaser.Scene{
   if(!t.tamed&&t.basket&&!fedToday(this.state))return'Afaste-se da cesta: o cavalo só se aproxima com espaço';
   return this.player.y<230?'Propriedade ao norte':'Explore as clareiras · leve capim ao silo para preparar palha';
  }
+ private trapNear(){return nearTrap(this.state,this.player);}
+ /** Colmeia vazia: fica no chão à sua frente, junto a um ipê, esperando um enxame. */
+ private useEmptyHive():void{
+  const f=this.player.facing,p={x:this.player.x+f.x*24,y:this.player.y+f.y*24};
+  if(!fieldsSafe(p)){this.ui.toast('Escolha um lugar livre no chão, perto do ipê.');return;}
+  this.snapshotState();const r=placeHiveTrap(this.state,p,saveGame);this.ui.toast(r.message);if(r.ok)gameAudio.play('pickup');this.updateHUD();
+ }
  private basketNear(){const b=horseTaming(this.state).basket;return b&&Math.hypot(b.x-this.player.x,b.y-this.player.y)<=48?b:undefined;}
  /** Usar a cesta: ela fica no chão à sua frente para o cavalo buscar. */
  private useBasket():void{
@@ -91,9 +99,10 @@ export class OpenFieldsScene extends Phaser.Scene{
   const h=this.horseNear();if(!h){if(this.state.animalEscort)this.ui.toast('Você já está conduzindo um animal.');return;}
   this.snapshotState();const r=startHorseEscort(this.state,h.brain.snapshot());if(r.ok)saveGame(this.state);this.ui.toast(r.message);this.updateHUD();
  }
- private updateHUD():void{if(!this.player)return;const ipe=this.ipeTarget(),horse=ipe?undefined:this.horseNear()??(this.state.animalEscort?.id===HORSE_ID?this.world.horse:undefined),hp=horse?this.horsePrompt():!ipe&&this.basketNear()?{text:'Cesta para o cavalo · E recolher',key:'E' as const}:undefined,p=ipe||hp?undefined:this.target();this.ui.updateHUD({area:'openFields',worldMapSize:{width:96,height:72},worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',inHome:false,swimming:false,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:ipe||p?'E':hp?hp.key:null,prompt:ipe?this.ipePrompt():hp?hp.text:p?p.kind==='grass'?'Cortar capim com a foice':'Colher '+(p.kind==='herb'?'ervas':'cogumelos'):this.fieldsHint(),location:'Campos Abertos',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});this.ui.updateCameraZoom(this.shownZoom,!this.paused);}
+ private updateHUD():void{if(!this.player)return;const ipe=this.ipeTarget(),horse=ipe?undefined:this.horseNear()??(this.state.animalEscort?.id===HORSE_ID?this.world.horse:undefined),hp=horse?this.horsePrompt():!ipe&&this.trapNear()?{text:trapHint(this.state,this.trapNear()!),key:'E' as const}:!ipe&&this.basketNear()?{text:'Cesta para o cavalo · E recolher',key:'E' as const}:undefined,p=ipe||hp?undefined:this.target();this.ui.updateHUD({area:'openFields',worldMapSize:{width:96,height:72},worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',inHome:false,swimming:false,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:ipe||p?'E':hp?hp.key:null,prompt:ipe?this.ipePrompt():hp?hp.text:p?p.kind==='grass'?'Cortar capim com a foice':'Colher '+(p.kind==='herb'?'ervas':'cogumelos'):this.fieldsHint(),location:'Campos Abertos',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});this.ui.updateCameraZoom(this.shownZoom,!this.paused);}
  private interact():void{
   if(this.swing||this.paused||this.leaving||this.ui.isModalOpen())return;
+  const trap=this.trapNear();if(trap&&!this.horseNear()){this.snapshotState();const r=collectHiveTrap(this.state,trap.id,saveGame);this.ui.toast(r.message);if(r.ok)gameAudio.play('pickup');this.updateHUD();return;}
   if(this.basketNear()&&!this.horseNear()){this.snapshotState();const r=pickUpBasket(this.state,saveGame);if(r.message)this.ui.toast(r.message);this.updateHUD();return;}
   const horse=this.ipeTarget()?undefined:this.horseNear(),t=horseTaming(this.state);
   if(horse&&t.tamed&&this.state.animalEscort?.id!==HORSE_ID){
@@ -122,7 +131,7 @@ export class OpenFieldsScene extends Phaser.Scene{
  setPaused(v:boolean):void{this.paused=v;this.input.keyboard?.resetKeys();if(v){this.swing=undefined;this.toolVisual?.hide();this.persist();}}
  selectTool(tool:Tool):void{if(tool==='hatchet'){this.interact();return;}this.ui.toast('Use a foice da mochila ou pressione E perto do capim.');}
  craftRecipe(id:string):void{const r=craftInField(this.state,id,saveGame);this.ui.toast(r.message);this.updateHUD();this.ui.refreshCrafting(this.state.inventory,false);}
- async useVillageItem(item:ItemId):Promise<void>{if(item==='harvestBasket'){this.useBasket();return;}if(item==='sickle'||item==='hatchet'){this.interact();return;}if(item==='fishingRod'||item==='net'){this.ui.toast('Procure um lago ou rio para pescar.');return;}const r=consumeInField(this.state,item,saveGame);this.ui.toast(r.message);this.updateHUD();}
+ async useVillageItem(item:ItemId):Promise<void>{if(item==='harvestBasket'){this.useBasket();return;}if(item==='emptyHive'){this.useEmptyHive();return;}if(item==='sickle'||item==='hatchet'){this.interact();return;}if(item==='fishingRod'||item==='net'){this.ui.toast('Procure um lago ou rio para pescar.');return;}const r=consumeInField(this.state,item,saveGame);this.ui.toast(r.message);this.updateHUD();}
  openMapEditor():void{this.ui.toast('O mapa dos Campos Abertos está disponível na tecla M.');}
  async captureMap():Promise<string>{const rt=this.make.renderTexture({width:1024,height:768},false);rt.camera.setZoom(1/3).setScroll(0,0).setOrigin(0,0);const visible=[...this.world.patches.values()].map(p=>p.visible);for(const p of this.world.patches.values())p.setVisible(true);this.children.depthSort();rt.draw(this.children.list.filter(o=>o!==this.player.sprite&&!this.daylight.contains(o)&&'visible'in o&&o.visible));let i=0;for(const p of this.world.patches.values())p.setVisible(visible[i++]);return new Promise(resolve=>rt.snapshot(img=>{const url=img instanceof HTMLImageElement?img.src:'';rt.destroy();resolve(url);}));}
  persist():boolean{return this.save();}

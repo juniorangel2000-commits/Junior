@@ -46,6 +46,11 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   spinningWheel:{name:'Roca',description:'Instale e use 1 lã para fiar um novelo em um dia.'},
   loom:{name:'Tear',description:'Instale e use 2 novelos para tecer 1 tecido em um dia.'},
   clayOven:{name:'Forno de barro',description:'Instale ao ar livre, na Propriedade. E abre o caderno: pães e bolos assam em meio dia, com 1 madeira de lenha.'},
+  emptyHive:{name:'Colmeia vazia',description:'Do armazém do Augusto. Coloque nos Campos Abertos, a até 2 passos de um ipê: a cada 5 dias um enxame pode ocupá-la.'},
+  beehive:{name:'Colmeia povoada',description:'Com um enxame dos ipês. Instale na Propriedade: dá mel a cada 4 dias, e cera a cada 3 coletas. Descansa no Inverno.'},
+  beeswax:{name:'Cera de abelha',description:'Sai da colmeia a cada 3 coletas de mel. Amélia compra.'},
+  daisyHoney:{name:'Mel de margarida',description:'Mel de colmeia com margaridas maduras por perto. Vale mais que o mel comum.'},
+  sunflowerHoney:{name:'Mel de girassol',description:'Mel de colmeia com girassóis maduros por perto. Vale mais que o mel comum.'},
   campfire:{name:'Fogueira portátil',description:'Use pela mochila ao ar livre para assar peixe, milho ou batata-doce na hora. Cada prato gasta 1 madeira.'},
   stoneMill:{name:'Moinho de pedra',description:'Instale e moa 2 trigos, milhos ou aveias em meio dia.'},
   cheese:{name:'Queijo',description:'Preparado na queijeira com leite. Helena compra.'},
@@ -55,7 +60,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   flour:{name:'Farinha',description:'Trigo moído no moinho de pedra. Helena compra.'},
   cornmeal:{name:'Fubá',description:'Milho moído no moinho de pedra. Helena compra.'},
   oatFlakes:{name:'Aveia em flocos',description:'Aveia preparada no moinho de pedra. Helena compra.'},
-  honey:{name:'Mel',description:'Ingrediente de várias receitas. Ainda não há colmeias: o mel chega com as abelhas.'},
+  honey:{name:'Mel',description:'Da colmeia povoada, a cada 4 dias. Ingrediente de várias receitas; Amélia compra.'},
   duckEgg:{name:'Ovo de pato',description:'Ingrediente da torta de morango. Ainda não há criação de patos.'},
   ...Object.fromEntries(DISH_RECIPES.map(r=>[r.id,{name:r.name,description:`Prato ${({stove:'do fogão a lenha',oven:'do forno de barro',campfire:'da fogueira'})[r.station??'stove']}. Recupera ${r.vigor} de vigor. Helena compra.`}])) as Record<import('./kitchen').DishId,{name:string;description:string}>,
   egg:{name:'Ovo',description:'Posto pelas galinhas alimentadas. Recolha nos ninhos do galinheiro. Helena e Rosa compram.'},
@@ -102,7 +107,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
 
 /** Only these stock fields may be absent in a save from before the village
  * services update. Missing any older field still indicates a corrupt save. */
-export const VILLAGE_ITEM_IDS=['harvestBasket','honey','duckEgg',...DISH_IDS,...NEW_CROP_ITEM_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','clayOven','campfire','cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
+export const VILLAGE_ITEM_IDS=['harvestBasket','honey','duckEgg',...DISH_IDS,...NEW_CROP_ITEM_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','clayOven','campfire','beehive','emptyHive','beeswax','daisyHoney','sunflowerHoney','cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
 
 export const ITEM_IDS = Object.keys(ITEMS) as ItemId[];
 export const ITEM_NAMES = Object.fromEntries(ITEM_IDS.map(id => [id, ITEMS[id].name])) as Record<ItemId, string>;
