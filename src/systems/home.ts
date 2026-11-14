@@ -56,23 +56,54 @@ export const FURNITURE_CATALOG: Record<FurnitureKind, {
   toolRack:{name:'Painel de ferramentas',width:3,height:2,blocking:false,limit:3,surface:'wall'},
   tongs:{name:'Tenaz de bancada',width:1,height:1,blocking:false,limit:6,surface:'tabletop'},
   /** Fogão a lenha da cozinha: já vem na casa; E abre o caderno de receitas. */
-  woodStove:{name:'Fogão a lenha',width:2,height:2,blocking:true,limit:1},
+  woodStove:{name:'Fogão a lenha',width:2,height:1,blocking:true,limit:1},
 };
 export const FURNITURE_KINDS = Object.keys(FURNITURE_CATALOG) as FurnitureKind[];
 
+/** Arrumação inicial: cama centrada sob a janela esquerda, fogão centrado na parede do
+ * fundo, estante baixa centrada sob a janela direita, mesa com duas cadeiras à direita e
+ * tapete na sala, à esquerda da entrada. */
 export function createDefaultHome(): HomeData {
   return {
     floor: 'oak', wall: 'cream',
     furniture: [
       { id: 'home-bed-1', kind: 'bed', x: 2, y: 2 },
-      { id: 'home-shelf-2', kind: 'shelf', x: 9, y: 7 },
+      { id: 'home-shelf-2', kind: 'shelf', x: 8, y: 2 },
+      { id: 'home-table-3', kind: 'table', x: 8, y: 4 },
+      { id: 'home-chair-4', kind: 'chair', x: 7, y: 4 },
+      { id: 'home-rug-5', kind: 'rug', x: 2, y: 5 },
+      { id: 'home-plant-6', kind: 'plant', x: 1, y: 7 },
+      { id: 'home-woodStove-7', kind: 'woodStove', x: 5, y: 2 },
+      { id: 'home-chair-8', kind: 'chair', x: 10, y: 4 },
+    ],
+  };
+}
+
+/** Arrumação inicial publicada até a preview.34, antes da cozinha. */
+export function legacyDefaultHome(): HomeData {
+  return {
+    floor: 'oak', wall: 'cream',
+    furniture: [
+      { id: 'home-bed-1', kind: 'bed', x: 2, y: 2 },
+      { id: 'home-shelf-2', kind: 'shelf', x: 8, y: 2 },
       { id: 'home-table-3', kind: 'table', x: 7, y: 4 },
       { id: 'home-chair-4', kind: 'chair', x: 6, y: 4 },
       { id: 'home-rug-5', kind: 'rug', x: 4, y: 5 },
       { id: 'home-plant-6', kind: 'plant', x: 2, y: 6 },
-      { id: 'home-woodStove-7', kind: 'woodStove', x: 4, y: 2 },
     ],
   };
+}
+
+/** A casa ainda está na arrumação inicial antiga (preview.34), talvez com os ajustes
+ * automáticos da preview.35 em desenvolvimento: fogão em (4,2) e estante em (9,7).
+ * O piso e as paredes escolhidos pelo jogador não contam. */
+export function untouchedLegacyLayout(home: HomeData): boolean {
+  const key = (p: HomeFurniture) => `${p.id}@${p.x},${p.y}`;
+  const own = home.furniture.filter(p => !(p.id === 'home-woodStove-7' && p.x === 4 && p.y === 2)).map(key).sort();
+  return [{ x: 8, y: 2 }, { x: 9, y: 7 }].some(shelf => {
+    const legacy = legacyDefaultHome().furniture.map(p => p.kind === 'shelf' ? { ...p, ...shelf } : p).map(key).sort();
+    return legacy.length === own.length && legacy.every((k, i) => k === own[i]);
+  });
 }
 
 export function furnitureFootprint(piece: Pick<HomeFurniture, 'kind' | 'x' | 'y'>): TilePoint[] {

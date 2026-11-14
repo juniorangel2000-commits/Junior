@@ -33,6 +33,11 @@ export function paintHomeRoom(ctx: Paint, source: CanvasImageSource, floor: Floo
       part(x, y, w, h, 20 + (x - 86) * 344 / 1205, 5 + (y - 30) * 59 / 275, w * 344 / 1205, h * 59 / 275);
     }
   }
+  // Janelas centradas sobre a grade do piso (x=96 e x=288): a cama em x=2 e a estante
+  // em x=8 ficam no meio delas. Cada painel de reboco entre as vigas é deslocado 13 px
+  // para dentro; a faixa que sobra repete o reboco liso que já estava naquela borda.
+  shiftWallPanel(ctx, 33, 131, 13);
+  shiftWallPanel(ctx, 251, 351, -13);
   part(86, 305, 22, 775, 20, 64, 12, 224);
   part(1268, 305, 23, 775, 352, 64, 12, 224);
   // Soleira aberta: continua o piso, sem desenhar uma parede sobre a saída.
@@ -41,4 +46,15 @@ export function paintHomeRoom(ctx: Paint, source: CanvasImageSource, floor: Floo
   part(86, 1080, 514, 36, 20, 288, 140, 16);
   part(773, 1080, 518, 36, 224, 288, 140, 16);
   ctx.fillStyle = '#34291f24'; ctx.fillRect(32, 64, 320, 3);
+}
+
+/** Desloca na horizontal o painel de parede [x0,x1) (faixa y=5..64). A faixa descoberta
+ * mantém os pixels originais daquela borda, que são reboco liso. */
+export function shiftWallPanel(ctx: Paint, x0: number, x1: number, dx: number): void {
+  const w = x1 - x0, h = 59, src = ctx.getImageData(x0, 5, w, h), out = ctx.createImageData(w, h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const keep = dx > 0 ? x < dx : x >= w + dx, sx = keep ? x : x - dx, i = (y * w + x) * 4, j = (y * w + sx) * 4;
+    out.data.set(src.data.subarray(j, j + 4), i);
+  }
+  ctx.putImageData(out, x0, 5);
 }

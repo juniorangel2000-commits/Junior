@@ -1,8 +1,9 @@
 import type { SaveData } from '../types';
 import type { Inventory } from './inventory';
 export const HOME_SUPPLIES = [
-  { id: 'wateringCan' as const, x: 4, y: 7, texture: 'icon-water-empty', label: 'Recolher regador' },
-  { id: 'seedPacket' as const, x: 7, y: 7, texture: 'home-seed-packet', label: 'Recolher pacote de 7 sementes' },
+  // Lado a lado no canto inferior direito, livre na arrumação inicial.
+  { id: 'wateringCan' as const, x: 8, y: 7, texture: 'icon-water-empty', label: 'Recolher regador' },
+  { id: 'seedPacket' as const, x: 9, y: 7, texture: 'home-seed-packet', label: 'Recolher pacote de 7 sementes' },
 ];
 export function collectHomeSupply(state: SaveData, inventory: Inventory, id: 'wateringCan' | 'seedPacket'): boolean {
   if (state.homeSupplies?.[id]) return false;

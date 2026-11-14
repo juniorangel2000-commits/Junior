@@ -73,8 +73,8 @@ describe('cozinha: fogão a lenha',()=>{
 describe('cozinha: o fogão na casa',()=>{
  it('a casa nova já vem com o fogão encostado na parede do fundo',()=>{
   const h=createDefaultHome();expect(validateHome(h)).toBe(true);
-  expect(h.furniture.find(p=>p.kind==='woodStove')).toMatchObject({x:4,y:2});
-  expect(new Home(h).furnitureNear('woodStove',{x:5,y:4},1.1)).toBeDefined();
+  expect(h.furniture.find(p=>p.kind==='woodStove')).toMatchObject({x:5,y:2});
+  expect(new Home(h).furnitureNear('woodStove',{x:6,y:3},1.1)).toBeDefined();
  });
  it('saves antigos recebem o fogão num lugar livre, sem perder nada',()=>{
   const old:any=fresh(),home=createDefaultHome();home.furniture=home.furniture.filter(p=>p.kind!=='woodStove');old.home=home;
@@ -84,14 +84,14 @@ describe('cozinha: o fogão na casa',()=>{
  });
  it('com o jogador dentro de casa, o fogão não cai em cima dele',()=>{
   const old:any=fresh(),home=createDefaultHome();home.furniture=home.furniture.filter(p=>p.kind!=='woodStove');old.home=home;
-  old.homePosition={x:4.5*32,y:3*32};expect(validateSave(old)).toBe(true);
+  old.homePosition={x:5.5*32,y:2.7*32};expect(validateSave(old)).toBe(true);
   const m=migrateSave(old)!;expect(m).not.toBeNull();const stove=m.home!.furniture.find(p=>p.kind==='woodStove')!;
-  expect(stove).toBeDefined();expect(new Home(m.home!).isBlocked(4,3)).toBe(false);
+  expect(stove).toBeDefined();expect(new Home(m.home!).isBlocked(5,2)).toBe(false);
  });
  it('save sem casa própria, salvo no lugar do novo fogão, continua carregando',()=>{
-  const old:any=fresh();delete old.home;old.homePosition={x:4.5*32,y:3*32};
+  const old:any=fresh();delete old.home;old.homePosition={x:5.5*32,y:2.6*32};
   const m=migrateSave(old)!;expect(m).not.toBeNull();
-  expect(new Home(m.home!).isBlocked(4,3)).toBe(false);expect(m.home!.furniture.filter(p=>p.kind==='woodStove')).toHaveLength(1);
+  expect(new Home(m.home!).isBlocked(5,2)).toBe(false);expect(m.home!.furniture.filter(p=>p.kind==='woodStove')).toHaveLength(1);
  });
  it('uma casa sem lugar para o fogão continua como está',()=>{
   const h=createDefaultHome();h.furniture=h.furniture.filter(p=>p.kind!=='woodStove');

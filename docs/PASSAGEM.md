@@ -3,12 +3,36 @@
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
 - **Atualizado em:** 2026-11-14
-- **Por:** Codex
-- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Casa refeita em `09d6954` e `c037244`, sobre a cozinha do Claude.
+- **Por:** Claude Code
+- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Nova arrumação da casa sobre a casa rústica do Codex.
 - **Última versão publicada:** `v0.10.0-preview.34`, https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.10.0-preview.34
 - **Estado:** casa do jogador com móveis, fogão, paredes e piso no mesmo conjunto rústico. Cozinha, máquinas, patos e distanciamento permanecem integrados. Nada publicado; `main`, tags e versão do pacote continuam na preview.34.
 
 ## Feito nesta rodada
+
+### Nova arrumação da casa (Claude Code, pedidos do Junior)
+
+- Arrumação inicial (`createDefaultHome`):
+  - cama centrada sob a janela esquerda (2,2);
+  - fogão centrado na parede do fundo (5,2);
+  - **estante baixa nova** centrada sob a janela direita (8,2);
+  - mesa (8,4) com **duas cadeiras** (7,4) e (10,4);
+  - tapete (2,5) e vaso (1,7);
+  - regador e sementes lado a lado no canto inferior direito, em (8,7) e (9,7) (`HOME_SUPPLIES`).
+- **Fogão:** passou a ocupar 2×1 (só a fileira encostada na parede) e é desenhado 12 px acima, com o corpo no rodapé e a chaminé subindo pela parede. A **cama** também subiu 14 px, com a cabeceira no rodapé. A colisão não mudou.
+- **Janelas:** foram deslocadas 13 px para dentro na arte da parede (`shiftWallPanel` em `src/home-room-art.ts`), para ficarem centradas sobre a grade (x=96 e x=288). Vale para os três rebocos e os três pisos.
+- **Estante baixa:** gerada no SpriteCook com a casa rústica como guia de estilo, em `public/assets/visual/home-furniture/spritecook/shelf.png`, na resolução original. A estante do Codex (`shelf.png`) continua no repositório, sem uso. Restam cerca de 196 créditos no SpriteCook.
+- **Migração** (`src/systems/save.ts`):
+  - Casas ainda na arrumação inicial antiga (`legacyDefaultHome`, da preview.34) recebem a arrumação nova inteira, mantendo piso e paredes, se o save inteiro continuar válido. Isso inclui as variações da preview.35: com o fogão em (4,2) ou a estante em (9,7). Ver `untouchedLegacyLayout`.
+  - Se alguém estiver parado no lugar de um móvel novo, a casa fica como estava e só ganha o fogão num lugar livre.
+  - A regra do Codex que tirava a estante de (8,2) saiu: a estante agora é baixa e cabe sob a janela.
+  - Casas reorganizadas pelo editor não mudam.
+- **Testes:**
+  - `tests/home-layout-migration.test.ts` foi reescrito para a regra nova.
+  - Os testes do editor (`tests/home.test.ts`) usam a casa antiga explícita (`legacyDefaultHome`), porque testam o editor e não a arrumação.
+  - `tests/mine-rescue.test.ts` move a cama para (5,5), porque (6,2) agora é o fogão.
+- Captura: `docs/planejamento/qa-moveis/casa-arrumacao-nova.png`.
+
 
 ### Casa do jogador — conjunto rústico (Codex)
 
@@ -155,10 +179,10 @@
 ## Testes
 
 - `npm run check`: ok.
-- `npm test`: **2.031 passaram, zero falhas, 230 arquivos**. Inclui os quatro novos testes da mudança de disposição em saves antigos. Base anterior desta rodada: 2.027 passaram.
-- `npm run build`: ok nesta rodada, com aviso anterior de tamanho do pacote.
-- Chromium, nesta rodada:
-  - `scripts/qa-home-furniture.cjs`: OK; evidências em `docs/planejamento/qa-moveis/`.
-  - `scripts/qa-kitchen.cjs`: OK. O fogão aparece com 64 px de largura, a dica "Fogão a lenha · E abre o caderno de receitas" aparece, o caderno mostra 2 receitas aprendidas pela Helena, a salada fica desabilitada sem cenoura, a omelete é cozida, o save guarda o prato e comer leva o vigor de 20 a 60. Capturas em `docs/planejamento/qa-cozinha/`.
-  - `scripts/qa-forest-ducks.cjs` e `scripts/qa-fields-distance.cjs`: OK.
+- `npm test`: **2.035 passaram, zero falhas, 230 arquivos**.
+- `npm run build`: não repetido depois da nova arrumação (ok na rodada do Codex).
+- Chromium:
+  - `scripts/qa-kitchen.cjs`: OK com o fogão novo (2×1). O script agora para o jogador logo abaixo do fogão.
+  - Casa nova conferida: cama, fogão, estante, os três acabamentos, a dica "Dormir" perto da cama, e regador e sementes recolhidos com E. Sem erros de JavaScript.
+- Antes: `scripts/qa-home-furniture.cjs` (Codex), `scripts/qa-forest-ducks.cjs` e `scripts/qa-fields-distance.cjs` passaram.
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.

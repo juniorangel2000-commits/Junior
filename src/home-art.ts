@@ -273,12 +273,15 @@ export interface HomeView {
 /** Móveis com arte em PNG, carregada em `preloadVisualAssets`, na resolução original:
  * só a exibição é reduzida para a largura do móvel. */
 export const FURNITURE_IMAGES: Partial<Record<FurnitureKind, { file: string; maxHeight?: number; offsetY?: number }>> = {
-  bed: { file: 'assets/visual/home-furniture/bed.png', maxHeight: 76 },
+  // Cabeceira encostada no rodapé, como o fogão.
+  bed: { file: 'assets/visual/home-furniture/bed.png', maxHeight: 76, offsetY: -14 },
   table: { file: 'assets/visual/home-furniture/table.png', maxHeight: 66 },
   chair: { file: 'assets/visual/home-furniture/chair.png', maxHeight: 42 },
-  shelf: { file: 'assets/visual/home-furniture/shelf.png', maxHeight: 56 },
+  shelf: { file: 'assets/visual/home-furniture/spritecook/shelf.png', maxHeight: 62 },
   rug: { file: 'assets/visual/home-furniture/rug.png', maxHeight: 64 },
   plant: { file: 'assets/visual/home-furniture/plant.png', maxHeight: 48 },
+  // Uma fileira de profundidade, subido até o rodapé: o fogão fica encostado na parede,
+  // com a chaminé subindo por ela.
   woodStove: { file: 'assets/visual/home-furniture/wood-stove.png', maxHeight: 100, offsetY: -12 },
 };
 export function preloadFurnitureImages(scene:Phaser.Scene):void{

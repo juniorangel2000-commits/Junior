@@ -44,7 +44,7 @@ export function learnNextDish(s:SaveData,payCoins:(coins:number)=>void):DishReci
 export function withWoodStove(home:HomeData,accept:(next:HomeData)=>boolean=()=>true):HomeData{
  if(home.furniture.some(p=>p.kind==='woodStove'))return home;
  const ids=home.furniture.map(p=>Number(p.id.split('-').at(-1))).filter(Number.isFinite),id=`home-woodStove-${Math.max(0,...ids)+1}`;
- const spots=[{x:4,y:2}];for(let y=2;y<HOME_HEIGHT-2;y++)for(let x=1;x<HOME_WIDTH-2;x++)spots.push({x,y});
+ const spots=[{x:5,y:2}];for(let y=2;y<HOME_HEIGHT-2;y++)for(let x=1;x<HOME_WIDTH-2;x++)spots.push({x,y});
  for(const p of spots){const next={...home,furniture:[...home.furniture,{id,kind:'woodStove' as const,x:p.x,y:p.y}]};if(validateHome(next)&&accept(next))return next;}
  return home;
 }

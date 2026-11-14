@@ -29,7 +29,7 @@ fs.mkdirSync(out, { recursive: true });
     console.log('· fogão na casa:', JSON.stringify(stove));
     assert.equal(stove.key, 'home-furniture-woodStove'); assert.equal(stove.w, 64);
     // Em frente ao fogão: a dica muda e E abre o caderno.
-    await page.evaluate(({ x, y }) => { v.player.x = (x + 1) * 32; v.player.y = (y + 2) * 32 + 14; v.player.facing = { x: 0, y: -1 }; }, stove);
+    await page.evaluate(({ x, y }) => { v.player.x = (x + 1) * 32; v.player.y = (y + 1) * 32 + 14; v.player.facing = { x: 0, y: -1 }; }, stove);
     await page.waitForTimeout(500);
     assert.equal(await page.evaluate(() => document.body.innerText.includes('Fogão a lenha · E abre o caderno de receitas')), true);
     await page.screenshot({ path: `${out}/casa-fogao.png` });

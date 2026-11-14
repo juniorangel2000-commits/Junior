@@ -27,7 +27,7 @@ describe('phase 9 persistent Bento rescue',()=>{
   expect(acknowledgeMineRescue(loaded,()=>false)).toBe(false);expect(loaded).toEqual(pending);expect(acknowledgeMineRescue(loaded,validateSave)).toBe(true);expect(loaded.mineRescue!.stage).toBe('leaving');const ack=structuredClone(loaded);expect(acknowledgeMineRescue(loaded,()=>true)).toBe(false);expect(loaded).toEqual(ack);
  });
  it('uses the moved owned bed and puts both bodies on reachable, non-overlapping floor with a walkable door route',()=>{
-  const s=fallen(),home=new Home(s.home),bed=home.data.furniture.find(f=>f.kind==='bed')!;expect(home.apply({type:'move',id:bed.id,x:6,y:2},{x:5,y:8}).ok).toBe(true);s.home=home.data;
+  const s=fallen(),home=new Home(s.home),bed=home.data.furniture.find(f=>f.kind==='bed')!;expect(home.apply({type:'move',id:bed.id,x:5,y:5},{x:5,y:8}).ok).toBe(true);s.home=home.data;
   expect(recoverMineDefeat(s,validateSave)).toBe(true);expect(s.mineRescue!.bedId).toBe(bed.id);expect(home.bedNear({x:s.homePosition!.x/32,y:s.homePosition!.y/32},2)).toBeDefined();const b=s.bentoTravel!.trip!;expect(bentoMapNavigation(s,'home').fits(b)).toBe(true);expect(Math.hypot(b.x-s.homePosition!.x,b.y-s.homePosition!.y)).toBeGreaterThanOrEqual(30);
   const goal={x:HOME_INTERIOR_DOORWAY.x,y:HOME_INTERIOR_DOORWAY.y+8},route=bentoRoute(s,'home',b,goal);expect(route.length).toBeGreaterThan(0);let from=b;for(const point of route){expect(bentoSegment(bentoMapNavigation(s,'home'),from,point)).toBe(true);from={...b,...point};}expect(rescueHomePlacement(home)).toBeDefined();
  });

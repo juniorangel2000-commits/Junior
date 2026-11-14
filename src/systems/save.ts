@@ -42,7 +42,7 @@ import { EMPTY_INVENTORY, INITIAL_INVENTORY, ITEM_IDS, MAX_ITEM_COUNT } from './
 import { RESOURCE_DEFINITIONS } from './resources';
 import { buildingFootprint, buildingLayer } from './building';
 import { TILE, WORLD_HEIGHT, WORLD_WIDTH } from '../data/regions';
-import { Home, HOME_WIDTH, HOME_HEIGHT, validateHome, createDefaultHome, type HomeData } from './home';
+import { Home, HOME_WIDTH, HOME_HEIGHT, validateHome, createDefaultHome, legacyDefaultHome, untouchedLegacyLayout, type HomeData } from './home';
 import { validateMapEdits } from './map-editor';
 import { isCharacterId } from '../data/characters';
 import {createVillageEconomy,validateVillageEconomy} from '../data/village-commerce';
@@ -343,20 +343,16 @@ export function migrateSave(value: unknown): SaveData | null {
   // Sem `home`, o save usa a casa padrão, que agora tem o fogão. Se o jogador salvou dentro
   // de casa no lugar do fogão, a casa antiga (sem fogão) passa a ser explícita.
   if(isRecord(value)&&value.version===SAVE_VERSION&&value.home===undefined&&value.homePosition!==undefined&&!validateSave(value)){
-    const legacy=createDefaultHome();legacy.furniture=legacy.furniture.filter(p=>p.kind!=='woodStove').map(p=>p.id==='home-shelf-2'?{...p,x:8,y:2}:p);
+    const legacy=legacyDefaultHome();
     if(validateSave({...value,home:legacy}))value={...value,home:legacy};
   }
-  // A estante padrão antiga cobria a janela. Só move essa posição antiga;
-  // casas reorganizadas mantêm suas peças. Testa o save inteiro para preservar
-  // o espaço do jogador e visitantes, sem recolher móveis ou perder conteúdo.
-  if (isRecord(value) && value.version === SAVE_VERSION && validateHome(value.home) && validateSave(value)) {
-    const home = value.home as HomeData;
-    const shelf = home.furniture.find(p => p.id === 'home-shelf-2' && p.kind === 'shelf' && p.x === 8 && p.y === 2);
-    if (shelf) for (const [x, y] of [[9, 7], [8, 6], [1, 7]]) {
-      const next = { ...home, furniture: home.furniture.map(p => p === shelf ? { ...p, x, y } : p) };
-      if (validateHome(next) && validateSave({ ...value, home: next })) { value = { ...value, home: next }; break; }
-    }
+  // Casa ainda na arrumação inicial antiga: recebe a arrumação nova inteira, mantendo piso
+  // e paredes. Se não couber (alguém parado no lugar de um móvel), seguem as regras abaixo.
+  if (isRecord(value) && value.version === SAVE_VERSION && validateHome(value.home) && untouchedLegacyLayout(value.home as HomeData)) {
+    const old = value.home as HomeData, next = { ...createDefaultHome(), floor: old.floor, wall: old.wall };
+    if (validateSave({ ...value, home: next })) value = { ...value, home: next };
   }
+  // A estante agora é baixa e cabe sob a janela: a regra que a tirava de (8,2) saiu.
   // Cozinha (preview.35): casas salvas antes recebem o fogão a lenha num lugar livre.
   // Cada lugar é testado com o save inteiro, para não cair sobre o jogador dentro de casa.
   if(isRecord(value)&&value.version===SAVE_VERSION&&value.home!==undefined&&validateHome(value.home)&&!(value.home as HomeData).furniture.some(p=>p.kind==='woodStove')&&validateSave(value)){

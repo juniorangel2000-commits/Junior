@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createDefaultHome, furnitureFootprint, Home, HOME_EXIT, HOME_HEIGHT, HOME_WIDTH, validateHome } from '../src/systems/home';
+import { createDefaultHome, legacyDefaultHome, furnitureFootprint, Home, HOME_EXIT, HOME_HEIGHT, HOME_WIDTH, validateHome } from '../src/systems/home';
 import type { FloorStyle, HomeData, HomeFurniture } from '../src/systems/home';
 
 describe('interior da casa inicial', () => {
@@ -19,7 +19,7 @@ describe('interior da casa inicial', () => {
   });
 
   it('usa o footprint inteiro da cama e permite um tapete debaixo de móveis', () => {
-    const home = new Home();
+    const home = new Home(legacyDefaultHome());
     expect(furnitureFootprint(home.data.furniture[0])).toEqual([
       { x: 2, y: 2 }, { x: 3, y: 2 }, { x: 2, y: 3 }, { x: 3, y: 3 },
     ]);
@@ -31,7 +31,7 @@ describe('interior da casa inicial', () => {
   });
 
   it('rejeita sobreposição, móveis fora do cômodo e bloqueio do corredor da porta sem mutação parcial', () => {
-    const home = new Home();
+    const home = new Home(legacyDefaultHome());
     const original = structuredClone(home.data);
     expect(home.place('shelf', 3, 2).ok).toBe(false);
     expect(home.place('shelf', 10, 4).ok).toBe(false);
@@ -43,7 +43,7 @@ describe('interior da casa inicial', () => {
   });
 
   it('não permite colocar ou mover um móvel no personagem', () => {
-    const home = new Home();
+    const home = new Home(legacyDefaultHome());
     const before = structuredClone(home.data);
     expect(home.place('plant', 5, 7, { x: 5.4, y: 7.2 }).ok).toBe(false);
     expect(home.move('home-plant-6', 5, 7, { x: 5, y: 7 }).ok).toBe(false);
@@ -52,7 +52,7 @@ describe('interior da casa inicial', () => {
   });
 
   it('mantém uma cama e aceita reposicioná-la com acesso pela entrada', () => {
-    const home = new Home();
+    const home = new Home(legacyDefaultHome());
     expect(home.remove('home-bed-1').ok).toBe(false);
     expect(home.move('home-bed-1', 3, 6).ok).toBe(true);
     expect(home.bedNear({ x: 2, y: 7 })?.id).toBe('home-bed-1');
@@ -83,7 +83,7 @@ describe('interior da casa inicial', () => {
   });
 
   it('limita o acervo, mantém ids únicos e não aceita campos malformados em saves', () => {
-    const home = new Home();
+    const home = new Home(legacyDefaultHome());
     expect(home.place('table', 3, 6).ok).toBe(true);
     const before = structuredClone(home.data);
     expect(home.place('table', 1, 5).ok).toBe(false);
@@ -100,7 +100,7 @@ describe('interior da casa inicial', () => {
   });
 
   it('aplica ações e acabamentos sem alterar o inventário ou cobrar materiais', () => {
-    const home = new Home();
+    const home = new Home(legacyDefaultHome());
     expect(home.apply({ type: 'style', floor: 'stone', wall: 'sage' }).ok).toBe(true);
     expect(home.data.floor).toBe('stone');
     expect(home.data.wall).toBe('sage');
