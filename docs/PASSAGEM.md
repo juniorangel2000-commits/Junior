@@ -4,11 +4,37 @@
 
 - **Atualizado em:** 2026-11-14
 - **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Patos e distanciamento nos Campos corrigidos e conferidos em `ec3ec4f`.
+- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Cozinha (etapa 1) em `5ef5287`–`b7d816d`.
 - **Última versão publicada:** `v0.10.0-preview.34`, https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.10.0-preview.34
-- **Estado:** máquinas aprovadas no QA de navegador. Patos da Floresta Antiga e distanciamento nos Campos corrigidos e conferidos no navegador. **Suíte inteira passando e build ok.** Nada foi publicado; `main`, tags e versão do pacote estão inalteradas.
+- **Estado:** cozinha (etapa 1) implementada e conferida no navegador, sobre máquinas, patos e distanciamento já validados. **Suíte inteira passando.** Nada foi publicado; `main`, tags e versão do pacote estão inalteradas.
 
 ## Feito nesta rodada
+
+### Cozinha, etapa 1 (Claude Code, `5ef5287`, `c377838`, `b7d816d`)
+
+- Decisões do Junior:
+  - o **fogão a lenha já vem na casa**;
+  - a arte que faltava é gerada no SpriteCook.
+- Detalhes, tabela de receitas e preços em **`docs/construcoes/COZINHA.md`**.
+- **Fogão:** móvel `woodStove` (2×2, um por casa) na casa padrão em (4,2). Pode ser movido pelo editor (H).
+  - Saves anteriores recebem o fogão no primeiro lugar livre. Cada lugar é testado com o save inteiro, para não cair sobre o jogador que salvou dentro de casa.
+  - Um save sem `home`, salvo onde o fogão fica, ganha a casa antiga explícita antes da migração.
+- **Helena** ensina 14 receitas, **uma por vez**, no serviço `learn-dish`. O rótulo mostra a próxima receita e o preço (20–50 C).
+- **E no fogão** abre o caderno (`src/cookbook-ui.ts`): receitas aprendidas e ingredientes, com o que falta. Cozinhar gasta os ingredientes e 1 madeira, e salva antes de aplicar.
+- **Pratos:** recuperam vigor pela mochila ou pela barra (`useConsumable`) e a Helena os compra. Nenhuma loja vende.
+- **Mel** (`honey`) e **ovo de pato** (`duckEgg`) já existem como itens com arte, mas sem fonte. O caderno avisa "mel chega com as abelhas" e "ovo de pato chega com a criação de patos".
+- **Arte do SpriteCook** em `public/assets/visual/kitchen/`, com ids em `spritecook-assets.json`:
+  - fogão, guiado por uma captura da casa;
+  - 14 pratos, mel e ovo de pato, guiados pelos ícones de ovo e leite.
+  - O Junior apontou que o pote de mel estava fechado com a colher atravessando a tampa. Mel e doce de leite foram refeitos com o pote aberto.
+- **SpriteCook:** sobram cerca de 230 créditos.
+
+### Comparação de escala dos animais novos (`09d3bda`)
+
+- `scripts/capture-new-animals.cjs` monta, na Propriedade e no zoom normal, a fileira: jogador, galinha, pato, coelho, abelha, porco, ovelha, cabra, vaca, cervo e cavalo.
+- Gera `escala-parados.png`, `escala-andando.gif` e `tamanhos.json` em `docs/planejamento/qa-animais-novos/`. Os quadros soltos ficam fora do repositório.
+- As escalas ficaram coerentes; nenhuma foi alterada.
+- `docs/construcoes/MAQUINAS.md` criado, e o andamento do plano foi atualizado (`b9b30fa`).
 
 ### Patos e distanciamento nos Campos (Claude Code, `ec3ec4f`)
 
@@ -83,9 +109,13 @@
 
 ## Em andamento e próximo passo exato
 
-1. Gerar uma comparação ou GIF dos cinco animais novos (porco, pato, abelha, coelho e cervo) em escala real, com vaca, galinha e jogador como referência, incluindo o voo da abelha. As escalas iniciais estão em `ANIMAL_ART`; ainda falta a conferência visual.
-2. Atualizar o plano geral (`docs/planejamento/ANIMAIS-E-RECEITAS.md`): as máquinas já têm implementação e QA; falta fechar a documentação.
-3. Próxima etapa do plano: **cozinha** (fogão a lenha, receitas da Helena e caderno); depois a criação e a produção de porco, pato e abelhas. A arte deles existe, mas o sistema de criação não.
+1. Cozinha, etapa 2 (`docs/planejamento/ANIMAIS-E-RECEITAS.md`):
+   - forno de barro (uma máquina, ao ar livre);
+   - fogueira portátil;
+   - efeitos por algumas horas (café reforçado, peixe assado, feijão tropeiro, suco de melancia);
+   - receitas escondidas;
+   - pedidos ("prato do dia" da Helena).
+2. Depois: porco (chiqueiro, esterco e composteira), pato (criação e ovo de pato) e abelhas (colmeia, mel e cera). Assim as receitas com mel e ovo de pato passam a funcionar.
 - Não publicar sem pedido do Junior. O pacote continua preview.34; tudo está no branch preview.35.
 
 ## Pendências e ideias para depois
@@ -104,12 +134,9 @@
 ## Testes
 
 - `npm run check`: ok.
-- `npm test`: **2.015 passaram, zero falhas, 228 arquivos** (`ec3ec4f`).
-- `npm run build`: ok (aviso de tamanho do pacote, que já existia).
+- `npm test`: **2.027 passaram, zero falhas, 229 arquivos**. Teste novo: `tests/kitchen.test.ts` (12). `tests/home.test.ts` agora espera 7 tipos de móveis na casa inicial.
+- `npm run build`: ok na rodada anterior (`ec3ec4f`); não repetido depois da cozinha.
 - Chromium, nesta rodada:
-  - `scripts/qa-forest-ducks.cjs`: OK.
-  - `scripts/qa-fields-distance.cjs`: OK.
-- Antes, com o Codex:
-  - QA das máquinas (`scripts/qa-machines.cjs`) passou;
-  - 26 testes de máquinas e 7 de arte dos animais novos.
-- Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`. Os scripts usam o Playwright instalado; `CHROMIUM_PATH` é opcional.
+  - `scripts/qa-kitchen.cjs`: OK. O fogão aparece com 64 px de largura, a dica "Fogão a lenha · E abre o caderno de receitas" aparece, o caderno mostra 2 receitas aprendidas pela Helena, a salada fica desabilitada sem cenoura, a omelete é cozida, o save guarda o prato e comer leva o vigor de 20 a 60. Capturas em `docs/planejamento/qa-cozinha/`.
+  - `scripts/qa-forest-ducks.cjs` e `scripts/qa-fields-distance.cjs`: OK.
+- Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.
