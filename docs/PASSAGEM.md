@@ -241,7 +241,8 @@
 
 1. **Junior:** criar a Release no GitHub. Em Releases, escolha "Draft a new release" e crie a tag nova `v0.10.0-preview.35` com target `main`, marcando pre-release. A tag dispara o workflow do Windows, que já aceita uma Release existente e anexa instalador, portátil, `SHA256SUMS.txt` e `LEIA.md`.
 2. Depois de publicada, conferir no GitHub Actions se o workflow passou, e então atualizar esta passagem.
-3. Próxima rodada (`release/v0.10.0-preview.36`): equilíbrio de preços jogando e qualidade dos produtos e pratos.
+3. Próxima rodada (`release/v0.10.0-preview.36`, já criado a partir da `main`): equilíbrio de preços jogando e qualidade dos produtos e pratos.
+4. **Pixel arts que faltam:** lista em `docs/planejamento/ARTE-PENDENTE.md`. Tem as artes provisórias feitas por script na preview.35, os ícones emprestados de outro item e as artes previstas que não existem. O Junior vai gerar as artes no ChatGPT e mandar no chat.
 
 ## Pendências e ideias para depois
 
