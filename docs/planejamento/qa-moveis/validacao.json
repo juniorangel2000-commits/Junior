@@ -1,0 +1,90 @@
+{
+  "furniture": [
+    {
+      "id": "home-bed-1",
+      "key": "home-furniture-bed",
+      "w": 64,
+      "h": 71.94044665012407,
+      "sourceWidth": 403,
+      "uniform": true
+    },
+    {
+      "id": "home-shelf-2",
+      "key": "home-furniture-shelf",
+      "w": 64,
+      "h": 55.85185185185185,
+      "sourceWidth": 432,
+      "uniform": true
+    },
+    {
+      "id": "home-table-3",
+      "key": "home-furniture-table",
+      "w": 63.99999999999999,
+      "h": 65.8443804034582,
+      "sourceWidth": 347,
+      "uniform": true
+    },
+    {
+      "id": "home-chair-4",
+      "key": "home-furniture-chair",
+      "w": 22.414507772020723,
+      "h": 42,
+      "sourceWidth": 206,
+      "uniform": true
+    },
+    {
+      "id": "home-rug-5",
+      "key": "home-furniture-rug",
+      "w": 96,
+      "h": 57.919239904988125,
+      "sourceWidth": 421,
+      "uniform": true
+    },
+    {
+      "id": "home-plant-6",
+      "key": "home-furniture-plant",
+      "w": 32,
+      "h": 37.36774193548387,
+      "sourceWidth": 310,
+      "uniform": true
+    },
+    {
+      "id": "home-woodStove-7",
+      "key": "home-furniture-woodStove",
+      "w": 64,
+      "h": 97.70212765957447,
+      "sourceWidth": 752,
+      "uniform": true
+    }
+  ],
+  "styles": [
+    {
+      "floor": "dark",
+      "wall": "sage",
+      "key": "home-room-dark-sage"
+    },
+    {
+      "floor": "stone",
+      "wall": "clay",
+      "key": "home-room-stone-clay"
+    },
+    {
+      "floor": "oak",
+      "wall": "cream",
+      "key": "home-room-oak-cream"
+    }
+  ],
+  "layout": {
+    "plant": {
+      "id": "home-plant-6",
+      "kind": "plant",
+      "x": 1,
+      "y": 6
+    },
+    "blocked": true,
+    "cleared": true,
+    "bed": true,
+    "exit": true
+  },
+  "errors": []
+}
