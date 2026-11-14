@@ -518,10 +518,12 @@ export class GameUI {
     this.cameraZoomFactor = factor;
     this.cameraZoomEnabled = enabled;
     const value = this.base.querySelector('.camera-zoom-value');
-    if (value) value.textContent = `${Math.round(factor * 100)}%`;
+    const label = `${Math.round(factor * 100)}%`;
+    if (value && value.textContent !== label) value.textContent = label;
     this.base.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach(button => {
       const direction = Number(button.dataset.zoom);
-      button.disabled = !enabled || direction < 0 && factor <= CAMERA_ZOOM_MIN || direction > 0 && factor >= CAMERA_ZOOM_MAX;
+      const disabled = !enabled || direction < 0 && factor <= CAMERA_ZOOM_MIN || direction > 0 && factor >= CAMERA_ZOOM_MAX;
+      if (button.disabled !== disabled) button.disabled = disabled;
     });
     if(!enabled){this.hideCameraZoom();return;}
     if(reveal){
@@ -692,7 +694,9 @@ export class GameUI {
     this.latest = data;
     if (waterChanged && this.mode === 'hud') this.renderQuickbar();
     if (this.mode !== 'hud') return;
-    const key = JSON.stringify(data);
+    // O relógio mostra minutos inteiros; a posição precisa ficar atualizada para
+    // o mapa, mas não altera os textos da HUD a cada pixel da caminhada.
+    const key = JSON.stringify({...data,time:Math.floor(data.time),playerTile:undefined});
     if (key === this.lastHudKey) return;
     this.lastHudKey = key;
     this.topToolbar?.setActionVisible('building',(data.area??'property')==='property'&&!data.inHome);

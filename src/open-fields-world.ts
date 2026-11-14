@@ -1,3 +1,4 @@
+import {meadowPatchesInRect} from './systems/meadow-visibility';
 import {IPE_ART} from './data/ipe-art';
 import {HorseIdleCycle} from './systems/horse-idle';
 import {HORSE_ID,TAMING_DAYS,horseTaming,horseLeftFields,tamingPhase,feedingDay,fedToday} from './systems/horse-taming';
@@ -40,6 +41,7 @@ export class OpenFieldsWorld{
  private horseLabel:Phaser.GameObjects.Text;
  private roof:Phaser.GameObjects.Image;
  private elapsed=0;
+ private visiblePatches=new Set<string>();
  constructor(private scene:Phaser.Scene,private state:()=>SaveData,private hooks:OpenFieldsHooks={}){
   drawExitSign(scene,{x:48,y:2},{x:48,y:4});
   if(!scene.textures.exists('fields-floor')){const canvas=document.createElement('canvas');canvas.width=FIELDS_SIZE.width;canvas.height=FIELDS_SIZE.height;paintFieldsFloor(canvas.getContext('2d')!,readTerrainSprites(scene)!);scene.textures.addCanvas('fields-floor',canvas)!.setFilter(0);}
@@ -57,7 +59,7 @@ export class OpenFieldsWorld{
   if(!tex.has('left-post')){tex.add('left-post',0,235,500,110,415);tex.add('right-post',0,1040,500,115,415);}
   scene.add.image(FIELDS_SHED.x-70,FIELDS_SHED.y,'fields-shed','left-post').setOrigin(.5,1).setDisplaySize(21,92).setDepth(FIELDS_SHED.y+1);
   scene.add.image(FIELDS_SHED.x+71,FIELDS_SHED.y,'fields-shed','right-post').setOrigin(.5,1).setDisplaySize(22,92).setDepth(FIELDS_SHED.y+1);
-  for(const p of MEADOW_PATCHES){const texture=p.kind==='grass'?`nature-tall-grass-${p.variant}`:p.kind==='herb'?'ecology-herbs':'forest-detail-mushrooms';this.patches.set(p.id,scene.add.image(p.x,p.y,texture).setOrigin(.5,1).setDisplaySize(p.size,p.kind==='grass'?p.size*.8:p.size).setDepth(p.y));}
+  for(const p of MEADOW_PATCHES){const texture=p.kind==='grass'?`nature-tall-grass-${p.variant}`:p.kind==='herb'?'ecology-herbs':'forest-detail-mushrooms';this.patches.set(p.id,scene.add.image(p.x,p.y,texture).setVisible(false).setOrigin(.5,1).setDisplaySize(p.size,p.kind==='grass'?p.size*.8:p.size).setDepth(p.y));}
   setupAnimalArt(scene);
   for(const d of FIELDS_ANIMALS){if(d.id===HORSE_ID&&horseLeftFields(state()))continue;const saved=state().openFields?.animals?.find(a=>a.id===d.id),p=saved&&fieldsSafe(saved)?saved:d;
    const brain=new AnimalBrain(d.id,d.kind,p.x,p.y,d.kind==='rabbit'||d.kind==='horse',(tx,ty)=>fieldsBlocked(tx*32+16,ty*32+16),84,()=>0,fieldsBlocked);if(saved&&p===saved)brain.restore(saved);
@@ -109,7 +111,10 @@ export class OpenFieldsWorld{
  store():void{const s=this.state();s.openFields??={version:1,cut:{}};s.openFields.animals=this.animals.map(a=>a.brain.snapshot());}
  update(dt:number,player:{x:number;y:number;leftHandPosition?:{x:number;y:number}}):void{
   this.elapsed+=dt;const s=this.state(),view=this.scene.cameras.main.worldView;
-  for(const p of MEADOW_PATCHES){const img=this.patches.get(p.id)!,growth=meadowGrowth(s,p),visible=p.x>view.x-90&&p.x<view.right+90&&p.y>view.y-30&&p.y<view.bottom+90;img.setVisible(visible);if(!visible)continue;
+  const visible=meadowPatchesInRect(view.x-90,view.y-30,view.right+90,view.bottom+90),ids=new Set(visible.map(p=>p.id));
+  for(const id of this.visiblePatches)if(!ids.has(id))this.patches.get(id)!.setVisible(false);
+  this.visiblePatches=ids;
+  for(const p of visible){const img=this.patches.get(p.id)!,growth=meadowGrowth(s,p);if(!img.visible)img.setVisible(true);
    const scale=p.kind==='grass'?.24+.76*growth:growth>=1?1:.25;img.setDisplaySize(p.size*scale,(p.kind==='grass'?p.size*.8:p.size)*scale).setAlpha(p.kind==='grass'?.8+.2*growth:growth>=1?1:.25);
    img.setRotation(p.kind==='grass'?Math.sin(this.elapsed*1.5+p.x*.018+p.y*.01)*.035*growth:0);
    // At most lower legs are occluded by nearby blades, never the head.
@@ -120,10 +125,10 @@ export class OpenFieldsWorld{
   this.roof.setAlpha(player.x>FIELDS_SHED.x-62&&player.x<FIELDS_SHED.x+62&&player.y>FIELDS_SHED.y-70&&player.y<FIELDS_SHED.y+3?.32:1);
   for(const t of this.trees)t.setAlpha(player.y<t.y&&player.y>t.y-t.displayHeight*.75&&Math.abs(player.x-t.x)<t.displayWidth*.38?.45:1);
   const brains=this.animals.map(a=>a.brain);
-  const grassNear=(b:AnimalBrain)=>MEADOW_PATCHES.some(p=>p.kind==='grass'&&Math.hypot(p.x-b.x,p.y-b.y)<56&&meadowGrowth(s,p)>=1);
+  const grassNear=(b:AnimalBrain)=>meadowPatchesInRect(b.x-56,b.y-56,b.x+56,b.y+56).some(p=>p.kind==='grass'&&Math.hypot(p.x-b.x,p.y-b.y)<56&&meadowGrowth(s,p)>=1);
   for(const a of this.animals){if(a.brain.id===HORSE_ID){this.updateHorse(a,dt,player,brains,s,grassNear(a.brain));continue;}const near=Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<85;
    a.rest?.update(dt,!near,a.brain.canStand(a.brain.x,a.brain.y),a.brain.direction,!a.brain.moving&&a.brain.mode==='idle');a.brain.resting=!!a.rest?.locked;
-   a.idle?.update(dt,!a.brain.moving&&a.brain.mode==='idle',Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<196,a.brain.direction,MEADOW_PATCHES.some(p=>p.kind==='grass'&&Math.hypot(p.x-a.brain.x,p.y-a.brain.y)<56&&meadowGrowth(s,p)>=1));
+   a.idle?.update(dt,!a.brain.moving&&a.brain.mode==='idle',Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<196,a.brain.direction,grassNear(a.brain));
    if(a.idle?.locked)a.brain.resting=true;
    if(a.idle?.locked)a.brain.hold(a.idle.direction);else if(a.rest?.locked)a.brain.hold(a.rest.direction);else a.brain.update(dt,player,brains);
    a.shadow.setPosition(a.brain.x,a.brain.y).setDepth(a.brain.y-.2);

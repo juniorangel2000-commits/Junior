@@ -36,7 +36,7 @@ export function dropInventoryItem(rt:GroundRuntime,item:ItemId,amount=1,toolId?:
  if(!addGroundItems(d,{[item]:amount},rt.space(),point,true,specimens))return fail('Recolha alguns itens do chão antes de soltar mais.');d.inventory=inventory.data;return commit(rt,d,`${amount} ${ITEM_NAMES[item]} no chão. Desaparece após dois dias do jogo.`);
 }
 /** Collect only reachable, mature drops; a full bag leaves every item on the ground. */
-export function collectGroundItems(rt:GroundRuntime):{ok:boolean;message:string}{if(!rt.enabled()||!(rt.read?.().groundItems??rt.snapshot().groundItems)?.items.length)return fail('');const d=rt.snapshot(),p=rt.player(),clock=groundClock(d);let changed=false,picked=0;const keep:GroundItem[]=[];const inventory=new Inventory(d.inventory);
+export function collectGroundItems(rt:GroundRuntime):{ok:boolean;message:string}{if(!rt.enabled())return fail('');const current=rt.read?.()??rt.snapshot();if(!current.groundItems?.items.length)return fail('');const d=rt.snapshot(),p=rt.player(),clock=groundClock(d);let changed=false,picked=0;const keep:GroundItem[]=[];const inventory=new Inventory(d.inventory);
  for(const drop of groundItems(d)){
   if(groundExpired(d,drop)){changed=true;continue;}
   if(drop.space!==rt.space()){keep.push(drop);continue;}

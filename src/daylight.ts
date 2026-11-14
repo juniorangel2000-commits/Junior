@@ -35,7 +35,9 @@ export class Daylight {
         this.windows.push({ x: x + pane.width * house.scaleX / 2, y: y + pane.height * house.scaleY / 2 });
       }
     }
-    if (scene.game.renderer.type === Phaser.WEBGL) {
+    // O shader só faz diferença nas janelas da casa. Nos outros mapas,
+    // duas camadas de cor produzem o mesmo resultado sem processar o mapa inteiro.
+    if (this.windows.length && scene.game.renderer.type === Phaser.WEBGL) {
       const shader = new Phaser.Display.BaseShader('after-rain-window-light', WINDOW_LIGHT_FRAGMENT, undefined, {
         darkness: { type: '1f', value: 0 }, golden: { type: '1f', value: 0 }, lamp: { type: '1f', value: 0 },
         windowA: { type: '2f', value: this.windows[0] ?? {x:-1000,y:-1000} },
@@ -63,9 +65,9 @@ export class Daylight {
     const light = daylightAt(time, settings.daylight ? settings.intensity : 0, indoors);
     this.shade.setAlpha(light.shade); this.warmth.setAlpha(light.warmth);
     const dynamic=this.shown&&settings.daylight&&settings.dynamicLighting&&!indoors;
-    const useShader=dynamic&&!!this.shader;
-    this.shade.setVisible(this.shown&&!useShader);this.warmth.setVisible(this.shown&&!useShader);
     const lamp=this.windows.length&&dynamic?windowLight(time)*settings.intensity:0;
+    const useShader=dynamic&&!!this.shader&&lamp>0;
+    this.shade.setVisible(this.shown&&!useShader);this.warmth.setVisible(this.shown&&!useShader);
     this.panes.setVisible(lamp>0).setAlpha(lamp*.88);
     this.shader?.setVisible(useShader).setUniform('darkness.value',light.shade)
       .setUniform('golden.value',light.warmth).setUniform('lamp.value',lamp);
