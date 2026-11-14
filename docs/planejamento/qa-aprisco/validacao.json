@@ -1,0 +1,15 @@
+{
+  "construction": {
+    "siteId": 1,
+    "kind": "aprisco",
+    "animals": 4
+  },
+  "products": {
+    "goatMilk": 1,
+    "wool": 1,
+    "shears": 1,
+    "durability": 99
+  },
+  "reload": true,
+  "errors": []
+}

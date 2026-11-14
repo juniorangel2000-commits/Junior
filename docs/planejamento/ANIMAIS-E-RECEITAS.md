@@ -1,6 +1,6 @@
 # Animais, produtos e receitas — proposta
 
-Status: proposta de 14/11/2026, a partir do pedido do Junior:
+Status: plano de 14/11/2026. Etapas 1–3 implementadas no branch preview.35, sem publicação; detalhes do aprisco em `docs/construcoes/APRISCO.md`. Restante continua planejado, a partir do pedido do Junior:
 - ovelha e cabra completas;
 - porco, pato e abelhas novos;
 - cada animal com seu produto e receitas;
@@ -169,7 +169,7 @@ Aprovado pelo Junior em 14/11/2026.
 
 ## Arte necessária
 
-- **Animais animados** no padrão da vaca e do cavalo, em 8 direções, andando e parados: ovelha, cabra, porco e pato. A ovelha e a cabra existem hoje só como arte simples.
+- **Animais animados** no padrão da vaca e do cavalo, em 8 direções, andando e parados: ovelha, cabra, porco e pato. Ovelha e cabra já têm arte própria animada em oito direções nesta etapa.
 - **Construções:** aprisco e chiqueiro (o estábulo está com o Codex). Colmeia como objeto, mais abelhas pequenas voando perto.
 - **Ícones:**
   - Produtos: ovo de pato, pena, leite de cabra, lã, esterco, mel (3 tipos), cera.
