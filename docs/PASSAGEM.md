@@ -4,9 +4,9 @@
 
 - **Atualizado em:** 2026-11-14
 - **Por:** Claude Code
-- **Continuar a partir de:** `main` / tag `v0.10.0-preview.34` (mesmo commit do branch `release/v0.10.0-preview.34`). Próxima rodada: branch `release/v0.10.0-preview.35`.
-- **Última versão publicada:** `v0.10.0-preview.34`; a tag dispara o workflow do Windows, e convém conferir a Release.
-- **Estado:** preview.34 publicada a pedido do Junior.
+- **Continuar a partir de:** `main` = commit de versão `227cda5` ("Release preview.34"). Próxima rodada: branch `release/v0.10.0-preview.35`.
+- **Última versão publicada:** `v0.10.0-preview.33`. A preview.34 está pronta na `main` (`227cda5`), mas **falta a tag**.
+- **Estado:** publicação da preview.34 pedida pelo Junior. Branch e `main` enviados; a tag `v0.10.0-preview.34` **não pôde ser enviada desta sessão do Claude Code**, porque o serviço de git recusou o envio de tags ("unexpected disconnect") e a criação pela API foi bloqueada.
 
 ## Feito nesta rodada
 
@@ -21,7 +21,7 @@
 
 ## Em andamento e próximo passo exato
 
-- Conferir o workflow do Windows da tag `v0.10.0-preview.34` e os executáveis na Release.
+- **Codex: criar a tag anotada `v0.10.0-preview.34` no commit `227cda5` e enviar** (`git tag -a v0.10.0-preview.34 227cda5 -m "After Rain preview.34"` e `git push origin v0.10.0-preview.34`). Depois, conferir o workflow do Windows e os executáveis na Release.
 - Próxima rodada (`release/v0.10.0-preview.35`), seguindo a ordem de `docs/planejamento/ANIMAIS-E-RECEITAS.md`:
   1. Interiores do galinheiro e do curral, com a opção "Recolher os animais".
   2. Ovos e leite (`docs/construcoes/PRODUCAO-ANIMAL-PLANO.md`).
