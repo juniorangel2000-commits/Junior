@@ -28,7 +28,7 @@ describe('compatibilidade e persistência da casa', () => {
     const save = createNewSave(profile);
     const home = new Home();
     expect(home.move('home-bed-1', 2, 3).ok).toBe(true);
-    expect(home.place('chair', 9, 7).ok).toBe(true);
+    expect(home.place('chair', 7, 7).ok).toBe(true);
     expect(home.setStyle('dark', 'sage').ok).toBe(true);
     save.home = home.data;
     save.homePosition = { ...HOME_SPAWN, direction: 'up' };
