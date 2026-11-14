@@ -4,11 +4,41 @@
 
 - **Atualizado em:** 2026-11-14
 - **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Nova arrumação da casa sobre a casa rústica do Codex.
+- **Continuar a partir de:** branch `release/v0.10.0-preview.35`, HEAD. Cozinha, etapa 2, em `8089263` e no commit de QA seguinte.
 - **Última versão publicada:** `v0.10.0-preview.34`, https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.10.0-preview.34
 - **Estado:** casa do jogador com móveis, fogão, paredes e piso no mesmo conjunto rústico. Cozinha, máquinas, patos e distanciamento permanecem integrados. Nada publicado; `main`, tags e versão do pacote continuam na preview.34.
 
 ## Feito nesta rodada
+
+### Cozinha, etapa 2 (Claude Code)
+
+- Decisões do Junior: pães e bolos passam ao forno; os quatro efeitos do plano; receitas escondidas na Mina, com os sobreviventes e no mapa antigo. Tudo detalhado em **`docs/construcoes/COZINHA.md`**.
+- **Forno de barro:**
+  - máquina `clayOven` do sistema do Codex, projeto da Helena, só na Propriedade;
+  - E no forno vazio abre o caderno (aba do forno); a fornada leva meio dia;
+  - as receitas do forno entram em `MACHINE_RECIPES` com `ingredients` e não carregam pelo item solto;
+  - funções `nearEmptyOven` e `loadOven` em `src/systems/machines.ts`;
+  - folha de sprites `public/assets/visual/machines/clayOven.png` (parado, aceso e aceso mais forte), registrada em `art.json` com `cuts: []`.
+- **Fogueira portátil:**
+  - item `campfire`, montado sem bancada;
+  - tratada em `main.ts` (`onUseItem`) com `cookInScene`, que cozinha no estado do cenário, sincroniza a mochila própria do Vale e da Vila (`syncInventory`) e salva por `persist()`, desfazendo tudo se falhar.
+- **Efeitos** (`src/systems/food-effects.ts`, `save.foodEffect`):
+  - café reforçado: +30 de vigor extra (`spendVigor`, usado na pesca e no combate);
+  - peixe assado: `bandBonus` na pesca;
+  - feijão tropeiro: `UndergroundHazards.damageScale`;
+  - suco de melancia: `playerSpeedFactor` em todos os cenários.
+- **Adaptações:** a Mina não gasta vigor, então o tropeiro reduz dano. O vigor continua com limite 100 no save, então o café dá vigor extra temporário.
+- **Prato do dia:** serviço `dish-of-day` da Helena; paga o dobro, uma vez por dia (`save.kitchen`).
+- **Receitas escondidas** (`discoverDishAndSave`), que aparecem como "???" no caderno:
+  - Mineração: caldo do mineiro, na primeira expedição;
+  - acampamento amigável: ensopado de peixe;
+  - mapa antigo: bolo de mel.
+- **Café da manhã reforçado** entrou na lista da Helena, depois do pão caseiro. A Helena agora tem 15 receitas.
+- **Arte do SpriteCook:** forno parado e aceso, fogueira e 7 pratos. **Restam cerca de 64 créditos.**
+- **Correção durante o QA:**
+  - O `canPlay()` do Vale recusa ações com modal aberto, então a fornada fecha o caderno antes de carregar o forno.
+  - O `syncInventory` do Vale não tinha sido inserido na primeira tentativa; foi corrigido.
+
 
 ### Nova arrumação da casa (Claude Code, pedidos do Junior)
 
@@ -154,13 +184,8 @@
 
 ## Em andamento e próximo passo exato
 
-1. Cozinha, etapa 2 (`docs/planejamento/ANIMAIS-E-RECEITAS.md`):
-   - forno de barro (uma máquina, ao ar livre);
-   - fogueira portátil;
-   - efeitos por algumas horas (café reforçado, peixe assado, feijão tropeiro, suco de melancia);
-   - receitas escondidas;
-   - pedidos ("prato do dia" da Helena).
-2. Depois: porco (chiqueiro, esterco e composteira), pato (criação e ovo de pato) e abelhas (colmeia, mel e cera). Assim as receitas com mel e ovo de pato passam a funcionar.
+1. Próxima etapa do plano: **porco** (chiqueiro com interior, esterco e composteira), **pato** (criação e ovo de pato) e **abelhas** (colmeia, mel e cera). Isso dá fonte ao mel e ao ovo de pato, que hoje travam 6 receitas (mingau, chá, doce de leite, torta de morango, pão com queijo e mel, e bolo de mel). A arte animada dos três já existe.
+2. Depois: qualidade dos pratos, barril de conservas, prensa de cera e equilíbrio de preços.
 - Não publicar sem pedido do Junior. O pacote continua preview.34; tudo está no branch preview.35.
 
 ## Pendências e ideias para depois
@@ -179,10 +204,13 @@
 ## Testes
 
 - `npm run check`: ok.
-- `npm test`: **2.035 passaram, zero falhas, 230 arquivos**.
-- `npm run build`: não repetido depois da nova arrumação (ok na rodada do Codex).
+- `npm test`: **2.051 passaram, zero falhas, 231 arquivos**.
+  - Novos: `tests/kitchen-stage2.test.ts` (15).
+  - `tests/machines.test.ts`: o teste genérico por item agora pula as fornadas.
+  - `tests/kitchen.test.ts`: considera que os pratos da fogueira já vêm conhecidos e que a Helena tem 15 receitas.
+- `npm run build`: não repetido nesta rodada.
 - Chromium:
-  - `scripts/qa-kitchen.cjs`: OK com o fogão novo (2×1). O script agora para o jogador logo abaixo do fogão.
-  - Casa nova conferida: cama, fogão, estante, os três acabamentos, a dica "Dormir" perto da cama, e regador e sementes recolhidos com E. Sem erros de JavaScript.
-- Antes: `scripts/qa-home-furniture.cjs` (Codex), `scripts/qa-forest-ducks.cjs` e `scripts/qa-fields-distance.cjs` passaram.
+  - `scripts/qa-kitchen-stage2.cjs`: OK. Instala o forno, abre a fornada pelo E, mostra o forno aceso, mostra o balão com o pão pronto em meio dia e recolhe. A fogueira assa o peixe. O suco dá velocidade 1,15. Sem erros de JavaScript. Capturas em `docs/planejamento/qa-cozinha/`.
+  - `scripts/qa-kitchen.cjs`: OK na rodada anterior.
+- **Não conferido no navegador:** o efeito do feijão tropeiro na Mina (só pelo código) e as receitas escondidas da Mina e dos sobreviventes (cobertas por teste unitário).
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.

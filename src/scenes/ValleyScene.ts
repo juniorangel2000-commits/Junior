@@ -136,6 +136,8 @@ export class ValleyScene extends Phaser.Scene {
   private resources!: Resources;
   private state!: SaveData;
  getFishingState():SaveData { this.state.inventory={...this.inventory.data};return this.state; }
+ /** Fogueira: a mochila foi alterada no estado; copia de volta para a mochila da cena. */
+ syncInventory(inventory:SaveData['inventory']):void{for(const k of Object.keys(this.inventory.data))delete (this.inventory.data as unknown as Record<string,unknown>)[k];Object.assign(this.inventory.data,structuredClone(inventory));this.updateHUD();}
   private running = false;
   private paused = true;
   private tool: Tool = 'hand';
@@ -1207,7 +1209,7 @@ export class ValleyScene extends Phaser.Scene {
     }
     if(this.canPlay()&&!this.inHome&&!this.player.isSwimming&&this.tool==='hand'){
       const oven=nearEmptyOven(this.machineRuntime);
-      if(oven){this.ui.showCookbook(()=>this.getFishingState(),id=>{const r=loadOven(this.machineRuntime,oven.id,id);if(r.ok){gameAudio.play('craft');this.updateHUD();}return r;},{station:'oven',onPickUp:()=>collectMachine(this.machineRuntime,oven.id)});return;}
+      if(oven){this.ui.showCookbook(()=>this.getFishingState(),id=>{this.ui.closeModal();const r=loadOven(this.machineRuntime,oven.id,id);this.ui.toast(r.message);if(r.ok){gameAudio.play('craft');this.updateHUD();}return r;},{station:'oven',onPickUp:()=>{this.ui.closeModal();const r=collectMachine(this.machineRuntime,oven.id);this.ui.toast(r.message);return r;}});return;}
       const result=interactMachine(this.machineRuntime,this.ui.getActiveItem());if(result){this.ui.toast(result.message);return;}
       const door=nearFarmDoor(this.state,this.player);if(door){this.enterFarmInterior(door.id);return;}
       const site=nearFarmSite(this.state,this.player);if(site){showFarmConstruction(this.ui,this.farmRuntime,site.id,id=>this.enterFarmInterior(id));return;}
