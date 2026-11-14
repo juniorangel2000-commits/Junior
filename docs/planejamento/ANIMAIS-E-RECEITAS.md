@@ -32,9 +32,28 @@ Os valores são pontos de partida para ajustar. Complementa `docs/construcoes/PR
 - **Abelhas sem alimentação:** colmeias não comem palha. Elas produzem de março a novembro do jogo (Primavera a Outono) e param no Inverno.
 - **Enxame:** sugestão de que apareça nos ipês floridos dos Campos Abertos, coletado com uma caixa de abelhas feita na bancada. Alternativa: comprar a colmeia pronta.
 
-## Equipamentos de produção (artesanato)
+## Máquinas de processamento
 
-São fabricados na bancada e colocados na Propriedade. Você põe a matéria-prima, espera e retira o produto.
+Pedido do Junior: o processamento é feito em **máquinas**, e não na bancada. A arte, os nomes e os detalhes são nossos, sem copiar outro jogo.
+
+**Como funcionam**
+- A máquina fica no chão da Propriedade, como objeto com colisão.
+- **E com a matéria-prima** coloca uma carga.
+- A máquina trabalha sozinha com o tempo do jogo, mesmo com você em outro cenário ou dormindo, e mostra uma animação enquanto trabalha.
+- Quando termina, aparece um **ícone do produto** sobre ela; **E retira** o produto.
+- Cada máquina processa **uma carga por vez**.
+- Uma máquina vazia pode ser recolhida e mudada de lugar; uma trabalhando, não.
+- Carga, tempo restante e produto pronto ficam no save. Uma falha ao salvar não perde a matéria-prima.
+
+**Como conseguir**
+
+Você aprende o projeto com um NPC, no mesmo padrão de "Aprender adubo" (Rosa) e "Aprender iluminação e bombas" (Ícaro). Depois, monta a máquina na bancada, uma vez, com os materiais do projeto.
+
+| NPC | Ensina |
+| --- | --- |
+| Tobias (carpintaria) | Barril de conservas, roca, tear e composteira |
+| Bento (ferraria) | Queijeira, batedeira de manteiga e prensa de cera |
+| Ícaro (mecânica) | Moinho de pedra |
 
 | Equipamento | Entrada | Saída | Tempo |
 | --- | --- | --- | --- |
@@ -89,20 +108,21 @@ Alguns pratos podem dar efeitos além do vigor (por exemplo, andar mais rápido 
   - Artesanato: queijo (2), manteiga, novelo, farinha, fubá, aveia em flocos, geleia (2), vela.
   - Pratos: os 14 da tabela.
   - Ferramentas: balde de ordenha e tesoura de tosquia.
-- **Equipamentos**, com estados vazio, trabalhando e pronto: queijeira, batedeira, roca, tear, moinho, composteira, barril, prensa e fogão a lenha.
+- **Máquinas**, com estados vazia, trabalhando e pronta: queijeira, batedeira, roca, tear, moinho, composteira, barril, prensa e fogão a lenha.
 
 ## Ordem sugerida
 
 1. Produção básica: alimentação, ovo e leite (`PRODUCAO-ANIMAL-PLANO.md`).
 2. Ovelha e cabra: arte animada, aprisco, lã, leite de cabra e tesoura.
-3. Primeiros equipamentos: queijeira, batedeira, roca, tear e moinho.
+3. Sistema de máquinas e as primeiras: queijeira, batedeira, roca, tear e moinho.
 4. Fogão a lenha e as receitas de cozinha.
 5. Porco (chiqueiro, esterco e composteira), pato e abelhas (colmeia, mel e cera).
 6. Barril de conservas, prensa de cera, efeitos dos pratos e equilíbrio de preços.
 
 ## Decisões em aberto
 
-- Processar em **equipamentos na Propriedade** (proposta acima) ou por **serviços de NPC**, como a cesta da Helena?
+- ~~Equipamentos ou serviços de NPC~~: decidido, **máquinas** na Propriedade.
+- As máquinas ficam só ao ar livre na Propriedade, ou também dentro de casa e no galpão?
 - O porco produz esterco (que vira fertilizante)? Ou prefere outro produto?
 - Cozinhar no **fogão a lenha de casa**?
 - Abelhas: enxame nos ipês ou colmeia comprada?
