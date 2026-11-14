@@ -54,8 +54,8 @@ describe('interior da casa inicial', () => {
   it('mantém uma cama e aceita reposicioná-la com acesso pela entrada', () => {
     const home = new Home();
     expect(home.remove('home-bed-1').ok).toBe(false);
-    expect(home.move('home-bed-1', 8, 6).ok).toBe(true);
-    expect(home.bedNear({ x: 7, y: 7 })?.id).toBe('home-bed-1');
+    expect(home.move('home-bed-1', 3, 6).ok).toBe(true);
+    expect(home.bedNear({ x: 2, y: 7 })?.id).toBe('home-bed-1');
     expect(home.bedNear({ x: 1, y: 2 })).toBeUndefined();
     expect(home.place('bed', 2, 2).ok).toBe(true);
     expect(home.remove('home-bed-1').ok).toBe(true);
@@ -84,7 +84,7 @@ describe('interior da casa inicial', () => {
 
   it('limita o acervo, mantém ids únicos e não aceita campos malformados em saves', () => {
     const home = new Home();
-    expect(home.place('table', 8, 6).ok).toBe(true);
+    expect(home.place('table', 3, 6).ok).toBe(true);
     const before = structuredClone(home.data);
     expect(home.place('table', 1, 5).ok).toBe(false);
     expect(home.data).toEqual(before);

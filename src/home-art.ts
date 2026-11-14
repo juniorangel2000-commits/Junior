@@ -1,3 +1,4 @@
+import { paintHomeRoom } from './home-room-art';
 import type Phaser from 'phaser';
 import { FLOOR_STYLES, FURNITURE_CATALOG, RESIDENTIAL_FURNITURE_KINDS, HOME_HEIGHT, HOME_TILE, HOME_WIDTH, WALL_STYLES } from './systems/home';
 import type { FloorStyle, FurnitureKind, HomeData, HomeFurniture, WallStyle } from './systems/home';
@@ -51,7 +52,8 @@ function window(ctx: Paint, x: number): void {
   wood(ctx, x - 7, 49, 57, 6);
 }
 
-function room(ctx: Paint, floor: FloorStyle, wall: WallStyle, finishes?: CanvasImageSource): void {
+function room(ctx: Paint, floor: FloorStyle, wall: WallStyle, finishes?: CanvasImageSource, authored?: CanvasImageSource): void {
+  if (authored) { paintHomeRoom(ctx, authored, floor, wall, finishes); return; }
   const width = HOME_WIDTH * HOME_TILE, height = HOME_HEIGHT * HOME_TILE;
   rect(ctx, '#263b35', 0, 0, width, height);
   rect(ctx, '#514538', 9, 6, width - 18, height - 10);
@@ -247,9 +249,11 @@ function texture(scene: Phaser.Scene, name: string, width: number, height: numbe
 export function createHomeArt(scene: Phaser.Scene): void {
   const finishes = scene.textures.exists('terrain-finishes-source')
     ? scene.textures.get('terrain-finishes-source').getSourceImage() as CanvasImageSource : undefined;
+  const authored = scene.textures.exists('home-room-source')
+    ? scene.textures.get('home-room-source').getSourceImage() as CanvasImageSource : undefined;
   for (const floor of Object.keys(FLOOR_STYLES) as FloorStyle[]) {
     for (const wall of Object.keys(WALL_STYLES) as WallStyle[]) {
-      texture(scene, `home-room-${floor}-${wall}`, HOME_WIDTH * HOME_TILE, HOME_HEIGHT * HOME_TILE, ctx => room(ctx, floor, wall, finishes));
+      texture(scene, `home-room-${floor}-${wall}`, HOME_WIDTH * HOME_TILE, HOME_HEIGHT * HOME_TILE, ctx => room(ctx, floor, wall, finishes, authored));
     }
   }
   for (const kind of RESIDENTIAL_FURNITURE_KINDS) {
@@ -271,17 +275,19 @@ export interface HomeView {
 export const FURNITURE_IMAGES: Partial<Record<FurnitureKind, { file: string; maxHeight?: number; offsetY?: number }>> = {
   bed: { file: 'assets/visual/home-furniture/bed.png', maxHeight: 76 },
   table: { file: 'assets/visual/home-furniture/table.png', maxHeight: 66 },
-  chair: { file: 'assets/visual/home-furniture/chair.png', maxHeight: 52 },
+  chair: { file: 'assets/visual/home-furniture/chair.png', maxHeight: 42 },
   shelf: { file: 'assets/visual/home-furniture/shelf.png', maxHeight: 56 },
   rug: { file: 'assets/visual/home-furniture/rug.png', maxHeight: 64 },
   plant: { file: 'assets/visual/home-furniture/plant.png', maxHeight: 48 },
-  woodStove: { file: 'assets/visual/home-furniture/wood-stove.png', maxHeight: 100, offsetY: -4 },
+  woodStove: { file: 'assets/visual/home-furniture/wood-stove.png', maxHeight: 100, offsetY: -12 },
 };
-export function preloadFurnitureImages(scene:Phaser.Scene):void{for(const [kind,a] of Object.entries(FURNITURE_IMAGES))if(!scene.textures.exists(`home-furniture-${kind}`))scene.load.image(`home-furniture-${kind}`,a!.file);}
+export function preloadFurnitureImages(scene:Phaser.Scene):void{
+  if (!scene.textures.exists('home-room-source')) scene.load.image('home-room-source', 'assets/visual/home-furniture/room-source.png');
+  for(const [kind,a] of Object.entries(FURNITURE_IMAGES))if(!scene.textures.exists(`home-furniture-${kind}`))scene.load.image(`home-furniture-${kind}`,a!.file);}
 export interface HomeFurnitureArt {key:string;w:number;h:number;offsetX?:number;offsetY?:number;depth?:number}
 export function drawHome(scene: Phaser.Scene, data: HomeData, resolveArt?:(piece:HomeFurniture)=>HomeFurnitureArt): HomeView {
   createHomeArt(scene);
-  const objects = [scene.add.image(0, 0, `home-room-${data.floor}-${data.wall}`).setOrigin(0).setDepth(-1000).setData('fixture-light',{offsetX:231,offsetY:32,radius:65,always:true})];
+  const objects = [scene.add.image(0, 0, `home-room-${data.floor}-${data.wall}`).setOrigin(0).setDepth(-1000).setData('fixture-light',{offsetX:scene.textures.exists('home-room-source')?192:231,offsetY:scene.textures.exists('home-room-source')?22:32,radius:65,always:true})];
   for (const piece of data.furniture) {
     const definition = FURNITURE_CATALOG[piece.kind];
     const bottom = (piece.y + definition.height) * HOME_TILE;

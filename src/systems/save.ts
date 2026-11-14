@@ -343,8 +343,19 @@ export function migrateSave(value: unknown): SaveData | null {
   // Sem `home`, o save usa a casa padrão, que agora tem o fogão. Se o jogador salvou dentro
   // de casa no lugar do fogão, a casa antiga (sem fogão) passa a ser explícita.
   if(isRecord(value)&&value.version===SAVE_VERSION&&value.home===undefined&&value.homePosition!==undefined&&!validateSave(value)){
-    const legacy=createDefaultHome();legacy.furniture=legacy.furniture.filter(p=>p.kind!=='woodStove');
+    const legacy=createDefaultHome();legacy.furniture=legacy.furniture.filter(p=>p.kind!=='woodStove').map(p=>p.id==='home-shelf-2'?{...p,x:8,y:2}:p);
     if(validateSave({...value,home:legacy}))value={...value,home:legacy};
+  }
+  // A estante padrão antiga cobria a janela. Só move essa posição antiga;
+  // casas reorganizadas mantêm suas peças. Testa o save inteiro para preservar
+  // o espaço do jogador e visitantes, sem recolher móveis ou perder conteúdo.
+  if (isRecord(value) && value.version === SAVE_VERSION && validateHome(value.home) && validateSave(value)) {
+    const home = value.home as HomeData;
+    const shelf = home.furniture.find(p => p.id === 'home-shelf-2' && p.kind === 'shelf' && p.x === 8 && p.y === 2);
+    if (shelf) for (const [x, y] of [[9, 7], [8, 6], [1, 7]]) {
+      const next = { ...home, furniture: home.furniture.map(p => p === shelf ? { ...p, x, y } : p) };
+      if (validateHome(next) && validateSave({ ...value, home: next })) { value = { ...value, home: next }; break; }
+    }
   }
   // Cozinha (preview.35): casas salvas antes recebem o fogão a lenha num lugar livre.
   // Cada lugar é testado com o save inteiro, para não cair sobre o jogador dentro de casa.

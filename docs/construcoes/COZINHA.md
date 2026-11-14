@@ -47,7 +47,10 @@ falta, em vez de esconder a receita.
 Gerada no SpriteCook e mantida na resolução original, em `public/assets/visual/kitchen/`;
 os ids estão em `spritecook-assets.json`.
 
-- **Fogão:** guia de estilo foi uma captura do interior da casa.
+- **Fogão:** a primeira arte usou uma captura do interior da casa. Foi substituída
+  pelo conjunto rústico de `public/assets/visual/home-furniture/`, gerado por imagegen
+  com os móveis como referência: ferro, alvenaria creme, chaleira verde e nicho de lenha.
+  A fonte anterior permanece preservada, sem carga em jogo.
 - **Pratos, mel e ovo de pato:** guia de estilo foram os ícones de ovo e leite.
 
 ## Próximas etapas da cozinha

@@ -11,7 +11,7 @@ fs.mkdirSync(out, { recursive: true });
     const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
     page.setDefaultTimeout(120000); page.on('pageerror', (e) => { errors.push(e.message); console.log('JSERROR', e.message); });
     await page.goto('http://127.0.0.1:5190');
-    await page.locator('#new-game').click(); await page.locator('#character-name').fill('Cozinha QA');
+    await page.locator('#new-game').click(); await page.locator('#character-name').fill('Móveis QA');
     await page.getByRole('button', { name: 'Começar minha história' }).click();
     await page.waitForFunction(() => { document.querySelector('[data-skip-intro]:not([hidden]):not([disabled])')?.click(); return document.querySelector('#ui')?.dataset.area === 'property'; });
     await page.evaluate(async () => {
@@ -22,8 +22,21 @@ fs.mkdirSync(out, { recursive: true });
     await page.waitForTimeout(4300);
     const furniture = await page.evaluate(() => v.homeView.objects.filter(o => o.getData('homeFurnitureId')).map(o => ({id:o.getData('homeFurnitureId'), key:o.texture.key, w:o.displayWidth, h:o.displayHeight, sourceWidth:o.width, uniform:Math.abs(o.scaleX-o.scaleY)<0.00001})));
     assert.equal(furniture.length, 7);
+    assert.ok(furniture.find(o => o.id === 'home-chair-4').h <= 42);
+    assert.equal(await page.evaluate(() => v.home.data.furniture.find(p=>p.kind==='shelf').y), 7);
     assert.ok(furniture.every(o => o.sourceWidth > 100 && o.uniform));
     await page.screenshot({path: `${out}/casa-moveis.png`});
+    const styles = [];
+    for (const [floor, wall, name] of [['Madeira escura', 'Verde sálvia', 'escura-salvia'], ['Pedra recuperada', 'Argila suave', 'pedra-argila'], ['Madeira clara', 'Reboco creme', 'clara-creme']]) {
+      await page.keyboard.press('h'); await page.waitForSelector('.home-editor');
+      await page.locator('.home-floor-styles').getByRole('button', { name: floor, exact: true }).click();
+      await page.locator('.home-wall-styles').getByRole('button', { name: wall, exact: true }).click();
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(150);
+      styles.push(await page.evaluate(() => ({floor:v.home.data.floor,wall:v.home.data.wall,key:v.homeView.objects[0].texture.key})));
+      await page.screenshot({path: `${out}/casa-${name}.png`});
+    }
+    assert.deepEqual(styles.map(s=>[s.floor,s.wall]), [['dark','sage'],['stone','clay'],['oak','cream']]);
     await page.keyboard.press('h');
     await page.waitForSelector('.home-editor');
     await page.locator('[data-home-x="2"][data-home-y="6"]').click();
@@ -39,7 +52,7 @@ fs.mkdirSync(out, { recursive: true });
     await page.evaluate(() => { v.persist(); v.leaveHome(); v.enterHome(); });
     assert.equal(await page.evaluate(() => v.home.data.furniture.find(f => f.kind === 'plant').x),1);
     await page.screenshot({path: `${out}/casa-reorganizada.png`});
-    fs.writeFileSync(`${out}/validacao.json`, JSON.stringify({furniture,layout,errors},null,2));
+    fs.writeFileSync(`${out}/validacao.json`, JSON.stringify({furniture,styles,layout,errors},null,2));
     assert.deepEqual(errors, []); console.log('QA dos móveis: OK');
   } finally { await browser.close(); }
 })().catch((e) => { console.error(e); process.exitCode = 1; });

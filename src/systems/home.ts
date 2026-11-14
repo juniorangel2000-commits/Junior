@@ -65,7 +65,7 @@ export function createDefaultHome(): HomeData {
     floor: 'oak', wall: 'cream',
     furniture: [
       { id: 'home-bed-1', kind: 'bed', x: 2, y: 2 },
-      { id: 'home-shelf-2', kind: 'shelf', x: 8, y: 2 },
+      { id: 'home-shelf-2', kind: 'shelf', x: 9, y: 7 },
       { id: 'home-table-3', kind: 'table', x: 7, y: 4 },
       { id: 'home-chair-4', kind: 'chair', x: 6, y: 4 },
       { id: 'home-rug-5', kind: 'rug', x: 4, y: 5 },

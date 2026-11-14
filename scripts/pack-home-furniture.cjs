@@ -42,3 +42,7 @@ fs.writeFileSync(root + 'wood-stove.png', PNG.sync.write(stoveCrop));
 const manifest = JSON.parse(fs.readFileSync(root + 'art.json'));
 manifest.stove = { sourceSha256: createHash('sha256').update(stoveBytes).digest('hex'), x: left, y: top, width: stoveCrop.width, height: stoveCrop.height };
 fs.writeFileSync(root + 'art.json', JSON.stringify(manifest, null, 2) + '\n');
+const roomBytes = fs.readFileSync(root + 'room-source.png');
+manifest.room = { sourceSha256: createHash('sha256').update(roomBytes).digest('hex'), width: PNG.sync.read(roomBytes).width, height: PNG.sync.read(roomBytes).height,
+  northWall: [86, 30, 1205, 275], floor: [108, 305, 1160, 775], leftTrim: [86, 305, 22, 775], rightTrim: [1268, 305, 23, 775], threshold: [601, 1005, 172, 76], southLeft: [86, 1080, 514, 36], southRight: [773, 1080, 518, 36] };
+fs.writeFileSync(root + 'art.json', JSON.stringify(manifest, null, 2) + '\n');
