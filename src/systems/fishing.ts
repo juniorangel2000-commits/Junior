@@ -4,6 +4,7 @@ import {BAITS,FISH_HABITS,rodControlBonus,speciesWeight,recordFishingReward,type
 import type {SaveData} from '../types';
 import {Inventory} from './inventory';
 import {createVillageProgress} from '../data/village-progress';
+import {spendVigor} from './food-effects';
 export type FishingPhase='waiting'|'bite'|'fighting'|'caught'|'escaped'|'cancelled';
 export const FISHING_RULES={waitMin:10,waitMax:20,hookSeconds:3,maxFightSeconds:45,vigorCost:3} as const;
 const clamp=(v:number,min=0,max=1)=>Math.max(min,Math.min(max,v));
@@ -19,11 +20,11 @@ export class FishingSession {
  private target=.5;
  private turn=0;
  private swimAge=0;
- constructor(readonly skill:number,readonly net=false,accessory=false,private random:()=>number=Math.random,habitat:keyof typeof FISHING_HABITATS='lake',readonly equipment:{rodTier?:number;bait?:BaitStyle;time?:number;day?:number}={}){
+ constructor(readonly skill:number,readonly net=false,accessory=false,private random:()=>number=Math.random,habitat:keyof typeof FISHING_HABITATS='lake',readonly equipment:{rodTier?:number;bait?:BaitStyle;time?:number;day?:number;bandBonus?:number}={}){
   this.waitSeconds=FISHING_RULES.waitMin+clamp(random())*(FISHING_RULES.waitMax-FISHING_RULES.waitMin);
   const chance=clamp(random()),rules=FISHING_HABITATS[habitat],rare=rules.rare&&chance<.04+clamp(skill,0,2)*.04+(accessory?.03:0);
   this.reward=rollFishingReward(rare,net,random,rules.trash,id=>speciesWeight(id,equipment.time??720,equipment.day??1,equipment.bait??'worm'));this.rare=this.reward.kind==='fish'&&rare;
-  this.bandSize=.28+(clamp(skill,1,2)-1)*.08+(net?.05:0)+rodControlBonus(equipment.rodTier??0,net);
+  this.bandSize=.28+(clamp(skill,1,2)-1)*.08+(net?.05:0)+rodControlBonus(equipment.rodTier??0,net)+(equipment.bandBonus??0);
  }
  hook():boolean{if(this.phase!=='bite')return false;this.phase='fighting';return true;}
  cancel():void{if(this.phase!=='caught'&&this.phase!=='escaped')this.phase='cancelled';}
@@ -63,7 +64,7 @@ export function beginFishingCast(save:SaveData,net:boolean,rare:boolean|FishingR
  const capacity=new Inventory(draft.inventory);
  if(!capacity.transact({bait:baitCost},typeof rare==='boolean'?{[rare?'rareFish':'fish']:net?2:1}:fishingRewardItems(rare)))return{ok:false,message:'Libere espaço na mochila para a captura antes de lançar a linha.'};
  inventory.spend({bait:baitCost});wearInventoryTool(inventory.data,net?'net':'fishingRod');draft.inventory={...inventory.data};
- const p=draft.villageProgress??=createVillageProgress();p.vigor=Math.max(0,p.vigor-FISHING_RULES.vigorCost);
+ draft.villageProgress??=createVillageProgress();spendVigor(draft,FISHING_RULES.vigorCost);
  if(!persist(draft,write))return{ok:false,message:'Não foi possível salvar o lançamento. A isca e o vigor foram preservados.'};
  save.inventory=draft.inventory;save.villageProgress=draft.villageProgress;save.fishingProgress=draft.fishingProgress;return{ok:true,message:''};
 }

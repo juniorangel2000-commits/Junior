@@ -1249,7 +1249,7 @@ export class GameUI {
   }
 
   /** Caderno de receitas do fogão a lenha. */
-  showCookbook(save: () => SaveData, onCook: (id: string) => { ok: boolean; message: string }): void {
+  showCookbook(save: () => SaveData, onCook: (id: string) => { ok: boolean; message: string }, options?: import('./cookbook-ui').CookbookOptions): void {
     if (this.mode !== 'hud' || this.modal) return;
     this.openModal('cookbook');
     const panel = document.createElement('section');
@@ -1258,7 +1258,7 @@ export class GameUI {
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Caderno de receitas');
     this.overlay.append(panel);
-    renderCookbook(panel, save, onCook, () => this.closeModal());
+    renderCookbook(panel, save, onCook, () => this.closeModal(), options);
     panel.querySelector<HTMLButtonElement>('[data-cook]:not([disabled]), [data-cook-close]')?.focus();
   }
 

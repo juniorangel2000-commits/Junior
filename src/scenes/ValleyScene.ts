@@ -1,5 +1,5 @@
 import {MachineView} from '../machine-view';
-import {machinePointBlocked,machineReserved,nearMachine,machineHint,useMachineItem,interactMachine,type MachineRuntime} from '../systems/machines';
+import {machinePointBlocked,machineReserved,nearMachine,machineHint,useMachineItem,interactMachine,type MachineRuntime,nearEmptyOven,loadOven,collectMachine} from '../systems/machines';
 import {cropDefinition,cropFromSeed,cropStage} from '../data/crops';
 import {nearFarmDoor} from '../systems/farm-interior';
 import {FIELDS_ENTRY,PROPERTY_FIELDS_EXIT,propertyFieldsApproach} from '../data/open-fields';
@@ -102,6 +102,7 @@ import { ToolUse, TOOL_USE_DURATION, type ToolStrike } from '../systems/tool-use
 import { ToolVisual } from '../tool-visual';
 import { isAnimatedTool } from '../data/tool-art';
 
+import {playerSpeedFactor} from '../systems/food-effects';
 const DEFAULT_PROFILE: CharacterProfile = { name: 'Viajante', skin: '#d9a276', hairStyle: 'preso', hairColor: '#754323', outfit: '#638a9d' };
 
 export class ValleyScene extends Phaser.Scene {
@@ -1205,6 +1206,8 @@ export class ValleyScene extends Phaser.Scene {
       const p=explicitTile??this.targetTile(),result=placeFarmBase(this.farmRuntime,this.tool.slice(5)as FarmKind,p.x,p.y);this.ui.toast(result.message);if(result.ok){gameAudio.play('build');this.selectTool('hand');}return;
     }
     if(this.canPlay()&&!this.inHome&&!this.player.isSwimming&&this.tool==='hand'){
+      const oven=nearEmptyOven(this.machineRuntime);
+      if(oven){this.ui.showCookbook(()=>this.getFishingState(),id=>{const r=loadOven(this.machineRuntime,oven.id,id);if(r.ok){gameAudio.play('craft');this.updateHUD();}return r;},{station:'oven',onPickUp:()=>collectMachine(this.machineRuntime,oven.id)});return;}
       const result=interactMachine(this.machineRuntime,this.ui.getActiveItem());if(result){this.ui.toast(result.message);return;}
       const door=nearFarmDoor(this.state,this.player);if(door){this.enterFarmInterior(door.id);return;}
       const site=nearFarmSite(this.state,this.player);if(site){showFarmConstruction(this.ui,this.farmRuntime,site.id,id=>this.enterFarmInterior(id));return;}
@@ -1644,7 +1647,7 @@ export class ValleyScene extends Phaser.Scene {
     }
     this.cameras.main.setLerp(1 - Math.exp(-9 * delta));
     const previousX = this.player.x, previousY = this.player.y;
-    this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta, this.movementBlocked, this.movementBlockedPoint, !this.toolUse.active&&!this.world.well?.busy,this.swimmingPoint,this.allowLeashMovement);
+    this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(delta, this.movementBlocked, this.movementBlockedPoint, !this.toolUse.active&&!this.world.well?.busy,this.swimmingPoint,this.allowLeashMovement);
     if(!this.player.isSwimming&&!this.toolUse.active&&!this.world.well?.busy&&this.homePassage.update({x:previousX,y:previousY},this.player,this.inHome?HOME_INTERIOR_DOORWAY:HOME_OUTDOOR_DOORWAY)){
       if(this.inHome||!this.state.animalEscort){this.changeHomeScene(!this.inHome);return;}
       if(!this.homeDoorWarningShown){this.ui.toast('Conclua a condução do animal antes de entrar em casa.');this.homeDoorWarningShown=true;}

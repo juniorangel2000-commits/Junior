@@ -1,5 +1,5 @@
-import {learnNextDish,nextDishLesson,knownDishes} from './kitchen';
-import {DISH_RECIPES} from '../data/kitchen';
+import {learnNextDish,nextDishLesson,knownDishes,dishOfDay,sellDishOfDay,DISH_OF_DAY_FACTOR} from './kitchen';
+import {HELENA_DISHES} from '../data/kitchen';
 import {MACHINE_IDS,MACHINES} from '../data/machines';
 import {HARVEST_BASKET_COST,HARVEST_BASKET_FEE,HARVEST_BASKET_DESCRIPTION} from '../data/harvest-basket';
 import {ITEMS} from '../data/items';
@@ -55,14 +55,20 @@ add('shelter-carpentry','tobias','Preparar peças para a casinha','30 C, 2 tronc
 add('shelter-textiles','celina','Preparar tecidos para os pets','20 C e 8 fibras: recebe 4 tecidos e 2 cordas.',(s,i)=>{pay(s,i,20,{fiber:8});requireThat(i.transact({},{cloth:4,cord:2}),'Libere espaço na mochila.');});
 add('shelter-fittings','icaro','Preparar fixadores para a casinha','12 C e 4 sucatas: recebe 2 peças metálicas.',(s,i)=>{pay(s,i,12,{scrap:4});requireThat(i.transact({},{metalPart:2}),'Libere espaço na mochila.');});
 for(const id of MACHINE_IDS){const d=MACHINES[id];add(`learn-${id}`,d.npc,`Aprender ${d.name.toLowerCase()}`,`${d.learnFee} C. Aprenda o projeto para montar na bancada e instalar na fazenda.`,(s,i)=>{requireThat(!s.villageProgress!.recipes.includes(id),'Você já conhece este projeto.');pay(s,i,d.learnFee);s.villageProgress!.recipes.push(id);});}
+add('dish-of-day','helena','Prato do dia','A Helena paga o dobro por 1 unidade do prato do dia, uma vez por dia.',(s,i)=>{sellDishOfDay(s,i,coins=>reward(s,coins));});
 add('learn-dish','helena','Aprender receita da pousada','Helena ensina uma receita por vez, para cozinhar no fogão a lenha de casa.',(s,i)=>{learnNextDish(s,coins=>pay(s,i,coins));});
 export function listVillageServices(npc:string,save?:SaveData):VillageServiceOffer[]{
  return Object.entries(services).filter(([,s])=>s.npc===npc).map(([id,s])=>{
   const offer:VillageServiceOffer={id,label:s.label,description:s.description};if(!save)return offer;
+  if(id==='dish-of-day'){
+   const r=dishOfDay(save.day),sold=save.kitchen?.dishOfDaySold===save.day,have=save.inventory[r.id]??0;
+   offer.label=`Prato do dia: ${r.name.toLowerCase()}`;offer.item=r.id;offer.actionLabel=sold?'Já vendido hoje':`Vender (${r.price*DISH_OF_DAY_FACTOR} C)`;
+   offer.disabled=sold||have<1;offer.description=sold?'A Helena já comprou o prato do dia. Amanhã ela pede outro.':`Hoje a pousada paga ${r.price*DISH_OF_DAY_FACTOR} C por 1 ${r.name.toLowerCase()} (o dobro do normal). Na mochila: ${have}.`;
+  }
   if(id==='learn-dish'){
-   const r=nextDishLesson(save),known=knownDishes(save).length;
+   const r=nextDishLesson(save),known=knownDishes(save).filter(d=>HELENA_DISHES.includes(d)).length;
    offer.label=r?`Aprender: ${r.name.toLowerCase()}`:'Receitas da pousada';offer.disabled=!r||(save.villageEconomy?.coins??0)<r.learnFee;offer.actionLabel=r?`Aprender (${r.learnFee} C)`:'Todas aprendidas';
-   offer.description=r?`${r.learnFee} C. Ingredientes: ${Object.entries(r.ingredients).map(([item,n])=>`${n} ${ITEMS[item as ItemId].name.toLowerCase()}`).join(', ')}, mais 1 madeira de lenha. Recupera ${r.vigor} de vigor. Receitas conhecidas: ${known}/${DISH_RECIPES.length}.`:`Você conhece as ${DISH_RECIPES.length} receitas. Cozinhe no fogão a lenha de casa.`;
+   offer.description=r?`${r.learnFee} C. Ingredientes: ${Object.entries(r.ingredients).map(([item,n])=>`${n} ${ITEMS[item as ItemId].name.toLowerCase()}`).join(', ')}, mais 1 madeira de lenha. Recupera ${r.vigor} de vigor. Receitas da pousada: ${known}/${HELENA_DISHES.length}.${r.station==='oven'?' Esta vai ao forno de barro.':''}`:`Você conhece as ${HELENA_DISHES.length} receitas da pousada.`;
   }
   if(id==='create-harvest-basket'){
    offer.item='harvestBasket';offer.actionLabel='Preparar 1 cesta';

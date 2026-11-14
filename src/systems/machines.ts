@@ -1,5 +1,6 @@
 import type {SaveData,ItemId,TilePoint} from '../types';
 import {MACHINES,MACHINE_RECIPES,isMachine,machineIngredient,type MachineKind} from '../data/machines';
+import {cookCheck} from './kitchen';
 import {FARM_INTERIORS,hasInterior} from '../data/farm-interiors';
 import {farmReserved} from './farm-construction';
 import {Inventory} from './inventory';
@@ -63,6 +64,7 @@ export function machinePlacementReason(rt:MachineRuntime,s:SaveData,m:PlacedMach
  return '';
 }
 export function placeMachine(rt:MachineRuntime,kind:MachineKind){return commit(rt,s=>{
+ if(kind==='clayOven'&&rt.space()!=='property')return fail('O forno de barro fica ao ar livre, na Propriedade.');
  const p=rt.player(),dx=Math.sign(p.facing.x),dy=Math.sign(p.facing.y),width=MACHINES[kind].width;
  const m:PlacedMachine={id:s.machines?.nextId??1,kind,space:rt.space()!,x:Math.floor(p.x/32)+dx-(dx<0?width-1:0),y:Math.floor(p.y/32)+dy};
  const reason=machinePlacementReason(rt,s,m);if(reason)return fail(reason);
@@ -75,7 +77,7 @@ function accessible(rt:MachineRuntime,s:SaveData,id:number){const m=s.machines?.
 export function loadMachine(rt:MachineRuntime,id:number,item:ItemId){return commit(rt,s=>{
  const m=accessible(rt,s,id);if(!m)return fail('Aproxime-se da máquina pelo lado livre.');
  if(m.job)return fail(machineReady(s,m)?'Recolha o produto pronto antes de colocar outra carga.':'A máquina já está trabalhando.');
- const recipe=MACHINE_RECIPES.find(r=>r.machine===m.kind&&r.input===item);if(!recipe)return fail('Esta máquina não trabalha com esse ingrediente.');
+ const recipe=MACHINE_RECIPES.find(r=>!r.ingredients&&r.machine===m.kind&&r.input===item);if(!recipe)return fail('Esta máquina não trabalha com esse ingrediente.');
  const i=new Inventory(s.inventory);if(!i.spend({[item]:recipe.amount}))return fail(`Leve ${recipe.amount} × ${ITEM_NAMES[item]} para carregar.`);
  const startedAt=groundClock(s);m.job={recipe:recipe.id,startedAt,readyAt:startedAt+recipe.minutes};s.inventory=i.data;
  return{ok:true,message:MACHINES[m.kind].name+' trabalhando.'};
@@ -88,6 +90,18 @@ export function collectMachine(rt:MachineRuntime,id:number){return commit(rt,s=>
  }
  if(!i.transact({},{[m.kind]:1}))return fail('Libere espaço na mochila para recolher a máquina.');s.inventory=i.data;s.machines!.items=s.machines!.items.filter(x=>x.id!==id);
  return{ok:true,message:MACHINES[m.kind].name+' guardada na mochila.'};
+});}
+/** Forno vazio perto do jogador: E abre o caderno na aba do forno. */
+export function nearEmptyOven(rt:MachineRuntime):PlacedMachine|undefined{const m=nearMachine(rt);return m?.kind==='clayOven'&&!m.job?m:undefined;}
+/** Começa uma fornada com os ingredientes da receita e 1 madeira; salva antes de aplicar. */
+export function loadOven(rt:MachineRuntime,id:number,dish:string){return commit(rt,s=>{
+ const m=accessible(rt,s,id);if(!m||m.kind!=='clayOven')return fail('Aproxime-se do forno.');
+ if(m.job)return fail(machineReady(s,m)?'Recolha a fornada pronta antes de assar outra.':'O forno já está assando.');
+ const recipe=MACHINE_RECIPES.find(r=>r.machine==='clayOven'&&r.output===dish);if(!recipe?.ingredients)return fail('Esta receita não vai ao forno.');
+ const check=cookCheck(s,dish,'oven');if(!check.ok)return check;
+ const i=new Inventory(s.inventory);if(!i.spend(recipe.ingredients))return fail('Faltam ingredientes.');
+ const startedAt=groundClock(s);m.job={recipe:recipe.id,startedAt,readyAt:startedAt+recipe.minutes};s.inventory=i.data;
+ return{ok:true,message:`${ITEM_NAMES[recipe.output]} no forno. Fica pronto em meio dia.`};
 });}
 export function useMachineItem(rt:MachineRuntime,item:ItemId):{ok:boolean;message:string}|undefined{
  if(isMachine(item))return placeMachine(rt,item);
@@ -102,6 +116,7 @@ export function machineHint(s:SaveData,m:PlacedMachine):string{
  if(m.job){const r=MACHINE_RECIPES.find(r=>r.id===m.job!.recipe)!;if(machineReady(s,m))return `${ITEM_NAMES[r.output]} · E recolher`;
  const minutes=Math.max(1,Math.ceil(m.job.readyAt-groundClock(s)));return `${name} trabalhando · ${Math.floor(minutes/60)}h ${minutes%60}min`;
  }
+ if(m.kind==='clayOven')return name+' · E escolher a fornada no caderno';
  return name+' · use '+MACHINE_RECIPES.filter(r=>r.machine===m.kind).map(r=>`${r.amount} ${ITEM_NAMES[r.input].toLowerCase()}`).join(' ou ')+' · E guardar máquina';
 }
 export function validMachineState(value:unknown,save:SaveData):value is MachineState{

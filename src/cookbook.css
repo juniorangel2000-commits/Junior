@@ -18,3 +18,8 @@
 .cookbook-status{margin-top:12px;padding:10px 12px;background:#e2e6d1;border:1px solid #bcc7a5;border-radius:4px;font-size:12px;color:#435a3d}
 .cookbook-status.is-error{background:#f0d9c3;border-color:#cfaa89;color:#87472e}
 @media(max-width:520px){.cookbook-card{padding:16px}.cookbook-list{grid-template-columns:1fr}}
+.cookbook-effect{display:block;color:#6d5a2e!important;margin-top:2px}
+.cookbook-active{margin:0 0 12px;padding:8px 12px;background:#efe4bf;border:1px solid #d1bc84;border-radius:4px;font-size:12px;color:#5e4b22}
+.cookbook-recipe.is-hidden{opacity:.75;background:#e4e2cf}
+.cookbook-secret{width:40px;height:40px;display:grid;place-items:center;border:2px dashed #a99a70;border-radius:6px;font:22px Georgia,serif;color:#8f7f53;flex:none}
+.cookbook-pickup{margin-top:10px;min-height:32px;font-size:11px}

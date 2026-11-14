@@ -45,6 +45,8 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   butterChurn:{name:'Batedeira de manteiga',description:'Instale e carregue 2 leites para preparar manteiga em meio dia.'},
   spinningWheel:{name:'Roca',description:'Instale e use 1 lã para fiar um novelo em um dia.'},
   loom:{name:'Tear',description:'Instale e use 2 novelos para tecer 1 tecido em um dia.'},
+  clayOven:{name:'Forno de barro',description:'Instale ao ar livre, na Propriedade. E abre o caderno: pães e bolos assam em meio dia, com 1 madeira de lenha.'},
+  campfire:{name:'Fogueira portátil',description:'Use pela mochila ao ar livre para assar peixe, milho ou batata-doce na hora. Cada prato gasta 1 madeira.'},
   stoneMill:{name:'Moinho de pedra',description:'Instale e moa 2 trigos, milhos ou aveias em meio dia.'},
   cheese:{name:'Queijo',description:'Preparado na queijeira com leite. Helena compra.'},
   goatCheese:{name:'Queijo de cabra',description:'Preparado na queijeira com leite de cabra. Helena compra.'},
@@ -55,7 +57,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   oatFlakes:{name:'Aveia em flocos',description:'Aveia preparada no moinho de pedra. Helena compra.'},
   honey:{name:'Mel',description:'Ingrediente de várias receitas. Ainda não há colmeias: o mel chega com as abelhas.'},
   duckEgg:{name:'Ovo de pato',description:'Ingrediente da torta de morango. Ainda não há criação de patos.'},
-  ...Object.fromEntries(DISH_RECIPES.map(r=>[r.id,{name:r.name,description:`Prato do fogão a lenha. Recupera ${r.vigor} de vigor. Helena compra.`}])) as Record<import('./kitchen').DishId,{name:string;description:string}>,
+  ...Object.fromEntries(DISH_RECIPES.map(r=>[r.id,{name:r.name,description:`Prato ${({stove:'do fogão a lenha',oven:'do forno de barro',campfire:'da fogueira'})[r.station??'stove']}. Recupera ${r.vigor} de vigor. Helena compra.`}])) as Record<import('./kitchen').DishId,{name:string;description:string}>,
   egg:{name:'Ovo',description:'Posto pelas galinhas alimentadas. Recolha nos ninhos do galinheiro. Helena e Rosa compram.'},
   milk:{name:'Leite',description:'Ordenhado das vacas alimentadas, dentro do curral, com o balde. Helena compra.'},
   goatMilk:{name:'Leite de cabra',description:'Ordenhado das cabras alimentadas no aprisco, com o balde. Helena compra.'},
@@ -100,7 +102,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
 
 /** Only these stock fields may be absent in a save from before the village
  * services update. Missing any older field still indicates a corrupt save. */
-export const VILLAGE_ITEM_IDS=['harvestBasket','honey','duckEgg',...DISH_IDS,...NEW_CROP_ITEM_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
+export const VILLAGE_ITEM_IDS=['harvestBasket','honey','duckEgg',...DISH_IDS,...NEW_CROP_ITEM_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','clayOven','campfire','cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
 
 export const ITEM_IDS = Object.keys(ITEMS) as ItemId[];
 export const ITEM_NAMES = Object.fromEntries(ITEM_IDS.map(id => [id, ITEMS[id].name])) as Record<ItemId, string>;

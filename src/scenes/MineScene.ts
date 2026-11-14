@@ -46,6 +46,8 @@ import {ToolVisual} from '../tool-visual';
 import {toolCondition} from '../systems/economy';
 import {MINE_ROOM,MINE_NAME,MINE_EXIT,MINE_TUNNELS,MINE_SOLIDS} from '../data/mine-room';
 import {highlandMineApproach,highlandResumePosition} from '../data/highland';
+import {playerSpeedFactor,hasFoodEffect,MINE_DAMAGE_SCALE} from '../systems/food-effects';
+import {discoverDishAndSave,discoveryMessage} from '../systems/kitchen';
 interface MineStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 /** Shared exploration controls for the separate reception room and continuous mining scene. */
 export class MineScene extends Phaser.Scene{
@@ -69,6 +71,8 @@ export class MineScene extends Phaser.Scene{
   this.view=this.miningMode?new UndergroundView(this,()=>this.state.underground!,false):new MineRoomView(this,{x:UNDERGROUND.entryX,y:UNDERGROUND.entryY});this.hazardArt=this.miningMode?new UndergroundHazardArt(this,()=>this.state.underground!):undefined;this.darkness=this.miningMode?new UndergroundLighting(this,()=>this.state.underground!):undefined;this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
   const saved=this.state.mineInterior,p=saved&&!this.blockedPoint(saved.x,saved.y)?saved:this.miningMode?MINING_ENTRY:undergroundArrival();this.player=new Player(this,this.state.profile,p.x,p.y,'mine-player');this.player.facing=directionVector(p.direction??'up');this.player.update(0,this.blockedTile,this.blockedPoint,false);
   this.zoom=loadCameraZoom();if(this.miningMode)this.cameras.main.setBounds(0,0,UNDERGROUND.width*32,MINING_HEIGHT);else this.cameras.main.setBounds(UNDERGROUND.entryX,UNDERGROUND.entryY,MINE_ROOM.width,MINE_ROOM.height);this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
+  // Primeira expedição na Mineração: a anotação perdida do caldo do mineiro.
+  if(this.miningMode)this.time.delayedCall(1200,()=>{const r=discoverDishAndSave(this.state,'mine',()=>this.persist());if(r)this.ui.toast('Entre as pedras há uma anotação antiga. '+discoveryMessage(r));});
   this.bentoTravelView=new BentoTravelView(this,()=>this.state,()=>this.player,()=>this.miningMode?'mining':'mine',this.ui,undefined,this.bentoWorkRuntime);this.events.once('shutdown',()=>this.bentoTravelView?.destroy());if(this.miningMode){ensureMineMissions(this.state);this.missionView=new MineMissionView(this,()=>this.state,this.mineMissionRuntime,()=>!this.paused&&!this.incapacitated&&!this.ui.isModalOpen()&&!this.leaving&&!this.toolUse.active,m=>this.ui.toast(m));this.events.once('shutdown',()=>{this.missionView?.destroy();this.missionView=undefined;});}this.missionElapsed=0;this.ui.showHUD('highland');document.querySelector<HTMLElement>('#ui')!.dataset.interior=this.miningMode?'mining':'mine';this.ui.setQuickbar(this.state.quickbar??emptyQuickbar());this.updateHUD();
   this.input.keyboard!.on('keydown',this.key,this);this.input.on('pointerdown',this.pointer,this);this.input.on('wheel',this.wheel,this);this.scale.on('resize',this.applyCamera,this);
   window.addEventListener('pagehide',this.save);window.addEventListener('beforeunload',this.save);window.addEventListener('blur',this.blur);document.addEventListener('visibilitychange',this.visibility);
@@ -188,7 +192,8 @@ export class MineScene extends Phaser.Scene{
  }
  update(_time:number,ms:number):void{
   if(!this.player)return;this.view.update(this.player);this.darkness?.update(this.player,Math.min(.1,ms/1000),this.state.inventory.lantern>0);if(this.paused||this.incapacitated||this.leaving||this.ui.isModalOpen()||document.hidden){this.hazardArt?.update(this.player,0);return;}
-  const dt=Math.min(.1,ms/1000),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(dt,this.blockedTile,this.blockedPoint,!this.toolUse.active);
+  const dt=Math.min(.1,ms/1000),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(dt,this.blockedTile,this.blockedPoint,!this.toolUse.active);
+  this.hazards.damageScale=hasFoodEffect(this.state,'beanTropeiro')?MINE_DAMAGE_SCALE:1;
   if(this.miningMode)this.hazardEvents(this.hazards.advance(dt,this.player,this.state.bentoTravel?.trip?.area==='mining'?this.state.bentoTravel.trip:undefined));this.hazardArt?.update(this.player,dt);if(this.miningMode&&this.hazards.health<=0){this.updateHUD();this.defeat();return;}
   const strike=this.toolUse.advance(dt);if(strike)this.hitMiningBlock(strike.target);
   const active=this.toolUse.current;if(active)this.toolVisual?.show('pickaxe',active.direction,this.player.x,this.player.y,this.toolUse,toolCondition(this.state,'pickaxe').tier,this.player.sprite);else this.toolVisual?.hide();

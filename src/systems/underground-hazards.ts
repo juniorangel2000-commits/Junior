@@ -63,11 +63,13 @@ export class UndergroundHazards{
  get health(){return ensureMineHazards(this.mine()).hp;}
  get exposure(){return this.exposed;}
  noise(origin:TilePoint){return registerMineNoise(this.mine(),origin);}
+ /** Escala do dano recebido pelo jogador (feijão tropeiro: 0,65). */
+ damageScale=1;
  advance(seconds:number,player?:TilePoint,npc?:TilePoint):MineHazardEvent[]{
   if(!Number.isFinite(seconds)||seconds<=0)return[];
   const events:MineHazardEvent[]=[];
   // Bounded steps keep contact grace, dive impacts and warning transitions fair at low FPS.
-  for(let left=seconds;left>1e-8;){const dt=Math.min(.05,left);left-=dt;this.step(dt,player,events,npc);if(player&&this.health<=0)break;}
+  for(let left=seconds;left>1e-8;){const dt=Math.min(.05,left);left-=dt;const h=ensureMineHazards(this.mine()),before=h.hp;this.step(dt,player,events,npc);if(this.damageScale!==1&&h.hp<before)h.hp=before-(before-h.hp)*this.damageScale;if(player&&this.health<=0)break;}
   return events;
  }
  private step(dt:number,player:TilePoint|undefined,events:MineHazardEvent[],npc?:TilePoint):void{

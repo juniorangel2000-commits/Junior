@@ -84,6 +84,7 @@ import {freeArrival,actorsOverlap} from '../systems/actor-arrival';
 import {DEVELOPMENT_TOOLS} from '../development-tools';
 import type {MapArea} from '../data/default-maps';
 
+import {playerSpeedFactor} from '../systems/food-effects';
 export interface VillageStart {resumeCityForest?:boolean;save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 type Villager={data:VillageNPC;sprite:Phaser.GameObjects.Sprite;frames:number};
 
@@ -101,6 +102,7 @@ export class VillageScene extends Phaser.Scene {
  private helpers?:SurvivorResidentsView;
  private state!:SaveData;
  getFishingState():SaveData { this.state.inventory={...this.inventory.data};return this.state; }
+ syncInventory(inventory:SaveData['inventory']):void{for(const k of Object.keys(this.inventory.data))delete (this.inventory.data as unknown as Record<string,unknown>)[k];Object.assign(this.inventory.data,structuredClone(inventory));}
  private ui!:GameUI;
  private world!:VillageWorld;
  private player!:Player;
@@ -581,7 +583,7 @@ export class VillageScene extends Phaser.Scene {
  update(time:number,ms:number):void {
   if(!this.player)return;this.daylight.update(this.state.time,this.inShop,this.state.day);this.world.update(time,this.inShop?undefined:this.player);this.world.updateLighting(this.state.time);
   if(this.paused||this.leaving||this.changingRoom||this.shop?.isOpen||this.ui.isModalOpen()||document.hidden)return;
-  const delta=Math.min(ms/1000,.1),previous={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta,this.movementBlocked,this.movementBlockedPoint,true,this.swimmingPoint,this.allowPierStep);
+  const delta=Math.min(ms/1000,.1),previous={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(delta,this.movementBlocked,this.movementBlockedPoint,true,this.swimmingPoint,this.allowPierStep);
   if(this.inShop)this.centerInteriorCamera();
   if(this.inCommunity&&this.communityPassage.update(previous,this.player,COMMUNITY_ROOM_EXIT)){this.changeCommunityRoom(false);return;}
   if(!this.inCommunity&&!this.merchantRoom&&this.homePassage.update(previous,this.player,this.inBlacksmith?smithDoor(this.smithLayout):BLACKSMITH_DOOR)){this.changeBlacksmithRoom();return;}

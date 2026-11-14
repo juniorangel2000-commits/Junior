@@ -49,7 +49,8 @@ import {createVillageEconomy,validateVillageEconomy} from '../data/village-comme
 import {createVillageProgress,validateVillageProgress,validateVillageInstallations,validateVillageSurvivors} from '../data/village-progress';
 import {VILLAGE_ITEM_IDS} from '../data/items';
 import {validAnimalCare} from './animal-production';
-import {withWoodStove} from './kitchen';
+import {withWoodStove,validKitchenState} from './kitchen';
+import {validFoodEffect} from './food-effects';
 import {blacksmithRoomPosition,previousBlacksmithPosition,BLACKSMITH_INSIDE,validateBlacksmithHome,BLACKSMITH_ROOM} from '../data/blacksmith-interior';
 import {validBentoRoutine} from './bento-routine';
 import {validMerchantRoutines} from './merchant-routine';
@@ -90,6 +91,8 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.farmConstruction!==undefined&&!validFarmConstruction(value.farmConstruction,value.recruitedAnimals))return false;
   if(value.machines!==undefined&&!validMachineState(value.machines,value as unknown as SaveData))return false;
   if(value.animalCare!==undefined&&!validAnimalCare(value.animalCare,typeof value.day==='number'?value.day:0))return false;
+  if(value.foodEffect!==undefined&&!validFoodEffect(value.foodEffect))return false;
+  if(value.kitchen!==undefined&&!validKitchenState(value.kitchen,typeof value.day==='number'?value.day:0))return false;
   if(value.npcSocial!==undefined&&!validNpcSocial(value.npcSocial,typeof value.day==='number'?value.day:999999))return false;
   if(value.bentoTravel!==undefined&&!validBentoTravel(value.bentoTravel,typeof value.day==='number'?value.day:999999))return false;
   if(value.mineRescue!==undefined&&!validMineRescue(value.mineRescue,typeof value.day==='number'?value.day:999999))return false;

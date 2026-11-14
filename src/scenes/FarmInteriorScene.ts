@@ -28,6 +28,7 @@ import {animalsInside,farmDoorExit} from '../systems/farm-interior';
 import type {FarmSite} from '../systems/farm-construction';
 import {drawFarmInterior,preloadFarmInteriorArt,type InteriorView} from '../farm-interior-art';
 import {processAnimalProduction,productionSummary,fillTrough,collectEgg,canMilk,milkCow,milkReady,woolReady,canShear,shearSheep,SHEARING_SECONDS,MILKING_SECONDS,TROUGH_CAPACITY} from '../systems/animal-production';
+import {playerSpeedFactor} from '../systems/food-effects';
 interface InteriorStart{save:SaveData;ui:GameUI;siteId:number;onReturn:(save:SaveData,title?:boolean)=>void}
 interface InteriorAnimal{id:string;brain:AnimalBrain;sprite:Phaser.GameObjects.Sprite;shadow:Phaser.GameObjects.Ellipse;badge?:Phaser.GameObjects.Image}
 /** Interior do galinheiro ou do curral. A Propriedade fica dormindo enquanto você está aqui;
@@ -153,7 +154,7 @@ export class FarmInteriorScene extends Phaser.Scene{
  update(_time:number,ms:number):void{
   this.machineView?.update(_time);
   if(!this.player||this.leaving||!this.layout)return;if(this.paused||this.ui.isModalOpen()||document.hidden)return;
-  const dt=Math.min(.1,ms/1000),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;
+  const dt=Math.min(.1,ms/1000),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);
   if(this.careAction)this.updateAnimalCare(dt);else this.player.update(dt,this.blockedTile,this.blocked,true);this.player.sprite.setDepth(this.player.y);
   if(this.passage.update(before,this.player,interiorExit(this.layout))){this.leave();return;}
   this.farming.update(dt,this.state.day);Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state,dt,this.player,this.bentoRuntime);

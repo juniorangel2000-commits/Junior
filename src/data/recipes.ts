@@ -101,6 +101,7 @@ RECIPES.push(
  {id:'windowKit',name:'Janela pronta',description:'Componente de construção.',cost:{board:3,peg:2},output:{windowKit:1}},
  {id:'shears',name:'Tesoura de tosquia',description:'Tesoura de ferro para recolher a lã das ovelhas no aprisco.',cost:{ironIngot:2,handle:1},output:{shears:1},requiresWorkbench:true,requiresTool:'hammer',durationSeconds:2},
  {id:'milkPail',name:'Balde de ordenha',description:'Balde de tábuas com aros de ferro, para ordenhar vacas e cabras nos seus abrigos.',cost:{board:4,ironShard:2},output:{milkPail:1},requiresWorkbench:true,requiresTool:'hammer',durationSeconds:2},
+ {id:'campfire',name:'Fogueira portátil',description:'Pedras e galhos amarrados: monte em qualquer lugar ao ar livre para assar peixe, milho ou batata-doce.',cost:{stone:4,branch:4,cord:1},output:{campfire:1},durationSeconds:1.5},
  {id:'fenceKit',name:'Módulo de cerca',description:'Prepare um trecho de cerca na bancada. Os módulos se conectam automaticamente ao serem colocados.',cost:{wood:3},output:{fenceKit:1},requiresWorkbench:true,requiresTool:'hammer',durationSeconds:1.5}
 );
 

@@ -34,6 +34,7 @@ import {loadCameraZoom,saveCameraZoom,stepCameraZoom} from '../camera-zoom';
 import {LAKE_CITY_ENTRY,LAKE_CITY_EXIT,LAKE_PROPERTY_ENTRY,LAKE_PROPERTY_EXIT,CITY_LAKE_ENTRY,PROPERTY_LAKE_ENTRY,lakeBlockedPoint,lakeWater,lakePier,lakeBridge,lakeDeckAllowsStep,lakeElevationAllowsStep} from '../data/fishing-lake';
 import {FishingLakeWorld,preloadFishingLake} from '../fishing-lake-world';
 
+import {playerSpeedFactor} from '../systems/food-effects';
 interface FishingLakeStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void;fromCity?:boolean}
 export class FishingLakeScene extends Phaser.Scene{
  private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>'fishingLake',(x,y)=>this.blockedPoint(x,y)||this.swimmingPoint(x,y)>0,()=>!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden,()=>{this.updateHUD();});
@@ -204,7 +205,7 @@ export class FishingLakeScene extends Phaser.Scene{
  update(time:number,ms:number):void{
   if(!this.player||this.leaving)return;this.player.sprite.setDepth(cabinActorDepth(this.player.x,this.player.y));this.daylight.update(this.state.time,false,this.state.day);this.world.update(time);
   if(this.paused||this.leaving||this.ui.isModalOpen()||document.hidden)return;
-  const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(dt,this.movementBlockedTile,this.movementBlockedPoint,true,this.swimmingPoint,this.allowCabinStep);this.player.sprite.setDepth(cabinActorDepth(this.player.x,this.player.y));
+  const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(dt,this.movementBlockedTile,this.movementBlockedPoint,true,this.swimmingPoint,this.allowCabinStep);this.player.sprite.setDepth(cabinActorDepth(this.player.x,this.player.y));
   if(this.passage.update(before,this.player,this.state.fishingLakeMapEdits?.points?.exit??LAKE_CITY_EXIT,this.state.fishingLakeMapEdits?.points?.entry??LAKE_CITY_ENTRY)){this.leave();return;}
   if(this.highlandPassage.update(before,this.player,LAKE_HIGHLAND_EXIT,LAKE_HIGHLAND_RETURN)){this.enterHighland();return;}
   if(this.propertyPassage.update(before,this.player,LAKE_PROPERTY_EXIT,LAKE_PROPERTY_ENTRY)){this.leave(false,true);return;}

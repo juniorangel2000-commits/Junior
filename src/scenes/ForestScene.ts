@@ -49,6 +49,7 @@ import { FOREST_ANIMALS, FOREST_ENTRY, ANIMAL_NAMES,forestPathDistance } from '.
 import { gameAudio } from '../audio';
 import { loadCameraZoom, saveCameraZoom, stepCameraZoom } from '../camera-zoom';
 
+import {playerSpeedFactor} from '../systems/food-effects';
 export interface ForestStart { save: SaveData; ui: GameUI; onReturn: (save: SaveData, title?: boolean) => void }
 export class ForestScene extends Phaser.Scene {
  private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>'forest',(x,y)=>this.movementBlockedAt(Math.floor(x/32),Math.floor(y/32))||this.world.waterPointAt(x,y),()=>!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden,()=>{this.updateHUD();});
@@ -310,7 +311,7 @@ export class ForestScene extends Phaser.Scene {
     this.daylight?.update(this.state.time,false,this.state.day);
     if(!this.player||this.paused||this.leaving||this.mapEditor||document.hidden)return;
     const previous={x:this.player.x,y:this.player.y};
-    const delta=Math.min(ms/1000,.1);this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(delta,this.movementBlockedAt,undefined,!this.toolUse.active,this.swimmingPoint,this.allowLeashMovement);this.wildlife?.update(delta,this.player);this.waterfowl?.update(delta,this.player);this.farming.update(delta,this.state.day);if(this.player.isSwimming){this.state.equippedTool='hand';this.toolUse.cancel();this.toolVisual?.hide();}
+    const delta=Math.min(ms/1000,.1);this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(delta,this.movementBlockedAt,undefined,!this.toolUse.active,this.swimmingPoint,this.allowLeashMovement);this.wildlife?.update(delta,this.player);this.waterfowl?.update(delta,this.player);this.farming.update(delta,this.state.day);if(this.player.isSwimming){this.state.equippedTool='hand';this.toolUse.cancel();this.toolVisual?.hide();}
     if(!this.player.isSwimming&&this.exitPassage.update(previous,this.player,this.exit(),this.entry())){
       if(this.wildlife?.canLeave(this.player)??true){this.leave();return;}
       if(!this.exitWarningShown){this.ui.toast('Traga o animal para perto da saída.');this.exitWarningShown=true;}

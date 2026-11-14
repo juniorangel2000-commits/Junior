@@ -7,6 +7,8 @@ import {machineReady,type MachineSpace} from './systems/machines';
 export function preloadMachineArt(scene:Phaser.Scene):void{
  for(const kind of MACHINE_IDS){const f=art.frames[kind],key='machine-'+kind;if(!scene.textures.exists(key))scene.load.spritesheet(key,`assets/visual/machines/${kind}.png`,{frameWidth:f.width,frameHeight:f.height});}
  for(const item of MACHINE_PRODUCTS)if(!scene.textures.exists('machine-product-'+item))scene.load.image('machine-product-'+item,`assets/visual/machines/${item}.png`);
+ // Pães e bolos do forno usam o ícone do prato no balão.
+ for(const r of MACHINE_RECIPES)if(r.machine==='clayOven'&&!scene.textures.exists('machine-product-'+r.output))scene.load.image('machine-product-'+r.output,`assets/visual/kitchen/dishes/${r.output}.png`);
 }
 export class MachineView{
  private objects=new Map<number,{body:Phaser.GameObjects.Sprite;badge:Phaser.GameObjects.Image}>();

@@ -18,6 +18,15 @@
     "dishes/dulceDeLeche.png": "6cd04e63-aab8-4080-9448-0fbebd5de3bc",
     "dishes/cheeseHoneyBread.png": "953cf5fe-9db5-4e53-a4f2-941bf9c0807d",
     "dishes/watermelonJuice.png": "9faac826-2ce9-4604-b246-0353c71c4fb1",
-    "dishes/chamomileTea.png": "3e558463-aa9c-4da3-a7f7-c5d75521dd8f"
+    "dishes/chamomileTea.png": "3e558463-aa9c-4da3-a7f7-c5d75521dd8f",
+    "campfire.png": "07b5069c-3ff3-4e5b-8b6a-2dbd770e365e",
+    "dishes/heartyBreakfast.png": "77d95dbf-62b1-4756-ae96-13f780d6d729",
+    "dishes/roastedFish.png": "52dab0d0-feef-4929-9e2a-2c59bcf0314f",
+    "dishes/roastedCorn.png": "864394c6-0597-465e-8ec4-222930cbc37e",
+    "dishes/roastedSweetPotato.png": "b0981ef8-ae20-4785-a31b-de4334f493a3",
+    "dishes/minerBroth.png": "e60de9d8-40d0-4d36-8a39-bba55ece1a0e",
+    "dishes/fishStew.png": "fdf44680-1a3d-4369-b87d-0aae6cd1687d",
+    "dishes/honeyCake.png": "c174e9ba-e0ae-491e-b7ed-0be54c59a3f7",
+    "../machines/clayOven.png": "84331b76-e95d-48dc-8722-190ce1a730bd + 709e6800-39cd-4fc9-a449-1a5f6218d9c4 (aceso)"
   }
 }

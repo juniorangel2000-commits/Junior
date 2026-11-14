@@ -35,6 +35,7 @@ import {loadCameraZoom,saveCameraZoom,stepCameraZoom} from '../camera-zoom';
 import {CITY_ACCESS,CITY_FOREST_ENTRY,CITY_FOREST_EXIT,VILLAGE_NORTH_ARRIVAL,cityForestWater,cityForestBlockedPoint} from '../data/city-forest';
 import {CityForestWorld,preloadCityForest} from '../city-forest-world';
 
+import {playerSpeedFactor} from '../systems/food-effects';
 interface CityForestStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void;fromCity?:boolean}
 export class CityForestScene extends Phaser.Scene{
  private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>'cityForest',(x,y)=>this.blockedPoint(x,y)||this.swimmingPoint(x,y)>0,()=>!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden,()=>{this.updateHUD();});
@@ -221,7 +222,7 @@ export class CityForestScene extends Phaser.Scene{
  update(time:number,ms:number):void{
   if(!this.player)return;this.daylight.update(this.state.time,false,this.state.day);this.world.update(time);this.fisherRoad?.update();
   if(this.paused||this.leaving||this.ui.isModalOpen()||document.hidden)return;
-  const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(dt,this.movementBlockedTile,this.movementBlockedPoint,true,this.swimmingPoint);
+  const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(dt,this.movementBlockedTile,this.movementBlockedPoint,true,this.swimmingPoint);
   if(this.lakePassage.update(before,this.player,CITY_LAKE_EXIT,CITY_LAKE_ENTRY)){this.enterLake();return;}
   const distance=Math.hypot(this.player.x/32-CITY_ACCESS.x,this.player.y/32-CITY_ACCESS.y);
   if(distance>4)this.cityPromptArmed=true;

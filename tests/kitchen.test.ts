@@ -2,7 +2,8 @@ import {describe,it,expect} from 'vitest';
 import fs from 'node:fs';
 import {createNewSave,validateSave,migrateSave} from '../src/systems/save';
 import {createCharacterProfile} from '../src/data/characters';
-import {DISH_RECIPES,DISH_IDS,STOVE_FUEL} from '../src/data/kitchen';
+import {DISH_RECIPES,DISH_IDS,STOVE_FUEL,HELENA_DISHES} from '../src/data/kitchen';
+const helenaKnown=(s:SaveData)=>knownDishes(s).filter(r=>HELENA_DISHES.includes(r));
 import {ITEMS} from '../src/data/items';
 import {MERCHANTS} from '../src/data/village-commerce';
 import {cookDish,canCookDish,nextDishLesson,knownDishes,withWoodStove,dishIngredients} from '../src/systems/kitchen';
@@ -15,7 +16,7 @@ const fresh=():SaveData=>{const s=createNewSave(createCharacterProfile('Cozinha'
 
 describe('cozinha: dados e arte',()=>{
  it('14 receitas com ingredientes que existem e arte do SpriteCook para cada prato',()=>{
-  expect(DISH_RECIPES).toHaveLength(14);expect(new Set(DISH_IDS).size).toBe(14);
+  expect(DISH_RECIPES).toHaveLength(21);expect(new Set(DISH_IDS).size).toBe(21);expect(HELENA_DISHES).toHaveLength(15);
   for(const r of DISH_RECIPES){
    for(const id of Object.keys(r.ingredients))expect(ITEMS[id as keyof typeof ITEMS],`${r.id}: ${id}`).toBeDefined();
    expect(fs.existsSync(`public/assets/visual/kitchen/dishes/${r.id}.png`),r.id).toBe(true);
@@ -30,12 +31,12 @@ describe('cozinha: aprender com a Helena',()=>{
   const s=fresh();expect(nextDishLesson(s)!.id).toBe('kaleOmelette');
   const offer=listVillageServices('helena',s).find(o=>o.id==='learn-dish')!;expect(offer.label).toContain('omelete de couve');expect(offer.disabled).toBe(false);
   expect(performVillageService(s,'learn-dish').ok).toBe(true);
-  expect(s.villageEconomy!.coins).toBe(2000-DISH_RECIPES[0].learnFee);expect(knownDishes(s).map(r=>r.id)).toEqual(['kaleOmelette']);
+  expect(s.villageEconomy!.coins).toBe(2000-DISH_RECIPES[0].learnFee);expect(helenaKnown(s).map(r=>r.id)).toEqual(['kaleOmelette']);
  });
  it('sem coroas não aprende; depois da última, o serviço fica encerrado',()=>{
-  const s=fresh();s.villageEconomy!.coins=5;expect(performVillageService(s,'learn-dish').ok).toBe(false);expect(knownDishes(s)).toHaveLength(0);
-  s.villageEconomy!.coins=2000;for(let i=0;i<14;i++)performVillageService(s,'learn-dish');
-  expect(knownDishes(s)).toHaveLength(14);expect(performVillageService(s,'learn-dish').ok).toBe(false);
+  const s=fresh();s.villageEconomy!.coins=5;expect(performVillageService(s,'learn-dish').ok).toBe(false);expect(helenaKnown(s)).toHaveLength(0);
+  s.villageEconomy!.coins=2000;for(let i=0;i<15;i++)performVillageService(s,'learn-dish');
+  expect(helenaKnown(s)).toHaveLength(15);expect(performVillageService(s,'learn-dish').ok).toBe(false);
   expect(listVillageServices('helena',s).find(o=>o.id==='learn-dish')!.disabled).toBe(true);
   expect(validateSave(s)).toBe(true);
  });

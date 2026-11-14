@@ -25,7 +25,7 @@ export interface CharacterProfile {
   accessory?: CharacterAccessory;
 }
 export type ItemId = import('./data/crop-catalog').CropItemId | 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 'plank' | 'scrap' | 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw'
-  | 'cheesePress' | 'butterChurn' | 'spinningWheel' | 'loom' | 'stoneMill' | 'cheese' | 'goatCheese' | 'butter' | 'yarn' | 'flour' | 'cornmeal' | 'oatFlakes'
+  | 'cheesePress' | 'butterChurn' | 'spinningWheel' | 'loom' | 'stoneMill' | 'clayOven' | 'campfire' | 'cheese' | 'goatCheese' | 'butter' | 'yarn' | 'flour' | 'cornmeal' | 'oatFlakes'
   | 'harvestBasket' | 'freshGrass' | 'hay' | 'egg' | 'milk' | 'milkPail' | 'honey' | 'duckEgg' | import('./data/kitchen').DishId | 'goatMilk' | 'wool' | 'shears' | 'hardwood' | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer'
   | 'herb' | 'rareHerb' | 'bandage' | 'herbalTonic' | 'fungalInfusion' | 'oakSeed' | 'pineSeed' | 'fertilizer' | 'fishingRod' | 'bait' | 'net' | 'fish' | 'rareFish' | 'meal'
   | 'ironShard' | 'ironOre' | 'ironIngot' | 'goldShard' | 'goldOre' | 'goldIngot' | 'blackMetalShard' | 'blackMetalOre' | 'blackMetalIngot' | 'sickle' | 'shovel' | 'furniture' | 'doorKit' | 'windowKit' | 'fenceKit' | 'forge' | 'mushroom'
@@ -68,6 +68,10 @@ export interface SaveData {
   /** Alimentação e produção dos animais alojados (ovos e leite). */
   machines?:import('./systems/machines').MachineState;
   animalCare?:import('./systems/animal-production').AnimalCare;
+  /** Efeito do último prato comido (um por vez). */
+  foodEffect?:import('./systems/food-effects').FoodEffect;
+  /** Cozinha: dia em que a Helena comprou o prato do dia. */
+  kitchen?:{dishOfDaySold?:number};
   npcSocial?:import('./systems/npc-social-state').NpcSocialState;
   mineMissions?:import('./systems/mine-mission-state').MineMissionsState;
   mineRescue?:import('./systems/mine-rescue-state').MineRescueState;

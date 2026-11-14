@@ -26,6 +26,7 @@ import {HORSE_ID,HORSE_NAME_MAX,TAMING_DAYS,horseTaming,feedHorse,fedToday,settl
 import {releaseAnimalEscort,ANIMAL_BEHAVIOR} from '../systems/animals';
 import {OpenFieldsWorld,preloadOpenFields} from '../open-fields-world';
 import {FIELDS_SIZE,FIELDS_ENTRY,FIELDS_EXIT,PROPERTY_FIELDS_RETURN,MEADOW_PATCHES,FIELDS_IPES,IPE_REACH,fieldsBlocked,fieldsSafe} from '../data/open-fields';
+import {playerSpeedFactor} from '../systems/food-effects';
 interface FieldsStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 export class OpenFieldsScene extends Phaser.Scene{
  private state!:SaveData;private ui!:GameUI;private player!:Player;private world!:OpenFieldsWorld;private daylight!:Daylight;private farming!:Farming;private toolVisual!:ToolVisual;
@@ -137,7 +138,7 @@ export class OpenFieldsScene extends Phaser.Scene{
   const next=structuredClone(this.snapshotState());if(!title){next.activeArea='property';next.player={...PROPERTY_FIELDS_RETURN};if(escorting)transferHorseToProperty(next,PROPERTY_FIELDS_RETURN);}if(!saveGame(next)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}this.leaving=true;this.cameras.main.fadeOut(SCENE_FADE_MS);this.time.delayedCall(SCENE_FADE_MS,()=>{this.scene.stop();this.onReturn(next,title);});}
  update(_time:number,ms:number):void{
   if(!this.player||this.leaving)return;this.daylight.update(this.state.time,false,this.state.day);if(this.paused||this.ui.isModalOpen()||document.hidden)return;
-  const dt=Math.min(.1,ms/1000),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(dt,this.blockedTile,fieldsBlocked,!this.swing);this.player.sprite.setDepth(this.player.y);
+  const dt=Math.min(.1,ms/1000),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(dt,this.blockedTile,fieldsBlocked,!this.swing);this.player.sprite.setDepth(this.player.y);
   if(this.passage.update(before,this.player,FIELDS_EXIT)){this.leave();return;}
   if(this.swing){this.swing.age+=dt;if(this.swing.age>=.22&&!this.swing.hit){this.swing.hit=true;this.snapshotState();if(this.swing.ipe){const r=chopIpe(this.state,this.swing.id,this.player,saveGame);if(r.ok){gameAudio.play('wood');this.world.shakeIpe(this.swing.id);if(r.felled)this.ui.toast(r.message);}else this.ui.toast(r.message);}else{const r=harvestMeadow(this.state,this.swing.id,this.player,saveGame);if(r.ok)gameAudio.play('plant');else this.ui.toast(r.message);}}if(this.swing.age>=.5){this.swing=undefined;this.toolVisual.hide();}}
   this.farming.update(dt,this.state.day);Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state,dt,this.player,this.bentoRuntime);if(this.horseLost())this.ui.toast('Faltou cesta em um dia: a confiança do cavalo voltou a zero.');this.world.update(dt,this.player);this.updateHUD();this.elapsed+=dt;if(this.elapsed>=5){this.elapsed=0;this.persist();}

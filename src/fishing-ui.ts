@@ -8,6 +8,7 @@ import {saveGame} from './systems/save';
 import {gameAudio} from './audio';
 import './fishing.css';
 
+import {hasFoodEffect,FISHING_BAND_BONUS} from './systems/food-effects';
 let active:Promise<string>|undefined;
 export const fishingActive=():boolean=>active!==undefined;
 const random=()=>{const n=new Uint32Array(1);crypto.getRandomValues(n);return n[0]/4294967296;};
@@ -17,7 +18,7 @@ const fishIcon='<svg viewBox="0 0 28 18" aria-hidden="true"><path d="M6 9 1 3v12
 export function fishAtBank(save:SaveData,net:boolean,onChange:()=>void,visual?:{ready?:boolean;start:()=>Promise<boolean>;destroy:()=>void;signal?:AbortSignal}):Promise<string>{
  if(active)return active;
  if(visual?.ready===false){visual.destroy();return Promise.resolve(net?'Procure um trecho com água livre para abrir a rede inteira. A isca foi preservada.':'Aproxime-se de um trecho com água livre para lançar a linha. A isca foi preservada.');}
- const session=new FishingSession(save.villageProgress?.fishingSkill??0,net,save.inventory.accessory>0,random,save.activeArea==='fishingLake'?'lake':'other',{rodTier:save.fishingProgress?.rodTier,bait:save.fishingProgress?.bait,time:save.time,day:save.day});
+ const session=new FishingSession(save.villageProgress?.fishingSkill??0,net,save.inventory.accessory>0,random,save.activeArea==='fishingLake'?'lake':'other',{bandBonus:hasFoodEffect(save,'roastedFish')?FISHING_BAND_BONUS:0,rodTier:save.fishingProgress?.rodTier,bait:save.fishingProgress?.bait,time:save.time,day:save.day});
  const cast=beginFishingCast(save,net,session.reward,saveGame);
  if(!cast.ok){visual?.destroy();return Promise.resolve(cast.message);}
  onChange();if(!visual)gameAudio.play('fishing-cast');

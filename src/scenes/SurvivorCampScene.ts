@@ -33,6 +33,8 @@ import {CAMP_ENTRY,CAMP_EXIT} from '../data/survivor-camp';
 import {FOREST_CAMP_RETURN} from '../data/forest-camp-access';
 import {ensureSurvivorCamp,advanceSurvivorCamp,advanceHostileWarning,recruitCampVisitor,type CampPerson} from '../systems/survivor-camp';
 import {DEVELOPMENT_TOOLS} from '../development-tools';
+import {playerSpeedFactor} from '../systems/food-effects';
+import {discoverDishAndSave,discoveryMessage} from '../systems/kitchen';
 interface CampStart {save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 export class SurvivorCampScene extends Phaser.Scene {
  private readonly passageCollision=new NpcPassageCollision();
@@ -93,6 +95,7 @@ export class SurvivorCampScene extends Phaser.Scene {
  }
  private showPerson(p:CampPerson):void {
   const c=this.state.survivorCamp!;if(c.kind==='hostile'&&c.members.includes(p)){if(c.aggressive){this.defend(p);return;}this.warning();return;}
+  if(c.kind!=='hostile'){const r=discoverDishAndSave(this.state,'survivors',()=>this.persist());if(r)this.ui.toast(`${p.name} ensinou a receita da casa. `+discoveryMessage(r));}
   if(p.status==='resident'){showSurvivorHelp(this.ui,this.state,p.id,saveGame,()=>this.updateHUD());return;}
   this.ui.showSceneEditor(host=>{
    const panel=document.createElement('section');panel.className='panel camp-dialog';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-label',p.name);
@@ -140,7 +143,7 @@ export class SurvivorCampScene extends Phaser.Scene {
  update(time:number,ms:number):void {
   if(this.leaving||!this.player)return;this.daylight.update(this.state.time,false,this.state.day);this.world.update(time);
   if(this.paused||this.leaving||this.ui.isModalOpen()||document.hidden){this.combatArt.update(0);this.renderPeople();return;}
-  const dt=Math.min(.1,ms/1000);this.combatArt.update(dt);const before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=this.state.inventory.boots>0?1.08:1;this.player.update(dt,this.blockedTile,this.blockedPoint,true);this.player.sprite.setDepth(this.player.y);
+  const dt=Math.min(.1,ms/1000);this.combatArt.update(dt);const before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(dt,this.blockedTile,this.blockedPoint,true);this.player.sprite.setDepth(this.player.y);
   if(this.passage.update(before,this.player,this.state.survivorCampMapEdits?.points?.exit??CAMP_EXIT,this.state.survivorCampMapEdits?.points?.entry??CAMP_ENTRY)){this.leave();return;}
   Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));this.farming.update(dt,this.state.day);this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state,dt,undefined,this.bentoWorkRuntime);advanceSurvivorCamp(this.state,dt,this.player);this.renderPeople();
   const c=this.state.survivorCamp!,enemies=c.members.filter(p=>p.status!=='gone'&&p.status!=='leaving'&&p.hp>0),near=enemies.find(p=>Math.hypot(p.x-this.player.x,p.y-this.player.y)<210);
