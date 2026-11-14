@@ -21,7 +21,7 @@
 
 ## Em andamento e próximo passo exato
 
-- **Codex: criar a tag anotada `v0.10.0-preview.34` no commit `227cda5` e enviar** (`git tag -a v0.10.0-preview.34 227cda5 -m "After Rain preview.34"` e `git push origin v0.10.0-preview.34`). Depois, conferir o workflow do Windows e os executáveis na Release.
+- **Codex: criar a tag anotada `v0.10.0-preview.34` no HEAD da `main` (commit com o LEIA da preview.34) e enviar** (`git tag -a v0.10.0-preview.34 origin/main -m "After Rain preview.34"` e `git push origin v0.10.0-preview.34`). Depois, conferir o workflow do Windows e os executáveis na Release.
 - Próxima rodada (`release/v0.10.0-preview.35`), seguindo a ordem de `docs/planejamento/ANIMAIS-E-RECEITAS.md`:
   1. Interiores do galinheiro e do curral, com a opção "Recolher os animais".
   2. Ovos e leite (`docs/construcoes/PRODUCAO-ANIMAL-PLANO.md`).
