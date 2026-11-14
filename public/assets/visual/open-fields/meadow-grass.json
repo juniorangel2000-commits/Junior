@@ -1,0 +1,58 @@
+{
+  "file": "assets/visual/open-fields/meadow-grass.png",
+  "sha256": "1917dc1a431088a619f52fcb282d375896002ad0de43658024e0e1a2d66f7548",
+  "alphaCutoff": 200,
+  "width": 336,
+  "height": 180,
+  "frames": [
+    {
+      "x": 30,
+      "y": 106
+    },
+    {
+      "x": 417,
+      "y": 106
+    },
+    {
+      "x": 800,
+      "y": 106
+    },
+    {
+      "x": 1184,
+      "y": 106
+    },
+    {
+      "x": 25,
+      "y": 428
+    },
+    {
+      "x": 410,
+      "y": 428
+    },
+    {
+      "x": 793,
+      "y": 428
+    },
+    {
+      "x": 1177,
+      "y": 428
+    },
+    {
+      "x": 28,
+      "y": 755
+    },
+    {
+      "x": 414,
+      "y": 755
+    },
+    {
+      "x": 796,
+      "y": 755
+    },
+    {
+      "x": 1181,
+      "y": 755
+    }
+  ],
+  "description": "Três tufos próprios e quatro poses de brisa. Recortes alinhados pelas raízes; PNG original preservado."
+}

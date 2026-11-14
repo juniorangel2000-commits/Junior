@@ -1,0 +1,543 @@
+{
+  "environment": {
+    "viewport": [
+      1280,
+      800
+    ],
+    "sample_ms": 6500,
+    "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "note": "GPU emulada; tempos de quadros n\u00e3o s\u00e3o estimativas do execut\u00e1vel no PC do jogador. Sem ganho de FPS demonstrado nesta medi\u00e7\u00e3o."
+  },
+  "before": [
+    {
+      "key": "Vale",
+      "frames": {
+        "n": 37,
+        "mean": 173.35,
+        "p95": 228.1,
+        "max": 260.8
+      },
+      "methods": {
+        "updateHUD": {
+          "n": 4,
+          "mean": 6.25,
+          "p95": 10.3,
+          "max": 10.3
+        }
+      },
+      "objects": 1318,
+      "renderer": 2
+    },
+    {
+      "key": "Interior",
+      "frames": {
+        "n": 92,
+        "mean": 70.62,
+        "p95": 130.3,
+        "max": 149.5
+      },
+      "methods": {
+        "syncAnimals": {
+          "n": 93,
+          "mean": 0.02,
+          "p95": 0.1,
+          "max": 0.3
+        },
+        "updateHUD": {
+          "n": 93,
+          "mean": 0.73,
+          "p95": 1.4,
+          "max": 6.3
+        },
+        "persist": {
+          "n": 1,
+          "mean": 4.8,
+          "p95": 4.8,
+          "max": 4.8
+        }
+      },
+      "objects": 15,
+      "renderer": 2,
+      "siteId": 1
+    },
+    {
+      "key": "Interior",
+      "frames": {
+        "n": 87,
+        "mean": 75.14,
+        "p95": 150,
+        "max": 161.1
+      },
+      "methods": {
+        "syncAnimals": {
+          "n": 88,
+          "mean": 0,
+          "p95": 0,
+          "max": 0.1
+        },
+        "updateHUD": {
+          "n": 88,
+          "mean": 0.84,
+          "p95": 1.1,
+          "max": 11.3
+        },
+        "update": {
+          "n": 88,
+          "mean": 1.44,
+          "p95": 4.7,
+          "max": 18.5
+        },
+        "persist": {
+          "n": 1,
+          "mean": 0,
+          "p95": 0,
+          "max": 0
+        }
+      },
+      "objects": 14,
+      "renderer": 2,
+      "siteId": 2
+    },
+    {
+      "key": "Campos",
+      "frames": {
+        "n": 83,
+        "mean": 78.96,
+        "p95": 126.4,
+        "max": 176.1
+      },
+      "methods": {
+        "updateHUD": {
+          "n": 84,
+          "mean": 0.93,
+          "p95": 4.6,
+          "max": 6.8
+        },
+        "persist": {
+          "n": 1,
+          "mean": 0.2,
+          "p95": 0.2,
+          "max": 0.2
+        }
+      },
+      "objects": 1606,
+      "renderer": 2
+    },
+    {
+      "key": "Floresta",
+      "frames": {
+        "n": 42,
+        "mean": 156.75,
+        "p95": 188.9,
+        "max": 240.9
+      },
+      "methods": {
+        "updateHUD": {
+          "n": 43,
+          "mean": 1.34,
+          "p95": 4.8,
+          "max": 6.8
+        }
+      },
+      "objects": 1528,
+      "renderer": 2
+    },
+    {
+      "key": "Lago",
+      "frames": {
+        "n": 46,
+        "mean": 139.37,
+        "p95": 173.2,
+        "max": 187.3
+      },
+      "methods": {
+        "updateHUD": {
+          "n": 47,
+          "mean": 2.78,
+          "p95": 15.2,
+          "max": 22.2
+        },
+        "persist": {
+          "n": 1,
+          "mean": 0.1,
+          "p95": 0.1,
+          "max": 0.1
+        }
+      },
+      "objects": 918,
+      "renderer": 2
+    },
+    {
+      "key": "Serra",
+      "frames": {
+        "n": 46,
+        "mean": 143.2,
+        "p95": 236.1,
+        "max": 292.7
+      },
+      "methods": {
+        "updateHUD": {
+          "n": 47,
+          "mean": 1.23,
+          "p95": 5.8,
+          "max": 6.7
+        },
+        "persist": {
+          "n": 1,
+          "mean": 0,
+          "p95": 0,
+          "max": 0
+        }
+      },
+      "objects": 65,
+      "renderer": 2
+    },
+    {
+      "key": "Mina",
+      "frames": {
+        "n": 98,
+        "mean": 66.8,
+        "p95": 128.6,
+        "max": 191.8
+      },
+      "methods": {
+        "updateHUD": {
+          "n": 99,
+          "mean": 1.11,
+          "p95": 4.5,
+          "max": 18.9
+        },
+        "persist": {
+          "n": 1,
+          "mean": 0.1,
+          "p95": 0.1,
+          "max": 0.1
+        }
+      },
+      "objects": 21,
+      "renderer": 2
+    },
+    {
+      "key": "AcessoCidade",
+      "frames": {
+        "n": 33,
+        "mean": 197.11,
+        "p95": 314,
+        "max": 377.6
+      },
+      "methods": {
+        "updateHUD": {
+          "n": 34,
+          "mean": 2.22,
+          "p95": 6.6,
+          "max": 22.9
+        }
+      },
+      "objects": 2075,
+      "renderer": 2
+    },
+    {
+      "key": "Vila",
+      "frames": {
+        "n": 46,
+        "mean": 140.89,
+        "p95": 196,
+        "max": 265.9
+      },
+      "methods": {
+        "updateHUD": {
+          "n": 24,
+          "mean": 2.36,
+          "p95": 5.9,
+          "max": 17.1
+        },
+        "persist": {
+          "n": 1,
+          "mean": 0.6,
+          "p95": 0.6,
+          "max": 0.6
+        }
+      },
+      "objects": 1271,
+      "renderer": 2
+    }
+  ],
+  "after": [
+    {
+      "key": "Vale",
+      "frames": {
+        "n": 35,
+        "mean": 182.28,
+        "p95": 400.5,
+        "max": 427.9
+      },
+      "activeScenes": [
+        "Vale"
+      ],
+      "methods": {
+        "updateHUD": {
+          "n": 3,
+          "mean": 3.83,
+          "p95": 10,
+          "max": 10
+        }
+      },
+      "objects": 1321,
+      "renderer": 2
+    },
+    {
+      "key": "Interior",
+      "frames": {
+        "n": 92,
+        "mean": 70.44,
+        "p95": 135.8,
+        "max": 152.1
+      },
+      "activeScenes": [
+        "Interior"
+      ],
+      "methods": {
+        "syncAnimals": {
+          "n": 93,
+          "mean": 0.03,
+          "p95": 0.1,
+          "max": 0.3
+        },
+        "updateHUD": {
+          "n": 93,
+          "mean": 0.5,
+          "p95": 2.4,
+          "max": 7.2
+        },
+        "persist": {
+          "n": 1,
+          "mean": 0.1,
+          "p95": 0.1,
+          "max": 0.1
+        }
+      },
+      "objects": 15,
+      "renderer": 2,
+      "siteId": 1
+    },
+    {
+      "key": "Interior",
+      "frames": {
+        "n": 93,
+        "mean": 69.74,
+        "p95": 122.7,
+        "max": 163.9
+      },
+      "activeScenes": [
+        "Interior"
+      ],
+      "methods": {
+        "syncAnimals": {
+          "n": 94,
+          "mean": 0.01,
+          "p95": 0.1,
+          "max": 0.1
+        },
+        "updateHUD": {
+          "n": 94,
+          "mean": 0.45,
+          "p95": 1.2,
+          "max": 12.2
+        },
+        "update": {
+          "n": 94,
+          "mean": 0.94,
+          "p95": 2.6,
+          "max": 14.3
+        },
+        "persist": {
+          "n": 1,
+          "mean": 0.1,
+          "p95": 0.1,
+          "max": 0.1
+        }
+      },
+      "objects": 14,
+      "renderer": 2,
+      "siteId": 2
+    },
+    {
+      "key": "Campos",
+      "frames": {
+        "n": 63,
+        "mean": 102.69,
+        "p95": 192.3,
+        "max": 238.6
+      },
+      "activeScenes": [
+        "Campos"
+      ],
+      "methods": {
+        "updateHUD": {
+          "n": 64,
+          "mean": 0.4,
+          "p95": 1.1,
+          "max": 5
+        },
+        "persist": {
+          "n": 1,
+          "mean": 0.2,
+          "p95": 0.2,
+          "max": 0.2
+        }
+      },
+      "objects": 1605,
+      "renderer": 2
+    },
+    {
+      "key": "Floresta",
+      "frames": {
+        "n": 39,
+        "mean": 166.03,
+        "p95": 311.1,
+        "max": 317.6
+      },
+      "activeScenes": [
+        "Floresta"
+      ],
+      "methods": {
+        "updateHUD": {
+          "n": 40,
+          "mean": 0.98,
+          "p95": 2.3,
+          "max": 15.6
+        }
+      },
+      "objects": 1527,
+      "renderer": 2
+    },
+    {
+      "key": "Lago",
+      "frames": {
+        "n": 43,
+        "mean": 149.63,
+        "p95": 186.3,
+        "max": 198.4
+      },
+      "activeScenes": [
+        "Lago"
+      ],
+      "methods": {
+        "updateHUD": {
+          "n": 44,
+          "mean": 0.26,
+          "p95": 0.7,
+          "max": 2.4
+        },
+        "persist": {
+          "n": 1,
+          "mean": 0.2,
+          "p95": 0.2,
+          "max": 0.2
+        }
+      },
+      "objects": 917,
+      "renderer": 2
+    },
+    {
+      "key": "Serra",
+      "frames": {
+        "n": 45,
+        "mean": 148.02,
+        "p95": 302,
+        "max": 382.6
+      },
+      "activeScenes": [
+        "Serra"
+      ],
+      "methods": {
+        "updateHUD": {
+          "n": 46,
+          "mean": 0.43,
+          "p95": 1.8,
+          "max": 4.2
+        },
+        "persist": {
+          "n": 1,
+          "mean": 0.2,
+          "p95": 0.2,
+          "max": 0.2
+        }
+      },
+      "objects": 64,
+      "renderer": 2
+    },
+    {
+      "key": "Mina",
+      "frames": {
+        "n": 109,
+        "mean": 59.56,
+        "p95": 97.3,
+        "max": 130.9
+      },
+      "activeScenes": [
+        "Mina"
+      ],
+      "methods": {
+        "updateHUD": {
+          "n": 110,
+          "mean": 0.48,
+          "p95": 0.7,
+          "max": 22.5
+        },
+        "persist": {
+          "n": 1,
+          "mean": 0.1,
+          "p95": 0.1,
+          "max": 0.1
+        }
+      },
+      "objects": 21,
+      "renderer": 2
+    },
+    {
+      "key": "AcessoCidade",
+      "frames": {
+        "n": 33,
+        "mean": 198.71,
+        "p95": 393.3,
+        "max": 473
+      },
+      "activeScenes": [
+        "AcessoCidade"
+      ],
+      "methods": {
+        "updateHUD": {
+          "n": 34,
+          "mean": 0.43,
+          "p95": 1.8,
+          "max": 4.3
+        }
+      },
+      "objects": 2074,
+      "renderer": 2
+    },
+    {
+      "key": "Vila",
+      "frames": {
+        "n": 39,
+        "mean": 165.24,
+        "p95": 197.8,
+        "max": 198.7
+      },
+      "activeScenes": [
+        "Vila"
+      ],
+      "methods": {
+        "updateHUD": {
+          "n": 20,
+          "mean": 0.54,
+          "p95": 1.1,
+          "max": 1.1
+        }
+      },
+      "objects": 1270,
+      "renderer": 2
+    }
+  ]
+}

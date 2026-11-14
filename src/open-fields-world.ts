@@ -1,3 +1,4 @@
+import {preloadMeadowGrass,setupMeadowGrass,meadowGrassFrame,MEADOW_GRASS_TEXTURE,MEADOW_GRASS_RATIO} from './meadow-grass-art';
 import {meadowPatchesInRect} from './systems/meadow-visibility';
 import {IPE_ART} from './data/ipe-art';
 import {HorseIdleCycle} from './systems/horse-idle';
@@ -15,6 +16,7 @@ import {animalSprite,setupAnimalArt} from './forest-art';
 import {preloadAnimalSprites,updateAnimalSprite,animalRopeAnchor} from './animal-sprites';
 import {CowRestCycle} from './systems/cow-rest';
 export function preloadOpenFields(scene:Phaser.Scene){
+ preloadMeadowGrass(scene);
  if(!scene.textures.exists('fields-ipe'))scene.load.image('fields-ipe','assets/visual/open-fields/ipe-yellow.png');
  for(const key of ['shed'])if(!scene.textures.exists('fields-'+key))scene.load.image('fields-'+key,`assets/visual/open-fields/${key}.png`);
  if(!scene.textures.exists('fields-harvest-basket'))scene.load.image('fields-harvest-basket','assets/visual/crops/harvest-basket.png');
@@ -46,7 +48,7 @@ export class OpenFieldsWorld{
   drawExitSign(scene,{x:48,y:2},{x:48,y:4});
   if(!scene.textures.exists('fields-floor')){const canvas=document.createElement('canvas');canvas.width=FIELDS_SIZE.width;canvas.height=FIELDS_SIZE.height;paintFieldsFloor(canvas.getContext('2d')!,readTerrainSprites(scene)!);scene.textures.addCanvas('fields-floor',canvas)!.setFilter(0);}
   scene.add.image(0,0,'fields-floor').setOrigin(0).setDepth(-100);
-  ensureIpeTexture(scene);
+  ensureIpeTexture(scene);setupMeadowGrass(scene);
   for(const p of FIELDS_IPES){
    this.ipeStumps.set(p.id,scene.add.image(p.x,p.y+4,'forest-detail-stump').setOrigin(.5,1).setDisplaySize(46,34).setDepth(p.y));
    const image=scene.add.image(p.x,p.y,'fields-ipe','tree').setOrigin(IPE_ART.originX,1).setDisplaySize(p.width,p.height).setDepth(p.y);this.ipes.set(p.id,image);this.trees.push(image);
@@ -59,7 +61,7 @@ export class OpenFieldsWorld{
   if(!tex.has('left-post')){tex.add('left-post',0,235,500,110,415);tex.add('right-post',0,1040,500,115,415);}
   scene.add.image(FIELDS_SHED.x-70,FIELDS_SHED.y,'fields-shed','left-post').setOrigin(.5,1).setDisplaySize(21,92).setDepth(FIELDS_SHED.y+1);
   scene.add.image(FIELDS_SHED.x+71,FIELDS_SHED.y,'fields-shed','right-post').setOrigin(.5,1).setDisplaySize(22,92).setDepth(FIELDS_SHED.y+1);
-  for(const p of MEADOW_PATCHES){const texture=p.kind==='grass'?`nature-tall-grass-${p.variant}`:p.kind==='herb'?'ecology-herbs':'forest-detail-mushrooms';this.patches.set(p.id,scene.add.image(p.x,p.y,texture).setVisible(false).setOrigin(.5,1).setDisplaySize(p.size,p.kind==='grass'?p.size*.8:p.size).setDepth(p.y));}
+  for(const p of MEADOW_PATCHES){const texture=p.kind==='grass'?MEADOW_GRASS_TEXTURE:p.kind==='herb'?'ecology-herbs':'forest-detail-mushrooms';this.patches.set(p.id,scene.add.image(p.x,p.y,texture,p.kind==='grass'?p.variant*4:undefined).setVisible(false).setOrigin(.5,1).setDisplaySize(p.size,p.kind==='grass'?p.size*MEADOW_GRASS_RATIO:p.size).setDepth(p.y));}
   setupAnimalArt(scene);
   for(const d of FIELDS_ANIMALS){if(d.id===HORSE_ID&&horseLeftFields(state()))continue;const saved=state().openFields?.animals?.find(a=>a.id===d.id),p=saved&&fieldsSafe(saved)?saved:d;
    const brain=new AnimalBrain(d.id,d.kind,p.x,p.y,d.kind==='rabbit'||d.kind==='horse',(tx,ty)=>fieldsBlocked(tx*32+16,ty*32+16),84,()=>0,fieldsBlocked);if(saved&&p===saved)brain.restore(saved);
@@ -115,8 +117,8 @@ export class OpenFieldsWorld{
   for(const id of this.visiblePatches)if(!ids.has(id))this.patches.get(id)!.setVisible(false);
   this.visiblePatches=ids;
   for(const p of visible){const img=this.patches.get(p.id)!,growth=meadowGrowth(s,p);if(!img.visible)img.setVisible(true);
-   const scale=p.kind==='grass'?.24+.76*growth:growth>=1?1:.25;img.setDisplaySize(p.size*scale,(p.kind==='grass'?p.size*.8:p.size)*scale).setAlpha(p.kind==='grass'?.8+.2*growth:growth>=1?1:.25);
-   img.setRotation(p.kind==='grass'?Math.sin(this.elapsed*1.5+p.x*.018+p.y*.01)*.035*growth:0);
+   const scale=p.kind==='grass'?.24+.76*growth:growth>=1?1:.25;img.setDisplaySize(p.size*scale,(p.kind==='grass'?p.size*MEADOW_GRASS_RATIO:p.size)*scale).setAlpha(p.kind==='grass'?.8+.2*growth:growth>=1?1:.25);
+   if(p.kind==='grass'){const frame=growth>=1?meadowGrassFrame(p.variant,this.elapsed,p.x,p.y):p.variant*4;if(String(img.frame.name)!==String(frame))img.setFrame(frame);}
    // At most lower legs are occluded by nearby blades, never the head.
    if(p.kind==='grass'&&Math.abs(player.x-p.x)<25&&Math.abs(player.y-p.y)<20)img.setAlpha(.65);
   }
