@@ -13,7 +13,7 @@ const SOURCES:Record<string,string>={
  'interior-nest':'nest.png','interior-water':'water.png',
  'interior-trough-64':'trough-64.png','interior-trough-96':'trough-96.png',
  'interior-stall-96x96':'stall.png','interior-divider-88':'divider.png',
- 'interior-nest-egg':'nest-egg.png','interior-trough-64-empty':'trough-64-empty.png','interior-trough-96-empty':'trough-96-empty.png',
+ 'interior-nest-egg':'nest-egg.png','interior-nest-duck-egg':'nest-duck-egg.png','interior-trough-64-empty':'trough-64-empty.png','interior-trough-96-empty':'trough-96-empty.png',
  'interior-wool-ready':'../products/wool.png','interior-shears':'../products/shears.png',
  'interior-milk-ready':'../products/milk.png','interior-milk-pail':'../products/milk-pail.png',
 };
@@ -64,7 +64,7 @@ function floor(scene:Phaser.Scene,kind:FarmKind,l:FarmInteriorLayout):string{
  scene.textures.addCanvas(key,canvas)?.setFilter(0);return key;
 }
 /** Estado visível dos objetos: ovos nos ninhos (índices 0–5) e cocho com ou sem palha. */
-export interface InteriorFixtureState{eggs:readonly number[];trough:number}
+export interface InteriorFixtureState{eggs:readonly number[];duckEggs?:readonly number[];trough:number}
 export interface InteriorView{fixtures:Map<string,Phaser.GameObjects.Image>;refresh(state:InteriorFixtureState):void;destroy():void}
 export function drawFarmInterior(scene:Phaser.Scene,kind:FarmKind):InteriorView{
  const l=FARM_INTERIORS[kind]!,objects:Phaser.GameObjects.GameObject[]=[],fixtures=new Map<string,Phaser.GameObjects.Image>();
@@ -81,6 +81,7 @@ export function drawFarmInterior(scene:Phaser.Scene,kind:FarmKind):InteriorView{
  const refresh=(state:InteriorFixtureState)=>{for(const f of l.fixtures){const img=fixtures.get(f.id);if(!img)continue;
   let key=fixtureKey(f);
   if(f.kind==='nest'&&state.eggs.includes(Number(f.id.slice(5))-1))key='interior-nest-egg';
+  if(f.kind==='nest'&&state.duckEggs?.includes(Number(f.id.slice(5))-1))key='interior-nest-duck-egg';
   if(f.kind==='trough'&&state.trough<=0)key+='-empty';
   if(img.texture.key!==key&&scene.textures.exists(key)){const w=img.displayWidth,h=img.displayHeight;img.setTexture(key).setDisplaySize(w,h);}
  }};

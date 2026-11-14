@@ -77,7 +77,7 @@ export class FarmInteriorScene extends Phaser.Scene{
  private blocked=(x:number,y:number)=>interiorBlocked(this.layout,x,y)||machinePointBlocked(this.state,this.machineSpace(),x,y);
  private blockedTile=(x:number,y:number)=>interiorBlocked(this.layout,x*32+16,y*32+16);
  private clearAnimals():void{this.stopAnimalCare();for(const a of this.animals){a.sprite.destroy();a.shadow.destroy();a.badge?.destroy();}this.animals=[];}
- private refreshFixtures():void{const s=this.site;if(s)this.view?.refresh({eggs:s.eggs??[],trough:s.trough??0});}
+ private refreshFixtures():void{const s=this.site;if(s)this.view?.refresh({eggs:s.eggs??[],duckEggs:s.duckEggs??[],trough:s.trough??0});}
  /** Produto pronto: gota de leite ou mecha de lã acima do animal. */
  private refreshBadges():void{for(const a of this.animals){const ready=milkReady(this.state,a.id)||woolReady(this.state,a.id),texture=domesticAnimal(a.id)?.kind==='sheep'?'interior-wool-ready':'interior-milk-ready';if(ready&&!a.badge)a.badge=this.add.image(a.brain.x,a.brain.y-44,texture).setOrigin(.5,1);if(!ready&&a.badge){a.badge.destroy();a.badge=undefined;}if(a.badge)a.badge.setDisplaySize(10,13);}}
  /** Os animais aparecem aqui dentro à noite ou quando foram recolhidos; de dia, ficam no cercado. */
@@ -99,7 +99,7 @@ export class FarmInteriorScene extends Phaser.Scene{
   const site=this.site;
   if(kind==='trough'&&site){const cap=TROUGH_CAPACITY[site.kind]??0,n=site.trough??0;return`${label} · ${n}/${cap} palhas${n<cap?' · E coloca a palha da mochila':''}`;}
   if(kind==='water')return`${label} · água fresca para os animais`;
-  if(kind==='nest')return site?.eggs?.includes(Number(id.slice(5))-1)?`${label} · E recolhe o ovo`:`${label} · vazio; as galinhas alimentadas botam pela manhã`;
+  if(kind==='nest'){const n=Number(id.slice(5))-1;return site?.duckEggs?.includes(n)?`${label} · E recolhe o ovo de pato`:site?.eggs?.includes(n)?`${label} · E recolhe o ovo`:`${label} · vazio; galinhas e patos alimentados botam pela manhã`;}
   return site?.kind==='aprisco'?`${label} · aproxime-se da ovelha com a tesoura ou da cabra com o balde`:`${label} · leve a vaca até aqui e use o balde para ordenhar`;
  }
  /** Animal mais próximo para ordenha ou tosquia. */

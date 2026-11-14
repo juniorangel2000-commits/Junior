@@ -1,4 +1,4 @@
-import type {SaveData} from '../types';
+import type {SaveData,ItemId} from '../types';
 import type {FarmSite} from './farm-construction';
 import {FARM_BUILDINGS} from '../data/farm-buildings';
 import {domesticAnimal} from '../data/domestic-animals';
@@ -14,7 +14,7 @@ import {DAY_START} from './farm-interior';
  *   fica pronta para uma ordenha (`animalCare.animals[id].milk`).
  * - Os dias fora da Propriedade são recuperados com o estoque real do cocho, até
  *   `MAX_CATCH_UP` manhãs; o ovo e o leite pendentes não se acumulam. */
-export interface AnimalCareRecord{fed?:number;milk?:boolean;woolDays?:number;wool?:boolean}
+export interface AnimalCareRecord{fed?:number;milk?:boolean;woolDays?:number;wool?:boolean;duckDays?:number}
 export interface AnimalCare{day:number;animals:Record<string,AnimalCareRecord>}
 export const TROUGH_CAPACITY:Partial<Record<FarmSite['kind'],number>>={coop:12,barn:8,aprisco:8};
 export const NEST_COUNT=6;
@@ -22,9 +22,14 @@ export const MAX_CATCH_UP=7;
 export const MILKING_SECONDS=1;
 export const SHEARING_SECONDS=1.2;
 export const WOOL_FED_DAYS=3;
+/** Pato: um ovo a cada 2 manhãs alimentado; a pena sai a cada 4 ovos de pato recolhidos. */
+export const DUCK_FED_DAYS=2;
+export const FEATHER_EVERY=4;
 /** Dia de produção: a manhã das 06:00 abre o dia; antes disso ainda vale o anterior. */
 export const productionDay=(s:Pick<SaveData,'day'|'time'>)=>Math.max(0,Math.floor(s.day)-(s.time<DAY_START?1:0));
 export const producesAnimals=(s:FarmSite)=>s.finished&&TROUGH_CAPACITY[s.kind]!==undefined;
+/** Primeiro ninho sem ovo de galinha nem de pato. */
+const freeNest=(site:FarmSite)=>Array.from({length:NEST_COUNT},(_,i)=>i).find(i=>!site.eggs?.includes(i)&&!site.duckEggs?.includes(i));
 const productionSites=(save:SaveData)=>(save.farmConstruction?.sites??[]).filter(producesAnimals);
 /** Uma manhã: alimentação pelo cocho e produção dos animais alimentados. */
 function morning(save:SaveData,care:AnimalCare,day:number):void{
@@ -32,11 +37,12 @@ function morning(save:SaveData,care:AnimalCare,day:number):void{
   const queue=[...site.animals].sort((a,b)=>(care.animals[a]?.fed??-1)-(care.animals[b]?.fed??-1));
   for(const id of queue){
    if((site.trough??0)<1)break;
-   const kind=domesticAnimal(id)?.kind;if(kind!=='chicken'&&kind!=='cow'&&kind!=='goat'&&kind!=='sheep')continue;
+   const kind=domesticAnimal(id)?.kind;if(kind!=='chicken'&&kind!=='cow'&&kind!=='goat'&&kind!=='sheep'&&kind!=='duck')continue;
    site.trough=(site.trough??0)-1;const rec=care.animals[id]??={};rec.fed=day;
    if(kind==='cow'||kind==='goat')rec.milk=true;
    else if(kind==='sheep'){if(!rec.wool){const days=(rec.woolDays??0)+1;if(days>=WOOL_FED_DAYS){rec.wool=true;rec.woolDays=0;}else rec.woolDays=days;}}
-   else{const eggs=site.eggs??=[];const free=Array.from({length:NEST_COUNT},(_,i)=>i).find(i=>!eggs.includes(i));if(free!==undefined)eggs.push(free);}
+   else if(kind==='duck'){const days=(rec.duckDays??0)+1;const free=freeNest(site);if(days>=DUCK_FED_DAYS&&free!==undefined){(site.duckEggs??=[]).push(free);rec.duckDays=0;}else rec.duckDays=Math.min(days,DUCK_FED_DAYS-1);}
+   else{const free=freeNest(site);if(free!==undefined)(site.eggs??=[]).push(free);}
   }
  }
 }
@@ -57,7 +63,7 @@ export const milkReady=(save:SaveData,id:string)=>!!save.animalCare?.animals[id]
 export const fedToday=(save:SaveData,id:string)=>save.animalCare?.animals[id]?.fed===productionDay(save);
 export interface ProductionSummary{trough:number;capacity:number;animals:number;fed:number;eggs:number;milk:number;wool:number}
 export function productionSummary(save:SaveData,site:FarmSite):ProductionSummary{
- return{trough:site.trough??0,capacity:TROUGH_CAPACITY[site.kind]??0,animals:site.animals.length,fed:site.animals.filter(id=>fedToday(save,id)).length,eggs:site.eggs?.length??0,milk:site.animals.filter(id=>milkReady(save,id)).length,wool:site.animals.filter(id=>woolReady(save,id)).length};
+ return{trough:site.trough??0,capacity:TROUGH_CAPACITY[site.kind]??0,animals:site.animals.length,fed:site.animals.filter(id=>fedToday(save,id)).length,eggs:(site.eggs?.length??0)+(site.duckEggs?.length??0),milk:site.animals.filter(id=>milkReady(save,id)).length,wool:site.animals.filter(id=>woolReady(save,id)).length};
 }
 
 type Result={ok:boolean;message:string};
@@ -82,7 +88,13 @@ export function fillTrough(save:SaveData,siteId:number,write:Writer):Result{
 }
 export function collectEgg(save:SaveData,siteId:number,nest:number,write:Writer):Result{
  return commit(save,write,(d,site)=>{
-  if(!site.eggs?.includes(nest))return fail('Ninho vazio. Galinhas alimentadas botam pela manhã.');
+  if(site.duckEggs?.includes(nest)){
+   const n=(site.duckCollected??0)+1,out:Partial<Record<ItemId,number>>={duckEgg:1,...(n%FEATHER_EVERY===0?{feather:1}:{})};
+   const i=new Inventory(d.inventory);if(!i.transact({},out))return fail('Libere espaço na mochila para guardar o ovo de pato.');
+   d.inventory=i.data;site.duckEggs=site.duckEggs.filter(x=>x!==nest);if(!site.duckEggs.length)delete site.duckEggs;site.duckCollected=n;
+   return{ok:true,message:out.feather?'Você recolheu 1 ovo de pato e uma pena que estava no ninho.':'Você recolheu 1 ovo de pato.'};
+  }
+  if(!site.eggs?.includes(nest))return fail('Ninho vazio. Galinhas e patos alimentados botam pela manhã.');
   const i=new Inventory(d.inventory);if(!i.transact({},{egg:1}))return fail('Libere espaço na mochila para guardar o ovo.');
   d.inventory=i.data;site.eggs=site.eggs.filter(n=>n!==nest);if(!site.eggs.length)delete site.eggs;
   return{ok:true,message:'Você recolheu 1 ovo.'};
@@ -132,13 +144,16 @@ export function validAnimalCare(v:unknown,day:number):v is AnimalCare{
   &&(r.fed===undefined||Number.isSafeInteger(r.fed)&&r.fed>=0&&r.fed<=c.day)&&(r.milk===undefined||r.milk===true)
   &&(r.wool===undefined||r.wool===true&&domesticAnimal(id)?.kind==='sheep')
   &&(r.woolDays===undefined||domesticAnimal(id)?.kind==='sheep'&&Number.isInteger(r.woolDays)&&r.woolDays>=0&&r.woolDays<WOOL_FED_DAYS)
-  &&Object.keys(r).every(k=>k==='fed'||k==='milk'||k==='wool'||k==='woolDays'));
+  &&(r.duckDays===undefined||domesticAnimal(id)?.kind==='duck'&&Number.isInteger(r.duckDays)&&r.duckDays>=0&&r.duckDays<DUCK_FED_DAYS)
+  &&Object.keys(r).every(k=>k==='fed'||k==='milk'||k==='wool'||k==='woolDays'||k==='duckDays'));
 }
 /** Campos de produção de cada obra: cocho e ovos só em galinheiro e curral prontos. */
 export function validSiteProduction(s:FarmSite):boolean{
  const cap=TROUGH_CAPACITY[s.kind];
  if(s.trough!==undefined&&(cap===undefined||!s.finished||!Number.isSafeInteger(s.trough)||s.trough<0||s.trough>cap))return false;
- if(s.eggs!==undefined&&(s.kind!=='coop'||!s.finished||!Array.isArray(s.eggs)||s.eggs.length>NEST_COUNT||new Set(s.eggs).size!==s.eggs.length||s.eggs.some(n=>!Number.isInteger(n)||n<0||n>=NEST_COUNT)))return false;
+ const nests=(v:number[]|undefined)=>v===undefined||s.kind==='coop'&&s.finished&&Array.isArray(v)&&v.length<=NEST_COUNT&&new Set(v).size===v.length&&v.every(n=>Number.isInteger(n)&&n>=0&&n<NEST_COUNT);
+ if(!nests(s.eggs)||!nests(s.duckEggs)||s.eggs?.some(n=>s.duckEggs?.includes(n)))return false;
+ if(s.duckCollected!==undefined&&(s.kind!=='coop'||!Number.isSafeInteger(s.duckCollected)||s.duckCollected<0||s.duckCollected>1e6))return false;
  return true;
 }
 export const farmAnimalNoun=(kind:FarmSite['kind'])=>FARM_BUILDINGS[kind].animal==='cow'?'vaca':'galinha';

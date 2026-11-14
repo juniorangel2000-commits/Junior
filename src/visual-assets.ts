@@ -45,6 +45,7 @@ export function itemIconUrl(id: string, tier=0): string | undefined {
   if(id==='campfire')return 'assets/visual/kitchen/campfire.png';
   if(id==='emptyHive')return 'assets/visual/kitchen/empty-hive.png';
   if(id==='beeswax')return 'assets/visual/kitchen/beeswax.png';
+  if(id==='feather')return 'assets/visual/kitchen/feather.png';
   if(id==='daisyHoney')return 'assets/visual/kitchen/daisy-honey.png';
   if(id==='sunflowerHoney')return 'assets/visual/kitchen/sunflower-honey.png';
   if(id==='duckEgg')return 'assets/visual/kitchen/duck-egg.png';

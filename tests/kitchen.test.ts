@@ -59,10 +59,10 @@ describe('cozinha: fogão a lenha',()=>{
   expect(cookDish(s,'kaleOmelette',()=>false).ok).toBe(false);expect(cookDish(s,'kaleOmelette',()=>{throw Error('x');}).ok).toBe(false);
   expect(s.inventory).toEqual(before);
  });
- it('ovo de pato aparece com o aviso de que ainda não tem fonte; o mel já tem (abelhas)',()=>{
+ it('mel (abelhas) e ovo de pato (patos) já têm fonte: nenhum ingrediente fica sem aviso',()=>{
   const s=fresh();const tea=DISH_RECIPES.find(r=>r.id==='chamomileTea')!,pie=DISH_RECIPES.find(r=>r.id==='strawberryPie')!;
   expect(dishIngredients(s,tea).find(i=>i.item==='honey')!.future).toBeUndefined();
-  expect(dishIngredients(s,pie).find(i=>i.item==='duckEgg')!.future).toContain('patos');
+  expect(dishIngredients(s,pie).find(i=>i.item==='duckEgg')!.future).toBeUndefined();
   expect(dishIngredients(s,tea).find(i=>i.item===STOVE_FUEL)!.need).toBe(1);
   s.villageProgress!.recipes.push('chamomileTea');s.inventory.chamomile=1;s.inventory.wood=1;
   expect(cookDish(s,'chamomileTea',()=>true).message).toContain('1 mel');

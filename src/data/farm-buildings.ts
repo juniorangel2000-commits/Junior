@@ -13,8 +13,8 @@ export const ANIMAL_BUILDING_MATERIAL='hardwood';
 /** Materials added to a cost after release. Buildings finished before that
  * are treated as fully supplied; unfinished sites must still deliver them. */
 export const LATER_FARM_MATERIALS=['hardwood'] as const;
-export const FARM_BUILDINGS:Record<FarmKind,{name:string;width:number;height:number;bodyRows:number;cost:ItemCost;capacity:number;animal?:'chicken'|'cow'|'horse'|'sheep';allowedAnimals?:readonly ('sheep'|'goat')[];openYard?:boolean;description:string}>={
- coop:{name:'Galinheiro',width:5,height:5,bodyRows:3,cost:{wood:40,stone:16,plank:12,hardwood:6,doorKit:1,windowKit:1},capacity:6,animal:'chicken',description:'Abrigo e cercado para as galinhas da propriedade.'},
+export const FARM_BUILDINGS:Record<FarmKind,{name:string;width:number;height:number;bodyRows:number;cost:ItemCost;capacity:number;animal?:'chicken'|'cow'|'horse'|'sheep';allowedAnimals?:readonly ('sheep'|'goat'|'chicken'|'duck')[];openYard?:boolean;description:string}>={
+ coop:{name:'Galinheiro',width:5,height:5,bodyRows:3,cost:{wood:40,stone:16,plank:12,hardwood:6,doorKit:1,windowKit:1},capacity:6,animal:'chicken',allowedAnimals:['chicken','duck'],description:'Abrigo e cercado para as galinhas e os patos da propriedade.'},
  barn:{name:'Curral',width:7,height:6,bodyRows:4,cost:{wood:70,stone:28,plank:20,hardwood:10,doorKit:1,windowKit:1},capacity:4,animal:'cow',description:'Estábulo com cercado para as vacas da propriedade.'},
  stable:{name:'Estábulo',width:7,height:6,bodyRows:4,cost:{wood:80,stone:28,plank:24,hardwood:12,windowKit:1},capacity:1,animal:'horse',openYard:true,description:'Abrigo aberto para um cavalo domado, sem cercas nem porteira. O cavalo passeia e retorna ao seu abrigo.'},
  aprisco:{name:'Aprisco',width:7,height:6,bodyRows:4,cost:{wood:60,stone:24,plank:18,hardwood:8,doorKit:1,windowKit:1},capacity:4,animal:'sheep',allowedAnimals:['sheep','goat'],description:'Abrigo para até quatro ovelhas e cabras, com cocho e área de tosquia.'},
