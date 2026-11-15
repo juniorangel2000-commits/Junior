@@ -42,26 +42,29 @@ Cada projeto é aprendido uma vez, num serviço do NPC, e fica salvo em
 | Queijeira | 1 leite de cabra | 1 queijo de cabra | 1 dia |
 | Batedeira de manteiga | 2 leites | 1 manteiga | meio dia |
 | Roca | 1 lã | 1 novelo | 1 dia |
-| Tear | 2 novelos | 1 tecido | 1 dia |
-| Moinho de pedra | 2 trigos | 1 farinha | meio dia |
-| Moinho de pedra | 2 milhos | 1 fubá | meio dia |
-| Moinho de pedra | 2 aveias | 1 aveia em flocos | meio dia |
+| Tear | 2 novelos | 1 tecido de lã | 1 dia |
+| Moinho de pedra | 1 trigo | 1 farinha | meio dia |
+| Moinho de pedra | 1 milho | 1 fubá | meio dia |
+| Moinho de pedra | 1 aveia | 1 aveia em flocos | meio dia |
 
 ## Comércio
 
-Nenhuma loja vende os produtos novos. Preços iniciais, a ajustar jogando:
+Nenhuma loja vende os produtos novos. Preços revistos na preview.36 (regra em `docs/construcoes/PRECOS.md`):
 
 | Comprador | Produto | Preço |
 | --- | --- | --- |
 | Helena | Queijo | 40 |
 | Helena | Queijo de cabra | 52 |
 | Helena | Manteiga | 48 |
-| Helena | Farinha | 24 |
-| Helena | Fubá | 26 |
-| Helena | Aveia em flocos | 22 |
+| Helena | Farinha | 32 |
+| Helena | Fubá | 37 |
+| Helena | Aveia em flocos | 32 |
 | Celina | Novelo | 54 |
+| Celina | Tecido de lã | 150 |
 
-O tecido continua sendo o item que já existia, com as mesmas regras e o mesmo estoque.
+Desde a preview.36 o tear faz **tecido de lã**, um item próprio. Os tecidos simples da Celina
+custam 8 C e não pagavam os 2 novelos. Fornadas do tear já carregadas em saves antigos
+entregam tecido de lã. Produtos de leite e lã herdam a qualidade (`docs/construcoes/QUALIDADE.md`).
 
 ## Save
 

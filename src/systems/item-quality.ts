@@ -25,7 +25,7 @@ export const MAX_BOND=30;
 export const bondQuality=(bond:number|undefined):Quality=>(bond??0)>=QUALITY_BOND[2]?2:(bond??0)>=QUALITY_BOND[1]?1:0;
 
 /** Itens de animal (e o que se faz com eles) que levam qualidade para máquinas e pratos. */
-export const ANIMAL_QUALITY_ITEMS:readonly ItemId[]=['egg','duckEgg','milk','goatMilk','wool','cheese','goatCheese','butter','yarn','cloth'];
+export const ANIMAL_QUALITY_ITEMS:readonly ItemId[]=['egg','duckEgg','milk','goatMilk','wool','cheese','goatCheese','butter','yarn','woolCloth'];
 /** Separa os ingredientes (as melhores unidades primeiro) e devolve a qualidade média dos
  * itens de animal; comum se a receita não leva nenhum. */
 export function takeIngredientsQuality(s:Pick<SaveData,'inventory'|'itemQuality'>,cost:Partial<Record<ItemId,number>>):Quality{

@@ -3,7 +3,7 @@ import type {ItemId} from '../types';
 import type {ItemCost} from '../systems/inventory';
 export const MACHINE_IDS=['cheesePress','butterChurn','spinningWheel','loom','stoneMill','clayOven','beehive','composter','preserveKeg','waxPress'] as const;
 export type MachineKind=typeof MACHINE_IDS[number];
-export const MACHINE_PRODUCTS=['cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','cloth','strawberryJam','watermelonJam','candle'] as const;
+export const MACHINE_PRODUCTS=['cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','cloth','woolCloth','strawberryJam','watermelonJam','candle'] as const;
 export const isMachine=(v:unknown):v is MachineKind=>MACHINE_IDS.includes(v as MachineKind);
 export const MACHINES:Record<MachineKind,{name:string;width:number;npc:'bento'|'tobias'|'icaro'|'helena'|'augusto';learnFee:number;cost:ItemCost}>={
  cheesePress:{name:'Queijeira',width:1,npc:'bento',learnFee:60,cost:{board:8,ironIngot:2,peg:4}},
@@ -31,10 +31,10 @@ export const MACHINE_RECIPES:readonly MachineRecipe[]=[
  {id:'goatCheese',machine:'cheesePress',input:'goatMilk',amount:1,output:'goatCheese',quantity:1,minutes:1440},
  {id:'butter',machine:'butterChurn',input:'milk',amount:2,output:'butter',quantity:1,minutes:720},
  {id:'yarn',machine:'spinningWheel',input:'wool',amount:1,output:'yarn',quantity:1,minutes:1440},
- {id:'cloth',machine:'loom',input:'yarn',amount:2,output:'cloth',quantity:1,minutes:1440},
- {id:'flour',machine:'stoneMill',input:'wheat',amount:2,output:'flour',quantity:1,minutes:720},
- {id:'cornmeal',machine:'stoneMill',input:'corn',amount:2,output:'cornmeal',quantity:1,minutes:720},
- {id:'oatFlakes',machine:'stoneMill',input:'oat',amount:2,output:'oatFlakes',quantity:1,minutes:720},
+ {id:'cloth',machine:'loom',input:'yarn',amount:2,output:'woolCloth',quantity:1,minutes:1440},
+ {id:'flour',machine:'stoneMill',input:'wheat',amount:1,output:'flour',quantity:1,minutes:720},
+ {id:'cornmeal',machine:'stoneMill',input:'corn',amount:1,output:'cornmeal',quantity:1,minutes:720},
+ {id:'oatFlakes',machine:'stoneMill',input:'oat',amount:1,output:'oatFlakes',quantity:1,minutes:720},
 ];
 /** Forno de barro: pães e bolos do caderno, meio dia por fornada, com 1 madeira de lenha. */
 export const OVEN_MINUTES=720;

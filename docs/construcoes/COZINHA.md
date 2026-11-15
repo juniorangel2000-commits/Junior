@@ -19,24 +19,25 @@ Dados em `src/data/kitchen.ts`, regras em `src/systems/kitchen.ts` e caderno em
 A Helena ensina **uma receita por vez**, no serviço "Aprender" da pousada, na ordem
 abaixo. Cozinhar gasta os ingredientes e **1 madeira** de lenha. O prato vai para a
 mochila e recupera vigor ao ser comido. A Helena compra todos os pratos; nenhuma loja
-os vende. Os preços são iniciais, a ajustar jogando.
+os vende. Preços revistos na preview.36 (regra em `docs/construcoes/PRECOS.md`); a qualidade
+multiplica preço e vigor (`docs/construcoes/QUALIDADE.md`).
 
 | Prato | Ingredientes | Vigor | Aula | Venda |
 | --- | --- | --- | --- | --- |
-| Omelete de couve | 2 ovos, 1 couve | 40 | 20 C | 36 |
-| Salada da horta | 1 alface, 1 tomate, 1 cenoura | 35 | 20 C | 60 |
-| Pão caseiro | 2 farinhas, 1 ovo, 1 leite | 45 | 30 C | 80 |
-| Broa de milho | 2 fubás, 1 ovo, 1 manteiga | 50 | 30 C | 115 |
-| Pamonha | 2 milhos, 1 leite, 1 manteiga | 55 | 35 C | 110 |
-| Sopa de abóbora | 1 abóbora, 1 batata-doce, 1 manteiga | 60 | 35 C | 110 |
-| Bolo de cenoura | 2 farinhas, 2 ovos, 1 cenoura, 1 leite | 60 | 40 C | 110 |
-| Feijão tropeiro | 2 feijões, 1 couve, 1 ovo, 1 fubá | 70 | 45 C | 100 |
-| Suco de melancia | 1 melancia, 1 hortelã | 30 | 25 C | 70 |
-| Mingau de aveia | 1 aveia em flocos, 1 leite, 1 mel | 50 | 35 C | 75 |
-| Chá de camomila com mel | 1 camomila, 1 mel | 35 | 30 C | 55 |
-| Doce de leite | 3 leites, 1 mel | 45 | 40 C | 95 |
-| Torta de morango | 2 farinhas, 2 morangos, 1 manteiga, 1 ovo de pato | 70 | 50 C | 160 |
-| Pão com queijo e mel | 1 pão caseiro, 1 queijo, 1 mel | 80 | 50 C | 170 |
+| Omelete de couve | 2 ovos, 1 couve | 40 | 20 C | 55 |
+| Salada da horta | 1 alface, 1 tomate, 1 cenoura | 35 | 20 C | 95 |
+| Pão caseiro | 2 farinhas, 1 ovo, 1 leite | 45 | 30 C | 130 |
+| Broa de milho | 2 fubás, 1 ovo, 1 manteiga | 50 | 30 C | 190 |
+| Pamonha | 2 milhos, 1 leite, 1 manteiga | 55 | 35 C | 165 |
+| Sopa de abóbora | 1 abóbora, 1 batata-doce, 1 manteiga | 60 | 35 C | 205 |
+| Bolo de cenoura | 2 farinhas, 2 ovos, 1 cenoura, 1 leite | 60 | 40 C | 180 |
+| Feijão tropeiro | 2 feijões, 1 couve, 1 ovo, 1 fubá | 70 | 45 C | 155 |
+| Suco de melancia | 1 melancia, 1 hortelã | 30 | 25 C | 135 |
+| Mingau de aveia | 1 aveia em flocos, 1 leite, 1 mel | 50 | 35 C | 120 |
+| Chá de camomila com mel | 1 camomila, 1 mel | 35 | 30 C | 95 |
+| Doce de leite | 3 leites, 1 mel | 45 | 40 C | 120 |
+| Torta de morango | 2 farinhas, 2 morangos, 1 manteiga, 1 ovo de pato | 70 | 50 C | 275 |
+| Pão com queijo e mel | 1 pão caseiro, 1 queijo, 1 mel | 80 | 50 C | 285 |
 
 **Mel** e **ovo de pato** já existem como itens, com arte, mas ainda não têm fonte: chegam
 com as abelhas e com a criação de patos. O caderno mostra esse aviso no ingrediente que

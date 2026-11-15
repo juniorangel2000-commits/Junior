@@ -53,6 +53,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   strawberryJam:{name:'Geleia de morango',description:'Do barril de conservas. Nilo leva para outras regiões e paga bem.'},
   watermelonJam:{name:'Geleia de melancia',description:'Do barril de conservas. Nilo leva para outras regiões e paga bem.'},
   candle:{name:'Vela de cera',description:'Da prensa de cera. Amélia compra.'},
+  woolCloth:{name:'Tecido de lã',description:'Tecido fino do tear, feito com 2 novelos. Celina compra.'},
   manure:{name:'Esterco',description:'Deixado pelos porcos alimentados no chão do chiqueiro. Na composteira, vira adubo.'},
   composter:{name:'Composteira',description:'Instale na Propriedade: 2 estercos e 3 capins ou fibras viram 2 adubos em 2 dias.'},
   feather:{name:'Pena de pato',description:'Sai do ninho a cada 4 ovos de pato recolhidos. Celina compra.'},
@@ -64,7 +65,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   cheese:{name:'Queijo',description:'Preparado na queijeira com leite. Helena compra.'},
   goatCheese:{name:'Queijo de cabra',description:'Preparado na queijeira com leite de cabra. Helena compra.'},
   butter:{name:'Manteiga',description:'Preparada na batedeira com 2 leites. Helena compra.'},
-  yarn:{name:'Novelo',description:'Fiado na roca com lã. Use 2 no tear para fazer tecido; Celina compra.'},
+  yarn:{name:'Novelo',description:'Fiado na roca com lã. Use 2 no tear para fazer tecido de lã; Celina compra.'},
   flour:{name:'Farinha',description:'Trigo moído no moinho de pedra. Helena compra.'},
   cornmeal:{name:'Fubá',description:'Milho moído no moinho de pedra. Helena compra.'},
   oatFlakes:{name:'Aveia em flocos',description:'Aveia preparada no moinho de pedra. Helena compra.'},
@@ -115,7 +116,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
 
 /** Only these stock fields may be absent in a save from before the village
  * services update. Missing any older field still indicates a corrupt save. */
-export const VILLAGE_ITEM_IDS=['harvestBasket','honey','duckEgg',...DISH_IDS,...NEW_CROP_ITEM_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','clayOven','campfire','beehive','emptyHive','feather','manure','composter','preserveKeg','waxPress','strawberryJam','watermelonJam','candle','beeswax','daisyHoney','sunflowerHoney','cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
+export const VILLAGE_ITEM_IDS=['harvestBasket','honey','duckEgg',...DISH_IDS,...NEW_CROP_ITEM_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','clayOven','campfire','beehive','emptyHive','feather','manure','composter','preserveKeg','waxPress','strawberryJam','watermelonJam','candle','woolCloth','beeswax','daisyHoney','sunflowerHoney','cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
 
 export const ITEM_IDS = Object.keys(ITEMS) as ItemId[];
 export const ITEM_NAMES = Object.fromEntries(ITEM_IDS.map(id => [id, ITEMS[id].name])) as Record<ItemId, string>;

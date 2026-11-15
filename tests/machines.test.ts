@@ -96,7 +96,7 @@ describe('projetos e compatibilidade',()=>{
   t.s.machines.items[0].y=8;expect(validateSave(t.s)).toBe(false);t.s.machines.items[0].y=1;t.s.machines.items[0].x=2;expect(validateSave(t.s)).toBe(false);
  });
  it('os produtos novos vêm do processamento e são comprados pelos moradores',()=>{
-  expect(MERCHANTS.inn.sell).toMatchObject({cheese:40,goatCheese:52,butter:48,flour:24});expect(MERCHANTS.tailor.sell.yarn).toBe(54);
-  for(const m of Object.values(MERCHANTS))for(const id of ['cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes'] as const)expect(m.buy[id]).toBeUndefined();
+  expect(MERCHANTS.inn.sell).toMatchObject({cheese:40,goatCheese:52,butter:48,flour:32});expect(MERCHANTS.tailor.sell.yarn).toBe(54);expect(MERCHANTS.tailor.sell.woolCloth).toBe(150);
+  for(const m of Object.values(MERCHANTS))for(const id of ['cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','woolCloth'] as const)expect(m.buy[id]).toBeUndefined();
  });
 });

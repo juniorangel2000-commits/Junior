@@ -197,3 +197,10 @@ Object.assign(MERCHANTS.traveler.sell,{strawberryJam:170,watermelonJam:330});Obj
 // Pratos da cozinha: Helena compra; nenhuma loja vende.
 for(const r of DISH_RECIPES)MERCHANTS.inn.sell[r.id]=r.price;
 Object.assign(MERCHANTS.inn.sell,{cheese:40,goatCheese:52,butter:48,flour:24,cornmeal:26,oatFlakes:22});Object.assign(MERCHANTS.tailor.sell,{yarn:54});
+
+// Equilíbrio da preview.36 (docs/construcoes/PRECOS.md): todo produto de máquina vale pelo
+// menos 1,3× o que entra nele, e todo prato vale mais que os ingredientes. O tear faz
+// tecido de lã (os tecidos simples da Celina custam 8 C e não pagavam 2 novelos).
+Object.assign(MERCHANTS.inn.sell,{flour:32,cornmeal:37,oatFlakes:32});
+Object.assign(MERCHANTS.tailor.sell,{woolCloth:150});
+Object.assign(MERCHANTS.traveler.sell,{watermelonJam:370});
