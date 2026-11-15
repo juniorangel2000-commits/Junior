@@ -111,7 +111,7 @@ export class ValleyScene extends Phaser.Scene {
  private machineView?:MachineView;
  private machineRuntime:MachineRuntime={
   read:()=>this.state,snapshot:()=>this.snapshotState(),write:saveGame,
-  apply:d=>{this.state.machines=d.machines;this.state.inventory=d.inventory;Object.assign(this.inventory.data,d.inventory);this.updateHUD();},
+  apply:d=>{this.state.machines=d.machines;this.state.inventory=d.inventory;if(d.itemQuality)this.state.itemQuality=d.itemQuality;else delete this.state.itemQuality;Object.assign(this.inventory.data,d.inventory);this.updateHUD();},
   player:()=>this.player,space:()=>this.inHome?undefined:'property',bounds:()=>({width:WORLD_WIDTH*TILE,height:WORLD_HEIGHT*TILE}),
   blocked:(x,y)=>this.world.isSolidPoint(x,y)||farmPointBlocked(this.state,x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)),
   placement:(x,y)=>this.farmPlacementTileReason(x,y),actors:()=>[...(this.animals?.animals.filter(a=>a.sprite.visible)??[]),...(this.state.bentoTravel?.trip?.area==='property'?[this.state.bentoTravel.trip]:[])],

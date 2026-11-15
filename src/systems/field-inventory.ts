@@ -19,5 +19,7 @@ export function consumeInField(save:SaveData,item:ItemId,write:Writer):Result{
  if(!['herb','bandage','herbalTonic','fungalInfusion','meal','oldMap'].includes(item)&&!isDish(item))return{ok:false,message:'Este item é usado na propriedade ou funciona ao ser carregado na mochila.'};
  const draft=structuredClone(save),result=useConsumable(draft,item);if(!result.ok)return result;
  if(!persist(write,draft))return{ok:false,message:'Não foi possível salvar. O item foi preservado.'};
- save.inventory=draft.inventory;save.villageProgress=draft.villageProgress;save.underground=draft.underground;return result;
+ save.inventory=draft.inventory;save.villageProgress=draft.villageProgress;save.underground=draft.underground;
+ for(const k of ['itemQuality','foodEffect'] as const){if(draft[k])(save as any)[k]=draft[k];else delete save[k];}
+ return result;
 }

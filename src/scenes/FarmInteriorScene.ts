@@ -38,7 +38,7 @@ export class FarmInteriorScene extends Phaser.Scene{
  private machineView?:MachineView;
  private machineSpace=():MachineSpace=>`farm:${this.siteId}`;
  private machineRuntime:MachineRuntime={
-  read:()=>this.state,snapshot:()=>this.snapshotState(),write:saveGame,apply:d=>{this.state.machines=d.machines;this.state.inventory=d.inventory;this.updateHUD();},
+  read:()=>this.state,snapshot:()=>this.snapshotState(),write:saveGame,apply:d=>{this.state.machines=d.machines;this.state.inventory=d.inventory;if(d.itemQuality)this.state.itemQuality=d.itemQuality;else delete this.state.itemQuality;this.updateHUD();},
   player:()=>this.player,space:()=>this.machineSpace(),bounds:()=>interiorSize(this.layout),blocked:(x,y)=>interiorBlocked(this.layout,x,y),
   placement:(x,y)=>{if(y>=this.layout.height-2)return 'Deixe a porta e o corredor de entrada livres.';if(this.layout.fixtures.some(f=>x*32<f.x+f.w+16&&(x+1)*32>f.x-16&&y*32<f.y+f.h+16&&(y+1)*32>f.y-16))return 'Deixe livre o acesso ao cocho, ninhos e baias.';return [[2,2],[30,2],[2,30],[30,30],[16,16]].some(([dx,dy])=>interiorBlocked(this.layout,x*32+dx,y*32+dy))?'Há uma parede ou objeto neste espaço.':'';},
   actors:()=>this.animals.map(a=>a.brain),enabled:()=>!this.paused&&!this.leaving&&!this.careAction&&!this.ui.isModalOpen()&&!document.hidden,
