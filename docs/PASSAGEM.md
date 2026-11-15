@@ -5,8 +5,8 @@
 - **Atualizado em:** 2026-11-15
 - **Por:** Claude Code
 - **Continuar a partir de:** branch `release/v0.10.0-preview.36` (último commit desta rodada; ver `git log`).
-- **Última versão publicada:** `v0.10.0-preview.35` (Release pre-release com executáveis do Windows; tag em `861ea71`, `main` igual).
-- **Estado:** preview.36 em andamento, **não publicada**. Qualidade dos produtos e equilíbrio de preços prontos e testados. O Junior ainda não pediu para publicar.
+- **Última versão publicada:** `v0.10.0-preview.36` enviada à `main`. **Falta o Junior criar a Release** no GitHub: tag `v0.10.0-preview.36`, target `main`, pre-release. A preview.35 continua sendo a última Release com executável até isso acontecer.
+- **Estado:** preview.36 pronta, com versão do pacote, `NOTAS-0.10.0-preview.36.md` e `LEIA-0.10.0-preview.36.md`. Esta sessão não consegue enviar tags; por isso o Junior cria a Release pela página do GitHub.
 
 ## Feito nesta rodada
 
@@ -49,8 +49,8 @@ Lista em `docs/planejamento/ARTE-PENDENTE.md`: artes feitas por script na previe
 
 ## Em andamento e próximo passo exato
 
-1. Mostrar ao Junior a qualidade e os preços novos e pedir que ele jogue para conferir os pontos de `docs/construcoes/PRECOS.md` ("A conferir jogando").
-2. Se ele pedir **publicar**: `npm run build`, `npm version 0.10.0-preview.36 --no-git-tag-version`, `docs/cenarios/NOTAS-0.10.0-preview.36.md` e `LEIA-0.10.0-preview.36.md` (modelo da preview.35), commit `Release preview.36: qualidade e equilíbrio de preços`, push do branch e da `main` (avanço direto). O Junior cria a Release no GitHub (tag `v0.10.0-preview.36`, target `main`, pre-release), porque esta sessão não consegue enviar tags.
+1. **Junior:** criar a Release no GitHub. Em Releases, escolha "Draft a new release", crie a tag nova `v0.10.0-preview.36` com target `main` e marque pre-release. A tag dispara o workflow do Windows, que anexa instalador, portátil, `SHA256SUMS.txt` e `LEIA.md`.
+2. Depois, conferir no GitHub Actions se o workflow passou e criar o branch `release/v0.10.0-preview.37` a partir da `main`. O Junior ainda vai jogar para conferir os pontos de `docs/construcoes/PRECOS.md` ("A conferir jogando").
 3. Ideias para a próxima etapa: mostrar a amizade no painel do abrigo; qualidade nas colheitas (adubo); preço dos animais.
 
 ## Pendências e ideias para depois
@@ -70,7 +70,7 @@ Lista em `docs/planejamento/ARTE-PENDENTE.md`: artes feitas por script na previe
 
 - `npm run check`: ok.
 - `npm test`: **2.089 passaram, zero falhas, 236 arquivos** (inclui `item-quality.test.ts` e `prices-balance.test.ts`).
-- `npm run build`: não rodado nesta rodada (só é obrigatório para publicar).
+- `npm run build`: ok (aviso de tamanho do pacote, que já existia).
 - Chromium, nesta rodada (`CHROMIUM_PATH=/opt/pw-browsers/chromium` quando o padrão não existir):
   - `scripts/qa-quality.cjs`: OK. Carinho, ovo excelente, estrela na mochila, queijo excelente na Propriedade e save. Capturas em `docs/planejamento/qa-qualidade/`.
   - `scripts/qa-machines.cjs`, `qa-kitchen-stage2.cjs` e `qa-preserves.cjs`: OK.
