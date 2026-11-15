@@ -3,6 +3,7 @@ import {DISH_RECIPES,HELENA_DISHES,STOVE_FUEL,FUTURE_INGREDIENTS,dishRecipe,dish
 import {ITEM_NAMES} from '../data/items';
 import {Inventory} from './inventory';
 import {createVillageProgress} from '../data/village-progress';
+import {takeIngredientsQuality,gainQuality,qualityName,qualityPrice,takeBest,QUALITY_FACTOR,type Quality} from './item-quality';
 import {HOME_HEIGHT,HOME_WIDTH,validateHome,type HomeData} from './home';
 type Result={ok:boolean;message:string};
 type Writer=(d:SaveData)=>boolean;
@@ -40,10 +41,13 @@ export function cookDish(s:SaveData,id:string,write:Writer,station:CookingStatio
  const check=cookCheck(s,id,station);if(!check.recipe)return check;const r=check.recipe;
  const d=structuredClone(s),inv=new Inventory(d.inventory),cost=dishCost(r);
  if(!inv.transact(cost,{[r.id]:1}))return fail('Libere espaço na mochila para o prato.');
- d.inventory=inv.data;
+ const q=takeIngredientsQuality(d,cost);d.inventory=inv.data;gainQuality(d,r.id,d.inventory[r.id],q);
  try{if(!write(d))return fail('Não foi possível salvar. Os ingredientes foram preservados.');}catch{return fail('Não foi possível salvar. Os ingredientes foram preservados.');}
- s.inventory=d.inventory;return{ok:true,message:`${r.name} pronto! Coma pela mochila para recuperar ${r.vigor} de vigor.`};
+ s.inventory=d.inventory;if(d.itemQuality)s.itemQuality=d.itemQuality;else delete s.itemQuality;return{ok:true,message:dishReadyMessage(r,q)};
 }
+/** Vigor de um prato com a qualidade aplicada. */
+export const dishVigor=(r:DishRecipe,q:Quality)=>Math.round(r.vigor*QUALITY_FACTOR[q]);
+const dishReadyMessage=(r:DishRecipe,q:Quality)=>`${qualityName(r.id,q)} pronto! Coma pela mochila para recuperar ${dishVigor(r,q)} de vigor.`;
 /** Serviço da Helena: ensina a próxima receita. Lança erro com a mensagem, como os outros serviços. */
 export function learnNextDish(s:SaveData,payCoins:(coins:number)=>void):DishRecipe{
  const r=nextDishLesson(s);if(!r)throw Error('Você já aprendeu todas as receitas da pousada.');
@@ -67,12 +71,12 @@ export const discoveryMessage=(r:DishRecipe)=>`Receita encontrada: ${r.name}. El
  * (Vale e Vila guardam uma cópia própria) e salva; se salvar falhar, desfaz tudo. */
 export function cookInScene(s:SaveData,id:string,station:CookingStation,persist:()=>boolean,sync:(inventory:SaveData['inventory'])=>void=()=>{}):Result{
  const check=cookCheck(s,id,station);if(!check.recipe)return check;const r=check.recipe;
- const before=s.inventory,inv=new Inventory(structuredClone(before));
+ const before=s.inventory,beforeQuality=structuredClone(s.itemQuality),inv=new Inventory(structuredClone(before));
  if(!inv.transact(dishCost(r),{[r.id]:1}))return fail('Libere espaço na mochila para o prato.');
- s.inventory=inv.data;sync(s.inventory);
+ const q=takeIngredientsQuality(s,dishCost(r));s.inventory=inv.data;gainQuality(s,r.id,s.inventory[r.id],q);sync(s.inventory);
  let saved=false;try{saved=persist();}catch{saved=false;}
- if(!saved){s.inventory=before;sync(before);return fail('Não foi possível salvar. Os ingredientes foram preservados.');}
- return{ok:true,message:`${r.name} pronto! Coma pela mochila para recuperar ${r.vigor} de vigor.`};
+ if(!saved){s.inventory=before;if(beforeQuality)s.itemQuality=beforeQuality;else delete s.itemQuality;sync(before);return fail('Não foi possível salvar. Os ingredientes foram preservados.');}
+ return{ok:true,message:dishReadyMessage(r,q)};
 }
 
 /** Prato do dia da pousada: a Helena paga o dobro por 1 unidade, uma vez por dia.
@@ -85,8 +89,9 @@ export function dishOfDay(day:number):DishRecipe{
 export function sellDishOfDay(s:SaveData,i:Inventory,reward:(coins:number)=>void):DishRecipe{
  const r=dishOfDay(s.day);
  if(s.kitchen?.dishOfDaySold===s.day)throw Error('A Helena já comprou o prato do dia. Volte amanhã.');
- if(!i.spend({[r.id]:1}))throw Error(`Traga 1 ${r.name.toLowerCase()} para o prato do dia.`);
- reward(r.price*DISH_OF_DAY_FACTOR);(s.kitchen??={}).dishOfDaySold=s.day;return r;
+ if(!i.has(r.id))throw Error(`Traga 1 ${r.name.toLowerCase()} para o prato do dia.`);
+ const q=takeBest(s,r.id,i.data[r.id],1)[0]??0;i.spend({[r.id]:1});
+ reward(qualityPrice(r.price,q)*DISH_OF_DAY_FACTOR);(s.kitchen??={}).dishOfDaySold=s.day;return r;
 }
 export function validKitchenState(v:unknown,day:number):v is NonNullable<SaveData['kitchen']>{
  if(!v||typeof v!=='object'||Array.isArray(v))return false;const k=v as NonNullable<SaveData['kitchen']>;

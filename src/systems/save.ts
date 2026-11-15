@@ -50,6 +50,7 @@ import {createVillageProgress,validateVillageProgress,validateVillageInstallatio
 import {VILLAGE_ITEM_IDS} from '../data/items';
 import {validAnimalCare} from './animal-production';
 import {withWoodStove,validKitchenState} from './kitchen';
+import {validQualityLedger,syncQuality} from './item-quality';
 import {validFoodEffect} from './food-effects';
 import {validBeekeeping} from './beekeeping';
 import {blacksmithRoomPosition,previousBlacksmithPosition,BLACKSMITH_INSIDE,validateBlacksmithHome,BLACKSMITH_ROOM} from '../data/blacksmith-interior';
@@ -92,6 +93,7 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.farmConstruction!==undefined&&!validFarmConstruction(value.farmConstruction,value.recruitedAnimals))return false;
   if(value.machines!==undefined&&!validMachineState(value.machines,value as unknown as SaveData))return false;
   if(value.animalCare!==undefined&&!validAnimalCare(value.animalCare,typeof value.day==='number'?value.day:0))return false;
+  if(value.itemQuality!==undefined&&!validQualityLedger(value.itemQuality))return false;
   if(value.foodEffect!==undefined&&!validFoodEffect(value.foodEffect))return false;
   if(value.kitchen!==undefined&&!validKitchenState(value.kitchen,typeof value.day==='number'?value.day:0))return false;
   if(value.beekeeping!==undefined&&!validBeekeeping(value.beekeeping,typeof value.day==='number'?value.day:0))return false;
@@ -471,6 +473,7 @@ export function saveGame(data:SaveData):boolean {
   const original=data;
   try {
     if(!validateSave(data))return false;
+    if(data.itemQuality){const q={inventory:data.inventory,itemQuality:structuredClone(data.itemQuality)};syncQuality(q);data={...data,itemQuality:q.itemQuality};if(!data.itemQuality)delete data.itemQuality;}
     if(data.fishingProgress){data={...data,fishingProgress:{...data.fishingProgress,basket:availableSpecimens(data)}};}
     const keys=saveKeys(activeSaveKey());
     if(!validateSave(data))return false;
@@ -494,6 +497,7 @@ export function saveGame(data:SaveData):boolean {
       }
     }
     localStorage.setItem(keys.main,JSON.stringify(data));
+    if(original.itemQuality){if(data.itemQuality)original.itemQuality=data.itemQuality;else delete original.itemQuality;}
     if(original.fishingProgress&&data.fishingProgress)original.fishingProgress.basket=data.fishingProgress.basket;return true;
   } catch { return false; }
 }

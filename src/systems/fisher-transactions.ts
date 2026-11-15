@@ -11,7 +11,7 @@ const unavailable={ok:false as const,reason:'unavailable' as const,message:'Dami
 /** Save the complete draft before exposing inventory and wallet changes. */
 export function fisherTrade(save:SaveData,merchant:MerchantId,side:TradeSide,item:ItemId,quantity:number,write:Writer):CommerceResult{
  if(!villageAccessUnlocked(save)||merchant!=='fisher'||!fisherAtLake(save.time))return unavailable;
- const draft=structuredClone(save),inventory=new Inventory(draft.inventory),result=trade(merchant,side,item,quantity,inventory,draft.villageEconomy!,draft.day);
+ const draft=structuredClone(save),inventory=new Inventory(draft.inventory),result=trade(merchant,side,item,quantity,inventory,draft.villageEconomy!,draft.day,draft);
  if(!result.ok)return result;draft.inventory={...inventory.data};
  if(!persist(draft,write))return{ok:false,reason:'invalid-economy',message:'Não foi possível salvar. A negociação foi cancelada.'};
  Object.assign(save,draft);return result;

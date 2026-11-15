@@ -8,9 +8,10 @@ import {farmReserved} from './farm-construction';
 import {Inventory} from './inventory';
 import {ITEM_NAMES} from '../data/items';
 import {groundClock} from './ground-items';
+import {takeIngredientsQuality,gainQuality,qualityName,type Quality} from './item-quality';
 export type MachineSpace='property'|`farm:${number}`;
 /** `harvests`: coletas de mel da colmeia (a cera sai a cada 3). */
-export interface PlacedMachine extends TilePoint{id:number;kind:MachineKind;space:MachineSpace;job?:{recipe:string;startedAt:number;readyAt:number};harvests?:number}
+export interface PlacedMachine extends TilePoint{id:number;kind:MachineKind;space:MachineSpace;job?:{recipe:string;startedAt:number;readyAt:number;/** Qualidade do produto, herdada da matéria-prima de animal. */quality?:1|2};harvests?:number}
 export interface MachineState{version:1;nextId:number;items:PlacedMachine[]}
 export interface MachineRuntime{
  read:()=>SaveData;snapshot:()=>SaveData;write:(d:SaveData)=>boolean;apply:(d:SaveData)=>void;
@@ -86,7 +87,8 @@ export function loadMachine(rt:MachineRuntime,id:number,item:ItemId){return comm
  const has=(r:typeof options[number])=>Object.entries({[item]:r.amount,...r.extra}).every(([k,n])=>(s.inventory[k as ItemId]??0)>=(n??0));
  const recipe=options.find(has)??options[0];
  const i=new Inventory(s.inventory);if(!i.spend({[item]:recipe.amount,...recipe.extra}))return fail(`Leve ${recipe.amount} × ${ITEM_NAMES[item]}`+(options.some(r=>r.extra)?' e '+options.map(r=>Object.entries(r.extra??{}).map(([k,n])=>`${n} × ${ITEM_NAMES[k as ItemId]}`).join(', ')).join(' ou '):'')+' para carregar.');
- const startedAt=groundClock(s);m.job={recipe:recipe.id,startedAt,readyAt:startedAt+recipe.minutes};s.inventory=i.data;
+ const q=takeIngredientsQuality(s,{[item]:recipe.amount,...recipe.extra});
+ const startedAt=groundClock(s);m.job={recipe:recipe.id,startedAt,readyAt:startedAt+recipe.minutes,...(q?{quality:q as 1|2}:{})};s.inventory=i.data;
  return{ok:true,message:MACHINES[m.kind].name+' trabalhando.'};
 });}
 export function collectMachine(rt:MachineRuntime,id:number){return commit(rt,s=>{
@@ -99,7 +101,7 @@ export function collectMachine(rt:MachineRuntime,id:number){return commit(rt,s=>
   return{ok:true,message:'Você recolheu '+Object.entries(out).map(([k,n])=>`${n} × ${ITEM_NAMES[k as ItemId]}`).join(' e ')+'.'};
  }
  if(m.job){if(!machineReady(s,m))return fail('A máquina está trabalhando. Aguarde o produto ficar pronto.');const r=MACHINE_RECIPES.find(r=>r.id===m.job!.recipe)!;
-  if(!i.transact({},{[r.output]:r.quantity}))return fail('Libere espaço na mochila para recolher o produto.');delete m.job;s.inventory=i.data;return{ok:true,message:`Você recolheu ${r.quantity} × ${ITEM_NAMES[r.output]}.`};
+  if(!i.transact({},{[r.output]:r.quantity}))return fail('Libere espaço na mochila para recolher o produto.');const q:Quality=m.job.quality??0;delete m.job;s.inventory=i.data;gainQuality(s,r.output,s.inventory[r.output],q,r.quantity);return{ok:true,message:`Você recolheu ${r.quantity} × ${qualityName(r.output,q)}.`};
  }
  if(!i.transact({},{[m.kind]:1}))return fail('Libere espaço na mochila para recolher a máquina.');s.inventory=i.data;s.machines!.items=s.machines!.items.filter(x=>x.id!==id);
  return{ok:true,message:MACHINES[m.kind].name+' guardada na mochila.'};
@@ -113,7 +115,8 @@ export function loadOven(rt:MachineRuntime,id:number,dish:string){return commit(
  const recipe=MACHINE_RECIPES.find(r=>r.machine==='clayOven'&&r.output===dish);if(!recipe?.ingredients)return fail('Esta receita não vai ao forno.');
  const check=cookCheck(s,dish,'oven');if(!check.ok)return check;
  const i=new Inventory(s.inventory);if(!i.spend(recipe.ingredients))return fail('Faltam ingredientes.');
- const startedAt=groundClock(s);m.job={recipe:recipe.id,startedAt,readyAt:startedAt+recipe.minutes};s.inventory=i.data;
+ const q=takeIngredientsQuality(s,recipe.ingredients);
+ const startedAt=groundClock(s);m.job={recipe:recipe.id,startedAt,readyAt:startedAt+recipe.minutes,...(q?{quality:q as 1|2}:{})};s.inventory=i.data;
  return{ok:true,message:`${ITEM_NAMES[recipe.output]} no forno. Fica pronto em meio dia.`};
 });}
 export function useMachineItem(rt:MachineRuntime,item:ItemId):{ok:boolean;message:string}|undefined{
@@ -126,7 +129,7 @@ export function interactMachine(rt:MachineRuntime,item?:ItemId|null):{ok:boolean
 }
 export function machineHint(s:SaveData,m:PlacedMachine):string{
  const name=MACHINES[m.kind].name;
- if(m.job){const r=MACHINE_RECIPES.find(r=>r.id===m.job!.recipe)!;if(machineReady(s,m))return `${ITEM_NAMES[r.output]} · E recolher`;
+ if(m.job){const r=MACHINE_RECIPES.find(r=>r.id===m.job!.recipe)!;if(machineReady(s,m))return `${qualityName(r.output,m.job.quality??0)} · E recolher`;
  const minutes=Math.max(1,Math.ceil(m.job.readyAt-groundClock(s)));return `${name} trabalhando · ${Math.floor(minutes/60)}h ${minutes%60}min`;
  }
  if(m.kind==='clayOven')return name+' · E escolher a fornada no caderno';
@@ -152,6 +155,7 @@ export function validMachineState(value:unknown,save:SaveData):value is MachineS
   if(m.x+MACHINES[m.kind].width>=width||m.y+1>=height)return false;
   for(const t of machineFootprint(m)){const key=`${m.space}:${t.x},${t.y}`;if(cells.has(key)||m.space==='property'&&farmReserved(save,t.x,t.y))return false;cells.add(key);}
   if(m.job){const r=MACHINE_RECIPES.find(r=>r.id===m.job!.recipe&&r.machine===m.kind);if(!r||!Number.isFinite(m.job.startedAt)||m.job.startedAt<0||m.job.startedAt>groundClock(save)||!Number.isFinite(m.job.readyAt)||Math.abs(m.job.readyAt-(r.machine==='beehive'?nextHoneyReady(m.job.startedAt):m.job.startedAt+r.minutes))>.00001)return false;}
+  if(m.job?.quality!==undefined&&m.job.quality!==1&&m.job.quality!==2)return false;
   if(m.harvests!==undefined&&(m.kind!=='beehive'||!Number.isSafeInteger(m.harvests)||m.harvests<0||m.harvests>1e6))return false;
   if(m.kind==='beehive'&&(m.space!=='property'||!m.job))return false;
   return true;

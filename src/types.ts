@@ -68,6 +68,8 @@ export interface SaveData {
   /** Alimentação e produção dos animais alojados (ovos e leite). */
   machines?:import('./systems/machines').MachineState;
   animalCare?:import('./systems/animal-production').AnimalCare;
+  /** Quantas unidades de cada item são boas ou excelentes (o resto é comum). */
+  itemQuality?:import('./systems/item-quality').QualityLedger;
   /** Efeito do último prato comido (um por vez). */
   foodEffect?:import('./systems/food-effects').FoodEffect;
   /** Cozinha: dia em que a Helena comprou o prato do dia. */
@@ -169,6 +171,8 @@ export interface SaveData {
   forestMapEdits?: MapEditData;
 }
 export interface HudData {
+  /** Qualidade dos itens da mochila (mostrada no detalhe do item). */
+  itemQuality?:import('./systems/item-quality').QualityLedger;
   selectedCrop?:import('./data/crops').CropId;
   health?:{current:number;max:number;contaminated?:boolean};
   mapTitle?:string;

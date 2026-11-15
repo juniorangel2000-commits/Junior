@@ -45,7 +45,7 @@ describe('produção animal: ciclo diário',()=>{
   const s=farm();coop(s).trough=12;barn(s).trough=8;nextMorning(s,3);
   expect(coop(s).trough).toBe(6);expect(barn(s).trough).toBe(2);
   expect(coop(s).eggs).toHaveLength(6);
-  expect(s.animalCare!.animals[COWS[0]]).toEqual({fed:4,milk:true});
+  expect(s.animalCare!.animals[COWS[0]]).toEqual({fed:4,bond:3,milk:true});
  });
  it(`dias fora são recuperados com o estoque real, até ${MAX_CATCH_UP} manhãs`,()=>{
   const s=farm();barn(s).trough=8;nextMorning(s,30);

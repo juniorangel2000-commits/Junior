@@ -27,7 +27,7 @@ import {FARM_INTERIORS,interiorBlocked,interiorSafe,interiorSpawn,interiorExit,i
 import {animalsInside,farmDoorExit} from '../systems/farm-interior';
 import type {FarmSite} from '../systems/farm-construction';
 import {drawFarmInterior,preloadFarmInteriorArt,type InteriorView} from '../farm-interior-art';
-import {processAnimalProduction,productionSummary,fillTrough,collectEgg,collectManure,canMilk,milkCow,milkReady,woolReady,canShear,shearSheep,SHEARING_SECONDS,MILKING_SECONDS,TROUGH_CAPACITY} from '../systems/animal-production';
+import {processAnimalProduction,productionSummary,fillTrough,collectEgg,collectManure,canMilk,milkCow,milkReady,woolReady,canShear,shearSheep,petAnimal,pettedToday,bondStatus,SHEARING_SECONDS,MILKING_SECONDS,TROUGH_CAPACITY} from '../systems/animal-production';
 import {playerSpeedFactor} from '../systems/food-effects';
 interface InteriorStart{save:SaveData;ui:GameUI;siteId:number;onReturn:(save:SaveData,title?:boolean)=>void}
 interface InteriorAnimal{id:string;brain:AnimalBrain;sprite:Phaser.GameObjects.Sprite;shadow:Phaser.GameObjects.Ellipse;badge?:Phaser.GameObjects.Image}
@@ -106,18 +106,21 @@ export class FarmInteriorScene extends Phaser.Scene{
  }
  /** Animal mais próximo para ordenha ou tosquia. */
  private careAnimalNear():InteriorAnimal|undefined{
-  const p=this.player,closest=this.animals.filter(a=>['cow','goat','sheep'].includes(a.brain.kind)).map(a=>({a,d:Math.hypot(a.brain.x-p.x,a.brain.y-p.y)})).filter(x=>x.d<44).sort((a,b)=>a.d-b.d)[0];
+  const p=this.player,closest=this.animals.map(a=>({a,d:Math.hypot(a.brain.x-p.x,a.brain.y-p.y)})).filter(x=>x.d<44).sort((a,b)=>a.d-b.d)[0];
   if(!closest)return;const f=this.fixtureNear();
   // Um animal perto do cocho não pode roubar a interação de abastecer.
   if(f&&(f.kind==='trough'||f.kind==='nest')&&Math.hypot(Math.max(f.x-p.x,0,p.x-f.x-f.w),Math.max(f.y-p.y,0,p.y-f.y-f.h))<=closest.d)return;
   return closest.a;
  }
- private careAnimalPrompt(a:InteriorAnimal):string{const name=farmAnimalLabel(a.id),sheep=a.brain.kind==='sheep',c=sheep?canShear(this.state,a.id):canMilk(this.state,a.id);return c.ok?`${name} · E ${sheep?'tosquia com a tesoura':'ordenha com o balde'}`:`${name} · ${c.message}`;}
+ /** Ordenha ou tosquia quando o animal está pronto; senão, o carinho do dia. */
+ private careCheck(a:InteriorAnimal){const k=a.brain.kind;return k==='sheep'?canShear(this.state,a.id):k==='cow'||k==='goat'?canMilk(this.state,a.id):undefined;}
+ private careAnimalPrompt(a:InteriorAnimal):string{const name=farmAnimalLabel(a.id),c=this.careCheck(a);if(c?.ok)return`${name} · E ${a.brain.kind==='sheep'?'tosquia com a tesoura':'ordenha com o balde'}`;
+  return pettedToday(this.state,a.id)?`${name} · ${bondStatus(this.state,a.id)}${c?' · '+c.message:''}`:`${name} · E carinho · ${bondStatus(this.state,a.id)}`;}
  private updateHUD():void{if(!this.player)return;const f=this.fixtureNear(),machine=this.careAction?undefined:this.machineTarget(),site=this.site,count=site?.animals.length??0;
   const sum=site?productionSummary(this.state,site):undefined,cow=this.careAction?undefined:this.careAnimalNear();
   const status=sum&&count?` · cocho ${sum.trough}/${sum.capacity} · ${sum.fed}/${count} ${sum.fed===1?'alimentado':'alimentados'} hoje${site!.kind==='pigsty'?` · ${sum.manure} de esterco no chão`:site!.kind==='coop'?` · ${sum.eggs} ${sum.eggs===1?'ovo':'ovos'} nos ninhos`:` · ${sum.milk} para ordenhar${site!.kind==='aprisco'?` · ${sum.wool} para tosquiar`:''}`}`:'';
   const hint=!count?`${this.name} vazio · conduza seus animais até a entrada pelo cercado`:this.animalsShown?`${count} ${count===1?'animal':'animais'} aqui dentro${status}`:`De dia os animais ficam no cercado · use "Recolher os animais" no painel${status}`;
-  this.ui.updateHUD({area:'property',worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',inHome:true,swimming:false,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:this.careAction?null:machine||cow||f?'E':null,prompt:this.careAction?(this.careAction.kind==='shear'?'Tosquiando…':'Ordenhando…'):machine?machineHint(this.state,machine):cow?this.careAnimalPrompt(cow):f?this.fixturePrompt(f.kind,f.label,f.id):hint,location:this.name,harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:true,shelterReason:this.name,resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});this.ui.updateCameraZoom(this.shownZoom,!this.paused);}
+  this.ui.updateHUD({itemQuality:this.state.itemQuality,area:'property',worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',inHome:true,swimming:false,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:this.careAction?null:machine||cow||f?'E':null,prompt:this.careAction?(this.careAction.kind==='shear'?'Tosquiando…':'Ordenhando…'):machine?machineHint(this.state,machine):cow?this.careAnimalPrompt(cow):f?this.fixturePrompt(f.kind,f.label,f.id):hint,location:this.name,harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:true,shelterReason:this.name,resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});this.ui.updateCameraZoom(this.shownZoom,!this.paused);}
  private interact():void{if(this.paused||this.leaving||this.careAction||this.ui.isModalOpen())return;
   if(this.machineTarget()){const result=interactMachine(this.machineRuntime,this.ui.getActiveItem())!;this.ui.toast(result.message);return;}
   const cow=this.careAnimalNear();if(cow){this.startAnimalCare(cow);return;}
@@ -129,10 +132,13 @@ export class FarmInteriorScene extends Phaser.Scene{
   this.ui.toast(this.fixturePrompt(f.kind,f.label,f.id));
  }
  private startAnimalCare(cow:InteriorAnimal):void{
-  const shear=cow.brain.kind==='sheep',c=shear?canShear(this.state,cow.id):canMilk(this.state,cow.id);if(!c.ok){this.ui.toast(c.message);return;}
+  const shear=cow.brain.kind==='sheep',c=this.careCheck(cow);
+  if(!c?.ok){if(!pettedToday(this.state,cow.id)){const r=petAnimal(this.state,this.siteId,cow.id,saveGame);this.ui.toast(r.message);if(r.ok){gameAudio.play('pickup');this.heart(cow);}return;}this.ui.toast(c?.message??`${farmAnimalLabel(cow.id)} · ${bondStatus(this.state,cow.id)}`);return;}
   const side=this.player.x<cow.brain.x?-1:1,tool=this.add.image(cow.brain.x+side*14,cow.brain.y+6,shear?'interior-shears':'interior-milk-pail').setOrigin(.5,1).setDepth(cow.brain.y+1);tool.setScale(14/tool.height);
   this.careAction={animal:cow,left:shear?SHEARING_SECONDS:MILKING_SECONDS,kind:shear?'shear':'milk',tool};gameAudio.play(shear?'craft':'water');
  }
+ /** Coração que sobe sobre o animal depois do carinho. */
+ private heart(a:InteriorAnimal):void{const t=this.add.text(a.brain.x,a.brain.y-28,'♥',{fontFamily:'serif',fontSize:'14px',color:'#e2566b',stroke:'#4a2418',strokeThickness:3}).setOrigin(.5).setDepth(9999);this.tweens.add({targets:t,y:t.y-18,alpha:0,duration:900,onComplete:()=>t.destroy()});}
  private stopAnimalCare():void{this.careAction?.tool.destroy();this.careAction=undefined;}
  private updateAnimalCare(dt:number):void{const m=this.careAction;if(!m)return;if(Math.hypot(this.player.x-m.animal.brain.x,this.player.y-m.animal.brain.y)>48){this.stopAnimalCare();this.ui.toast('Aproxime-se do animal para continuar.');return;}m.left-=dt;if(m.kind==='shear')m.tool.setRotation(Math.sin(m.left*24)*.2);m.tool.y=m.animal.brain.y+6+Math.round(Math.sin(m.left*18));if(m.left>0)return;
   this.stopAnimalCare();const r=m.kind==='shear'?shearSheep(this.state,this.siteId,m.animal.id,saveGame):milkCow(this.state,this.siteId,m.animal.id,saveGame);this.ui.toast(r.message);if(r.ok)gameAudio.play('pickup');this.refreshBadges();}

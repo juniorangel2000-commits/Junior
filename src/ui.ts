@@ -1,4 +1,5 @@
 import {isMachine,machineIngredient} from './data/machines';
+import {qualityLabel,qualityCounts} from './systems/item-quality';
 import {cropFromSeed,cropDefinition} from './data/crops';
 import {FARM_KINDS,FARM_BUILDINGS,FARM_BASE_COST,isFarmTool} from './data/farm-buildings';
 import {shortCalendarLabel,fullCalendarLabel,calendarDate} from './systems/calendar';
@@ -845,6 +846,12 @@ export class GameUI {
     next.focus();
   }
 
+  /** Estrela no canto do espaço: prata se há unidades boas, ouro se há excelentes. */
+  private qualityBadge(slot:QuickSlot,inventory:InventoryData):string{
+    const id=slot?quickItem(slot) as ItemId|undefined:undefined;if(!id||toolReferenceParts(slot!))return '';
+    const c=qualityCounts(this.latest?.itemQuality,id,inventory[id]??0);if(!c.good&&!c.excellent)return '';
+    return `<span class="slot-quality slot-quality-${c.excellent?'excellent':'good'}" aria-hidden="true">★</span>`;
+  }
   toggleInventory(inventory: InventoryData): void {
     if(this.gameplayLocked||fishingActive())return;
     if (this.mode !== 'hud') return;
@@ -862,7 +869,7 @@ export class GameUI {
       <div class="backpack-grid" aria-label="Mochila com ${inventoryCapacity(inventory)} espaços">${Array.from({ length: Math.max(entries.length,inventoryCapacity(inventory)) }, (_, index) => {
         const slot = entries[index] ?? null, info = this.slotInfo(slot);
         const quantity = quickQuantity(slot, inventory, !!this.latest?.wateringCan);
-        return `<button type="button" class="bag-slot${slot ? ' occupied' : ''}" ${slot ? `data-bag-item="${slot}" draggable="true"` : 'disabled'} aria-label="${slot ? `${info.label}, quantidade ${quantity}` : `Espaço ${index + 1} vazio`}" title="${slot ? info.label : 'Vazio'}">${slot ? `${icon(info.icon,'',this.slotCondition(slot)?.tier??0)}<strong class="slot-quantity">${toolReferenceParts(slot)?'':quantity}</strong>${this.durabilityMarkup(slot)}` : ''}</button>`;
+        return `<button type="button" class="bag-slot${slot ? ' occupied' : ''}" ${slot ? `data-bag-item="${slot}" draggable="true"` : 'disabled'} aria-label="${slot ? `${info.label}, quantidade ${quantity}` : `Espaço ${index + 1} vazio`}" title="${slot ? info.label : 'Vazio'}">${slot ? `${icon(info.icon,'',this.slotCondition(slot)?.tier??0)}<strong class="slot-quantity">${toolReferenceParts(slot)?'':quantity}</strong>${this.qualityBadge(slot,inventory)}${this.durabilityMarkup(slot)}` : ''}</button>`;
       }).join('')}</div>
       <div class="backpack-detail" aria-live="polite"><span class="detail-icon">${icon('leaf')}</span><div><strong class="detail-name">Cada coisa no seu lugar</strong><p class="detail-text">Arraste um item para a barra abaixo. Ou clique no item e depois no slot.</p></div></div>
       <div class="backpack-bar-heading"><strong>Barra rápida</strong><span>Teclas 1–9</span></div><div class="inventory-quickbar" aria-label="Nove slots da barra rápida"></div>
@@ -877,7 +884,8 @@ export class GameUI {
         panel.querySelector('.detail-icon')!.innerHTML = icon(info.icon,'',this.slotCondition(item)?.tier??0);
         panel.querySelector('.detail-name')!.textContent = info.label;
         const condition=this.slotCondition(item),copy=toolReferenceParts(item);
-        panel.querySelector('.detail-text')!.textContent = info.detail+(condition&&wearsOut(quickItem(item))?`${durableTool(quickItem(item))?' · Material: '+['Pedra','Ferro','Ouro','Metal Negro'][condition.tier]:''} · Durabilidade: ${condition.durability}/${ECONOMY_BALANCE.durability[condition.tier]}`:'');
+        const quality=quickItem(item)?qualityLabel(this.latest?.itemQuality,quickItem(item) as ItemId,inventory[quickItem(item) as ItemId]??0):'';
+        panel.querySelector('.detail-text')!.textContent = info.detail+(quality?` · Qualidade: ${quality}`:'')+(condition&&wearsOut(quickItem(item))?`${durableTool(quickItem(item))?' · Material: '+['Pedra','Ferro','Ouro','Metal Negro'][condition.tier]:''} · Durabilidade: ${condition.durability}/${ECONOMY_BALANCE.durability[condition.tier]}`:'');
         panel.querySelector('[data-use-item]')?.remove();
         panel.querySelector('[data-drop-item]')?.remove();
         const id=quickItem(item) as ItemId|undefined;
