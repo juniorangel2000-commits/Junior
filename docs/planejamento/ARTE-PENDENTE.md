@@ -21,6 +21,7 @@ Boas referências para anexar ao gerador:
 | Abelhas na colmeia | `public/assets/visual/machines/beehive.png` (quadros 2 e 3) | pontinhos pintados por script |
 | Colmeia vazia | `public/assets/visual/kitchen/empty-hive.png` | colmeia povoada desbotada |
 | Mel de margarida e mel de girassol | `daisy-honey.png` e `sunflower-honey.png` em `kitchen/` | ícone do mel com outro tom |
+| Tecido de lã (preview.36) | `public/assets/visual/machines/woolCloth.png` | cópia do ícone dos tecidos simples |
 | Porteira aberta do chiqueiro | montada em código (`pigstyGate` em `src/farm-construction-view.ts`) | folha "de lado" feita da borda da porteira |
 
 Sugestões para o próximo pacote:
@@ -29,6 +30,7 @@ Sugestões para o próximo pacote:
 - **Lamaçal:** poça de lama vista de cima, larga (3×2 blocos), bordas irregulares.
 - **Colmeia:** a mesma colmeia em 3 versões lado a lado (parada, abelhas à esquerda, abelhas à direita), mais uma versão vazia, com a madeira desbotada e sem abelhas.
 - **Méis de flor:** o mesmo pote aberto do mel, um com margaridas na etiqueta e outro com girassol.
+- **Tecido de lã:** rolo de tecido de lã macio, creme com listras marrons, diferente do tecido simples.
 - **Chiqueiro:** a mesma arte em duas versões, porteira fechada e porteira aberta (folha encostada por dentro da cerca).
 
 ## 2. Itens que usam o ícone de outro item

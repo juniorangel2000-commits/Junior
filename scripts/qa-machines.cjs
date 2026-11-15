@@ -8,11 +8,11 @@ const out=process.argv[2]||'/tmp/qa-machines';fs.mkdirSync(out,{recursive:true})
   const{FARM_BUILDINGS}=await import('/src/data/farm-buildings.ts'),{performVillageService}=await import('/src/systems/village-services.ts'),{craft}=await import('/src/systems/crafting.ts'),{Inventory}=await import('/src/systems/inventory.ts'),s=v.snapshotState();
   s.time=600;s.villageEconomy.coins=1000;s.inventory.hammer=1;
   for(const k of md.MACHINE_IDS)for(const[id,n]of Object.entries(md.MACHINES[k].cost))s.inventory[id]+=n;
-  for(const k of md.MACHINE_IDS){const learned=performVillageService(s,'learn-'+k);if(!learned.ok)throw Error(learned.message);const inv=new Inventory(s.inventory),built=craft(k,inv,true,s.villageProgress);if(!built.ok)throw Error(built.message);s.inventory=inv.data;}
-  s.inventory.milk=3;s.inventory.goatMilk=1;s.inventory.wool=2;s.inventory.wheat=2;s.inventory.yarn=0;
+  for(const k of ['cheesePress','butterChurn','spinningWheel','loom','stoneMill']){const learned=performVillageService(s,'learn-'+k);if(!learned.ok)throw Error(learned.message);const inv=new Inventory(s.inventory),built=craft(k,inv,true,s.villageProgress);if(!built.ok)throw Error(built.message);s.inventory=inv.data;}
+  s.inventory.milk=3;s.inventory.goatMilk=1;s.inventory.wool=2;s.inventory.wheat=1;s.inventory.yarn=0;
   s.depletedResources=[...new Set([...s.depletedResources,...v.world.resources.filter(r=>r.x>=27&&r.x<=65&&r.y>=27&&r.y<=58).map(r=>r.id)])];
   s.farmConstruction={version:1,nextId:2,sites:[{id:1,kind:'barn',x:40,y:30,delivered:{...FARM_BUILDINGS.barn.cost},finished:true,animals:[],hay:0,gateOpen:true}]};v.loadState(s);
-  return {learned:s.villageProgress.recipes.filter(r=>md.MACHINE_IDS.includes(r)),machines:md.MACHINE_IDS.map(k=>s.inventory[k])};
+  const five=['cheesePress','butterChurn','spinningWheel','loom','stoneMill'];return {learned:s.villageProgress.recipes.filter(r=>five.includes(r)),machines:five.map(k=>s.inventory[k])};
  });assert.equal(setup.learned.length,5);assert.deepEqual(setup.machines,[1,1,1,1,1]);console.log('· cinco projetos aprendidos com os moradores e máquinas montadas');
  const outside=await page.evaluate(async()=>{
   let candidate;for(let y=39;y<53&&!candidate;y++)for(let x=30;x<60&&!candidate;x++){
@@ -41,11 +41,11 @@ const out=process.argv[2]||'/tmp/qa-machines';fs.mkdirSync(out,{recursive:true})
  for(const[id,product]of [[churn,'butter'],[mill,'flour']]){await page.waitForFunction(id=>i.machineView.objects.get(id)?.badge.visible,id);assert.equal(await page.evaluate(id=>i.machineView.objects.get(id).badge.texture.key,id),'machine-product-'+product);}
  await page.screenshot({path:out+'/baloes-produtos-prontos.png'});
  await near(churn);await pressE();await near(mill);await pressE();assert.equal(await stock('butter'),1);assert.equal(await stock('flour'),1);
- await advance(720);await near(loom);await pressE();assert.equal(await stock('cloth'),1);console.log('· lã → novelos → tecido; leite → manteiga; trigo → farinha, com balões corretos');
+ await advance(720);await near(loom);await pressE();assert.equal(await stock('woolCloth'),1);console.log('· lã → novelos → tecido de lã; leite → manteiga; trigo → farinha, com balões corretos');
  await near(wheel);await page.evaluate(()=>i.ui.setQuickbar(['hand',null,null,null,null,null,null,null,null]));await page.keyboard.press('1');await pressE();assert.equal(await stock('spinningWheel'),1);
  await page.evaluate(()=>{i.player.x=(i.layout.doorX+1)*32;i.player.y=(i.layout.height-1.6)*32;});await page.keyboard.down('s');await page.waitForFunction(()=>!game.scene.isActive('Interior')&&game.scene.isActive('Vale'));await page.keyboard.up('s');
  await near(outside);await page.waitForFunction(id=>v.machineView.objects.get(id)?.badge.visible,outside);assert.equal(await page.evaluate(id=>v.machineView.objects.get(id).badge.texture.key,outside),'machine-product-cheese');await pressE();assert.equal(await stock('cheese'),1);console.log('· queijeira terminou enquanto o jogador estava em outro cenário');
  await page.evaluate(()=>v.mainMenu());await page.locator('#continue-game').waitFor();await page.locator('#continue-game').click();await page.waitForFunction(()=>document.querySelector('#ui')?.dataset.area==='property');
- const result=await page.evaluate(()=>({cheese:v.state.inventory.cheese,butter:v.state.inventory.butter,flour:v.state.inventory.flour,cloth:v.state.inventory.cloth,yarn:v.state.inventory.yarn,spinningWheel:v.state.inventory.spinningWheel,machines:v.state.machines.items.length,jobs:v.state.machines.items.filter(m=>m.job).length}));assert.deepEqual(result,{cheese:1,butter:1,flour:1,cloth:1,yarn:0,spinningWheel:1,machines:4,jobs:0});assert.deepEqual(errors,[]);
+ const result=await page.evaluate(()=>({cheese:v.state.inventory.cheese,butter:v.state.inventory.butter,flour:v.state.inventory.flour,woolCloth:v.state.inventory.woolCloth,yarn:v.state.inventory.yarn,spinningWheel:v.state.inventory.spinningWheel,machines:v.state.machines.items.length,jobs:v.state.machines.items.filter(m=>m.job).length}));assert.deepEqual(result,{cheese:1,butter:1,flour:1,woolCloth:1,yarn:0,spinningWheel:1,machines:4,jobs:0});assert.deepEqual(errors,[]);
  fs.writeFileSync(out+'/validacao.json',JSON.stringify({setup,result,errors},null,2));console.log('QA das máquinas: OK');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
