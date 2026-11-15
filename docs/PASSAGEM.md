@@ -4,7 +4,7 @@
 
 - **Atualizado em:** 2026-11-14
 - **Por:** Claude Code
-- **Continuar a partir de:** `main` / commit `f6f39cb` (Release preview.35). Próxima rodada: branch `release/v0.10.0-preview.36`.
+- **Continuar a partir de:** branch `release/v0.10.0-preview.36` (criado da `main`, que é a preview.35 publicada).
 - **Última versão publicada:** `v0.10.0-preview.35` enviada à `main` (`f6f39cb`). **Falta o Junior criar a Release** no GitHub: tag `v0.10.0-preview.35`, target `main`, pre-release. A preview.34 continua sendo a última Release com executável até isso acontecer.
 - **Estado:** preview.35 pronta e enviada à `main`, com versão do pacote, `NOTAS-0.10.0-preview.35.md` e `LEIA-0.10.0-preview.35.md`. Esta sessão não consegue criar tags (o push da tag é recusado); por isso o Junior cria a Release pela página do GitHub.
 
@@ -239,8 +239,8 @@
 
 ## Em andamento e próximo passo exato
 
-1. **Junior:** criar a Release no GitHub. Em Releases, escolha "Draft a new release" e crie a tag nova `v0.10.0-preview.35` com target `main`, marcando pre-release. A tag dispara o workflow do Windows, que já aceita uma Release existente e anexa instalador, portátil, `SHA256SUMS.txt` e `LEIA.md`.
-2. Depois de publicada, conferir no GitHub Actions se o workflow passou, e então atualizar esta passagem.
+1. ✅ Release `v0.10.0-preview.35` publicada (pre-release, 15/11/2026). O workflow do Windows passou e anexou instalador, portátil, `SHA256SUMS.txt` e `LEIA.md`.
+2. A tag `v0.10.0-preview.35` aponta para `861ea71`; a `main` está nesse commit.
 3. Próxima rodada (`release/v0.10.0-preview.36`, já criado a partir da `main`): equilíbrio de preços jogando e qualidade dos produtos e pratos.
 4. **Pixel arts que faltam:** lista em `docs/planejamento/ARTE-PENDENTE.md`. Tem as artes provisórias feitas por script na preview.35, os ícones emprestados de outro item e as artes previstas que não existem. O Junior vai gerar as artes no ChatGPT e mandar no chat.
 
