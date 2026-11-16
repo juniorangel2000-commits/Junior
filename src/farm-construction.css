@@ -1,2 +1,11 @@
 .farm-site-panel{width:min(720px,94vw);max-height:90dvh;overflow:auto;padding:22px;color:#60492f;background:#faedcc;border:7px ridge #a6783d;border-radius:7px;box-shadow:0 12px 60px #121c1bb0}
 .farm-site-panel h2{font-family:Georgia,serif;margin:0;font-weight:normal}.farm-site-panel p{line-height:1.5}.farm-site-materials{padding:0;list-style:none;display:grid;gap:7px}.farm-site-materials li{display:flex;align-items:center;gap:10px;padding:5px 10px;background:#e8d7b2;border:1px solid #c5a16a;border-radius:4px}.farm-site-materials img{width:30px;height:30px;object-fit:contain;image-rendering:pixelated}.farm-site-actions{display:flex;gap:9px;flex-wrap:wrap}.farm-site-message{min-height:24px;color:#58643b}.farm-storage-count{font-size:1.3rem}.farm-project-preview{height:100px;width:100%;object-fit:contain;image-rendering:pixelated}
+
+/* Amizade dos moradores no painel do abrigo (preview.40). */
+.farm-site-residents p{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0}
+.farm-site-residents p>button{margin-left:auto;padding:4px 10px;font-size:11px}
+.farm-friendship{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;color:#7a5a36}
+.farm-friendship-bar{display:inline-block;width:70px;height:7px;border-radius:4px;background:#e2cfa2;box-shadow:inset 0 0 0 1px #b7965f;overflow:hidden}
+.farm-friendship-bar i{display:block;height:100%;background:#b98a4f}
+.farm-friendship-bar i.q1{background:#a9b0ba}.farm-friendship-bar i.q2{background:#e0b33d}
+.farm-friendship-todo{color:#a0532e;font-weight:600}
