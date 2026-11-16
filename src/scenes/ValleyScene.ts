@@ -74,6 +74,7 @@ import { Inventory, ITEM_NAMES } from '../systems/inventory';
 import { Farming, soilGroundReason, cropStatus, type SoilGround } from '../systems/farming';
 import {cropSpriteLayout} from '../crop-layout';
 import { drawPreparedSoil } from '../farming-art';
+import { wideBench } from '../systems/building';
 import { Building, BUILD_COSTS, BUILD_NAMES, BUILD_REQUIREMENTS, buildingFootprint, buildingLayer } from '../systems/building';
 import { BLUEPRINT_COST, BLUEPRINT_LABEL, BLUEPRINT_SHELTER } from '../data/blueprints';
 import { RECIPES } from '../data/recipes';
@@ -106,6 +107,9 @@ import { isAnimatedTool } from '../data/tool-art';
 import {playerSpeedFactor} from '../systems/food-effects';
 const DEFAULT_PROFILE: CharacterProfile = { name: 'Viajante', skin: '#d9a276', hairStyle: 'preso', hairColor: '#754323', outfit: '#638a9d' };
 
+/** Arte das bancadas de 2 blocos e a largura na tela (2 blocos + uma sobra de 6 px). */
+const WIDE_BENCH_ART={workbench:'asset-workbench-wide',constructionBench:'asset-construction-bench'} as const;
+const WIDE_BENCH_WIDTH=70;
 export class ValleyScene extends Phaser.Scene {
  private farmView?:FarmConstructionView;
  private farmRuntime=createFarmRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.inventory.data,()=>this.player,(x,y)=>this.farmPlacementTileReason(x,y),()=>{this.farmView?.refresh();this.updateHUD();});
@@ -1509,6 +1513,10 @@ export class ValleyScene extends Phaser.Scene {
         if (b.kind === 'fence') {
           this.buildingSprites.push(drawConnectedFence(this, b, this.building.buildings, this.state.day));
         } else if(b.kind==='bench'){this.buildingSprites.push(drawCraftedBench(this,b));
+        } else if(wideBench(b)&&this.textures.exists(WIDE_BENCH_ART[b.kind as 'workbench'|'constructionBench'])){
+          // Bancada de 2 blocos (arte de 16/11/2026): ocupa a largura dos dois e passa um pouco para cima.
+          const img=this.add.image(b.x*TILE+TILE,b.y*TILE+30,WIDE_BENCH_ART[b.kind as 'workbench'|'constructionBench']).setOrigin(.5,1).setDepth(b.y*TILE+30);
+          img.setScale(WIDE_BENCH_WIDTH/img.width);this.buildingSprites.push(img as unknown as Phaser.GameObjects.Sprite);
         } else if (b.kind === 'gate') {
           this.buildingSprites.push(...drawGate(this,b));
         } else if (b.kind === 'roof') {

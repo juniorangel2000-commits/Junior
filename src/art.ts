@@ -83,22 +83,7 @@ export function createArt(scene: Phaser.Scene): void {
   adopt('window', 'imported-window');
   adopt('door', 'imported-door');
   adopt('workbench', 'asset-workbench');
-  // Bancada de construção: arte provisória até a definitiva (docs/planejamento/ARTE-PENDENTE.md).
-  // A bancada de trabalho com uma pilha de tábuas, um esquadro e tijolos por cima.
-  adopt('constructionBench', 'asset-construction-bench');
-  if (scene.textures.exists('asset-workbench')) {
-    const base = scene.textures.get('asset-workbench').getSourceImage() as HTMLImageElement | HTMLCanvasElement;
-    add('constructionBench', base.width, base.height, c => {
-      c.drawImage(base, 0, 0);
-      const u = base.width / 32, r = (color: string, x: number, y: number, w: number, h: number) => { c.fillStyle = color; c.fillRect(Math.round(x * u), Math.round(y * u), Math.max(1, Math.round(w * u)), Math.max(1, Math.round(h * u))); };
-      // Pilha de tábuas.
-      r('#5a3f26', 3, 6, 14, 6); r('#c99a5c', 3, 6, 14, 2); r('#a77a45', 3, 8, 14, 2); r('#d8ae70', 4, 10, 12, 2); r('#5a3f26', 3, 12, 14, 1);
-      // Tijolos.
-      r('#6b2f22', 19, 8, 9, 5); r('#b4553c', 19, 8, 4, 2); r('#c4644a', 24, 8, 4, 2); r('#a54a34', 19, 11, 9, 2);
-      // Esquadro de ferro.
-      r('#43514d', 20, 2, 1, 6); r('#43514d', 20, 7, 6, 1); r('#a9b8ae', 21, 2, 1, 5);
-    });
-  }
+  // A bancada de construção usa a arte de 2 blocos (asset-construction-bench), desenhada à parte.
   const floorSource = scene.textures.exists('asset-ground-wood') ? 'asset-ground-wood' : 'module-piso_tabuas';
   if (scene.textures.exists(floorSource)) {
     const floor = scene.textures.get(floorSource).getSourceImage() as HTMLImageElement | HTMLCanvasElement;

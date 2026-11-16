@@ -28,8 +28,7 @@ Boas referências para anexar ao gerador:
 ## 0. Bancadas (pedido de 16/11/2026)
 
 Bancada de trabalho refeita e bancada de construção nova, as duas com **2 blocos de largura**.
-Prompts prontos em `docs/planejamento/PROMPTS-ARTE-BANCADAS.md`. Hoje a bancada de construção
-usa uma arte provisória (a bancada de trabalho com tábuas, tijolos e esquadro).
+✅ Recebidas e no jogo em 16/11/2026 (`docs/arte-recebida/bancadas/`).
 
 ## 1. Provisórias feitas por script na preview.35 (trocar primeiro)
 

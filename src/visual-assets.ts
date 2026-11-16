@@ -104,6 +104,9 @@ export function preloadVisualAssets(scene: Phaser.Scene): void {
   preloadCharacterSprites(scene);
   preloadToolArt(scene);
   preloadAnimalSprites(scene);preloadCropArt(scene);
+  // Bancadas de 2 blocos (scripts/import_art_bancadas.py).
+  if(!scene.textures.exists('asset-workbench-wide'))scene.load.image('asset-workbench-wide','assets/visual/world/workbench-wide.png');
+  if(!scene.textures.exists('asset-construction-bench'))scene.load.image('asset-construction-bench','assets/visual/world/construction-bench.png');
   scene.load.image('lake-rocks-source', 'assets/visual/nature/lake-rocks.png');
   scene.load.image('reference-trees-source', 'assets/visual/nature/reference-trees.png');
   scene.load.image('reference-details-source', 'assets/visual/nature/reference-details.png');

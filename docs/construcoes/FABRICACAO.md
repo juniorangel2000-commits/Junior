@@ -18,8 +18,10 @@ Materiais.
 
 - Montada no modo de construção, como a bancada de trabalho: 8 tábuas serradas, 6 pedras e
   4 cavilhas, com o martelo. Usada com E (abre a aba dela).
-- Arte provisória: a bancada de trabalho com tábuas, tijolos e esquadro por cima. A arte
-  definitiva (2 blocos de largura) está pedida em `docs/planejamento/ARTE-PENDENTE.md`.
+- **As duas bancadas ocupam 2 blocos de largura**, com a arte do Junior de 16/11/2026
+  (`docs/arte-recebida/bancadas/`, importada por `scripts/import_art_bancadas.py`).
+- Partidas antigas: a bancada de trabalho cresce para o bloco da direita se ele estiver livre;
+  se houver algo encostado, ela fica com 1 bloco (`narrow: true`) e continua funcionando.
 
 ## Janela de fabricação
 

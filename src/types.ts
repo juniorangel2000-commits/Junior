@@ -40,7 +40,9 @@ export interface TilePoint { x: number; y: number }
  * são convertidos na primeira atualização (nabo, progresso proporcional). */
 export interface CropData extends TilePoint { growth: number; watered: boolean; crop?: import('./data/crops').CropId; days?: number; day?: number }
 export interface FarmingProgress { prepared: boolean; planted: boolean; watered: boolean; harvested: boolean }
-export interface BuildingData extends TilePoint { kind: 'gate' | 'fence' | 'bench' | 'workbench' | 'constructionBench' | 'wall' | 'door' | 'floor' | 'window' | 'roof'; open?: boolean; rotation?: 0 | 1 | 2 | 3; gateFlip?: boolean; fenceBuiltDay?: number }
+export interface BuildingData extends TilePoint { kind: 'gate' | 'fence' | 'bench' | 'workbench' | 'constructionBench' | 'wall' | 'door' | 'floor' | 'window' | 'roof'; open?: boolean; rotation?: 0 | 1 | 2 | 3; gateFlip?: boolean; fenceBuiltDay?: number;
+  /** Bancada de trabalho antiga que não coube em 2 blocos (o bloco ao lado estava ocupado): fica com 1. */
+  narrow?: true }
 export type ResourceKind = 'tree' | 'stone' | 'seeds' | 'scrap' | 'standingTree' | 'vein' | 'fiber' | 'fallenLog' | 'stump' | 'herb' | 'mushroom';
 export interface ResourceNode extends TilePoint { id: string; kind: ResourceKind; metal?:import('./data/economy-balance').Metal; plant?: FiberPlant; treeSpecies?:'oak'|'pine';treeStage?:0|1|2|3;treePlanted?:boolean;treePlantingSoil?:boolean }
 export interface ResourceProgressData { id: string; hits: number }

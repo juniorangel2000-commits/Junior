@@ -259,6 +259,7 @@ export function validateSave(value: unknown): value is SaveData {
     if (building.open !== undefined && (!['door','gate'].includes(building.kind as string) || typeof building.open !== 'boolean')) return false;
     if (building.rotation !== undefined && !(['gate','bench'].includes(building.kind as string) ? [0, 1, 2, 3] : building.kind === 'roof' ? [0, 1] : []).includes(building.rotation as number)) return false;
     if (building.gateFlip !== undefined && (building.kind !== 'gate' || typeof building.gateFlip !== 'boolean')) return false;
+    if (building.narrow !== undefined && (building.kind !== 'workbench' || building.narrow !== true)) return false;
     if (building.fenceBuiltDay !== undefined && (building.kind !== 'fence' || !integer(building.fenceBuiltDay, 1, value.day))) return false;
     const piece = building as unknown as SaveData['buildings'][number];
     for (const tile of buildingFootprint(piece)) {
@@ -327,6 +328,22 @@ export function migrateSave(value: unknown): SaveData | null {
     const stock=value.inventory;
     const missing=VILLAGE_ITEM_IDS.filter(id=>!Object.hasOwn(stock,id));
     if(missing.length){const unarmed=missing.includes('sword')&&value.worldWeapon==='sword';value={...value,inventory:{...stock,...Object.fromEntries(missing.map(id=>[id,0]))},...(unarmed?{worldWeapon:'unarmed'}:{})};}
+  }
+  // Preview.39: bancadas passam a ocupar 2 blocos. Uma bancada antiga só cresce se o bloco à
+  // direita estiver livre (sem outra peça na mesma camada, canteiro, plantação ou área da fazenda);
+  // senão ganha `narrow` e continua com 1 bloco. Repetir não muda nada.
+  if(isRecord(value)&&value.version===SAVE_VERSION&&Array.isArray(value.buildings)&&value.buildings.some(b=>isRecord(b)&&b.kind==='workbench'&&b.narrow===undefined)){
+    const list=value.buildings as Record<string,unknown>[],used=new Set<string>(),soil=new Set<string>();
+    // Todas as peças (inclusive as próprias bancadas, no bloco delas) ocupam antes de qualquer bancada crescer.
+    for(const b of list)if(isRecord(b)&&typeof b.x==='number'&&typeof b.y==='number'){const piece=b as unknown as SaveData['buildings'][number];for(const t of b.kind==='workbench'?[{x:b.x,y:b.y}]:buildingFootprint(piece))used.add(buildingLayer(piece.kind)+':'+t.x+','+t.y);}
+    for(const p of [...(Array.isArray(value.preparedSoil)?value.preparedSoil:[]),...(Array.isArray(value.crops)?value.crops:[])])if(isRecord(p))soil.add(p.x+','+p.y);
+    const restored=new Set((Array.isArray(value.restoredFarmSoil)?value.restoredFarmSoil:[]).filter(isRecord).map(p=>p.x+','+p.y));
+    value={...value,buildings:list.map(b=>{
+     if(!isRecord(b)||b.kind!=='workbench'||b.narrow!==undefined||typeof b.x!=='number'||typeof b.y!=='number')return b;
+     const x=b.x+1,y=b.y,key=x+','+y,free=x<=WORLD_WIDTH-2&&!used.has('structure:'+key)&&!soil.has(key)&&!(isFarmTile(x,y)&&!restored.has(key));
+     if(free){used.add('structure:'+key);return b;}
+     return{...b,narrow:true};
+    })};
   }
   // Preview.39: o módulo de cerca saiu do jogo (a cerca é construída direto com madeira).
   // Cada módulo guardado vira as 3 madeiras que ele custava. Repetir não muda nada: sobra 0.

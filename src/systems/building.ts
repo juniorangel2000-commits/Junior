@@ -36,9 +36,13 @@ export function buildingLayer(kind: BuildingData['kind']): BuildingLayer {
   return kind === 'floor' ? 'floor' : kind === 'roof' ? 'roof' : 'structure';
 }
 
+/** Bancadas de trabalho e de construção ocupam 2 blocos de largura (preview.39). */
+export const WIDE_BENCHES: readonly BuildingData['kind'][] = ['workbench', 'constructionBench'];
+export const wideBench = (b: Pick<BuildingData, 'kind' | 'narrow'>) => WIDE_BENCHES.includes(b.kind) && !b.narrow;
+
 export function buildingFootprint(building: BuildingData): TilePoint[] {
   const vertical = (building.rotation ?? 0) % 2 === 1;
-  return Array.from({ length: building.kind === 'roof' ? 3 : 1 }, (_, offset) => ({
+  return Array.from({ length: building.kind === 'roof' ? 3 : wideBench(building) ? 2 : 1 }, (_, offset) => ({
     x: building.x + (vertical ? 0 : offset),
     y: building.y + (vertical ? offset : 0),
   }));

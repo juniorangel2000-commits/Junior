@@ -52,7 +52,7 @@ function completeSnapshot(): SaveData {
   saved.crops = [{ x: 21, y: 20, growth: 0.5, watered: true }];
   saved.buildings = [
     { x: 5, y: 5, kind: 'fence' }, { x: 6, y: 5, kind: 'bench' },
-    { x: 7, y: 5, kind: 'workbench' }, { x: 8, y: 5, kind: 'wall' },
+    { x: 7, y: 5, kind: 'workbench', narrow: true }, { x: 8, y: 5, kind: 'wall' }, // encostada na parede: fica estreita (preview.39)
     { x: 9, y: 5, kind: 'door', open: true },
   ];
   saved.day = 14;
