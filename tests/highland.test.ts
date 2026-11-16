@@ -1,10 +1,11 @@
+import {MapExitPassage} from '../src/systems/map-transition';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import contour from '../src/data/highland-river-contour.json';
 import {describe,it,expect} from 'vitest';
 import {DoorwayPassage} from '../src/systems/map-transition';
 import {HIGHLAND_ENTRY,HIGHLAND_SIZE,LAKE_HIGHLAND_EXIT,LAKE_HIGHLAND_RETURN,highlandBlockedPoint,highlandAllowsStep,highlandDeck,highlandWaterPoint,highlandMineApproach,HIGHLAND_OBJECTS,HIGHLAND_STAIRS,HIGHLAND_LAKE_PASSAGE,highlandArrivalPosition,highlandResumePosition,highlandBridgePose,HIGHLAND_ART} from '../src/data/highland';
-import {lakeBlockedPoint,lakeStairs,lakeElevationAllowsStep} from '../src/data/fishing-lake';
+import {lakeBlockedPoint,lakeStairs} from '../src/data/fishing-lake';
 import {createNewSave,validateSave,migrateSave} from '../src/systems/save';
 import {createCharacterProfile} from '../src/data/characters';
 import {defaultMap} from '../src/data/default-maps';
@@ -20,7 +21,17 @@ describe('Platô da Nascente — upper plateau',()=>{
  it('blocks bridge rails and side climbing from water',()=>{const b=highlandBridgePose()!;expect(highlandDeck(836,b.y)).toBe(true);expect(highlandWaterPoint(800,500)).toBe(true);expect(highlandBlockedPoint(800,500)).toBe(true);expect(highlandBlockedPoint(800,500,undefined,true)).toBe(false);expect(highlandAllowsStep({x:836,y:b.y+b.half+10},{x:836,y:b.y+b.half-2})).toBe(false);expect(highlandAllowsStep({x:b.left-4,y:b.y},{x:b.left+4,y:b.y})).toBe(true);});
  it('keeps swimmers before the waterfall lip at the map boundary',()=>{const row=contour.rows[1000],x=(row[0][0]+row[row.length-1][1])/2;expect(highlandWaterPoint(x,1000)).toBe(true);expect(highlandBlockedPoint(x,1000,undefined,true)).toBe(true);});
  it('only returns to the lake when walking down across the stair top',()=>{const arrival=highlandArrivalPosition(),passage=new DoorwayPassage();expect(passage.update(arrival,arrival,HIGHLAND_LAKE_PASSAGE)).toBe(false);expect(passage.update(arrival,{...arrival,y:arrival.y-2},HIGHLAND_LAKE_PASSAGE)).toBe(false);for(const x of[236,272,306]){passage.reset();expect(passage.update({x,y:981},{x,y:984},HIGHLAND_LAKE_PASSAGE)).toBe(true);}const interior={x:1315,y:240,direction:'left' as const};expect(highlandResumePosition(interior)).toEqual(interior);expect(highlandResumePosition({x:50,y:50})).toEqual(arrival);});
- it('returns to the original lake stairs and permits continued descent',()=>{const point={x:(LAKE_HIGHLAND_RETURN.x+.5)*32,y:(LAKE_HIGHLAND_RETURN.y+.5)*32};expect(lakeStairs(point.x/32,point.y/32)).toBe(true);for(let y=point.y;y<280;y+=2){expect(lakeBlockedPoint(point.x,y)).toBe(false);expect(lakeElevationAllowsStep({x:point.x,y},{x:point.x,y:y+2})).toBe(true);}});
+ it('a entrada fica no começo da escada e a volta chega ao pé dela, livre para seguir',()=>{
+  const point={x:(LAKE_HIGHLAND_RETURN.x+.5)*32,y:(LAKE_HIGHLAND_RETURN.y+.5)*32};
+  expect(lakeBlockedPoint(point.x,point.y)).toBe(false);expect(lakeStairs(point.x/32,point.y/32)).toBe(false);
+  // O primeiro degrau fica logo acima da linha da entrada.
+  expect(lakeStairs(LAKE_HIGHLAND_EXIT.x+.5,LAKE_HIGHLAND_EXIT.y+.6)).toBe(true);
+  for(let y=point.y;y<point.y+64;y+=2){expect(lakeBlockedPoint(point.x,y)).toBe(false);}
+  const passage=new MapExitPassage(),x=point.x;
+  expect(passage.update({x,y:point.y},{x,y:point.y-4},LAKE_HIGHLAND_EXIT,LAKE_HIGHLAND_RETURN)).toBe(false);
+  let entered=false;for(let y=point.y;y>(LAKE_HIGHLAND_EXIT.y-1)*32&&!entered;y-=4)entered=passage.update({x,y},{x,y:y-4},LAKE_HIGHLAND_EXIT,LAKE_HIGHLAND_RETURN);
+  expect(entered).toBe(true);
+ });
  it('uses prop frames inside their source assets and scales the bridge to both riverbanks',()=>{
   for(const kind of ['bridge','mine'] as const){const bytes=readFileSync(`public/assets/visual/highland/${kind}.png`),frame=HIGHLAND_ART[kind];expect(frame.x+frame.width).toBeLessThanOrEqual(bytes.readUInt32BE(16));expect(frame.y+frame.height).toBeLessThanOrEqual(bytes.readUInt32BE(20));}
   const b=highlandBridgePose()!,row=contour.rows[Math.round(b.y)];expect(b.left).toBeLessThan(row[0][0]-12);expect(b.right).toBeGreaterThan(row[row.length-1][1]+12);expect(b.right-b.left).toBeLessThan(220);expect(Math.hypot(b.left-740,b.y-398)).toBeLessThan(6);expect(Math.hypot(b.right-930,b.y-400)).toBeLessThan(6);

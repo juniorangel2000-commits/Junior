@@ -4,7 +4,9 @@ import type {SaveData} from '../types';
 import type {MapEditData,EditorObjectKind} from '../systems/map-editor';
 export const HIGHLAND_SIZE={width:1536,height:1024};
 export const HIGHLAND_ENTRY={x:8,y:29},HIGHLAND_EXIT={x:8,y:30};
-export const LAKE_HIGHLAND_EXIT={x:34,y:3},LAKE_HIGHLAND_RETURN={x:34,y:7};
+/** Entrada da Serra no começo da escada do Lago, lá embaixo (pedido do Junior, preview.41):
+ * subir o primeiro degrau já leva à Serra. Na volta, chega-se ao pé da escada. */
+export const LAKE_HIGHLAND_EXIT={x:34,y:18},LAKE_HIGHLAND_RETURN={x:34,y:20};
 export const HIGHLAND_LAKE_PASSAGE={x:271,y:982,halfWidth:46,depth:24,direction:'down'} as const;
 // Only the first two native lake treads are visible, at the southern map edge.
 export const HIGHLAND_STAIRS={sourceX:385,sourceY:450,width:225,height:48,x:146,y:976};
