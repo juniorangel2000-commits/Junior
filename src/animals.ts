@@ -1,4 +1,5 @@
 import {CowRestCycle} from './systems/cow-rest';
+import {HORSE_ID} from './systems/horse-taming';
 import {FARM_BUILDINGS} from './data/farm-buildings';
 import {farmAnimalHome,farmAnimalSettled,farmYardPoint,farmPointBlocked,farmHomePoint} from './systems/farm-construction';
 import {animalsInside} from './systems/farm-interior';
@@ -67,6 +68,8 @@ export class AnimalPopulation {
   return false;
  }
  /** À noite (ou quando recolhidos) os animais ficam dentro da construção e somem do cercado. */
+ /** Coloca o cavalo onde o jogador desceu. */
+ placeHorse(x:number,y:number):void{const h=this.animals.find(a=>a.id===HORSE_ID);if(h&&h.brain.canStand(x,y)){h.brain.x=x;h.brain.y=y;}}
  private indoors(a:MovingAnimal):boolean{if(this.area!=='property'||a===this.led)return false;const home=farmAnimalHome(this.save,a.id);return !!home&&animalsInside(home,this.save);}
  blocksPoint(x:number,y:number):boolean{return this.animals.some(a=>a.sprite.visible&&!this.indoors(a)&&((x-a.x)/a.brain.radius)**2+((y-a.y)/a.brain.footRadiusY)**2<1);}
  get led():MovingAnimal|undefined {const id=this.save.animalEscort?.area===this.area?this.save.animalEscort.id:undefined;return this.animals.find(a=>a.id===id);}
@@ -81,6 +84,8 @@ export class AnimalPopulation {
   for(const a of this.animals){
    // Dentro da construção: some do cercado e volta pela porta quando for solto.
    if(this.indoors(a)){const home=farmAnimalHome(this.save,a.id)!,door=farmHomePoint(home);a.brain.x=door.x;a.brain.y=door.y;a.brain.hold();this.homes.set(a.id,home.id);a.sprite.setVisible(false);a.shadow?.setVisible(false);continue;}
+   // Montado: o cavalo está sob o jogador (horse-mount.ts), não no pasto.
+   if(this.save.riding&&a.id===HORSE_ID){a.brain.hold();a.sprite.setVisible(false);a.shadow?.setVisible(false);continue;}
    if(!a.sprite.visible){a.sprite.setVisible(true);a.shadow?.setVisible(true);}
    const home=this.area==='property'?farmAnimalHome(this.save,a.id):undefined,led=a===this.led;
    if(!home||led||FARM_BUILDINGS[home.kind].openYard&&Math.hypot(a.x-farmHomePoint(home).x,a.y-farmHomePoint(home).y)>128)this.homes.delete(a.id);

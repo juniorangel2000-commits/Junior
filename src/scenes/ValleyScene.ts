@@ -1,4 +1,5 @@
 import {MachineView} from '../machine-view';
+import {mountProblem} from '../systems/horse-riding';
 import {HORSE_ID} from '../systems/horse-taming';
 import {DOMESTIC_ANIMALS} from '../data/domestic-animals';
 import {animalTexture,animalFrame,animatedAnimal} from '../data/animal-art';
@@ -1664,7 +1665,8 @@ export class ValleyScene extends Phaser.Scene {
     if(this.player.isSwimming)prompt='Nadar · siga até a margem para sair';
     if(!this.player.isSwimming&&this.world.well&&nearPropertyWell(this.player.x,this.player.y))prompt=this.world.well.busy?'Buscando água no poço…':!this.state.homeSupplies?.wateringCan?'Recolha o regador dentro da casa':(this.state.wateringCanWater??0)>=WATER_CAPACITY?'Regador cheio':'Encher regador no poço';
     const nearPassage=[this.forestGate(),PROPERTY_VILLAGE_EXIT].some(point=>Math.abs(this.player.x-(point.x+.5)*TILE)<64&&Math.abs(this.player.y-(point.y+.5)*TILE)<TILE);
-    if(this.tool==='hand'&&!this.player.isSwimming){const a=this.animals?.nearest(this.player);if(this.state.animalEscort)prompt='Conduzindo animal · G para soltar no cercado';else if(a)prompt='Prender animal com corda · E';}
+    if(this.tool==='hand'&&!this.player.isSwimming){const a=this.animals?.nearest(this.player);if(this.state.animalEscort)prompt='Conduzindo animal · G para soltar no cercado';else if(a)prompt=a.id===HORSE_ID&&!mountProblem(this.state)?`${this.state.horseTaming?.name??'Cavalo'} · V montar · E prender com corda`:'Prender animal com corda · E';}
+    if(this.state.riding)prompt=`Montado em ${this.state.horseTaming?.name??'seu cavalo'} · V para descer · Shift galopa`;
     if(nearPassage&&!this.player.isSwimming)prompt=this.state.animalEscort?'Conclua a condução ou solte a corda antes de sair':'Siga a seta e ultrapasse a placa para continuar';
     if(!villageAccessUnlocked(this.state)&&Math.abs(this.player.x-93.5*TILE)<96&&Math.abs(this.player.y-52.5*TILE)<64)prompt=VILLAGE_LOCK_MESSAGE;
     if(this.tool==='hand'&&this.state.petShelter&&Math.hypot(this.player.x-this.state.petShelter.x,this.player.y-this.state.petShelter.y)<90)prompt='Casinha dos companheiros · E';

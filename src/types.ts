@@ -75,6 +75,8 @@ export interface SaveData {
   animalCare?:import('./systems/animal-production').AnimalCare;
   /** Quantas unidades de cada item são boas ou excelentes (o resto é comum). */
   itemQuality?:import('./systems/item-quality').QualityLedger;
+  /** Montado no cavalo domado (systems/horse-riding.ts). */
+  riding?:true;
   /** Efeito do último prato comido (um por vez). */
   foodEffect?:import('./systems/food-effects').FoodEffect;
   /** Cozinha: dia em que a Helena comprou o prato do dia. */

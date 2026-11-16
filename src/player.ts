@@ -1,4 +1,5 @@
 import {gameAudio} from './audio';
+import {HorseMount,MOUNT_SPEED,horseTextureReady,HORSE_IN_FRONT} from './horse-mount';
 import {SwimmingController} from './swimming/controller';
 import {SWIMMING_CONFIG} from './swimming/config';
 import { SwimmingVisual, prepareSwimmingTextures, SWIM_SPEED_FACTOR } from './swimming';
@@ -21,6 +22,8 @@ export const PLAYER_WALK_CYCLE_DISTANCE = 48;
 const RELEASE_TURN_GRACE = .03;
 const COLLISION_PRECISION = .01;
 
+/** Parte do personagem que aparece montado (da cabeça à cintura). */
+const RIDER_VISIBLE=.6;
 export class Player {
   readonly sprite: Phaser.GameObjects.Sprite;
   x: number;
@@ -35,6 +38,11 @@ export class Player {
   get waterDepth(){return this.swimming.depth;}
   get leftHandPosition(){return characterLeftHand(this.profile,Number(this.sprite.frame.name),this.sprite,this.isRunning?'run':'walk');}
   private swimmingVisual?:SwimmingVisual;
+  private mount?:HorseMount;
+  get mounted(){return !!this.mount;}
+  /** Monta no cavalo (o cenário precisa ter o atlas do cavalo carregado). */
+  mountHorse():boolean{if(this.mount||!horseTextureReady(this.scene)||this.isSwimming)return false;this.mount=new HorseMount(this.scene,this.x,this.y);this.isRunning=false;this.sprite.setTexture(this.textureKey);return true;}
+  dismountHorse():void{if(!this.mount)return;this.mount.destroy();this.mount=undefined;this.sprite.setCrop().setPosition(this.x,this.y).setDepth(this.y);}
   private walkDistance = 0;
   private runDistance=0;
   private readonly runFrames:number;
@@ -57,7 +65,7 @@ export class Player {
     this.keys = scene.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,SHIFT', false) as MovementKeys;
   }
 
-  setVisible(visible:boolean):void {this.sprite.setVisible(visible);this.swimmingVisual?.setVisible(visible&&this.isSwimming);}
+  setVisible(visible:boolean):void {this.mount?.setVisible(visible);this.sprite.setVisible(visible);this.swimmingVisual?.setVisible(visible&&this.isSwimming);}
 
   update(delta: number, isBlocked: (x: number, y: number) => boolean,
     isBlockedPoint?: (x: number, y: number) => boolean, movementEnabled = true, isWaterPoint?: (x:number,y:number)=>boolean|number, canMoveCenter?: (x:number,y:number)=>boolean): void {
@@ -65,7 +73,7 @@ export class Player {
     const initialDepth=depthAt(this.x,this.y);
     const swimAmount=Math.max(0,(initialDepth-SWIMMING_CONFIG.deepThreshold)/(1-SWIMMING_CONFIG.deepThreshold));
     const wantsRun=movementEnabled&&!!this.keys.SHIFT?.isDown&&initialDepth<=.005;
-    const speed=PLAYER_SPEED*this.speedMultiplier*(wantsRun?PLAYER_RUN_MULTIPLIER:1)*(1-(1-SWIM_SPEED_FACTOR)*swimAmount);
+    const speed=PLAYER_SPEED*this.speedMultiplier*(this.mount?MOUNT_SPEED:1)*(wantsRun?(this.mount?1.25:PLAYER_RUN_MULTIPLIER):1)*(1-(1-SWIM_SPEED_FACTOR)*swimAmount);
     const inputX = movementEnabled ? Number(this.keys.D.isDown || this.keys.RIGHT.isDown) - Number(this.keys.A.isDown || this.keys.LEFT.isDown) : 0;
     const inputY = movementEnabled ? Number(this.keys.S.isDown || this.keys.DOWN.isDown) - Number(this.keys.W.isDown || this.keys.UP.isDown) : 0;
     const moving = inputX !== 0 || inputY !== 0;
@@ -74,8 +82,9 @@ export class Player {
     if (moving) {
       const length = Math.hypot(inputX, inputY);
       const dx = inputX / length, dy = inputY / length;
+      // Montado, o cavalo não entra na água.
       const canStand = (x: number, y: number) =>
-        (!canMoveCenter || canMoveCenter(x,y)) && [[-7, -5], [7, -5], [-7, 3], [7, 3]].every(([ox, oy]) =>
+        (!this.mount || depthAt(x, y) <= .005) && (!canMoveCenter || canMoveCenter(x,y)) && [[-7, -5], [7, -5], [-7, 3], [7, 3]].every(([ox, oy]) =>
           isBlockedPoint ? !isBlockedPoint(x + ox, y + oy)
             : !isBlocked(Math.floor((x + ox) / TILE), Math.floor((y + oy) / TILE)));
       const moveAxis = (amount: number, horizontal: boolean): void => {
@@ -140,6 +149,15 @@ export class Player {
     if(this.swimming.depth>.005){
       this.swimmingVisual??=new SwimmingVisual(this.scene,this.profile);
       this.swimmingVisual.update(this.sprite,this.x,this.y,direction,walked,delta,this.swimming.depth,characterFrame(direction,walked?phase:0,this.walkFrames),speed/PLAYER_SPEED);return;
+    }
+    if(this.mount){
+      // Sentado no lombo: pose parada de frente para a direção, só da cintura para cima.
+      const saddle=this.mount.update(this.x,this.y,direction,distance,wantsRun&&walked);
+      this.isRunning=false;if(this.sprite.texture.key!==this.textureKey)this.sprite.setTexture(this.textureKey);
+      this.sprite.setFrame(characterFrame(direction,0,this.walkFrames));
+      const frameHeight=this.sprite.frame.height;this.sprite.setCrop(0,0,this.sprite.frame.width,Math.round(frameHeight*RIDER_VISIBLE));
+      this.sprite.setPosition(this.x,this.y-saddle+CHARACTER_HEIGHT*(1-RIDER_VISIBLE)).setDepth(HORSE_IN_FRONT.includes(direction)?this.y-1:this.y);
+      return;
     }
     if(wasWet||wasRunning!==this.isRunning){this.sprite.setTexture(this.isRunning?this.runTextureKey:this.textureKey).setCrop().setOrigin(.5,1);this.swimmingVisual?.setVisible(false);}
     const shownPhase=this.isRunning?Math.floor(this.runDistance/PLAYER_RUN_CYCLE_DISTANCE*this.runFrames)%this.runFrames+1:walked?phase:0;

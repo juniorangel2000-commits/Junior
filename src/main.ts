@@ -18,6 +18,7 @@ import { installFullscreenShortcut } from './fullscreen';
 import { installPerformanceOverlay } from './performance-overlay';
 import { installSceneTextureRelease } from './scene-texture-release';
 import { showCampfire } from './campfire-view';
+import { installRiding, type RidingScene } from './riding-controller';
 import { ForestScene } from './scenes/ForestScene';
 import { VillageScene } from './scenes/VillageScene';
 import { ValleyScene } from './scenes/ValleyScene';
@@ -59,6 +60,8 @@ const ui = new GameUI({
   onZoom: direction => {const forest=activeForest();if(forest)forest.changeCameraZoom(direction);else scene.changeCameraZoom(direction);},
 });
 scene.ui = ui;
+// Montaria em todos os cenários (riding-controller.ts).
+installRiding(()=>{const c=activeForest()??scene;return c instanceof DungeonScene?undefined:c as unknown as RidingScene;},ui);
 installFullscreenShortcut(() => ui.toast('Não foi possível ativar tela cheia neste navegador.'));
 
 export const game = new Phaser.Game({
