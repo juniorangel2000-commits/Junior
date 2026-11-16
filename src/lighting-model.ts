@@ -27,13 +27,15 @@ const NEUTRAL:LightingState={ambient:[1,1,1],saturation:1,contrast:1,lamps:0,clo
 /** `intensity` (0–1, opção do jogador) aproxima tudo do neutro. Dentro de casa a noite
  * fica bem mais clara (lareira e lampião) e não há nuvens nem pólen. Chuva: céu fechado,
  * cores mais apagadas, sem nuvens correndo, pólen nem vaga-lumes. */
-export function lightingAt(time:number,intensity=1,indoors=false,rain=false):LightingState{
+/** `indoors`: true na casa (bem clara à noite); 'shelter' nos abrigos dos animais, que
+ * escurecem à noite e dependem do lampião. */
+export function lightingAt(time:number,intensity=1,indoors:boolean|'shelter'=false,rain=false):LightingState{
  const t=dayMinutes(time),i=KEYS.findIndex(x=>x.at>t),a=KEYS[i-1],b=KEYS[i],x=smooth((t-a.at)/(b.at-a.at));
  const m=(p:number,q:number)=>p+(q-p)*x,s=Math.max(0,Math.min(1,Number.isFinite(intensity)?intensity:1));
  let out:LightingState={ambient:[m(a.ambient[0],b.ambient[0]),m(a.ambient[1],b.ambient[1]),m(a.ambient[2],b.ambient[2])],saturation:m(a.saturation,b.saturation),contrast:m(a.contrast,b.contrast),
   lamps:m(a.lamps,b.lamps),clouds:m(a.clouds,b.clouds),pollen:m(a.pollen,b.pollen),fireflies:m(a.fireflies,b.fireflies),vignette:m(a.vignette,b.vignette)};
  if(rain)out={...out,ambient:[out.ambient[0]*.82,out.ambient[1]*.86,out.ambient[2]*.92],saturation:out.saturation*.8,clouds:0,pollen:0,fireflies:0,lamps:Math.min(1,out.lamps+.15)};
- if(indoors)out={...out,ambient:out.ambient.map(c=>c+(1-c)*.7) as [number,number,number],saturation:1+(out.saturation-1)*.4,clouds:0,pollen:0,fireflies:0,vignette:out.vignette*.6,lamps:out.lamps*.6};
+ if(indoors){const lift=indoors==='shelter'?.3:.7;out={...out,ambient:out.ambient.map(c=>c+(1-c)*lift) as [number,number,number],saturation:1+(out.saturation-1)*.4,clouds:0,pollen:0,fireflies:0,vignette:out.vignette*(indoors==='shelter'?1:.6),lamps:indoors==='shelter'?Math.max(out.lamps,.6):out.lamps*.6};}
  const mix=(n:number,v:number)=>n+(v-n)*s;
  return{ambient:[mix(1,out.ambient[0]),mix(1,out.ambient[1]),mix(1,out.ambient[2])],saturation:mix(1,out.saturation),contrast:mix(1,out.contrast),lamps:out.lamps*s,clouds:out.clouds*s,pollen:out.pollen*s,fireflies:out.fireflies*s,vignette:out.vignette*s};
 }

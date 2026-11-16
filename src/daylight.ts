@@ -83,12 +83,12 @@ export class Daylight {
     this.rain.destroy();this.shadows.destroy();this.fixtures.destroy();this.shader?.destroy();
     this.shade.destroy();this.warmth.destroy();this.panes.destroy();
   }
-  update(time: number, indoors = false, day = 1): void {
-    this.rain.update(day,indoors);
+  update(time: number, indoors: boolean | 'shelter' = false, day = 1): void {
+    this.rain.update(day,!!indoors);
     if (this.pipeline) { this.updatePipeline(time, indoors, day); return; }
     this.fixtures.update(time);
     const settings = getVisualSettings();
-    const light = daylightAt(time, settings.daylight ? settings.intensity : 0, indoors);
+    const light = daylightAt(time, settings.daylight ? settings.intensity : 0, !!indoors);
     this.shade.setAlpha(light.shade); this.warmth.setAlpha(light.warmth);
     const dynamic=this.shown&&settings.daylight&&settings.dynamicLighting&&!indoors;
     const lamp=this.windows.length&&dynamic?windowLight(time)*settings.intensity:0;
@@ -100,7 +100,7 @@ export class Daylight {
     this.shadows.update(time,dynamic,settings.intensity);
   }
   /** Passe de luz: estado da hora, câmera e lista de luzes em pixels da tela. */
-  private updatePipeline(time: number, indoors: boolean, day: number): void {
+  private updatePipeline(time: number, indoors: boolean | 'shelter', day: number): void {
     const scene = this.scene, camera = scene.cameras.main, view = camera.worldView, zoom = camera.zoom;
     // Usa sempre o passe que está de fato na câmera (troca de cenário pode recriá-lo).
     let attached = camera.getPostPipeline(LightingPipeline) as LightingPipeline | LightingPipeline[] | undefined;

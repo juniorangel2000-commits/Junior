@@ -1,4 +1,6 @@
 import {MachineView,preloadMachineArt} from '../machine-view';
+import {Daylight} from '../daylight';
+import {INTERIOR_TILE} from '../data/farm-interiors';
 import {machinePointBlocked,machineDistance,nearMachine,machineHint,useMachineItem,interactMachine,type MachineRuntime,type MachineSpace} from '../systems/machines';
 import Phaser from 'phaser';
 import type {SaveData,Tool,ItemId} from '../types';
@@ -36,6 +38,7 @@ interface InteriorAnimal{id:string;brain:AnimalBrain;sprite:Phaser.GameObjects.S
 export class FarmInteriorScene extends Phaser.Scene{
  private state!:SaveData;private ui!:GameUI;private player!:Player;private farming!:Farming;private toolVisual!:ToolVisual;private view?:InteriorView;
  private machineView?:MachineView;
+ private daylight?:Daylight;
  private machineSpace=():MachineSpace=>`farm:${this.siteId}`;
  private machineRuntime:MachineRuntime={
   read:()=>this.state,snapshot:()=>this.snapshotState(),write:saveGame,apply:d=>{this.state.machines=d.machines;this.state.inventory=d.inventory;if(d.itemQuality)this.state.itemQuality=d.itemQuality;else delete this.state.itemQuality;this.updateHUD();},
@@ -68,10 +71,11 @@ export class FarmInteriorScene extends Phaser.Scene{
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
   const p=interiorSpawn(layout);this.player=new Player(this,this.state.profile,p.x,p.y,'interior-player');this.player.facing=directionVector('up');this.player.update(0,this.blockedTile,this.blocked,false);
   this.toolVisual=new ToolVisual(this,this.state.profile);this.zoom=loadCameraZoom();const size=interiorSize(layout);this.cameras.main.setBounds(0,0,size.width,size.height).setBackgroundColor('#2b1f15');this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
+  this.lanterns(size.width);this.daylight=new Daylight(this,size.width,size.height);this.daylight.update(this.state.time,'shelter',this.state.day);
   this.ui.showHUD();document.querySelector<HTMLElement>('#ui')!.style.display='';this.ui.setQuickbar(this.state.quickbar??emptyQuickbar());this.syncAnimals();this.updateHUD();
   this.input.keyboard!.on('keydown',this.key,this);this.input.on('wheel',this.wheel,this);this.scale.on('resize',this.applyCamera,this);
   window.addEventListener('pagehide',this.save);window.addEventListener('beforeunload',this.save);window.addEventListener('blur',this.blur);document.addEventListener('visibilitychange',this.visibility);
-  this.events.once('shutdown',()=>{this.machineView?.destroy();this.machineView=undefined;this.clearAnimals();this.view?.destroy();this.view=undefined;this.toolVisual?.hide();this.input.keyboard?.off('keydown',this.key,this);this.input.off('wheel',this.wheel,this);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
+  this.events.once('shutdown',()=>{this.daylight?.destroy();this.daylight=undefined;this.machineView?.destroy();this.machineView=undefined;this.clearAnimals();this.view?.destroy();this.view=undefined;this.toolVisual?.hide();this.input.keyboard?.off('keydown',this.key,this);this.input.off('wheel',this.wheel,this);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
   this.persist();
  }
  private blocked=(x:number,y:number)=>interiorBlocked(this.layout,x,y)||machinePointBlocked(this.state,this.machineSpace(),x,y);
@@ -139,6 +143,15 @@ export class FarmInteriorScene extends Phaser.Scene{
  }
  /** Coração que sobe sobre o animal depois do carinho. */
  private heart(a:InteriorAnimal):void{const t=this.add.text(a.brain.x,a.brain.y-28,'♥',{fontFamily:'serif',fontSize:'14px',color:'#e2566b',stroke:'#4a2418',strokeThickness:3}).setOrigin(.5).setDepth(9999);this.tweens.add({targets:t,y:t.y-18,alpha:0,duration:900,onComplete:()=>t.destroy()});}
+ /** Lampiões presos na parede do fundo: à noite acendem e iluminam o abrigo (luz nova). */
+ private lanterns(width:number):void{const count=width>=12*INTERIOR_TILE?2:1;
+  for(let i=0;i<count;i++){const x=Math.round(width*(i+1)/(count+1)),y=Math.round(INTERIOR_TILE*.7),g=this.add.graphics().setDepth(y+20);
+   // Lampião de ferro com vidro âmbar, preso num gancho na parede (pixel art simples).
+   g.fillStyle(0x2b1d12).fillRect(x-1,y-8,2,4).fillRect(x-4,y-4,8,2).fillRect(x-5,y-2,10,12).fillRect(x-3,y+10,6,2);
+   g.fillStyle(0xf2b45a).fillRect(x-3,y,6,8);g.fillStyle(0xffe3a0).fillRect(x-1,y+2,2,4);
+   g.fillStyle(0x4a3424).fillRect(x-5,y-2,1,12).fillRect(x+4,y-2,1,12);
+   this.add.zone(x,y+5,1,1).setData('fixture-light',{radius:120,always:true,strength:.95});}
+ }
  private stopAnimalCare():void{this.careAction?.tool.destroy();this.careAction=undefined;}
  private updateAnimalCare(dt:number):void{const m=this.careAction;if(!m)return;if(Math.hypot(this.player.x-m.animal.brain.x,this.player.y-m.animal.brain.y)>48){this.stopAnimalCare();this.ui.toast('Aproxime-se do animal para continuar.');return;}m.left-=dt;if(m.kind==='shear')m.tool.setRotation(Math.sin(m.left*24)*.2);m.tool.y=m.animal.brain.y+6+Math.round(Math.sin(m.left*18));if(m.left>0)return;
   this.stopAnimalCare();const r=m.kind==='shear'?shearSheep(this.state,this.siteId,m.animal.id,saveGame):milkCow(this.state,this.siteId,m.animal.id,saveGame);this.ui.toast(r.message);if(r.ok)gameAudio.play('pickup');this.refreshBadges();}
@@ -162,7 +175,7 @@ export class FarmInteriorScene extends Phaser.Scene{
  mainMenu():void{this.ui.closeModal();this.leave(true);}
  private leave(title=false):void{if(this.leaving)return;const next=structuredClone(this.snapshotState());if(!saveGame(next)){this.ui.toast('Não foi possível salvar. A saída foi cancelada.');return;}this.leaving=true;this.cameras.main.fadeOut(SCENE_FADE_MS);this.time.delayedCall(SCENE_FADE_MS,()=>{this.scene.stop();this.onReturn(next,title);});}
  update(_time:number,ms:number):void{
-  this.machineView?.update(_time);
+  this.machineView?.update(_time);if(this.state)this.daylight?.update(this.state.time,'shelter',this.state.day);
   if(!this.player||this.leaving||!this.layout)return;if(this.paused||this.ui.isModalOpen()||document.hidden)return;
   const dt=Math.min(.1,ms/1000),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);
   if(this.careAction)this.updateAnimalCare(dt);else this.player.update(dt,this.blockedTile,this.blocked,true);this.player.sprite.setDepth(this.player.y);
