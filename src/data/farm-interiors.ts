@@ -22,10 +22,9 @@ export const FARM_INTERIORS:Partial<Record<FarmKind,FarmInteriorLayout>>={
   fixture('shearing-pen','stall',8,4,3,3,'Área de tosquia',false),
   {id:'stall-divider-shearing',kind:'stall',x:8*T-3,y:4*T,w:6,h:3*T-8,solid:true,label:'Divisória da tosquia'},
  ]},
- // Chiqueiro 10×8: cocho e bebedouro no alto, lamaçal no meio e quatro cantos onde aparece esterco.
+ // Chiqueiro 10×8: cocho e bebedouro no alto, chão de palha e quatro cantos onde aparece esterco.
  pigsty:{width:10,height:8,doorX:4,doorWidth:2,floor:'straw',fixtures:[
   fixture('trough','trough',1,1,2,1,'Cocho'),fixture('water','water',7,1,1,1,'Bebedouro'),
-  fixture('mud','mud',3,3,3,2,'Lamaçal',false),
   ...[[1,4],[8,3],[1,6],[8,6]].map(([x,y],i)=>fixture(`manure-${i+1}`,'manure',x,y,1,1,'Esterco',false)),
  ]},
  // Curral 14×10: quatro baias no alto, separadas por divisórias; cocho e bebedouro embaixo.

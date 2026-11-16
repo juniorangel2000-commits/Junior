@@ -38,7 +38,7 @@ Com o mel e o ovo de pato, nenhuma receita da cozinha fica mais sem fonte.
 
 - **Compra:** a Rosa vende cada porco por 400 C, no serviço "Acolher um porco" (`farm-pig-1` a `farm-pig-4`).
 - **Chiqueiro:** construção nova (`pigsty`), 5×5, com o mesmo funcionamento do galinheiro. Custa 40 madeiras, 20 pedras, 12 tábuas, 6 madeiras nobres e 1 porta. Abriga até 4 porcos e usa os estágios de obra do galinheiro.
-- **Interior 10×8:** cocho, bebedouro, lamaçal e quatro cantos onde aparece o esterco.
+- **Interior 10×8:** cocho, bebedouro, chão de palha (sem lamaçal, a pedido do Junior) e quatro cantos onde aparece o esterco.
 - **Cocho:** aceita **sobras da horta** (legumes, frutas e grãos colhidos), não palha nem flores, até 8 porções.
 - **Esterco:** às 06:00, cada porco alimentado come 1 porção e deixa **1 esterco** num canto livre. E recolhe.
 - **Composteira:** máquina com projeto do **Tobias** (40 C), montada na bancada com 6 tábuas, 4 cavilhas e 6 pedras.
@@ -52,7 +52,7 @@ Com o mel e o ovo de pato, nenhuma receita da cozinha fica mais sem fonte.
 - Cera, ninho com ovo de pato e pena.
 - Méis de flor: o ícone do mel em outro tom.
 - Chiqueiro e composteira foram gerados com os últimos 4 créditos (GPT-Image-2, qualidade baixa). O fundo branco do chiqueiro foi removido por script.
-- O lamaçal do interior e o ícone do esterco foram desenhados por script.
+- O ícone do esterco e o adubo vieram do lote 01 de artes (`docs/arte-recebida/lote01-fazenda`). O lamaçal saiu do interior.
 - Os ids estão em `public/assets/visual/kitchen/spritecook-assets.json` e em `public/assets/visual/farm/interior/spritecook-assets.json`.
 
 ## Verificação

@@ -1,10 +1,11 @@
 # Pixel arts que faltam
 
 > **Lote 01 recebido em 16/11/2026** (`docs/arte-recebida/lote01-fazenda/`, importado por
-> `scripts/import_art_lote01.py`). Já no jogo: esterco, adubo, lamaçal do chiqueiro,
+> `scripts/import_art_lote01.py`). Já no jogo: esterco, adubo,
 > colmeia (parada, abelhas, vazia e ícone), méis de margarida e girassol, tecido de lã e os
 > ícones de cavilhas, ervas, ervas raras, mapa antigo, mochila, botas e peças metálicas.
-> Ainda não usados: a porteira do lote (a do chiqueiro faz parte da arte da construção e
+> O lamaçal do lote ficou guardado (`farm/interior/mud.png`); o Junior preferiu o chiqueiro só
+> com palha, sem a mancha de lama. Ainda não usados: a porteira do lote (a do chiqueiro faz parte da arte da construção e
 > precisa ser encaixada nela) e os ícones extras sem item no jogo (pregos, dobradiça,
 > engrenagem, roda dentada, molas, frasco de óleo, alecrim, folhas, flores e cera bruta).
 

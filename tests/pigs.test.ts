@@ -22,7 +22,9 @@ describe('porcos e chiqueiro',()=>{
   const s=createNewSave(createCharacterProfile('Rosa'));s.villageEconomy!.coins=1000;
   expect(performVillageService(s,'buy-pig').ok).toBe(true);expect(s.recruitedAnimals).toContain(PIG);expect(s.villageEconomy!.coins).toBe(600);
   expect(domesticAnimal(PIG)?.kind).toBe('pig');expect(farmAcceptsAnimal('pigsty','pig')).toBe(true);expect(farmAcceptsAnimal('coop','pig')).toBe(false);
-  const l=FARM_INTERIORS.pigsty!;expect(l.fixtures.map(f=>f.kind)).toEqual(expect.arrayContaining(['trough','water','mud','manure']));
+  const l=FARM_INTERIORS.pigsty!;expect(l.fixtures.map(f=>f.kind)).toEqual(expect.arrayContaining(['trough','water','manure']));
+  // O Junior preferiu o chão de palha sem a mancha de lama no centro (16/11/2026).
+  expect(l.fixtures.some(f=>f.kind==='mud')).toBe(false);
   expect(l.fixtures.filter(f=>f.kind==='manure')).toHaveLength(MANURE_SPOTS);expect(validateSave(s)).toBe(true);
  });
  it('o cocho aceita só sobras da horta (legumes, frutas e grãos), não palha nem flores',()=>{
