@@ -1,8 +1,7 @@
 # Prompt para o ChatGPT: personagem montado no cavalo
 
-Anexe como referência:
-- um quadro do cavalo do jogo: `public/assets/animals/horse/Idle/` (qualquer PNG de lado);
-- o personagem: uma captura do jogo com o personagem parado.
+Anexe como referência as imagens de `docs/planejamento/referencias-montaria/`: a personagem nas
+4 direções e o cavalo de lado, de frente e de costas (ou só `referencias-juntas.png`).
 
 ```
 Folha de sprites em pixel art detalhado para um jogo de fazenda aconchegante: a MESMA personagem
