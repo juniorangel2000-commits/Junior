@@ -42,6 +42,10 @@ O Junior disse que o jogo está pesado, tanto no tamanho quanto nos travamentos.
 
 - Interiores dos abrigos escurecem à noite, com lampiões na parede (luz nova, modo `'shelter'`).
 - Atlas dos animais compactados: 132 MB → 42 MB de memória de vídeo e 22 → 7 MB no pacote. Detalhes em `docs/planejamento/DESEMPENHO.md`.
+- **Artes do Junior (lote 01 e fase 02):** esterco, adubo, méis de flor, tecido de lã e ícones de cavilhas, ervas, ervas raras, mapa antigo, mochila, botas e peças metálicas, além da fogueira acesa no chão ao abrir o caderno da fogueira. Detalhes em `docs/planejamento/ARTE-PENDENTE.md`.
+  - A franja branca do contorno saiu de todas as sprites (`scripts/clean_white_fringe.py`).
+  - O Junior rejeitou o chão de terra e o lamaçal no chiqueiro: ele fica só com palha.
+  - Também rejeitou a colmeia nova com abelhas em sprite: voltou a colmeia antiga, com abelhas desenhadas por código.
 - **Instalador menor:** o WebP sem perda dá 31%, mas exige uma dependência nova no build (`sharp`). Adicionar foi bloqueado na sessão; **falta o aval do Junior**.
 
 ## Pendências e ideias para depois
