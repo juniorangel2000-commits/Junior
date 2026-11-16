@@ -19,8 +19,11 @@ fs.mkdirSync(out, { recursive: true });
       window.game = (await import(document.querySelector('script[src*="main.ts"]').src)).game; window.v = game.scene.getScene('Vale');
       const { FARM_BUILDINGS } = await import('/src/data/farm-buildings.ts');
       const { farmDoorPoint } = await import('/src/systems/farm-interior.ts');
+      const { farmPlacementReason } = await import('/src/systems/farm-construction.ts');
       const s = v.snapshotState(); s.time = 20 * 60; s.recruitedAnimals = ['forest-chicken-1'];
-      s.farmConstruction = { version: 1, nextId: 2, sites: [{ id: 1, kind: 'coop', x: 30, y: 30, delivered: { ...FARM_BUILDINGS.coop.cost }, finished: true, animals: ['forest-chicken-1'], hay: 0, gateOpen: true }] };
+      // Primeiro lugar livre perto da casa, pela mesma regra do jogo ao colocar a base.
+      let spot; for (let r = 0; r < 20 && !spot; r++) for (let dy = -r; dy <= r && !spot; dy++) for (let dx = -r; dx <= r && !spot; dx++) { const x = 30 + dx, y = 22 + dy; if (!farmPlacementReason(s, 'coop', x, y, (a, b) => v.farmPlacementTileReason(a, b))) spot = { x, y }; }
+      s.farmConstruction = { version: 1, nextId: 2, sites: [{ id: 1, kind: 'coop', x: spot.x, y: spot.y, delivered: { ...FARM_BUILDINGS.coop.cost }, finished: true, animals: ['forest-chicken-1'], hay: 0, gateOpen: true }] };
       const door = farmDoorPoint(s.farmConstruction.sites[0]); s.animalPositions = { forest: [], property: [{ id: 'forest-chicken-1', x: door.x, y: door.y + 20, direction: 'down' }] };
       s.player = { x: door.x, y: door.y + 6, direction: 'up' }; v.loadState(s);
     });
