@@ -4,9 +4,9 @@
 
 - **Atualizado em:** 2026-11-16
 - **Por:** Claude Code
-- **Continuar a partir de:** `release/v0.10.0-preview.40` (não publicado ainda).
-- **Última versão publicada:** `v0.10.0-preview.39`, enviada à `main`. A criação da Release no GitHub pelo Junior não foi confirmada.
-- **Estado:** preview.40 em andamento. Tudo enviado, testes passando. Publicar só quando o Junior pedir.
+- **Continuar a partir de:** `main` (preview.40). Próxima rodada: criar `release/v0.10.0-preview.41` a partir da `main`.
+- **Última versão publicada:** `v0.10.0-preview.40`, enviada à `main`. **Falta o Junior criar a Release** no GitHub: tag `v0.10.0-preview.40`, target `main`, pre-release. A Release da preview.39 também não foi confirmada.
+- **Estado:** preview.40 pronta, com versão do pacote, `NOTAS-0.10.0-preview.40.md` e `LEIA-0.10.0-preview.40.md`.
 
 ## Feito nesta rodada
 
@@ -42,7 +42,7 @@
    - ícones extras (pregos, dobradiça, engrenagem, molas, óleo) como peças de construção;
    - instalador em WebP (precisa de aprovação para instalar o `sharp`);
    - ajustes pelos números do F3 no PC do Junior.
-3. Publicar a preview.40 quando o Junior pedir.
+3. **Junior:** criar a Release da preview.40 (e conferir a da preview.39).
 
 ## Pendências e ideias para depois
 
@@ -64,6 +64,7 @@
 ## Testes
 
 - `npm run check`: ok.
+- `npm run build`: ok (aviso de tamanho do pacote, que já existia).
 - `npm test`: **2.121 passaram, zero falhas** (inclui o teste novo da personagem montada em `tests/horse-riding.test.ts`).
 - Montaria conferida no Chromium, andando nas 4 direções principais e galopando de lado. As diagonais e a vista de costas foram conferidas em imagem montada sobre o cavalo parado.
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.
