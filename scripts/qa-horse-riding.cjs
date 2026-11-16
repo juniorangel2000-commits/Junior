@@ -37,7 +37,10 @@ if(!only){
  await page.evaluate(async()=>{window.game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;window.v=game.scene.getScene('Vale');});
  // Lugar aberto, longe de árvores e casas, com o cavalo domado ao lado.
  const spot=await page.evaluate(()=>{const big=v.children.list.filter(o=>o.visible&&o.depth>0&&o.depth<4000&&o.displayHeight>40&&o!==v.player.sprite);
-  for(let ty=20;ty<50;ty++)for(let tx=15;tx<50;tx++){const x=tx*32,y=ty*32;if(v.movementBlockedPoint?.(x,y))continue;if(big.every(o=>Math.hypot(o.x-x,o.y-y)>200))return{x,y};}return{x:35*32,y:27*32};});
+  for(let ty=12;ty<60;ty++)for(let tx=8;tx<60;tx++){const x=tx*32,y=ty*32;if(!big.every(o=>Math.hypot(o.x-x,o.y-y)>200))continue;
+   // Livre para andar 150 px em todas as direções, sem água.
+   const free=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]].every(([dx,dy])=>{for(let r=0;r<=150;r+=8){const px=x+dx*r,py=y+dy*r;if(v.movementBlockedPoint?.(px,py)||v.blockedPoint?.(px,py)||(v.swimmingPoint?.(px,py)??0)>0)return false;}return true;});
+   if(free)return{x,y};}return{x:35*32,y:27*32};});
  await page.evaluate(spot=>{const s=v.snapshotState();s.time=11*60;s.recruitedAnimals=['field-horse-1'];s.horseTaming={version:1,trust:7,tamed:true,name:'Trovão',lastFedDay:s.day};
   s.animalPositions={forest:[],property:[{id:'field-horse-1',x:spot.x+24,y:spot.y,direction:'down'}]};s.player={x:spot.x,y:spot.y,direction:'right'};v.loadState(s);},spot);
  await page.waitForTimeout(1500);
