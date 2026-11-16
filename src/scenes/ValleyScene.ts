@@ -1,4 +1,7 @@
 import {MachineView} from '../machine-view';
+import {HORSE_ID} from '../systems/horse-taming';
+import {DOMESTIC_ANIMALS} from '../data/domestic-animals';
+import {animalTexture,animalFrame,animatedAnimal} from '../data/animal-art';
 import {gainQuality} from '../systems/item-quality';
 import {workbenchUpgrade,upgradeProblem} from '../systems/economy';
 import type {CraftingRecipe} from '../data/recipes';
@@ -1143,6 +1146,12 @@ export class ValleyScene extends Phaser.Scene {
     return true;
   }
 
+  /** Retrato de lado (virado para a direita, parado) de um animal da fazenda, para o painel do abrigo. */
+  private animalPortrait(animalId: string): string | undefined {
+    const kind = animalId === HORSE_ID ? 'horse' : DOMESTIC_ANIMALS.find(a => a.id === animalId)?.kind;
+    if (!kind || !animatedAnimal(kind) || !this.textures.exists(animalTexture(kind))) return;
+    try { return this.textures.getBase64(animalTexture(kind), String(animalFrame(kind, 'right', false, 0))); } catch { return; }
+  }
   private nearWorkbench(kind: 'workbench' | 'constructionBench' = 'workbench'): boolean {
     if (this.inHome) return false;
     return this.building.buildings.some(b => b.kind === kind && this.tileDistance(b) <= 112 && this.clearReach(b));
@@ -1242,7 +1251,7 @@ export class ValleyScene extends Phaser.Scene {
       if(oven){this.ui.showCookbook(()=>this.getFishingState(),id=>{this.ui.closeModal();const r=loadOven(this.machineRuntime,oven.id,id);this.ui.toast(r.message);if(r.ok){gameAudio.play('craft');this.updateHUD();}return r;},{station:'oven',onPickUp:()=>{this.ui.closeModal();const r=collectMachine(this.machineRuntime,oven.id);this.ui.toast(r.message);return r;}});return;}
       const result=interactMachine(this.machineRuntime,this.ui.getActiveItem());if(result){this.ui.toast(result.message);return;}
       const door=nearFarmDoor(this.state,this.player);if(door){this.enterFarmInterior(door.id);return;}
-      const site=nearFarmSite(this.state,this.player);if(site){showFarmConstruction(this.ui,this.farmRuntime,site.id,id=>this.enterFarmInterior(id));return;}
+      const site=nearFarmSite(this.state,this.player);if(site){showFarmConstruction(this.ui,this.farmRuntime,site.id,id=>this.enterFarmInterior(id),animalId=>this.animalPortrait(animalId));return;}
     }
     if(isFarmTool(this.tool))return;
 
