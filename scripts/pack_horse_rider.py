@@ -171,6 +171,17 @@ def polish(image, mask, horse_palette):
         if (lab == j).sum() < 8: mask = mask & (lab != j)
     mask = fill_holes(mask)
     out = image.copy(); out[~mask] = 0
+    # Furinhos e frestas de 1 px (onde saiu a rédea, no pulso): fecha com o vizinho mais escuro.
+    for _ in range(2):
+        opaque = out[..., 3] > 0
+        between = np.zeros_like(opaque)
+        between[1:-1] |= opaque[:-2] & opaque[2:]; between[:, 1:-1] |= opaque[:, :-2] & opaque[:, 2:]
+        notch = ~opaque & ((neighbours(opaque) >= 3) | between)
+        for y, x in zip(*np.nonzero(notch)):
+            around = [out[y + dy, x + dx] for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1))
+                      if 0 <= y + dy < out.shape[0] and 0 <= x + dx < out.shape[1] and out[y + dy, x + dx, 3] > 0]
+            out[y, x] = min(around, key=lambda c: int(c[0]) + int(c[1]) + int(c[2]))
+        mask = out[..., 3] > 0
     # Contorno escuro de 1 px onde a borda ficou sem ele (o personagem se destaca do cavalo).
     dark = rgb.sum(-1) < 150
     ring = ~mask & (neighbours(mask & ~dark) > 0)

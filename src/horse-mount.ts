@@ -15,7 +15,7 @@ const RUN_BY_DIRECTION:Record<CharacterDirection,typeof RUN_DIRECTIONS[number]>=
 /** Personagens com desenho próprio montado (scripts/pack_horse_rider.py): só o personagem,
  * separado do desenho, vai por cima do cavalo animado e acompanha o lombo quadro a quadro.
  * Os outros usam o personagem do jogo cortado na cintura, com pernas e sela por código. */
-export const RIDER_ART:readonly string[]=['farmer-female'];
+export const RIDER_ART:readonly string[]=['farmer-female','farmer-male'];
 /** Ordem das células na folha do cavalo com cavaleiro. */
 export const RIDER_ORDER:readonly CharacterDirection[]=['down','up','left','right','down-left','down-right','up-left','up-right'];
 export const riderTexture=(character:string)=>`horse-rider-${character}`;

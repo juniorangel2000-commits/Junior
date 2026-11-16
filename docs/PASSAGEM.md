@@ -16,7 +16,7 @@
 - `scripts/pack_horse_rider.py` separa só a personagem. No jogo, ela vai por cima do cavalo animado (passo e galope) e sobe e desce com o lombo.
 - Detalhes em `docs/construcoes/MONTARIA.md`; imagem em `docs/planejamento/montaria-preview.png`.
 - O Junior pediu acabamento caprichado. Foram limpos restos do cavalo nas bordas, pontas de rédea e o contorno; na vista de frente, as mãos ficaram sobre a cabeça do cavalo.
-- O personagem masculino continua com a versão por código (cortado na cintura, pernas, sela e rédeas desenhadas). Falta a arte dele no mesmo formato.
+- O personagem masculino usa a mesma montaria com a cabeça dele no lugar da dela (`scripts/swap_rider_head.py`), a pedido do Junior. Os dois ficam com a arte.
 - Correção: o efeito de nado não aparece mais por cima de quem está montado.
 
 ### Antes, nesta versão (preview.40)
@@ -36,7 +36,7 @@
 
 ## Em andamento e próximo passo exato
 
-1. O Junior vai conferir a montaria no jogo. Se ele mandar a arte do personagem masculino montado, rode `pack_horse_rider.py` com `farmer-male` e inclua-o em `RIDER_ART`.
+1. O Junior vai conferir a montaria no jogo, com os dois personagens. Se a arte dela mudar, rode `pack_horse_rider.py` e depois `swap_rider_head.py`.
 2. Pendentes do pedido "depois fazemos o restante":
    - porteira do lote 01 no chiqueiro;
    - ícones extras (pregos, dobradiça, engrenagem, molas, óleo) como peças de construção;
