@@ -15,6 +15,8 @@ import {MapEditorScene} from './scenes/MapEditorScene';
 import Phaser from 'phaser';
 import { gameAudio } from './audio';
 import { installFullscreenShortcut } from './fullscreen';
+import { installPerformanceOverlay } from './performance-overlay';
+import { installSceneTextureRelease } from './scene-texture-release';
 import { ForestScene } from './scenes/ForestScene';
 import { VillageScene } from './scenes/VillageScene';
 import { ValleyScene } from './scenes/ValleyScene';
@@ -69,6 +71,9 @@ export const game = new Phaser.Game({
   audio: { noAudio: true },
   banner: false,
 });
+
+installPerformanceOverlay(game);
+installSceneTextureRelease(game);
 
 export { gameAudio };
 

@@ -1,4 +1,5 @@
 import {MachineView} from '../machine-view';
+import {destroySceneChildren} from '../scene-children';
 import {machinePointBlocked,machineReserved,nearMachine,machineHint,useMachineItem,interactMachine,type MachineRuntime,nearEmptyOven,loadOven,collectMachine} from '../systems/machines';
 import {cropDefinition,cropFromSeed,cropStage} from '../data/crops';
 import {nearFarmDoor} from '../systems/farm-interior';
@@ -821,7 +822,7 @@ export class ValleyScene extends Phaser.Scene {
 
     getAmbientBirds(this)?.destroy();
     this.helpers?.destroy();this.helpers=undefined;
-    this.children.removeAll(true);
+    destroySceneChildren(this);
     this.state = structuredClone(data);this.ui.setGameplayLocked(rescuePending(this.state));
 
     this.supplySprites = [];

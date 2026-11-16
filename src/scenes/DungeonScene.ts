@@ -1,4 +1,5 @@
 import {sampleWaterDepth} from '../swimming';
+import {destroySceneChildren} from '../scene-children';
 import {paintedWaterPoint} from '../data/terrain-paint';
 import {DEVELOPMENT_TOOLS} from '../development-tools';
 import type {MapArea} from '../data/default-maps';
@@ -229,7 +230,7 @@ export class DungeonScene extends Phaser.Scene {
     this.cameras.main.stopFollow();
     this.world?.destroy();
     this.world = undefined;
-    this.children.removeAll(true);
+    destroySceneChildren(this);
     this.player = undefined;
     this.enemyImages.clear();
     this.projectileImages.clear();

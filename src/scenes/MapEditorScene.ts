@@ -1,4 +1,5 @@
 import {cropSpriteLayout} from '../crop-layout';
+import {destroySceneChildren} from '../scene-children';
 import {HighlandWorld,preloadHighland} from '../highland-world';
 import {highlandBlockedPoint,highlandWaterPoint} from '../data/highland';
 import {campApproachDistance} from '../data/forest-camp-access';
@@ -62,7 +63,7 @@ export class MapEditorScene extends Phaser.Scene {
   this.events.once('shutdown',()=>{this.editor?.destroy();this.editor=undefined;this.villageView?.destroy();this.villageView=undefined;this.resourceVisibility.clear();this.extraView?.destroy();this.extraView=undefined;});
  }
  private openArea(area:MapArea):void {
-  this.editor?.destroy();this.villageView?.destroy();this.villageView=undefined;this.extraView?.destroy();this.extraView=undefined;this.children.removeAll(true);this.area=area;
+  this.editor?.destroy();this.villageView?.destroy();this.villageView=undefined;this.extraView?.destroy();this.extraView=undefined;destroySceneChildren(this);this.area=area;
   const save=this.editorStart.save,edits=this.histories[area].current;
   const farming=new Farming(save.crops,save.preparedSoil,save.farmingProgress,save.restoredFarmSoil);
   let property:WorldView|undefined,forest:ForestWorld|undefined,village:VillageWorld|undefined;
@@ -75,7 +76,7 @@ export class MapEditorScene extends Phaser.Scene {
    liveMap=map;
    this.resourceVisibility.clear();
    village?.destroy();village=undefined;this.villageView=undefined;
-   this.extraView?.destroy();this.extraView=undefined;this.children.removeAll(true);
+   this.extraView?.destroy();this.extraView=undefined;destroySceneChildren(this);
    if(area==='forest'){forest=new ForestWorld(this,map,'editor-forest');forest.depleted=new Set(save.depletedResources);forest.rebuildEnvironment(map);property=undefined;for(const animal of FOREST_ANIMALS)if(!save.recruitedAnimals?.includes(animal.id))animalSprite(this,animal.kind,animal.x*32+16,animal.y*32+16);}
    else if(area==='village'){village=this.villageView=new VillageWorld(this,map,'editor-village');property=undefined;forest=undefined;}
    else if(area==='fishingLake'){property=undefined;forest=undefined;this.extraView=new FishingLakeWorld(this,map,'editor-lake');}

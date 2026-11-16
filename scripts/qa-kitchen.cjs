@@ -35,7 +35,7 @@ fs.mkdirSync(out, { recursive: true });
     await page.screenshot({ path: `${out}/casa-fogao.png` });
     await page.keyboard.press('e'); await page.waitForSelector('.cookbook-card');
     const cards = await page.evaluate(() => [...document.querySelectorAll('.cookbook-recipe h3')].map((h) => h.textContent));
-    console.log('· caderno:', JSON.stringify(cards)); assert.deepEqual(cards, ['Omelete de couve', 'Salada da horta']);
+    console.log('· caderno:', JSON.stringify(cards)); assert.deepEqual(cards, ['Omelete de couve', 'Salada da horta', '???', '???']);
     await page.screenshot({ path: `${out}/caderno.png` });
     // Salada: falta cenoura. Omelete: tudo na mochila.
     assert.equal(await page.locator('[data-cook="gardenSalad"]').isDisabled(), true);
