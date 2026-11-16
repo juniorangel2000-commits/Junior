@@ -896,6 +896,8 @@ export class ValleyScene extends Phaser.Scene {
     this.unregisterBentoNavigation=registerBentoPropertyNavigation(this.state,{fits:p=>[[-7,-5],[7,-5],[-7,3],[7,3]].every(([x,y])=>!machinePointBlocked(this.state,'property',p.x+x,p.y+y)&&!farmPointBlocked(this.state,p.x+x,p.y+y)&&!this.world.isBlockedPoint(p.x+x,p.y+y)&&!this.building.isBlocked(Math.floor((p.x+x)/32),Math.floor((p.y+y)/32))),allows:(a,b)=>bridgeAllowsStep(a.x,a.y,b.x,b.y,this.world.isSwimmingPoint)});
     this.bentoView=new BentoTravelView(this,()=>this.state,()=>this.player,()=>this.inHome?'home':'property',this.ui,undefined,this.bentoWorkRuntime);
     if(this.state.animalEscort)this.ui.toast('Leve o animal ao cercado e aperte G para soltá-lo.');
+    // A dica (porta, poço, animal...) já vale para onde o jogador apareceu, sem esperar o primeiro passo.
+    if(this.running)this.updateHUD();
   }
 
   private beginRescueScene():void {

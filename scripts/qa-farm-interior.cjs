@@ -64,8 +64,9 @@ fs.mkdirSync(out, { recursive: true });
     await page.screenshot({ path: `${out}/curral-noite.png` });
     // Planta inteira (piso, paredes e porta), para conferir a arte sem o corte da câmera.
     for (const kind of ['coop', 'barn']) {
-      const png = await page.evaluate((k) => game.textures.getBase64(`interior-${k}-floor`), kind);
-      fs.writeFileSync(`${out}/piso-${kind}.png`, Buffer.from(png.split(',')[1], 'base64'));
+      // Cada interior libera as imagens ao sair (preview.37): só o piso do abrigo atual existe.
+      const png = await page.evaluate((k) => game.textures.exists(`interior-${k}-floor`) ? game.textures.getBase64(`interior-${k}-floor`) : '', kind);
+      if (png) fs.writeFileSync(`${out}/piso-${kind}.png`, Buffer.from(png.split(',')[1], 'base64'));
     }
     console.log('· dentro do curral');
     assert.deepEqual(errors, []); console.log('QA do interior: OK');
