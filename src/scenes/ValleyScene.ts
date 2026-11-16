@@ -1343,7 +1343,11 @@ export class ValleyScene extends Phaser.Scene {
       if (result.ok) gameAudio.play('pickup');
       // Qualidade da colheita: só o que entrou na mochila (o que caiu no chão volta comum).
       const h = result.harvested, entered = h ? this.inventory.data[h.item] - before : 0;
-      if (h?.quality && entered > 0) gainQuality(this.state, h.item, this.inventory.data[h.item], h.quality, Math.min(entered, h.amount));
+      if (h && entered > 0) {
+        // As melhores unidades entram primeiro no registro, até o que coube na mochila.
+        const got = [...h.qualities].sort((a, b) => b - a).slice(0, entered), total = this.inventory.data[h.item];
+        for (const q of [2, 1] as const) { const n = got.filter(x => x === q).length; if (n) gainQuality(this.state, h.item, total, q, n); }
+      }
       this.ui.toast(result.message); this.afterAction(); return;
     }
     if (this.tool === 'hand' || this.tool === 'hatchet' || this.tool === 'pickaxe') {

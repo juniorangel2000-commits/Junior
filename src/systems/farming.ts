@@ -1,11 +1,11 @@
 import type { CropData, FarmingProgress, TilePoint } from '../types';
-import {QUALITY_NAMES,type Quality} from './item-quality';
+import type {Quality} from './item-quality';
 import { WORLD_WIDTH, WORLD_HEIGHT } from '../data/regions';
 import { Inventory } from './inventory';
 import { CROPS, cropDefinition, type CropDefinition, type CropId } from '../data/crops';
 import { calendarDate, daysLeftInSeason, IN_SEASON } from './calendar';
 
-export interface ActionResult { ok: boolean; message: string; /** Colheita: item, quantidade e qualidade, para o registro de qualidade. */ harvested?: { item: import('../types').ItemId; amount: number; quality: Quality } }
+export interface ActionResult { ok: boolean; message: string; /** Colheita: item, quantidade e qualidade, para o registro de qualidade. */ harvested?: { item: import('../types').ItemId; amount: number; qualities: Quality[] } }
 /** Limite de dias processados de uma vez; protege saves com datas absurdas. */
 const MAX_SETTLE_DAYS = 4000;
 
@@ -44,8 +44,7 @@ export function cropStatus(crop: CropData): string {
   const def = cropDefinition(crop.crop), done = crop.days ?? Math.floor(crop.growth * def.days);
   if (crop.growth >= 1) return `Colher ${def.name.toLowerCase()}`;
   const left = def.days - done;
-  const q = cropQuality(crop);
-  return `${def.name} · falta${left > 1 ? 'm' : ''} ${left} dia${left > 1 ? 's' : ''} regado${left > 1 ? 's' : ''}${crop.watered ? ' · regado hoje' : ' · precisa de água'}${q ? ` · rende ${QUALITY_NAMES[q]}` : ''}`;
+  return `${def.name} · falta${left > 1 ? 'm' : ''} ${left} dia${left > 1 ? 's' : ''} regado${left > 1 ? 's' : ''}${crop.watered ? ' · regado hoje' : ' · precisa de água'}${cropQualityHint(crop)}`;
 }
 
 /** Adubo: um dia extra de crescimento e a rega do dia. */
@@ -60,12 +59,30 @@ export function fertilizeCrop(crop: CropData, day: number): boolean {
   return true;
 }
 
-/** Qualidade da colheita (docs/construcoes/QUALIDADE.md): bom se regada todos os dias OU adubada;
- * excelente se regada todos os dias E adubada. Plantas antigas, sem registro, colhem comum. */
-export function cropQuality(crop: CropData): Quality {
+/** Nível de cuidado de uma planta (0 a 2): regada todos os dias desde o plantio e adubada contam
+ * um ponto cada. Plantas antigas, sem registro, têm nível 0. */
+export function careLevel(crop: CropData): 0 | 1 | 2 {
   if (!crop.care) return 0;
-  const daily = crop.care.missed === 0, fed = !!crop.care.fertilized;
-  return daily && fed ? 2 : daily || fed ? 1 : 0;
+  return ((crop.care.missed === 0 ? 1 : 0) + (crop.care.fertilized ? 1 : 0)) as 0 | 1 | 2;
+}
+/** Chances de [comum, bom, excelente] por nível de cuidado (docs/construcoes/QUALIDADE.md).
+ * O cuidado só aumenta a chance: nem toda colheita adubada sai excelente. */
+export const CROP_QUALITY_CHANCES: Record<0 | 1 | 2, readonly [number, number, number]> = {
+  0: [.85, .15, 0], 1: [.5, .4, .1], 2: [.25, .5, .25],
+};
+/** Sorteia a qualidade de cada unidade colhida. A semente vem do canteiro e do dia, então
+ * recarregar a partida no mesmo dia não muda o resultado. */
+export function rollCropQuality(crop: CropData, amount: number): Quality[] {
+  const [common, good] = CROP_QUALITY_CHANCES[careLevel(crop)];
+  let seed = (Math.imul(crop.x, 73856093) ^ Math.imul(crop.y, 19349663) ^ Math.imul(crop.day ?? 1, 83492791)) >>> 0;
+  const random = () => (seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296;
+  return Array.from({ length: amount }, () => { const r = random(); return r < common ? 0 : r < common + good ? 1 : 2; });
+}
+/** Texto das chances de bom e excelente para o status do canteiro. */
+export function cropQualityHint(crop: CropData): string {
+  if (!crop.care) return '';
+  const [, good, excellent] = CROP_QUALITY_CHANCES[careLevel(crop)];
+  return ` · chance ${Math.round(good * 100)}% boa${excellent ? `, ${Math.round(excellent * 100)}% excelente` : ''}`;
 }
 export const isFarmTile = (x: number, y: number): boolean =>
   Number.isInteger(x) && Number.isInteger(y) && x >= 21 && x <= 29 && y >= 20 && y <= 24;
@@ -193,13 +210,15 @@ export class Farming {
     const def = cropDefinition(crop.crop), gain: Record<string, number> = { [def.harvest]: def.yield };
     if (def.seedReturn) gain[def.seed] = (gain[def.seed] ?? 0) + def.seedReturn;
     if (!(ground?ground(gain):inventory.transact({}, gain))) return { ok: false, message: 'A mochila não comporta a colheita. Abra espaço antes de colher.' };
-    const quality = cropQuality(crop);
+    const qualities = rollCropQuality(crop, def.yield);
+    const good = qualities.filter(q => q === 1).length, excellent = qualities.filter(q => q === 2).length;
+    const qualityText = [excellent ? `${excellent} excelente${excellent > 1 ? 's' : ''}` : '', good ? `${good} boa${good > 1 ? 's' : ''}` : ''].filter(Boolean).join(' e ');
     // Rebrota: o cuidado recomeça para a próxima colheita.
     if (def.regrow) { crop.days = def.days - def.regrow; crop.growth = crop.days / def.days; if (crop.care) crop.care = { missed: 0 }; }
     else this.crops.splice(this.crops.indexOf(crop), 1);
     this.progress.harvested = true;
     const name = def.name.toLowerCase();
-    return { ok: true, harvested: { item: def.harvest as import('../types').ItemId, amount: def.yield, quality }, message: `Colheita! +${def.yield} ${name}${quality ? ` (qualidade ${quality === 2 ? 'excelente' : 'boa'})` : ''}${def.seedReturn ? ` e +${def.seedReturn} semente para recomeçar` : ''}${def.regrow ? `. Produz de novo em ${def.regrow} dias regados` : ''}.` };
+    return { ok: true, harvested: { item: def.harvest as import('../types').ItemId, amount: def.yield, qualities }, message: `Colheita! +${def.yield} ${name}${qualityText ? ` (${qualityText})` : ''}${def.seedReturn ? ` e +${def.seedReturn} semente para recomeçar` : ''}${def.regrow ? `. Produz de novo em ${def.regrow} dias regados` : ''}.` };
   }
 
   /** O crescimento conta por dias regados; `day` é o dia atual do calendário. Sem dia,

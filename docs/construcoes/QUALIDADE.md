@@ -34,9 +34,18 @@ tosquia. Esterco, pena e mel ficam sempre comuns.
 
 - Cada planta nova guarda o cuidado desde o plantio (`crop.care`): dias sem rega enquanto
   crescia e se recebeu adubo.
-- **Bom:** regada todos os dias **ou** adubada. **Excelente:** regada todos os dias **e**
-  adubada. Esquecer a rega e não adubar dá comum.
-- O status do canteiro mostra "rende bom/excelente" enquanto cresce. Plantas que rebrotam
+- A qualidade de cada unidade colhida é **sorteada**. O cuidado só aumenta as chances
+  (pedido do Junior: nem toda colheita adubada sai excelente):
+
+  | Cuidado | Comum | Bom | Excelente |
+  | --- | --- | --- | --- |
+  | Sem rega diária e sem adubo | 85% | 15% | 0% |
+  | Rega diária **ou** adubo | 50% | 40% | 10% |
+  | Rega diária **e** adubo | 25% | 50% | 25% |
+
+  O sorteio usa o canteiro e o dia, então recarregar a partida não muda o resultado. Valores em
+  `CROP_QUALITY_CHANCES` (`src/systems/farming.ts`).
+- O status do canteiro mostra as chances ("chance 40% boa, 10% excelente") enquanto cresce. Plantas que rebrotam
   recomeçam o cuidado depois de cada colheita.
 - Plantas de saves anteriores não têm o registro e colhem comum. O que cai no chão (mochila
   cheia) volta comum.
