@@ -11,6 +11,9 @@ export class HorseIdleCycle{
  get locked(){return this.phase!=='waiting';}
  /** Come a cesta da doma: mesma sequência de comer do capim (começar, comer 4–7 s e terminar). */
  eatBasket(direction:CharacterDirection):void{this.direction=direction.includes('up')?'up':'down';this.meal=4+this.random()*3;this.stopRequested=false;this.nextMeal=false;this.set('turning');}
+ /** Encerra a ação atual do jeito natural: comendo, termina a mordida (fim da refeição);
+  * começando a comer, termina logo depois; virando ou sacudindo a cabeça, para. */
+ finish():void{if(this.phase==='starting')this.stopRequested=true;else if(this.phase==='eating')this.set('ending');else if(this.phase==='turning'||this.phase==='shaking')this.reset();}
  get waitSeconds(){return this.cooldown;}
  private set(p:HorseIdlePhase){this.phase=p;this.age=0;}
  update(delta:number,idle:boolean,unsafe:boolean,direction:CharacterDirection,grass:boolean):void{

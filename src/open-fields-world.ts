@@ -90,7 +90,9 @@ export class OpenFieldsWorld{
   let target:{x:number;y:number}|undefined,arrival=32,led=false;
   if(escort){target=player;led=true;arrival=ANIMAL_BEHAVIOR.followDistance;}
   // Domado, ele vem até você por conta própria.
-  else if(t.tamed){if(range>60&&range<420&&!a.idle?.locked){target=player;led=true;arrival=36;}}
+  else if(t.tamed){if(range>60&&range<420){
+   // Domado e você longe: termina o que estava fazendo (até a cesta) e vem até você.
+   if(a.idle?.locked)a.idle.finish();else{target=player;led=true;arrival=36;}}}
   else if(!a.idle?.locked){const basket=this.basketFor(s,player,phase.clearance);
    // Come ao alcançar a cesta com a cabeça; o corpo largo não precisa pisar nela.
    if(basket){if(Math.hypot(basket.x-a.brain.x,basket.y-a.brain.y)<44){this.hooks.horseAte?.();a.idle?.eatBasket(a.brain.direction);}else{target=basket;led=true;arrival=26;}}}
