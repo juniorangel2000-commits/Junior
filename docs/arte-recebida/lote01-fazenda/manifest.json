@@ -1,0 +1,506 @@
+{
+  "package": "jardim-depois-da-chuva-arte-fazenda-lote-01",
+  "version": "1.0",
+  "origin": "Folha de sprites aprovada, variante porteira a 90 graus",
+  "source_file": "a_highly_detailed_pixel_art_sprite_sheet_on_a_whit.png",
+  "source_dimensions_px": [
+    1774,
+    887
+  ],
+  "export_rules": [
+    "PNG RGBA transparente",
+    "sem redimensionamento",
+    "recorte sem mudar desenho",
+    "sprite sheets alinhadas sem redimensionar"
+  ],
+  "assets": [
+    {
+      "id": "esterco",
+      "file": "provisorios/esterco.png",
+      "width": 223,
+      "height": 228,
+      "source_bounds": [
+        5,
+        39,
+        228,
+        267
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "adubo",
+      "file": "provisorios/adubo.png",
+      "width": 226,
+      "height": 227,
+      "source_bounds": [
+        235,
+        44,
+        461,
+        271
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "lamacal_chiqueiro",
+      "file": "terreno/lamacal_chiqueiro.png",
+      "width": 397,
+      "height": 236,
+      "source_bounds": [
+        474,
+        35,
+        871,
+        271
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "colmeia_parada",
+      "file": "colmeia/colmeia_parada.png",
+      "width": 202,
+      "height": 247,
+      "source_bounds": [
+        897,
+        28,
+        1099,
+        275
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "colmeia_abelhas_esquerda",
+      "file": "colmeia/colmeia_abelhas_esquerda.png",
+      "width": 211,
+      "height": 270,
+      "source_bounds": [
+        1099,
+        5,
+        1310,
+        275
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "colmeia_abelhas_direita",
+      "file": "colmeia/colmeia_abelhas_direita.png",
+      "width": 227,
+      "height": 271,
+      "source_bounds": [
+        1300,
+        5,
+        1527,
+        276
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "colmeia_vazia",
+      "file": "colmeia/colmeia_vazia.png",
+      "width": 202,
+      "height": 245,
+      "source_bounds": [
+        1547,
+        30,
+        1749,
+        275
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "mel_margarida",
+      "file": "produtos/mel_margarida.png",
+      "width": 225,
+      "height": 222,
+      "source_bounds": [
+        63,
+        307,
+        288,
+        529
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "mel_girassol",
+      "file": "produtos/mel_girassol.png",
+      "width": 222,
+      "height": 221,
+      "source_bounds": [
+        317,
+        307,
+        539,
+        528
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "tecido_la",
+      "file": "produtos/tecido_la.png",
+      "width": 293,
+      "height": 213,
+      "source_bounds": [
+        576,
+        313,
+        869,
+        526
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "porteira_fechada",
+      "file": "porteira/porteira_fechada.png",
+      "width": 370,
+      "height": 185,
+      "source_bounds": [
+        903,
+        318,
+        1273,
+        503
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "poste_porteira",
+      "file": "porteira/poste_porteira.png",
+      "width": 113,
+      "height": 185,
+      "source_bounds": [
+        1303,
+        318,
+        1416,
+        503
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "porteira_aberta_90graus",
+      "file": "porteira/porteira_aberta_90graus.png",
+      "width": 188,
+      "height": 217,
+      "source_bounds": [
+        1521,
+        317,
+        1709,
+        534
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "cavilhas",
+      "file": "inventario/cavilhas.png",
+      "width": 151,
+      "height": 126,
+      "source_bounds": [
+        42,
+        580,
+        193,
+        706
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "ervas",
+      "file": "inventario/ervas.png",
+      "width": 141,
+      "height": 138,
+      "source_bounds": [
+        227,
+        572,
+        368,
+        710
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "ervas_raras",
+      "file": "inventario/ervas_raras.png",
+      "width": 136,
+      "height": 141,
+      "source_bounds": [
+        385,
+        569,
+        521,
+        710
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "flores_margarida",
+      "file": "inventario/flores_margarida.png",
+      "width": 148,
+      "height": 141,
+      "source_bounds": [
+        544,
+        569,
+        692,
+        710
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "erva_alecrim",
+      "file": "inventario/erva_alecrim.png",
+      "width": 136,
+      "height": 145,
+      "source_bounds": [
+        712,
+        565,
+        848,
+        710
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "folhas_verdes",
+      "file": "inventario/folhas_verdes.png",
+      "width": 154,
+      "height": 134,
+      "source_bounds": [
+        872,
+        576,
+        1026,
+        710
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "flor_girassol",
+      "file": "inventario/flor_girassol.png",
+      "width": 157,
+      "height": 141,
+      "source_bounds": [
+        1026,
+        569,
+        1183,
+        710
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "flor_rosa",
+      "file": "inventario/flor_rosa.png",
+      "width": 169,
+      "height": 140,
+      "source_bounds": [
+        1183,
+        570,
+        1352,
+        710
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "mapa_antigo",
+      "file": "inventario/mapa_antigo.png",
+      "width": 169,
+      "height": 146,
+      "source_bounds": [
+        1380,
+        564,
+        1549,
+        710
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "mochila_reforcada",
+      "file": "inventario/mochila_reforcada.png",
+      "width": 168,
+      "height": 148,
+      "source_bounds": [
+        1568,
+        562,
+        1736,
+        710
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "botas",
+      "file": "inventario/botas.png",
+      "width": 160,
+      "height": 142,
+      "source_bounds": [
+        32,
+        736,
+        192,
+        878
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "corda",
+      "file": "inventario/corda.png",
+      "width": 146,
+      "height": 130,
+      "source_bounds": [
+        229,
+        743,
+        375,
+        873
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "pregos",
+      "file": "inventario/pregos.png",
+      "width": 120,
+      "height": 111,
+      "source_bounds": [
+        402,
+        747,
+        522,
+        858
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "parafuso_e_porcas",
+      "file": "inventario/parafuso_e_porcas.png",
+      "width": 134,
+      "height": 129,
+      "source_bounds": [
+        565,
+        741,
+        699,
+        870
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "dobradica",
+      "file": "inventario/dobradica.png",
+      "width": 126,
+      "height": 113,
+      "source_bounds": [
+        739,
+        749,
+        865,
+        862
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "engrenagem",
+      "file": "inventario/engrenagem.png",
+      "width": 137,
+      "height": 132,
+      "source_bounds": [
+        899,
+        739,
+        1036,
+        871
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "roda_dentada",
+      "file": "inventario/roda_dentada.png",
+      "width": 158,
+      "height": 151,
+      "source_bounds": [
+        1062,
+        732,
+        1220,
+        883
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "molas",
+      "file": "inventario/molas.png",
+      "width": 119,
+      "height": 163,
+      "source_bounds": [
+        1245,
+        710,
+        1364,
+        873
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "frasco_de_oleo",
+      "file": "inventario/frasco_de_oleo.png",
+      "width": 107,
+      "height": 149,
+      "source_bounds": [
+        1407,
+        729,
+        1514,
+        878
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "cera_bruta",
+      "file": "inventario/cera_bruta.png",
+      "width": 176,
+      "height": 163,
+      "source_bounds": [
+        1555,
+        710,
+        1731,
+        873
+      ],
+      "format": "RGBA PNG"
+    }
+  ],
+  "animations": {
+    "beehive": {
+      "sheet": "animacoes/colmeia_4_quadros.png",
+      "frame_width": 270,
+      "frame_height": 284,
+      "frame_count": 4,
+      "states": [
+        "idle",
+        "working_left",
+        "working_right",
+        "empty"
+      ],
+      "frames": [
+        "animacoes/colmeia_parada.png",
+        "animacoes/colmeia_abelhas_esquerda.png",
+        "animacoes/colmeia_abelhas_direita.png",
+        "animacoes/colmeia_vazia.png"
+      ],
+      "fps_recommended": 2,
+      "loop_working_states": [
+        1,
+        2
+      ]
+    },
+    "pigsty_gate": {
+      "sheet": "animacoes/porteira_2_estados.png",
+      "frame_width": 400,
+      "frame_height": 260,
+      "frame_count": 2,
+      "states": [
+        "closed",
+        "open_90_degrees"
+      ],
+      "frames": [
+        "animacoes/porteira_fechada_alinhada.png",
+        "animacoes/porteira_aberta_90graus_alinhada.png"
+      ],
+      "note": "Gate frames include a right-hand post when open; geometry/collision must change independently."
+    }
+  },
+  "game_id_suggestions": {
+    "peg": "inventario/cavilhas.png",
+    "herb": "inventario/ervas.png",
+    "rareHerb": "inventario/ervas_raras.png",
+    "oldMap": "inventario/mapa_antigo.png",
+    "backpack": "inventario/mochila_reforcada.png",
+    "boots": "inventario/botas.png",
+    "daisy-honey": "produtos/mel_margarida.png",
+    "sunflower-honey": "produtos/mel_girassol.png",
+    "woolCloth": "produtos/tecido_la.png",
+    "manure": "provisorios/esterco.png",
+    "fertilizer": "provisorios/adubo.png"
+  },
+  "quality_notes": [
+    "Sprites cortados de folha em imagem raster: transparência recortada por máscara, algum antialias e pixel fringe podem existir em altas ampliações.",
+    "Lamaçal possui arte original com proporção aproximada 1.8:1; footprint lógico 3x2 pode ser implementado sem redimensionar o PNG fonte.",
+    "Ícones extras sem equivalência segura com itemId não foram ligados automaticamente.",
+    "Não integrado nem publicado no repositório."
+  ]
+}

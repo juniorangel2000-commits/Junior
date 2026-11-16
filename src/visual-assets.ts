@@ -32,9 +32,12 @@ import { TOOL_ICON_URLS } from './data/tool-art';
 /** Local assets from the received packages and original tree/ground atlases. */
 const BASE = 'assets/visual/';
 const ICON_IDS = new Set(['wood', 'stone', 'branch', 'log', 'plank', 'scrap', 'hatchet', 'pickaxe', 'handsaw', 'fiber', 'cord', 'flakedStone', 'handle', 'blade', 'board', 'hammer', 'water', 'workbench', 'seeds']);
+const ITEM_ART=new Set(['peg','herb','rareHerb','oldMap','backpack','boots','metalPart']);
 export function itemIconUrl(id: string, tier=0): string | undefined {
   if((MACHINE_IDS as readonly string[]).includes(id))return `assets/visual/machines/${id}-icon.png`;
   if((MACHINE_PRODUCTS as readonly string[]).includes(id))return `assets/visual/machines/${id}.png`;
+  // Lote 01 de artes (docs/arte-recebida/lote01-fazenda): ícones próprios no lugar dos emprestados.
+  if(ITEM_ART.has(id))return `assets/visual/items/${id}.png`;
   if(id==='harvestBasket')return 'assets/visual/crops/harvest-basket.png';
   const crop=CROP_CATALOG.find(c=>c.seed===id||c.harvest===id);if(crop)return `assets/visual/crops/${crop.id}/${crop.seed===id?'seed':'harvest'}.png`;
   if(id==='freshGrass')return 'assets/visual/open-fields/fresh-grass.png';

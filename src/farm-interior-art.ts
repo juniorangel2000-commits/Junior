@@ -13,7 +13,7 @@ const SOURCES:Record<string,string>={
  'interior-nest':'nest.png','interior-water':'water.png',
  'interior-trough-64':'trough-64.png','interior-trough-96':'trough-96.png',
  'interior-stall-96x96':'stall.png','interior-divider-88':'divider.png',
- 'interior-nest-egg':'nest-egg.png','interior-nest-duck-egg':'nest-duck-egg.png','interior-manure':'../../kitchen/manure.png','interior-trough-64-empty':'trough-64-empty.png','interior-trough-96-empty':'trough-96-empty.png',
+ 'interior-mud':'mud.png','interior-nest-egg':'nest-egg.png','interior-nest-duck-egg':'nest-duck-egg.png','interior-manure':'../../kitchen/manure.png','interior-trough-64-empty':'trough-64-empty.png','interior-trough-96-empty':'trough-96-empty.png',
  'interior-wool-ready':'../products/wool.png','interior-shears':'../products/shears.png',
  'interior-milk-ready':'../products/milk.png','interior-milk-pail':'../products/milk-pail.png',
 };
@@ -68,7 +68,7 @@ function floor(scene:Phaser.Scene,kind:FarmKind,l:FarmInteriorLayout):string{
 /** Estado visível dos objetos: ovos nos ninhos (índices 0–5) e cocho com ou sem palha. */
 export interface InteriorFixtureState{eggs:readonly number[];duckEggs?:readonly number[];manure?:readonly number[];trough:number}
 export interface InteriorView{fixtures:Map<string,Phaser.GameObjects.Image>;refresh(state:InteriorFixtureState):void;destroy():void}
-/** Lamaçal do chiqueiro, desenhado em pixel art (terra molhada com poças e reflexos). */
+/** Reserva do lamaçal (a arte do lote 01, `mud.png`, é carregada antes; esta só entra se faltar). */
 function mudTexture(scene:Phaser.Scene,w:number,h:number):void{
  if(scene.textures.exists('interior-mud'))return;
  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d')!;
