@@ -2,6 +2,8 @@ import type Phaser from 'phaser';
 import {createAnimalSprite,updateAnimalSprite} from './animal-sprites';
 import {FOREST_DUCK_SPAWNS,createForestDuck} from './systems/forest-ducks';
 import type {AnimalBrain,AnimalPoint} from './systems/animals';
+/** Linha d'água no quadro de 224 px do pato: abaixo dela ficam as patas. */
+const WATERLINE=170;
 export class ForestWaterfowl{
  readonly ducks:{brain:AnimalBrain;sprite:Phaser.GameObjects.Sprite;shadow:Phaser.GameObjects.Ellipse;swimming:boolean}[]=[];
  private ripples:Phaser.GameObjects.Graphics;private elapsed=0;private nextRipple=0;
@@ -15,7 +17,8 @@ export class ForestWaterfowl{
   this.elapsed+=dt;const brains=this.ducks.map(d=>d.brain),draw=this.elapsed>=this.nextRipple;if(draw){this.nextRipple=this.elapsed+.1;this.ripples.clear();}
   const view=this.scene.cameras.main.worldView;
   for(const d of this.ducks){d.brain.update(dt,player,brains);updateAnimalSprite(d.sprite,d.brain,dt);const water=this.water(d.brain.x,d.brain.y);d.swimming=water;d.shadow.setVisible(!water).setPosition(d.brain.x,d.brain.y).setDepth(d.brain.y-.2);
-   if(water)d.sprite.setCrop(0,0,224,182);else d.sprite.setCrop();
+   // Nadando, a parte de baixo do quadro (patas) fica sob a água.
+   if(water)d.sprite.setCrop(0,0,224,WATERLINE);else d.sprite.setCrop();
    if(draw&&water&&d.brain.x>view.x-30&&d.brain.x<view.right+30&&d.brain.y>view.y-30&&d.brain.y<view.bottom+30){const wave=1+Math.sin(this.elapsed*3+d.brain.x)*.12;
     this.ripples.lineStyle(.7,0xc6e3cd,.4).strokeEllipse(d.brain.x,d.brain.y-3,24*wave,6*wave).lineStyle(.7,0x264e53,.35).strokeEllipse(d.brain.x,d.brain.y-2,19,4);
    }
