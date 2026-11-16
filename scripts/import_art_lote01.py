@@ -63,6 +63,15 @@ def despeckle(im, limit=12):
     return im.crop(im.getbbox())
 
 
+def clean_fringe(paths):
+    """Tira a franja branca do contorno (scripts/clean_white_fringe.py)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('fringe', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'clean_white_fringe.py'))
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    for p in paths:
+        mod.clean(p)
+
+
 def main():
     keep = os.path.join(ROOT, 'docs/arte-recebida/lote01-fazenda')
     if os.path.exists(keep):
@@ -91,6 +100,7 @@ def main():
     open(art_path, 'w', encoding='utf-8').write(text)
     print(f'colmeia: 3 quadros de {fw}x{fh}')
 
+    clean_fringe([os.path.join(VIS, d) for d in ICONS.values()] + [os.path.join(VIS, 'machines/beehive.png')])
 
 if __name__ == '__main__':
     main()
