@@ -7,6 +7,20 @@ import { WELL_SHADOW_FOOT } from './data/property-well';
 type Caster = Phaser.GameObjects.Image | Phaser.GameObjects.Sprite;
 const CASTER = /^(asset-(tree|pine)(-[012])?|lake-rock-[0-5]|asset-house|property-well-(idle|use)|cabin|player|forest-player|city-forest-player|village-player|village-npc-[a-z]+|village-lantern|village-(augusto|rosa|amelia|nilo|celina|damiao|helena|icaro)-shop|village-tobias-shop-front|detailed-ore-atlas|village-blacksmith-house(-front)?)$/;
 
+/** Chão, plantinhas rasteiras, camadas de janela/fogo das casas e efeitos não projetam sombra. */
+const NO_SHADOW = /^(__|solar-|tool:|animal-)|-windows$|window-glow|-back$|-roof$|-floor$|blacksmith-(fire|anvil)|^bridge-|village-pier|ambient-wild-birds|forest-detail-(fern|flowers|mushrooms|reeds)|village-greenery|ecology-herbs|fields-meadow-grass|asset-small-stones|prepared-soil|exit-sign|fields-floor|ground|map-seam|cliff|harvest-basket|machine-product|item-/;
+/** Tudo o que fica em pé no mundo projeta sombra: árvores, pedras, casas, cercas, bancos,
+ * canteiros, fonte, barris, máquinas, construções e pessoas. Os animais já têm a sombra
+ * oval embaixo deles; a projetada, feita quadro a quadro na corrida, travava o jogo. Os objetos em pé são os
+ * ordenados pela altura no mapa (profundidade = y); o chão fica abaixo de zero e as camadas de
+ * luz e interface acima de 4000. `setData('no-shadow', true)` tira um objeto da regra. */
+export function castsShadow(o: Phaser.GameObjects.GameObject): boolean {
+  if (o.type !== 'Image' && o.type !== 'Sprite') return false;
+  const g = o as Caster, key = g.texture?.key ?? '';
+  if (CASTER.test(key)) return true;
+  if (o.getData('no-shadow') || o.getData('solar-shadow') || g.depth < 0 || g.depth >= 4000 || NO_SHADOW.test(key)) return false;
+  return g.displayHeight >= 26 && g.displayWidth <= 520 && g.displayHeight <= 520;
+}
 /** Sombras de personagens e moradores mudam de quadro: são feitas sob demanda. */
 const STATIC_LAZY=/player|village-npc-/;
 /** Reuses sprite alpha, including animated character frames. No source art is modified. */
@@ -30,7 +44,7 @@ export class SolarShadows {
       this.nextScan = this.scene.time.now + 500;
       for (const object of [...this.scene.children.list]) {
         const source = object as Caster;
-        if (source.texture && CASTER.test(source.texture.key) && !this.pairs.has(source)) {
+        if (source.texture && !this.pairs.has(source) && castsShadow(source)) {
           const shadow = new ProjectedShadow(this.scene,source.x,source.y,'__WHITE');
           this.scene.add.existing(shadow);
           this.pairs.set(source,shadow.setDepth(-5).setVisible(false).setData('solar-shadow',true));
@@ -53,11 +67,14 @@ export class SolarShadows {
       const authoredFoot = typeof source.getData('shadow-foot')==='number'?source.getData('shadow-foot') as number : source.texture.key === 'asset-house' ? HOUSE_SHADOW_FOOT
         : /^property-well-(idle|use)$/.test(source.texture.key) ? WELL_SHADOW_FOOT : source.originY;
       const foot = this.footPivots.get(texture) ?? authoredFoot;
-      shadow.setTexture(texture).setOrigin(source.originX, 1 - foot)
-        .setPosition(source.x, source.y + (foot-source.originY)*source.displayHeight + .25).setRotation(0)
-        .setScale(source.scaleX, source.scaleY * sun.projectionY)
+      // A sombra nasce no pé e deita no chão para trás do objeto, achatada e inclinada para
+      // o lado oposto ao sol: fica sempre colada à base. De manhã e à tarde ela é mais comprida.
+      const squash = .2 + .5 * sun.length;
+      shadow.setTexture(texture).setOrigin(source.originX, foot)
+        .setPosition(source.x, source.y + (foot-source.originY)*source.displayHeight).setRotation(0)
+        .setScale(source.scaleX, source.scaleY * squash)
         .setFlipX(source.flipX).setAlpha(sun.opacity * strength).setVisible(true);
-      shadow.shear = sun.projectionX / sun.projectionY;
+      shadow.shear = -sun.x * .85 / squash;
     }
   }
   private texture(source: Caster): string {
@@ -68,20 +85,26 @@ export class SolarShadows {
     const canvas = document.createElement('canvas');
     canvas.width = frame.realWidth; canvas.height = frame.realHeight;
     const c = canvas.getContext('2d')!;
-    // Mirror about the feet onto the ground, retaining the frame's transparent margins.
-    c.translate(0, canvas.height); c.scale(1, -1);c.filter='blur(1px)';
+    // Silhueta na mesma posição do quadro (sem espelhar), com as margens transparentes.
+    c.filter='blur(1px)';
     c.drawImage(frame.source.image as HTMLImageElement, frame.cutX, frame.cutY, frame.cutWidth, frame.cutHeight,
       frame.x, frame.y, frame.cutWidth, frame.cutHeight);
-    if(['player','forest-player','city-forest-player','village-player'].includes(source.texture.key)||source.texture.key.startsWith('village-npc-')){
+    // A sombra parte do pé desenhado (última linha opaca), não da borda da imagem. Casa,
+    // poço e prédios da vila (com 'shadow-foot' medido à mão) mantêm o pé deles.
+    // 'shadow-foot' igual a 1 (borda de baixo) também é medido: essas artes têm margem transparente.
+    const authored=source.getData('shadow-foot');
+    if(!/^(asset-house|property-well-(idle|use))$/.test(source.texture.key)&&(typeof authored!=='number'||authored>=1)){
       const alpha=c.getImageData(0,0,canvas.width,canvas.height).data;
-      let first=canvas.height;
-      for(let y=0;y<canvas.height&&first===canvas.height;y++)for(let x=0;x<canvas.width;x++)if(alpha[(y*canvas.width+x)*4+3]>=200){first=y;break;}
-      if(first<canvas.height)this.footPivots.set(key,1-first/canvas.height);
+      // Pé: a última linha bem opaca, de baixo para cima.
+      let bottom=-1;
+      for(let y=canvas.height-1;y>=0&&bottom<0;y--)for(let x=0;x<canvas.width;x++)if(alpha[(y*canvas.width+x)*4+3]>=160){bottom=y;break;}
+      if(bottom>=0)this.footPivots.set(key,(bottom+1)/canvas.height);
     }
     c.setTransform(1,0,0,1,0,0); c.filter='none';c.globalCompositeOperation = 'source-in';
     c.fillStyle = '#182c28'; c.fillRect(0,0,canvas.width,canvas.height);
     c.globalCompositeOperation = 'destination-in';
-    const fade = c.createLinearGradient(0,0,0,canvas.height); fade.addColorStop(0,'#000');fade.addColorStop(1,'#000a');
+    // Mais escura junto ao pé, mais clara na ponta.
+    const fade = c.createLinearGradient(0,0,0,canvas.height); fade.addColorStop(0,'#0007');fade.addColorStop(1,'#000');
     c.fillStyle = fade;c.fillRect(0,0,canvas.width,canvas.height);
     this.scene.textures.addCanvas(key,canvas)?.setFilter(Phaser.Textures.FilterMode.LINEAR);
     this.textures.add(key);

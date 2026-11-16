@@ -4,11 +4,11 @@ export function solarLight(time: number) {
   const minute = dayMinutes(time);
   const progress = (minute - SUNRISE_MINUTES) / (SUNSET_MINUTES - SUNRISE_MINUTES);
   const elevation = Math.sin(Math.max(0, Math.min(1, progress)) * Math.PI);
-  const fade = Math.max(0, Math.min(1, (minute - SUNRISE_MINUTES) / 45, (SUNSET_MINUTES - minute) / 45));
+  const fade = Math.max(0, Math.min(1, (minute - SUNRISE_MINUTES) / 30, (SUNSET_MINUTES - minute) / 25));
   const x=-Math.cos(progress*Math.PI), y=.42;
   const length=.22+.52*(1-elevation);
   return { x,y,length,projectionX:x*length,projectionY:y*length,
-    opacity: (.24 + .08 * elevation) * fade };
+    opacity: (.5 + .08 * elevation) * fade };
 }
 
 export function windowLight(time: number): number {
