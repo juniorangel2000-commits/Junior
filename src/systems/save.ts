@@ -248,6 +248,7 @@ export function validateSave(value: unknown): value is SaveData {
     if (crop.day === undefined && crop.days === undefined && crop.crop === undefined) { if (!crop.watered && crop.growth > 0) return false; }
     // Formato por dias regados: planta conhecida, dias dentro da ficha e dia de referência até hoje.
     else if (!isCropId(crop.crop) || !integer(crop.days, 0, CROPS[crop.crop].days) || !integer(crop.day, 1, typeof value.day === 'number' ? value.day : 1)) return false;
+    if (crop.care !== undefined && (!isRecord(crop.care) || !integer(crop.care.missed, 0, 999) || crop.care.fertilized !== undefined && crop.care.fertilized !== true || Object.keys(crop.care).some(k => k !== 'missed' && k !== 'fertilized'))) return false;
     const key = String(crop.x) + ',' + String(crop.y);
     if (occupied.has(key)) return false;
     occupied.add(key);

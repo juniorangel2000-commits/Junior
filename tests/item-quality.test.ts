@@ -93,7 +93,10 @@ describe('qualidade herdada',()=>{
  });
  it('o prato herda a média dos ingredientes de animal e dá mais vigor',()=>{
   const s=createNewSave(createCharacterProfile('Cozinha'));s.villageProgress!.recipes.push('kaleOmelette');
-  Object.assign(s.inventory,{egg:2,kale:1,wood:1});gainQuality(s,'egg',2,2,2);
+  // Desde a preview.40 a couve também conta: ovos excelentes com couve comum dão prato bom.
+  const t=createNewSave(createCharacterProfile('Couve'));t.villageProgress!.recipes.push('kaleOmelette');Object.assign(t.inventory,{egg:2,kale:1,wood:1});gainQuality(t,'egg',2,2,2);
+  expect(cookDish(t,'kaleOmelette',ok).message).toContain('Omelete de couve bom pronto');
+  Object.assign(s.inventory,{egg:2,kale:1,wood:1});gainQuality(s,'egg',2,2,2);gainQuality(s,'kale',1,2,1);
   const r=cookDish(s,'kaleOmelette',ok);expect(r.ok).toBe(true);expect(r.message).toContain('Omelete de couve excelente pronto');
   expect(qualityCounts(s.itemQuality,'kaleOmelette',1).excellent).toBe(1);
   const base=dishRecipe('kaleOmelette')!;expect(dishVigor(base,2)).toBe(Math.round(base.vigor*1.5));

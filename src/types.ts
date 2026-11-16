@@ -38,7 +38,10 @@ export interface TilePoint { x: number; y: number }
 /** growth: fração 0–1 derivada de days, mantida para o desenho e saves antigos.
  * watered: regada no dia `day`. Canteiros de saves antigos não têm crop/days/day e
  * são convertidos na primeira atualização (nabo, progresso proporcional). */
-export interface CropData extends TilePoint { growth: number; watered: boolean; crop?: import('./data/crops').CropId; days?: number; day?: number }
+export interface CropData extends TilePoint { growth: number; watered: boolean; crop?: import('./data/crops').CropId; days?: number; day?: number;
+  /** Cuidado desde o plantio (qualidade da colheita): dias sem rega enquanto crescia e se foi adubada.
+   * Plantas de saves anteriores não têm e colhem comum. */
+  care?: { missed: number; fertilized?: true } }
 export interface FarmingProgress { prepared: boolean; planted: boolean; watered: boolean; harvested: boolean }
 export interface BuildingData extends TilePoint { kind: 'gate' | 'fence' | 'bench' | 'workbench' | 'constructionBench' | 'wall' | 'door' | 'floor' | 'window' | 'roof'; open?: boolean; rotation?: 0 | 1 | 2 | 3; gateFlip?: boolean; fenceBuiltDay?: number;
   /** Bancada de trabalho antiga que não coube em 2 blocos (o bloco ao lado estava ocupado): fica com 1. */

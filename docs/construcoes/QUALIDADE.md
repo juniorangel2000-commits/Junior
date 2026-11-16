@@ -30,13 +30,24 @@ O ovo e o ovo de pato recebem a qualidade da ave na manhã em que foram postos (
 guarda isso). O leite e a lã recebem a qualidade do animal na hora da ordenha ou da
 tosquia. Esterco, pena e mel ficam sempre comuns.
 
+## Colheitas da horta (preview.40)
+
+- Cada planta nova guarda o cuidado desde o plantio (`crop.care`): dias sem rega enquanto
+  crescia e se recebeu adubo.
+- **Bom:** regada todos os dias **ou** adubada. **Excelente:** regada todos os dias **e**
+  adubada. Esquecer a rega e não adubar dá comum.
+- O status do canteiro mostra "rende bom/excelente" enquanto cresce. Plantas que rebrotam
+  recomeçam o cuidado depois de cada colheita.
+- Plantas de saves anteriores não têm o registro e colhem comum. O que cai no chão (mochila
+  cheia) volta comum.
+
 ## Qualidade herdada
 
 - **Máquinas:** queijo, queijo de cabra, manteiga, novelo e tecido de lã herdam a
   qualidade média da matéria-prima de animal que entrou.
-- **Pratos:** fogão, forno e fogueira usam a qualidade média dos ingredientes de animal
-  (ovos, leites, lã, queijos, manteiga, novelo e tecido de lã). Ingredientes da horta
-  não contam. Uma receita sem ingrediente de animal sai comum.
+- **Pratos e máquinas:** usam a qualidade média dos ingredientes com qualidade: produtos de
+  animal, colheitas da horta (desde a preview.40) e o que as máquinas fazem com eles (farinhas,
+  geleias). Ovos excelentes com couve comum dão prato bom.
 - Média arredondada para baixo: 1 ovo excelente com 1 leite comum dá prato **bom**.
 - Venda, cozinha, máquinas e o prato do dia usam primeiro as **melhores** unidades.
 

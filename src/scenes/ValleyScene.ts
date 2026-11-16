@@ -1,4 +1,5 @@
 import {MachineView} from '../machine-view';
+import {gainQuality} from '../systems/item-quality';
 import {workbenchUpgrade,upgradeProblem} from '../systems/economy';
 import type {CraftingRecipe} from '../data/recipes';
 import {destroySceneChildren} from '../scene-children';
@@ -1337,8 +1338,12 @@ export class ValleyScene extends Phaser.Scene {
     }
     // A deliberately aimed crop wins over automatic nearby resource pickup.
     if (this.tool === 'hand' && this.farming.cropAt(tile.x, tile.y)) {
+      const crop = this.farming.cropAt(tile.x, tile.y), item = crop ? cropDefinition(crop.crop).harvest as import('../types').ItemId : undefined, before = item ? this.inventory.data[item] : 0;
       const result = this.farming.harvest(tile.x, tile.y, this.inventory,resourceGroundSink(this.state,'property',tile));
       if (result.ok) gameAudio.play('pickup');
+      // Qualidade da colheita: só o que entrou na mochila (o que caiu no chão volta comum).
+      const h = result.harvested, entered = h ? this.inventory.data[h.item] - before : 0;
+      if (h?.quality && entered > 0) gainQuality(this.state, h.item, this.inventory.data[h.item], h.quality, Math.min(entered, h.amount));
       this.ui.toast(result.message); this.afterAction(); return;
     }
     if (this.tool === 'hand' || this.tool === 'hatchet' || this.tool === 'pickaxe') {

@@ -1,4 +1,5 @@
 import type {ItemId,SaveData} from '../types';
+import {CROP_CATALOG} from '../data/crop-catalog';
 import {ITEM_IDS,ITEM_NAMES} from '../data/items';
 import {MAX_ITEM_COUNT} from './inventory';
 /** Qualidade dos produtos (docs/construcoes/QUALIDADE.md).
@@ -24,10 +25,12 @@ export const QUALITY_BOND=[0,10,25] as const;
 export const MAX_BOND=30;
 export const bondQuality=(bond:number|undefined):Quality=>(bond??0)>=QUALITY_BOND[2]?2:(bond??0)>=QUALITY_BOND[1]?1:0;
 
-/** Itens de animal (e o que se faz com eles) que levam qualidade para máquinas e pratos. */
-export const ANIMAL_QUALITY_ITEMS:readonly ItemId[]=['egg','duckEgg','milk','goatMilk','wool','cheese','goatCheese','butter','yarn','woolCloth'];
+/** Itens que têm qualidade e a passam adiante em máquinas e pratos: produtos de animal, as
+ * colheitas da horta (preview.40) e o que as máquinas fazem com eles. */
+export const ANIMAL_QUALITY_ITEMS:readonly ItemId[]=['egg','duckEgg','milk','goatMilk','wool','cheese','goatCheese','butter','yarn','woolCloth',
+ ...CROP_CATALOG.map(c=>c.harvest as ItemId),'flour','cornmeal','oatFlakes','strawberryJam','watermelonJam'];
 /** Separa os ingredientes (as melhores unidades primeiro) e devolve a qualidade média dos
- * itens de animal; comum se a receita não leva nenhum. */
+ * itens com qualidade (animais e horta); comum se a receita não leva nenhum. */
 export function takeIngredientsQuality(s:Pick<SaveData,'inventory'|'itemQuality'>,cost:Partial<Record<ItemId,number>>):Quality{
  const qs:Quality[]=[];
  for(const [id,n] of Object.entries(cost) as [ItemId,number][]){const taken=takeBest(s,id,s.inventory[id]??0,n);if(ANIMAL_QUALITY_ITEMS.includes(id))qs.push(...taken);}
