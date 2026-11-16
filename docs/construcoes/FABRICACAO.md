@@ -7,7 +7,7 @@ construção nova, e dividir em categorias. Dados em `src/data/recipe-groups.ts`
 
 | Lugar | Categorias e receitas |
 | --- | --- |
-| **Sem bancada** | Materiais: corda, pedra lascada, cabo, cavilhas, tecer tecido · Ferramentas: machadinha, picareta, enxada, martelo, foice, pá · Ações: preparar tábuas com machadinha · Preparados: curativo, tônico, infusão, adubo vegetal · Construções: fogueira portátil |
+| **Sem bancada** (tecla C) | Materiais: corda, pedra lascada, cabo, cavilhas, tecer tecido · Ferramentas: machadinha, picareta, enxada, martelo, foice, pá · Ações: preparar tábuas com machadinha · Preparados: curativo, tônico, infusão, adubo vegetal · Construções: fogueira portátil |
 | **Bancada de trabalho** | Materiais: lâmina de sucata · Ferramentas: serrote, tesoura de tosquia, balde de ordenha · Equipamentos: espada, mochila, botas, acessório de pesca · Ações: serrar tábuas |
 | **Bancada de construção** | Construções: porta, janela, banco de madeira, forja, luminária, bomba de irrigação · Máquinas: queijeira, batedeira, roca, tear, moinho, forno de barro, composteira, barril, prensa · Kits: casa, oficina, base |
 
@@ -23,9 +23,14 @@ Materiais.
 
 ## Janela de fabricação
 
-Abas no alto: Sem bancada, Bancada de trabalho e Bancada de construção (com "ao alcance" ou
-"longe"). Abaixo, as categorias da aba (Todas e as que existem nela). As receitas de uma
-bancada longe aparecem, mas o botão pede para se aproximar.
+Cada lugar abre a própria janela, sem abas (pedido do Junior):
+
+- **Tecla C:** "Fabricação", só as receitas feitas sem bancada.
+- **E na bancada de trabalho:** "Bancada de trabalho", só as receitas dela.
+- **E na bancada de construção:** "Bancada de construção", só as receitas dela.
+
+Dentro de cada janela, as categorias aparecem como filtros (Todas e as que existem ali). Se o
+jogador se afastar com a janela de uma bancada aberta, aparece o aviso para se aproximar.
 
 ## Cerca sem módulo
 

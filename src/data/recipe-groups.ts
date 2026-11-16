@@ -8,7 +8,8 @@ import {CRAFTED_MACHINE_IDS} from './machines';
 export type CraftStation='hand'|'workbench'|'construction';
 export type CraftCategory='materials'|'tools'|'actions'|'preparations'|'equipment'|'constructions'|'machines'|'kits';
 export const CRAFT_STATIONS:readonly CraftStation[]=['hand','workbench','construction'];
-export const STATION_NAMES:Record<CraftStation,string>={hand:'Sem bancada',workbench:'Bancada de trabalho',construction:'Bancada de construção'};
+/** Título de cada janela: a tecla C abre a das receitas sem bancada ("Fabricação"). */
+export const STATION_NAMES:Record<CraftStation,string>={hand:'Fabricação',workbench:'Bancada de trabalho',construction:'Bancada de construção'};
 export const CATEGORY_NAMES:Record<CraftCategory,string>={materials:'Materiais',tools:'Ferramentas',actions:'Ações',preparations:'Preparados',equipment:'Equipamentos',constructions:'Construções',machines:'Máquinas',kits:'Kits'};
 export const CATEGORY_ORDER:readonly CraftCategory[]=['materials','tools','actions','preparations','equipment','constructions','machines','kits'];
 type Group=[CraftStation,CraftCategory];

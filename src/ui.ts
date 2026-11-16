@@ -1,6 +1,6 @@
 import {isMachine,machineIngredient} from './data/machines';
 import {qualityLabel,qualityCounts} from './systems/item-quality';
-import {CRAFT_STATIONS,STATION_NAMES,CATEGORY_NAMES,CATEGORY_ORDER,recipeStation,recipeCategory,stationReady,type CraftStation,type CraftCategory,type NearStations} from './data/recipe-groups';
+import {STATION_NAMES,CATEGORY_NAMES,CATEGORY_ORDER,recipeStation,recipeCategory,stationReady,type CraftStation,type CraftCategory,type NearStations} from './data/recipe-groups';
 import {cropFromSeed,cropDefinition} from './data/crops';
 import {FARM_KINDS,FARM_BUILDINGS,FARM_BASE_COST,isFarmTool} from './data/farm-buildings';
 import {shortCalendarLabel,fullCalendarLabel,calendarDate} from './systems/calendar';
@@ -920,14 +920,15 @@ export class GameUI {
     if (this.modal) return;
     this.openModal('crafting');
     const near = this.withConstruction(nearWorkbench);
-    this.craftingStation = station ?? (near.construction ? 'construction' : near.workbench ? 'workbench' : 'hand');
+    // C abre as receitas sem bancada; usar uma bancada (E) abre só as receitas dela.
+    this.craftingStation = station ?? 'hand';
     this.craftingCategory = 'all';
     const panel = document.createElement('section');
     panel.className = 'crafting-card panel';
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Fabricação');
-    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">DAS MÃOS NASCE UM LAR</span><h2 class="crafting-title">${STATION_NAMES[this.craftingStation]}</h2></div><button class="icon-button" aria-label="Fechar fabricação">${icon('close')}</button></div><nav class="crafting-stations" role="tablist" aria-label="Onde fabricar"></nav><div class="crafting-station"></div><nav class="crafting-categories" aria-label="Categorias"></nav><div class="crafting-progress" hidden><div class="crafting-progress-heading"><strong></strong><span class="crafting-percent">0%</span></div><progress max="1" value="0" aria-label="Progresso da fabricação"></progress><button class="text-button cancel-crafting">Cancelar fabricação</button></div><div class="recipe-grid"></div><div class="inventory-footer">${icon('leaf')} Recolha sucata na parte oeste da propriedade para preparar a lâmina.<span>SIMULAÇÃO PAUSADA</span></div>`;
+    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">DAS MÃOS NASCE UM LAR</span><h2 class="crafting-title">${STATION_NAMES[this.craftingStation]}</h2></div><button class="icon-button" aria-label="Fechar fabricação">${icon('close')}</button></div><div class="crafting-station"></div><nav class="crafting-categories" aria-label="Categorias"></nav><div class="crafting-progress" hidden><div class="crafting-progress-heading"><strong></strong><span class="crafting-percent">0%</span></div><progress max="1" value="0" aria-label="Progresso da fabricação"></progress><button class="text-button cancel-crafting">Cancelar fabricação</button></div><div class="recipe-grid"></div><div class="inventory-footer">${icon('leaf')} Recolha sucata na parte oeste da propriedade para preparar a lâmina.<span>SIMULAÇÃO PAUSADA</span></div>`;
     panel.querySelector('button')!.addEventListener('click', () => this.closeModal());
     panel.querySelector('.cancel-crafting')!.addEventListener('click', () => {
       this.callbacks.onCancelCraft();
@@ -949,12 +950,11 @@ export class GameUI {
     const current = this.craftingStation, here = stationReady(current, near);
     const title = this.overlay.querySelector<HTMLElement>('.crafting-title');
     if (title) title.textContent = STATION_NAMES[current];
-    const tabs = this.overlay.querySelector<HTMLElement>('.crafting-stations')!;
-    tabs.innerHTML = CRAFT_STATIONS.map(st => `<button type="button" role="tab" class="crafting-tab${st === current ? ' active' : ''}${stationReady(st, near) ? ' reachable' : ''}" aria-selected="${st === current}" data-station="${st}">${STATION_NAMES[st]}${st !== 'hand' ? `<small>${stationReady(st, near) ? 'ao alcance' : 'longe'}</small>` : ''}</button>`).join('');
-    tabs.querySelectorAll<HTMLButtonElement>('[data-station]').forEach(b => b.addEventListener('click', () => { this.craftingStation = b.dataset.station as CraftStation; this.craftingCategory = 'all'; this.refreshCrafting(inventory, near); }));
     const station = this.overlay.querySelector<HTMLElement>('.crafting-station')!;
+    // Só aparece quando a bancada desta janela ficou longe (o jogador se afastou com ela aberta).
+    station.hidden = here;
     station.classList.toggle('available', here);
-    station.innerHTML = `${icon('workbench')}<span>${current === 'hand' ? 'Sem bancada: fabrique em qualquer lugar.' : here ? `${STATION_NAMES[current]} ao alcance.` : `Aproxime-se de uma ${STATION_NAMES[current].toLocaleLowerCase('pt-BR')} para fabricar estas receitas.`}</span>`;
+    station.innerHTML = here ? '' : `${icon('workbench')}<span>Aproxime-se da ${STATION_NAMES[current].toLocaleLowerCase('pt-BR')} para fabricar.</span>`;
     const pool = RECIPES.filter(r => recipeStation(r) === current);
     const categories = CATEGORY_ORDER.filter(c => pool.some(r => recipeCategory(r) === c));
     if (this.craftingCategory !== 'all' && !categories.includes(this.craftingCategory)) this.craftingCategory = 'all';
