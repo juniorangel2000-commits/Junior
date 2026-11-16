@@ -38,6 +38,12 @@ O Junior disse que o jogo está pesado, tanto no tamanho quanto nos travamentos.
 1. ✅ Release `v0.10.0-preview.38` publicada; workflow passou.
 2. Pedir ao Junior os números do **F3** (FPS e MB na Propriedade, na Vila e nos Campos) e a opinião sobre luz e sombras. Seguir `docs/planejamento/DESEMPENHO.md` → "Próximos passos".
 
+### Preview.39 (Claude Code, em andamento)
+
+- Interiores dos abrigos escurecem à noite, com lampiões na parede (luz nova, modo `'shelter'`).
+- Atlas dos animais compactados: 132 MB → 42 MB de memória de vídeo e 22 → 7 MB no pacote. Detalhes em `docs/planejamento/DESEMPENHO.md`.
+- **Instalador menor:** o WebP sem perda dá 31%, mas exige uma dependência nova no build (`sharp`). Adicionar foi bloqueado na sessão; **falta o aval do Junior**.
+
 ## Pendências e ideias para depois
 
 - Plano em `docs/planejamento/ANIMAIS-E-RECEITAS.md`: animais, cozinha, abelhas, patos, porcos, máquinas e qualidade estão prontos. Faltam a conferência dos preços jogando e as artes provisórias.

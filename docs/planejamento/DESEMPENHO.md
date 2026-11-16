@@ -60,6 +60,21 @@ Causas e correções:
 O restante do tempo por quadro aqui é o desenho por software do navegador da nuvem
 (~57 ms parado); no PC do Junior isso fica na placa de vídeo.
 
+## Preview.39
+
+- **Interiores dos abrigos à noite:** modo `'shelter'` da luz nova, com lampiões na parede.
+- **Atlas dos animais compactados** (`scripts/pack_animal_atlases.py`): 132 MB → 42 MB de
+  memória de vídeo, com pixels idênticos (o script confere). Propriedade: 1.002 → 917 MB.
+  No pacote, os animais caíram de 22 MB para 7 MB, porque os originais saem do instalador.
+- **Instalador menor (pendente de decisão do Junior):**
+  - Recomprimir os PNGs sem perda (oxipng) dá só 6%.
+  - **WebP sem perda dá 31%**, com pixels visíveis idênticos (`exact`). O Chromium do jogo
+    reconhece o WebP mesmo com o nome `.png`, então dá para converter só o pacote final no
+    build, sem mudar caminhos no código (testado no Phaser).
+  - Precisa de um conversor no build: a dependência `sharp` (npm, funciona no Windows) ou
+    o Pillow (Python) no workflow. Adicionar a dependência foi bloqueado nesta sessão e
+    precisa do aval do Junior.
+
 ## Próximos passos
 
 - **Propriedade carrega o que não usa:** atlas do cavalo (45 MB, ele vive nos Campos),
