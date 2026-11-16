@@ -5,14 +5,25 @@ construção nova, e dividir em categorias. Dados em `src/data/recipe-groups.ts`
 
 ## Onde cada receita é feita
 
-| Lugar | Categorias e receitas |
+| Janela | Categorias |
 | --- | --- |
-| **Sem bancada** (tecla C) | Materiais: corda, pedra lascada, cabo, cavilhas, tecer tecido · Ferramentas: machadinha, picareta, enxada, martelo, foice, pá · Ações: preparar tábuas com machadinha · Preparados: curativo, tônico, infusão, adubo vegetal · Construções: fogueira portátil |
-| **Bancada de trabalho** | Materiais: lâmina de sucata · Ferramentas: serrote, tesoura de tosquia, balde de ordenha · Equipamentos: espada, mochila, botas, acessório de pesca · Ações: serrar tábuas |
-| **Bancada de construção** | Construções: porta, janela, banco de madeira, forja, luminária, bomba de irrigação · Máquinas: queijeira, batedeira, roca, tear, moinho, forno de barro, composteira, barril, prensa · Kits: casa, oficina, base |
+| **Fabricação (tecla C)** | Materiais: corda, pedra lascada, cabo, cavilhas, tecido, tábuas com machadinha · Ferramentas: machadinha, picareta, enxada, martelo, foice, pá · Cura: curativo, tônico, infusão · Campo: adubo vegetal, fogueira portátil |
+| **Bancada de trabalho** | Materiais: lâmina, tábuas serradas · Ferramentas: serrote · Melhorias: as 5 ferramentas em ferro, ouro e metal negro · Criação: tesoura de tosquia, balde de ordenha · Equipamentos: mochila, botas, acessório de pesca · Combate: espada |
+| **Bancada de construção** | Peças da casa: porta, janela · Móveis: banco · Instalações: forja, luminária, bomba · Máquinas: as nove · Projetos: kits da casa, oficina e base |
 
 Receita nova sem grupo: bancada de trabalho se pedir bancada, senão sem bancada; categoria
 Materiais.
+
+## Melhorias de ferramentas na bancada de trabalho
+
+- Machadinha, picareta, enxada, foice e pá, em ferro, ouro e metal negro (15 receitas).
+- **Aprendidas** quando o Bento entrega aquela melhoria pela primeira vez (encomenda
+  retirada). Como isso vem das encomendas guardadas, as partidas antigas já contam o que foi
+  feito.
+- Na bancada: os mesmos materiais do ferreiro, **sem mão de obra e sem espera de dias**
+  (alguns segundos de trabalho). A ordem continua Pedra → Ferro → Ouro → Metal Negro, e a
+  melhoria vale para a ferramenta ativa na mochila. Código: `workbenchUpgrade` em
+  `src/systems/economy.ts`.
 
 ## Bancada de construção
 
@@ -25,14 +36,17 @@ Materiais.
 
 ## Janela de fabricação
 
-Cada lugar abre a própria janela, sem abas (pedido do Junior):
+Cada lugar abre a própria janela, sem abas: a tecla C abre "Fabricação"; usar a bancada de
+trabalho ou a de construção abre só as receitas dela.
 
-- **Tecla C:** "Fabricação", só as receitas feitas sem bancada.
-- **E na bancada de trabalho:** "Bancada de trabalho", só as receitas dela.
-- **E na bancada de construção:** "Bancada de construção", só as receitas dela.
-
-Dentro de cada janela, as categorias aparecem como filtros (Todas e as que existem ali). Se o
-jogador se afastar com a janela de uma bancada aberta, aparece o aviso para se aproximar.
+- **Filtros por categoria com contador:** "Ferramentas 2/6" quer dizer 2 prontas para fazer
+  agora, de 6.
+- **Prontas primeiro:** dentro de cada filtro, as receitas que dá para fazer vêm antes.
+- **Para aprender:** as receitas ainda não aprendidas ficam fora das categorias, num filtro
+  próprio que diz com quem aprender (Amélia, Celina, Rosa, Tobias, Ícaro, Helena, Augusto, ou
+  o Bento para as melhorias).
+- **Cada janela lembra a última categoria** escolhida enquanto o jogo está aberto.
+- Se o jogador se afastar com a janela de uma bancada aberta, aparece o aviso para chegar perto.
 
 ## Cerca sem módulo
 

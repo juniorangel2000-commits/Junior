@@ -1,4 +1,6 @@
 import {MachineView} from '../machine-view';
+import {workbenchUpgrade,upgradeProblem} from '../systems/economy';
+import type {CraftingRecipe} from '../data/recipes';
 import {destroySceneChildren} from '../scene-children';
 import {machinePointBlocked,machineReserved,nearMachine,machineHint,useMachineItem,interactMachine,type MachineRuntime,nearEmptyOven,loadOven,collectMachine} from '../systems/machines';
 import {cropDefinition,cropFromSeed,cropStage} from '../data/crops';
@@ -685,7 +687,7 @@ export class ValleyScene extends Phaser.Scene {
     if (!this.running || !this.ui.isCraftingOpen() || this.craftJob) return;
     const recipe = RECIPES.find(entry => entry.id === id);
     if (!recipe) return;
-    if (!canCraft(recipe, this.inventory, this.nearStations(),this.state.villageProgress)) {
+    if (recipe.upgrade ? !!this.upgradeProblem(recipe) : !canCraft(recipe, this.inventory, this.nearStations(),this.state.villageProgress)) {
       this.ui.toast('Confira os materiais, a ferramenta e a proximidade da bancada.');
       return;
     }
@@ -703,7 +705,25 @@ export class ValleyScene extends Phaser.Scene {
     this.ui.toast('Fabricação cancelada. Nenhum material foi consumido.');
   }
 
+  /** Melhoria de ferramenta na bancada de trabalho: aprendida, nível certo, materiais e bancada. */
+  private upgradeProblem(recipe: CraftingRecipe): string {
+    const u = recipe.upgrade!, s = { ...this.state, inventory: this.inventory.data };
+    return upgradeProblem(s, u.tool, u.tier) || (!this.nearWorkbench() ? 'Aproxime-se da bancada de trabalho.' : !this.inventory.canAfford(recipe.cost) ? 'Faltam materiais.' : '');
+  }
+  private upgradeProblems(): Record<string, string> {
+    const s = { ...this.state, inventory: this.inventory.data };
+    return Object.fromEntries(RECIPES.filter(r => r.upgrade).map(r => [r.id, upgradeProblem(s, r.upgrade!.tool, r.upgrade!.tier)]));
+  }
   private finishCrafting(id: string): void {
+    const upgrade = RECIPES.find(r => r.id === id)?.upgrade;
+    if (upgrade) {
+      this.state.inventory = { ...this.inventory.data };
+      const r = workbenchUpgrade(this.state, upgrade.tool, upgrade.tier, this.nearWorkbench());
+      if (r.ok) { Object.assign(this.inventory.data, this.state.inventory); gameAudio.play('craft'); this.persist(); this.ui.toast(`${RECIPES.find(x => x.id === id)!.name}: melhoria concluída.`); }
+      else this.ui.toast(r.message);
+      this.craftJob = null; this.ui.setCraftingProgress('', 1); this.updateHUD(); this.ui.refreshCrafting(this.inventory.data, this.nearStations());
+      return;
+    }
     const result = craft(id, this.inventory, this.nearStations(),this.state.villageProgress);
     if (result.ok) {
       gameAudio.play('craft');
@@ -1635,7 +1655,7 @@ export class ValleyScene extends Phaser.Scene {
       selectedCrop:this.state.selectedCrop, tool: this.tool, prompt:machine?prompt:this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:prompt, interactionKey:nearPassage||nearHouse?null:undefined, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
       playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
       harvests: this.inventory.data.turnip, metLia: this.state.metLia,
-      nearWorkbench: this.nearWorkbench(), nearConstruction: this.nearWorkbench('constructionBench'), sheltered: this.shelter.sheltered, shelterReason: this.shelter.reason,
+      nearWorkbench: this.nearWorkbench(), nearConstruction: this.nearWorkbench('constructionBench'), upgradeProblems: this.upgradeProblems(), sheltered: this.shelter.sheltered, shelterReason: this.shelter.reason,
       resourceProgress, progress: this.state.progress });
   }
 

@@ -1,6 +1,6 @@
 import {isMachine,machineIngredient} from './data/machines';
 import {qualityLabel,qualityCounts} from './systems/item-quality';
-import {STATION_NAMES,CATEGORY_NAMES,CATEGORY_ORDER,recipeStation,recipeCategory,stationReady,type CraftStation,type CraftCategory,type NearStations} from './data/recipe-groups';
+import {recipeTeacher,STATION_NAMES,CATEGORY_NAMES,CATEGORY_ORDER,recipeStation,recipeCategory,stationReady,type CraftStation,type CraftCategory,type NearStations} from './data/recipe-groups';
 import {cropFromSeed,cropDefinition} from './data/crops';
 import {FARM_KINDS,FARM_BUILDINGS,FARM_BASE_COST,isFarmTool} from './data/farm-buildings';
 import {shortCalendarLabel,fullCalendarLabel,calendarDate} from './systems/calendar';
@@ -51,7 +51,7 @@ import { WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 import { BUILD_COSTS, BUILD_NAMES, BUILD_REQUIREMENTS } from './systems/building';
 import { ITEMS, ITEM_IDS, ITEM_NAMES } from './data/items';
 import { BLUEPRINT_COST } from './data/blueprints';
-import { RECIPES } from './data/recipes';
+import { RECIPES, type CraftingRecipe } from './data/recipes';
 import { createHomeEditor } from './home-ui';
 import type { HomeEditor, HomeEditResponse,HomeEditorOptions } from './home-ui';
 import type { HomeData, HomeEditAction } from './systems/home';
@@ -174,7 +174,7 @@ export class GameUI {
   private craftingInventory?: InventoryData;
   private craftingNear: NearStations = { workbench: false, construction: false };
   private craftingStation: CraftStation = 'hand';
-  private craftingCategory: CraftCategory | 'all' = 'all';
+  private craftingCategoryBy: Partial<Record<CraftStation, CraftCategory | 'all' | 'learn'>> = {};
   private homeEditor?: HomeEditor;
   private journalCollapsed = false;
   private topToolbar?: TopToolbar;
@@ -922,7 +922,6 @@ export class GameUI {
     const near = this.withConstruction(nearWorkbench);
     // C abre as receitas sem bancada; usar uma bancada (E) abre só as receitas dela.
     this.craftingStation = station ?? 'hand';
-    this.craftingCategory = 'all';
     const panel = document.createElement('section');
     panel.className = 'crafting-card panel';
     panel.setAttribute('role', 'dialog');
@@ -955,39 +954,53 @@ export class GameUI {
     station.hidden = here;
     station.classList.toggle('available', here);
     station.innerHTML = here ? '' : `${icon('workbench')}<span>Aproxime-se da ${STATION_NAMES[current].toLocaleLowerCase('pt-BR')} para fabricar.</span>`;
-    const pool = RECIPES.filter(r => recipeStation(r) === current);
-    const categories = CATEGORY_ORDER.filter(c => pool.some(r => recipeCategory(r) === c));
-    if (this.craftingCategory !== 'all' && !categories.includes(this.craftingCategory)) this.craftingCategory = 'all';
-    const chips = this.overlay.querySelector<HTMLElement>('.crafting-categories')!;
-    chips.innerHTML = (['all', ...categories] as const).map(c => `<button type="button" class="crafting-chip${c === this.craftingCategory ? ' active' : ''}" data-category="${c}">${c === 'all' ? 'Todas' : CATEGORY_NAMES[c]}</button>`).join('');
-    chips.querySelectorAll<HTMLButtonElement>('[data-category]').forEach(b => b.addEventListener('click', () => { this.craftingCategory = b.dataset.category as CraftCategory | 'all'; this.refreshCrafting(inventory, near); }));
-    const shown = pool.filter(r => this.craftingCategory === 'all' || recipeCategory(r) === this.craftingCategory)
-      .sort((a, b) => CATEGORY_ORDER.indexOf(recipeCategory(a)) - CATEGORY_ORDER.indexOf(recipeCategory(b)));
-    const grid = this.overlay.querySelector<HTMLElement>('.recipe-grid')!;
-    const focusedRecipe = (document.activeElement as HTMLElement | null)?.dataset.recipe;
-    grid.innerHTML = shown.map(recipe => {
+    // Situação de cada receita: aprendida, pronta para fazer agora e a frase de status.
+    const upgrades = this.latest?.upgradeProblems ?? {};
+    const info = (recipe: CraftingRecipe) => {
       const missing: string[] = [];
-      const inputs = Object.entries(recipe.cost) as [ItemId, number][];
-      const outputs = Object.entries(recipe.output) as [ItemId, number][];
-      for (const [item, quantity] of inputs) {
-        if (inventory[item] < quantity) missing.push(`${quantity - inventory[item]} ${ITEM_NAMES[item].toLocaleLowerCase('pt-BR')}`);
-      }
-      const outputTool = outputs.find(([item]) => UNIQUE_CRAFT_ITEMS.includes(item));
-      const alreadyOwned = !!outputTool && inventory[outputTool[0]] > 0;
+      for (const [item, quantity] of Object.entries(recipe.cost) as [ItemId, number][]) if (inventory[item] < quantity) missing.push(`${quantity - inventory[item]} ${ITEM_NAMES[item].toLocaleLowerCase('pt-BR')}`);
+      const outputTool = (Object.keys(recipe.output) as ItemId[]).find(item => UNIQUE_CRAFT_ITEMS.includes(item));
+      const alreadyOwned = !!outputTool && inventory[outputTool] > 0;
       const missingTool = recipe.requiresTool && inventory[recipe.requiresTool] < 1;
       const missingStation = !stationReady(recipeStation(recipe), near);
-      const learned=!recipe.unlock||this.latest?.learnedRecipes?.includes(recipe.unlock);
-      const ready = learned && !missing.length && !missingTool && !missingStation && !alreadyOwned && !this.craftingBusy;
+      const upgrade = recipe.upgrade ? upgrades[recipe.id] ?? 'Use a bancada de trabalho da Propriedade.' : '';
+      const learned = recipe.upgrade ? !upgrade.startsWith('Encomende') : !recipe.unlock || !!this.latest?.learnedRecipes?.includes(recipe.unlock);
+      const ready = learned && !upgrade && !missing.length && !missingTool && !missingStation && !alreadyOwned && !this.craftingBusy;
+      const teacher = recipeTeacher(recipe);
+      const status = !learned ? (recipe.upgrade ? 'Encomende esta melhoria uma vez com o Bento, no ferreiro, para aprender.' : `Aprenda com ${teacher ?? 'os moradores da vila'}.`)
+        : this.craftingBusy ? 'Aguarde a fabricação atual ou cancele.' : alreadyOwned ? recipe.output.sword?'Você já possui uma espada.':'Você já possui esta ferramenta.'
+        : upgrade ? upgrade
+        : missingTool ? `Precisa de ${ITEM_NAMES[recipe.requiresTool!].toLocaleLowerCase('pt-BR')}.`
+        : missingStation ? `Aproxime-se de uma ${STATION_NAMES[recipeStation(recipe)].toLocaleLowerCase('pt-BR')}.`
+        : missing.length ? `Faltam: ${missing.join(', ')}.` : 'Materiais e requisitos disponíveis.';
+      return { learned, ready, status };
+    };
+    const pool = RECIPES.filter(r => recipeStation(r) === current).map(r => ({ r, ...info(r) }));
+    const known = pool.filter(x => x.learned), toLearn = pool.filter(x => !x.learned);
+    const categories = CATEGORY_ORDER.filter(c => known.some(x => recipeCategory(x.r) === c));
+    // Cada janela lembra a última categoria escolhida.
+    let chosen: CraftCategory | 'all' | 'learn' = this.craftingCategoryBy[current] ?? 'all';
+    if (chosen === 'learn' ? !toLearn.length : chosen !== 'all' && !categories.includes(chosen)) chosen = 'all';
+    const count = (list: typeof pool) => `<small>${list.filter(x => x.ready).length}/${list.length}</small>`;
+    const chips = this.overlay.querySelector<HTMLElement>('.crafting-categories')!;
+    chips.innerHTML = [`<button type="button" class="crafting-chip${chosen === 'all' ? ' active' : ''}" data-category="all">Todas ${count(known)}</button>`,
+      ...categories.map(c => `<button type="button" class="crafting-chip${c === chosen ? ' active' : ''}" data-category="${c}">${CATEGORY_NAMES[c]} ${count(known.filter(x => recipeCategory(x.r) === c))}</button>`),
+      ...(toLearn.length ? [`<button type="button" class="crafting-chip learn${chosen === 'learn' ? ' active' : ''}" data-category="learn">Para aprender <small>${toLearn.length}</small></button>`] : [])].join('');
+    chips.querySelectorAll<HTMLButtonElement>('[data-category]').forEach(b => b.addEventListener('click', () => { this.craftingCategoryBy[current] = b.dataset.category as CraftCategory | 'all' | 'learn'; this.refreshCrafting(inventory, near); }));
+    // As que dá para fazer agora vêm primeiro; depois, a ordem das categorias.
+    const shown = (chosen === 'learn' ? toLearn : known.filter(x => chosen === 'all' || recipeCategory(x.r) === chosen))
+      .sort((a, b) => Number(b.ready) - Number(a.ready) || CATEGORY_ORDER.indexOf(recipeCategory(a.r)) - CATEGORY_ORDER.indexOf(recipeCategory(b.r)));
+    const grid = this.overlay.querySelector<HTMLElement>('.recipe-grid')!;
+    const focusedRecipe = (document.activeElement as HTMLElement | null)?.dataset.recipe;
+    grid.innerHTML = shown.map(({ r: recipe, ready, status }) => {
+      const inputs = Object.entries(recipe.cost) as [ItemId, number][];
+      const outputs = Object.entries(recipe.output) as [ItemId, number][];
       const requirements = [
         recipe.requiresTool ? ITEM_NAMES[recipe.requiresTool] : '',
         CATEGORY_NAMES[recipeCategory(recipe)],
         recipe.durationSeconds ? `${recipe.durationSeconds} segundos` : '',
       ].filter(Boolean).join(' · ');
-      const status = this.craftingBusy ? 'Aguarde a fabricação atual ou cancele.' : alreadyOwned ? recipe.output.sword?'Você já possui uma espada.':'Você já possui esta ferramenta.'
-        : missingTool ? `Precisa de ${ITEM_NAMES[recipe.requiresTool!].toLocaleLowerCase('pt-BR')}.`
-        : missingStation ? `Aproxime-se de uma ${STATION_NAMES[recipeStation(recipe)].toLocaleLowerCase('pt-BR')}.`
-        : missing.length ? `Faltam: ${missing.join(', ')}.` : 'Materiais e requisitos disponíveis.';
-      return `<article class="recipe-card${ready ? ' ready' : ''}"><div class="recipe-title">${icon(outputs[0]?.[0] ?? 'workbench')}<h3>${recipe.name}</h3></div><p>${recipe.description}</p><div class="recipe-materials">${inputs.map(([item, quantity]) => `<span class="${inventory[item] < quantity ? 'insufficient' : ''}">${icon(item)}${quantity} ${ITEM_NAMES[item]} <small>(${inventory[item]})</small></span>`).join('')}</div><div class="recipe-output">${icon('arrow')} ${outputs.map(([item, quantity]) => `${quantity} ${ITEM_NAMES[item]}`).join(' + ')}</div><small class="recipe-requirements">${requirements}</small><div class="recipe-status${ready ? '' : ' unavailable'}">${status}</div><button class="button ${ready ? 'button-primary' : 'button-light'}" data-recipe="${recipe.id}" ${ready ? '' : 'disabled'} aria-label="Fabricar: ${recipe.name}">Fabricar ${icon('check')}</button></article>`;
+      return `<article class="recipe-card${ready ? ' ready' : ''}"><div class="recipe-title">${icon(recipe.upgrade?.tool ?? outputs[0]?.[0] ?? 'workbench')}<h3>${recipe.name}</h3></div><p>${recipe.description}</p><div class="recipe-materials">${inputs.map(([item, quantity]) => `<span class="${inventory[item] < quantity ? 'insufficient' : ''}">${icon(item)}${quantity} ${ITEM_NAMES[item]} <small>(${inventory[item]})</small></span>`).join('')}</div><div class="recipe-output">${icon('arrow')} ${outputs.map(([item, quantity]) => `${quantity} ${ITEM_NAMES[item]}`).join(' + ')}</div><small class="recipe-requirements">${requirements}</small><div class="recipe-status${ready ? '' : ' unavailable'}">${status}</div><button class="button ${ready ? 'button-primary' : 'button-light'}" data-recipe="${recipe.id}" ${ready ? '' : 'disabled'} aria-label="Fabricar: ${recipe.name}">Fabricar ${icon('check')}</button></article>`;
     }).join('');
     grid.querySelectorAll<HTMLButtonElement>('[data-recipe]').forEach(button => button.addEventListener('click', () => {
       if (!button.disabled) this.callbacks.onCraft(button.dataset.recipe!);

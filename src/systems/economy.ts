@@ -40,8 +40,30 @@ export function reserveTool(s:SaveData,tool:EconomicTool,tier:number,toolId?:num
  need(TOOL_IDS.includes(tool)&&[1,2,3].includes(tier),'Ferramenta inválida.');need(d.economy6!.orders.filter(o=>o.phase==='reserved'||o.phase==='working').length<B.maxOrders,'Limite de encomendas pendentes.');
  if(toolId!==undefined)need(equipToolCopy(d,toolId)&&activeToolCopy(d.inventory,tool)?.id===toolId,'Traga esta ferramenta.');const copy=activeToolCopy(d.inventory,tool);
  need(!d.economy6!.orders.some(o=>o.kind==='tool'&&o.tool===tool&&(!o.toolId||o.toolId===copy?.id)&&(o.phase==='working'||o.phase==='reserved')),'Já há uma encomenda desta ferramenta.');need(i.has(tool),'Fabrique primeiro a ferramenta básica.');need(toolCondition(d,tool).tier===tier-1,'Respeite a sequência Pedra → Ferro → Ouro → Metal Negro.');
- const m=METALS[tier-1],cost:ItemCost=tier===3?{...B.blackToolRecipe}:{[ingot(m)]:B.ingots[tool][tier],[tier===2?'board':'wood']:2};
+ const m=METALS[tier-1],cost:ItemCost=toolUpgradeCost(tool,tier);
  need(i.spend(cost),'Materiais insuficientes.');const now=gameMinute(d);d.economy6!.orders.push({id:++d.economy6!.sequence,kind:'tool',tool,toolId:copy!.id,metal:m,tier,quantity:1,materials:cost,fee:B.labor[tool][tier],phase:'reserved',createdAt:now,readyAt:0});
+ });}
+/** Materiais de uma melhoria (os mesmos no ferreiro e na bancada de trabalho). */
+export function toolUpgradeCost(tool:EconomicTool,tier:number):ItemCost{return tier===3?{...B.blackToolRecipe}:{[ingot(METALS[tier-1])]:B.ingots[tool][tier],[tier===2?'board':'wood']:2};}
+export const upgradeRecipeId=(tool:EconomicTool,tier:number)=>`upgrade-${tool}-${tier}`;
+/** Melhorias aprendidas: cada ferramenta e nível que o Bento já entregou uma vez (encomenda
+ * retirada). Calculado das encomendas, então saves antigos já contam o que foi feito. */
+export function learnedUpgrades(s:Pick<SaveData,'economy6'>):string[]{return[...new Set((s.economy6?.orders??[]).filter(o=>o.kind==='tool'&&o.phase==='collected'&&o.tool).map(o=>upgradeRecipeId(o.tool!,o.tier)))];}
+/** Motivo para não melhorar agora (vazio se pode). Não confere materiais nem a bancada. */
+export function upgradeProblem(s:SaveData,tool:EconomicTool,tier:number):string{
+ if(!learnedUpgrades(s).includes(upgradeRecipeId(tool,tier)))return `Encomende esta melhoria uma vez com o Bento para aprender.`;
+ if(!(s.inventory[tool]>0))return 'Traga a ferramenta na mochila.';
+ const now=toolCondition(s,tool).tier;
+ if(now>=tier)return 'Esta ferramenta já está neste nível.';
+ if(now!==tier-1)return `Melhore antes para ${METAL_LABELS[tier-2]}.`;
+ return '';
+}
+const METAL_LABELS=['Ferro','Ouro','Metal Negro'];
+/** Melhoria feita na bancada de trabalho: sem mão de obra nem espera, depois de aprendida. */
+export function workbenchUpgrade(s:SaveData,tool:EconomicTool,tier:number,nearWorkbench:boolean){return atomicEconomy(s,(d,i)=>{
+ need(nearWorkbench,'Aproxime-se da bancada de trabalho.');need(TOOL_IDS.includes(tool)&&[1,2,3].includes(tier),'Ferramenta inválida.');
+ const problem=upgradeProblem(d,tool,tier);need(!problem,problem);
+ need(i.spend(toolUpgradeCost(tool,tier)),'Materiais insuficientes.');configureTool(d,tool,tier);
  });}
 export function reserveSmelt(s:SaveData,m:Metal,q:number){return atomicEconomy(s,(d,i)=>{need(bentoAvailability(d).open,bentoAvailability(d).message);need(METALS.includes(m)&&Number.isSafeInteger(q)&&q>=1&&q<=99,'Quantidade inválida.');need(d.economy6!.orders.filter(o=>['reserved','working'].includes(o.phase)).length<B.maxOrders,'Limite de encomendas.');const materials=smeltCost(i,m,q);need(i.spend(materials),'Materiais insuficientes.');d.economy6!.orders.push({id:++d.economy6!.sequence,kind:'smelt',metal:m,tier:METALS.indexOf(m)+1,quantity:q,materials,fee:B.smeltFee[m]*q,phase:'reserved',createdAt:gameMinute(d),readyAt:0});});}
 export function orderAction(s:SaveData,id:number,action:'pay'|'cancel'|'collect'){return atomicEconomy(s,(d,i)=>{

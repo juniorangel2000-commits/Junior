@@ -207,6 +207,8 @@ export interface HudData {
   nearWorkbench: boolean;
   /** Bancada de construção ao alcance (peças de construção, máquinas e kits). */
   nearConstruction?: boolean;
+  /** Melhorias de ferramenta: motivo para não fazer agora ('' = pode), por receita. */
+  upgradeProblems?: Record<string, string>;
   sheltered: boolean;
   shelterReason: string;
   resourceProgress: string;

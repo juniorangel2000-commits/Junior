@@ -2,6 +2,7 @@ import {MACHINES,CRAFTED_MACHINE_IDS} from './machines';
 import type { ItemCost } from '../systems/inventory';
 import type { OwnedTool } from '../types';
 import {ECOLOGY_BALANCE as ECOLOGY} from './ecology-balance';
+import {ECONOMY_BALANCE as ECONOMY,METALS,METAL_NAMES,TOOL_IDS,type EconomicTool} from './economy-balance';
 
 export interface CraftingRecipe {
   id: string;
@@ -13,6 +14,8 @@ export interface CraftingRecipe {
   requiresWorkbench?: boolean;
   durationSeconds?: number;
   unlock?:string;
+  /** Melhoria de ferramenta na bancada de trabalho (systems/economy.ts → workbenchUpgrade). */
+  upgrade?:{tool:EconomicTool;tier:1|2|3};
 }
 
 // Regras de progressão ficam reunidas aqui para permitir ajustes sem mudar os sistemas.
@@ -107,3 +110,11 @@ RECIPES.push(
 RECIPES.push({id:'pet-bedding-cloth',name:'Tecer tecido',description:'Costura aprendida com Celina; serve para as camas da casinha dos pets.',cost:{fiber:4,cord:1},output:{cloth:2},unlock:'backpack'});
 
 for(const id of CRAFTED_MACHINE_IDS)RECIPES.push({id,name:MACHINES[id].name,description:'Monte na bancada e instale pela mochila, na Propriedade ou dentro dos abrigos.',cost:MACHINES[id].cost,output:{[id]:1},requiresWorkbench:true,requiresTool:'hammer',durationSeconds:3,unlock:id});
+
+// Melhorias de ferramentas na bancada de trabalho: aprendidas depois da primeira encomenda
+// com o Bento (mesmos materiais, sem mão de obra nem espera). docs/construcoes/FABRICACAO.md
+const TOOL_LABEL:Record<EconomicTool,string>={hatchet:'Machadinha',pickaxe:'Picareta',hoe:'Enxada',sickle:'Foice',shovel:'Pá'};
+for(const tool of TOOL_IDS)for(const tier of [1,2,3] as const){
+ const metal=METALS[tier-1],cost=tier===3?{...ECONOMY.blackToolRecipe}:{[`${metal}Ingot`]:ECONOMY.ingots[tool][tier],[tier===2?'board':'wood']:2};
+ RECIPES.push({id:`upgrade-${tool}-${tier}`,name:`${TOOL_LABEL[tool]} de ${METAL_NAMES[metal].toLowerCase()}`,description:`Reforce a ${TOOL_LABEL[tool].toLowerCase()} da mochila com ${METAL_NAMES[metal].toLowerCase()}: mais força e mais durabilidade.`,cost:cost as ItemCost,output:{},requiresWorkbench:true,durationSeconds:2+tier*2,upgrade:{tool,tier}});
+}

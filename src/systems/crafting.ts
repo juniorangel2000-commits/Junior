@@ -8,6 +8,7 @@ import {recipeStation,stationReady,type NearStations} from '../data/recipe-group
 export const UNIQUE_CRAFT_ITEMS: readonly ItemId[] = ['sword'];
 
 function missingRequirement(recipe: CraftingRecipe, inventory: Inventory, near: boolean|NearStations, progress?:{recipes:string[]}): string | undefined {
+  if(recipe.upgrade)return 'Melhore a ferramenta na bancada de trabalho da Propriedade.';
   if(recipe.unlock&&!progress?.recipes.includes(recipe.unlock))return 'Aprenda esta receita com os moradores da vila.';
   if (UNIQUE_CRAFT_ITEMS.some((item) => (recipe.output[item] ?? 0) > 0 && inventory.has(item))) {
     return inventory.has('sword')&&recipe.output.sword?'Você já tem uma espada. Equipe-a pela mochila ou pela barra rápida.':'Você já possui este equipamento.';

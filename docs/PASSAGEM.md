@@ -37,7 +37,8 @@ O Junior disse que o jogo está pesado, tanto no tamanho quanto nos travamentos.
 
 1. **Junior:** criar a Release no GitHub: tag nova `v0.10.0-preview.39`, target `main`, pre-release.
 2. Conferir o workflow e criar `release/v0.10.0-preview.40` a partir da `main`.
-3. Pendentes: números do F3 no PC do Junior; decisão sobre `sharp` (WebP sem perda, instalador 31% menor); porteira do lote 01 no chiqueiro.
+3. Feito depois da preview.39, no branch `release/v0.10.0-preview.40`: categorias novas, filtros com contador, prontas primeiro, "Para aprender" e melhorias de ferramentas na bancada de trabalho (`docs/construcoes/FABRICACAO.md`).
+4. Pendentes: números do F3 no PC do Junior; decisão sobre `sharp` (WebP sem perda, instalador 31% menor); porteira do lote 01 no chiqueiro.
 
 ## Pendências e ideias para depois
 
