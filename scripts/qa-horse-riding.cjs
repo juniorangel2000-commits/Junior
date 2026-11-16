@@ -68,10 +68,15 @@ if(!only){
   check(`anda para ${dir}`,moved>20&&after.riderFrame===ORDER.indexOf(dir)&&frames.size>=3,`andou ${moved.toFixed(0)} px, quadro ${after.riderFrame}, ${frames.size} quadros do cavalo`);
  }
  if(only==='galope'){
-  const run=async shift=>{await page.evaluate(spot=>{v.player.x=spot.x-150;v.player.y=spot.y;},spot);await page.waitForTimeout(100);const a=await state();
-   if(shift)await page.keyboard.down('Shift');await page.keyboard.down('d');await page.waitForTimeout(600);const z=await state();if(shift)await shot('galope');await page.keyboard.up('d');if(shift)await page.keyboard.up('Shift');return z.x-a.x;};
+  // Velocidade pelo tempo do jogo (quadros com dt limitado a 0,1 s), não pelo relógio: aqui os
+  // quadros demoram de forma irregular.
+  await page.evaluate(()=>{window.__dt=0;v.events.on('postupdate',(_t,d)=>{window.__dt+=Math.min(d,100);});});
+  const run=async shift=>{await page.evaluate(spot=>{v.player.x=spot.x-150;v.player.y=spot.y;},spot);await page.waitForTimeout(100);
+   if(shift)await page.keyboard.down('Shift');await page.keyboard.down('d');await page.waitForTimeout(60);
+   const a=await page.evaluate(()=>({x:v.player.x,t:window.__dt}));await page.waitForTimeout(600);const z=await page.evaluate(()=>({x:v.player.x,t:window.__dt}));
+   if(shift)await shot('galope');await page.keyboard.up('d');if(shift)await page.keyboard.up('Shift');return (z.x-a.x)/Math.max(1,z.t-a.t)*1000;};
   const walk=await run(false),gallop=await run(true);
-  check('Shift galopa mais rápido',gallop>walk*1.15,`passo ${walk.toFixed(0)} px, galope ${gallop.toFixed(0)} px`);
+  check('Shift galopa mais rápido',gallop>walk*1.15,`passo ${walk.toFixed(0)} px/s, galope ${gallop.toFixed(0)} px/s`);
  }
  if(only==='descer'){
   await page.keyboard.press('v');await page.waitForTimeout(600);st=await state();
