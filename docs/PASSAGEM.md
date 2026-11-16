@@ -4,9 +4,9 @@
 
 - **Atualizado em:** 2026-11-16
 - **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.39` (criado da `main`, que é a preview.38 publicada).
-- **Última versão publicada:** `v0.10.0-preview.38` (Release pre-release; tag em `8b6eabf`, `main` igual). Workflow do Windows conferido: passou.
-- **Estado:** preview.38 publicada. Próxima rodada ainda não definida pelo Junior.
+- **Continuar a partir de:** `main` (preview.39). Próxima rodada: criar `release/v0.10.0-preview.40` a partir da `main`.
+- **Última versão publicada:** `v0.10.0-preview.39` enviada à `main`. **Falta o Junior criar a Release** no GitHub: tag `v0.10.0-preview.39`, target `main`, pre-release.
+- **Estado:** preview.39 pronta, com versão do pacote, `NOTAS-0.10.0-preview.39.md` e `LEIA-0.10.0-preview.39.md`.
 
 ## Feito nesta rodada
 
@@ -35,22 +35,9 @@ O Junior disse que o jogo está pesado, tanto no tamanho quanto nos travamentos.
 
 ## Em andamento e próximo passo exato
 
-1. ✅ Release `v0.10.0-preview.38` publicada; workflow passou.
-2. Pedir ao Junior os números do **F3** (FPS e MB na Propriedade, na Vila e nos Campos) e a opinião sobre luz e sombras. Seguir `docs/planejamento/DESEMPENHO.md` → "Próximos passos".
-
-### Preview.39 (Claude Code, em andamento)
-
-- Interiores dos abrigos escurecem à noite, com lampiões na parede (luz nova, modo `'shelter'`).
-- Atlas dos animais compactados: 132 MB → 42 MB de memória de vídeo e 22 → 7 MB no pacote. Detalhes em `docs/planejamento/DESEMPENHO.md`.
-- **Artes do Junior (lote 01 e fase 02):** esterco, adubo, méis de flor, tecido de lã e ícones de cavilhas, ervas, ervas raras, mapa antigo, mochila, botas e peças metálicas, além da fogueira acesa no chão ao abrir o caderno da fogueira. Detalhes em `docs/planejamento/ARTE-PENDENTE.md`.
-  - A franja branca do contorno saiu de todas as sprites (`scripts/clean_white_fringe.py`).
-  - O Junior rejeitou o chão de terra e o lamaçal no chiqueiro: ele fica só com palha.
-  - Também rejeitou a colmeia nova com abelhas em sprite: voltou a colmeia antiga, com abelhas desenhadas por código.
-- **Fabricação por lugar e categoria:** sem bancada, bancada de trabalho e **bancada de construção** (nova), com categorias em abas. Detalhes em `docs/construcoes/FABRICACAO.md`.
-- **Cerca sem módulo:** construída direto com 3 madeiras, reparo com 2. Saves antigos trocam cada módulo por 3 madeiras.
-- **Bancadas de 2 blocos** com a arte do Junior. Bancadas antigas crescem se o bloco da direita estiver livre; senão ficam com 1 bloco (`narrow`). Testes em `tests/wide-benches.test.ts`.
-- **Fabricação separada:** C abre só as receitas sem bancada; cada bancada abre só as dela.
-- **Instalador menor:** o WebP sem perda dá 31%, mas exige uma dependência nova no build (`sharp`). Adicionar foi bloqueado na sessão; **falta o aval do Junior**.
+1. **Junior:** criar a Release no GitHub: tag nova `v0.10.0-preview.39`, target `main`, pre-release.
+2. Conferir o workflow e criar `release/v0.10.0-preview.40` a partir da `main`.
+3. Pendentes: números do F3 no PC do Junior; decisão sobre `sharp` (WebP sem perda, instalador 31% menor); porteira do lote 01 no chiqueiro.
 
 ## Pendências e ideias para depois
 
@@ -71,7 +58,7 @@ O Junior disse que o jogo está pesado, tanto no tamanho quanto nos travamentos.
 ## Testes
 
 - `npm run check`: ok.
-- `npm test`: **2.094 passaram, zero falhas, 238 arquivos**.
+- `npm test`: **2.109 passaram, zero falhas, 240 arquivos**.
 - `npm run build`: ok (aviso de tamanho do pacote, que já existia).
 - Chromium (`CHROMIUM_PATH=/opt/pw-browsers/chromium` quando o padrão não existir):
   - `qa-texture-release`, `qa-quality`, `qa-pigs`, `qa-kitchen`, `qa-fields-distance`, `qa-open-fields` e `qa-horse-fields`: OK.
