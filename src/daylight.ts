@@ -26,7 +26,7 @@ export class Daylight {
   private shown = true;
   private rain:WorldRain;
   private windows: Array<{ x: number; y: number }> = [];
-  private readonly pipeline?: LightingPipeline;
+  private pipeline?: LightingPipeline;
   private readonly particles?: AmbientParticles;
   private emitters: Phaser.GameObjects.GameObject[] = [];
   private nextEmitterScan = 0;
@@ -51,6 +51,8 @@ export class Daylight {
     }
     if (registerLightingPipeline(scene.game)) {
       const camera = scene.cameras.main;
+      // Um passe por câmera: o de uma luz anterior deste cenário sai antes.
+      for (const old of [...camera.postPipelines]) if (old instanceof LightingPipeline) camera.removePostPipeline(old);
       camera.setPostPipeline(LightingPipeline);
       const pipeline = camera.getPostPipeline(LightingPipeline);
       this.pipeline = (Array.isArray(pipeline) ? pipeline[0] : pipeline) as LightingPipeline | undefined;
@@ -76,7 +78,7 @@ export class Daylight {
     if(!visible){this.shader?.setVisible(false);this.panes.setVisible(false);this.shadows.setVisible(false);}
   }
   destroy(): void {
-    if (this.pipeline) this.scene.cameras.main?.removePostPipeline('AfterRainLighting');
+    if (this.pipeline) this.scene.cameras.main?.removePostPipeline(this.pipeline);
     this.particles?.destroy();
     this.rain.destroy();this.shadows.destroy();this.fixtures.destroy();this.shader?.destroy();
     this.shade.destroy();this.warmth.destroy();this.panes.destroy();
@@ -99,7 +101,13 @@ export class Daylight {
   }
   /** Passe de luz: estado da hora, câmera e lista de luzes em pixels da tela. */
   private updatePipeline(time: number, indoors: boolean, day: number): void {
-    const p = this.pipeline!, scene = this.scene, camera = scene.cameras.main, view = camera.worldView, zoom = camera.zoom;
+    const scene = this.scene, camera = scene.cameras.main, view = camera.worldView, zoom = camera.zoom;
+    // Usa sempre o passe que está de fato na câmera (troca de cenário pode recriá-lo).
+    let attached = camera.getPostPipeline(LightingPipeline) as LightingPipeline | LightingPipeline[] | undefined;
+    if (Array.isArray(attached)) attached = attached[0];
+    if (!attached) { camera.setPostPipeline(LightingPipeline); const again = camera.getPostPipeline(LightingPipeline); attached = (Array.isArray(again) ? again[0] : again) as LightingPipeline | undefined; }
+    if (attached) this.pipeline = attached;
+    const p = this.pipeline!;
     const settings = getVisualSettings(), seconds = scene.time.now / 1000, dt = Math.min(.1, Math.max(0, seconds - this.lastSeconds));this.lastSeconds = seconds;
     const state = this.shown && settings.daylight ? lightingAt(time, settings.intensity, indoors, weatherForDay(day) === 'rain') : { ...NEUTRAL_LIGHTING };
     if (!settings.dynamicLighting) { state.clouds = 0; state.pollen = 0; state.fireflies = 0; }

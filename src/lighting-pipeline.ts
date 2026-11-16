@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import type {LightingState} from './lighting-model';
+import {NEUTRAL_LIGHTING,type LightingState} from './lighting-model';
 /** Passe único de luz aplicado à câmera (docs/construcoes/ILUMINACAO.md): sombra das nuvens,
  * cor da hora do dia, luzes quentes que recortam o escuro com brilho suave, e vinheta.
  * As luzes chegam já em pixels da tela; as nuvens usam coordenadas do mundo, então ficam
@@ -72,7 +72,8 @@ export class LightingPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPipe
  private readonly colors=new Float32Array(MAX_LIGHTS*3);
  constructor(game:Phaser.Game){super({game,name:'AfterRainLighting',fragShader:FRAGMENT});}
  onPreRender():void{
-  const s=this.state;if(!s)return;
+  // Sem configuração ainda (primeiro quadro), a imagem passa como está: nunca fica preta.
+  const s=this.state??NEUTRAL_LIGHTING;
   this.set2f('uResolution',this.renderer.width,this.renderer.height);
   this.set2f('uScroll',this.scroll.x,this.scroll.y);this.set1f('uZoom',this.zoom);this.set1f('uTime',this.seconds);
   this.set3f('uAmbient',...s.ambient);this.set1f('uSaturation',s.saturation);this.set1f('uContrast',s.contrast);

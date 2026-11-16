@@ -19,6 +19,8 @@ const assert = require('node:assert/strict');
       const r = await page.evaluate(() => {
         const missing = []; const visit = (o, scene) => { if (!o) return; if (o.texture?.key === '__MISSING') missing.push(scene + ':' + (o.type ?? '?')); if (o.anims?.currentAnim === null && o.anims?.isPlaying) missing.push(scene + ':anim'); for (const c of o.list ?? []) visit(c, scene); };
         for (const s of game.scene.getScenes(true)) for (const o of s.children.list) visit(o, s.scene.key);
+        // Um só passe de luz por câmera: passes empilhados deixavam a tela preta na volta.
+        for (const s of game.scene.getScenes(true)) { const n = s.cameras.main.postPipelines.filter((x) => x.constructor.name === 'LightingPipeline').length; if (n > 1) missing.push(s.scene.key + ':' + n + ' passes de luz'); }
         const p = perf.samplePerformance(game, [16]); return { missing, mb: p.textureMB, scenes: p.scenes.join(',') };
       });
       console.log(`· ${label}: ${r.scenes} · ${r.mb} MB · faltando ${r.missing.length}`); assert.deepEqual(r.missing, [], label); return r.mb;
