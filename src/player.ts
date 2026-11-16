@@ -146,12 +146,13 @@ export class Player {
     const direction = directionFromVector(this.facing.x, this.facing.y);
     const wasWet=this.swimming.depth>0;this.swimming.update(depthAt(this.x,this.y),walked,direction,delta);this.isSwimming=this.swimming.isSwimming;
     if(walked)gameAudio.play(this.isSwimming||depthAt(this.x,this.y)>.005?'swim':'step');
-    if(this.swimming.depth>.005){
+    if(this.swimming.depth>.005&&!this.mount){
       this.swimmingVisual??=new SwimmingVisual(this.scene,this.profile);
       this.swimmingVisual.update(this.sprite,this.x,this.y,direction,walked,delta,this.swimming.depth,characterFrame(direction,walked?phase:0,this.walkFrames),speed/PLAYER_SPEED);return;
     }
     if(this.mount){
       // Sentado no lombo: pose parada de frente para a direção, só da cintura para cima.
+      this.swimmingVisual?.setVisible(false);
       const saddle=this.mount.update(this.x,this.y,direction,distance,wantsRun&&walked);
       this.isRunning=false;if(this.sprite.texture.key!==this.textureKey)this.sprite.setTexture(this.textureKey);
       this.sprite.setFrame(characterFrame(direction,0,this.walkFrames));
