@@ -46,6 +46,9 @@ O Junior disse que o jogo está pesado, tanto no tamanho quanto nos travamentos.
   - A franja branca do contorno saiu de todas as sprites (`scripts/clean_white_fringe.py`).
   - O Junior rejeitou o chão de terra e o lamaçal no chiqueiro: ele fica só com palha.
   - Também rejeitou a colmeia nova com abelhas em sprite: voltou a colmeia antiga, com abelhas desenhadas por código.
+- **Fabricação por lugar e categoria:** sem bancada, bancada de trabalho e **bancada de construção** (nova), com categorias em abas. Detalhes em `docs/construcoes/FABRICACAO.md`.
+- **Cerca sem módulo:** construída direto com 3 madeiras, reparo com 2. Saves antigos trocam cada módulo por 3 madeiras.
+- **Arte das bancadas:** o Junior quer as duas com 2 blocos de largura. Prompts em `docs/planejamento/PROMPTS-ARTE-BANCADAS.md`. Quando a arte chegar, falta mudar a área da bancada para 2 blocos (`buildingFootprint`) sem mexer nas bancadas já colocadas em saves antigos.
 - **Instalador menor:** o WebP sem perda dá 31%, mas exige uma dependência nova no build (`sharp`). Adicionar foi bloqueado na sessão; **falta o aval do Junior**.
 
 ## Pendências e ideias para depois
