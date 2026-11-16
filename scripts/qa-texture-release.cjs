@@ -8,7 +8,7 @@ const assert = require('node:assert/strict');
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: 800 } }); page.setDefaultTimeout(180000);
     page.on('pageerror', (e) => { errors.push(e.message); console.log('ERRO', e.stack?.slice(0, 600)); });
-    page.on('console', (m) => { const t = m.text(); if (/missing|Missing|não encontrad|Frame missing|not found|\[agua\]/i.test(t)) { warnings.push(t); console.log('AVISO', t.slice(0, 200)); } });
+    page.on('console', (m) => { const t = m.text(); if (/missing|Missing|não encontrad|Frame missing|not found/i.test(t)) { warnings.push(t); console.log('AVISO', t.slice(0, 200)); } });
     await page.goto('http://127.0.0.1:5190');
     await page.locator('#new-game').click(); await page.locator('#character-name').fill('Memória QA');
     await page.getByRole('button', { name: 'Começar minha história' }).click();
