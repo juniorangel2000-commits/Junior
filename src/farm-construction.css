@@ -19,7 +19,7 @@
 .farm-resident-chips{display:flex;flex-wrap:wrap;gap:5px}
 .farm-chip{padding:2px 8px;border-radius:999px;font-size:11px}
 .farm-chip.done{background:#dfe8c8;color:#4b6535}.farm-chip.todo{background:#f6dccb;color:#9a4a26;font-weight:600}
-.farm-resident-release{align-self:flex-end;margin-top:2px;padding:2px 0;border:0;background:none;color:#8a6c45;font-size:11px;text-decoration:underline;cursor:pointer}
+.farm-resident-release{align-self:flex-end;margin-top:auto;padding:2px 0;border:0;background:none;color:#8a6c45;font-size:11px;text-decoration:underline;cursor:pointer}
 .farm-resident-release:hover{color:#5a3f24}
 /* Números do abrigo em blocos (preview.40). */
 .farm-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px;margin:12px 0 4px}
