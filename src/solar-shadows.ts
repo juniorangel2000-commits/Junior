@@ -7,12 +7,15 @@ import { WELL_SHADOW_FOOT } from './data/property-well';
 type Caster = Phaser.GameObjects.Image | Phaser.GameObjects.Sprite;
 const CASTER = /^(asset-(tree|pine)(-[012])?|lake-rock-[0-5]|asset-house|property-well-(idle|use)|cabin|player|forest-player|city-forest-player|village-player|village-npc-[a-z]+|village-lantern|village-(augusto|rosa|amelia|nilo|celina|damiao|helena|icaro)-shop|village-tobias-shop-front|detailed-ore-atlas|village-blacksmith-house(-front)?)$/;
 
+/** Sombras de personagens e moradores mudam de quadro: são feitas sob demanda. */
+const STATIC_LAZY=/player|village-npc-/;
 /** Reuses sprite alpha, including animated character frames. No source art is modified. */
 export class SolarShadows {
   private pairs = new Map<Caster, ProjectedShadow>();
   private textures = new Set<string>();
   private footPivots = new Map<string,number>();
   private nextScan = 0;
+  private warmed = false;
   constructor(private readonly scene: Phaser.Scene) {}
   setVisible(visible: boolean): void { if (!visible) this.pairs.forEach(s => s.setVisible(false)); }
   destroy(): void {
@@ -31,8 +34,13 @@ export class SolarShadows {
           const shadow = new ProjectedShadow(this.scene,source.x,source.y,'__WHITE');
           this.scene.add.existing(shadow);
           this.pairs.set(source,shadow.setDepth(-5).setVisible(false).setData('solar-shadow',true));
+          // Árvores, pedras e casas: a silhueta é feita já na primeira varredura (ao entrar no
+          // cenário), e não no meio da caminhada, quando aparecem na tela. Personagens animados
+          // continuam sob demanda, quadro a quadro.
+          if(!this.warmed&&!STATIC_LAZY.test(source.texture.key))this.texture(source);
         }
       }
+      this.warmed=true;
     }
     const view = this.scene.cameras.main.worldView;
     for (const [source, shadow] of this.pairs) {

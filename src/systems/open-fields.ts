@@ -57,4 +57,8 @@ export function validOpenFields(v:unknown,day:number):v is OpenFieldsState{
 
 /** Todos os animais soltos dos Campos têm reação selvagem. A doma do cavalo
  * ajusta seu raio de fuga no controlador próprio, preservando a aproximação. */
-export function createFieldAnimalBrain(d:{id:string;kind:AnimalKind},p:AnimalPoint):AnimalBrain{return new AnimalBrain(d.id,d.kind,p.x,p.y,true,(x,y)=>fieldsBlocked(x*32+16,y*32+16),84,()=>0,fieldsBlocked);}
+export function createFieldAnimalBrain(d:{id:string;kind:AnimalKind},p:AnimalPoint):AnimalBrain{
+ const brain=new AnimalBrain(d.id,d.kind,p.x,p.y,true,(x,y)=>fieldsBlocked(x*32+16,y*32+16),84,()=>0,fieldsBlocked);
+ // Troncos, pedras e o galpão dos Campos não mudam de lugar: a rota de fuga reaproveita as conferências.
+ brain.staticWorld=true;return brain;
+}

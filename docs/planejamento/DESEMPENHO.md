@@ -34,6 +34,32 @@ Conferência: `scripts/qa-texture-release.cjs` vai e volta duas vezes entre a Pr
 Vila e a Floresta. Ele procura imagens faltando (`__MISSING`) e erros, e confere que a
 memória volta ao valor inicial.
 
+## Campos Abertos: animais fugindo travavam
+
+O Junior relatou travadas com o cavalo e os animais correndo. `scripts/perf-fields.cjs` mediu:
+
+| Parte (por quadro, perseguindo os animais) | Antes | Agora |
+| --- | --- | --- |
+| Animais (rota de fuga) | 25 ms | 2,7 ms |
+| Pior travada | 1,6–2,3 s | 0,28 s |
+| Luz do dia (sombras) | picos de 1,6 s | até 7 ms |
+
+Causas e correções:
+
+1. **Rota de fuga** (`AnimalBrain.plan`): cada recálculo conferia centenas de milhares de
+   pontos, montando um texto para buscar cada célula de obstáculo.
+   - `fieldsBlocked` agora usa índice numérico.
+   - A busca guarda o que já conferiu. Nos Campos (`staticWorld`), a memória vale entre
+     recálculos, porque os obstáculos não mudam.
+   - Os recálculos têm intervalos levemente diferentes, para os animais não calcularem
+     todos no mesmo quadro.
+2. **Sombras** (`SolarShadows`): a silhueta de pedras e árvores era desenhada (com
+   desfoque) quando aparecia na tela pela primeira vez. Agora é feita ao entrar no
+   cenário. Personagens animados continuam sob demanda.
+
+O restante do tempo por quadro aqui é o desenho por software do navegador da nuvem
+(~57 ms parado); no PC do Junior isso fica na placa de vídeo.
+
 ## Próximos passos
 
 - **Propriedade carrega o que não usa:** atlas do cavalo (45 MB, ele vive nos Campos),

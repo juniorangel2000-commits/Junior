@@ -54,6 +54,9 @@ export class AnimalBrain {
   private path: AnimalPoint[] = [];
   private stuckFor = 0;
   private following=false;
+  /** Liga quando os obstáculos do cenário nunca mudam: a busca de rota guarda o que já conferiu. */
+  staticWorld=false;
+  private planCache?:{stands:Map<number,boolean>;travels:Map<number,boolean>};
 
   constructor(readonly id: string, readonly kind: AnimalKind, x: number, y: number,
     readonly wild: boolean, private readonly blocked: AnimalBlocked, readonly playerSpeed = 84,
@@ -112,6 +115,14 @@ export class AnimalBrain {
     const push=(index:number)=>{queue.push(index);let at=queue.length-1;while(at>0){const parent=(at-1)>>1;if(nodes[queue[parent]].cost<=nodes[index].cost)break;queue[at]=queue[parent];at=parent;}queue[at]=index;};
     const pop=():number=>{const first=queue[0],last=queue.pop()!;if(queue.length){let at=0;while(at*2+1<queue.length){let child=at*2+1;if(child+1<queue.length&&nodes[queue[child+1]].cost<nodes[queue[child]].cost)child++;if(nodes[last].cost<=nodes[queue[child]].cost)break;queue[at]=queue[child];at=child;}queue[at]=last;}return first;};
     let best=0,bestScore=-Infinity;
+    // Cada busca confere o mesmo centro de bloco e a mesma passagem várias vezes; guardamos
+    // a resposta só durante esta busca (o mundo pode mudar entre uma busca e outra).
+    // Num cenário sem obstáculos que mudam (Campos Abertos), as respostas valem para sempre.
+    const cache=this.staticWorld&&!this.resting?(this.planCache??={stands:new Map(),travels:new Map()}):{stands:new Map<number,boolean>(),travels:new Map<number,boolean>()};
+    const stands=cache.stands,travels=cache.travels,tileKey=(x:number,y:number)=>(y+4096)*8192+x+4096;
+    const standTile=(x:number,y:number)=>{const k=tileKey(x,y);let v=stands.get(k);if(v===undefined){v=this.canStand(x*TILE+16,y*TILE+16);stands.set(k,v);}return v;};
+    const travelTile=(n:number,from:AnimalPoint,x:number,y:number,dx:number,dy:number)=>{if(n===0)return this.canTravel(from,{x:x*TILE+16,y:y*TILE+16});
+      const k=tileKey(x-dx,y-dy)*9+(dx+1)*3+(dy+1);let v=travels.get(k);if(v===undefined){v=this.canTravel(from,{x:x*TILE+16,y:y*TILE+16});travels.set(k,v);}return v;};
     for(let visited=0;queue.length&&visited<7000;visited++){
       const n=pop();
       const node=nodes[n],px=node.x*TILE+16,py=node.y*TILE+16;
@@ -125,8 +136,8 @@ export class AnimalBrain {
       }
       for(const [dx,dy]of headings){
         const x=node.x+dx,y=node.y+dy,key=`${x},${y}`;
-        if(!this.canStand(x*TILE+16,y*TILE+16)||this.pointBlocked&&!this.canTravel(point,{x:x*TILE+16,y:y*TILE+16}))continue;
-        if(dx&&dy&&(!this.canStand(node.x*TILE+16+dx*TILE,py)||!this.canStand(px,node.y*TILE+16+dy*TILE)))continue;
+        if(!standTile(x,y)||this.pointBlocked&&!travelTile(n,point,x,y,dx,dy))continue;
+        if(dx&&dy&&(!standTile(node.x+dx,node.y)||!standTile(node.x,node.y+dy)))continue;
         const nextDistance=node.distance+(dx&&dy?Math.SQRT2:1);if(fleeing&&nextDistance>10)continue;
         const cost=node.cost+(dx&&dy?Math.SQRT2:1)*(1+this.terrainCost(x,y)*2.5);
         if(cost>=(costs.get(key)??Infinity)-.0001)continue;
@@ -160,7 +171,9 @@ export class AnimalBrain {
         this.following=true;
       }
       if(this.mode==='led'&&this.canTravel(this,player)&&(range<arrivalDistance+8||this.travelCost(this,player)<=range/TILE*1.1))this.path=[{x:player.x,y:player.y}];
-      else if(this.rethink<=0){this.path=this.plan(player,this.mode==='flee',arrivalDistance);this.rethink=ANIMAL_BEHAVIOR.replanSeconds;}
+      else if(this.rethink<=0){this.path=this.plan(player,this.mode==='flee',arrivalDistance);
+        // Intervalos levemente diferentes: animais que fogem juntos não recalculam no mesmo quadro.
+        this.rethink=ANIMAL_BEHAVIOR.replanSeconds*(.85+this.random()*.3);}
     }else{
       this.timer-=dt;
       if(this.mode==='idle'&&this.timer<=0){
