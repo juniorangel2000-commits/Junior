@@ -36,7 +36,8 @@ def main():
         im = im.crop(im.getbbox())
         out = os.path.join(ROOT, dst)
         im.save(out, optimize=True)
-        removed = fringe.clean(out)
+        # Fundo preso dentro do desenho (prateleira, caixa) e contorno claro mais largo.
+        removed = fringe.clean(out, passes=5, floor=170, holes=True, hole_minimum=25)
         print(f'{name} -> {dst}: {Image.open(out).size}, franja {removed} px')
 
 

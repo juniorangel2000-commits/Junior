@@ -11,13 +11,42 @@ import sys
 from PIL import Image
 
 
-def whitish(p):
+def whitish(p, floor=196):
     r, g, b, a = p
-    return a > 0 and min(r, g, b) >= 196 and max(r, g, b) - min(r, g, b) <= 48
+    return a > 0 and min(r, g, b) >= floor and max(r, g, b) - min(r, g, b) <= 48
 
 
-def clean(path, passes=3):
+def clear_holes(im, minimum=120):
+    """Apaga o fundo branco preso dentro do desenho: áreas quase brancas (sem cor) com pelo menos
+    `minimum` pixels. Partes claras de verdade (pano, papel) têm cor e ficam."""
+    from collections import deque
+    w, h = im.size
+    px = im.load()
+    pure = lambda q: q[3] > 0 and min(q[:3]) >= 236 and max(q[:3]) - min(q[:3]) <= 12
+    seen = bytearray(w * h)
+    for y in range(h):
+        for x in range(w):
+            if seen[y * w + x] or not pure(px[x, y]):
+                continue
+            group, queue = [], deque([(x, y)])
+            seen[y * w + x] = 1
+            while queue:
+                cx, cy = queue.popleft()
+                group.append((cx, cy))
+                for nx, ny in ((cx + 1, cy), (cx - 1, cy), (cx, cy + 1), (cx, cy - 1)):
+                    if 0 <= nx < w and 0 <= ny < h and not seen[ny * w + nx] and pure(px[nx, ny]):
+                        seen[ny * w + nx] = 1
+                        queue.append((nx, ny))
+            if len(group) >= minimum:
+                for gx, gy in group:
+                    px[gx, gy] = (0, 0, 0, 0)
+    return im
+
+
+def clean(path, passes=3, floor=196, holes=False, hole_minimum=120):
     im = Image.open(path).convert('RGBA')
+    if holes:
+        clear_holes(im, hole_minimum)
     w, h = im.size
     removed = 0
     for _ in range(passes):
@@ -26,7 +55,7 @@ def clean(path, passes=3):
         for y in range(h):
             for x in range(w):
                 p = px[x, y]
-                if not whitish(p):
+                if not whitish(p, floor):
                     continue
                 border = False
                 opaque = light = 0
@@ -45,7 +74,7 @@ def clean(path, passes=3):
                                 border = True
                             continue
                         opaque += 1
-                        light += whitish(q)
+                        light += whitish(q, floor)
                 if border and opaque and light / opaque < 0.5:
                     kill.append((x, y))
         if not kill:
