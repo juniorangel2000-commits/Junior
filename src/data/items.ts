@@ -23,7 +23,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   furniture: {name:'Banco de madeira',description:'Fabricado na bancada ou adquirido na vila. Selecione e posicione na propriedade; R gira a vista.',iconFallback:'board'},
   doorKit: {name:'Porta pronta',description:'Produzido ou coletado na região.',iconFallback:'board'},
   windowKit: {name:'Janela pronta',description:'Produzido ou coletado na região.',iconFallback:'board'},
-  fenceKit: {name:'Módulo de cerca',description:'Fabricado na bancada. Coloque para conectar a outros módulos, ou use para reparar um trecho.',iconFallback:'board'},
+  fenceKit: {name:'Módulo de cerca',description:'Item antigo: a cerca agora é construída direto com madeira. Saves anteriores recebem 3 madeiras por módulo.',iconFallback:'board'},
   forge: {name:'Forja própria',description:'Produzido ou coletado na região.',iconFallback:'workbench'},
   mushroom: {name:'Cogumelos',description:'Recolha sem ferramentas na propriedade e na floresta. Ingrediente dos preparados da Amélia.',iconFallback:'board'},
   fungalInfusion:{name:'Infusão de cogumelos',description:'Preparado de ervas e cogumelos de Amélia. Recupera 50 de vigor.',iconFallback:'water'},

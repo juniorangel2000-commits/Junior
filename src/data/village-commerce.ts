@@ -102,8 +102,8 @@ MERCHANTS.herbalist.description='Ervas, cogumelos, plantas medicinais e preparad
 Object.assign(MERCHANTS.herbalist.sell,{mushroom:4});
 Object.assign(MERCHANTS.herbalist.buy,{fungalInfusion:ECOLOGY.infusion.buy});
 Object.assign(MERCHANTS.herbalist.sell,{fungalInfusion:ECOLOGY.infusion.sell});
-Object.assign(MERCHANTS.carpenter.buy,{furniture:180,doorKit:90,windowKit:70,fenceKit:25});
-Object.assign(MERCHANTS.carpenter.sell,{furniture:100,doorKit:40,windowKit:30,fenceKit:10});
+Object.assign(MERCHANTS.carpenter.buy,{furniture:180,doorKit:90,windowKit:70});
+Object.assign(MERCHANTS.carpenter.sell,{furniture:100,doorKit:40,windowKit:30});
 MERCHANTS.general.buy.plank=18;
 for(const merchant of Object.values(MERCHANTS)){
  for(const item of NON_COMMERCIAL){delete merchant.buy[item as ItemId];delete merchant.sell[item as ItemId];}

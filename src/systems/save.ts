@@ -1,4 +1,5 @@
 import {validMachineState} from './machines';
+import {FENCE_WOOD} from '../data/blueprints';
 import {validOpenFields} from './open-fields';
 import {HORSE_ID,validHorseTaming} from './horse-taming';
 import {DOMESTIC_ANIMALS,isDomesticAnimal} from '../data/domestic-animals';
@@ -63,7 +64,7 @@ import {merchantRoomFits,validMerchantLayout} from '../data/merchant-rooms';
 export const SAVE_KEY = 'depois-da-chuva-v1';
 export const SAVE_BACKUP_KEY = 'depois-da-chuva-v1-backup';
 export const SAVE_VERSION = 4;
-const TOOLS: Tool[] = ['farm-coop','farm-barn','farm-silo','farm-stable','farm-aprisco','hand', 'plant', 'water', 'gate', 'repair', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'hoe', 'workbench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
+const TOOLS: Tool[] = ['farm-coop','farm-barn','farm-silo','farm-stable','farm-aprisco','hand', 'plant', 'water', 'gate', 'repair', 'fence', 'bench', 'remove', 'hatchet', 'pickaxe', 'hoe', 'workbench', 'constructionBench', 'wall', 'door', 'floor', 'window', 'roof', 'blueprint'];
 const PROGRESS_KEYS: Array<keyof ProgressData> = ['collected', 'craftedTools', 'harvested', 'processed', 'builtWorkbench', 'sawn', 'builtShelter'];
 const emptyProgress = (): ProgressData => ({ collected: false, craftedTools: false, harvested: false, processed: false, builtWorkbench: false, sawn: false, builtShelter: false });
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -253,7 +254,7 @@ export function validateSave(value: unknown): value is SaveData {
   }
   for (const building of value.buildings) {
     if (!isRecord(building) || !integer(building.x, 1, WORLD_WIDTH - 2) || !integer(building.y, 1, WORLD_HEIGHT - 2)
-      || !['gate', 'fence', 'bench', 'workbench', 'wall', 'door', 'floor', 'window', 'roof'].includes(building.kind as string)
+      || !['gate', 'fence', 'bench', 'workbench', 'constructionBench', 'wall', 'door', 'floor', 'window', 'roof'].includes(building.kind as string)
       || isFarmTile(building.x, building.y) && !restored.has(`${building.x},${building.y}`)) return false;
     if (building.open !== undefined && (!['door','gate'].includes(building.kind as string) || typeof building.open !== 'boolean')) return false;
     if (building.rotation !== undefined && !(['gate','bench'].includes(building.kind as string) ? [0, 1, 2, 3] : building.kind === 'roof' ? [0, 1] : []).includes(building.rotation as number)) return false;
@@ -326,6 +327,11 @@ export function migrateSave(value: unknown): SaveData | null {
     const stock=value.inventory;
     const missing=VILLAGE_ITEM_IDS.filter(id=>!Object.hasOwn(stock,id));
     if(missing.length){const unarmed=missing.includes('sword')&&value.worldWeapon==='sword';value={...value,inventory:{...stock,...Object.fromEntries(missing.map(id=>[id,0]))},...(unarmed?{worldWeapon:'unarmed'}:{})};}
+  }
+  // Preview.39: o módulo de cerca saiu do jogo (a cerca é construída direto com madeira).
+  // Cada módulo guardado vira as 3 madeiras que ele custava. Repetir não muda nada: sobra 0.
+  if(isRecord(value)&&value.version===SAVE_VERSION&&isRecord(value.inventory)&&Number.isSafeInteger(value.inventory.fenceKit)&&(value.inventory.fenceKit as number)>0&&Number.isSafeInteger(value.inventory.wood)){
+    const stock=value.inventory as Record<string,number>;value={...value,inventory:{...stock,wood:Math.min(999_999,stock.wood+stock.fenceKit*FENCE_WOOD),fenceKit:0}};
   }
   // Preserve the unpublished village preview wallet after the residents were
   // named. Reading still leaves the original save and its coin balance intact.

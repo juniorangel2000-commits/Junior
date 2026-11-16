@@ -1,12 +1,19 @@
 import type { BuildingData, ItemId } from '../types';
 import type { ItemCost } from '../systems/inventory';
 
+/** Madeira de um trecho de cerca (era o custo do antigo módulo de cerca). */
+export const FENCE_WOOD = 3;
+/** Madeira para restaurar um trecho desgastado. */
+export const FENCE_REPAIR_WOOD = 2;
 // Construção livre e projetos consultam a mesma tabela; os valores são ajustáveis aqui.
 export const BUILD_COSTS: Record<BuildingData['kind'], ItemCost> = {
-  fence: { fenceKit: 1 },
+  // Desde a preview.39 a cerca é construída direto com madeira (sem o módulo de cerca).
+  fence: { wood: 3 },
   gate: { wood: 4 },
   bench: { furniture: 1 },
   workbench: { plank: 4, peg: 4 },
+  // Bancada de construção (peças de construção, máquinas e kits): tábuas serradas, pedras e cavilhas.
+  constructionBench: { board: 8, stone: 6, peg: 4 },
   wall: { plank: 2, peg: 1 },
   door: { plank: 3, peg: 2 },
   window: { plank: 2, peg: 1 },

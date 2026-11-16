@@ -2,14 +2,14 @@ import { fenceStage } from '../data/fences';
 import type { BuildingData, ItemId, TilePoint } from '../types';
 import type { ActionResult } from './farming';
 import { Inventory, ITEM_NAMES, type ItemCost } from './inventory';
-import { BUILD_COSTS, BLUEPRINT_COST, BLUEPRINT_SHELTER } from '../data/blueprints';
+import { BUILD_COSTS, BLUEPRINT_COST, BLUEPRINT_SHELTER, FENCE_REPAIR_WOOD } from '../data/blueprints';
 import { WORLD_HEIGHT, WORLD_WIDTH } from '../data/regions';
 import {inventoryToolCondition,wearInventoryTool} from './tool-instances';
 
 export { BUILD_COSTS } from '../data/blueprints';
 
 export const BUILD_NAMES: Record<BuildingData['kind'], string> = {
-  gate: 'Porteira', fence: 'Cerca', bench: 'Banco de madeira', workbench: 'Bancada', wall: 'Parede', door: 'Porta',
+  gate: 'Porteira', fence: 'Cerca', bench: 'Banco de madeira', workbench: 'Bancada', constructionBench: 'Bancada de construção', wall: 'Parede', door: 'Porta',
   floor: 'Piso', window: 'Janela', roof: 'Cobertura',
 };
 
@@ -24,6 +24,7 @@ export const BUILD_REQUIREMENTS: Record<BuildingData['kind'], BuildRequirements>
   fence: { tools: [], nearWorkbench: false },
   bench: { tools: [], nearWorkbench: false },
   workbench: { tools: ['hammer'], nearWorkbench: false },
+  constructionBench: { tools: ['hammer'], nearWorkbench: false },
   wall: { tools: ['hammer'], nearWorkbench: true },
   door: { tools: ['hammer'], nearWorkbench: true },
   window: { tools: ['hammer'], nearWorkbench: true },
@@ -158,9 +159,9 @@ export class Building {
     const fence=this.at(x,y,'structure');
     if(fence?.kind!=='fence')return {ok:false,message:'Aponte para uma cerca desgastada.'};
     if(fenceStage(fence,day)==='new')return {ok:false,message:'Esta cerca ainda está nova.'};
-    if(!inventory.spend({fenceKit:1}))return {ok:false,message:'Fabrique um módulo de cerca na bancada para substituir o trecho desgastado.'};
+    if(!inventory.spend({wood:FENCE_REPAIR_WOOD}))return {ok:false,message:`Traga ${FENCE_REPAIR_WOOD} madeiras para substituir o trecho desgastado.`};
     fence.fenceBuiltDay=day;
-    return {ok:true,message:'Cerca restaurada com um módulo pronto.'};
+    return {ok:true,message:'Cerca restaurada com madeira nova.'};
   }
 
   toggleGate(x:number,y:number,occupied=false):ActionResult {

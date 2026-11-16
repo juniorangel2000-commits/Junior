@@ -1,4 +1,5 @@
 import {describe,it,expect} from 'vitest';
+import {FENCE_REPAIR_WOOD} from '../src/data/blueprints';
 import {Building,BUILD_COSTS,buildingFootprint} from '../src/systems/building';
 import {Inventory,INITIAL_INVENTORY} from '../src/systems/inventory';
 import {AnimalBrain,startAnimalEscort,releaseAnimalEscort,transferAnimalEscort} from '../src/systems/animals';
@@ -104,7 +105,7 @@ describe('porteiras, cercados e reparos',()=>{
  },15000);
  it('restaura os três desgastes sem desmontar nem repetir o consumo',()=>{
   for(const day of [31,61,91]){const b=new Building([{kind:'fence',x:10,y:10,fenceBuiltDay:1}]),i=inv();
-   expect(fenceStage(b.buildings[0],day)).not.toBe('new');expect(b.repairFence(10,10,i,day).ok).toBe(true);expect(i.data.fenceKit).toBe(9);expect(i.data.wood).toBe(100);expect(fenceStage(b.buildings[0],day)).toBe('new');expect(b.repairFence(10,10,i,day).ok).toBe(false);expect(i.data.fenceKit).toBe(9);expect(i.data.wood).toBe(100);expect(b.isBlocked(10,10)).toBe(true);
+   expect(fenceStage(b.buildings[0],day)).not.toBe('new');expect(b.repairFence(10,10,i,day).ok).toBe(true);expect(i.data.fenceKit).toBe(10);expect(i.data.wood).toBe(100-FENCE_REPAIR_WOOD);expect(fenceStage(b.buildings[0],day)).toBe('new');expect(b.repairFence(10,10,i,day).ok).toBe(false);expect(i.data.wood).toBe(100-FENCE_REPAIR_WOOD);expect(b.isBlocked(10,10)).toBe(true);
   }
   const b=pen(),empty=new Inventory();expect(b.repairFence(10,10,empty,31).ok).toBe(false);expect(b.at(10,10)?.fenceBuiltDay).toBe(1);expect(b.repairFence(13,16,inv(),31).ok).toBe(false);
  });

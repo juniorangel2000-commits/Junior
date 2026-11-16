@@ -1,5 +1,6 @@
 import {isMachine,machineIngredient} from './data/machines';
 import {qualityLabel,qualityCounts} from './systems/item-quality';
+import {CRAFT_STATIONS,STATION_NAMES,CATEGORY_NAMES,CATEGORY_ORDER,recipeStation,recipeCategory,stationReady,type CraftStation,type CraftCategory,type NearStations} from './data/recipe-groups';
 import {cropFromSeed,cropDefinition} from './data/crops';
 import {FARM_KINDS,FARM_BUILDINGS,FARM_BASE_COST,isFarmTool} from './data/farm-buildings';
 import {shortCalendarLabel,fullCalendarLabel,calendarDate} from './systems/calendar';
@@ -145,6 +146,7 @@ const tools: { id: Tool; label: string; icon: string; detail: string }[] = [
   { id: 'hoe', label: 'Enxada', icon: 'hoe', detail: 'E prepara · Shift + E desfaz canteiros vazios' },
   { id: 'pickaxe', label: 'Picareta', icon: 'pickaxe', detail: 'Minerar rochas com uma picareta da mochila' },
   { id: 'workbench', label: 'Bancada', icon: 'workbench', detail: 'Colocar uma bancada de trabalho' },
+  { id: 'constructionBench', label: 'Bancada de construção', icon: 'workbench', detail: 'Colocar uma bancada de construção: peças de construção, máquinas e kits' },
   ...FARM_KINDS.map(kind=>({id:`farm-${kind}` as Tool,label:FARM_BUILDINGS[kind].name,icon:`farm-${kind}`,detail:'Colocar base no terreno livre e entregar materiais na obra'})),
 ];
 const items = ITEM_IDS.map(id => ({ id, label: ITEMS[id].name, description: ITEMS[id].description }));
@@ -170,7 +172,9 @@ export class GameUI {
   private lastHudKey = '';
   private craftingBusy = false;
   private craftingInventory?: InventoryData;
-  private craftingNearWorkbench = false;
+  private craftingNear: NearStations = { workbench: false, construction: false };
+  private craftingStation: CraftStation = 'hand';
+  private craftingCategory: CraftCategory | 'all' = 'all';
   private homeEditor?: HomeEditor;
   private journalCollapsed = false;
   private topToolbar?: TopToolbar;
@@ -907,38 +911,61 @@ export class GameUI {
     panel.querySelector<HTMLButtonElement>('.icon-button')!.focus();
   }
 
-  toggleCrafting(inventory: InventoryData, nearWorkbench: boolean): void {
+  /** Abas por lugar (sem bancada, bancada de trabalho, bancada de construção) e, dentro delas,
+   * categorias (docs/construcoes/FABRICACAO.md). `station`: aba que abre (a da bancada usada). */
+  toggleCrafting(inventory: InventoryData, nearWorkbench: boolean | NearStations, station?: CraftStation): void {
     if(this.gameplayLocked)return;
     if (this.mode !== 'hud') return;
     if (this.modal === 'crafting') { this.closeModal(); return; }
     if (this.modal) return;
     this.openModal('crafting');
+    const near = this.withConstruction(nearWorkbench);
+    this.craftingStation = station ?? (near.construction ? 'construction' : near.workbench ? 'workbench' : 'hand');
+    this.craftingCategory = 'all';
     const panel = document.createElement('section');
     panel.className = 'crafting-card panel';
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Fabricação');
-    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">DAS MÃOS NASCE UM LAR</span><h2>${nearWorkbench?'Bancada de trabalho':'Fabricação manual'}</h2></div><button class="icon-button" aria-label="Fechar fabricação">${icon('close')}</button></div><p class="crafting-intro">Prepare cordas, cabos e pedras lascadas. A machadinha faz tábuas brutas; o serrote prepara tábuas regulares na bancada.</p><div class="crafting-station"></div><div class="crafting-progress" hidden><div class="crafting-progress-heading"><strong></strong><span class="crafting-percent">0%</span></div><progress max="1" value="0" aria-label="Progresso da fabricação"></progress><button class="text-button cancel-crafting">Cancelar fabricação</button></div><div class="recipe-grid"></div><div class="inventory-footer">${icon('leaf')} Recolha sucata na parte oeste da propriedade para preparar a lâmina.<span>SIMULAÇÃO PAUSADA</span></div>`;
+    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">DAS MÃOS NASCE UM LAR</span><h2 class="crafting-title">${STATION_NAMES[this.craftingStation]}</h2></div><button class="icon-button" aria-label="Fechar fabricação">${icon('close')}</button></div><nav class="crafting-stations" role="tablist" aria-label="Onde fabricar"></nav><div class="crafting-station"></div><nav class="crafting-categories" aria-label="Categorias"></nav><div class="crafting-progress" hidden><div class="crafting-progress-heading"><strong></strong><span class="crafting-percent">0%</span></div><progress max="1" value="0" aria-label="Progresso da fabricação"></progress><button class="text-button cancel-crafting">Cancelar fabricação</button></div><div class="recipe-grid"></div><div class="inventory-footer">${icon('leaf')} Recolha sucata na parte oeste da propriedade para preparar a lâmina.<span>SIMULAÇÃO PAUSADA</span></div>`;
     panel.querySelector('button')!.addEventListener('click', () => this.closeModal());
     panel.querySelector('.cancel-crafting')!.addEventListener('click', () => {
       this.callbacks.onCancelCraft();
       this.setCraftingProgress('', 1);
     });
     this.overlay.append(panel);
-    this.refreshCrafting(inventory, nearWorkbench);
+    this.refreshCrafting(inventory, near);
     panel.querySelector<HTMLButtonElement>('button')!.focus();
   }
 
-  refreshCrafting(inventory: InventoryData, nearWorkbench: boolean): void {
+  /** Chamadas antigas passam só a bancada de trabalho; a de construção vem da HUD. */
+  private withConstruction(near: boolean | NearStations): NearStations {
+    return typeof near === 'boolean' ? { workbench: near, construction: !!this.latest?.nearConstruction } : near;
+  }
+  refreshCrafting(inventory: InventoryData, nearWorkbench: boolean | NearStations): void {
     this.craftingInventory = inventory;
-    this.craftingNearWorkbench = nearWorkbench;
+    const near = this.craftingNear = this.withConstruction(nearWorkbench);
     if (this.modal !== 'crafting') return;
+    const current = this.craftingStation, here = stationReady(current, near);
+    const title = this.overlay.querySelector<HTMLElement>('.crafting-title');
+    if (title) title.textContent = STATION_NAMES[current];
+    const tabs = this.overlay.querySelector<HTMLElement>('.crafting-stations')!;
+    tabs.innerHTML = CRAFT_STATIONS.map(st => `<button type="button" role="tab" class="crafting-tab${st === current ? ' active' : ''}${stationReady(st, near) ? ' reachable' : ''}" aria-selected="${st === current}" data-station="${st}">${STATION_NAMES[st]}${st !== 'hand' ? `<small>${stationReady(st, near) ? 'ao alcance' : 'longe'}</small>` : ''}</button>`).join('');
+    tabs.querySelectorAll<HTMLButtonElement>('[data-station]').forEach(b => b.addEventListener('click', () => { this.craftingStation = b.dataset.station as CraftStation; this.craftingCategory = 'all'; this.refreshCrafting(inventory, near); }));
     const station = this.overlay.querySelector<HTMLElement>('.crafting-station')!;
-    station.classList.toggle('available', nearWorkbench);
-    station.innerHTML = `${icon('workbench')}<span>${nearWorkbench ? 'Bancada ao alcance: fabrique bancos, módulos de cerca e outras peças.' : 'Fabricação manual. Aproxime-se de uma bancada para serrar.'}</span>`;
+    station.classList.toggle('available', here);
+    station.innerHTML = `${icon('workbench')}<span>${current === 'hand' ? 'Sem bancada: fabrique em qualquer lugar.' : here ? `${STATION_NAMES[current]} ao alcance.` : `Aproxime-se de uma ${STATION_NAMES[current].toLocaleLowerCase('pt-BR')} para fabricar estas receitas.`}</span>`;
+    const pool = RECIPES.filter(r => recipeStation(r) === current);
+    const categories = CATEGORY_ORDER.filter(c => pool.some(r => recipeCategory(r) === c));
+    if (this.craftingCategory !== 'all' && !categories.includes(this.craftingCategory)) this.craftingCategory = 'all';
+    const chips = this.overlay.querySelector<HTMLElement>('.crafting-categories')!;
+    chips.innerHTML = (['all', ...categories] as const).map(c => `<button type="button" class="crafting-chip${c === this.craftingCategory ? ' active' : ''}" data-category="${c}">${c === 'all' ? 'Todas' : CATEGORY_NAMES[c]}</button>`).join('');
+    chips.querySelectorAll<HTMLButtonElement>('[data-category]').forEach(b => b.addEventListener('click', () => { this.craftingCategory = b.dataset.category as CraftCategory | 'all'; this.refreshCrafting(inventory, near); }));
+    const shown = pool.filter(r => this.craftingCategory === 'all' || recipeCategory(r) === this.craftingCategory)
+      .sort((a, b) => CATEGORY_ORDER.indexOf(recipeCategory(a)) - CATEGORY_ORDER.indexOf(recipeCategory(b)));
     const grid = this.overlay.querySelector<HTMLElement>('.recipe-grid')!;
     const focusedRecipe = (document.activeElement as HTMLElement | null)?.dataset.recipe;
-    grid.innerHTML = RECIPES.map(recipe => {
+    grid.innerHTML = shown.map(recipe => {
       const missing: string[] = [];
       const inputs = Object.entries(recipe.cost) as [ItemId, number][];
       const outputs = Object.entries(recipe.output) as [ItemId, number][];
@@ -948,17 +975,17 @@ export class GameUI {
       const outputTool = outputs.find(([item]) => UNIQUE_CRAFT_ITEMS.includes(item));
       const alreadyOwned = !!outputTool && inventory[outputTool[0]] > 0;
       const missingTool = recipe.requiresTool && inventory[recipe.requiresTool] < 1;
-      const missingStation = recipe.requiresWorkbench && !nearWorkbench;
+      const missingStation = !stationReady(recipeStation(recipe), near);
       const learned=!recipe.unlock||this.latest?.learnedRecipes?.includes(recipe.unlock);
       const ready = learned && !missing.length && !missingTool && !missingStation && !alreadyOwned && !this.craftingBusy;
       const requirements = [
         recipe.requiresTool ? ITEM_NAMES[recipe.requiresTool] : '',
-        recipe.requiresWorkbench ? 'Bancada próxima' : 'À mão',
+        CATEGORY_NAMES[recipeCategory(recipe)],
         recipe.durationSeconds ? `${recipe.durationSeconds} segundos` : '',
       ].filter(Boolean).join(' · ');
       const status = this.craftingBusy ? 'Aguarde a fabricação atual ou cancele.' : alreadyOwned ? recipe.output.sword?'Você já possui uma espada.':'Você já possui esta ferramenta.'
         : missingTool ? `Precisa de ${ITEM_NAMES[recipe.requiresTool!].toLocaleLowerCase('pt-BR')}.`
-        : missingStation ? 'Aproxime-se de uma bancada.'
+        : missingStation ? `Aproxime-se de uma ${STATION_NAMES[recipeStation(recipe)].toLocaleLowerCase('pt-BR')}.`
         : missing.length ? `Faltam: ${missing.join(', ')}.` : 'Materiais e requisitos disponíveis.';
       return `<article class="recipe-card${ready ? ' ready' : ''}"><div class="recipe-title">${icon(outputs[0]?.[0] ?? 'workbench')}<h3>${recipe.name}</h3></div><p>${recipe.description}</p><div class="recipe-materials">${inputs.map(([item, quantity]) => `<span class="${inventory[item] < quantity ? 'insufficient' : ''}">${icon(item)}${quantity} ${ITEM_NAMES[item]} <small>(${inventory[item]})</small></span>`).join('')}</div><div class="recipe-output">${icon('arrow')} ${outputs.map(([item, quantity]) => `${quantity} ${ITEM_NAMES[item]}`).join(' + ')}</div><small class="recipe-requirements">${requirements}</small><div class="recipe-status${ready ? '' : ' unavailable'}">${status}</div><button class="button ${ready ? 'button-primary' : 'button-light'}" data-recipe="${recipe.id}" ${ready ? '' : 'disabled'} aria-label="Fabricar: ${recipe.name}">Fabricar ${icon('check')}</button></article>`;
     }).join('');
@@ -982,7 +1009,7 @@ export class GameUI {
       bar.setAttribute('aria-label', name ? `Fabricação: ${name}` : 'Progresso da fabricação');
     }
     if (wasBusy !== this.craftingBusy && this.craftingInventory) {
-      this.refreshCrafting(this.craftingInventory, this.craftingNearWorkbench);
+      this.refreshCrafting(this.craftingInventory, this.craftingNear);
     }
   }
 
@@ -1003,10 +1030,10 @@ export class GameUI {
       const requirement = BUILD_REQUIREMENTS[kind];
       const descriptions = requirement.tools.map(item => `${ITEM_NAMES[item]}${inventory[item] < 1 ? ' — falta na mochila' : ''}`);
       if (requirement.nearWorkbench) descriptions.push(nearWorkbench ? 'Bancada ao alcance' : 'Aproxime-se de uma bancada');
-      if(kind==='bench'||kind==='fence')descriptions.push('Peça pronta na mochila · fabricação na bancada');
+      if(kind==='bench')descriptions.push('Banco pronto na mochila · fabricação na bancada de construção');
       return descriptions.join(' · ') || 'Construção manual';
     };
-    const kinds: BuildingData['kind'][] = ['workbench', 'fence', 'gate', 'bench'];
+    const kinds: BuildingData['kind'][] = ['workbench', 'constructionBench', 'fence', 'gate', 'bench'];
     panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">CUIDE DA SUA PROPRIEDADE</span><h2>Construção</h2></div><button class="icon-button" aria-label="Fechar construção">${icon('close')}</button></div><p class="crafting-intro">Escolha uma base e posicione no terreno limpo, fora dos caminhos e da água. Depois leve os materiais à entrada da obra e conclua com o martelo. Sua casa principal continua sendo o seu lar.</p><div class="build-grid">${FARM_KINDS.map(kind=>`<article class="build-option"><div class="recipe-title"><img src="assets/visual/farm/${kind}.png" alt="" style="width:72px;height:72px;object-fit:contain"/><h3>${FARM_BUILDINGS[kind].name}</h3></div><p>${FARM_BUILDINGS[kind].description}</p><strong>Para colocar a base</strong><div class="recipe-materials">${materialList(FARM_BASE_COST)}</div><small class="recipe-requirements">Martelo na mochila · área livre de ${FARM_BUILDINGS[kind].width} × ${FARM_BUILDINGS[kind].height}</small><p>Entregue depois na obra:</p><div class="recipe-materials">${materialList(FARM_BUILDINGS[kind].cost)}</div><button class="button button-primary" data-build="farm-${kind}">Selecionar base ${icon('arrow')}</button></article>`).join('')}${kinds.map(kind => `<article class="build-option"><div class="recipe-title">${icon(kind)}<h3>${BUILD_NAMES[kind]}</h3></div><div class="recipe-materials">${materialList(BUILD_COSTS[kind])}</div><small class="recipe-requirements">${requirementText(kind)}</small>${kind === 'gate' ? '<p class="fence-aging-note">R gira entre quatro posições e troca o lado da dobradiça. F inverte para onde ela abre. A seta no terreno mostra a abertura. Mãos + E abre e fecha. Não fecha sobre o jogador ou um animal.</p>' : ''}${kind === 'fence' ? `<div class="fence-stages" aria-label="Estágios de desgaste da cerca">${FENCE_STAGES.map((stage,i)=>`<figure><img src="${fencePreview(stage)}" alt="Cerca ${FENCE_NAMES[i].toLowerCase()}"/><figcaption>${FENCE_NAMES[i]}<small>${i*FENCE_STAGE_DAYS} dias</small></figcaption></figure>`).join('')}</div><p class="fence-aging-note">Conecta em todas as direções. Desgasta a cada 30 dias do jogo, até ficar arruinada; permanece no terreno até ser recolhida.</p>` : ''}<button class="button button-light" data-build="${kind}" aria-label="Selecionar construção: ${BUILD_NAMES[kind]}">Selecionar ${icon('arrow')}</button></article>`).join('')}<article class="build-option"><div class="recipe-title">${icon('hammer')}<h3>Reparar cerca</h3></div><p>Substitua um trecho desgastado usando 1 módulo de cerca fabricado na bancada. Uma cerca nova não gasta material.</p><button class="button button-light" data-build="repair">Selecionar reparo ${icon('arrow')}</button></article><article class="build-option"><div class="recipe-title">${icon('remove')}<h3>Remover</h3></div><p>Recolha uma peça colocada por você. Bancos e cercas voltam como peças prontas para reposicionar; outras construções devolvem parte dos materiais.</p><button class="button button-light" data-build="remove" aria-label="Selecionar remoção de construção">Selecionar ${icon('arrow')}</button></article></div><div class="inventory-footer">${icon('leaf')} Leve os materiais até a entrada de cada obra para finalizar.<span>SIMULAÇÃO PAUSADA</span></div>`;
     panel.querySelector('.modal-heading button')!.addEventListener('click', () => this.closeModal());
     panel.querySelectorAll<HTMLButtonElement>('[data-build]').forEach(button => button.addEventListener('click', () => {

@@ -32,7 +32,7 @@ export type ItemId = import('./data/crop-catalog').CropItemId | 'wood' | 'stone'
   | 'sword' | 'lantern' | 'oldMap' | 'metalPart' | 'electronicPart' | 'waterPump' | 'lamp' | 'backpack' | 'boots' | 'cloth' | 'clothing' | 'accessory';
 export type InventoryData = Record<ItemId, number> & {toolInstances?:import('./systems/tool-instances').ToolInventory};
 export type OwnedTool = 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw' | 'hammer';
-export type Tool = 'hand' | 'plant' | 'water' | 'gate' | 'repair' | 'fence' | 'bench' | 'remove' | 'hatchet' | 'pickaxe' | 'hoe' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof' | 'blueprint' | 'farm-coop' | 'farm-barn' | 'farm-silo' | 'farm-stable' | 'farm-aprisco';
+export type Tool = 'hand' | 'plant' | 'water' | 'gate' | 'repair' | 'fence' | 'bench' | 'remove' | 'hatchet' | 'pickaxe' | 'hoe' | 'workbench' | 'constructionBench' | 'wall' | 'door' | 'floor' | 'window' | 'roof' | 'blueprint' | 'farm-coop' | 'farm-barn' | 'farm-silo' | 'farm-stable' | 'farm-aprisco';
 export type QuickSlot = Tool | `item:${ItemId}` | `tool:${import('./systems/tool-instances').IndividualTool}:${number}` | 'item:wateringCan' | null;
 export interface TilePoint { x: number; y: number }
 /** growth: fração 0–1 derivada de days, mantida para o desenho e saves antigos.
@@ -40,7 +40,7 @@ export interface TilePoint { x: number; y: number }
  * são convertidos na primeira atualização (nabo, progresso proporcional). */
 export interface CropData extends TilePoint { growth: number; watered: boolean; crop?: import('./data/crops').CropId; days?: number; day?: number }
 export interface FarmingProgress { prepared: boolean; planted: boolean; watered: boolean; harvested: boolean }
-export interface BuildingData extends TilePoint { kind: 'gate' | 'fence' | 'bench' | 'workbench' | 'wall' | 'door' | 'floor' | 'window' | 'roof'; open?: boolean; rotation?: 0 | 1 | 2 | 3; gateFlip?: boolean; fenceBuiltDay?: number }
+export interface BuildingData extends TilePoint { kind: 'gate' | 'fence' | 'bench' | 'workbench' | 'constructionBench' | 'wall' | 'door' | 'floor' | 'window' | 'roof'; open?: boolean; rotation?: 0 | 1 | 2 | 3; gateFlip?: boolean; fenceBuiltDay?: number }
 export type ResourceKind = 'tree' | 'stone' | 'seeds' | 'scrap' | 'standingTree' | 'vein' | 'fiber' | 'fallenLog' | 'stump' | 'herb' | 'mushroom';
 export interface ResourceNode extends TilePoint { id: string; kind: ResourceKind; metal?:import('./data/economy-balance').Metal; plant?: FiberPlant; treeSpecies?:'oak'|'pine';treeStage?:0|1|2|3;treePlanted?:boolean;treePlantingSoil?:boolean }
 export interface ResourceProgressData { id: string; hits: number }
@@ -203,6 +203,8 @@ export interface HudData {
   harvests: number;
   metLia: boolean;
   nearWorkbench: boolean;
+  /** Bancada de construção ao alcance (peças de construção, máquinas e kits). */
+  nearConstruction?: boolean;
   sheltered: boolean;
   shelterReason: string;
   resourceProgress: string;

@@ -68,11 +68,11 @@ describe('processamento pelo relógio do jogo',()=>{
  });
 });
 describe('projetos e compatibilidade',()=>{
- it.each(CRAFTED_MACHINE_IDS)('%s é aprendida com o morador correto e montada apenas na bancada',kind=>{
-  const t=setup(),d=MACHINES[kind];t.s.villageEconomy!.coins=1000;expect(listVillageServices(d.npc).some(s=>s.id==='learn-'+kind)).toBe(true);
-  const inventory=new Inventory({...d.cost,hammer:1});expect(craft(kind,inventory,true,t.s.villageProgress).ok).toBe(false);
+ it.each(CRAFTED_MACHINE_IDS)('%s é aprendida com o morador correto e montada apenas na bancada de construção',kind=>{
+  const t=setup(),d=MACHINES[kind],bench={workbench:false,construction:true};t.s.villageEconomy!.coins=1000;expect(listVillageServices(d.npc).some(s=>s.id==='learn-'+kind)).toBe(true);
+  const inventory=new Inventory({...d.cost,hammer:1});expect(craft(kind,inventory,bench,t.s.villageProgress).ok).toBe(false);
   expect(performVillageService(t.s,'learn-'+kind).ok).toBe(true);expect(t.s.villageEconomy!.coins).toBe(1000-d.learnFee);expect(performVillageService(t.s,'learn-'+kind).ok).toBe(false);
-  expect(craft(kind,inventory,false,t.s.villageProgress).ok).toBe(false);expect(craft(kind,inventory,true,t.s.villageProgress).ok).toBe(true);expect(inventory.data[kind]).toBe(1);expect(validateSave(t.s)).toBe(true);
+  expect(craft(kind,inventory,false,t.s.villageProgress).ok).toBe(false);expect(craft(kind,inventory,true,t.s.villageProgress).ok).toBe(false);expect(craft(kind,inventory,bench,t.s.villageProgress).ok).toBe(true);expect(inventory.data[kind]).toBe(1);expect(validateSave(t.s)).toBe(true);
  });
  it('adiciona itens opcionais a saves anteriores sem instalar máquinas ou mudar o estoque antigo',()=>{
   const old:any=setup().s;delete old.machines;for(const id of [...MACHINE_IDS,'cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes'])delete old.inventory[id];

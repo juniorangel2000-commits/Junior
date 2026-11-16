@@ -681,7 +681,7 @@ export class ValleyScene extends Phaser.Scene {
     if (!this.running || !this.ui.isCraftingOpen() || this.craftJob) return;
     const recipe = RECIPES.find(entry => entry.id === id);
     if (!recipe) return;
-    if (!canCraft(recipe, this.inventory, this.nearWorkbench(),this.state.villageProgress)) {
+    if (!canCraft(recipe, this.inventory, this.nearStations(),this.state.villageProgress)) {
       this.ui.toast('Confira os materiais, a ferramenta e a proximidade da bancada.');
       return;
     }
@@ -695,12 +695,12 @@ export class ValleyScene extends Phaser.Scene {
     if (!this.craftJob) return;
     this.craftJob = null;
     this.ui.setCraftingProgress('', 1);
-    this.ui.refreshCrafting(this.inventory.data, this.nearWorkbench());
+    this.ui.refreshCrafting(this.inventory.data, this.nearStations());
     this.ui.toast('Fabricação cancelada. Nenhum material foi consumido.');
   }
 
   private finishCrafting(id: string): void {
-    const result = craft(id, this.inventory, this.nearWorkbench(),this.state.villageProgress);
+    const result = craft(id, this.inventory, this.nearStations(),this.state.villageProgress);
     if (result.ok) {
       gameAudio.play('craft');
       this.state.progress.craftedTools = this.inventory.has('hatchet') && this.inventory.has('pickaxe') && this.inventory.has('hammer');
@@ -737,7 +737,7 @@ export class ValleyScene extends Phaser.Scene {
     const planting=item==='oakSeed'||item==='pineSeed';if(planting&&this.inHome){this.ui.toast('Plante a semente fora da casa.');return;}
     const point={x:Math.floor(this.player.x/32+this.player.facing.x),y:Math.floor(this.player.y/32+this.player.facing.y)};
     const water=(x:number,y:number)=>this.world.isSwimmingPoint(x,y);
-    if(item==='furniture'||item==='fenceKit'){if(this.inHome){this.ui.toast('Posicione bancos e cercas no terreno da propriedade.');return;}if(!this.inventory.has(item))return;this.selectTool(item==='furniture'?'bench':'fence');this.ui.toast(item==='furniture'?'Escolha um espaço livre para o banco. R gira a vista; clique ou E coloca.':'Escolha onde colocar o módulo de cerca. Os trechos se conectam automaticamente.');return;}
+    if(item==='furniture'){if(this.inHome){this.ui.toast('Posicione bancos e cercas no terreno da propriedade.');return;}if(!this.inventory.has(item))return;this.selectTool(item==='furniture'?'bench':'fence');this.ui.toast(item==='furniture'?'Escolha um espaço livre para o banco. R gira a vista; clique ou E coloca.':'Escolha onde colocar o módulo de cerca. Os trechos se conectam automaticamente.');return;}
     if(item==='doorKit'||item==='windowKit'){this.ui.toast('Leve estes materiais até a obra para concluir a construção.');return;}
     if(item==='shovel'){
       if(this.inHome||toolCondition(this.state,'shovel').durability<=0){this.ui.toast('A pá precisa ser reparada ou usada fora da casa.');return;}
@@ -1118,10 +1118,12 @@ export class ValleyScene extends Phaser.Scene {
     return true;
   }
 
-  private nearWorkbench(): boolean {
+  private nearWorkbench(kind: 'workbench' | 'constructionBench' = 'workbench'): boolean {
     if (this.inHome) return false;
-    return this.building.buildings.some(b => b.kind === 'workbench' && this.tileDistance(b) <= 112 && this.clearReach(b));
+    return this.building.buildings.some(b => b.kind === kind && this.tileDistance(b) <= 112 && this.clearReach(b));
   }
+  /** Bancadas ao alcance: de trabalho e de construção. */
+  private nearStations() { return { workbench: this.nearWorkbench(), construction: this.nearWorkbench('constructionBench') }; }
 
   private targetTile(): TilePoint {
     if (this.lastAim && this.time.now < this.aimUntil && (isFarmTool(this.tool)||this.tileDistance(this.lastAim) <= 75)) return this.lastAim;
@@ -1175,7 +1177,7 @@ export class ValleyScene extends Phaser.Scene {
     const requirements = BUILD_REQUIREMENTS[kind];
     if (requirements.tools.some(item => !this.inventory.has(item))) return 'Fabrique um martelo antes de construir.';
     if (requirements.nearWorkbench && !this.nearWorkbench()) return 'Aproxime-se de uma bancada.';
-    if (!this.inventory.canAfford(BUILD_COSTS[kind])) return kind==='bench'||kind==='fence'?'Fabrique a peça na bancada ou obtenha uma pronta na vila.':'Faltam materiais. Consulte o custo abaixo.';
+    if (!this.inventory.canAfford(BUILD_COSTS[kind])) return kind==='bench'?'Fabrique o banco na bancada de construção ou compre um pronto na vila.':'Faltam materiais. Consulte o custo abaixo.';
     return '';
   }
 
@@ -1295,7 +1297,7 @@ export class ValleyScene extends Phaser.Scene {
         this.afterAction(); return;
       }
       const station = this.building.at(tile.x, tile.y, 'structure');
-      if (station?.kind === 'workbench') { this.ui.toggleCrafting(this.inventory.data, this.nearWorkbench()); return; }
+      if (station?.kind === 'workbench' || station?.kind === 'constructionBench') { this.ui.toggleCrafting(this.inventory.data, this.nearStations(), station.kind === 'constructionBench' ? 'construction' : 'workbench'); return; }
     }
     if (this.tool === 'hoe') {
       const reason = restoreSoil ? this.farming.restoreReason(tile.x,tile.y,this.inventory)
@@ -1588,7 +1590,7 @@ export class ValleyScene extends Phaser.Scene {
     if (this.tool === 'hoe') prompt = this.restoreSoilHeld
       ? this.farming.restoreReason(tile.x,tile.y,this.inventory) || 'Desfazer canteiro · Shift + E ou clique'
       : 'E: preparar · Shift + E: desfazer canteiro';
-    else if (this.tool === 'repair') prompt = 'Reparar cerca desgastada · 1 módulo de cerca · E ou clique';
+    else if (this.tool === 'repair') prompt = 'Reparar cerca desgastada · 2 madeiras · E ou clique';
     else if (this.tool === 'plant') prompt = 'Plantar '+cropDefinition(this.state.selectedCrop).name.toLowerCase()+' · 1 semente';
     else if (this.tool === 'water') prompt = `Regador: ${this.state.wateringCanWater ?? 0}/8 · E junto à água para encher`;
     else if (this.tool === 'blueprint') prompt = this.blueprintReason(tile) || `Montar ${BLUEPRINT_LABEL} · clique ou E`;
@@ -1600,6 +1602,7 @@ export class ValleyScene extends Phaser.Scene {
     else if (this.building.at(tile.x,tile.y,'structure')?.kind === 'gate' && this.tool === 'hand') prompt = 'Abrir ou fechar porteira · E';
     else if (this.building.at(tile.x, tile.y, 'structure')?.kind === 'door' && this.tool === 'hand') prompt = 'Abrir ou fechar porta';
     else if (this.building.at(tile.x, tile.y, 'structure')?.kind === 'workbench' && this.tool === 'hand') prompt = 'Usar bancada · fabricação';
+    else if (this.building.at(tile.x, tile.y, 'structure')?.kind === 'constructionBench' && this.tool === 'hand') prompt = 'Usar bancada de construção · peças, máquinas e kits';
     else if (this.farming.cropAt(tile.x, tile.y)) {
       const crop = this.farming.cropAt(tile.x, tile.y)!;
       prompt = cropStatus(crop);
@@ -1624,7 +1627,7 @@ export class ValleyScene extends Phaser.Scene {
       selectedCrop:this.state.selectedCrop, tool: this.tool, prompt:machine?prompt:this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:prompt, interactionKey:nearPassage||nearHouse?null:undefined, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
       playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
       harvests: this.inventory.data.turnip, metLia: this.state.metLia,
-      nearWorkbench: this.nearWorkbench(), sheltered: this.shelter.sheltered, shelterReason: this.shelter.reason,
+      nearWorkbench: this.nearWorkbench(), nearConstruction: this.nearWorkbench('constructionBench'), sheltered: this.shelter.sheltered, shelterReason: this.shelter.reason,
       resourceProgress, progress: this.state.progress });
   }
 
