@@ -4,64 +4,66 @@
 
 - **Atualizado em:** 2026-11-16
 - **Por:** Claude Code
-- **Continuar a partir de:** `main` (preview.39). Próxima rodada: criar `release/v0.10.0-preview.40` a partir da `main`.
-- **Última versão publicada:** `v0.10.0-preview.39` enviada à `main`. **Falta o Junior criar a Release** no GitHub: tag `v0.10.0-preview.39`, target `main`, pre-release.
-- **Estado:** preview.39 pronta, com versão do pacote, `NOTAS-0.10.0-preview.39.md` e `LEIA-0.10.0-preview.39.md`.
+- **Continuar a partir de:** `release/v0.10.0-preview.40` (não publicado ainda).
+- **Última versão publicada:** `v0.10.0-preview.39`, enviada à `main`. A criação da Release no GitHub pelo Junior não foi confirmada.
+- **Estado:** preview.40 em andamento. Tudo enviado, testes passando. Publicar só quando o Junior pedir.
 
 ## Feito nesta rodada
 
-### Desempenho (Claude Code)
+### Montaria com a arte do Junior (Claude Code)
 
-O Junior disse que o jogo está pesado, tanto no tamanho quanto nos travamentos. Medições, o que foi feito e os próximos passos estão em `docs/planejamento/DESEMPENHO.md`.
+- O Junior mandou a personagem feminina montada, parada, nas 8 direções.
+- `scripts/pack_horse_rider.py` separa só a personagem. No jogo, ela vai por cima do cavalo animado (passo e galope) e sobe e desce com o lombo.
+- Detalhes em `docs/construcoes/MONTARIA.md`; imagem em `docs/planejamento/montaria-preview.png`.
+- O Junior pediu acabamento caprichado. Foram limpos restos do cavalo nas bordas, pontas de rédea e o contorno; na vista de frente, as mãos ficaram sobre a cabeça do cavalo.
+- O personagem masculino continua com a versão por código (cortado na cintura, pernas, sela e rédeas desenhadas). Falta a arte dele no mesmo formato.
+- Correção: o efeito de nado não aparece mais por cima de quem está montado.
 
-- **F3:** contador de FPS, imagens e memória (`src/performance-overlay.ts`).
-- **Liberação de imagens ao sair de cada cenário** (`src/scene-texture-release.ts`). Depois de visitar o mundo, o pico caiu de 2,3 GB para ~1,1 GB.
-- **Vazamento antigo corrigido:** `children.removeAll(true)` não destruía nada no Phaser 3.90. A Propriedade guardava o mundo anterior a cada volta, com a água animada rodando. Agora `destroySceneChildren` (`src/scene-children.ts`) destrói de verdade (Vale, Masmorras e Editor). Propriedade estável em 996 MB.
-- `scripts/qa-texture-release.cjs`: idas e voltas sem imagens faltando, sem erros e sem crescer memória.
-- `scripts/qa-kitchen.cjs` atualizado para as receitas escondidas ("???").
-- **Campos Abertos travando com animais fugindo:** a rota de fuga custava 25 ms por quadro e a sombra de pedras e árvores travava até 1,6 s. Agora são 2,7 ms e 7 ms no máximo. Detalhes em `DESEMPENHO.md`; medidor em `scripts/perf-fields.cjs`.
+### Antes, nesta versão (preview.40)
 
-### Iluminação nova e sombras (Claude Code)
-
-- Novo sistema de luz, com noite de verdade, postes, nuvens, vaga-lumes e pólen. Detalhes em `docs/construcoes/ILUMINACAO.md`.
-- O Junior pediu: postes iluminando mais em volta (só os postes), e sombras ajustadas. Depois disse que as sombras estavam péssimas e tinham um vão até o objeto.
-  - Agora tudo em pé projeta sombra, colada ao pé.
-  - **Falta a opinião dele** sobre o resultado das sombras (`docs/planejamento/luz-depois/`).
-- **Cavalo domado** (falha antiga do `qa-horse-taming`): ele ficava 6–9 s comendo a última cesta e ignorava o jogador. Agora termina a refeição e vem (`HorseIdleCycle.finish`). O QA passa inteiro.
-
-### Antes, nesta versão
-
-- preview.36 publicada pelo Junior; workflow passou (instalador, portátil, `SHA256SUMS.txt`, `LEIA.md`).
+- Fabricação:
+  - categorias melhores;
+  - filtros com contador e prontas primeiro;
+  - "Para aprender";
+  - melhorias de ferramentas na bancada de trabalho (`docs/construcoes/FABRICACAO.md`).
+- Qualidade das colheitas por sorteio, conforme os cuidados (rega diária e adubo). A semente do nabo ganhou nome próprio (`docs/construcoes/QUALIDADE.md`).
+- Painel do abrigo:
+  - cartões com retrato de lado de cada animal;
+  - amizade, "Comeu hoje" e "Carinho";
+  - números em blocos;
+  - "Liberar moradia" alinhado.
+- Montaria no cavalo domado: tecla V perto dele, na Propriedade. Shift galopa. Ao entrar em lugares fechados, o jogador desce sozinho.
 
 ## Em andamento e próximo passo exato
 
-1. **Junior:** criar a Release no GitHub: tag nova `v0.10.0-preview.39`, target `main`, pre-release.
-2. Conferir o workflow e criar `release/v0.10.0-preview.40` a partir da `main`.
-3. Feito depois da preview.39, no branch `release/v0.10.0-preview.40`: categorias novas, filtros com contador, prontas primeiro, "Para aprender" e melhorias de ferramentas na bancada de trabalho (`docs/construcoes/FABRICACAO.md`).
-4. Pendentes: números do F3 no PC do Junior; decisão sobre `sharp` (WebP sem perda, instalador 31% menor); porteira do lote 01 no chiqueiro.
+1. O Junior vai conferir a montaria no jogo. Se ele mandar a arte do personagem masculino montado, rode `pack_horse_rider.py` com `farmer-male` e inclua-o em `RIDER_ART`.
+2. Pendentes do pedido "depois fazemos o restante":
+   - porteira do lote 01 no chiqueiro;
+   - ícones extras (pregos, dobradiça, engrenagem, molas, óleo) como peças de construção;
+   - instalador em WebP (precisa de aprovação para instalar o `sharp`);
+   - ajustes pelos números do F3 no PC do Junior.
+3. Publicar a preview.40 quando o Junior pedir.
 
 ## Pendências e ideias para depois
 
-- Plano em `docs/planejamento/ANIMAIS-E-RECEITAS.md`: animais, cozinha, abelhas, patos, porcos, máquinas e qualidade estão prontos. Faltam a conferência dos preços jogando e as artes provisórias.
-- Estábulo/corda, montaria e calendário seguem planos anteriores.
-- Há stash antigo do branch preview.34 com evidências/documentação do estábulo aberto. **Não aplicar sobre esta PASSAGEM nem desfazer os interiores atuais.**
+- Plano em `docs/planejamento/ANIMAIS-E-RECEITAS.md`. Animais, cozinha, abelhas, patos, porcos, máquinas e qualidade estão prontos. Faltam conferir os preços jogando e substituir as artes provisórias.
+- Estábulo/corda e calendário seguem planos anteriores.
+- Há um stash antigo do branch preview.34 com evidências e documentação do estábulo aberto. **Não aplicar sobre esta PASSAGEM nem desfazer os interiores atuais.**
 
 ## Problemas conhecidos
 
-- Interiores dos animais não persistem posição interna individual e ficam claros à noite.
-- Travamentos nos Campos ainda precisam ser medidos no PC do Junior: otimizações anteriores estão em `f28f27c`, capim em `5424eee`; o navegador aqui usa SwiftShader. **Não afirmar que o problema de FPS foi resolvido.**
-- Arte definitiva dos interiores deve permanecer em resolução original (`setScale`/`setDisplaySize`, piso `FLOOR_SCALE=2`); o Junior rejeitou redução dos PNGs.
-- `scripts/qa-animal-escort.cjs` está desatualizado: roteiro antigo de antes da abertura e das passagens a pé. Já foi ajustado para a abertura, a porta 5190 e a entrada caminhando na Floresta, mas ainda falha na volta à Propriedade. A corda até a Propriedade é conferida em `qa-horse-taming`.
-- `qa-open-fields` e `qa-horse-fields` têm `executablePath:'/usr/bin/chromium'` fixo; rode com uma cópia sem esse caminho.
-- `scripts/qa-farm-interior.cjs` falha (já falhava antes da preview.37): perto da porta do galinheiro aparece a dica da missão ("Plantar uma semente da estação · E") em vez de "Entrar no galinheiro". Investigar se é só o roteiro ou a prioridade da dica.
-- Qualidade: unidades soltas no chão e recolhidas voltam como comuns. Uma entrada sem registro logo depois de um gasto sem registro, antes de salvar, pode ser contada errado (raro; o save confere tudo).
+- Os interiores dos animais não guardam a posição de cada animal lá dentro.
+- Os travamentos nos Campos ainda precisam ser medidos no PC do Junior; o navegador aqui usa SwiftShader. **Não afirmar que o problema de FPS foi resolvido.**
+- A arte definitiva dos interiores deve ficar na resolução original; o Junior rejeitou reduzir os PNGs.
+- `scripts/qa-animal-escort.cjs` está desatualizado e falha na volta à Propriedade. A corda é conferida em `qa-horse-taming`.
+- `qa-open-fields` e `qa-horse-fields` têm o caminho `executablePath:'/usr/bin/chromium'` fixo no código; para rodar aqui, use uma cópia sem esse caminho.
+- `scripts/qa-farm-interior.cjs` falha (já falhava antes da preview.37): perto da porta do galinheiro aparece a dica da missão.
+- Qualidade: unidades soltas no chão e recolhidas voltam como comuns.
+- O Chromium daqui às vezes trava ("Target crashed") em capturas com zoom e movimento. Rode uma direção por execução.
 
 ## Testes
 
 - `npm run check`: ok.
-- `npm test`: **2.109 passaram, zero falhas, 240 arquivos**.
-- `npm run build`: ok (aviso de tamanho do pacote, que já existia).
-- Chromium (`CHROMIUM_PATH=/opt/pw-browsers/chromium` quando o padrão não existir):
-  - `qa-texture-release`, `qa-quality`, `qa-pigs`, `qa-kitchen`, `qa-fields-distance`, `qa-open-fields` e `qa-horse-fields`: OK.
-  - `qa-farm-interior`: falha antiga (ver Problemas conhecidos).
+- `npm test`: **2.121 passaram, zero falhas** (inclui o teste novo da personagem montada em `tests/horse-riding.test.ts`).
+- Montaria conferida no Chromium, andando nas 4 direções principais e galopando de lado. As diagonais e a vista de costas foram conferidas em imagem montada sobre o cavalo parado.
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.

@@ -41,8 +41,8 @@ export class Player {
   private mount?:HorseMount;
   get mounted(){return !!this.mount;}
   /** Monta no cavalo (o cenário precisa ter o atlas do cavalo carregado). */
-  mountHorse():boolean{if(this.mount||!horseTextureReady(this.scene)||this.isSwimming)return false;this.mount=new HorseMount(this.scene,this.x,this.y);this.isRunning=false;this.sprite.setTexture(this.textureKey);return true;}
-  dismountHorse():void{if(!this.mount)return;this.mount.destroy();this.mount=undefined;this.sprite.setCrop().setPosition(this.x,this.y).setDepth(this.y);}
+  mountHorse():boolean{if(this.mount||!horseTextureReady(this.scene,this.characterId)||this.isSwimming)return false;this.mount=new HorseMount(this.scene,this.x,this.y,this.characterId);if(this.mount.combined)this.sprite.setVisible(false);this.isRunning=false;this.sprite.setTexture(this.textureKey);return true;}
+  dismountHorse():void{if(!this.mount)return;const hidden=this.mount.combined;this.mount.destroy();this.mount=undefined;if(hidden)this.sprite.setVisible(true);this.sprite.setCrop().setPosition(this.x,this.y).setDepth(this.y);}
   private walkDistance = 0;
   private runDistance=0;
   private readonly runFrames:number;
@@ -65,7 +65,7 @@ export class Player {
     this.keys = scene.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,SHIFT', false) as MovementKeys;
   }
 
-  setVisible(visible:boolean):void {this.mount?.setVisible(visible);this.sprite.setVisible(visible);this.swimmingVisual?.setVisible(visible&&this.isSwimming);}
+  setVisible(visible:boolean):void {this.mount?.setVisible(visible);this.sprite.setVisible(visible&&!this.mount?.combined);this.swimmingVisual?.setVisible(visible&&this.isSwimming);}
 
   update(delta: number, isBlocked: (x: number, y: number) => boolean,
     isBlockedPoint?: (x: number, y: number) => boolean, movementEnabled = true, isWaterPoint?: (x:number,y:number)=>boolean|number, canMoveCenter?: (x:number,y:number)=>boolean): void {
@@ -154,6 +154,7 @@ export class Player {
       // Sentado no lombo: pose parada de frente para a direção, só da cintura para cima.
       this.swimmingVisual?.setVisible(false);
       const saddle=this.mount.update(this.x,this.y,direction,distance,wantsRun&&walked);
+      if(this.mount.combined){this.sprite.setPosition(this.x,this.y).setDepth(this.y);return;}
       this.isRunning=false;if(this.sprite.texture.key!==this.textureKey)this.sprite.setTexture(this.textureKey);
       this.sprite.setFrame(characterFrame(direction,0,this.walkFrames));
       const frameHeight=this.sprite.frame.height;this.sprite.setCrop(0,0,this.sprite.frame.width,Math.round(frameHeight*RIDER_VISIBLE));

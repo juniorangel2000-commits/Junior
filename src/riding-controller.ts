@@ -31,8 +31,8 @@ export function installRiding(current:()=>RidingScene|undefined,ui:Toaster):void
   const horse=scene.animals?.animals.find(a=>a.id===HORSE_ID&&a.sprite.visible);
   if(!horse||Math.hypot(horse.x-p.x,horse.y-p.y)>56){ui.toast(`Chegue perto de ${horseName(s)} para montar.`);return;}
   if(p.isSwimming)return;
-  p.x=horse.x;p.y=horse.y;s.riding=true;
-  if(!p.mountHorse()){delete s.riding;return;}
+  // Se o desenho montado ainda não carregou, a sincronização abaixo carrega e monta.
+  p.x=horse.x;p.y=horse.y;s.riding=true;p.mountHorse();
   ui.toast(`Montado em ${horseName(s)} · V para descer · Shift galopa.`);scene.persist();
  });
  return void (function sync(){
@@ -42,6 +42,6 @@ export function installRiding(current:()=>RidingScene|undefined,ui:Toaster):void
   const p=scene.player;
   if(!s.riding){if(p.mounted)p.dismountHorse();return;}
   if(indoors(scene)){delete s.riding;if(p.mounted)p.dismountHorse();ui.toast(`Você desceu para entrar. ${horseName(s)[0].toUpperCase()+horseName(s).slice(1)} voltou para a Propriedade.`);scene.persist();return;}
-  if(!p.mounted&&!loading&&!p.isSwimming){loading=true;loadHorseTexture(scene,()=>{loading=false;if(scene.sys.isActive()&&scene.player===p&&s.riding)p.mountHorse();});}
+  if(!p.mounted&&!loading&&!p.isSwimming){loading=true;loadHorseTexture(scene,()=>{loading=false;if(scene.sys.isActive()&&scene.player===p&&s.riding)p.mountHorse();},p.characterId);}
  })();
 }

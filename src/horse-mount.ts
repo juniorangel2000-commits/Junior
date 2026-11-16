@@ -1,5 +1,6 @@
 import type Phaser from 'phaser';
 import horsePoses from './data/horse-poses.json';
+import riderLift from './data/horse-rider-lift.json';
 import {ANIMAL_ART,animalFrame,animalTexture,animalHeadOffset} from './data/animal-art';
 import {CHARACTER_DIRECTIONS,type CharacterDirection} from './character-directions';
 /** Montaria (docs/construcoes/MONTARIA.md): o cavalo é desenhado sob o personagem, que aparece
@@ -11,22 +12,37 @@ const SADDLE:Record<CharacterDirection,number>={down:60,up:30,left:27,right:27,'
 export const HORSE_IN_FRONT:readonly CharacterDirection[]=['down'];
 const RUN_DIRECTIONS=['south-west','north','west','north-east','east','south','south-east','north-west'] as const;
 const RUN_BY_DIRECTION:Record<CharacterDirection,typeof RUN_DIRECTIONS[number]>={down:'south',up:'north',left:'west',right:'east','down-left':'south-west','down-right':'south-east','up-left':'north-west','up-right':'north-east'};
-export function horseTextureReady(scene:Phaser.Scene):boolean{return scene.textures.exists(animalTexture('horse'));}
-/** Carrega o atlas do cavalo num cenário que ainda não tem (cenários sem animais). */
-export function loadHorseTexture(scene:Phaser.Scene,done:()=>void):void{
- if(horseTextureReady(scene)){done();return;}
- scene.load.atlas(animalTexture('horse'),'assets/animals/horse/atlas-packed.png','assets/animals/horse/atlas-packed.json');
+/** Personagens com desenho próprio montado (scripts/pack_horse_rider.py): só o personagem,
+ * separado do desenho, vai por cima do cavalo animado e acompanha o lombo quadro a quadro.
+ * Os outros usam o personagem do jogo cortado na cintura, com pernas e sela por código. */
+export const RIDER_ART:readonly string[]=['farmer-female'];
+/** Ordem das células na folha do cavalo com cavaleiro. */
+export const RIDER_ORDER:readonly CharacterDirection[]=['down','up','left','right','down-left','down-right','up-left','up-right'];
+export const riderTexture=(character:string)=>`horse-rider-${character}`;
+export function horseTextureReady(scene:Phaser.Scene,character=''):boolean{
+ return scene.textures.exists(animalTexture('horse'))&&(!RIDER_ART.includes(character)||scene.textures.exists(riderTexture(character)));
+}
+/** Carrega o que falta do cavalo (cenários sem animais) e o desenho montado do personagem. */
+export function loadHorseTexture(scene:Phaser.Scene,done:()=>void,character=''):void{
+ if(horseTextureReady(scene,character)){done();return;}
+ if(!scene.textures.exists(animalTexture('horse')))scene.load.atlas(animalTexture('horse'),'assets/animals/horse/atlas-packed.png','assets/animals/horse/atlas-packed.json');
+ if(RIDER_ART.includes(character)&&!scene.textures.exists(riderTexture(character)))scene.load.spritesheet(riderTexture(character),`assets/animals/horse-rider/${character}.png`,{frameWidth:192,frameHeight:192});
  scene.load.once('complete',done);scene.load.start();
 }
 export class HorseMount{
  readonly horse:Phaser.GameObjects.Sprite;
+ /** Personagem desenhado montado (o sprite do jogador fica escondido enquanto monta). */
+ readonly rider?:Phaser.GameObjects.Sprite;
+ get combined(){return !!this.rider;}
  /** Pernas, sela e rédeas desenhadas por código, entre o cavalo e o cavaleiro. */
  readonly tack:Phaser.GameObjects.Graphics;
  private distance=0;
- constructor(scene:Phaser.Scene,x:number,y:number){
-  const art=ANIMAL_ART.horse;
+ constructor(scene:Phaser.Scene,x:number,y:number,character=''){
+  const art=ANIMAL_ART.horse,origin=.5+art.foot/art.cell;
   this.horse=scene.add.sprite(x,y,animalTexture('horse'),animalFrame('horse','down',false,0)).setOrigin(.5,.5+art.foot/art.cell).setScale(art.scale).setDepth(y-1).setData('mount',true);
   this.tack=scene.add.graphics().setData('mount',true);
+  if(RIDER_ART.includes(character)&&scene.textures.exists(riderTexture(character)))
+   this.rider=scene.add.sprite(x,y,riderTexture(character),0).setOrigin(.5,origin).setScale(art.scale).setData('mount',true);
  }
  /** Atualiza o cavalo e devolve o deslocamento vertical do personagem (sentado no lombo). */
  update(x:number,y:number,direction:CharacterDirection,moved:number,galloping:boolean):number{
@@ -34,6 +50,11 @@ export class HorseMount{
   let frame=animalFrame('horse',direction,moving,this.distance);
   if(galloping&&moving){const list=horsePoses.Run[RUN_BY_DIRECTION[direction]];frame=list[Math.floor(this.distance/14)%list.length];}
   this.horse.setFrame(frame).setPosition(x,y).setDepth(y-.5);
+  if(this.rider){
+   // O lombo sobe e desce no passo e na corrida; o personagem vai junto.
+   const lift=Math.max(-6,Math.min(6,(riderLift as number[])[frame]??0));
+   this.rider.setFrame(RIDER_ORDER.indexOf(direction)).setPosition(x,y-lift*ANIMAL_ART.horse.scale).setDepth(y);this.tack.clear();return 0;
+  }
   // Balanço do passo (galope balança mais): o cavaleiro sobe e desce junto com o cavalo.
   const bob=moving?Math.round(Math.abs(Math.sin(this.distance/(galloping?9:14)*Math.PI))*(galloping?2.5:1.2)):0;
   const hip=y-SADDLE[direction]-bob;this.drawTack(x,hip,direction,frame);
@@ -56,7 +77,7 @@ export class HorseMount{
    g.lineStyle(1,rein,.9);if(side){g.beginPath();g.moveTo(x+dir*5,handY);g.lineTo(hx-dir*3,hy);g.strokePath();}
    else{for(const s of [-1,1]){g.beginPath();g.moveTo(x+s*5,handY);g.lineTo(hx+s*3,hy);g.strokePath();}}}
  }
- setVisible(v:boolean){this.horse.setVisible(v);this.tack.setVisible(v);}
- destroy(){this.horse.destroy();this.tack.destroy();}
+ setVisible(v:boolean){this.horse.setVisible(v);this.rider?.setVisible(v);this.tack.setVisible(v&&!this.rider);}
+ destroy(){this.horse.destroy();this.rider?.destroy();this.tack.destroy();}
 }
 export {CHARACTER_DIRECTIONS};
