@@ -1,11 +1,16 @@
 # Pixel arts que faltam
 
 > **Lote 01 recebido em 16/11/2026** (`docs/arte-recebida/lote01-fazenda/`, importado por
-> `scripts/import_art_lote01.py`). Já no jogo: esterco, adubo,
-> colmeia (parada, abelhas, vazia e ícone), méis de margarida e girassol, tecido de lã e os
+> `scripts/import_art_lote01.py`). Já no jogo: esterco, adubo, méis de margarida e girassol, tecido de lã e os
 > ícones de cavilhas, ervas, ervas raras, mapa antigo, mochila, botas e peças metálicas.
 > O lamaçal do lote ficou guardado (`farm/interior/mud.png`); o Junior preferiu o chiqueiro só
-> com palha, sem a mancha de lama. Ainda não usados: a porteira do lote (a do chiqueiro faz parte da arte da construção e
+> com palha, sem a mancha de lama.
+>
+> **Fase 02 recebida em 16/11/2026** (`docs/arte-recebida/fase02-fogueira-abelhas/`): fogueira
+> acesa (3 quadros, aparece no chão enquanto o caderno da fogueira está aberto). A colmeia e
+> a abelha dos lotes ficaram só guardadas: o Junior preferiu a colmeia antiga com três
+> abelhinhas desenhadas por código (`MachineView.bees`), de dia e fora do inverno. A franja branca do contorno foi
+> tirada de todas as sprites recebidas (`scripts/clean_white_fringe.py`). Ainda não usados: a porteira do lote (a do chiqueiro faz parte da arte da construção e
 > precisa ser encaixada nela) e os ícones extras sem item no jogo (pregos, dobradiça,
 > engrenagem, roda dentada, molas, frasco de óleo, alecrim, folhas, flores e cera bruta).
 

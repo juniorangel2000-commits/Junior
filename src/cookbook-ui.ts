@@ -7,7 +7,7 @@ import {farmClock} from './systems/farm-interior';
 import {itemIconUrl} from './visual-assets';
 const esc=(t:string)=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]!);
 const img=(id:string,cls:string)=>{const url=itemIconUrl(id);return url?`<img class="${cls}" src="${url}" alt="">`:'';};
-export interface CookbookOptions{station:CookingStation;onPickUp?:()=>{ok:boolean;message:string}}
+export interface CookbookOptions{station:CookingStation;onPickUp?:()=>{ok:boolean;message:string};/** Chamado quando o caderno fecha (a fogueira acesa some). */onClose?:()=>void}
 const TITLES:Record<CookingStation,[string,string,string]>={
  stove:['FOGÃO A LENHA','Caderno de receitas','Cozinhar'],
  oven:['FORNO DE BARRO','Fornada','Assar (meio dia)'],

@@ -1259,7 +1259,7 @@ export class GameUI {
   /** Caderno de receitas do fogão a lenha. */
   showCookbook(save: () => SaveData, onCook: (id: string) => { ok: boolean; message: string }, options?: import('./cookbook-ui').CookbookOptions): void {
     if (this.mode !== 'hud' || this.modal) return;
-    this.openModal('cookbook');
+    this.openModal('cookbook');this.cookbookClosed = options?.onClose;
     const panel = document.createElement('section');
     panel.className = 'cookbook-card panel';
     panel.setAttribute('role', 'dialog');
@@ -1274,8 +1274,10 @@ export class GameUI {
 
   isModalOpen(): boolean { return fishingActive() || this.gameplayLocked || this.mode !== 'hud' || this.modal !== null || this.topToolbar?.isOpen === true; }
 
+  private cookbookClosed?: () => void;
   closeModal(): void {
     if (this.mode !== 'hud') return;
+    if (this.modal === 'cookbook') { const done = this.cookbookClosed; this.cookbookClosed = undefined; done?.(); }
     this.topToolbar?.setOpen(false, false);
     this.topToolbar?.setEnabled(true);
     this.homeEditor?.destroy();

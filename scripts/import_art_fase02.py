@@ -17,7 +17,7 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 SRC = sys.argv[1]
 SHEETS = {  # arquivo -> (quadros, destino)
     'fogueira_3_quadros.png': (3, 'public/assets/visual/kitchen/campfire-lit.png'),
-    'abelha_4_quadros.png': (4, 'public/assets/visual/machines/bee-flight.png'),
+    # A abelha voando ficou só guardada: o Junior preferiu abelhas desenhadas por código.
 }
 
 

@@ -6,8 +6,7 @@ Uso: python3 -I scripts/import_art_lote01.py <pasta do zip extraído>
 - Copia cada arte para o caminho do jogo, na resolução original (o jogo só reduz na tela).
 - Nos ícones, apaga pontinhos soltos do recorte (grupos de até 12 pixels separados do
   desenho). Na colmeia não: o rastro de voo das abelhas é feito de pontinhos.
-- A colmeia vira uma folha de 3 quadros alinhados (parada, abelhas à esquerda, à direita),
-  e o atlas das máquinas recebe o tamanho novo do quadro.
+- A colmeia do lote não é usada (o Junior preferiu a antiga, com abelhas por código).
 """
 import json, os, re, shutil, sys
 from collections import deque
@@ -23,8 +22,7 @@ ICONS = {  # arquivo do lote -> destino no jogo
     'produtos/mel_margarida.png': 'kitchen/daisy-honey.png',
     'produtos/mel_girassol.png': 'kitchen/sunflower-honey.png',
     'produtos/tecido_la.png': 'machines/woolCloth.png',
-    'colmeia/colmeia_vazia.png': 'kitchen/empty-hive.png',
-    'colmeia/colmeia_parada.png': 'machines/beehive-icon.png',
+    # A colmeia do lote ficou só guardada: o Junior preferiu a colmeia antiga.
     'inventario/cavilhas.png': 'items/peg.png',
     'inventario/ervas.png': 'items/herb.png',
     'inventario/ervas_raras.png': 'items/rareHerb.png',
@@ -85,22 +83,9 @@ def main():
         os.makedirs(os.path.dirname(out), exist_ok=True)
         im.save(out, optimize=True)
         print(f'{src} -> {dst} {im.size}')
-    frames = [Image.open(os.path.join(SRC, f'animacoes/colmeia_{n}.png')).convert('RGBA')
-              for n in ('parada', 'abelhas_esquerda', 'abelhas_direita')]
-    fw, fh = frames[0].size
-    sheet = Image.new('RGBA', (fw * 3, fh), (0, 0, 0, 0))
-    for i, f in enumerate(frames):
-        sheet.paste(f, (i * fw, 0))
-    sheet.save(os.path.join(VIS, 'machines/beehive.png'), optimize=True)
-    # Só a linha da colmeia muda: o resto do art.json mantém o formato de quem o gerou.
-    art_path = os.path.join(VIS, 'machines/art.json')
-    text = open(art_path, encoding='utf-8').read()
-    text = re.sub(r'"beehive":\{"width":\d+,"height":\d+,"cuts":\[\]\}', f'"beehive":{{"width":{fw},"height":{fh},"cuts":[]}}', text)
-    json.loads(text)
-    open(art_path, 'w', encoding='utf-8').write(text)
-    print(f'colmeia: 3 quadros de {fw}x{fh}')
 
-    clean_fringe([os.path.join(VIS, d) for d in ICONS.values()] + [os.path.join(VIS, 'machines/beehive.png')])
+
+    clean_fringe([os.path.join(VIS, d) for d in ICONS.values()])
 
 if __name__ == '__main__':
     main()

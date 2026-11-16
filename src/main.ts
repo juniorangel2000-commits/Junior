@@ -17,6 +17,7 @@ import { gameAudio } from './audio';
 import { installFullscreenShortcut } from './fullscreen';
 import { installPerformanceOverlay } from './performance-overlay';
 import { installSceneTextureRelease } from './scene-texture-release';
+import { showCampfire } from './campfire-view';
 import { ForestScene } from './scenes/ForestScene';
 import { VillageScene } from './scenes/VillageScene';
 import { ValleyScene } from './scenes/ValleyScene';
@@ -38,7 +39,8 @@ const ui = new GameUI({
     // Fogueira portátil: abre o caderno da fogueira em qualquer cenário ao ar livre.
     if(item==='campfire'&&!toolId){
       if(current instanceof DungeonScene||current instanceof FarmInteriorScene||current.getFishingState().homePosition){ui.toast('Monte a fogueira ao ar livre.');return;}
-      ui.showCookbook(()=>current.getFishingState(),id=>{const s=current.getFishingState();const r=cookInScene(s,id,'campfire',()=>current.persist(),inv=>{if('syncInventory' in current)(current as {syncInventory:(i:typeof inv)=>void}).syncInventory(inv);});if(r.ok)gameAudio.play('craft');return r;},{station:'campfire'});return;
+      const fire=showCampfire(current,(current as unknown as {player:{x:number;y:number;facing?:{x:number;y:number}}}).player);
+      ui.showCookbook(()=>current.getFishingState(),id=>{const s=current.getFishingState();const r=cookInScene(s,id,'campfire',()=>current.persist(),inv=>{if('syncInventory' in current)(current as {syncInventory:(i:typeof inv)=>void}).syncInventory(inv);});if(r.ok)gameAudio.play('craft');return r;},{station:'campfire',onClose:fire});return;
     }if(toolId&&!(current instanceof DungeonScene)&&!equipToolCopy(current.getFishingState(),toolId))return;void current.useVillageItem(item);},
   onNewGame: profile => scene.startNew(profile),
   onContinue: () => scene.continueGame(),
