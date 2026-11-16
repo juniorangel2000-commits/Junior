@@ -22,8 +22,10 @@ it('os animais pequenos mantêm escala menor que a da vaca e a abelha anima asas
  for(const[row,direction]of CHARACTER_DIRECTIONS.entries())expect(new Set(Array.from({length:100},(_,i)=>beeFlightFrame(direction,i/60)))).toEqual(new Set([1,2,3,4].map(f=>row*5+f)));
 });
 it('não carrega porco e abelha sem uso, mas inclui os animais presentes e aceita pré-carregamento explícito',()=>{
- const loaded:string[]=[],scene={load:{spritesheet:(key:string)=>loaded.push(key)}} as unknown as Phaser.Scene;
+ const loaded:string[]=[],files:string[]=[],scene={textures:{exists:()=>false},load:{atlas:(key:string,png:string,json:string)=>{loaded.push(key);files.push(png,json);}}} as unknown as Phaser.Scene;
  preloadAnimalSprites(scene);expect(loaded).toContain('animal-duck-animated');expect(loaded).toContain('animal-rabbit-animated');expect(loaded).toContain('animal-deer-animated');
  for(const kind of PREPARED_ANIMAL_KINDS)expect(loaded).not.toContain(`animal-${kind}-animated`);
  preloadAnimalSprites(scene,PREPARED_ANIMAL_KINDS);for(const kind of PREPARED_ANIMAL_KINDS)expect(loaded).toContain(`animal-${kind}-animated`);
+ // O jogo carrega o atlas compactado (scripts/pack_animal_atlases.py), não o atlas.png original.
+ expect(files.every(f=>/atlas-packed\.(png|json)$/.test(f))).toBe(true);
 });

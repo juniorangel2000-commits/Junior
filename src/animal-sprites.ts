@@ -11,8 +11,9 @@ const walkCycles=new WeakMap<Phaser.GameObjects.Sprite,AnimalWalkCycle>();
 
 export function preloadAnimalSprites(scene:Phaser.Scene,kinds?:readonly AnimatedAnimalKind[]):void {
   for(const kind of kinds??(Object.keys(ANIMAL_ART) as AnimatedAnimalKind[]).filter(k=>!(PREPARED_ANIMAL_KINDS as readonly string[]).includes(k))){
-    const cell=ANIMAL_ART[kind].cell;
-    scene.load.spritesheet(animalTexture(kind),`assets/animals/${kind}/atlas.png`,{frameWidth:cell,frameHeight:cell});
+    // Atlas compactado (scripts/pack_animal_atlases.py): cada quadro recortado no desenho,
+    // com a posição original guardada; os pixels e as posições são idênticos ao atlas.png.
+    if(!scene.textures.exists(animalTexture(kind)))scene.load.atlas(animalTexture(kind),`assets/animals/${kind}/atlas-packed.png`,`assets/animals/${kind}/atlas-packed.json`);
   }
 }
 export function createAnimalSprite(scene:Phaser.Scene,kind:AnimalKind,x:number,y:number):Phaser.GameObjects.Sprite|undefined {

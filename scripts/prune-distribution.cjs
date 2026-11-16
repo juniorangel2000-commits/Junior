@@ -15,6 +15,9 @@ const PRUNED_PATHS=[
  'assets/visual/highland/terrain.png',
  'assets/visual/highland/terrain-sections',
  'assets/visual/highland/ground-detailed.json',
+ // Animais: o jogo carrega só atlas-packed.* (scripts/pack_animal_atlases.py); os atlas
+ // originais, as fontes e os quadros soltos ficam no repositório.
+ ...['bee','chicken','cow','deer','duck','goat','horse','pig','rabbit','sheep'].flatMap(k=>['atlas.png','atlas.json','source.png','metadata.json','Idle'].map(f=>`assets/animals/${k}/${f}`)),
 ];
 function excludedAsset(file){return PRUNED_PATHS.some(p=>file===p||file.startsWith(p+'/'));}
 function size(file){const stat=fs.statSync(file);return stat.isDirectory()?fs.readdirSync(file).reduce((n,name)=>n+size(path.join(file,name)),0):stat.size;}
