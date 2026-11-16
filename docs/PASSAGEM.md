@@ -4,9 +4,9 @@
 
 - **Atualizado em:** 2026-11-16
 - **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.38` (criado da `main`, que é a preview.37 publicada).
-- **Última versão publicada:** `v0.10.0-preview.37` (Release pre-release; tag em `d1a74a6`, `main` igual). Workflow do Windows conferido: passou.
-- **Estado:** preview.37 publicada. Aguardando o Junior jogar e mandar os números do F3 e a opinião sobre luz e sombras.
+- **Continuar a partir de:** `main` (preview.38). Próxima rodada: criar `release/v0.10.0-preview.39` a partir da `main`.
+- **Última versão publicada:** `v0.10.0-preview.38` enviada à `main`. **Falta o Junior criar a Release** no GitHub: tag `v0.10.0-preview.38`, target `main`, pre-release.
+- **Estado:** preview.38 (correção da tela preta e patos) pronta, com versão do pacote, `NOTAS-0.10.0-preview.38.md` e `LEIA-0.10.0-preview.38.md`.
 
 ## Feito nesta rodada
 
@@ -35,16 +35,9 @@ O Junior disse que o jogo está pesado, tanto no tamanho quanto nos travamentos.
 
 ## Em andamento e próximo passo exato
 
-1. ✅ Release `v0.10.0-preview.37` publicada; workflow passou.
-2. Pedir ao Junior os números do **F3** no PC dele (FPS e MB na Propriedade, na Vila e nos Campos) e a opinião sobre as sombras e a luz. Seguir `docs/planejamento/DESEMPENHO.md` → "Próximos passos".
-
-### Preview.38 (Claude Code, em andamento)
-
-- **Tela preta ao voltar da Floresta (defeito da preview.37):** o passe de luz não saía da câmera e se empilhava a cada volta à Propriedade. Corrigido; `qa-texture-release` confere um passe por câmera.
-- **Patos da Floresta:** pés escondidos na água, passeio pela margem (até 3 blocos da água) e fuga sem travar (`staticWorld`).
-- Dica da Propriedade atualizada ao carregar o estado (antes ficava a antiga até o primeiro passo).
-- Conferência geral pedida pelo Junior ("animais, produtos, receitas, máquinas funcionando?"): passaram ovos e leite, aprisco, patos, porcos, abelhas, máquinas, conservas, cozinha (etapas 1 e 2), qualidade, interior, doma e distanciamento nos Campos.
-- `qa-farm-interior` voltou a passar: o roteiro foi corrigido.
+1. **Junior:** criar a Release no GitHub: tag nova `v0.10.0-preview.38`, target `main`, pre-release. A tag dispara o workflow do Windows.
+2. Conferir o workflow e criar `release/v0.10.0-preview.39` a partir da `main`.
+3. Pedir ao Junior os números do **F3** (FPS e MB na Propriedade, na Vila e nos Campos) e a opinião sobre luz e sombras. Seguir `docs/planejamento/DESEMPENHO.md` → "Próximos passos".
 
 ## Pendências e ideias para depois
 
@@ -65,7 +58,7 @@ O Junior disse que o jogo está pesado, tanto no tamanho quanto nos travamentos.
 ## Testes
 
 - `npm run check`: ok.
-- `npm test`: **2.092 passaram, zero falhas, 237 arquivos**.
+- `npm test`: **2.094 passaram, zero falhas, 238 arquivos**.
 - `npm run build`: ok (aviso de tamanho do pacote, que já existia).
 - Chromium (`CHROMIUM_PATH=/opt/pw-browsers/chromium` quando o padrão não existir):
   - `qa-texture-release`, `qa-quality`, `qa-pigs`, `qa-kitchen`, `qa-fields-distance`, `qa-open-fields` e `qa-horse-fields`: OK.
