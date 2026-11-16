@@ -1,4 +1,5 @@
 import {isMachine,machineIngredient} from './data/machines';
+import {mountWorldLoading,type WorldLoadingInfo} from './world-loading';
 import {qualityLabel,qualityCounts} from './systems/item-quality';
 import {recipeTeacher,STATION_NAMES,CATEGORY_NAMES,CATEGORY_ORDER,recipeStation,recipeCategory,stationReady,type CraftStation,type CraftCategory,type NearStations} from './data/recipe-groups';
 import {cropFromSeed,cropDefinition} from './data/crops';
@@ -408,7 +409,8 @@ export class GameUI {
     });
   }
 
-  showWorldLoading(label:string):void {
+  private worldLoading?:{setProgress(v:number):void};
+  showWorldLoading(label:string,info:WorldLoadingInfo={}):void {
     this.cleanupOpening?.();this.cleanupOpening=undefined;
     this.cleanupTitle?.();this.cleanupTitle=undefined;
     this.cleanupCreation?.();this.cleanupCreation=undefined;
@@ -417,13 +419,11 @@ export class GameUI {
     this.root.dataset.area='loading';this.root.style.display='';
     this.overlay.replaceChildren();this.overlay.classList.remove('active');
     this.base.style.display='';
-    this.base.innerHTML='<section class="world-loading" role="status" aria-live="polite"><div><h2></h2><progress max="1" value="0" aria-label="Carregamento dos recursos"></progress><p>Preparando os recursos do cenário…</p></div></section>';
-    this.base.querySelector('h2')!.textContent=label;
+    this.worldLoading=mountWorldLoading(this.base,label,info);
     this.callbacks.onTitleBackground('off');this.callbacks.onPause(true);
   }
   setWorldLoadingProgress(value:number):void {
-    const progress=this.base.querySelector<HTMLProgressElement>('.world-loading progress');
-    if(progress)progress.value=Math.max(0,Math.min(1,value));
+    if(this.base.querySelector('.world-loading'))this.worldLoading?.setProgress(value);
   }
 
   showNewGameOpening(resources: Promise<unknown>, prepare: () => void, complete: () => void): void {

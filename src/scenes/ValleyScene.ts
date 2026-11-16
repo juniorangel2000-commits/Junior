@@ -311,7 +311,7 @@ export class ValleyScene extends Phaser.Scene {
       begin();
     };
     if (!hasNewGameOpening(profile)) {
-      this.ui.showWorldLoading('Preparando sua história…');
+      this.ui.showWorldLoading('Preparando sua história…',{character:profile.characterId,area:'property',time:8*60});
       void prepare().then(finish).catch(()=>{
         if(token===this.openingToken){this.ui.showTitle(hasSave());this.ui.toast('Não foi possível preparar a partida. Tente novamente.');}
       });
@@ -337,7 +337,7 @@ export class ValleyScene extends Phaser.Scene {
       if(!window.confirm('A partida principal não pôde ser lida. Recuperar uma cópia de segurança? O progresso pode ser anterior ao último salvamento.'))return;
       if(!preserveInvalidSave()){this.ui.toast('Não foi possível preservar o original. A recuperação foi cancelada.');return;}
     }
-    this.ui.showWorldLoading('Carregando sua partida…');
+    this.ui.showWorldLoading('Carregando sua partida…',{character:saved.profile.characterId,area:saved.mineInterior?'highland':saved.activeArea??'property',time:saved.time});
     try{await this.prepareWorld();}catch{
       if(token===this.openingToken){this.ui.showTitle(hasSave());this.ui.toast('Não foi possível carregar os recursos. Sua partida foi preservada.');}
       return;
