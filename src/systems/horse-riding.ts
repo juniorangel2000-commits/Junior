@@ -10,7 +10,8 @@ export function mountProblem(s:SaveData):string{
  return '';
 }
 /** Cenários fechados: ao entrar, o jogador desce e o cavalo volta para a Propriedade. */
-export const INDOOR_SCENES:readonly string[]=['Interior','Mina','Mineracao','Dungeons','Editor'];
+/** O acampamento é ao ar livre, mas o cavalo não entra (pedido do Junior, preview.41). */
+export const INDOOR_SCENES:readonly string[]=['Interior','Mina','Mineracao','Dungeons','Editor','Acampamento'];
 export function validRiding(v:unknown,s:Record<string,unknown>):boolean{
  return v===undefined||v===true&&Array.isArray(s.recruitedAnimals)&&s.recruitedAnimals.includes(HORSE_ID);
 }

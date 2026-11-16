@@ -116,6 +116,22 @@ if(!only){
   await page.evaluate(()=>{const f=game.scene.getScene('Floresta');f.cameras.main.stopFollow();f.cameras.main.centerOn(f.player.x,f.player.y-25);});await page.waitForTimeout(200);
   await page.screenshot({path:`${out}/${character}-floresta.png`,clip:{x:580,y:320,width:120,height:130}});
  }
+ if(only.startsWith('cenario-')){
+  // Salva montado com a área ativa e continua a partida: o jogo abre direto naquele cenário.
+  const area=only.slice(8);
+  await page.evaluate(async area=>{const {saveGame}=await import('/src/systems/save.ts');const s=v.snapshotState();s.activeArea=area;saveGame(s);},area);
+  await page.reload();await page.locator('#continue-game').click();
+  await page.waitForFunction(()=>document.querySelector('#ui')?.dataset.area&&document.querySelector('#ui').dataset.area!=='property'||false,{timeout:60000}).catch(()=>{});
+  await page.waitForTimeout(4000);
+  const r=await page.evaluate(async()=>{const game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;
+   const sc=game.scene.getScenes(true).find(x=>x.player&&x.scene.key!=='Vale')??game.scene.getScene('Vale');const p=sc.player;
+   return{scene:sc.scene.key,area:document.querySelector('#ui')?.dataset.area,mounted:!!p?.mounted,rider:p?.mount?.rider?.texture.key,visible:p?.sprite.visible,
+    rideable:!!sc.getFishingState?.().riding};});
+  check(`montado em ${area}`,r.mounted&&r.rider===`horse-rider-${character}`&&!r.visible,JSON.stringify(r));
+  await page.evaluate(async()=>{const game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;const sc=game.scene.getScenes(true).find(x=>x.player);
+   document.querySelector('#ui').style.visibility='hidden';sc.cameras.main.stopFollow();sc.cameras.main.centerOn(sc.player.x,sc.player.y-25);});await page.waitForTimeout(300);
+  await page.screenshot({path:`${out}/${character}-${area}.png`,clip:{x:580,y:320,width:120,height:130}});
+ }
  check(`sem erros na página (${only})`,errors.length===0,errors.slice(0,3).join(' | '));
  await b.close();
 })().catch(e=>{console.error(e.message);process.exit(1);});

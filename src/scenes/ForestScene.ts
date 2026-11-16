@@ -1,4 +1,5 @@
 import {ForestWaterfowl} from '../forest-waterfowl';
+import {blockMountedEntry,CAMP_MOUNTED_MESSAGE} from '../riding-guard';
 import {createGroundRuntime,resourceGroundSink} from '../systems/ground-items';
 import {createMineMissionRuntime} from '../systems/mine-missions';
 import {bentoSceneWriter} from '../systems/bento-commit';
@@ -292,6 +293,7 @@ export class ForestScene extends Phaser.Scene {
     this.state.crops=this.farming.crops.map(c=>({...c}));return this.state;
   }
   enterSurvivorCamp():void {
+    if(blockMountedEntry(this.player,this.ui,performance.now(),CAMP_MOUNTED_MESSAGE)){this.campPassage.reset();return;}
     if(!communityReady(this.state)){this.ui.toast('Repare o centro comunitário da vila para abrir o acesso ao acampamento.');this.campPassage.reset();return;}
     if(this.leaving||this.state.animalEscort){if(this.state.animalEscort)this.ui.toast('Solte a corda ou leve o animal à propriedade antes de entrar no acampamento.');return;}
     this.save();this.leaving=true;this.toolUse.cancel();this.toolVisual?.hide();const originalReturn=this.onReturn,ui=this.ui;

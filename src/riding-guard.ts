@@ -1,12 +1,14 @@
 /** Regras de montaria e corda (docs/construcoes/MONTARIA.md):
- * - montado, não se entra em interiores (casa, lojas, abrigos, mina, masmorras): a porta avisa;
+ * - montado, não se entra em interiores (casa, lojas, abrigos, mina, masmorras) nem no
+ *   acampamento dos sobreviventes: a passagem avisa;
  * - montado ou conduzindo um animal na corda, não se entra na água. */
 export const MOUNTED_ENTRY_MESSAGE='Desça do cavalo (V) para entrar.';
+export const CAMP_MOUNTED_MESSAGE='O cavalo não entra no acampamento. Desça (V) para seguir.';
 let lastWarning=-Infinity;
 /** Impede a entrada montado; avisa no máximo a cada 1,5 s (a porta é tentada a cada quadro). */
-export function blockMountedEntry(player:{mounted:boolean}|undefined,ui:{toast(message:string):void},now=performance.now()):boolean{
+export function blockMountedEntry(player:{mounted:boolean}|undefined,ui:{toast(message:string):void},now=performance.now(),message=MOUNTED_ENTRY_MESSAGE):boolean{
  if(!player?.mounted)return false;
- if(now-lastWarning>1500){lastWarning=now;ui.toast(MOUNTED_ENTRY_MESSAGE);}
+ if(now-lastWarning>1500){lastWarning=now;ui.toast(message);}
  return true;
 }
 /** Pode pisar em (x, y)? Seco sempre pode; com água, só quem não está montado nem com a corda,

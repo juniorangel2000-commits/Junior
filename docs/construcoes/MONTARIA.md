@@ -9,7 +9,10 @@
   "Desça do cavalo (V) para entrar." (`src/riding-guard.ts`). Se, por algum caminho, o jogador
   chegar montado a um cenário fechado, a sincronização ainda o faz descer, e o cavalo volta
   sozinho para a Propriedade.
-- O cavalo vai junto por todos os cenários ao ar livre. Descendo na Propriedade, o cavalo fica
+- **Acampamento (preview.41, pedido do Junior):** o cavalo não entra. A passagem da Floresta avisa
+  "O cavalo não entra no acampamento. Desça (V) para seguir."
+- O cavalo vai junto pelos outros cenários ao ar livre: Floresta, Campos, Vila, Lago, Serra e Acesso
+  à Cidade. Descendo na Propriedade, o cavalo fica
   onde o jogador desceu.
 - Save: `riding: true` (só com o cavalo domado alojado). Código: `src/systems/horse-riding.ts`,
   `src/riding-controller.ts` (tecla V e acompanhamento entre cenários), `src/riding-guard.ts`
