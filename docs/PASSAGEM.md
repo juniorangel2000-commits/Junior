@@ -4,9 +4,9 @@
 
 - **Atualizado em:** 2026-11-16
 - **Por:** Claude Code
-- **Continuar a partir de:** `main` (preview.38). Próxima rodada: criar `release/v0.10.0-preview.39` a partir da `main`.
-- **Última versão publicada:** `v0.10.0-preview.38` enviada à `main`. **Falta o Junior criar a Release** no GitHub: tag `v0.10.0-preview.38`, target `main`, pre-release.
-- **Estado:** preview.38 (correção da tela preta e patos) pronta, com versão do pacote, `NOTAS-0.10.0-preview.38.md` e `LEIA-0.10.0-preview.38.md`.
+- **Continuar a partir de:** branch `release/v0.10.0-preview.39` (criado da `main`, que é a preview.38 publicada).
+- **Última versão publicada:** `v0.10.0-preview.38` (Release pre-release; tag em `8b6eabf`, `main` igual). Workflow do Windows conferido: passou.
+- **Estado:** preview.38 publicada. Próxima rodada ainda não definida pelo Junior.
 
 ## Feito nesta rodada
 
@@ -35,9 +35,8 @@ O Junior disse que o jogo está pesado, tanto no tamanho quanto nos travamentos.
 
 ## Em andamento e próximo passo exato
 
-1. **Junior:** criar a Release no GitHub: tag nova `v0.10.0-preview.38`, target `main`, pre-release. A tag dispara o workflow do Windows.
-2. Conferir o workflow e criar `release/v0.10.0-preview.39` a partir da `main`.
-3. Pedir ao Junior os números do **F3** (FPS e MB na Propriedade, na Vila e nos Campos) e a opinião sobre luz e sombras. Seguir `docs/planejamento/DESEMPENHO.md` → "Próximos passos".
+1. ✅ Release `v0.10.0-preview.38` publicada; workflow passou.
+2. Pedir ao Junior os números do **F3** (FPS e MB na Propriedade, na Vila e nos Campos) e a opinião sobre luz e sombras. Seguir `docs/planejamento/DESEMPENHO.md` → "Próximos passos".
 
 ## Pendências e ideias para depois
 
