@@ -38,6 +38,14 @@ O Junior disse que o jogo está pesado, tanto no tamanho quanto nos travamentos.
 1. ✅ Release `v0.10.0-preview.37` publicada; workflow passou.
 2. Pedir ao Junior os números do **F3** no PC dele (FPS e MB na Propriedade, na Vila e nos Campos) e a opinião sobre as sombras e a luz. Seguir `docs/planejamento/DESEMPENHO.md` → "Próximos passos".
 
+### Preview.38 (Claude Code, em andamento)
+
+- **Tela preta ao voltar da Floresta (defeito da preview.37):** o passe de luz não saía da câmera e se empilhava a cada volta à Propriedade. Corrigido; `qa-texture-release` confere um passe por câmera.
+- **Patos da Floresta:** pés escondidos na água, passeio pela margem (até 3 blocos da água) e fuga sem travar (`staticWorld`).
+- Dica da Propriedade atualizada ao carregar o estado (antes ficava a antiga até o primeiro passo).
+- Conferência geral pedida pelo Junior ("animais, produtos, receitas, máquinas funcionando?"): passaram ovos e leite, aprisco, patos, porcos, abelhas, máquinas, conservas, cozinha (etapas 1 e 2), qualidade, interior, doma e distanciamento nos Campos.
+- `qa-farm-interior` voltou a passar: o roteiro foi corrigido.
+
 ## Pendências e ideias para depois
 
 - Plano em `docs/planejamento/ANIMAIS-E-RECEITAS.md`: animais, cozinha, abelhas, patos, porcos, máquinas e qualidade estão prontos. Faltam a conferência dos preços jogando e as artes provisórias.
@@ -49,6 +57,7 @@ O Junior disse que o jogo está pesado, tanto no tamanho quanto nos travamentos.
 - Interiores dos animais não persistem posição interna individual e ficam claros à noite.
 - Travamentos nos Campos ainda precisam ser medidos no PC do Junior: otimizações anteriores estão em `f28f27c`, capim em `5424eee`; o navegador aqui usa SwiftShader. **Não afirmar que o problema de FPS foi resolvido.**
 - Arte definitiva dos interiores deve permanecer em resolução original (`setScale`/`setDisplaySize`, piso `FLOOR_SCALE=2`); o Junior rejeitou redução dos PNGs.
+- `scripts/qa-animal-escort.cjs` está desatualizado: roteiro antigo de antes da abertura e das passagens a pé. Já foi ajustado para a abertura, a porta 5190 e a entrada caminhando na Floresta, mas ainda falha na volta à Propriedade. A corda até a Propriedade é conferida em `qa-horse-taming`.
 - `qa-open-fields` e `qa-horse-fields` têm `executablePath:'/usr/bin/chromium'` fixo; rode com uma cópia sem esse caminho.
 - `scripts/qa-farm-interior.cjs` falha (já falhava antes da preview.37): perto da porta do galinheiro aparece a dica da missão ("Plantar uma semente da estação · E") em vez de "Entrar no galinheiro". Investigar se é só o roteiro ou a prioridade da dica.
 - Qualidade: unidades soltas no chão e recolhidas voltam como comuns. Uma entrada sem registro logo depois de um gasto sem registro, antes de salvar, pode ser contada errado (raro; o save confere tudo).
