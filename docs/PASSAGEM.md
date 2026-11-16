@@ -4,9 +4,9 @@
 
 - **Atualizado em:** 2026-11-16
 - **Por:** Claude Code
-- **Continuar a partir de:** `main` (preview.37). Próxima rodada: criar `release/v0.10.0-preview.38` a partir da `main`.
-- **Última versão publicada:** `v0.10.0-preview.37` enviada à `main`. **Falta o Junior criar a Release** no GitHub: tag `v0.10.0-preview.37`, target `main`, pre-release. A preview.36 continua sendo a última Release com executável até isso acontecer.
-- **Estado:** preview.37 pronta, com versão do pacote, `NOTAS-0.10.0-preview.37.md` e `LEIA-0.10.0-preview.37.md`. Esta sessão não consegue enviar tags; por isso o Junior cria a Release pela página do GitHub.
+- **Continuar a partir de:** branch `release/v0.10.0-preview.38` (criado da `main`, que é a preview.37 publicada).
+- **Última versão publicada:** `v0.10.0-preview.37` (Release pre-release; tag em `d1a74a6`, `main` igual). Workflow do Windows conferido: passou.
+- **Estado:** preview.37 publicada. Aguardando o Junior jogar e mandar os números do F3 e a opinião sobre luz e sombras.
 
 ## Feito nesta rodada
 
@@ -35,9 +35,8 @@ O Junior disse que o jogo está pesado, tanto no tamanho quanto nos travamentos.
 
 ## Em andamento e próximo passo exato
 
-1. **Junior:** criar a Release no GitHub. Em Releases, escolha "Draft a new release", crie a tag nova `v0.10.0-preview.37` com target `main` e marque pre-release. A tag dispara o workflow do Windows.
-2. Conferir no GitHub Actions se o workflow passou e criar `release/v0.10.0-preview.38` a partir da `main`.
-3. Pedir ao Junior os números do **F3** no PC dele (FPS e MB na Propriedade, na Vila e nos Campos) e a opinião sobre as sombras e a luz. Seguir `docs/planejamento/DESEMPENHO.md` → "Próximos passos".
+1. ✅ Release `v0.10.0-preview.37` publicada; workflow passou.
+2. Pedir ao Junior os números do **F3** no PC dele (FPS e MB na Propriedade, na Vila e nos Campos) e a opinião sobre as sombras e a luz. Seguir `docs/planejamento/DESEMPENHO.md` → "Próximos passos".
 
 ## Pendências e ideias para depois
 
