@@ -8,7 +8,7 @@ describe('cavalo domado deixa o que está fazendo para vir até você',()=>{
  });
  it('começando a comer: não emenda a refeição',()=>{
   const h=new HorseIdleCycle('field-horse-1');h.eatBasket('up');run(h,.5);expect(h.phase).toBe('starting');
-  h.finish();run(h,.6);expect(h.phase).toBe('ending');run(h,1.25);expect(h.locked).toBe(false);
+  h.finish();run(h,.9);expect(h.phase).toBe('ending');run(h,1.25);expect(h.locked).toBe(false);
  });
  it('virando ou parado: libera na hora',()=>{
   const h=new HorseIdleCycle('field-horse-1');h.eatBasket('down');expect(h.phase).toBe('turning');h.finish();expect(h.locked).toBe(false);
