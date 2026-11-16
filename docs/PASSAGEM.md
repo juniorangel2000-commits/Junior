@@ -4,9 +4,9 @@
 
 - **Atualizado em:** 2026-11-16
 - **Por:** Claude Code
-- **Continuar a partir de:** branch `release/v0.10.0-preview.37` (último commit desta rodada; ver `git log`).
-- **Última versão publicada:** `v0.10.0-preview.36` (Release pre-release com instalador e portátil; tag em `502005b`, `main` igual). Workflow do Windows conferido: passou.
-- **Estado:** preview.37 em andamento, **não publicada**. Rodada de desempenho: contador F3, liberação de imagens por cenário e correção do vazamento da Propriedade prontos e testados.
+- **Continuar a partir de:** `main` (preview.37). Próxima rodada: criar `release/v0.10.0-preview.38` a partir da `main`.
+- **Última versão publicada:** `v0.10.0-preview.37` enviada à `main`. **Falta o Junior criar a Release** no GitHub: tag `v0.10.0-preview.37`, target `main`, pre-release. A preview.36 continua sendo a última Release com executável até isso acontecer.
+- **Estado:** preview.37 pronta, com versão do pacote, `NOTAS-0.10.0-preview.37.md` e `LEIA-0.10.0-preview.37.md`. Esta sessão não consegue enviar tags; por isso o Junior cria a Release pela página do GitHub.
 
 ## Feito nesta rodada
 
@@ -35,9 +35,9 @@ O Junior disse que o jogo está pesado, tanto no tamanho quanto nos travamentos.
 
 ## Em andamento e próximo passo exato
 
-1. Pedir ao Junior para abrir o jogo, apertar **F3** e contar o FPS e os MB na Propriedade, na Vila e nos Campos, além da configuração do PC.
-2. Seguir `docs/planejamento/DESEMPENHO.md` → "Próximos passos": tirar da Propriedade o cavalo, os pets do abrigo e os animais que não estão lá; recortar os atlas; WebP sem perda para o instalador.
-3. Publicar só quando o Junior pedir (modelo da preview.36).
+1. **Junior:** criar a Release no GitHub. Em Releases, escolha "Draft a new release", crie a tag nova `v0.10.0-preview.37` com target `main` e marque pre-release. A tag dispara o workflow do Windows.
+2. Conferir no GitHub Actions se o workflow passou e criar `release/v0.10.0-preview.38` a partir da `main`.
+3. Pedir ao Junior os números do **F3** no PC dele (FPS e MB na Propriedade, na Vila e nos Campos) e a opinião sobre as sombras e a luz. Seguir `docs/planejamento/DESEMPENHO.md` → "Próximos passos".
 
 ## Pendências e ideias para depois
 
@@ -57,7 +57,8 @@ O Junior disse que o jogo está pesado, tanto no tamanho quanto nos travamentos.
 ## Testes
 
 - `npm run check`: ok.
-- `npm test`: **2.089 passaram, zero falhas, 236 arquivos**.
+- `npm test`: **2.092 passaram, zero falhas, 237 arquivos**.
+- `npm run build`: ok (aviso de tamanho do pacote, que já existia).
 - Chromium (`CHROMIUM_PATH=/opt/pw-browsers/chromium` quando o padrão não existir):
   - `qa-texture-release`, `qa-quality`, `qa-pigs`, `qa-kitchen`, `qa-fields-distance`, `qa-open-fields` e `qa-horse-fields`: OK.
   - `qa-farm-interior`: falha antiga (ver Problemas conhecidos).
