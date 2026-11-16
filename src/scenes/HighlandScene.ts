@@ -1,4 +1,5 @@
 import {createGroundRuntime} from '../systems/ground-items';
+import {blockMountedEntry} from '../riding-guard';
 import {createMineMissionRuntime} from '../systems/mine-missions';
 import {bentoSceneWriter} from '../systems/bento-commit';
 import {BentoTravelView,preloadBentoTravel} from '../bento-travel-view';
@@ -64,6 +65,7 @@ export class HighlandScene extends Phaser.Scene {
  private updateHUD():void{this.ui.updateHUD({itemQuality:this.state.itemQuality,area:'highland',worldMapSize:{width:48,height:32},worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',inHome:false,swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:this.nearMine()||this.nearFishing()?'E':null,prompt:this.nearMine()?'Entrar na Mina Antiga':this.nearFishing()?'Pescar no rio da serra':this.player.isSwimming?'Nadar · a corrente segue para a queda':Math.hypot(this.player.x-HIGHLAND_LAKE_PASSAGE.x,this.player.y-HIGHLAND_LAKE_PASSAGE.y)<70?'Descer ao Lago entre as Serras':'Ponte elevada · mina a nordeste · escadaria de volta ao lago a sudoeste',location:'Platô da Nascente',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress,...this.bentoTravelView?.hud});this.ui.updateCameraZoom(this.shownZoom,!this.paused);}
  private interact():void{if(this.bentoTravelView?.talk())return;if(this.nearMine())this.enterMine();else if(this.nearFishing())void this.useVillageItem('fishingRod');}
  private enterMine():void{
+  if(blockMountedEntry(this.player,this.ui))return;
   if(this.leaving||!this.persist())return;const next=structuredClone(this.state);
   if(!enterMineHall(next,saveGame)){this.ui.toast('Não foi possível salvar. A entrada foi cancelada.');return;}
   this.leaving=true;this.input.keyboard?.resetKeys();this.cameras.main.fadeOut(SCENE_FADE_MS);this.time.delayedCall(SCENE_FADE_MS,()=>this.scene.start('Mina',{save:next,ui:this.ui,onReturn:this.onReturn}));

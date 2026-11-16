@@ -1,4 +1,5 @@
 import {createGroundRuntime} from '../systems/ground-items';
+import {blockMountedEntry} from '../riding-guard';
 import {createMineMissionRuntime} from '../systems/mine-missions';
 import {bentoSceneWriter} from '../systems/bento-commit';
 import {BentoTravelView,preloadBentoTravel} from '../bento-travel-view';
@@ -193,6 +194,7 @@ export class CityForestScene extends Phaser.Scene{
  private blur=():void=>{if(!this.paused&&!this.leaving){this.setPaused(true);this.ui.togglePause();}this.persist();};
  private visibility=():void=>{if(document.hidden)this.blur();};
  private enterDungeons():void{
+  if(blockMountedEntry(this.player,this.ui))return;
   if(this.leaving||!this.persist())return;this.leaving=true;const ui=this.ui,onReturn=this.onReturn;
   const save=structuredClone(this.state);
   const start=(travel?:CityTravelTransition):void=>{

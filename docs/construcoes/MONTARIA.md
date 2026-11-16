@@ -1,12 +1,19 @@
 # Montaria (preview.40)
 
 - **V** perto do cavalo domado, na Propriedade: monta. **V** montado: desce. **Shift** galopa.
-- Montado, o jogador anda 1,9× mais rápido (galope 1,25× a mais). O cavalo não entra na água.
-- O cavalo vai junto por todos os cenários ao ar livre. Ao entrar em casa, loja, abrigo, mina
-  ou masmorra, o jogador desce e o cavalo volta sozinho para a Propriedade. Descendo na
-  Propriedade, o cavalo fica onde o jogador desceu.
+- Montado, o jogador anda 1,9× mais rápido (galope 1,25× a mais).
+- **Água:** montado, o cavalo não entra na água. Conduzindo um animal na corda, o jogador também
+  não entra. Quem já está na água sempre consegue sair para o raso.
+- **Interiores (preview.41, pedido do Junior):** montado, a porta não abre. Isso vale para casa,
+  lojas, ferreiro, centro comunitário, abrigos dos animais, mina e masmorras. Aparece o aviso
+  "Desça do cavalo (V) para entrar." (`src/riding-guard.ts`). Se, por algum caminho, o jogador
+  chegar montado a um cenário fechado, a sincronização ainda o faz descer, e o cavalo volta
+  sozinho para a Propriedade.
+- O cavalo vai junto por todos os cenários ao ar livre. Descendo na Propriedade, o cavalo fica
+  onde o jogador desceu.
 - Save: `riding: true` (só com o cavalo domado alojado). Código: `src/systems/horse-riding.ts`,
-  `src/riding-controller.ts` (tecla V e acompanhamento entre cenários), `src/horse-mount.ts`
+  `src/riding-controller.ts` (tecla V e acompanhamento entre cenários), `src/riding-guard.ts`
+  (portas e água), `src/horse-mount.ts`
   (desenho) e `Player.mountHorse`.
 
 ## Arte da montaria

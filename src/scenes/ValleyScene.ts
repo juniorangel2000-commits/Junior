@@ -1,4 +1,5 @@
 import {MachineView} from '../machine-view';
+import {blockMountedEntry} from '../riding-guard';
 import {mountProblem} from '../systems/horse-riding';
 import {HORSE_ID} from '../systems/horse-taming';
 import {DOMESTIC_ANIMALS} from '../data/domestic-animals';
@@ -440,6 +441,7 @@ export class ValleyScene extends Phaser.Scene {
 
   /** Entra no interior do galinheiro ou do curral (cena 'Interior'); na volta, recarrega o estado. */
   private enterFarmInterior(siteId:number):void {
+    if(blockMountedEntry(this.player,this.ui))return;
     if(this.forestActive||this.villageActive||this.state.animalEscort||this.inHome){if(this.state.animalEscort)this.ui.toast('Solte a corda antes de entrar.');return;}
     this.world.well?.cancel();this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
     const data=this.snapshotState();if(!saveGame(data)){this.ui.toast('Não foi possível salvar. A entrada foi cancelada.');return;}
@@ -515,6 +517,7 @@ export class ValleyScene extends Phaser.Scene {
 
   private changeHomeScene(enter:boolean):void {
     if(this.homeTransitionActive||!this.canPlay())return;
+    if(enter&&blockMountedEntry(this.player,this.ui)){this.homePassage.reset();return;}
     this.homeTransitionActive=true;
     const token=++this.homeTransitionToken;
     this.input.keyboard?.resetKeys();

@@ -39,7 +39,7 @@ export function installRiding(current:()=>RidingScene|undefined,ui:Toaster):void
   requestAnimationFrame(sync);
   const scene=current();if(!scene?.player||!scene.sys.isActive())return;
   let s:SaveData;try{s=scene.getFishingState();}catch{return;}
-  const p=scene.player;
+  const p=scene.player;p.keepDry=!!s.animalEscort;
   if(!s.riding){if(p.mounted)p.dismountHorse();return;}
   if(indoors(scene)){delete s.riding;if(p.mounted)p.dismountHorse();ui.toast(`Você desceu para entrar. ${horseName(s)[0].toUpperCase()+horseName(s).slice(1)} voltou para a Propriedade.`);scene.persist();return;}
   if(!p.mounted&&!loading&&!p.isSwimming){loading=true;loadHorseTexture(scene,()=>{loading=false;if(scene.sys.isActive()&&scene.player===p&&s.riding)p.mountHorse();},p.characterId);}

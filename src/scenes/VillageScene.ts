@@ -1,4 +1,5 @@
 import {NpcPassageCollision} from '../systems/npc-collision';
+import {blockMountedEntry} from '../riding-guard';
 import {createGroundRuntime} from '../systems/ground-items';
 import {createSocialRuntime,openSocialConversation,respondSocial} from '../systems/npc-social';
 import {showMineMissionJournal} from '../mine-mission-journal';
@@ -340,6 +341,7 @@ export class VillageScene extends Phaser.Scene {
   this.input.keyboard?.resetKeys();this.player.update(0,this.movementBlocked,this.movementBlockedPoint,false,this.swimmingPoint);this.applyCamera();
  }
  private changeCommunityRoom(inside:boolean):void {
+  if(inside&&blockMountedEntry(this.player,this.ui)){this.communityPassage.reset();return;}
   if(this.changingRoom||this.leaving||inside&&!communityReady(this.state))return;
   if(!this.persist()){this.ui.toast('Não foi possível salvar. Tente novamente.');return;}
   this.changingRoom=true;this.cameras.main.fadeOut(SCENE_FADE_MS);
@@ -375,6 +377,7 @@ export class VillageScene extends Phaser.Scene {
   this.input.keyboard?.resetKeys();this.player.update(0,this.movementBlocked,this.movementBlockedPoint,false,this.swimmingPoint);this.daylight.update(this.state.time,!!id,this.state.day);this.applyCamera();
  }
  private changeMerchantRoom(id?:ResidentId):void {
+  if(id&&blockMountedEntry(this.player,this.ui)){this.merchantPassage.reset();return;}
   if(id&&!merchantMayEnter(id,this.state)){this.ui.toast('Comércio fechado · abre às 08:00.');this.merchantPassage.reset();return;}
   if(this.changingRoom)return;this.persist();this.changingRoom=true;this.cameras.main.fadeOut(SCENE_FADE_MS);
   this.time.delayedCall(SCENE_FADE_MS,()=>{if(this.leaving)return;if(id)this.completeGuide(id);this.guide=undefined;this.setMerchantRoom(id);this.changingRoom=false;this.cameras.main.fadeIn(SCENE_FADE_MS);gameAudio.play('door');this.updateHUD();this.persist();});
@@ -485,6 +488,7 @@ export class VillageScene extends Phaser.Scene {
   this.daylight.update(this.state.time,inside,this.state.day);this.applyCamera();
  }
  private changeBlacksmithRoom():void {
+  if(!this.inBlacksmith&&blockMountedEntry(this.player,this.ui)){this.homePassage.reset();return;}
   if(!this.inBlacksmith&&!merchantMayEnter('bento',this.state)&&!(this.guide?.owner==='bento'&&!this.state.bentoTravel?.trip)){this.ui.toast(bentoAvailability(this.state).message);this.homePassage.reset();return;}
   if(this.changingRoom)return;this.persist();this.changingRoom=true;
   this.cameras.main.fadeOut(SCENE_FADE_MS);

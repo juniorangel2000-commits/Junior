@@ -2,8 +2,8 @@
  * Uso: node scripts/qa-horse-riding.cjs <pasta das imagens> [farmer-female|farmer-male] [etapa]
  * Precisa do jogo em http://127.0.0.1:5190 (npx vite --host 127.0.0.1 --port 5190 --strictPort).
  * Confere: montar com V, as 8 direções andando (quadro do cavaleiro e patas animadas), galope
- * mais rápido, descer com V, descer ao entrar em casa, continuar montado ao carregar a partida e
- * na Floresta. Sai com código 1 se algo falhar.
+ * mais rápido, descer com V, não entrar em casa nem na água montado, continuar montado ao carregar
+ * a partida e na Floresta. Sai com código 1 se algo falhar.
  * Cada etapa abre um navegador novo: o Chromium daqui (SwiftShader) trava depois de alguns
  * minutos de movimento na mesma página. Sem etapa, roda todas em sequência. */
 const {chromium}=require('playwright');
@@ -12,7 +12,7 @@ const {execFileSync}=require('node:child_process');
 const [out='.',character='farmer-female',only]=process.argv.slice(2);
 const DIRS={down:['s'],up:['w'],left:['a'],right:['d'],'down-left':['s','a'],'down-right':['s','d'],'up-left':['w','a'],'up-right':['w','d']};
 const ORDER=['down','up','left','right','down-left','down-right','up-left','up-right'];
-const STEPS=['montar',...ORDER.map(d=>`andar-${d}`),'galope','descer','casa','carregar','floresta'];
+const STEPS=['montar',...ORDER.map(d=>`andar-${d}`),'galope','descer','casa','agua','carregar','floresta'];
 const check=(name,ok,detail='')=>{console.log(`${ok?'OK  ':'FALHA'} ${name}${detail?' — '+detail:''}`);if(!ok)process.exitCode=1;};
 
 if(!only){
@@ -83,8 +83,25 @@ if(!only){
   check('desce com V e o cavalo volta ao pasto',!st.mounted&&!st.riding&&st.visible&&st.horseVisible===true);
  }
  if(only==='casa'){
-  await page.evaluate(()=>v.enterHome());await page.waitForTimeout(800);st=await state();
-  check('ao entrar em casa, desce',!st.mounted&&!st.riding&&st.visible);
+  // Montado, a porta não abre: avisa para descer.
+  await page.evaluate(()=>{document.querySelector('#ui').style.visibility='';v.changeHomeScene(true);});await page.waitForTimeout(900);
+  st=await state();const inHome=await page.evaluate(()=>v.inHome);const msg=await page.evaluate(()=>document.body.innerText.includes('Desça do cavalo (V) para entrar.'));
+  check('montado, não entra em casa e recebe o aviso',!inHome&&st.mounted&&st.riding&&msg,JSON.stringify({inHome,mounted:st.mounted,msg}));
+  await page.keyboard.press('v');await page.waitForTimeout(600);
+  await page.evaluate(()=>v.changeHomeScene(true));await page.waitForTimeout(900);
+  check('a pé, entra em casa',await page.evaluate(()=>v.inHome));
+ }
+ if(only==='agua'){
+  // Água logo à direita de um ponto seco: montado, o cavalo para na margem.
+  const shore=await page.evaluate(()=>{for(let y=200;y<60*32;y+=16)for(let x=200;x<60*32;x+=16){if(v.swimmingPoint(x,y)>0||v.movementBlockedPoint?.(x,y))continue;
+   let ok=true;for(let r=0;r<=40;r+=8)if(v.swimmingPoint(x+r,y)>0||v.movementBlockedPoint?.(x+r,y))ok=false;if(ok&&v.swimmingPoint(x+70,y)>0.3)return{x,y};}return null;});
+  if(!shore)check('achou uma margem para o teste',false);else{
+   await page.evaluate(p=>{v.player.x=p.x;v.player.y=p.y;},shore);await page.waitForTimeout(150);
+   await page.keyboard.down('d');await page.waitForTimeout(1500);await page.keyboard.up('d');
+   const r=await page.evaluate(()=>({depth:v.swimmingPoint(v.player.x,v.player.y),x:v.player.x,mounted:v.player.mounted}));
+   check('montado, o cavalo não entra na água',r.depth<=0.005&&r.mounted&&r.x>shore.x+20,JSON.stringify({...r,start:shore.x}));
+   await shot('margem');
+  }
  }
  if(only==='carregar'){
   await page.evaluate(()=>{v.persist();v.loadState(v.snapshotState());});await page.waitForTimeout(1500);st=await state();

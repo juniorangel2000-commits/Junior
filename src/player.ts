@@ -1,5 +1,6 @@
 import {gameAudio} from './audio';
 import {HorseMount,MOUNT_SPEED,horseTextureReady,HORSE_IN_FRONT} from './horse-mount';
+import {dryStepAllowed} from './riding-guard';
 import {SwimmingController} from './swimming/controller';
 import {SWIMMING_CONFIG} from './swimming/config';
 import { SwimmingVisual, prepareSwimmingTextures, SWIM_SPEED_FACTOR } from './swimming';
@@ -40,6 +41,8 @@ export class Player {
   private swimmingVisual?:SwimmingVisual;
   private mount?:HorseMount;
   get mounted(){return !!this.mount;}
+  /** Conduzindo um animal na corda: não entra na água (atualizado a cada quadro pela montaria). */
+  keepDry=false;
   /** Monta no cavalo (o cenário precisa ter o atlas do cavalo carregado). */
   mountHorse():boolean{if(this.mount||!horseTextureReady(this.scene,this.characterId)||this.isSwimming)return false;this.mount=new HorseMount(this.scene,this.x,this.y,this.characterId);if(this.mount.combined)this.sprite.setVisible(false);this.isRunning=false;this.sprite.setTexture(this.textureKey);return true;}
   dismountHorse():void{if(!this.mount)return;const hidden=this.mount.combined;this.mount.destroy();this.mount=undefined;if(hidden)this.sprite.setVisible(true);this.sprite.setCrop().setPosition(this.x,this.y).setDepth(this.y);}
@@ -82,9 +85,10 @@ export class Player {
     if (moving) {
       const length = Math.hypot(inputX, inputY);
       const dx = inputX / length, dy = inputY / length;
-      // Montado, o cavalo não entra na água.
+      // Montado ou com um animal na corda, não se entra na água (só se sai dela).
+      const depthHere=depthAt(this.x,this.y);
       const canStand = (x: number, y: number) =>
-        (!this.mount || depthAt(x, y) <= .005) && (!canMoveCenter || canMoveCenter(x,y)) && [[-7, -5], [7, -5], [-7, 3], [7, 3]].every(([ox, oy]) =>
+        dryStepAllowed(!!this.mount||this.keepDry,depthHere,depthAt(x,y)) && (!canMoveCenter || canMoveCenter(x,y)) && [[-7, -5], [7, -5], [-7, 3], [7, 3]].every(([ox, oy]) =>
           isBlockedPoint ? !isBlockedPoint(x + ox, y + oy)
             : !isBlocked(Math.floor((x + ox) / TILE), Math.floor((y + oy) / TILE)));
       const moveAxis = (amount: number, horizontal: boolean): void => {
