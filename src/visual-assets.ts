@@ -84,7 +84,8 @@ export function itemIconUrl(id: string, tier=0): string | undefined {
 }
 
 const WORLD_SOURCES: Record<string, string> = {
-  scrap: 'world/sucata.png', log: 'world/tronco.png', workbench: 'world/workbench.png',
+  // A sucata no chão usa o mesmo desenho do inventário, mais legível em tamanho pequeno.
+  scrap: 'icons/scrap.png', log: 'world/tronco.png', workbench: 'world/workbench.png',
 };
 const MODULES = ['parede_creme', 'parede_janela_floreira', 'parede_trepadeira', 'parede_porta', 'porta_madeira', 'janela_turquesa', 'telha_lisa', 'telha_variante', 'chamine', 'floreira', 'cerca_natural', 'banco_jardim', 'barril', 'vaso_flor', 'piso_tabuas', 'piso_pedra', 'terra', 'caminho', 'planta'];
 export function preloadVisualAssets(scene: Phaser.Scene): void {
@@ -305,7 +306,7 @@ export function setupVisualAssets(scene: Phaser.Scene): void {
   fitSource(scene,'source-new-branches','asset-new-branches',128,96,4);
   fitSource(scene,'source-berry-bush','asset-berry-bush',128,128,4);
   setupResourceSprites(scene);
-  for (const [id, width, height] of [['scrap', 32, 32], ['log', 40, 34], ['workbench', 40, 40]] as const) {
+  for (const [id, width, height] of [['scrap', 34, 34], ['log', 40, 34], ['workbench', 40, 40]] as const) {
     if (!scene.textures.exists(`asset-${id}`)) fitSource(scene, `source-${id}`, `asset-${id}`, width, height, 1);
   }
   for (const [source, key, width, height] of [
