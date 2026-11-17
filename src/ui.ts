@@ -888,10 +888,11 @@ export class GameUI {
         this.selectedInventoryItem = item;
         const info = this.slotInfo(item);
         panel.querySelector('.detail-icon')!.innerHTML = icon(info.icon,'',this.slotCondition(item)?.tier??0);
-        panel.querySelector('.detail-name')!.textContent = info.label;
+        // A espada mostra o nome do nível (de ferro, de ouro, de metal negro).
+        { const c=quickItem(item)==='sword'?this.slotCondition(item):undefined; panel.querySelector('.detail-name')!.textContent = c?info.label.replace(SWORD_TIER_NAMES[0],SWORD_TIER_NAMES[c.tier]):info.label; }
         const condition=this.slotCondition(item),copy=toolReferenceParts(item);
         const quality=quickItem(item)?qualityLabel(this.latest?.itemQuality,quickItem(item) as ItemId,inventory[quickItem(item) as ItemId]??0):'';
-        panel.querySelector('.detail-text')!.textContent = info.detail+(quality?` · Qualidade: ${quality}`:'')+(condition&&wearsOut(quickItem(item))?`${durableTool(quickItem(item))?' · Material: '+['Pedra','Ferro','Ouro','Metal Negro'][condition.tier]:''} · Durabilidade: ${condition.durability}/${ECONOMY_BALANCE.durability[condition.tier]}`:'')+(quickItem(item)==='sword'&&condition?` · ${SWORD_TIER_NAMES[condition.tier]} · golpe ${SWORD_POWER[condition.tier]}×`:'');
+        panel.querySelector('.detail-text')!.textContent = info.detail+(quality?` · Qualidade: ${quality}`:'')+(condition&&wearsOut(quickItem(item))?`${durableTool(quickItem(item))?' · Material: '+['Pedra','Ferro','Ouro','Metal Negro'][condition.tier]:''} · Durabilidade: ${condition.durability}/${ECONOMY_BALANCE.durability[condition.tier]}`:'')+(quickItem(item)==='sword'&&condition?` · golpe ${SWORD_POWER[condition.tier].toLocaleString('pt-BR')}× mais forte que a improvisada`:'');
         panel.querySelector('[data-use-item]')?.remove();
         panel.querySelector('[data-drop-item]')?.remove();
         const id=quickItem(item) as ItemId|undefined;
