@@ -1,0 +1,46 @@
+/* Quadro de pedidos (src/request-board.ts): cartões presos num quadro de cortiça. */
+.request-board{width:min(980px,calc(100vw - 32px));max-height:calc(100vh - 40px);display:flex;flex-direction:column;gap:12px;overflow:hidden}
+.request-board .modal-heading{display:flex;align-items:center;gap:12px}
+.request-board .modal-heading>div:first-child{flex:1}
+.rb-coins{display:flex;flex-direction:column;align-items:flex-end;padding:4px 12px;border-radius:8px;background:#5a3f24;color:#f7e4b8;line-height:1.1}
+.rb-coins span{font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.8}
+.rb-coins strong{font:20px Georgia,serif}
+.rb-tabs{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rb-tabs button{padding:6px 14px;border:1px solid #c9a970;border-radius:999px;background:#fff4dc;color:#6b4c2b;font-size:13px;cursor:pointer;transition:background .15s,transform .15s}
+.rb-tabs button b{display:inline-block;min-width:18px;margin-left:4px;padding:0 5px;border-radius:999px;background:#e8d3a6;font-size:11px}
+.rb-tabs button[aria-pressed="true"]{background:#6f8a45;border-color:#55702f;color:#fff}
+.rb-tabs button[aria-pressed="true"] b{background:#ffffff33}
+.rb-tabs button:hover{transform:translateY(-1px)}
+.rb-tabs .rb-mine{margin-left:auto;border-style:dashed}
+.rb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;padding:16px;overflow:auto;border-radius:10px;
+ background:radial-gradient(circle at 20% 30%,#c79a62 0 2px,transparent 3px) 0 0/22px 22px,radial-gradient(circle at 70% 60%,#b98a54 0 1.5px,transparent 2.5px) 0 0/18px 18px,#d4a86e;
+ box-shadow:inset 0 0 0 6px #7a5530,inset 0 0 0 8px #5a3c1f,inset 0 6px 18px #0004}
+.rb-card{position:relative;display:flex;flex-direction:column;gap:8px;padding:16px 14px 12px;border-radius:4px;background:#fffaf0;color:#4f3a22;
+ box-shadow:0 3px 8px #0003,0 1px 0 #e8d3a6;transform:rotate(-.6deg);transition:transform .18s,box-shadow .18s}
+.rb-card:nth-child(2n){transform:rotate(.7deg)}.rb-card:nth-child(3n){transform:rotate(-.2deg)}
+.rb-card:hover{transform:rotate(0) translateY(-3px);box-shadow:0 8px 16px #0003}
+.rb-pin{position:absolute;top:-6px;left:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff9f8a,#b8382a 60%,#7a1f15);box-shadow:0 2px 3px #0005}
+.rb-card header{display:flex;align-items:center;gap:10px}
+.rb-face{flex:none;width:46px;height:46px;border-radius:8px;background:#f0e2bf;box-shadow:inset 0 0 0 1px #d3b783;display:grid;place-items:center;overflow:hidden}
+.rb-face img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated;transform:scale(1.35) translateY(10%)}
+.rb-face span{font:22px Georgia,serif;color:#8a6c45}
+.rb-card small{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8a6c45}
+.rb-card h3{margin:0;font:17px Georgia,serif;color:#5a3f24}
+.rb-card p{margin:0;font-size:13px;line-height:1.45;color:#6b5236}
+.rb-progress{display:flex;align-items:center;gap:8px}
+.rb-progress img{width:26px;height:26px;object-fit:contain;image-rendering:pixelated}
+.rb-bar{flex:1;height:10px;border-radius:999px;background:#ead9b4;overflow:hidden;box-shadow:inset 0 1px 2px #0002}
+.rb-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(#9cbf5e,#6f9a3a);transition:width .4s}
+.rb-progress b{font-size:13px;color:#5a3f24;min-width:38px;text-align:right}
+.rb-card footer{display:flex;justify-content:space-between;gap:8px;font-size:12px}
+.rb-reward{padding:2px 8px;border-radius:999px;background:#f7e2a4;color:#7a5410;font-weight:bold}
+.rb-due{padding:2px 8px;border-radius:999px;background:#efe2c2;color:#7a5a36}
+.rb-card .button{align-self:stretch;margin-top:auto}
+.rb-card.is-ready{box-shadow:0 0 0 2px #8fb35a,0 6px 14px #0003}
+.rb-card.is-done{opacity:.82;background:#f3ead6}
+.rb-stamp{align-self:center;margin-top:auto;padding:3px 14px;border:2px solid #6f8a45;border-radius:6px;color:#55702f;font:bold 13px Georgia,serif;letter-spacing:.1em;text-transform:uppercase;transform:rotate(-6deg)}
+.rb-empty{grid-column:1/-1;margin:24px;text-align:center;color:#fff8e6;font:16px Georgia,serif;text-shadow:0 1px 2px #0006}
+.rb-feedback{min-height:18px;margin:0;font-size:13px;color:#4f6b2c}.rb-feedback.is-error{color:#a23a2a}
+.rb-float{position:absolute;right:12px;top:10px;font:bold 18px Georgia,serif;color:#4f7a26;text-shadow:0 1px 0 #fff;pointer-events:none;animation:rb-float 1.2s ease-out forwards}
+@keyframes rb-float{from{opacity:0;transform:translateY(8px)}20%{opacity:1}to{opacity:0;transform:translateY(-28px)}}
+@media(max-width:640px){.rb-grid{grid-template-columns:1fr;padding:10px}.rb-tabs .rb-mine{margin-left:0}}

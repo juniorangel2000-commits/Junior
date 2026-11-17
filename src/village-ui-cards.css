@@ -1,0 +1,85 @@
+/* Janela dos moradores em cartões (preview.41), no estilo do painel do abrigo. */
+.village-friendship{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:11px;color:#f7e0b4}
+.village-friendship span{white-space:nowrap}
+.village-friendship-bar{position:relative;width:150px;height:8px;border-radius:999px;background:#3a2414aa;box-shadow:inset 0 1px 2px #0006;overflow:visible}
+.village-friendship-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#e48aa0,#f2b35c);transition:width .5s}
+.village-friendship-bar b{position:absolute;top:-2px;width:2px;height:12px;background:#ffe9c2aa}
+.village-wallet{position:relative;transition:transform .2s}
+.village-wallet.is-bump{animation:village-bump .35s ease}
+@keyframes village-bump{40%{transform:scale(1.08)}}
+.village-coin-float{position:absolute;right:8px;top:-6px;font:bold 15px Georgia,serif;pointer-events:none;animation:village-float 1.2s ease-out forwards;text-shadow:0 1px 2px #0008}
+.village-coin-float.is-gain{color:#b8f08a}.village-coin-float.is-spend{color:#ffd0c0}
+@keyframes village-float{from{opacity:0;transform:translateY(6px)}20%{opacity:1}to{opacity:0;transform:translateY(-26px)}}
+
+.village-services{padding-top:14px}
+.village-service-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;max-height:min(52dvh,460px);overflow:auto;padding:2px 4px 6px 2px}
+.village-service{position:relative;display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #d3b783;border-radius:8px;background:#fff7e2;box-shadow:0 1px 0 #e8d3a6;transition:transform .15s,box-shadow .15s}
+.village-service:hover{transform:translateY(-2px);box-shadow:0 6px 14px #6b4a2b26}
+.village-service header{display:flex;align-items:center;gap:8px}
+.village-service header .village-item-icon{flex:none;width:36px;height:36px;border-radius:6px;background:#f0e2bf;box-shadow:inset 0 0 0 1px #d3b783;display:grid;place-items:center}
+.village-service header .village-item-icon img{width:28px;height:28px;object-fit:contain;image-rendering:pixelated}
+.village-service h3{flex:1;margin:0;font:16px Georgia,serif;color:#5a3f24}
+.village-service p{margin:0;font-size:12px;line-height:1.5;color:#6b5236}
+.village-service-status{flex:none;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:bold;letter-spacing:.04em;white-space:nowrap}
+.village-service-status[data-state="ok"]{background:#dfeec4;color:#46651f}
+.village-service-status[data-state="missing"]{background:#f7d9cf;color:#9a3b25}
+.village-service-status[data-state="waiting"]{background:#efe2c2;color:#7a5a36}
+.village-service-status[data-state="done"]{background:#e6e9ee;color:#4d5663}
+.village-service .village-primary{margin-top:auto;align-self:stretch}
+.village-chips{display:flex;flex-wrap:wrap;gap:5px}
+.village-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 4px;border-radius:999px;font-size:11px;font-weight:bold}
+.village-chip .village-item-icon{width:18px;height:18px;display:inline-grid;place-items:center}.village-chip .village-item-icon img,.village-chip .village-item-icon svg{width:16px;height:16px;object-fit:contain;image-rendering:pixelated}
+.village-chip.is-ok{background:#e4f0cf;color:#46651f}.village-chip.is-missing{background:#f8ddd3;color:#9a3b25}
+.village-service.is-done-flash{animation:village-flash .8s ease}
+@keyframes village-flash{30%{box-shadow:0 0 0 3px #8fb35a,0 6px 14px #0002}}
+.village-card-float{position:absolute;right:12px;top:8px;font:bold 14px Georgia,serif;color:#4f7a26;pointer-events:none;animation:village-float 1.2s ease-out forwards}
+
+/* Compra e venda: itens em cartões e quantidade com − e +. */
+.village-item{transition:transform .12s,background .12s}
+.village-item:hover{transform:translateX(2px);background:#fff5dc}
+.village-item[aria-pressed="true"]{background:#eef3d8;border-color:#8fae5a;box-shadow:inset 0 0 0 1px #fff,0 0 0 2px #b5cf86}
+.village-stepper{display:flex;align-items:flex-end;gap:6px}
+.village-stepper .village-quantity{flex:1}
+.village-step{min-width:34px;min-height:34px;border:1px solid #ad8750;border-radius:4px;background:#f6e3bd;color:#5a3f24;font:bold 16px Georgia,serif;cursor:pointer;transition:background .12s,transform .12s}
+.village-step:hover{background:#fff1d0;transform:translateY(-1px)}
+.village-step-max{font-size:12px;padding:0 8px}
+
+@media(max-width:640px){.village-service-grid{grid-template-columns:1fr}.village-friendship-bar{width:100px}}
+
+/* Cabeçalho: retrato à esquerda, textos ao lado sem quebrar por baixo do retrato. */
+.village-heading-with-portrait{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
+.village-heading-with-portrait>[data-npc-portrait]{grid-row:1/span 5;width:56px;height:72px;object-fit:contain;image-rendering:pixelated;padding:4px;border-radius:8px;background:#ffffff1a;box-shadow:inset 0 0 0 1px #ffffff2a}
+.village-heading-with-portrait>*:not([data-npc-portrait]){grid-column:2}
+
+/* Conversa (preview.41): o morador em pé num palco, balão de fala com plaquinha e respostas. */
+.village-dialogue.vd{display:grid;grid-template-columns:minmax(150px,220px) 1fr;gap:22px;align-items:end;min-height:320px;padding-top:12px;
+ background:radial-gradient(ellipse 60% 40% at 18% 92%,#c9b07a55,transparent 70%),linear-gradient(#f6ecd1 0,#fbf3df 60%,#efe0bb 100%);border-radius:10px}
+.vd-stage{position:relative;display:flex;justify-content:center;align-items:flex-end;height:290px}
+.vd-stage::after{content:'';position:absolute;bottom:6px;left:50%;width:150px;height:22px;margin-left:-75px;border-radius:50%;background:radial-gradient(#5a3f2440,transparent 70%)}
+.vd-portrait{position:relative;z-index:1;height:270px;width:auto;max-width:100%;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 4px 0 #5a3f2422);animation:vd-breathe 3.2s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes vd-breathe{50%{transform:scaleY(1.012)}}
+.vd-emblem{width:120px;height:120px}
+.vd-side{display:flex;flex-direction:column;gap:12px;min-width:0;padding-bottom:10px}
+.vd-box{position:relative;display:flex;flex-direction:column;gap:10px;padding:26px 20px 14px;border:2px solid #b08a52;border-radius:14px;background:#fffaf0;box-shadow:0 4px 0 #d9c08e,0 10px 22px #6b4a2b22}
+.vd-box::before{content:'';position:absolute;left:-16px;bottom:40px;border:14px solid transparent;border-right-color:#b08a52;border-left:0}
+.vd-box::after{content:'';position:absolute;left:-12px;bottom:42px;border:12px solid transparent;border-right-color:#fffaf0;border-left:0}
+.vd-plate{position:absolute;top:-16px;left:16px;display:flex;align-items:baseline;gap:8px;padding:5px 14px;border-radius:8px;background:linear-gradient(#7a5530,#5a3c1f);color:#ffe9bf;box-shadow:0 2px 0 #3a2410}
+.vd-plate strong{font:17px Georgia,serif}.vd-plate span{font-size:11px;opacity:.85}
+.vd-mood{font-style:normal;font-size:11px;padding:1px 8px;border-radius:999px;background:#ffffff22;color:#ffd7e0}
+.vd-greeting{margin:0;padding:0;border:0;background:none}
+.vd-greeting p{margin:0;font:italic 14px Georgia,serif;color:#7a6040}
+.vd-memory{margin-top:4px!important;font-size:12px!important;color:#8a7350!important;border:0!important;padding:0!important}
+.village-dialogue-text.vd-text{margin:0;min-height:84px;font:20px/1.6 Georgia,serif;color:#4f3a22;cursor:pointer}
+.vd-text span{opacity:0;animation:vd-word .25s ease forwards}
+.vd-text.is-shown span{animation:none;opacity:1}
+@keyframes vd-word{to{opacity:1}}
+.vd-foot{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.vd-dots{display:flex;gap:6px}.vd-dots i{width:9px;height:9px;border-radius:50%;background:#e2cfa5}.vd-dots i.is-on{background:#8a6a3c}
+.vd-next{min-width:140px}
+.vd-choices{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0}
+.vd-choice{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:1px solid #c9a970;border-radius:999px;background:#fff4dc;color:#5a3f24;font:14px Georgia,serif;cursor:pointer;transition:transform .15s,background .15s,box-shadow .15s}
+.vd-choice:hover:not(:disabled){transform:translateY(-2px);background:#fffaf0;box-shadow:0 4px 10px #6b4a2b22}
+.vd-choice:disabled{opacity:.5;cursor:default}
+.vd-answered{font-size:12px;color:#8a6c45;font-style:italic}
+.vd-note{flex-basis:100%;margin:0;font-size:12px;color:#8a6c45}
+@media(max-width:700px){.village-dialogue.vd{grid-template-columns:1fr}.vd-stage{height:170px}.vd-portrait{height:160px}.vd-box::before,.vd-box::after{display:none}}

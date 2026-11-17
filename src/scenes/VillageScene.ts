@@ -1,4 +1,5 @@
 import {NpcPassageCollision} from '../systems/npc-collision';
+import {showRequestBoard,boardHasReady,BOARD_POINT,BOARD_SERVICE_IDS} from '../request-board';
 import {blockMountedEntry} from '../riding-guard';
 import {createGroundRuntime} from '../systems/ground-items';
 import {createSocialRuntime,openSocialConversation,respondSocial} from '../systems/npc-social';
@@ -184,12 +185,13 @@ export class VillageScene extends Phaser.Scene {
   this.shop=new VillageInteractionUI({
    onSocialOpen:id=>openSocialConversation(this.socialRuntime,id),onSocialResponse:(id,tone)=>respondSocial(this.socialRuntime,id,tone),
    canTrade:id=>this.canTrade(id),isInside:id=>merchantCanTrade(id,this.roomOwner),getAvailability:id=>id==='bento'?{...this.routines.get('bento')!.availability(this.state),message:bentoAvailability(this.state).message}:dailyMerchant(id)?this.routines.get(id)?.availability(this.state):undefined,onGuide:id=>this.beginGuide(id),
-   getPortrait:id=>id==='bento'?this.textures.getBase64(bentoTexture(this),characterFrame('down',0,BENTO_WALK_FRAMES)):id==='augusto'?this.textures.getBase64(augustoSourceKey('down')):id==='rosa'?this.textures.getBase64(rosaSourceKey('down')):id==='tobias'?this.textures.getBase64('village-npc-tobias',characterFrame('down',0,TOBIAS_WALK_FRAMES)):this.textures.getBase64(`village-npc-${id}`,0),
+   getPortrait:id=>this.npcPortrait(id),
    onMineRequests:()=>{this.shop?.close();showMineMissionJournal(this.ui,this.mineMissionRuntime);},
    onBentoExpedition:()=>{this.shop?.close();showBentoExpedition(this.ui,()=>this.state,()=>this.player,this.bentoWorkRuntime,this.textures.getBase64(bentoTexture(this),0));},
    onBlacksmith:()=>{if(!bentoAvailability(this.state).open){this.ui.toast(bentoAvailability(this.state).message);return;}this.shop?.close();this.setPaused(true);openBlacksmithPanel(()=>({...this.state,inventory:{...this.inventory.data}}),change=>{const before=structuredClone(this.state);this.state.inventory={...this.inventory.data};const r=change(this.state);if(r.ok){Object.assign(this.inventory.data,this.state.inventory);if(!this.persist()){this.state=before;Object.assign(this.inventory.data,before.inventory);return{ok:false,message:'Falha ao salvar. A operação foi revertida.'};}this.updateHUD();}return r;},()=>this.setPaused(false));},
-   getServices:npc=>listVillageServices(npc,this.state),
-   onService:id=>{const previous=structuredClone(this.state);const previousStock={...this.inventory.data};this.state.inventory={...this.inventory.data};this.state.crops=this.farming.crops.map(c=>({...c}));const result=performVillageService(this.state,id);if(result.ok){Object.assign(this.inventory.data,this.state.inventory);this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);const x=this.player.x,y=this.player.y;this.player.sprite.destroy();this.player=new Player(this,this.state.profile,x,y,'village-player');this.applyCamera();if(!this.persist()){this.state=previous;Object.assign(this.inventory.data,previousStock);return{ok:false,message:'Falha ao salvar. A operação foi revertida.'};}this.updateHUD();}return result;},
+   // Os pedidos ficam no quadro do centro comunitário, não na janela de cada morador.
+   getServices:npc=>listVillageServices(npc,this.state).filter(o=>!BOARD_SERVICE_IDS.includes(o.id)),
+   onService:id=>this.runService(id),
    getInventory:()=>this.inventory.data,getEconomy:()=>this.state.villageEconomy!,getDay:()=>this.state.day,
    onTrade:(merchant,side,item,quantity)=>{
     const owner=VILLAGE_NPCS.find(n=>n.merchantId===merchant);if(!owner||!this.canTrade(owner.id))return{ok:false,reason:'invalid-economy',message:owner&&dailyMerchant(owner.id)?this.routines.get(owner.id)?.availability(this.state).message??'Compre e venda dentro do comércio desse morador.':'Compre e venda dentro do comércio desse morador.'};
@@ -323,6 +325,28 @@ export class VillageScene extends Phaser.Scene {
  private movementBlocked=(x:number,y:number):boolean=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
  private allowPierStep=(x:number,y:number)=>this.inShop||villagePierAllowsStep(this.player,{x,y},this.world.waterPointAt);
  private swimmingPoint=(x:number,y:number):number=>this.inShop||villagePierDeckContains(x,y)?0:sampleWaterDepth(this.world.waterPointAt,x,y);
+ private runService=(id:string):{ok:boolean;message:string}=>{const previous=structuredClone(this.state);const previousStock={...this.inventory.data};this.state.inventory={...this.inventory.data};this.state.crops=this.farming.crops.map(c=>({...c}));const result=performVillageService(this.state,id);if(result.ok){Object.assign(this.inventory.data,this.state.inventory);this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);const x=this.player.x,y=this.player.y;this.player.sprite.destroy();this.player=new Player(this,this.state.profile,x,y,'village-player');this.applyCamera();if(!this.persist()){this.state=previous;Object.assign(this.inventory.data,previousStock);return{ok:false,message:'Falha ao salvar. A operação foi revertida.'};}this.updateHUD();}return result;};
+ private npcPortrait=(id:string):string=>{
+  const tex=this.textures,first=(()=>{try{return id==='bento'?this.textures.getBase64(bentoTexture(this),characterFrame('down',0,BENTO_WALK_FRAMES)):id==='augusto'?this.textures.getBase64(augustoSourceKey('down')):id==='rosa'?this.textures.getBase64(rosaSourceKey('down')):id==='tobias'?this.textures.getBase64('village-npc-tobias',characterFrame('down',0,TOBIAS_WALK_FRAMES)):this.textures.getBase64(`village-npc-${id}`,0);}catch{return '';}})();
+  if(first)return first;
+  // Retrato de reserva: o primeiro quadro que existir do morador (a Rosa carrega quadros soltos).
+  for(const key of [rosaSourceKey('down',1),`village-npc-${id}`])if(key.includes(id)&&tex.exists(key)){const b=tex.getBase64(key,key.startsWith('village-npc')?0:undefined);if(b)return b;}
+  return '';
+ }
+ private boardMark?:Phaser.GameObjects.Text;private boardCheck=0;
+ private nearBoard():boolean{return !this.inShop&&Math.hypot(this.player.x-BOARD_POINT.x,this.player.y-BOARD_POINT.y)<48;}
+ private openBoard():void{
+  this.state.inventory={...this.inventory.data};
+  showRequestBoard(this.ui,{get:()=>({...this.state,inventory:{...this.inventory.data}}),perform:id=>{const r=this.runService(id);this.boardCheck=0;return r;},portrait:id=>this.npcPortrait(id),
+   openMine:()=>showMineMissionJournal(this.ui,this.mineMissionRuntime)});
+ }
+ /** "!" sobre o quadro quando há pedido para entregar agora (conferido a cada segundo). */
+ private updateBoardMark():void{
+  if(this.time.now<this.boardCheck)return;this.boardCheck=this.time.now+1000;
+  if(!this.boardMark||!this.boardMark.active){this.boardMark=this.add.text(BOARD_POINT.x,BOARD_POINT.y-124,'!',{fontFamily:'Georgia,serif',fontSize:'22px',fontStyle:'bold',color:'#ffe08a',stroke:'#5a3a1a',strokeThickness:5}).setOrigin(.5).setDepth(BOARD_POINT.y+400);
+   this.tweens.add({targets:this.boardMark,y:BOARD_POINT.y-132,duration:600,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});}
+  this.state.inventory={...this.inventory.data};this.boardMark.setVisible(!this.inShop&&boardHasReady(this.state));
+ }
  private nearCommunity():boolean{return !this.inShop&&this.player.y>=COMMUNITY_ENTRANCE.y-20&&Math.hypot(this.player.x-COMMUNITY_ENTRANCE.x,this.player.y-COMMUNITY_ENTRANCE.y)<76;}
  private openCommunity():void {
   if(communityReady(this.state)){this.changeCommunityRoom(true);return;}
@@ -386,6 +410,7 @@ export class VillageScene extends Phaser.Scene {
  private interact():void {
   if(this.bentoTravelView?.talk())return;
   if(this.paused||this.leaving||this.changingRoom||this.ui.isModalOpen()||this.shop?.isOpen)return;
+  if(this.nearBoard()){this.openBoard();return;}
   if(this.nearCommunity()){this.openCommunity();return;}
   if(this.helpers?.interact())return;
   const npc=this.nearest();if(!npc){if(this.inBlacksmith&&nearBentoDepot(this.state,this.player))this.ui.toast('Depósito particular do Bento · materiais de trabalho da ferraria.');return;}
@@ -394,6 +419,7 @@ export class VillageScene extends Phaser.Scene {
  }
  private pointer=(pointer:Phaser.Input.Pointer):void=>{
   if(pointer.button!==0||this.paused||this.ui.isModalOpen())return;
+  if(this.nearBoard()&&Math.hypot(pointer.worldX-BOARD_POINT.x,pointer.worldY-(BOARD_POINT.y-40))<60){this.openBoard();return;}
   if(this.nearCommunity()&&Math.hypot(pointer.worldX-COMMUNITY_ENTRANCE.x,pointer.worldY-COMMUNITY_ENTRANCE.y)<100){this.openCommunity();return;}
   if(this.helpers?.nearest()){this.interact();return;}
   if(this.villagers.some(n=>Math.hypot(n.sprite.x-pointer.worldX,n.sprite.y-28-pointer.worldY)<44))this.interact();
@@ -524,10 +550,11 @@ export class VillageScene extends Phaser.Scene {
  private updateHUD():void {
   this.state.crops=this.farming.crops;updateVillageEquipment(this,this.state,this.player,this.inShop);notifyReadyOrders(this.state,m=>this.ui.toast(m));markMinerals(this,this.world.resources);
   const npc=this.nearest(),nearExit=!this.inShop&&Math.abs(this.player.x-64)<70&&Math.abs(this.player.y-1680)<32,location=this.inCommunity?'Centro comunitário':this.inBlacksmith?'Ferraria de Bento':this.merchantRoom?`${VILLAGE_NPCS.find(n=>n.id===this.merchantRoom)!.role} · ${VILLAGE_NPCS.find(n=>n.id===this.merchantRoom)!.name}`:VILLAGE_NAME;
+  this.updateBoardMark();
   this.communityLabel?.setText(communityReady(this.state)?'Centro comunitário':`Centro comunitário · reforma ${communityStage(this.state)}/3`).setVisible(!this.inShop&&Math.hypot(this.player.x-COMMUNITY_ENTRANCE.x,this.player.y-COMMUNITY_ENTRANCE.y)<260);
   this.ui.updateHUD({itemQuality:this.state.itemQuality,worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'village',mapTitle:this.inCommunity?'Centro comunitário':undefined,coins:this.state.villageEconomy!.coins,inHome:this.inShop,mapEditorAvailable:!this.inCommunity,interiorEditor:this.inShop&&!this.inCommunity,swimming:this.player.isSwimming,name:this.state.profile.name,
    day:this.state.day,time:this.state.time,inventory:this.inventory.data,tool:'hand',wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,
-   playerTile:{x:this.player.x/32,y:this.player.y/32},interiorMapSize:this.inShop?{width:18,height:this.merchantRoom||this.inCommunity?12:11}:undefined,interactionKey:npc||this.helpers?.nearest()||this.nearCommunity()?'E':null,prompt:this.nearCommunity()?(communityReady(this.state)?'Entrar no centro comunitário':'Reparar o centro comunitário · preparar um lar para sobreviventes'):(this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:undefined)??this.closedDoorMessage()??(npc?`Conversar com ${npc.data.name}${this.canTrade(npc.data.id)?' · comprar e vender':' · conversa e serviços'}`:this.guide?`Siga ${VILLAGE_NPCS.find(n=>n.id===this.guide!.owner)!.name} até a loja`:this.inShop?'Caminhe pela porta ao sul para sair':nearExit?'Siga a seta para voltar à propriedade':'Explore a praça e converse com os moradores'),
+   playerTile:{x:this.player.x/32,y:this.player.y/32},interiorMapSize:this.inShop?{width:18,height:this.merchantRoom||this.inCommunity?12:11}:undefined,interactionKey:npc||this.helpers?.nearest()||this.nearCommunity()||this.nearBoard()?'E':null,prompt:this.nearBoard()?'Quadro de pedidos · pedidos dos moradores':this.nearCommunity()?(communityReady(this.state)?'Entrar no centro comunitário':'Reparar o centro comunitário · preparar um lar para sobreviventes'):(this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:undefined)??this.closedDoorMessage()??(npc?`Conversar com ${npc.data.name}${this.canTrade(npc.data.id)?' · comprar e vender':' · conversa e serviços'}`:this.guide?`Siga ${VILLAGE_NPCS.find(n=>n.id===this.guide!.owner)!.name} até a loja`:this.inShop?'Caminhe pela porta ao sul para sair':nearExit?'Siga a seta para voltar à propriedade':'Explore a praça e converse com os moradores'),
    location,harvests:this.inventory.data.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:this.inShop,shelterReason:this.inShop?location:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress,...this.bentoTravelView?.hud,...(this.inBlacksmith&&!npc&&nearBentoDepot(this.state,this.player)?{prompt:'Depósito particular do Bento',interactionKey:'E'}:{})});
   this.ui.updateCameraZoom(this.zoom,!this.paused&&!this.shop?.isOpen);
  }

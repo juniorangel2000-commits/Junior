@@ -39,6 +39,7 @@ export function itemIconUrl(id: string, tier=0): string | undefined {
   // Lote 01 de artes (docs/arte-recebida/lote01-fazenda): ícones próprios no lugar dos emprestados.
   if(ITEM_ART.has(id))return `assets/visual/items/${id}.png`;
   if(id==='harvestBasket')return 'assets/visual/crops/harvest-basket.png';
+  if(id==='lamp')return 'assets/visual/village/street-lamp.png';
   const crop=CROP_CATALOG.find(c=>c.seed===id||c.harvest===id);if(crop)return `assets/visual/crops/${crop.id}/${crop.seed===id?'seed':'harvest'}.png`;
   if(id==='freshGrass')return 'assets/visual/open-fields/fresh-grass.png';
   if(id==='hardwood')return 'assets/visual/open-fields/hardwood.png';

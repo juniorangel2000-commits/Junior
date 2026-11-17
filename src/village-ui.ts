@@ -10,6 +10,8 @@ import type { MerchantId, TradeSide, VillageEconomy } from './data/village-comme
 import type { CommerceResult } from './systems/commerce';
 import { itemIconUrl } from './visual-assets';
 import './village-ui.css';
+import './village-ui-cards.css';
+import {gameAudio} from './audio';
 
 export interface VillageInteractionCallbacks {
   onSocialOpen?(id:VillageNPC['id']):SocialContext;
@@ -161,10 +163,12 @@ export class VillageInteractionUI {
     if (merchant && !available) this.report(merchantSchedule(merchant.id), false);
     if (!available) this.tab = 'talk';
     this.title.textContent = this.npc.name;
-    this.panel.querySelector('[data-npc-portrait]')?.remove();const portrait=this.callbacks.getPortrait?.(this.npc.id);if(portrait){const img=document.createElement('img');img.dataset.npcPortrait='';img.src=portrait;img.alt=this.npc.name;img.style.cssText='width:48px;height:64px;object-fit:contain;image-rendering:pixelated;float:left;margin-right:14px';this.title.parentElement!.prepend(img);}
+    this.panel.querySelector('[data-npc-portrait]')?.remove();const portrait=this.callbacks.getPortrait?.(this.npc.id);if(portrait){const img=document.createElement('img');img.dataset.npcPortrait='';img.src=portrait;img.alt=this.npc.name;this.title.parentElement!.prepend(img);}
+    this.title.parentElement!.classList.toggle('village-heading-with-portrait',!!portrait);
     const schedule=this.callbacks.getAvailability?.(this.npc.id);
     this.subtitle.textContent = (merchant?.shop ?? this.npc.role)+(schedule?' · '+schedule.message:'');
-    this.balance.textContent = count(this.callbacks.getEconomy().coins);
+    this.setBalance(this.callbacks.getEconomy().coins,false);
+    this.renderFriendship();
     this.tabs.replaceChildren();
     const options: Array<[Tab, string]> = [['talk', 'Conversar']];
     if(this.npc.id==='bento'){const b=document.createElement('button');b.className='village-primary';b.textContent='Fundição, ferramentas e encomendas';b.dataset.openBlacksmith='';b.onclick=()=>this.callbacks.onBlacksmith?.();this.tabs.append(b);}
@@ -184,15 +188,55 @@ export class VillageInteractionUI {
     else this.renderTrade(merchant.id, this.tab);
   }
 
+  /** Amizade no cabeçalho: barra com marcas em "À vontade" (3) e "Amizade" (8). */
+  private renderFriendship():void{
+    this.panel.querySelector('.village-friendship')?.remove();const ctx=this.socialContext;if(!ctx||ctx.affinity===undefined)return;
+    const box=document.createElement('div');box.className='village-friendship';const pct=Math.max(0,Math.min(100,(ctx.affinity+4)/14*100));
+    box.innerHTML=`<span>♥ ${ctx.label}</span><div class="village-friendship-bar"><i style="width:${pct}%"></i><b style="left:${7/14*100}%"></b><b style="left:${12/14*100}%"></b></div>`;
+    this.subtitle.after(box);
+  }
+  /** Saldo com animação: os números correm até o valor novo e aparece "+X" ou "−X". */
+  private shownCoins?:number;
+  private setBalance(coins:number,animate=true):void{
+    const from=this.shownCoins??coins;this.shownCoins=coins;
+    if(!animate||from===coins){this.balance.textContent=count(coins);return;}
+    const wallet=this.balance.closest<HTMLElement>('.village-wallet');const diff=coins-from;
+    if(wallet){const f=document.createElement('span');f.className=`village-coin-float ${diff>0?'is-gain':'is-spend'}`;f.textContent=`${diff>0?'+':'−'}${count(Math.abs(diff))}`;wallet.append(f);setTimeout(()=>f.remove(),1300);wallet.classList.remove('is-bump');void wallet.offsetWidth;wallet.classList.add('is-bump');}
+    gameAudio.play(diff>0?'pickup':'ui');
+    const start=performance.now(),run=(now:number)=>{const t=Math.min(1,(now-start)/450);this.balance.textContent=count(Math.round(from+(coins-from)*(1-(1-t)**3)));if(t<1)requestAnimationFrame(run);};requestAnimationFrame(run);
+  }
+  /** Chip de custo: verde quando você tem o suficiente, vermelho quando falta. */
+  private costChip(label:string,have:number,need:number,item?:string):HTMLElement{
+    const chip=document.createElement('span');chip.className=`village-chip ${have>=need?'is-ok':'is-missing'}`;
+    if(item)chip.append(this.emblem(item));const text=document.createElement('span');text.textContent=item?`${count(Math.min(have,99999))}/${count(need)}`:label;chip.append(text);
+    chip.title=item?`${ITEMS[item as ItemId]?.name??item}: você tem ${count(have)}, precisa de ${count(need)}`:label;return chip;
+  }
   private renderServices():void {
-    this.body.replaceChildren();this.body.className='village-panel-body';
+    this.body.replaceChildren();this.body.className='village-panel-body village-services';
+    const inventory=this.callbacks.getInventory(),coins=this.callbacks.getEconomy().coins;
+    const grid=document.createElement('div');grid.className='village-service-grid';
     for(const service of this.callbacks.getServices?.(this.npc!.id)??[]){
-      const row=document.createElement('article');row.className='village-service';row.style.cssText='padding:14px;border-bottom:1px solid #b39a6d';
-      const title=document.createElement('h3');title.textContent=service.label;if(service.item)title.prepend(this.emblem(service.item));const text=document.createElement('p');text.textContent=service.description;
+      const card=document.createElement('article');card.className='village-service';card.dataset.serviceCard=service.id;
+      const head=document.createElement('header');const icon=service.item??Object.keys(service.cost?.items??{})[0];
+      if(icon)head.append(this.emblem(icon));const title=document.createElement('h3');title.textContent=service.label;head.append(title);
+      const lackCoins=(service.cost?.coins??0)>coins,lackItems=Object.entries(service.cost?.items??{}).some(([it,n])=>(inventory[it as ItemId]??0)<n!),missing=lackCoins||lackItems;
+      const status=document.createElement('span');status.className='village-service-status';
+      const learned=service.actionLabel==='Já aprendido';
+      status.textContent=learned?'Já aprendido':service.disabled?(service.actionLabel??'Indisponível'):lackItems?'Faltam materiais':lackCoins?'Faltam Coroas':'Disponível';
+      status.dataset.state=learned?'done':service.disabled?'waiting':missing?'missing':'ok';head.append(status);
+      const text=document.createElement('p');text.textContent=service.description;
+      card.append(head,text);
+      if(service.cost&&!learned){const chips=document.createElement('div');chips.className='village-chips';
+        if(service.cost.coins)chips.append(this.costChip(`${count(service.cost.coins)} C`,coins,service.cost.coins));
+        for(const [it,n] of Object.entries(service.cost.items??{}))chips.append(this.costChip('',inventory[it as ItemId]??0,n!,it));
+        card.append(chips);}
       const button=document.createElement('button');button.className='village-primary';button.textContent=service.actionLabel??'Solicitar';button.disabled=!!service.disabled;button.dataset.villageService=service.id;
-      button.onclick=()=>{const result=this.callbacks.onService?.(service.id);this.balance.textContent=count(this.callbacks.getEconomy().coins);if(result){this.report(result.message,result.ok);if(result.ok){this.renderServices();const next=this.body.querySelector<HTMLButtonElement>(`[data-village-service="${service.id}"]`);(next&&!next.disabled?next:this.body.querySelector<HTMLButtonElement>('button:not(:disabled)'))?.focus();}}};
-      row.append(title,text,button);this.body.append(row);
+      button.onclick=()=>{const result=this.callbacks.onService?.(service.id);this.setBalance(this.callbacks.getEconomy().coins);if(result){this.report(result.message,result.ok);if(result.ok){gameAudio.play('craft');this.renderServices();
+        const again=this.body.querySelector<HTMLElement>(`[data-service-card="${service.id}"]`);if(again){again.classList.add('is-done-flash');const f=document.createElement('span');f.className='village-card-float';f.textContent='✓ Feito';again.append(f);}
+        this.body.querySelector<HTMLButtonElement>(`[data-village-service="${service.id}"]`)?.focus();}}};
+      card.append(button);grid.append(card);
     }
+    this.body.append(grid);
   }
 
   private emblem(item: string): HTMLElement {
@@ -217,40 +261,60 @@ export class VillageInteractionUI {
   private renderDialogue(): void {
     if (!this.npc) return;
     const npc = this.npc;
-    this.body.replaceChildren(); this.body.className = 'village-panel-body village-dialogue';
+    this.body.replaceChildren(); this.body.className = 'village-panel-body village-dialogue vd';
     const available = npc.merchantId && isMerchantOpen(npc.merchantId, this.day);
     const inside=this.callbacks.isInside?.(npc.id)??this.callbacks.canTrade?.(npc.id)??true;
     const trading=inside&&(this.callbacks.canTrade?.(npc.id)??true);
-    const emblem = this.emblem(npc.merchantId ? merchantEmblems[npc.merchantId] : 'fiber');
-    emblem.classList.add('village-dialogue-emblem');
-    const copy = document.createElement('div'); copy.className = 'village-dialogue-copy';
-    const quote = document.createElement('p'); quote.className = 'village-dialogue-text';
-    quote.textContent = npc.dialogue[this.dialogueIndex] ?? 'É bom ver a vila recebendo novos vizinhos.';
-    const actions = document.createElement('div'); actions.className = 'village-dialogue-actions';
-    const progress = document.createElement('span'); progress.className = 'village-dialogue-count';
-    progress.textContent = `${Math.min(this.dialogueIndex + 1, npc.dialogue.length)} de ${npc.dialogue.length}`;
-    const next = document.createElement('button'); next.type = 'button'; next.className = 'village-primary'; next.dataset.villageDialogueNext = '';
-    const remaining = this.dialogueIndex < npc.dialogue.length - 1;
     const completion=this.callbacks.getDialogueAction?.(npc.id);
-    next.textContent = remaining ? 'Continuar conversa →' : completion?completion.label:available&&trading ? 'Ver a loja →' : 'Até mais';
+    const remaining = this.dialogueIndex < npc.dialogue.length - 1;
+    // Palco: o morador em pé, grande, sobre um chão.
+    const stage=document.createElement('div');stage.className='vd-stage';
+    const portrait=this.callbacks.getPortrait?.(npc.id);
+    if(portrait)stage.append(Object.assign(document.createElement('img'),{src:portrait,alt:npc.name,className:'vd-portrait'}));
+    else{const e=this.emblem(npc.merchantId?merchantEmblems[npc.merchantId]:'fiber');e.classList.add('vd-emblem');stage.append(e);}
+    // Balão: plaquinha com o nome, a fala aparecendo palavra por palavra e o andamento da conversa.
+    const box=document.createElement('div');box.className='vd-box';
+    const plate=document.createElement('div');plate.className='vd-plate';
+    const name=document.createElement('strong');name.textContent=npc.name;const role=document.createElement('span');role.textContent=npc.role;plate.append(name,role);
+    if(this.socialContext){const mood=document.createElement('em');mood.className='vd-mood';mood.textContent='♥ '+this.socialContext.label;plate.append(mood);}
+    const quote=document.createElement('p');quote.className='village-dialogue-text vd-text';
+    const line=npc.dialogue[this.dialogueIndex]??'É bom ver a vila recebendo novos vizinhos.';
+    line.split(/(\s+)/).forEach((w,k)=>{const span=document.createElement('span');span.textContent=w;span.style.animationDelay=`${Math.min(k,80)*28}ms`;quote.append(span);});
+    quote.onclick=()=>quote.classList.add('is-shown');
+    box.append(plate);
+    if(this.socialContext){
+      const context=this.socialContext,note=document.createElement('aside');note.className='village-social-note vd-greeting';note.dataset.socialNpc=npc.id;
+      const greeting=document.createElement('p');greeting.textContent='“'+context.greeting+'”';note.append(greeting);
+      if(context.memory){const memory=document.createElement('p');memory.dataset.socialMemory='';memory.className='vd-memory';memory.textContent=context.memory;note.append(memory);}
+      box.append(note);
+    }
+    box.append(quote);
+    const foot=document.createElement('div');foot.className='village-dialogue-actions vd-foot';
+    const dots=document.createElement('span');dots.className='village-dialogue-count vd-dots';dots.setAttribute('aria-label',`${Math.min(this.dialogueIndex+1,npc.dialogue.length)} de ${npc.dialogue.length}`);
+    for(let k=0;k<npc.dialogue.length;k++){const d=document.createElement('i');if(k<=this.dialogueIndex)d.className='is-on';dots.append(d);}
+    const next = document.createElement('button'); next.type = 'button'; next.className = 'village-primary vd-next'; next.dataset.villageDialogueNext = '';
+    next.textContent = remaining ? 'Continuar ▸' : completion?completion.label:available&&trading ? 'Ver a loja ▸' : 'Até mais';
     next.addEventListener('click', () => {
+      gameAudio.play('ui');
       if (remaining) { this.dialogueIndex++; this.renderDialogue(); this.body.querySelector<HTMLButtonElement>('[data-village-dialogue-next]')?.focus(); }
       else if(completion){const result=completion.complete();if(result.ok)this.render();this.report(result.message,result.ok);}
       else if (available&&trading) this.selectTab('buy');
       else this.close();
     });
-    actions.append(progress, next);
-    if(available&&!inside&&this.callbacks.onGuide){const guide=document.createElement('button');guide.type='button';guide.className='village-primary';guide.dataset.guideToShop='';guide.textContent='Leve-me até sua loja';guide.disabled=this.callbacks.getAvailability?.(npc.id)?.canGuide===false;guide.onclick=()=>{this.close();this.callbacks.onGuide?.(npc.id);};actions.append(guide);const note=document.createElement('p');note.textContent='Compra e venda acontecem dentro da loja. Conversas e serviços continuam disponíveis aqui.';copy.append(note);}
-    copy.prepend(quote);
-    if(this.socialContext){
-      const context=this.socialContext,note=document.createElement('aside');note.className='village-social-note';note.dataset.socialNpc=npc.id;
-      const label=document.createElement('small');label.textContent=context.label;const greeting=document.createElement('p');greeting.textContent=context.greeting;note.append(label,greeting);
-      if(context.memory){const memory=document.createElement('p');memory.dataset.socialMemory='';memory.textContent=context.memory;note.append(memory);}
-      copy.prepend(note);
-      if(!completion&&this.callbacks.onSocialResponse){const choices=document.createElement('div');choices.className='village-social-choices';
-       for(const[tone,text]of[['warm','É bom conversar com você.'],['distant','Prefiro não conversar agora.']]as const){const button=document.createElement('button');button.type='button';button.className='village-primary';button.dataset.socialResponse=tone;button.textContent=text;button.disabled=!context.canRespond;button.onclick=()=>{const result=this.callbacks.onSocialResponse!(npc.id,tone);if(result.ok){this.socialContext={...context,...result.context};this.renderDialogue();}this.report(result.message,result.ok);};choices.append(button);}copy.append(choices);}
+    foot.append(dots,next);box.append(foot);
+    // Respostas e atalhos, abaixo do balão.
+    const choices=document.createElement('div');choices.className='village-social-choices vd-choices';
+    if(this.socialContext&&!completion&&this.callbacks.onSocialResponse){
+      const context=this.socialContext;
+      for(const[tone,text,icon]of[['warm','É bom conversar com você.','😊'],['distant','Prefiro não conversar agora.','🤚']]as const){const button=document.createElement('button');button.type='button';button.className='vd-choice';button.dataset.socialResponse=tone;
+        button.innerHTML=`<span aria-hidden="true">${icon}</span>`;button.append(document.createTextNode(text));button.disabled=!context.canRespond;
+        button.onclick=()=>{const result=this.callbacks.onSocialResponse!(npc.id,tone);if(result.ok){gameAudio.play('pickup');this.socialContext={...context,...result.context};this.renderFriendship();this.renderDialogue();}this.report(result.message,result.ok);};choices.append(button);}
+      if(!context.canRespond){const done=document.createElement('small');done.className='vd-answered';done.textContent='Vocês já conversaram hoje.';choices.append(done);}
     }
-    copy.append(actions); this.body.append(emblem, copy);
+    if(available&&!inside&&this.callbacks.onGuide){const guide=document.createElement('button');guide.type='button';guide.className='vd-choice vd-guide';guide.dataset.guideToShop='';guide.innerHTML='<span aria-hidden="true">🧭</span>';guide.append(document.createTextNode('Leve-me até sua loja'));guide.disabled=this.callbacks.getAvailability?.(npc.id)?.canGuide===false;guide.onclick=()=>{this.close();this.callbacks.onGuide?.(npc.id);};choices.append(guide);
+      const note=document.createElement('p');note.className='vd-note';note.textContent='Compra e venda acontecem dentro da loja. Conversas e serviços continuam aqui.';choices.append(note);}
+    const side=document.createElement('div');side.className='vd-side';side.append(box,choices);
+    this.body.append(stage, side);
   }
 
   private renderTrade(merchantId: MerchantId, side: TradeSide): void {
@@ -301,7 +365,12 @@ export class VillageInteractionUI {
     const stock = document.createElement('p'); stock.className = 'village-owned'; stock.textContent = `Você tem ${count(inventory[item])} na mochila.`;
     const label = document.createElement('label'); label.className = 'village-quantity'; label.textContent = 'Quantidade';
     const input = document.createElement('input'); input.type = 'number'; input.min = '1'; input.max = String(max); input.step = '1'; input.value = String(this.quantity); input.inputMode = 'numeric'; input.dataset.tradeQuantity = ''; input.setAttribute('aria-label', 'Quantidade para negociar');
-    label.append(input);
+    // Botões de − e + e "máximo" ao redor da quantidade.
+    const stepper=document.createElement('div');stepper.className='village-stepper';
+    const step=(d:number|'max')=>{const v=d==='max'?(side==='buy'?Math.max(1,Math.min(max,Math.floor(economy.coins/Math.max(1,price)))):max):Math.max(1,Math.min(max,(Number(input.value)||1)+d));input.value=String(v);input.dispatchEvent(new Event('input'));gameAudio.play('ui');};
+    for(const [txt,d,name] of [['−',-1,'Diminuir'],['+',1,'Aumentar']] as const){const b=document.createElement('button');b.type='button';b.textContent=txt;b.className='village-step';b.setAttribute('aria-label',name);b.onclick=()=>step(d);stepper.append(b);}
+    const maxButton=document.createElement('button');maxButton.type='button';maxButton.className='village-step village-step-max';maxButton.textContent='Máx';maxButton.onclick=()=>step('max');
+    label.append(input);stepper.insertBefore(label,stepper.lastChild);stepper.append(maxButton);
     const total = document.createElement('div'); total.className = 'village-total';
     const totalLabel = document.createElement('span'); totalLabel.textContent = side === 'buy' ? 'Você paga' : 'Você recebe';
     const amount = document.createElement('strong'); amount.dataset.tradeTotal = ''; total.append(totalLabel, amount);
@@ -329,11 +398,11 @@ export class VillageInteractionUI {
         this.selected = undefined; this.renderTrade(merchantId, side); this.report('A seleção da loja mudou. Escolha um dos produtos disponíveis hoje.', false); return;
       }
       const result = this.callbacks.onTrade(merchantId, side, item, this.quantity);
-      this.balance.textContent = count(this.callbacks.getEconomy().coins);
+      this.setBalance(this.callbacks.getEconomy().coins);
       this.renderTrade(merchantId, side);
       this.report(result.message, result.ok);
       this.body.querySelector<HTMLButtonElement>(`[data-trade-item="${item}"]`)?.focus();
     });
-    detail.append(icon, heading, description, stock, label, total, action, reason);
+    detail.append(icon, heading, description, stock, stepper, total, action, reason);
   }
 }

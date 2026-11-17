@@ -17,7 +17,9 @@ import {createVillageEconomy,MAX_COINS} from '../data/village-commerce';
 import {FOREST_ANIMALS} from '../data/ancient-forest';
 import {ECOLOGY_BALANCE as ECOLOGY} from '../data/ecology-balance';
 import {inventoryToolCondition,repairInventoryTool} from './tool-instances';
-export interface VillageServiceOffer{id:string;label:string;description:string;item?:ItemId;disabled?:boolean;actionLabel?:string}
+/** Custo para os chips da janela (moedas e itens, com "tenho/preciso"). */
+export interface ServiceCost{coins?:number;items?:Partial<Record<ItemId,number>>}
+export interface VillageServiceOffer{id:string;label:string;description:string;item?:ItemId;disabled?:boolean;actionLabel?:string;cost?:ServiceCost}
 type Service={npc:string;label:string;description:string;run:(s:SaveData,i:Inventory)=>void|string};
 const services:Record<string,Service>={};
 const add=(id:string,npc:string,label:string,description:string,run:Service['run'])=>{services[id]={npc,label,description,run};};
@@ -51,7 +53,9 @@ add('create-harvest-basket','helena','Preparar cesta de colheita',HARVEST_BASKET
 add('inn-rest','helena','Hospedar até as 08:00','40 Coroas. Recupera todo o vigor e avança até a manhã seguinte.',(s,i)=>{requireThat(s.day<999999,'O calendário atingiu o limite.');pay(s,i,40);s.day++;s.time=480;s.villageProgress!.vigor=100;});
 add('inn-rumor','helena','Ouvir os rumores','Conheça pistas sobre a floresta e o acampamento de sobreviventes.',s=>{const p=s.villageProgress!;for(const id of ['forest-lake','survivor-camp'])if(!p.rumors.includes(id))p.rumors.push(id);});
 for(const survivor of ['marina','rui'])add(`welcome-${survivor}`,'helena',`Receber ${survivor==='marina'?'Marina':'Rui'}`,'Prepare uma base (projeto de Tobias), 4 refeições e 8 tábuas para acolher este sobrevivente.',(s,i)=>{requireThat(s.villageProgress!.plans.includes('survivor'),'Aprenda o projeto de base com Tobias.');requireThat(!s.villageSurvivors?.includes(survivor),'Este sobrevivente já foi acolhido.');pay(s,i,0,{meal:4,plank:8});s.villageSurvivors??=[];s.villageSurvivors.push(survivor);});
-add('learn-machines','icaro','Aprender iluminação e bombas','80 Coroas, 6 sucatas e 2 componentes eletrônicos. Libera luminárias e bombas.',(s,i)=>{requireThat(!s.villageProgress!.recipes.includes('waterPump'),'Projetos já conhecidos.');pay(s,i,80,{scrap:6,electronicPart:2});s.villageProgress!.recipes.push('lamp','waterPump');});
+// Iluminação e bomba d'água eram um só projeto; desde a preview.41 são dois (pedido do Junior).
+add('learn-lamps','icaro','Aprender luminárias','40 Coroas, 3 sucatas e 1 componente eletrônico. Libera a luminária exterior.',(s,i)=>{requireThat(!s.villageProgress!.recipes.includes('lamp'),'Projeto já conhecido.');pay(s,i,40,{scrap:3,electronicPart:1});s.villageProgress!.recipes.push('lamp');});
+add('learn-pump','icaro','Aprender bomba de irrigação','50 Coroas, 4 sucatas e 2 componentes eletrônicos. Libera a bomba de irrigação.',(s,i)=>{requireThat(!s.villageProgress!.recipes.includes('waterPump'),'Projeto já conhecido.');pay(s,i,50,{scrap:4,electronicPart:2});s.villageProgress!.recipes.push('waterPump');});
 for(const c of B.contracts)add(`request-${c.npc}`,c.npc,'Quadro de pedidos',`${c.quantity} ${c.item}: ${c.reward} C. Renova a cada ${c.interval} dias.`,(s)=>{const r=fulfillContract(s,c.npc);requireThat(r.ok,r.message);});
 for(const tool of ['hatchet','pickaxe','hoe','sickle','shovel'] as const)add(`repair-${tool}`,'bento',`Reparar ${tool}`,'20 C. Restaura a durabilidade do material atual.',(s,i)=>{requireThat(i.has(tool),'Traga a ferramenta.');const c=toolCondition(s,tool);requireThat(c.durability<B.durability[c.tier],'A ferramenta já está em bom estado.');pay(s,i,20);configureTool(s,tool,c.tier);});
 for(const tool of ['hammer','handsaw','fishingRod','net','shears'] as const)add(`repair-${tool}`,'bento',`Reparar ${{hammer:'martelo',handsaw:'serrote',fishingRod:'vara de pesca',net:'rede',shears:'tesoura de tosquia'}[tool]}`,'20 C. Repara somente a cópia selecionada.',(s,i)=>{requireThat(i.has(tool),'Traga a ferramenta.');requireThat(inventoryToolCondition(i.data,tool).durability<100,'A ferramenta já está em bom estado.');pay(s,i,20);repairInventoryTool(i.data,tool);});
@@ -70,9 +74,29 @@ for(const id of CRAFTED_MACHINE_IDS){const d=MACHINES[id];add(`learn-${id}`,d.np
 add('buy-empty-hive','augusto','Colmeia vazia','120 Coroas. Coloque nos Campos Abertos, junto a um ipê: a cada 5 dias um enxame pode ocupá-la.',(s,i)=>{pay(s,i,120);requireThat(i.transact({},{emptyHive:1}),'Libere espaço na mochila para a colmeia.');});
 add('dish-of-day','helena','Prato do dia','A Helena paga o dobro por 1 unidade do prato do dia, uma vez por dia.',(s,i)=>{sellDishOfDay(s,i,coins=>reward(s,coins));});
 add('learn-dish','helena','Aprender receita da pousada','Helena ensina uma receita por vez, para cozinhar no fogão a lenha de casa.',(s,i)=>{learnNextDish(s,coins=>pay(s,i,coins));});
+const SERVICE_COSTS:Record<string,ServiceCost>={
+ 'learn-medicine':{items:{rareHerb:1}},'learn-infusion':{items:{...ECOLOGY.infusion.learnCost}},'brew-infusion':{coins:ECOLOGY.infusion.serviceFee,items:{...ECOLOGY.infusion.cost}},
+ 'plan-home':{coins:50,items:{wood:8,stone:4}},'plan-workshop':{coins:50,items:{wood:8,stone:4}},'plan-survivor':{coins:50,items:{wood:8,stone:4}},
+ 'learn-fertilizer':{coins:20,items:{fiber:4}},'buy-pig':{coins:400},'buy-duck':{coins:300},'buy-chicken':{coins:250},
+ 'learn-tailoring':{coins:30,items:{fiber:6}},'outfit-female':{coins:10,items:{clothing:1}},'outfit-male':{coins:10,items:{clothing:1}},
+ 'fishing-baits':{coins:40,items:{fiber:3}},'inn-rest':{coins:40},'learn-lamps':{coins:40,items:{scrap:3,electronicPart:1}},'learn-pump':{coins:50,items:{scrap:4,electronicPart:2}},
+ 'shelter-carpentry':{coins:30,items:{log:2,wood:6}},'shelter-textiles':{coins:20,items:{fiber:8}},'shelter-fittings':{coins:12,items:{scrap:4}},
+ 'buy-empty-hive':{coins:120},'create-harvest-basket':{coins:HARVEST_BASKET_FEE,items:{...HARVEST_BASKET_COST}},
+ ...Object.fromEntries(CRAFTED_MACHINE_IDS.map(id=>[`learn-${id}`,{coins:MACHINES[id].learnFee}])),
+ ...Object.fromEntries(['hatchet','pickaxe','hoe','sickle','shovel','hammer','handsaw','fishingRod','net','shears'].map(t=>[`repair-${t}`,{coins:20}])),
+};
 export function listVillageServices(npc:string,save?:SaveData):VillageServiceOffer[]{
  return Object.entries(services).filter(([,s])=>s.npc===npc).map(([id,s])=>{
-  const offer:VillageServiceOffer={id,label:s.label,description:s.description};if(!save)return offer;
+  const offer:VillageServiceOffer={id,label:s.label,description:s.description};if(SERVICE_COSTS[id])offer.cost=SERVICE_COSTS[id];if(!save)return offer;
+  // Receitas e projetos já aprendidos aparecem como concluídos.
+  const recipes=save.villageProgress?.recipes??[],plans=save.villageProgress?.plans??[];
+  const learned:Record<string,boolean>={'learn-medicine':recipes.includes('herbalTonic'),'learn-infusion':recipes.includes('fungalInfusion'),'learn-fertilizer':recipes.includes('fertilizer'),
+   'learn-tailoring':recipes.includes('backpack'),'learn-lamps':recipes.includes('lamp'),'learn-pump':recipes.includes('waterPump'),'plan-home':plans.includes('home'),'plan-workshop':plans.includes('workshop'),'plan-survivor':plans.includes('survivor'),
+   ...Object.fromEntries(CRAFTED_MACHINE_IDS.map(m=>[`learn-${m}`,recipes.includes(m)]))};
+  const icons:Record<string,ItemId>={'learn-lamps':'lamp','learn-pump':'waterPump','shelter-fittings':'metalPart','scrap-sort':'scrap','buy-empty-hive':'emptyHive','create-harvest-basket':'harvestBasket'};
+  if(icons[id])offer.item=icons[id];else if(id.startsWith('learn-')&&(CRAFTED_MACHINE_IDS as readonly string[]).includes(id.slice(6)))offer.item=id.slice(6) as ItemId;
+  if(learned[id]){offer.disabled=true;offer.actionLabel='Já aprendido';offer.cost=undefined;}
+  if(id==='fishing-lesson'){const k=save.villageProgress?.fishingSkill??0;offer.cost=k?{coins:60,items:{fish:3}}:{coins:30};if(k>=2){offer.disabled=true;offer.actionLabel='Já aprendido';}}
   if(id==='dish-of-day'){
    const r=dishOfDay(save.day),sold=save.kitchen?.dishOfDaySold===save.day,have=save.inventory[r.id]??0;
    offer.label=`Prato do dia: ${r.name.toLowerCase()}`;offer.item=r.id;offer.actionLabel=sold?'Já vendido hoje':`Vender (${r.price*DISH_OF_DAY_FACTOR} C)`;
@@ -80,6 +104,7 @@ export function listVillageServices(npc:string,save?:SaveData):VillageServiceOff
   }
   if(id==='learn-dish'){
    const r=nextDishLesson(save),known=knownDishes(save).filter(d=>HELENA_DISHES.includes(d)).length;
+   if(r)offer.cost={coins:r.learnFee};
    offer.label=r?`Aprender: ${r.name.toLowerCase()}`:'Receitas da pousada';offer.disabled=!r||(save.villageEconomy?.coins??0)<r.learnFee;offer.actionLabel=r?`Aprender (${r.learnFee} C)`:'Todas aprendidas';
    offer.description=r?`${r.learnFee} C. Ingredientes: ${Object.entries(r.ingredients).map(([item,n])=>`${n} ${ITEMS[item as ItemId].name.toLowerCase()}`).join(', ')}, mais 1 madeira de lenha. Recupera ${r.vigor} de vigor. Receitas da pousada: ${known}/${HELENA_DISHES.length}.${r.station==='oven'?' Esta vai ao forno de barro.':''}`:`Você conhece as ${HELENA_DISHES.length} receitas da pousada.`;
   }
@@ -92,7 +117,7 @@ export function listVillageServices(npc:string,save?:SaveData):VillageServiceOff
    const job=save.scrapSorting,have=save.inventory.scrap??0,n=Math.min(SCRAP_SORT_MAX,have),coins=save.villageEconomy?.coins??0;
    if(scrapSortingReady(job,save.day)){offer.label='Buscar peças separadas';offer.actionLabel='Buscar peças';offer.description=`O Ícaro terminou de separar ${job!.count} sucata${job!.count===1?'':'s'}.`;}
    else if(job){offer.label='Separando sucata…';offer.actionLabel='Pronto amanhã';offer.disabled=true;offer.description=`O Ícaro está separando ${job.count} sucata${job.count===1?'':'s'}. Volte amanhã de manhã.`;}
-   else{offer.item='scrap';offer.actionLabel=n?`Entregar ${n} (${n*SCRAP_SORT_FEE} C)`:'Sem sucata';offer.disabled=n===0||coins<n*SCRAP_SORT_FEE;
+   else{offer.item='scrap';offer.cost={coins:Math.max(1,n)*SCRAP_SORT_FEE,items:{scrap:Math.max(1,n)}};offer.actionLabel=n?`Entregar ${n} (${n*SCRAP_SORT_FEE} C)`:'Sem sucata';offer.disabled=n===0||coins<n*SCRAP_SORT_FEE;
     offer.description=`Até ${SCRAP_SORT_MAX} sucatas por dia, ${SCRAP_SORT_FEE} C cada. Saem pregos (os mais comuns), dobradiças, molas e engrenagens (as mais raras); às vezes, só ferrugem. Na mochila: ${have}.`;}
   }
   const tier=save.fishingProgress?.rodTier??0,basket=availableSpecimens(save),order=fishingOrder(save.day);

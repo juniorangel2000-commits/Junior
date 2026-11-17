@@ -1,4 +1,5 @@
 import {createSocialRuntime,openSocialConversation,respondSocial} from './systems/npc-social';
+import {BOARD_SERVICE_IDS} from './request-board';
 import {ensureFisherTravel} from './systems/fisher-travel';
 import {villageAccessUnlocked,needsDamiaoIntroduction,receiveDamiaoIntroduction,DAMIAO_INTRODUCTION} from './systems/village-introduction';
 import type Phaser from 'phaser';
@@ -37,7 +38,7 @@ export class LakeFisherVisit {
    canTrade:()=>villageAccessUnlocked(state())&&damiaoAtLake(state()),isInside:()=>true,
    getAvailability:()=>({message:needsDamiaoIntroduction(state())?'Tenho um presente e uma indicação para você':'Cabana do lago · '+FISHER_LAKE_HOURS.label,canGuide:false}),
    getPortrait:()=>scene.textures.getBase64('village-npc-damiao',characterFrame('down',0,DAMIAO_WALK_FRAMES)),
-   getServices:()=>villageAccessUnlocked(state())?listVillageServices('damiao',state()):[],
+   getServices:()=>villageAccessUnlocked(state())?listVillageServices('damiao',state()).filter(o=>!BOARD_SERVICE_IDS.includes(o.id)):[],
    onService:id=>{const result=fisherService(state(),id,saveGame);if(result.ok)changed();return result;},
    getInventory:()=>state().inventory,getEconomy:()=>state().villageEconomy!,getDay:()=>state().day,
    onTrade:(merchant,side,item,quantity)=>{const result=fisherTrade(state(),merchant,side,item,quantity,saveGame);if(result.ok)changed();return result;},

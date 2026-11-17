@@ -3,7 +3,7 @@ import {NPC_SOCIAL,SOCIAL_DISAGREEMENTS,type SocialNpc,type SocialMemoryKind} fr
 import {MINE_MISSIONS,type MineMissionId,mineMission} from '../data/mine-missions';
 import {newNpcSocial,socialPairKey,socialMemoryKey,type NpcSocialState,type SocialMemory} from './npc-social-state';
 export interface SocialRuntime{current?:()=>SaveData;snapshot:()=>SaveData;write:(draft:SaveData)=>boolean;apply:(draft:SaveData)=>void}
-export interface SocialContext{greeting:string;memory?:string;label:string;canRespond:boolean}
+export interface SocialContext{greeting:string;memory?:string;label:string;canRespond:boolean;affinity?:number}
 export function createSocialRuntime(snapshot:()=>SaveData,write:(save:SaveData)=>boolean,root:()=>SaveData):SocialRuntime{return{current:root,snapshot,write,apply:d=>{root().npcSocial=d.npcSocial;}};}
 export const ensureNpcSocial=(save:SaveData):NpcSocialState=>save.npcSocial??=newNpcSocial();
 const clamp=(n:number)=>Math.max(NPC_SOCIAL.min,Math.min(NPC_SOCIAL.max,n));
@@ -38,7 +38,7 @@ export function socialMemoryLine(m:SocialMemory):string{
 }
 export function socialContext(save:SaveData,npc:SocialNpc):SocialContext{
  const p=save.npcSocial?.players[npc],n=p?.affinity??0;
- return{label:n<=-4?'Um pouco distantes':n>=8?'Amizade':n>=3?'À vontade':'Conhecendo melhor',greeting:n<=-4?'Olá. Hoje prefiro uma conversa mais curta.':n>=8?'Que bom encontrar você! Como tem passado?':n>=3?'É bom ver você por aqui. Como vai?':'Olá! Como você está?',canRespond:p?.responseDay!==save.day};
+ return{affinity:n,label:n<=-4?'Um pouco distantes':n>=8?'Amizade':n>=3?'À vontade':'Conhecendo melhor',greeting:n<=-4?'Olá. Hoje prefiro uma conversa mais curta.':n>=8?'Que bom encontrar você! Como tem passado?':n>=3?'É bom ver você por aqui. Como vai?':'Olá! Como você está?',canRespond:p?.responseDay!==save.day};
 }
 function commit(runtime:SocialRuntime,draft:SaveData):boolean{try{if(!runtime.write(draft))return false;}catch{return false;}runtime.apply(draft);return true;}
 export function openSocialConversation(runtime:SocialRuntime,npc:SocialNpc):SocialContext{

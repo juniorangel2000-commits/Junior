@@ -11,7 +11,8 @@ export const VILLAGE_DRESSING = [
  {id:'tina-damiao',frame:'tub',owner:'damiao',x:72,y:42.5,width:70,height:47},
  {id:'mesa-helena',frame:'table',owner:'helena',x:49,y:24.5,width:86,height:60},
  {id:'pecas-icaro',frame:'gears',owner:'icaro',x:66.5,y:56.75,width:80,height:62},
- {id:'avisos-comunitarios',frame:'notice',owner:'community',x:52,y:18.75,width:64,height:62},
+ // Quadro de pedidos (preview.41): na frente do centro comunitário, à esquerda da escada.
+ {id:'avisos-comunitarios',frame:'notice',owner:'community',x:53.9,y:17.7,width:64,height:62},
  {id:'lenha-casa-sul',frame:'firewood',owner:'cottage',x:81,y:62,width:76,height:49},
 ] as const;
 export type VillageDressing=typeof VILLAGE_DRESSING[number];
