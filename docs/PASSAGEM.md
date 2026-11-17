@@ -79,6 +79,6 @@ Outras ideias: ferramentas na mão (machadinha e picareta), Marina e Rui andando
 
 - `npm run check`: ok.
 - `npm run build`: ok (aviso de tamanho do pacote, que já existia).
-- `npm test`: **2.170 passaram, zero falhas, 255 arquivos**.
+- `npm test`: **2.174 passaram, zero falhas, 256 arquivos**.
 - Montaria conferida no Chromium, andando nas 4 direções principais e galopando de lado. As diagonais e a vista de costas foram conferidas em imagem montada sobre o cavalo parado.
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.
