@@ -15,12 +15,21 @@ import {gameAudio} from './audio';
 import {FIRST_TOOL_MATERIALS} from './data/economy-balance';
 import {materialsLabel} from './systems/commerce';
 import {pickConversation} from './data/npc-conversations';
+import {answersFor,type AnswerTone} from './data/npc-answers';
+import type {GiftTaste} from './data/npc-gifts';
+import type {SocialResult} from './systems/npc-gifts';
+const TASTE_BADGE:Record<GiftTaste,string>={loved:'♥♥ adora',liked:'♥ gosta',neutral:'· tanto faz',disliked:'✗ não gosta'};
 /** Moradores já ouvidos nesta sessão e a última conversa de cada um (para não repetir). */
 const heard=new Set<string>(),lastConversation=new Map<string,number>();
 
 export interface VillageInteractionCallbacks {
   onSocialOpen?(id:VillageNPC['id']):SocialContext;
   onSocialResponse?(id:VillageNPC['id'],tone:'warm'|'distant'):{ok:boolean;message:string;context?:SocialContext};
+  /** Resposta do jogador ao fim da conversa (src/data/npc-answers.ts). */
+  onAnswer?(id:VillageNPC['id'],conversation:number,tone:AnswerTone):SocialResult;
+  /** Presentes (src/systems/npc-gifts.ts). */
+  getGiftChoices?(id:VillageNPC['id']):{item:ItemId;count:number;known?:GiftTaste}[];
+  onGift?(id:VillageNPC['id'],item:ItemId):SocialResult;
   locationLabel?:string;
   getDialogueAction?(npcId:string):{label:string;complete:()=>{ok:boolean;message:string}}|undefined;
   returnLabel?:string;
@@ -41,7 +50,7 @@ export interface VillageInteractionCallbacks {
   onClose(): void;
 }
 
-type Tab = 'talk' | 'services' | TradeSide;
+type Tab = 'talk' | 'services' | 'gift' | TradeSide;
 const count = (value: number): string => value.toLocaleString('pt-BR');
 const toolItems = new Set<ItemId>(['hatchet', 'pickaxe', 'hoe', 'handsaw', 'hammer', 'sickle', 'shovel']);
 const merchantEmblems: Record<MerchantId, string> = {
@@ -65,6 +74,8 @@ export class VillageInteractionUI {
   private dialogueIndex = 0;
   private lines:readonly string[]=[];
   private socialContext?:SocialContext;
+  /** Conversa sorteada (índice em NPC_CONVERSATIONS) e se o jogador já respondeu nela. */
+  private conversation?:number;private answered=false;
   private selected?: ItemId;
   private quantity = 1;
   private previousFocus?: HTMLElement;
@@ -109,6 +120,9 @@ export class VillageInteractionUI {
     const firstTime=!heard.has(npc.id)&&(this.socialContext?.affinity??0)<1;
     const picked=firstTime||this.callbacks.getDialogueAction?.(npc.id)?undefined:pickConversation(npc.id,lastConversation.get(npc.id));
     if(picked)lastConversation.set(npc.id,picked.index);heard.add(npc.id);this.lines=picked?.lines??npc.dialogue;
+    this.conversation=picked?.index;this.answered=false;
+    // Presente de amizade que ficou guardado (mochila cheia): o morador entrega agora.
+    if(this.socialContext?.reward)this.lines=[...this.lines,this.socialContext.reward];
     this.layer.dataset.npc = npc.id;
     this.layer.hidden = false;
     this.report('');
@@ -185,6 +199,7 @@ export class VillageInteractionUI {
     if(this.npc.id==='bento'&&this.callbacks.onBentoExpedition){const b=document.createElement('button');b.className='village-primary';b.textContent='Expedição à mina';b.dataset.bentoExpedition='';b.onclick=()=>this.callbacks.onBentoExpedition?.();this.tabs.append(b);}
     if(this.npc.id==='bento'&&this.callbacks.onMineRequests){const b=document.createElement('button');b.className='village-primary';b.textContent='Pedidos da mina';b.dataset.mineRequests='';b.onclick=()=>this.callbacks.onMineRequests?.();this.tabs.append(b);}
     if(this.callbacks.getServices?.(this.npc.id).length)options.push(['services','Serviços']);
+    if(this.socialContext&&this.callbacks.onGift)options.push(['gift','Presentear']);
     if (available&&(this.callbacks.canTrade?.(this.npc.id)??true)) options.push(['buy', this.npc.id==='bento'?'Comprar materiais':'Comprar'], ['sell', 'Vender']);
     for (const [tab, label] of options) {
       const button = document.createElement('button');
@@ -194,15 +209,16 @@ export class VillageInteractionUI {
       this.tabs.append(button);
     }
     if(this.tab==='services'){this.renderServices();return;}
+    if(this.tab==='gift'){this.renderGift();return;}
     if (this.tab === 'talk' || !merchant) this.renderDialogue();
     else this.renderTrade(merchant.id, this.tab);
   }
 
-  /** Amizade no cabeçalho: barra com marcas em "À vontade" (3) e "Amizade" (8). */
+  /** Amizade no cabeçalho: barra com marcas nos níveis (3, 8, 15 e 25; src/data/npc-gifts.ts). */
   private renderFriendship():void{
     this.panel.querySelector('.village-friendship')?.remove();const ctx=this.socialContext;if(!ctx||ctx.affinity===undefined)return;
-    const box=document.createElement('div');box.className='village-friendship';const pct=Math.max(0,Math.min(100,(ctx.affinity+4)/14*100));
-    box.innerHTML=`<span>♥ ${ctx.label}</span><div class="village-friendship-bar"><i style="width:${pct}%"></i><b style="left:${7/14*100}%"></b><b style="left:${12/14*100}%"></b></div>`;
+    const box=document.createElement('div');box.className='village-friendship';const span=34,at=(n:number)=>Math.max(0,Math.min(100,(n+4)/span*100));
+    box.innerHTML=`<span>♥ ${ctx.label}</span><div class="village-friendship-bar" title="Amizade ${ctx.affinity}"><i style="width:${at(ctx.affinity)}%"></i>${[3,8,15,25].map(n=>`<b style="left:${at(n)}%"></b>`).join('')}</div>`;
     this.subtitle.after(box);
   }
   /** Saldo com animação: os números correm até o valor novo e aparece "+X" ou "−X". */
@@ -314,17 +330,55 @@ export class VillageInteractionUI {
     foot.append(dots,next);box.append(foot);
     // Respostas e atalhos, abaixo do balão.
     const choices=document.createElement('div');choices.className='village-social-choices vd-choices';
-    if(this.socialContext&&!completion&&this.callbacks.onSocialResponse){
+    const answers=this.conversation!==undefined&&this.callbacks.onAnswer?answersFor(npc.id,this.conversation,this.day):undefined;
+    if(this.socialContext&&!completion&&answers&&!this.answered&&!remaining&&this.socialContext.canRespond){
+      for(const answer of answers){const button=document.createElement('button');button.type='button';button.className='vd-choice vd-answer';button.dataset.socialAnswer=answer.tone;
+        button.innerHTML='<span aria-hidden="true">💬</span>';button.append(document.createTextNode(answer.text));
+        button.onclick=()=>{const result=this.callbacks.onAnswer!(npc.id,this.conversation!,answer.tone);this.report(result.message,result.ok);if(!result.ok)return;
+          gameAudio.play(answer.tone==='bad'?'ui':'pickup');this.answered=true;this.socialContext={...this.socialContext!,...result.context};
+          this.lines=[result.reply??'',...(result.rewards??[])];this.dialogueIndex=0;this.renderFriendship();this.renderDialogue();};
+        choices.append(button);}
+    }else if(this.socialContext&&!completion&&!answers&&!this.callbacks.onAnswer&&this.callbacks.onSocialResponse){
       const context=this.socialContext;
       for(const[tone,text,icon]of[['warm','É bom conversar com você.','😊'],['distant','Prefiro não conversar agora.','🤚']]as const){const button=document.createElement('button');button.type='button';button.className='vd-choice';button.dataset.socialResponse=tone;
         button.innerHTML=`<span aria-hidden="true">${icon}</span>`;button.append(document.createTextNode(text));button.disabled=!context.canRespond;
         button.onclick=()=>{const result=this.callbacks.onSocialResponse!(npc.id,tone);if(result.ok){gameAudio.play('pickup');this.socialContext={...context,...result.context};this.renderFriendship();this.renderDialogue();}this.report(result.message,result.ok);};choices.append(button);}
       if(!context.canRespond){const done=document.createElement('small');done.className='vd-answered';done.textContent='Vocês já conversaram hoje.';choices.append(done);}
     }
+    if(this.socialContext&&answers&&!this.answered&&!this.socialContext.canRespond){const done=document.createElement('small');done.className='vd-answered';done.textContent='Vocês já conversaram hoje. Volte amanhã para outra conversa.';choices.append(done);}
     if(available&&!inside&&this.callbacks.onGuide){const guide=document.createElement('button');guide.type='button';guide.className='vd-choice vd-guide';guide.dataset.guideToShop='';guide.innerHTML='<span aria-hidden="true">🧭</span>';guide.append(document.createTextNode('Leve-me até sua loja'));guide.disabled=this.callbacks.getAvailability?.(npc.id)?.canGuide===false;guide.onclick=()=>{this.close();this.callbacks.onGuide?.(npc.id);};choices.append(guide);
       const note=document.createElement('p');note.className='vd-note';note.textContent='Compra e venda acontecem dentro da loja. Conversas e serviços continuam aqui.';choices.append(note);}
     const side=document.createElement('div');side.className='vd-side';side.append(box,choices);
     this.body.append(stage, side);
+  }
+
+  /** Aba Presentear: os itens da mochila, com a reação já conhecida de cada um. Um presente por dia. */
+  private renderGift():void{
+    const npc=this.npc;if(!npc)return;
+    this.body.replaceChildren();this.body.className='village-panel-body village-gift';
+    const ctx=this.socialContext,choices=this.callbacks.getGiftChoices?.(npc.id)??[];
+    const intro=document.createElement('p');intro.className='village-gift-intro';
+    intro.textContent=ctx?.canGift===false?`Você já deu um presente para ${npc.name} hoje. Volte amanhã.`:`Escolha um item da mochila para dar a ${npc.name}. Um presente por dia. Depois de dar, você fica sabendo o que achou.`;
+    this.body.append(intro);
+    const loved=choices.filter(c=>c.known==='loved').map(c=>ITEMS[c.item].name);
+    if(!choices.length){const empty=document.createElement('p');empty.className='village-gift-empty';empty.textContent='Nada na mochila para presentear.';this.body.append(empty);return;}
+    const grid=document.createElement('div');grid.className='village-gift-grid';
+    const order:Record<string,number>={loved:0,liked:1,neutral:3,disliked:4};
+    for(const c of [...choices].sort((x,y)=>(order[x.known??'']??2)-(order[y.known??'']??2)||ITEMS[x.item].name.localeCompare(ITEMS[y.item].name))){
+      const b=document.createElement('button');b.type='button';b.className='village-gift-item';b.dataset.giftItem=c.item;if(c.known)b.dataset.taste=c.known;b.disabled=ctx?.canGift===false;
+      const img=document.createElement('img');img.src=itemIconUrl(c.item)??"";img.alt='';
+      const name=document.createElement('strong');name.textContent=ITEMS[c.item].name;
+      const info=document.createElement('small');info.textContent=c.known?TASTE_BADGE[c.known]:'?';
+      const n=document.createElement('span');n.className='village-gift-count';n.textContent='×'+count(c.count);
+      b.append(img,name,info,n);
+      b.onclick=()=>{const result=this.callbacks.onGift!(npc.id,c.item);this.report(result.message,result.ok);if(!result.ok)return;
+        gameAudio.play(result.message.startsWith('✗')?'ui':'pickup');this.socialContext={...this.socialContext!,...result.context};this.renderFriendship();
+        // O morador responde no balão da conversa.
+        this.tab='talk';this.conversation=undefined;this.lines=[result.reply??'',...(result.rewards??[])];this.dialogueIndex=0;this.render();this.report(result.message,true);};
+      grid.append(b);
+    }
+    this.body.append(grid);
+    if(loved.length){const hint=document.createElement('p');hint.className='village-gift-hint';hint.textContent=`${npc.name} adora: ${loved.join(', ')}.`;this.body.append(hint);}
   }
 
   private renderTrade(merchantId: MerchantId, side: TradeSide): void {

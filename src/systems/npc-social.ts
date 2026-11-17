@@ -1,11 +1,16 @@
 import type {SaveData} from '../types';
+import {FRIENDSHIP_LEVELS} from '../data/npc-gifts';
 import {NPC_SOCIAL,SOCIAL_DISAGREEMENTS,type SocialNpc,type SocialMemoryKind} from '../data/npc-social';
 import {MINE_MISSIONS,type MineMissionId,mineMission} from '../data/mine-missions';
 import {newNpcSocial,socialPairKey,socialMemoryKey,type NpcSocialState,type SocialMemory} from './npc-social-state';
-export interface SocialRuntime{current?:()=>SaveData;snapshot:()=>SaveData;write:(draft:SaveData)=>boolean;apply:(draft:SaveData)=>void}
-export interface SocialContext{greeting:string;memory?:string;label:string;canRespond:boolean;affinity?:number}
-export function createSocialRuntime(snapshot:()=>SaveData,write:(save:SaveData)=>boolean,root:()=>SaveData):SocialRuntime{return{current:root,snapshot,write,apply:d=>{root().npcSocial=d.npcSocial;}};}
+export interface SocialRuntime{current?:()=>SaveData;snapshot:()=>SaveData;write:(draft:SaveData)=>boolean;apply:(draft:SaveData,inventory?:boolean)=>void}
+export interface SocialContext{greeting:string;memory?:string;label:string;canRespond:boolean;canGift?:boolean;affinity?:number;reward?:string}
+/** `syncInventory`: chamado quando a amizade mexe na mochila (presentes dados e recebidos). */
+export function createSocialRuntime(snapshot:()=>SaveData,write:(save:SaveData)=>boolean,root:()=>SaveData,syncInventory?:(inventory:SaveData['inventory'])=>void):SocialRuntime{
+ return{current:root,snapshot,write,apply:(d,inventory)=>{const r=root();r.npcSocial=d.npcSocial;if(inventory){r.inventory=d.inventory;syncInventory?.(d.inventory);}}};}
 export const ensureNpcSocial=(save:SaveData):NpcSocialState=>save.npcSocial??=newNpcSocial();
+/** Nome do nível de amizade (src/data/npc-gifts.ts). */
+export function friendshipLabel(n:number):string{if(n<=-4)return'Um pouco distantes';let label='Conhecendo melhor';for(const l of FRIENDSHIP_LEVELS)if(n>=l.at)label=l.label;return label;}
 const clamp=(n:number)=>Math.max(NPC_SOCIAL.min,Math.min(NPC_SOCIAL.max,n));
 const relationship=(save:SaveData,id:SocialNpc)=>ensureNpcSocial(save).players[id]??={affinity:0};
 export function recordSocialMemory(save:SaveData,npc:SocialNpc,kind:SocialMemoryKind,sequence:number,detail?:MineMissionId,day=save.day,affinity=0):boolean{
@@ -38,9 +43,10 @@ export function socialMemoryLine(m:SocialMemory):string{
 }
 export function socialContext(save:SaveData,npc:SocialNpc):SocialContext{
  const p=save.npcSocial?.players[npc],n=p?.affinity??0;
- return{affinity:n,label:n<=-4?'Um pouco distantes':n>=8?'Amizade':n>=3?'À vontade':'Conhecendo melhor',greeting:n<=-4?'Olá. Hoje prefiro uma conversa mais curta.':n>=8?'Que bom encontrar você! Como tem passado?':n>=3?'É bom ver você por aqui. Como vai?':'Olá! Como você está?',canRespond:p?.responseDay!==save.day};
+ return{affinity:n,label:friendshipLabel(n),greeting:n<=-4?'Olá. Hoje prefiro uma conversa mais curta.':n>=25?'Que alegria! Meu dia melhora quando você aparece.':n>=15?'Olha só quem chegou! Senta, vamos conversar.':n>=8?'Que bom encontrar você! Como tem passado?':n>=3?'É bom ver você por aqui. Como vai?':'Olá! Como você está?',canRespond:p?.responseDay!==save.day,canGift:p?.giftDay!==save.day};
 }
-function commit(runtime:SocialRuntime,draft:SaveData):boolean{try{if(!runtime.write(draft))return false;}catch{return false;}runtime.apply(draft);return true;}
+export function commitSocial(runtime:SocialRuntime,draft:SaveData,inventory=false):boolean{try{if(!runtime.write(draft))return false;}catch{return false;}runtime.apply(draft,inventory);return true;}
+const commit=commitSocial;
 export function openSocialConversation(runtime:SocialRuntime,npc:SocialNpc):SocialContext{
  const draft=structuredClone(runtime.snapshot());reconcileSocialFacts(draft);const p=relationship(draft,npc),view=socialContext(draft,npc);
  if(p.memoryDay!==draft.day){

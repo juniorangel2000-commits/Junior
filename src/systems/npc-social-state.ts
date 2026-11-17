@@ -1,6 +1,9 @@
 import {SOCIAL_NPCS,SOCIAL_MEMORY_KINDS,NPC_SOCIAL,type SocialNpc,type SocialMemoryKind} from '../data/npc-social';
 import {MINE_MISSION_IDS,type MineMissionId} from '../data/mine-missions';
-export interface PlayerRelationship{affinity:number;responseDay?:number;memoryDay?:number}
+import {ITEMS} from '../data/items';
+export const MAX_KNOWN_GIFTS=120;
+/** `giftDay`: último dia com presente. `known`: itens já dados (para mostrar a reação). `rewards`: presentes de amizade já recebidos (0–3). */
+export interface PlayerRelationship{affinity:number;responseDay?:number;memoryDay?:number;giftDay?:number;known?:string[];rewards?:number}
 export interface ResidentRelationship{affinity:number;startedDay:number;completedDay?:number;encounters:number}
 export interface SocialMemory{npc:SocialNpc;kind:SocialMemoryKind;detail?:MineMissionId;sequence:number;day:number;count:number;mentionedDay?:number;sharedDay?:number}
 export interface NpcSocialState{version:1;players:Partial<Record<SocialNpc,PlayerRelationship>>;pairs:Record<string,ResidentRelationship>;memories:Record<string,SocialMemory>}
@@ -13,7 +16,11 @@ const int=(v:unknown,min:number,max:number)=>typeof v==='number'&&Number.isSafeI
 const affinity=(v:unknown)=>int(v,NPC_SOCIAL.min,NPC_SOCIAL.max);
 export function validNpcSocial(v:unknown,maxDay=999999):v is NpcSocialState{
  if(!record(v)||v.version!==1||!record(v.players)||!record(v.pairs)||!record(v.memories)||Object.keys(v.players).length>SOCIAL_NPCS.length||Object.keys(v.pairs).length>NPC_SOCIAL.maxPairs||Object.keys(v.memories).length>NPC_SOCIAL.maxMemories)return false;
- for(const[id,p]of Object.entries(v.players))if(!socialNpc(id)||!record(p)||!affinity(p.affinity)||['responseDay','memoryDay'].some(k=>p[k]!==undefined&&!int(p[k],1,maxDay)))return false;
+ for(const[id,p]of Object.entries(v.players)){
+  if(!socialNpc(id)||!record(p)||!affinity(p.affinity)||['responseDay','memoryDay','giftDay'].some(k=>p[k]!==undefined&&!int(p[k],1,maxDay)))return false;
+  if(p.rewards!==undefined&&!int(p.rewards,0,3))return false;
+  if(p.known!==undefined&&(!Array.isArray(p.known)||p.known.length>MAX_KNOWN_GIFTS||new Set(p.known).size!==p.known.length||!p.known.every(i=>typeof i==='string'&&Object.hasOwn(ITEMS,i))))return false;
+ }
  for(const[key,p]of Object.entries(v.pairs)){
   const[a,b,...extra]=key.split(':');if(extra.length||!socialNpc(a)||!socialNpc(b)||a===b||key!==socialPairKey(a,b)||!record(p)||!affinity(p.affinity)||!int(p.startedDay,1,maxDay)||!int(p.encounters,0,NPC_SOCIAL.maxCount)||p.completedDay!==undefined&&(!int(p.completedDay,1,Number(p.startedDay))||p.encounters===0)||p.encounters!==0&&p.completedDay===undefined)return false;
  }

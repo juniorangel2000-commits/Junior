@@ -3,6 +3,7 @@ import {showRequestBoard,boardHasReady,BOARD_POINT,BOARD_SERVICE_IDS} from '../r
 import {blockMountedEntry} from '../riding-guard';
 import {createGroundRuntime} from '../systems/ground-items';
 import {createSocialRuntime,openSocialConversation,respondSocial} from '../systems/npc-social';
+import {answerConversation,collectPendingRewards,giftChoices,giveGift} from '../systems/npc-gifts';
 import {showMineMissionJournal} from '../mine-mission-journal';
 import {createMineMissionRuntime} from '../systems/mine-missions';
 import {showBentoExpedition} from '../bento-expedition-menu';
@@ -93,7 +94,7 @@ type Villager={data:VillageNPC;sprite:Phaser.GameObjects.Sprite;frames:number};
 /** Town state travels through the same save as the farm, without replacing its
  * outdoor position, crops, resource fields or animal population. */
 export class VillageScene extends Phaser.Scene {
- private socialRuntime=createSocialRuntime(()=>this.snapshotState(),saveGame,()=>this.state);
+ private socialRuntime=createSocialRuntime(()=>this.snapshotState(),saveGame,()=>this.state,inv=>{this.syncInventory(inv);this.updateHUD();});
  private readonly passageCollision=new NpcPassageCollision();
  private npcBlocksPoint=(x:number,y:number):boolean=>this.villagers.some(n=>n.sprite.visible&&this.passageCollision.blocks(n.data.id,n.sprite,this.player,x,y,this.time.now,this.inCommunity?'community':this.inBlacksmith?'smith':this.merchantRoom??'village'));
  private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.inventory.data,()=>this.player,()=>this.inCommunity?'community':this.inBlacksmith?'blacksmith':this.merchantRoom?'shop:'+this.merchantRoom:'village',(x,y)=>this.blockedPoint(x,y)||this.swimmingPoint(x,y)>0,()=>!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden,()=>{this.updateHUD();});
@@ -178,7 +179,8 @@ export class VillageScene extends Phaser.Scene {
   this.communityLabel=this.add.text(COMMUNITY_ENTRANCE.x,COMMUNITY_ENTRANCE.y+8,'',{fontFamily:'Georgia',fontSize:'12px',color:'#f4e6be',backgroundColor:'#24372edb',padding:{x:7,y:5}}).setOrigin(.5,0).setDepth(600);
   this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
   this.shop=new VillageInteractionUI({
-   onSocialOpen:id=>openSocialConversation(this.socialRuntime,id),onSocialResponse:(id,tone)=>respondSocial(this.socialRuntime,id,tone),
+   onSocialOpen:id=>{const c=openSocialConversation(this.socialRuntime,id),r=collectPendingRewards(this.socialRuntime,id);return r.length?{...c,reward:r.join(' ')}:c;},onSocialResponse:(id,tone)=>respondSocial(this.socialRuntime,id,tone),
+   onAnswer:(id,conversation,tone)=>answerConversation(this.socialRuntime,id,conversation,tone),getGiftChoices:id=>giftChoices(this.snapshotState(),id),onGift:(id,item)=>giveGift(this.socialRuntime,id,item),
    canTrade:id=>this.canTrade(id),isInside:id=>merchantCanTrade(id,this.roomOwner),getAvailability:id=>id==='bento'?{...this.routines.get('bento')!.availability(this.state),message:bentoAvailability(this.state).message}:dailyMerchant(id)?this.routines.get(id)?.availability(this.state):undefined,onGuide:id=>this.beginGuide(id),
    getPortrait:id=>this.npcPortrait(id),
    onMineRequests:()=>{this.shop?.close();showMineMissionJournal(this.ui,this.mineMissionRuntime);},

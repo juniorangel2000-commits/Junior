@@ -83,3 +83,20 @@
 .vd-answered{font-size:12px;color:#8a6c45;font-style:italic}
 .vd-note{flex-basis:100%;margin:0;font-size:12px;color:#8a6c45}
 @media(max-width:700px){.village-dialogue.vd{grid-template-columns:1fr}.vd-stage{height:170px}.vd-portrait{height:160px}.vd-box::before,.vd-box::after{display:none}}
+
+/* Respostas do jogador no fim da conversa e aba Presentear (preview.43). */
+.vd-answer{width:100%;justify-content:flex-start;border-radius:10px;text-align:left;line-height:1.35}
+.village-gift{display:flex;flex-direction:column;gap:12px}
+.village-gift-intro,.village-gift-hint,.village-gift-empty{margin:0;color:#61472b;font:14px/1.5 Georgia,serif}
+.village-gift-hint{padding:8px 12px;border-left:3px solid #d27a8a;background:#d27a8a14}
+.village-gift-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px;max-height:min(46vh,420px);overflow:auto;padding:2px}
+.village-gift-item{position:relative;display:grid;justify-items:center;gap:3px;padding:10px 6px 8px;background:#faedce;border:1px solid #bc9863;border-radius:6px;color:#61472b;cursor:pointer;transition:transform .12s,background .12s}
+.village-gift-item:hover:not(:disabled){transform:translateY(-2px);background:#fff4dc}
+.village-gift-item:disabled{opacity:.55;cursor:default}
+.village-gift-item img{width:40px;height:40px;object-fit:contain;image-rendering:auto}
+.village-gift-item strong{font:12px/1.2 Georgia,serif;text-align:center}
+.village-gift-item small{font-size:11px;color:#8a7352}
+.village-gift-item[data-taste="loved"]{border-color:#d27a8a;box-shadow:inset 0 0 0 1px #f3c3cc}.village-gift-item[data-taste="loved"] small{color:#b4475c;font-weight:700}
+.village-gift-item[data-taste="liked"] small{color:#a8566a}
+.village-gift-item[data-taste="disliked"] small{color:#7c6a5a}
+.village-gift-count{position:absolute;top:4px;right:6px;font-size:10px;color:#8a7352}
