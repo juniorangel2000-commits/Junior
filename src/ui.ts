@@ -1070,7 +1070,7 @@ export class GameUI {
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Mapa das regiões exploráveis');
-    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM VALE PARA CONHECER</span><h2>${this.latest?.inHome ? this.latest.area==='village'?'Interior do comércio':"Interior da casa" : this.latest?.area==='openFields' ? 'Campos Abertos' : this.latest?.area==='highland' ? 'Platô da Nascente' : this.latest?.area==='survivorCamp' ? "Acampamento de Sobreviventes" : this.latest?.area==='fishingLake' ? "Lago entre as Serras" : this.latest?.area==='cityForest' ? "Floresta de Acesso à Cidade" : this.latest?.area==='forest' ? "Floresta Antiga" : this.latest?.area==='village' ? "Vila do Recomeço" : "Mapa completo do vale"}</h2></div><button class="icon-button" aria-label="Fechar mapa">${icon('close')}</button></div>
+    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM VALE PARA CONHECER</span><h2>${this.latest?.inHome ? this.latest.area==='village'?'Interior do comércio':"Interior da casa" : this.latest?.area==='openFields' ? 'Campos Abertos' : this.latest?.area==='highland' ? 'Platô da Nascente' : this.latest?.area==='survivorCamp' ? "Acampamento dos Sobreviventes" : this.latest?.area==='fishingLake' ? "Lago da Cachoeira" : this.latest?.area==='cityForest' ? "Estrada da Cidade" : this.latest?.area==='forest' ? "Floresta Antiga" : this.latest?.area==='village' ? "Vila" : "Mapa completo do vale"}</h2></div><button class="icon-button" aria-label="Fechar mapa">${icon('close')}</button></div>
       <p class="map-current">Você está em <strong></strong>.</p>
       <div class="exploration-map real-map" role="img" aria-label="Cenário real e posição do personagem"><img class="map-snapshot" alt="Vista do cenário atual" /><span class="map-player" hidden><i></i><b>Você</b></span><span class="map-north">N ↑</span></div>
       <p class="map-caption">Vista atual do cenário. Seu marcador indica a posição exata.</p>
@@ -1080,7 +1080,7 @@ export class GameUI {
     const mapHeight=this.latest?.inHome?(this.latest.interiorMapSize?.height??HOME_HEIGHT):(this.latest?.worldMapSize?.height??WORLD_HEIGHT);
     map.style.aspectRatio = `${mapWidth}/${mapHeight}`;
     void this.callbacks.onMap().then(url => { if (panel.isConnected) panel.querySelector<HTMLImageElement>('.map-snapshot')!.src = url; });
-    panel.querySelector('.map-current strong')!.textContent = this.latest?.location || 'Propriedade';
+    panel.querySelector('.map-current strong')!.textContent = this.latest?.location || 'Propriedade Abandonada';
     if(this.latest?.mapTitle)panel.querySelector('h2')!.textContent=this.latest.mapTitle;
     const position = this.latest?.playerTile;
     if (position) {

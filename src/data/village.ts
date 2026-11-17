@@ -24,7 +24,7 @@ export function villageLakeDistance(x:number,y:number):number {
 export const villageWater=(x:number,y:number,edits?:MapEditData)=>{if(villagePierDeckContains((x+.5)*32,(y+.5)*32))return false;const kind=edits?.terrain[`${x},${y}`];return kind?kind==='water':villageLakeDistance(x+.5,y+.5)<0;};
 export const villageWaterPoint=(x:number,y:number,edits?:MapEditData):boolean=>
  !villagePierDeckContains(x,y)&&paintedWaterPoint(edits?.terrain,x,y,(x,y)=>villageLakeDistance(x/32,y/32)<0);
-export const VILLAGE_NAME='Vila do Recomeço';
+export const VILLAGE_NAME='Vila';
 export const VILLAGE_ENTRY={x:2,y:52} as const;
 export const VILLAGE_EXIT={x:1,y:52} as const;
 export const VILLAGE_PLAZA={x:46,y:38,rx:10.5,ry:8} as const;

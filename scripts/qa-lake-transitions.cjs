@@ -11,7 +11,7 @@ const out='/workspace/fishing-lake-qa';
   await page.locator('[data-fishing-reel]:not([disabled])').waitFor();await page.locator('[data-fishing-reel]').click();
   check('Pesca no píer entrega peixe e consome uma isca',await page.evaluate(async()=>{await fishingPromise;return lake.state.inventory.bait===2&&lake.state.inventory.fish+lake.state.inventory.rareFish===fishBefore+1;}));
   await walk('Lago',94*32-2,33.5*32,'d');await area('cityForest');check('Lago → acesso à cidade a pé',true);
-  await walk('AcessoCidade',2*32+2,33.5*32,'a');await area('fishingLake');check('Acesso à cidade → lago a pé',true);
+  await walk('AcessoCidade',2*32+2,33.5*32,'a');await area('fishingLake');check('Estrada da Cidade → lago a pé',true);
   await walk('Lago',75.5*32,70*32-2,'s');await area('property');check('Lago → propriedade a pé',await page.evaluate(()=>Math.abs(v.player.x-75.5*32)<1&&v.player.y<6*32));
   check('Entrada e aproximação da propriedade sem colisões',await page.evaluate(()=>Array.from({length:16},(_,i)=>i+1).every(y=>!v.world.isSolidPoint(75.5*32,(y+.5)*32))));
   await walk('Vale',75.5*32,2*32+2,'w');await area('fishingLake');check('Propriedade → lago a pé',true);

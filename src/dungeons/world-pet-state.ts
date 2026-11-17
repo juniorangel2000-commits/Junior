@@ -15,8 +15,8 @@ export const PET_WORLD_AREAS: Record<PetWorldArea, string> = {
   forest: "Floresta Antiga",
   village: "Vila",
   cityForest: "Floresta de acesso",
-  fishingLake: "Lago entre as Serras",
-  survivorCamp: "Acampamento de Sobreviventes",highland:"Platô da Nascente",
+  fishingLake: "Lago da Cachoeira",
+  survivorCamp: "Acampamento dos Sobreviventes",highland:"Platô da Nascente",
 };
 export function validWorldPetState(value: unknown): value is WorldPetState {
   if (!value || typeof value !== "object") return false;

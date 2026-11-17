@@ -5,7 +5,7 @@ import {defaultMap} from '../src/data/default-maps';
 import {readSceneMap,writeSceneMap} from '../src/systems/scene-map-edits';
 import {cityForestBlockedPoint} from '../src/data/city-forest';
 function reachable(){const queue=[LAKE_CITY_ENTRY],visited=new Set<string>();for(let at=0;at<queue.length;at++){const p=queue[at],key=`${p.x},${p.y}`;if(visited.has(key)||lakeBlockedPoint((p.x+.5)*32,(p.y+.5)*32))continue;visited.add(key);for(const[dx,dy]of[[0,1],[0,-1],[1,0],[-1,0]])queue.push({x:p.x+dx,y:p.y+dy});}return visited;}
-describe('Lago entre as Serras',()=>{
+describe('Lago da Cachoeira',()=>{
  it('connects east entrance, south exit, terrace staircase and pier without crossing cliffs or lake',()=>{
   const connected=reachable();for(const p of[LAKE_CITY_ENTRY,LAKE_PROPERTY_ENTRY,{x:34,y:20},{x:28,y:5},{x:67,y:46},{x:32,y:60}])expect(connected.has(`${p.x},${p.y}`),JSON.stringify(p)).toBe(true);
   expect(lakeBlockedPoint(48*32,40*32)).toBe(true);expect(lakeBlockedPoint(40*32,10*32)).toBe(true);

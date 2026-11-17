@@ -1,13 +1,13 @@
 import horsePoses from './data/horse-poses.json';
 import riderLift from './data/horse-rider-lift.json';
+import {AREA_NAMES} from './data/area-names';
 import {RIDER_ART,RIDER_ORDER} from './horse-mount';
 /** Tela de carregamento (preview.41): a paisagem do destino em camadas que passam, na cor da
  * hora do dia, e a personagem montada galopando por uma trilha que é a própria barra de
  * progresso, levantando poeira. Embaixo, o passo da viagem e uma dica que se alterna. */
 export interface WorldLoadingInfo{character?:string;area?:string;time?:number}
 export type LoadingPeriod='morning'|'day'|'evening'|'night';
-export const LOADING_PLACES:Record<string,string>={property:'Propriedade',forest:'Floresta Antiga',village:'Vila do Recomeço',cityForest:'Estrada da cidade',
- fishingLake:'Lago entre as Serras',openFields:'Campos Abertos',highland:'Platô da Nascente',survivorCamp:'Acampamento de Sobreviventes'};
+export const LOADING_PLACES:Record<string,string>=AREA_NAMES;
 export const LOADING_TIPS:readonly string[]=[
  'Com o cavalo domado, aperte V perto dele para montar. Shift galopa.',
  'Regar todo dia e adubar aumentam a chance de colheita boa ou excelente.',

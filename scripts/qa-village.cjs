@@ -161,7 +161,7 @@ const url=process.env.QA_URL||'http://127.0.0.1:5178';
   await page.screenshot({path:path.join(output,'vila-praca-no-jogo.png')});
   await page.keyboard.press('m');await page.locator('.map-card .map-snapshot').waitFor();
   await page.waitForFunction(()=>document.querySelector('.map-snapshot')?.src.startsWith('data:image'));
-  assert.equal(await page.locator('.map-card h2').innerText(),'Vila do Recomeço');
+  assert.equal(await page.locator('.map-card h2').innerText(),'Vila');
   const marker=await page.locator('.map-player').evaluate(el=>({left:parseFloat(el.style.left),top:parseFloat(el.style.top)}));
   assert.ok(Math.abs(marker.left-46.5/96*100)<.1);assert.ok(Math.abs(marker.top-45.5/72*100)<.1);
   await page.screenshot({path:path.join(output,'mapa-da-vila.png')});
