@@ -4,13 +4,13 @@
 
 - **Atualizado em:** 2026-11-17
 - **Por:** Claude Code
-- **Continuar a partir de:** `release/v0.10.0-preview.41` (não publicado ainda).
-- **Última versão publicada:** `v0.10.0-preview.40`, enviada à `main`. **Falta o Junior criar a Release** no GitHub: tag `v0.10.0-preview.40`, target `main`, pre-release. A Release da preview.39 também não foi confirmada.
-- **Estado:** preview.41 em andamento. Tudo enviado, testes passando. Publicar só quando o Junior pedir.
+- **Continuar a partir de:** `main` (preview.41). Próxima rodada: criar `release/v0.10.0-preview.42` a partir da `main`.
+- **Última versão publicada:** `v0.10.0-preview.41`, enviada à `main`. **Falta o Junior criar as Releases** no GitHub da preview.40 e da preview.41 (tags `v0.10.0-preview.40` e `v0.10.0-preview.41`, target `main`, pre-release).
+- **Estado:** preview.41 pronta, com versão do pacote, `NOTAS-0.10.0-preview.41.md` e `LEIA-0.10.0-preview.41.md`.
 
 ## Feito nesta rodada
 
-### preview.41 (Claude Code) — tudo enviado, nada publicado
+### preview.41 (publicada)
 
 - **Montaria:** não entra em interiores, na água (nem com animal na corda) nem no Acampamento (`src/riding-guard.ts`). Testada no navegador com `scripts/qa-horse-riding.cjs`.
 - **Entrada da Serra** no começo da escada do Lago.
@@ -27,6 +27,7 @@
 - **Corda vegetal:** nenhum morador compra nem vende.
 - **Aspersor automático** (arte do Junior) no lugar da bomba d'água: gira em loop (quadros 1–14, `scripts/pack_sprinkler.py`) e joga pingos acompanhando os braços. GIF em `docs/planejamento/aspersor-pingos.gif`.
 - **Sucata no chão** usa o desenho do inventário.
+- **Desde a última passagem:** ícones de todos os itens, ferramentas no estilo das espadas, foice e pá começando no ferro (a primeira com o Bento, por 3 lingotes de ferro e 2 madeiras), Telhado de tábuas e Ninho e baias, cabo novo e ícones mais nítidos na mochila.
 - **Espadas:** arte das 4 espadas (`scripts/import_swords.py`). A espada ganhou níveis de ferro, ouro e metal negro, como as ferramentas:
   - melhorada no Bento e depois na bancada;
   - golpe 1×, 1,4×, 1,9× e 2,6×;
@@ -39,26 +40,13 @@
 
 ## Em andamento e próximo passo exato
 
-1. **Pedido do Junior ainda não entregue:** "verifique no jogo o que falta fazer sprite e já gere um prompt para cada item com as características; se precisar, mande referências; tudo dentro de um zip". Levantamento já feito, falta montar o zip com os prompts e referências.
-   - **Itens com ícone emprestado:**
-     - Infusão de cogumelos e Tônico de ervas (usam o regador);
-     - Curativos e Acessórios (usam a corda);
-     - Refeições (usa a semente de nabo);
-     - Lanterna (usa o martelo);
-     - Componentes eletrônicos (usam a lâmina);
-     - Roupas (usa a fibra);
-     - Enxada (usa um desenho provisório).
-   - **Desenhados por código no mundo:**
-     - a luminária instalada (retângulos em `src/village-equipment.ts`);
-     - os sobreviventes Marina e Rui na propriedade (retângulos no mesmo arquivo).
-   - Conferir também a arte da bancada de fabricação do aspersor.
-2. Conferir no jogo as espadas de nível:
-   - a ferraria, aba "Ferramentas e reparos";
-   - o golpe no Acampamento e na mina.
-   As duas só foram cobertas por testes automáticos.
-3. **Junior:** criar a Release da preview.40 (tag `v0.10.0-preview.40`, target `main`).
-4. Pendentes antigos: porteira do chiqueiro, instalador em WebP (`sharp`), números do F3.
-5. Publicar a preview.41 quando o Junior pedir.
+1. **Junior:** criar as Releases da preview.40 e da preview.41 no GitHub.
+2. Ideias para a preview.42 (o Junior escolhe):
+   - **Ferramentas na mão:** refazer a machadinha e a picareta durante o uso (`tools/hatchet`, `tools/pickaxe`) no estilo dos ícones novos.
+   - **Marina e Rui andando** pela propriedade, com as 4 vistas em `characters/survivors/`.
+   - **Desempenho:** números do F3 no PC do Junior; instalador em WebP (`sharp`, precisa de aprovação).
+   - **Porteira do chiqueiro** do lote 01.
+3. Conferir no PC do Junior a subida da escada do Lago até o Platô (o Lago não carrega no Chromium daqui).
 
 ## Pendências e ideias para depois
 
@@ -83,6 +71,6 @@
 
 - `npm run check`: ok.
 - `npm run build`: ok (aviso de tamanho do pacote, que já existia).
-- `npm test`: **2.150 passaram, zero falhas, 250 arquivos**.
+- `npm test`: **2.154 passaram, zero falhas, 251 arquivos**.
 - Montaria conferida no Chromium, andando nas 4 direções principais e galopando de lado. As diagonais e a vista de costas foram conferidas em imagem montada sobre o cavalo parado.
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.
