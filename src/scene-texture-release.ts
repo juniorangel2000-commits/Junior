@@ -39,17 +39,26 @@ export function installSceneTextureRelease(game:Phaser.Game,keep:readonly string
  const before=new Map<string,Set<string>>();
  // Os cenários só existem depois que o jogo termina de iniciar.
  if(!game.scene.scenes.length){game.events.once(Phaser.Core.Events.READY,()=>installSceneTextureRelease(game,keep));return;}
+ // Liberações pendentes. Rodam quando o próximo cenário começa, ANTES do carregamento dele
+ // (preview.43): antes rodavam um instante depois, quando o cenário seguinte já tinha
+ // conferido que a imagem existia e não carregava de novo. Assim o Damião, que a Vila monta
+ // e a Estrada e o Lago também usam, virava um quadradinho vazio.
+ const pending:(()=>void)[]=[];
+ const flush=()=>{while(pending.length)pending.shift()!();};
  for(const scene of game.scene.scenes){
-  const key=scene.scene.key;if(keep.includes(key))continue;
+  const key=scene.scene.key;
+  scene.events.on(Phaser.Scenes.Events.START,flush);
+  if(keep.includes(key))continue;
   scene.events.on(Phaser.Scenes.Events.START,()=>before.set(key,new Set(game.textures.getTextureKeys())));
   scene.events.on(Phaser.Scenes.Events.SHUTDOWN,()=>{
    const start=before.get(key);if(!start)return;before.delete(key);
-   // Logo depois do encerramento (os textos do cenário apagam as próprias imagens), antes do
-   // próximo quadro, quando o cenário seguinte começa: ele carrega de novo o que precisar.
-   window.setTimeout(()=>{
+   // Depois do encerramento (os textos do cenário apagam as próprias imagens): no começo do
+   // próximo cenário ou, se nenhum começar, logo depois.
+   pending.push(()=>{
     const open=game.scene.scenes.filter(s=>s!==scene&&(s.sys.isActive()||s.sys.isSleeping()||s.sys.isPaused()));
     releaseTextures(game,game.textures.getTextureKeys().filter(k=>!start.has(k)),open);
-   },0);
+   });
+   window.setTimeout(flush,0);
   });
  }
 }
