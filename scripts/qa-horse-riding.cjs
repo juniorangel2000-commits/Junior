@@ -12,7 +12,8 @@ const {execFileSync}=require('node:child_process');
 const [out='.',character='farmer-female',only]=process.argv.slice(2);
 const DIRS={down:['s'],up:['w'],left:['a'],right:['d'],'down-left':['s','a'],'down-right':['s','d'],'up-left':['w','a'],'up-right':['w','d']};
 const ORDER=['down','up','left','right','down-left','down-right','up-left','up-right'];
-const STEPS=['montar',...ORDER.map(d=>`andar-${d}`),'galope','descer','casa','agua','carregar','floresta'];
+const STEPS=['montar',...ORDER.map(d=>`andar-${d}`),'galope','descer','casa','agua','carregar','floresta',...['openFields','village','cityForest'].map(a=>`cenario-${a}`)];
+// O Lago e a Serra não terminam de carregar no Chromium daqui; confira-os com `cenario-fishingLake` e `cenario-highland` num navegador com placa de vídeo.
 const check=(name,ok,detail='')=>{console.log(`${ok?'OK  ':'FALHA'} ${name}${detail?' — '+detail:''}`);if(!ok)process.exitCode=1;};
 
 if(!only){
@@ -119,16 +120,16 @@ if(!only){
  if(only.startsWith('cenario-')){
   // Salva montado com a área ativa e continua a partida: o jogo abre direto naquele cenário.
   const area=only.slice(8);
-  await page.evaluate(async area=>{const {saveGame}=await import('/src/systems/save.ts');const s=v.snapshotState();s.activeArea=area;saveGame(s);},area);
+  await page.evaluate(async area=>{const {saveGame}=await import('/src/systems/save.ts');const s=v.snapshotState();s.activeArea=area;s.damiaoIntroduction=true;v.running=false;saveGame(s);},area);
   await page.reload();await page.locator('#continue-game').click();
-  await page.waitForFunction(()=>document.querySelector('#ui')?.dataset.area&&document.querySelector('#ui').dataset.area!=='property'||false,{timeout:60000}).catch(()=>{});
+  await page.evaluate(async()=>{window.__g=(await import(document.querySelector('script[src*="main.ts"]').src)).game;});
+  // Espera o cenário de destino aparecer com o jogador e a tela de carregamento sumir.
+  await page.waitForFunction(()=>{const sc=window.__g.scene.getScenes(true).find(x=>x.player&&x.scene.key!=='Vale');const a=document.querySelector('#ui')?.dataset.area;return !!sc&&a&&a!=='loading'&&a!=='title';},{timeout:200000}).catch(()=>{});
   await page.waitForTimeout(4000);
-  const r=await page.evaluate(async()=>{const game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;
-   const sc=game.scene.getScenes(true).find(x=>x.player&&x.scene.key!=='Vale')??game.scene.getScene('Vale');const p=sc.player;
-   return{scene:sc.scene.key,area:document.querySelector('#ui')?.dataset.area,mounted:!!p?.mounted,rider:p?.mount?.rider?.texture.key,visible:p?.sprite.visible,
-    rideable:!!sc.getFishingState?.().riding};});
+  const r=await page.evaluate(()=>{const sc=window.__g.scene.getScenes(true).find(x=>x.player&&x.scene.key!=='Vale');const p=sc?.player;
+   return{scene:sc?.scene.key,area:document.querySelector('#ui')?.dataset.area,mounted:!!p?.mounted,rider:p?.mount?.rider?.texture.key,visible:p?.sprite.visible};});
   check(`montado em ${area}`,r.mounted&&r.rider===`horse-rider-${character}`&&!r.visible,JSON.stringify(r));
-  await page.evaluate(async()=>{const game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;const sc=game.scene.getScenes(true).find(x=>x.player);
+  if(r.scene)await page.evaluate(()=>{const sc=window.__g.scene.getScenes(true).find(x=>x.player&&x.scene.key!=='Vale');
    document.querySelector('#ui').style.visibility='hidden';sc.cameras.main.stopFollow();sc.cameras.main.centerOn(sc.player.x,sc.player.y-25);});await page.waitForTimeout(300);
   await page.screenshot({path:`${out}/${character}-${area}.png`,clip:{x:580,y:320,width:120,height:130}});
  }
