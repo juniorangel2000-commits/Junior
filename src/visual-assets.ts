@@ -72,7 +72,8 @@ export function itemIconUrl(id: string, tier=0): string | undefined {
   if((ART_TOOL_IDS as readonly string[]).includes(id)&&(tier>0||id==='sickle'||id==='shovel'))return tierToolIcon(id as EconomicTool,tier);
   const fallback=Object.hasOwn(ITEMS,id)?ITEMS[id as ItemId].iconFallback:undefined;
   if(fallback)return itemIconUrl(fallback);
-  if (id === 'stone') return 'assets/visual/nature/small-stones.png';
+  // Ícone de pedra do conjunto de ícones (as pedrinhas do chão ficavam minúsculas no slot).
+  if (id === 'stone') return `${BASE}icons/stone.png`;
   if (id === 'branch') return 'assets/visual/nature/fallen-branches.png';
   if (id === 'hatchet' || id === 'pickaxe' || id === 'hoe') return TOOL_ICON_URLS[id];
   if (id === 'water-empty') return WATER_EMPTY_ICON;
