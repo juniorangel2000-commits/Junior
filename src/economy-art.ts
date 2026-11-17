@@ -1,3 +1,4 @@
+import {minToolTier} from './data/economy-balance';
 import {icaroTexture,preloadIcaroSprites} from './icaro-sprites';
 import {helenaTexture,preloadHelenaSprites} from './helena-sprites';
 import {damiaoTexture,preloadDamiaoSprites} from './damiao-sprites';
@@ -28,7 +29,7 @@ export function preloadEconomyArt(scene:Phaser.Scene):void{
  for(const b of Object.values(SHOP_FACADES))scene.load.image(b.texture,b.file);
 
  for(const metal of ['iron','gold','blackMetal'] as const)scene.load.image(mineralTexture(metal),`${ROOT}/deposits/${metal}.png`);
- for(const tool of ART_TOOL_IDS)for(const [tier,material]of TOOL_MATERIALS.entries())scene.load.image(`economy-tool-${material}-${tool}`,tierToolIcon(tool,tier));
+ for(const tool of ART_TOOL_IDS)for(const [tier,material]of TOOL_MATERIALS.entries())if(tier>=minToolTier(tool))scene.load.image(`economy-tool-${material}-${tool}`,tierToolIcon(tool,tier));
  for(const id of ['anvil','tongs'])scene.load.image(`economy-workshop-${id}`,`${ROOT}/workshop/${id}.png`);
  for(let frame=0;frame<4;frame++)scene.load.image(`economy-forge-${frame}`,`${ROOT}/forge/frame-${frame}.png`);
  for(const id of MERCHANT_ART_IDS)for(const direction of NPC_ART_DIRECTIONS)scene.load.image(`economy-npc-${id}-${direction}`,`${ROOT}/npcs/${id}-${direction}.png`);

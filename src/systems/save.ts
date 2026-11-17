@@ -8,7 +8,7 @@ import {DOMESTIC_ANIMALS,isDomesticAnimal} from '../data/domestic-animals';
 import {CROPS,isCropId} from '../data/crops';
 import {validGroundItems} from './ground-items';
 import {syncToolInstances,validToolInventory,activeToolCopy,toolReference} from './tool-instances';
-import {TOOL_IDS} from '../data/economy-balance';
+import {TOOL_IDS,ECONOMY_BALANCE} from '../data/economy-balance';
 import {isLegacyHouseTool,FARM_KINDS,FARM_BUILDINGS,LATER_FARM_MATERIALS,type FarmKind} from '../data/farm-buildings';
 import {validFarmConstruction} from './farm-construction';
 import {validMineMissions} from './mine-mission-state';
@@ -364,6 +364,26 @@ export function migrateSave(value: unknown): SaveData | null {
       &&met.some(id=>Object.hasOwn(aliases,id))){
       value={...value,villageEconomy:{...economy,met:[...new Set(met.map(id=>Object.hasOwn(aliases,id)?aliases[id]:id))]}};
     }
+  }
+  // Preview.41: foice e pá de pedra não existem mais. As que estavam na mochila viram de ferro
+  // (durabilidade cheia) e quem já tinha uma conhece a receita da bancada de trabalho.
+  if(isRecord(value)&&value.version===SAVE_VERSION&&isRecord(value.inventory)){
+    const inv=value.inventory as Record<string,unknown>,book=inv.toolInstances,eco=isRecord(value.economy6)?value.economy6:undefined;
+    const upgrade=(c:unknown)=>isRecord(c)&&c.tier===0?{...c,tier:1,durability:ECONOMY_BALANCE.durability[1]}:c;
+    let changed=false,inventory=inv,economy6=eco;
+    if(isRecord(book)&&Array.isArray(book.items)){
+      const items=book.items.map(t=>isRecord(t)&&(t.kind==='sickle'||t.kind==='shovel')&&isRecord(t.condition)&&t.condition.tier===0?(changed=true,{...t,condition:upgrade(t.condition)}):t);
+      if(changed)inventory={...inv,toolInstances:{...book,items}};
+    }
+    if(eco&&isRecord(eco.tools)){
+      const tools={...eco.tools} as Record<string,unknown>;let t=false;
+      for(const k of ['sickle','shovel'])if(isRecord(tools[k])&&(tools[k] as Record<string,unknown>).tier===0){tools[k]=upgrade(tools[k]);t=true;}
+      if(t){economy6={...eco,tools};changed=true;}
+    }
+    const owned=['sickle','shovel'].filter(k=>Number.isSafeInteger(inv[k])&&(inv[k] as number)>0);
+    const vp=isRecord(value.villageProgress)&&Array.isArray(value.villageProgress.recipes)?value.villageProgress:undefined;
+    const missing=vp?owned.filter(k=>!(vp.recipes as string[]).includes(k)):[];
+    if(changed||missing.length)value={...value,inventory,...(economy6?{economy6}:{}),...(missing.length&&vp?{villageProgress:{...vp,recipes:[...(vp.recipes as string[]),...missing]}}:{})};
   }
   // Animal buildings gained madeira nobre in preview.34. Finished ones were
   // already built, so they count as supplied; work in progress still needs it.

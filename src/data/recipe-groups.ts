@@ -15,7 +15,7 @@ export const CATEGORY_ORDER:readonly CraftCategory[]=['materials','tools','upgra
 type Group=[CraftStation,CraftCategory];
 const GROUPS:Record<string,Group>={
  cord:['hand','materials'],'flaked-stone':['hand','materials'],handle:['hand','materials'],pegs:['hand','materials'],'pet-bedding-cloth':['hand','materials'],'rough-planks':['hand','materials'],
- hatchet:['hand','tools'],pickaxe:['hand','tools'],hoe:['hand','tools'],hammer:['hand','tools'],sickle:['hand','tools'],shovel:['hand','tools'],
+ hatchet:['hand','tools'],pickaxe:['hand','tools'],hoe:['hand','tools'],hammer:['hand','tools'],sickle:['workbench','tools'],shovel:['workbench','tools'],
  bandage:['hand','healing'],herbalTonic:['hand','healing'],fungalInfusion:['hand','healing'],
  fertilizer:['hand','field'],campfire:['hand','field'],
  blade:['workbench','materials'],'sawn-planks':['workbench','materials'],

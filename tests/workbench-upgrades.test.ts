@@ -12,8 +12,8 @@ const save=()=>{const s=createNewSave(createCharacterProfile('Melhoria'));s.inve
 /** O Bento entrega a picareta de ferro uma vez: a melhoria de ferro fica aprendida. */
 function learnIron(s:ReturnType<typeof save>){s.inventory.ironIngot=4;s.inventory.wood=2;expect(reserveTool(s,'pickaxe',1).ok).toBe(true);expect(orderAction(s,1,'pay').ok).toBe(true);s.day=2;expect(orderAction(s,1,'collect').ok).toBe(true);}
 describe('melhorias de ferramentas na bancada de trabalho',()=>{
- it('15 receitas (5 ferramentas × ferro, ouro e metal negro), na bancada de trabalho, categoria Melhorias, ensinadas pelo Bento',()=>{
-  const up=RECIPES.filter(r=>r.upgrade);expect(up).toHaveLength(TOOL_IDS.length*3);
+ it('melhorias de ferro, ouro e metal negro na bancada (foice e pá já começam no ferro), ensinadas pelo Bento',()=>{
+  const up=RECIPES.filter(r=>r.upgrade);expect(up).toHaveLength(TOOL_IDS.length*3-2);
   for(const r of up){expect(recipeStation(r)).toBe('workbench');expect(recipeCategory(r)).toBe('upgrades');expect(recipeTeacher(r)).toBe('Bento');expect(r.cost).toEqual(toolUpgradeCost(r.upgrade!.tool,r.upgrade!.tier));}
   expect(craft('upgrade-pickaxe-1',new Inventory({ironIngot:9,wood:9,pickaxe:1}),true).ok).toBe(false);
  });

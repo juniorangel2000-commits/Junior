@@ -1,0 +1,178 @@
+{
+  "game": "Jardim Depois da Chuva",
+  "total_tool_sprites": 18,
+  "total_construction_sprites": 1,
+  "assets": [
+    {
+      "item": "machadinha",
+      "material": "pedra",
+      "file": "ferramentas/machadinha-pedra.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "machadinha",
+      "material": "ferro",
+      "file": "ferramentas/machadinha-ferro.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "machadinha",
+      "material": "ouro",
+      "file": "ferramentas/machadinha-ouro.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "machadinha",
+      "material": "metal-negro",
+      "file": "ferramentas/machadinha-metal-negro.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "picareta",
+      "material": "pedra",
+      "file": "ferramentas/picareta-pedra.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "picareta",
+      "material": "ferro",
+      "file": "ferramentas/picareta-ferro.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "picareta",
+      "material": "ouro",
+      "file": "ferramentas/picareta-ouro.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "picareta",
+      "material": "metal-negro",
+      "file": "ferramentas/picareta-metal-negro.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "enxada",
+      "material": "pedra",
+      "file": "ferramentas/enxada-pedra.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "enxada",
+      "material": "ferro",
+      "file": "ferramentas/enxada-ferro.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "enxada",
+      "material": "ouro",
+      "file": "ferramentas/enxada-ouro.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "enxada",
+      "material": "metal-negro",
+      "file": "ferramentas/enxada-metal-negro.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "foice",
+      "material": "ferro",
+      "file": "ferramentas/foice-ferro.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "foice",
+      "material": "ouro",
+      "file": "ferramentas/foice-ouro.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "foice",
+      "material": "metal-negro",
+      "file": "ferramentas/foice-metal-negro.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "pa",
+      "material": "ferro",
+      "file": "ferramentas/pa-ferro.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "pa",
+      "material": "ouro",
+      "file": "ferramentas/pa-ouro.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "pa",
+      "material": "metal-negro",
+      "file": "ferramentas/pa-metal-negro.png",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "item": "telhado-de-tabuas",
+      "material": null,
+      "file": "telhado/telhado-de-tabuas.png",
+      "size": [
+        128,
+        128
+      ]
+    }
+  ]
+}

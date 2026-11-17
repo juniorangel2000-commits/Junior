@@ -71,7 +71,8 @@ export function itemIconUrl(id: string, tier=0): string | undefined {
   if(id==='bait')return 'assets/visual/fishing/basic-worm.png';
   const natural=ecologyIcon(id);if(natural)return natural;
   const dedicated=economyIcon(id);if(dedicated)return dedicated;
-  if((ART_TOOL_IDS as readonly string[]).includes(id)&&(tier>0||id==='sickle'||id==='shovel'))return tierToolIcon(id as EconomicTool,tier);
+  // Ícones das ferramentas no estilo das espadas (preview.41), em todos os materiais, pedra incluída.
+  if((ART_TOOL_IDS as readonly string[]).includes(id))return tierToolIcon(id as EconomicTool,tier);
   const fallback=Object.hasOwn(ITEMS,id)?ITEMS[id as ItemId].iconFallback:undefined;
   if(fallback)return itemIconUrl(fallback);
   // Ícone de pedra do conjunto de ícones (as pedrinhas do chão ficavam minúsculas no slot).

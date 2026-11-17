@@ -260,3 +260,6 @@
 #ui .bag-slot .sword-tier-icon{transform:rotate(-45deg) scale(1.3)}
 #ui .hud .tool .icon[src*="/tools/"],#ui .hud .tool .icon[src*="items/swords/"]{width:40px;height:40px;margin:-3px 0 -5px}
 @media(max-width:600px){#ui .bag-slot .icon[src*="/tools/"],#ui .bag-slot .icon[src*="items/swords/"]{max-width:48px;max-height:48px}#ui .hud .tool .icon[src*="/tools/"],#ui .hud .tool .icon[src*="items/swords/"]{width:31px;height:31px}}
+/* Ferramentas novas (de pé, finas): um pouco maiores no slot. */
+#ui .bag-slot .icon[src*="economy/tools/"]{transform:scale(1.22)}
+#ui .hud .tool .icon[src*="economy/tools/"]{transform:scale(1.15)}

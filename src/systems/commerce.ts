@@ -8,7 +8,7 @@ import {peekBest,takeBest,touchQuality,qualityPrice,QUALITY_NAMES,QUALITY_PLURAL
 
 export type CommerceFailure='unknown-merchant'|'shop-closed'|'unavailable'|'invalid-quantity'|'invalid-economy'|'not-enough-coins'|'not-enough-items'|'inventory-full'|'wallet-full'|'already-owned';
 export type CommerceResult={ok:true;message:string;total:number;quantity:number;unitPrice:number}|{ok:false;message:string;reason:CommerceFailure};
-const tools=new Set<ItemId>(['hatchet','pickaxe','hoe','handsaw','hammer']);
+const tools=new Set<ItemId>(['hatchet','pickaxe','hoe','handsaw','hammer','sickle','shovel']);
 const fail=(reason:CommerceFailure,message:string):CommerceResult=>({ok:false,reason,message});
 
 /** Inventory and wallet commit together. Refused trades never spend either
@@ -36,7 +36,11 @@ export function trade(merchantId:string,side:TradeSide,item:ItemId,quantity:numb
     if(!inventory.transact({},{[item]:quantity}))return fail('inventory-full','Não há espaço para esta compra no inventário.');
     economy.coins-=total;
     if(stock){economy.stock??={};economy.stock[item]={cycle:stock.cycle,remaining:stock.remaining-quantity,bought:(B.stock[item as keyof typeof B.stock].quantity-stock.remaining)+quantity};}
-    return {ok:true,message:`Compra concluída: ${quantity} × ${ITEM_NAMES[item]} por ${total} C.`,quantity,total,unitPrice:price};
+    // Comprar a primeira foice ou pá com o Bento ensina a receita da bancada de trabalho.
+    const learns=merchantId==='blacksmith'&&(item==='sickle'||item==='shovel')&&quality&&'villageProgress' in quality;
+    const progress=learns?(quality as {villageProgress?:{recipes:string[]}}).villageProgress:undefined;
+    const learned=!!progress&&!progress.recipes.includes(item);if(learned)progress!.recipes.push(item);
+    return {ok:true,message:`Compra concluída: ${quantity} × ${ITEM_NAMES[item]} por ${total} C.`+(learned?' Você aprendeu a fazer na bancada de trabalho.':''),quantity,total,unitPrice:price};
   }
   if(!inventory.has(item,quantity))return fail('not-enough-items','Você não tem essa quantidade para vender.');
   if(economy.coins>MAX_COINS-total)return fail('wallet-full','Seu saldo atingiria o limite. A venda foi cancelada.');

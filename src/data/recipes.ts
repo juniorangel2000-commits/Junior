@@ -2,7 +2,7 @@ import {MACHINES,CRAFTED_MACHINE_IDS} from './machines';
 import type { ItemCost } from '../systems/inventory';
 import type { OwnedTool } from '../types';
 import {ECOLOGY_BALANCE as ECOLOGY} from './ecology-balance';
-import {ECONOMY_BALANCE as ECONOMY,METALS,METAL_NAMES,TOOL_IDS,type EconomicTool} from './economy-balance';
+import {ECONOMY_BALANCE as ECONOMY,METALS,METAL_NAMES,TOOL_IDS,minToolTier,type EconomicTool} from './economy-balance';
 
 export interface CraftingRecipe {
   id: string;
@@ -96,8 +96,9 @@ for(const [id,name,cost,output] of [
 
 RECIPES.push(
  {id:'fungalInfusion',name:'Infusão de cogumelos',description:'Receita da Amélia. Combine ervas e cogumelos para recuperar 50 de vigor.',cost:ECOLOGY.infusion.cost,output:ECOLOGY.infusion.output,unlock:'fungalInfusion',durationSeconds:3},
- {id:'sickle',name:'Foice de Pedra',description:'Ferramenta básica de coleta vegetal.',cost:{flakedStone:1,handle:1,cord:1},output:{sickle:1}},
- {id:'shovel',name:'Pá de Pedra',description:'Ferramenta básica para preparar o chão.',cost:{flakedStone:2,handle:1,cord:1},output:{shovel:1}},
+ // Sem foice e pá de pedra (preview.41): a primeira se compra com o Bento, que ensina a receita.
+ {id:'sickle',name:'Foice de ferro',description:'Corta fibras e capim. Receita aprendida ao comprar a primeira foice com o Bento.',cost:{ironIngot:3,wood:2},output:{sickle:1},unlock:'sickle',requiresWorkbench:true},
+ {id:'shovel',name:'Pá de ferro',description:'Prepara a terra da horta. Receita aprendida ao comprar a primeira pá com o Bento.',cost:{ironIngot:3,wood:2},output:{shovel:1},unlock:'shovel',requiresWorkbench:true},
  {id:'forge',name:'Forja própria',description:'Instale na propriedade para fundir sem pagar mão de obra. Este sistema não exige combustível.',cost:{stone:15,wood:8,scrap:6},output:{forge:1},requiresWorkbench:true},
  {id:'furniture',name:'Banco de madeira',description:'Monte o banco com as novas peças de madeira. Depois escolha sua posição e gire com R antes de colocar.',cost:{wood:10,board:4},output:{furniture:1},requiresWorkbench:true,requiresTool:'hammer',durationSeconds:3},
  {id:'doorKit',name:'Telhado de tábuas',description:'Painel de telhado de tábuas e telhas para cobrir os abrigos dos animais.',cost:{board:4,peg:4},output:{doorKit:1}},
@@ -115,6 +116,7 @@ for(const id of CRAFTED_MACHINE_IDS)RECIPES.push({id,name:MACHINES[id].name,desc
 // com o Bento (mesmos materiais, sem mão de obra nem espera). docs/construcoes/FABRICACAO.md
 const TOOL_LABEL:Record<EconomicTool,string>={hatchet:'Machadinha',pickaxe:'Picareta',hoe:'Enxada',sickle:'Foice',shovel:'Pá',sword:'Espada'};
 for(const tool of TOOL_IDS)for(const tier of [1,2,3] as const){
+ if(tier<=minToolTier(tool))continue;
  const metal=METALS[tier-1],cost=tier===3?{...ECONOMY.blackToolRecipe}:{[`${metal}Ingot`]:ECONOMY.ingots[tool][tier],[tier===2?'board':'wood']:2};
  RECIPES.push({id:`upgrade-${tool}-${tier}`,name:`${TOOL_LABEL[tool]} de ${METAL_NAMES[metal].toLowerCase()}`,description:`Reforce a ${TOOL_LABEL[tool].toLowerCase()} da mochila com ${METAL_NAMES[metal].toLowerCase()}: mais força e mais durabilidade.`,cost:cost as ItemCost,output:{},requiresWorkbench:true,durationSeconds:2+tier*2,upgrade:{tool,tier}});
 }

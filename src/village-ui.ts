@@ -41,7 +41,7 @@ export interface VillageInteractionCallbacks {
 
 type Tab = 'talk' | 'services' | TradeSide;
 const count = (value: number): string => value.toLocaleString('pt-BR');
-const toolItems = new Set<ItemId>(['hatchet', 'pickaxe', 'hoe', 'handsaw', 'hammer']);
+const toolItems = new Set<ItemId>(['hatchet', 'pickaxe', 'hoe', 'handsaw', 'hammer', 'sickle', 'shovel']);
 const merchantEmblems: Record<MerchantId, string> = {
   general: 'wood', blacksmith: 'pickaxe', herbalist: 'fiber', carpenter: 'plank', seeds: 'seeds',
   traveler: 'board', tailor: 'cord', fisher: 'branch', inn: 'turnip', mechanic: 'scrap',
@@ -332,14 +332,13 @@ export class VillageInteractionUI {
       this.tab = 'talk'; this.render(); this.report(merchantSchedule(merchantId), false); return;
     }
     const inventory = this.callbacks.getInventory();
-    if(merchantId==='blacksmith'&&side==='buy'&&this.day<31){this.body.replaceChildren();const message=document.createElement('p');message.textContent='A venda de minerais será liberada no dia 31. Fundição e encomendas já estão disponíveis.';this.body.append(message);return;}
     const items = Object.keys(merchant[side]) as ItemId[];
     if (!this.selected || !items.includes(this.selected)) this.selected = side === 'sell' ? items.find(item => inventory[item] > 0) ?? items[0] : items[0];
     this.body.replaceChildren(); this.body.className = 'village-panel-body village-trade';
     const catalog = document.createElement('div'); catalog.className = 'village-catalog';
     const note = document.createElement('p'); note.className = 'village-shop-note';
     note.textContent = side === 'buy'
-      ? `${merchant.description}${merchantId === 'general' || merchantId === 'traveler' ? ` Seleção do dia ${count(this.day)}.` : ''}`
+      ? `${merchant.description}${merchantId === 'general' || merchantId === 'traveler' ? ` Seleção do dia ${count(this.day)}.` : ''}${merchantId==='blacksmith'&&this.day<31?' Foice e pá de ferro à venda; os minerais a partir do dia 31.':''}`
       : 'Escolha os produtos que quer vender. O valor mostrado é por unidade.';
     const list = document.createElement('div'); list.className = 'village-item-list'; list.setAttribute('role', 'group'); list.setAttribute('aria-label', side === 'buy' ? 'Itens à venda na loja' : 'Itens aceitos pelo comerciante');
     for (const item of items) {

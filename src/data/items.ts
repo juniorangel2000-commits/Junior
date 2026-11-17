@@ -18,8 +18,8 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   blackMetalShard: {name:'Fragmento bruto de Metal Negro',description:'Material metálico para a ferraria.',iconFallback:'scrap'},
   blackMetalOre: {name:'Minério bruto inteiro de Metal Negro',description:'Equivale a nove fragmentos, não é um lingote.',iconFallback:'scrap'},
   blackMetalIngot: {name:'Lingote de Metal Negro',description:'Material metálico para a ferraria.',iconFallback:'scrap'},
-  sickle: {name:'Foice de Pedra',description:'Produzido ou coletado na região.',iconFallback:'board'},
-  shovel: {name:'Pá de Pedra',description:'Produzido ou coletado na região.',iconFallback:'board'},
+  sickle: {name:'Foice',description:'Corta fibras e capim. A primeira se compra com o Bento; depois, a receita fica na bancada de trabalho.',iconFallback:'board'},
+  shovel: {name:'Pá',description:'Prepara a terra da horta. A primeira se compra com o Bento; depois, a receita fica na bancada de trabalho.',iconFallback:'board'},
   furniture: {name:'Banco de madeira',description:'Fabricado na bancada ou adquirido na vila. Selecione e posicione na propriedade; R gira a vista.',iconFallback:'board'},
   // Nomes da preview.41 (pedido do Junior); os ids continuam doorKit e windowKit por causa dos saves.
   doorKit: {name:'Telhado de tábuas',description:'Painel de telhado de tábuas e telhas. Vai no galinheiro, no curral, no aprisco e no chiqueiro.',iconFallback:'board'},

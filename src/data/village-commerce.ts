@@ -1,6 +1,6 @@
 import {DISH_RECIPES} from './kitchen';
 import {CROP_CATALOG} from './crop-catalog';
-import {ECONOMY_BALANCE as B,NON_COMMERCIAL} from './economy-balance';
+import {ECONOMY_BALANCE as B,NON_COMMERCIAL,FIRST_TOOL_PRICE} from './economy-balance';
 import {ECOLOGY_BALANCE as ECOLOGY} from './ecology-balance';
 import type {ItemId,VillageEconomy} from '../types';
 
@@ -121,6 +121,7 @@ for(const merchant of Object.values(MERCHANTS)){
  if(merchant.buy.fish)merchant.buy.fish=35;
 }
 for(const item of ['ironShard','ironIngot','goldShard','goldIngot','blackMetalIngot'] as ItemId[])MERCHANTS.blacksmith.buy[item]=B.prices[item]![0];
+Object.assign(MERCHANTS.blacksmith.buy,FIRST_TOOL_PRICE);
 for(const item of ['ironShard','ironIngot','goldShard','goldIngot','blackMetalShard','blackMetalIngot'] as ItemId[])MERCHANTS.blacksmith.sell[item]=B.prices[item]![1];
 // O comércio agrícola vende somente sementes; colheitas vêm do cultivo.
 for(const c of CROP_CATALOG){
@@ -163,7 +164,8 @@ export function getMerchant(id:string,day=1):Merchant|undefined {
   const merchant=MERCHANTS[id as MerchantId];
   if(!isMerchantOpen(id,day))return {...merchant,buy:{},sell:{}};
   if(id==='general')return {...merchant,buy:rotatingOffers(merchant.buy,4,day,73856093)};
-  if(id==='blacksmith'&&day<B.mineralTradeDay)return {...merchant,buy:{}};
+  // Antes do comércio de minérios, o Bento já vende a foice e a pá.
+  if(id==='blacksmith'&&day<B.mineralTradeDay)return {...merchant,buy:{...FIRST_TOOL_PRICE}};
   return merchant;
 }
 

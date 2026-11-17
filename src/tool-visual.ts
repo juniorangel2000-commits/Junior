@@ -1,3 +1,4 @@
+import {minToolTier} from './data/economy-balance';
 import {preloadPlayerMiningArt,playerMiningPose,playerChoppingPose} from './player-mining-art';
 import Phaser from 'phaser';
 import { CHARACTER_DIRECTIONS, directionVector, type CharacterDirection } from './character-directions';
@@ -66,7 +67,7 @@ export class ToolVisual {
     this.hideMiningPose();
     direction = direction.includes('left') ? 'left' : 'right';
     if(tool!=='water'&&(tier>0||tool==='sickle'||tool==='shovel')){
-      const material=TOOL_MATERIALS[Math.max(0,Math.min(3,Math.floor(tier)))];
+      const material=TOOL_MATERIALS[Math.max(minToolTier(tool),Math.min(3,Math.floor(tier)))];
       const character=resolveCharacter(this.profile),hand=HANDS[character.id][direction];
       this.sprite.setTexture(`economy-tool-${material}-${tool}`).setFlipX(direction==='left').clearTint();
       this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);

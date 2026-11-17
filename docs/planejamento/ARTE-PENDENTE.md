@@ -111,3 +111,14 @@ Arte do Junior em `docs/arte-recebida/faltantes/`, importada por `scripts/import
   `docs/arte-recebida/faltantes/icones-2/`; `import_art_faltantes.py --icones`)
 
 Todos os itens do jogo têm ícone próprio desde a preview.41.
+
+## Ferramentas no estilo das espadas (preview.41)
+
+Arte do Junior em `docs/arte-recebida/ferramentas/`, importada por `scripts/import_tools.py`
+(quadro de 128 px e ponto de pegada medido de novo em `src/data/tool-art-anchors.json`):
+
+- [x] Machadinha, picareta e enxada: pedra, ferro, ouro e metal negro
+- [x] Foice e pá: ferro, ouro e metal negro. **Não existem em pedra**: a primeira se compra
+  com o Bento (80 C e 90 C), que ensina a receita da bancada de trabalho (3 lingotes de ferro
+  + 2 madeiras). Saves antigos: a foice e a pá de pedra viram de ferro.
+- [x] Telhado de tábuas (antiga porta pronta) e Ninho e baias (antiga janela pronta, usa o ninho do galinheiro)

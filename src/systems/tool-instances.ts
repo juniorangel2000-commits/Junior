@@ -1,5 +1,5 @@
 import type {InventoryData} from '../types';
-import {TOOL_IDS,ECONOMY_BALANCE as B,type EconomicTool} from '../data/economy-balance';
+import {TOOL_IDS,ECONOMY_BALANCE as B,minToolTier,type EconomicTool} from '../data/economy-balance';
 export const INDIVIDUAL_TOOLS=[...TOOL_IDS,'hammer','handsaw','fishingRod','net','sword','shears'] as const;
 export type IndividualTool=typeof INDIVIDUAL_TOOLS[number];
 export interface ToolCopy {id:number;kind:IndividualTool;condition:{tier:number;durability:number;work?:number}}
@@ -18,7 +18,7 @@ export function syncToolInstances(stock:InventoryData,legacy?:Legacy):ToolInvent
  for(const kind of INDIVIDUAL_TOOLS){
   const owned=book.items.filter(t=>t.kind===kind),count=stock[kind];
   if(count<owned.length){const keep=[...owned].sort((a,b)=>Number(b.id===book!.active[kind])-Number(a.id===book!.active[kind])).slice(0,count);book.items=book.items.filter(t=>t.kind!==kind||keep.includes(t));}
-  for(let n=owned.length;n<count;n++){const condition=first&&durableTool(kind)?legacy?.[kind]:undefined;book.items.push({id:book.nextId++,kind,condition:{tier:condition?.tier??0,durability:condition?.durability??B.durability[0],...(condition?.work!==undefined?{work:condition.work}:{})}});}
+  for(let n=owned.length;n<count;n++){const condition=first&&durableTool(kind)?legacy?.[kind]:undefined;const tier=Math.max(minToolTier(kind),condition?.tier??0);book.items.push({id:book.nextId++,kind,condition:{tier,durability:condition&&condition.tier===tier?condition.durability:B.durability[tier],...(condition?.work!==undefined?{work:condition.work}:{})}});}
   if(!book.items.some(t=>t.kind===kind&&t.id===book!.active[kind])){const t=book.items.find(t=>t.kind===kind);if(t)book.active[kind]=t.id;else delete book.active[kind];}
  }
  stock.toolInstances=book;return book;

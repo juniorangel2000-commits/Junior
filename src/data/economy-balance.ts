@@ -5,6 +5,12 @@ export const METAL_NAMES={iron:'Ferro',gold:'Ouro',blackMetal:'Metal Negro'};
 /** A espada tem os mesmos níveis das ferramentas (preview.41), mas não se desgasta. */
 export const TOOL_IDS=['hatchet','pickaxe','hoe','sickle','shovel','sword'] as const;
 export type EconomicTool=typeof TOOL_IDS[number];
+/** Foice e pá não existem em pedra (preview.41): começam no ferro. A primeira se compra com o
+ * Bento; depois de comprar, a receita é aprendida e dá para fazer na bancada de trabalho. */
+export const MIN_TOOL_TIER:Partial<Record<string,number>>={sickle:1,shovel:1};
+export const minToolTier=(tool:string)=>MIN_TOOL_TIER[tool]??0;
+/** Preço da primeira foice e da primeira pá na ferraria. */
+export const FIRST_TOOL_PRICE={sickle:80,shovel:90} as const;
 export const ECONOMY_BALANCE={blackToolRecipe:{blackMetalIngot:9,goldIngot:4},rareDepositRespawnDays:30,initialCrowns:100,fragmentsPerIngot:9,mineralTradeDay:31,maxOrders:20,
  efficiency:[1,1.5,2.2,3.2],durability:[100,250,450,800],workDays:[0,1,2,4],
  smeltMinutes:{iron:30,gold:90,blackMetal:240},smeltFee:{iron:25,gold:90,blackMetal:500},
@@ -20,4 +26,4 @@ export const ECONOMY_ITEM_IDS=['ironShard','ironOre','ironIngot','goldShard','go
 export const shard=(metal:Metal)=>`${metal}Shard` as ItemId;
 export const ore=(metal:Metal)=>`${metal}Ore` as ItemId;
 export const ingot=(metal:Metal)=>`${metal}Ingot` as ItemId;
-export const NON_COMMERCIAL:readonly string[]=['sword','branch','stone','fiber','flakedStone','hatchet','pickaxe','hoe','sickle','shovel','hammer','handsaw','ironOre','goldOre','blackMetalOre'];
+export const NON_COMMERCIAL:readonly string[]=['sword','branch','stone','fiber','flakedStone','hatchet','pickaxe','hoe','hammer','handsaw','ironOre','goldOre','blackMetalOre'];

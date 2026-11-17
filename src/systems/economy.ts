@@ -2,7 +2,7 @@ import {bentoAvailability} from './bento-schedule';
 import {validateVillageEconomy} from '../data/village-commerce';
 import type {SaveData,ItemId,VillageEconomy} from '../types';
 import {Inventory,type ItemCost} from './inventory';
-import {ECONOMY_BALANCE as B,METALS,TOOL_IDS,shard,ore,ingot,type Metal,type EconomicTool} from '../data/economy-balance';
+import {ECONOMY_BALANCE as B,METALS,TOOL_IDS,minToolTier,shard,ore,ingot,type Metal,type EconomicTool} from '../data/economy-balance';
 import {activeToolCopy,syncToolInstances,selectToolCopy} from './tool-instances';
 export interface ToolCondition {tier:number;durability:number;work?:number}
 export interface CraftOrder {id:number;station?:'bento'|'own';kind:'tool'|'smelt';tool?:EconomicTool;toolId?:number;metal:Metal;tier:number;quantity:number;materials:ItemCost;fee:number;phase:'reserved'|'working'|'collected'|'cancelled';createdAt:number;readyAt:number;notified?:boolean}
@@ -15,7 +15,7 @@ export function stockInfo(e:VillageEconomy,item:ItemId,day:number):{remaining:nu
  const cycle=Math.floor((day-31)/spec.interval),stored=e.stock?.[item];
  return{remaining:stored?.cycle===cycle?stored.remaining:spec.quantity,nextDay:31+(cycle+1)*spec.interval,cycle};
 }
-export function toolCondition(s:SaveData,tool:EconomicTool):ToolCondition {return activeToolCopy(s.inventory,tool)?.condition??s.economy6?.tools[tool]??{tier:0,durability:B.durability[0]};}
+export function toolCondition(s:SaveData,tool:EconomicTool):ToolCondition {const t=minToolTier(tool);return activeToolCopy(s.inventory,tool)?.condition??s.economy6?.tools[tool]??{tier:t,durability:B.durability[t]};}
 export function configureTool(s:SaveData,tool:EconomicTool,tier:number):void{syncToolInstances(s.inventory,s.economy6?.tools);const copy=activeToolCopy(s.inventory,tool),condition={tier,durability:B.durability[tier]};if(copy)copy.condition=condition;(s.economy6??=newEconomyState()).tools[tool]=condition;}
 export function equipToolCopy(s:SaveData,id:number):boolean {syncToolInstances(s.inventory,s.economy6?.tools);if(!selectToolCopy(s.inventory,id))return false;for(const kind of TOOL_IDS){const copy=activeToolCopy(s.inventory,kind);if(copy)(s.economy6??=newEconomyState()).tools[kind]=copy.condition;}return true;}
 export function toolWork(s:SaveData,tool:EconomicTool):number{const c=toolCondition(s,tool);return Math.floor(B.efficiency[c.tier]+(c.work??0));}
@@ -37,7 +37,7 @@ export function startOwnSmelt(s:SaveData,m:Metal,q:number){return atomicEconomy(
  });}
 export function reserveTool(s:SaveData,tool:EconomicTool,tier:number,toolId?:number){return atomicEconomy(s,(d,i)=>{
  need(bentoAvailability(d).open,bentoAvailability(d).message);
- need(TOOL_IDS.includes(tool)&&[1,2,3].includes(tier),'Ferramenta inválida.');need(d.economy6!.orders.filter(o=>o.phase==='reserved'||o.phase==='working').length<B.maxOrders,'Limite de encomendas pendentes.');
+ need(TOOL_IDS.includes(tool)&&[1,2,3].includes(tier)&&tier>minToolTier(tool),'Ferramenta inválida.');need(d.economy6!.orders.filter(o=>o.phase==='reserved'||o.phase==='working').length<B.maxOrders,'Limite de encomendas pendentes.');
  if(toolId!==undefined)need(equipToolCopy(d,toolId)&&activeToolCopy(d.inventory,tool)?.id===toolId,'Traga esta ferramenta.');const copy=activeToolCopy(d.inventory,tool);
  need(!d.economy6!.orders.some(o=>o.kind==='tool'&&o.tool===tool&&(!o.toolId||o.toolId===copy?.id)&&(o.phase==='working'||o.phase==='reserved')),'Já há uma encomenda desta ferramenta.');need(i.has(tool),'Fabrique primeiro a ferramenta básica.');need(toolCondition(d,tool).tier===tier-1,'Respeite a sequência Pedra → Ferro → Ouro → Metal Negro.');
  const m=METALS[tier-1],cost:ItemCost=toolUpgradeCost(tool,tier);

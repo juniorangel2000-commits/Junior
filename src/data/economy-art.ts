@@ -1,3 +1,4 @@
+import {minToolTier} from './economy-balance';
 import type {EconomicTool,Metal} from './economy-balance';
 
 export const ECONOMY_ART_ROOT='assets/visual/economy';
@@ -10,7 +11,8 @@ export function economyIcon(id:string):string|undefined{
  return (ECONOMY_ICON_IDS as readonly string[]).includes(id)?`${ECONOMY_ART_ROOT}/icons/${id}.png`:undefined;
 }
 export function tierToolIcon(tool:EconomicTool,tier:number):string{
- const material=TOOL_MATERIALS[Number.isInteger(tier)&&tier>=0&&tier<=3?tier:0];
+ // Foice e pá não têm versão de pedra: começam no ferro.
+ const material=TOOL_MATERIALS[Math.max(minToolTier(tool),Number.isInteger(tier)&&tier>=0&&tier<=3?tier:0)];
  return `${ECONOMY_ART_ROOT}/tools/${material}-${tool}.png`;
 }
 export const mineralTexture=(metal:Metal)=>`economy-deposit-${metal}`;
