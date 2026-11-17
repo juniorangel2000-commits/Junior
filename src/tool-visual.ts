@@ -95,7 +95,7 @@ export class ToolVisual {
   }
 
   /** The same rigid pivot swing is used for inventory-operated sickles and shovels. */
-  playGather(tool:EconomicTool,direction:CharacterDirection,player:{x:number;y:number},tier:number,body?:Phaser.GameObjects.Sprite):void{
+  playGather(tool:Exclude<EconomicTool,'sword'>,direction:CharacterDirection,player:{x:number;y:number},tier:number,body?:Phaser.GameObjects.Sprite):void{
     this.hide();
     this.sprite.setData('gathering',true);
     this.show(tool,direction,player.x,player.y,{active:true,frame:0},tier,body);

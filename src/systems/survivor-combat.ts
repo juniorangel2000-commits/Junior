@@ -1,4 +1,4 @@
-import {hasEquippedSword} from './world-sword';
+import {hasEquippedSword,swordDamage,swordTier} from './world-sword';
 import type {SaveData} from '../types';
 import {WEAPONS} from '../dungeons/config';
 import {insideSwordArc} from '../dungeons/weapon-identity';
@@ -11,7 +11,7 @@ export function campStrike(save:SaveData,origin:{x:number;y:number},angle:number
  const c=save.survivorCamp,sword=hasEquippedSword(save),weapon=WEAPONS.sword,range=sword?weapon.range:42;
  const result:{hit:string[];cooldown:number;effect?:AttackEffect}={hit:[],cooldown:0};if(!c||c.kind!=='hostile'||!c.aggressive||!save.villageProgress||save.villageProgress.vigor<=0)return result;
  spendVigor(save,1);result.cooldown=sword?weapon.cooldown:.65;
- if(sword)result.effect={id:0,weapon:'sword',...origin,angle,ttl:.22,variant:0,radius:range};
- for(const p of c.members){const dx=p.x-origin.x,dy=p.y-origin.y;if(p.hp<=0||!['arriving','staying'].includes(p.status)||Math.hypot(dx,dy)>range||!insideSwordArc(dx,dy,angle,0)||!campSegmentClear(origin,p,blocked))continue;p.hp=Math.max(0,p.hp-(sword?weapon.damage:6));if(p.hp===0)p.status='leaving';result.hit.push(p.id);}
+ if(sword)result.effect={id:0,weapon:'sword',...origin,angle,ttl:.22,variant:0,radius:range,tier:swordTier(save)};
+ for(const p of c.members){const dx=p.x-origin.x,dy=p.y-origin.y;if(p.hp<=0||!['arriving','staying'].includes(p.status)||Math.hypot(dx,dy)>range||!insideSwordArc(dx,dy,angle,0)||!campSegmentClear(origin,p,blocked))continue;p.hp=Math.max(0,p.hp-(sword?swordDamage(save,weapon.damage):6));if(p.hp===0)p.status='leaving';result.hit.push(p.id);}
  return result;
 }

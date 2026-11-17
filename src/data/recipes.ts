@@ -113,7 +113,7 @@ for(const id of CRAFTED_MACHINE_IDS)RECIPES.push({id,name:MACHINES[id].name,desc
 
 // Melhorias de ferramentas na bancada de trabalho: aprendidas depois da primeira encomenda
 // com o Bento (mesmos materiais, sem mão de obra nem espera). docs/construcoes/FABRICACAO.md
-const TOOL_LABEL:Record<EconomicTool,string>={hatchet:'Machadinha',pickaxe:'Picareta',hoe:'Enxada',sickle:'Foice',shovel:'Pá'};
+const TOOL_LABEL:Record<EconomicTool,string>={hatchet:'Machadinha',pickaxe:'Picareta',hoe:'Enxada',sickle:'Foice',shovel:'Pá',sword:'Espada'};
 for(const tool of TOOL_IDS)for(const tier of [1,2,3] as const){
  const metal=METALS[tier-1],cost=tier===3?{...ECONOMY.blackToolRecipe}:{[`${metal}Ingot`]:ECONOMY.ingots[tool][tier],[tier===2?'board':'wood']:2};
  RECIPES.push({id:`upgrade-${tool}-${tier}`,name:`${TOOL_LABEL[tool]} de ${METAL_NAMES[metal].toLowerCase()}`,description:`Reforce a ${TOOL_LABEL[tool].toLowerCase()} da mochila com ${METAL_NAMES[metal].toLowerCase()}: mais força e mais durabilidade.`,cost:cost as ItemCost,output:{},requiresWorkbench:true,durationSeconds:2+tier*2,upgrade:{tool,tier}});

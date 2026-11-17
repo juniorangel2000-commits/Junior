@@ -40,6 +40,7 @@ export function itemIconUrl(id: string, tier=0): string | undefined {
   if(ITEM_ART.has(id))return `assets/visual/items/${id}.png`;
   if(id==='harvestBasket')return 'assets/visual/crops/harvest-basket.png';
   if(id==='lamp')return 'assets/visual/village/street-lamp.png';
+  if(id==='sword')return `assets/visual/items/swords/${['improvisada','ferro','ouro','metal-negro'][Math.max(0,Math.min(3,tier))]}.png`;
   if(id==='waterPump')return 'assets/visual/equipment/irrigation-sprinkler-off.png';
   const crop=CROP_CATALOG.find(c=>c.seed===id||c.harvest===id);if(crop)return `assets/visual/crops/${crop.id}/${crop.seed===id?'seed':'harvest'}.png`;
   if(id==='freshGrass')return 'assets/visual/open-fields/fresh-grass.png';

@@ -6,7 +6,7 @@ import {advanceEnemyPursuit,swordTargets,damageWithGrace} from '../dungeons/comb
 import type {AttackEffect} from '../dungeons/run';
 import {villageRoute} from './village-walk';
 import {campSegmentClear} from './survivor-combat';
-import {hasEquippedSword} from './world-sword';
+import {hasEquippedSword,swordDamage,swordTier} from './world-sword';
 import {undergroundFits,undergroundBlocked,type UndergroundState} from './underground';
 import type {MineHazardState,MineBat} from './underground-hazard-state';
 export type MineHazardEvent='gas-enter'|'gas-leave'|'collapse-warning'|'collapse-impact'|'hurt';
@@ -125,7 +125,7 @@ export class UndergroundHazards{
   const mine=this.mine(),h=ensureMineHazards(mine);if(h.hp<=0||h.swordCooldown>0||!hasEquippedSword(save))return{hits:0};
   const w=WEAPONS.sword;h.swordCooldown=w.cooldown;
   const targets=swordTargets([...h.zombies,...h.bats],origin,angle,w.range,0,1,(a,b)=>mineSegmentClear(mine,a,b));
-  for(const e of targets){e.hp=Math.max(0,e.hp-w.damage);const d=Math.hypot(e.x-origin.x,e.y-origin.y)||1;moveMineActor(mine,e,(e.x-origin.x)/d*6,(e.y-origin.y)/d*6);}
-  return{effect:{id:0,weapon:'sword',x:origin.x,y:origin.y,angle,ttl:.22,variant:0,radius:w.range},hits:targets.length};
+  const damage=swordDamage(save,w.damage);for(const e of targets){e.hp=Math.max(0,e.hp-damage);const d=Math.hypot(e.x-origin.x,e.y-origin.y)||1;moveMineActor(mine,e,(e.x-origin.x)/d*6,(e.y-origin.y)/d*6);}
+  return{effect:{id:0,weapon:'sword',x:origin.x,y:origin.y,angle,ttl:.22,variant:0,radius:w.range,tier:swordTier(save)},hits:targets.length};
  }
 }

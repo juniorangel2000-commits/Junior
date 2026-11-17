@@ -534,3 +534,6 @@
 .wl[data-period="night"] .wl-sun{width:60px;height:60px;top:12%;left:76%;background:radial-gradient(circle at 40% 40%,#f3efd9 0 44%,#f3efd933 46%,transparent 68%)}
 .wl[data-period="morning"] .wl-sun{top:30%;left:18%}
 .wl-card{display:flex;flex-direction:column;align-items:center;gap:6px;width:min(620px,100%);padding:18px 24px 16px;border-radius:14px;background:#14201a73;box-shadow:0 8px 30px #0003;backdrop-filter:blur(2px)}
+
+/* Espadas de ferro, ouro e metal negro: o desenho é deitado, o ícone fica na diagonal. */
+.sword-tier-icon{transform:rotate(-45deg) scale(1.15);object-fit:contain}

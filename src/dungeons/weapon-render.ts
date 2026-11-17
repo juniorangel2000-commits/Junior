@@ -4,9 +4,9 @@ import { weaponIdentity, swordHalfArc } from "./weapon-identity";
 import { WEAPON_PALETTES, effectProgress } from "./weapon-presentation";
 const TAU = Math.PI * 2;
 /** Shared by dungeon attacks and outdoor sword combat. */
-export function drawSwordSlash(ink:Phaser.GameObjects.Graphics,e:{x:number;y:number;angle:number;ttl:number;variant?:number},radius:number,wide=0,evolved=false):void {
+export function drawSwordSlash(ink:Phaser.GameObjects.Graphics,e:{x:number;y:number;angle:number;ttl:number;variant?:number},radius:number,wide=0,evolved=false,palette?:readonly [number,number]):void {
  const t=effectProgress(e.ttl),alpha=1-t,half=swordHalfArc(wide),end=e.angle+(e.variant?-1:1)*(t*2-1)*half;
- const core=evolved?0xffdf9d:WEAPON_PALETTES.sword.core,trail=evolved?0xc6a160:WEAPON_PALETTES.sword.trail;
+ const core=palette?.[0]??(evolved?0xffdf9d:WEAPON_PALETTES.sword.core),trail=palette?.[1]??(evolved?0xc6a160:WEAPON_PALETTES.sword.trail);
  for(let layer=0;layer<3;layer++){
   const r=radius*(1-layer*.1),start=end-(e.variant?-1:1)*Math.min(half*2,t*half*2,.85);
   ink.lineStyle(5-layer*1.7,layer===0?core:trail,alpha*(.75-layer*.17)).beginPath().arc(e.x,e.y-20,r,Math.min(start,end),Math.max(start,end),false).strokePath();

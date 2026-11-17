@@ -20,12 +20,13 @@ export function openBlacksmithPanel(getSave:()=>SaveData,commit:(change:(s:SaveD
  if(tab==='smelt')for(const m of METALS){const a=row(METAL_NAMES[m],`9 fragmentos ou 1 minério inteiro = 1 lingote. Na mochila: ${s.inventory[`${m}Shard`]} fragmentos, ${s.inventory[`${m}Ore`]} inteiros. ${own?`Grátis; sem combustível. ${B.smeltMinutes[m]} minutos do jogo por lingote.`:`${B.smeltFee[m]} C por lingote; ${B.smeltMinutes[m]} minutos do jogo.`}`,`${m}Ingot`),q=document.createElement('input');q.type='number';q.value='1';q.min='1';q.max='99';q.setAttribute('aria-label',`Quantidade de lingotes de ${METAL_NAMES[m]}`);a.append(q,button(own?'Iniciar fundição':'Entregar materiais',`smelt-${m}`,()=>commit(d=>own?startOwnSmelt(d,m,Number(q.value)):reserveSmelt(d,m,Number(q.value)))));}
  if(tab==='tools'){
   const copies=syncToolInstances(s.inventory,s.economy6?.tools).items;
-  for(const tool of WEARING_TOOLS){
+  for(const tool of [...WEARING_TOOLS,'sword'] as const){
    const owned=copies.filter(t=>t.kind===tool);
    if(!owned.length){row(ITEM_NAMES[tool],'Fabrique a ferramenta básica e traga a cópia que deseja melhorar ou reparar.',tool);continue;}
    for(const copy of owned){const c=copy.condition,tier=c.tier+1,m=METALS[tier-1];
     const a=row(`${ITEM_NAMES[tool].replace(' de Pedra','')} #${copy.id}${durableTool(tool)?' · '+['Pedra','Ferro','Ouro','Metal Negro'][c.tier]:''}`,`Durabilidade: ${c.durability}/${B.durability[c.tier]}. O serviço afeta somente esta ferramenta.`,tool,c.tier);
-    const repair=button('Reparar esta cópia · 20 C',`repair-${tool}-${copy.id}`,()=>commit(d=>{if(!equipToolCopy(d,copy.id))return{ok:false,message:'Traga esta ferramenta.'};return performVillageService(d,'repair-'+tool);}));repair.disabled=c.durability===B.durability[c.tier];a.append(repair);
+    if(tool==='sword')a.querySelector('h3')!.textContent=`Espada #${copy.id} · ${['Improvisada','Ferro','Ouro','Metal Negro'][c.tier]}`,a.querySelector('p')!.textContent=`A espada não se desgasta. Golpe ${[1,1.4,1.9,2.6][c.tier]}× mais forte que a improvisada.`;
+    const repair=button('Reparar esta cópia · 20 C',`repair-${tool}-${copy.id}`,()=>commit(d=>{if(!equipToolCopy(d,copy.id))return{ok:false,message:'Traga esta ferramenta.'};return performVillageService(d,'repair-'+tool);}));repair.disabled=c.durability===B.durability[c.tier];if(tool!=='sword')a.append(repair);
     if(durableTool(tool)&&tier<=3){const p=document.createElement('p');p.textContent=(tier===3?'9 lingotes de Metal Negro + 4 lingotes de Ouro':`${B.ingots[tool][tier]} lingotes de ${METAL_NAMES[m]} + 2 ${tier===2?'tábuas regulares':'madeiras'}`)+`. Mão de obra: ${B.labor[tool][tier]} C. Prazo: ${B.workDays[tier]} dia(s).`;a.append(p,button(`Melhorar esta cópia para ${METAL_NAMES[m]}`,`reserve-${tool}-${tier}-${copy.id}`,()=>commit(d=>reserveTool(d,tool,tier,copy.id))));}
    }
   }

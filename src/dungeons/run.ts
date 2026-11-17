@@ -88,6 +88,8 @@ export interface AttackEffect {
   ttl: number;
   variant: number;
   radius?: number;
+  /** Nível da espada fora das masmorras (cor do golpe e desenho). */
+  tier?: number;
 }
 export type RunPhase =
   "fighting" | "choice" | "paused" | "victory" | "defeat" | "abandoned";
