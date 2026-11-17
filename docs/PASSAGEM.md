@@ -2,7 +2,7 @@
 
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
-- **Atualizado em:** 2026-11-16
+- **Atualizado em:** 2026-11-17
 - **Por:** Claude Code
 - **Continuar a partir de:** `release/v0.10.0-preview.41` (não publicado ainda).
 - **Última versão publicada:** `v0.10.0-preview.40`, enviada à `main`. **Falta o Junior criar a Release** no GitHub: tag `v0.10.0-preview.40`, target `main`, pre-release. A Release da preview.39 também não foi confirmada.
@@ -10,39 +10,58 @@
 
 ## Feito nesta rodada
 
-### preview.41 (Claude Code)
+### preview.41 (Claude Code) — tudo enviado, nada publicado
 
-- **Regras da montaria** (`src/riding-guard.ts`, `docs/construcoes/MONTARIA.md`):
-  - montado, não se entra em interiores (casa, lojas, ferreiro, centro comunitário, abrigos, mina, masmorras) nem no Acampamento: a passagem avisa para descer;
-  - montado ou com animal na corda, não se entra na água (quem já está nela sai para o raso).
-- **Entrada da Serra** no começo da escada do Lago, lá embaixo (`LAKE_HIGHLAND_EXIT` em `src/data/highland.ts`).
-- **Tela de carregamento nova** (`src/world-loading.ts`):
-  - a personagem montada galopa pela barra, que vira uma trilha;
-  - ao fundo, a paisagem do destino em camadas, na cor da hora do dia;
-  - o passo da viagem e dicas alternadas.
-  - Imagem em `docs/planejamento/carregamento-preview.png`.
-- **Nomes dos lugares unificados** (`src/data/area-names.ts`), escolhidos pelo Junior: Propriedade Abandonada, Floresta Antiga, Vila, Estrada da Cidade, Lago da Cachoeira, Campos Abertos, Platô da Nascente, Acampamento dos Sobreviventes e Mina Antiga.
-- `scripts/qa-horse-riding.cjs`: conferência da montaria no navegador, etapa por etapa, uma etapa por navegador.
+- **Montaria:** não entra em interiores, na água (nem com animal na corda) nem no Acampamento (`src/riding-guard.ts`). Testada no navegador com `scripts/qa-horse-riding.cjs`.
+- **Entrada da Serra** no começo da escada do Lago.
+- **Tela de carregamento nova** (`src/world-loading.ts`) e **nomes dos lugares unificados** (`src/data/area-names.ts`).
+- **Peças de construção:** o Ícaro separa sucata em pregos, dobradiças, molas e engrenagens; o Bento vende caro; as máquinas pedem as peças (`src/systems/scrap-sorting.ts`, `docs/construcoes/FABRICACAO.md`).
+- **Quadro de pedidos** (o quadro com telhado na frente do centro comunitário, `src/request-board.ts`): pedidos de Rosa, Tobias, Helena, Amélia, Bento e Damião; um "!" aparece quando há algo para entregar.
+- **Janela dos moradores refeita:**
+  - serviços em cartões com chips "tenho/preciso";
+  - amizade no cabeçalho;
+  - conversa num palco com balão;
+  - 6 conversas por morador (`src/data/npc-conversations.ts`);
+  - − e + na compra.
+- **Ícaro:** luminárias e aspersor viraram dois projetos.
+- **Corda vegetal:** nenhum morador compra nem vende.
+- **Aspersor automático** (arte do Junior) no lugar da bomba d'água: gira em loop (quadros 1–14, `scripts/pack_sprinkler.py`) e joga pingos acompanhando os braços. GIF em `docs/planejamento/aspersor-pingos.gif`.
+- **Sucata no chão** usa o desenho do inventário.
+- **Espadas:** arte das 4 espadas (`scripts/import_swords.py`). A espada ganhou níveis de ferro, ouro e metal negro, como as ferramentas:
+  - melhorada no Bento e depois na bancada;
+  - golpe 1×, 1,4×, 1,9× e 2,6×;
+  - desenho e cor do golpe por nível;
+  - continua sem desgaste.
 
 ### preview.40 (publicada)
 
-- Montaria com a arte do Junior (dois personagens), qualidade das colheitas, painel do abrigo e fabricação. Detalhes em `docs/cenarios/NOTAS-0.10.0-preview.40.md`.
+- Montaria, qualidade das colheitas, painel do abrigo e fabricação (`docs/cenarios/NOTAS-0.10.0-preview.40.md`).
 
 ## Em andamento e próximo passo exato
 
-1. **Junior:** criar a Release da preview.40, com a tag `v0.10.0-preview.40` e target `main` (e conferir a da preview.39).
-2. Repetir no navegador as etapas de `scripts/qa-horse-riding.cjs` que ainda não rodaram:
-   - `casa` (feminina) e `floresta` (masculino);
-   - `agua` (os dois);
-   - `cenario-<área>`, que ainda falha ao recarregar a página.
-3. **No PC do Junior:** conferir a subida da escada do Lago até a Serra, porque o Lago não termina de carregar no Chromium daqui.
-4. Pendentes do pedido "depois fazemos o restante":
-   - porteira do chiqueiro;
-   - ícones de peças de construção;
-   - instalador em WebP (precisa do `sharp`);
-   - ajustes pelos números do F3.
+1. **Pedido do Junior ainda não entregue:** "verifique no jogo o que falta fazer sprite e já gere um prompt para cada item com as características; se precisar, mande referências; tudo dentro de um zip". Levantamento já feito, falta montar o zip com os prompts e referências.
+   - **Itens com ícone emprestado:**
+     - Infusão de cogumelos e Tônico de ervas (usam o regador);
+     - Curativos e Acessórios (usam a corda);
+     - Refeições (usa a semente de nabo);
+     - Lanterna (usa o martelo);
+     - Componentes eletrônicos (usam a lâmina);
+     - Roupas (usa a fibra);
+     - Enxada (usa um desenho provisório).
+   - **Desenhados por código no mundo:**
+     - a luminária instalada (retângulos em `src/village-equipment.ts`);
+     - os sobreviventes Marina e Rui na propriedade (retângulos no mesmo arquivo).
+   - Conferir também a arte da bancada de fabricação do aspersor.
+2. Conferir no jogo as espadas de nível:
+   - a ferraria, aba "Ferramentas e reparos";
+   - o golpe no Acampamento e na mina.
+   As duas só foram cobertas por testes automáticos.
+3. **Junior:** criar a Release da preview.40 (tag `v0.10.0-preview.40`, target `main`).
+4. Pendentes antigos: porteira do chiqueiro, instalador em WebP (`sharp`), números do F3.
+5. Publicar a preview.41 quando o Junior pedir.
 
 ## Pendências e ideias para depois
+
 
 
 - Plano em `docs/planejamento/ANIMAIS-E-RECEITAS.md`. Animais, cozinha, abelhas, patos, porcos, máquinas e qualidade estão prontos. Faltam conferir os preços jogando e substituir as artes provisórias.
@@ -64,6 +83,6 @@
 
 - `npm run check`: ok.
 - `npm run build`: ok (aviso de tamanho do pacote, que já existia).
-- `npm test`: **2.129 passaram, zero falhas, 245 arquivos**.
+- `npm test`: **2.150 passaram, zero falhas, 250 arquivos**.
 - Montaria conferida no Chromium, andando nas 4 direções principais e galopando de lado. As diagonais e a vista de costas foram conferidas em imagem montada sobre o cavalo parado.
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.
