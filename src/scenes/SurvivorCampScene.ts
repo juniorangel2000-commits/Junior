@@ -5,6 +5,7 @@ import {bentoSceneWriter} from '../systems/bento-commit';
 import {communityReady} from '../systems/community-center';
 import {equipWorldSword,ownsWorldSword} from '../systems/world-sword';
 import {swordTier} from '../systems/world-sword';
+import {itemIconUrl} from '../visual-assets';
 import {showSurvivorHelp} from '../survivor-dialog';
 import {CampCombatArt,preloadCampCombat} from '../camp-combat-art';
 import {campStrike,campSegmentClear} from '../systems/survivor-combat';
