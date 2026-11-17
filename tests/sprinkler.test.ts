@@ -11,3 +11,13 @@ describe('aspersor automático',()=>{
  });
  it('o item mantém o id antigo e passa a se chamar aspersor',()=>{expect(ITEMS.waterPump.name).toBe('Aspersor automático');});
 });
+
+import {stepSprinklerDrops} from '../src/village-equipment';
+describe('pingos do aspersor',()=>{
+ it('saem dos três braços, caem a até ~3 blocos e somem depois do respingo',()=>{
+  const drops:Parameters<typeof stepSprinklerDrops>[0]=[];let far=0;
+  for(let t=0;t<120;t++){stepSprinklerDrops(drops,1/30,t%14,t<60?3:0);for(const d of drops)far=Math.max(far,Math.hypot(d.gx,d.gy));}
+  expect(far).toBeGreaterThan(40);expect(far).toBeLessThanOrEqual(3*32+20);
+  expect(drops.length).toBe(0);
+ });
+});
