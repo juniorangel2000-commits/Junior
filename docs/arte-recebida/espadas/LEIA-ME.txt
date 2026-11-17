@@ -1,0 +1,5 @@
+ESPADAS — JARDIM DEPOIS DA CHUVA
+
+A prancha original contem as quatro espadas na ordem: improvisada (sucata), ferro, ouro e metal negro.
+Os PNGs individuais preservam tamanho, proporcoes e posicao da prancha, em faixas de mesma altura, com fundo transparente.
+Este pacote contem apenas a arte. Nenhum arquivo do jogo foi alterado.
