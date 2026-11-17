@@ -45,7 +45,7 @@ export const MERCHANTS:Record<MerchantId,Merchant>={
   },
   herbalist:{
     id:'herbalist',npcId:'amelia',name:'Amélia',shop:'Ervas da Amélia',
-    description:'Amélia conhece a vegetação da região e negocia sementes e fibras. Ela compra cordas vegetais, mas não vende.',
+    description:'Amélia conhece a vegetação da região e negocia sementes e fibras.',
     buy:{fiber:4,seeds:9,cord:16},
     sell:{fiber:1,seeds:2,cord:3},
   },
@@ -63,7 +63,7 @@ export const MERCHANTS:Record<MerchantId,Merchant>={
   },
   tailor:{
     id:'tailor',npcId:'celina',name:'Celina',shop:'Ateliê da Celina',
-    description:'No ateliê, Celina negocia as fibras usadas em trabalhos manuais e compra cordas.',
+    description:'No ateliê, Celina negocia as fibras usadas em trabalhos manuais.',
     buy:{cord:15,fiber:4},sell:{fiber:1,cord:3},
   },
   fisher:{
@@ -101,8 +101,9 @@ Object.assign(MERCHANTS.blacksmith.buy,{nails:18,hinge:50,spring:60,gear:90});
 Object.assign(MERCHANTS.mechanic.sell,{nails:3,hinge:10,spring:12,gear:18});
 MERCHANTS.traveler.buy={oldMap:80};MERCHANTS.traveler.sell={oldMap:20};
 MERCHANTS.traveler.description='Compra e vende antiguidades encontradas na região.';
-// Corda vegetal se faz à mão, com fibras: nenhum morador vende (pedido do Junior, preview.41).
-for(const m of Object.values(MERCHANTS))delete m.buy.cord;
+// Corda vegetal se faz à mão, com fibras, e é para uso próprio: nenhum morador vende nem compra
+// (pedido do Junior, preview.41).
+for(const m of Object.values(MERCHANTS)){delete m.buy.cord;delete m.sell.cord;}
 MERCHANTS.herbalist.description='Ervas, cogumelos, plantas medicinais e preparados para exploração.';
 Object.assign(MERCHANTS.herbalist.sell,{mushroom:4});
 Object.assign(MERCHANTS.herbalist.buy,{fungalInfusion:ECOLOGY.infusion.buy});

@@ -13,5 +13,5 @@ describe('conversas dos moradores',()=>{
 
 import {MERCHANTS} from '../src/data/village-commerce';
 describe('corda vegetal',()=>{
- it('nenhum morador vende corda vegetal (ela se faz à mão)',()=>{for(const m of Object.values(MERCHANTS))expect(m.buy.cord,m.id).toBeUndefined();});
+ it('nenhum morador vende nem compra corda vegetal (ela se faz à mão)',()=>{for(const m of Object.values(MERCHANTS)){expect(m.buy.cord,m.id).toBeUndefined();expect(m.sell.cord,m.id).toBeUndefined();}});
 });
