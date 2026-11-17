@@ -9,7 +9,6 @@ import {shortCalendarLabel,fullCalendarLabel,calendarDate} from './systems/calen
 import {mountMineMissionJournal,mineMissionSummary} from './mine-mission-journal';
 import type {MineMissionRuntime} from './systems/mine-missions';
 import {UNIQUE_CRAFT_ITEMS} from './systems/crafting';
-import {swordIcon} from './data/sword-icon';
 import {weatherForDay,WEATHER_NAMES} from './weather-model';
 import {mountFishingJournal} from './fishing-journal';
 import {createSaveLibraryPanel} from './save-library-panel';
@@ -130,8 +129,8 @@ const paths: Record<string, string> = {
   keys: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h1m4 0h1m4 0h1M6 12h1m4 0h1m4 0h1M7 16h10"/>',
 };
 function icon(name: string, cls = '', tier=0): string {
-  // Espada: a improvisada continua com o recorte do atlas; os outros níveis usam o desenho deles, na diagonal.
-  if(name==='sword')return tier>0?`<img class="icon asset-icon sword-tier-icon ${cls}" src="${itemIconUrl('sword',tier)}" alt="" aria-hidden="true" draggable="false" />`:swordIcon('icon '+cls);
+  // Espada: cada nível usa o seu desenho, na diagonal.
+  if(name==='sword')return `<img class="icon asset-icon sword-tier-icon ${cls}" src="${itemIconUrl('sword',tier)}" alt="" aria-hidden="true" draggable="false" />`;
   const asset = name === 'gate' ? gatePreview() : name === 'fence' ? fencePreview() ?? itemIconUrl(name) : itemIconUrl(name,tier);
   if (asset) return `<img class="icon asset-icon ${cls}" src="${asset}" alt="" aria-hidden="true" draggable="false" />`;
   return `<svg class="icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] ?? paths.leaf}</svg>`;
@@ -892,7 +891,7 @@ export class GameUI {
         { const c=quickItem(item)==='sword'?this.slotCondition(item):undefined; panel.querySelector('.detail-name')!.textContent = c?info.label.replace(SWORD_TIER_NAMES[0],SWORD_TIER_NAMES[c.tier]):info.label; }
         const condition=this.slotCondition(item),copy=toolReferenceParts(item);
         const quality=quickItem(item)?qualityLabel(this.latest?.itemQuality,quickItem(item) as ItemId,inventory[quickItem(item) as ItemId]??0):'';
-        panel.querySelector('.detail-text')!.textContent = info.detail+(quality?` · Qualidade: ${quality}`:'')+(condition&&wearsOut(quickItem(item))?`${durableTool(quickItem(item))?' · Material: '+['Pedra','Ferro','Ouro','Metal Negro'][condition.tier]:''} · Durabilidade: ${condition.durability}/${ECONOMY_BALANCE.durability[condition.tier]}`:'')+(quickItem(item)==='sword'&&condition?` · golpe ${SWORD_POWER[condition.tier].toLocaleString('pt-BR')}× mais forte que a improvisada`:'');
+        panel.querySelector('.detail-text')!.textContent = info.detail+(quality?` · Qualidade: ${quality}`:'')+(condition&&wearsOut(quickItem(item))?`${durableTool(quickItem(item))?' · Material: '+['Pedra','Ferro','Ouro','Metal Negro'][condition.tier]:''} · Durabilidade: ${condition.durability}/${ECONOMY_BALANCE.durability[condition.tier]}`:'')+(quickItem(item)==='sword'&&condition&&condition.tier>0?` · golpe ${SWORD_POWER[condition.tier].toLocaleString('pt-BR')}× mais forte que a improvisada`:'');
         panel.querySelector('[data-use-item]')?.remove();
         panel.querySelector('[data-drop-item]')?.remove();
         const id=quickItem(item) as ItemId|undefined;
