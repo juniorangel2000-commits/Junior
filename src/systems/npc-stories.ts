@@ -25,7 +25,7 @@ export function storyStatus(s:SaveData,npc:SocialNpc):StoryStatus|undefined{
 }
 const rewardText=(r:StoryPart['reward'])=>[
  ...Object.entries(r.items??{}).map(([id,n])=>`${n} × ${ITEM_NAMES[id as ItemId]}`),
- ...(r.coins?[`${r.coins} Coroas`]:[]),...(r.recipe?['receita nova']:[])].join(', ');
+ ...(r.coins?[`${r.coins} Coroas`]:[]),...(r.recipe?[`receita: ${ITEM_NAMES[r.recipe as ItemId]??r.recipe}`]:[])].join(', ');
 export function storyRewardText(part:StoryPart):string{return rewardText(part.reward);}
 /** Entrega a parte atual: gasta os itens, dá a recompensa e avança a história. */
 export function completeStoryPart(runtime:SocialRuntime,npc:SocialNpc):SocialResult{

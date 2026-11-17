@@ -28,6 +28,13 @@ Pedido do Junior: "precisamos explorar os outros npcs" e "adicionar respostas di
   - a ordem muda a cada dia;
   - uma resposta por dia;
   - substituem os botões genéricos "É bom conversar com você" e "Prefiro não conversar agora".
+- **Histórias pessoais** (`src/data/npc-stories.ts`, `src/systems/npc-stories.ts`, aba "História" na janela do morador):
+  - 8 moradores têm uma história em 3 partes: Tobias (a ponte do avô), Helena (o caderno da vó Lúcia), Damião (o barco), Augusto (a carroça e a feira), Bento (o martelo do pai), Rosa (o jardim da praça), Celina (agasalhos para o acampamento) e Ícaro (o rádio).
+  - Cada parte se abre com amizade 3, 8 e 15 e pede uma entrega.
+  - Ao entregar: fala de agradecimento, recompensa (itens, Coroas e, na Helena, receitas) e +3 de amizade.
+  - A aba mostra "História ✦" quando dá para entregar.
+  - **Amélia e Nilo** ficam para quando o Junior adicionar o pântano e as ruínas.
+  - Save: `npcStories` (partes concluídas por morador, 0–3), opcional e validado.
 - **Correção: moradores invisíveis (um quadradinho andando no lugar do Damião).**
   - Causa: ao sair de um cenário, as imagens dele eram liberadas um instante depois de o próximo cenário já ter conferido que existiam. O Damião, que a Vila monta, ficava sem imagem na Estrada e no Lago.
   - Agora a liberação roda no começo do próximo cenário, antes do carregamento dele (`src/scene-texture-release.ts`).
@@ -43,7 +50,7 @@ Pedido do Junior: "precisamos explorar os outros npcs" e "adicionar respostas di
 Plano dos moradores, combinado com o Junior (em ordem):
 
 1. ~~Presentes e amizade com recompensas~~ (feito) e ~~respostas nas conversas~~ (feito).
-2. **História pessoal de cada morador:** uma missão em 3 partes que se abre com a amizade. O Junior vai adicionar dois cenários novos, um **pântano** e uma **ruína**, que devem ser usados nessas histórias. Exemplos: flor rara da Amélia no pântano, peça antiga do Nilo nas ruínas.
+2. ~~Histórias pessoais~~ (feito para 8 moradores). **Falta:** Amélia (flor rara no **pântano**) e Nilo (peça antiga nas **ruínas**), quando o Junior adicionar esses cenários. Pode também usar os cenários novos em partes extras das outras histórias.
 3. **Rotina na vila:** moradores andando pela praça, almoçando na pousada e fechando a loja à noite, como o Bento.
 4. **Visitas à propriedade** em dias de amizade alta.
 
