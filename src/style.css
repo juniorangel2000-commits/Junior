@@ -505,6 +505,12 @@
 .mining-entry-menu{max-width:560px}.mining-entry-summary{margin:18px 0;padding:14px;background:#e1d2ac;border:1px solid #a38a5c;border-radius:5px}.mining-entry-summary p{margin:7px 0}.mining-entry-summary small{line-height:1.6}.mining-entry-actions{display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap}
 
 /* Tela de carregamento (src/world-loading.ts). */
+/* Camada da viagem entre cenários (src/travel-loading.ts), por cima do jogo e do HUD. */
+.travel-loading{position:fixed;inset:0;z-index:9000;opacity:1;transition:opacity .3s ease}
+.travel-loading.leaving{opacity:0;pointer-events:none}
+.travel-loading .world-loading{position:absolute;inset:0}
+/* O cenário passando atrás do cavalo é o que mostra a viagem: continua mesmo com menos animação no sistema. */
+@media(prefers-reduced-motion:reduce){.wl .wl-far{animation:wl-scroll 60s linear infinite!important}.wl .wl-near{animation:wl-scroll 24s linear infinite!important}}
 .world-loading.wl{display:block;padding:0;overflow:hidden;background:linear-gradient(var(--wl-sky-a),var(--wl-sky-b))}
 .wl-sky,.wl-stars,.wl-layer{position:absolute;inset:0;pointer-events:none}
 .wl-stars{display:none;background-image:radial-gradient(1.5px 1.5px at 12% 18%,#fff8,transparent),radial-gradient(1px 1px at 32% 8%,#fff9,transparent),radial-gradient(1.5px 1.5px at 58% 22%,#fff7,transparent),radial-gradient(1px 1px at 76% 12%,#fffa,transparent),radial-gradient(1.5px 1.5px at 90% 28%,#fff6,transparent),radial-gradient(1px 1px at 44% 34%,#fff8,transparent)}

@@ -60,6 +60,9 @@ const PALETTE:Record<LoadingPeriod,{sky:[string,string];far:string;near:string;g
  night:{sky:['#101b33','#2c3c5e'],far:'#26324a',near:'#1a2337',ground:'#141b2a'},
 };
 
+type Atlas=Record<string,{frame:{x:number;y:number;w:number;h:number};spriteSourceSize:{x:number;y:number}}>;
+/** Quadros do cavalo, lidos uma vez só (a tela aparece em toda troca de cenário). */
+let cachedAtlas:Atlas|undefined;
 /** Monta a tela dentro de `holder`. Devolve o controle do progresso; a animação para sozinha
  * quando a tela sai do documento. */
 export function mountWorldLoading(holder:HTMLElement,label:string,info:WorldLoadingInfo={}):{setProgress(v:number):void}{
@@ -81,10 +84,10 @@ export function mountWorldLoading(holder:HTMLElement,label:string,info:WorldLoad
  let target=0,shown=0,lastTip=performance.now();
  // Cavalo galopando para a direita com a personagem por cima, nos quadros do jogo.
  const canvas=root.querySelector('canvas')!,ctx=canvas.getContext('2d');
- const horse=new Image(),rider=new Image();let atlas:Record<string,{frame:{x:number;y:number;w:number;h:number};spriteSourceSize:{x:number;y:number}}>|undefined;
+ const horse=new Image(),rider=new Image();let atlas=cachedAtlas;
  horse.src='assets/animals/horse/atlas-packed.png';rider.src=`assets/animals/horse-rider/${character}.png`;
- fetch('assets/animals/horse/atlas-packed.json').then(r=>r.json()).then(j=>{atlas=j.frames;}).catch(()=>{});
- const run=horsePoses.Run.east,riderCell=RIDER_ORDER.indexOf('right'),reduced=matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+ if(!atlas)fetch('assets/animals/horse/atlas-packed.json').then(r=>r.json()).then(j=>{atlas=cachedAtlas=j.frames;}).catch(()=>{});
+ const run=horsePoses.Run.east,riderCell=RIDER_ORDER.indexOf('right');
  const dust:{x:number;y:number;life:number;r:number}[]=[];let last=performance.now(),distance=0;
  const draw=(now:number)=>{
   if(!root.isConnected)return;requestAnimationFrame(draw);
@@ -92,9 +95,9 @@ export function mountWorldLoading(holder:HTMLElement,label:string,info:WorldLoad
   fill.style.width=`${shown*100}%`;
   if(now-lastTip>5000){lastTip=now;tipIndex=(tipIndex+1)%LOADING_TIPS.length;tip.classList.remove('wl-in');void tip.offsetWidth;tip.textContent=LOADING_TIPS[tipIndex];tip.classList.add('wl-in');}
   if(!ctx)return;ctx.clearRect(0,0,canvas.width,canvas.height);ctx.imageSmoothingEnabled=false;
-  const scale=.85,x=60+shown*(canvas.width-150),foot=canvas.height-6;distance+=reduced?0:dt*260;
+  const scale=.85,x=60+shown*(canvas.width-150),foot=canvas.height-6;distance+=dt*260;
   const frame=run[Math.floor(distance/26)%run.length];
-  if(!reduced&&Math.random()<dt*28)dust.push({x:x-26,y:foot-2,life:1,r:2+Math.random()*3});
+  if(Math.random()<dt*28)dust.push({x:x-26,y:foot-2,life:1,r:2+Math.random()*3});
   for(const d of dust){d.life-=dt*1.6;d.x-=dt*40;d.y-=dt*8;}
   while(dust.length&&dust[0].life<=0)dust.shift();
   for(const d of dust){ctx.fillStyle=`rgba(214,186,140,${Math.max(0,d.life)*.55})`;ctx.beginPath();ctx.arc(d.x,d.y,d.r*(1.6-d.life*.6),0,Math.PI*2);ctx.fill();}

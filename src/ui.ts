@@ -410,6 +410,8 @@ export class GameUI {
     });
   }
 
+  /** Na tela de título ou criando o personagem (fora do jogo). */
+  get onTitle():boolean{return this.mode==='title'||this.mode==='creation';}
   private worldLoading?:{setProgress(v:number):void};
   showWorldLoading(label:string,info:WorldLoadingInfo={}):void {
     this.cleanupOpening?.();this.cleanupOpening=undefined;

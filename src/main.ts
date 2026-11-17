@@ -1,4 +1,5 @@
 import { cookInScene } from './systems/kitchen';
+import {installTravelLoading} from './travel-loading';
 import {installCampfires,placeCampfireInScene,type CampfireScene} from './campfire-controller';
 import {OpenFieldsScene} from './scenes/OpenFieldsScene';
 import {FarmInteriorScene} from './scenes/FarmInteriorScene';
@@ -78,6 +79,7 @@ export const game = new Phaser.Game({
   audio: { noAudio: true },
   banner: false,
 });
+installTravelLoading(game,{isTitle:()=>ui.onTitle});
 
 installPerformanceOverlay(game);
 installSceneTextureRelease(game);

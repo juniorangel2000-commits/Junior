@@ -146,14 +146,9 @@ export class VillageScene extends Phaser.Scene {
  private readonly northPassage=new MapExitPassage();
  private bentoTravelView?:BentoTravelView;
  constructor(){super('Vila');}
- private startSave?:SaveData;
- init(data:VillageStart):void{this.ui=data.ui;this.startSave=data.save;}
+ init(data:VillageStart):void{this.ui=data.ui;}
  preload():void{
-  if(!this.textures.exists('village-npc-bento')){
-   this.ui.showWorldLoading('Preparando a vila…',{character:this.startSave?.profile.characterId,area:'village',time:this.startSave?.time});
-   this.load.on('progress',this.ui.setWorldLoadingProgress,this.ui);
-   this.load.once('complete',()=>this.load.off('progress',this.ui.setWorldLoadingProgress,this.ui));
-  }
+  // A tela de carregamento da viagem é a de toda troca de cenário (src/travel-loading.ts).
   preloadPetArt(this);preloadVillagePeople(this);preloadBentoWorkArt(this);preloadSmithLayout(this);
  }
 

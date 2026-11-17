@@ -4,49 +4,41 @@
 
 - **Atualizado em:** 2026-11-17
 - **Por:** Claude Code
-- **Continuar a partir de:** `main` (preview.41). Próxima rodada: criar `release/v0.10.0-preview.42` a partir da `main`.
-- **Última versão publicada:** `v0.10.0-preview.41`, enviada à `main`. **Falta o Junior criar as Releases** no GitHub da preview.40 e da preview.41 (tags `v0.10.0-preview.40` e `v0.10.0-preview.41`, target `main`, pre-release).
-- **Estado:** preview.41 pronta, com versão do pacote, `NOTAS-0.10.0-preview.41.md` e `LEIA-0.10.0-preview.41.md`.
+- **Continuar a partir de:** `release/v0.10.0-preview.42` (em andamento, ainda não publicada).
+- **Última versão publicada:** `v0.10.0-preview.41`, na `main`. Se ainda não existirem, o Junior cria as Releases da preview.40 e da preview.41 no GitHub (tags `v0.10.0-preview.40` e `v0.10.0-preview.41`, target `main`, pre-release).
+- **Estado:** preview.42 com quatro correções prontas e enviadas. Ainda falta versão do pacote e notas (só quando o Junior pedir para publicar).
 
 ## Feito nesta rodada
 
+### preview.42 (em andamento)
+
+- **Fogueira montada no chão:** usar a fogueira portátil monta ela acesa na frente do personagem, em qualquer cenário ao ar livre (`src/systems/placed-campfires.ts`, `src/campfire-controller.ts`).
+  - Fica salva (`campfires` no save, opcional, com validação). Máximo de 3 por lugar.
+  - Perto dela aparece "E · cozinhar"; o caderno tem o botão "Apagar e recolher a fogueira".
+- **Aspersor sem requisitos:** instala em qualquer lugar da propriedade, sem precisar de água perto.
+- **Máquinas:** mensagem de instalação com o gênero certo (tear, moinho, forno, barril).
+- **Colmeia vazia:** usar fora do lugar explica que ela vai perto de um ipê florido nos Campos Abertos.
+- **Tela de carregamento em toda troca de cenário** (`src/travel-loading.ts`):
+  - é a tela do cavalo, numa camada por cima do jogo;
+  - aparece ao ir para Floresta, Campos, Vila, Estrada, Lago, Platô, Acampamento, Mina e expedições, e na volta à propriedade;
+  - fica no mínimo 0,9 s, e o cenário fica pausado por baixo;
+  - não aparece ao entrar em casa.
+  - O cavalo e o cenário de fundo agora animam mesmo com "menos animação" ligado no Windows, que era a causa provável de o cavalo ficar parado. O desenho do cavalo é lido uma vez só.
+  - Conferido no Chromium: na ida para a Vila foram 17 amostras e 17 quadros diferentes, e a tela saiu sozinha ao chegar.
+
 ### preview.41 (publicada)
 
-- **Montaria:** não entra em interiores, na água (nem com animal na corda) nem no Acampamento (`src/riding-guard.ts`). Testada no navegador com `scripts/qa-horse-riding.cjs`.
-- **Entrada da Serra** no começo da escada do Lago.
-- **Tela de carregamento nova** (`src/world-loading.ts`) e **nomes dos lugares unificados** (`src/data/area-names.ts`).
-- **Peças de construção:** o Ícaro separa sucata em pregos, dobradiças, molas e engrenagens; o Bento vende caro; as máquinas pedem as peças (`src/systems/scrap-sorting.ts`, `docs/construcoes/FABRICACAO.md`).
-- **Quadro de pedidos** (o quadro com telhado na frente do centro comunitário, `src/request-board.ts`): pedidos de Rosa, Tobias, Helena, Amélia, Bento e Damião; um "!" aparece quando há algo para entregar.
-- **Janela dos moradores refeita:**
-  - serviços em cartões com chips "tenho/preciso";
-  - amizade no cabeçalho;
-  - conversa num palco com balão;
-  - 6 conversas por morador (`src/data/npc-conversations.ts`);
-  - − e + na compra.
-- **Ícaro:** luminárias e aspersor viraram dois projetos.
-- **Corda vegetal:** nenhum morador compra nem vende.
-- **Aspersor automático** (arte do Junior) no lugar da bomba d'água: gira em loop (quadros 1–14, `scripts/pack_sprinkler.py`) e joga pingos acompanhando os braços. GIF em `docs/planejamento/aspersor-pingos.gif`.
-- **Sucata no chão** usa o desenho do inventário.
-- **Desde a última passagem:** ícones de todos os itens, ferramentas no estilo das espadas, foice e pá começando no ferro (a primeira com o Bento, por 3 lingotes de ferro e 2 madeiras), Telhado de tábuas e Ninho e baias, cabo novo e ícones mais nítidos na mochila.
-- **Espadas:** arte das 4 espadas (`scripts/import_swords.py`). A espada ganhou níveis de ferro, ouro e metal negro, como as ferramentas:
-  - melhorada no Bento e depois na bancada;
-  - golpe 1×, 1,4×, 1,9× e 2,6×;
-  - desenho e cor do golpe por nível;
-  - continua sem desgaste.
-
-### preview.40 (publicada)
-
-- Montaria, qualidade das colheitas, painel do abrigo e fabricação (`docs/cenarios/NOTAS-0.10.0-preview.40.md`).
+- Quadro de pedidos, janela dos moradores refeita, aspersor, espadas e ferramentas novas (`docs/cenarios/NOTAS-0.10.0-preview.41.md`).
 
 ## Em andamento e próximo passo exato
 
-1. **Junior:** criar as Releases da preview.40 e da preview.41 no GitHub.
-2. Ideias para a preview.42 (o Junior escolhe):
-   - **Ferramentas na mão:** refazer a machadinha e a picareta durante o uso (`tools/hatchet`, `tools/pickaxe`) no estilo dos ícones novos.
-   - **Marina e Rui andando** pela propriedade, com as 4 vistas em `characters/survivors/`.
+1. **Junior:** testar no PC a fogueira no chão e a tela de carregamento ao trocar de cenário. Depois, pedir para publicar a preview.42.
+2. Ideias para depois (o Junior escolhe):
+   - **Ferramentas na mão:** refazer a machadinha e a picareta durante o uso (`tools/hatchet`, `tools/pickaxe`).
+   - **Marina e Rui andando** pela propriedade (`characters/survivors/`).
    - **Desempenho:** números do F3 no PC do Junior; instalador em WebP (`sharp`, precisa de aprovação).
    - **Porteira do chiqueiro** do lote 01.
-3. Conferir no PC do Junior a subida da escada do Lago até o Platô (o Lago não carrega no Chromium daqui).
+   - **Ações do GitHub:** atualizar para as versões que não usam mais o Node 20.
 
 ## Pendências e ideias para depois
 
