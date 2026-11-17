@@ -17,7 +17,7 @@ const dropViews=new WeakMap<Phaser.Scene,{g:Phaser.GameObjects.Graphics;drops:Ma
 export function stepSprinklerDrops(drops:Drop[],dt:number,frame:number,emit:number,random=Math.random):void{
  const base=(SPRINKLER_ARMS as number[])[frame%SPRINKLER_ARMS.length]*Math.PI/180;
  for(let i=0;i<emit&&drops.length<MAX_DROPS;i++){
-  const arm=base+(i%3)*2*Math.PI/3+(random()-.5)*.45,speed=55+random()*85;
+  const arm=base+(i%3)*2*Math.PI/3+(random()-.5)*.45,speed=50+random()*62;
   drops.push({gx:Math.cos(arm)*TIP,gy:Math.sin(arm)*TIP,z:16+random()*4,vx:Math.cos(arm)*speed,vy:Math.sin(arm)*speed,vz:40+random()*70});
  }
  for(const d of drops){
