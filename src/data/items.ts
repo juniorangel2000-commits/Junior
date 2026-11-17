@@ -21,8 +21,9 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   sickle: {name:'Foice de Pedra',description:'Produzido ou coletado na região.',iconFallback:'board'},
   shovel: {name:'Pá de Pedra',description:'Produzido ou coletado na região.',iconFallback:'board'},
   furniture: {name:'Banco de madeira',description:'Fabricado na bancada ou adquirido na vila. Selecione e posicione na propriedade; R gira a vista.',iconFallback:'board'},
-  doorKit: {name:'Porta pronta',description:'Produzido ou coletado na região.',iconFallback:'board'},
-  windowKit: {name:'Janela pronta',description:'Produzido ou coletado na região.',iconFallback:'board'},
+  // Nomes da preview.41 (pedido do Junior); os ids continuam doorKit e windowKit por causa dos saves.
+  doorKit: {name:'Telhado de tábuas',description:'Painel de telhado de tábuas e telhas. Vai no galinheiro, no curral, no aprisco e no chiqueiro.',iconFallback:'board'},
+  windowKit: {name:'Ninho e baias',description:'Divisórias de tábua com palha, onde os animais dormem e as galinhas botam. Vai no galinheiro, no curral, no aprisco e no estábulo.',iconFallback:'board'},
   fenceKit: {name:'Módulo de cerca',description:'Item antigo: a cerca agora é construída direto com madeira. Saves anteriores recebem 3 madeiras por módulo.',iconFallback:'board'},
   forge: {name:'Forja própria',description:'Produzido ou coletado na região.',iconFallback:'workbench'},
   mushroom: {name:'Cogumelos',description:'Recolha sem ferramentas na propriedade e na floresta. Ingrediente dos preparados da Amélia.',iconFallback:'board'},

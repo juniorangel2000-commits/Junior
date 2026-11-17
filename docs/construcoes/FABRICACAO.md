@@ -71,6 +71,7 @@ Ideia do Junior: a sucata vira peças.
   - barril de conservas e composteira: pregos;
   - prensa de cera: molas e dobradiça;
   - moinho: duas engrenagens.
-- Porta e janela prontas ainda **não** pedem peças: o galinheiro usa as duas e pode vir antes
+- Telhado de tábuas (antiga porta pronta) e ninho e baias (antiga janela pronta) ainda **não**
+  pedem peças: o galinheiro usa os dois e pode vir antes
   de chegar à Vila. Decidir com o Junior antes de mudar.
 - Ícones do lote 01 (`items/nails.png`, `hinge.png`, `spring.png`, `gear.png`).
