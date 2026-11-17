@@ -39,8 +39,8 @@ describe('fishing cabin and morning visit',()=>{
   const s=save(),before=structuredClone(s);expect(fisherService(s,'fishing-lesson',()=>false).ok).toBe(false);expect(s).toEqual(before);
   expect(fisherService(s,'fishing-lesson',validateSave).ok).toBe(true);expect(s.villageProgress!.fishingSkill).toBe(1);expect(s.villageEconomy!.coins).toBe(970);
   const after=structuredClone(s);expect(fisherService(s,'inn-rest',()=>true).ok).toBe(false);expect(s).toEqual(after);
-  expect(fisherTrade(s,'fisher','buy','cord',1,()=>false).ok).toBe(false);expect(s).toEqual(after);
-  expect(fisherTrade(s,'fisher','buy','cord',1,validateSave).ok).toBe(true);expect(s.inventory.cord).toBe(after.inventory.cord+1);expect(s.villageEconomy!.coins).toBeLessThan(after.villageEconomy!.coins);
+  expect(fisherTrade(s,'fisher','buy','bait',1,()=>false).ok).toBe(false);expect(s).toEqual(after);
+  expect(fisherTrade(s,'fisher','buy','bait',1,validateSave).ok).toBe(true);expect(s.inventory.bait).toBe(after.inventory.bait+1);expect(s.villageEconomy!.coins).toBeLessThan(after.villageEconomy!.coins);
   const final=structuredClone(s);s.time=700;expect(fisherService(s,'fishing-lesson',()=>true).ok).toBe(false);expect(fisherTrade(s,'general','buy','wood',1,()=>true).ok).toBe(false);expect(s.inventory).toEqual(final.inventory);
  });
 });

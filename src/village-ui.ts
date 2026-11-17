@@ -12,6 +12,9 @@ import { itemIconUrl } from './visual-assets';
 import './village-ui.css';
 import './village-ui-cards.css';
 import {gameAudio} from './audio';
+import {pickConversation} from './data/npc-conversations';
+/** Moradores já ouvidos nesta sessão e a última conversa de cada um (para não repetir). */
+const heard=new Set<string>(),lastConversation=new Map<string,number>();
 
 export interface VillageInteractionCallbacks {
   onSocialOpen?(id:VillageNPC['id']):SocialContext;
@@ -58,6 +61,7 @@ export class VillageInteractionUI {
   private npc?: VillageNPC;
   private tab: Tab = 'talk';
   private dialogueIndex = 0;
+  private lines:readonly string[]=[];
   private socialContext?:SocialContext;
   private selected?: ItemId;
   private quantity = 1;
@@ -99,6 +103,10 @@ export class VillageInteractionUI {
     if (!this.isOpen) this.previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
     this.npc = npc;this.socialContext=this.callbacks.onSocialOpen?.(npc.id);
     this.tab = 'talk'; this.dialogueIndex = 0; this.selected = undefined; this.quantity = 1;
+    // A primeira conversa é a apresentação; depois, uma conversa diferente a cada visita.
+    const firstTime=!heard.has(npc.id)&&(this.socialContext?.affinity??0)<1;
+    const picked=firstTime||this.callbacks.getDialogueAction?.(npc.id)?undefined:pickConversation(npc.id,lastConversation.get(npc.id));
+    if(picked)lastConversation.set(npc.id,picked.index);heard.add(npc.id);this.lines=picked?.lines??npc.dialogue;
     this.layer.dataset.npc = npc.id;
     this.layer.hidden = false;
     this.report('');
@@ -266,7 +274,7 @@ export class VillageInteractionUI {
     const inside=this.callbacks.isInside?.(npc.id)??this.callbacks.canTrade?.(npc.id)??true;
     const trading=inside&&(this.callbacks.canTrade?.(npc.id)??true);
     const completion=this.callbacks.getDialogueAction?.(npc.id);
-    const remaining = this.dialogueIndex < npc.dialogue.length - 1;
+    const remaining = this.dialogueIndex < this.lines.length - 1;
     // Palco: o morador em pé, grande, sobre um chão.
     const stage=document.createElement('div');stage.className='vd-stage';
     const portrait=this.callbacks.getPortrait?.(npc.id);
@@ -278,7 +286,7 @@ export class VillageInteractionUI {
     const name=document.createElement('strong');name.textContent=npc.name;const role=document.createElement('span');role.textContent=npc.role;plate.append(name,role);
     if(this.socialContext){const mood=document.createElement('em');mood.className='vd-mood';mood.textContent='♥ '+this.socialContext.label;plate.append(mood);}
     const quote=document.createElement('p');quote.className='village-dialogue-text vd-text';
-    const line=npc.dialogue[this.dialogueIndex]??'É bom ver a vila recebendo novos vizinhos.';
+    const line=this.lines[this.dialogueIndex]??'É bom ver a vila recebendo novos vizinhos.';
     line.split(/(\s+)/).forEach((w,k)=>{const span=document.createElement('span');span.textContent=w;span.style.animationDelay=`${Math.min(k,80)*28}ms`;quote.append(span);});
     quote.onclick=()=>quote.classList.add('is-shown');
     box.append(plate);
@@ -290,8 +298,8 @@ export class VillageInteractionUI {
     }
     box.append(quote);
     const foot=document.createElement('div');foot.className='village-dialogue-actions vd-foot';
-    const dots=document.createElement('span');dots.className='village-dialogue-count vd-dots';dots.setAttribute('aria-label',`${Math.min(this.dialogueIndex+1,npc.dialogue.length)} de ${npc.dialogue.length}`);
-    for(let k=0;k<npc.dialogue.length;k++){const d=document.createElement('i');if(k<=this.dialogueIndex)d.className='is-on';dots.append(d);}
+    const dots=document.createElement('span');dots.className='village-dialogue-count vd-dots';dots.setAttribute('aria-label',`${Math.min(this.dialogueIndex+1,this.lines.length)} de ${this.lines.length}`);
+    for(let k=0;k<this.lines.length;k++){const d=document.createElement('i');if(k<=this.dialogueIndex)d.className='is-on';dots.append(d);}
     const next = document.createElement('button'); next.type = 'button'; next.className = 'village-primary vd-next'; next.dataset.villageDialogueNext = '';
     next.textContent = remaining ? 'Continuar ▸' : completion?completion.label:available&&trading ? 'Ver a loja ▸' : 'Até mais';
     next.addEventListener('click', () => {
