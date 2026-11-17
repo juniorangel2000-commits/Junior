@@ -40,6 +40,7 @@ export function itemIconUrl(id: string, tier=0): string | undefined {
   if(ITEM_ART.has(id))return `assets/visual/items/${id}.png`;
   if(id==='harvestBasket')return 'assets/visual/crops/harvest-basket.png';
   if(id==='lamp')return 'assets/visual/village/street-lamp.png';
+  if(id==='waterPump')return 'assets/visual/equipment/irrigation-sprinkler-off.png';
   const crop=CROP_CATALOG.find(c=>c.seed===id||c.harvest===id);if(crop)return `assets/visual/crops/${crop.id}/${crop.seed===id?'seed':'harvest'}.png`;
   if(id==='freshGrass')return 'assets/visual/open-fields/fresh-grass.png';
   if(id==='hardwood')return 'assets/visual/open-fields/hardwood.png';
@@ -87,6 +88,8 @@ const WORLD_SOURCES: Record<string, string> = {
 };
 const MODULES = ['parede_creme', 'parede_janela_floreira', 'parede_trepadeira', 'parede_porta', 'porta_madeira', 'janela_turquesa', 'telha_lisa', 'telha_variante', 'chamine', 'floreira', 'cerca_natural', 'banco_jardim', 'barril', 'vaso_flor', 'piso_tabuas', 'piso_pedra', 'terra', 'caminho', 'planta'];
 export function preloadVisualAssets(scene: Phaser.Scene): void {
+  // Aspersor automático: 14 quadros em loop (7×2, 96×72).
+  if(!scene.textures.exists('irrigation-sprinkler-loop'))scene.load.spritesheet('irrigation-sprinkler-loop','assets/visual/equipment/irrigation-sprinkler-loop.png',{frameWidth:96,frameHeight:72});
   preloadFarmConstructionArt(scene);
   preloadFurnitureImages(scene);
   preloadMachineArt(scene);preloadFishingArt(scene);

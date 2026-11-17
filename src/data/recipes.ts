@@ -89,7 +89,7 @@ for(const [id,name,cost,output] of [
  ['bandage','Curativo',{cloth:1,herb:2},{bandage:2}],['herbalTonic','Tônico medicinal',{herb:4,rareHerb:1},{herbalTonic:2}],
  ['fertilizer','Adubo vegetal',{fiber:6,herb:1},{fertilizer:2}],['backpack','Mochila reforçada',{cloth:8,cord:4},{backpack:1}],
  ['boots','Botas de caminhada',{cloth:4,cord:2},{boots:1}],['accessory','Acessório de pesca',{cloth:2,rareHerb:1},{accessory:1}],
- ['lamp','Luminária exterior',{wood:4,metalPart:2,electronicPart:1},{lamp:1}],['waterPump','Bomba de irrigação',{metalPart:6,electronicPart:3,plank:4},{waterPump:1}],
+ ['lamp','Luminária exterior',{wood:4,metalPart:2,electronicPart:1},{lamp:1}],['waterPump','Aspersor automático',{metalPart:6,electronicPart:3,plank:4},{waterPump:1}],
  ['homeKit','Kit da casa',{log:3,fiber:4},{plank:6,peg:8}],['workshopKit','Kit da oficina',{log:4,scrap:3},{board:6,metalPart:2}],
  ['survivorKit','Kit de base',{log:4,fiber:6},{plank:8,cord:3}],
 ] as const)RECIPES.push({id,name,description:'Receita aprendida com os moradores da vila.',cost,output,unlock:id});

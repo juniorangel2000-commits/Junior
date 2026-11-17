@@ -78,7 +78,7 @@ export const NPC_CONVERSATIONS:Record<string,readonly (readonly string[])[]>={
   ['Sucata é só uma peça esperando a chance de ser útil de novo.','Traga a sua. Eu separo pregos, molas, dobradiças... e às vezes uma engrenagem.'],
   ['Engrenagem é a peça mais rara da sucata. Quando aparece, eu comemoro.','Moinhos, teares e queijeiras não funcionam sem ela.'],
   ['Estou tentando consertar um rádio velho. Se funcionar, talvez a gente ouça a cidade.','Ou só chiado. Mas chiado também é companhia.'],
-  ['Luminárias deixam a propriedade segura à noite.','E uma bomba de irrigação poupa muito balde. Os dois projetos estão aqui na oficina.'],
+  ['Luminárias deixam a propriedade segura à noite.','E um aspersor automático poupa muito balde. Os dois projetos estão aqui na oficina.'],
   ['O Bento faz peças novas, eu salvo as velhas.','Juntos, a vila não fica parada. Ele com o fogo, eu com a paciência.'],
   ['Às vezes desmonto uma coisa só para entender como ela funciona.','Depois monto de novo. Quase sempre sobra um parafuso.'],
  ],

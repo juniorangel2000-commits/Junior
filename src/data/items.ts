@@ -108,7 +108,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   gear:{name:'Engrenagem',description:'A peça mais rara da sucata. O Bento também vende, caro. Vai nos moinhos, tear, roca e queijeira.',iconFallback:'scrap'},
   metalPart: {name:'Peças metálicas',description:'Componentes aproveitados por Ícaro em equipamentos e melhorias.',iconFallback:'scrap'},
   electronicPart: {name:'Componentes eletrônicos',description:'Peças delicadas para as invenções da oficina.',iconFallback:'blade'},
-  waterPump: {name:'Bomba de água',description:'Equipamento de Ícaro que pode ser instalado na propriedade.',iconFallback:'water'},
+  waterPump: {name:'Aspersor automático',description:'Projeto do Ícaro. Instale perto de um rio ou lago: os três braços giram sem parar e regam os canteiros a até 3 blocos.',iconFallback:'water'},
   lamp: {name:'Luminárias',description:'Luzes de exterior para iluminar a propriedade à noite.',iconFallback:'hammer'},
   backpack: {name:'Mochila reforçada',description:'Uma mochila de Celina para aumentar o espaço disponível ao explorar.',iconFallback:'cord'},
   boots: {name:'Botas',description:'Calçado preparado por Celina para as caminhadas.',iconFallback:'handle'},
