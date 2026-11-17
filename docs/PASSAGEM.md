@@ -4,13 +4,13 @@
 
 - **Atualizado em:** 2026-11-17
 - **Por:** Claude Code
-- **Continuar a partir de:** `release/v0.10.0-preview.42` (em andamento, ainda não publicada).
-- **Última versão publicada:** `v0.10.0-preview.41`, na `main`. Se ainda não existirem, o Junior cria as Releases da preview.40 e da preview.41 no GitHub (tags `v0.10.0-preview.40` e `v0.10.0-preview.41`, target `main`, pre-release).
-- **Estado:** preview.42 com quatro correções prontas e enviadas. Ainda falta versão do pacote e notas (só quando o Junior pedir para publicar).
+- **Continuar a partir de:** `main` (preview.42). Próxima rodada: criar `release/v0.10.0-preview.43` a partir da `main`.
+- **Última versão publicada:** `v0.10.0-preview.42`, enviada à `main`. **Falta o Junior criar a Release** no GitHub (tag `v0.10.0-preview.42`, target `main`, pre-release), e as da preview.40 e 41 se ainda não existirem.
+- **Estado:** preview.42 pronta, com versão do pacote, `NOTAS-0.10.0-preview.42.md` e `LEIA-0.10.0-preview.42.md`.
 
 ## Feito nesta rodada
 
-### preview.42 (em andamento)
+### preview.42 (publicada)
 
 - **Fogueira montada no chão:** usar a fogueira portátil monta ela acesa na frente do personagem, em qualquer cenário ao ar livre (`src/systems/placed-campfires.ts`, `src/campfire-controller.ts`).
   - Fica salva (`campfires` no save, opcional, com validação). Máximo de 3 por lugar.
@@ -32,7 +32,7 @@
 
 ## Em andamento e próximo passo exato
 
-1. **Junior:** testar no PC a fogueira no chão e a tela de carregamento ao trocar de cenário. Depois, pedir para publicar a preview.42.
+1. **Junior:** criar a Release da preview.42 e testar no PC a fogueira no chão e a tela de carregamento ao trocar de cenário.
 2. Ideias para depois (o Junior escolhe):
    - **Ferramentas na mão:** refazer a machadinha e a picareta durante o uso (`tools/hatchet`, `tools/pickaxe`).
    - **Marina e Rui andando** pela propriedade (`characters/survivors/`).
