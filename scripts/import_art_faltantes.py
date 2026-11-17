@@ -19,7 +19,7 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, '..')
 VIS = os.path.join(ROOT, 'public/assets/visual')
-SRC = sys.argv[1]
+SRC = sys.argv[-1]
 NAMES = {
     'caneca_de_chá_com_cogumelos.png': 'infusao-cogumelos.png',
     'poção_verde_com_laço_e_ervas.png': 'tonico-ervas.png',
@@ -105,5 +105,29 @@ def main():
         fringe.clean(out)
 
 
+# Últimos 6 ícones (segundo envio, 17/11/2026): <arquivo do zip> -> id do item.
+ICONS_2 = {'01-curativos.png': 'bandage', '02-refeicoes.png': 'meal', '03-lanterna-de-mao.png': 'lantern',
+           '04-componentes-eletronicos.png': 'electronicPart', '05-roupas.png': 'clothing', '06-acessorios.png': 'accessory'}
+
+
+def import_icons_2(src):
+    """Uso: python3 -I scripts/import_art_faltantes.py --icones <pasta do zip extraído>"""
+    fase02, fringe = load('import_art_fase02'), load('clean_white_fringe')
+    keep = os.path.join(ROOT, 'docs/arte-recebida/faltantes/icones-2')
+    os.makedirs(keep, exist_ok=True)
+    for name, item in ICONS_2.items():
+        shutil.copy(os.path.join(src, name), os.path.join(keep, name))
+        im = fase02.clear_background(Image.open(os.path.join(src, name)))
+        im = im.crop(im.getbbox())
+        im.thumbnail((160, 160), Image.LANCZOS)
+        out = os.path.join(VIS, f'items/{item}.png')
+        im.save(out, optimize=True)
+        fringe.clean(out)
+        print(f'items/{item}.png', im.size)
+
+
 if __name__ == '__main__':
-    main()
+    if sys.argv[1] == '--icones':
+        import_icons_2(sys.argv[2])
+    else:
+        main()

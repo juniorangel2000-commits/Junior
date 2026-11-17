@@ -107,5 +107,7 @@ Arte do Junior em `docs/arte-recebida/faltantes/`, importada por `scripts/import
 - [x] Luminária instalada, apagada de dia e acesa à noite (`equipment/lamp-off.png`, `lamp-on.png`); também é o ícone do item
 - [x] Marina e Rui, 4 vistas cada (`characters/survivors/`)
 
-Ainda com ícone emprestado: curativos, refeições, lanterna, componentes eletrônicos, roupas
-e acessórios (prompts no zip `sprites-faltando` enviado ao Junior).
+- [x] Curativos, refeições, lanterna, componentes eletrônicos, roupas e acessórios (segundo envio,
+  `docs/arte-recebida/faltantes/icones-2/`; `import_art_faltantes.py --icones`)
+
+Todos os itens do jogo têm ícone próprio desde a preview.41.

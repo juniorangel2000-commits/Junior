@@ -31,7 +31,7 @@ import { TOOL_ICON_URLS } from './data/tool-art';
 /** Local assets from the received packages and original tree/ground atlases. */
 const BASE = 'assets/visual/';
 const ICON_IDS = new Set(['wood', 'stone', 'branch', 'log', 'plank', 'scrap', 'hatchet', 'pickaxe', 'handsaw', 'fiber', 'cord', 'flakedStone', 'handle', 'blade', 'board', 'hammer', 'water', 'workbench', 'seeds']);
-const ITEM_ART=new Set(['peg','herb','rareHerb','oldMap','backpack','boots','metalPart','nails','hinge','spring','gear','fungalInfusion','herbalTonic','net']);
+const ITEM_ART=new Set(['peg','herb','rareHerb','oldMap','backpack','boots','metalPart','nails','hinge','spring','gear','fungalInfusion','herbalTonic','net','bandage','meal','lantern','electronicPart','clothing','accessory']);
 export function itemIconUrl(id: string, tier=0): string | undefined {
   if((MACHINE_IDS as readonly string[]).includes(id))return `assets/visual/machines/${id}-icon.png`;
   if((MACHINE_PRODUCTS as readonly string[]).includes(id))return `assets/visual/machines/${id}.png`;
