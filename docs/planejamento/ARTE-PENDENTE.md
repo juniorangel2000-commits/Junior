@@ -95,3 +95,17 @@ Mande os PNGs (ou um .zip) no chat, como o pacote de conservas e cera. Para cada
 máquina, as versões ficam lado a lado na mesma escala; para cada ícone, um objeto por
 imagem ou vários lado a lado com espaço entre eles. Os originais ficam guardados em
 `docs/arte-recebida/`.
+
+## Recebidas em 17/11/2026 (preview.41)
+
+Arte do Junior em `docs/arte-recebida/faltantes/`, importada por `scripts/import_art_faltantes.py`:
+
+- [x] Infusão de cogumelos (`items/fungalInfusion.png`)
+- [x] Tônico de ervas (`items/herbalTonic.png`)
+- [x] Rede de pesca (`items/net.png`)
+- [x] Enxada de pedra (`tools/hoe/stone.png`; mesma posição da antiga, o cabo fica em 80, 220)
+- [x] Luminária instalada, apagada de dia e acesa à noite (`equipment/lamp-off.png`, `lamp-on.png`); também é o ícone do item
+- [x] Marina e Rui, 4 vistas cada (`characters/survivors/`)
+
+Ainda com ícone emprestado: curativos, refeições, lanterna, componentes eletrônicos, roupas
+e acessórios (prompts no zip `sprites-faltando` enviado ao Junior).

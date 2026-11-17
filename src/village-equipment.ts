@@ -8,6 +8,10 @@ const forgeViews=new WeakMap<Phaser.Scene,Map<string,Phaser.GameObjects.Image>>(
  * (scripts/pack_sprinkler.py). Rega as plantações a até 3 blocos, como a bomba antiga. */
 export const SPRINKLER_FRAMES=14,SPRINKLER_FRAME_MS=90;
 const sprinklerViews=new WeakMap<Phaser.Scene,Map<string,Phaser.GameObjects.Sprite>>();
+/** Luminárias instaladas e os sobreviventes Marina e Rui (artes do Junior, preview.41). */
+const imageViews=new WeakMap<Phaser.Scene,Map<string,Phaser.GameObjects.Image>>();
+/** A luminária acende ao anoitecer e apaga de manhã. */
+export const lampLit=(time:number)=>{const m=((time%1440)+1440)%1440;return m>=18*60+30||m<6*60;};
 /** Pingos do aspersor: saem das pontas dos três braços (ângulo medido em cada quadro,
  * data/sprinkler-arms.json), voam em arco e caem a até ~3 blocos, com um respingo no chão.
  * Coordenadas no chão (gx, gy) com a profundidade achatada em 0,6, como a vista do jogo. */
@@ -18,7 +22,7 @@ export function stepSprinklerDrops(drops:Drop[],dt:number,frame:number,emit:numb
  const base=(SPRINKLER_ARMS as number[])[frame%SPRINKLER_ARMS.length]*Math.PI/180;
  for(let i=0;i<emit&&drops.length<MAX_DROPS;i++){
   const arm=base+(i%3)*2*Math.PI/3+(random()-.5)*.45,speed=50+random()*62;
-  drops.push({gx:Math.cos(arm)*TIP,gy:Math.sin(arm)*TIP,z:16+random()*4,vx:Math.cos(arm)*speed,vy:Math.sin(arm)*speed,vz:40+random()*70});
+  drops.push({gx:Math.cos(arm)*TIP,gy:Math.sin(arm)*TIP,z:16+random()*4,vx:Math.cos(arm)*speed,vy:Math.sin(arm)*speed,vz:40+random()*55});
  }
  for(const d of drops){
   if(d.splash!==undefined){d.splash+=dt;continue;}
@@ -36,7 +40,9 @@ export function updateVillageEquipment(scene:Phaser.Scene,s:SaveData,player:{x:n
  if(s.activeArea==='forest'||s.activeArea==='village'){clean();return;}
  let forges=forgeViews.get(scene);if(!forges){forges=new Map();forgeViews.set(scene,forges);}
  let sprinklers=sprinklerViews.get(scene);if(!sprinklers){sprinklers=new Map();sprinklerViews.set(scene,sprinklers);}
- const live=new Set<string>(),sprinklerLive=new Set<string>();
+ const live=new Set<string>(),sprinklerLive=new Set<string>(),imageLive=new Set<string>();
+ let images=imageViews.get(scene);if(!images){images=new Map();imageViews.set(scene,images);}
+ const image=(id:string,key:string,x:number,y:number,w:number,h:number)=>{if(!scene.textures.exists(key))return false;imageLive.add(id);let im=images!.get(id);if(!im?.active){im=scene.add.image(x,y,key).setOrigin(.5,1);images!.set(id,im);}if(im.texture.key!==key)im.setTexture(key);im.setPosition(x,y).setDisplaySize(w,h).setDepth(y).setVisible(!indoors);return true;};
  const burning=s.economy6?.orders.some(o=>o.station==='own'&&o.phase==='working'&&gameMinute(s)<o.readyAt)??false;
  for(const f of s.villageInstallations??[]){const x=f.x*32+16,y=f.y*32+28;
  if(f.kind==='forge'){
@@ -44,7 +50,9 @@ export function updateVillageEquipment(scene:Phaser.Scene,s:SaveData,player:{x:n
    if(!sprite?.active){sprite=scene.add.image(x,y,'economy-forge-0').setOrigin(.5,1).setDisplaySize(72,72).setDepth(y);forges.set(id,sprite);}
    sprite.setTexture(`economy-forge-${burning?1+Math.floor(scene.time.now/150)%3:0}`).setDisplaySize(72,72).setVisible(!indoors);
    if(burning&&!indoors)glow('forge-'+id,x,y-15,true);
- }else if(f.kind==='lamp'){view.body.fillStyle(0x64442e).fillRect(x-3,y-38,6,38);view.body.fillStyle(0xe7c875).fillRect(x-7,y-46,14,15);if(!indoors)glow(`lamp-${f.x}-${f.y}`,x,y-40);
+ }else if(f.kind==='lamp'){
+   if(!image(`lamp-${f.x},${f.y}`,lampLit(s.time)?'equipment-lamp-on':'equipment-lamp-off',x,y+2,27,56)){view.body.fillStyle(0x64442e).fillRect(x-3,y-38,6,38);view.body.fillStyle(0xe7c875).fillRect(x-7,y-46,14,15);}
+   if(!indoors)glow(`lamp-${f.x}-${f.y}`,x,y-44);
  }else{
    for(const crop of s.crops)if(Math.hypot(crop.x-f.x,crop.y-f.y)<=3)crop.watered=true;
    const id=`${f.x},${f.y}`;sprinklerLive.add(id);
@@ -81,6 +89,9 @@ export function updateVillageEquipment(scene:Phaser.Scene,s:SaveData,player:{x:n
    }
   }
  }
- for(const [n,id]of(s.villageSurvivors??[]).entries()){const x=990+n*55,y=630;view.body.fillStyle(id==='marina'?0x647dab:0x8f6348).fillRoundedRect(x-8,y-24,16,23,3);view.body.fillStyle(0xe4b88b).fillCircle(x,y-32,7);}
+ for(const [n,id]of(s.villageSurvivors??[]).entries()){const x=990+n*55,y=630;
+  // Mesmo tamanho dos personagens do jogo (quadro 256 × 256 mostrado em 48 × 64).
+  if(!image(`survivor-${id}`,`survivor-${id}`,x,y+8,48,64)){view.body.fillStyle(id==='marina'?0x647dab:0x8f6348).fillRoundedRect(x-8,y-24,16,23,3);view.body.fillStyle(0xe4b88b).fillCircle(x,y-32,7);}}
+ for(const [id,im]of images)if(!imageLive.has(id)){im.destroy();images.delete(id);}
  clean();
 }

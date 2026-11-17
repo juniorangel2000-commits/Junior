@@ -12,7 +12,8 @@ export const TOOL_IMPACT_FRAME = 4;
 const PICKAXE_ROOT = 'assets/visual/tools/pickaxe/quero_que_voce_faca_uma_picare';
 const HATCHET_ROOT = 'assets/visual/tools/hatchet/troque_a_imagem_do_cabo_para_m';
 export const TOOL_ICON_URLS: Record<AnimatedTool, string> = {
-  hoe: 'assets/visual/tools/hoe/provisional.png',
+  // Enxada de pedra (arte do Junior, preview.41): mesma posição da antiga; o cabo fica em (80, 220).
+  hoe: 'assets/visual/tools/hoe/stone.png',
   water: WATER_FULL_ICON,
   pickaxe: `${PICKAXE_ROOT}/rotations/quero_que_voce_faca_uma_picare.png`,
   hatchet: `${HATCHET_ROOT}/rotations/south.png`,
@@ -29,7 +30,7 @@ const GRIPS: Record<CharacterDirection, readonly [number, number]> = {
 };
 
 export function toolIdleArt(tool: AnimatedTool, direction: CharacterDirection) {
-  if (tool === 'hoe') return { key: 'tool:hoe:provisional', path: TOOL_ICON_URLS.hoe, grip: [80, 220] as const, flipX: direction.includes('left') };
+  if (tool === 'hoe') return { key: 'tool:hoe:stone', path: TOOL_ICON_URLS.hoe, grip: [80, 220] as const, flipX: direction.includes('left') };
   if (tool === 'water') return { key: 'tool:water:idle', path: WATER_FULL_ICON, grip: [210, 130] as const, flipX: direction === 'right' };
   // The export's "west" view has its cutting edge on the right, and vice versa.
   const view = direction === 'right' ? 'left' : direction === 'left' ? 'right' : direction;

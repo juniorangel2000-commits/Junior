@@ -21,3 +21,12 @@ describe('pingos do aspersor',()=>{
   expect(drops.length).toBe(0);
  });
 });
+
+describe('pingos do aspersor, no pior caso',()=>{
+ it('mesmo o pingo mais forte cai dentro do alcance de rega',()=>{
+  const drops:Parameters<typeof stepSprinklerDrops>[0]=[];let far=0;
+  // random() perto de 1: maior velocidade, maior altura e maior altura de saída.
+  for(let t=0;t<60;t++){stepSprinklerDrops(drops,1/60,t%14,t<5?3:0,()=>.999);for(const d of drops)far=Math.max(far,Math.hypot(d.gx,d.gy));}
+  expect(far).toBeLessThanOrEqual(3*32+20);
+ });
+});

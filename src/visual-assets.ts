@@ -5,7 +5,6 @@ import {MACHINE_IDS,MACHINE_PRODUCTS} from './data/machines';
 import {CROP_CATALOG} from './data/crop-catalog';
 import {preloadCropArt,setupCropArt} from './crop-art';
 import {preloadFarmConstructionArt} from './farm-construction-view';
-import {fishingSupplyIcon} from './data/fishing-supplies';
 import {preloadFishingArt} from './fishing-cast';
 import {preloadEcologyArt,setupEcologyArt,ecologyIcon} from './ecology-art';
 import {setupTreeWind} from './tree-wind';
@@ -32,14 +31,14 @@ import { TOOL_ICON_URLS } from './data/tool-art';
 /** Local assets from the received packages and original tree/ground atlases. */
 const BASE = 'assets/visual/';
 const ICON_IDS = new Set(['wood', 'stone', 'branch', 'log', 'plank', 'scrap', 'hatchet', 'pickaxe', 'handsaw', 'fiber', 'cord', 'flakedStone', 'handle', 'blade', 'board', 'hammer', 'water', 'workbench', 'seeds']);
-const ITEM_ART=new Set(['peg','herb','rareHerb','oldMap','backpack','boots','metalPart','nails','hinge','spring','gear']);
+const ITEM_ART=new Set(['peg','herb','rareHerb','oldMap','backpack','boots','metalPart','nails','hinge','spring','gear','fungalInfusion','herbalTonic','net']);
 export function itemIconUrl(id: string, tier=0): string | undefined {
   if((MACHINE_IDS as readonly string[]).includes(id))return `assets/visual/machines/${id}-icon.png`;
   if((MACHINE_PRODUCTS as readonly string[]).includes(id))return `assets/visual/machines/${id}.png`;
   // Lote 01 de artes (docs/arte-recebida/lote01-fazenda): ícones próprios no lugar dos emprestados.
   if(ITEM_ART.has(id))return `assets/visual/items/${id}.png`;
   if(id==='harvestBasket')return 'assets/visual/crops/harvest-basket.png';
-  if(id==='lamp')return 'assets/visual/village/street-lamp.png';
+  if(id==='lamp')return 'assets/visual/equipment/lamp-off.png';
   if(id==='sword')return `assets/visual/items/swords/${['improvisada','ferro','ouro','metal-negro'][Math.max(0,Math.min(3,tier))]}.png`;
   if(id==='waterPump')return 'assets/visual/equipment/irrigation-sprinkler-off.png';
   const crop=CROP_CATALOG.find(c=>c.seed===id||c.harvest===id);if(crop)return `assets/visual/crops/${crop.id}/${crop.seed===id?'seed':'harvest'}.png`;
@@ -67,7 +66,6 @@ export function itemIconUrl(id: string, tier=0): string | undefined {
   if(id==='fishingRod')return 'assets/visual/fishing/fishing-rod.png';
   if(id==='fish')return 'assets/visual/fishing/catches/fish.svg#tilapia';
   if(id==='rareFish')return 'assets/visual/fishing/catches/fish.svg#dourado';
-  if(id==='net')return fishingSupplyIcon('net');
   if(id==='bait')return 'assets/visual/fishing/basic-worm.png';
   const natural=ecologyIcon(id);if(natural)return natural;
   const dedicated=economyIcon(id);if(dedicated)return dedicated;
@@ -91,6 +89,9 @@ const WORLD_SOURCES: Record<string, string> = {
 const MODULES = ['parede_creme', 'parede_janela_floreira', 'parede_trepadeira', 'parede_porta', 'porta_madeira', 'janela_turquesa', 'telha_lisa', 'telha_variante', 'chamine', 'floreira', 'cerca_natural', 'banco_jardim', 'barril', 'vaso_flor', 'piso_tabuas', 'piso_pedra', 'terra', 'caminho', 'planta'];
 export function preloadVisualAssets(scene: Phaser.Scene): void {
   // Aspersor automático: 14 quadros em loop (7×2, 96×72).
+  // Luminária instalada (apagada e acesa) e os sobreviventes Marina e Rui.
+  for(const k of ['lamp-off','lamp-on'])if(!scene.textures.exists(`equipment-${k}`))scene.load.image(`equipment-${k}`,`assets/visual/equipment/${k}.png`);
+  for(const who of ['marina','rui'])if(!scene.textures.exists(`survivor-${who}`))scene.load.image(`survivor-${who}`,`assets/visual/characters/survivors/${who}-south.png`);
   if(!scene.textures.exists('irrigation-sprinkler-loop'))scene.load.spritesheet('irrigation-sprinkler-loop','assets/visual/equipment/irrigation-sprinkler-loop.png',{frameWidth:96,frameHeight:72});
   preloadFarmConstructionArt(scene);
   preloadFurnitureImages(scene);
