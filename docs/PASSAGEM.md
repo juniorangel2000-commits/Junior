@@ -28,6 +28,10 @@ Pedido do Junior: "precisamos explorar os outros npcs" e "adicionar respostas di
   - a ordem muda a cada dia;
   - uma resposta por dia;
   - substituem os botões genéricos "É bom conversar com você" e "Prefiro não conversar agora".
+- **Correção: moradores invisíveis (um quadradinho andando no lugar do Damião).**
+  - Causa: ao sair de um cenário, as imagens dele eram liberadas um instante depois de o próximo cenário já ter conferido que existiam. O Damião, que a Vila monta, ficava sem imagem na Estrada e no Lago.
+  - Agora a liberação roda no começo do próximo cenário, antes do carregamento dele (`src/scene-texture-release.ts`).
+  - Teste em `tests/scene-texture-release.test.ts`. No Chromium, o Damião na Estrada voltou a ter desenho.
 - **Save:** `npcSocial.players[id]` ganhou `giftDay`, `known` e `rewards`, todos opcionais e validados. Saves antigos continuam válidos.
 
 ### preview.42 (publicada)
@@ -68,6 +72,6 @@ Outras ideias: ferramentas na mão (machadinha e picareta), Marina e Rui andando
 
 - `npm run check`: ok.
 - `npm run build`: ok (aviso de tamanho do pacote, que já existia).
-- `npm test`: **2.160 passaram, zero falhas**.
+- `npm test`: **2.170 passaram, zero falhas, 255 arquivos**.
 - Montaria conferida no Chromium, andando nas 4 direções principais e galopando de lado. As diagonais e a vista de costas foram conferidas em imagem montada sobre o cavalo parado.
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.
