@@ -255,3 +255,8 @@
 /* Ovo: pequeno no slot, do tamanho de um ovo de verdade perto dos outros itens. */
 #ui .bag-slot .icon[src$="products/egg.png"],#ui .bag-slot .icon[src$="kitchen/duck-egg.png"]{width:40%;height:40%}
 #ui .hud .tool .icon[src$="products/egg.png"],#ui .hud .tool .icon[src$="kitchen/duck-egg.png"]{width:18px;height:18px}
+/* Ferramentas e espadas: desenhos finos na diagonal, então ocupam o slot inteiro. */
+#ui .bag-slot .icon[src*="/tools/"],#ui .bag-slot .icon[src*="items/swords/"]{width:100%;height:100%;max-width:64px;max-height:64px}
+#ui .bag-slot .sword-tier-icon{transform:rotate(-45deg) scale(1.3)}
+#ui .hud .tool .icon[src*="/tools/"],#ui .hud .tool .icon[src*="items/swords/"]{width:40px;height:40px;margin:-3px 0 -5px}
+@media(max-width:600px){#ui .bag-slot .icon[src*="/tools/"],#ui .bag-slot .icon[src*="items/swords/"]{max-width:48px;max-height:48px}#ui .hud .tool .icon[src*="/tools/"],#ui .hud .tool .icon[src*="items/swords/"]{width:31px;height:31px}}
