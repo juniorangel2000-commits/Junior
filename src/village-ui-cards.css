@@ -100,3 +100,19 @@
 .village-gift-item[data-taste="liked"] small{color:#a8566a}
 .village-gift-item[data-taste="disliked"] small{color:#7c6a5a}
 .village-gift-count{position:absolute;top:4px;right:6px;font-size:10px;color:#8a7352}
+
+/* Aba História (preview.43). */
+.village-story{display:flex;flex-direction:column;gap:10px;color:#61472b;font:14px/1.5 Georgia,serif}
+.village-story-head h3{margin:0 0 6px;font:22px Georgia,serif;color:#4f3921}
+.village-story-steps{display:flex;gap:6px;margin:0;padding:0;list-style:none;font-size:12px}
+.village-story-steps li{flex:1;padding:6px 8px;border-bottom:3px solid #c9a97066;color:#8a7352}
+.village-story-steps li.is-done{border-color:#7f9c63;color:#48613c}.village-story-steps li[aria-current=step]{border-color:#d6ad64;color:#68451f;font-weight:700}
+.village-story-part{margin:0;font-weight:700}
+.village-story-text{margin:0;padding:8px 12px;border-left:3px solid #d6ad64;background:#fff4dc;font-style:italic}
+.village-story-lock{margin:0;padding:10px 12px;background:#0000000a;border-radius:6px}
+.village-story-needs{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;margin:0;padding:0;list-style:none}
+.village-story-needs li{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#faedce;border:1px solid #bc9863;border-radius:6px}
+.village-story-needs li img{width:28px;height:28px;object-fit:contain}.village-story-needs li b{margin-left:auto}
+.village-story-needs li.is-ok{border-color:#7f9c63;background:#eef3df}
+.village-story-reward{margin:0;font-size:13px;color:#7a5d38}
+.village-story .village-primary{align-self:flex-start}

@@ -1,3 +1,4 @@
+import {validNpcStories} from './npc-stories';
 import {validMachineState} from './machines';
 import {validRiding} from './horse-riding';
 import {validCampfires} from './placed-campfires';
@@ -105,6 +106,7 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.kitchen!==undefined&&!validKitchenState(value.kitchen,typeof value.day==='number'?value.day:0))return false;
   if(value.beekeeping!==undefined&&!validBeekeeping(value.beekeeping,typeof value.day==='number'?value.day:0))return false;
   if(value.npcSocial!==undefined&&!validNpcSocial(value.npcSocial,typeof value.day==='number'?value.day:999999))return false;
+  if(!validNpcStories(value.npcStories))return false;
   if(value.bentoTravel!==undefined&&!validBentoTravel(value.bentoTravel,typeof value.day==='number'?value.day:999999))return false;
   if(value.mineRescue!==undefined&&!validMineRescue(value.mineRescue,typeof value.day==='number'?value.day:999999))return false;
   if(value.mineMissions!==undefined&&!validMineMissions(value.mineMissions,typeof value.day==='number'?value.day:999999))return false;

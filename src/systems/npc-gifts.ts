@@ -10,7 +10,7 @@ import {MAX_KNOWN_GIFTS} from './npc-social-state';
 import {commitSocial,ensureNpcSocial,socialContext,type SocialContext,type SocialRuntime} from './npc-social';
 /** Presentes, respostas nas conversas e presentes de amizade (preview.43).
  * Tudo passa pelo `SocialRuntime`: um rascunho do save é alterado, salvo e só então aplicado. */
-export interface SocialResult{ok:boolean;message:string;context?:SocialContext;reply?:string;rewards?:string[]}
+export interface SocialResult{ok:boolean;message:string;context?:SocialContext;reply?:string;lines?:readonly string[];rewards?:string[]}
 const fail=(message:string):SocialResult=>({ok:false,message});
 const clamp=(n:number)=>Math.max(NPC_SOCIAL.min,Math.min(NPC_SOCIAL.max,n));
 const relation=(s:SaveData,npc:SocialNpc)=>ensureNpcSocial(s).players[npc]??={affinity:0};

@@ -1,4 +1,5 @@
 import {createSocialRuntime,openSocialConversation,respondSocial} from './systems/npc-social';
+import {completeStoryPart,storyStatus} from './systems/npc-stories';
 import {answerConversation,collectPendingRewards,giftChoices,giveGift} from './systems/npc-gifts';
 import {BOARD_SERVICE_IDS} from './request-board';
 import {ensureFisherTravel} from './systems/fisher-travel';
@@ -34,7 +35,7 @@ export class LakeFisherVisit {
   const socialRuntime=createSocialRuntime(state,saveGame,state);
   this.panel=new VillageInteractionUI({
    onSocialOpen:id=>{const c=openSocialConversation(socialRuntime,id),r=collectPendingRewards(socialRuntime,id);return r.length?{...c,reward:r.join(' ')}:c;},onSocialResponse:(id,tone)=>respondSocial(socialRuntime,id,tone),
-   onAnswer:(id,conversation,tone)=>answerConversation(socialRuntime,id,conversation,tone),getGiftChoices:id=>giftChoices(state(),id),onGift:(id,item)=>{const r=giveGift(socialRuntime,id,item);if(r.ok)changed();return r;},
+   onAnswer:(id,conversation,tone)=>answerConversation(socialRuntime,id,conversation,tone),getStory:id=>storyStatus(state(),id),onStory:id=>completeStoryPart(socialRuntime,id),getGiftChoices:id=>giftChoices(state(),id),onGift:(id,item)=>{const r=giveGift(socialRuntime,id,item);if(r.ok)changed();return r;},
    locationLabel:'CABANA DO LAGO',returnLabel:'voltar ao lago',
    getDialogueAction:()=>needsDamiaoIntroduction(state())?{label:'Receber vara de pesca',complete:()=>{const result=receiveDamiaoIntroduction(state(),saveGame);if(result.ok)changed();return result;}}:undefined,
    canTrade:()=>villageAccessUnlocked(state())&&damiaoAtLake(state()),isInside:()=>true,

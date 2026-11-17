@@ -88,6 +88,8 @@ export interface SaveData {
   /** Colmeias vazias esperando enxame junto aos ipês dos Campos Abertos. */
   beekeeping?:import('./systems/beekeeping').BeekeepingState;
   npcSocial?:import('./systems/npc-social-state').NpcSocialState;
+  /** Partes concluídas da história de cada morador (0–3; src/data/npc-stories.ts). */
+  npcStories?:Partial<Record<string,number>>;
   mineMissions?:import('./systems/mine-mission-state').MineMissionsState;
   mineRescue?:import('./systems/mine-rescue-state').MineRescueState;
   bentoExpedition?:import('./systems/bento-expedition-state').BentoExpeditionState;

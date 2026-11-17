@@ -3,6 +3,7 @@ import {showRequestBoard,boardHasReady,BOARD_POINT,BOARD_SERVICE_IDS} from '../r
 import {blockMountedEntry} from '../riding-guard';
 import {createGroundRuntime} from '../systems/ground-items';
 import {createSocialRuntime,openSocialConversation,respondSocial} from '../systems/npc-social';
+import {completeStoryPart,storyStatus} from '../systems/npc-stories';
 import {answerConversation,collectPendingRewards,giftChoices,giveGift} from '../systems/npc-gifts';
 import {showMineMissionJournal} from '../mine-mission-journal';
 import {createMineMissionRuntime} from '../systems/mine-missions';
@@ -180,7 +181,7 @@ export class VillageScene extends Phaser.Scene {
   this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
   this.shop=new VillageInteractionUI({
    onSocialOpen:id=>{const c=openSocialConversation(this.socialRuntime,id),r=collectPendingRewards(this.socialRuntime,id);return r.length?{...c,reward:r.join(' ')}:c;},onSocialResponse:(id,tone)=>respondSocial(this.socialRuntime,id,tone),
-   onAnswer:(id,conversation,tone)=>answerConversation(this.socialRuntime,id,conversation,tone),getGiftChoices:id=>giftChoices(this.snapshotState(),id),onGift:(id,item)=>giveGift(this.socialRuntime,id,item),
+   onAnswer:(id,conversation,tone)=>answerConversation(this.socialRuntime,id,conversation,tone),getStory:id=>storyStatus(this.snapshotState(),id),onStory:id=>completeStoryPart(this.socialRuntime,id),getGiftChoices:id=>giftChoices(this.snapshotState(),id),onGift:(id,item)=>giveGift(this.socialRuntime,id,item),
    canTrade:id=>this.canTrade(id),isInside:id=>merchantCanTrade(id,this.roomOwner),getAvailability:id=>id==='bento'?{...this.routines.get('bento')!.availability(this.state),message:bentoAvailability(this.state).message}:dailyMerchant(id)?this.routines.get(id)?.availability(this.state):undefined,onGuide:id=>this.beginGuide(id),
    getPortrait:id=>this.npcPortrait(id),
    onMineRequests:()=>{this.shop?.close();showMineMissionJournal(this.ui,this.mineMissionRuntime);},

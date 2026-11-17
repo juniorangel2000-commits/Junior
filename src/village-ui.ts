@@ -18,6 +18,7 @@ import {pickConversation} from './data/npc-conversations';
 import {answersFor,type AnswerTone} from './data/npc-answers';
 import type {GiftTaste} from './data/npc-gifts';
 import type {SocialResult} from './systems/npc-gifts';
+import {storyRewardText,type StoryStatus} from './systems/npc-stories';
 const TASTE_BADGE:Record<GiftTaste,string>={loved:'♥♥ adora',liked:'♥ gosta',neutral:'· tanto faz',disliked:'✗ não gosta'};
 /** Moradores já ouvidos nesta sessão e a última conversa de cada um (para não repetir). */
 const heard=new Set<string>(),lastConversation=new Map<string,number>();
@@ -30,6 +31,9 @@ export interface VillageInteractionCallbacks {
   /** Presentes (src/systems/npc-gifts.ts). */
   getGiftChoices?(id:VillageNPC['id']):{item:ItemId;count:number;known?:GiftTaste}[];
   onGift?(id:VillageNPC['id'],item:ItemId):SocialResult;
+  /** História pessoal (src/systems/npc-stories.ts). */
+  getStory?(id:VillageNPC['id']):StoryStatus|undefined;
+  onStory?(id:VillageNPC['id']):SocialResult;
   locationLabel?:string;
   getDialogueAction?(npcId:string):{label:string;complete:()=>{ok:boolean;message:string}}|undefined;
   returnLabel?:string;
@@ -50,7 +54,7 @@ export interface VillageInteractionCallbacks {
   onClose(): void;
 }
 
-type Tab = 'talk' | 'services' | 'gift' | TradeSide;
+type Tab = 'talk' | 'services' | 'gift' | 'story' | TradeSide;
 const count = (value: number): string => value.toLocaleString('pt-BR');
 const toolItems = new Set<ItemId>(['hatchet', 'pickaxe', 'hoe', 'handsaw', 'hammer', 'sickle', 'shovel']);
 const merchantEmblems: Record<MerchantId, string> = {
@@ -200,6 +204,7 @@ export class VillageInteractionUI {
     if(this.npc.id==='bento'&&this.callbacks.onMineRequests){const b=document.createElement('button');b.className='village-primary';b.textContent='Pedidos da mina';b.dataset.mineRequests='';b.onclick=()=>this.callbacks.onMineRequests?.();this.tabs.append(b);}
     if(this.callbacks.getServices?.(this.npc.id).length)options.push(['services','Serviços']);
     if(this.socialContext&&this.callbacks.onGift)options.push(['gift','Presentear']);
+    const story=this.callbacks.getStory?.(this.npc.id);if(story)options.push(['story',story.ready?'História ✦':'História']);
     if (available&&(this.callbacks.canTrade?.(this.npc.id)??true)) options.push(['buy', this.npc.id==='bento'?'Comprar materiais':'Comprar'], ['sell', 'Vender']);
     for (const [tab, label] of options) {
       const button = document.createElement('button');
@@ -210,6 +215,7 @@ export class VillageInteractionUI {
     }
     if(this.tab==='services'){this.renderServices();return;}
     if(this.tab==='gift'){this.renderGift();return;}
+    if(this.tab==='story'){this.renderStory();return;}
     if (this.tab === 'talk' || !merchant) this.renderDialogue();
     else this.renderTrade(merchant.id, this.tab);
   }
@@ -352,6 +358,34 @@ export class VillageInteractionUI {
     this.body.append(stage, side);
   }
 
+  /** Aba História: a parte atual, o que o morador pede e o botão de entregar. */
+  private renderStory():void{
+    const npc=this.npc,status=npc&&this.callbacks.getStory?.(npc.id);if(!npc||!status)return;
+    this.body.replaceChildren();this.body.className='village-panel-body village-story';
+    const head=document.createElement('header');head.className='village-story-head';
+    const title=document.createElement('h3');title.textContent=status.story.title;
+    const steps=document.createElement('ol');steps.className='village-story-steps';
+    status.story.parts.forEach((p,i)=>{const li=document.createElement('li');li.textContent=i<status.done||i===status.done&&status.unlocked?p.title:'???';if(i<status.done)li.className='is-done';else if(i===status.done)li.setAttribute('aria-current','step');steps.append(li);});
+    head.append(title,steps);this.body.append(head);
+    const part=status.part;
+    if(!part){const end=document.createElement('p');end.className='village-story-text';end.textContent=`História concluída. ${npc.name} não esquece o que vocês fizeram juntos.`;this.body.append(end);return;}
+    if(!status.unlocked){const lock=document.createElement('p');lock.className='village-story-lock';
+      lock.textContent=`${npc.name} ainda tem mais para contar. Fiquem mais próximos (amizade ${part.affinity}; hoje: ${this.socialContext?.affinity??0}) para ouvir a próxima parte. Conversas e presentes ajudam.`;this.body.append(lock);return;}
+    const sub=document.createElement('p');sub.className='village-story-part';sub.textContent=`Parte ${status.done+1} de ${status.story.parts.length}: ${part.title}`;this.body.append(sub);
+    for(const line of part.ask){const q=document.createElement('blockquote');q.className='village-story-text';q.textContent='“'+line+'”';this.body.append(q);}
+    const list=document.createElement('ul');list.className='village-story-needs';
+    for(const n of status.needs){const li=document.createElement('li');if(n.have>=n.need)li.className='is-ok';
+      const img=document.createElement('img');img.src=itemIconUrl(n.item)??'';img.alt='';
+      const name=document.createElement('span');name.textContent=ITEMS[n.item].name;const c=document.createElement('b');c.textContent=`${count(Math.min(n.have,n.need))}/${count(n.need)}`;
+      li.append(img,name,c);list.append(li);}
+    this.body.append(list);
+    const reward=document.createElement('p');reward.className='village-story-reward';reward.textContent='Recompensa: '+storyRewardText(part);this.body.append(reward);
+    const give=document.createElement('button');give.type='button';give.className='village-primary';give.dataset.storyDeliver='';give.textContent=status.ready?'Entregar':'Ainda faltam itens';give.disabled=!status.ready;
+    give.onclick=()=>{const result=this.callbacks.onStory!(npc.id);this.report(result.message,result.ok);if(!result.ok)return;
+      gameAudio.play('pickup');this.socialContext={...this.socialContext!,...result.context};this.renderFriendship();
+      this.tab='talk';this.conversation=undefined;this.lines=[...(result.lines??[]),...(result.rewards??[])];this.dialogueIndex=0;this.render();this.report(result.message,true);};
+    this.body.append(give);
+  }
   /** Aba Presentear: os itens da mochila, com a reação já conhecida de cada um. Um presente por dia. */
   private renderGift():void{
     const npc=this.npc;if(!npc)return;
