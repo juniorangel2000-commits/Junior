@@ -212,7 +212,7 @@ export class ForestScene extends Phaser.Scene {
     const point={x:Math.floor(this.player.x/32+this.player.facing.x),y:Math.floor(this.player.y/32+this.player.facing.y)};
     const water=(x:number,y:number)=>this.world.waterPointAt(x,y);
     const near=Array.from({length:7},(_,a)=>a-3).some(dx=>Array.from({length:7},(_,a)=>a-3).some(dy=>water(this.player.x+dx*16,this.player.y+dy*16)));
-    if(item==='waterPump'&&!near){this.ui.toast('Instale a bomba perto de um rio ou lago.');return;}
+    // O aspersor funciona em qualquer lugar da propriedade (preview.42: sem precisar de água por perto).
     if(item==='fishingRod'||item==='net'){
       if(this.player.isSwimming||!near){this.ui.toast('Fique em terra firme, perto da água, para pescar.');return;}
       this.setPaused(true);const message=await fishAtBank(this.state,item==='net',()=>this.updateHUD(),createFishingCast(this,this.player,(x,y)=>this.swimmingPoint(x,y)>0,(x,y)=>!this.movementBlockedAt(Math.floor(x/32),Math.floor(y/32)),item==='net'));this.setPaused(false);this.ui.toast(message);

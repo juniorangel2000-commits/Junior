@@ -1,4 +1,5 @@
 import { cookInScene } from './systems/kitchen';
+import {installCampfires,placeCampfireInScene,type CampfireScene} from './campfire-controller';
 import {OpenFieldsScene} from './scenes/OpenFieldsScene';
 import {FarmInteriorScene} from './scenes/FarmInteriorScene';
 import {GroundItemsView} from './ground-items-view';
@@ -17,7 +18,6 @@ import { gameAudio } from './audio';
 import { installFullscreenShortcut } from './fullscreen';
 import { installPerformanceOverlay } from './performance-overlay';
 import { installSceneTextureRelease } from './scene-texture-release';
-import { showCampfire } from './campfire-view';
 import { installRiding, type RidingScene } from './riding-controller';
 import { ForestScene } from './scenes/ForestScene';
 import { VillageScene } from './scenes/VillageScene';
@@ -37,11 +37,11 @@ const ui = new GameUI({
   getFishingState: () => {const current=activeForest()??scene;return current instanceof DungeonScene?undefined:current.getFishingState();},
   onDropItem:(item,amount,toolId)=>{const current=activeForest()??scene;if(current instanceof DungeonScene)return;const rt=current.getGroundItemRuntime();if(!rt)return;const result=dropInventoryItem(rt,item,amount,toolId);ui.toast(result.message);},
   onUseItem: (item,toolId) => {const current=activeForest()??scene;
-    // Fogueira portátil: abre o caderno da fogueira em qualquer cenário ao ar livre.
+    // Fogueira portátil: montada no chão, na frente do personagem, e fica ali (preview.42).
     if(item==='campfire'&&!toolId){
-      if(current instanceof DungeonScene||current instanceof FarmInteriorScene||current.getFishingState().homePosition){ui.toast('Monte a fogueira ao ar livre.');return;}
-      const fire=showCampfire(current,(current as unknown as {player:{x:number;y:number;facing?:{x:number;y:number}}}).player);
-      ui.showCookbook(()=>current.getFishingState(),id=>{const s=current.getFishingState();const r=cookInScene(s,id,'campfire',()=>current.persist(),inv=>{if('syncInventory' in current)(current as {syncInventory:(i:typeof inv)=>void}).syncInventory(inv);});if(r.ok)gameAudio.play('craft');return r;},{station:'campfire',onClose:fire});return;
+      if(current instanceof DungeonScene||current instanceof FarmInteriorScene){ui.toast('Monte a fogueira ao ar livre.');return;}
+      const c=current as unknown as CampfireScene&{movementBlockedPoint?:(x:number,y:number)=>boolean;swimmingPoint?:(x:number,y:number)=>number};
+      const r=placeCampfireInScene(c,(x,y)=>!!c.movementBlockedPoint?.(x,y)||(c.swimmingPoint?.(x,y)??0)>0);ui.toast(r.message);if(r.ok)gameAudio.play('craft');return;
     }if(toolId&&!(current instanceof DungeonScene)&&!equipToolCopy(current.getFishingState(),toolId))return;void current.useVillageItem(item);},
   onNewGame: profile => scene.startNew(profile),
   onContinue: () => scene.continueGame(),
@@ -62,6 +62,8 @@ const ui = new GameUI({
 scene.ui = ui;
 // Montaria em todos os cenários (riding-controller.ts).
 installRiding(()=>{const c=activeForest()??scene;return c instanceof DungeonScene?undefined:c as unknown as RidingScene;},ui);
+installCampfires(()=>{const c=activeForest()??scene;return c instanceof DungeonScene||c instanceof FarmInteriorScene?undefined:c as unknown as CampfireScene;},ui,
+ (c,id)=>{const s=c.getFishingState();const r=cookInScene(s,id,'campfire',()=>c.persist(),inv=>c.syncInventory?.(inv));if(r.ok)gameAudio.play('craft');return r;});
 installFullscreenShortcut(() => ui.toast('Não foi possível ativar tela cheia neste navegador.'));
 
 export const game = new Phaser.Game({

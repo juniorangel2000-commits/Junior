@@ -77,7 +77,9 @@ export function placeMachine(rt:MachineRuntime,kind:MachineKind){return commit(r
  const i=new Inventory(s.inventory);if(!i.spend({[kind]:1}))return fail('Você não tem esta máquina na mochila.');
  s.inventory=i.data;const state=s.machines??={version:1,nextId:1,items:[]};state.items.push(m);state.nextId++;
  if(kind==='beehive'){startHive(s,m);return{ok:true,message:'Colmeia instalada. As abelhas fazem mel a cada 4 dias; margaridas ou girassóis por perto dão mel de flor.'};}
- return{ok:true,message:MACHINES[kind].name+' instalada. Use a matéria-prima perto dela para carregar.'};
+ // Tear, moinho, forno e barril são masculinos.
+ const male=['loom','stoneMill','clayOven','preserveKeg'].includes(kind);
+ return{ok:true,message:`${MACHINES[kind].name} instalad${male?'o':'a'}. Use a matéria-prima perto ${male?'dele':'dela'} para carregar.`};
 });}
 function accessible(rt:MachineRuntime,s:SaveData,id:number){const m=s.machines?.items.find(m=>m.id===id);return m&&m.space===rt.space()&&nearMachine(rt)?.id===id?m:undefined;}
 export function loadMachine(rt:MachineRuntime,id:number,item:ItemId){return commit(rt,s=>{

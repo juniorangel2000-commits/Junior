@@ -77,6 +77,8 @@ export interface SaveData {
   itemQuality?:import('./systems/item-quality').QualityLedger;
   /** Montado no cavalo domado (systems/horse-riding.ts). */
   riding?:true;
+  /** Fogueiras montadas no chão (src/systems/placed-campfires.ts). */
+  campfires?:{space:string;x:number;y:number}[];
   /** Sucata entregue ao Ícaro para separar (src/systems/scrap-sorting.ts). */
   scrapSorting?:{day:number;count:number};
   /** Efeito do último prato comido (um por vez). */

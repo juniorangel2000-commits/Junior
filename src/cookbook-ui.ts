@@ -32,7 +32,7 @@ export function renderCookbook(panel:HTMLElement,save:()=>SaveData,onCook:(id:st
    ${known.length||hidden.length?`<div class="cookbook-list">${cards}${secrets}</div>`:`<p class="cookbook-empty">${station==='oven'?'Nenhuma receita de forno ainda. A Helena ensina pães e bolos na pousada.':'Nenhuma receita ainda. A Helena ensina receitas na pousada, uma por vez.'}</p>`}
    ${missing>0&&known.length?`<p class="cookbook-more">${missing} ${missing===1?'receita da Helena ainda não aprendida':'receitas da Helena ainda não aprendidas'} · ela ensina na pousada. Pães e bolos vão ao ${STATION_NAMES.oven}.</p>`:''}
    <p class="cookbook-status${error?' is-error':''}" role="status">${esc(status)}</p>
-   ${options.onPickUp?'<button class="button button-light cookbook-pickup" data-cook-pickup>Guardar o forno na mochila</button>':''}`;
+   ${options.onPickUp?`<button class="button button-light cookbook-pickup" data-cook-pickup>${station==='campfire'?'Apagar e recolher a fogueira':'Guardar o forno na mochila'}</button>`:''}`;
   panel.querySelector('[data-cook-close]')!.addEventListener('click',onClose);
   panel.querySelector('[data-cook-pickup]')?.addEventListener('click',()=>{const r=options.onPickUp!();if(r.ok){onClose();return;}status=r.message;error=true;draw();});
   for(const b of panel.querySelectorAll<HTMLButtonElement>('[data-cook]'))b.addEventListener('click',()=>{const r=onCook(b.dataset.cook!);status=r.message;error=!r.ok;if(r.ok&&station==='oven'){onClose();return;}draw();panel.querySelector<HTMLButtonElement>(`[data-cook="${b.dataset.cook}"]`)?.focus();});

@@ -1,5 +1,6 @@
 import {validMachineState} from './machines';
 import {validRiding} from './horse-riding';
+import {validCampfires} from './placed-campfires';
 import {validScrapSorting} from './scrap-sorting';
 import {FENCE_WOOD} from '../data/blueprints';
 import {validOpenFields} from './open-fields';
@@ -98,6 +99,7 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.animalCare!==undefined&&!validAnimalCare(value.animalCare,typeof value.day==='number'?value.day:0))return false;
   if(value.itemQuality!==undefined&&!validQualityLedger(value.itemQuality))return false;
   if(!validRiding(value.riding,value))return false;
+  if(!validCampfires(value.campfires))return false;
   if(!validScrapSorting(value.scrapSorting))return false;
   if(value.foodEffect!==undefined&&!validFoodEffect(value.foodEffect))return false;
   if(value.kitchen!==undefined&&!validKitchenState(value.kitchen,typeof value.day==='number'?value.day:0))return false;
