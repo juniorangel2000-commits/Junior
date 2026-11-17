@@ -30,6 +30,11 @@ ICONS = {  # arquivo do lote -> destino no jogo
     'inventario/mochila_reforcada.png': 'items/backpack.png',
     'inventario/botas.png': 'items/boots.png',
     'inventario/parafuso_e_porcas.png': 'items/metalPart.png',
+    # Peças de construção (preview.41): o Ícaro separa da sucata; o Bento vende caro.
+    'inventario/pregos.png': 'items/nails.png',
+    'inventario/dobradica.png': 'items/hinge.png',
+    'inventario/molas.png': 'items/spring.png',
+    'inventario/engrenagem.png': 'items/gear.png',
     'terreno/lamacal_chiqueiro.png': 'farm/interior/mud.png',
 }
 NO_DESPECKLE = {'colmeia/colmeia_parada.png', 'colmeia/colmeia_vazia.png', 'terreno/lamacal_chiqueiro.png'}
@@ -70,6 +75,14 @@ def clean_fringe(paths):
         mod.clean(p)
 
 
+def import_only(names):
+    """Importa só alguns ícones do lote já guardado em docs/arte-recebida (sem refazer os outros)."""
+    for src in names:
+        im = despeckle(Image.open(os.path.join(SRC, src)).convert('RGBA'))
+        out = os.path.join(VIS, ICONS[src]); im.save(out, optimize=True); print(f'{src} -> {ICONS[src]} {im.size}')
+    clean_fringe([os.path.join(VIS, ICONS[n]) for n in names])
+
+
 def main():
     keep = os.path.join(ROOT, 'docs/arte-recebida/lote01-fazenda')
     if os.path.exists(keep):
@@ -88,4 +101,7 @@ def main():
     clean_fringe([os.path.join(VIS, d) for d in ICONS.values()])
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) > 2:
+        import_only(sys.argv[2:])
+    else:
+        main()

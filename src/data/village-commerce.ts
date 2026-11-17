@@ -96,6 +96,9 @@ Object.assign(MERCHANTS.traveler.buy,{oldMap:80,rareHerb:80,electronicPart:45,ne
 
 // Canonical 6.0 catalogues supersede only incompatible earlier commercial offers.
 MERCHANTS.blacksmith.buy={scrap:12};MERCHANTS.blacksmith.sell={scrap:4,blade:10};
+// Peças de construção (preview.41): o Bento faz e vende, caro; separar sucata com o Ícaro sai bem mais barato.
+Object.assign(MERCHANTS.blacksmith.buy,{nails:18,hinge:50,spring:60,gear:90});
+Object.assign(MERCHANTS.mechanic.sell,{nails:3,hinge:10,spring:12,gear:18});
 MERCHANTS.traveler.buy={oldMap:80};MERCHANTS.traveler.sell={oldMap:20};
 MERCHANTS.traveler.description='Compra e vende antiguidades encontradas na região.';
 MERCHANTS.herbalist.description='Ervas, cogumelos, plantas medicinais e preparados para exploração.';

@@ -55,3 +55,22 @@ trabalho ou a de construção abre só as receitas dela.
 - A receita do módulo saiu, e o carpinteiro não compra nem vende mais módulos.
 - Saves anteriores: cada módulo na mochila vira 3 madeiras (migração em `save.ts`, com teste).
   O item `fenceKit` continua existindo só para os saves antigos abrirem.
+
+## Peças de construção (preview.41)
+
+Ideia do Junior: a sucata vira peças.
+
+- **Ícaro separa sucata** (serviço "Separar sucata"): até 10 por dia, 5 C cada. Na manhã
+  seguinte você busca as peças. Por sucata: pregos 35% (1 a 3), dobradiça 20%, molas 18%,
+  engrenagem 12%, ferrugem 15% (`src/systems/scrap-sorting.ts`; save `scrapSorting`).
+- **Bento vende as peças, caro** (depois que a ferraria abre o comércio de minérios):
+  pregos 18 C, dobradiça 50 C, molas 60 C, engrenagem 90 C. O Ícaro compra sobras barato.
+- **Onde entram:** só nas máquinas, que já são aprendidas na Vila:
+  - queijeira: mola e engrenagem;
+  - batedeira, roca e tear: engrenagem (o tear também leva uma mola);
+  - barril de conservas e composteira: pregos;
+  - prensa de cera: molas e dobradiça;
+  - moinho: duas engrenagens.
+- Porta e janela prontas ainda **não** pedem peças: o galinheiro usa as duas e pode vir antes
+  de chegar à Vila. Decidir com o Junior antes de mudar.
+- Ícones do lote 01 (`items/nails.png`, `hinge.png`, `spring.png`, `gear.png`).

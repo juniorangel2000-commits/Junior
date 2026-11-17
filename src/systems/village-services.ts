@@ -4,6 +4,7 @@ import {HELENA_DISHES} from '../data/kitchen';
 import {MACHINES,CRAFTED_MACHINE_IDS} from '../data/machines';
 import {HARVEST_BASKET_COST,HARVEST_BASKET_FEE,HARVEST_BASKET_DESCRIPTION} from '../data/harvest-basket';
 import {ITEMS} from '../data/items';
+import {SCRAP_SORT_FEE,SCRAP_SORT_MAX,sortScrap,scrapSortingReady,partsLabel} from './scrap-sorting';
 import {bentoAvailability} from './bento-schedule';
 import {newFishingProgress,availableSpecimens,specimenPrice,fishingOrder,RODS,ROD_UPGRADES,rodControlLabel} from './fishing-progress';
 import {fishSpecies} from '../data/fishing-catches';
@@ -17,7 +18,7 @@ import {FOREST_ANIMALS} from '../data/ancient-forest';
 import {ECOLOGY_BALANCE as ECOLOGY} from '../data/ecology-balance';
 import {inventoryToolCondition,repairInventoryTool} from './tool-instances';
 export interface VillageServiceOffer{id:string;label:string;description:string;item?:ItemId;disabled?:boolean;actionLabel?:string}
-type Service={npc:string;label:string;description:string;run:(s:SaveData,i:Inventory)=>void};
+type Service={npc:string;label:string;description:string;run:(s:SaveData,i:Inventory)=>void|string};
 const services:Record<string,Service>={};
 const add=(id:string,npc:string,label:string,description:string,run:Service['run'])=>{services[id]={npc,label,description,run};};
 const requireThat=(ok:unknown,message:string)=>{if(!ok)throw Error(message);};
@@ -56,6 +57,14 @@ for(const tool of ['hatchet','pickaxe','hoe','sickle','shovel'] as const)add(`re
 for(const tool of ['hammer','handsaw','fishingRod','net','shears'] as const)add(`repair-${tool}`,'bento',`Reparar ${{hammer:'martelo',handsaw:'serrote',fishingRod:'vara de pesca',net:'rede',shears:'tesoura de tosquia'}[tool]}`,'20 C. Repara somente a cópia selecionada.',(s,i)=>{requireThat(i.has(tool),'Traga a ferramenta.');requireThat(inventoryToolCondition(i.data,tool).durability<100,'A ferramenta já está em bom estado.');pay(s,i,20);repairInventoryTool(i.data,tool);});
 add('shelter-carpentry','tobias','Preparar peças para a casinha','30 C, 2 troncos e 6 madeiras: recebe 6 tábuas regulares e 6 cavilhas.',(s,i)=>{pay(s,i,30,{log:2,wood:6});requireThat(i.transact({},{board:6,peg:6}),'Libere espaço na mochila.');});
 add('shelter-textiles','celina','Preparar tecidos para os pets','20 C e 8 fibras: recebe 4 tecidos e 2 cordas.',(s,i)=>{pay(s,i,20,{fiber:8});requireThat(i.transact({},{cloth:4,cord:2}),'Libere espaço na mochila.');});
+add('scrap-sort','icaro','Separar sucata',`Entregue até ${SCRAP_SORT_MAX} sucatas por dia (${SCRAP_SORT_FEE} C cada). Na manhã seguinte, busque pregos, dobradiças, molas e engrenagens.`,(s,i)=>{
+ const job=s.scrapSorting;
+ if(scrapSortingReady(job,s.day)){const parts=sortScrap(job!.day,job!.count);requireThat(i.transact({},parts),'Libere espaço na mochila para as peças.');delete s.scrapSorting;return `O Ícaro separou ${job!.count} sucata${job!.count===1?'':'s'}: ${partsLabel(parts)}.`;}
+ requireThat(!job,'O Ícaro ainda está separando a sucata de hoje. Volte amanhã.');
+ const n=Math.min(SCRAP_SORT_MAX,s.inventory.scrap??0);requireThat(n>0,'Traga sucata para o Ícaro separar.');
+ pay(s,i,n*SCRAP_SORT_FEE,{scrap:n});s.scrapSorting={day:s.day,count:n};
+ return `Você entregou ${n} sucata${n===1?'':'s'} e pagou ${n*SCRAP_SORT_FEE} C. O Ícaro separa durante a noite: volte amanhã.`;
+});
 add('shelter-fittings','icaro','Preparar fixadores para a casinha','12 C e 4 sucatas: recebe 2 peças metálicas.',(s,i)=>{pay(s,i,12,{scrap:4});requireThat(i.transact({},{metalPart:2}),'Libere espaço na mochila.');});
 for(const id of CRAFTED_MACHINE_IDS){const d=MACHINES[id];add(`learn-${id}`,d.npc,`Aprender ${d.name.toLowerCase()}`,`${d.learnFee} C. Aprenda o projeto para montar na bancada e instalar na fazenda.`,(s,i)=>{requireThat(!s.villageProgress!.recipes.includes(id),'Você já conhece este projeto.');pay(s,i,d.learnFee);s.villageProgress!.recipes.push(id);});}
 add('buy-empty-hive','augusto','Colmeia vazia','120 Coroas. Coloque nos Campos Abertos, junto a um ipê: a cada 5 dias um enxame pode ocupá-la.',(s,i)=>{pay(s,i,120);requireThat(i.transact({},{emptyHive:1}),'Libere espaço na mochila para a colmeia.');});
@@ -78,6 +87,13 @@ export function listVillageServices(npc:string,save?:SaveData):VillageServiceOff
    offer.item='harvestBasket';offer.actionLabel='Preparar 1 cesta';
    offer.description=HARVEST_BASKET_DESCRIPTION+' Na mochila: '+Object.entries(HARVEST_BASKET_COST).map(([item,amount])=>`${ITEMS[item as ItemId].name}: ${save.inventory[item as ItemId]}/${amount}`).join(' · ')+'.';
    offer.disabled=(save.villageEconomy?.coins??0)<HARVEST_BASKET_FEE||!Object.entries(HARVEST_BASKET_COST).every(([item,amount])=>save.inventory[item as ItemId]>=amount);
+  }
+  if(id==='scrap-sort'){
+   const job=save.scrapSorting,have=save.inventory.scrap??0,n=Math.min(SCRAP_SORT_MAX,have),coins=save.villageEconomy?.coins??0;
+   if(scrapSortingReady(job,save.day)){offer.label='Buscar peças separadas';offer.actionLabel='Buscar peças';offer.description=`O Ícaro terminou de separar ${job!.count} sucata${job!.count===1?'':'s'}.`;}
+   else if(job){offer.label='Separando sucata…';offer.actionLabel='Pronto amanhã';offer.disabled=true;offer.description=`O Ícaro está separando ${job.count} sucata${job.count===1?'':'s'}. Volte amanhã de manhã.`;}
+   else{offer.item='scrap';offer.actionLabel=n?`Entregar ${n} (${n*SCRAP_SORT_FEE} C)`:'Sem sucata';offer.disabled=n===0||coins<n*SCRAP_SORT_FEE;
+    offer.description=`Até ${SCRAP_SORT_MAX} sucatas por dia, ${SCRAP_SORT_FEE} C cada. Saem pregos (os mais comuns), dobradiças, molas e engrenagens (as mais raras); às vezes, só ferrugem. Na mochila: ${have}.`;}
   }
   const tier=save.fishingProgress?.rodTier??0,basket=availableSpecimens(save),order=fishingOrder(save.day);
   if(id==='fishing-rod-upgrade'){
@@ -102,5 +118,7 @@ export function performVillageService(save:SaveData,id:string):{ok:boolean;messa
  const service=services[id];if(!service)return{ok:false,message:'Serviço desconhecido.'};
  if(service.npc==='bento'&&!bentoAvailability(save).open)return{ok:false,message:bentoAvailability(save).message};
  const draft=structuredClone(save);draft.villageProgress??=createVillageProgress();draft.villageEconomy??=createVillageEconomy();
- try{const inventory=new Inventory(draft.inventory);draft.inventory=inventory.data;service.run(draft,inventory);draft.inventory={...inventory.data};Object.assign(save,draft);return{ok:true,message:`${service.label}: concluído.`};}catch(error){return{ok:false,message:error instanceof Error?error.message:'Não foi possível concluir.'};}
+ try{const inventory=new Inventory(draft.inventory);draft.inventory=inventory.data;const said=service.run(draft,inventory);draft.inventory={...inventory.data};Object.assign(save,draft);
+  // Campos apagados pelo serviço (como o pedido de sucata já buscado) saem também da partida.
+  for(const key of Object.keys(save) as (keyof SaveData)[])if(!(key in draft))delete save[key];return{ok:true,message:said||`${service.label}: concluído.`};}catch(error){return{ok:false,message:error instanceof Error?error.message:'Não foi possível concluir.'};}
 }

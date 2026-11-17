@@ -25,7 +25,7 @@ export interface CharacterProfile {
   accessory?: CharacterAccessory;
 }
 export type ItemId = import('./data/crop-catalog').CropItemId | 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 'plank' | 'scrap' | 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw'
-  | 'cheesePress' | 'butterChurn' | 'spinningWheel' | 'loom' | 'stoneMill' | 'clayOven' | 'campfire' | 'beehive' | 'emptyHive' | 'feather' | 'manure' | 'composter' | 'preserveKeg' | 'waxPress' | 'strawberryJam' | 'watermelonJam' | 'candle' | 'woolCloth' | 'beeswax' | 'daisyHoney' | 'sunflowerHoney' | 'cheese' | 'goatCheese' | 'butter' | 'yarn' | 'flour' | 'cornmeal' | 'oatFlakes'
+  | 'cheesePress' | 'butterChurn' | 'spinningWheel' | 'loom' | 'stoneMill' | 'clayOven' | 'campfire' | 'beehive' | 'emptyHive' | 'feather' | 'manure' | 'composter' | 'preserveKeg' | 'waxPress' | 'strawberryJam' | 'watermelonJam' | 'candle' | 'nails' | 'hinge' | 'spring' | 'gear' | 'woolCloth' | 'beeswax' | 'daisyHoney' | 'sunflowerHoney' | 'cheese' | 'goatCheese' | 'butter' | 'yarn' | 'flour' | 'cornmeal' | 'oatFlakes'
   | 'harvestBasket' | 'freshGrass' | 'hay' | 'egg' | 'milk' | 'milkPail' | 'honey' | 'duckEgg' | import('./data/kitchen').DishId | 'goatMilk' | 'wool' | 'shears' | 'hardwood' | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer'
   | 'herb' | 'rareHerb' | 'bandage' | 'herbalTonic' | 'fungalInfusion' | 'oakSeed' | 'pineSeed' | 'fertilizer' | 'fishingRod' | 'bait' | 'net' | 'fish' | 'rareFish' | 'meal'
   | 'ironShard' | 'ironOre' | 'ironIngot' | 'goldShard' | 'goldOre' | 'goldIngot' | 'blackMetalShard' | 'blackMetalOre' | 'blackMetalIngot' | 'sickle' | 'shovel' | 'furniture' | 'doorKit' | 'windowKit' | 'fenceKit' | 'forge' | 'mushroom'
@@ -77,6 +77,8 @@ export interface SaveData {
   itemQuality?:import('./systems/item-quality').QualityLedger;
   /** Montado no cavalo domado (systems/horse-riding.ts). */
   riding?:true;
+  /** Sucata entregue ao Ícaro para separar (src/systems/scrap-sorting.ts). */
+  scrapSorting?:{day:number;count:number};
   /** Efeito do último prato comido (um por vez). */
   foodEffect?:import('./systems/food-effects').FoodEffect;
   /** Cozinha: dia em que a Helena comprou o prato do dia. */

@@ -6,17 +6,17 @@ export type MachineKind=typeof MACHINE_IDS[number];
 export const MACHINE_PRODUCTS=['cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','cloth','woolCloth','strawberryJam','watermelonJam','candle'] as const;
 export const isMachine=(v:unknown):v is MachineKind=>MACHINE_IDS.includes(v as MachineKind);
 export const MACHINES:Record<MachineKind,{name:string;width:number;npc:'bento'|'tobias'|'icaro'|'helena'|'augusto';learnFee:number;cost:ItemCost}>={
- cheesePress:{name:'Queijeira',width:1,npc:'bento',learnFee:60,cost:{board:8,ironIngot:2,peg:4}},
- butterChurn:{name:'Batedeira de manteiga',width:1,npc:'bento',learnFee:50,cost:{board:6,ironShard:4,peg:2}},
- spinningWheel:{name:'Roca',width:2,npc:'tobias',learnFee:40,cost:{board:8,cord:4,peg:4}},
- loom:{name:'Tear',width:2,npc:'tobias',learnFee:50,cost:{board:12,cord:6,peg:6,hardwood:2}},
+ cheesePress:{name:'Queijeira',width:1,npc:'bento',learnFee:60,cost:{board:8,ironIngot:2,peg:4,spring:1,gear:1}},
+ butterChurn:{name:'Batedeira de manteiga',width:1,npc:'bento',learnFee:50,cost:{board:6,ironShard:4,peg:2,gear:1}},
+ spinningWheel:{name:'Roca',width:2,npc:'tobias',learnFee:40,cost:{board:8,cord:4,peg:4,gear:1}},
+ loom:{name:'Tear',width:2,npc:'tobias',learnFee:50,cost:{board:12,cord:6,peg:6,hardwood:2,gear:1,spring:1}},
  clayOven:{name:'Forno de barro',width:2,npc:'helena',learnFee:60,cost:{stone:24,wood:10,board:4,ironShard:2}},
  /** Colmeia povoada: não se monta nem se aprende; vem do enxame dos ipês (beekeeping.ts). */
  beehive:{name:'Colmeia',width:1,npc:'augusto',learnFee:0,cost:{}},
- preserveKeg:{name:'Barril de conservas',width:2,npc:'tobias',learnFee:50,cost:{board:8,ironShard:2,peg:4}},
- waxPress:{name:'Prensa de cera',width:2,npc:'bento',learnFee:50,cost:{board:6,ironShard:4,peg:4}},
- composter:{name:'Composteira',width:2,npc:'tobias',learnFee:40,cost:{board:6,peg:4,stone:6}},
- stoneMill:{name:'Moinho de pedra',width:2,npc:'icaro',learnFee:60,cost:{stone:20,ironIngot:2,board:6,metalPart:1}},
+ preserveKeg:{name:'Barril de conservas',width:2,npc:'tobias',learnFee:50,cost:{board:8,ironShard:2,peg:4,nails:4}},
+ waxPress:{name:'Prensa de cera',width:2,npc:'bento',learnFee:50,cost:{board:6,ironShard:4,peg:4,spring:2,hinge:1}},
+ composter:{name:'Composteira',width:2,npc:'tobias',learnFee:40,cost:{board:6,peg:4,stone:6,nails:4}},
+ stoneMill:{name:'Moinho de pedra',width:2,npc:'icaro',learnFee:60,cost:{stone:20,ironIngot:2,board:6,metalPart:1,gear:2}},
 };
 /** `ingredients`: receita de vários itens (forno), carregada pelo caderno, não pelo item solto. */
 /** `extra`: itens gastos junto com a carga (composteira: capim ou fibras). */
