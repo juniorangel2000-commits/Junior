@@ -12,6 +12,8 @@ import { itemIconUrl } from './visual-assets';
 import './village-ui.css';
 import './village-ui-cards.css';
 import {gameAudio} from './audio';
+import {FIRST_TOOL_MATERIALS} from './data/economy-balance';
+import {materialsLabel} from './systems/commerce';
 import {pickConversation} from './data/npc-conversations';
 /** Moradores já ouvidos nesta sessão e a última conversa de cada um (para não repetir). */
 const heard=new Set<string>(),lastConversation=new Map<string,number>();
@@ -391,9 +393,11 @@ export class VillageInteractionUI {
       const insufficient = side === 'buy' && valid && economy.coins < value * price;
       const noStock = side === 'sell' && inventory[item] === 0;
       const stock=merchantId==='blacksmith'&&side==='buy'&&item in BALANCE.stock?stockInfo(economy,item,this.day):undefined;
-      action.disabled = !!stock&&stock.remaining<this.quantity || !valid || ownedTool || insufficient || noStock;
+      const needs=merchantId==='blacksmith'&&side==='buy'&&(item==='sickle'||item==='shovel')?FIRST_TOOL_MATERIALS:{};
+      const lacking=Object.entries(needs).some(([id,n])=>(inventory[id as ItemId]??0)<n!);
+      action.disabled = !!stock&&stock.remaining<this.quantity || !valid || ownedTool || insufficient || noStock || lacking;
       action.textContent = side === 'buy' ? 'Comprar' : 'Vender';
-      reason.textContent = !valid ? `Escolha de 1 a ${max} unidades.` : ownedTool ? 'Você já possui esta ferramenta.' : noStock ? 'Você não tem este item para vender.' : insufficient ? 'Coroas insuficientes. Venda colheitas ou recursos para juntar Coroas.' : side === 'buy' ? 'A compra será colocada na sua mochila.' : 'Os itens vendidos saem da sua mochila.';
+      reason.textContent = !valid ? `Escolha de 1 a ${max} unidades.` : ownedTool ? 'Você já possui esta ferramenta.' : noStock ? 'Você não tem este item para vender.' : lacking ? `Traga ${materialsLabel(needs)} para o Bento fazer a ferramenta.` : insufficient ? 'Coroas insuficientes. Venda colheitas ou recursos para juntar Coroas.' : side === 'buy' ? 'A compra será colocada na sua mochila.' : 'Os itens vendidos saem da sua mochila.';
     };
     input.addEventListener('input', update); update();
     action.addEventListener('click', () => {
@@ -410,6 +414,10 @@ export class VillageInteractionUI {
       this.report(result.message, result.ok);
       this.body.querySelector<HTMLButtonElement>(`[data-trade-item="${item}"]`)?.focus();
     });
-    detail.append(icon, heading, description, stock, stepper, total, action, reason);
+    detail.append(icon, heading, description, stock);
+    const needs=merchantId==='blacksmith'&&side==='buy'&&(item==='sickle'||item==='shovel')?FIRST_TOOL_MATERIALS:{};
+    if(Object.keys(needs).length){const box=document.createElement('div');box.className='village-chips';const label=document.createElement('small');label.textContent='Você leva:';box.append(label);
+      for(const [id,n] of Object.entries(needs))box.append(this.costChip('',inventory[id as ItemId]??0,n!,id));detail.append(box);}
+    detail.append(stepper, total, action, reason);
   }
 }

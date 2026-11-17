@@ -11,6 +11,8 @@ export const MIN_TOOL_TIER:Partial<Record<string,number>>={sickle:1,shovel:1};
 export const minToolTier=(tool:string)=>MIN_TOOL_TIER[tool]??0;
 /** Preço da primeira foice e da primeira pá na ferraria. */
 export const FIRST_TOOL_PRICE={sickle:80,shovel:90} as const;
+/** Material que o Bento pede para fazer a primeira foice ou pá (o mesmo da receita da bancada). */
+export const FIRST_TOOL_MATERIALS:Partial<Record<ItemId,number>>={ironIngot:3,wood:2};
 export const ECONOMY_BALANCE={blackToolRecipe:{blackMetalIngot:9,goldIngot:4},rareDepositRespawnDays:30,initialCrowns:100,fragmentsPerIngot:9,mineralTradeDay:31,maxOrders:20,
  efficiency:[1,1.5,2.2,3.2],durability:[100,250,450,800],workDays:[0,1,2,4],
  smeltMinutes:{iron:30,gold:90,blackMetal:240},smeltFee:{iron:25,gold:90,blackMetal:500},

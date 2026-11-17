@@ -12,7 +12,7 @@ vi.mock('../src/systems/bento-schedule',async o=>({...(await o() as object),bent
 
 describe('foice e pá começam no ferro',()=>{
  it('o Bento vende desde o primeiro dia e a compra ensina a receita',()=>{
-  const s=createNewSave(createCharacterProfile('Pá'));s.day=2;s.villageEconomy=createVillageEconomy();s.villageEconomy.coins=500;
+  const s=createNewSave(createCharacterProfile('Pá'));s.day=2;s.villageEconomy=createVillageEconomy();s.villageEconomy.coins=500;s.inventory.ironIngot=3;s.inventory.wood=2;
   expect(unitPrice('blacksmith','buy','sickle',2)).toBe(80);expect(unitPrice('blacksmith','buy','shovel',2)).toBe(90);
   const inv=new Inventory(s.inventory);const r=trade('blacksmith','buy','sickle',1,inv,s.villageEconomy,2,s);
   expect(r.ok).toBe(true);expect(r.message).toContain('aprendeu');s.inventory=inv.data;
@@ -30,5 +30,15 @@ describe('foice e pá começam no ferro',()=>{
  });
  it('não há arte de foice nem de pá de pedra',()=>{
   expect(existsSync('public/assets/visual/economy/tools/stone-sickle.png')).toBe(false);expect(existsSync('public/assets/visual/economy/tools/stone-shovel.png')).toBe(false);
+ });
+});
+
+describe('o Bento pede o ferro e a madeira',()=>{
+ it('sem os 3 lingotes e as 2 madeiras, não faz; com eles, gasta o material e as moedas',()=>{
+  const s=createNewSave(createCharacterProfile('Material'));s.day=2;s.villageEconomy=createVillageEconomy();s.villageEconomy.coins=500;s.inventory.wood=0;s.inventory.ironIngot=0;
+  let inv=new Inventory(s.inventory);const no=trade('blacksmith','buy','shovel',1,inv,s.villageEconomy,2,s);
+  expect(no.ok).toBe(false);expect(no.message).toContain('3 lingotes');expect(s.villageEconomy.coins).toBe(500);
+  s.inventory.ironIngot=4;s.inventory.wood=5;inv=new Inventory(s.inventory);const ok=trade('blacksmith','buy','shovel',1,inv,s.villageEconomy,2,s);
+  expect(ok.ok).toBe(true);expect(inv.data.ironIngot).toBe(1);expect(inv.data.wood).toBe(3);expect(inv.data.shovel).toBe(1);expect(s.villageEconomy.coins).toBe(410);
  });
 });

@@ -1,5 +1,8 @@
 import {stockInfo} from './economy';
-import {ECONOMY_BALANCE as B,NON_COMMERCIAL} from '../data/economy-balance';
+import {ECONOMY_BALANCE as B,NON_COMMERCIAL,FIRST_TOOL_MATERIALS} from '../data/economy-balance';
+/** "3 lingotes de ferro e 2 madeiras" */
+const PLURAL:Partial<Record<ItemId,[string,string]>>={ironIngot:['lingote de ferro','lingotes de ferro'],wood:['madeira','madeiras']};
+export const materialsLabel=(m:Partial<Record<ItemId,number>>)=>Object.entries(m).map(([id,n])=>{const p=PLURAL[id as ItemId];return `${n} ${p?p[n===1?0:1]:ITEM_NAMES[id as ItemId].toLowerCase()}`;}).join(' e ');
 import {ITEM_NAMES} from '../data/items';
 import {getMerchant,isMerchantOpen,MAX_COINS,MAX_TRADE_QUANTITY,unitPrice,validateVillageEconomy,type TradeSide,type VillageEconomy} from '../data/village-commerce';
 import type {ItemId} from '../types';
@@ -31,9 +34,12 @@ export function trade(merchantId:string,side:TradeSide,item:ItemId,quantity:numb
     const limited=merchantId==='blacksmith'&&item in B.stock;const stock=limited?stockInfo(economy,item,day):undefined;
     if(stock&&stock.remaining<quantity)return fail('unavailable',`Estoque esgotado. Novas unidades no dia ${stock.nextDay}.`);
     if(tools.has(item)&&(inventory.has(item)||quantity!==1))return fail('already-owned',inventory.has(item)?'Você já tem esta ferramenta.':'Compre uma ferramenta de cada vez.');
+    // A primeira foice e a primeira pá: o Bento cobra a mão de obra e você leva o ferro e a madeira.
+    const materials=merchantId==='blacksmith'&&(item==='sickle'||item==='shovel')?FIRST_TOOL_MATERIALS:{};
+    if(!Object.entries(materials).every(([id,n])=>(inventory.data[id as ItemId]??0)>=n!))return fail('unavailable',`Traga ${materialsLabel(materials)} para o Bento fazer a ferramenta.`);
     if(economy.coins<total)return fail('not-enough-coins','Moedas insuficientes. Venda uma colheita ou recursos para juntar C.');
     if(quality)touchQuality(quality,item,inventory.data[item]);
-    if(!inventory.transact({},{[item]:quantity}))return fail('inventory-full','Não há espaço para esta compra no inventário.');
+    if(!inventory.transact(materials,{[item]:quantity}))return fail('inventory-full','Não há espaço para esta compra no inventário.');
     economy.coins-=total;
     if(stock){economy.stock??={};economy.stock[item]={cycle:stock.cycle,remaining:stock.remaining-quantity,bought:(B.stock[item as keyof typeof B.stock].quantity-stock.remaining)+quantity};}
     // Comprar a primeira foice ou pá com o Bento ensina a receita da bancada de trabalho.
