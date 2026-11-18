@@ -74,7 +74,7 @@ Plano dos moradores, combinado com o Junior (em ordem):
 
 **Próximo passo:** publicar a preview.43 quando o Junior pedir, ou seguir a lista de outras ideias.
 
-Outras ideias: ferramentas na mão (machadinha e picareta), Marina e Rui andando, desempenho (F3 no PC do Junior), porteira do chiqueiro, Actions sem Node 20.
+Outras ideias: Marina e Rui andando, desempenho (F3 no PC do Junior), porteira do chiqueiro, Actions sem Node 20.
 
 ## Pendências e ideias para depois
 
