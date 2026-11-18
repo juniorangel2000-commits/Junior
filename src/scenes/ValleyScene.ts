@@ -897,7 +897,7 @@ export class ValleyScene extends Phaser.Scene {
     this.damageMarks = this.add.graphics().setDepth(3500);
     this.player = new Player(this, data.profile, data.player.x, data.player.y);
     this.helpers=new SurvivorResidentsView(this,()=>{this.state.inventory={...this.inventory.data};return{save:this.state,area:'property',player:this.player,visible:this.running&&!this.inHome&&this.titleBackgroundMode==='off',blocked:(x,y)=>(farmBlocked(this.state,x,y)||machineReserved(this.state,'property',x,y))||this.world.isBlocked(x,y)||this.building.isBlocked(x,y)};},this.ui,()=>{Object.assign(this.inventory.data,this.state.inventory);this.updateHUD();});
-    this.visit=new PropertyVisit(this,{state:()=>this.state,snapshot:()=>this.snapshotState(),player:()=>this.player,visible:()=>this.running&&!this.inHome&&this.titleBackgroundMode==='off',pause:v=>this.setPaused(v),toast:m=>this.ui.toast(m),syncInventory:inv=>this.syncInventory(inv)});
+    this.visit=new PropertyVisit(this,{state:()=>this.state,snapshot:()=>this.snapshotState(),player:()=>this.player,visible:()=>this.running&&!this.inHome&&this.titleBackgroundMode==='off',active:()=>this.canPlay(),blocked:(x,y)=>farmBlocked(this.state,x,y)||machineReserved(this.state,'property',x,y)||this.world.isBlocked(x,y)||this.building.isBlocked(x,y),pause:v=>this.setPaused(v),toast:m=>this.ui.toast(m),syncInventory:inv=>this.syncInventory(inv)});
     this.toolVisual = new ToolVisual(this, data.profile);
     const direction = data.player.direction;
     this.player.facing = directionVector(direction ?? 'down');

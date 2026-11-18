@@ -47,7 +47,7 @@ describe('Bento weekly travelling routine',()=>{
  });
  it('persists the route, exact position, weekday decision and progress through reload without restarting',()=>{
   const s=road();s.activeArea='cityForest';for(let i=0;i<90;i++){Object.assign(s,advanceClock(s,.1));advanceBentoTravel(s,.1);}const before=structuredClone(s.bentoTravel),loaded=migrateSave(JSON.parse(JSON.stringify(s)))!;
-  expect(loaded.bentoTravel).toEqual(before);expect(validateSave(loaded)).toBe(true);advanceBentoTravel(loaded,.1);expect(loaded.bentoTravel!.trip!.day).toBe(2);expect(loaded.bentoTravel!.lastAttemptDay).toBe(2);expect(Math.hypot(loaded.bentoTravel!.trip!.x-before!.trip!.x,loaded.bentoTravel!.trip!.y-before!.trip!.y)).toBeLessThanOrEqual(4.801);
+  expect(loaded.bentoTravel).toEqual(before);expect(validateSave(loaded)).toBe(true);advanceBentoTravel(loaded,.1);expect(loaded.bentoTravel!.trip!.day).toBe(2);expect(loaded.bentoTravel!.lastAttemptDay).toBe(2);expect(Math.hypot(loaded.bentoTravel!.trip!.x-before!.trip!.x,loaded.bentoTravel!.trip!.y-before!.trip!.y)).toBeLessThanOrEqual(8.401);
  });
  it('does not move, create resources or advance a route while paused or held in conversation',()=>{
   const s=road(),before=structuredClone(s);for(const dt of[0,-1,NaN])advanceBentoTravel(s,dt);expect(s).toEqual(before);advanceBentoTravel(s,.1,undefined,true);expect(s.bentoTravel!.trip).toEqual(before.bentoTravel!.trip);expect(s.inventory).toEqual(before.inventory);

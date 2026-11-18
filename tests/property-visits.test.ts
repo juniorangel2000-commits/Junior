@@ -4,7 +4,7 @@ import {createCharacterProfile} from '../src/data/characters';
 import {ITEMS} from '../src/data/items';
 import {createSocialRuntime} from '../src/systems/npc-social';
 import {restDay,rainyDay,REST_WEEKDAY} from '../src/data/village-schedule';
-import {propertyVisitor,visitingProperty,receiveVisitGift,propertyVisitDialogue,PROPERTY_VISIT_GIFTS,PROPERTY_VISIT} from '../src/systems/property-visits';
+import {propertyVisitor,visitingProperty,receiveVisitGift,propertyVisitDialogue,PROPERTY_VISIT_GIFTS,PROPERTY_VISIT,visitStage,visitStartPoint,PROPERTY_VISIT_GATE,PROPERTY_VISIT_SPOT} from '../src/systems/property-visits';
 import {MerchantDailyRoutine} from '../src/systems/merchant-routine';
 import type {RoutineId} from '../src/systems/merchant-routine';
 import type {SaveData} from '../src/types';
@@ -15,7 +15,7 @@ const visitDay=(s:SaveData)=>{for(let d=2;d<400;d++){s.day=d;if(propertyVisitor(
 
 describe('visitas à propriedade',()=>{
  it('os presentes existem e cada morador com folga tem presente',()=>{
-  for(const id of Object.keys(REST_WEEKDAY)){const list=PROPERTY_VISIT_GIFTS[id as never]!;expect(list.length).toBeGreaterThan(0);
+  for(const id of Object.keys(REST_WEEKDAY)){const list=PROPERTY_VISIT_GIFTS[id as keyof typeof PROPERTY_VISIT_GIFTS]!;expect(list.length).toBeGreaterThan(0);
    for(const g of list)for(const item of Object.keys(g.items))expect(Object.hasOwn(ITEMS,item),`${id}: ${item}`).toBe(true);}
  });
  it('só vem quem tem amizade 8 ou mais, na folga e com tempo aberto',()=>{
@@ -32,7 +32,7 @@ describe('visitas à propriedade',()=>{
   s.time=PROPERTY_VISIT.start+10;expect(s.day).toBe(day);
   const r=new MerchantDailyRoutine(id as RoutineId,{x:288,y:300,direction:'down',shop:true},{entry:{x:288,y:335},isBlocked:()=>false,validPosition:()=>true,stops:[{x:9,y:7}],tileSize:32} as never,undefined,6,()=>({entry:{x:288,y:335},isBlocked:()=>false,validPosition:()=>true,stops:[{x:9,y:7}],tileSize:32}) as never);
   expect(r.availability(s).message).toContain('Visitando a sua propriedade');
-  const before={...r.state};r.step(.1,s,{blocked:()=>false,fits:()=>true,arrival:p=>p});expect(r.state.x).toBe(before.x);expect(r.state.y).toBe(before.y);
+  const before={...r.state};r.step(.1,s,{blocked:()=>false,fits:()=>true,arrival:(_a,p)=>p});expect(r.state.x).toBe(before.x);expect(r.state.y).toBe(before.y);
  });
  it('entrega o presente uma vez por dia, com +1 de amizade, e salva de forma compatível',()=>{
   const s=friends(10);visitDay(s);s.time=PROPERTY_VISIT.start+30;const id=propertyVisitor(s)!;
@@ -51,5 +51,12 @@ describe('visitas à propriedade',()=>{
  it('fora do horário não entrega presente',()=>{
   const s=friends(10);visitDay(s);s.time=PROPERTY_VISIT.end+5;const id=propertyVisitor(s)!,root={s};
   expect(receiveVisitGift(createSocialRuntime(()=>root.s,()=>true,()=>root.s),id).ok).toBe(false);
+ });
+ it('chega de manhã pela estrada, espera na porta e vai embora antes das 11:00',()=>{
+  expect(PROPERTY_VISIT.start).toBe(8*60);expect(PROPERTY_VISIT.end).toBe(11*60);
+  expect(visitStage(8*60)).toBe('stay');expect(visitStage(PROPERTY_VISIT.leave)).toBe('leave');
+  expect(visitStartPoint(8*60)).toEqual(PROPERTY_VISIT_GATE);
+  expect(visitStartPoint(9*60)).toEqual(PROPERTY_VISIT_SPOT);
+  expect(PROPERTY_VISIT.leave).toBeLessThan(PROPERTY_VISIT.end);
  });
 });

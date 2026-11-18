@@ -9,11 +9,19 @@ import {Inventory} from './inventory';
 import {commitSocial,ensureNpcSocial,type SocialRuntime} from './npc-social';
 import type {SocialResult} from './npc-gifts';
 
-/** Visitas à propriedade: um morador com amizade 8 ou mais, no dia de folga e com
- * tempo aberto, passa a tarde na propriedade e traz um presente. No máximo um por dia. */
-export const PROPERTY_VISIT={start:14*60,end:16*60+30,minAffinity:8,chance:.65,affinity:1} as const;
+/** Visitas à propriedade (de manhã, quando o jogador acorda em casa): um morador com amizade 8 ou mais, no dia de folga e com
+ * tempo aberto, vem à propriedade de manhã, logo depois de você acordar, e traz um presente. No máximo um por dia. */
+export const PROPERTY_VISIT={start:8*60,leave:10*60+15,end:11*60,minAffinity:8,chance:.65,affinity:1,arriveMinutes:30} as const;
 /** Onde o visitante espera, perto da porta da casa (pixels do mapa da propriedade). */
-export const PROPERTY_VISIT_SPOT={x:27*32,y:18*32+8} as const;
+export const PROPERTY_VISIT_SPOT={x:27.5*32,y:18.5*32} as const;
+/** O visitante chega e vai embora pela estrada da vila (src/data/property-village-gate.ts). */
+export const PROPERTY_VISIT_GATE={x:93.5*32,y:52.5*32} as const;
+/** Etapa da visita pela hora: chegando/esperando até `leave`, depois indo embora. */
+export const visitStage=(time:number):'stay'|'leave'=>time<PROPERTY_VISIT.leave?'stay':'leave';
+/** Onde o visitante começa quando a cena o mostra pela primeira vez naquela etapa. */
+export function visitStartPoint(time:number):{x:number;y:number}{
+ return visitStage(time)==='stay'&&time<PROPERTY_VISIT.start+PROPERTY_VISIT.arriveMinutes?PROPERTY_VISIT_GATE:PROPERTY_VISIT_SPOT;
+}
 
 export interface PropertyVisitGift{items:Partial<Record<ItemId,number>>;line:string}
 export const PROPERTY_VISIT_GIFTS:Readonly<Partial<Record<SocialNpc,readonly PropertyVisitGift[]>>>={

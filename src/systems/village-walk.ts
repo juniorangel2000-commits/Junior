@@ -1,3 +1,4 @@
+import {NPC_WALK_SPEED} from '../data/npc-speed';
 import {directionFromVector,type CharacterDirection} from '../character-directions';
 import {WORLD_WIDTH,WORLD_HEIGHT,TILE} from '../data/world-size';
 type Point={x:number;y:number};
@@ -46,7 +47,7 @@ export class VillageWalk {
  private wait:number;
  private distance=0;
  private direction:CharacterDirection='down';
- constructor(private readonly stops:readonly Point[],private readonly speed=34,initialWait=8,private readonly stopWait=12,private readonly tile=TILE,private readonly walkFrames=6){this.wait=initialWait;}
+ constructor(private readonly stops:readonly Point[],private readonly speed=NPC_WALK_SPEED,initialWait=8,private readonly stopWait=12,private readonly tile=TILE,private readonly walkFrames=6){this.wait=initialWait;}
  step(seconds:number,position:Point,blocked:Blocked,cost:Cost=()=>1,paused=false){
   let moved=0,x=position.x,y=position.y,arrived=false;
   if(!paused&&seconds>0&&Number.isFinite(seconds)&&this.stops.length){

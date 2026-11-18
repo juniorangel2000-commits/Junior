@@ -1,3 +1,4 @@
+import {NPC_WALK_SPEED} from '../data/npc-speed';
 import {bentoTravelling,bentoTripPending,bentoAvailability} from './bento-schedule';
 import {beginFisherLakeTrip} from './fisher-travel';
 import type {SaveData} from '../types';
@@ -24,7 +25,7 @@ export interface MerchantRoutineState {
 }
 export const MERCHANT_DAILY_PLAN={
  opening:8*60,lunch:12*60,return:13*60+30,closing:{augusto:20*60,bento:19*60,rosa:18*60,tobias:18*60,amelia:18*60,nilo:18*60,celina:18*60,damiao:18*60,helena:22*60,icaro:18*60},
- speed:34,stopSeconds:6,guideMinutes:45,socialMinutes:12,
+ speed:NPC_WALK_SPEED,stopSeconds:6,guideMinutes:45,socialMinutes:12,
  plaza:{augusto:{x:50,y:41},bento:{x:49,y:41},rosa:{x:48,y:43},tobias:{x:45,y:43},amelia:{x:47,y:43},nilo:{x:50,y:43},celina:{x:51,y:43},damiao:{x:43,y:41},helena:{x:44,y:41},icaro:{x:46,y:43}},
 } as const;
 const absolute=(c:GameClock)=>c.day*1440+c.time;
@@ -137,7 +138,7 @@ export class MerchantDailyRoutine {
  private move(point:{x:number;y:number},key:string,seconds:number,env:RoutineEnvironment){
   const s=this.state,tile=s.area==='shop'?(this.navigation.tileSize??32):32;
   if(this.target!==key){this.resetPath();this.target=key;}
-  if(!this.walker){const goal=this.goal(point,tile,env);if(!goal)return{moving:false,phase:0,arrived:false};this.walker=new VillageWalk([goal],s.area==='village'&&this.navigationFor?48:MERCHANT_DAILY_PLAN.speed,0,0,tile,this.walkFrames);}
+  if(!this.walker){const goal=this.goal(point,tile,env);if(!goal)return{moving:false,phase:0,arrived:false};this.walker=new VillageWalk([goal],s.area==='village'&&this.navigationFor?NPC_WALK_SPEED:MERCHANT_DAILY_PLAN.speed,0,0,tile,this.walkFrames);}
   const step=this.walker.step(seconds,s,(x,y)=>this.blocked(s.area,x,y,env),s.area==='village'?(x,y)=>['path','paving'].includes(villageGround(x,y))?1:2.4:()=>1);
   if(step.moving&&!env.fits(s.area,step.x,step.y)){this.resetPath();s.wait=.3;return{moving:false,phase:0,arrived:false};}
   s.x=step.x;s.y=step.y;if(step.moving)s.direction=step.direction;

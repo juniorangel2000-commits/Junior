@@ -1,3 +1,4 @@
+import {NPC_WALK_SPEED} from '../data/npc-speed';
 import type {SaveData} from '../types';
 import type {CampPerson,SurvivorArea,SurvivorTaskKind} from './survivor-camp';
 import {CAMP_ENTRY} from '../data/survivor-camp';
@@ -31,7 +32,7 @@ function walk(save:SaveData,p:CampPerson,goal:{x:number;y:number},dt:number):boo
  const tile=route.points[0],same=Math.floor(p.x/32)===Math.floor(goal.x/32)&&Math.floor(p.y/32)===Math.floor(goal.y/32),to=tile?center(tile):same?goal:undefined;if(!to)return false;
  if(blocked(Math.floor(to.x/32),Math.floor(to.y/32))){route.points=[];return false;}
  const dx=to.x-p.x,dy=to.y-p.y,d=Math.hypot(dx,dy);if(d<.01){route.points.shift();return false;}
- const distance=Math.min(d,46*dt),x=p.x+dx/d*distance,y=p.y+dy/d*distance;
+ const distance=Math.min(d,NPC_WALK_SPEED*dt),x=p.x+dx/d*distance,y=p.y+dy/d*distance;
  if(blocked(Math.floor(x/32),Math.floor(y/32))){route.points=[];return false;}
  p.x=x;p.y=y;p.direction=directionFromVector(Math.abs(dx)<.05?0:dx,Math.abs(dy)<.05?0:dy);p.distance+=distance;if(distance>=d-.01)route.points.shift();return false;
 }

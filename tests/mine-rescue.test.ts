@@ -40,7 +40,7 @@ describe('phase 9 persistent Bento rescue',()=>{
   const inv=structuredClone(s.inventory),seen=new Set<string>();let complete=false;
   for(let i=0;i<18000;i++){
    const previous=s.bentoTravel?.trip&&structuredClone(s.bentoTravel.trip);Object.assign(s,advanceClock(s,.1));advanceBentoTravel(s,.1);const trip=s.bentoTravel?.trip;
-   if(trip){seen.add(trip.area);expect(bentoMapNavigation(s,trip.area).fits(trip),JSON.stringify(trip)).toBe(true);if(previous?.area===trip.area&&bentoPlayerSpace(s)===trip.area)expect(Math.hypot(trip.x-previous.x,trip.y-previous.y)).toBeLessThanOrEqual(4.801);}
+   if(trip){seen.add(trip.area);expect(bentoMapNavigation(s,trip.area).fits(trip),JSON.stringify(trip)).toBe(true);if(previous?.area===trip.area&&bentoPlayerSpace(s)===trip.area)expect(Math.hypot(trip.x-previous.x,trip.y-previous.y)).toBeLessThanOrEqual(8.401);}
    else{complete=true;break;}
   }
   expect(complete,JSON.stringify({trip:s.bentoTravel?.trip,goal:s.bentoTravel?.trip&&bentoTripGoal(s,s.bentoTravel.trip),seen:[...seen]})).toBe(true);expect([...seen]).toEqual(expect.arrayContaining(['home','property','village','shop']));expect(s.mineRescue!.stage).toBe('complete');expect(s.villageRoutines!.bento!.area).toBe('shop');expect(s.inventory).toEqual(inv);expect(validateSave(s)).toBe(true);
@@ -61,7 +61,7 @@ describe('scene rescue integration',()=>{
 describe('rescue edge cases',()=>{
  it('separates an existing close contact without crossing the player or teleporting',()=>{
   const s=fallen();recoverMineDefeat(s,validateSave);acknowledgeMineRescue(s,validateSave);Object.assign(s.bentoTravel!.trip!,{x:48,y:112});const player={x:48,y:103};let previous=structuredClone(s.bentoTravel!.trip!);
-  for(let i=0;i<600&&s.bentoTravel!.trip!.area==='home';i++){Object.assign(s,advanceClock(s,.1));advanceBentoTravel(s,.1,player);const t=s.bentoTravel!.trip!;if(t.area==='home'){expect(Math.hypot(t.x-previous.x,t.y-previous.y)).toBeLessThanOrEqual(4.801);if(Math.abs(previous.x-player.x)<19&&Math.abs(previous.y-player.y)<13)expect(Math.hypot(t.x-player.x,t.y-player.y)).toBeGreaterThanOrEqual(Math.hypot(previous.x-player.x,previous.y-player.y)-.001);}previous=structuredClone(t);}
+  for(let i=0;i<600&&s.bentoTravel!.trip!.area==='home';i++){Object.assign(s,advanceClock(s,.1));advanceBentoTravel(s,.1,player);const t=s.bentoTravel!.trip!;if(t.area==='home'){expect(Math.hypot(t.x-previous.x,t.y-previous.y)).toBeLessThanOrEqual(8.401);if(Math.abs(previous.x-player.x)<19&&Math.abs(previous.y-player.y)<13)expect(Math.hypot(t.x-player.x,t.y-player.y)).toBeGreaterThanOrEqual(Math.hypot(previous.x-player.x,previous.y-player.y)-.001);}previous=structuredClone(t);}
   expect(s.bentoTravel!.trip!.area).toBe('property');
  });
  it('resumes a privately reserved smithy job after rescue without depositing its carried materials twice',()=>{

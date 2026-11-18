@@ -1,3 +1,4 @@
+import {NPC_WALK_SPEED} from '../data/npc-speed';
 import {advanceWorldRoute} from './world-route';
 import type {SaveData} from '../types';
 import {CHARACTER_DIRECTIONS,type CharacterDirection} from '../character-directions';
@@ -8,7 +9,7 @@ import {LAKE_FISHER_WALK,lakeFisherPose} from './lake-fisher';
 import {villageRoute} from './village-walk';
 type Point={x:number;y:number};
 export interface FisherTravel extends Point {day:number;area:'village'|'cityForest'|'fishingLake';mode:'village'|'lake'|'to-lake'|'to-village';route:Point[];index:number;routeTime:number;direction:CharacterDirection;distance:number;moving:boolean}
-const SPEED=36;
+const SPEED=NPC_WALK_SPEED;
 export function validFisherTravel(value:unknown):value is FisherTravel {
  if(!value||typeof value!=='object')return false;const s=value as FisherTravel;
  const point=(p:Point)=>!!p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=0&&p.x<=3072&&p.y>=0&&p.y<=2304;

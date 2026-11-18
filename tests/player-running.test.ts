@@ -40,3 +40,14 @@ describe.each(CHARACTERS)('$label: Shift running',character=>{
   expect(dry.player.x-300).toBeCloseTo(PLAYER_SPEED*1.2*PLAYER_RUN_MULTIPLIER*.2);
  });
 });
+
+import {NPC_WALK_SPEED} from '../src/data/npc-speed';
+import {MERCHANT_DAILY_PLAN} from '../src/systems/merchant-routine';
+import {BENTO_WEEKLY_PLAN} from '../src/data/bento-schedule';
+describe('velocidade dos personagens',()=>{
+ it('todos andam na mesma velocidade do jogador',()=>{
+  expect(NPC_WALK_SPEED).toBe(PLAYER_SPEED);
+  expect(MERCHANT_DAILY_PLAN.speed).toBe(PLAYER_SPEED);
+  expect(BENTO_WEEKLY_PLAN.speed).toBe(PLAYER_SPEED);
+ });
+});

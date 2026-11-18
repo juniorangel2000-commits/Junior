@@ -1,3 +1,4 @@
+import {NPC_WALK_SPEED} from './data/npc-speed';
 import type Phaser from 'phaser';
 import type {SaveData} from './types';
 import type {Player} from './player';
@@ -10,7 +11,9 @@ import {VillageNpcOverlays} from './village-npc-overlays';
 import {createSocialRuntime,openSocialConversation,respondSocial,type SocialRuntime} from './systems/npc-social';
 import {completeStoryPart,storyStatus} from './systems/npc-stories';
 import {answerConversation,collectPendingRewards,giftChoices,giveGift} from './systems/npc-gifts';
-import {propertyVisitor,visitingProperty,visitGiftReceived,propertyVisitDialogue,receiveVisitGift,PROPERTY_VISIT,PROPERTY_VISIT_SPOT} from './systems/property-visits';
+import {propertyVisitor,visitingProperty,visitGiftReceived,propertyVisitDialogue,receiveVisitGift,visitStage,visitStartPoint,PROPERTY_VISIT,PROPERTY_VISIT_SPOT,PROPERTY_VISIT_GATE} from './systems/property-visits';
+import {VillageWalk} from './systems/village-walk';
+import type {CharacterDirection} from './character-directions';
 import {saveGame} from './systems/save';
 import {preloadAugustoSprites,AUGUSTO_WALK_FRAMES,AUGUSTO_DISPLAY,AUGUSTO_ORIGIN_Y} from './augusto-sprites';
 import {preloadRosaSprites,ROSA_WALK_FRAMES,ROSA_DISPLAY,ROSA_ORIGIN_Y} from './rosa-sprites';
@@ -33,10 +36,15 @@ const LOOKS:Partial<Record<SocialNpc,Look>>={
 
 export interface PropertyVisitHost{
  state:()=>SaveData;snapshot:()=>SaveData;player:()=>Player;
- visible:()=>boolean;pause:(value:boolean)=>void;toast:(message:string)=>void;
+ visible:()=>boolean;
+ /** Jogo rodando (sem menus nem pausa): só então o visitante anda. */
+ active:()=>boolean;
+ /** Ladrilho bloqueado na propriedade (terreno, construções, máquinas, cercados). */
+ blocked:(x:number,y:number)=>boolean;
+ pause:(value:boolean)=>void;toast:(message:string)=>void;
  syncInventory:(inventory:SaveData['inventory'])=>void;
 }
-/** Morador que passa a tarde na propriedade (src/systems/property-visits.ts). As imagens
+/** Morador que visita a propriedade de manhã (src/systems/property-visits.ts). As imagens
  * dele só são carregadas no dia da visita, porque a Propriedade não carrega a vila. */
 export class PropertyVisit {
  private sprite?:Phaser.GameObjects.Sprite;
@@ -44,6 +52,14 @@ export class PropertyVisit {
  private loading?:SocialNpc;
  private ready=new Set<SocialNpc>();
  private announced=0;
+ private stageKey='';
+ private walker?:VillageWalk;
+ private goal={x:0,y:0};
+ private pos={x:0,y:0};
+ private direction:CharacterDirection='down';
+ private phase=0;
+ private still=0;
+ private gone=false;
  private panel:VillageInteractionUI;
  private overlays:VillageNpcOverlays;
  private runtime:SocialRuntime;
@@ -99,13 +115,34 @@ export class PropertyVisit {
   this.sprite=this.scene.add.sprite(PROPERTY_VISIT_SPOT.x,PROPERTY_VISIT_SPOT.y,key,characterFrame('down',0,look.frames)).setOrigin(.5,look.origin).setDisplaySize(look.display,look.display).setDepth(PROPERTY_VISIT_SPOT.y);
   return true;
  }
- private update():void{
+ private update(_time:number,ms:number):void{
   const s=this.host.state();if(!s)return;
-  const id=visitingProperty(propertyVisitor(s)??'',s)?propertyVisitor(s):undefined;
-  const show=!!id&&this.host.visible()&&this.ensureSprite(id);
-  this.sprite?.setVisible(show);
-  if(show&&this.announced!==s.day){this.announced=s.day;this.host.toast(`${VILLAGE_NPCS.find(n=>n.id===id)!.name} veio visitar você! Está perto da porta de casa.`);}
-  if(show&&!this.panel.isOpen&&this.sprite){const p=this.host.player(),d=Math.hypot(p.x-this.sprite.x,p.y-this.sprite.y);if(d<140)this.sprite.setFrame(characterFrame(directionFromVector(p.x-this.sprite.x,p.y-this.sprite.y),0,LOOKS[id!]!.frames));}
+  const who=propertyVisitor(s),id=who&&visitingProperty(who,s)?who:undefined;
+  if(!id||!this.host.visible()||!this.ensureSprite(id)){this.sprite?.setVisible(false);if(!id)this.stageKey='';return;}
+  const look=LOOKS[id]!,stage=visitStage(s.time),key=`${s.day}:${id}:${stage}`;
+  if(this.stageKey!==key){
+   // Nova etapa: chegar pela estrada até a porta, ou sair da porta até a estrada.
+   const first=!this.stageKey.startsWith(`${s.day}:${id}:`);
+   this.stageKey=key;this.gone=false;this.still=0;this.phase=0;
+   this.pos=stage==='stay'?{...visitStartPoint(s.time)}:first?{...PROPERTY_VISIT_SPOT}:this.pos;
+   this.goal=stage==='stay'?PROPERTY_VISIT_SPOT:PROPERTY_VISIT_GATE;
+   this.walker=new VillageWalk([{x:Math.floor(this.goal.x/32),y:Math.floor(this.goal.y/32)}],NPC_WALK_SPEED,0,9999,32,look.frames);
+  }
+  if(this.gone){this.sprite!.setVisible(false);return;}
+  this.sprite!.setVisible(true);
+  if(this.announced!==s.day){this.announced=s.day;this.host.toast(`${VILLAGE_NPCS.find(n=>n.id===id)!.name} veio visitar você!${Math.hypot(this.pos.x-this.goal.x,this.pos.y-this.goal.y)>8?' Está chegando pela estrada da vila.':' Está perto da porta de casa.'}`);}
+  const atGoal=()=>Math.hypot(this.pos.x-this.goal.x,this.pos.y-this.goal.y)<6;
+  if(!this.panel.isOpen&&this.host.active()&&!atGoal()){
+   const seconds=Math.min(.1,Math.max(0,ms/1000)),step=this.walker!.step(seconds,this.pos,this.host.blocked);
+   this.pos={x:step.x,y:step.y};this.phase=step.phase;
+   if(step.moving){this.direction=step.direction;this.still=0;}else this.still+=seconds;
+   // Sem caminho (tudo cercado) ou preso: aparece no destino em vez de ficar parado na estrada.
+   if(this.still>6)this.pos={...this.goal};
+   if(atGoal()){this.phase=0;if(stage==='leave'){this.gone=true;this.sprite!.setVisible(false);return;}this.direction='down';}
+  }
+  const p=this.host.player(),idle=this.phase===0;
+  if(idle&&!this.panel.isOpen&&Math.hypot(p.x-this.pos.x,p.y-this.pos.y)<140)this.direction=directionFromVector(p.x-this.pos.x,p.y-this.pos.y);
+  if(!this.panel.isOpen)this.sprite!.setPosition(this.pos.x,this.pos.y).setDepth(this.pos.y).setFrame(characterFrame(this.direction,this.phase,look.frames));
  }
  destroy():void{this.scene.events.off('update',this.update,this);this.overlays.destroy();this.panel.destroy();this.sprite?.destroy();}
 }

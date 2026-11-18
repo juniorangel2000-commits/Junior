@@ -1,3 +1,4 @@
+import {NPC_WALK_SPEED} from '../data/npc-speed';
 import {CHARACTER_DIRECTIONS,type CharacterDirection,directionFromVector} from '../character-directions';
 import {BLACKSMITH_ROOM,BLACKSMITH_DOOR,BLACKSMITH_OUTSIDE} from '../data/blacksmith-interior';
 import {villageBlockedAt,villageGround} from '../data/village';
@@ -51,7 +52,7 @@ export class BentoRoutine {
      const candidates=[];for(let y=2;y<=(this.room.height??10)-2;y++)for(let x=1;x<=(this.room.width??12)-2;x++)if(!blocked(x,y))candidates.push({x,y});
      candidates.sort((a,b)=>Math.hypot(a.x-goal.x,a.y-goal.y)-Math.hypot(b.x-goal.x,b.y-goal.y));goal=candidates[0]??goal;
     }
-    this.walker??=new VillageWalk([goal],34,0,0,s.area==='blacksmith-home'?(this.room.tileSize??32):32);
+    this.walker??=new VillageWalk([goal],NPC_WALK_SPEED,0,0,s.area==='blacksmith-home'?(this.room.tileSize??32):32);
     const result=this.walker.step(seconds,s,blocked,s.area==='village'?(x,y)=>['path','paving'].includes(villageGround(x,y))?1:2.4:()=>1);
     s.x=result.x;s.y=result.y;if(result.moving)s.direction=result.direction;phase=result.phase;
     if(result.arrived){if(s.stop===3||s.stop===7)s.doorway=true;else this.next();}
