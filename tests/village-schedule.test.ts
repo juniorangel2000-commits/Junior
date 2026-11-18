@@ -80,6 +80,6 @@ describe('chuva sorteada',()=>{
   expect(year).toEqual(Array.from({length:112},(_,i)=>weatherForDay(i+1)));
   const weekday=(w:number)=>year.filter((_,i)=>(i+1)%7===w).map(x=>x==='rain');
   expect([0,1,2,3,4,5,6].some(w=>new Set(weekday(w)).size===2)).toBe(true);
-  const {rainDropCount}=await import('../src/world-rain');const c=rainDropCount(1920*1080);expect(c.far).toBeGreaterThan(200);expect(c.near).toBeGreaterThan(60);
+  const {rainDropCount}=await import('../src/world-rain');const c=rainDropCount(1920*1080);expect(c.far).toBeGreaterThan(500);expect(c.near).toBeGreaterThan(180);
  });
 });
