@@ -66,6 +66,7 @@ import { PROPERTY_FOREST_GATE } from '../data/ancient-forest';
 import {PROPERTY_LAKE_EXIT,PROPERTY_LAKE_ENTRY,LAKE_PROPERTY_ENTRY} from '../data/fishing-lake';
 import {PROPERTY_VILLAGE_ENTRY,PROPERTY_VILLAGE_EXIT} from '../data/property-village-gate';
 import {PropertyVisit} from '../property-visit';
+import {PropertySurvivorsView} from '../property-survivors-view';
 import {VILLAGE_NPCS} from '../data/village';
 import { setupAnimalArt } from '../forest-art';
 import { WATER_CAPACITY } from '../data/watering-can';
@@ -156,6 +157,7 @@ export class ValleyScene extends Phaser.Scene {
   private running = false;
   private paused = true;
   private visit?:PropertyVisit;
+  private survivors?:PropertySurvivorsView;
   private tool: Tool = 'hand';
   private toolUse = new ToolUse();
   private toolVisual?: ToolVisual;
@@ -856,7 +858,7 @@ export class ValleyScene extends Phaser.Scene {
     this.animals?.destroy();this.animals=undefined;
 
     getAmbientBirds(this)?.destroy();
-    this.helpers?.destroy();this.helpers=undefined;this.visit?.destroy();this.visit=undefined;
+    this.helpers?.destroy();this.helpers=undefined;this.visit?.destroy();this.visit=undefined;this.survivors?.destroy();this.survivors=undefined;
     destroySceneChildren(this);
     this.state = structuredClone(data);this.ui.setGameplayLocked(rescuePending(this.state));
 
@@ -897,6 +899,7 @@ export class ValleyScene extends Phaser.Scene {
     this.damageMarks = this.add.graphics().setDepth(3500);
     this.player = new Player(this, data.profile, data.player.x, data.player.y);
     this.helpers=new SurvivorResidentsView(this,()=>{this.state.inventory={...this.inventory.data};return{save:this.state,area:'property',player:this.player,visible:this.running&&!this.inHome&&this.titleBackgroundMode==='off',blocked:(x,y)=>(farmBlocked(this.state,x,y)||machineReserved(this.state,'property',x,y))||this.world.isBlocked(x,y)||this.building.isBlocked(x,y)};},this.ui,()=>{Object.assign(this.inventory.data,this.state.inventory);this.updateHUD();});
+    this.survivors=new PropertySurvivorsView(this,{state:()=>this.state,player:()=>this.player,visible:()=>this.running&&!this.inHome&&this.titleBackgroundMode==='off',active:()=>this.canPlay(),blocked:(x,y)=>farmBlocked(this.state,x,y)||machineReserved(this.state,'property',x,y)||this.world.isBlocked(x,y)||this.building.isBlocked(x,y)});
     this.visit=new PropertyVisit(this,{state:()=>this.state,snapshot:()=>this.snapshotState(),player:()=>this.player,visible:()=>this.running&&!this.inHome&&this.titleBackgroundMode==='off',active:()=>this.canPlay(),blocked:(x,y)=>farmBlocked(this.state,x,y)||machineReserved(this.state,'property',x,y)||this.world.isBlocked(x,y)||this.building.isBlocked(x,y),pause:v=>this.setPaused(v),toast:m=>this.ui.toast(m),syncInventory:inv=>this.syncInventory(inv)});
     this.toolVisual = new ToolVisual(this, data.profile);
     const direction = data.player.direction;

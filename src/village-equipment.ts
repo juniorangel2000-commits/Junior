@@ -89,9 +89,7 @@ export function updateVillageEquipment(scene:Phaser.Scene,s:SaveData,player:{x:n
    }
   }
  }
- for(const [n,id]of(s.villageSurvivors??[]).entries()){const x=990+n*55,y=630;
-  // Mesmo tamanho dos personagens do jogo (quadro 256 × 256 mostrado em 48 × 64).
-  if(!image(`survivor-${id}`,`survivor-${id}`,x,y+8,48,64)){view.body.fillStyle(id==='marina'?0x647dab:0x8f6348).fillRoundedRect(x-8,y-24,16,23,3);view.body.fillStyle(0xe4b88b).fillCircle(x,y-32,7);}}
+ // Marina e Rui andam pela propriedade (src/property-survivors-view.ts).
  for(const [id,im]of images)if(!imageLive.has(id)){im.destroy();images.delete(id);}
  clean();
 }

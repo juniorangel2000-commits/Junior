@@ -1,3 +1,4 @@
+import {preloadSurvivorViews} from './property-survivors-view';
 import {preloadFurnitureImages} from './home-art';
 import {isDish} from './data/kitchen';
 import {preloadMachineArt} from './machine-view';
@@ -96,6 +97,7 @@ export function preloadVisualAssets(scene: Phaser.Scene): void {
   // Luminária instalada (apagada e acesa) e os sobreviventes Marina e Rui.
   for(const k of ['lamp-off','lamp-on'])if(!scene.textures.exists(`equipment-${k}`))scene.load.image(`equipment-${k}`,`assets/visual/equipment/${k}.png`);
   for(const who of ['marina','rui'])if(!scene.textures.exists(`survivor-${who}`))scene.load.image(`survivor-${who}`,`assets/visual/characters/survivors/${who}-south.png`);
+  preloadSurvivorViews(scene);
   if(!scene.textures.exists('irrigation-sprinkler-loop'))scene.load.spritesheet('irrigation-sprinkler-loop','assets/visual/equipment/irrigation-sprinkler-loop.png',{frameWidth:96,frameHeight:72});
   preloadFarmConstructionArt(scene);
   preloadFurnitureImages(scene);
