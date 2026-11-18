@@ -65,6 +65,8 @@ import {DEVELOPMENT_TOOLS} from '../development-tools';
 import { PROPERTY_FOREST_GATE } from '../data/ancient-forest';
 import {PROPERTY_LAKE_EXIT,PROPERTY_LAKE_ENTRY,LAKE_PROPERTY_ENTRY} from '../data/fishing-lake';
 import {PROPERTY_VILLAGE_ENTRY,PROPERTY_VILLAGE_EXIT} from '../data/property-village-gate';
+import {PropertyVisit} from '../property-visit';
+import {VILLAGE_NPCS} from '../data/village';
 import { setupAnimalArt } from '../forest-art';
 import { WATER_CAPACITY } from '../data/watering-can';
 import {WELL_BASE,nearPropertyWell,targetsPropertyWell,wellSiteTile} from '../data/property-well';
@@ -153,6 +155,7 @@ export class ValleyScene extends Phaser.Scene {
  syncInventory(inventory:SaveData['inventory']):void{for(const k of Object.keys(this.inventory.data))delete (this.inventory.data as unknown as Record<string,unknown>)[k];Object.assign(this.inventory.data,structuredClone(inventory));this.updateHUD();}
   private running = false;
   private paused = true;
+  private visit?:PropertyVisit;
   private tool: Tool = 'hand';
   private toolUse = new ToolUse();
   private toolVisual?: ToolVisual;
@@ -853,7 +856,7 @@ export class ValleyScene extends Phaser.Scene {
     this.animals?.destroy();this.animals=undefined;
 
     getAmbientBirds(this)?.destroy();
-    this.helpers?.destroy();this.helpers=undefined;
+    this.helpers?.destroy();this.helpers=undefined;this.visit?.destroy();this.visit=undefined;
     destroySceneChildren(this);
     this.state = structuredClone(data);this.ui.setGameplayLocked(rescuePending(this.state));
 
@@ -894,6 +897,7 @@ export class ValleyScene extends Phaser.Scene {
     this.damageMarks = this.add.graphics().setDepth(3500);
     this.player = new Player(this, data.profile, data.player.x, data.player.y);
     this.helpers=new SurvivorResidentsView(this,()=>{this.state.inventory={...this.inventory.data};return{save:this.state,area:'property',player:this.player,visible:this.running&&!this.inHome&&this.titleBackgroundMode==='off',blocked:(x,y)=>(farmBlocked(this.state,x,y)||machineReserved(this.state,'property',x,y))||this.world.isBlocked(x,y)||this.building.isBlocked(x,y)};},this.ui,()=>{Object.assign(this.inventory.data,this.state.inventory);this.updateHUD();});
+    this.visit=new PropertyVisit(this,{state:()=>this.state,snapshot:()=>this.snapshotState(),player:()=>this.player,visible:()=>this.running&&!this.inHome&&this.titleBackgroundMode==='off',pause:v=>this.setPaused(v),toast:m=>this.ui.toast(m),syncInventory:inv=>this.syncInventory(inv)});
     this.toolVisual = new ToolVisual(this, data.profile);
     const direction = data.player.direction;
     this.player.facing = directionVector(direction ?? 'down');
@@ -1259,6 +1263,7 @@ export class ValleyScene extends Phaser.Scene {
     }
     if(isFarmTool(this.tool))return;
 
+    if(this.canPlay()&&!this.inHome&&this.visit?.interact())return;
     if(this.canPlay()&&!this.inHome&&this.tool==='hand'&&this.helpers?.interact())return;
     const forge=this.state.villageInstallations?.find(f=>f.kind==='forge'&&Math.hypot(f.x*32+16-this.player.x,f.y*32+16-this.player.y)<70);
     if(forge&&!this.inHome&&this.canPlay()&&this.tool==='hand'&&!this.ui.isModalOpen()){
@@ -1675,7 +1680,7 @@ export class ValleyScene extends Phaser.Scene {
     if(this.tool==='hand'&&this.state.petShelter&&Math.hypot(this.player.x-this.state.petShelter.x,this.player.y-this.state.petShelter.y)<90)prompt='Casinha dos companheiros · E';
     const machine=this.tool==='hand'&&!this.player.isSwimming?nearMachine(this.machineRuntime):undefined;if(machine)prompt=machineHint(this.state,machine);
     this.ui.updateHUD({itemQuality:this.state.itemQuality,worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100, coins:this.state.villageEconomy?.coins??0,farmingProgress: this.farming.progress, wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, swimming:this.player.isSwimming, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
-      selectedCrop:this.state.selectedCrop, tool: this.tool, prompt:machine?prompt:this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:prompt, interactionKey:nearPassage||nearHouse?null:undefined, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
+      selectedCrop:this.state.selectedCrop, tool: this.tool, prompt:this.visit?.near()?`Conversar com ${VILLAGE_NPCS.find(n=>n.id===this.visit!.visitor)?.name??'visita'} · E`:machine?prompt:this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:prompt, interactionKey:nearPassage||nearHouse?null:undefined, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
       playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
       harvests: this.inventory.data.turnip, metLia: this.state.metLia,
       nearWorkbench: this.nearWorkbench(), nearConstruction: this.nearWorkbench('constructionBench'), upgradeProblems: this.upgradeProblems(), sheltered: this.shelter.sheltered, shelterReason: this.shelter.reason,

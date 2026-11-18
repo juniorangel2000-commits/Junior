@@ -90,6 +90,8 @@ export interface SaveData {
   npcSocial?:import('./systems/npc-social-state').NpcSocialState;
   /** Partes concluídas da história de cada morador (0–3; src/data/npc-stories.ts). */
   npcStories?:Partial<Record<string,number>>;
+  /** Dia em que o jogador recebeu o presente da visita de um morador à propriedade. */
+  propertyVisitDay?:number;
   mineMissions?:import('./systems/mine-mission-state').MineMissionsState;
   mineRescue?:import('./systems/mine-rescue-state').MineRescueState;
   bentoExpedition?:import('./systems/bento-expedition-state').BentoExpeditionState;
