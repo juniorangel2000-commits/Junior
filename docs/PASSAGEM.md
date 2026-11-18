@@ -56,6 +56,12 @@ Pedido do Junior: "precisamos explorar os outros npcs" e "adicionar respostas di
   - Durante a visita, ele some da vila e a janela dele lá diz "Visitando a sua propriedade".
   - As imagens do visitante só carregam no dia da visita, depois que as imagens-fonte terminam (para não repetir o quadradinho do Damião).
   - Save: `propertyVisitDay` (opcional, validado). Testes em `tests/property-visits.test.ts`. Conferido no Chromium com o Ícaro: aparece, conversa e entrega 2 molas.
+- **Marina e Rui andando** (`src/systems/property-survivors.ts`, `src/property-survivors-view.ts`, ligado em `ValleyScene`):
+  - Eles moram na propriedade (acolhidos pelo serviço da Helena) e antes ficavam parados perto da casa (o desenho estava em `village-equipment.ts`, removido de lá).
+  - Rotina pela hora: Marina cuida das plantações, da horta e busca água; Rui trabalha na bancada (se houver), no poço e na horta. Almoço e fim de tarde em frente de casa; às 20:00 entram em casa e voltam às 07:00. Com chuva ficam na varanda. Sem plantação ou bancada, vão à horta.
+  - Arte: só a pose parada em 4 direções (sul, norte, leste, oeste, todas carregadas agora); andando, um sobe e desce de até 2 px a cada passo. Exibidos em 64 × 64 (antes 48 × 64, espremidos).
+  - Balão com a tarefa ao chegar perto. Destino ajustado ao centro do ladrilho livre mais próximo (o poço ocupa o ladrilho pedido).
+  - Sem campo novo no save. Testes em `tests/property-survivors.test.ts`; conferido no Chromium andando de casa até a horta.
 - **Velocidade dos personagens** (pedido do Junior: "deixe a velocidade como a do jogador"): `src/data/npc-speed.ts` (`NPC_WALK_SPEED = 84`, igual a `PLAYER_SPEED`) para moradores na vila e nas lojas, guia, Bento, Damião, sobreviventes e visitante. Testes de passo máximo por quadro passaram a usar 8,4 px. Teste em `tests/player-running.test.ts`.
 - **Save:** `npcSocial.players[id]` ganhou `giftDay`, `known` e `rewards`, todos opcionais e validados. Saves antigos continuam válidos.
 
@@ -74,7 +80,7 @@ Plano dos moradores, combinado com o Junior (em ordem):
 
 **Próximo passo:** publicar a preview.43 quando o Junior pedir, ou seguir a lista de outras ideias.
 
-Outras ideias: Marina e Rui andando, desempenho (F3 no PC do Junior), porteira do chiqueiro, Actions sem Node 20.
+Outras ideias: desempenho (F3 no PC do Junior), porteira do chiqueiro, Actions sem Node 20 (trocar `actions/checkout`, `actions/setup-node` e `actions/upload-artifact` de v4 para v5 nos dois workflows; o Junior perguntou se o Node 20 vai parar).
 
 ## Pendências e ideias para depois
 
@@ -99,6 +105,6 @@ Outras ideias: Marina e Rui andando, desempenho (F3 no PC do Junior), porteira d
 
 - `npm run check`: ok.
 - `npm run build`: ok (aviso de tamanho do pacote, que já existia).
-- `npm test`: **2.188 passaram, zero falhas, 258 arquivos**.
+- `npm test`: **2.192 passaram, zero falhas, 259 arquivos**.
 - Montaria conferida no Chromium, andando nas 4 direções principais e galopando de lado. As diagonais e a vista de costas foram conferidas em imagem montada sobre o cavalo parado.
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.
