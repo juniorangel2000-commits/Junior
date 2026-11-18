@@ -2,11 +2,11 @@
 
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
-- **Atualizado em:** 2026-11-17
+- **Atualizado em:** 2026-11-18
 - **Por:** Claude Code
 - **Continuar a partir de:** `release/v0.10.0-preview.43` (em andamento, ainda não publicada).
 - **Última versão publicada:** `v0.10.0-preview.42`, na `main`, com a Release criada no GitHub.
-- **Estado:** preview.43 com presentes, níveis de amizade e respostas nas conversas prontos e enviados. Falta versão do pacote e notas (só quando o Junior pedir para publicar).
+- **Estado:** preview.43 com presentes, amizade, respostas, histórias, rotina da vila (folga, pousada, chuva) e chuva sorteada prontos e enviados. Falta versão do pacote e notas (só quando o Junior pedir para publicar).
 
 ## Feito nesta rodada
 
@@ -39,6 +39,16 @@ Pedido do Junior: "precisamos explorar os outros npcs" e "adicionar respostas di
   - Causa: ao sair de um cenário, as imagens dele eram liberadas um instante depois de o próximo cenário já ter conferido que existiam. O Damião, que a Vila monta, ficava sem imagem na Estrada e no Lago.
   - Agora a liberação roda no começo do próximo cenário, antes do carregamento dele (`src/scene-texture-release.ts`).
   - Teste em `tests/scene-texture-release.test.ts`. No Chromium, o Damião na Estrada voltou a ter desenho.
+- **Rotina da vila** (`src/data/village-schedule.ts`, ligada em `src/systems/merchant-routine.ts`):
+  - **Folga semanal:** Augusto e Amélia (dias 5, 12, 19, 26), Nilo (4…), Tobias e Ícaro (6…), Rosa e Celina (7, 14, 21, 28). Loja fechada o dia todo; com sol passeiam pela vila (praça e frente de lojas vizinhas, 9h–18h); com chuva ficam na pousada. Bento, Damião e Helena não folgam. A janela do morador mostra "Folga hoje" e, nos outros dias, "folga nos dias …".
+  - **Chuva:** o almoço é dentro da pousada da Helena em vez da praça.
+  - **Noite na pousada:** 3 moradores por noite, em rodízio (`innGuests`), jantam na pousada depois de fechar a loja, até as 21h, e voltam para casa.
+  - `merchantPeriod(id, hora, dia)` agora aceita o dia e devolve 'closed' na folga. Sem campo novo no save.
+  - Testes em `tests/village-schedule.test.ts`.
+- **Chuva** (pedido do Junior: "não parece estar chovendo" e "a chuva deve ser aleatória"):
+  - `src/weather-model.ts`: o tempo agora é sorteado por dia (hash do número do dia, sem padrão semanal), com chance por estação (primavera 34%, verão 18%, outono 30%, inverno 24%). O dia 1 é sempre aberto. O mesmo dia sempre dá o mesmo tempo.
+  - `src/world-rain.ts`: muito mais gotas (até 620 + 240), espalhadas de forma uniforme, e respingos no chão. Com "reduzir movimento" (efeitos de animação desligados no Windows) a chuva antes sumia; agora cai mais devagar. O Junior aprovou o visual fino original, só com mais gotas.
+  - A luz em dia de chuva ficou um pouco mais fechada (`src/lighting-model.ts`).
 - **Save:** `npcSocial.players[id]` ganhou `giftDay`, `known` e `rewards`, todos opcionais e validados. Saves antigos continuam válidos.
 
 ### preview.42 (publicada)
@@ -51,8 +61,8 @@ Plano dos moradores, combinado com o Junior (em ordem):
 
 1. ~~Presentes e amizade com recompensas~~ (feito) e ~~respostas nas conversas~~ (feito).
 2. ~~Histórias pessoais~~ (feito para 8 moradores). **Falta:** Amélia (flor rara no **pântano**) e Nilo (peça antiga nas **ruínas**), quando o Junior adicionar esses cenários. Pode também usar os cenários novos em partes extras das outras histórias.
-3. **Rotina na vila:** moradores andando pela praça, almoçando na pousada e fechando a loja à noite, como o Bento.
-4. **Visitas à propriedade** em dias de amizade alta.
+3. ~~Rotina na vila~~ (feito: folga, chuva, noite na pousada; trabalho, almoço e visitas já existiam). Ainda não conferida andando no navegador, só nos testes.
+4. **Visitas à propriedade** em dias de amizade alta. **Próximo passo**, ou publicar a preview.43 se o Junior pedir.
 
 Outras ideias: ferramentas na mão (machadinha e picareta), Marina e Rui andando, desempenho (F3 no PC do Junior), porteira do chiqueiro, Actions sem Node 20.
 
@@ -79,6 +89,6 @@ Outras ideias: ferramentas na mão (machadinha e picareta), Marina e Rui andando
 
 - `npm run check`: ok.
 - `npm run build`: ok (aviso de tamanho do pacote, que já existia).
-- `npm test`: **2.174 passaram, zero falhas, 256 arquivos**.
+- `npm test`: **2.181 passaram, zero falhas, 257 arquivos**.
 - Montaria conferida no Chromium, andando nas 4 direções principais e galopando de lado. As diagonais e a vista de costas foram conferidas em imagem montada sobre o cavalo parado.
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.
