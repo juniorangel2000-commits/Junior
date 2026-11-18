@@ -30,6 +30,39 @@ Boas referências para anexar ao gerador:
 Bancada de trabalho refeita e bancada de construção nova, as duas com **2 blocos de largura**.
 ✅ Recebidas e no jogo em 16/11/2026 (`docs/arte-recebida/bancadas/`).
 
+## 0b. Chiqueiro novo, porteira fechada e aberta (pedido de 18/11/2026)
+
+O chiqueiro ocupa **5 × 5 blocos**: as 3 fileiras de trás são o abrigo e as 2 da frente são
+o cercado com a porteira no meio da cerca da frente. Gere primeiro a versão fechada e,
+na mesma conversa, peça a aberta a partir dela, para as duas ficarem idênticas.
+Anexe como referência `public/assets/visual/farm/pigsty.png` (o atual) e
+`docs/arte-recebida/lote01-fazenda/porteira/porteira_aberta_90graus.png` (a folha aberta que o Junior aprovou).
+
+**Prompt 1: porteira fechada**
+
+> Pixel art detalhado de um chiqueiro para um jogo de fazenda, no mesmo estilo da imagem anexa:
+> paleta quente, contorno marrom-escuro, visto de cima em 3/4, de frente, alinhado, sem isometria.
+> Composição quadrada (5 × 5 blocos): na metade de trás, um abrigo de madeira com telhado de palha,
+> paredes de tábuas com base de pedra, uma janelinha de cada lado e uma abertura larga e escura no
+> meio, com palha no chão da entrada. Na metade da frente, um cercado de chão de terra batida com
+> tufos de palha espalhados (sem poça de lama), cercado por uma cerca de postes redondos e duas
+> travessas. No centro da cerca da frente, uma porteira de madeira **fechada**, com travessa em
+> diagonal e duas dobradiças de ferro no poste da esquerda. Um cocho de madeira encostado na parede
+> do abrigo. Sem porcos, sem pessoas, sem texto e sem sombra no chão fora do desenho. O desenho
+> ocupa toda a largura da imagem; deixe uma faixa vazia de cerca de 1/10 da altura embaixo da cerca
+> da frente. Fundo branco liso.
+
+**Prompt 2: porteira aberta (na mesma conversa)**
+
+> Agora a mesma imagem, idêntica em tudo (mesmo tamanho, enquadramento, cores, telhado, cerca e
+> posição de cada objeto). Mude só a porteira: ela está **aberta 90 graus para fora**, presa às
+> dobradiças do poste da esquerda, com a folha virada para a frente (na direção de quem olha),
+> como na referência da porteira aberta. O vão da porteira mostra o chão de terra com palha do
+> cercado. A folha aberta pode ocupar a faixa vazia embaixo da cerca. Fundo branco liso.
+
+Depois de gerar: salve as duas em `docs/arte-recebida/chiqueiro-novo/` (`chiqueiro_fechado.png`
+e `chiqueiro_aberto.png`). O fundo branco é removido por script, sem reduzir os PNGs.
+
 ## 1. Provisórias feitas por script na preview.35 (trocar primeiro)
 
 | Arte | Arquivo atual | Como está hoje |
