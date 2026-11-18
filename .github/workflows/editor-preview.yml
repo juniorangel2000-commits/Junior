@@ -14,8 +14,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
@@ -37,7 +37,7 @@ jobs:
           "$hash  After-Rain-0.9.3-Windows-x64.exe" | Set-Content -Encoding utf8NoBOM release/SHA256SUMS.txt
           Copy-Item docs/cenarios/LEIA-0.9.3.md release/LEIA.md
       - name: Guardar pacote na execução
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: After-Rain-0.9.3-Windows-x64
           path: |

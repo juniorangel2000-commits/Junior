@@ -23,10 +23,10 @@ jobs:
         run: git config --global core.autocrlf false
 
       - name: Obter o código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Preparar Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
@@ -72,7 +72,7 @@ jobs:
           Copy-Item "docs/cenarios/LEIA-$version.md" release/LEIA.md
 
       - name: Disponibilizar para download na execução
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: After-Rain-${{ github.ref_name }}-Windows-x64
           path: |
