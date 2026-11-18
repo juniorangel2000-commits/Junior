@@ -10,6 +10,7 @@ import type {BentoRoomNavigation} from './bento-routine';
 import type {GameClock} from './clock';
 import {MERCHANT_VISITS} from '../data/merchant-visits';
 import {MERCHANT_LUNCHES,merchantLunchHours} from '../data/merchant-lunches';
+import {villageExtra,restDay,restDays,INN_GUESTS,STROLL,type VillageExtra} from '../data/village-schedule';
 
 export type RoutineId='augusto'|'bento'|'rosa'|'tobias'|'amelia'|'nilo'|'celina'|'damiao'|'helena'|'icaro';
 export type RoutineArea='village'|'shop';
@@ -27,12 +28,14 @@ export const MERCHANT_DAILY_PLAN={
 } as const;
 const absolute=(c:GameClock)=>c.day*1440+c.time;
 export const dailyMerchant=(id:ResidentId):id is RoutineId=>id==='augusto'||id==='bento'||id==='rosa'||id==='tobias'||id==='amelia'||id==='nilo'||id==='celina'||id==='damiao'||id==='helena'||id==='icaro';
-export function merchantPeriod(id:RoutineId,time:number):'work'|'break'|'closed'{
+/** Com `day`, considera também a folga semanal (loja fechada o dia todo). */
+export function merchantPeriod(id:RoutineId,time:number,day?:number):'work'|'break'|'closed'{
  const p=MERCHANT_DAILY_PLAN;
+ if(day!==undefined&&restDay(id,day))return'closed';
  const lunch=MERCHANT_LUNCHES[id];
  return time<p.opening||time>=p.closing[id]?'closed':time>=lunch.start&&time<lunch.end?'break':'work';
 }
-export const merchantMayEnter=(shop:RoutineId,clock:GameClock,actor:'player'|RoutineId='player'):boolean=>actor===shop||(shop==='bento'?bentoAvailability(clock).open:merchantPeriod(shop,clock.time)!=='closed');
+export const merchantMayEnter=(shop:RoutineId,clock:GameClock,actor:'player'|RoutineId='player'):boolean=>actor===shop||(shop==='bento'?bentoAvailability(clock).open:merchantPeriod(shop,clock.time,clock.day)!=='closed');
 export function validMerchantRoutine(v:unknown):v is MerchantRoutineState{
  if(!v||typeof v!=='object')return false;const s=v as MerchantRoutineState;
  return (s.area==='village'||s.area==='shop')&&Number.isFinite(s.x)&&Number.isFinite(s.y)
@@ -80,26 +83,37 @@ export class MerchantDailyRoutine {
   return !this.external&&this.state.area==='village'&&this.target==='plaza'&&!this.walking&&Math.hypot(this.state.x-(p.x+.5)*32,this.state.y-(p.y+.5)*32)<24;
  }
  holdStill(held:boolean):void{this.conversationHeld=held;}
- isServing(clock:GameClock):boolean{if(this.owner==='bento'&&'bentoTravel'in clock&&(clock as SaveData).bentoTravel?.trip?.purpose==='workshop')return bentoAvailability(clock as SaveData).open;return !this.external&&!(this.owner==='bento'&&bentoTravelling(clock))&&!(this.owner==='damiao'&&damiaoAtLake(clock))&&this.state.area==='shop'&&this.roomOwner===this.owner&&(merchantPeriod(this.owner,clock.time)==='work'||merchantPeriod(this.owner,clock.time)==='break'&&this.state.serviceUntil>absolute(clock));}
+ isServing(clock:GameClock):boolean{if(this.owner==='bento'&&'bentoTravel'in clock&&(clock as SaveData).bentoTravel?.trip?.purpose==='workshop')return bentoAvailability(clock as SaveData).open;return !this.external&&!(this.owner==='bento'&&bentoTravelling(clock))&&!(this.owner==='damiao'&&damiaoAtLake(clock))&&this.state.area==='shop'&&this.roomOwner===this.owner&&(merchantPeriod(this.owner,clock.time,clock.day)==='work'||merchantPeriod(this.owner,clock.time,clock.day)==='break'&&this.state.serviceUntil>absolute(clock));}
  private visit(clock:GameClock){if(this.owner==='bento'&&'profile'in clock&&bentoTripPending(clock as SaveData))return;const plan=MERCHANT_VISITS[this.owner];return this.navigationFor&&this.state.serviceUntil<=absolute(clock)&&clock.time>=plan.start&&clock.time<plan.end&&merchantMayEnter(plan.host,clock,this.owner)?plan:undefined;}
  conversation(clock:GameClock):{host:RoutineId;id:RoutineId;text:string}|undefined{
   if(this.external||this.owner==='bento'&&bentoTravelling(clock)||this.owner==='damiao'&&damiaoAtLake(clock))return;
-  const plan=this.visit(clock);if(merchantPeriod(this.owner,clock.time)!=='work'||!plan||this.walking||this.state.area!=='shop'||this.roomOwner!==plan.host||this.activity!=='visit-talk'||this.state.wait<=0||Math.hypot(this.state.x-288,this.state.y-230)>56)return;
+  const plan=this.visit(clock);if(merchantPeriod(this.owner,clock.time,clock.day)!=='work'||!plan||this.walking||this.state.area!=='shop'||this.roomOwner!==plan.host||this.activity!=='visit-talk'||this.state.wait<=0||Math.hypot(this.state.x-288,this.state.y-230)>56)return;
   return{host:plan.host,id:this.owner,text:plan.lines[0]};
  }
  holdConversation(clock:GameClock):void{this.state.socialUntil=absolute(clock)+.15;}
  availability(clock:GameClock):{message:string;canGuide:boolean}{
   if(this.owner==='bento'&&(bentoTravelling(clock)||'profile'in clock&&bentoTripPending(clock as SaveData)))return{message:bentoTravelling(clock)?bentoAvailability(clock).message:'Bento vai preparar a viagem à mina. Aguarde o retorno para pedir atendimento.',canGuide:false};
   if(this.owner==='damiao'&&damiaoAtLake(clock))return{message:'Na cabana do lago · '+FISHER_LAKE_HOURS.label,canGuide:false};
-  const lunch=merchantLunchHours(this.owner);
-  const period=merchantPeriod(this.owner,clock.time),hours=`08:00–${lunch.start} e ${lunch.end}–${String(MERCHANT_DAILY_PLAN.closing[this.owner]/60).padStart(2,'0')}:00`;
+  const lunch=merchantLunchHours(this.owner),extra=this.extra(clock),off=restDay(this.owner,clock.day),days=restDays(this.owner);
+  if(off)return{message:extra==='inn'?'Folga hoje · na pousada da Helena por causa da chuva':extra==='stroll'?'Folga hoje · passeando pela vila':'Folga hoje · loja fechada',canGuide:false};
+  if(extra==='inn'&&this.owner!=='helena')return{message:clock.time>=MERCHANT_DAILY_PLAN.closing[this.owner]?'Jantando na pousada da Helena · até as 21:00':`Almoço na pousada (chuva) · volta às ${lunch.end}`,canGuide:false};
+  const folga=days.length?` · folga nos dias ${days.slice(0,-1).join(', ')} e ${days.at(-1)}`:'';
+  const period=merchantPeriod(this.owner,clock.time,clock.day),hours=`08:00–${lunch.start} e ${lunch.end}–${String(MERCHANT_DAILY_PLAN.closing[this.owner]/60).padStart(2,'0')}:00`;
   const visit=this.visit(clock);if(visit)return{message:visit.purpose+' · volta após a visita',canGuide:false};
-  return {message:this.isServing(clock)?`Atendendo na loja · ${hours}`:period==='break'?`Intervalo na praça · volta às ${lunch.end}`:period==='closed'?`Atendimento encerrado · abre às 08:00 · ${hours}`:`A caminho da loja · ${hours}`,canGuide:period==='work'};
+  return {message:this.isServing(clock)?`Atendendo na loja · ${hours}`:period==='break'?`Intervalo na praça · volta às ${lunch.end}`:period==='closed'?`Atendimento encerrado · abre às 08:00 · ${hours}${folga}`:`A caminho da loja · ${hours}`,canGuide:period==='work'};
  }
  guided(clock:GameClock,position:{x:number;y:number},shop:boolean):void{
   Object.assign(this.state,{x:position.x,y:position.y},{area:shop?'shop':'village',wait:0,socialUntil:0,serviceUntil:absolute(clock)+MERCHANT_DAILY_PLAN.guideMinutes,direction:shop?'down':this.state.direction});delete this.state.roomOwner;this.resetPath();
  }
+ /** Pousada ou passeio do dia (src/data/village-schedule.ts); só com navegação entre lojas. */
+ extra(clock:GameClock):VillageExtra|undefined{return this.navigationFor?villageExtra(this.owner,clock,MERCHANT_DAILY_PLAN.closing[this.owner],MERCHANT_LUNCHES[this.owner]):undefined;}
  socialize(clock:GameClock):void{this.state.socialUntil=absolute(clock)+MERCHANT_DAILY_PLAN.socialMinutes;this.state.socialDay=clock.day;this.resetPath();}
+ /** Passeio da folga: praça, depois a frente de duas lojas de vizinhos, trocando a cada 50 min. */
+ private strollPoint(clock:GameClock):{x:number;y:number}{
+  const ids=Object.keys(MERCHANT_DAILY_PLAN.closing) as RoutineId[],i=ids.indexOf(this.owner),plaza=MERCHANT_DAILY_PLAN.plaza[this.owner];
+  const spots=[{x:(plaza.x+.5)*32,y:(plaza.y+.5)*32},...[3,6].map(k=>{const o=merchantOutside(ids[(i+k)%ids.length]);return{x:o.x,y:o.y+40};})];
+  return spots[Math.floor((clock.time-STROLL.start)/STROLL.minutes)%spots.length];
+ }
  private blocked(area:RoutineArea,x:number,y:number,env:RoutineEnvironment):boolean {
   if(area==='village'){
    if((env.cellBlocked??env.blocked)(area,x,y))return true;
@@ -136,8 +150,9 @@ export class MerchantDailyRoutine {
   if(this.external||this.owner==='bento'&&bentoTravelling(clock))return{...s,phase,moving,transferred};
   if(this.conversationHeld)return{...s,phase,moving,transferred};
   if(!Number.isFinite(seconds)||seconds<=0)return{...s,phase,moving,transferred};seconds=Math.min(seconds,.1);
-  const now=absolute(clock),period=merchantPeriod(this.owner,clock.time);
-  const visit=period==='work'?this.visit(clock):undefined,destination=visit?.host??this.owner;
+  const now=absolute(clock),period=merchantPeriod(this.owner,clock.time,clock.day),extra=this.extra(clock);
+  const inn=extra==='inn'&&this.owner!=='helena'&&merchantMayEnter('helena',clock,this.owner);
+  const visit=period==='work'&&!extra?this.visit(clock):undefined,destination=inn?'helena':visit?.host??this.owner;
   if(s.socialUntil>now&&period==='break')return{...s,phase,moving,transferred};
   if(s.socialUntil>now&&s.area==='shop'&&this.roomOwner===this.owner&&destination===this.owner&&period==='work'){
    const result=this.move({x:288,y:151},'receiving-visitor',seconds,env);phase=result.phase;moving=result.moving;
@@ -146,18 +161,23 @@ export class MerchantDailyRoutine {
   if(s.wait>0){s.wait=Math.max(0,s.wait-seconds);return{...s,phase,moving,transferred};}
   const toLake=this.owner==='damiao'&&'profile' in clock&&(clock as SaveData).fisherTravel?.mode==='village'&&clock.time>=420&&clock.time<690;
   if(toLake&&s.area==='village'){const step=this.move({x:50.5*32,y:2.5*32},'lake-departure',seconds,env);if(step.arrived)beginFisherLakeTrip(clock as SaveData);return{...s,phase:step.phase,moving:step.moving,transferred};}
-  const outside=toLake||period==='break'&&s.serviceUntil<=now;
+  const outside=toLake||extra==='stroll'||!inn&&period==='break'&&s.serviceUntil<=now;
   const transfer=(area:RoutineArea,preferred:{x:number;y:number},owner:RoutineId=this.owner)=>{const free=env.arrival(area,preferred,owner);if(!free||Math.hypot(free.x-preferred.x,free.y-preferred.y)>24){s.wait=1;return;}Object.assign(s,free,{area,stop:0,wait:.3});if(area==='shop'&&owner!==this.owner)s.roomOwner=owner;else delete s.roomOwner;this.resetPath();transferred=true;};
   if(s.area==='shop'&&(outside||this.roomOwner!==destination)){
    const current=this.roomOwner,nav=this.navigation,door=nav.exit??nav.entry??{x:288,y:335};
    const result=this.move(door,'exit',seconds,env);phase=result.phase;moving=result.moving;
    if(result.arrived&&Math.hypot(s.x-door.x,s.y-door.y)<16)transfer('village',merchantOutside(current));
   }else if(s.area==='village'&&!outside){
-   const result=this.move(merchantOutside(destination),visit?'visit-'+destination:'return',seconds,env);phase=result.phase;moving=result.moving;
+   const result=this.move(merchantOutside(destination),inn?'inn':visit?'visit-'+destination:'return',seconds,env);phase=result.phase;moving=result.moving;
    const nav=destination===this.owner?this.room:this.navigationFor!(destination);
    if(result.arrived&&Math.hypot(s.x-merchantOutside(destination).x,s.y-merchantOutside(destination).y)<25&&merchantMayEnter(destination,clock,this.owner))transfer('shop',nav.entry??{x:288,y:335},destination);
+  }else if(s.area==='village'&&extra==='stroll'){
+   const p=this.strollPoint(clock),result=this.move(p,'stroll-'+Math.floor(clock.time/STROLL.minutes),seconds,env);phase=result.phase;moving=result.moving;if(result.arrived)s.wait=3;
   }else if(s.area==='village'){
    const p=MERCHANT_DAILY_PLAN.plaza[this.owner],result=this.move({x:(p.x+.5)*32,y:(p.y+.5)*32},'plaza',seconds,env);phase=result.phase;moving=result.moving;if(result.arrived)s.wait=1;
+  }else if(inn&&this.roomOwner==='helena'){
+   const nav=this.navigation,stops=nav.stops?.length?nav.stops:[{x:36,y:19}],tile=nav.tileSize??32,p=stops[(INN_GUESTS.indexOf(this.owner)+1)%stops.length];
+   const result=this.move({x:(p.x+.5)*tile,y:(p.y+.5)*tile},'inn-seat',seconds,env);phase=result.phase;moving=result.moving;if(result.arrived){s.direction='down';s.wait=4;}
   }else if(visit&&this.roomOwner===visit.host){
    const result=this.move({x:288,y:230},'visit-talk',seconds,env);phase=result.phase;moving=result.moving;
    if(result.arrived){s.direction='up';s.wait=1;}

@@ -43,7 +43,7 @@ class BackgroundVillage {
     save.villageRoutines=Object.fromEntries([...this.routines].map(([id,r])=>[id,r.state]));
   }
   private initial(id:RoutineId,index:number):MerchantRoutineState{
-    const period=merchantPeriod(id,this.save.time),visit=MERCHANT_VISITS[id];
+    const period=merchantPeriod(id,this.save.time,this.save.day),visit=MERCHANT_VISITS[id];
     const host=period==='work'&&this.save.time>=visit.start&&this.save.time<visit.end&&merchantMayEnter(visit.host,this.save,id)?visit.host:id;
     const nav=this.rooms.get(host)!,tile=nav.tileSize??32;
     const stop=nav.stops?.[period==='closed'?0:index%Math.max(1,nav.stops.length)]??{x:36,y:19};

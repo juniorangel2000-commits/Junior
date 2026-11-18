@@ -39,7 +39,7 @@ export class MerchantConversations {
    const valid=c.room===room&&c.pair.every(id=>{
     const r=routines.get(id);
     return r&&!r.externallyControlled&&id!==guide&&!(socialSave&&(id==='bento'&&socialSave.bentoTravel?.trip||id==='damiao'&&socialSave.fisherTravel&&socialSave.fisherTravel.area!=='village'))&&r.state.area===(room?'shop':'village')
-     &&(!room||r.roomOwner===room)&&merchantPeriod(id,clock.time)===(room?'work':'break')&&r.state.serviceUntil<=clock.day*1440+clock.time;
+     &&(!room||r.roomOwner===room)&&merchantPeriod(id,clock.time,clock.day)===(room?'work':'break')&&r.state.serviceUntil<=clock.day*1440+clock.time;
    });
    if(!valid||Math.hypot(routines.get(c.pair[0])!.state.x-routines.get(c.pair[1])!.state.x,routines.get(c.pair[0])!.state.y-routines.get(c.pair[1])!.state.y)>(room?110:72))this.release(routines);
   }
@@ -54,7 +54,7 @@ export class MerchantConversations {
    if(!room){
     for(const plan of PLAZA_CONVERSATIONS){
      const [a,b]=plan.pair.map(id=>routines.get(id));
-     if(!a||!b||!a.plazaReady||!b.plazaReady||plan.pair.some(id=>merchantPeriod(id,clock.time)!=='break'))continue;
+     if(!a||!b||!a.plazaReady||!b.plazaReady||plan.pair.some(id=>merchantPeriod(id,clock.time,clock.day)!=='break'))continue;
      if(Math.hypot(a.state.x-b.state.x,a.state.y-b.state.y)>72)continue;
      start(plan.pair,plan.lines[(clock.day-1)%plan.lines.length],'plaza:'+plan.pair.join(':'));
      if(this.active)break;
@@ -63,7 +63,7 @@ export class MerchantConversations {
     const host=routines.get(room);
     for(const [id,visitor] of routines){
      const cue=visitor.conversation(clock);
-     if(!host||host.externallyControlled||!cue||cue.host!==room||host.state.area!=='shop'||host.roomOwner!==room||merchantPeriod(room,clock.time)!=='work'||id===guide||room===guide||!permitted([id,room],'shop:'+id))continue;
+     if(!host||host.externallyControlled||!cue||cue.host!==room||host.state.area!=='shop'||host.roomOwner!==room||merchantPeriod(room,clock.time,clock.day)!=='work'||id===guide||room===guide||!permitted([id,room],'shop:'+id))continue;
      host.holdConversation(clock);
      if(host.isMoving||host.activity!=='receiving-visitor'||Math.hypot(host.state.x-visitor.state.x,host.state.y-visitor.state.y)>110)continue;
      start([id,room],MERCHANT_VISITS[id].lines,'shop:'+id);
