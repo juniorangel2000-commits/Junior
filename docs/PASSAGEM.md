@@ -6,7 +6,7 @@
 - **Por:** Claude Code
 - **Continuar a partir de:** `release/v0.10.0-preview.43` (em andamento, ainda não publicada).
 - **Última versão publicada:** `v0.10.0-preview.42`, na `main`, com a Release criada no GitHub.
-- **Estado:** preview.43 com presentes, amizade, respostas, histórias, rotina da vila (folga, pousada, chuva) e chuva sorteada prontos e enviados. Falta versão do pacote e notas (só quando o Junior pedir para publicar).
+- **Estado:** preview.43 com presentes, amizade, respostas, histórias, rotina da vila (folga, pousada, chuva), chuva sorteada e visitas à propriedade prontos e enviados. Falta versão do pacote e notas (só quando o Junior pedir para publicar).
 
 ## Feito nesta rodada
 
@@ -49,6 +49,13 @@ Pedido do Junior: "precisamos explorar os outros npcs" e "adicionar respostas di
   - `src/weather-model.ts`: o tempo agora é sorteado por dia (hash do número do dia, sem padrão semanal), com chance por estação (primavera 34%, verão 18%, outono 30%, inverno 24%). O dia 1 é sempre aberto. O mesmo dia sempre dá o mesmo tempo.
   - `src/world-rain.ts`: muito mais gotas (até 620 + 240), espalhadas de forma uniforme, e respingos no chão. Com "reduzir movimento" (efeitos de animação desligados no Windows) a chuva antes sumia; agora cai mais devagar. O Junior aprovou o visual fino original, só com mais gotas.
   - A luz em dia de chuva ficou um pouco mais fechada (`src/lighting-model.ts`).
+- **Visitas à propriedade** (`src/systems/property-visits.ts`, `src/property-visit.ts`, ligado em `ValleyScene`):
+  - Um morador com amizade 8 ou mais, no dia de folga e com tempo aberto, pode passar a tarde (14:00–16:30) perto da porta da casa. Chance de 65% por dia; no máximo um por dia. Só os 7 que têm folga (Bento, Damião e Helena não visitam).
+  - Aviso ao aparecer, balão "Oi! Vim fazer uma visita.", tecla E para conversar. A janela é a mesma da vila (conversa, presentes, história).
+  - Traz um presente (botão "Receber presente", uma vez por dia, +1 de amizade) e comenta a propriedade (muda quando há 6 ou mais plantações).
+  - Durante a visita, ele some da vila e a janela dele lá diz "Visitando a sua propriedade".
+  - As imagens do visitante só carregam no dia da visita, depois que as imagens-fonte terminam (para não repetir o quadradinho do Damião).
+  - Save: `propertyVisitDay` (opcional, validado). Testes em `tests/property-visits.test.ts`. Conferido no Chromium com o Ícaro: aparece, conversa e entrega 2 molas.
 - **Save:** `npcSocial.players[id]` ganhou `giftDay`, `known` e `rewards`, todos opcionais e validados. Saves antigos continuam válidos.
 
 ### preview.42 (publicada)
@@ -62,7 +69,9 @@ Plano dos moradores, combinado com o Junior (em ordem):
 1. ~~Presentes e amizade com recompensas~~ (feito) e ~~respostas nas conversas~~ (feito).
 2. ~~Histórias pessoais~~ (feito para 8 moradores). **Falta:** Amélia (flor rara no **pântano**) e Nilo (peça antiga nas **ruínas**), quando o Junior adicionar esses cenários. Pode também usar os cenários novos em partes extras das outras histórias.
 3. ~~Rotina na vila~~ (feito: folga, chuva, noite na pousada; trabalho, almoço e visitas já existiam). Ainda não conferida andando no navegador, só nos testes.
-4. **Visitas à propriedade** em dias de amizade alta. **Próximo passo**, ou publicar a preview.43 se o Junior pedir.
+4. ~~Visitas à propriedade~~ (feito). Ideias para depois: o visitante chegar andando pela estrada, Bento/Damião/Helena visitarem à noite, visitas no aniversário.
+
+**Próximo passo:** publicar a preview.43 quando o Junior pedir, ou seguir a lista de outras ideias.
 
 Outras ideias: ferramentas na mão (machadinha e picareta), Marina e Rui andando, desempenho (F3 no PC do Junior), porteira do chiqueiro, Actions sem Node 20.
 
@@ -89,6 +98,6 @@ Outras ideias: ferramentas na mão (machadinha e picareta), Marina e Rui andando
 
 - `npm run check`: ok.
 - `npm run build`: ok (aviso de tamanho do pacote, que já existia).
-- `npm test`: **2.181 passaram, zero falhas, 257 arquivos**.
+- `npm test`: **2.186 passaram, zero falhas, 258 arquivos**.
 - Montaria conferida no Chromium, andando nas 4 direções principais e galopando de lado. As diagonais e a vista de costas foram conferidas em imagem montada sobre o cavalo parado.
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.
