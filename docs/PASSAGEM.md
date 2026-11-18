@@ -79,7 +79,7 @@ Plano dos moradores, combinado com o Junior (em ordem):
 3. ~~Rotina na vila~~ (feito: folga, chuva, noite na pousada; trabalho, almoço e visitas já existiam). Ainda não conferida andando no navegador, só nos testes.
 4. ~~Visitas à propriedade~~ (feito). Ideias para depois: Bento/Damião/Helena visitarem à noite, visitas no aniversário.
 
-**Próximo passo:** a Release da preview.43 saiu com sucesso (execução 44370859861, já com as Actions no Node 24): instalador, executável sem instalação, LEIA e SHA256SUMS. Na preview.44: chiqueiro novo (o Junior vai gerar no ChatGPT com os prompts da seção 0b de `docs/planejamento/ARTE-PENDENTE.md`), números do F3 do Junior e histórias da Amélia e do Nilo quando houver pântano e ruínas.
+**Próximo passo:** a Release da preview.43 saiu com sucesso (execução 44370859861, já com as Actions no Node 24): instalador, executável sem instalação, LEIA e SHA256SUMS. Na preview.44: chiqueiro novo **em espera** (o ChatGPT não gerou uma arte parecida; o Junior vai pedir depois. Há uma montagem aprovada por ele: chiqueiro atual com a folha aberta de `docs/arte-recebida/lote01-fazenda/porteira/porteira_aberta_90graus.png` recortada em x 74–186, y 28–216, redimensionada para 176 px de altura e colada em (318, 775) de `pigsty.png`, com o vão preenchido como hoje; prompts na seção 0b de `docs/planejamento/ARTE-PENDENTE.md`), números do F3 do Junior e histórias da Amélia e do Nilo quando houver pântano e ruínas.
 
 Outras ideias: desempenho (F3 no PC do Junior), porteira do chiqueiro.
 
