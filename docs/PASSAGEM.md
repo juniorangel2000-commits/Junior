@@ -4,13 +4,13 @@
 
 - **Atualizado em:** 2026-11-18
 - **Por:** Claude Code
-- **Continuar a partir de:** `release/v0.10.0-preview.43` (em andamento, ainda não publicada).
-- **Última versão publicada:** `v0.10.0-preview.42`, na `main`, com a Release criada no GitHub.
-- **Estado:** preview.43 com presentes, amizade, respostas, histórias, rotina da vila (folga, pousada, chuva), chuva sorteada e visitas à propriedade prontos e enviados. Falta versão do pacote e notas (só quando o Junior pedir para publicar).
+- **Continuar a partir de:** `main` (igual à `release/v0.10.0-preview.43`). A próxima rodada cria `release/v0.10.0-preview.44` a partir dela.
+- **Última versão publicada:** `v0.10.0-preview.43` (commit de release enviado ao branch e à `main`). **A tag e a Release são criadas pelo Junior no GitHub** (push de tag é recusado nesta sessão).
+- **Estado:** preview.43 publicada: presentes, amizade, respostas, histórias, rotina da vila, chuva sorteada, visitas à propriedade, Marina e Rui andando, velocidade dos personagens e Actions no Node 24.
 
 ## Feito nesta rodada
 
-### preview.43 (em andamento): explorar os moradores
+### preview.43 (publicada): explorar os moradores
 
 Pedido do Junior: "precisamos explorar os outros npcs" e "adicionar respostas diferentes do jogador, igual Stardew Valley".
 
@@ -62,6 +62,7 @@ Pedido do Junior: "precisamos explorar os outros npcs" e "adicionar respostas di
   - Arte: só a pose parada em 4 direções (sul, norte, leste, oeste, todas carregadas agora); andando, um sobe e desce de até 2 px a cada passo. Exibidos em 64 × 64 (antes 48 × 64, espremidos).
   - Balão com a tarefa ao chegar perto. Destino ajustado ao centro do ladrilho livre mais próximo (o poço ocupa o ladrilho pedido).
   - Sem campo novo no save. Testes em `tests/property-survivors.test.ts`; conferido no Chromium andando de casa até a horta.
+- **Actions no Node 24:** `actions/checkout@v5`, `actions/setup-node@v5` e `actions/upload-artifact@v6` nos dois workflows (a v5 do upload-artifact ainda usava Node 20). Conferir na primeira execução da preview.43.
 - **Velocidade dos personagens** (pedido do Junior: "deixe a velocidade como a do jogador"): `src/data/npc-speed.ts` (`NPC_WALK_SPEED = 84`, igual a `PLAYER_SPEED`) para moradores na vila e nas lojas, guia, Bento, Damião, sobreviventes e visitante. Testes de passo máximo por quadro passaram a usar 8,4 px. Teste em `tests/player-running.test.ts`.
 - **Save:** `npcSocial.players[id]` ganhou `giftDay`, `known` e `rewards`, todos opcionais e validados. Saves antigos continuam válidos.
 
@@ -78,9 +79,9 @@ Plano dos moradores, combinado com o Junior (em ordem):
 3. ~~Rotina na vila~~ (feito: folga, chuva, noite na pousada; trabalho, almoço e visitas já existiam). Ainda não conferida andando no navegador, só nos testes.
 4. ~~Visitas à propriedade~~ (feito). Ideias para depois: Bento/Damião/Helena visitarem à noite, visitas no aniversário.
 
-**Próximo passo:** publicar a preview.43 quando o Junior pedir, ou seguir a lista de outras ideias.
+**Próximo passo:** confirmar que a Release da preview.43 gerou o executável (primeira execução com as Actions novas). Depois, seguir as outras ideias.
 
-Outras ideias: desempenho (F3 no PC do Junior), porteira do chiqueiro, Actions sem Node 20 (trocar `actions/checkout`, `actions/setup-node` e `actions/upload-artifact` de v4 para v5 nos dois workflows; o Junior perguntou se o Node 20 vai parar).
+Outras ideias: desempenho (F3 no PC do Junior), porteira do chiqueiro.
 
 ## Pendências e ideias para depois
 
@@ -104,7 +105,7 @@ Outras ideias: desempenho (F3 no PC do Junior), porteira do chiqueiro, Actions s
 ## Testes
 
 - `npm run check`: ok.
-- `npm run build`: ok (aviso de tamanho do pacote, que já existia).
+- `npm run build`: ok na preview.43 (aviso de tamanho do pacote, que já existia).
 - `npm test`: **2.192 passaram, zero falhas, 259 arquivos**.
 - Montaria conferida no Chromium, andando nas 4 direções principais e galopando de lado. As diagonais e a vista de costas foram conferidas em imagem montada sobre o cavalo parado.
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.
