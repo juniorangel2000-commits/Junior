@@ -50,12 +50,13 @@ Pedido do Junior: "precisamos explorar os outros npcs" e "adicionar respostas di
   - `src/world-rain.ts`: muito mais gotas (até 620 + 240), espalhadas de forma uniforme, e respingos no chão. Com "reduzir movimento" (efeitos de animação desligados no Windows) a chuva antes sumia; agora cai mais devagar. O Junior aprovou o visual fino original, só com mais gotas.
   - A luz em dia de chuva ficou um pouco mais fechada (`src/lighting-model.ts`).
 - **Visitas à propriedade** (`src/systems/property-visits.ts`, `src/property-visit.ts`, ligado em `ValleyScene`):
-  - Um morador com amizade 8 ou mais, no dia de folga e com tempo aberto, pode passar a tarde (14:00–16:30) perto da porta da casa. Chance de 65% por dia; no máximo um por dia. Só os 7 que têm folga (Bento, Damião e Helena não visitam).
+  - Um morador com amizade 8 ou mais, no dia de folga e com tempo aberto, visita de manhã, depois de o jogador dormir (pedido do Junior): às 08:00 sai da entrada da estrada da vila e anda até a porta da casa (caminho com A*, desviando das construções; se não houver caminho, aparece na porta depois de 6 s). Às 10:15 volta pela estrada e some na entrada; às 11:00 está de novo na vila. Chance de 65% por dia; no máximo um por dia. Só os 7 que têm folga (Bento, Damião e Helena não visitam).
   - Aviso ao aparecer, balão "Oi! Vim fazer uma visita.", tecla E para conversar. A janela é a mesma da vila (conversa, presentes, história).
   - Traz um presente (botão "Receber presente", uma vez por dia, +1 de amizade) e comenta a propriedade (muda quando há 6 ou mais plantações).
   - Durante a visita, ele some da vila e a janela dele lá diz "Visitando a sua propriedade".
   - As imagens do visitante só carregam no dia da visita, depois que as imagens-fonte terminam (para não repetir o quadradinho do Damião).
   - Save: `propertyVisitDay` (opcional, validado). Testes em `tests/property-visits.test.ts`. Conferido no Chromium com o Ícaro: aparece, conversa e entrega 2 molas.
+- **Velocidade dos personagens** (pedido do Junior: "deixe a velocidade como a do jogador"): `src/data/npc-speed.ts` (`NPC_WALK_SPEED = 84`, igual a `PLAYER_SPEED`) para moradores na vila e nas lojas, guia, Bento, Damião, sobreviventes e visitante. Testes de passo máximo por quadro passaram a usar 8,4 px. Teste em `tests/player-running.test.ts`.
 - **Save:** `npcSocial.players[id]` ganhou `giftDay`, `known` e `rewards`, todos opcionais e validados. Saves antigos continuam válidos.
 
 ### preview.42 (publicada)
@@ -69,7 +70,7 @@ Plano dos moradores, combinado com o Junior (em ordem):
 1. ~~Presentes e amizade com recompensas~~ (feito) e ~~respostas nas conversas~~ (feito).
 2. ~~Histórias pessoais~~ (feito para 8 moradores). **Falta:** Amélia (flor rara no **pântano**) e Nilo (peça antiga nas **ruínas**), quando o Junior adicionar esses cenários. Pode também usar os cenários novos em partes extras das outras histórias.
 3. ~~Rotina na vila~~ (feito: folga, chuva, noite na pousada; trabalho, almoço e visitas já existiam). Ainda não conferida andando no navegador, só nos testes.
-4. ~~Visitas à propriedade~~ (feito). Ideias para depois: o visitante chegar andando pela estrada, Bento/Damião/Helena visitarem à noite, visitas no aniversário.
+4. ~~Visitas à propriedade~~ (feito). Ideias para depois: Bento/Damião/Helena visitarem à noite, visitas no aniversário.
 
 **Próximo passo:** publicar a preview.43 quando o Junior pedir, ou seguir a lista de outras ideias.
 
@@ -98,6 +99,6 @@ Outras ideias: ferramentas na mão (machadinha e picareta), Marina e Rui andando
 
 - `npm run check`: ok.
 - `npm run build`: ok (aviso de tamanho do pacote, que já existia).
-- `npm test`: **2.186 passaram, zero falhas, 258 arquivos**.
+- `npm test`: **2.188 passaram, zero falhas, 258 arquivos**.
 - Montaria conferida no Chromium, andando nas 4 direções principais e galopando de lado. As diagonais e a vista de costas foram conferidas em imagem montada sobre o cavalo parado.
 - Para os QAs: `npx vite --host 127.0.0.1 --port 5190 --strictPort`.
