@@ -1,0 +1,50 @@
+{
+  "characters": {
+    "farmer-male": {
+      "file": "assets/visual/characters/farmer-male/work-body.png",
+      "rows": [
+        {
+          "originX": 0.5,
+          "originY": 0.9375
+        },
+        {
+          "originX": 0.5,
+          "originY": 0.9375
+        },
+        {
+          "originX": 0.5,
+          "originY": 0.9375
+        },
+        {
+          "originX": 0.5,
+          "originY": 0.9375
+        }
+      ],
+      "scale": 0.25,
+      "sourceSha256": "ad3213aed0e5ca759cb3244e0583a84fef1000e99e2708adfc182673a0d9ef1e"
+    },
+    "farmer-female": {
+      "file": "assets/visual/characters/farmer-female/work-body.png",
+      "rows": [
+        {
+          "originX": 0.5,
+          "originY": 0.94140625
+        },
+        {
+          "originX": 0.5,
+          "originY": 0.94140625
+        },
+        {
+          "originX": 0.5,
+          "originY": 0.94140625
+        },
+        {
+          "originX": 0.5,
+          "originY": 0.94140625
+        }
+      ],
+      "scale": 0.25,
+      "sourceSha256": "0a8631734428d14c831b50c09cf95b0d276997fc22cd2f2223d8b3ce2dc95a06"
+    }
+  }
+}

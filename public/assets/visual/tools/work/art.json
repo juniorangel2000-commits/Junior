@@ -1,0 +1,35 @@
+{
+  "sourceSha256": "5b39ec7018f7d6387aba65d88476bad6e144a9c303451b9ec9ba51f2beae57e2",
+  "tools": {
+    "hoe": {
+      "file": "assets/visual/tools/work/hoe.png",
+      "width": 724,
+      "height": 724,
+      "grip": [
+        356,
+        590
+      ],
+      "scale": 0.07
+    },
+    "shovel": {
+      "file": "assets/visual/tools/work/shovel.png",
+      "width": 724,
+      "height": 724,
+      "grip": [
+        362,
+        590
+      ],
+      "scale": 0.07
+    },
+    "sickle": {
+      "file": "assets/visual/tools/work/sickle.png",
+      "width": 724,
+      "height": 724,
+      "grip": [
+        302,
+        590
+      ],
+      "scale": 0.055
+    }
+  }
+}

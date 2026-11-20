@@ -1,0 +1,5 @@
+const fs=require('fs'),{PNG}=require('pngjs'),{createHash}=require('crypto');const characters={};
+for(const id of ['farmer-male','farmer-female']){const bytes=fs.readFileSync(`referencias/personagens/ferramentas-corpo/${id}.png`),p=PNG.sync.read(bytes);if(p.width!==1536||p.height!==1024)throw Error('Folha deve ter 6×4 quadros');for(let i=3;i<p.data.length;i+=4)p.data[i]=p.data[i]>=200?255:0;
+ const rows=[];for(let row=0;row<4;row++){const bottoms=[];for(let col=0;col<6;col++){let b=0;for(let y=180;y<256;y++)for(let x=65;x<185;x++){const k=((row*256+y)*p.width+col*256+x)*4;if(p.data[k+3]&&p.data[k]>p.data[k+1]*1.15&&p.data[k+1]>p.data[k+2]*1.1)b=Math.max(b,y+1);}bottoms.push(b);}bottoms.sort((a,b)=>a-b);rows.push({originX:.5,originY:(bottoms[2]+bottoms[3])/512});}
+ const file=`assets/visual/characters/${id}/work-body.png`;fs.writeFileSync('public/'+file,PNG.sync.write(p));characters[id]={file,rows,scale:.25,sourceSha256:createHash('sha256').update(bytes).digest('hex')};}
+fs.writeFileSync('public/assets/visual/characters/player-tool-body.json',JSON.stringify({characters},null,2)+'\n');

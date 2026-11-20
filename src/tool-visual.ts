@@ -1,3 +1,5 @@
+import {preloadPlayerToolBody,playerToolBody} from './player-tool-body';
+import {preloadWorkTools,workToolArt} from './work-tool-art';
 import { toolHandPlacement } from './data/tool-hand-placement';
 import {minToolTier} from './data/economy-balance';
 import {preloadPlayerMiningArt,playerMiningPose,playerChoppingPose} from './player-mining-art';
@@ -12,7 +14,7 @@ import type {EconomicTool} from './data/economy-balance';
 import {hoeSwingAngle} from './data/tool-art';
 
 export function preloadToolArt(scene: Phaser.Scene): void {
-  preloadPlayerMiningArt(scene);
+  preloadPlayerMiningArt(scene);preloadPlayerToolBody(scene);preloadWorkTools(scene);
   const sources = new Map<string, string>();
   for (const tool of ['hatchet', 'pickaxe', 'water', 'hoe'] as const) for (const direction of CHARACTER_DIRECTIONS) {
     const idle = toolIdleArt(tool, direction); sources.set(idle.key, idle.path);
@@ -42,6 +44,24 @@ export class ToolVisual {
 
   show(tool: AnimatedTool | 'sickle' | 'shovel', direction: CharacterDirection, x: number, y: number, use: Pick<ToolUse,'active'|'frame'>, tier=0,body?:Phaser.GameObjects.Sprite): void {
     if (!use.active) { this.hide(); return; }
+    if(body&&(tool==='hoe'||tool==='water'||tool==='sickle'||tool==='shovel')){
+      const pose=playerToolBody(this.sprite.scene,this.profile,tool,direction,use.frame);
+      if(pose){
+        if(this.hiddenBody!==body){this.hideMiningPose();this.hiddenBody=body;this.bodyWasVisible=body.visible;}
+        body.setVisible(false);this.miningSprite??=this.sprite.scene.add.image(x,y,pose.key,pose.frame).setData('player-mining-pose',true);
+        this.miningSprite.setTexture(pose.key,pose.frame).setPosition(x,y).setOrigin(pose.originX,pose.originY).setScale(pose.bodyScale).setDepth(body.depth).setAlpha(body.alpha).setVisible(this.bodyWasVisible);
+        let scale=pose.scale;
+        if(tool==='water'){
+          const a=toolUseArt('water',direction.includes('left')?'left':'right',use.frame);this.sprite.setTexture(a.key).setFlipX(a.flipX).setOrigin((a.flipX?256-a.grip[0]:a.grip[0])/256,a.grip[1]/256);
+        }else{
+          const a=workToolArt(this.sprite.scene,tool,tier);
+          if(!a){this.hide();return;}
+          this.sprite.setTexture(a.key).setFlipX(pose.flipX).setOrigin((pose.flipX?a.width-a.grip[0]:a.grip[0])/a.width,a.grip[1]/a.height);
+          scale=a.scale;
+        }
+        this.sprite.clearTint().setAlpha(body.alpha).setScale(scale).setAngle(pose.angle).setPosition(x+pose.handX,y+pose.handY).setDepth(body.depth-.01).setVisible(this.bodyWasVisible);return;
+      }
+    }
     if((tool==='pickaxe'||tool==='hatchet')&&body){
       const pose=(tool==='hatchet'?playerChoppingPose:playerMiningPose)(this.sprite.scene,this.profile,direction,use.frame,tier);
       if(pose){

@@ -778,13 +778,13 @@ export class ValleyScene extends Phaser.Scene {
     if(item==='doorKit'||item==='windowKit'){this.ui.toast('Leve estes materiais até a obra para concluir a construção.');return;}
     if(item==='shovel'){
       if(this.inHome||toolCondition(this.state,'shovel').durability<=0){this.ui.toast('A pá precisa ser reparada ou usada fora da casa.');return;}
-      const count=toolWork(this.state,'shovel'),result=this.farming.prepare(point.x,point.y,this.inventory,this.soilGround());if(result.ok){for(let n=1;n<count;n++)if(this.clearReach({x:point.x+n,y:point.y}))this.farming.prepare(point.x+n,point.y,this.inventory,this.soilGround());spendDurability(this.state,'shovel');this.toolVisual?.playGather('shovel',directionFromVector(this.player.facing.x,this.player.facing.y),this.player,toolCondition(this.state,'shovel').tier);this.nextInteractionAt=this.time.now+460;}this.ui.toast(result.message);this.afterAction();return;
+      const count=toolWork(this.state,'shovel'),result=this.farming.prepare(point.x,point.y,this.inventory,this.soilGround());if(result.ok){for(let n=1;n<count;n++)if(this.clearReach({x:point.x+n,y:point.y}))this.farming.prepare(point.x+n,point.y,this.inventory,this.soilGround());spendDurability(this.state,'shovel');this.toolVisual?.playGather('shovel',directionFromVector(this.player.facing.x,this.player.facing.y),this.player,toolCondition(this.state,'shovel').tier,this.player.sprite);this.nextInteractionAt=this.time.now+460;}this.ui.toast(result.message);this.afterAction();return;
     }
     if(item==='sickle'){
       if(this.inHome||toolCondition(this.state,'sickle').durability<=0){this.ui.toast('A foice precisa ser reparada ou usada fora da casa.');return;}
       const nodes=this.world.resources.filter(n=>n.kind==='fiber'&&Math.hypot(n.x*32+16-this.player.x,n.y*32+16-this.player.y)<80).slice(0,toolWork(this.state,'sickle'));let done=false;
       for(const n of nodes){const result=this.resources.hit(n,'hand',this.inventory,this.state,undefined,resourceGroundSink(this.state,'property',n));if(result.depleted){this.world.removeResource(n.id);if(!this.resourceLifecycle?.collected(n))this.state.depletedResources.push(n.id);done=true;}}
-      if(done){spendDurability(this.state,'sickle');this.toolVisual?.playGather('sickle',directionFromVector(this.player.facing.x,this.player.facing.y),this.player,toolCondition(this.state,'sickle').tier);this.nextInteractionAt=this.time.now+460;}this.ui.toast(done?'Vegetação recolhida.':'Aproxime-se de uma planta coletável.');this.afterAction();return;
+      if(done){spendDurability(this.state,'sickle');this.toolVisual?.playGather('sickle',directionFromVector(this.player.facing.x,this.player.facing.y),this.player,toolCondition(this.state,'sickle').tier,this.player.sprite);this.nextInteractionAt=this.time.now+460;}this.ui.toast(done?'Vegetação recolhida.':'Aproxime-se de uma planta coletável.');this.afterAction();return;
     }
 
     const near=Array.from({length:7},(_,a)=>a-3).some(dx=>Array.from({length:7},(_,a)=>a-3).some(dy=>water(this.player.x+dx*16,this.player.y+dy*16)));
