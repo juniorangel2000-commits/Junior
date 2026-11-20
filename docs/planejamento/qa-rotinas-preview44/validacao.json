@@ -1,0 +1,267 @@
+{
+  "checks": [
+    {
+      "spec": {
+        "name": "folga-com-sol",
+        "day": 19,
+        "time": 600,
+        "id": "augusto",
+        "area": "village",
+        "activity": "stroll"
+      },
+      "steps": 133,
+      "maxStep": 8.400000000000091,
+      "walked": 1065.6114994325167,
+      "transitions": [
+        {
+          "from": {
+            "area": "shop",
+            "room": "augusto",
+            "x": 292,
+            "y": 350.3968757625671
+          },
+          "to": {
+            "area": "village",
+            "room": "augusto",
+            "x": 1072,
+            "y": 1047
+          }
+        }
+      ],
+      "collisions": [],
+      "reached": true,
+      "state": {
+        "x": 912,
+        "y": 1488,
+        "area": "village",
+        "direction": "up-left",
+        "stop": 0,
+        "wait": 2.9,
+        "serviceUntil": 0,
+        "socialUntil": 0,
+        "socialDay": 0,
+        "updatedAt": 27960
+      },
+      "activity": "stroll-12",
+      "availability": {
+        "message": "Folga hoje · passeando pela vila",
+        "canGuide": false
+      },
+      "serving": false
+    },
+    {
+      "spec": {
+        "name": "folga-com-chuva",
+        "day": 4,
+        "time": 600,
+        "id": "nilo",
+        "area": "shop",
+        "room": "helena",
+        "activity": "inn-seat"
+      },
+      "steps": 305,
+      "maxStep": 8.400000000000091,
+      "walked": 2273.212101004836,
+      "transitions": [
+        {
+          "from": {
+            "area": "shop",
+            "room": "nilo",
+            "x": 292,
+            "y": 350.3968757625671
+          },
+          "to": {
+            "area": "village",
+            "room": "nilo",
+            "x": 784,
+            "y": 1879
+          }
+        },
+        {
+          "from": {
+            "area": "village",
+            "room": "nilo",
+            "x": 1429.8894951916957,
+            "y": 757.8894951916958
+          },
+          "to": {
+            "area": "shop",
+            "room": "helena",
+            "x": 288,
+            "y": 335
+          }
+        }
+      ],
+      "collisions": [],
+      "reached": true,
+      "state": {
+        "x": 380,
+        "y": 132,
+        "area": "shop",
+        "direction": "down",
+        "stop": 0,
+        "wait": 3.9,
+        "serviceUntil": 0,
+        "socialUntil": 0,
+        "socialDay": 0,
+        "updatedAt": 6360,
+        "roomOwner": "helena"
+      },
+      "activity": "inn-seat",
+      "availability": {
+        "message": "Folga hoje · na pousada da Helena por causa da chuva",
+        "canGuide": false
+      },
+      "serving": false
+    },
+    {
+      "spec": {
+        "name": "almoco-com-chuva",
+        "day": 3,
+        "time": 721,
+        "id": "augusto",
+        "area": "shop",
+        "room": "helena",
+        "activity": "inn-seat"
+      },
+      "steps": 152,
+      "maxStep": 8.400000000000116,
+      "walked": 994.0315051964503,
+      "transitions": [
+        {
+          "from": {
+            "area": "shop",
+            "room": "augusto",
+            "x": 292,
+            "y": 350.3968757625671
+          },
+          "to": {
+            "area": "village",
+            "room": "augusto",
+            "x": 1072,
+            "y": 1047
+          }
+        },
+        {
+          "from": {
+            "area": "village",
+            "room": "augusto",
+            "x": 1426.0548339959387,
+            "y": 752
+          },
+          "to": {
+            "area": "shop",
+            "room": "helena",
+            "x": 288,
+            "y": 335
+          }
+        }
+      ],
+      "collisions": [],
+      "reached": true,
+      "state": {
+        "x": 396,
+        "y": 148,
+        "area": "shop",
+        "direction": "down",
+        "stop": 0,
+        "wait": 3.9,
+        "serviceUntil": 0,
+        "socialUntil": 0,
+        "socialDay": 0,
+        "updatedAt": 5041,
+        "roomOwner": "helena"
+      },
+      "activity": "inn-seat",
+      "availability": {
+        "message": "Almoço na pousada (chuva) · volta às 12:50",
+        "canGuide": false
+      },
+      "serving": false
+    },
+    {
+      "name": "almoco-com-chuva-retorno",
+      "arrived": true,
+      "maxStep": 8.400000000000091,
+      "walked": 921.7012701713609,
+      "steps": 154
+    },
+    {
+      "spec": {
+        "name": "jantar-na-pousada",
+        "day": 3,
+        "time": 1081,
+        "id": "rosa",
+        "area": "shop",
+        "room": "helena",
+        "activity": "inn-seat"
+      },
+      "steps": 214,
+      "maxStep": 8.400000000000091,
+      "walked": 1706.3505090854335,
+      "transitions": [
+        {
+          "from": {
+            "area": "shop",
+            "room": "rosa",
+            "x": 292,
+            "y": 350.3968757625671
+          },
+          "to": {
+            "area": "village",
+            "room": "rosa",
+            "x": 1232,
+            "y": 1815
+          }
+        },
+        {
+          "from": {
+            "area": "village",
+            "room": "rosa",
+            "x": 1424.3740622984385,
+            "y": 752.3740622984384
+          },
+          "to": {
+            "area": "shop",
+            "room": "helena",
+            "x": 288,
+            "y": 335
+          }
+        }
+      ],
+      "collisions": [],
+      "reached": true,
+      "state": {
+        "x": 140,
+        "y": 244,
+        "area": "shop",
+        "direction": "down",
+        "stop": 0,
+        "wait": 3.9,
+        "serviceUntil": 0,
+        "socialUntil": 0,
+        "socialDay": 0,
+        "updatedAt": 5401,
+        "roomOwner": "helena"
+      },
+      "activity": "inn-seat",
+      "availability": {
+        "message": "Jantando na pousada da Helena · até as 21:00",
+        "canGuide": false
+      },
+      "serving": false
+    },
+    {
+      "name": "jantar-na-pousada-retorno",
+      "arrived": true,
+      "maxStep": 8.400000000000091,
+      "walked": 1745.5068318044052,
+      "steps": 252
+    }
+  ],
+  "save": {
+    "valid": true,
+    "actors": 10
+  },
+  "errors": []
+}
