@@ -6,25 +6,25 @@
 - **Por:** Codex
 - **Continuar a partir de:** `release/v0.10.0-preview.44`, HEAD.
 - **Última versão publicada:** `v0.10.0-preview.43`, commit `8df467d`, na `main`.
-- **Estado:** a pá e a foice usam o mesmo relógio para animação, efeito no alvo e gasto de durabilidade. Montaria masculina integrada em `599eafa`.
+- **Estado:** golpe da enxada revisado nas duas laterais. Montaria masculina em `599eafa` e contato da pá/foice em `5e1623b`.
 
 ## Feito nesta rodada
 
-- A pá e a foice da Propriedade e a foice da Floresta Antiga esperam o quadro 4 para preparar o canteiro ou cortar a vegetação. Nos Campos Abertos, foice e machadinha do ipê passaram a usar o mesmo relógio da animação.
-- `ToolSwing` concentra o relógio de 18 quadros por segundo e entrega um único contato aos 4/18 s. `ToolUse` continua fornecendo a mesma interface e o mesmo formato de snapshot para os golpes existentes e para Bento.
-- A ferramenta guarda a direção, o alvo e o ID da cópia escolhida. No contato, são conferidos alcance, alvo e durabilidade disponível da mesma cópia. Pausa, saída de cena e troca de ferramenta cancelam as ações aplicáveis.
-- O jogador fica no lugar durante o golpe. A pá fica um pouco mais alta no último quadro de preparação, de modo que sua descida coincida com a mudança do solo.
-- `scripts/qa-gather-contact.cjs` confere o uso pela mochila na Propriedade e Floresta e pela tecla E nos Campos. Com duas cópias na mochila, verifica que o alvo fica intacto no quadro 3, que cancelar não produz efeito, que o quadro 4 muda o alvo e que só uma cópia perde um ponto. A recuperação não repete o efeito.
-- A documentação da montaria está em `docs/construcoes/MONTARIA.md`. A revisão das ferramentas, rotinas da vila, passadas de Marina e Rui e porteira a 90 graus está em `a106cdb:docs/PASSAGEM.md`.
+- Refeito o perfil da lâmina de animação da enxada para que a ponta fique à frente do encaixe e voltada para o solo no contato. O ícone de inventário continua na fonte anterior.
+- Fonte nativa em `referencias/personagens/ferramentas-corpo/enxada-impacto.png`. `scripts/prepare-work-tools.cjs` mantém o comprimento exibido da ferramenta equivalente ao anterior e registra a pegada, o encaixe e o ponto da ponta no manifesto.
+- O último quadro de levantamento usa a pose existente. O impacto usa a mão mais baixa e o novo ângulo. Esquerda e direita são espelhadas em torno da mão.
+- O relógio do golpe continua aplicando efeito no quadro 4. Conferido no Chromium com E em dois canteiros livres da Propriedade. A pegada, a escala e a textura permanecem estáveis durante o golpe. A terra aparece no contato e a pose normal volta ao final.
+- `tests/player-tool-body.test.ts` valida a posição da ponta em relação ao encaixe e ao solo dos dois personagens. Fotos em `docs/planejamento/qa-enxada-preview44/`.
+- Revisões anteriores de ferramentas em `5e1623b` e `a106cdb:docs/PASSAGEM.md`. Montaria revisada no chat e integrada em `599eafa`.
 
 ## Em andamento e próximo passo exato
 
-- Revisar a orientação da lâmina da enxada no impacto. Conferir esquerda e direita lado a lado, com o cabo na mão e a lâmina legível no contato. Preservar os ícones e a escala.
+- Receber o retorno do Junior sobre o golpe da enxada. A rodada de contato e orientação das ferramentas está concluída.
+- Se a próxima prioridade continuar em arte, revisar as diagonais dos sobreviventes Marina e Rui. Hoje eles têm animações próprias nas quatro direções principais. Usar as caminhadas originais dos jogadores como referência.
 - O fazendeiro montado usa uma pose por direção e acompanha o lombo animado. Uma inclinação de tronco própria para o galope fica para uma revisão futura, se pedida.
 
 ## Pendências e ideias para depois
 
-- Diagonais autorais para Marina e Rui com as caminhadas originais do jogador como referência.
 - Histórias de Amélia e Nilo aguardam os cenários correspondentes. Planos de calendário, visitas, animais e receitas continuam em `docs/planejamento/`.
 
 ## Problemas conhecidos
@@ -37,4 +37,4 @@
 ## Testes
 
 - Base: `npm ci` pelo cache, `npm run check` e 2.204 testes passando.
-- Integração em `5e1623b`: check e 2.204 testes (263 arquivos) passaram. Chromium confirmou pá e foice na Propriedade e foice na Floresta Antiga e nos Campos Abertos, sem erros de página. A Propriedade foi conferida de novo após o ajuste visual da pá.
+- Integração `7b4a645`: check, 2.204 testes em 263 arquivos e QA no Chromium sem erros. Confirmados preparo, contato no quadro 4, escala/pegada e recuperação dos dois lados.
