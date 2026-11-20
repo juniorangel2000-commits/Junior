@@ -4,84 +4,85 @@
 
 - **Atualizado em:** 2026-11-20
 - **Por:** Codex
-- **Continuar a partir de:** `release/v0.10.0-preview.44`, HEAD. Revisão de rotinas e arte em `9d06bfe` e `99ce073`.
-- **Última versão publicada:** `v0.10.0-preview.43`, commit `8df467d`, já na `main`. Nada foi publicado nesta rodada; pacote, main e tags permanecem como estavam.
-- **Estado:** retomado o trabalho do Claude. Novas rotinas da vila conferidas no navegador; removido teleporte de visitas e de Marina/Rui; passadas próprias dos sobreviventes; pegada/profundidade das ferramentas corrigidas; chiqueiro com estados alinhados fechado/aberto a 90 graus. Check, 2.199 testes e build passaram.
+- **Continuar a partir de:** `release/v0.10.0-preview.44`, HEAD. Ferramentas laterais refeitas a partir da machadinha; próxima prioridade do Junior é o masculino montado.
+- **Última versão publicada:** `v0.10.0-preview.43`, commit `8df467d`, já na `main`. Nada publicado nesta rodada; pacote e main continuam na .43.
+- **Estado:** implementadas animações laterais de enxada, pá, foice e regador para os dois personagens, mantendo os ícones. Fontes de corpo refeitas diretamente da machadinha após o retorno sobre estilo e pegadas. Check, 2.203 testes / 263 arquivos e build passaram. Implementação em `d70d45c`, refeita após retorno do Junior em `5133e15`.
 
 ## Feito nesta rodada
 
-### Retomada
+### Ferramentas — pedidos e decisões mais recentes do Junior
 
-- O ambiente tinha apenas a cópia antiga da preview.35. Foi necessário buscar os refs no GitHub com execução fora do sandbox (proxy inacessível no sandbox). Última passagem do Claude era a preview.44, após publicação da .43.
-- Mantido o trabalho da .43: presentes, amizade, respostas, oito histórias pessoais, folgas, chuva, pousada, visitas à propriedade, Marina/Rui e velocidade dos NPCs igual à do jogador. Detalhes nas notas da preview.43 e documentos dos sistemas.
-- Durante a rodada chegaram `4d65a0c` e `39f15b1`, dois commits de documentação que se anulam. Foram integrados por merge, sem sobrescrever o trabalho remoto.
-- Base validada: `npm ci` (sem baixar binário do Electron), check e 2.192 testes / 259 arquivos passando.
+- A ordem pedida foi ferramentas primeiro, depois o masculino montado.
+- A primeira tentativa de enxada embutida na folha mudou tamanho/orientação entre quadros e foi rejeitada. Junior sugeriu sprites simples exclusivas da animação, mantendo os ícones, e pediu **somente vistas laterais**.
+- Pediu movimentos distintos: enxada com arco da picareta/machadinha; pá cava/faz alavanca; foice corta embaixo. Depois pediu proporção igual às ferramentas existentes, corrigir cabos fora das mãos e refazer com base direta nas animações aprovadas, pois estavam distintas.
+- A base intermediária de corpo, derivada da mineração, foi substituída. **Não voltar a ela**, nem compartilhar um único mapa de mãos entre masculino e feminino.
 
-### Rotinas e deslocamento
+### Implementação final
 
-- `scripts/qa-village-schedule.cjs`: confere a cena real, não apenas regras isoladas:
-  - Augusto passeia na folga com sol;
-  - Nilo vai à pousada na folga chuvosa;
-  - Augusto almoça dentro da pousada com chuva e volta à loja;
-  - Rosa janta na pousada e volta para casa às 21h.
-- Conferidos trajetos, transferências por portas, ausência de colisão com cenário, passo máximo de 8,4 px por atualização de 0,1 s, serviço fechado durante pausa/folga e save válido com dez moradores.
-- Preparação do QA foi corrigida: desbloquear a entrada da vila na partida de teste; não tentar sair de uma loja sem estar dentro; tirar o jogador da porta durante o teste de saída do NPC. Essas falhas eram das fixtures, não regressões do produto.
-- Encontrado e removido o atalho que colocava o visitante no destino após seis segundos bloqueado. `PropertyVisitWalk` mantém a posição e deixa `VillageWalk` tentar novamente o caminho. Sem campo novo no save.
-- `--property-visit`: Ícaro fica 12 s diante de bloqueio, retoma e caminha cerca de 2.643 px até a casa; depois volta à estrada e só então desaparece. Máximo 8,4 px por quadro; sem erros JS.
-- O mesmo atalho de teleporte existia em Marina/Rui e foi removido, reutilizando o controlador.
-- `--survivors`: confere Marina/Rui bloqueados por 12 s, retomada, imagens de caminhada mudando e chegada à tarefa sem saltos.
-- Evidências em `docs/planejamento/qa-rotinas-preview44/`.
+- Fontes nativas em `referencias/personagens/ferramentas-corpo/`, editadas por imagegen a partir das laterais de `work-chopping.png`, removendo a machadinha. Mantêm o masculino com sua postura/cabelo e a feminina com corpo esguio e coque próprios dela. São seis poses × duas vistas, 2172×724, sem reduzir a fonte.
+- `scripts/prepare-player-tool-body.cjs` limpa alfa/resíduos soltos, conserva os pixels nativos e produz `work-body.png` para cada personagem e `player-tool-body.json`. Escala/origem vêm da machadinha; **pegadas calibradas por personagem, direção e pose**. Testes verificam pele opaca em cada ponto da mão.
+- `src/player-tool-body.ts` carrega as células nativas e converte cada ponto de pegada para o mundo. O corpo original fica oculto apenas durante a ação e sua visibilidade é restaurada ao terminar/cancelar, inclusive se já estava oculto.
+- `src/data/player-tool-motion.ts` mantém nove posições do relógio existente:
+  - enxada: preparação, levantar à frente como a machadinha, golpe, recuperação;
+  - pá: inserir no chão e alavanca, sem pose acima da cabeça;
+  - foice: varredura baixa, sem erguer ao ombro;
+  - regador: acompanha as mãos, preservando o jato autoral anterior.
+- São só esquerda/direita na apresentação. Direção lógica da interação preservada: norte/sul usam lateral direita; diagonais à esquerda usam a esquerda. Picareta/machadinha originais continuam em quatro vistas, sem substituir suas folhas.
+- `public/assets/visual/tools/work/`: fonte de imagegen e sprites simples de enxada/pá/foice, exclusivas do movimento. `scripts/prepare-work-tools.cjs` recorta as células de 724 px sem reduzir PNGs; `art.json` guarda pegadas e escala.
+- Enxada/pá com cerca de **30 px** de altura no mundo; foice **22 px**, proporcionais à picareta/machadinha. A mesma textura rígida é usada em todo o ciclo, sem mudar desenho, espelhamento ou tamanho.
+- `src/work-tool-art.ts` troca apenas os tons neutros da cabeça metálica por nível. Os ícones do inventário não foram alterados; foice/pá continuam começando em ferro.
+- `ToolVisual.show` integra corpo + ferramenta; `playGather` agora recebe o corpo do jogador também na pá/foice da Propriedade e na foice da Floresta/Campos. Mesmos relógios, regras do solo, custos, durabilidade e formato de save anteriores.
+- Documentação da arte em `public/assets/visual/tools/work/README.md` e lista de pendências atualizada.
 
-### Arte e animações — pedidos adicionais do Junior
+### Prévias e conferência
 
-Prioridades informadas: personagem montado, sobreviventes, arte do chiqueiro, ferramentas e conferir outros itens.
+- `scripts/capture-art-review.cjs`, modos `tools-male` e `tools-female`, mostra o **adaptador real** em esquerda/direita: machadinha e picareta como referência, depois enxada, pá, foice e regador.
+- GIFs finais e auditorias em `docs/planejamento/qa-arte-preview44/ferramentas-laterais/`.
+- Conferidos preparação, levantamento, contato e recuperação dos dois personagens. O QA verifica textura/escala/espelhamento constantes, quatro níveis de ferramenta, corpo oculto durante a ação e restauração ao terminar/cancelar. Sem erros JS.
+- Estas capturas são conferência do renderer; não afirmar que foi percorrido um ciclo completo de plantio em todos os mapas.
 
-- **Sobreviventes:** primeira proposta descartada porque os quadros pareciam repetidos. Junior pediu conferir as caminhadas originais dos jogadores (aprovadas) e usá-las como referência.
-  - Folhas dos quadros originais foram montadas em `/tmp` para referência, sem alterar os assets dos jogadores.
-  - Novas artes de Marina (6 quadros por vista) e Rui (8), nas quatro vistas principais: sul, norte, leste e oeste. Ciclo de 48 px percorridos, como os jogadores, em vez do balanço de uma pose parada.
-  - Parados mantêm as poses originais; animação avança só ao andar e reinicia ao parar. Não há animação idle rodando em loop.
-  - Fontes de imagegen preservadas em `public/assets/visual/characters/survivors/*-walk-source.png`. Atlas, recortes, hashes e escalas em `walk.json`; `scripts/pack-survivor-walk.cjs` não reduz os pixels, alinha cada linha por deslocamento fixo e remove transparência residual abaixo de alfa 200.
-  - `src/data/survivor-walk.ts` fornece direção e fase. **Diagonais próprias ainda não existem:** continua a vista lateral dominante, como antes. Não afirmar que foram criadas oito vistas.
-- **Ferramentas:** `ToolVisual` reduzia a direção real para esquerda/direita antes de escolher mão e profundidade, inclusive nas vistas de costas. Agora `toolHandPlacement` mantém a mão das oito direções; só o desenho é espelhado. Ferramentas de costas ficam atrás do corpo. Artes completas de mineração/machadinha mantidas, com suas cores por nível.
-- **Chiqueiro:** Junior retomou o item em espera e pediu a mesma construção em dois estados. Rejeitou a primeira abertura a 45 graus e pediu **90 graus**.
-  - Fonte correta gerada em `public/assets/visual/farm/pigsty-open-source.png`. A folha fica perpendicular à cerca, vista de lado, com o vão livre.
-  - A versão fechada é a textura original. O renderer aplica somente a região da folha da fonte nova (318,775,166,192, normalizada a 816×967), mantendo telhado, paredes, chão e demais cercas exatamente iguais.
-  - QA compara todos os pixels fora da região da porteira: **zero diferenças**. Colisões e dimensões continuam seguindo o `gateOpen` existente.
-  - Sprites exportadas `chiqueiro-fechado.png` / `chiqueiro-aberto.png` e comparação `pigsty.png` em `docs/planejamento/qa-arte-preview44/`.
-- **Montaria:** conferida visualmente nos dois personagens, nas oito direções, andando e galopando. GIFs de vistas principais e diagonais na pasta de QA. Não foram substituídas as artes do cavaleiro: são oito poses existentes acompanhando o cavalo animado, sem uma nova animação independente do corpo montado. A captura usa `HorseMount` real e não composição ilustrativa.
-- Os testes existentes de atlas de animais/personagens/ferramentas também passaram; isso confere referências, arquivos e recortes e não substitui a revisão visual de cada asset de todos os mapas.
-- `scripts/capture-art-review.cjs` gera comparações pelos adaptadores reais de renderização. Modos: `survivors`, `horse`, `horse-diagonals`, `tools-male`, `tools-female`, `pigsty`. Usa Chromium (`CHROMIUM_PATH` opcional), Vite em 5190 e ffmpeg. Quadros temporários ficam em `/tmp`.
-- Prévia detalhada, GIFs e medidas: `docs/planejamento/qa-arte-preview44/README.md`. Lista de arte atualizada em `docs/planejamento/ARTE-PENDENTE.md`.
+### Trabalho anterior preservado da preview.44
+
+- `9d06bfe`, `99ce073`, `94810c0`: revisão das rotinas/arte e passagem anterior, já enviados junto desta rodada.
+- Rotinas da vila: Augusto folga com sol, Nilo na pousada com chuva, almoço de Augusto e volta à loja, jantar/retorno de Rosa. QA de caminhos físicos, pausas/serviço e save com dez moradores em `scripts/qa-village-schedule.cjs` e `qa-rotinas-preview44/`.
+- Removido teleporte após seis segundos de bloqueio nas visitas da Propriedade e em Marina/Rui. `PropertyVisitWalk` usa `VillageWalk`, espera/replaneja. Conferidos bloqueio de 12 s, retomada, chegada e retorno, passos máximos de 8,4 px/0,1 s, sem saltos. Sem campo novo no save.
+- Marina com seis passos e Rui com oito nas quatro vistas principais, baseados nas caminhadas originais dos jogadores. Ciclo por 48 px percorridos, sem idle infinito. Diagonais próprias ainda pendentes. Fontes, atlas, hashes, `scripts/pack-survivor-walk.cjs`, `src/data/survivor-walk.ts` e QA preservados.
+- Chiqueiro fechado original e aberto a **90 graus**: `pigsty-open-source.png`, patch só da folha aplicado pelo renderer. Comparação fora da porteira: zero pixels diferentes. Sprites exportadas e GIFs na pasta `qa-arte-preview44/`.
+- Montaria anterior conferida nas oito vistas, andando/galopando. Ainda são oito poses acompanhando o cavalo, não uma animação nova do corpo montado. O masculino atual continua sendo a cabeça dele sobre a base feminina.
 
 ## Em andamento e próximo passo exato
 
-1. Seguir o retorno do Junior sobre os GIFs e os dois estados do chiqueiro. A caminhada original dos jogadores deve continuar preservada.
-2. Se for expandir a arte dos sobreviventes: criar diagonais próprias e poses paradas correspondentes; hoje só quatro vistas são autorais. Para a montaria, avaliar com o Junior quais vistas ainda incomodam antes de substituir as poses fornecidas por ele.
-3. Histórias da Amélia (flor rara no pântano) e Nilo (peça antiga nas ruínas) continuam aguardando os novos cenários. Não criar esses mapas só por esta revisão.
-4. Desempenho: ainda faltam os números de F3 no PC do Junior.
-- Não publicar sem pedido. O pacote continua preview.43; trabalho novo no branch preview.44.
+1. Seguir o retorno do Junior sobre os GIFs finais das ferramentas. Fontes e metadados atuais já substituem os rascunhos rejeitados.
+2. **Depois, masculino montado**, conforme a ordem pedida. Existe proposta de oito poses sentadas em `referencias/personagens/montaria/masculino-proposta.png`, fonte nativa de imagegen; **ainda não aplicada, encaixada ou aprovada**. Ler o README ao lado.
+   - Validar proporções, mãos, pernas e identidade sobre o cavalo nas oito vistas.
+   - Preservar a personagem feminina e o atlas/animação do cavalo.
+   - Fonte 1536×1024, quatro colunas × duas linhas. O carregamento atual usa células de 192: precisa de adaptador/encaixe próprio, incluindo `src/world-loading.ts`, não só trocar o PNG.
+   - Não alterar o clamp de `riderLift` sem evidência: nos quadros Walk/Run os valores já estão entre -4 e 3; extremos de outros estados não são o problema da montaria.
+3. Sobreviventes: diagonais autorais/poses paradas correspondentes continuam como expansão futura. Caminhadas originais dos jogadores devem permanecer intactas.
+4. Não publicar sem pedido. Trabalho novo na .44; última publicada e pacote continuam .43.
 
 ## Pendências e ideias para depois
 
-- Plano em `docs/planejamento/ANIMAIS-E-RECEITAS.md`: animais, cozinha, abelhas, patos, porcos, máquinas e qualidade já implementados antes desta rodada. Equilibrar preços jogando e substituir artes provisórias conforme a lista atualizada.
-- Estábulo/corda e calendário seguem os planos anteriores. Visitas noturnas de Bento/Damião/Helena e aniversários são ideias, não implementadas aqui.
-- Há stash antigo da preview.34 com documentação/evidências do estábulo aberto: não aplicar sobre a passagem atual.
+- Histórias de Amélia (flor rara no pântano) e Nilo (peça nas ruínas) aguardam os novos cenários; não criar mapas apenas por esta revisão.
+- Plano `ANIMAIS-E-RECEITAS.md`: animais, cozinha, abelhas, patos, porcos, máquinas e qualidade implementados antes desta rodada. Equilibrar preços jogando, substituir artes provisórias conforme a lista atualizada.
+- Estábulo/corda/calendário seguem planos anteriores; visitas noturnas e aniversários são ideias, não implementados aqui.
+- Stash antigo da preview.34: não aplicar sobre esta passagem.
 
 ## Problemas conhecidos
 
-- Interiores dos animais não persistem a posição individual.
-- Travamentos nos Campos ainda precisam de medição no PC do Junior; este ambiente usa SwiftShader. Não afirmar que FPS foi resolvido.
-- Originais de arte devem permanecer sem redução de PNGs; o jogo ajusta a exibição.
-- `qa-animal-escort.cjs` desatualizado na volta à Propriedade; corda conferida em `qa-horse-taming`.
-- `qa-open-fields` / `qa-horse-fields` fixam `/usr/bin/chromium`; precisam de caminho compatível em outro ambiente.
+- Travamentos nos Campos ainda precisam de números de F3 no PC do Junior. Ambiente de QA usa SwiftShader; não afirmar FPS resolvido.
+- Interiores dos animais não persistem posição individual.
+- Qualidade de itens soltos/recolhidos volta a comum.
+- `qa-animal-escort.cjs` desatualizado na volta; corda conferida em `qa-horse-taming`.
 - `qa-farm-interior.cjs` tem falha antiga na dica da porta do galinheiro.
-- Qualidade de itens soltos no chão e recolhidos volta a comum.
-- Chromium/SwiftShader pode travar após minutos de movimento e não terminar o Lago. `qa-horse-riding.cjs` usa navegadores separados por etapa.
+- Alguns QAs fixam `/usr/bin/chromium`; ajustar caminho em outro ambiente. Chromium/SwiftShader pode travar após minutos de movimento; `qa-horse-riding` separa navegadores.
+- Originais de arte devem permanecer sem redução; escala só no jogo.
 
 ## Testes
 
-- Base: `npm ci`, `npm run check`, **2.192 testes / 259 arquivos**, todos passando.
-- Final: `npm run check`, **2.199 testes / 262 arquivos**, zero falhas, e `npm run build` passando. Aviso de tamanho do bundle já existente.
-- Novos testes: `property-visit-walk.test.ts` (3), `survivor-walk-art.test.ts` (2), `tool-hand-placement.test.ts` (2).
-- Chromium: rotinas da vila, visita bloqueada/retomada/retorno, sobreviventes na propriedade e todas as capturas de arte acima passaram sem erros de execução.
-- QAs exigem servidor `npm run dev -- --host 127.0.0.1 --port 5190 --strictPort`. Neste ambiente abrir porta/browser/rede exigiu execução fora do sandbox; não alterar proxies ou configuração de segurança.
+- Base desta rodada: `npm ci` offline (sem binário do Electron), check e **2.199 testes / 262 arquivos** passando antes de editar.
+- Primeira integração: check, **2.203 testes / 263 arquivos** e build passaram. Depois foi refeita a base do corpo por retorno do Junior.
+- Segunda base final: check, quatro testes direcionados, **2.203 testes / 263 arquivos** (169 s) e build passaram, zero falhas. Aviso de tamanho do bundle já existente.
+- `tests/player-tool-body.test.ts`: escala/espelhamento constantes, arco lateral espelhado, contato no chão, pá/foice sem levantar acima da cabeça, regador sem inclinação dupla, dimensões nativas, pegadas na pele por personagem/pose e proporção das ferramentas.
+- Navegador: duas capturas finais completas, sem erros JS, invariantes de rigidez, níveis e visibilidade passando. Previews anteriores mantidos apenas em /tmp foram substituídos na pasta de evidências.
+- Servidor QA: Vite em 5190, Chromium e ffmpeg. Neste ambiente porta/browser/rede exigiram execução fora do sandbox; não alterar proxies ou configurações de segurança.
