@@ -1,0 +1,412 @@
+{
+  "cell": 256,
+  "rows": [
+    "south",
+    "north",
+    "east",
+    "west"
+  ],
+  "alphaCutoff": 200,
+  "characters": {
+    "marina": {
+      "columns": 6,
+      "file": "assets/visual/characters/survivors/marina-walk.png",
+      "sourceSha256": "8a9b59817e1879d1a04ba5cc9272085c80bfd2f60909872f11e3e51fb1302041",
+      "scale": 0.24871794871794872,
+      "rows": [
+        {
+          "shiftX": 1,
+          "shiftY": -5,
+          "bounds": [
+            {
+              "x": 77,
+              "y": 38,
+              "width": 99,
+              "height": 195
+            },
+            {
+              "x": 333,
+              "y": 38,
+              "width": 99,
+              "height": 199
+            },
+            {
+              "x": 589,
+              "y": 38,
+              "width": 99,
+              "height": 199
+            },
+            {
+              "x": 845,
+              "y": 37,
+              "width": 100,
+              "height": 196
+            },
+            {
+              "x": 1101,
+              "y": 37,
+              "width": 100,
+              "height": 200
+            },
+            {
+              "x": 1357,
+              "y": 38,
+              "width": 100,
+              "height": 199
+            }
+          ]
+        },
+        {
+          "shiftX": -1,
+          "shiftY": -6,
+          "bounds": [
+            {
+              "x": 79,
+              "y": 292,
+              "width": 100,
+              "height": 200
+            },
+            {
+              "x": 334,
+              "y": 292,
+              "width": 100,
+              "height": 202
+            },
+            {
+              "x": 590,
+              "y": 292,
+              "width": 101,
+              "height": 202
+            },
+            {
+              "x": 847,
+              "y": 292,
+              "width": 101,
+              "height": 199
+            },
+            {
+              "x": 1102,
+              "y": 292,
+              "width": 101,
+              "height": 202
+            },
+            {
+              "x": 1359,
+              "y": 292,
+              "width": 101,
+              "height": 202
+            }
+          ]
+        },
+        {
+          "shiftX": -1,
+          "shiftY": 0,
+          "bounds": [
+            {
+              "x": 77,
+              "y": 550,
+              "width": 93,
+              "height": 194
+            },
+            {
+              "x": 333,
+              "y": 550,
+              "width": 106,
+              "height": 194
+            },
+            {
+              "x": 590,
+              "y": 550,
+              "width": 101,
+              "height": 194
+            },
+            {
+              "x": 846,
+              "y": 550,
+              "width": 93,
+              "height": 194
+            },
+            {
+              "x": 1101,
+              "y": 550,
+              "width": 108,
+              "height": 192
+            },
+            {
+              "x": 1359,
+              "y": 550,
+              "width": 102,
+              "height": 194
+            }
+          ]
+        },
+        {
+          "shiftX": 0,
+          "shiftY": -1,
+          "bounds": [
+            {
+              "x": 81,
+              "y": 806,
+              "width": 95,
+              "height": 194
+            },
+            {
+              "x": 328,
+              "y": 806,
+              "width": 104,
+              "height": 195
+            },
+            {
+              "x": 590,
+              "y": 806,
+              "width": 98,
+              "height": 195
+            },
+            {
+              "x": 850,
+              "y": 806,
+              "width": 95,
+              "height": 194
+            },
+            {
+              "x": 1095,
+              "y": 806,
+              "width": 106,
+              "height": 192
+            },
+            {
+              "x": 1361,
+              "y": 806,
+              "width": 95,
+              "height": 194
+            }
+          ]
+        }
+      ]
+    },
+    "rui": {
+      "columns": 8,
+      "file": "assets/visual/characters/survivors/rui-walk.png",
+      "sourceSha256": "f1401e24cab0e2ba14743666e2bcd1abf65216073125660abaa16096a62b7fee",
+      "scale": 0.24744897959183673,
+      "rows": [
+        {
+          "shiftX": 17,
+          "shiftY": 21,
+          "bounds": [
+            {
+              "x": 59,
+              "y": 15,
+              "width": 105,
+              "height": 196
+            },
+            {
+              "x": 281,
+              "y": 15,
+              "width": 104,
+              "height": 196
+            },
+            {
+              "x": 502,
+              "y": 15,
+              "width": 105,
+              "height": 191
+            },
+            {
+              "x": 724,
+              "y": 15,
+              "width": 105,
+              "height": 196
+            },
+            {
+              "x": 946,
+              "y": 16,
+              "width": 105,
+              "height": 195
+            },
+            {
+              "x": 1168,
+              "y": 16,
+              "width": 104,
+              "height": 194
+            },
+            {
+              "x": 1389,
+              "y": 15,
+              "width": 105,
+              "height": 191
+            },
+            {
+              "x": 1612,
+              "y": 15,
+              "width": 105,
+              "height": 196
+            }
+          ]
+        },
+        {
+          "shiftX": 17,
+          "shiftY": 20,
+          "bounds": [
+            {
+              "x": 59,
+              "y": 237,
+              "width": 104,
+              "height": 196
+            },
+            {
+              "x": 281,
+              "y": 237,
+              "width": 104,
+              "height": 196
+            },
+            {
+              "x": 502,
+              "y": 237,
+              "width": 105,
+              "height": 196
+            },
+            {
+              "x": 724,
+              "y": 237,
+              "width": 105,
+              "height": 196
+            },
+            {
+              "x": 946,
+              "y": 237,
+              "width": 104,
+              "height": 196
+            },
+            {
+              "x": 1168,
+              "y": 237,
+              "width": 104,
+              "height": 196
+            },
+            {
+              "x": 1389,
+              "y": 237,
+              "width": 105,
+              "height": 196
+            },
+            {
+              "x": 1612,
+              "y": 238,
+              "width": 105,
+              "height": 192
+            }
+          ]
+        },
+        {
+          "shiftX": 18,
+          "shiftY": 22,
+          "bounds": [
+            {
+              "x": 56,
+              "y": 452,
+              "width": 109,
+              "height": 200
+            },
+            {
+              "x": 276,
+              "y": 452,
+              "width": 106,
+              "height": 200
+            },
+            {
+              "x": 499,
+              "y": 452,
+              "width": 105,
+              "height": 201
+            },
+            {
+              "x": 720,
+              "y": 452,
+              "width": 106,
+              "height": 201
+            },
+            {
+              "x": 943,
+              "y": 455,
+              "width": 113,
+              "height": 197
+            },
+            {
+              "x": 1165,
+              "y": 452,
+              "width": 106,
+              "height": 196
+            },
+            {
+              "x": 1386,
+              "y": 452,
+              "width": 107,
+              "height": 201
+            },
+            {
+              "x": 1609,
+              "y": 453,
+              "width": 106,
+              "height": 200
+            }
+          ]
+        },
+        {
+          "shiftX": 19,
+          "shiftY": 24,
+          "bounds": [
+            {
+              "x": 56,
+              "y": 676,
+              "width": 107,
+              "height": 195
+            },
+            {
+              "x": 276,
+              "y": 676,
+              "width": 108,
+              "height": 197
+            },
+            {
+              "x": 499,
+              "y": 676,
+              "width": 106,
+              "height": 196
+            },
+            {
+              "x": 721,
+              "y": 676,
+              "width": 106,
+              "height": 197
+            },
+            {
+              "x": 943,
+              "y": 676,
+              "width": 106,
+              "height": 196
+            },
+            {
+              "x": 1164,
+              "y": 676,
+              "width": 107,
+              "height": 193
+            },
+            {
+              "x": 1386,
+              "y": 676,
+              "width": 107,
+              "height": 194
+            },
+            {
+              "x": 1610,
+              "y": 676,
+              "width": 107,
+              "height": 194
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

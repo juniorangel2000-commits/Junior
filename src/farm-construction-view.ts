@@ -5,7 +5,7 @@ import type {SaveData,TilePoint} from './types';
 import {FARM_BUILDINGS,type FarmKind} from './data/farm-buildings';
 import {farmSites,farmStage} from './systems/farm-construction';
 import {drawGate} from './fence-art';
-export function preloadFarmConstructionArt(scene:Phaser.Scene):void{scene.load.image('farm-aprisco-source','assets/visual/farm/aprisco.png');scene.load.image('farm-pigsty-source','assets/visual/farm/pigsty.png');scene.load.image('farm-stable-source','assets/visual/farm/stable.png');scene.load.image('farm-stable-stages-source','assets/visual/farm/stable-stages.png');scene.load.image('farm-coop-open-source','assets/visual/farm/coop.png');scene.load.image('farm-buildings-source','assets/visual/farm/buildings.png');}
+export function preloadFarmConstructionArt(scene:Phaser.Scene):void{scene.load.image('farm-aprisco-source','assets/visual/farm/aprisco.png');scene.load.image('farm-pigsty-source','assets/visual/farm/pigsty.png');scene.load.image('farm-pigsty-open-source','assets/visual/farm/pigsty-open-source.png');scene.load.image('farm-stable-source','assets/visual/farm/stable.png');scene.load.image('farm-stable-stages-source','assets/visual/farm/stable-stages.png');scene.load.image('farm-coop-open-source','assets/visual/farm/coop.png');scene.load.image('farm-buildings-source','assets/visual/farm/buildings.png');}
 function texture(scene:Phaser.Scene,kind:FarmKind,stage:0|1|2):string{
  const key=`farm-building-${kind}-${stage}`;if(scene.textures.exists(key))return key;
  const stable=kind==='stable'?stableAtlas.frames[`stable-${stage}` as keyof typeof stableAtlas.frames]:undefined;
@@ -23,15 +23,13 @@ function pigstyGate(scene:Phaser.Scene,key:string,open:boolean):string{
  if(!open)return key;const out=key+'-open';if(scene.textures.exists(out))return out;
  const src=scene.textures.get(key).getSourceImage()as HTMLCanvasElement,c=document.createElement('canvas');c.width=src.width;c.height=src.height;
  const x=c.getContext('2d')!;x.imageSmoothingEnabled=false;x.drawImage(src,0,0);
- x.clearRect(342,778,142,177);x.drawImage(src,500,580,142,177,342,778,142,177);
- // Topo do vão misturado à terra logo acima, para não deixar emenda.
- const fade=document.createElement('canvas');fade.width=142;fade.height=28;const f=fade.getContext('2d')!;
- f.drawImage(src,342,740,142,38,0,0,142,28);f.globalCompositeOperation='destination-in';
- const g=f.createLinearGradient(0,0,0,28);g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(1,'rgba(0,0,0,0)');f.fillStyle=g;f.fillRect(0,0,142,28);
- x.drawImage(fade,342,778);
- // Folha aberta vista de lado: a tábua da borda, presa às dobradiças.
- x.drawImage(src,322,780,16,172,338,780,16,172);x.fillStyle='#2d1c10';x.fillRect(354,780,2,172);
- x.drawImage(src,295,815,47,130,295,815,47,130);
+ // Apenas a região da folha muda; telhado, paredes e cerca ficam pixel a pixel
+ // iguais ao estado fechado, mesmo que a fonte gerada tenha outra resolução.
+ const leaf=scene.textures.get('farm-pigsty-open-source').getSourceImage()as HTMLImageElement;
+ const rect={x:318/816,y:775/967,w:166/816,h:192/967};
+ x.clearRect(rect.x*c.width,rect.y*c.height,rect.w*c.width,rect.h*c.height);
+ x.drawImage(leaf,rect.x*leaf.width,rect.y*leaf.height,rect.w*leaf.width,rect.h*leaf.height,
+   rect.x*c.width,rect.y*c.height,rect.w*c.width,rect.h*c.height);
  scene.textures.addCanvas(out,c)?.setFilter(Phaser.Textures.FilterMode.NEAREST);return out;
 }
 function buildingLayer(scene:Phaser.Scene,key:string,kind:FarmKind,front:boolean):string{

@@ -14,15 +14,37 @@ fs.mkdirSync(out,{recursive:true});
   await page.goto(process.env.QA_URL||'http://127.0.0.1:5190');
   await page.locator('#new-game').click();await page.locator('#character-name').fill('Rotinas da vila');await page.getByRole('button',{name:'Começar minha história'}).click();
   await page.waitForFunction(()=>{document.querySelector('[data-skip-intro]:not([hidden]):not([disabled])')?.click();return document.querySelector('#ui')?.dataset.area==='property'});
+  if(process.argv.includes('--survivors')){
+   await page.evaluate(async()=>{
+    window.game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;window.vale=game.scene.getScene('Vale');if(vale.inHome)vale.leaveHome();game.loop.sleep();
+    window.survivors=vale.survivors;window.survivorRules=await import('/src/systems/property-survivors.ts');vale.state.villageSurvivors=['marina','rui'];vale.state.day=1;vale.state.time=7*60;survivors.update(0,0);
+    window.starts=Object.fromEntries([...survivors.actors].map(([id,a])=>[id,{...a.pos}]));window.realBlocked=survivors.host.blocked;survivors.host.blocked=()=>true;vale.state.time=18*60+10;
+   });
+   const held=await page.evaluate(()=>{
+    for(let i=0;i<120;i++)survivors.update(0,100);
+    return{starts,ends:Object.fromEntries([...survivors.actors].map(([id,a])=>[id,{...a.pos}]))};
+   });assert.deepEqual(held.ends,held.starts);
+   const moved=await page.evaluate(()=>{
+    survivors.host.blocked=realBlocked;const stats=Object.fromEntries([...survivors.actors].map(([id,a])=>[id,{maxStep:0,frames:[],walked:0,old:{...a.pos},arrived:false}]));
+    for(let tick=0;tick<1800;tick++){
+     survivors.update(0,100);
+     for(const[id,a]of survivors.actors){const st=stats[id],d=Math.hypot(a.pos.x-st.old.x,a.pos.y-st.old.y);st.maxStep=Math.max(st.maxStep,d);st.walked+=d;st.old={...a.pos};if(a.moving){if(!a.sprite.texture.key.startsWith('survivor-walk-'))throw Error('pose parada durante caminhada');const f=Number(a.sprite.frame.name);if(!st.frames.includes(f))st.frames.push(f);}const goal=survivors.freeTile(survivorRules.survivorActivity(id,vale.state).point);st.arrived=Math.hypot(a.pos.x-goal.x,a.pos.y-goal.y)<6;}
+     if(Object.values(stats).every(s=>s.arrived))break;
+    }
+    return stats;
+   });
+   for(const st of Object.values(moved)){assert.ok(st.arrived&&st.walked>20);assert.ok(st.maxStep<=8.401);assert.ok(st.frames.length>=2);}
+   assert.deepEqual(errors,[]);fs.writeFileSync(`${out}/sobreviventes-validacao.json`,JSON.stringify({held,moved,errors},null,2)+'\n');console.log('QA dos sobreviventes: passadas próprias, bloqueio e retomada OK');return;
+  }
   if(process.argv.includes('--property-visit')){
    await page.evaluate(async()=>{
-    window.game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;window.vale=game.scene.getScene('Vale');game.loop.sleep();
+    window.game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;window.vale=game.scene.getScene('Vale');if(vale.inHome)vale.leaveHome();game.loop.sleep();
     window.visitRules=await import('/src/systems/property-visits.ts');
     vale.state.npcSocial={version:1,players:{icaro:{affinity:8}},pairs:{},memories:{}};
     for(let day=2;day<400;day++){vale.state.day=day;if(visitRules.propertyVisitor(vale.state)==='icaro')break;}
     vale.state.time=visitRules.PROPERTY_VISIT.start;window.visit=vale.visit;window.realBlocked=visit.host.blocked;visit.host.blocked=()=>true;
    });
-   await page.waitForFunction(()=>{visit.update(0,0);return visit.visitor==='icaro'});
+   await page.waitForFunction(()=>{game.step(performance.now(),0);visit.update(0,0);return visit.visitor==='icaro'});
    const blocked=await page.evaluate(()=>{
     const start={...visit.pos};let maxStep=0,previous=start;
     for(let i=0;i<120;i++){visit.update(0,100);maxStep=Math.max(maxStep,Math.hypot(visit.pos.x-previous.x,visit.pos.y-previous.y));previous={...visit.pos};}

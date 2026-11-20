@@ -1,0 +1,42 @@
+{
+  "checks": [
+    {
+      "name": "visita-com-caminho-fechado",
+      "start": {
+        "x": 2992,
+        "y": 1680
+      },
+      "end": {
+        "x": 2992,
+        "y": 1680
+      },
+      "maxStep": 0,
+      "seconds": 12,
+      "key": "village-npc-icaro"
+    },
+    {
+      "name": "visita-retoma-ate-a-casa",
+      "arrived": true,
+      "maxStep": 8.400000000000091,
+      "walked": 2643.222812872,
+      "steps": 319,
+      "end": {
+        "x": 881.4072739331395,
+        "y": 593.4072739331395
+      }
+    },
+    {
+      "name": "visita-volta-a-estrada",
+      "gone": true,
+      "maxStep": 8.400000000000091,
+      "walked": 2642.8502884190357,
+      "steps": 316,
+      "end": {
+        "x": 2992,
+        "y": 1680
+      },
+      "visible": false
+    }
+  ],
+  "errors": []
+}
