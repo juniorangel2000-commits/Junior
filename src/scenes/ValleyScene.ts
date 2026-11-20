@@ -111,7 +111,8 @@ import type { HomeEditAction } from '../home-ui';
 import {drawHouseWindowGlow} from '../house-sprites';
 import { baseCameraZoom, homeFitsCamera, loadCameraZoom, saveCameraZoom, stepCameraZoom } from '../camera-zoom';
 import { MapEditor } from '../map-editor';
-import { ToolUse, TOOL_USE_DURATION, type ToolStrike } from '../systems/tool-use';
+import { ToolUse, ToolSwing, TOOL_USE_DURATION, type ToolStrike } from '../systems/tool-use';
+import { readyGatherCopy, gatherCopyStillReady, type GatherAction } from '../systems/tool-gather';
 import { ToolVisual } from '../tool-visual';
 import { isAnimatedTool } from '../data/tool-art';
 
@@ -121,6 +122,10 @@ const DEFAULT_PROFILE: CharacterProfile = { name: 'Viajante', skin: '#d9a276', h
 /** Arte das bancadas de 2 blocos e a largura na tela (2 blocos + uma sobra de 6 px). */
 const WIDE_BENCH_ART={workbench:'asset-workbench-wide',constructionBench:'asset-construction-bench'} as const;
 const WIDE_BENCH_WIDTH=70;
+type PropertyGather =
+  | (GatherAction<'shovel'> & { target: TilePoint })
+  | (GatherAction<'sickle'> & { nodes: ResourceNode[] });
+
 export class ValleyScene extends Phaser.Scene {
  private farmView?:FarmConstructionView;
  private farmRuntime=createFarmRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.inventory.data,()=>this.player,(x,y)=>this.farmPlacementTileReason(x,y),()=>{this.farmView?.refresh();this.updateHUD();});
@@ -131,7 +136,7 @@ export class ValleyScene extends Phaser.Scene {
   player:()=>this.player,space:()=>this.inHome?undefined:'property',bounds:()=>({width:WORLD_WIDTH*TILE,height:WORLD_HEIGHT*TILE}),
   blocked:(x,y)=>this.world.isSolidPoint(x,y)||farmPointBlocked(this.state,x,y)||this.building.isBlocked(Math.floor(x/TILE),Math.floor(y/TILE)),
   placement:(x,y)=>this.farmPlacementTileReason(x,y),actors:()=>[...(this.animals?.animals.filter(a=>a.sprite.visible)??[]),...(this.state.bentoTravel?.trip?.area==='property'?[this.state.bentoTravel.trip]:[])],
-  enabled:()=>this.canPlay()&&!this.inHome&&!this.player.isSwimming&&!this.toolUse.active,
+  enabled:()=>this.canPlay()&&!this.inHome&&!this.player.isSwimming&&!this.toolBusy,
  };
  private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.inventory.data,()=>this.player,()=>this.inHome?'home':'property',(x,y)=>this.blockedPoint(x,y)||this.swimmingPoint(x,y)>0,()=>this.canPlay(),()=>{this.tool=this.state.equippedTool;this.updateToolVisual();this.updateHUD();});
  getGroundItemRuntime(){return this.player?this.groundRuntime:undefined;}
@@ -160,6 +165,13 @@ export class ValleyScene extends Phaser.Scene {
   private survivors?:PropertySurvivorsView;
   private tool: Tool = 'hand';
   private toolUse = new ToolUse();
+  private gather = new ToolSwing<PropertyGather>();
+  private get toolBusy(): boolean { return this.toolUse.active || this.gather.active; }
+
+  private cancelToolActions(): void {
+    this.toolUse.cancel();
+    this.gather.cancel();
+  }
   private toolVisual?: ToolVisual;
   private cropSprites: Phaser.GameObjects.Sprite[] = [];
   private buildingSprites: Phaser.GameObjects.Sprite[] = [];
@@ -364,7 +376,7 @@ export class ValleyScene extends Phaser.Scene {
 
   setPaused(value: boolean): void {
     if(value&&this.homeTransitionActive){this.homeTransitionActive=false;this.homeTransitionToken++;this.cameras.main.fadeIn(SCENE_FADE_MS);}
-    if (value) { this.restoreSoilHeld = false; this.toolUse.cancel(); this.toolVisual?.hide(); }
+    if (value) { this.restoreSoilHeld = false; this.cancelToolActions(); this.toolVisual?.hide(); }
     this.paused = value;
     this.ui.updateCameraZoom(this.cameraZoomFactor, !value && this.running);
     this.input.keyboard?.resetKeys();
@@ -387,7 +399,7 @@ export class ValleyScene extends Phaser.Scene {
     if(this.state?.animalEscort){this.ui.toast('Leve o animal à propriedade ou solte a corda com G antes de editar.');return;}
     if(this.editingMap)return;
     const wasRunning=this.running,original=this.snapshotState(),base=wasRunning?original:loadSave()??createNewSave(DEFAULT_PROFILE);
-    this.editingMap=true;this.paused=true;this.adminMenu?.close();this.cancelCrafting();this.toolUse.cancel();this.ui.showMapEditorMode();this.input.keyboard?.resetKeys();
+    this.editingMap=true;this.paused=true;this.adminMenu?.close();this.cancelCrafting();this.cancelToolActions();this.ui.showMapEditorMode();this.input.keyboard?.resetKeys();
     this.scene.setVisible(false);this.scene.pause();this.scene.launch('Editor',{save:base,area:'property',onClose:(updated:SaveData|undefined,area:'property'|'forest'|'village')=>{
       this.scene.resume();this.scene.setVisible(true);this.editingMap=false;this.loadState(updated??original);this.running=updated?true:wasRunning;this.paused=!this.running;
       if(this.running){this.ui.showHUD();this.updateHUD();if(updated){this.persist();if(area==='forest')this.enterForest(updated);else if(area==='village')this.enterVillage(updated);}}
@@ -427,7 +439,7 @@ export class ValleyScene extends Phaser.Scene {
     if(!saved&&this.state.animalEscort){this.ui.toast('Conclua a condução ou solte a corda com G antes de sair.');return;}
     if(this.forestActive||this.villageActive)return;
     this.world.well?.cancel();
-    this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
+    this.cancelCrafting();this.cancelToolActions();this.toolVisual?.hide();
     const data=saved??this.snapshotState();if(data.activeArea!=='survivorCamp')data.activeArea='forest';delete data.homePosition;
     this.forestActive=true;this.paused=true;this.input.keyboard?.resetKeys();
     const root=document.querySelector<HTMLElement>('#ui')!;root.style.display='none';
@@ -448,7 +460,7 @@ export class ValleyScene extends Phaser.Scene {
   private enterFarmInterior(siteId:number):void {
     if(blockMountedEntry(this.player,this.ui))return;
     if(this.forestActive||this.villageActive||this.state.animalEscort||this.inHome){if(this.state.animalEscort)this.ui.toast('Solte a corda antes de entrar.');return;}
-    this.world.well?.cancel();this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
+    this.world.well?.cancel();this.cancelCrafting();this.cancelToolActions();this.toolVisual?.hide();
     const data=this.snapshotState();if(!saveGame(data)){this.ui.toast('Não foi possível salvar. A entrada foi cancelada.');return;}
     this.villageActive=true;this.paused=true;this.input.keyboard?.resetKeys();this.cameras.main.fadeOut(SCENE_FADE_MS);
     this.time.delayedCall(SCENE_FADE_MS,()=>{this.scene.sleep();this.scene.launch('Interior',{save:data,ui:this.ui,siteId,onReturn:(updated:SaveData,title=false)=>{
@@ -459,7 +471,7 @@ export class ValleyScene extends Phaser.Scene {
   }
   private enterFields(saved?:SaveData):void {
     if(this.forestActive||this.villageActive||this.state.animalEscort)return;
-    this.world.well?.cancel();this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
+    this.world.well?.cancel();this.cancelCrafting();this.cancelToolActions();this.toolVisual?.hide();
     const data=saved??this.snapshotState();data.activeArea='openFields';delete data.homePosition;
     if(!saved)data.openFieldsPosition={...FIELDS_ENTRY};
     if(!saveGame(data)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}
@@ -474,7 +486,7 @@ export class ValleyScene extends Phaser.Scene {
 
   private enterLake(saved?:SaveData):void {
     if(this.forestActive||this.villageActive||this.state.animalEscort)return;
-    this.world.well?.cancel();this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
+    this.world.well?.cancel();this.cancelCrafting();this.cancelToolActions();this.toolVisual?.hide();
     const data=saved??this.snapshotState();
     if(!saved)data.fishingLakePosition={x:(LAKE_PROPERTY_ENTRY.x+.5)*32,y:(LAKE_PROPERTY_ENTRY.y+.5)*32,direction:'up'};
     if(data.activeArea!=='highland')data.activeArea='fishingLake';delete data.homePosition;
@@ -494,7 +506,7 @@ export class ValleyScene extends Phaser.Scene {
     if(saved?.activeArea!=='cityForest'&&!villageAccessUnlocked(saved??this.state)){this.ui.toast(VILLAGE_LOCK_MESSAGE);return;}
     if(this.forestActive||this.villageActive)return;
     if(!saved&&this.state.animalEscort){this.ui.toast('Deixe o animal na propriedade ou solte a corda com G antes de visitar a vila.');return;}
-    this.world.well?.cancel();this.cancelCrafting();this.toolUse.cancel();this.toolVisual?.hide();
+    this.world.well?.cancel();this.cancelCrafting();this.cancelToolActions();this.toolVisual?.hide();
     const data=saved??this.snapshotState(),resumeCityForest=data.activeArea==='cityForest';data.activeArea='village';delete data.homePosition;
     this.villageActive=true;this.paused=true;this.input.keyboard?.resetKeys();
     const root=document.querySelector<HTMLElement>('#ui')!;root.style.display='none';
@@ -526,7 +538,7 @@ export class ValleyScene extends Phaser.Scene {
     this.homeTransitionActive=true;
     const token=++this.homeTransitionToken;
     this.input.keyboard?.resetKeys();
-    this.toolUse.cancel();this.toolVisual?.hide();
+    this.cancelToolActions();this.toolVisual?.hide();
     this.cameras.main.fadeOut(SCENE_FADE_MS);
     this.time.delayedCall(SCENE_FADE_MS,()=>{
       if(token!==this.homeTransitionToken||!this.homeTransitionActive)return;
@@ -541,7 +553,7 @@ export class ValleyScene extends Phaser.Scene {
     this.world.well?.cancel();
     if (this.inHome) return;
     this.homePassage.reset();this.homeDoorWarningShown=false;
-    this.toolUse.cancel(); this.toolVisual?.hide();
+    this.cancelToolActions(); this.toolVisual?.hide();
     this.outdoorPosition = this.playerPosition();
     // Preserve each object's visibility: title lighting and hidden roofs must not reappear on leaving.
     this.outdoorVisibility.clear();
@@ -653,7 +665,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   setTitleBackground(mode: TitleBackgroundMode): void {
-    if (mode !== 'off') { this.toolUse.cancel(); this.toolVisual?.hide(); }
+    if (mode !== 'off') { this.cancelToolActions(); this.toolVisual?.hide(); }
     if (mode !== 'off') gameAudio.setScene('title');
     const wasOff = this.titleBackgroundMode === 'off';
     this.titleBackgroundMode = mode;
@@ -689,7 +701,7 @@ export class ValleyScene extends Phaser.Scene {
       this.ui.toast('Fabrique essa ferramenta primeiro. Abra a fabricação com C.');
       return;
     }
-    if (this.tool !== tool) this.toolUse.cancel();
+    if (this.tool !== tool) this.cancelToolActions();
     this.tool = tool;
     if(tool==='roof')this.rotation=(this.rotation%2) as 0|1;
     this.updateToolVisual();
@@ -765,7 +777,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   async useVillageItem(item:import('../types').ItemId):Promise<void>{
-    if(!this.canPlay()||this.player.isSwimming||this.toolUse.active||this.time.now<this.nextInteractionAt)return;
+    if(!this.canPlay()||this.player.isSwimming||this.toolBusy||this.time.now<this.nextInteractionAt)return;
     const machineResult=useMachineItem(this.machineRuntime,item);if(machineResult){this.ui.toast(machineResult.message);return;}
     const cropId=cropFromSeed(item);if(cropId){if(!this.inventory.has(item))return;this.state.selectedCrop=cropId;this.selectTool('plant');this.ui.toast('Sementes de '+cropDefinition(cropId).name.toLowerCase()+' equipadas. Escolha um canteiro e use E ou clique.');return;}
     if((item==='sickle'||item==='shovel')&&!this.inventory.has(item))return;
@@ -776,15 +788,9 @@ export class ValleyScene extends Phaser.Scene {
     const water=(x:number,y:number)=>this.world.isSwimmingPoint(x,y);
     if(item==='furniture'){if(this.inHome){this.ui.toast('Posicione bancos e cercas no terreno da propriedade.');return;}if(!this.inventory.has(item))return;this.selectTool(item==='furniture'?'bench':'fence');this.ui.toast(item==='furniture'?'Escolha um espaço livre para o banco. R gira a vista; clique ou E coloca.':'Escolha onde colocar o módulo de cerca. Os trechos se conectam automaticamente.');return;}
     if(item==='doorKit'||item==='windowKit'){this.ui.toast('Leve estes materiais até a obra para concluir a construção.');return;}
-    if(item==='shovel'){
-      if(this.inHome||toolCondition(this.state,'shovel').durability<=0){this.ui.toast('A pá precisa ser reparada ou usada fora da casa.');return;}
-      const count=toolWork(this.state,'shovel'),result=this.farming.prepare(point.x,point.y,this.inventory,this.soilGround());if(result.ok){for(let n=1;n<count;n++)if(this.clearReach({x:point.x+n,y:point.y}))this.farming.prepare(point.x+n,point.y,this.inventory,this.soilGround());spendDurability(this.state,'shovel');this.toolVisual?.playGather('shovel',directionFromVector(this.player.facing.x,this.player.facing.y),this.player,toolCondition(this.state,'shovel').tier,this.player.sprite);this.nextInteractionAt=this.time.now+460;}this.ui.toast(result.message);this.afterAction();return;
-    }
-    if(item==='sickle'){
-      if(this.inHome||toolCondition(this.state,'sickle').durability<=0){this.ui.toast('A foice precisa ser reparada ou usada fora da casa.');return;}
-      const nodes=this.world.resources.filter(n=>n.kind==='fiber'&&Math.hypot(n.x*32+16-this.player.x,n.y*32+16-this.player.y)<80).slice(0,toolWork(this.state,'sickle'));let done=false;
-      for(const n of nodes){const result=this.resources.hit(n,'hand',this.inventory,this.state,undefined,resourceGroundSink(this.state,'property',n));if(result.depleted){this.world.removeResource(n.id);if(!this.resourceLifecycle?.collected(n))this.state.depletedResources.push(n.id);done=true;}}
-      if(done){spendDurability(this.state,'sickle');this.toolVisual?.playGather('sickle',directionFromVector(this.player.facing.x,this.player.facing.y),this.player,toolCondition(this.state,'sickle').tier,this.player.sprite);this.nextInteractionAt=this.time.now+460;}this.ui.toast(done?'Vegetação recolhida.':'Aproxime-se de uma planta coletável.');this.afterAction();return;
+    if(item==='shovel'||item==='sickle'){
+      this.startGather(item,point);
+      return;
     }
 
     const near=Array.from({length:7},(_,a)=>a-3).some(dx=>Array.from({length:7},(_,a)=>a-3).some(dy=>water(this.player.x+dx*16,this.player.y+dy*16)));
@@ -794,6 +800,77 @@ export class ValleyScene extends Phaser.Scene {
       this.setPaused(true);const message=await fishAtBank(this.state,item==='net',()=>{Object.assign(this.inventory.data,this.state.inventory);this.updateHUD();},createFishingCast(this,this.player,(x,y)=>this.swimmingPoint(x,y)>0,(x,y)=>!this.movementBlockedPoint(x,y),item==='net'));this.setPaused(false);this.ui.toast(message);
     }else{const result=useConsumable(this.state,item,point,(x,y)=>machineReserved(this.state,'property',x,y)||this.world.isBlocked(x,y)||this.building.isBlocked(x,y)||planting&&((farmReserved(this.state,x,y)||machineReserved(this.state,'property',x,y))||!this.world.canPlantTree(x,y)||!naturalPlantGround(this.state.mapEdits?.terrain[`${x},${y}`])||this.farming.isPrepared(x,y)||!!this.world.resourceAt(x,y)||this.world.resources.some(n=>n.kind==='standingTree'&&Math.hypot(n.x-x,n.y-y)<2)));if(result.ok){Object.assign(this.inventory.data,this.state.inventory);if(planting)this.resourceLifecycle?.tick(true);this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);this.persist();}this.ui.toast(result.message);}
     this.updateHUD();
+  }
+
+  private startGather(tool: 'shovel' | 'sickle', target: TilePoint): void {
+    if (this.player.mounted) { this.ui.toast('Desça do cavalo para usar a ferramenta.'); return; }
+    const label = tool === 'shovel' ? 'A pá' : 'A foice';
+    const copy = readyGatherCopy(this.state, tool);
+    if (this.inHome || !copy) {
+      this.ui.toast(label + ' precisa ser reparada ou usada fora da casa.');
+      return;
+    }
+    this.inventory.data.toolInstances = this.state.inventory.toolInstances;
+
+    if (tool === 'shovel') {
+      const reason = this.farming.prepareReason(target.x, target.y, this.inventory, this.soilGround());
+      if (reason || !this.clearReach(target)) {
+        this.ui.toast(reason || 'Aproxime-se pelo lado livre do canteiro.');
+        return;
+      }
+      const direction = directionFromVector(this.player.facing.x, this.player.facing.y);
+      this.gather.start({ tool, target, direction, ...copy });
+    } else {
+      const nodes = this.world.resources
+        .filter(node => node.kind === 'fiber' && this.tileDistance(node) < 80 && this.clearReach(node))
+        .sort((a, b) => this.tileDistance(a) - this.tileDistance(b))
+        .slice(0, toolWork(this.state, tool));
+      if (!nodes.length) { this.ui.toast('Aproxime-se de uma planta coletável.'); return; }
+      const direction = directionFromVector(nodes[0].x * TILE + TILE / 2 - this.player.x, nodes[0].y * TILE + TILE / 2 - this.player.y);
+      this.player.facing = directionVector(direction);
+      this.gather.start({ tool, nodes, direction, ...copy });
+    }
+    this.updateToolVisual();
+  }
+
+  private applyGatherImpact(action: PropertyGather): void {
+    if (!this.canPlay() || this.inHome || this.player.isSwimming || this.player.mounted) return;
+    this.state.inventory = { ...this.inventory.data };
+    if (!gatherCopyStillReady(this.state, action)) return;
+
+    if (action.tool === 'shovel') {
+      const { x, y } = action.target;
+      if (this.tileDistance(action.target) > 78 || !this.clearReach(action.target)) return;
+      const result = this.farming.prepare(x, y, this.inventory, this.soilGround());
+      if (result.ok) {
+        const count = toolWork(this.state, action.tool);
+        for (let n = 1; n < count; n++) {
+          if (this.clearReach({ x: x + n, y })) this.farming.prepare(x + n, y, this.inventory, this.soilGround());
+        }
+        spendDurability(this.state, action.tool);
+        this.resourceFeedback(action.target);
+        gameAudio.play('plant');
+      }
+      this.ui.toast(result.message);
+    } else {
+      let done = false;
+      for (const target of action.nodes) {
+        const node = this.world.resourceAt(target.x, target.y);
+        if (node?.id !== target.id || node.kind !== 'fiber' || this.tileDistance(node) >= 80 || !this.clearReach(node)) continue;
+        const result = this.resources.hit(node, 'hand', this.inventory, this.state, undefined, resourceGroundSink(this.state, 'property', node));
+        if (!result.depleted) continue;
+        this.world.removeResource(node.id);
+        if (!this.resourceLifecycle?.collected(node)) this.state.depletedResources.push(node.id);
+        this.resourceFeedback(node);
+        done = true;
+      }
+      if (done) {
+        spendDurability(this.state, action.tool);
+        gameAudio.play('plant');
+      }
+      this.ui.toast(done ? 'Vegetação recolhida.' : 'Aproxime-se de uma planta coletável.');
+    }
+    this.afterAction();
   }
 
   captureMap(): Promise<string> {
@@ -848,7 +925,7 @@ export class ValleyScene extends Phaser.Scene {
     this.homeTransitionActive=false;this.homeTransitionToken++;this.homePassage.reset();this.homeDoorWarningShown=false;
     this.fieldsPassage.reset();this.exitPassage.reset();this.villagePassage.reset();this.lakePassage.reset();this.exitWarningShown=false;
     this.daylight?.destroy();
-    this.toolUse.cancel(); this.toolVisual = undefined;
+    this.cancelToolActions(); this.toolVisual = undefined;
     this.craftJob = null;
     this.inHome = false;
     this.homeView = undefined;
@@ -942,7 +1019,7 @@ export class ValleyScene extends Phaser.Scene {
   private beginRescueScene():void {
     if(!this.inHome||!this.state.mineRescue||this.rescueStarting)return;
     this.rescueStarting=true;this.ui.setGameplayLocked(true);const token=++this.rescueToken;
-    this.paused=true;this.toolUse.cancel();this.toolVisual?.hide();this.input.keyboard?.resetKeys();
+    this.paused=true;this.cancelToolActions();this.toolVisual?.hide();this.input.keyboard?.resetKeys();
     this.rescueView=new MineRescueView(this,this.snapshotState());this.player.sprite.setVisible(false);this.bentoView?.update();
     this.cameras.main.fadeIn(SCENE_FADE_MS);
     this.time.delayedCall(SCENE_FADE_MS+650,()=>{
@@ -1136,7 +1213,7 @@ export class ValleyScene extends Phaser.Scene {
   };
   private handleVisibility = (): void => {
     if (document.hidden && this.running) {
-      this.toolUse.cancel(); this.toolVisual?.hide();
+      this.cancelToolActions(); this.toolVisual?.hide();
       this.persist(); this.input.keyboard?.resetKeys();
     }
   };
@@ -1254,6 +1331,7 @@ export class ValleyScene extends Phaser.Scene {
     return '';
   }
   private interact(explicitTile?: TilePoint, restoreSoil = false): void {
+    if (this.gather.active) return;
     if(this.canPlay()&&!this.inHome&&!this.player.isSwimming&&isFarmTool(this.tool)){
       const p=explicitTile??this.targetTile(),result=placeFarmBase(this.farmRuntime,this.tool.slice(5)as FarmKind,p.x,p.y);this.ui.toast(result.message);if(result.ok){gameAudio.play('build');this.selectTool('hand');}return;
     }
@@ -1273,7 +1351,7 @@ export class ValleyScene extends Phaser.Scene {
       this.setPaused(true);openBlacksmithPanel(()=>this.snapshotState(),change=>{const before=this.snapshotState(),draft=structuredClone(before),r=change(draft);if(r.ok){if(!saveGame(draft))return{ok:false,message:'Falha ao salvar. Operação cancelada.'};this.state=draft;Object.assign(this.inventory.data,draft.inventory);this.updateHUD();}return r;},()=>this.setPaused(false),true);return;
     }
 
-    if (!this.canPlay() || this.toolUse.active || this.world.well?.busy || this.time.now < this.nextInteractionAt) return;
+    if (!this.canPlay() || this.toolBusy || this.world.well?.busy || this.time.now < this.nextInteractionAt) return;
     if(this.bentoView?.talk())return;
     if (this.inHome) { this.interactHome(explicitTile); return; }
     if(this.player.isSwimming)return;
@@ -1294,7 +1372,7 @@ export class ValleyScene extends Phaser.Scene {
       if(this.tool!=='hand'&&this.tool!=='water'){this.ui.toast('Use as mãos ou equipe o regador para interagir com o poço.');return;}
       if(!this.state.homeSupplies?.wateringCan){this.ui.toast('Recolha o regador dentro da casa para buscar água no poço.');return;}
       if((this.state.wateringCanWater??0)>=WATER_CAPACITY){this.ui.toast('O regador já está cheio.');return;}
-      this.toolUse.cancel();this.toolVisual?.hide();this.player.facing=directionVector(directionFromVector(WELL_BASE.x-this.player.x,WELL_BASE.y-this.player.y));this.world.well.start();this.updateHUD();return;
+      this.cancelToolActions();this.toolVisual?.hide();this.player.facing=directionVector(directionFromVector(WELL_BASE.x-this.player.x,WELL_BASE.y-this.player.y));this.world.well.start();this.updateHUD();return;
     }
     if (this.tool === 'water' && this.state.homeSupplies?.wateringCan) {
       const px = Math.floor(this.player.x / TILE), py = Math.floor(this.player.y / TILE);
@@ -1495,7 +1573,11 @@ export class ValleyScene extends Phaser.Scene {
 
   private updateToolVisual(): void {
     if (!this.toolVisual) return;
-    if(this.toolVisual.sprite.getData('gathering')&&!this.player.isSwimming&&this.canPlay())return;
+    const gather = this.gather.current;
+    if (gather && !this.player.isSwimming && this.canPlay()) {
+      this.toolVisual.show(gather.tool, gather.direction, this.player.x, this.player.y, this.gather, gather.tier, this.player.sprite);
+      return;
+    }
     if (this.player.isSwimming || !this.toolUse.active || !this.canPlay() || !isAnimatedTool(this.tool) || !(this.tool === 'water' ? this.state.homeSupplies?.wateringCan : this.inventory.has(this.tool))) { this.toolVisual.hide(); return; }
     const direction = this.toolUse.current?.direction ?? directionFromVector(this.player.facing.x, this.player.facing.y);
     this.toolVisual.show(this.tool, direction, this.player.x, this.player.y, this.toolUse, this.tool==='water'?0:toolCondition(this.state,this.tool).tier,this.player.sprite);
@@ -1522,7 +1604,7 @@ export class ValleyScene extends Phaser.Scene {
       onComplete: () => ripple.destroy() });
   }
 
-  private resourceFeedback(resource: ResourceNode): void {
+  private resourceFeedback(resource: TilePoint & { kind?: ResourceNode['kind'] }): void {
     const color = resource.kind === 'vein' || resource.kind === 'stone' ? 0xbfc6ac : 0xd9b778;
     for (let i = 0; i < 5; i++) {
       const chip = this.add.rectangle(resource.x * TILE + 16, resource.y * TILE + 12, 3, 3, color).setDepth(3600);
@@ -1707,15 +1789,15 @@ export class ValleyScene extends Phaser.Scene {
     }
     this.bentoView?.update();
     if(this.running&&rescuePending(this.state)&&!this.rescueStarting)this.beginRescueScene();
-    if (!this.canPlay()) { this.toolUse.cancel(); this.toolVisual?.hide(); return; }
+    if (!this.canPlay()) { this.cancelToolActions(); this.toolVisual?.hide(); return; }
     if(!this.inHome&&this.world.well?.advance(delta*1000)&&this.state.homeSupplies?.wateringCan&&nearPropertyWell(this.player.x,this.player.y)){
       this.state.wateringCanWater=WATER_CAPACITY;this.waterFeedback({x:Math.floor(WELL_BASE.x/TILE),y:Math.floor(WELL_BASE.y/TILE)},true);
       this.ui.toast('Regador cheio no poço · 8 regas disponíveis.');gameAudio.play('water');this.afterAction();
     }
     this.cameras.main.setLerp(1 - Math.exp(-9 * delta));
     const previousX = this.player.x, previousY = this.player.y;
-    this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(delta, this.movementBlocked, this.movementBlockedPoint, !this.toolUse.active&&!this.world.well?.busy,this.swimmingPoint,this.allowLeashMovement);
-    if(!this.player.isSwimming&&!this.toolUse.active&&!this.world.well?.busy&&this.homePassage.update({x:previousX,y:previousY},this.player,this.inHome?HOME_INTERIOR_DOORWAY:HOME_OUTDOOR_DOORWAY)){
+    this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(delta, this.movementBlocked, this.movementBlockedPoint, !this.toolBusy&&!this.world.well?.busy,this.swimmingPoint,this.allowLeashMovement);
+    if(!this.player.isSwimming&&!this.toolBusy&&!this.world.well?.busy&&this.homePassage.update({x:previousX,y:previousY},this.player,this.inHome?HOME_INTERIOR_DOORWAY:HOME_OUTDOOR_DOORWAY)){
       if(this.inHome||!this.state.animalEscort){this.changeHomeScene(!this.inHome);return;}
       if(!this.homeDoorWarningShown){this.ui.toast('Conclua a condução do animal antes de entrar em casa.');this.homeDoorWarningShown=true;}
     }else this.homeDoorWarningShown=false;
@@ -1730,9 +1812,11 @@ export class ValleyScene extends Phaser.Scene {
       if(!this.state.animalEscort){this.enterVillage();return;}
       if(!this.exitWarningShown){this.ui.toast('Deixe o animal na propriedade ou solte a corda com G antes de visitar a vila.');this.exitWarningShown=true;}
     }
-    if(this.player.isSwimming){this.tool='hand';this.state.equippedTool='hand';this.toolUse.cancel();this.toolVisual?.hide();}
+    if(this.player.isSwimming){this.tool='hand';this.state.equippedTool='hand';this.cancelToolActions();this.toolVisual?.hide();}
     const impact = this.toolUse.advance(delta);
     if (impact) this.applyToolImpact(impact);
+    const gathered = this.gather.advance(delta);
+    if (gathered) this.applyGatherImpact(gathered);
     this.updateToolVisual();
     if (!this.inHome) this.world.updateOcclusion(this.player.x, this.player.y);
     const withered = this.farming.update(delta,this.state.day);

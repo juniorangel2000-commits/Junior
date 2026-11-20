@@ -20,6 +20,8 @@ import {createMineMissionRuntime} from '../systems/mine-missions';
 import {bentoSceneWriter} from '../systems/bento-commit';
 import {installWorldCompanion} from '../dungeons/world-pet-controller';
 import {preloadPetArt} from '../dungeons/pet-sprites';
+import {ToolSwing} from '../systems/tool-use';
+import { readyGatherCopy, gatherCopyStillReady, type GatherAction } from '../systems/tool-gather';
 import {inventoryToolCondition} from '../systems/tool-instances';
 import {harvestMeadow,meadowGrowth,chopIpe,ipeStanding} from '../systems/open-fields';
 import {HORSE_ID,HORSE_NAME_MAX,TAMING_DAYS,horseTaming,feedHorse,fedToday,settleHorseTaming,applyTamingLoss,tamingPhase,feedingDay,nameHorse,startHorseEscort,transferHorseToProperty,placeBasket,pickUpBasket} from '../systems/horse-taming';
@@ -29,9 +31,10 @@ import {FIELDS_SIZE,FIELDS_ENTRY,FIELDS_EXIT,PROPERTY_FIELDS_RETURN,MEADOW_PATCH
 import {playerSpeedFactor} from '../systems/food-effects';
 import {placeHiveTrap,collectHiveTrap,nearTrap,trapHint} from '../systems/beekeeping';
 interface FieldsStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
+type FieldSwing = GatherAction<'sickle' | 'hatchet'> & { id: string };
 export class OpenFieldsScene extends Phaser.Scene{
  private state!:SaveData;private ui!:GameUI;private player!:Player;private world!:OpenFieldsWorld;private daylight!:Daylight;private farming!:Farming;private toolVisual!:ToolVisual;
- private onReturn!:FieldsStart['onReturn'];private paused=false;private leaving=false;private zoom=1;private elapsed=0;private passage=new DoorwayPassage();private swing?:{id:string;age:number;hit:boolean;ipe?:boolean};
+ private onReturn!:FieldsStart['onReturn'];private paused=false;private leaving=false;private zoom=1;private elapsed=0;private passage=new DoorwayPassage();private swing=new ToolSwing<FieldSwing>();
  private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>'openFields',fieldsBlocked,()=>!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden,()=>this.updateHUD());
  private missionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player);
  private bentoRuntime={missions:this.missionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
@@ -41,7 +44,7 @@ export class OpenFieldsScene extends Phaser.Scene{
  getMineMissionRuntime=()=>this.missionRuntime;
  getFishingState=()=>this.state;
  create(data:FieldsStart):void{
-  this.state=structuredClone(data.save);this.state.activeArea='openFields';delete this.state.homePosition;this.ui=data.ui;this.onReturn=data.onReturn;this.paused=this.leaving=false;this.elapsed=0;this.swing=undefined;this.passage.reset();gameAudio.setScene('game');setupTreeWind(this);
+  this.state=structuredClone(data.save);this.state.activeArea='openFields';delete this.state.homePosition;this.ui=data.ui;this.onReturn=data.onReturn;this.paused=this.leaving=false;this.elapsed=0;this.swing.cancel();this.passage.reset();gameAudio.setScene('game');setupTreeWind(this);
   // Cestas deixadas no chão em dias anteriores: o cavalo comeu enquanto você estava fora.
   const settled=settleHorseTaming(this.state,this.state.day,true),lostOnArrival=!settled.length&&this.horseLost();
   this.world=new OpenFieldsWorld(this,()=>this.state,{horseAte:()=>this.horseAte()});this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
@@ -101,7 +104,7 @@ export class OpenFieldsScene extends Phaser.Scene{
  }
  private updateHUD():void{if(!this.player)return;const ipe=this.trapNear()?undefined:this.ipeTarget(),horse=ipe?undefined:this.horseNear()??(this.state.animalEscort?.id===HORSE_ID?this.world.horse:undefined),hp=horse?this.horsePrompt():!ipe&&this.trapNear()?{text:trapHint(this.state,this.trapNear()!),key:'E' as const}:!ipe&&this.basketNear()?{text:'Cesta para o cavalo · E recolher',key:'E' as const}:undefined,p=ipe||hp?undefined:this.target();this.ui.updateHUD({itemQuality:this.state.itemQuality,area:'openFields',worldMapSize:{width:96,height:72},worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',inHome:false,swimming:false,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:ipe||p?'E':hp?hp.key:null,prompt:ipe?this.ipePrompt():hp?hp.text:p?p.kind==='grass'?'Cortar capim com a foice':'Colher '+(p.kind==='herb'?'ervas':'cogumelos'):this.fieldsHint(),location:'Campos Abertos',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});this.ui.updateCameraZoom(this.shownZoom,!this.paused);}
  private interact():void{
-  if(this.swing||this.paused||this.leaving||this.ui.isModalOpen())return;
+  if(this.swing.active||this.paused||this.leaving||this.ui.isModalOpen())return;
   const trap=this.trapNear();if(trap&&!this.horseNear()){this.snapshotState();const r=collectHiveTrap(this.state,trap.id,saveGame);this.ui.toast(r.message);if(r.ok)gameAudio.play('pickup');this.updateHUD();return;}
   if(this.basketNear()&&!this.horseNear()){this.snapshotState();const r=pickUpBasket(this.state,saveGame);if(r.message)this.ui.toast(r.message);this.updateHUD();return;}
   const horse=this.ipeTarget()?undefined:this.horseNear(),t=horseTaming(this.state);
@@ -114,21 +117,54 @@ export class OpenFieldsScene extends Phaser.Scene{
    const t=inventoryToolCondition(this.state.inventory,'hatchet');
    if(!this.state.inventory.hatchet||t.tier<1){this.ui.toast('Este ipê é duro demais. Você precisa de uma machadinha de ferro ou melhor.');return;}
    if(t.durability<=0){this.ui.toast('Repare esta machadinha antes de cortar o ipê.');return;}
-   const direction=directionFromVector(ipe.x-this.player.x,ipe.y-this.player.y);this.player.facing=directionVector(direction);this.swing={id:ipe.id,age:0,hit:false,ipe:true};this.toolVisual.playGather('hatchet',direction,this.player,t.tier,this.player.sprite);return;
+   this.startSwing('hatchet',ipe);return;
   }
   const p=this.target();if(!p)return;
   if(p.kind==='grass'){
    if(!this.state.inventory.sickle||inventoryToolCondition(this.state.inventory,'sickle').durability<=0){this.ui.toast('Leve uma foice em boas condições para cortar o capim.');return;}
-   const direction=directionFromVector(p.x-this.player.x,p.y-this.player.y);this.player.facing=directionVector(direction);this.swing={id:p.id,age:0,hit:false};this.toolVisual.playGather('sickle',direction,this.player,inventoryToolCondition(this.state.inventory,'sickle').tier,this.player.sprite);
+   this.startSwing('sickle',p);
   }else{this.snapshotState();const result=harvestMeadow(this.state,p.id,this.player,saveGame);if(!result.ok)this.ui.toast(result.message);else gameAudio.play('pickup');this.updateHUD();}
  }
+ private startSwing(tool: FieldSwing['tool'], target: { id: string; x: number; y: number }): void {
+  if (this.player.mounted) { this.ui.toast('Desça do cavalo para usar a ferramenta.'); return; }
+  const copy = readyGatherCopy(this.state, tool);
+  if (!copy) return;
+  const direction = directionFromVector(target.x - this.player.x, target.y - this.player.y);
+  this.player.facing = directionVector(direction);
+  this.swing.start({ tool, id: target.id, direction, ...copy });
+  this.updateToolVisual();
+ }
+
+ private applySwingImpact(action: FieldSwing): void {
+  if (this.player.mounted || !gatherCopyStillReady(this.state, action)) return;
+  this.snapshotState();
+  if (action.tool === 'hatchet') {
+   const result = chopIpe(this.state, action.id, this.player, saveGame);
+   if (result.ok) {
+    gameAudio.play('wood');
+    this.world.shakeIpe(action.id);
+   }
+   if (!result.ok || result.felled) this.ui.toast(result.message);
+  } else {
+   const result = harvestMeadow(this.state, action.id, this.player, saveGame);
+   if (result.ok) gameAudio.play('plant');
+   else this.ui.toast(result.message);
+  }
+ }
+
+ private updateToolVisual(): void {
+  const action = this.swing.current;
+  if (action) this.toolVisual.show(action.tool, action.direction, this.player.x, this.player.y, this.swing, action.tier, this.player.sprite);
+  else this.toolVisual.hide();
+ }
+
  private key(e:KeyboardEvent):void{if(e.repeat||this.leaving)return;if(e.target instanceof HTMLElement&&e.target.matches('input,textarea,select,[contenteditable="true"]'))return;const k=e.key.toLowerCase();if(k==='escape'){e.preventDefault();this.ui.togglePause();return;}if(k==='i'){this.ui.toggleInventory(this.state.inventory);return;}if(k==='m'){void this.ui.toggleMap();return;}if(k==='c'){this.ui.toggleCrafting(this.state.inventory,false);return;}if(this.paused||this.ui.isModalOpen())return;if(k==='e')this.interact();if(k==='g')this.toggleHorseRope();if(e.key>='1'&&e.key<='9')this.ui.activateSlot(Number(e.key)-1);if(['+','=','-','_','Home'].includes(e.key))this.changeCameraZoom(e.key==='Home'?0:e.key==='-'||e.key==='_'?-1:1);}
  private pointer=(p:Phaser.Input.Pointer)=>{if(p.button===0)this.interact();};
  private wheel=(_p:Phaser.Input.Pointer,_objects:unknown,_dx:number,dy:number)=>{if(!this.paused&&!this.ui.isModalOpen()&&Math.abs(dy)>5)this.changeCameraZoom(dy>0?-1:1);};
  private get shownZoom(){return mapCameraZoom(this.zoom,this.scale.width,this.scale.height,FIELDS_SIZE.width,FIELDS_SIZE.height);}
  private applyCamera=()=>{this.cameras.main.setZoom(2*this.shownZoom).startFollow(this.player,true,.12,.12).setRoundPixels(true);this.ui?.updateCameraZoom(this.shownZoom,!this.paused);};
  changeCameraZoom(d:-1|0|1):void{if(this.paused)return;this.zoom=stepCameraZoom(this.shownZoom,d);saveCameraZoom(this.zoom);this.applyCamera();}
- setPaused(v:boolean):void{this.paused=v;this.input.keyboard?.resetKeys();if(v){this.swing=undefined;this.toolVisual?.hide();this.persist();}}
+ setPaused(v:boolean):void{this.paused=v;this.input.keyboard?.resetKeys();if(v){this.swing.cancel();this.toolVisual?.hide();this.persist();}}
  selectTool(tool:Tool):void{if(tool==='hatchet'){this.interact();return;}this.ui.toast('Use a foice da mochila ou pressione E perto do capim.');}
  craftRecipe(id:string):void{const r=craftInField(this.state,id,saveGame);this.ui.toast(r.message);this.updateHUD();this.ui.refreshCrafting(this.state.inventory,false);}
  async useVillageItem(item:ItemId):Promise<void>{if(item==='harvestBasket'){this.useBasket();return;}if(item==='emptyHive'){this.useEmptyHive();return;}if(item==='sickle'||item==='hatchet'){this.interact();return;}if(item==='fishingRod'||item==='net'){this.ui.toast('Procure um lago ou rio para pescar.');return;}const r=consumeInField(this.state,item,saveGame);this.ui.toast(r.message);this.updateHUD();}
@@ -137,19 +173,21 @@ export class OpenFieldsScene extends Phaser.Scene{
  persist():boolean{return this.save();}
  private snapshotState():SaveData{this.world.store();this.state.openFieldsPosition={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};this.state.quickbar=this.ui.getQuickbar();this.state.crops=this.farming.crops.map(c=>({...c}));return this.state;}
  private save=():boolean=>!!this.player&&!this.leaving&&saveGame(this.snapshotState());
- private blur=()=>{this.input.keyboard?.resetKeys();this.swing=undefined;this.toolVisual?.hide();};
+ private blur=()=>{this.input.keyboard?.resetKeys();this.swing.cancel();this.toolVisual?.hide();};
  private visibility=()=>{if(document.hidden){this.blur();this.persist();}};
  mainMenu():void{this.ui.closeModal();this.leave(true);}
  private leave(title=false):void{if(this.leaving)return;
   // Com o cavalo na corda, ele precisa estar ao lado para atravessar junto.
   const escorting=this.state.animalEscort?.id===HORSE_ID,horse=this.world.horse;
   if(!title&&escorting&&(!horse||Math.hypot(horse.brain.x-this.player.x,horse.brain.y-this.player.y)>ANIMAL_BEHAVIOR.portalDistance)){this.ui.toast('Espere o cavalo chegar perto antes de atravessar.');return;}
-  const next=structuredClone(this.snapshotState());if(!title){next.activeArea='property';next.player={...PROPERTY_FIELDS_RETURN};if(escorting)transferHorseToProperty(next,PROPERTY_FIELDS_RETURN);}if(!saveGame(next)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}this.leaving=true;this.cameras.main.fadeOut(SCENE_FADE_MS);this.time.delayedCall(SCENE_FADE_MS,()=>{this.scene.stop();this.onReturn(next,title);});}
+  const next=structuredClone(this.snapshotState());if(!title){next.activeArea='property';next.player={...PROPERTY_FIELDS_RETURN};if(escorting)transferHorseToProperty(next,PROPERTY_FIELDS_RETURN);}if(!saveGame(next)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}this.leaving=true;this.swing.cancel();this.toolVisual.hide();this.cameras.main.fadeOut(SCENE_FADE_MS);this.time.delayedCall(SCENE_FADE_MS,()=>{this.scene.stop();this.onReturn(next,title);});}
  update(_time:number,ms:number):void{
-  if(!this.player||this.leaving)return;this.daylight.update(this.state.time,false,this.state.day);if(this.paused||this.ui.isModalOpen()||document.hidden)return;
-  const dt=Math.min(.1,ms/1000),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(dt,this.blockedTile,fieldsBlocked,!this.swing);this.player.sprite.setDepth(this.player.y);
+  if(!this.player||this.leaving)return;this.daylight.update(this.state.time,false,this.state.day);if(this.paused||this.ui.isModalOpen()||document.hidden){if(this.swing.active){this.swing.cancel();this.toolVisual.hide();}return;}
+  const dt=Math.min(.1,ms/1000),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(dt,this.blockedTile,fieldsBlocked,!this.swing.active);this.player.sprite.setDepth(this.player.y);
   if(this.passage.update(before,this.player,FIELDS_EXIT)){this.leave();return;}
-  if(this.swing){this.swing.age+=dt;if(this.swing.age>=.22&&!this.swing.hit){this.swing.hit=true;this.snapshotState();if(this.swing.ipe){const r=chopIpe(this.state,this.swing.id,this.player,saveGame);if(r.ok){gameAudio.play('wood');this.world.shakeIpe(this.swing.id);if(r.felled)this.ui.toast(r.message);}else this.ui.toast(r.message);}else{const r=harvestMeadow(this.state,this.swing.id,this.player,saveGame);if(r.ok)gameAudio.play('plant');else this.ui.toast(r.message);}}if(this.swing.age>=.5){this.swing=undefined;this.toolVisual.hide();}}
+  const impact=this.swing.advance(dt);
+  if(impact)this.applySwingImpact(impact);
+  this.updateToolVisual();
   this.farming.update(dt,this.state.day);Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));this.state.crops=this.farming.crops;advanceBackgroundVillage(this.state,dt,this.player,this.bentoRuntime);if(this.horseLost())this.ui.toast('Faltou cesta em um dia: a confiança do cavalo voltou a zero.');this.world.update(dt,this.player);this.updateHUD();this.elapsed+=dt;if(this.elapsed>=5){this.elapsed=0;this.persist();}
  }
 }

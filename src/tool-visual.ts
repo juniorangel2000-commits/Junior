@@ -10,7 +10,6 @@ import type { CharacterProfile } from './types';
 import type { ToolUse } from './systems/tool-use';
 import anchors from './data/tool-art-anchors.json';
 import {TOOL_MATERIALS} from './data/economy-art';
-import type {EconomicTool} from './data/economy-balance';
 import {hoeSwingAngle} from './data/tool-art';
 
 export function preloadToolArt(scene: Phaser.Scene): void {
@@ -31,7 +30,6 @@ export class ToolVisual {
   private miningSprite?:Phaser.GameObjects.Image;
   private hiddenBody?:Phaser.GameObjects.Sprite;
   private bodyWasVisible=false;
-  private gatherTween?:Phaser.Tweens.Tween;
 
   constructor(scene: Phaser.Scene, private readonly profile: CharacterProfile) {
     this.sprite = scene.add.image(0, 0, toolIdleArt('hatchet', 'down').key).setVisible(false);
@@ -40,7 +38,7 @@ export class ToolVisual {
 
   private hideMiningPose():void{this.miningSprite?.setVisible(false);if(this.hiddenBody?.scene)this.hiddenBody.setVisible(this.bodyWasVisible);this.hiddenBody=undefined;}
 
-  hide(): void { this.hideMiningPose(); this.gatherTween?.stop();this.gatherTween=undefined;this.sprite.setData('gathering',false).setVisible(false); }
+  hide(): void { this.hideMiningPose(); this.sprite.setVisible(false); }
 
   show(tool: AnimatedTool | 'sickle' | 'shovel', direction: CharacterDirection, x: number, y: number, use: Pick<ToolUse,'active'|'frame'>, tier=0,body?:Phaser.GameObjects.Sprite): void {
     if (!use.active) { this.hide(); return; }
@@ -93,15 +91,5 @@ export class ToolVisual {
     this.sprite.setOrigin(gripX / size, art.grip[1] / size).setScale(tool === 'hoe' ? .115 : tool === 'water' ? .14 : .30);
     this.sprite.setAngle(toolSwingAngle(tool, use.frame, side === 'left')).setPosition(hand.x,hand.y)
       .setDepth(hand.depth).setVisible(true);
-  }
-
-  /** The same rigid pivot swing is used for inventory-operated sickles and shovels. */
-  playGather(tool:Exclude<EconomicTool,'sword'>,direction:CharacterDirection,player:{x:number;y:number},tier:number,body?:Phaser.GameObjects.Sprite):void{
-    this.hide();
-    this.sprite.setData('gathering',true);
-    this.show(tool,direction,player.x,player.y,{active:true,frame:0},tier,body);
-    this.gatherTween=this.sprite.scene.tweens.addCounter({from:0,to:8,duration:450,onUpdate:tween=>{
-      this.show(tool,direction,player.x,player.y,{active:true,frame:Math.floor(tween.getValue()??0)},tier,body);
-    },onComplete:()=>{this.gatherTween=undefined;this.sprite.setData('gathering',false);this.hide();}});
   }
 }
