@@ -136,3 +136,22 @@ Arte do Junior em `docs/arte-recebida/ferramentas/`, importada por `scripts/impo
   com o Bento (80 C e 90 C), que ensina a receita da bancada de trabalho (3 lingotes de ferro
   + 2 madeiras). Saves antigos: a foice e a pá de pedra viram de ferro.
 - [x] Telhado de tábuas (antiga porta pronta) e Ninho e baias (antiga janela pronta, usa o ninho do galinheiro)
+
+## Animações laterais das ferramentas — 20/11/2026
+
+- [x] Corpo masculino/feminino para enxada, pá, foice e regador. Somente vistas
+  laterais, conforme o pedido mais recente; fontes refeitas diretamente das laterais
+  da machadinha, com seis poses em duas linhas.
+- [x] Sprites simples exclusivas do movimento de enxada/pá/foice. Ícones anteriores
+  mantidos. Mesma ferramenta rígida em todos os quadros, metal por nível.
+- [x] Enxada com arco da mineração; pá cava/faz alavanca sem passar acima da cabeça;
+  foice faz varredura baixa. Regador mantém o jato anterior.
+- [x] Enxada/pá menores, proporcionais à picareta/machadinha (~30 px); foice ~22 px.
+- [ ] Próxima prioridade do Junior: masculino montado. Proposta de arte guardada em
+  `referencias/personagens/montaria/`; ainda não aplicada nem validada sobre o cavalo.
+
+GIFs e auditoria em `qa-arte-preview44/ferramentas-laterais/`. Fontes e instruções
+em `public/assets/visual/tools/work/README.md`.
+
+Pegadas agora calibradas por personagem/direção/pose, sem compartilhar coordenadas
+entre masculino e feminino. Base anterior de corpo substituída após o retorno do Junior.

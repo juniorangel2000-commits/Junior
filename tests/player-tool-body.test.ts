@@ -5,6 +5,7 @@ const {PNG}=createRequire(import.meta.url)('pngjs');
 import {CHARACTER_DIRECTIONS} from '../src/character-directions';
 import {playerToolMotion,type BodyTool} from '../src/data/player-tool-motion';
 import art from '../public/assets/visual/characters/player-tool-body.json';
+import tools from '../public/assets/visual/tools/work/art.json';
 
 describe('corpo e ferramenta separados durante o trabalho',()=>{
  it('mantém tamanho e espelhamento da ferramenta em todo o ciclo, inclusive diagonais',()=>{
@@ -13,7 +14,6 @@ describe('corpo e ferramenta separados durante o trabalho',()=>{
    expect(new Set(poses.map(p=>p.scale)).size).toBe(1);
    expect(new Set(poses.map(p=>p.flipX)).size).toBe(1);
    expect(poses.at(-1)?.pose).toBe(5);
-   expect(poses[0].hand).toEqual(poses[8].hand);
    expect(poses.every(p=>Number.isFinite(p.angle)&&p.frame>=0&&p.frame<24)).toBe(true);
   }
  });
@@ -34,12 +34,26 @@ describe('corpo e ferramenta separados durante o trabalho',()=>{
    expect(water.pose).not.toBe(2);expect(water.angle).toBe(0);
   }
  });
- it('mantém folhas nativas de seis poses por quatro vistas com mãos dentro do recorte',()=>{
+ it('mantém as duas vistas nativas e calibra cada pegada na pele da mão',()=>{
   for(const character of Object.values(art.characters)){
    const png=PNG.sync.read(readFileSync('public/'+character.file));
-   expect([png.width,png.height]).toEqual([1536,1024]);
-   expect(character.rows).toHaveLength(4);
+   expect([png.width,png.height]).toEqual([6*art.frameWidth,2*art.frameHeight]);
+   expect(character.rows).toHaveLength(2);
+   for(const [row,poses]of character.hands.entries())for(const [col,[x,y]]of poses.entries()){
+    const i=((row*art.frameHeight+y)*png.width+col*art.frameWidth+x)*4;
+    expect(png.data[i+3]).toBe(255);expect(png.data[i]).toBeGreaterThan(150);
+    expect(png.data[i+1]).toBeGreaterThan(png.data[i+2]+12);
+   }
+   for(const poses of character.hands)expect(poses[0]).toEqual(poses[5]);
    for(const row of character.rows)expect(row.originY).toBeGreaterThan(.8);
+  }
+  // Como a picareta/machadinha, a ferramenta ocupa cerca de metade da altura
+  // do corpo (~50 px no mundo), sem o cabo gigante dos ícones ampliados.
+  for(const tool of Object.values(tools.tools)){
+   const png=PNG.sync.read(readFileSync('public/'+tool.file));let top=png.height,bottom=0;
+   for(let y=0;y<png.height;y++)for(let x=0;x<png.width;x++)if(png.data[(y*png.width+x)*4+3]){top=Math.min(top,y);bottom=Math.max(bottom,y);}
+   expect((bottom-top+1)*tool.scale).toBeGreaterThan(18);
+   expect((bottom-top+1)*tool.scale).toBeLessThan(32);
   }
   expect(playerToolMotion('hoe','up',NaN).frame).toBe(12);
   expect(playerToolMotion('hoe','down',99).frame).toBe(17);

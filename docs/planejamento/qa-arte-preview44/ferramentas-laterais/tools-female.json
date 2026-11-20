@@ -1,0 +1,146 @@
+{
+  "mode": "tools-female",
+  "errors": [],
+  "frames": 48,
+  "tools": [
+    {
+      "tool": "hatchet",
+      "direction": "right",
+      "tiers": [
+        "tool:hatchet:idle:down",
+        "tool:hatchet:idle:down",
+        "tool:hatchet:idle:down",
+        "tool:hatchet:idle:down"
+      ],
+      "bodyRestored": true
+    },
+    {
+      "tool": "hatchet",
+      "direction": "left",
+      "tiers": [
+        "tool:hatchet:idle:down",
+        "tool:hatchet:idle:down",
+        "tool:hatchet:idle:down",
+        "tool:hatchet:idle:down"
+      ],
+      "bodyRestored": true
+    },
+    {
+      "tool": "pickaxe",
+      "direction": "right",
+      "tiers": [
+        "tool:hatchet:idle:down",
+        "tool:hatchet:idle:down",
+        "tool:hatchet:idle:down",
+        "tool:hatchet:idle:down"
+      ],
+      "bodyRestored": true
+    },
+    {
+      "tool": "pickaxe",
+      "direction": "left",
+      "tiers": [
+        "tool:hatchet:idle:down",
+        "tool:hatchet:idle:down",
+        "tool:hatchet:idle:down",
+        "tool:hatchet:idle:down"
+      ],
+      "bodyRestored": true
+    },
+    {
+      "tool": "hoe",
+      "direction": "right",
+      "rigidSignature": "work-tool-hoe-1|0.05|0.05|false",
+      "tiers": [
+        "work-tool-hoe-0",
+        "work-tool-hoe-1",
+        "work-tool-hoe-2",
+        "work-tool-hoe-3"
+      ],
+      "bodyRestored": true
+    },
+    {
+      "tool": "hoe",
+      "direction": "left",
+      "rigidSignature": "work-tool-hoe-1|0.05|0.05|true",
+      "tiers": [
+        "work-tool-hoe-0",
+        "work-tool-hoe-1",
+        "work-tool-hoe-2",
+        "work-tool-hoe-3"
+      ],
+      "bodyRestored": true
+    },
+    {
+      "tool": "shovel",
+      "direction": "right",
+      "rigidSignature": "work-tool-shovel-1|0.05|0.05|false",
+      "tiers": [
+        "work-tool-shovel-1",
+        "work-tool-shovel-1",
+        "work-tool-shovel-2",
+        "work-tool-shovel-3"
+      ],
+      "bodyRestored": true
+    },
+    {
+      "tool": "shovel",
+      "direction": "left",
+      "rigidSignature": "work-tool-shovel-1|0.05|0.05|true",
+      "tiers": [
+        "work-tool-shovel-1",
+        "work-tool-shovel-1",
+        "work-tool-shovel-2",
+        "work-tool-shovel-3"
+      ],
+      "bodyRestored": true
+    },
+    {
+      "tool": "sickle",
+      "direction": "right",
+      "rigidSignature": "work-tool-sickle-1|0.045|0.045|false",
+      "tiers": [
+        "work-tool-sickle-1",
+        "work-tool-sickle-1",
+        "work-tool-sickle-2",
+        "work-tool-sickle-3"
+      ],
+      "bodyRestored": true
+    },
+    {
+      "tool": "sickle",
+      "direction": "left",
+      "rigidSignature": "work-tool-sickle-1|0.045|0.045|true",
+      "tiers": [
+        "work-tool-sickle-1",
+        "work-tool-sickle-1",
+        "work-tool-sickle-2",
+        "work-tool-sickle-3"
+      ],
+      "bodyRestored": true
+    },
+    {
+      "tool": "water",
+      "direction": "right",
+      "tiers": [
+        "tool:water:use:4",
+        "tool:water:use:4",
+        "tool:water:use:4",
+        "tool:water:use:4"
+      ],
+      "bodyRestored": true
+    },
+    {
+      "tool": "water",
+      "direction": "left",
+      "tiers": [
+        "tool:water:use:4",
+        "tool:water:use:4",
+        "tool:water:use:4",
+        "tool:water:use:4"
+      ],
+      "bodyRestored": true
+    }
+  ],
+  "temporaryFrames": "/tmp/art-review-oclJiM"
+}

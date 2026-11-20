@@ -1,50 +1,148 @@
 {
+  "frameWidth": 362,
+  "frameHeight": 362,
   "characters": {
     "farmer-male": {
       "file": "assets/visual/characters/farmer-male/work-body.png",
       "rows": [
         {
-          "originX": 0.5,
-          "originY": 0.9375
+          "direction": "east",
+          "originX": 0.4450954861111111,
+          "originY": 0.9900173611111112
         },
         {
-          "originX": 0.5,
-          "originY": 0.9375
-        },
-        {
-          "originX": 0.5,
-          "originY": 0.9375
-        },
-        {
-          "originX": 0.5,
-          "originY": 0.9375
+          "direction": "west",
+          "originX": 0.5394965277777778,
+          "originY": 0.9900173611111112
         }
       ],
-      "scale": 0.25,
-      "sourceSha256": "ad3213aed0e5ca759cb3244e0583a84fef1000e99e2708adfc182673a0d9ef1e"
+      "hands": [
+        [
+          [
+            201,
+            245
+          ],
+          [
+            255,
+            167
+          ],
+          [
+            243,
+            133
+          ],
+          [
+            219,
+            262
+          ],
+          [
+            225,
+            283
+          ],
+          [
+            201,
+            245
+          ]
+        ],
+        [
+          [
+            143,
+            253
+          ],
+          [
+            89,
+            165
+          ],
+          [
+            109,
+            132
+          ],
+          [
+            110,
+            264
+          ],
+          [
+            110,
+            284
+          ],
+          [
+            143,
+            253
+          ]
+        ]
+      ],
+      "scale": 0.17048145224940806,
+      "sourceSha256": "f22de9b1505235af4ee7a678efd9b556e45a273bb17879145d5a0e5ce4997a89"
     },
     "farmer-female": {
       "file": "assets/visual/characters/farmer-female/work-body.png",
       "rows": [
         {
-          "originX": 0.5,
-          "originY": 0.94140625
+          "direction": "east",
+          "originX": 0.4398356958762887,
+          "originY": 1.0021343427835052
         },
         {
-          "originX": 0.5,
-          "originY": 0.94140625
-        },
-        {
-          "originX": 0.5,
-          "originY": 0.94140625
-        },
-        {
-          "originX": 0.5,
-          "originY": 0.94140625
+          "direction": "west",
+          "originX": 0.5299210695876289,
+          "originY": 1.0021343427835052
         }
       ],
-      "scale": 0.25,
-      "sourceSha256": "0a8631734428d14c831b50c09cf95b0d276997fc22cd2f2223d8b3ce2dc95a06"
+      "hands": [
+        [
+          [
+            214,
+            266
+          ],
+          [
+            239,
+            181
+          ],
+          [
+            222,
+            126
+          ],
+          [
+            221,
+            270
+          ],
+          [
+            219,
+            281
+          ],
+          [
+            214,
+            266
+          ]
+        ],
+        [
+          [
+            115,
+            269
+          ],
+          [
+            88,
+            174
+          ],
+          [
+            107,
+            133
+          ],
+          [
+            93,
+            276
+          ],
+          [
+            95,
+            286
+          ],
+          [
+            115,
+            269
+          ]
+        ]
+      ],
+      "scale": 0.15661343626226695,
+      "sourceSha256": "543b6ab6649f81ec1a97f8bb6f401e798572dadd7cd643610db68fdcb14826e7"
     }
   }
 }

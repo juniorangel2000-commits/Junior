@@ -10,6 +10,6 @@ for(const [index,tool]of ['hoe','shovel','sickle'].entries()){
  let sum=0,n=0;for(let y=560;y<620;y++)for(let x=0;x<724;x++){const i=(y*724+x)*4;if(cell.data[i+3]){sum+=x;n++;}}
  if(!n)throw Error('Cabo ausente: '+tool);
  const grip=[Math.round(sum/n),590],file=`assets/visual/tools/work/${tool}.png`;
- fs.writeFileSync('public/'+file,PNG.sync.write(cell));tools[tool]={file,width:724,height:724,grip,scale:tool==='sickle'?.055:.07};
+ fs.writeFileSync('public/'+file,PNG.sync.write(cell));tools[tool]={file,width:724,height:724,grip,scale:tool==='sickle'?.045:.05};
 }
 fs.writeFileSync(root+'/art.json',JSON.stringify({sourceSha256:createHash('sha256').update(bytes).digest('hex'),tools},null,2)+'\n');
