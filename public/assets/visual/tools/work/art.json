@@ -3,13 +3,23 @@
   "tools": {
     "hoe": {
       "file": "assets/visual/tools/work/hoe.png",
-      "width": 724,
-      "height": 724,
+      "width": 1254,
+      "height": 1254,
       "grip": [
-        356,
-        590
+        613,
+        1015
       ],
-      "scale": 0.05
+      "scale": 0.02701688555347092,
+      "sourceSha256": "1f68466c7f66c6fe43848196c3b0ced227604d40295695a087915af0e322e883",
+      "metalBottom": 292,
+      "socket": [
+        609,
+        225
+      ],
+      "edge": [
+        893,
+        153
+      ]
     },
     "shovel": {
       "file": "assets/visual/tools/work/shovel.png",

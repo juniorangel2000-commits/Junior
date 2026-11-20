@@ -15,7 +15,8 @@ export function workToolArt(scene:Phaser.Scene,tool:WorkTool,tier:number){
   const texture=scene.textures.createCanvas(key,a.width,a.height);if(!texture)return;
   const context=texture.context;context.drawImage(scene.textures.get(source).getSourceImage() as HTMLImageElement,0,0);
   const pixels=context.getImageData(0,0,a.width,a.height);
-  for(let y=0;y<350;y++)for(let x=0;x<a.width;x++){
+  const metalBottom='metalBottom' in a ? a.metalBottom : 350;
+  for(let y=0;y<metalBottom;y++)for(let x=0;x<a.width;x++){
    const i=(y*a.width+x)*4;if(!pixels.data[i+3])continue;
    const [r,g,b]=playerMiningMetal(pixels.data[i],pixels.data[i+1],pixels.data[i+2],level);
    pixels.data[i]=r;pixels.data[i+1]=g;pixels.data[i+2]=b;

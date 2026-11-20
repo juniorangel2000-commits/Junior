@@ -4,6 +4,7 @@ import {createRequire} from 'node:module';
 const {PNG}=createRequire(import.meta.url)('pngjs');
 import {CHARACTER_DIRECTIONS} from '../src/character-directions';
 import {playerToolMotion,type BodyTool} from '../src/data/player-tool-motion';
+import {TOOL_IMPACT_FRAME} from '../src/data/tool-art';
 import art from '../public/assets/visual/characters/player-tool-body.json';
 import tools from '../public/assets/visual/tools/work/art.json';
 
@@ -21,9 +22,29 @@ describe('corpo e ferramenta separados durante o trabalho',()=>{
   for(const direction of CHARACTER_DIRECTIONS)expect([2,3]).toContain(playerToolMotion('hoe',direction,4).row);
   expect(playerToolMotion('hoe','down',4)).toEqual(playerToolMotion('hoe','right',4));
   expect(playerToolMotion('hoe','up-left',4)).toEqual(playerToolMotion('hoe','left',4));
-  const contact=playerToolMotion('hoe','right',4);
-  expect(-Math.cos(contact.angle*Math.PI/180)).toBeGreaterThan(0);
-  expect(Math.sin(contact.angle*Math.PI/180)).toBeGreaterThan(0);
+  const hoe=tools.tools.hoe;
+  for(const direction of ['left','right'] as const){
+   const contact=playerToolMotion('hoe',direction,TOOL_IMPACT_FRAME);
+   const sign=direction==='left'?-1:1;
+   const angle=contact.angle*Math.PI/180;
+   const rotate=([x,y]:number[])=>{
+    const dx=(contact.flipX?-x:x)*hoe.scale,dy=y*hoe.scale;
+    return [Math.cos(angle)*dx-Math.sin(angle)*dy,Math.sin(angle)*dx+Math.cos(angle)*dy];
+   };
+   const [edgeX,edgeY]=rotate([hoe.edge[0]-hoe.grip[0],hoe.edge[1]-hoe.grip[1]]);
+   const [socketX,socketY]=rotate([hoe.socket[0]-hoe.grip[0],hoe.socket[1]-hoe.grip[1]]);
+   expect((edgeX-socketX)*sign).toBeGreaterThan(.5);
+   expect(edgeY-socketY).toBeGreaterThan(5);
+   for(const character of Object.values(art.characters)){
+    const row=contact.row-2;
+    const [handX,handY]=character.hands[row][contact.pose];
+    const groundY=(handY-character.rows[row].originY*art.frameHeight)*character.scale+edgeY;
+    const groundX=(handX-character.rows[row].originX*art.frameWidth)*character.scale+edgeX;
+    expect(Math.abs(groundY)).toBeLessThan(3.5);
+    expect(groundX*sign).toBeGreaterThan(26);
+    expect(groundX*sign).toBeLessThan(42);
+   }
+  }
   for(let frame=0;frame<9;frame++)expect(playerToolMotion('hoe','left',frame).angle).toBe(-playerToolMotion('hoe','right',frame).angle);
  });
  it('não levanta foice ou regador sobre a cabeça nem gira novamente o jato autoral',()=>{
