@@ -147,8 +147,8 @@ Arte do Junior em `docs/arte-recebida/ferramentas/`, importada por `scripts/impo
 - [x] Enxada com arco da mineração; pá cava/faz alavanca sem passar acima da cabeça;
   foice faz varredura baixa. Regador mantém o jato anterior.
 - [x] Enxada/pá menores, proporcionais à picareta/machadinha (~30 px); foice ~22 px.
-- [ ] Próxima prioridade do Junior: masculino montado. Proposta de arte guardada em
-  `referencias/personagens/montaria/`; ainda não aplicada nem validada sobre o cavalo.
+- [x] Fazendeiro montado com poses próprias, integradas nas oito direções.
+  A fonte está em `referencias/personagens/montaria/`.
 
 GIFs e auditoria em `qa-arte-preview44/ferramentas-laterais/`. Fontes e instruções
 em `public/assets/visual/tools/work/README.md`.

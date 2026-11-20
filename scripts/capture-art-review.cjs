@@ -13,7 +13,7 @@ fs.mkdirSync(out,{recursive:true});const frames=fs.mkdtempSync(path.join(os.tmpd
   await p.evaluate(async mode=>{
    window.game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;
    window.survivors=await import('/src/data/survivor-walk.ts');window.survivorView=await import('/src/property-survivors-view.ts');window.walkArt=await(await fetch('/assets/visual/characters/survivors/walk.json')).json();
-   window.HorseMount=(await import('/src/horse-mount.ts')).HorseMount;window.ToolVisual=(await import('/src/tool-visual.ts')).ToolVisual;
+   const mountArt=await import('/src/horse-mount.ts');window.HorseMount=mountArt.HorseMount;window.riderSheet=mountArt.riderSheet;window.ToolVisual=(await import('/src/tool-visual.ts')).ToolVisual;
    window.miningArt=await import('/src/player-mining-art.ts');window.toolArt=await import('/src/tool-visual.ts');window.economy=await import('/src/data/economy-art.ts');window.characters=await import('/src/data/characters.ts');window.dirs=['down','up','right','left'];window.items=[];window.reviewMode=mode;if(mode==='horse-diagonals')window.dirs=['down-left','down-right','up-left','up-right'];window.farmArt=await import('/src/farm-construction-view.ts');window.farmDefs=await import('/src/data/farm-buildings.ts');
    for(const s of game.scene.getScenes(true))game.scene.stop(s.scene.key);
    game.scene.add('ArtReview',{
@@ -25,7 +25,8 @@ fs.mkdirSync(out,{recursive:true});const frames=fs.mkdtempSync(path.join(os.tmpd
        const paths=characters.characterSourcePaths(id,d);
        paths.forEach((url,i)=>this.load.image(`${id}-${d}-${i}`,url));
       }
-      this.load.spritesheet(`horse-rider-${id}`,`assets/animals/horse-rider/${id}.png`,{frameWidth:192,frameHeight:192});
+      const sheet=riderSheet(id);
+      this.load.spritesheet(`horse-rider-${id}`,sheet.file,{frameWidth:sheet.width,frameHeight:sheet.height});
      }
      this.load.atlas('animal-horse-animated','assets/animals/horse/atlas-packed.png','assets/animals/horse/atlas-packed.json');
      for(const [tier,material]of economy.TOOL_MATERIALS.entries())for(const tool of ['hatchet','pickaxe','hoe','sickle','shovel'])if(tier>0||!['sickle','shovel'].includes(tool))this.load.image(`economy-tool-${material}-${tool}`,economy.tierToolIcon(tool,tier));

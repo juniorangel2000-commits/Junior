@@ -36,12 +36,12 @@
     nosso cavalo é mais alta) e `CHEST` (de frente, a faixa do peito e das mãos vem inteira do
     desenho).
   - Para refazer: `python3 -I scripts/pack_horse_rider.py <pasta do zip> farmer-female`.
-- **Personagem masculino** (`farmer-male`): mesma arte da personagem, com a cabeça trocada.
-  `scripts/swap_rider_head.py` apaga a cabeça dela inteira (cabelo, rosto e pescoço, até onde
-  começa o macacão, mais as mechas e o coque que caem nos ombros). No lugar, põe a cabeça dele,
-  tirada do desenho parado do jogo, em cada direção. A escala vem da largura da cabeça (montaria
-  ÷ jogo); o queixo fica onde começa o macacão. Para refazer, depois de mudar a arte dela:
-  `python3 -I scripts/swap_rider_head.py`.
+- **Personagem masculino** (`farmer-male`): oito poses próprias na folha
+  `farmer-male-seated.png`, com o corpo inteiro desenhado para a montaria. A arte mantém a
+  resolução nativa de 384×512 por célula. A escala e a posição de cada direção ficam em
+  `src/data/horse-rider-art.ts` e são usadas no cenário e na tela de carregamento.
+  Para preparar a folha a partir do original, rode `node scripts/prepare-male-rider.cjs`.
+  A pose de cada direção acompanha o lombo no passo e no galope.
 - Sem arte (personagem novo): o jogo usa o personagem cortado na cintura, com pernas, sela e
   rédeas desenhadas por código.
 - Prompts antigos em `docs/planejamento/PROMPTS-ARTE-MONTARIA.md`. Imagem de conferência em
