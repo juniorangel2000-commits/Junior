@@ -5,7 +5,7 @@ import {mountProblem,ownsTamedHorse,INDOOR_SCENES} from '../src/systems/horse-ri
 import {HORSE_ID} from '../src/systems/horse-taming';
 import riderLift from '../src/data/horse-rider-lift.json';
 import horseAtlas from '../public/assets/animals/horse/atlas.json';
-import {RIDER_ORDER,RIDER_ART,riderSheet,riderPose} from '../src/data/horse-rider-art';
+import {RIDER_ORDER,RIDER_ART,riderFile,riderPose,frontHeadFrame,FRONT_HEAD_PLACEMENT} from '../src/data/horse-rider-art';
 import {CHARACTER_DIRECTIONS} from '../src/character-directions';
 import {readFileSync} from 'node:fs';
 const fresh=()=>createNewSave(createCharacterProfile('Montaria'));
@@ -30,21 +30,30 @@ describe('personagem desenhado montado',()=>{
   expect(riderLift).toHaveLength(horseAtlas.frames.length);
   expect(riderLift.every(n=>Number.isInteger(n))).toBe(true);
   for(const character of RIDER_ART){
-   const sheet=riderSheet(character);
-   const png=readFileSync('public/'+sheet.file);
+   const png=readFileSync('public/'+riderFile(character));
    const width=png.readUInt32BE(16),height=png.readUInt32BE(20);
-   expect(width).toBe(sheet.width*sheet.columns);
    const poses=CHARACTER_DIRECTIONS.map(direction=>riderPose(character,direction));
    expect(new Set(poses.map(p=>p.frame)).size).toBe(8);
    for(const pose of poses){
-    expect(pose.sourceX+sheet.width).toBeLessThanOrEqual(width);
-    expect(pose.sourceY+sheet.height).toBeLessThanOrEqual(height);
+    expect(pose.sourceX+pose.width).toBeLessThanOrEqual(width);
+    expect(pose.sourceY+pose.height).toBeLessThanOrEqual(height);
    }
   }
-  // A grade masculina segue a ordem da arte, diferente da ordem do atlas do cavalo.
-  expect(riderPose('farmer-male','up').sourceX).toBe(384);
-  expect(riderPose('farmer-male','left').sourceX).toBe(768);
-  expect(riderPose('farmer-male','right').sourceX).toBe(1152);
-  expect(riderPose('farmer-male','down-left').sourceY).toBe(512);
+  // A ordem da arte difere da ordem do atlas do cavalo nas vistas principais.
+  expect(riderPose('farmer-male','up').frame).toBe(1);
+  expect(riderPose('farmer-male','left').frame).toBe(2);
+  expect(riderPose('farmer-male','right').frame).toBe(3);
+  expect(riderPose('farmer-male','down').height).toBeGreaterThan(512);
+ });
+
+ it('cobre cada quadro frontal do cavalo parado, ao passo e no galope',()=>{
+  const expected=[0,1,2,3,4,5,6,7,8,112,113,114,115,116,117,118,119];
+  expect(FRONT_HEAD_PLACEMENT.frames).toEqual(expected);
+  expect(expected.map(frontHeadFrame)).toEqual(expected.map((_,index)=>index));
+  expect(frontHeadFrame(9)).toBe(-1);
+  const png=readFileSync('public/assets/animals/horse-rider/horse-head-male.png');
+  const {width,height,columns}=FRONT_HEAD_PLACEMENT;
+  expect(png.readUInt32BE(16)).toBe(width*columns);
+  expect(png.readUInt32BE(20)).toBe(height*Math.ceil(expected.length/columns));
  });
 });

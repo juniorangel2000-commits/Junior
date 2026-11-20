@@ -1,7 +1,10 @@
 import type Phaser from 'phaser';
 import horsePoses from './data/horse-poses.json';
 import riderLift from './data/horse-rider-lift.json';
-import {RIDER_ART,riderSheet,riderPose} from './data/horse-rider-art';
+import {
+ RIDER_ART, RIDER_FRONT_HEAD, FRONT_HEAD_PLACEMENT, riderTexture, riderPose,
+ preloadRiderArt, frontalSeatOffset, frontHeadFrame,
+} from './data/horse-rider-art';
 import {ANIMAL_ART,animalFrame,animalTexture,animalHeadOffset} from './data/animal-art';
 import {CHARACTER_DIRECTIONS,type CharacterDirection} from './character-directions';
 /** Montaria (docs/construcoes/MONTARIA.md): o cavalo é desenhado sob o personagem, que aparece
@@ -12,36 +15,25 @@ const SADDLE:Record<CharacterDirection,number>={down:60,up:30,left:27,right:27,'
 /** Vindo na direção da câmera, a cabeça do cavalo fica na frente do cavaleiro. */
 export const HORSE_IN_FRONT:readonly CharacterDirection[]=['down'];
 const RUN_DIRECTIONS=['south-west','north','west','north-east','east','south','south-east','north-west'] as const;
-// Início de cada orelha no quadro frontal de 192 px. O cavalo se inclina
-// durante a passada, então o recorte acompanha o quadro do próprio atlas.
-const FRONT_EARS:Record<number,readonly [number,number,number,number]>={
- 0:[85,52,99,52],
- 1:[83,69,98,69], 2:[85,69,100,69], 3:[86,69,102,69], 4:[89,69,105,69],
- 5:[89,69,104,69], 6:[90,69,104,69], 7:[85,69,103,69], 8:[84,69,100,69],
- 112:[85,54,100,53], 113:[85,58,100,58], 114:[85,60,100,60], 115:[85,60,100,60],
- 116:[85,60,100,60], 117:[85,61,100,61], 118:[85,60,100,60], 119:[85,60,100,60],
-};
 const RUN_BY_DIRECTION:Record<CharacterDirection,typeof RUN_DIRECTIONS[number]>={down:'south',up:'north',left:'west',right:'east','down-left':'south-west','down-right':'south-east','up-left':'north-west','up-right':'north-east'};
-export {RIDER_ART,RIDER_ORDER,riderSheet} from './data/horse-rider-art';
-export const riderTexture=(character:string)=>`horse-rider-${character}`;
+export {RIDER_ART,RIDER_ORDER,preloadRiderArt} from './data/horse-rider-art';
 export function horseTextureReady(scene:Phaser.Scene,character=''):boolean{
- return scene.textures.exists(animalTexture('horse'))&&(!RIDER_ART.includes(character)||scene.textures.exists(riderTexture(character)));
+ return scene.textures.exists(animalTexture('horse'))
+  && (!RIDER_ART.includes(character) || scene.textures.exists(riderTexture(character)))
+  && (character !== 'farmer-male' || scene.textures.exists(RIDER_FRONT_HEAD));
 }
 /** Carrega o que falta do cavalo (cenários sem animais) e o desenho montado do personagem. */
 export function loadHorseTexture(scene:Phaser.Scene,done:()=>void,character=''):void{
  if(horseTextureReady(scene,character)){done();return;}
  if(!scene.textures.exists(animalTexture('horse')))scene.load.atlas(animalTexture('horse'),'assets/animals/horse/atlas-packed.png','assets/animals/horse/atlas-packed.json');
- if(RIDER_ART.includes(character)&&!scene.textures.exists(riderTexture(character))){
-  const sheet=riderSheet(character);
-  scene.load.spritesheet(riderTexture(character),sheet.file,{frameWidth:sheet.width,frameHeight:sheet.height});
- }
+ preloadRiderArt(scene,character);
  scene.load.once('complete',done);scene.load.start();
 }
 export class HorseMount{
  readonly horse:Phaser.GameObjects.Sprite;
  /** Personagem desenhado montado (o sprite do jogador fica escondido enquanto monta). */
  readonly rider?:Phaser.GameObjects.Sprite;
- private readonly frontEars?:readonly [Phaser.GameObjects.Image,Phaser.GameObjects.Image];
+ private readonly frontHead?:Phaser.GameObjects.Image;
  get combined(){return !!this.rider;}
  /** Pernas, sela e rédeas desenhadas por código, entre o cavalo e o cavaleiro. */
  readonly tack:Phaser.GameObjects.Graphics;
@@ -53,19 +45,19 @@ export class HorseMount{
   if(RIDER_ART.includes(character)&&scene.textures.exists(riderTexture(character))){
    this.rider=scene.add.sprite(x,y,riderTexture(character),0).setData('mount',true);
    this.placeRider(x,y,'down');
-   if(character==='farmer-male'){
-    const newEar=()=>scene.add.image(x,y,animalTexture('horse'),0)
-     .setOrigin(.5,.5+art.foot/art.cell).setScale(art.scale).setData('mount',true).setVisible(false);
-    this.frontEars=[newEar(),newEar()];
+   if(character==='farmer-male'&&scene.textures.exists(RIDER_FRONT_HEAD)){
+    const {x: headX,y: headY,width,height}=FRONT_HEAD_PLACEMENT;
+    this.frontHead=scene.add.image(x,y,RIDER_FRONT_HEAD,0)
+     .setOrigin((art.cell/2-headX)/width,(art.cell/2+art.foot-headY)/height)
+     .setScale(art.scale).setData('mount',true).setVisible(false);
    }
   }
  }
  private placeRider(x:number,y:number,direction:CharacterDirection):void{
-  const sheet=riderSheet(this.character);
   const pose=riderPose(this.character,direction);
   const {cell,foot,scale}=ANIMAL_ART.horse;
   this.rider?.setFrame(pose.frame)
-   .setOrigin((cell/2-pose.x)/(pose.scale*sheet.width),(cell/2+foot-pose.y)/(pose.scale*sheet.height))
+   .setOrigin((cell/2-pose.x)/(pose.scale*pose.width),(cell/2+foot-pose.y)/(pose.scale*pose.height))
    .setScale(pose.scale*scale).setPosition(x,y);
  }
  /** Atualiza o cavalo e devolve o deslocamento vertical do personagem (sentado no lombo). */
@@ -77,24 +69,19 @@ export class HorseMount{
   if(this.rider){
    // O lombo sobe e desce no passo e na corrida; o personagem vai junto.
    const lift=Math.max(-6,Math.min(6,(riderLift as number[])[frame]??0));
-   this.placeRider(x,y-lift*ANIMAL_ART.horse.scale,direction);
+   const front=this.character==='farmer-male'&&direction==='down';
+   const offset=front?frontalSeatOffset(frame):0;
+   this.placeRider(x,y+(offset-lift)*ANIMAL_ART.horse.scale,direction);
    this.rider.setDepth(y);
-   this.updateFrontEars(x,y,direction,frame);
+   const headFrame=front?frontHeadFrame(frame):-1;
+   this.frontHead?.setVisible(headFrame>=0&&this.horse.visible);
+   if(headFrame>=0)this.frontHead?.setFrame(headFrame).setPosition(x,y).setDepth(y+.01);
    this.tack.clear();return 0;
   }
   // Balanço do passo (galope balança mais): o cavaleiro sobe e desce junto com o cavalo.
   const bob=moving?Math.round(Math.abs(Math.sin(this.distance/(galloping?9:14)*Math.PI))*(galloping?2.5:1.2)):0;
   const hip=y-SADDLE[direction]-bob;this.drawTack(x,hip,direction,frame);
   return SADDLE[direction]+bob;
- }
- private updateFrontEars(x:number,y:number,direction:CharacterDirection,frame:number):void{
-  if(!this.frontEars)return;
-  const region=direction==='down'?FRONT_EARS[frame]:undefined;
-  for(const [i,ear] of this.frontEars.entries()){
-   ear.setVisible(!!region&&this.horse.visible);
-   if(region)ear.setFrame(frame).setOrigin(this.horse.originX,this.horse.originY)
-    .setPosition(x,y).setDepth(y+.01).setCrop(region[i*2],region[i*2+1],10,16);
-  }
  }
  /** Sela, pernas de jeans com botas caindo pela lateral e rédeas até a cabeça do cavalo. */
  private drawTack(x:number,hip:number,d:CharacterDirection,frame:number):void{
@@ -114,8 +101,8 @@ export class HorseMount{
    else{for(const s of [-1,1]){g.beginPath();g.moveTo(x+s*5,handY);g.lineTo(hx+s*3,hy);g.strokePath();}}}
  }
  setVisible(v:boolean){this.horse.setVisible(v);this.rider?.setVisible(v);this.tack.setVisible(v&&!this.rider);
-  for(const ear of this.frontEars??[])ear.setVisible(v&&ear.isCropped&&Number(this.rider?.frame.name)===0);
+  this.frontHead?.setVisible(v&&Number(this.rider?.frame.name)===0);
  }
- destroy(){this.horse.destroy();this.rider?.destroy();this.tack.destroy();for(const ear of this.frontEars??[])ear.destroy();}
+ destroy(){this.horse.destroy();this.rider?.destroy();this.tack.destroy();this.frontHead?.destroy();}
 }
 export {CHARACTER_DIRECTIONS};

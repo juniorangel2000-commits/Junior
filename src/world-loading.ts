@@ -1,7 +1,7 @@
 import horsePoses from './data/horse-poses.json';
 import riderLift from './data/horse-rider-lift.json';
 import {AREA_NAMES} from './data/area-names';
-import {RIDER_ART,riderSheet,riderPose} from './data/horse-rider-art';
+import {RIDER_ART,riderFile,riderPose} from './data/horse-rider-art';
 /** Tela de carregamento (preview.41): a paisagem do destino em camadas que passam, na cor da
  * hora do dia, e a personagem montada galopando por uma trilha que é a própria barra de
  * progresso, levantando poeira. Embaixo, o passo da viagem e uma dica que se alterna. */
@@ -85,8 +85,8 @@ export function mountWorldLoading(holder:HTMLElement,label:string,info:WorldLoad
  // Cavalo galopando para a direita com a personagem por cima, nos quadros do jogo.
  const canvas=root.querySelector('canvas')!,ctx=canvas.getContext('2d');
  const horse=new Image(),rider=new Image();let atlas=cachedAtlas;
- const sheet=riderSheet(character),pose=riderPose(character,'right');
- horse.src='assets/animals/horse/atlas-packed.png';rider.src=sheet.file;
+ const pose=riderPose(character,'right');
+ horse.src='assets/animals/horse/atlas-packed.png';rider.src=riderFile(character);
  if(!atlas)fetch('assets/animals/horse/atlas-packed.json').then(r=>r.json()).then(j=>{atlas=cachedAtlas=j.frames;}).catch(()=>{});
  const run=horsePoses.Run.east;
  const dust:{x:number;y:number;life:number;r:number}[]=[];let last=performance.now(),distance=0;
@@ -106,8 +106,8 @@ export function mountWorldLoading(holder:HTMLElement,label:string,info:WorldLoad
   const ox=x-96*scale,oy=foot-(96+56)*scale;
   const f=atlas?.[String(frame)];
   if(f&&horse.complete)ctx.drawImage(horse,f.frame.x,f.frame.y,f.frame.w,f.frame.h,ox+f.spriteSourceSize.x*scale,oy+f.spriteSourceSize.y*scale,f.frame.w*scale,f.frame.h*scale);
-  if(f&&rider.complete&&rider.naturalWidth){const lift=Math.max(-6,Math.min(6,(riderLift as number[])[frame]??0));ctx.drawImage(rider,pose.sourceX,pose.sourceY,sheet.width,sheet.height,
-   ox+pose.x*scale,oy+(pose.y-lift)*scale,sheet.width*pose.scale*scale,sheet.height*pose.scale*scale);}
+  if(f&&rider.complete&&rider.naturalWidth){const lift=Math.max(-6,Math.min(6,(riderLift as number[])[frame]??0));ctx.drawImage(rider,pose.sourceX,pose.sourceY,pose.width,pose.height,
+   ox+pose.x*scale,oy+(pose.y-lift)*scale,pose.width*pose.scale*scale,pose.height*pose.scale*scale);}
  };
  requestAnimationFrame(draw);
  return{setProgress(v:number){target=Math.max(0,Math.min(1,v));bar.value=target;step.textContent=loadingStep(target);}};

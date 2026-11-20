@@ -37,11 +37,13 @@
     desenho).
   - Para refazer: `python3 -I scripts/pack_horse_rider.py <pasta do zip> farmer-female`.
 - **Personagem masculino** (`farmer-male`): oito poses próprias na folha
-  `farmer-male-seated.png`, com o corpo inteiro desenhado para a montaria. A arte mantém a
-  resolução nativa de 384×512 por célula. A escala e a posição de cada direção ficam em
-  `src/data/horse-rider-art.ts` e são usadas no cenário e na tela de carregamento.
-  Para preparar a folha a partir do original, rode `node scripts/prepare-male-rider.cjs`.
-  A pose de cada direção acompanha o lombo no passo e no galope.
+  `farmer-male-mounted.png`. A pose frontal aprovada abre espaço entre as pernas
+  para a cabeça do cavalo. Um recorte do próprio atlas passa à frente do cavaleiro
+  para mostrar as orelhas e a crina. As outras sete poses usam os mesmos pixels e
+  o mesmo encaixe de `farmer-male-seated.png`.
+  `src/data/horse-rider-art.ts` compartilha os recortes entre o cenário e a tela
+  de carregamento. O cavaleiro acompanha o lombo no passo e no galope.
+  Para preparar o atlas, rode `node scripts/prepare-male-mounted.cjs`.
 - Sem arte (personagem novo): o jogo usa o personagem cortado na cintura, com pernas, sela e
   rédeas desenhadas por código.
 - Prompts antigos em `docs/planejamento/PROMPTS-ARTE-MONTARIA.md`. Imagem de conferência em
