@@ -6,22 +6,21 @@
 - **Por:** Codex
 - **Continuar a partir de:** `release/v0.10.0-preview.44`, HEAD.
 - **Última versão publicada:** `v0.10.0-preview.43`, commit `8df467d`, na `main`.
-- **Estado:** montaria masculina aprovada na revisão do chat e integrada na Propriedade. Arte feminina e atlas original do cavalo preservados.
+- **Estado:** a pá e a foice usam o mesmo relógio para animação, efeito no alvo e gasto de durabilidade. Montaria masculina integrada em `599eafa`.
 
 ## Feito nesta rodada
 
-- Depois da revisão visual com o Junior, a pose frontal do fazendeiro passou a ter as pernas abertas em diagonal, como na pose montada da fazendeira. A altura frontal segue a prévia final, com pequeno ajuste ao passo para esconder a faixa escura acima da crina.
-- `scripts/prepare-male-mounted.cjs` usa a fonte frontal `referencias/personagens/montaria/masculino-frente.png` e as outras sete poses de `farmer-male-seated.png`. Recorta sem reduzir os pixels. O novo atlas `farmer-male-mounted.png` mede 1533×775 e registra dimensões e pontos de encaixe por quadro.
-- O recorte frontal copia os pixels da cabeça do cavalo a partir do atlas original. São 17 quadros de orelhas e crina, compactados numa folha separada. A sobreposição fica à frente do cavaleiro só ao olhar para sul. As mãos, as botas e as laterais do corpo continuam visíveis.
-- O adaptador da montaria e a tela de carregamento usam as mesmas coordenadas da arte. A chave da textura de montaria e o formato do save continuam compatíveis.
-- A comparação byte a byte confirmou os sete quadros já existentes e os 17 recortes copiados do cavalo. A conferência no Chromium partiu de uma partida na Propriedade, montou com V e verificou frente, costas, esquerda e direita ao passo e no galope, com Shift. Capturas frontais em `docs/planejamento/qa-montaria-preview44/`.
-- A revisão das ferramentas, as rotinas da vila, as passadas de Marina e Rui e a porteira a 90 graus estão em `a106cdb:docs/PASSAGEM.md`.
+- A pá e a foice da Propriedade e a foice da Floresta Antiga esperam o quadro 4 para preparar o canteiro ou cortar a vegetação. Nos Campos Abertos, foice e machadinha do ipê passaram a usar o mesmo relógio da animação.
+- `ToolSwing` concentra o relógio de 18 quadros por segundo e entrega um único contato aos 4/18 s. `ToolUse` continua fornecendo a mesma interface e o mesmo formato de snapshot para os golpes existentes e para Bento.
+- A ferramenta guarda a direção, o alvo e o ID da cópia escolhida. No contato, são conferidos alcance, alvo e durabilidade disponível da mesma cópia. Pausa, saída de cena e troca de ferramenta cancelam as ações aplicáveis.
+- O jogador fica no lugar durante o golpe. A pá fica um pouco mais alta no último quadro de preparação, de modo que sua descida coincida com a mudança do solo.
+- `scripts/qa-gather-contact.cjs` confere o uso pela mochila na Propriedade e Floresta e pela tecla E nos Campos. Com duas cópias na mochila, verifica que o alvo fica intacto no quadro 3, que cancelar não produz efeito, que o quadro 4 muda o alvo e que só uma cópia perde um ponto. A recuperação não repete o efeito.
+- A documentação da montaria está em `docs/construcoes/MONTARIA.md`. A revisão das ferramentas, rotinas da vila, passadas de Marina e Rui e porteira a 90 graus está em `a106cdb:docs/PASSAGEM.md`.
 
 ## Em andamento e próximo passo exato
 
-- Sincronizar o efeito da pá e da foice com o quadro de contato. Hoje as ações via inventário mudam o solo ou recolhem a vegetação no início da animação. Testar pelo inventário na Propriedade e a foice também nos Campos e na Floresta. A enxada e o regador já aplicam o efeito no contato.
-- Revisar a lâmina da enxada no impacto para que sua direção fique legível. Preservar escala, pegada e sprites dos ícones.
-- O fazendeiro montado usa uma pose por direção e acompanha o lombo animado. Uma pose de tronco própria para o galope fica para uma revisão de arte futura, se pedida.
+- Revisar a orientação da lâmina da enxada no impacto. Conferir esquerda e direita lado a lado, com o cabo na mão e a lâmina legível no contato. Preservar os ícones e a escala.
+- O fazendeiro montado usa uma pose por direção e acompanha o lombo animado. Uma inclinação de tronco própria para o galope fica para uma revisão futura, se pedida.
 
 ## Pendências e ideias para depois
 
@@ -37,6 +36,5 @@
 
 ## Testes
 
-- Base: `npm ci` pelo cache, `npm run check` e 2.203 testes passando.
-- Integração: `npm run check`, conferência das quatro vistas principais na Propriedade e auditoria de pixels passaram.
-- Final: 2.204 testes em 263 arquivos e build passaram. O build inclui os dois novos atlas e seus metadados.
+- Base: `npm ci` pelo cache, `npm run check` e 2.204 testes passando.
+- Integração em `5e1623b`: check e 2.204 testes (263 arquivos) passaram. Chromium confirmou pá e foice na Propriedade e foice na Floresta Antiga e nos Campos Abertos, sem erros de página. A Propriedade foi conferida de novo após o ajuste visual da pá.
