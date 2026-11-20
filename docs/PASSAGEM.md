@@ -8,6 +8,8 @@
 - **Última versão publicada:** `v0.10.0-preview.43` (commit de release enviado ao branch e à `main`). **A tag e a Release são criadas pelo Junior no GitHub** (push de tag é recusado nesta sessão).
 - **Estado:** preview.43 publicada: presentes, amizade, respostas, histórias, rotina da vila, chuva sorteada, visitas à propriedade, Marina e Rui andando, velocidade dos personagens e Actions no Node 24.
 
+> **Pedido do Junior (20/11/2026): não publicar novas versões no GitHub por enquanto** (sem `npm version`, notas de release, push para a `main` nem pedido de Release), até ele pedir de novo. Continue commitando e enviando o branch `release/v0.10.0-preview.44` normalmente.
+
 ## Feito nesta rodada
 
 ### preview.43 (publicada): explorar os moradores
