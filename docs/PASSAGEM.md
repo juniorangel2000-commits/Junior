@@ -4,25 +4,22 @@
 
 - **Atualizado em:** 2026-11-21
 - **Por:** Codex
-- **Continuar a partir de:** `release/v0.10.0-preview.44`, HEAD.
-- **Última versão publicada:** `v0.10.0-preview.43`, commit `8df467d`, na `main`.
-- **Estado:** Marina e Rui caminham, param e viram nas oito direções na Propriedade. Caminhada em `b5e8de4` e parada em `26adaa2`.
+- **Continuar a partir de:** `release/v0.10.0-preview.44`, HEAD. A tag desta versão é `v0.10.0-preview.44`.
+- **Estado:** versão 0.10.0-preview.44 preparada para Windows x64. O status da publicação e os arquivos ficam na [Release da preview.44](https://github.com/juniorangel2000-commits/Junior/releases/tag/v0.10.0-preview.44).
 
 ## Feito nesta rodada
 
-- Quatro poses paradas diagonais por sobrevivente, baseadas nas poses dos jogadores e nas passadas de Marina e Rui. As fontes em resolução nativa ficam em `public/assets/visual/characters/survivors/`. `node scripts/pack-survivor-walk.cjs` monta os atlas de caminhada e de parada.
-- Ao chegar, a primeira pose parada segue a direção da última passada. A origem dos pés coincide nos dois atlas. Marina e Rui assentam por 180 ms e então viram em passos de 45 graus a cada 75 ms até olhar para o jogador ou para a tarefa.
-- O teste no Chromium percorreu o trajeto de descanso, verificou a chegada por uma diagonal livre, conferiu as quatro poses olhando para o jogador e retomou a caminhada até o poço. A gravação na Propriedade ficou em `/workspace/afterrain-sobreviventes-paradas/parada-e-retomada.gif`.
-- Referências de arte anteriores em `b462fc4:docs/PASSAGEM.md`. Montaria masculina em `599eafa`, contato da pá e da foice em `5e1623b` e golpe da enxada em `7b4a645`.
+- Atualizados `package.json`, `package-lock.json`, [notas da versão](cenarios/NOTAS-0.10.0-preview.44.md) e [instruções de instalação](cenarios/LEIA-0.10.0-preview.44.md).
+- Marina e Rui caminham e param nas oito direções na Propriedade. As viradas avançam de 45 em 45 graus depois de uma breve pausa ao chegar. Caminhada em `b5e8de4` e parada em `26adaa2`.
+- A versão reúne a montaria masculina de `599eafa`, os contatos da pá e da foice de `5e1623b`, a correção da enxada de `7b4a645`, a porteira aberta a 90 graus de `99ce073` e o trajeto a pé dos visitantes de `9d06bfe`.
 
 ## Em andamento e próximo passo exato
 
-- A rodada de transição de Marina e Rui está concluída. Para repetir a conferência, inicie Vite na porta 5190 e rode `node scripts/qa-village-schedule.cjs --survivors` com o Playwright disponível. O caso cobre bloqueio, caminhada, chegada, conversa e retorno ao trabalho.
-- Fechar a preview.44 quando o Junior pedir a publicação, seguindo o protocolo de release em `AGENTS.md`.
+- Usar esta versão como base para a próxima tarefa depois de conferir a publicação no GitHub. Para repetir a conferência no jogo, inicie Vite na porta 5190 e rode `node scripts/qa-village-schedule.cjs --survivors` com o Playwright disponível.
 
 ## Pendências e ideias para depois
 
-- Histórias de Amélia e Nilo aguardam os cenários correspondentes. Planos de calendário, visitas, animais e receitas continuam em `docs/planejamento/`.
+- Histórias de Amélia e Nilo aguardam os cenários correspondentes. Planos de calendário, visitas, animais e receitas estão em `docs/planejamento/`.
 - Inclinação de tronco do fazendeiro montado durante o galope pode ser revista em uma rodada futura, se pedida.
 
 ## Problemas conhecidos
@@ -34,5 +31,6 @@
 
 ## Testes
 
-- Base: `npm ci` pelo cache, com o download do binário Electron desativado, `npm run check` e 2.204 testes em 263 arquivos.
-- Integração: `npm run check`, 2.204 testes em 263 arquivos e QA dos sobreviventes no Chromium sem erros.
+- `npm ci` pelo cache, `npm run check`, 2.204 testes em 263 arquivos e build local concluídos.
+- Confira o empacotamento Windows no workflow da tag, que gera o instalador, o portátil e os hashes SHA-256.
+- QA anterior no Chromium cobriu bloqueio, caminhada, chegada diagonal, conversa e retomada até o poço. Detalhes em `85c419e:docs/PASSAGEM.md`.
