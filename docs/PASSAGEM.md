@@ -6,24 +6,24 @@
 - **Por:** Codex
 - **Continuar a partir de:** `release/v0.10.0-preview.44`, HEAD.
 - **Última versão publicada:** `v0.10.0-preview.43`, commit `8df467d`, na `main`.
-- **Estado:** Marina e Rui caminham nas oito direções na Propriedade. A animação das diagonais está integrada em `b5e8de4`.
+- **Estado:** Marina e Rui caminham, param e viram nas oito direções na Propriedade. Caminhada em `b5e8de4` e parada em `26adaa2`.
 
 ## Feito nesta rodada
 
-- As passadas diagonais seguem a ordem dos quadros dos jogadores. Marina usa seis quadros por vista e Rui usa oito. O ciclo avança pela distância percorrida e se completa em 48 px.
-- As fontes diagonais nativas estão em `public/assets/visual/characters/survivors/`. `node scripts/pack-survivor-walk.cjs` monta cada atlas com quatro linhas cardinais e quatro diagonais. A posição dos pés e o tamanho de exibição foram ajustados em conjunto para as novas vistas.
-- Os quatro ciclos cardinais foram conferidos pixel a pixel contra a versão anterior. As poses paradas continuam cardinais. Movimentação e colisões seguem a rotina da Propriedade.
-- A galeria do Chromium mostra os ciclos ao lado das caminhadas de referência. Para reproduzir, inicie o Vite na porta 5190 e execute `node scripts/capture-art-review.cjs /tmp/qa-sobreviventes survivors-diagonals`.
-- Referências anteriores de arte: montaria masculina em `599eafa`, contato da pá e da foice em `5e1623b` e golpe da enxada em `7b4a645`.
+- Quatro poses paradas diagonais por sobrevivente, baseadas nas poses dos jogadores e nas passadas de Marina e Rui. As fontes em resolução nativa ficam em `public/assets/visual/characters/survivors/`. `node scripts/pack-survivor-walk.cjs` monta os atlas de caminhada e de parada.
+- Ao chegar, a primeira pose parada segue a direção da última passada. A origem dos pés coincide nos dois atlas. Marina e Rui assentam por 180 ms e então viram em passos de 45 graus a cada 75 ms até olhar para o jogador ou para a tarefa.
+- O teste no Chromium percorreu o trajeto de descanso, verificou a chegada por uma diagonal livre, conferiu as quatro poses olhando para o jogador e retomou a caminhada até o poço. A gravação na Propriedade ficou em `/workspace/afterrain-sobreviventes-paradas/parada-e-retomada.gif`.
+- Referências de arte anteriores em `b462fc4:docs/PASSAGEM.md`. Montaria masculina em `599eafa`, contato da pá e da foice em `5e1623b` e golpe da enxada em `7b4a645`.
 
 ## Em andamento e próximo passo exato
 
-- Receber o retorno do Junior sobre as passadas diagonais no GIF e, quando a preview estiver disponível, durante as rotinas na Propriedade. Reproduzir com a galeria ou com `node scripts/qa-village-schedule.cjs --survivors` antes de alterar pose ou compasso.
-- O fazendeiro montado usa uma pose por direção e acompanha o lombo animado. Uma inclinação de tronco própria para o galope fica para uma revisão futura, se pedida.
+- A rodada de transição de Marina e Rui está concluída. Para repetir a conferência, inicie Vite na porta 5190 e rode `node scripts/qa-village-schedule.cjs --survivors` com o Playwright disponível. O caso cobre bloqueio, caminhada, chegada, conversa e retorno ao trabalho.
+- Fechar a preview.44 quando o Junior pedir a publicação, seguindo o protocolo de release em `AGENTS.md`.
 
 ## Pendências e ideias para depois
 
 - Histórias de Amélia e Nilo aguardam os cenários correspondentes. Planos de calendário, visitas, animais e receitas continuam em `docs/planejamento/`.
+- Inclinação de tronco do fazendeiro montado durante o galope pode ser revista em uma rodada futura, se pedida.
 
 ## Problemas conhecidos
 
@@ -34,6 +34,5 @@
 
 ## Testes
 
-- Base: `npm run check` e 2.204 testes passando. Reinstalação com `npm ci` pelo cache, sem download do binário Electron.
-- Integração: `npm run check` e 2.204 testes em 263 arquivos. Conferidas todas as vistas, as diferenças entre quadros consecutivos das botas e a seleção de quadro por distância.
-- Chromium: galeria das quatro diagonais sem erros. Na Propriedade, Marina e Rui aguardam quando o trajeto está bloqueado, retomam as caminhadas ao liberar a passagem e usam todos os quadros de leste e sudeste na ida para casa.
+- Base: `npm ci` pelo cache, com o download do binário Electron desativado, `npm run check` e 2.204 testes em 263 arquivos.
+- Integração: `npm run check`, 2.204 testes em 263 arquivos e QA dos sobreviventes no Chromium sem erros.
