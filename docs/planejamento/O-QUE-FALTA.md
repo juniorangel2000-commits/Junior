@@ -25,7 +25,8 @@
 
 ## 1. Conteúdo e cenários
 
-- [x] **Pântano jogável** com acesso pela Floresta Antiga, editor F2, passarela, sapos e jacarés (branch da preview.45).
+- [x] **Pântano jogável** ao sul da Floresta Antiga, com editor F2, passarela, sapos e jacarés (branch da preview.45).
+- [ ] **Continuidade dos rios.** Conferir o encaixe do Platô com a cachoeira do Lago e definir a continuidade das bocas do Pântano e da saída da Propriedade nos Campos Abertos.
 - [ ] **História da Amélia** em 3 partes. A íris azul do Pântano já tem sprite e posição no mapa. Modelo em `src/data/npc-stories.ts`.
 - [ ] **Ruínas** e a **história do Nilo** (a peça antiga).
 - [ ] Usar o pântano e as ruínas também em partes extras das histórias dos outros moradores.
