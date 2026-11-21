@@ -1,4 +1,4 @@
-import { SURVIVOR_VIEWS, survivorView, survivorWalkFrame } from './data/survivor-walk';
+import { SURVIVOR_VIEWS, survivorView, survivorWalkFrame, survivorWalkScale } from './data/survivor-walk';
 export { SURVIVOR_VIEWS, survivorView, survivorWalkFrame } from './data/survivor-walk';
 import type Phaser from 'phaser';
 import type {SaveData} from './types';
@@ -9,7 +9,7 @@ import {VillageNpcOverlays} from './village-npc-overlays';
 import {PROPERTY_SURVIVORS,SURVIVOR_NAMES,survivorActivity,type PropertySurvivorId} from './systems/property-survivors';
 import type {CharacterDirection} from './character-directions';
 
-/** Poses paradas originais e passadas próprias em quatro direções, com pés alinhados. */
+/** Poses paradas originais e passadas próprias em oito direções, com pés alinhados. */
 type View=typeof SURVIVOR_VIEWS[number];
 export const survivorTexture=(id:PropertySurvivorId,view:View)=>view==='south'?`survivor-${id}`:`survivor-${id}-${view}`;
 export function preloadSurvivorViews(scene:Phaser.Scene):void{
@@ -75,7 +75,7 @@ export class PropertySurvivorsView {
    // À noite somem só depois de chegar à porta de casa.
    const visible=shown&&(plan.visible||!atGoal);
    const animated=a.moving&&this.scene.textures.exists(`survivor-walk-${id}`);
-   if(animated)a.sprite.setTexture(`survivor-walk-${id}`,survivorWalkFrame(id,a.direction,a.distance)).setScale(walkArt.characters[id].scale);
+   if(animated)a.sprite.setTexture(`survivor-walk-${id}`,survivorWalkFrame(id,a.direction,a.distance)).setScale(survivorWalkScale(id,a.direction));
    else a.sprite.setTexture(survivorTexture(id,survivorView(a.direction))).setDisplaySize(WIDTH,HEIGHT);
    a.sprite.setPosition(a.pos.x,a.pos.y).setDepth(a.pos.y).setVisible(visible);
   }

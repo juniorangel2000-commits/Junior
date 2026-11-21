@@ -12,9 +12,12 @@ fs.mkdirSync(out,{recursive:true});const frames=fs.mkdtempSync(path.join(os.tmpd
   await p.goto('http://127.0.0.1:5190');
   await p.evaluate(async mode=>{
    window.game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;
-   window.survivors=await import('/src/data/survivor-walk.ts');window.survivorView=await import('/src/property-survivors-view.ts');window.walkArt=await(await fetch('/assets/visual/characters/survivors/walk.json')).json();
+   window.survivors=await import('/src/data/survivor-walk.ts');window.survivorView=await import('/src/property-survivors-view.ts');
    const mountArt=await import('/src/horse-mount.ts');window.HorseMount=mountArt.HorseMount;window.preloadRiderArt=mountArt.preloadRiderArt;window.ToolVisual=(await import('/src/tool-visual.ts')).ToolVisual;
-   window.miningArt=await import('/src/player-mining-art.ts');window.toolArt=await import('/src/tool-visual.ts');window.economy=await import('/src/data/economy-art.ts');window.characters=await import('/src/data/characters.ts');window.dirs=['down','up','right','left'];window.items=[];window.reviewMode=mode;if(mode==='horse-diagonals')window.dirs=['down-left','down-right','up-left','up-right'];window.farmArt=await import('/src/farm-construction-view.ts');window.farmDefs=await import('/src/data/farm-buildings.ts');
+   window.miningArt=await import('/src/player-mining-art.ts');window.toolArt=await import('/src/tool-visual.ts');window.economy=await import('/src/data/economy-art.ts');window.characters=await import('/src/data/characters.ts');window.dirs=['down','up','right','left'];window.items=[];window.reviewMode=mode;
+   if(mode==='horse-diagonals')window.dirs=['down-left','down-right','up-left','up-right'];
+   if(mode==='survivors-diagonals')window.dirs=survivors.SURVIVOR_WALK_DIRECTIONS.slice(4);
+   window.farmArt=await import('/src/farm-construction-view.ts');window.farmDefs=await import('/src/data/farm-buildings.ts');
    for(const s of game.scene.getScenes(true))game.scene.stop(s.scene.key);
    game.scene.add('ArtReview',{
     preload(){
@@ -33,10 +36,11 @@ fs.mkdirSync(out,{recursive:true});const frames=fs.mkdtempSync(path.join(os.tmpd
     create(){
      window.review=this;this.cameras.main.setBackgroundColor('#718361').setZoom(2).centerOn(300,reviewMode.startsWith('tools')?275:200);
      const text=(x,y,t)=>this.add.text(x,y,t,{fontFamily:'serif',fontSize:'11px',color:'#fff8dd'}).setOrigin(.5,0);
-     if(reviewMode==='survivors'){
+     if(reviewMode.startsWith('survivors')){
       const columns=['farmer-female','marina','farmer-male','rui'];columns.forEach((id,col)=>text(75+col*150,8,{'farmer-female':'Fazendeira',marina:'Marina','farmer-male':'Fazendeiro',rui:'Rui'}[id]));
+      if(reviewMode==='survivors-diagonals')dirs.forEach((d,row)=>text(300,105+row*90,{'down-right':'Sudeste','down-left':'Sudoeste','up-right':'Nordeste','up-left':'Noroeste'}[d]));
       dirs.forEach((d,row)=>columns.forEach((id,col)=>{const x=75+col*150,y=100+row*90,original=id.startsWith('farmer-'),meta=original?characters.resolveCharacter({characterId:id}):undefined;
-       const image=this.add.image(x,y,original?`${id}-${d}-0`:`survivor-walk-${id}`,original?undefined:survivors.survivorWalkFrame(id,d,0)).setOrigin(.5,original?meta.originY/256:232/256).setScale(original?.25:walkArt.characters[id].scale);items.push({id,d,image,original});}));
+       const image=this.add.image(x,y,original?`${id}-${d}-0`:`survivor-walk-${id}`,original?undefined:survivors.survivorWalkFrame(id,d,0)).setOrigin(.5,original?meta.originY/256:232/256).setScale(original?.25:survivors.survivorWalkScale(id,d));items.push({id,d,image,original});}));
      }else if(reviewMode==='pigsty'){
       const cost=farmDefs.FARM_BUILDINGS.pigsty.cost;const sites=[false,true].map((gateOpen,i)=>({id:i+1,kind:'pigsty',x:2+i*9,y:5,finished:true,delivered:{...cost},animals:[],hay:0,gateOpen}));
       window.farmView=new farmArt.FarmConstructionView(this,()=>({farmConstruction:{sites}}));text(144,90,'Porteira fechada');text(432,90,'Porteira aberta — 90°');
@@ -55,7 +59,7 @@ fs.mkdirSync(out,{recursive:true});const frames=fs.mkdtempSync(path.join(os.tmpd
   await p.addStyleTag({content:'#ui,#title-screen,.title-screen{visibility:hidden!important}'});
   for(let frame=0;frame<(mode==='pigsty'?1:48);frame++){
    await p.evaluate(({frame,mode})=>{
-    if(mode==='survivors')for(const a of items){if(a.original){const n=characters.resolveCharacter({characterId:a.id}).walkFrames;const phase=Math.floor(((frame*2+1e-7)%48)/48*n)+1;a.image.setTexture(`${a.id}-${a.d}-${phase}`);}else a.image.setFrame(survivors.survivorWalkFrame(a.id,a.d,frame*2));}
+    if(mode.startsWith('survivors'))for(const a of items){if(a.original){const n=characters.resolveCharacter({characterId:a.id}).walkFrames;const phase=Math.floor(((frame*2+1e-7)%48)/48*n)+1;a.image.setTexture(`${a.id}-${a.d}-${phase}`);}else a.image.setFrame(survivors.survivorWalkFrame(a.id,a.d,frame*2));}
     else if(mode.startsWith('horse'))for(const a of items)a.mount.update(a.x,a.y,a.d,frame===0?0:4,frame>=24);
     else if(mode!=='pigsty')for(const a of items){a.visual.hide();a.body.setVisible(true);a.visual.show(a.tool,a.d,a.x,a.y,{active:true,frame:frame%9},1,a.body);
      if(a.body.visible)throw Error('Corpo original duplicado durante a ação');
@@ -78,7 +82,7 @@ fs.mkdirSync(out,{recursive:true});const frames=fs.mkdtempSync(path.join(os.tmpd
    textures.forEach((t,i)=>fs.writeFileSync(path.join(out,i?'chiqueiro-aberto.png':'chiqueiro-fechado.png'),Buffer.from(t.split(',')[1],'base64')));
    fs.writeFileSync(path.join(out,'pigsty.json'),JSON.stringify({sameBuilding:true,changedOutside,errors},null,2));console.log('Chiqueiro: estados alinhados, somente a porteira muda');return;
   }
-  execFileSync('ffmpeg',['-loglevel','error','-y','-framerate',mode==='survivors'?'42':'24','-i',path.join(frames,'%03d.png'),'-filter_complex','split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer',path.join(out,mode+'.gif')]);
+  execFileSync('ffmpeg',['-loglevel','error','-y','-framerate',mode.startsWith('survivors')?'42':'24','-i',path.join(frames,'%03d.png'),'-filter_complex','split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer',path.join(out,mode+'.gif')]);
   let tools;
   if(mode.startsWith('tools'))tools=await p.evaluate(()=>items.map(a=>{
    const tiers=[];for(let tier=0;tier<4;tier++){a.visual.show(a.tool,a.d,a.x,a.y,{active:true,frame:4},tier,a.body);tiers.push(a.visual.sprite.texture.key);}
