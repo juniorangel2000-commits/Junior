@@ -36,6 +36,8 @@
 
 ## Pendências e ideias para depois
 
+- **Lista completa do que falta no jogo:** `docs/planejamento/O-QUE-FALTA.md` (escrita para o Junior colar no ChatGPT). Mantenha atualizada ao terminar itens.
+
 - **iPhone (conversa com o Junior, sem decisão):** o jogo poderia virar app para iPhone, offline, com Capacitor e build no GitHub Actions em máquina macOS; instalação gratuita pelo Sideloadly (7 dias) ou conta Apple (US$ 99/ano). Falta: controles de toque e de controle Bluetooth, telas para celular, peso (a compressão desta rodada ajuda) e saves em arquivo do app. App Store fica para depois.
 - **Chiqueiro novo:** o ChatGPT não gerou arte parecida; o Junior vai pedir depois. Prompts na seção 0b de `docs/planejamento/ARTE-PENDENTE.md`.
 - **Peças de construção:** pregos, dobradiça, engrenagem, molas e óleo têm ícone, mas não existem como item.
