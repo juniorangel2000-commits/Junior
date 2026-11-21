@@ -2,25 +2,23 @@
 
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
-- **Atualizado em:** 2026-11-20
+- **Atualizado em:** 2026-11-21
 - **Por:** Codex
 - **Continuar a partir de:** `release/v0.10.0-preview.44`, HEAD.
 - **Última versão publicada:** `v0.10.0-preview.43`, commit `8df467d`, na `main`.
-- **Estado:** golpe da enxada revisado nas duas laterais. Montaria masculina em `599eafa` e contato da pá/foice em `5e1623b`.
+- **Estado:** Marina e Rui caminham nas oito direções na Propriedade. A animação das diagonais está integrada em `b5e8de4`.
 
 ## Feito nesta rodada
 
-- Refeito o perfil da lâmina de animação da enxada para que a ponta fique à frente do encaixe e voltada para o solo no contato. O ícone de inventário continua na fonte anterior.
-- Fonte nativa em `referencias/personagens/ferramentas-corpo/enxada-impacto.png`. `scripts/prepare-work-tools.cjs` mantém o comprimento exibido da ferramenta equivalente ao anterior e registra a pegada, o encaixe e o ponto da ponta no manifesto.
-- O último quadro de levantamento usa a pose existente. O impacto usa a mão mais baixa e o novo ângulo. Esquerda e direita são espelhadas em torno da mão.
-- O relógio do golpe continua aplicando efeito no quadro 4. Conferido no Chromium com E em dois canteiros livres da Propriedade. A pegada, a escala e a textura permanecem estáveis durante o golpe. A terra aparece no contato e a pose normal volta ao final.
-- `tests/player-tool-body.test.ts` valida a posição da ponta em relação ao encaixe e ao solo dos dois personagens. Fotos em `docs/planejamento/qa-enxada-preview44/`.
-- Revisões anteriores de ferramentas em `5e1623b` e `a106cdb:docs/PASSAGEM.md`. Montaria revisada no chat e integrada em `599eafa`.
+- As passadas diagonais seguem a ordem dos quadros dos jogadores. Marina usa seis quadros por vista e Rui usa oito. O ciclo avança pela distância percorrida e se completa em 48 px.
+- As fontes diagonais nativas estão em `public/assets/visual/characters/survivors/`. `node scripts/pack-survivor-walk.cjs` monta cada atlas com quatro linhas cardinais e quatro diagonais. A posição dos pés e o tamanho de exibição foram ajustados em conjunto para as novas vistas.
+- Os quatro ciclos cardinais foram conferidos pixel a pixel contra a versão anterior. As poses paradas continuam cardinais. Movimentação e colisões seguem a rotina da Propriedade.
+- A galeria do Chromium mostra os ciclos ao lado das caminhadas de referência. Para reproduzir, inicie o Vite na porta 5190 e execute `node scripts/capture-art-review.cjs /tmp/qa-sobreviventes survivors-diagonals`.
+- Referências anteriores de arte: montaria masculina em `599eafa`, contato da pá e da foice em `5e1623b` e golpe da enxada em `7b4a645`.
 
 ## Em andamento e próximo passo exato
 
-- Receber o retorno do Junior sobre o golpe da enxada. A rodada de contato e orientação das ferramentas está concluída.
-- Se a próxima prioridade continuar em arte, revisar as diagonais dos sobreviventes Marina e Rui. Hoje eles têm animações próprias nas quatro direções principais. Usar as caminhadas originais dos jogadores como referência.
+- Receber o retorno do Junior sobre as passadas diagonais no GIF e, quando a preview estiver disponível, durante as rotinas na Propriedade. Reproduzir com a galeria ou com `node scripts/qa-village-schedule.cjs --survivors` antes de alterar pose ou compasso.
 - O fazendeiro montado usa uma pose por direção e acompanha o lombo animado. Uma inclinação de tronco própria para o galope fica para uma revisão futura, se pedida.
 
 ## Pendências e ideias para depois
@@ -36,5 +34,6 @@
 
 ## Testes
 
-- Base: `npm ci` pelo cache, `npm run check` e 2.204 testes passando.
-- Integração `7b4a645`: check, 2.204 testes em 263 arquivos e QA no Chromium sem erros. Confirmados preparo, contato no quadro 4, escala/pegada e recuperação dos dois lados.
+- Base: `npm run check` e 2.204 testes passando. Reinstalação com `npm ci` pelo cache, sem download do binário Electron.
+- Integração: `npm run check` e 2.204 testes em 263 arquivos. Conferidas todas as vistas, as diferenças entre quadros consecutivos das botas e a seleção de quadro por distância.
+- Chromium: galeria das quatro diagonais sem erros. Na Propriedade, Marina e Rui aguardam quando o trajeto está bloqueado, retomam as caminhadas ao liberar a passagem e usam todos os quadros de leste e sudeste na ida para casa.
