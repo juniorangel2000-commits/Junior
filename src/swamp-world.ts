@@ -4,7 +4,9 @@ import type { MapEditData, TerrainKind } from './systems/map-editor';
 import { natureArt } from './data/nature-catalog';
 import { createSwampLayout, SWAMP_SIZE, swampEntry, swampExit, swampTrailDistance, swampWaterDistance, tileCenter } from './data/swamp';
 import { SWAMP_GROUND, SWAMP_KINDS, SWAMP_ART } from './data/swamp-art';
-import { directionFromVector } from './character-directions';
+import type { CharacterDirection } from './character-directions';
+import { caimanHeadCrop } from './data/caiman-swim';
+import { WaterEffects } from './swimming/water-effects';
 import { readTerrainSprites } from './terrain-sprites';
 import { terrainPaintAlpha } from './data/terrain-paint';
 import { waterFinishChannel } from './data/water-style';
@@ -14,6 +16,7 @@ import frames from '../public/assets/visual/swamp/animals.json';
 
 const ROOT='assets/visual/swamp/';
 const TEXTURE_SIZE=128;
+const WATER_SHADE=[.72,.74,.65] as const;
 type Ground=typeof SWAMP_GROUND[number];
 const paintMaterial:Partial<Record<TerrainKind,Ground>>={
   grass:'sod',meadow:'sod',forest:'peat',moss:'peat',forestPath:'mud',path:'mud',wetPath:'mud',soil:'mud',sand:'silt',
@@ -81,7 +84,7 @@ function bakeGround(scene:Phaser.Scene,layout:ReturnType<typeof createSwampLayou
         let value=(bank*(1-trail)+mud[sample+k]*trail)*variation;
         if(material)value=value*(1-alpha)+materials[material][sample+k]*alpha;
         if(custom)value=value*(1-alpha)+custom.pixels[((py%custom.size)*custom.size+px%custom.size)*4+k]*alpha;
-        rgba[i+k]=waterPoint?waterFinishChannel(water.pixels[wav+k],k,-12):value;
+        rgba[i+k]=waterPoint?waterFinishChannel(water.pixels[wav+k],k,Math.min(0,distance))*WATER_SHADE[k]:value;
       }
       rgba[i+3]=255;
     }
@@ -90,6 +93,14 @@ function bakeGround(scene:Phaser.Scene,layout:ReturnType<typeof createSwampLayou
   return canvas;
 }
 
+function showCaimanHead(sprite:Phaser.GameObjects.Sprite,frame:number,x:number,y:number):void {
+  const crop=caimanHeadCrop(frame,frames.caiman);
+  sprite.setFrame(frame).setCrop(crop.x,crop.y,crop.width,crop.height)
+    .setOrigin((crop.x+crop.width/2)/frames.caiman,(crop.y+crop.height-2)/frames.caiman)
+    .setPosition(x,y);
+}
+
+const CAIMAN_DIRECTIONS=['right','down','left','up'] as const;
 class SwampFauna {
   private elapsed=0;
   private wait:number;
@@ -97,6 +108,8 @@ class SwampFauna {
   private to:{x:number;y:number};
   private turn=0;
   private frog:boolean;
+  private direction:CharacterDirection='right';
+  private readonly wake?:WaterEffects;
   constructor(
     private sprite:Phaser.GameObjects.Sprite,
     private home:{x:number;y:number},
@@ -105,6 +118,7 @@ class SwampFauna {
   ){
     this.frog=sprite.texture.key==='swamp-frog';
     this.from={...home};this.to={...home};this.wait=this.frog?2+index%5:0;
+    if(!this.frog)this.wake=new WaterEffects(sprite.scene);
     this.turn=index*.75;
   }
   update(dt:number):void {
@@ -136,18 +150,26 @@ class SwampFauna {
     this.elapsed+=dt;
     const a=this.turn+this.elapsed*.31;
     const p={x:this.home.x+Math.cos(a)*62,y:this.home.y+Math.sin(a)*45};
-    const sprite=this.sprite,dx=p.x-sprite.x,dy=p.y-sprite.y;
-    if(this.layout.inWater(p.x,p.y)&&!this.layout.blocked(p.x,p.y)){
-      const direction=directionFromVector(Math.abs(dx)>Math.abs(dy)?dx:0,Math.abs(dy)>=Math.abs(dx)?dy:0);
-      const row=direction==='right'?0:direction==='down'?1:direction==='left'?2:3;
-      if(Math.hypot(dx,dy)<5||this.elapsed<.1)sprite.setPosition(p.x,p.y);
-      else{
-        const distance=Math.hypot(dx,dy),step=Math.min(distance,dt*32);
-        const x=sprite.x+dx/distance*step,y=sprite.y+dy/distance*step;
-        if(this.layout.inWater(x,y)&&!this.layout.blocked(x,y))sprite.setPosition(x,y);
-      }
-      sprite.setFrame(row*4+Math.floor(this.elapsed*7)%4).setDepth(-77);
+    const dx=p.x-this.from.x,dy=p.y-this.from.y,distance=Math.hypot(dx,dy);
+    const step=Math.min(distance,dt*32);
+    const x=distance?this.from.x+dx/distance*step:this.from.x;
+    const y=distance?this.from.y+dy/distance*step:this.from.y;
+    const open=this.layout.inWater(x,y)&&!this.layout.blocked(x,y);
+    if(open&&step>.02){
+      this.from={x,y};
+      const horizontal=Math.abs(dx)>Math.abs(dy);
+      this.direction=horizontal?(dx>0?'right':'left'):(dy>0?'down':'up');
     }
+    const moving=open&&step>.02,at=this.from;
+    const wet=this.layout.inWater(at.x,at.y);
+    this.sprite.setVisible(wet);
+    if(!wet){this.wake?.hide();return;}
+    const row=CAIMAN_DIRECTIONS.findIndex(d=>d===this.direction);
+    const phase=moving?Math.floor(this.elapsed*5)%4:0;
+    const bob=this.wake?.update(at.x,at.y,1,moving,this.direction,.46,dt)??0;
+    this.wake?.graphics.setDepth(-78);
+    this.wake?.frontGraphics.setDepth(-76.9);
+    showCaimanHead(this.sprite,row*4+phase,at.x,at.y+bob*.55);
   }
 }
 
@@ -162,7 +184,7 @@ export class SwampWorld {
     this.terrainKey='swamp-ground-bake-'+(++nextTerrain);
     scene.textures.addCanvas(this.terrainKey,bakeGround(scene,this.layout,edits))!.setFilter(Phaser.Textures.FilterMode.NEAREST);
     scene.add.image(0,0,this.terrainKey).setOrigin(0).setDepth(-100);
-    if(!palette)addWaterMotion(scene,(x,y)=>this.layout.water(x*32+16,y*32+16),this.layout.water,{...SWAMP_SIZE,alpha:.4,depth:-80});
+    if(!palette)addWaterMotion(scene,(x,y)=>this.layout.water(x*32+16,y*32+16),this.layout.water,{...SWAMP_SIZE,alpha:.4,depth:-80,tint:0xaebca7});
     let index=0;
     for(const object of this.layout.objects){
       const art=natureArt(object.kind);
@@ -178,7 +200,8 @@ export class SwampWorld {
         const wet=object.kind==='swamp-caiman';
         const side=wet?108:43;
         const sprite=scene.add.sprite(p.x,p.y,texture,0).setOrigin(.5,wet?.5:.94).setDisplaySize(side,side)
-          .setDepth(wet?-77:p.y).setAlpha(wet?.87:1).setData('swamp-animal',object.kind);
+          .setDepth(wet?-77:p.y).setData('swamp-animal',object.kind);
+        if(wet)showCaimanHead(sprite,0,p.x,p.y);
         if(!palette)this.fauna.push(new SwampFauna(sprite,p,this.layout,index++));
         continue;
       }

@@ -44,7 +44,17 @@ split('boardwalk',['boardwalk'],1,1,0,true);
 
 const frames={};
 for(const [id,rows,preferred] of [['frog',1,528],['caiman',4,320]]){
-  const source=read(id),cells=Array.from({length:4*rows},(_,i)=>crop(source,trim(source,gridBounds(source,4,rows,i,3))));
+  const source=read(id);
+  // As quatro linhas do jacaré têm alturas diferentes na folha original.
+  const bands=[0,264,575,786,source.height];
+  const cells=Array.from({length:4*rows},(_,i)=>{
+    const region=gridBounds(source,4,rows,i,3);
+    if(id==='caiman'){
+      const row=Math.floor(i/4);
+      region.top=bands[row];region.bottom=bands[row+1];
+    }
+    return crop(source,trim(source,region));
+  });
   const side=Math.ceil(Math.max(preferred,...cells.map(p=>Math.max(p.width,p.height)+16))/16)*16;
   const atlas=new PNG({width:side*4,height:side*rows});
   cells.forEach((image,index)=>{
