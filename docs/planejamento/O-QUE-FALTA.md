@@ -21,13 +21,13 @@
   amizade, presentes, respostas nas conversas, histórias pessoais de 8 deles e visitas à
   propriedade), calendário de 4 estações × 28 dias, chuva sorteada, dia e noite com luz.
 - **Cenários:** Propriedade, Floresta, Campos Abertos, Vila, Estrada, Lago, Serra (Platô),
-  Acampamento, Mina e Dungeons.
+  Acampamento, Mina e Dungeons. O Pântano está jogável no branch da preview.45.
 
 ## 1. Conteúdo e cenários
 
-- [ ] **Pântano** (novo cenário, o Junior vai criar o mapa) e a **história da Amélia**
-  (3 partes, a flor rara que só cresce lá). Modelo das histórias: `src/data/npc-stories.ts`.
-- [ ] **Ruínas** (novo cenário, o Junior vai criar) e a **história do Nilo** (a peça antiga).
+- [x] **Pântano jogável** com acesso pela Floresta Antiga, editor F2, passarela, sapos e jacarés (branch da preview.45).
+- [ ] **História da Amélia** em 3 partes. A íris azul do Pântano já tem sprite e posição no mapa. Modelo em `src/data/npc-stories.ts`.
+- [ ] **Ruínas** e a **história do Nilo** (a peça antiga).
 - [ ] Usar o pântano e as ruínas também em partes extras das histórias dos outros moradores.
 - [ ] **Editor de mapa (F2) nos Campos Abertos**: ainda não integrado nesse cenário.
 
@@ -38,7 +38,7 @@
 - [ ] **Visitas à noite** de Bento, Damião e Helena (hoje só os 7 que têm folga visitam a
   propriedade, de manhã).
 - [ ] Decidir se haverá **namoro/casamento** ou só amizade (ainda não decidido).
-- [ ] Diagonais próprias da caminhada de Marina e Rui (hoje passadas nas 4 vistas principais).
+- [x] Caminhada, parada e viradas nas oito direções para Marina e Rui (preview.44).
 
 ## 3. Calendário e clima
 
@@ -55,7 +55,7 @@
 
 - [ ] **Equilíbrio de preços** de todos os produtos (máquinas, cozinha, animais) jogando.
 - [ ] **Posição dos animais dentro das construções** não é guardada ao sair e voltar.
-- [ ] **Interiores das construções à noite** ficam claros o tempo todo (falta iluminação).
+- [ ] Conferir a **iluminação noturna dos abrigos** em jogo. O modo de iluminação com lampiões já está integrado.
 - [ ] Itens soltos no chão e recolhidos **voltam com qualidade comum** (perdem a qualidade).
 - [ ] **Cavalo:** chamar de longe, sela (talvez fabricada) e as animações de deitar,
   descansar e levantar (os quadros já existem).
@@ -73,7 +73,7 @@
 - [ ] **Travamentos nos Campos Abertos:** medir com o F3 no PC do Junior antes de mexer.
 - [ ] **A Propriedade carrega o que não usa:** cavalo (45 MB, vive nos Campos), imagens dos
   pets do abrigo (~60 MB), coelho, cervo, pato, porco e a animação de nado antes de nadar.
-- [ ] Recortar o espaço vazio dos atlas dos animais (sem mudar pixels).
+- [ ] Medir quais atlas de animais ainda ocupam espaço vazio. O primeiro recorte já foi feito na preview.39.
 - [ ] Vídeos da estrada (16 + 13 MB): reduzir só com o aval do Junior (há pequena perda).
 - [x] Imagens em WebP sem perda no build (preview.45): jogo de ~450 MB para ~305 MB.
 - Detalhes em `docs/planejamento/DESEMPENHO.md`.
@@ -85,8 +85,8 @@
 - [ ] Itens que ainda usam o ícone de outro item ou provisórios: ver a seção 2 de
   `docs/planejamento/ARTE-PENDENTE.md` (algumas linhas já foram resolvidas pelo lote 01;
   conferir no jogo antes de pedir).
-- [ ] Arte das futuras novidades: pântano, ruínas, inverno/neve, árvores frutíferas, estufa,
-  festivais e a flor rara da Amélia.
+- [ ] Arte das futuras novidades: ruínas, inverno/neve, árvores frutíferas, estufa
+  e festivais.
 - **Estilo para pedir arte:** pixel art detalhado, paleta quente, contorno marrom-escuro,
   visto de cima em 3/4, de frente, sem isometria, fundo branco liso, sem reduzir os PNGs.
 
@@ -107,10 +107,10 @@
 
 ## Sugestão de ordem
 
-1. Publicar a preview.45 (mochila nova, barra maior, jogo mais leve) e conferir o build.
-2. Medir o desempenho no PC do Junior (F3) e corrigir o que pesar.
-3. Chuva regando as plantações e peixes por estação (ganho grande, trabalho pequeno).
-4. Tela de calendário com previsão e os primeiros eventos e aniversários da vila.
-5. Pântano e ruínas com as histórias da Amélia e do Nilo.
+1. Ajustar o Pântano após jogar e ligar a íris azul à história da Amélia.
+2. Criar as Ruínas e a história do Nilo. Depois, avaliar Costa das Marés, Pomar Abandonado e Estação Ferroviária Desativada.
+3. Publicar a preview.45 quando o Junior pedir e conferir a compressão no instalador para Windows.
+4. Medir o desempenho dos Campos Abertos no PC do Junior com F3.
+5. Integrar a chuva à rega e os peixes às estações. Em seguida, adicionar tela de calendário com previsão, eventos e aniversários.
 6. Inverno, árvores frutíferas, estufa e sementes especiais.
 7. Controle e, depois, a versão para iPhone.
