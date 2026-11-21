@@ -7,16 +7,30 @@ import { editorObjectKind, type EditorObjectKind, type MapEditData } from '../sy
 
 type Point = {x:number;y:number};
 export const SWAMP_SIZE = { width: WORLD_WIDTH * TILE, height: WORLD_HEIGHT * TILE };
-export const SWAMP_ENTRY = { x: 18, y: 67 };
-export const SWAMP_EXIT = { x: 18, y: 70 };
-export const FOREST_SWAMP_EXIT = { x: 84, y: 2 };
-export const FOREST_SWAMP_RETURN = { x: 84, y: 6 };
-export function forestSwampApproach(x:number,y:number): boolean {
-  return x >= 82 && x <= 86 && y >= 1 && y <= 10;
+export const SWAMP_ENTRY = { x: 18, y: 5 };
+export const SWAMP_EXIT = { x: 18, y: 2 };
+export const FOREST_SWAMP_EXIT = { x: 18, y: 70 };
+export const FOREST_SWAMP_RETURN = { x: 18, y: 65 };
+const forestApproach = [[25,55,21,59],[21,59,18,65],[18,65,18,72]] as const;
+export function forestSwampTrailDistance(x:number,y:number):number {
+  if(y<52||x<14||x>29)return Infinity;
+  return Math.min(...forestApproach.map(([ax,ay,bx,by])=>distanceToSegment(x,y,ax,ay,bx,by)));
 }
+export const forestSwampApproach=(x:number,y:number):boolean=>forestSwampTrailDistance(x,y)<2.25;
 export const tileCenter = (p: Point):Point => ({ x: (p.x + .5)*TILE, y: (p.y + .5)*TILE });
-export const swampEntry = (edits?: MapEditData):Point => edits?.points?.entry ?? SWAMP_ENTRY;
-export const swampExit = (edits?: MapEditData):Point => edits?.points?.exit ?? SWAMP_EXIT;
+/** As antigas coordenadas padrão ficam salvas quando se aplica o editor. */
+export function swampEntry(edits?: MapEditData):Point {
+  const p=edits?.points?.entry;
+  return !p||edits?.swampRevision!==1&&p.x===18&&p.y===67?SWAMP_ENTRY:p;
+}
+export function swampExit(edits?: MapEditData):Point {
+  const p=edits?.points?.exit;
+  return !p||edits?.swampRevision!==1&&p.x===18&&p.y===70?SWAMP_EXIT:p;
+}
+export function normalizeSwampMap(data:MapEditData):MapEditData {
+  if(data.area!=='swamp'||data.swampRevision===1)return data;
+  return {...data,swampRevision:1,points:{entry:swampEntry(data),exit:swampExit(data)}};
+}
 
 function distanceToSegment(x:number,y:number,ax:number,ay:number,bx:number,by:number):number {
   const dx=bx-ax,dy=by-ay;
@@ -24,7 +38,9 @@ function distanceToSegment(x:number,y:number,ax:number,ay:number,bx:number,by:nu
   return Math.hypot(x-ax-t*dx,y-ay-t*dy);
 }
 const trail = [
- [18,72,18,63],[18,63,21,56],[21,56,28,51],[28,51,32,43],[32,43,39,38],
+ [18,0,18,6],[18,6,16,11],[16,11,10,16],[10,16,7,22],[7,22,7,28],
+ [7,28,10,34],[10,34,13,40],
+ [12,64,18,63],[18,63,21,56],[21,56,28,51],[28,51,32,43],[32,43,39,38],
  [39,38,58,38],[58,38,65,37],[65,37,72,32],[72,32,78,22],[78,22,85,13],
  [32,43,25,39],[25,39,19,38],[19,38,13,40],[72,32,82,32],[82,32,89,36],
 ] as const;
@@ -95,26 +111,21 @@ function swampDefaults():SwampObject[] {
   return objects;
 }
 const ORIGINAL_OBJECTS=swampDefaults();
+export const isSwampReed=(kind:string|undefined):boolean=>
+  kind==='swamp-sedges'||kind==='swamp-cattails'||kind==='reeds';
+export function swampReedGroundClear(tile:Point,water:(x:number,y:number)=>boolean):boolean {
+  const p=tileCenter(tile);
+  return [-10,0,10].every(dx=>!water(p.x+dx,p.y)&&!water(p.x+dx,p.y+4));
+}
+export function originalSwampReed(id:string):SwampObject|undefined {
+  return ORIGINAL_OBJECTS.find(object=>object.id===id&&isSwampReed(object.kind));
+}
 
 const extraFootprint: Partial<Record<SwampKind, readonly [number, number]>> = {
   'swamp-cypress':[21,13], 'swamp-willow':[21,12], 'swamp-alder':[14,9],
   'swamp-stump':[22,14], 'swamp-log':[42,12], 'swamp-stones':[24,13],
 };
 export function createSwampLayout(edits?:MapEditData) {
-  const objects:SwampObject[]=[];
-  const occupied=new Set<string>();
-  const add=(object:SwampObject)=>{
-    occupied.add(`${object.x},${object.y}`);
-    objects.push(object);
-  };
-  for(const [id,edit] of Object.entries(edits?.objects??{})){
-    const kind=editorObjectKind(id);
-    if(!edit.removed&&kind)add({id,kind,x:edit.x,y:edit.y});
-  }
-  for(const object of ORIGINAL_OBJECTS){
-    if(edits?.objects[object.id]||occupied.has(`${object.x},${object.y}`))continue;
-    add(object);
-  }
   const water=(x:number,y:number)=>{
     const terrain=edits?.terrain;
     const tx=Math.floor(x/TILE),ty=Math.floor(y/TILE);
@@ -129,6 +140,21 @@ export function createSwampLayout(edits?:MapEditData) {
     return u>=radius||v>=radius||edgeWater(tx+dx,ty)||edgeWater(tx,ty+dy)||
       Math.hypot(radius-u,radius-v)<radius;
   };
+  const objects:SwampObject[]=[];
+  const occupied=new Set<string>();
+  const add=(object:SwampObject)=>{
+    if(isSwampReed(object.kind)&&!swampReedGroundClear(object,water))return;
+    occupied.add(`${object.x},${object.y}`);
+    objects.push(object);
+  };
+  for(const [id,edit] of Object.entries(edits?.objects??{})){
+    const kind=editorObjectKind(id);
+    if(!edit.removed&&kind)add({id,kind,x:edit.x,y:edit.y});
+  }
+  for(const object of ORIGINAL_OBJECTS){
+    if(edits?.objects[object.id]||occupied.has(`${object.x},${object.y}`))continue;
+    add(object);
+  }
   const decks=objects.filter(o=>o.kind==='swamp-boardwalk').map(tileCenter);
   const deck=(x:number,y:number)=>decks.find(p=>Math.abs(x-p.x)<SWAMP_ART['swamp-boardwalk'].width/2-11&&Math.abs(y-p.y)<22);
   const inWater=(x:number,y:number)=>!deck(x,y)&&water(x,y);

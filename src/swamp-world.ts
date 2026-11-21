@@ -17,6 +17,9 @@ import frames from '../public/assets/visual/swamp/animals.json';
 const ROOT='assets/visual/swamp/';
 const TEXTURE_SIZE=128;
 const WATER_SHADE=[.72,.74,.65] as const;
+const SWAMP_SURFACE=[34,85,76] as const;
+const CAIMAN_PROFILE='swamp-caiman-profile';
+const CAIMAN_SIZE=108;
 type Ground=typeof SWAMP_GROUND[number];
 const paintMaterial:Partial<Record<TerrainKind,Ground>>={
   grass:'sod',meadow:'sod',forest:'peat',moss:'peat',forestPath:'mud',path:'mud',wetPath:'mud',soil:'mud',sand:'silt',
@@ -93,11 +96,47 @@ function bakeGround(scene:Phaser.Scene,layout:ReturnType<typeof createSwampLayou
   return canvas;
 }
 
+function prepareCaimanProfiles(scene:Phaser.Scene):void {
+  if(scene.textures.exists(CAIMAN_PROFILE))return;
+  const source=scene.textures.get('swamp-caiman').getSourceImage() as HTMLImageElement;
+  const canvas=document.createElement('canvas');canvas.width=4*79;canvas.height=2*68;
+  const ctx=canvas.getContext('2d')!;
+  const rects=[];
+  for(const [row,first] of [0,8].entries())for(let col=0;col<4;col++){
+    const frame=first+col,crop=caimanHeadCrop(frame,frames.caiman);
+    const x=col*79,y=row*68;
+    ctx.drawImage(source,col*frames.caiman+crop.x,Math.floor(frame/4)*frames.caiman+crop.y,
+      crop.width,crop.height,x,y,crop.width,crop.height);
+    const pixels=ctx.getImageData(x,y,crop.width,crop.height);
+    for(let py=0;py<crop.height;py++)for(let px=0;px<crop.width;px++){
+      const neck=row===0?px:crop.width-1-px;
+      const arc=2.5+10*(2*py/crop.height-1)**2;
+      const above=smooth((neck-arc)/14);
+      const bottom=smooth((py-crop.height*.78)/(crop.height*.22));
+      const wash=Math.max(.22*bottom,.74*(1-above));
+      const i=(py*crop.width+px)*4;
+      for(let k=0;k<3;k++)pixels.data[i+k]=pixels.data[i+k]*(1-wash)+SWAMP_SURFACE[k]*wash;
+      pixels.data[i+3]*=above*(1-.23*bottom);
+    }
+    ctx.putImageData(pixels,x,y);
+    rects.push({frame,x,y,width:crop.width,height:crop.height});
+  }
+  const texture=scene.textures.addCanvas(CAIMAN_PROFILE,canvas)!;
+  for(const {frame,x,y,width,height} of rects)texture.add(frame,0,x,y,width,height);
+  texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+}
+
 function showCaimanHead(sprite:Phaser.GameObjects.Sprite,frame:number,x:number,y:number):void {
   const crop=caimanHeadCrop(frame,frames.caiman);
-  sprite.setFrame(frame).setCrop(crop.x,crop.y,crop.width,crop.height)
-    .setOrigin((crop.x+crop.width/2)/frames.caiman,(crop.y+crop.height-2)/frames.caiman)
-    .setPosition(x,y);
+  const side=frame<4||frame>=8&&frame<12;
+  if(side){
+    sprite.setTexture(CAIMAN_PROFILE,frame).setCrop(0,0,crop.width,crop.height)
+      .setOrigin(.5,(crop.height-2)/crop.height);
+  }else{
+    sprite.setTexture('swamp-caiman',frame).setCrop(crop.x,crop.y,crop.width,crop.height)
+      .setOrigin((crop.x+crop.width/2)/frames.caiman,(crop.y+crop.height-2)/frames.caiman);
+  }
+  sprite.setPosition(x,y).setScale(CAIMAN_SIZE/frames.caiman);
 }
 
 const CAIMAN_DIRECTIONS=['right','down','left','up'] as const;
@@ -180,6 +219,7 @@ export class SwampWorld {
   private readonly trees:Phaser.GameObjects.Image[]=[];
   private readonly terrainKey:string;
   constructor(private scene:Phaser.Scene,edits?:MapEditData,palette=false){
+    prepareCaimanProfiles(scene);
     this.layout=createSwampLayout(edits);
     this.terrainKey='swamp-ground-bake-'+(++nextTerrain);
     scene.textures.addCanvas(this.terrainKey,bakeGround(scene,this.layout,edits))!.setFilter(Phaser.Textures.FilterMode.NEAREST);
@@ -198,7 +238,7 @@ export class SwampWorld {
       this.editorObjects.push({...object,texture,...(object.kind==='swamp-caiman'||object.kind==='swamp-frog'?{frame:'0'}:{})});
       if(object.kind==='swamp-caiman'||object.kind==='swamp-frog'){
         const wet=object.kind==='swamp-caiman';
-        const side=wet?108:43;
+        const side=wet?CAIMAN_SIZE:43;
         const sprite=scene.add.sprite(p.x,p.y,texture,0).setOrigin(.5,wet?.5:.94).setDisplaySize(side,side)
           .setDepth(wet?-77:p.y).setData('swamp-animal',object.kind);
         if(wet)showCaimanHead(sprite,0,p.x,p.y);

@@ -28,6 +28,7 @@ export interface MapObjectEdit {
 export interface MapEditData {
   version: 1;
   continuation?:1;
+  swampRevision?:1;
   area?: StoredMapArea;
   points?: {entry?: {x:number;y:number};exit?: {x:number;y:number}};
   width: typeof WORLD_WIDTH;
@@ -104,8 +105,9 @@ export function emptyMapEdits(area?: StoredMapArea): MapEditData {
 /** Imported files are never allowed to mutate game data before all entries are checked. */
 export function validateMapEdits(value: unknown): value is MapEditData {
   try {
-    if (!plainRecord(value) || !keysAre(value, ['version', 'width', 'height', 'terrain', 'objects','area','points','continuation','collisions'])
+    if (!plainRecord(value) || !keysAre(value, ['version', 'width', 'height', 'terrain', 'objects','area','points','continuation','collisions','swampRevision'])
       || (value.continuation!==undefined&&value.continuation!==1)
+      || (value.swampRevision!==undefined&&(value.area!=='swamp'||value.swampRevision!==1))
       || (value.area!==undefined&&(!EDITOR_AREAS.includes(value.area as StoredMapArea)||value.area==='property'))
       || value.version !== MAP_EDIT_VERSION || value.width !== WORLD_WIDTH || value.height !== WORLD_HEIGHT
       || !plainRecord(value.terrain) || !plainRecord(value.objects)) return false;
@@ -149,6 +151,7 @@ export function cloneMapEdits(data: MapEditData): MapEditData {
   if (!validateMapEdits(data)) throw new TypeError('Mapa do editor inválido.');
   const clone = emptyMapEdits(data.area);
   if(data.continuation!==undefined)clone.continuation=data.continuation;
+  if(data.swampRevision===1)clone.swampRevision=1;
   if(data.points)clone.points=structuredClone(data.points);
   if(data.collisions&&Object.keys(data.collisions).length)clone.collisions=Object.fromEntries(Object.entries(data.collisions).sort(([a],[b])=>a.localeCompare(b)));
   for (const key of Object.keys(data.terrain).sort()) clone.terrain[key] = data.terrain[key];

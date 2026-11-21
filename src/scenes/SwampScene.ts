@@ -13,6 +13,7 @@ import { directionFromVector, directionVector } from '../character-directions';
 import { sampleWaterDepth } from '../swimming/config';
 import { loadCameraZoom, mapCameraZoom, stepCameraZoom, saveCameraZoom } from '../camera-zoom';
 import { MapExitPassage, SCENE_FADE_MS } from '../systems/map-transition';
+import { exitSignLayout } from '../data/exit-signs';
 import { saveGame } from '../systems/save';
 import { emptyQuickbar } from '../systems/quickbar';
 import { createGroundRuntime } from '../systems/ground-items';
@@ -75,7 +76,7 @@ export class SwampScene extends Phaser.Scene {
     const valid=saved&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!this.movementBlockedPoint(saved.x+dx,saved.y+dy));
     const start=valid?saved:tileCenter(swampEntry(this.state.swampMapEdits));
     this.player=new Player(this,this.state.profile,start.x,start.y,'swamp-player');
-    this.player.facing=directionVector(valid?saved.direction??'up':'up');
+    this.player.facing=directionVector(valid?saved.direction??'down':'down');
     this.player.update(0,this.tileBlocked,this.movementBlockedPoint,false,this.swimmingPoint);
     this.daylight=new Daylight(this,SWAMP_SIZE.width,SWAMP_SIZE.height);
     this.daylight.update(this.state.time,false,this.state.day);
@@ -126,10 +127,11 @@ export class SwampScene extends Phaser.Scene {
 
   private updateHUD():void {
     if(!this.player)return;
-    const {state,player}=this,gate=tileCenter(swampExit(state.swampMapEdits));
+    const {state,player}=this,exit=swampExit(state.swampMapEdits),gate=tileCenter(exit);
     const fishing=this.nearFishing()&&!!this.equippedFishingItem();
+    const cardinal={up:'norte',down:'sul',left:'oeste',right:'leste'}[exitSignLayout(exit,swampEntry(state.swampMapEdits)).direction];
     const prompt=player.isSwimming?'Siga até a margem para sair da água.':
-      Math.hypot(player.x-gate.x,player.y-gate.y)<144?'Floresta Antiga ao sul':
+      Math.hypot(player.x-gate.x,player.y-gate.y)<144?`Floresta Antiga ao ${cardinal}`:
       fishing?'Pescar na margem · E':'A passarela cruza o canal. Siga as trilhas entre as lagoas.';
     this.ui.updateHUD({
       area:'swamp',name:state.profile.name,day:state.day,time:state.time,
@@ -237,7 +239,7 @@ export class SwampScene extends Phaser.Scene {
     const next=structuredClone(this.snapshotState());
     if(!title){
       next.activeArea='forest';
-      next.forestPosition={...tileCenter(FOREST_SWAMP_RETURN),direction:'down'};
+      next.forestPosition={...tileCenter(FOREST_SWAMP_RETURN),direction:'up'};
       delete next.swampPosition;
     }
     if(!saveGame(next)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}

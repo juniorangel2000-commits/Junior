@@ -1,5 +1,5 @@
 import {SwampWorld,preloadSwamp} from '../swamp-world';
-import {createSwampLayout,forestSwampApproach,swampBaseWater,tileCenter} from '../data/swamp';
+import {createSwampLayout,forestSwampApproach,isSwampReed,swampBaseWater,swampReedGroundClear,tileCenter} from '../data/swamp';
 import {isSwampKind} from '../data/swamp-art';
 import {cropSpriteLayout} from '../crop-layout';
 import {destroySceneChildren} from '../scene-children';
@@ -122,6 +122,7 @@ export class MapEditorScene extends Phaser.Scene {
     if(area==='swamp'){
      const wet=water(x,y);
      if(blocked(x,y)&&!stays())return false;
+     if(isSwampReed(kind))return swampReedGroundClear({x,y},(this.extraView as SwampWorld).layout.water);
      if(kind==='swamp-caiman'||kind==='swamp-lilies')return wet;
      if(isSwampKind(kind)||natureArt(kind))return !wet||!!natureArt(kind)?.water;
      return !wet&&(!kind||['standingTree','pine','stone','vein','tree','fiber','seeds','scrap'].includes(kind));

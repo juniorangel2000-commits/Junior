@@ -112,7 +112,7 @@ export class ForestWorld {
     this.environment=this.scene.children.list.filter(o=>!before.has(o));
   }
   private drawGround():void {
-    const key='forest-ground-organic-shore-v4-grass';
+    const key='forest-ground-organic-shore-v5-grass';
     if(!this.scene.textures.exists(key)){
       const sprites=readTerrainSprites(this.scene);
       const terrain=document.createElement('canvas');terrain.width=3072;terrain.height=2304;

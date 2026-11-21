@@ -5,6 +5,7 @@ import {nearRiverBank,isFiberPlant} from './data/fiber-plants';
 import {paintedWaterPoint} from './data/terrain-paint';
 import type {MapArea} from './data/default-maps';
 import {SWAMP_KINDS} from './data/swamp-art';
+import {normalizeSwampMap,originalSwampReed} from './data/swamp';
 import { NATURE_KINDS, NATURE_ART, natureArt } from './data/nature-catalog';
 import Phaser from 'phaser';
 import { MapEditorUI } from './map-editor-ui';
@@ -351,10 +352,11 @@ export class MapEditor {
     const original = new Map(this.adapter.originalObjects.map(o => [o.id, o]));
     const resolved = new Map(editorBaselineObjects(this.adapter.originalObjects,data).map(o=>[o.id,o]));
     for (const [id, edit] of Object.entries(data.objects)) {
-      if (!id.startsWith('editor-') && !original.has(id)) return 'O arquivo contém um objeto que não pertence a este mapa.';
+      const base = original.get(id) ?? (data.area==='swamp'?originalSwampReed(id):undefined);
+      if (!id.startsWith('editor-') && !base) return 'O arquivo contém um objeto que não pertence a este mapa.';
       if (edit.removed) { resolved.delete(id); continue; }
       if (this.protected(edit)) return 'O arquivo altera uma área protegida ou uma construção da partida.';
-      resolved.set(id, { ...original.get(id), id, x: edit.x, y: edit.y, kind: edit.kind ?? original.get(id)!.kind, texture: '' });
+      resolved.set(id, { ...base, id, x: edit.x, y: edit.y, kind: edit.kind ?? base!.kind, texture: '' });
     }
     const current = this.history.current;
     for (const cell of new Set([...Object.keys(data.terrain), ...Object.keys(current.terrain)])) {
@@ -382,7 +384,8 @@ export class MapEditor {
 
   private importMap(text: string): void {
     this.finishStroke();
-    const data = parseMapEdits(text);
+    const parsed = parseMapEdits(text);
+    const data = parsed && normalizeSwampMap(parsed);
     const error = data ? this.layoutError(data) : 'Arquivo inválido. Importe um JSON exportado por este editor (mapa 96 × 72).';
     if (!data || error) { this.status = error!; this.refresh(true); return; }
     this.commit(data, 'Mapa importado como rascunho. Confira o resultado antes de aplicar.');
