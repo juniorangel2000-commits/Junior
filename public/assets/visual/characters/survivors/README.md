@@ -9,7 +9,10 @@ com os quadros na ordem das passadas dos jogadores.
 `node scripts/pack-survivor-walk.cjs` gera atlas com células de 256 px, alinhamento fixo
 por linha, alfa mínimo 200 e metadados em `walk.json`. O deslocamento não recentraliza
 cada quadro individualmente. A escala é aplicada apenas pelo jogo. O ciclo corresponde
-a 48 px percorridos e as poses paradas originais continuam em uso.
+a 48 px percorridos. O mesmo comando monta as poses paradas diagonais na ordem
+sudeste, sudoeste, nordeste e noroeste, em duas linhas de duas células. Cada pose
+tem a sola dos pés na mesma origem da caminhada e uma escala que mantém a altura
+do personagem quando para. As poses paradas cardinais são carregadas separadamente.
 
 O atlas reúne as quatro linhas cardinais seguidas das quatro diagonais. Evidências
 e comparação animada em `docs/planejamento/qa-arte-preview44/`.

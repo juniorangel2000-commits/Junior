@@ -19,6 +19,17 @@
       "diagonalSourceSha256": "a7ba59c374090a72e6f4907c2edbc870a5fe2986ec1516d394b92b08b0f12dd9",
       "scale": 0.24871794871794872,
       "diagonalScale": 0.2519480519480519,
+      "idle": {
+        "file": "assets/visual/characters/survivors/marina-idle-diagonal.png",
+        "cell": 512,
+        "scales": [
+          0.11226851851851852,
+          0.11226851851851852,
+          0.11098398169336385,
+          0.11073059360730593
+        ],
+        "sourceSha256": "be0f4f6383e5d19a28fef95ce5a54ea29a34ec53d2e0ede43c4e445e871c6dd0"
+      },
       "rows": [
         {
           "shiftX": 1,
@@ -365,6 +376,17 @@
       "diagonalSourceSha256": "9f6d8ab7180f0c38ff67985622f638332be6086c66b2836fbf819f759f2ec818",
       "scale": 0.24744897959183673,
       "diagonalScale": 0.2566137566137566,
+      "idle": {
+        "file": "assets/visual/characters/survivors/rui-idle-diagonal.png",
+        "cell": 512,
+        "scales": [
+          0.12340966921119594,
+          0.12435897435897436,
+          0.11887254901960784,
+          0.12034739454094293
+        ],
+        "sourceSha256": "3cc700f641fbbd52cac4c8a8dfadc664cef4107a3a3e24589705e4d238abc5d9"
+      },
       "rows": [
         {
           "shiftX": 17,

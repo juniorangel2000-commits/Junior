@@ -38,19 +38,91 @@ fs.mkdirSync(out,{recursive:true});
        if(frame!==survivorArt.survivorWalkFrame(id,a.direction,a.distance))throw Error('Quadro incorreto para a passada atual');
        if(!st.frames.includes(frame))st.frames.push(frame);
        if(!st.directions.includes(a.direction))st.directions.push(a.direction);
+       st.lastStep=a.direction;
       }
       const goal=survivors.freeTile(survivorRules.survivorActivity(id,vale.state).point);
       st.arrived=Math.hypot(a.pos.x-goal.x,a.pos.y-goal.y)<6;
+      if(st.arrived&&!a.moving&&st.lastStep&&!st.firstStop)st.firstStop={direction:a.direction,texture:a.sprite.texture.key};
      }
-     if(Object.values(stats).every(s=>s.arrived))break;
+     if(Object.values(stats).every(s=>s.arrived&&s.firstStop))break;
     }
     return stats;
    });
-   for(const st of Object.values(moved)){
+   for(const [id,st]of Object.entries(moved)){
     assert.ok(st.arrived&&st.walked>20);assert.ok(st.maxStep<=8.401);assert.ok(st.frames.length>=2);
     assert.ok(st.directions.some(direction=>direction.includes('-')), 'O trajeto precisa exercitar uma passada diagonal');
+    assert.equal(st.firstStop.direction,st.lastStep);
+    const view={right:'east',left:'west',up:'north',down:'south'}[st.lastStep];
+    assert.equal(st.firstStop.texture,view?(view==='south'?`survivor-${id}`:`survivor-${id}-${view}`):`survivor-idle-diagonal-${id}`);
    }
-   assert.deepEqual(errors,[]);fs.writeFileSync(`${out}/sobreviventes-validacao.json`,JSON.stringify({held,moved,errors},null,2)+'\n');console.log('QA dos sobreviventes: passadas próprias, bloqueio e retomada OK');return;
+   const turns=await page.evaluate(async()=>{
+    const {directionVector}=await import('/src/character-directions.ts');
+    const {PropertyVisitWalk}=await import('/src/systems/property-visit-walk.ts');
+    const results={};
+    const player=survivors.host.player();
+    for(const[id,a]of survivors.actors){
+     const goal=survivors.freeTile(survivorRules.survivorActivity(id,vale.state).point);
+     const col=Math.floor(goal.x/32),row=Math.floor(goal.y/32);
+     const corner=[[1,1],[1,-1],[-1,1],[-1,-1]].find(([x,y])=>
+      !realBlocked(col+x,row+y)&&!realBlocked(col+x,row)&&!realBlocked(col,row+y));
+     if(!corner)throw Error('O ponto de descanso precisa de um acesso diagonal livre');
+     a.pos={x:goal.x+32*corner[0],y:goal.y+32*corner[1]};
+     a.walker=new PropertyVisitWalk(a.pos,goal,6);
+     player.x=goal.x+80*corner[0];player.y=goal.y;
+     let lastStep,firstStop;
+     for(let t=0;t<90;t++){
+      survivors.update(0,16);
+      if(a.moving)lastStep=a.direction;
+      else if(lastStep){firstStop={direction:a.direction,texture:a.sprite.texture.key};break;}
+     }
+     const poses=[];
+     for(const direction of ['up-left','down-right','up-right','down-left']){
+      const vector=directionVector(direction);
+      player.x=a.pos.x+vector.x*60;player.y=a.pos.y+vector.y*60;
+      const start={...a.pos};
+      const steps=[a.direction];
+      for(let t=0;t<32;t++){
+       survivors.update(0,16);
+       if(a.direction!==steps.at(-1))steps.push(a.direction);
+      }
+      if(a.pos.x!==start.x||a.pos.y!==start.y)throw Error('O NPC saiu da posição ao virar');
+      const smallTurns=steps.slice(1).every((step,i)=>{
+       const previous=directionVector(steps[i]),next=directionVector(step);
+       return previous.x*next.x+previous.y*next.y>.7;
+      });
+      poses.push({direction,facing:a.direction,smallTurns,steps,frame:Number(a.sprite.frame.name),expectedFrame:survivorArt.survivorIdleDiagonalFrame(direction),texture:a.sprite.texture.key});
+     }
+     results[id]={lastStep,firstStop,poses};
+    }
+    return results;
+   });
+   for(const [id,turn]of Object.entries(turns)){
+    const texture=`survivor-idle-diagonal-${id}`;
+    assert.match(turn.lastStep,/-/);
+    assert.deepEqual(turn.firstStop,{direction:turn.lastStep,texture});
+    for(const pose of turn.poses){
+     assert.equal(pose.facing,pose.direction);assert.ok(pose.smallTurns);assert.equal(pose.frame,pose.expectedFrame);
+     assert.equal(pose.texture,texture);
+    }
+   }
+   const work=await page.evaluate(()=>{
+    const player=survivors.host.player();player.x=3000;player.y=3000;
+    const results={};
+    for(const[id,time]of [['marina',12*60+30],['rui',14*60+10]]){
+     vale.state.time=time;const a=survivors.actors.get(id);let started=false;
+     for(let t=0;t<2500;t++){
+      survivors.update(0,50);
+      if(a.moving)started ||= a.sprite.texture.key===`survivor-walk-${id}`;
+      const activity=survivorRules.survivorActivity(id,vale.state),goal=survivors.freeTile(activity.point);
+      if(!a.moving&&a.direction==='up'&&Math.hypot(a.pos.x-goal.x,a.pos.y-goal.y)<6){
+       results[id]={started,task:activity.task,texture:a.sprite.texture.key};break;
+      }
+     }
+    }
+    return results;
+   });
+   for(const id of ['marina','rui'])assert.deepEqual(work[id],{started:true,task:'well',texture:`survivor-${id}-north`});
+   assert.deepEqual(errors,[]);fs.writeFileSync(`${out}/sobreviventes-validacao.json`,JSON.stringify({held,moved,turns,work,errors},null,2)+'\n');console.log('QA dos sobreviventes: passadas, parada diagonal, conversa e retomada até o poço OK');return;
   }
   if(process.argv.includes('--property-visit')){
    await page.evaluate(async()=>{
