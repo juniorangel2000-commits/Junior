@@ -263,3 +263,20 @@
 /* Ferramentas novas (de pé, finas): um pouco maiores no slot. */
 #ui .bag-slot .icon[src*="economy/tools/"]{transform:scale(1.22)}
 #ui .hud .tool .icon[src*="economy/tools/"]{transform:scale(1.15)}
+/* Barra rápida maior e ícones proporcionais ao espaço (pedido do Junior, 21/11/2026).
+ * Só em telas largas; celulares e janelas estreitas mantêm as regras acima. */
+@media(min-width:761px){
+ #ui .hud .toolbelt{grid-template-columns:repeat(9,58px);gap:5px}
+ #ui .hud .tool{width:58px;height:62px;padding:13px 4px 4px}
+ #ui .hud .tool .icon{width:44px;height:44px}
+ #ui .hud .tool .icon[src$="products/egg.png"],#ui .hud .tool .icon[src$="kitchen/duck-egg.png"]{width:26px;height:26px}
+ #ui .hud .tool .icon[src*="/tools/"],#ui .hud .tool .icon[src*="items/swords/"]{width:46px;height:46px;margin:-2px 0 -2px}
+ #ui .hud .tool .icon[src*="economy/tools/"]{transform:scale(1.08)}
+ #ui .hud .tool-key{font-size:11px;top:2px;left:4px}
+ #ui .hud .tool .slot-quantity{font-size:12px}
+}
+/* Ferramentas de cabo (machadinha, picareta, enxada, foice, pá) inclinadas a 45°, todas
+ * paralelas às espadas, na barra e na mochila (pedido do Junior, 21/11/2026). Inclinadas,
+ * ocupam a diagonal do espaço, então ficam um pouco maiores. */
+#ui .hud .tool .icon[src*="economy/tools/"],#ui .bag-slot .icon[src*="economy/tools/"]{transform:rotate(-45deg) scale(1.3)}
+#ui .hud .tool .icon.sword-tier-icon{transform:rotate(-45deg) scale(1.3)}
