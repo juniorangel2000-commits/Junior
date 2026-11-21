@@ -280,3 +280,43 @@
  * ocupam a diagonal do espaço, então ficam um pouco maiores. */
 #ui .hud .tool .icon[src*="economy/tools/"],#ui .bag-slot .icon[src*="economy/tools/"]{transform:rotate(-45deg) scale(1.3)}
 #ui .hud .tool .icon.sword-tier-icon{transform:rotate(-45deg) scale(1.3)}
+/* Mochila reformulada (21/11/2026): personagem à esquerda, mochila e barra rápida no meio,
+ * item escolhido à direita. Em telas menores, personagem e item vão para baixo. */
+#ui .modal-root .backpack-panel{width:min(1136px,calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto;padding:0 20px 20px}
+#ui .backpack-panel .modal-heading{margin:0 -20px 16px;padding:12px 20px;background:linear-gradient(#8d6239,#6e4b2b);color:#fff1d2;border-bottom:3px solid #c9a26b}
+#ui .backpack-panel .modal-heading>div{display:flex;align-items:center;gap:14px}
+#ui .backpack-panel h2{font:400 28px Georgia,serif;margin:0;color:#fff1d2;letter-spacing:0}
+#ui .backpack-count{font-size:12px;background:#4f3520;padding:4px 9px;border-radius:4px;color:#ffe4a8}
+#ui .backpack-panel .modal-heading .icon-button{background:#e9c98f;border:2px solid #b1803f;color:#5a3a1d}
+#ui .backpack-layout{display:grid;grid-template-columns:200px auto 240px;gap:18px;align-items:stretch}
+#ui .backpack-character,#ui .backpack-detail{background:#f3e3c2;border:2px solid #d5b37f;border-radius:7px;padding:14px;display:flex;flex-direction:column;gap:8px;margin:0;min-height:0;align-items:stretch;box-shadow:none}
+#ui .backpack-portrait{height:176px;border-radius:6px;background:linear-gradient(#cfe0b6,#a9c486);border:2px solid #92ab6c;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+#ui .backpack-portrait img{width:128px;height:170px;object-fit:contain;image-rendering:pixelated;margin-bottom:-4px}
+#ui .backpack-stat{display:flex;justify-content:space-between;font-size:13px;border-bottom:1px dashed #d1b080;padding:4px 2px;color:#6c5034}#ui .backpack-stat b{color:#4d311a}
+#ui .backpack-label{font:700 11px Arial,sans-serif;letter-spacing:1.3px;text-transform:uppercase;color:#8a6a45}
+#ui .backpack-equipped{display:flex;gap:8px;flex-wrap:wrap}#ui .backpack-equipped .bag-slot{width:52px;height:52px;cursor:default}#ui .backpack-equipped small{font-size:12px;color:#8a6a45}
+#ui .backpack-main{display:flex;flex-direction:column;gap:6px;min-width:0}
+#ui .backpack-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#ui .backpack-sort{min-height:34px;padding:6px 14px;font-size:13px;gap:6px}
+#ui .backpack-panel .backpack-grid,#ui .backpack-panel .inventory-quickbar{grid-template-columns:repeat(9,58px)}
+#ui .backpack-panel .bag-slot{width:58px;height:58px}
+#ui .backpack-panel .bag-slot.locked{background:#c9a77a;border-style:dashed;opacity:.55;box-shadow:none}
+#ui .backpack-bar-heading{margin:8px 0 0}
+#ui .backpack-detail .detail-icon{height:104px;display:flex;align-items:center;justify-content:center;background:#ead2a3;border-radius:6px;border:2px solid #d0ad75}
+#ui .backpack-detail .detail-icon>.icon{width:78px;height:78px;object-fit:contain}
+#ui .backpack-detail .detail-name{font:400 23px Georgia,serif;color:#3f2a17}
+#ui .backpack-detail .detail-tag{font-size:12px;color:#7b5a36}
+#ui .detail-durability{display:grid;grid-template-columns:1fr auto;gap:4px;font-size:12px;color:#6c5034}#ui .detail-durability[hidden]{display:none}
+#ui .detail-bar{grid-column:1/-1;height:9px;border-radius:5px;background:#d6b98a;overflow:hidden}#ui .detail-bar i{display:block;height:100%;background:#7d9a4a}
+#ui .backpack-detail .detail-text{margin:0;font-size:13px;line-height:1.5;color:#6c5034;flex:1}
+#ui .detail-actions{display:flex;flex-direction:column;gap:8px}#ui .detail-actions .button{min-height:40px;padding:8px 12px;font-size:13px;justify-content:center}
+#ui .detail-drop{display:flex;gap:8px}#ui .detail-drop>.button{flex:1}
+#ui .detail-stepper{display:flex;border:2px solid #c5a476;border-radius:5px;overflow:hidden;background:#fff4dc}
+#ui .detail-stepper input{width:42px;border:0;text-align:center;font-weight:700;background:transparent;color:#4d311a;-moz-appearance:textfield}
+#ui .detail-stepper input::-webkit-inner-spin-button{appearance:none;margin:0}
+#ui .detail-step{border:0;background:#e8cf9f;width:30px;font-weight:700;color:#4d311a}
+@media(max-width:1180px){#ui .backpack-portrait{height:130px}#ui .backpack-portrait img{width:96px;height:128px}#ui .backpack-detail .detail-icon{height:84px}#ui .backpack-layout{grid-template-columns:1fr 1fr}#ui .backpack-main{grid-column:1/-1;order:-1;align-items:center}#ui .backpack-row,#ui .backpack-bar-heading{width:100%}}
+@media(max-width:760px){#ui .backpack-panel .backpack-grid,#ui .backpack-panel .inventory-quickbar{grid-template-columns:repeat(9,minmax(0,1fr));width:100%}#ui .backpack-panel .bag-slot{width:auto;height:auto}#ui .backpack-layout{grid-template-columns:1fr}#ui .backpack-portrait{height:120px}#ui .backpack-portrait img{width:90px;height:120px}}
+#ui .backpack-detail .detail-icon>.icon[src*="economy/tools/"]{transform:rotate(-45deg) scale(1.2)}
+#ui .detail-drop>.button{white-space:nowrap;padding:8px 10px}#ui .detail-stepper input{width:34px}#ui .detail-step{width:26px}
+#ui .modal-root .backpack-panel{padding-top:0}#ui .backpack-panel .modal-heading{margin-top:0;border-radius:4px 4px 0 0}

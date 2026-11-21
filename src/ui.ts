@@ -19,6 +19,8 @@ import { petMenuHTML, petCollectionHTML, type PetMenuView, type PetCommand } fro
 import { CompanionQuickPanel } from './dungeons/companion-quick-panel';
 import {inspectSave,hasSave} from './systems/save';
 import {inventoryCapacity} from './systems/inventory';
+import {resolveCharacter} from './data/characters';
+import {loadBagSort,saveBagSort,nextBagSort,sortBagEntries,bagCategory,bagItemId,BAG_SORT_LABELS,BAG_CATEGORY_NAMES} from './systems/bag-sort';
 import {USABLE_VILLAGE_ITEMS} from './systems/consumables';
 import { fencePreview, gatePreview } from './fence-art';
 import { FENCE_STAGES, FENCE_NAMES, FENCE_STAGE_DAYS } from './data/fences';
@@ -870,36 +872,74 @@ export class GameUI {
     panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Inventário');
     this.selectedInventoryItem = null;
-    const entries = inventoryEntries(inventory, !!this.latest?.wateringCan);
-    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">TUDO PARA UM NOVO COMEÇO</span><h2>Minha mochila</h2></div><button class="icon-button" aria-label="Fechar inventário">${icon('close')}</button></div>
-      <div class="backpack-meta"><span>${icon('bag')} Mochila inicial</span><strong>${entries.length} / ${inventoryCapacity(inventory)} espaços</strong></div>
-      <div class="backpack-grid" aria-label="Mochila com ${inventoryCapacity(inventory)} espaços">${Array.from({ length: Math.max(entries.length,inventoryCapacity(inventory)) }, (_, index) => {
+    const sort=loadBagSort(),wateringCan=!!this.latest?.wateringCan,capacity=inventoryCapacity(inventory);
+    const entries = sortBagEntries(inventoryEntries(inventory, wateringCan),sort,slot=>Number(quickQuantity(slot,inventory,wateringCan))||0);
+    // Fileiras completas de 9: os espaços além da capacidade aparecem tracejados (abrem com mochilas melhores).
+    const cells=Math.ceil(Math.max(entries.length,capacity)/9)*9;
+    const save=this.callbacks.getFishingState?.(),profile=save?.profile;
+    const portrait=profile?`${resolveCharacter(profile).assetRoot}/rotations/south.png`:'';
+    const clock=this.latest?`${shortCalendarLabel(this.latest.day)}</span><b>${String(Math.floor(this.latest.time/60)%24).padStart(2,'0')}:${String(Math.floor(this.latest.time%60)).padStart(2,'0')}</b>`:'';
+    const equipped=[this.latest&&this.latest.tool!=='hand'&&!['plant','blueprint','remove'].includes(this.latest.tool)?this.latest.tool as QuickSlot:null,this.latest?.worldWeapon==='sword'?'item:sword' as QuickSlot:null].filter(Boolean) as Exclude<QuickSlot,null>[];
+    const slotIcon=(slot:Exclude<QuickSlot,null>)=>{const info=this.slotInfo(slot);return icon(info.icon,'',this.slotCondition(slot)?.tier??0);};
+    panel.innerHTML = `<div class="modal-heading"><div><h2>Mochila</h2><span class="backpack-count">${entries.length} / ${capacity} espaços</span></div><button class="icon-button" aria-label="Fechar inventário">${icon('close')}</button></div>
+      <div class="backpack-layout">
+       <aside class="backpack-character" aria-label="Personagem">
+        <div class="backpack-portrait">${portrait?`<img src="${portrait}" alt="" draggable="false">`:icon('leaf')}</div>
+        <div class="backpack-stat"><span>Vigor</span><b>${Math.round(this.latest?.vigor??100)} / 100</b></div>
+        <div class="backpack-stat"><span>Coroas</span><b>${(this.latest?.coins??0).toLocaleString('pt-BR')}</b></div>
+        ${clock?`<div class="backpack-stat"><span>${clock}</div>`:''}
+        <span class="backpack-label">Equipado</span>
+        <div class="backpack-equipped">${equipped.length?equipped.map(slot=>`<span class="bag-slot occupied equipped-slot" title="${this.slotInfo(slot).label}">${slotIcon(slot)}</span>`).join(''):'<small>Mãos vazias</small>'}</div>
+       </aside>
+       <div class="backpack-main">
+        <div class="backpack-row"><span class="backpack-label">Mochila</span><button type="button" class="button button-light backpack-sort" data-bag-sort title="Muda a ordem dos itens: por tipo, por nome ou por quantidade">⇅ ${BAG_SORT_LABELS[sort]}</button></div>
+        <div class="backpack-grid" aria-label="Mochila com ${capacity} espaços">${Array.from({ length: cells }, (_, index) => {
         const slot = entries[index] ?? null, info = this.slotInfo(slot);
-        const quantity = quickQuantity(slot, inventory, !!this.latest?.wateringCan);
+        if(!slot&&index>=capacity)return `<span class="bag-slot locked" aria-hidden="true" title="${capacity<50?'Melhore a mochila para abrir mais espaços':''}"></span>`;
+        const quantity = quickQuantity(slot, inventory, wateringCan);
         return `<button type="button" class="bag-slot${slot ? ' occupied' : ''}" ${slot ? `data-bag-item="${slot}" draggable="true"` : 'disabled'} aria-label="${slot ? `${info.label}, quantidade ${quantity}` : `Espaço ${index + 1} vazio`}" title="${slot ? info.label : 'Vazio'}">${slot ? `${icon(info.icon,'',this.slotCondition(slot)?.tier??0)}<strong class="slot-quantity">${toolReferenceParts(slot)?'':quantity}</strong>${this.qualityBadge(slot,inventory)}${this.durabilityMarkup(slot)}` : ''}</button>`;
       }).join('')}</div>
-      <div class="backpack-detail" aria-live="polite"><span class="detail-icon">${icon('leaf')}</span><div><strong class="detail-name">Cada coisa no seu lugar</strong><p class="detail-text">Arraste um item para a barra abaixo. Ou clique no item e depois no slot.</p></div></div>
-      <div class="backpack-bar-heading"><strong>Barra rápida</strong><span>Teclas 1–9</span></div><div class="inventory-quickbar" aria-label="Nove slots da barra rápida"></div>
-      <p class="backpack-help">Materiais iguais ficam empilhados. Ferramentas ocupam espaços individuais. A barra é um atalho para a mochila: não duplica nem consome itens. Botão direito ou Delete no slot remove o atalho.</p>
-      <div class="inventory-footer">${icon('leaf')} Um espaço para cada descoberta.<span>SIMULAÇÃO PAUSADA · I PARA VOLTAR</span></div>`;
+        <div class="backpack-bar-heading"><span class="backpack-label">Barra rápida · teclas 1–9 · arraste itens para cá</span></div><div class="inventory-quickbar" aria-label="Nove slots da barra rápida"></div>
+       </div>
+       <aside class="backpack-detail" aria-live="polite">
+        <div class="detail-icon">${icon('leaf')}</div>
+        <strong class="detail-name">Escolha um item</strong>
+        <span class="detail-tag"></span>
+        <div class="detail-durability" hidden><span>Durabilidade</span><b></b><div class="detail-bar"><i></i></div></div>
+        <p class="detail-text">Clique num item para ver os detalhes. Arraste para a barra rápida para usar com as teclas 1–9; botão direito ou Delete na barra remove o atalho.</p>
+        <div class="detail-actions"></div>
+       </aside>
+      </div>`;
     panel.querySelector('.icon-button')!.addEventListener('click', () => this.closeModal());
+    panel.querySelector<HTMLButtonElement>('[data-bag-sort]')!.onclick=()=>{saveBagSort(nextBagSort(sort));this.closeModal();this.toggleInventory(inventory);};
     panel.querySelectorAll<HTMLButtonElement>('[data-bag-item]').forEach(button => {
       const item = button.dataset.bagItem as Exclude<QuickSlot, null>;
       const select = (): void => {
         this.selectedInventoryItem = item;
-        const info = this.slotInfo(item);
+        const info = this.slotInfo(item),actions=panel.querySelector<HTMLElement>('.detail-actions')!;
         panel.querySelector('.detail-icon')!.innerHTML = icon(info.icon,'',this.slotCondition(item)?.tier??0);
         // A espada mostra o nome do nível (de ferro, de ouro, de metal negro).
         { const c=quickItem(item)==='sword'?this.slotCondition(item):undefined; panel.querySelector('.detail-name')!.textContent = c?info.label.replace(SWORD_TIER_NAMES[0],SWORD_TIER_NAMES[c.tier]):info.label; }
-        const condition=this.slotCondition(item),copy=toolReferenceParts(item);
+        const condition=this.slotCondition(item),copy=toolReferenceParts(item),category=bagCategory(bagItemId(item));
         const quality=quickItem(item)?qualityLabel(this.latest?.itemQuality,quickItem(item) as ItemId,inventory[quickItem(item) as ItemId]??0):'';
-        panel.querySelector('.detail-text')!.textContent = info.detail+(quality?` · Qualidade: ${quality}`:'')+(condition&&wearsOut(quickItem(item))?`${durableTool(quickItem(item))?' · Material: '+['Pedra','Ferro','Ouro','Metal Negro'][condition.tier]:''} · Durabilidade: ${condition.durability}/${ECONOMY_BALANCE.durability[condition.tier]}`:'')+(quickItem(item)==='sword'&&condition&&condition.tier>0?` · golpe ${SWORD_POWER[condition.tier].toLocaleString('pt-BR')}× mais forte que a improvisada`:'');
-        panel.querySelector('[data-use-item]')?.remove();
-        panel.querySelector('[data-drop-item]')?.remove();
+        const material=condition&&durableTool(quickItem(item))?['Pedra','Ferro','Ouro','Metal Negro'][condition.tier]:'';
+        panel.querySelector('.detail-tag')!.textContent=[BAG_CATEGORY_NAMES[category],material,quality&&`Qualidade: ${quality}`].filter(Boolean).join(' · ');
+        const durability=panel.querySelector<HTMLElement>('.detail-durability')!,wears=!!condition&&wearsOut(quickItem(item));durability.hidden=!wears;
+        if(wears&&condition){const max=ECONOMY_BALANCE.durability[condition.tier];durability.querySelector('b')!.textContent=`${condition.durability} / ${max}`;durability.querySelector<HTMLElement>('i')!.style.width=`${Math.max(0,Math.min(100,condition.durability/max*100))}%`;}
+        panel.querySelector('.detail-text')!.textContent = info.detail+(quality?` · Qualidade: ${quality}`:'')+(condition&&wearsOut(quickItem(item))?`${material?' · Material: '+material:''} · Durabilidade: ${condition.durability}/${ECONOMY_BALANCE.durability[condition.tier]}`:'')+(quickItem(item)==='sword'&&condition&&condition.tier>0?` · golpe ${SWORD_POWER[condition.tier].toLocaleString('pt-BR')}× mais forte que a improvisada`:'');
+        actions.replaceChildren();
         const id=quickItem(item) as ItemId|undefined;
-        if(id&&this.callbacks.onDropItem){const actions=document.createElement('div');actions.dataset.dropItem=id;const amount=document.createElement('input');amount.type='number';amount.min='1';amount.max=String(copy?1:inventory[id]);amount.value='1';amount.setAttribute('aria-label','Quantidade para soltar');amount.style.width='65px';const drop=document.createElement('button');drop.className='button button-light';drop.textContent='Soltar no chão';drop.onclick=()=>{const n=Number(amount.value);if(!Number.isSafeInteger(n)||n<1||n>(copy?1:inventory[id])){this.toast('Escolha uma quantidade disponível na mochila.');return;}this.callbacks.onDropItem?.(id,n,copy?.id);this.closeModal();};actions.append(amount,drop);panel.querySelector('.backpack-detail')!.append(actions);}
-        if(copy&&quickAction(item)!=='hand'){const equip=document.createElement('button');equip.dataset.useItem=copy.kind;equip.className='button button-light';equip.textContent='Equipar esta ferramenta';equip.onclick=()=>{this.callbacks.onTool(quickAction(item),copy.id);this.closeModal();};panel.querySelector('.backpack-detail')!.append(equip);}
-        else if(id&&(!!cropFromSeed(id)||USABLE_VILLAGE_ITEMS.includes(id))){const use=document.createElement('button');use.dataset.useItem=id;use.className='button button-light';use.textContent=cropFromSeed(id)?'Equipar sementes':id==='sword'?(this.latest?.worldWeapon==='sword'?'Guardar espada':'Equipar espada'):'Usar / instalar';use.onclick=()=>{this.closeModal();this.callbacks.onUseItem(id,copy?.id);};panel.querySelector('.backpack-detail')!.append(use);}
+        if(copy&&quickAction(item)!=='hand'){const equip=document.createElement('button');equip.dataset.useItem=copy.kind;equip.className='button button-primary';equip.textContent='Equipar esta ferramenta';equip.onclick=()=>{this.callbacks.onTool(quickAction(item),copy.id);this.closeModal();};actions.append(equip);}
+        else if(id&&(!!cropFromSeed(id)||USABLE_VILLAGE_ITEMS.includes(id))){const use=document.createElement('button');use.dataset.useItem=id;use.className='button button-primary';use.textContent=cropFromSeed(id)?'Equipar sementes':id==='sword'?(this.latest?.worldWeapon==='sword'?'Guardar espada':'Equipar espada'):'Usar / instalar';use.onclick=()=>{this.closeModal();this.callbacks.onUseItem(id,copy?.id);};actions.append(use);}
+        if(id&&this.callbacks.onDropItem){
+         const max=copy?1:inventory[id],row=document.createElement('div');row.dataset.dropItem=id;row.className='detail-drop';
+         const amount=document.createElement('input');amount.type='number';amount.min='1';amount.max=String(max);amount.value='1';amount.setAttribute('aria-label','Quantidade para soltar');
+         const step=(d:number)=>{const n=Math.max(1,Math.min(max,(Number(amount.value)||1)+d));amount.value=String(n);};
+         const less=document.createElement('button');less.type='button';less.className='detail-step';less.textContent='−';less.setAttribute('aria-label','Menos');less.onclick=()=>step(-1);
+         const more=document.createElement('button');more.type='button';more.className='detail-step';more.textContent='+';more.setAttribute('aria-label','Mais');more.onclick=()=>step(1);
+         const drop=document.createElement('button');drop.className='button button-light';drop.textContent='Soltar no chão';drop.onclick=()=>{const n=Number(amount.value);if(!Number.isSafeInteger(n)||n<1||n>max){this.toast('Escolha uma quantidade disponível na mochila.');return;}this.callbacks.onDropItem?.(id,n,copy?.id);this.closeModal();};
+         const stepper=document.createElement('div');stepper.className='detail-stepper';stepper.append(less,amount,more);row.append(stepper,drop);actions.append(row);
+        }
         panel.querySelectorAll('[data-bag-item]').forEach(cell => cell.classList.toggle('chosen', cell === button));
       };
       button.onclick = select;
