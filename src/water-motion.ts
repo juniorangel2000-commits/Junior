@@ -9,7 +9,7 @@ export function setupWaterSurface(scene:Phaser.Scene):string {
  const material=readTerrainSprites(scene)!.water,canvas=document.createElement('canvas');canvas.width=canvas.height=material.size;const c=canvas.getContext('2d')!,pixels=c.createImageData(material.size,material.size);
  for(let i=0;i<pixels.data.length;i+=4){for(let k=0;k<3;k++)pixels.data[i+k]=waterFinishChannel(material.pixels[i+k],k,-72);pixels.data[i+3]=255;}c.putImageData(pixels,0,0);scene.textures.addCanvas(key,canvas)!.setFilter(0);return key;
 }
-export function addWaterMotion(scene:Phaser.Scene,water:(x:number,y:number)=>boolean,contains?:(x:number,y:number)=>boolean,bounds:{width:number;height:number;alpha:number;depth?:number;tint?:number;opacity?:(x:number,y:number)=>number}={width:3072,height:2304,alpha:.3}):void {
+export function addWaterMotion(scene:Phaser.Scene,water:(x:number,y:number)=>boolean,contains?:(x:number,y:number)=>boolean,bounds:{width:number;height:number;alpha:number;depth?:number;tint?:number;opacity?:(x:number,y:number)=>number}={width:3072,height:2304,alpha:.3}):Phaser.Display.Masks.BitmapMask|undefined {
  const point=contains??((x:number,y:number)=>water(Math.floor(x/32),Math.floor(y/32))),key=`world-water-mask-${++serial}`,canvas=document.createElement('canvas');canvas.width=bounds.width;canvas.height=bounds.height;const c=canvas.getContext('2d')!,pixels=c.createImageData(canvas.width,canvas.height);
  for(let ty=0;ty<Math.ceil(bounds.height/32);ty++)for(let tx=0;tx<Math.ceil(bounds.width/32);tx++){
   if(!water(tx,ty)&&![[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>water(tx+dx,ty+dy)))continue;
@@ -24,4 +24,5 @@ export function addWaterMotion(scene:Phaser.Scene,water:(x:number,y:number)=>boo
  };
  const cleanup=()=>{if(destroyed)return;destroyed=true;scene.events.off('update',update);scene.events.off('shutdown',cleanup);flow.clearMask();fish.clearMask();waves.clearMask();mask?.destroy();image.destroy();fish.destroy();waves.destroy();scene.textures.remove(key);};
  flow.once('destroy',cleanup);scene.events.once('shutdown',cleanup);scene.events.on('update',update);update(0);
+ return mask;
 }

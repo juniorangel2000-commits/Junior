@@ -19,6 +19,7 @@ const TEXTURE_SIZE=128;
 const WATER_SHADE=[.72,.74,.65] as const;
 const SWAMP_SURFACE=[34,85,76] as const;
 const CAIMAN_PROFILE='swamp-caiman-profile';
+const CAIMAN_SHADOW='swamp-caiman-shadow';
 const CAIMAN_SIZE=108;
 type Ground=typeof SWAMP_GROUND[number];
 const paintMaterial:Partial<Record<TerrainKind,Ground>>={
@@ -126,17 +127,36 @@ function prepareCaimanProfiles(scene:Phaser.Scene):void {
   texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
 }
 
-function showCaimanHead(sprite:Phaser.GameObjects.Sprite,frame:number,x:number,y:number):void {
-  const crop=caimanHeadCrop(frame,frames.caiman);
+function prepareCaimanShadow(scene:Phaser.Scene):void {
+  if(scene.textures.exists(CAIMAN_SHADOW))return;
+  const source=scene.textures.get('swamp-caiman').getSourceImage() as HTMLImageElement;
+  const canvas=document.createElement('canvas');
+  canvas.width=source.width;
+  canvas.height=source.height;
+  const ctx=canvas.getContext('2d')!;
+  ctx.drawImage(source,0,0);
+  ctx.globalCompositeOperation='source-in';
+  ctx.fillStyle='#000';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  const texture=scene.textures.addCanvas(CAIMAN_SHADOW,canvas)!;
+  const size=frames.caiman;
+  for(let frame=0;frame<16;frame++)texture.add(frame,0,(frame%4)*size,Math.floor(frame/4)*size,size,size);
+  texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
+}
+
+function showCaimanHead(sprite:Phaser.GameObjects.Sprite,frame:number,x:number,y:number,shadow?:Phaser.GameObjects.Image):void {
+  const size=frames.caiman,crop=caimanHeadCrop(frame,size);
+  const anchorX=(crop.x+crop.width/2)/size,anchorY=(crop.y+crop.height-2)/size;
   const side=frame<4||frame>=8&&frame<12;
   if(side){
     sprite.setTexture(CAIMAN_PROFILE,frame).setCrop(0,0,crop.width,crop.height)
       .setOrigin(.5,(crop.height-2)/crop.height);
   }else{
     sprite.setTexture('swamp-caiman',frame).setCrop(crop.x,crop.y,crop.width,crop.height)
-      .setOrigin((crop.x+crop.width/2)/frames.caiman,(crop.y+crop.height-2)/frames.caiman);
+      .setOrigin(anchorX,anchorY);
   }
-  sprite.setPosition(x,y).setScale(CAIMAN_SIZE/frames.caiman);
+  sprite.setPosition(x,y).setScale(CAIMAN_SIZE/size);
+  shadow?.setFrame(frame).setOrigin(anchorX,anchorY).setPosition(x,y+3);
 }
 
 const CAIMAN_DIRECTIONS=['right','down','left','up'] as const;
@@ -154,6 +174,7 @@ class SwampFauna {
     private home:{x:number;y:number},
     private layout:ReturnType<typeof createSwampLayout>,
     index:number,
+    private readonly shadow?:Phaser.GameObjects.Image,
   ){
     this.frog=sprite.texture.key==='swamp-frog';
     this.from={...home};this.to={...home};this.wait=this.frog?2+index%5:0;
@@ -202,13 +223,14 @@ class SwampFauna {
     const moving=open&&step>.02,at=this.from;
     const wet=this.layout.inWater(at.x,at.y);
     this.sprite.setVisible(wet);
+    this.shadow?.setVisible(wet);
     if(!wet){this.wake?.hide();return;}
     const row=CAIMAN_DIRECTIONS.findIndex(d=>d===this.direction);
     const phase=moving?Math.floor(this.elapsed*5)%4:0;
     const bob=this.wake?.update(at.x,at.y,1,moving,this.direction,.46,dt)??0;
     this.wake?.graphics.setDepth(-78);
     this.wake?.frontGraphics.setDepth(-76.9);
-    showCaimanHead(this.sprite,row*4+phase,at.x,at.y+bob*.55);
+    showCaimanHead(this.sprite,row*4+phase,at.x,at.y+bob*.55,this.shadow);
   }
 }
 
@@ -220,11 +242,12 @@ export class SwampWorld {
   private readonly terrainKey:string;
   constructor(private scene:Phaser.Scene,edits?:MapEditData,palette=false){
     prepareCaimanProfiles(scene);
+    if(!palette)prepareCaimanShadow(scene);
     this.layout=createSwampLayout(edits);
     this.terrainKey='swamp-ground-bake-'+(++nextTerrain);
     scene.textures.addCanvas(this.terrainKey,bakeGround(scene,this.layout,edits))!.setFilter(Phaser.Textures.FilterMode.NEAREST);
     scene.add.image(0,0,this.terrainKey).setOrigin(0).setDepth(-100);
-    if(!palette)addWaterMotion(scene,(x,y)=>this.layout.water(x*32+16,y*32+16),this.layout.water,{...SWAMP_SIZE,alpha:.4,depth:-80,tint:0xaebca7});
+    const waterMask=palette?undefined:addWaterMotion(scene,(x,y)=>this.layout.water(x*32+16,y*32+16),this.layout.water,{...SWAMP_SIZE,alpha:.4,depth:-80,tint:0xaebca7});
     let index=0;
     for(const object of this.layout.objects){
       const art=natureArt(object.kind);
@@ -241,8 +264,11 @@ export class SwampWorld {
         const side=wet?CAIMAN_SIZE:43;
         const sprite=scene.add.sprite(p.x,p.y,texture,0).setOrigin(.5,wet?.5:.94).setDisplaySize(side,side)
           .setDepth(wet?-77:p.y).setData('swamp-animal',object.kind);
-        if(wet)showCaimanHead(sprite,0,p.x,p.y);
-        if(!palette)this.fauna.push(new SwampFauna(sprite,p,this.layout,index++));
+        const shadow=wet&&!palette?scene.add.image(p.x,p.y,CAIMAN_SHADOW,0)
+          .setScale(CAIMAN_SIZE/frames.caiman).setDepth(-82).setAlpha(.7).setData('swamp-caiman-shadow',true):undefined;
+        if(shadow&&waterMask)shadow.setMask(waterMask);
+        if(wet)showCaimanHead(sprite,0,p.x,p.y,shadow);
+        if(!palette)this.fauna.push(new SwampFauna(sprite,p,this.layout,index++,shadow));
         continue;
       }
       const sprite=scene.add.image(p.x,p.y,texture).setOrigin(.5,art?.pivot??1)
