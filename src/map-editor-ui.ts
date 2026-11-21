@@ -1,13 +1,15 @@
 import {EDITOR_AREAS,EDITOR_AREA_NAMES,type EditorArea} from './data/editor-areas';
 import {EXTRA_PROP_KINDS,EXTRA_PROP_NAMES} from './data/editor-props';
+import {SWAMP_KINDS} from './data/swamp-art';
 import { NATURE_KINDS, NATURE_ART } from './data/nature-catalog';
 import './map-editor.css';
-import type { EditorObjectKind, TerrainKind } from './systems/map-editor';
+import type { EditorObjectKind, TerrainKind, MapCollision } from './systems/map-editor';
 
 export interface EditorTool {
-  mode: 'select' | 'terrain' | 'restore' | 'object' | 'remove' | 'entry' | 'exit';
+  mode: 'select' | 'terrain' | 'restore' | 'object' | 'remove' | 'entry' | 'exit' | 'collision';
   terrain?: TerrainKind;
   object?: EditorObjectKind;
+  collision?: MapCollision | 'original';
 }
 export type EditorAction = 'undo' | 'redo' | 'zoom-out' | 'zoom-fit' | 'zoom-in'
   | 'grid' | 'resources' | 'export' | 'load-draft' | 'apply' | 'cancel' | `map-${EditorArea}`;
@@ -44,7 +46,7 @@ const objects: ReadonlyArray<{ kind: EditorObjectKind; label: string; hint: stri
   { kind: 'seeds', label: 'Sementes', hint: 'Posicionar sementes' },
   { kind: 'scrap', label: 'Sucata', hint: 'Posicionar sucata' },
   ...EXTRA_PROP_KINDS.map(kind=>({kind,label:EXTRA_PROP_NAMES[kind],hint:`Posicionar ${EXTRA_PROP_NAMES[kind].toLowerCase()}`})),
-  ...NATURE_KINDS.filter(kind=>kind!=='mossBoulder'&&kind!=='shoreStones').map(kind=>({kind,label:NATURE_ART[kind].label,hint:`Posicionar ${NATURE_ART[kind].label.toLowerCase()}`})),
+  ...[...NATURE_KINDS,...SWAMP_KINDS].filter(kind=>kind!=='mossBoulder'&&kind!=='shoreStones').map(kind=>({kind,label:NATURE_ART[kind].label,hint:`Posicionar ${NATURE_ART[kind].label.toLowerCase()}`})),
 ];
 const icons: Record<string, string> = {
   map: '<path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Zm6-2v16m6-14v16"/>',
@@ -137,9 +139,10 @@ export class MapEditorUI {
           </div>
           <div class="me-brush-row"><span>${icon('brush')} Pincel</span><div role="group" aria-label="Tamanho do pincel">${[1, 3, 5].map(size => `<button type="button" data-brush="${size}" aria-label="Pincel ${size} por ${size}" aria-pressed="${size === 1}">${size}×${size}</button>`).join('')}</div></div>
         </section>
+        ${area==='swamp'?`<section class="me-palette-section"><h3>Colisão</h3><div class="me-terrain-grid"><button type="button" data-mode="collision" data-collision="blocked">Bloquear</button><button type="button" data-mode="collision" data-collision="clear">Liberar</button><button type="button" data-mode="collision" data-collision="original">Restaurar colisão</button></div></section>`:''}
         <section class="me-palette-section" aria-labelledby="me-objects-title">
           <h3 id="me-objects-title">Posicionar objetos</h3>
-          <div class="me-object-grid">${objects.filter(o=>!o.kind.startsWith('village-')||area==='village').filter(o=>!o.kind.startsWith('urban-')||['cityForest','abandoned-central-square','mall-parking'].includes(area)).map(({ kind, label, hint }) => `<button type="button" data-mode="object" data-object="${kind}" aria-label="${hint}" aria-pressed="false"><span class="me-object-preview" data-preview="${kind}" aria-hidden="true">${icon(kind)}</span><span>${label}</span></button>`).join('')}</div>
+          <div class="me-object-grid">${objects.filter(o=>!o.kind.startsWith('village-')||area==='village').filter(o=>!o.kind.startsWith('swamp-')||area==='swamp').filter(o=>!o.kind.startsWith('urban-')||['cityForest','abandoned-central-square','mall-parking'].includes(area)).map(({ kind, label, hint }) => `<button type="button" data-mode="object" data-object="${kind}" aria-label="${hint}" aria-pressed="false"><span class="me-object-preview" data-preview="${kind}" aria-hidden="true">${icon(kind)}</span><span>${label}</span></button>`).join('')}</div>
           <button type="button" class="me-remove-tool" data-mode="remove" aria-pressed="false">${icon('remove')}<span>Remover objeto</span></button>
         </section>
         <div class="me-selection-info"><span class="me-eyebrow">SELEÇÃO</span><p data-selection>Selecione um objeto no cenário.</p></div>
@@ -179,6 +182,7 @@ export class MapEditorUI {
         this.selectedTool = { mode: button.dataset.mode as EditorTool['mode'],
           ...(button.dataset.terrain ? { terrain: button.dataset.terrain as TerrainKind } : {}),
           ...(button.dataset.object ? { object: button.dataset.object as EditorObjectKind } : {}),
+          ...(button.dataset.collision ? { collision: button.dataset.collision as EditorTool['collision'] } : {}),
         };
         this.paintToolSelection();
         this.callbacks.tool({ ...this.selectedTool });

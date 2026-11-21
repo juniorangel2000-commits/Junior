@@ -368,7 +368,7 @@ export class ValleyScene extends Phaser.Scene {
     this.ui.showHUD();
     if(saved.activeArea==='openFields'){this.enterFields(saved);return;}
     if(saved.activeArea==='fishingLake'||saved.activeArea==='highland'){this.enterLake(saved);return;}
-    if (saved.activeArea === 'forest'||saved.activeArea==='survivorCamp') { this.enterForest(saved); return; }
+    if (saved.activeArea === 'forest'||saved.activeArea==='survivorCamp'||saved.activeArea==='swamp') { this.enterForest(saved); return; }
     if (saved.activeArea === 'village'||saved.activeArea==='cityForest') { this.enterVillage(saved); return; }
     this.ui.toast(`Que bom ter você de volta, ${saved.profile.name}.`);
     this.updateHUD();
@@ -440,7 +440,7 @@ export class ValleyScene extends Phaser.Scene {
     if(this.forestActive||this.villageActive)return;
     this.world.well?.cancel();
     this.cancelCrafting();this.cancelToolActions();this.toolVisual?.hide();
-    const data=saved??this.snapshotState();if(data.activeArea!=='survivorCamp')data.activeArea='forest';delete data.homePosition;
+    const data=saved??this.snapshotState();if(data.activeArea!=='survivorCamp'&&data.activeArea!=='swamp')data.activeArea='forest';delete data.homePosition;
     this.forestActive=true;this.paused=true;this.input.keyboard?.resetKeys();
     const root=document.querySelector<HTMLElement>('#ui')!;root.style.display='none';
     this.cameras.main.fadeOut(SCENE_FADE_MS);

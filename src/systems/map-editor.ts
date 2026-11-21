@@ -5,12 +5,14 @@ import { NATURE_KINDS, natureArt } from '../data/nature-catalog';
 import { FOREST_ANIMALS } from '../data/ancient-forest';
 import { isBridgeTile, isFarmTile, WORLD_HEIGHT, WORLD_WIDTH } from '../data/regions';
 import {villageBuildingAt,villageDoorApproach} from '../data/village';
+import {isSwampKind,SWAMP_KINDS} from '../data/swamp-art';
 
 export const MAP_EDIT_VERSION = 1;
 export const MAP_DRAFT_KEY = 'after-rain-map-editor-draft-v1';
 export const MAP_TERRAIN_KINDS = ['grass','meadow','forest','moss','forestPath','path','wetPath','water','sand','soil','wood','paving'] as const;
-export const MAP_OBJECT_KINDS = ['standingTree', 'pine', 'stone', 'vein', 'tree', 'fiber', 'seeds', 'scrap', ...NATURE_KINDS, ...EXTRA_PROP_KINDS] as const;
+export const MAP_OBJECT_KINDS = ['standingTree', 'pine', 'stone', 'vein', 'tree', 'fiber', 'seeds', 'scrap', ...NATURE_KINDS, ...SWAMP_KINDS, ...EXTRA_PROP_KINDS] as const;
 export type TerrainKind = typeof MAP_TERRAIN_KINDS[number];
+export type MapCollision = 'blocked' | 'clear';
 export type EditorObjectKind = typeof MAP_OBJECT_KINDS[number];
 
 /** The record key is the stable resource ID; moving an object never changes it. */
@@ -31,6 +33,7 @@ export interface MapEditData {
   width: typeof WORLD_WIDTH;
   height: typeof WORLD_HEIGHT;
   terrain: Record<string, TerrainKind>;
+  collisions?: Record<string, MapCollision>;
   objects: Record<string, MapObjectEdit>;
 }
 
@@ -49,6 +52,7 @@ const validCell = (x: unknown, y: unknown): boolean => typeof x === 'number' && 
 /** Keep fixed gameplay entrances and landmarks intact while editing their surroundings. */
 export function isProtectedMapTile(x: number, y: number, area?: StoredMapArea): boolean {
   if (!validCell(x, y)) return true;
+  if(area==='swamp')return false;
   if(area==='forest')return FOREST_ANIMALS.some(a=>Math.abs(a.x-x)<=1&&Math.abs(a.y-y)<=1);
   if(area==='village')return !!villageBuildingAt(x,y)||villageDoorApproach(x,y);
   if(area==='survivorCamp')return Math.abs(x-48)<=2&&y>=66;
@@ -100,12 +104,19 @@ export function emptyMapEdits(area?: StoredMapArea): MapEditData {
 /** Imported files are never allowed to mutate game data before all entries are checked. */
 export function validateMapEdits(value: unknown): value is MapEditData {
   try {
-    if (!plainRecord(value) || !keysAre(value, ['version', 'width', 'height', 'terrain', 'objects','area','points','continuation'])
+    if (!plainRecord(value) || !keysAre(value, ['version', 'width', 'height', 'terrain', 'objects','area','points','continuation','collisions'])
       || (value.continuation!==undefined&&value.continuation!==1)
       || (value.area!==undefined&&(!EDITOR_AREAS.includes(value.area as StoredMapArea)||value.area==='property'))
       || value.version !== MAP_EDIT_VERSION || value.width !== WORLD_WIDTH || value.height !== WORLD_HEIGHT
       || !plainRecord(value.terrain) || !plainRecord(value.objects)) return false;
     if (Object.keys(value.terrain).length > MAX_CELLS || Object.keys(value.objects).length > MAX_CELLS) return false;
+    if(value.collisions!==undefined){
+      if(value.area!=='swamp'||!plainRecord(value.collisions)||Object.keys(value.collisions).length>MAX_CELLS)return false;
+      for(const [key,state] of Object.entries(value.collisions)){
+        const match=TILE_KEY.exec(key);
+        if(!match||!validCell(Number(match[1]),Number(match[2]))||(state!=='blocked'&&state!=='clear'))return false;
+      }
+    }
     for (const [key, terrain] of Object.entries(value.terrain)) {
       const match = TILE_KEY.exec(key);
       if (!match || isProtectedTerrainTile(Number(match[1]), Number(match[2]),value.area as StoredMapArea|undefined,terrain as TerrainKind)
@@ -118,7 +129,7 @@ export function validateMapEdits(value: unknown): value is MapEditData {
     const occupied = new Set<string>();
     for (const [id, object] of Object.entries(value.objects)) {
       const kind = editorObjectKind(id);
-      if (!kind || kind.startsWith('urban-')&&!['cityForest','abandoned-central-square','mall-parking'].includes(String(value.area))
+      if (!kind || isSwampKind(kind)&&value.area!=='swamp'||kind.startsWith('urban-')&&!['cityForest','abandoned-central-square','mall-parking'].includes(String(value.area))
         ||kind.startsWith('village-')&&value.area!=='village'|| !plainRecord(object) || !keysAre(object, ['x', 'y', 'kind', 'removed'])
         || !validCell(object.x, object.y) || isProtectedMapTile(object.x as number, object.y as number,value.area as StoredMapArea|undefined)&&!(value.area==='village'&&kind.startsWith('village-')&&object.removed===true)
         || (own(object, 'removed') && typeof object.removed !== 'boolean')) return false;
@@ -139,6 +150,7 @@ export function cloneMapEdits(data: MapEditData): MapEditData {
   const clone = emptyMapEdits(data.area);
   if(data.continuation!==undefined)clone.continuation=data.continuation;
   if(data.points)clone.points=structuredClone(data.points);
+  if(data.collisions&&Object.keys(data.collisions).length)clone.collisions=Object.fromEntries(Object.entries(data.collisions).sort(([a],[b])=>a.localeCompare(b)));
   for (const key of Object.keys(data.terrain).sort()) clone.terrain[key] = data.terrain[key];
   for (const id of Object.keys(data.objects).sort()) {
     const source = data.objects[id], object: MapObjectEdit = { x: source.x, y: source.y };

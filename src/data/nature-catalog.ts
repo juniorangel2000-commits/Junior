@@ -1,10 +1,12 @@
 import {isFiberPlant} from './fiber-plants';
 import type {ResourceKind} from '../types';
+import {SWAMP_ART, SWAMP_KINDS, type SwampKind} from './swamp-art';
 export const NATURE_KINDS = ['tallGrassA','tallGrassB','tallGrassC','oakA','oakB','oakC','pineA','pineB','pineC','mossBoulder','fallenLog','stump','fern','whiteFlowers','bush','shoreStones','reeds','mushrooms','herbs','berryBush','lakeRockA','lakeRockB','lakeRockC','lakeRockD','lakeRockE','lakeRockF'] as const;
 export type NatureKind=typeof NATURE_KINDS[number];
 export interface NatureArt {label:string;texture:string;width:number;height:number;pivot:number;solid:boolean;water:boolean}
 const art=(label:string,texture:string,width:number,height=width,solid=false,water=false,pivot=124/128):NatureArt=>({label,texture,width,height,solid,water,pivot});
-export const NATURE_ART:Record<NatureKind,NatureArt>={
+export const NATURE_ART:Record<NatureKind|SwampKind,NatureArt>={
+ ...(Object.fromEntries(SWAMP_KINDS.map(kind=>[kind,{...SWAMP_ART[kind],texture:kind}])) as Record<SwampKind,NatureArt>),
  tallGrassA:art('Grama alta I','nature-tall-grass-0',46,40,false,false,1),tallGrassB:art('Grama alta II','nature-tall-grass-1',44,42,false,false,1),tallGrassC:art('Grama alta III','nature-tall-grass-2',48,38,false,false,1),
  herbs:art('Ervas medicinais','ecology-herbs',34,38,false,false,124/128),
  berryBush:art('Arbusto de berries','asset-berry-bush',44,44,false,false,1),
@@ -13,7 +15,7 @@ export const NATURE_ART:Record<NatureKind,NatureArt>={
  mossBoulder:art('Pedra com musgo','lake-rock-0',75,75,true),fallenLog:art('Tronco caído','forest-detail-log',68,68,true),stump:art('Toco','forest-detail-stump',38,38,true),fern:art('Samambaia','forest-detail-fern',36),whiteFlowers:art('Flores brancas','forest-detail-flowers',30),bush:art('Arbusto','forest-detail-bush',45),shoreStones:art('Pedras da margem','lake-rock-2',60,60,true,true),reeds:art('Juncos','forest-detail-reeds',46,46,false,true),mushrooms:art('Cogumelos','forest-detail-mushrooms',26),
  lakeRockA:art('Rocha musgosa','lake-rock-0',75,75,true,true),lakeRockB:art('Rocha alta','lake-rock-1',80,80,true,true),lakeRockC:art('Seixos agrupados','lake-rock-2',60,60,true,true),lakeRockD:art('Rocha submersa','lake-rock-3',80,80,true,true),lakeRockE:art('Dupla do lago','lake-rock-4',72,72,true,true),lakeRockF:art('Pedras baixas','lake-rock-5',56,56,true,true),
 };
-export function natureArt(kind:string|undefined):NatureArt|undefined{return kind&&Object.hasOwn(NATURE_ART,kind)?NATURE_ART[kind as NatureKind]:undefined;}
+export function natureArt(kind:string|undefined):NatureArt|undefined{return kind&&Object.hasOwn(NATURE_ART,kind)?NATURE_ART[kind as NatureKind|SwampKind]:undefined;}
 
 export function collectibleKind(kind:string|undefined):ResourceKind|undefined {
  if(!kind)return undefined;

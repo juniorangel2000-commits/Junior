@@ -215,8 +215,9 @@ export class AnimalBrain {
 
 function positions(save: SaveData) {return save.animalPositions??= {forest:[],property:[]};}
 export function startAnimalEscort(save: SaveData,animal: AnimalPosition): boolean {
-  if(save.activeArea==='openFields'||save.activeArea==='village'||save.activeArea==='cityForest'||save.activeArea==='fishingLake'||(save.activeArea==='survivorCamp'||save.activeArea==='highland')||save.animalEscort||!isDomesticAnimal(animal.id)||save.activeArea==='forest'&&!FOREST_ANIMALS.some(a=>a.id===animal.id))return false;
-  const area=save.activeArea??'property',owned=save.recruitedAnimals?.includes(animal.id)??false;
+  const area=save.activeArea??'property';
+  if((area!=='property'&&area!=='forest')||save.animalEscort||!isDomesticAnimal(animal.id)||area==='forest'&&!FOREST_ANIMALS.some(a=>a.id===animal.id))return false;
+  const owned=save.recruitedAnimals?.includes(animal.id)??false;
   if(area==='forest'?owned:!owned)return false;
   const inventory=new Inventory(save.inventory);if(!inventory.spend({cord:1}))return false;
   Object.assign(save.inventory,inventory.data);save.animalEscort={id:animal.id,area};

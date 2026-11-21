@@ -1,5 +1,6 @@
 import {waterFinishChannel} from './data/water-style';
 import { forestClearing, forestPathDistance, forestWaterDistanceAt } from './data/ancient-forest';
+import {forestSwampApproach,FOREST_SWAMP_EXIT} from './data/swamp';
 import type { TerrainSprites } from './terrain-sprites';
 
 const materials = ['forest', 'meadow', 'path-dry', 'water'] as const;
@@ -8,7 +9,7 @@ const smooth = (v:number):number => {const t=Math.max(0,Math.min(1,v));return t*
 const cells = new Map<string,number>();
 function materialAt(x:number,y:number):number {
   const key=`${x},${y}`;let value=cells.get(key);
-  if(value===undefined){value=forestPathDistance(x,y)<1.5&&!(y>=60&&x>=44&&x<=52)?2:forestClearing(x,y)?1:0;cells.set(key,value);}
+  if(value===undefined){value=(forestSwampApproach(x,y)&&Math.abs(x-FOREST_SWAMP_EXIT.x)<1.5||forestPathDistance(x,y)<1.5)&&!(y>=60&&x>=44&&x<=52)?2:forestClearing(x,y)?1:0;cells.set(key,value);}
   return value;
 }
 

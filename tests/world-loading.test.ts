@@ -11,13 +11,13 @@ describe('tela de carregamento',()=>{
  });
  it('tem dicas e o nome de todos os lugares ao ar livre',()=>{
   expect(LOADING_TIPS.length).toBeGreaterThanOrEqual(8);
-  for(const area of ['property','forest','village','cityForest','fishingLake','openFields','highland','survivorCamp'])expect(LOADING_PLACES[area]).toBeTruthy();
+  for(const area of ['property','forest','village','cityForest','fishingLake','openFields','highland','survivorCamp','swamp'])expect(LOADING_PLACES[area]).toBeTruthy();
  });
 });
 
 describe('nomes dos lugares',()=>{
  it('seguem a lista escolhida pelo Junior',()=>{
   expect(AREA_NAMES).toEqual({property:'Propriedade Abandonada',forest:'Floresta Antiga',village:'Vila',cityForest:'Estrada da Cidade',fishingLake:'Lago da Cachoeira',
-   openFields:'Campos Abertos',highland:'Platô da Nascente',survivorCamp:'Acampamento dos Sobreviventes',mine:'Mina Antiga'});
+   openFields:'Campos Abertos',highland:'Platô da Nascente',survivorCamp:'Acampamento dos Sobreviventes',swamp:'Pântano',mine:'Mina Antiga'});
  });
 });

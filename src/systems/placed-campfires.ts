@@ -4,7 +4,7 @@ import {Inventory} from './inventory';
  * ela acesa na frente do personagem, em qualquer cenário ao ar livre, e ela fica ali. Perto
  * dela, E abre o caderno da fogueira; o caderno tem o botão de recolher, que a devolve à mochila. */
 export interface PlacedCampfire{space:string;x:number;y:number}
-export const CAMPFIRE_SPACES=['property','forest','openFields','village','cityForest','fishingLake','highland','survivorCamp'] as const;
+export const CAMPFIRE_SPACES=['property','forest','openFields','village','cityForest','fishingLake','highland','survivorCamp','swamp'] as const;
 export const MAX_CAMPFIRES_PER_SPACE=3;
 export const CAMPFIRE_REACH=44;
 const fail=(message:string)=>({ok:false,message});

@@ -4,6 +4,7 @@ import {editorPropThumbnail} from './editor-prop-art';
 import {nearRiverBank,isFiberPlant} from './data/fiber-plants';
 import {paintedWaterPoint} from './data/terrain-paint';
 import type {MapArea} from './data/default-maps';
+import {SWAMP_KINDS} from './data/swamp-art';
 import { NATURE_KINDS, NATURE_ART, natureArt } from './data/nature-catalog';
 import Phaser from 'phaser';
 import { MapEditorUI } from './map-editor-ui';
@@ -35,7 +36,7 @@ export interface MapEditorAdapter {
 type Point = { x: number; y: number };
 const labels = {
   ...EXTRA_PROP_NAMES,
-  ...Object.fromEntries(NATURE_KINDS.map(kind=>[kind,NATURE_ART[kind].label])),
+  ...Object.fromEntries([...NATURE_KINDS,...SWAMP_KINDS].map(kind=>[kind,NATURE_ART[kind].label])),
   standingTree: 'Árvore', pine: 'Pinheiro', stone: 'Pedras', vein: 'Rocha',
   tree: 'Galhos', fiber: 'Fibras', seeds: 'Sementes', scrap: 'Sucata',
 } as Record<EditorObjectKind,string>;
@@ -81,7 +82,7 @@ export class MapEditor {
       tool: tool => {
         this.finishStroke();
         if(this.resourcesHidden&&['select','object','remove'].includes(tool.mode))this.setResourcesHidden(false);
-        this.tool = tool; this.selected = null; this.drawCursor(); this.refresh();
+        this.tool = tool; this.selected = null; this.drawGrid(); this.drawCursor(); this.refresh();
       },
       brush: size => { this.brush = size; this.drawCursor(); },
       import: text => this.importMap(text),
@@ -96,7 +97,7 @@ export class MapEditor {
     for (const object of adapter.objects()) if (!images[object.kind] && !object.depleted) {
       images[object.kind] = scene.textures.getBase64(object.texture,object.frame);
     }
-    for(const kind of NATURE_KINDS)if(scene.textures.exists(NATURE_ART[kind].texture))images[kind]=scene.textures.getBase64(NATURE_ART[kind].texture);
+    for(const kind of [...NATURE_KINDS,...(initial.area==='swamp'?SWAMP_KINDS:[])])if(scene.textures.exists(NATURE_ART[kind].texture))images[kind]=scene.textures.getBase64(NATURE_ART[kind].texture);
     for(const kind of URBAN_PROP_KINDS)if(scene.textures.exists('dungeon-urban'))images[kind]=editorPropThumbnail(scene,kind);
     this.ui.setThumbnails(images);
     const materials:Record<string,string>={grass:'grass',meadow:'meadow',forest:'forest',moss:'moss',forestPath:'forest',path:'path-dry',wetPath:'path-wet',water:'water',sand:'sand',soil:'soil',wood:'wood',paving:'paving'};
@@ -136,6 +137,10 @@ export class MapEditor {
     for (let y = 0; y <= WORLD_HEIGHT; y++) this.guides.lineBetween(0, y * TILE, WORLD_WIDTH * TILE, y * TILE);
     const points={...this.adapter.defaultPoints,...this.history.current.points};
     for(const [type,p] of Object.entries(points))if(p){this.guides.lineStyle(3/zoom,type==='entry'?0x80e8cd:0xf7c97c,1).strokeCircle(p.x*TILE+16,p.y*TILE+16,18);this.guides.lineBetween(p.x*TILE+8,p.y*TILE+16,p.x*TILE+24,p.y*TILE+16);if(type==='entry')this.guides.lineBetween(p.x*TILE+16,p.y*TILE+8,p.x*TILE+16,p.y*TILE+24);}
+    if(this.tool.mode==='collision')for(const [cell,state] of Object.entries(this.history.current.collisions??{})){
+      const [x,y]=cell.split(',').map(Number);
+      this.guides.fillStyle(state==='blocked'?0xe37366:0x72ca98,.48).fillRect(x*TILE,y*TILE,TILE,TILE);
+    }
     this.guides.lineStyle(2 / zoom, 0xe8d9ae, .8).strokeRect(0, 0, WORLD_WIDTH * TILE, WORLD_HEIGHT * TILE);
     this.guides.fillStyle(0xd5ac5d, .14);
     for (let y = 1; y < WORLD_HEIGHT - 1; y++) for (let x = 1; x < WORLD_WIDTH - 1; x++) {
@@ -268,7 +273,7 @@ export class MapEditor {
 
   private paint(center: Point): void {
     if (!this.stroke) return;
-    const radius = this.tool.mode === 'terrain' || this.tool.mode === 'restore' ? Math.floor(this.brush / 2) : 0;
+    const radius = ['terrain','restore','collision'].includes(this.tool.mode) ? Math.floor(this.brush / 2) : 0;
     for (let y = center.y - radius; y <= center.y + radius; y++) for (let x = center.x - radius; x <= center.x + radius; x++) {
       const p = { x, y };
       const cell = key(p), object = this.objectAt(p);
@@ -282,6 +287,12 @@ export class MapEditor {
         if(plant&&object)this.stroke.objects[object.id]={...this.stroke.objects[object.id],...(object.id.startsWith('editor-')?{kind:object.kind}:{}),x:object.x,y:object.y,removed:true};
         this.stroke.terrain[cell] = this.tool.terrain;
         this.strokePreview.fillStyle(colors[this.tool.terrain], .7).fillRect(x * TILE, y * TILE, TILE, TILE);
+      } else if(this.tool.mode==='collision'&&this.area==='swamp'&&this.tool.collision){
+        const collisions=this.stroke.collisions??={};
+        if(this.tool.collision==='original')delete collisions[cell];
+        else collisions[cell]=this.tool.collision;
+        const color=this.tool.collision==='blocked'?0xe37366:this.tool.collision==='clear'?0x72ca98:0xf0dfb6;
+        this.strokePreview.fillStyle(color,.53).fillRect(x*TILE,y*TILE,TILE,TILE);
       } else if (this.tool.mode === 'restore') {
         if (object && (this.adapter.baseWater??isWaterTile)(x,y) && !natureArt(object.kind)?.water) { this.strokeBlocked = true; continue; }
         delete this.stroke.terrain[cell];
@@ -311,7 +322,7 @@ export class MapEditor {
     if (!this.hover || this.pan) return;
     const p = this.hover;
     const allowed = this.tool.mode === 'object' || this.moving ? this.free(p, this.moving?.id) : !this.protected(p,this.tool.mode==='terrain'||this.tool.mode==='restore');
-    const radius = ['terrain', 'restore'].includes(this.tool.mode) ? Math.floor(this.brush / 2) : 0;
+    const radius = ['terrain', 'restore', 'collision'].includes(this.tool.mode) ? Math.floor(this.brush / 2) : 0;
     this.cursor.lineStyle(2 / zoom, allowed ? 0xffedbd : 0xe37366).strokeRect((p.x - radius) * TILE, (p.y - radius) * TILE, (radius * 2 + 1) * TILE, (radius * 2 + 1) * TILE);
     if (this.moving) this.cursor.fillStyle(allowed ? 0xc8e5a9 : 0xe37366, .35).fillRect(p.x * TILE, p.y * TILE, TILE, TILE);
   }
@@ -352,7 +363,7 @@ export class MapEditor {
     }
     for(const point of Object.values({...this.adapter.defaultPoints,...data.points})){
       if(!point)continue;const ground=data.terrain[key(point)];
-      if(ground==='water'||(ground===undefined&&(this.adapter.baseWater??isWaterTile)(point.x,point.y))||[...resolved.values()].some(o=>o.x===point.x&&o.y===point.y))return 'O ponto de chegada ou saída precisa ficar em chão livre.';
+      if(data.collisions?.[key(point)]==='blocked'||ground==='water'||(ground===undefined&&(this.adapter.baseWater??isWaterTile)(point.x,point.y))||[...resolved.values()].some(o=>o.x===point.x&&o.y===point.y))return 'O ponto de chegada ou saída precisa ficar em chão livre.';
     }
     const occupied = new Set<string>();
     for (const object of resolved.values()) {

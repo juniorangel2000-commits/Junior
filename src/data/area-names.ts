@@ -8,6 +8,7 @@ export const AREA_NAMES={
  openFields:'Campos Abertos',
  highland:'Platô da Nascente',
  survivorCamp:'Acampamento dos Sobreviventes',
+ swamp:'Pântano',
  mine:'Mina Antiga',
 } as const;
 export type AreaNameKey=keyof typeof AREA_NAMES;

@@ -39,7 +39,7 @@ const hills=(b:number,amp:number,phase=0)=>{let d=`M0,${H}L0,${b}`;for(let x=0;x
 const peaks=(b:number,list:[number,number,number][])=>list.map(([x,w,h])=>`M${x-w},${b}L${x},${b-h}L${x+w},${b}Z`).join(' ');
 function scenery(area:string):{far:string;near:string}{
  switch(area){
-  case'forest':case'cityForest':case'survivorCamp':return{far:hills(120,10)+' '+[30,90,150,230,300,380,440].map((x,i)=>pine(x,122,60+(i%3)*14)).join(' '),
+  case'forest':case'cityForest':case'survivorCamp':case'swamp':return{far:hills(120,10)+' '+[30,90,150,230,300,380,440].map((x,i)=>pine(x,122,60+(i%3)*14)).join(' '),
    near:hills(140,6,90)+' '+[10,70,120,200,260,330,410,460].map((x,i)=>pine(x,142,40+(i%2)*16)).join(' ')};
   case'fishingLake':case'highland':return{far:peaks(120,[[60,90,80],[200,110,105],[330,80,70],[440,100,90]])+` M0,${H}V120H${W}V${H}Z`,
    near:`M0,${H}V138H${W}V${H}Z `+[40,140,300,420].map(x=>roundTree(x,140,12)).join(' ')};

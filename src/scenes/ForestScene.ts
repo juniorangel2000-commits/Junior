@@ -6,6 +6,7 @@ import {bentoSceneWriter} from '../systems/bento-commit';
 import {communityReady} from '../systems/community-center';
 import {equipWorldSword} from '../systems/world-sword';
 import {SurvivorResidentsView} from '../survivor-residents-view';
+import {FOREST_SWAMP_EXIT,FOREST_SWAMP_RETURN} from '../data/swamp';
 import {FOREST_CAMP_EXIT,FOREST_CAMP_RETURN,campApproachDistance} from '../data/forest-camp-access';
 import {createFishingCast} from '../fishing-cast';
 import {setupTreeWind} from '../tree-wind';
@@ -89,6 +90,7 @@ export class ForestScene extends Phaser.Scene {
   private readonly exitPassage=new MapExitPassage();
   private exitWarningShown=false;
   private campPassage=new MapExitPassage();
+  private swampPassage=new MapExitPassage();
   private zoom=1;
   private elapsed=0;
   private hudElapsed=0;
@@ -107,8 +109,8 @@ export class ForestScene extends Phaser.Scene {
   create(data:ForestStart):void {
   gameAudio.setScene('game');
     setupTreeWind(this);
-    this.exitPassage.reset();this.campPassage.reset();this.exitWarningShown=false;
-    this.ui=data.ui;this.state=structuredClone(data.save);const restoreCamp=data.save.activeArea==='survivorCamp'&&communityReady(data.save);this.state.activeArea='forest';this.onReturn=data.onReturn;
+    this.exitPassage.reset();this.campPassage.reset();this.swampPassage.reset();this.exitWarningShown=false;
+    this.ui=data.ui;this.state=structuredClone(data.save);const restoreSwamp=data.save.activeArea==='swamp';const restoreCamp=data.save.activeArea==='survivorCamp'&&communityReady(data.save);this.state.activeArea='forest';this.onReturn=data.onReturn;
     this.paused=false;this.leaving=false;this.elapsed=0;this.hudElapsed=0;this.wildlife?.destroy();this.wildlife=undefined;
     this.zoom=loadCameraZoom();this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);setupAnimalArt(this);
     this.world=new ForestWorld(this);
@@ -156,6 +158,7 @@ export class ForestScene extends Phaser.Scene {
       for(const x of [1080,1120,1160,1200])this.add.image(x,215,'asset-new-branches').setOrigin(.5,1).setDisplaySize(54,34).setDepth(215);
       this.add.text(1136,162,'Passagem fechada\nRepare o centro comunitário da vila',{fontSize:'12px',fontFamily:'Georgia',color:'#efe2bd',backgroundColor:'#243b2bd9',padding:{x:8,y:6},align:'center'}).setOrigin(.5).setDepth(230);
     }
+    if(restoreSwamp){this.enterSwamp();return;}
     if(restoreCamp){this.enterSurvivorCamp();return;}
     this.save();
   }
@@ -233,11 +236,12 @@ export class ForestScene extends Phaser.Scene {
   }
   private updateHUD():void {
   this.state.crops=this.farming.crops;updateVillageEquipment(this,this.state,this.player);notifyReadyOrders(this.state,m=>this.ui.toast(m));markMinerals(this,this.world.resources);
+    const swampNear=this.player.y<360&&Math.abs(this.player.x-(FOREST_SWAMP_EXIT.x+.5)*32)<80;
     const campNear=campApproachDistance(this.player.x,this.player.y)<50&&this.player.y<240;
     const nearest=this.nearest(),info=nearest&&FOREST_ANIMALS.find(a=>a.id===nearest.id),node=this.nearestResource();
     this.ui.updateHUD({itemQuality:this.state.itemQuality,worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'forest',coins:this.state.villageEconomy?.coins??0,inHome:false,swimming:this.player.isSwimming,name:this.state.profile.name,day:this.state.day,time:this.state.time,
       inventory:this.state.inventory,tool:this.state.equippedTool??'hand',wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,
-      playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:campNear?null:this.nearExit()?null:this.state.animalEscort?'G':'E',prompt:this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:campNear?(communityReady(this.state)?'Pegadas seguem para o norte':'Repare o centro comunitário da vila para abrir esta passagem'):this.player.isSwimming?'Nadar · siga até a margem para sair':this.nearExit()?this.state.animalEscort?'Siga pela placa para levar o animal à propriedade':'Siga a seta e ultrapasse a placa para continuar':this.state.animalEscort?'Conduzindo animal · siga até a saída · soltar corda':info?'Prender '+ANIMAL_NAMES[info.kind].toLowerCase()+' com corda':node?`${RESOURCE_DEFINITIONS[node.kind].label} · ${RESOURCE_DEFINITIONS[node.kind].tool==='pickaxe'?'use a picareta':RESOURCE_DEFINITIONS[node.kind].tool==='hatchet'?'use a machadinha':'recolher'}`:'Explorar a floresta',
+      playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:campNear||swampNear?null:this.nearExit()?null:this.state.animalEscort?'G':'E',prompt:this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:swampNear?'Pântano ao norte':campNear?(communityReady(this.state)?'Pegadas seguem para o norte':'Repare o centro comunitário da vila para abrir esta passagem'):this.player.isSwimming?'Nadar · siga até a margem para sair':this.nearExit()?this.state.animalEscort?'Siga pela placa para levar o animal à propriedade':'Siga a seta e ultrapasse a placa para continuar':this.state.animalEscort?'Conduzindo animal · siga até a saída · soltar corda':info?'Prender '+ANIMAL_NAMES[info.kind].toLowerCase()+' com corda':node?`${RESOURCE_DEFINITIONS[node.kind].label} · ${RESOURCE_DEFINITIONS[node.kind].tool==='pickaxe'?'use a picareta':RESOURCE_DEFINITIONS[node.kind].tool==='hatchet'?'use a machadinha':'recolher'}`:'Explorar a floresta',
       location:'Floresta Antiga',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});
     this.ui.updateCameraZoom(this.zoom,!this.paused&&!this.mapEditor);
   }
@@ -352,6 +356,24 @@ export class ForestScene extends Phaser.Scene {
     this.state.forestPosition={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};
     this.state.crops=this.farming.crops.map(c=>({...c}));return this.state;
   }
+  private enterSwamp():void {
+    if(this.leaving)return;
+    this.swampPassage.reset();
+    if(blockMountedEntry(this.player,this.ui))return;
+    if(this.state.animalEscort){this.ui.toast('Solte a corda antes de entrar no Pântano.');return;}
+    const next=structuredClone(this.snapshotState());
+    next.activeArea='swamp';
+    if(!saveGame(next)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}
+    this.leaving=true;this.cancelToolActions();this.toolVisual?.hide();
+    const ui=this.ui,onReturn=this.onReturn;
+    this.cameras.main.fadeOut(SCENE_FADE_MS);
+    this.time.delayedCall(SCENE_FADE_MS,()=>{
+      this.scene.start('Pantano',{save:next,ui,onReturn:(updated:SaveData,title=false)=>{
+        if(title)onReturn(updated,true);
+        else this.scene.start('Floresta',{save:updated,ui,onReturn});
+      }});
+    });
+  }
   enterSurvivorCamp():void {
     if(blockMountedEntry(this.player,this.ui,performance.now(),CAMP_MOUNTED_MESSAGE)){this.campPassage.reset();return;}
     if(!communityReady(this.state)){this.ui.toast('Repare o centro comunitário da vila para abrir o acesso ao acampamento.');this.campPassage.reset();return;}
@@ -382,6 +404,7 @@ export class ForestScene extends Phaser.Scene {
       if(!this.exitWarningShown){this.ui.toast('Traga o animal para perto da saída.');this.exitWarningShown=true;}
     }else this.exitWarningShown=false;
     if(!this.player.isSwimming&&this.campPassage.update(previous,this.player,FOREST_CAMP_EXIT,FOREST_CAMP_RETURN)){this.enterSurvivorCamp();return;}
+    if(!this.player.isSwimming&&this.swampPassage.update(previous,this.player,FOREST_SWAMP_EXIT,FOREST_SWAMP_RETURN)){this.enterSwamp();return;}
     const strike=this.toolUse.advance(delta);if(strike){const node=this.world.resourceAt(strike.target.x,strike.target.y);if(node?.id===strike.target.id&&!this.player.isSwimming)this.hitResource(node,strike.tool);}
     const gathered = this.gather.advance(delta);
     if (gathered) this.applyGatherImpact(gathered);

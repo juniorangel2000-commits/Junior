@@ -1,3 +1,4 @@
+import {FOREST_SWAMP_EXIT,FOREST_SWAMP_RETURN,forestSwampApproach} from './data/swamp';
 import {campApproachDistance} from './data/forest-camp-access';
 import {drawForestCampFootprints} from './forest-camp-access';
 import {drawTreePlantingSoil} from './tree-planting-soil';
@@ -37,7 +38,7 @@ export class ForestWorld {
   setNaturalResources(nodes:readonly ResourceNode[]):void {
     const next=new Set(nodes.map(n=>n.id));for(const n of [...this.resources])if(n.id.startsWith('spawn-')||n.id.startsWith('growth-')?!next.has(n.id):(n.kind==='fiber'||n.kind==='fallenLog'||n.kind==='stump')&&!FOREST_GLADE_RESOURCE_IDS.has(n.id)&&!Object.hasOwn(this.edits?.objects??{},n.id.replace(/^f-/,'')))this.removeResource(n.id);
     for(const n of nodes)if(!this.resources.some(r=>r.id===n.id)&&!this.isBlocked(n.x,n.y)&&!(this.seamLayout&&seamPassage(n.x,n.y,'forest'))&&!((n.kind==='fiber'||n.kind==='seeds'||n.kind==='herb'||n.kind==='mushroom')&&!naturalPlantGround(this.edits?.terrain[`${n.x},${n.y}`]))){
-      if(campApproachDistance((n.x+.5)*32,(n.y+.5)*32)<40)continue;
+      if(campApproachDistance((n.x+.5)*32,(n.y+.5)*32)<40||forestSwampApproach(n.x,n.y))continue;
       const plant=n.kind==='fiber'?fiberPlantArt(fiberPlantFor(n)):undefined;
       const soil=drawTreePlantingSoil(this.scene,n);if(soil){this.treeSoils.set(n.id,soil);this.environment.push(soil);}
       const image=this.scene.add.image(n.x*32+16,n.y*32+29,plant?.texture??naturalResourceTexture(n.kind)).setOrigin(.5,plant?.pivot??1).setDepth(n.y*32+29);
@@ -47,7 +48,7 @@ export class ForestWorld {
     }
   }
   constructor(private readonly scene:Phaser.Scene,edits?:MapEditData,private readonly textureNamespace='forest'){this.rebuildEnvironment(edits);}
-  canPlantTree=(x:number,y:number):boolean=>campApproachDistance((x+.5)*32,(y+.5)*32)>44&&treeGroundClear(x,y,this.waterPointAt);
+  canPlantTree=(x:number,y:number):boolean=>!forestSwampApproach(x,y)&&campApproachDistance((x+.5)*32,(y+.5)*32)>44&&treeGroundClear(x,y,this.waterPointAt);
   waterAt=(x:number,y:number):boolean=>{const t=this.edits?.terrain[`${x},${y}`];return t?t==='water':forestWater(x,y);};
   waterPointAt=(x:number,y:number):boolean=>paintedWaterPoint(this.edits?.terrain,x,y,(px,py)=>forestWaterDistanceAt(px,py)<0);
   isBlocked=(x:number,y:number):boolean=>x<1||y<1||x>=95||y>=71||this.waterAt(x,y)||this.solid.has(`${x},${y}`);
@@ -55,6 +56,7 @@ export class ForestWorld {
   exit(){return this.edits?.points?.exit??{x:48,y:69};}
   private addEnvironmentObject(id:string,kind:EditorObjectKind,x:number,y:number,texture:string,width:number,height:number,pivot:number,solid:boolean,flip=false):void {
     const edit=this.edits?.objects[id];
+    if(forestSwampApproach(edit?.x??x,edit?.y??y))return;
     if(solid&&campApproachDistance(((edit?.x??x)+.5)*32,((edit?.y??y)+.5)*32)<34)return;if(edit?.removed||kind==='reeds')return;
     const collectible=collectibleKind(kind),resourceID=`f-${id}`;if((collectible==='herb'||collectible==='mushroom')&&!naturalPlantGround(this.edits?.terrain[`${edit?.x??x},${edit?.y??y}`]))return;if(collectible&&this.depleted.has(resourceID)){if(collectible==='standingTree')this.editorObjects.push({id,x:edit?.x??x,y:edit?.y??y,kind,texture:'forest-detail-stump',depleted:true});return;}
     x=edit?.x??x;y=edit?.y??y;
@@ -65,7 +67,7 @@ export class ForestWorld {
       for(let radius=1;radius<=8&&!dry;radius++)for(let dy=-radius;dy<=radius&&!dry;dy++)for(let dx=-radius;dx<=radius;dx++){
         if(Math.max(Math.abs(dx),Math.abs(dy))!==radius)continue;
         const nx=x+dx,ny=y+dy;
-        if(treeGroundClear(nx,ny,this.waterPointAt)&&!this.solid.has(`${nx},${ny}`)&&!this.editorObjects.some(o=>o.x===nx&&o.y===ny)&&!FOREST_TREES.some(t=>t.x===nx&&t.y===ny)&&forestPathDistance(nx,ny)>2.2){dry={x:nx,y:ny};break;}
+        if(!forestSwampApproach(nx,ny)&&treeGroundClear(nx,ny,this.waterPointAt)&&!this.solid.has(`${nx},${ny}`)&&!this.editorObjects.some(o=>o.x===nx&&o.y===ny)&&!FOREST_TREES.some(t=>t.x===nx&&t.y===ny)&&forestPathDistance(nx,ny)>2.2){dry={x:nx,y:ny};break;}
       }
       if(!dry)return;x=dry.x;y=dry.y;
     }
@@ -106,10 +108,11 @@ export class ForestWorld {
     this.drawWoodlandDetails();
     drawForestCampFootprints(this.scene,this.waterPointAt);
     drawExitSign(this.scene,this.exit(),this.edits?.points?.entry??FOREST_ENTRY);
+    drawExitSign(this.scene,FOREST_SWAMP_EXIT,FOREST_SWAMP_RETURN);
     this.environment=this.scene.children.list.filter(o=>!before.has(o));
   }
   private drawGround():void {
-    const key='forest-ground-organic-shore-v3-grass';
+    const key='forest-ground-organic-shore-v4-grass';
     if(!this.scene.textures.exists(key)){
       const sprites=readTerrainSprites(this.scene);
       const terrain=document.createElement('canvas');terrain.width=3072;terrain.height=2304;

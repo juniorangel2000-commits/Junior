@@ -104,6 +104,8 @@ export interface SaveData {
   mineInterior?:import('./data/mine-room').MinePosition;
   highlandPosition?:TilePoint & {direction?:CharacterDirection};
   highlandMapEdits?:MapEditData;
+  swampMapEdits?:MapEditData;
+  swampPosition?:TilePoint & {direction?:CharacterDirection};
   /** Outdoor equipment references an owned sword; missing keeps hands free. */
   worldWeapon?:'sword'|'unarmed';
   mineCollisionRevision?:2;
@@ -128,7 +130,7 @@ export interface SaveData {
   /** One-time homestead layout; removed starter fences/beds are never recreated. */
   homesteadRevision?:1;
   selectedCrop?:import('./data/crops').CropId;
-  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake' | 'survivorCamp' | 'highland' | 'openFields';
+  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake' | 'survivorCamp' | 'highland' | 'openFields' | 'swamp';
   fishingLakePosition?: TilePoint & { direction?: CharacterDirection };
   fishingLakeMapEdits?:MapEditData;
   cityForestPosition?: TilePoint & { direction?: CharacterDirection };
@@ -199,7 +201,7 @@ export interface HudData {
   learnedRecipes?:string[];
   farmingProgress?: FarmingProgress;
   swimming?:boolean;
-  area?: 'property'|'forest'|'village'|'cityForest'|'fishingLake'|'survivorCamp'|'highland'|'openFields';
+  area?: SaveData['activeArea'];
   coins?: number;
   vigor?: number;
   wateringCan?: boolean;
