@@ -7,7 +7,7 @@ import {campfiresIn,nearCampfire,placeCampfire,pickUpCampfire,type PlacedCampfir
 export type CampfireScene=Phaser.Scene&{player?:{x:number;y:number;facing?:{x:number;y:number};mounted?:boolean;isSwimming?:boolean};getFishingState():SaveData;persist():boolean;
  syncInventory?(inventory:SaveData['inventory']):void;inHome?:boolean;inShop?:boolean;inBlacksmith?:boolean};
 interface Ui{toast(message:string):void;isModalOpen():boolean;showCookbook(save:()=>SaveData,cook:(id:string)=>{ok:boolean;message:string},options:{station:'campfire';onPickUp?:()=>{ok:boolean;message:string};onClose?:()=>void}):void}
-const SPACES:Record<string,string>={Vale:'property',Floresta:'forest',Campos:'openFields',Vila:'village',AcessoCidade:'cityForest',Lago:'fishingLake',Serra:'highland',Acampamento:'survivorCamp',Pantano:'swamp',Ruinas:'ruins'};
+const SPACES:Record<string,string>={Vale:'property',Floresta:'forest',Campos:'openFields',Vila:'village',AcessoCidade:'cityForest',Lago:'fishingLake',Serra:'highland',Acampamento:'survivorCamp',Pantano:'swamp',Ruinas:'ruins',Estacao:'railway'};
 const KEY='campfire-lit',ANIM='campfire-lit-burn',FRAME={w:487,h:545},WIDTH=30;
 /** O lugar da fogueira no cenário atual, ou nada se for um lugar fechado. */
 export function campfireSpace(scene:CampfireScene):string|undefined{

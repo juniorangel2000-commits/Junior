@@ -6,7 +6,7 @@ import {drawEditorProp} from './editor-prop-art';
 import {drawExitSign} from './exit-signs';
 import {addWaterMotion} from './water-motion';
 import {RUIN_KINDS} from './data/ruins-art';
-import {RUINS_ENTRY, RUINS_EXIT, RUINS_ROAD_Y, tileMidpoint} from './data/ruins-road';
+import {RUINS_ENTRY, RUINS_EXIT, RUINS_RAILWAY_EXIT, RUINS_RAILWAY_RETURN, RUINS_ROAD_Y, tileMidpoint} from './data/ruins-road';
 import {
   createRuinsLayout, RUINS_ROAD_HALF_WIDTH, RUINS_SIZE, ruinsCourtDistance,
   ruinsRoadDistance, ruinsSeed, ruinsTrailDistance,
@@ -131,6 +131,7 @@ export class RuinsWorld {
       if(tree)this.treetops.push(sprite.setData('wind-tree',true));
     }
     drawExitSign(scene,edits?.points?.exit??RUINS_EXIT,edits?.points?.entry??RUINS_ENTRY);
+    drawExitSign(scene,RUINS_RAILWAY_EXIT,RUINS_RAILWAY_RETURN);
     if(this.layout.wetTrack&&!palette){
       const {x,y}=this.layout.wetTrack;
       const marks=this.tracks=scene.add.graphics().setDepth(-92).setVisible(false);

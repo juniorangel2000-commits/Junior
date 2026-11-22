@@ -72,7 +72,7 @@ export class CityForestScene extends Phaser.Scene{
  create(data:CityForestStart):void{
   gameAudio.setScene('game');
   setupTreeWind(this);
-  const restoreRuins=data.save.activeArea==='ruins';
+  const restoreRuins=data.save.activeArea==='ruins'||data.save.activeArea==='railway'?data.save.activeArea:undefined;
   this.state=structuredClone(data.save);this.state.activeArea='cityForest';delete this.state.homePosition;delete this.state.merchantInterior;delete this.state.blacksmithInterior;
   this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.fishing=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.lakePassage.reset();this.ruinsPassage.reset();this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
@@ -109,12 +109,13 @@ export class CityForestScene extends Phaser.Scene{
     () => this.persist(),
   );
   this.cityPromptArmed=!data.fromCity;
-  if(this.state.dungeonRun)this.enterDungeons();else if(restoreRuins)this.enterRuins(true);else this.persist();
+  if(this.state.dungeonRun)this.enterDungeons();else if(restoreRuins)this.enterRuins(true,restoreRuins);else this.persist();
  }
- private enterRuins(resume=false):void {
+ /** `area` 'railway': a retomada passa pelas Ruínas e segue para a Estação. */
+ private enterRuins(resume=false,area:'ruins'|'railway'='ruins'):void {
   if(this.leaving)return;
   const save=structuredClone(this.snapshotState()),ui=this.ui,onReturn=this.onReturn;
-  save.activeArea='ruins';
+  save.activeArea=resume?area:'ruins';
   if(!resume)delete save.ruinsPosition;
   if(!saveGame(save)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}
   this.leaving=true;this.input.keyboard?.resetKeys();this.cameras.main.fadeOut(SCENE_FADE_MS);

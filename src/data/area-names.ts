@@ -10,6 +10,7 @@ export const AREA_NAMES={
  survivorCamp:'Acampamento dos Sobreviventes',
  swamp:'Pântano',
  ruins:'Ruínas',
+ railway:'Estação Ferroviária',
  mine:'Mina Antiga',
 } as const;
 export type AreaNameKey=keyof typeof AREA_NAMES;

@@ -1,6 +1,6 @@
 import {natureArt} from './nature-catalog';
 import {isRuinKind, RUINS_ART, type RuinKind} from './ruins-art';
-import {RUINS_ROAD_Y, tileMidpoint} from './ruins-road';
+import {RUINS_ROAD_Y, ruinsRailwayRoadProtected, tileMidpoint} from './ruins-road';
 import {paintedWaterPoint} from './terrain-paint';
 import {TILE, WORLD_HEIGHT, WORLD_WIDTH} from './world-size';
 import {editorObjectKind, type EditorObjectKind, type MapEditData} from '../systems/map-editor';
@@ -159,7 +159,8 @@ export function createRuinsLayout(edits?:MapEditData) {
   const water=(x:number,y:number)=>paintedWaterPoint(edits?.terrain,x,y,()=>false);
   const blocked=(x:number,y:number):boolean=>{
     if(x<32||y<32||x>=RUINS_SIZE.width-32||y>=RUINS_SIZE.height-32)return true;
-    const collision=edits?.collisions?.[`${Math.floor(x/TILE)},${Math.floor(y/TILE)}`];
+    const tx=Math.floor(x/TILE),ty=Math.floor(y/TILE);
+    const collision=ruinsRailwayRoadProtected(tx,ty)?undefined:edits?.collisions?.[`${tx},${ty}`];
     if(collision)return collision==='blocked';
     return solid.some(b=>x>b.left&&x<b.right&&y>b.top&&y<b.bottom);
   };

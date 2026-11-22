@@ -114,6 +114,11 @@ export interface SaveData {
   ruinsCellarPosition?:TilePoint & {direction?:CharacterDirection};
   ruinsSealFound?:true;
   ruinsSealIdentified?:true;
+  /** Estação Ferroviária (docs/cenarios/ESTACAO-FERROVIARIA.md). */
+  railwayMapEdits?:MapEditData;
+  railwayPosition?:TilePoint & {direction?:CharacterDirection};
+  /** Presente só enquanto o jogador está na sala de espera da Estação. */
+  railwayHallPosition?:TilePoint & {direction?:CharacterDirection};
   /** Outdoor equipment references an owned sword; missing keeps hands free. */
   worldWeapon?:'sword'|'unarmed';
   mineCollisionRevision?:2;
@@ -138,7 +143,7 @@ export interface SaveData {
   /** One-time homestead layout; removed starter fences/beds are never recreated. */
   homesteadRevision?:1;
   selectedCrop?:import('./data/crops').CropId;
-  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake' | 'survivorCamp' | 'highland' | 'openFields' | 'swamp' | 'ruins';
+  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake' | 'survivorCamp' | 'highland' | 'openFields' | 'swamp' | 'ruins' | 'railway';
   fishingLakePosition?: TilePoint & { direction?: CharacterDirection };
   fishingLakeMapEdits?:MapEditData;
   cityForestPosition?: TilePoint & { direction?: CharacterDirection };

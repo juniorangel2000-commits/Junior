@@ -2,11 +2,13 @@ import {isFiberPlant} from './fiber-plants';
 import type {ResourceKind} from '../types';
 import {SWAMP_ART, SWAMP_KINDS, type SwampKind} from './swamp-art';
 import {RUINS_ART, RUIN_KINDS, type RuinKind} from './ruins-art';
+import {RAILWAY_ART, RAILWAY_KINDS, railwayTexture, type RailwayKind} from './railway-art';
 export const NATURE_KINDS = ['tallGrassA','tallGrassB','tallGrassC','oakA','oakB','oakC','pineA','pineB','pineC','mossBoulder','fallenLog','stump','fern','whiteFlowers','bush','shoreStones','reeds','mushrooms','herbs','berryBush','lakeRockA','lakeRockB','lakeRockC','lakeRockD','lakeRockE','lakeRockF'] as const;
 export type NatureKind=typeof NATURE_KINDS[number];
 export interface NatureArt {label:string;texture:string;width:number;height:number;pivot:number;solid:boolean;water:boolean}
 const art=(label:string,texture:string,width:number,height=width,solid=false,water=false,pivot=124/128):NatureArt=>({label,texture,width,height,solid,water,pivot});
-export const NATURE_ART:Record<NatureKind|SwampKind|RuinKind,NatureArt>={
+export const NATURE_ART:Record<NatureKind|SwampKind|RuinKind|RailwayKind,NatureArt>={
+ ...(Object.fromEntries(RAILWAY_KINDS.map((kind):[RailwayKind,NatureArt]=>{const a=RAILWAY_ART[kind];return [kind,{label:a.label,texture:railwayTexture(a.file),width:a.width,height:a.height,pivot:a.pivot,solid:a.bases.length>0,water:false}];})) as Record<RailwayKind,NatureArt>),
  ...(Object.fromEntries(SWAMP_KINDS.map(kind=>[kind,{...SWAMP_ART[kind],texture:kind}])) as Record<SwampKind,NatureArt>),
  ...(Object.fromEntries(RUIN_KINDS.map((kind):[RuinKind,NatureArt]=>[kind,{...RUINS_ART[kind],texture:kind,solid:RUINS_ART[kind].bases.length>0,water:false}])) as Record<RuinKind,NatureArt>),
  tallGrassA:art('Grama alta I','nature-tall-grass-0',46,40,false,false,1),tallGrassB:art('Grama alta II','nature-tall-grass-1',44,42,false,false,1),tallGrassC:art('Grama alta III','nature-tall-grass-2',48,38,false,false,1),

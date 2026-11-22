@@ -90,7 +90,7 @@ import {DEVELOPMENT_TOOLS} from '../development-tools';
 import type {MapArea} from '../data/default-maps';
 
 import {playerSpeedFactor} from '../systems/food-effects';
-export interface VillageStart {resumeCityForest?:'cityForest'|'ruins';save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
+export interface VillageStart {resumeCityForest?:'cityForest'|'ruins'|'railway';save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 type Villager={data:VillageNPC;sprite:Phaser.GameObjects.Sprite;frames:number};
 
 /** Town state travels through the same save as the farm, without replacing its

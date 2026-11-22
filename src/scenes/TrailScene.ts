@@ -12,9 +12,13 @@ import { RuinsWorld, preloadRuins } from '../ruins-world';
 import { RuinsCellarWorld, preloadRuinsCellar } from '../ruins-cellar-world';
 import { RUINS_SIZE } from '../data/ruins';
 import { RUINS_CELLAR_ENTRY, RUINS_CELLAR_EXIT, RUINS_CELLAR_SIZE } from '../data/ruins-cellar';
+import { RailwayHallWorld, preloadRailwayHall } from '../railway-hall-world';
+import { RAILWAY_HALL_ENTRY, RAILWAY_HALL_EXIT, RAILWAY_HALL_SIZE } from '../data/railway-hall';
 import { ruinsHasWetTraces } from '../data/ruins-story';
 import { blockMountedEntry } from '../riding-guard';
-import { CITY_RUINS_RETURN, RUINS_ENTRY, RUINS_EXIT } from '../data/ruins-road';
+import { CITY_RUINS_RETURN, RUINS_ENTRY, RUINS_EXIT, RUINS_RAILWAY_EXIT, RUINS_RAILWAY_RETURN, RAILWAY_ENTRY, RAILWAY_EXIT } from '../data/ruins-road';
+import { RailwayWorld, preloadRailway } from '../railway-world';
+import { RAILWAY_SIZE } from '../data/railway';
 import { AREA_NAMES } from '../data/area-names';
 import { directionFromVector, directionVector } from '../character-directions';
 import { sampleWaterDepth } from '../swimming/config';
@@ -47,6 +51,11 @@ const TRAILS={
     exit:(edits?:MapEditData)=>edits?.points?.exit??RUINS_EXIT,
     arrival:'right',returnArea:'cityForest',returnPosition:'cityForestPosition',returnTile:CITY_RUINS_RETURN,returnFacing:'left',
     returnName:AREA_NAMES.cityForest,prompt:'A estrada segue a leste. As trilhas do antigo posto ficam ao sul.'},
+  railway:{scene:'Estacao',map:'railwayMapEdits',position:'railwayPosition',size:RAILWAY_SIZE,
+    World:RailwayWorld,preload:preloadRailway,entry:(edits?:MapEditData)=>edits?.points?.entry??RAILWAY_ENTRY,
+    exit:(edits?:MapEditData)=>edits?.points?.exit??RAILWAY_EXIT,
+    arrival:'right',returnArea:'ruins',returnPosition:'ruinsPosition',returnTile:RUINS_RAILWAY_RETURN,returnFacing:'left',
+    returnName:AREA_NAMES.ruins,prompt:'A estação fica ao sul da estrada. A plataforma e os trilhos estão logo atrás do prédio.'},
 } as const;
 
 export class TrailScene extends Phaser.Scene {
@@ -54,9 +63,13 @@ export class TrailScene extends Phaser.Scene {
   private state!: SaveData;
   private ui!: TrailStart['ui'];
   private onReturn!: TrailStart['onReturn'];
-  private world!: SwampWorld|RuinsWorld|RuinsCellarWorld;
-  get inHome():boolean{return this.area==='ruins'&&!!this.state?.ruinsCellarPosition;}
-  private get mapSize(){return this.inHome?RUINS_CELLAR_SIZE:this.trail.size;}
+  private world!: SwampWorld|RuinsWorld|RuinsCellarWorld|RailwayWorld|RailwayHallWorld;
+  /** Interiores: o porão das Ruínas e a sala de espera da Estação. */
+  get inHome():boolean{return this.area==='ruins'&&!!this.state?.ruinsCellarPosition||this.area==='railway'&&!!this.state?.railwayHallPosition;}
+  private get mapSize(){return this.inHome?(this.area==='railway'?RAILWAY_HALL_SIZE:RUINS_CELLAR_SIZE):this.trail.size;}
+  private get interiorEntry(){return this.area==='railway'?RAILWAY_HALL_ENTRY:RUINS_CELLAR_ENTRY;}
+  private get interiorExit(){return this.area==='railway'?RAILWAY_HALL_EXIT:RUINS_CELLAR_EXIT;}
+  private get interiorName(){return this.area==='railway'?'Sala de espera':'Porão do posto';}
   readonly movementBlockedPoint=(x:number,y:number)=>this.world.layout.blocked(x,y);
   private readonly tileBlocked=(x:number,y:number)=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
   readonly swimmingPoint=(x:number,y:number)=>sampleWaterDepth(this.world.layout.inWater,x,y);
@@ -71,8 +84,10 @@ export class TrailScene extends Phaser.Scene {
   private elapsed=0;
   private hudElapsed=0;
   private readonly passage=new MapExitPassage();
+  /** Ruínas: a estrada segue a leste até a Estação Ferroviária. */
+  private readonly railwayPassage=new MapExitPassage();
   private readonly grounds=createGroundRuntime(
-    ()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>this.inHome?'ruins-cellar':this.area,
+    ()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>this.inHome?(this.area==='railway'?'railway-hall':'ruins-cellar'):this.area,
     (x,y)=>this.movementBlockedPoint(x,y)||this.swimmingPoint(x,y)>0,()=>this.canPlay(),()=>this.updateHUD(),
   );
   private readonly missions=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player);
@@ -83,30 +98,33 @@ export class TrailScene extends Phaser.Scene {
     const data=this.sys.settings.data as TrailStart|undefined;
     if(this.area==='ruins'&&data?.save?.ruinsCellarPosition)preloadRuinsCellar(this);
     else this.trail.preload(this);
+    if(this.area==='railway')preloadRailwayHall(this);
   }
   getGroundItemRuntime(){return this.player?this.grounds:undefined;}
   getMineMissionRuntime=()=>this.missions;
   getFishingState=()=>this.state;
 
   create(data:TrailStart):void {
+    // Retomada: quem salvou na Estação passa pelas Ruínas e segue direto para lá.
+    const resumeRailway=this.area==='ruins'&&data.save.activeArea==='railway';
     this.state=structuredClone(data.save);
     this.state.activeArea=this.area;
     this.ui=data.ui;
     this.onReturn=data.onReturn;
     this.paused=this.leaving=this.fishing=false;
     this.elapsed=this.hudElapsed=0;
-    this.passage.reset();
+    this.passage.reset();this.railwayPassage.reset();
     gameAudio.setScene('game');
     setupTreeWind(this);
     const {width,height}=this.mapSize,edits=this.state[this.trail.map];
-    this.world=this.inHome?new RuinsCellarWorld(this,!!this.state.ruinsSealFound):new this.trail.World(this,edits);
+    this.world=this.inHome?(this.area==='railway'?new RailwayHallWorld(this):new RuinsCellarWorld(this,!!this.state.ruinsSealFound)):new this.trail.World(this,edits);
     if(this.world instanceof RuinsWorld)this.world.weather(this.state.day);
     this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
-    const saved=this.inHome?this.state.ruinsCellarPosition:this.state[this.trail.position];
+    const saved=this.inHome?(this.area==='railway'?this.state.railwayHallPosition:this.state.ruinsCellarPosition):this.state[this.trail.position];
     const valid=saved&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!this.movementBlockedPoint(saved.x+dx,saved.y+dy));
-    const start=valid?saved:tileCenter(this.inHome?RUINS_CELLAR_ENTRY:this.trail.entry(edits));
+    const start=valid?saved:tileCenter(this.inHome?this.interiorEntry:this.trail.entry(edits));
     this.player=new Player(this,this.state.profile,start.x,start.y,this.area+'-player');
-    const facing=this.inHome?'down':this.trail.arrival;
+    const facing=this.inHome?(this.area==='railway'?'up':'down'):this.trail.arrival;
     this.player.facing=directionVector(valid?saved.direction??facing:facing);
     this.player.update(0,this.tileBlocked,this.movementBlockedPoint,false,this.swimmingPoint);
     this.daylight=new Daylight(this,width,height);
@@ -137,7 +155,20 @@ export class TrailScene extends Phaser.Scene {
       window.removeEventListener('blur',this.blur);
       document.removeEventListener('visibilitychange',this.visibility);
     });
-    this.persist();
+    if(resumeRailway)this.enterRailway(true);else this.persist();
+  }
+
+  /** Ruínas → Estação; a volta recomeça as Ruínas na chegada leste. */
+  private enterRailway(resume=false):void {
+    if(this.leaving||this.area!=='ruins')return;
+    const save=structuredClone(this.snapshotState()),ui=this.ui,onReturn=this.onReturn;
+    save.activeArea='railway';
+    if(!resume)delete save.railwayPosition;
+    if(!saveGame(save)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}
+    this.leaving=true;this.blur();this.cameras.main.fadeOut(SCENE_FADE_MS);
+    this.time.delayedCall(SCENE_FADE_MS,()=>this.scene.start('Estacao',{save,ui,onReturn:(updated:SaveData,title=false)=>{
+      if(title)onReturn(updated,true);else this.scene.start('Ruinas',{save:updated,ui,onReturn} satisfies TrailStart);
+    }} satisfies TrailStart));
   }
 
   private canPlay():boolean{
@@ -158,8 +189,9 @@ export class TrailScene extends Phaser.Scene {
 
   private nearbyLandmark(){
     if(this.player.isSwimming)return undefined;
-    if(this.world instanceof RuinsCellarWorld)return this.world.layout.inspectNear(this.player.x,this.player.y);
+    if(this.world instanceof RuinsCellarWorld||this.world instanceof RailwayHallWorld)return this.world.layout.inspectNear(this.player.x,this.player.y);
     if(this.world instanceof RuinsWorld)return this.world.layout.inspectNear(this.player.x,this.player.y,ruinsHasWetTraces(this.state.day));
+    if(this.world instanceof RailwayWorld)return this.world.layout.inspectNear(this.player.x,this.player.y);
   }
 
   private updateHUD():void {
@@ -169,9 +201,10 @@ export class TrailScene extends Phaser.Scene {
     const fishing=this.nearFishing()&&!!this.equippedFishingItem();
     const cardinal={up:'norte',down:'sul',left:'oeste',right:'leste'}[exitSignLayout(exit,trail.entry(edits)).direction];
     const prompt=player.isSwimming?'Siga até a margem para sair da água.':
-      landmark?(landmark.cellar&&state.ruinsMapFound?'E · Descer ao porão':`E · Examinar ${landmark.name.toLowerCase()}`):
-      this.inHome?'Suba os degraus ao norte para voltar ao armazém.':
+      landmark?(landmark.cellar&&state.ruinsMapFound?'E · Descer ao porão':landmark.hall?'E · Entrar na sala de espera':`E · Examinar ${landmark.name.toLowerCase()}`):
+      this.inHome?(this.area==='railway'?'A porta ao sul leva de volta à plataforma.':'Suba os degraus ao norte para voltar ao armazém.'):
       Math.hypot(player.x-gate.x,player.y-gate.y)<144?`${trail.returnName} ao ${cardinal}`:
+      this.area==='ruins'&&!this.inHome&&Math.hypot(player.x-tileCenter(RUINS_RAILWAY_EXIT).x,player.y-tileCenter(RUINS_RAILWAY_EXIT).y)<144?`${AREA_NAMES.railway} a leste`:
       fishing?'Pescar na margem · E':trail.prompt;
     this.ui.updateHUD({
       area:this.area,name:state.profile.name,day:state.day,time:state.time,
@@ -180,7 +213,7 @@ export class TrailScene extends Phaser.Scene {
       inHome:this.inHome,swimming:player.isSwimming,coins:state.villageEconomy?.coins??0,vigor:state.villageProgress?.vigor??100,
       wateringCan:!!state.homeSupplies?.wateringCan,wateringCanWater:state.wateringCanWater??0,
       playerTile:{x:player.x/32,y:player.y/32},interactionKey:landmark||fishing?'E':null,prompt,location:AREA_NAMES[this.area],
-      ...(this.inHome?{mapTitle:'Porão do posto',location:'Porão do posto',interiorMapSize:{width:this.mapSize.width/32,height:this.mapSize.height/32}}:{}),
+      ...(this.inHome?{mapTitle:this.interiorName,location:this.interiorName,interiorMapSize:{width:this.mapSize.width/32,height:this.mapSize.height/32}}:{}),
       harvests:state.inventory.turnip,metLia:state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',
       resourceProgress:'',farmingProgress:this.farming.progress,progress:state.progress,
     });
@@ -198,7 +231,7 @@ export class TrailScene extends Phaser.Scene {
     else if(key==='e'){
       const landmark=this.nearbyLandmark();
       if(landmark){
-        if(landmark.cellar&&this.state.ruinsMapFound){this.changeCellar(true);return;}
+        if(landmark.cellar&&this.state.ruinsMapFound||landmark.hall){this.changeCellar(true);return;}
         const lines=inspectRuins(this.snapshotState(),landmark,saveGame);
         if(this.world instanceof RuinsCellarWorld&&this.state.ruinsSealFound)this.world.takeSeal();
         this.updateHUD();
@@ -278,7 +311,7 @@ export class TrailScene extends Phaser.Scene {
 
   private snapshotState():SaveData {
     const position={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};
-    if(this.inHome)this.state.ruinsCellarPosition=position;
+    if(this.inHome){if(this.area==='railway')this.state.railwayHallPosition=position;else this.state.ruinsCellarPosition=position;}
     else this.state[this.trail.position]=position;
     this.state.quickbar=this.ui.getQuickbar();
     this.state.crops=this.farming.crops;
@@ -290,7 +323,11 @@ export class TrailScene extends Phaser.Scene {
   private changeCellar(enter:boolean):void {
     if(this.leaving||enter&&blockMountedEntry(this.player,this.ui))return;
     const save=structuredClone(this.snapshotState());
-    if(enter)save.ruinsCellarPosition={...tileCenter(RUINS_CELLAR_ENTRY),direction:'down'};
+    if(this.area==='railway'){
+      if(enter)save.railwayHallPosition={...tileCenter(RAILWAY_HALL_ENTRY),direction:'up'};
+      // Ao sair, volta à posição guardada quando apertou E: o patamar livre diante da porta.
+      else delete save.railwayHallPosition;
+    }else if(enter)save.ruinsCellarPosition={...tileCenter(RUINS_CELLAR_ENTRY),direction:'down'};
     else delete save.ruinsCellarPosition;
     if(!saveGame(save)){this.ui.toast('Não foi possível salvar antes de atravessar a escada.');return;}
     this.leaving=true;this.blur();this.cameras.main.fadeOut(SCENE_FADE_MS);
@@ -320,9 +357,13 @@ export class TrailScene extends Phaser.Scene {
     this.player.update(dt,this.tileBlocked,this.movementBlockedPoint,true,this.swimmingPoint,this.allowStep);
     if(!(this.world instanceof RuinsCellarWorld))this.world.update(dt,this.player);
     const edits=this.state[this.trail.map];
-    const exit=this.inHome?RUINS_CELLAR_EXIT:this.trail.exit(edits),entry=this.inHome?RUINS_CELLAR_ENTRY:this.trail.entry(edits);
+    const exit=this.inHome?this.interiorExit:this.trail.exit(edits),entry=this.inHome?this.interiorEntry:this.trail.entry(edits);
     if(!this.player.isSwimming&&this.passage.update(previous,this.player,exit,entry)){
       if(this.inHome)this.changeCellar(false);else this.leave();
+      return;
+    }
+    if(this.area==='ruins'&&!this.inHome&&!this.player.isSwimming&&this.railwayPassage.update(previous,this.player,RUINS_RAILWAY_EXIT,RUINS_RAILWAY_RETURN)){
+      this.enterRailway();
       return;
     }
     this.farming.update(dt,this.state.day);

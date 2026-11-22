@@ -14,6 +14,8 @@ export interface RuinLandmark {
   map?: true;
   cellar?: true;
   seal?: true;
+  /** Porta da sala de espera da Estação Ferroviária. */
+  hall?: true;
 }
 
 export const RUINS_HATCH_ID='ruin-hatch-65-31';
