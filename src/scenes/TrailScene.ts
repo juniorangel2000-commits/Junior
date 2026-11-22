@@ -23,7 +23,7 @@ import { RailwayWorld, preloadRailway } from '../railway-world';
 import { RAILWAY_SIZE } from '../data/railway';
 import { CoastWorld, preloadCoast } from '../coast-world';
 import { COAST_SIZE } from '../data/coast';
-import { COAST_ENTRY, COAST_EXIT, RAILWAY_COAST_EXIT, RAILWAY_COAST_RETURN } from '../data/ruins-road';
+import { COAST_ENTRY, COAST_EXIT, FIELDS_COAST_RETURN } from '../data/fields-river';
 import { AREA_NAMES } from '../data/area-names';
 import { directionFromVector, directionVector } from '../character-directions';
 import { sampleWaterDepth } from '../swimming/config';
@@ -64,12 +64,11 @@ const TRAILS={
   coast:{scene:'Costa',map:'coastMapEdits',position:'coastPosition',size:COAST_SIZE,
     World:CoastWorld,preload:preloadCoast,entry:(edits?:MapEditData)=>edits?.points?.entry??COAST_ENTRY,
     exit:(edits?:MapEditData)=>edits?.points?.exit??COAST_EXIT,
-    arrival:'right',returnArea:'railway',returnPosition:'railwayPosition',returnTile:RAILWAY_COAST_RETURN,returnFacing:'left',
-    returnName:AREA_NAMES.railway,prompt:'Siga a trilha entre as dunas até o abrigo e o píer da enseada.'},
+    arrival:'down',returnArea:'openFields',returnPosition:'openFieldsPosition',returnTile:FIELDS_COAST_RETURN,returnFacing:'up',
+    returnName:AREA_NAMES.openFields,prompt:'Siga a trilha até as dunas e o píer junto à foz.'},
 } as const;
 const ROAD_LINKS={
   ruins:{area:'railway',exit:RUINS_RAILWAY_EXIT,approach:RUINS_RAILWAY_RETURN},
-  railway:{area:'coast',exit:RAILWAY_COAST_EXIT,approach:RAILWAY_COAST_RETURN},
 } as const;
 type RoadLink=typeof ROAD_LINKS[keyof typeof ROAD_LINKS];
 
@@ -109,10 +108,10 @@ export class TrailScene extends Phaser.Scene {
   private readonly bentoRuntime={missions:this.missions,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
 
   constructor(private readonly area:keyof typeof TRAILS){super(TRAILS[area].scene);this.trail=TRAILS[area];}
-  private get outgoingRoad(){return this.area==='ruins'||this.area==='railway'?ROAD_LINKS[this.area]:undefined;}
+  private get outgoingRoad(){return this.area==='ruins'?ROAD_LINKS.ruins:undefined;}
   private resumeViaRoad(save?:SaveData):RoadLink|undefined{
     const road=this.outgoingRoad;
-    return save&&(save.activeArea===road?.area||this.area==='ruins'&&save.activeArea==='coast')?road:undefined;
+    return road&&save?.activeArea===road.area?road:undefined;
   }
   preload():void{
     const data=this.sys.settings.data as TrailStart|undefined;

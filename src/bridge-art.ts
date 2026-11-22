@@ -4,9 +4,9 @@ import {TILE} from './data/regions';
 import {readTerrainSprites} from './terrain-sprites';
 
 /** Finished crossings share collision bounds with the old bridges. Rails sort with actors. */
-export function drawPropertyBridges(scene:Phaser.Scene):void {
+export function drawPropertyBridges(scene:Phaser.Scene,bridges:readonly {x:number;y:number;width:number;height:number}[]=PROPERTY_BRIDGES):void {
  const materials=readTerrainSprites(scene);
- for(const bridge of PROPERTY_BRIDGES){
+ for(const bridge of bridges){
   const width=bridge.width*TILE,height=bridge.height*TILE,left=bridge.x*TILE,top=bridge.y*TILE;
   for(const layer of ['deck','back','front'] as const){
    const key=`bridge-v3-finished:${bridge.width}:${layer}`;

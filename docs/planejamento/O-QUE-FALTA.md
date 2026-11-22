@@ -26,10 +26,11 @@
 ## 1. Conteúdo e cenários
 
 - [x] **Pântano jogável** ao sul da Floresta Antiga, com editor F2, passarela, sapos e jacarés (branch da preview.45).
-- [ ] **Continuidade dos rios.** Conferir o encaixe do Platô com a cachoeira do Lago e definir a continuidade das bocas do Pântano e da saída da Propriedade nos Campos Abertos.
+- [ ] **Continuidade dos rios.** Conferir o encaixe do Platô com a cachoeira do Lago e definir a continuidade das bocas do Pântano. O rio da Propriedade já atravessa os Campos Abertos e deságua na Costa.
 - [ ] **História da Amélia** em 3 partes. A íris azul do Pântano já tem sprite e posição no mapa. Modelo em `src/data/npc-stories.ts`.
 - [x] **Ruínas jogáveis** a leste da Estrada da Cidade, com o asfalto contínuo ao norte, investigação no antigo posto, porão, selo de bronze que Nilo identifica e grama alta editável.
 - [x] **Estação Ferroviária Desativada** a leste das Ruínas (preview.45): ligação nos dois sentidos, sala de espera com arte frontal, trilhas sinuosas, capim alto, F2 no exterior e save. A história curta depende dos textos e da recompensa do Junior.
+- [x] **Costa das Marés jogável** ao sul dos Campos Abertos (preview.45), com praia, píer, pesca, nado e editor F2.
 - [ ] Desenvolver a **história pessoal do Nilo** se o Junior quiser expandir a ligação com o selo.
 - [ ] Usar o pântano e as ruínas também em partes extras das histórias dos outros moradores.
 - [ ] **Editor de mapa (F2) nos Campos Abertos**: ainda não integrado nesse cenário.
@@ -111,7 +112,7 @@
 ## Sugestão de ordem
 
 1. Jogar a Estação Ferroviária no PC do Junior e ajustar o que ele pedir; definir a história curta da sala de espera.
-2. Ligar a íris azul do Pântano à história da Amélia. Costa das Marés e Pomar Abandonado ficam como opções para novas áreas.
+2. Ligar a íris azul do Pântano à história da Amélia. O Pomar Abandonado fica como opção para a próxima área.
 3. Publicar a preview.45 quando o Junior pedir e conferir a compressão no instalador para Windows.
 4. Medir o desempenho dos Campos Abertos no PC do Junior com F3.
 5. Integrar a chuva à rega e os peixes às estações. Em seguida, adicionar tela de calendário com previsão, eventos e aniversários.

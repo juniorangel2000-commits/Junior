@@ -6,16 +6,16 @@ import {drawEditorProp} from './editor-prop-art';
 import {drawExitSign} from './exit-signs';
 import {addWaterMotion} from './water-motion';
 import {RAILWAY_ART, RAILWAY_KINDS, RAILWAY_FLOORS, RAILWAY_TRACKS, isRailwayKind, railwayTexture} from './data/railway-art';
-import {RAILWAY_ENTRY, RAILWAY_EXIT, RAILWAY_ROAD_Y, RAILWAY_COAST_EXIT, RAILWAY_COAST_RETURN, railwayCoastRoadProtected} from './data/ruins-road';
+import {RAILWAY_ENTRY, RAILWAY_EXIT, RAILWAY_ROAD_Y} from './data/ruins-road';
 import {
-  createRailwayLayout, onPlatform, PLATFORM, RAILWAY_CROSSINGS, RAILWAY_LINES, RAILWAY_ROAD_HALF_WIDTH, RAILWAY_SIZE,
+  createRailwayLayout, MAIN_TRACK_BEND, onPlatform, PLATFORM, RAILWAY_CROSSINGS, RAILWAY_LINES, RAILWAY_ROAD_HALF_WIDTH, RAILWAY_SIZE,
   railwayBallastDistance, railwayGravelDistance, railwayRoadDistance, railwayYardDistance, railwaySeed, YARD_BROKEN, YARD_LINE_START,
 } from './data/railway';
 import {TILE, WORLD_WIDTH} from './data/world-size';
 import type {MapEditData} from './systems/map-editor';
 import type {WorldEditorObject} from './world';
 
-const GROUND='railway-ground-v2';
+const GROUND='railway-ground-v3';
 const blend=(n:number):number=>Math.max(0,Math.min(1,n));
 const files=[...new Set(RAILWAY_KINDS.map(kind=>RAILWAY_ART[kind].file))];
 
@@ -38,11 +38,42 @@ function floorPixels(scene:Phaser.Scene,file:string):Uint8ClampedArray {
 /** Trilhos: módulos de 64 px a partir das bordas das travessias, para não cortar dormentes. */
 export function trackModules(line:'main'|'yard'):{x:number;kind:'straight'|'crossing'}[] {
   const crossing=RAILWAY_CROSSINGS.find(c=>c.line===line)!;
-  const start=line==='yard'?YARD_LINE_START*TILE:-64,end=RAILWAY_SIZE.width;
+  const start=line==='yard'?YARD_LINE_START*TILE:MAIN_TRACK_BEND.joinX*TILE,end=RAILWAY_SIZE.width;
   const out:{x:number;kind:'straight'|'crossing'}[]=[{x:crossing.left,kind:'crossing'}];
   for(let x=crossing.left-64;x>=start;x-=64)out.push({x,kind:'straight'});
   for(let x=crossing.left+96;x<end;x+=64)out.push({x,kind:'straight'});
   return out.filter(m=>m.kind==='crossing'||line!=='yard'||m.x+64<=YARD_BROKEN.left||m.x>=YARD_BROKEN.right);
+}
+
+/** Dobra a reta original sem mudar a bitola, as cores ou o ritmo dos dormentes. */
+function drawWesternTrack(ctx:CanvasRenderingContext2D,straight:HTMLImageElement):void {
+  const moduleSize=64,half=moduleSize/2;
+  const radius=MAIN_TRACK_BEND.radius*TILE;
+  const joinX=MAIN_TRACK_BEND.joinX*TILE,joinY=RAILWAY_LINES.main*TILE;
+  const centerY=joinY+radius,westX=joinX-radius,endY=MAIN_TRACK_BEND.endY*TILE;
+  const source=document.createElement('canvas');source.width=source.height=moduleSize;
+  const sample=source.getContext('2d')!;
+  sample.imageSmoothingEnabled=false;sample.drawImage(straight,0,0,moduleSize,moduleSize);
+  const texture=sample.getImageData(0,0,moduleSize,moduleSize).data;
+  const patch=document.createElement('canvas');
+  const left=westX-half,top=joinY-half;
+  patch.width=joinX-left;patch.height=endY-top;
+  const paint=patch.getContext('2d')!,image=paint.createImageData(patch.width,patch.height);
+  for(let row=0;row<patch.height;row++)for(let col=0;col<patch.width;col++){
+    const x=left+col+.5,y=top+row+.5;
+    const angle=Math.atan2(centerY-y,joinX-x);
+    const curved=y<centerY;
+    const across=curved?radius-Math.hypot(joinX-x,centerY-y):x-westX;
+    if(Math.abs(across)>=half)continue;
+    const along=-radius*(Math.PI/2-(curved?angle:0))-Math.max(0,y-centerY);
+    const sx=(Math.floor(along)%moduleSize+moduleSize)%moduleSize,sy=Math.floor(across+half);
+    const from=(sy*moduleSize+sx)*4,to=(row*patch.width+col)*4;
+    image.data[to]=texture[from];
+    image.data[to+1]=texture[from+1];
+    image.data[to+2]=texture[from+2];
+    image.data[to+3]=texture[from+3]*blend((endY-y)/24);
+  }
+  paint.putImageData(image,0,0);ctx.drawImage(patch,left,top);
 }
 
 function drawGround(scene:Phaser.Scene):void {
@@ -95,6 +126,7 @@ function drawGround(scene:Phaser.Scene):void {
     c.imageSmoothingEnabled=false;
     const straight=scene.textures.get(railwayTexture('reta-horizontal')).getSourceImage() as HTMLImageElement;
     const crossing=scene.textures.get(railwayTexture('travessia-modular')).getSourceImage() as HTMLImageElement;
+    drawWesternTrack(c,straight);
     for(const line of ['main','yard'] as const){
       const top=(RAILWAY_LINES[line]-1)*TILE;
       for(const m of trackModules(line)){
@@ -121,12 +153,8 @@ export class RailwayWorld {
     this.layout=createRailwayLayout(edits);
     this.terrainTexture=palette?'railway-editor-terrain':'railway-play-terrain';
     drawGround(scene);
-    const terrain=Object.fromEntries(Object.entries(edits?.terrain??{}).filter(([id])=>{
-      const [x,y]=id.split(',').map(Number);
-      return !railwayCoastRoadProtected(x,y);
-    }));
-    drawMapTerrainEdits(scene,terrain,this.terrainTexture,()=>false,'forest')?.setDepth(-99);
-    if(!palette&&Object.values(terrain).includes('water')){
+    drawMapTerrainEdits(scene,edits?.terrain??{},this.terrainTexture,()=>false,'forest')?.setDepth(-99);
+    if(!palette&&Object.values(edits?.terrain??{}).includes('water')){
       const water=this.layout.water;
       addWaterMotion(scene,(x,y)=>water((x+.5)*TILE,(y+.5)*TILE),water,{...RAILWAY_SIZE,alpha:.4});
     }
@@ -156,7 +184,6 @@ export class RailwayWorld {
       this.editorObjects.push({id:o.id,kind:o.kind,x:o.x,y:o.y,texture:sprite.texture.key,frame:sprite.frame.name});
     }
     drawExitSign(scene,edits?.points?.exit??RAILWAY_EXIT,edits?.points?.entry??RAILWAY_ENTRY);
-    drawExitSign(scene,RAILWAY_COAST_EXIT,RAILWAY_COAST_RETURN);
   }
   update(_dt:number,player:{x:number;y:number}):void {
     for(const f of this.fading)f.sprite.setAlpha(player.x>f.left&&player.x<f.right&&player.y>f.top&&player.y<f.bottom?.5:1);

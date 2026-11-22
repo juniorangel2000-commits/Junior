@@ -24,14 +24,3 @@ export const ruinsRailwayRoadProtected = (x: number,y: number): boolean =>
   x >= RUINS_RAILWAY_RETURN.x - 2 && Math.abs(y - RUINS_ROAD_Y) <= 2;
 export const railwayRoadProtected = (x: number,y: number): boolean =>
   x <= RAILWAY_ENTRY.x + 2 && Math.abs(y - RAILWAY_ROAD_Y) <= 2;
-
-/** A estrada segue da Estação para a faixa seca ao norte da Costa. */
-export const COAST_ROAD_Y=RAILWAY_ROAD_Y;
-export const RAILWAY_COAST_EXIT={x:WORLD_WIDTH-2,y:RAILWAY_ROAD_Y};
-export const RAILWAY_COAST_RETURN={x:WORLD_WIDTH-4,y:RAILWAY_ROAD_Y};
-export const COAST_ENTRY={x:4,y:COAST_ROAD_Y};
-export const COAST_EXIT={x:1,y:COAST_ROAD_Y};
-export const railwayCoastRoadProtected=(x:number,y:number):boolean=>
-  x>=RAILWAY_COAST_RETURN.x-2&&Math.abs(y-RAILWAY_ROAD_Y)<=2;
-export const coastRoadProtected=(x:number,y:number):boolean=>
-  x<=COAST_ENTRY.x+2&&Math.abs(y-COAST_ROAD_Y)<=2;

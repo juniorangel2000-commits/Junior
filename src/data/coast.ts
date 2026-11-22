@@ -1,6 +1,6 @@
 import {COAST_ART,isCoastKind,type CoastKind} from './coast-art';
 import {natureArt} from './nature-catalog';
-import {COAST_ROAD_Y,coastRoadProtected} from './ruins-road';
+import {coastRiverBanksAt,coastApproach} from './fields-river';
 import type {RuinLandmark} from './ruins-story';
 import {paintedWaterPoint} from './terrain-paint';
 import {TILE,WORLD_HEIGHT,WORLD_WIDTH} from './world-size';
@@ -10,29 +10,26 @@ type Point={x:number;y:number};
 type Bounds={left:number;right:number;top:number;bottom:number};
 type CoastObject=Point & {id:string;kind:EditorObjectKind;scale?:number;flip?:true;variant?:number;generated?:true};
 export const COAST_SIZE={width:WORLD_WIDTH*TILE,height:WORLD_HEIGHT*TILE};
-export const COAST_ROAD_HALF_WIDTH=3.16;
-export const COAST_TRACKS=[{y:40,end:29*TILE},{y:48,end:13*TILE}] as const;
-export function coastTrackDistance(x:number,y:number):number {
-  let distance=Infinity;
-  for(const line of COAST_TRACKS)distance=Math.min(distance,Math.hypot(Math.max(0,x-line.end),y-line.y*TILE));
-  return distance;
+export function coastSeaY(x:number):number {
+  const east=Math.max(0,Math.min(1,(x-1700)/700));
+  return 1520+95*Math.sin(x*.004+1)+59*Math.sin(x*.0087)+84*Math.cos(x*.0025)-east*120;
 }
-
-export const coastRoadDistance=(y:number):number=>Math.abs(y-COAST_ROAD_Y);
-export function coastShoreX(y:number):number {
-  const t=y/TILE;
-  const headland=55*Math.exp(-(((t-3)/9)**4));
-  return (56.8+6.5*Math.sin((t-14)*.135)+3.4*Math.cos(t*.33)+headland)*TILE;
+const riverRows=Array.from({length:COAST_SIZE.height+1},(_,y)=>coastRiverBanksAt(y+.5));
+const seaColumns=Float32Array.from({length:COAST_SIZE.width+1},(_,x)=>coastSeaY(x+.5));
+export function coastShoreDistance(x:number,y:number):number{
+  const river=riverRows[Math.max(0,Math.min(COAST_SIZE.height,Math.floor(y)))];
+  const sea=seaColumns[Math.max(0,Math.min(COAST_SIZE.width,Math.floor(x)))];
+  const riverDistance=Math.min(x-river.left,river.right-x),seaDistance=y-sea;
+  const radius=105;
+  const blend=Math.max(0,radius-Math.abs(riverDistance-seaDistance));
+  return Math.max(riverDistance,seaDistance)+blend*blend/(radius*4);
 }
-const shoreRows=Float32Array.from({length:COAST_SIZE.height+1},(_,y)=>coastShoreX(y+.5));
-export const coastShoreDistance=(x:number,y:number):number=>
-  x-(shoreRows[Math.max(0,Math.min(COAST_SIZE.height,Math.floor(y)))]??coastShoreX(y));
 export const coastBaseWater=(x:number,y:number):boolean=>coastShoreDistance(x,y)>0;
 
 const trails=[
-  [[31,6.4],[31.7,12],[32,18],[36.2,22],[39,27],[43,31],[49,36],[53,38.25]],
-  [[49,36],[49.4,42],[46.4,47],[47.6,54],[49,57],[54,60],[57,59]],
-  [[31.7,12],[39,13],[44,15],[49.6,19],[53,21],[59,21]],
+  [[28.5,0],[28.5,5],[30,10],[34,15],[37,21],[40,25],[44,29],[48,34],[51,38]],
+  [[37,21],[31,23],[27,26],[23,31],[23,36],[28,39],[34,39]],
+  [[44,29],[42,33],[39,35],[34,39],[29,40],[25,39]],
 ] as const;
 const trailSegments=trails.flatMap(route=>route.slice(1).map(([x,y],i)=>{
   const [ax,ay]=route[i],dx=x-ax,dy=y-ay;
@@ -54,13 +51,13 @@ export function coastSeed(x:number,y:number):number {
 }
 
 const placements:ReadonlyArray<readonly [CoastKind,number,number]>=[
-  ['coast-hut',49,31],['coast-pier',59,39],['coast-boat',52,41],
+  ['coast-hut',49,31],['coast-pier',59,39],['coast-boat',50,41],
   ['coast-net-rack',50,34],['coast-lantern',51,36],['coast-lantern',54,40],
-  ['coast-broken-fence',46,32],['coast-driftwood',45,44],
-  ['coast-rocks',63,17],['coast-rocks',65,19],['coast-rocks',62,21],['coast-rocks',64,22],
-  ['coast-rocks',48,49],['coast-rocks',49,50],['coast-rocks',49,51],
-  ['coast-rocks',57,63],['coast-rocks',58,64],['coast-rocks',57,66],
-  ['coast-driftwood',54,58],['coast-shells',52,42],
+  ['coast-broken-fence',46,32],['coast-driftwood',44,39],
+  ['coast-rocks',50,24],['coast-rocks',51,25],['coast-rocks',55,30],
+  ['coast-rocks',35,48],['coast-rocks',37,47],['coast-rocks',38,46],
+  ['coast-rocks',72,41],['coast-rocks',73,41],['coast-rocks',77,38],
+  ['coast-driftwood',36,42],['coast-shells',31,43],
 ];
 const original:CoastObject[]=placements.map(([kind,x,y])=>({id:`${kind}-${x}-${y}`,kind,x,y}));
 const key=(x:number,y:number)=>`${x},${y}`;
@@ -77,8 +74,8 @@ const reserved=placements.map(([kind,x,y])=>{
 });
 for(let gy=2;gy<WORLD_HEIGHT-2;gy+=3)for(let gx=2;gx<WORLD_WIDTH-2;gx+=3){
   const x=gx+Math.floor(coastSeed(gy,gx)*3),y=gy+Math.floor(coastSeed(gx,gy)*3),p=pivot({x,y});
-  if(occupied.has(key(x,y))||coastRoadDistance(y+.5)<5.5||coastTrailDistance(x+.5,y+.5)<2.65||
-    coastShoreDistance(p.x,p.y)>-365||coastTrackDistance(p.x,p.y)<99||reserved.some(b=>contains(b,p.x,p.y)))continue;
+  if(occupied.has(key(x,y))||coastApproach(x,y)||coastTrailDistance(x+.5,y+.5)<2.65||
+    coastShoreDistance(p.x,p.y)>-365||reserved.some(b=>contains(b,p.x,p.y)))continue;
   const seed=coastSeed(x,y);
   if(seed<.37&&x>4&&y<67)continue;
   const kind=seed>.59?'standingTree':'pine';
@@ -87,7 +84,7 @@ for(let gy=2;gy<WORLD_HEIGHT-2;gy+=3)for(let gx=2;gx<WORLD_WIDTH-2;gx+=3){
 }
 for(let y=2;y<WORLD_HEIGHT-2;y++)for(let x=2;x<WORLD_WIDTH-2;x++){
   const p=pivot({x,y}),shore=coastShoreDistance(p.x,p.y),pick=coastSeed(x+105,y+419);
-  if(occupied.has(key(x,y))||shore> -18||coastRoadDistance(y+.5)<4.5||
+  if(occupied.has(key(x,y))||shore> -18||coastApproach(x,y)||
     coastTrailDistance(x+.5,y+.5)<1.5||coastTrailDistance(x+.5,y-.25)<1.17||
     reserved.some(b=>contains(b,p.x,p.y))||contains(originalPier,p.x,p.y))continue;
   const density=(shore< -78?.29:.12)+.12*Math.sin(x*.3+y*.18)+.07*Math.cos(y*.42-x*.15);
@@ -110,7 +107,7 @@ const landmarks:Partial<Record<EditorObjectKind,RuinLandmark>>={
 export function createCoastLayout(edits?:MapEditData) {
   const terrain=edits?.terrain??{},edited=Object.keys(terrain).length>0;
   const water=(x:number,y:number):boolean=>{
-    if(coastRoadProtected(Math.floor(x/TILE),Math.floor(y/TILE)))return false;
+    if(coastApproach(Math.floor(x/TILE),Math.floor(y/TILE)))return false;
     return edited?paintedWaterPoint(terrain,x,y,coastBaseWater):coastBaseWater(x,y);
   };
   const objects:CoastObject[]=[];
@@ -136,7 +133,7 @@ export function createCoastLayout(edits?:MapEditData) {
   const blocked=(x:number,y:number):boolean=>{
     if(x<TILE||y<TILE||x>=COAST_SIZE.width-TILE||y>=COAST_SIZE.height-TILE)return true;
     const tx=Math.floor(x/TILE),ty=Math.floor(y/TILE);
-    const collision=coastRoadProtected(tx,ty)?undefined:edits?.collisions?.[key(tx,ty)];
+    const collision=coastApproach(tx,ty)?undefined:edits?.collisions?.[key(tx,ty)];
     return collision?collision==='blocked':solid.some(b=>contains(b,x,y));
   };
   const inspectable=objects.flatMap(o=>landmarks[o.kind]?[{...pivot(o),landmark:landmarks[o.kind]!}]:[]);

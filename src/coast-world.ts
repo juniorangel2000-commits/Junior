@@ -1,13 +1,10 @@
 import Phaser from 'phaser';
-import {preloadCityRoadArt,readCityAsphalt,setupCityForestArt} from './city-forest-world';
 import {COAST_ART,COAST_KINDS} from './data/coast-art';
 import {
-  COAST_ROAD_HALF_WIDTH,COAST_SIZE,COAST_TRACKS,coastBaseWater,coastRoadDistance,coastSeed,
-  coastShoreDistance,coastShoreX,coastTrackDistance,coastTrailDistance,createCoastLayout,
+  COAST_SIZE,coastBaseWater,coastSeed,coastSeaY,coastShoreDistance,coastTrailDistance,createCoastLayout,
 } from './data/coast';
-import {railwayTexture} from './data/railway-art';
-import {COAST_ENTRY,COAST_EXIT,COAST_ROAD_Y,coastRoadProtected} from './data/ruins-road';
-import {TILE,WORLD_WIDTH} from './data/world-size';
+import {COAST_ENTRY,COAST_EXIT,coastApproach} from './data/fields-river';
+import {TILE} from './data/world-size';
 import {waterFinishChannel} from './data/water-style';
 import {drawEditorProp} from './editor-prop-art';
 import {drawExitSign} from './exit-signs';
@@ -20,15 +17,12 @@ import type {WorldEditorObject} from './world';
 
 const GROUND='coast-ground';
 const PIER_FRONT='coast-pier-front';
-const TRACK=railwayTexture('reta-horizontal');
 const clamp=(n:number)=>Math.max(0,Math.min(1,n));
 const mix=(a:number,b:number,t:number)=>a+(b-a)*t;
 const drySand=[205,184,132],wetSand=[145,136,101];
 export function preloadCoast(scene:Phaser.Scene):void {
-  preloadCityRoadArt(scene);
   for(const kind of COAST_KINDS)if(!scene.textures.exists(kind))scene.load.image(kind,`assets/visual/coast/${kind.slice(6)}.png`);
   if(!scene.textures.exists(PIER_FRONT))scene.load.image(PIER_FRONT,'assets/visual/coast/pier-front.png');
-  if(!scene.textures.exists(TRACK))scene.load.image(TRACK,'assets/visual/railway/reta-horizontal.png');
 }
 
 function drawGround(scene:Phaser.Scene):void {
@@ -37,20 +31,16 @@ function drawGround(scene:Phaser.Scene):void {
     canvas.width=width;canvas.height=height;
     const c=canvas.getContext('2d')!,ground=c.createImageData(width,height),rgba=ground.data;
     const terrain=readTerrainSprites(scene)!;
-    const asphalt=readCityAsphalt(scene);
     const size=terrain.water.size;
     for(let by=0;by<height;by+=4)for(let bx=0;bx<width;bx+=4){
       const x=bx+2,y=by+2,tx=x/TILE,ty=y/TILE;
       const shore=coastShoreDistance(x,y);
       const noise=.15*Math.sin(tx*1.67+ty*2.13)+.09*Math.sin(ty*3.56-tx*4.17);
-      const sand=clamp((shore+370+noise*136)/180);
-      const ballast=clamp((54+noise*28-coastTrackDistance(x,y))/28)*.74;
+      const beachWidth=clamp((y-110)/950);
+      const sand=clamp((shore+33+182*beachWidth+noise*(28+76*beachWidth))/(16+99*beachWidth))*(.88+.12*beachWidth);
       const worn=clamp((shore+40+noise*14)/40);
       const path=clamp((1.45+noise-coastTrailDistance(tx,ty))/.82)*.88;
-      const roadX=tx+2*WORLD_WIDTH;
-      const wear=.15*Math.sin(roadX*2.3+ty*1.7)+.09*Math.sin(ty*3.5-roadX*5.2);
-      const road=clamp((COAST_ROAD_HALF_WIDTH+wear-coastRoadDistance(ty))/.6);
-      const grass=.4+.15*Math.sin((roadX+WORLD_WIDTH)*.47+ty*.31)+.09*Math.sin(roadX*.24-ty*.48);
+      const grass=.40+.15*Math.sin(tx*.47+ty*.31)+.09*Math.sin(tx*.24-ty*.48);
       for(let dy=0;dy<4;dy++)for(let dx=0;dx<4;dx++){
         const px=bx+dx,py=by+dy,i=(py*width+px)*4,p=((py%size)*size+px%size)*4;
         const distance=Math.abs(shore)<=7?coastShoreDistance(px+.5,py+.5):shore;
@@ -58,32 +48,22 @@ function drawGround(scene:Phaser.Scene):void {
           const tint=mix(drySand[k],wetSand[k],worn);
           const beach=tint+(terrain.sand.pixels[p+k]-drySand[k])*.49;
           let color=mix(terrain.forest.pixels[p+k],terrain.grass.pixels[p+k],grass);
-          color=mix(color,terrain.paving.pixels[p+k]*.76,ballast);
           color=mix(color,terrain['path-dry'].pixels[p+k],path);
           color=mix(color,beach,sand);
           if(distance>0){
-            const shallow=.23*clamp(1-distance/85);
+            const shallow=.23*beachWidth*clamp(1-distance/85);
             const sea=waterFinishChannel(terrain.water.pixels[p+k],k,-distance);
             color=mix(sea,[166,186,152][k],shallow);
           }
-          const street=mix(asphalt[p+k],terrain.moss.pixels[p+k],.1);
-          rgba[i+k]=mix(color,street,road);
+          rgba[i+k]=color;
         }
         rgba[i+3]=255;
       }
     }
     c.putImageData(ground,0,0);
-    const track=scene.textures.get(TRACK).getSourceImage() as HTMLImageElement;
-    c.imageSmoothingEnabled=false;
-    for(const line of COAST_TRACKS)for(let x=-32;x<line.end;x+=64){
-      c.globalAlpha=clamp((line.end-x)/170);
-      c.drawImage(track,x,line.y*TILE-32,64,64);
-    }
-    c.globalAlpha=1;
-    c.strokeStyle='#c2b994';c.lineWidth=3;c.setLineDash([23,19]);c.lineDashOffset=(2*width)%42;
-    c.beginPath();c.moveTo(0,COAST_ROAD_Y*TILE);c.lineTo(width,COAST_ROAD_Y*TILE);c.stroke();c.setLineDash([]);
     for(let i=0;i<720;i++){
-      const y=240+coastSeed(i,41)*(height-272),x=coastShoreX(y)-9-coastSeed(i,17)*290;
+      const x=coastSeed(i,41)*width,y=coastSeaY(x)-9-coastSeed(i,17)*165;
+      if(coastBaseWater(x,y))continue;
       c.fillStyle=i%3?'#79624837':'#fbdfac62';c.fillRect(x,y,1+i%3,1+i%2);
     }
     scene.textures.addCanvas(GROUND,canvas)!.setFilter(Phaser.Textures.FilterMode.NEAREST);
@@ -100,13 +80,12 @@ export class CoastWorld {
   private readonly foam?:Phaser.GameObjects.Graphics;
   private waveTime=0;
   constructor(private readonly scene:Phaser.Scene,edits?:MapEditData,editor=false){
-    setupCityForestArt(scene);
     this.terrainKey=editor?'coast-editor-ground':'coast-play-ground';
     this.layout=createCoastLayout(edits);
     drawGround(scene);
     const terrain=Object.fromEntries(Object.entries(edits?.terrain??{}).filter(([id])=>{
       const [x,y]=id.split(',').map(Number);
-      return !coastRoadProtected(x,y);
+      return !coastApproach(x,y);
     }));
     drawMapTerrainEdits(scene,terrain,this.terrainKey,(x,y)=>coastBaseWater((x+.5)*TILE,(y+.5)*TILE),'forest')?.setDepth(-99);
     if(!editor){
@@ -145,17 +124,17 @@ export class CoastWorld {
     this.waveTime+=dt;
     const foam=this.foam,camera=this.scene.cameras.main;
     foam.clear();
-    const first=Math.max(320,Math.floor((camera.scrollY-80)/38)*38);
-    const last=Math.min(COAST_SIZE.height,camera.scrollY+camera.height/camera.zoom+80);
-    for(let y=first;y<last;y+=38){
-      const phase=(this.waveTime*.31+y*.0023)%1;
+    const first=Math.max(0,Math.floor((camera.scrollX-80)/38)*38);
+    const last=Math.min(COAST_SIZE.width,camera.scrollX+camera.width/camera.zoom+80);
+    for(let x=first;x<last;x+=38){
+      const phase=(this.waveTime*.31+x*.0023)%1;
       const alpha=Math.sin(phase*Math.PI)*.36;
-      const length=14+coastSeed(y,71)*21;
+      const length=14+coastSeed(x,71)*21;
       foam.lineStyle(1,0xe0f0d6,alpha);
       foam.beginPath();
       let started=false;
       for(let i=0;i<=5;i++){
-        const py=y+i*length/5,px=coastShoreX(py)+3+(1-phase)*29+Math.sin(i*.78+y*.12)*3;
+        const px=x+i*length/5,py=coastSeaY(px)+3+(1-phase)*29+Math.sin(i*.78+x*.12)*3;
         if(!this.layout.inWater(px,py)){started=false;continue;}
         if(started)foam.lineTo(px,py);else foam.moveTo(px,py);
         started=true;

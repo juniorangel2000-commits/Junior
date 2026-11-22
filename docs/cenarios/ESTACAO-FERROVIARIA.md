@@ -19,12 +19,12 @@ Use como ponto de partida 96 × 72 ladrilhos de 32 px, mesma grade das Ruínas. 
 | Norte, centro da via em `y=4` | Asfalto atravessa o mapa, desde as Ruínas a oeste até o limite leste. Preserve faixa livre e textura contínua nos dois limites. |
 | `x=48–56`, `y=24–31` | Prédio principal com frente para o sul. A porta abre a sala de espera e bilhetes. A placa faz a identificação da área. |
 | `x=24–75`, `y=32–37` | Plataforma com banco, cobertura, mureta fragmentada, rampa a oeste e escada perto da travessia. Mantenha saídas transitáveis nas extremidades. |
-| Centro em `y=40` | Linha principal leste–oeste. Una via e plataforma visualmente com lastro, escada e a travessia de madeira. Deixe a linha a leste continuar pela borda. |
+| Centro em `y=40` | Linha principal junto da plataforma e da travessia de madeira. A oeste, ela vira para o sul antes da divisa com as Ruínas e termina entre as árvores. |
 | `y=48` | Segunda linha, destinada a manobra e carga. Use um batente numa ponta e o trecho quebrado junto da antiga área de manutenção. Deixe o vão entre as linhas caminhar livremente. |
 | `x=65–82`, `y=49–57` | Galpão de carga voltado para o trilho. Distribua caixotes, latões, barril e carrinho perto da rampa. |
 | `x=17–23`, `y=37–45` | Cabine de sinais, poste, semáforo e peças de manutenção. Proteja a travessia com grade curta nos lados, com abertura nos dois extremos do acesso. |
 
-Coloque a locomotiva, o tender e um vagão do mesmo lado da travessia, deixando espaço para o resto do pátio. Use o vagão de carga e a dresina em pontos separados. Os trilhos da planta são horizontais e podem continuar fora do enquadramento. A linha secundária pode terminar no pátio, os desvios ferrugentos servem de detalhe junto dela e a estrada segue visualmente para leste.
+Coloque a locomotiva, o tender e um vagão do mesmo lado da travessia, deixando espaço para o resto do pátio. Use o vagão de carga e a dresina em pontos separados. A linha principal faz a curva para o sul no lado oeste. A linha secundária pode terminar no pátio, os desvios ferrugentos servem de detalhe junto dela e a estrada segue visualmente para leste.
 
 ### Saída para as Ruínas
 

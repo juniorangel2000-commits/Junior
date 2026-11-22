@@ -6,10 +6,13 @@ import {HORSE_ID,TAMING_DAYS,horseTaming,horseLeftFields,tamingPhase,feedingDay,
 import {ANIMAL_BEHAVIOR} from './systems/animals';
 import {readTerrainSprites} from './terrain-sprites';
 import {paintFieldsFloor} from './open-fields-ground';
+import {addWaterMotion} from './water-motion';
+import {drawPropertyBridges} from './bridge-art';
+import {FIELDS_RIVER_BRIDGES,FIELDS_COAST_EXIT,FIELDS_COAST_RETURN,fieldsRiverWater} from './data/fields-river';
 import {drawExitSign} from './exit-signs';
 import Phaser from 'phaser';
 import type {SaveData} from './types';
-import {FIELDS_SIZE,FIELDS_PROPS,FIELDS_SHED,FIELDS_ANIMALS,MEADOW_PATCHES,FIELDS_IPES,fieldsSafe} from './data/open-fields';
+import {FIELDS_SIZE,FIELDS_VISIBLE_PROPS,FIELDS_SHED,FIELDS_ANIMALS,VISIBLE_MEADOW_PATCHES,FIELDS_IPES,fieldsSafe} from './data/open-fields';
 import {meadowGrowth,ipeStanding,createFieldAnimalBrain} from './systems/open-fields';
 import type {AnimalBrain} from './systems/animals';
 import {animalSprite,setupAnimalArt} from './forest-art';
@@ -50,15 +53,18 @@ export class OpenFieldsWorld{
  private elapsed=0;
  private visiblePatches=new Set<string>();
  constructor(private scene:Phaser.Scene,private state:()=>SaveData,private hooks:OpenFieldsHooks={}){
-  drawExitSign(scene,{x:48,y:2},{x:48,y:4});
+  drawExitSign(scene,{x:25,y:2},{x:25,y:4});
+  drawExitSign(scene,FIELDS_COAST_EXIT,FIELDS_COAST_RETURN);
   if(!scene.textures.exists('fields-floor')){const canvas=document.createElement('canvas');canvas.width=FIELDS_SIZE.width;canvas.height=FIELDS_SIZE.height;paintFieldsFloor(canvas.getContext('2d')!,readTerrainSprites(scene)!);scene.textures.addCanvas('fields-floor',canvas)!.setFilter(0);}
   scene.add.image(0,0,'fields-floor').setOrigin(0).setDepth(-100);
+  addWaterMotion(scene,(x,y)=>fieldsRiverWater(x*32+16,y*32+16),fieldsRiverWater,{...FIELDS_SIZE,alpha:.32});
+  drawPropertyBridges(scene,FIELDS_RIVER_BRIDGES);
   ensureIpeTexture(scene);setupMeadowGrass(scene);
   for(const p of FIELDS_IPES){
    this.ipeStumps.set(p.id,scene.add.image(p.x,p.y+4,'forest-detail-stump').setOrigin(.5,1).setDisplaySize(46,34).setDepth(p.y));
    const image=scene.add.image(p.x,p.y,'fields-ipe','tree').setOrigin(IPE_ART.originX,1).setDisplaySize(p.width,p.height).setDepth(p.y);this.ipes.set(p.id,image);this.trees.push(image);
   }
-  for(const p of FIELDS_PROPS){const image=scene.add.image(p.x,p.y,p.texture).setOrigin(.5,1).setDisplaySize(p.width,p.height).setDepth(p.y);if(p.tree)this.trees.push(image);}
+  for(const p of FIELDS_VISIBLE_PROPS){const image=scene.add.image(p.x,p.y,p.texture).setOrigin(.5,1).setDisplaySize(p.width,p.height).setDepth(p.y);if(p.tree)this.trees.push(image);}
   // Crop in texture coordinates; keep original generated pixels unchanged on disk.
   const tex=scene.textures.get('fields-shed');if(!tex.has('trim'))tex.add('trim',0,125,140,1140,785);
   this.roof=scene.add.image(FIELDS_SHED.x,FIELDS_SHED.y,'fields-shed','trim').setOrigin(.5,1).setDisplaySize(FIELDS_SHED.width,FIELDS_SHED.height).setDepth(FIELDS_SHED.y);
@@ -66,7 +72,7 @@ export class OpenFieldsWorld{
   if(!tex.has('left-post')){tex.add('left-post',0,235,500,110,415);tex.add('right-post',0,1040,500,115,415);}
   scene.add.image(FIELDS_SHED.x-70,FIELDS_SHED.y,'fields-shed','left-post').setOrigin(.5,1).setDisplaySize(21,92).setDepth(FIELDS_SHED.y+1);
   scene.add.image(FIELDS_SHED.x+71,FIELDS_SHED.y,'fields-shed','right-post').setOrigin(.5,1).setDisplaySize(22,92).setDepth(FIELDS_SHED.y+1);
-  for(const p of MEADOW_PATCHES){const texture=p.kind==='grass'?MEADOW_GRASS_TEXTURE:p.kind==='herb'?'ecology-herbs':'forest-detail-mushrooms';this.patches.set(p.id,scene.add.image(p.x,p.y,texture,p.kind==='grass'?p.variant*4:undefined).setVisible(false).setOrigin(.5,1).setDisplaySize(p.size,p.kind==='grass'?p.size*MEADOW_GRASS_RATIO:p.size).setDepth(p.y));}
+  for(const p of VISIBLE_MEADOW_PATCHES){const texture=p.kind==='grass'?MEADOW_GRASS_TEXTURE:p.kind==='herb'?'ecology-herbs':'forest-detail-mushrooms';this.patches.set(p.id,scene.add.image(p.x,p.y,texture,p.kind==='grass'?p.variant*4:undefined).setVisible(false).setOrigin(.5,1).setDisplaySize(p.size,p.kind==='grass'?p.size*MEADOW_GRASS_RATIO:p.size).setDepth(p.y));}
   setupAnimalArt(scene);
   for(const d of FIELDS_ANIMALS){if(d.id===HORSE_ID&&horseLeftFields(state()))continue;const saved=state().openFields?.animals?.find(a=>a.id===d.id),p=saved&&fieldsSafe(saved)?saved:d;
    const brain=createFieldAnimalBrain(d,p);if(saved&&p===saved)brain.restore(saved);
