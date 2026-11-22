@@ -1,6 +1,6 @@
 import {existsSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
-import {createCoastLayout,coastBaseWater,coastShoreDistance,COAST_ORIGINAL_OBJECTS,COAST_RIVER} from '../src/data/coast';
+import {createCoastLayout,coastBaseWater,coastRiverEdge,coastShoreDistance,coastWaterDepth,COAST_ORIGINAL_OBJECTS,COAST_RIVER} from '../src/data/coast';
 import {FIELDS_COAST_EXIT,FIELDS_COAST_RETURN,FIELDS_RIVER,FIELDS_PROPS,FIELDS_ANIMALS,FIELDS_RETIRED_PATCHES,FIELDS_SIZE,FIELDS_TRAILS,MEADOW_PATCHES,fieldsBlocked,fieldsRiverEdge,fieldsPlayerSafe,fieldsSafe,fieldsSolid,fieldsWater} from '../src/data/open-fields';
 import {FIELDS_BRIDGES,mapBridgeAllowsStep} from '../src/data/bridges';
 import {riverBanksAt} from '../src/data/property-water';
@@ -52,6 +52,17 @@ describe('Costa das Marés',()=>{
     expect(coastBaseWater(48*32,70*32)).toBe(true);
     expect(coastBaseWater(90*32,45*32)).toBe(true);
     expect(coastBaseWater(48*32,20*32)).toBe(false);
+  });
+  it('alarga o rio para a foz sem perder o encaixe com os Campos',()=>{
+    const [riverX]=FIELDS_RIVER[FIELDS_RIVER.length-1];
+    for(let offset=-90;offset<=90;offset+=4){
+      expect(coastBaseWater(riverX+offset,0)).toBe(fieldsWater(riverX+offset,FIELDS_SIZE.height-1));
+    }
+    const [narrowX,narrowY]=COAST_RIVER[2], [mouthX,mouthY]=COAST_RIVER.at(-2)!;
+    expect(-coastRiverEdge(mouthX*32,mouthY*32)).toBeGreaterThan(-coastRiverEdge(narrowX*32,narrowY*32)*2.5);
+    for(let y=0;y<FIELDS_SIZE.height;y+=4){
+      expect(Array.from({length:27},(_,i)=>440+i*32).some(x=>coastWaterDepth(x,y)>0)).toBe(true);
+    }
   });
   it('conecta a praia com o mar e restringe o píer à entrada de terra',()=>{
     const layout=createCoastLayout(),[start]=layout.pierEntries;

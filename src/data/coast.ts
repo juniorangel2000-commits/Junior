@@ -16,12 +16,36 @@ type Line=readonly (readonly [number,number])[];
 export const COAST_SIZE={width:WORLD_WIDTH*TILE,height:WORLD_HEIGHT*TILE};
 /** Linha da praia, de oeste para leste (ladrilhos). O mar fica do lado sul/direito. */
 export const COAST_SHORE:Line=[[-1,58],[10,59.5],[20,58.5],[30,60.5],[38,59],[46,56.5],[53,52],[57,47],[60,42.5],[64,39],[70,36.5],[78,35.5],[86,36.5],[97,35]];
-/** Rio vindo dos Campos (mesma coluna em que ele sai de lá) até a foz. */
-export const COAST_RIVER:Line=[[16.1,-1],[16.4,10],[18.5,20],[23,30],[28,40],[32,50],[34.5,60],[35.5,68]];
-const riverHalf=(y:number)=>(1.7+1.9*Math.max(0,Math.min(1,(y/TILE-30)/36)))*TILE;
+/** Eixo do rio em ladrilhos, da divisa com os Campos até depois da foz. */
+export const COAST_RIVER:Line=[
+  [16.1,-1],[16.2,4],[15.8,10],[17.4,16],[21.5,23],[20.7,29],
+  [24,35],[28.7,41],[27.1,48],[29.8,54],[33.6,59],[35.8,65],[36.6,73],
+];
+const riverWidths=[1.72,1.74,1.55,1.83,2.22,1.76,1.94,2.6,2.08,2.76,4.15,5.25,5.8];
+type Banks={left:number;right:number};
+
+/** Tangentes centradas para evitar quinas entre os pontos de controle. */
+function riverSpline(values:readonly number[],i:number,t:number):number {
+  const before=Math.max(0,i-1),after=Math.min(COAST_RIVER.length-1,i+2);
+  const y=COAST_RIVER[i][1],nextY=COAST_RIVER[i+1][1],span=nextY-y;
+  const a=values[i],b=values[i+1];
+  const startSlope=(b-values[before])*span/(nextY-COAST_RIVER[before][1]);
+  const endSlope=(values[after]-a)*span/(COAST_RIVER[after][1]-y);
+  const t2=t*t,t3=t2*t;
+  return (2*t3-3*t2+1)*a+(t3-2*t2+t)*startSlope+(-2*t3+3*t2)*b+(t3-t2)*endSlope;
+}
+const riverCenters=COAST_RIVER.map(([x])=>x);
+const riverBanks:readonly Banks[]=Array.from({length:COAST_SIZE.height+1},(_,y)=>{
+  const ty=y/TILE,index=COAST_RIVER.findIndex(([,row])=>row>=ty)-1;
+  const start=COAST_RIVER[index][1],t=(ty-start)/(COAST_RIVER[index+1][1]-start);
+  const x=riverSpline(riverCenters,index,t)*TILE,half=riverSpline(riverWidths,index,t)*TILE;
+  const ripple=Math.min(1,y/230),left=(3*Math.sin(y*.047)+2*Math.sin(y*.081))*ripple;
+  const right=(4*Math.sin(y*.034+1.4)+2*Math.cos(y*.061))*ripple;
+  return {left:x-half+left,right:x+half+right};
+});
 
 const segments=(line:Line)=>line.slice(1).map(([bx,by],i)=>{const [ax,ay]=line[i];return{ax:ax*TILE,ay:ay*TILE,dx:(bx-ax)*TILE,dy:(by-ay)*TILE};});
-const shoreSegments=segments(COAST_SHORE),riverSegments=segments(COAST_RIVER);
+const shoreSegments=segments(COAST_SHORE);
 function lineDistance(list:ReturnType<typeof segments>,x:number,y:number):{distance:number;side:number} {
   let best=Infinity,side=0;
   for(const s of list){
@@ -38,9 +62,20 @@ export function coastShoreDistance(x:number,y:number):number {
   const fx=Math.max(0,Math.min(gw-1.001,x/GRID)),fy=Math.max(0,Math.min(gh-1.001,y/GRID)),ix=Math.floor(fx),iy=Math.floor(fy),tx=fx-ix,ty=fy-iy,i=iy*gw+ix;
   return (shoreGrid[i]*(1-tx)+shoreGrid[i+1]*tx)*(1-ty)+(shoreGrid[i+gw]*(1-tx)+shoreGrid[i+gw+1]*tx)*ty;
 }
-/** Distância (px) até a margem do rio: negativa dentro d'água. */
-export const coastRiverEdge=(x:number,y:number):number=>lineDistance(riverSegments,x,y).distance-riverHalf(y);
-export const coastBaseWater=(x:number,y:number):boolean=>coastShoreDistance(x,y)>0||coastRiverEdge(x,y)<0;
+/** Distância até uma das margens, negativa dentro do rio. */
+export function coastRiverEdge(x:number,y:number):number{
+  const at=Math.max(0,Math.min(COAST_SIZE.height-.001,y)),row=Math.floor(at),t=at-row;
+  const a=riverBanks[row],b=riverBanks[row+1];
+  const left=a.left+(b.left-a.left)*t,right=a.right+(b.right-a.right)*t;
+  return Math.max(left-x,x-right);
+}
+/** Une as curvas da praia às do rio, arredondando os dois cantos da foz. */
+export function coastWaterDepth(x:number,y:number):number{
+  const sea=coastShoreDistance(x,y),river=-coastRiverEdge(x,y);
+  const radius=105,blend=Math.max(0,radius-Math.abs(sea-river));
+  return Math.max(sea,river)+blend*blend/(4*radius);
+}
+export const coastBaseWater=(x:number,y:number):boolean=>coastWaterDepth(x,y)>0;
 /** Pontos ao longo da praia (para espuma e detalhes de areia), com a normal para o mar. */
 export const COAST_SHORE_POINTS:readonly {x:number;y:number;nx:number;ny:number}[]=shoreSegments.flatMap(s=>{
   const length=Math.hypot(s.dx,s.dy),steps=Math.max(1,Math.floor(length/38)),nx=-s.dy/length,ny=s.dx/length;
@@ -98,7 +133,7 @@ const reserved=placements.map(([kind,x,y])=>{
 for(let gy=2;gy<WORLD_HEIGHT-2;gy+=3)for(let gx=2;gx<WORLD_WIDTH-2;gx+=3){
   const x=gx+Math.floor(coastSeed(gy,gx)*3),y=gy+Math.floor(coastSeed(gx,gy)*3),p=pivot({x,y});
   if(occupied.has(key(x,y))||entryLane(x,y)||coastTrailDistance(x+.5,y+.5)<2.65||
-    coastShoreDistance(p.x,p.y)>-365||coastRiverEdge(p.x,p.y)<96||reserved.some(b=>contains(b,p.x,p.y)))continue;
+    coastShoreDistance(p.x,p.y)>-365||coastWaterDepth(p.x,p.y)>-86||reserved.some(b=>contains(b,p.x,p.y)))continue;
   const seed=coastSeed(x,y);
   if(seed<.37&&x>4&&y<67)continue;
   const kind=seed>.59?'standingTree':'pine';
@@ -107,7 +142,7 @@ for(let gy=2;gy<WORLD_HEIGHT-2;gy+=3)for(let gx=2;gx<WORLD_WIDTH-2;gx+=3){
 }
 for(let y=2;y<WORLD_HEIGHT-2;y++)for(let x=2;x<WORLD_WIDTH-2;x++){
   const p=pivot({x,y}),shore=coastShoreDistance(p.x,p.y),pick=coastSeed(x+105,y+419);
-  if(occupied.has(key(x,y))||shore> -18||entryLane(x,y)||coastRiverEdge(p.x,p.y)<20||
+  if(occupied.has(key(x,y))||shore> -18||entryLane(x,y)||coastWaterDepth(p.x,p.y)>-22||
     coastTrailDistance(x+.5,y+.5)<1.5||coastTrailDistance(x+.5,y-.25)<1.17||
     reserved.some(b=>contains(b,p.x,p.y))||contains(originalPier,p.x,p.y))continue;
   const density=(shore< -78?.29:.12)+.12*Math.sin(x*.3+y*.18)+.07*Math.cos(y*.42-x*.15);
