@@ -1,5 +1,7 @@
 # Estação Ferroviária Desativada
 
+> **Montada pelo Claude em 22/11/2026** (`d5d643c`). Arquivos: `src/data/railway-art.ts` (peças, tamanhos e bases), `src/data/railway.ts` (planta, vegetação, colisão e pontos de examinar), `src/railway-world.ts` (piso, trilhos e desvanecimento), `src/data/railway-hall.ts` e `src/railway-hall-world.ts` (sala de espera), integração em `src/scenes/TrailScene.ts` (área `railway`, cena `Estacao`). Diferenças em relação à planta proposta: a escada desce na ponta oeste da plataforma (x=24–27) direto para a travessia da linha principal; a rampa ficou na ponta leste (x=73–76); a travessia da linha de carga fica em x=66–69, ligada ao galpão por cascalho; os trilhos não bloqueiam a passagem (só veículos, mureta e objetos sólidos).
+
 O Junior escolheu a Estação como próximo cenário e pediu ao Codex um kit completo de arte. O Claude implementa o mapa jogável seguindo as decisões das Ruínas. Comece no HEAD de `release/v0.10.0-preview.45`, leia [a passagem](../PASSAGEM.md) e use [o manifesto das artes](../../referencias/cenarios/estacao-ferroviaria/manifest.json).
 
 ## Direção de arte
