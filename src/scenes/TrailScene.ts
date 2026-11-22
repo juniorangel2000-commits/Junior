@@ -106,6 +106,10 @@ export class TrailScene extends Phaser.Scene {
   getGroundItemRuntime(){return this.player?this.grounds:undefined;}
   getMineMissionRuntime=()=>this.missions;
   getFishingState=()=>this.state;
+  syncInventory(inventory:SaveData['inventory']):void {
+    this.state.inventory=inventory;
+    this.updateHUD();
+  }
 
   create(data:TrailStart):void {
     // Retomada: quem salvou na Estação passa pelas Ruínas e segue direto para lá.
