@@ -28,7 +28,8 @@
 - [x] **Pântano jogável** ao sul da Floresta Antiga, com editor F2, passarela, sapos e jacarés (branch da preview.45).
 - [ ] **Continuidade dos rios.** Conferir o encaixe do Platô com a cachoeira do Lago e definir a continuidade das bocas do Pântano e da saída da Propriedade nos Campos Abertos.
 - [ ] **História da Amélia** em 3 partes. A íris azul do Pântano já tem sprite e posição no mapa. Modelo em `src/data/npc-stories.ts`.
-- [ ] **Ruínas** e a **história do Nilo** (a peça antiga).
+- [x] **Ruínas jogáveis** a leste da Estrada da Cidade, com o asfalto contínuo ao norte, investigação no antigo posto, porão e selo de bronze que Nilo identifica.
+- [ ] Desenvolver a **história pessoal do Nilo** se o Junior quiser expandir a ligação com o selo.
 - [ ] Usar o pântano e as ruínas também em partes extras das histórias dos outros moradores.
 - [ ] **Editor de mapa (F2) nos Campos Abertos**: ainda não integrado nesse cenário.
 
@@ -109,7 +110,7 @@
 ## Sugestão de ordem
 
 1. Ajustar o Pântano após jogar e ligar a íris azul à história da Amélia.
-2. Criar as Ruínas e a história do Nilo. Depois, avaliar Costa das Marés, Pomar Abandonado e Estação Ferroviária Desativada.
+2. Conferir as Ruínas já jogáveis e escolher o próximo cenário. Avaliar Costa das Marés, Pomar Abandonado e Estação Ferroviária Desativada.
 3. Publicar a preview.45 quando o Junior pedir e conferir a compressão no instalador para Windows.
 4. Medir o desempenho dos Campos Abertos no PC do Junior com F3.
 5. Integrar a chuva à rega e os peixes às estações. Em seguida, adicionar tela de calendário com previsão, eventos e aniversários.
