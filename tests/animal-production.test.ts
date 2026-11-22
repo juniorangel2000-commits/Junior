@@ -103,7 +103,7 @@ describe('produção animal: save, receita e comércio',()=>{
  });
  it('o balde é feito na bancada; Helena compra ovo e leite, Rosa compra ovo',()=>{
   const r=RECIPES.find(r=>r.id==='milkPail')!;expect(r).toMatchObject({cost:{board:4,ironShard:2},output:{milkPail:1},requiresWorkbench:true});
-  expect(MERCHANTS.inn.sell).toMatchObject({egg:8,milk:16});expect(MERCHANTS.seeds.sell.egg).toBe(8);
+  expect(MERCHANTS.inn.sell).toMatchObject({egg:20,milk:30});expect(MERCHANTS.seeds.sell.egg).toBe(20);
   for(const m of Object.values(MERCHANTS))for(const id of ['egg','milk'] as const)expect(m.buy[id]).toBeUndefined();
  });
 });

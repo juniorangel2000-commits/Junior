@@ -21,13 +21,14 @@ export interface Festival{
  intro:string;lines:readonly string[];thanks:string;
 }
 const H=(h:number)=>h*60;
-const crops=[...new Set(CROP_CATALOG.map(c=>c.harvest))] as ItemId[];
+/** Concurso da colheita: só o que se colhe no outono (o que sobrou do verão não vale). */
+const crops=[...new Set(CROP_CATALOG.filter(c=>(c.seasons as readonly string[]).includes('autumn')).map(c=>c.harvest))] as ItemId[];
 export const FESTIVALS:readonly Festival[]=[
  {id:'seed-fair',name:'Feira das Sementes',seasonIndex:0,dayOfSeason:14,start:H(10),end:H(18),place:'village',host:'rosa',
-  contest:{name:'Concurso de flores',options:['sunflower','chamomile','blueIris'] as ItemId[],amount:1},
+  contest:{name:'Concurso de flores',options:['daisy','blueIris'] as ItemId[],amount:3},
   reward:{coins:200,items:{fertilizer:10}},
   intro:'Hoje é a Feira das Sementes! Tem barraca na praça até as 18:00.',
-  lines:['A feira é o dia mais bonito da primavera. Todo mundo traz alguma coisa para trocar.','Se tiver uma flor bonita, inscreva no concurso! Girassol, camomila ou até uma íris azul.'],
+  lines:['A feira é o dia mais bonito da primavera. Todo mundo traz alguma coisa para trocar.','Traga três flores para o concurso: margaridas da sua horta ou íris azuis do Pântano.'],
   thanks:'Que flor linda! O júri ficou encantado. O prêmio é seu.'},
  {id:'beach-party',name:'Festa da Praia',seasonIndex:1,dayOfSeason:14,start:H(15),end:H(21),place:'coast',host:'damiao',
   contest:{name:'Concurso do caranguejo',options:['crab'] as ItemId[],amount:3},
@@ -39,7 +40,7 @@ export const FESTIVALS:readonly Festival[]=[
   contest:{name:'Concurso da colheita',options:crops,amount:5},
   reward:{coins:400,items:{homemadeBread:2}},
   intro:'Hoje é a Festa da Colheita! Banquete na praça até as 19:00.',
-  lines:['A Festa da Colheita agradece a terra por mais um ano. A Helena preparou um banquete.','Traga cinco da sua melhor colheita para o concurso. Qualquer uma: o júri olha o cuidado.'],
+  lines:['A Festa da Colheita agradece a terra por mais um ano. A Helena preparou um banquete.','Traga cinco da colheita de outono para o concurso: abóbora, batata-doce, trigo… o júri olha o cuidado.'],
   thanks:'Que colheita caprichada! O júri não teve dúvida. Parabéns!'},
  {id:'lantern-night',name:'Noite das Lanternas',seasonIndex:3,dayOfSeason:21,start:H(17),end:H(23),place:'village',host:'helena',
   contest:{name:'Troca de presentes',options:[...DISH_IDS] as ItemId[],amount:1},

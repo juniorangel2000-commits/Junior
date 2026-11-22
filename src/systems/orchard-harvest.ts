@@ -7,7 +7,7 @@ const REACH=42;
 export const fruitWithinReach=(fruit:OrchardFruitSpot,p:TilePoint)=>Math.hypot(p.x-fruit.x,p.y-fruit.y)<REACH;
 
 export function collectOrchardFruit(save:SaveData,fruit:OrchardFruitSpot,player:TilePoint,write:(draft:SaveData)=>boolean):string{
-  if(save.activeArea!=='orchard'||!fruitWithinReach(fruit,player)||!orchardFruitReady(save.orchardHarvest?.[fruit.id],save.day))return 'A fruta já foi recolhida ou está longe.';
+  if(save.activeArea!=='orchard'||!fruitWithinReach(fruit,player)||!orchardFruitReady(save.orchardHarvest?.[fruit.id],save.day,fruit.item))return 'A fruta já foi recolhida ou está longe.';
   const inv=new Inventory(save.inventory);
   if(!inv.transact({},{[fruit.item]:1}))return 'A mochila está cheia.';
   const draft={...save,inventory:inv.data,orchardHarvest:{...save.orchardHarvest,[fruit.id]:save.day}};

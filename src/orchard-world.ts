@@ -102,11 +102,11 @@ export class OrchardWorld {
     drawExitSign(scene,edits?.points?.exit??ORCHARD_EXIT,edits?.points?.entry??ORCHARD_ENTRY);
   }
   fruitNear(player:TilePoint,day:number,harvest:Record<string,number>|undefined):OrchardFruitSpot|undefined{
-    return this.layout.fruit.filter(fruit=>orchardFruitReady(harvest?.[fruit.id],day)&&fruitWithinReach(fruit,player))
+    return this.layout.fruit.filter(fruit=>orchardFruitReady(harvest?.[fruit.id],day,fruit.item)&&fruitWithinReach(fruit,player))
       .sort((a,b)=>Math.hypot(a.x-player.x,a.y-player.y)-Math.hypot(b.x-player.x,b.y-player.y))[0];
   }
   showFruits(day:number,harvest:Record<string,number>|undefined):void{
-    for(const [id,sprite] of this.fruitSprites)sprite.setVisible(orchardFruitReady(harvest?.[id],day));
+    for(const [id,sprite] of this.fruitSprites){const item=this.layout.fruit.find(f=>f.id===id)?.item;sprite.setVisible(orchardFruitReady(harvest?.[id],day,item));}
   }
   update(_dt:number,player:TilePoint):void{
     for(const sprite of this.fading){

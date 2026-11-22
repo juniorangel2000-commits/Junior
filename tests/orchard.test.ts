@@ -1,7 +1,7 @@
 import {existsSync} from 'node:fs';
 import {describe,it,expect} from 'vitest';
 import {VILLAGE_ORCHARD_EXIT,VILLAGE_ORCHARD_RETURN,ORCHARD_ENTRY,ORCHARD_EXIT} from '../src/data/orchard-gate';
-import {ORCHARD_OBJECTS,ORCHARD_POND,ORCHARD_REGROW_DAYS,createOrchardLayout} from '../src/data/orchard';
+import {ORCHARD_OBJECTS,ORCHARD_POND,ORCHARD_REGROW_DAYS,createOrchardLayout,orchardFruitInSeason,orchardFruitReady} from '../src/data/orchard';
 import {ORCHARD_FRUITS,ORCHARD_KINDS,orchardArt,orchardFruitFile} from '../src/data/orchard-art';
 import {villagePointBlocked} from '../src/data/village';
 import {TILE} from '../src/data/world-size';
@@ -71,5 +71,22 @@ describe('Pomar Abandonado',()=>{
     expect(createOrchardLayout(map).blocked(p.x,p.y)).toBe(true);
     expect(validateSave(save)).toBe(true);
     expect(readSceneMap(save,'orchard')).toEqual(map);
+  });
+});
+
+describe('frutas do Pomar por estação (balanço da preview.48)',()=>{
+  it('laranja no inverno e na primavera, pera no verão, maçã no outono',()=>{
+    const day=(season:number,d=10)=>season*28+d;
+    expect(orchardFruitInSeason('orange',day(0))).toBe(true);
+    expect(orchardFruitInSeason('orange',day(3))).toBe(true);
+    expect(orchardFruitInSeason('orange',day(1))).toBe(false);
+    expect(orchardFruitInSeason('pear',day(1))).toBe(true);
+    expect(orchardFruitInSeason('pear',day(2))).toBe(false);
+    expect(orchardFruitInSeason('apple',day(2))).toBe(true);
+    expect(orchardFruitReady(undefined,day(1),'apple')).toBe(false);
+    expect(orchardFruitReady(undefined,day(2),'apple')).toBe(true);
+    // Toda estação tem alguma fruta no Pomar.
+    const fruits=createOrchardLayout().fruit;
+    for(let s=0;s<4;s++)expect(fruits.some(f=>orchardFruitInSeason(f.item,day(s))),`estação ${s}`).toBe(true);
   });
 });

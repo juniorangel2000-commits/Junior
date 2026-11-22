@@ -29,7 +29,7 @@ export const CROP_CATALOG=[
     "harvest": "lettuce",
     "yieldCount": 1,
     "seedPrice": 8,
-    "salePrice": 18,
+    "salePrice": 22,
     "batch": "spring",
     "row": 1
   },
@@ -45,7 +45,7 @@ export const CROP_CATALOG=[
     "harvest": "carrot",
     "yieldCount": 1,
     "seedPrice": 12,
-    "salePrice": 26,
+    "salePrice": 30,
     "batch": "spring",
     "row": 2
   },
@@ -58,12 +58,12 @@ export const CROP_CATALOG=[
       "summer"
     ],
     "days": 7,
-    "regrow": 3,
+    "regrow": 4,
     "seed": "beanSeeds",
     "harvest": "bean",
     "yieldCount": 1,
-    "seedPrice": 18,
-    "salePrice": 22,
+    "seedPrice": 30,
+    "salePrice": 24,
     "batch": "spring",
     "row": 3
   },
@@ -75,11 +75,11 @@ export const CROP_CATALOG=[
       "summer"
     ],
     "days": 7,
-    "regrow": 3,
+    "regrow": 4,
     "seed": "tomatoSeeds",
     "harvest": "tomato",
     "yieldCount": 1,
-    "seedPrice": 20,
+    "seedPrice": 30,
     "salePrice": 24,
     "batch": "summer",
     "row": 0
@@ -96,7 +96,7 @@ export const CROP_CATALOG=[
     "seed": "cornSeeds",
     "harvest": "corn",
     "yieldCount": 1,
-    "seedPrice": 22,
+    "seedPrice": 30,
     "salePrice": 28,
     "batch": "summer",
     "row": 1
@@ -130,7 +130,7 @@ export const CROP_CATALOG=[
     "harvest": "watermelon",
     "yieldCount": 1,
     "seedPrice": 30,
-    "salePrice": 80,
+    "salePrice": 95,
     "batch": "summer",
     "row": 3
   },
@@ -146,7 +146,7 @@ export const CROP_CATALOG=[
     "harvest": "sweetPotato",
     "yieldCount": 1,
     "seedPrice": 16,
-    "salePrice": 38,
+    "salePrice": 42,
     "batch": "autumn",
     "row": 0
   },
@@ -162,7 +162,7 @@ export const CROP_CATALOG=[
     "harvest": "pumpkin",
     "yieldCount": 1,
     "seedPrice": 25,
-    "salePrice": 65,
+    "salePrice": 75,
     "batch": "autumn",
     "row": 1
   },
@@ -243,7 +243,7 @@ export const CROP_CATALOG=[
     "seed": "strawberrySeeds",
     "harvest": "strawberry",
     "yieldCount": 1,
-    "seedPrice": 24,
+    "seedPrice": 40,
     "salePrice": 30,
     "batch": "winter",
     "row": 2
@@ -277,7 +277,7 @@ export const CROP_CATALOG=[
     "harvest": "sunflower",
     "yieldCount": 1,
     "seedPrice": 18,
-    "salePrice": 38,
+    "salePrice": 44,
     "batch": "special",
     "row": 0
   },
@@ -290,12 +290,12 @@ export const CROP_CATALOG=[
       "summer"
     ],
     "days": 5,
-    "regrow": 3,
+    "regrow": 4,
     "seed": "mintSeeds",
     "harvest": "mint",
     "yieldCount": 1,
     "seedPrice": 16,
-    "salePrice": 18,
+    "salePrice": 16,
     "batch": "special",
     "row": 1
   },
@@ -312,7 +312,7 @@ export const CROP_CATALOG=[
     "harvest": "cotton",
     "yieldCount": 1,
     "seedPrice": 22,
-    "salePrice": 56,
+    "salePrice": 62,
     "batch": "special",
     "row": 2
   }

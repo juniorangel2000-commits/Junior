@@ -45,7 +45,7 @@ describe('patos da criação',()=>{
   s.animalCare!.animals[HEN]={duckDays:1};expect(validateSave(s)).toBe(false);
  });
  it('Rosa compra o ovo de pato e Celina a pena; o ovo de pato deixa de travar a torta',()=>{
-  expect(MERCHANTS.seeds.sell.duckEgg).toBe(14);expect(MERCHANTS.tailor.sell.feather).toBe(12);
+  expect(MERCHANTS.seeds.sell.duckEgg).toBe(30);expect(MERCHANTS.tailor.sell.feather).toBe(12);
   expect(FUTURE_INGREDIENTS.duckEgg).toBeUndefined();
  });
  it('saves anteriores ganham a pena zerada',()=>{

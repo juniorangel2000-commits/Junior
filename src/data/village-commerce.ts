@@ -6,6 +6,8 @@ import type {ItemId,VillageEconomy} from '../types';
 
 export type {VillageEconomy} from '../types';
 export const MAX_COINS=999_999_999;
+/** Peixe comum (balanço da preview.48): pescar não pede investimento, então rende menos que a horta. */
+export const FISH_PRICE=12;
 export const MAX_TRADE_QUANTITY=99;
 export const VILLAGE_NPC_IDS=['augusto','bento','amelia','tobias','rosa','nilo','celina','damiao','helena','icaro'] as const;
 export type VillageNpcId=typeof VILLAGE_NPC_IDS[number];
@@ -92,7 +94,7 @@ Object.assign(MERCHANTS.seeds.sell,{apple:12,pear:14,orange:14});
 // Preview.47: conchas para o ateliê da Celina, caranguejo para o Damião, íris para a Amélia e o Nilo.
 Object.assign(MERCHANTS.tailor.sell,{shell:9});Object.assign(MERCHANTS.fisher.sell,{crab:22});Object.assign(MERCHANTS.herbalist.sell,{blueIris:60});
 Object.assign(MERCHANTS.inn.sell,{orangeJuice:70,pearJam:130,applePie:260,crabStew:180});
-Object.assign(MERCHANTS.fisher.sell,{fish:8,rareFish:45});
+Object.assign(MERCHANTS.fisher.sell,{fish:8,rareFish:70});
 Object.assign(MERCHANTS.tailor.buy,{cloth:8,clothing:25,boots:95,backpack:150,accessory:70});
 Object.assign(MERCHANTS.inn.buy,{meal:28});Object.assign(MERCHANTS.inn.sell,{fish:8});
 Object.assign(MERCHANTS.mechanic.buy,{metalPart:16,electronicPart:35,lantern:100});
@@ -121,7 +123,7 @@ for(const merchant of Object.values(MERCHANTS)){
   if(Object.hasOwn(merchant.buy,item))merchant.buy[item as ItemId]=prices![0];
   if(Object.hasOwn(merchant.sell,item))merchant.sell[item as ItemId]=prices![1];
  }
- for(const item of ['turnip','fish'] as ItemId[])if(merchant.sell[item])merchant.sell[item]=item==='turnip'?8:18;
+ for(const item of ['turnip','fish'] as ItemId[])if(merchant.sell[item])merchant.sell[item]=item==='turnip'?8:FISH_PRICE;
  if(merchant.buy.fish)merchant.buy.fish=35;
 }
 for(const item of ['ironShard','ironIngot','goldShard','goldIngot','blackMetalIngot'] as ItemId[])MERCHANTS.blacksmith.buy[item]=B.prices[item]![0];
@@ -137,7 +139,7 @@ for(const c of CROP_CATALOG){
  else{MERCHANTS.seeds.sell[c.harvest]=c.salePrice;if(c.group!=='flower')MERCHANTS.inn.sell[c.harvest]=c.salePrice;}
 }
 // Produtos animais: nenhuma loja vende; Helena e Rosa compram do jogador.
-Object.assign(MERCHANTS.inn.sell,{egg:8,milk:16});Object.assign(MERCHANTS.seeds.sell,{egg:8});
+Object.assign(MERCHANTS.inn.sell,{egg:20,milk:30});Object.assign(MERCHANTS.seeds.sell,{egg:20});
 MERCHANTS.inn.description='Helena compra colheitas, ovos e leite para abastecer a cozinha da pousada.';
 const validDay=(day:number):boolean=>Number.isSafeInteger(day)&&day>=1&&day<=999_999;
 
@@ -198,21 +200,21 @@ export function meetVillager(economy:VillageEconomy,npcId:string):boolean {
 }
 
 // Produtos do aprisco vêm da criação do jogador; os moradores apenas compram.
-Object.assign(MERCHANTS.inn.sell,{goatMilk:20});Object.assign(MERCHANTS.tailor.sell,{wool:36});
+Object.assign(MERCHANTS.inn.sell,{goatMilk:36});Object.assign(MERCHANTS.tailor.sell,{wool:60});
 
 // Abelhas: Amélia compra mel e cera; Nilo leva o mel de flor para outras regiões.
 Object.assign(MERCHANTS.herbalist.sell,{honey:40,beeswax:30,daisyHoney:70,sunflowerHoney:75});Object.assign(MERCHANTS.traveler.sell,{daisyHoney:85,sunflowerHoney:90});
 // Pato: Rosa compra o ovo de pato; Celina compra a pena.
-Object.assign(MERCHANTS.seeds.sell,{duckEgg:14});Object.assign(MERCHANTS.tailor.sell,{feather:12});
+Object.assign(MERCHANTS.seeds.sell,{duckEgg:30});Object.assign(MERCHANTS.tailor.sell,{feather:12});
 // Conservas e velas: Nilo leva as geleias; Amélia compra a vela.
 Object.assign(MERCHANTS.traveler.sell,{strawberryJam:170,watermelonJam:330});Object.assign(MERCHANTS.herbalist.sell,{candle:80});
 // Pratos da cozinha: Helena compra; nenhuma loja vende.
 for(const r of DISH_RECIPES)MERCHANTS.inn.sell[r.id]=r.price;
-Object.assign(MERCHANTS.inn.sell,{cheese:40,goatCheese:52,butter:48,flour:24,cornmeal:26,oatFlakes:22});Object.assign(MERCHANTS.tailor.sell,{yarn:54});
+Object.assign(MERCHANTS.inn.sell,{cheese:70,goatCheese:85,butter:90,flour:24,cornmeal:26,oatFlakes:22});Object.assign(MERCHANTS.tailor.sell,{yarn:90});
 
 // Equilíbrio da preview.36 (docs/construcoes/PRECOS.md): todo produto de máquina vale pelo
 // menos 1,3× o que entra nele, e todo prato vale mais que os ingredientes. O tear faz
 // tecido de lã (os tecidos simples da Celina custam 8 C e não pagavam 2 novelos).
-Object.assign(MERCHANTS.inn.sell,{flour:32,cornmeal:37,oatFlakes:32});
-Object.assign(MERCHANTS.tailor.sell,{woolCloth:150});
-Object.assign(MERCHANTS.traveler.sell,{watermelonJam:370});
+Object.assign(MERCHANTS.inn.sell,{flour:40,cornmeal:46,oatFlakes:40});
+Object.assign(MERCHANTS.tailor.sell,{woolCloth:240});
+Object.assign(MERCHANTS.traveler.sell,{watermelonJam:430});

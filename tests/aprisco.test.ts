@@ -91,7 +91,7 @@ describe('coleta manual do aprisco',()=>{
  it('cada tesoura ocupa um espaço, é fabricada na bancada e produtos só são comprados pelos NPCs',()=>{
   expect(occupiedInventorySlots(new Inventory({shears:2}).data)).toBe(2);
   expect(RECIPES.find(r=>r.id==='shears')).toMatchObject({requiresWorkbench:true,requiresTool:'hammer',output:{shears:1}});
-  expect(MERCHANTS.tailor.sell.wool).toBe(36);expect(MERCHANTS.inn.sell.goatMilk).toBe(20);
+  expect(MERCHANTS.tailor.sell.wool).toBe(60);expect(MERCHANTS.inn.sell.goatMilk).toBe(36);
   for(const m of Object.values(MERCHANTS)){expect(m.buy.wool).toBeUndefined();expect(m.buy.goatMilk).toBeUndefined();}
  });
 });

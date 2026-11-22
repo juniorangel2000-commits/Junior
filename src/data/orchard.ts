@@ -6,6 +6,7 @@ import {paintedWaterPoint} from './terrain-paint';
 import {lakeDistance} from './water-contours';
 import {TILE,WORLD_HEIGHT,WORLD_WIDTH} from './world-size';
 import {editorObjectKind,type EditorObjectKind,type MapEditData} from '../systems/map-editor';
+import {calendarDate,type Season} from '../systems/calendar';
 
 type Point={x:number;y:number};
 type ObjectPlacement=Point & {id:string;kind:EditorObjectKind;variant?:number;scale?:number;generated?:true};
@@ -93,7 +94,11 @@ const landmarkText={
 };
 type LandmarkKey=keyof typeof landmarkText;
 const pivot=(p:Point)=>({x:(p.x+.5)*TILE,y:(p.y+.5)*TILE});
-export const orchardFruitReady=(last:number|undefined,day:number)=>last===undefined||day-last>=ORCHARD_REGROW_DAYS;
+/** Cada fruta dá na sua época (balanço da preview.48): laranja no inverno e na primavera, pera no
+ * verão, maçã no outono. Fora de época a árvore fica sem fruta no chão. */
+export const ORCHARD_FRUIT_SEASONS:Record<OrchardFruit,readonly Season[]>={orange:['winter','spring'],pear:['summer'],apple:['autumn']};
+export const orchardFruitInSeason=(item:OrchardFruit,day:number)=>ORCHARD_FRUIT_SEASONS[item].includes(calendarDate(day).season);
+export const orchardFruitReady=(last:number|undefined,day:number,item?:OrchardFruit)=>(!item||orchardFruitInSeason(item,day))&&(last===undefined||day-last>=ORCHARD_REGROW_DAYS);
 
 export function createOrchardLayout(edits?:MapEditData){
   const objects:ObjectPlacement[]=[];
