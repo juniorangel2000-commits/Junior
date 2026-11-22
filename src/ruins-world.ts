@@ -11,7 +11,7 @@ import {
   createRuinsLayout, RUINS_ROAD_HALF_WIDTH, RUINS_SIZE, ruinsCourtDistance,
   ruinsRoadDistance, ruinsSeed, ruinsTrailDistance,
 } from './data/ruins';
-import {TILE} from './data/world-size';
+import {TILE,WORLD_WIDTH} from './data/world-size';
 import {ruinsHasWetTraces} from './data/ruins-story';
 import type {MapEditData} from './systems/map-editor';
 import type {WorldEditorObject} from './world';
@@ -93,6 +93,8 @@ export class RuinsWorld {
   private readonly treetops:Phaser.GameObjects.Image[]=[];
   private readonly terrainTexture:string;
   private readonly tracks?:Phaser.GameObjects.Graphics;
+  private readonly tallGrass=new Map<number,Phaser.GameObjects.Image>();
+  private fadedGrass:Phaser.GameObjects.Image[]=[];
   constructor(private readonly scene:Phaser.Scene,edits?:MapEditData,palette=false){
     setupCityForestArt(scene);
     this.layout=createRuinsLayout(edits);
@@ -116,7 +118,14 @@ export class RuinsWorld {
         sprite.setScale(sprite.scaleX*scale,sprite.scaleY*scale).setRotation((wear-.5)*.44);
       }
       if(/^tallGrass[ABC]$/.test(o.kind)){
-        sprite.setScale(sprite.scaleX*(o.scale??1)*.75,sprite.scaleY*(o.scale??1)*.53);
+        const size=o.scale??1;
+        if(o.overgrown||o.scale===undefined){
+          const scatter=ruinsSeed(o.x+614,o.y+291);
+          sprite.setPosition(x+(scatter-.5)*11,y+(ruinsSeed(o.y,o.x)-.5)*7)
+            .setScale(sprite.scaleX*size,sprite.scaleY*size).setFlipX(scatter>.5).setDepth(y);
+          if(!palette)this.tallGrass.set(o.y*WORLD_WIDTH+o.x,sprite);
+        }else sprite.setScale(sprite.scaleX*size*.75,sprite.scaleY*size*.53);
+        sprite.setData('no-shadow',true);
       }
       this.editorObjects.push({id:o.id,kind:o.kind,x:o.x,y:o.y,texture:sprite.texture.key,frame:sprite.frame.name});
       if(tree)this.treetops.push(sprite.setData('wind-tree',true));
@@ -138,6 +147,15 @@ export class RuinsWorld {
   update(_dt:number,player:{x:number;y:number}):void {
     for(const tree of this.treetops)
       tree.setAlpha(player.y<tree.y&&player.y>tree.y-tree.displayHeight*.8&&Math.abs(player.x-tree.x)<tree.displayWidth*.38?.48:1);
+    for(const grass of this.fadedGrass)grass.setAlpha(1);
+    this.fadedGrass.length=0;
+    const x=Math.floor(player.x/TILE),y=Math.floor(player.y/TILE);
+    for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+      if(x+dx<0||x+dx>=WORLD_WIDTH)continue;
+      const grass=this.tallGrass.get((y+dy)*WORLD_WIDTH+x+dx);
+      if(!grass||player.y>grass.y||grass.y-player.y>grass.displayHeight||Math.abs(player.x-grass.x)>27)continue;
+      this.fadedGrass.push(grass.setAlpha(.63));
+    }
   }
   destroy():void {
     if(this.scene.textures.exists(this.terrainTexture))this.scene.textures.remove(this.terrainTexture);

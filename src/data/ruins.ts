@@ -51,7 +51,7 @@ export function ruinsCourtDistance(x:number,y:number):number {
   return nearest;
 }
 
-type RuinObject = Point & {id:string;kind:EditorObjectKind;variant?:number;scale?:number};
+type RuinObject = Point & {id:string;kind:EditorObjectKind;variant?:number;scale?:number;overgrown?:true};
 const masonry: ReadonlyArray<readonly [RuinKind,number,number]> = [
   // Pátio de parada, guichê e curral das carroças.
   ['ruin-waystone',18,8],['ruin-toll',9,14],['ruin-rubble',10,17],['ruin-cart',16,15],['ruin-cargo',18,16],
@@ -106,7 +106,28 @@ for(let gy=2;gy<WORLD_HEIGHT-2;gy+=3)for(let gx=2;gx<WORLD_WIDTH-2;gx+=3){
   else continue;
   original.push({id:`${kind}-${x}-${y}`,kind,x,y,scale:.79+seed*.23,variant:Math.floor(seed*41)%3});
 }
+
+const occupiedGround=new Set(original.map(o=>`${o.x},${o.y}`));
+const grassVariants=['tallGrassA','tallGrassB','tallGrassC'] as const;
+const landmarkGround=masonry.filter(([kind,x,y])=>Object.hasOwn(RUINS_LANDMARKS,`${kind}-${x}-${y}`));
+const masonryGround=masonry.flatMap(([kind,x,y])=>RUINS_ART[kind].bases.map(([left,right,top,bottom])=>({
+  left:x*TILE+left-5,right:x*TILE+right+5,top:y*TILE+top-4,bottom:y*TILE+bottom+4,
+})));
+for(let y=1;y<WORLD_HEIGHT-1;y++)for(let x=1;x<WORLD_WIDTH-1;x++){
+  if(ruinsRoadDistance(y+.5)<4.8||occupiedGround.has(`${x},${y}`))continue;
+  const density=.38+.15*Math.sin(x*.24+y*.19)+.13*Math.cos(y*.42-x*.29);
+  const seed=ruinsSeed(x+937,y+513);
+  if(seed>density)continue;
+  if(ruinsTrailDistance(x+.5,y+.5)<1.55||ruinsTrailDistance(x+.5,y-.25)<1.28)continue;
+  if(landmarkGround.some(([,mx,my])=>Math.hypot(x-mx,y-my)<1.8))continue;
+  const px=x*TILE,py=y*TILE;
+  if(masonryGround.some(b=>px>b.left&&px<b.right&&py>b.top&&py<b.bottom))continue;
+  const variant=ruinsSeed(x-667,y+724);
+  const kind=grassVariants[Math.floor(variant*grassVariants.length)];
+  original.push({id:`${kind}-${x}-${y}`,kind,x,y,scale:.83+variant*.40,overgrown:true});
+}
 const originalById=new Map(original.map(object=>[object.id,object]));
+const grassyTerrain=new Set(['grass','meadow','forest','moss']);
 
 export function createRuinsLayout(edits?:MapEditData) {
   const objects:RuinObject[]=[];
@@ -116,7 +137,16 @@ export function createRuinsLayout(edits?:MapEditData) {
     const kind=editorObjectKind(id);
     if(!edit.removed&&kind)add({...originalById.get(id),id,kind,x:edit.x,y:edit.y});
   }
-  for(const o of original)if(!edits?.objects[o.id]&&!occupied.has(`${o.x},${o.y}`))add(o);
+  for(const o of original){
+    const key=`${o.x},${o.y}`;
+    if(edits?.objects[o.id]||occupied.has(key))continue;
+    if(o.overgrown&&edits){
+      const terrain=edits.terrain[key];
+      if(terrain&&!grassyTerrain.has(terrain))continue;
+      if(Object.values(edits.points??{}).some(p=>p&&Math.hypot(o.x-p.x,o.y-p.y)<1.8))continue;
+    }
+    add(o);
+  }
   const solid=objects.flatMap(o=>{
     const p=tileMidpoint(o);
     if(isRuinKind(o.kind))return RUINS_ART[o.kind].bases.map(([left,right,top,bottom])=>({

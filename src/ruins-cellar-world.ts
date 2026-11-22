@@ -3,6 +3,13 @@ import {CELLAR_ART,CELLAR_PROPS,CELLAR_SEAL,CELLAR_TEXTURES,RUINS_CELLAR_SIZE,cr
 import {ruinsSeed} from './data/ruins';
 
 const FLOOR='ruins-cellar-stone-floor';
+const CELLAR_GRASS=[
+  [74,217],[86,278],[78,309],[81,368],[94,414],[87,481],
+  [168,224],[287,225],[326,207],[336,181],[345,228],
+  [458,185],[465,214],[477,238],[510,214],[547,230],
+  [758,247],[747,296],[743,377],[747,472],
+  [135,490],[191,478],[263,490],[312,475],[369,490],[417,488],[535,481],[591,490],[707,486],
+];
 export function preloadRuinsCellar(scene:Phaser.Scene):void {
   for(const name of ['bronze-seal',...CELLAR_TEXTURES.map(piece=>'cellar-'+piece)]){
     if(!scene.textures.exists('ruins-'+name))scene.load.image('ruins-'+name,'assets/visual/ruins/'+name+'.png');
@@ -79,6 +86,13 @@ export class RuinsCellarWorld {
         .setFlipX(i%2===1).setDepth(515);
     }
     scene.add.image(400,210,'ruins-cellar-stairs').setOrigin(.5,.94).setDisplaySize(138,135).setDepth(-97);
+    for(const [i,[x,y]] of CELLAR_GRASS.entries()){
+      const texture='nature-tall-grass-'+(i%3);
+      if(!scene.textures.exists(texture))continue;
+      const size=.64+ruinsSeed(x,y)*.34;
+      scene.add.image(x,y,texture).setOrigin(.5,1).setDisplaySize(46*size,42*size)
+        .setFlipX(i%2===0).setTint(0xa5b08c).setDepth(y).setData('no-shadow',true);
+    }
     for(const [kind,x,y] of CELLAR_PROPS){
       const art=CELLAR_ART[kind];
       const [width,height]=art.size;

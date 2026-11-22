@@ -1,5 +1,5 @@
 import {describe,expect,it,vi} from 'vitest';
-import {createRuinsLayout, ruinsRoadDistance, RUINS_ROAD_HALF_WIDTH} from '../src/data/ruins';
+import {createRuinsLayout, ruinsRoadDistance, ruinsTrailDistance, RUINS_ROAD_HALF_WIDTH} from '../src/data/ruins';
 import {CITY_ROAD_Y,CITY_RUINS_EXIT,CITY_RUINS_RETURN,RUINS_ENTRY,RUINS_EXIT,RUINS_ROAD_Y,tileMidpoint} from '../src/data/ruins-road';
 import {cityForestBlockedPoint,cityRoadDistance,cityForestTerrain} from '../src/data/city-forest';
 import {defaultMap} from '../src/data/default-maps';
@@ -96,6 +96,25 @@ describe('Ruínas na Estrada da Cidade',()=>{
       }
     }
     expect([...landmarks].sort()).toEqual(Object.values(RUINS_LANDMARKS).map(o=>o.name).sort());
+  });
+
+  it('espalha grama alta pelas Ruínas e conserva os caminhos e o piso editado',()=>{
+    const layout=createRuinsLayout(),grass=layout.objects.filter(o=>o.overgrown);
+    expect(grass.length).toBeGreaterThan(1200);
+    for(const [x,y] of [[false,false],[true,false],[false,true],[true,true]]){
+      expect(grass.filter(o=>(o.x>=48)===x&&(o.y>=36)===y).length).toBeGreaterThan(180);
+    }
+    expect(grass.every(o=>ruinsRoadDistance(o.y+.5)>RUINS_ROAD_HALF_WIDTH&&ruinsTrailDistance(o.x+.5,o.y+.5)>=1.55)).toBe(true);
+    expect(grass.every(o=>{const p=tileMidpoint(o);return !layout.blocked(p.x,p.y);})).toBe(true);
+    const [painted,removed,moved]=grass;
+    const map=defaultMap('ruins');
+    map.terrain[`${painted.x},${painted.y}`]='paving';
+    map.objects[removed.id]={x:removed.x,y:removed.y,removed:true};
+    map.objects[moved.id]={x:7,y:12};
+    expect(validateMapEdits(map)).toBe(true);
+    const edited=createRuinsLayout(map).objects;
+    expect(edited.some(o=>o.id===painted.id||o.id===removed.id)).toBe(false);
+    expect(edited.find(o=>o.id===moved.id)).toMatchObject({x:7,y:12,overgrown:true});
   });
 
   it('guarda pistas em qualquer ordem e entrega o mapa uma vez, depois de salvar',()=>{
