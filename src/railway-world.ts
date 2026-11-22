@@ -15,7 +15,7 @@ import {TILE, WORLD_WIDTH} from './data/world-size';
 import type {MapEditData} from './systems/map-editor';
 import type {WorldEditorObject} from './world';
 
-const GROUND='railway-ground-v1';
+const GROUND='railway-ground-v2';
 const blend=(n:number):number=>Math.max(0,Math.min(1,n));
 const files=[...new Set(RAILWAY_KINDS.map(kind=>RAILWAY_ART[kind].file))];
 
@@ -55,12 +55,18 @@ function drawGround(scene:Phaser.Scene):void {
     for(let by=0;by<height;by+=block)for(let bx=0;bx<width;bx+=block){
       const tx=(bx+2)/TILE,ty=(by+2)/TILE;
       const noise=.16*Math.sin(tx*2.1+ty*1.6)+.10*Math.sin(ty*3.3-tx*4.7);
-      const road=blend((RAILWAY_ROAD_HALF_WIDTH+noise-railwayRoadDistance(ty))/.6);
-      const soil=blend((1.05+noise*.6-railwayYardDistance(tx,ty))/.22);
-      const gravel=blend((1.25+noise-railwayGravelDistance(tx,ty))/.55);
+      const roadX=tx+WORLD_WIDTH;
+      const roadWear=.15*Math.sin(roadX*2.3+ty*1.7)+.09*Math.sin(ty*3.5-roadX*5.2);
+      const road=blend((RAILWAY_ROAD_HALF_WIDTH+roadWear-railwayRoadDistance(ty))/.6);
+      const drift=.06*Math.sin(tx*.39+ty*.58)+.045*Math.sin(tx*.83-ty*.32);
+      const soil=blend((1.02+drift+noise*.42-railwayYardDistance(tx,ty))/.29);
+      const gravelWidth=1.28+.22*Math.sin(tx*.74+ty*.63)+noise*.76;
+      const gravel=blend((gravelWidth-railwayGravelDistance(tx,ty))/.84);
       const ballast=blend((1.75+noise*.8-railwayBallastDistance(tx,ty))/.55);
       const deck=onPlatform(tx,ty)?1:0;
-      const bright=.22+.18*(Math.sin(tx*.47+ty*.31)+1)/2;
+      const weatheredDeck=deck*(.92-.23*blend((noise+drift-.035)*2));
+      const bright=blend(.22+.18*(Math.sin((roadX+WORLD_WIDTH)*.47+ty*.31)+1)/2+
+        .12+.09*Math.sin(roadX*.24-ty*.48));
       for(let dy=0;dy<block;dy++)for(let dx=0;dx<block;dx++){
         const x=bx+dx,y=by+dy,i=(y*width+x)*4,p=((y%96)*96+x%96)*4,f=(((y*2)%256)*256+(x*2)%256)*4;
         for(let k=0;k<3;k++){
@@ -68,7 +74,7 @@ function drawGround(scene:Phaser.Scene):void {
           color=color*(1-soil)+floors['terra-com-musgo'][f+k]*soil;
           color=color*(1-gravel)+floors.cascalho[f+k]*gravel;
           color=color*(1-ballast)+floors.lastro[f+k]*ballast;
-          color=color*(1-deck)+floors['lajes-da-plataforma'][f+k]*deck;
+          color=color*(1-weatheredDeck)+floors['lajes-da-plataforma'][f+k]*weatheredDeck;
           const street=asphalt[p+k]*.9+materials.moss.pixels[p+k]*.1;
           pixels.data[i+k]=color*(1-road)+street*road;
         }
@@ -123,7 +129,7 @@ export class RailwayWorld {
     for(const o of this.layout.objects){
       const {x,y}=this.layout.pivot(o),tree=o.kind==='standingTree'||o.kind==='pine';
       const sprite=tree
-        ?scene.add.image(x,y,`asset-${o.kind==='pine'?'pine':'tree'}-${o.variant??0}`).setOrigin(.5,256/264).setDisplaySize(166*(o.scale??1),211*(o.scale??1)).setDepth(y)
+        ?scene.add.image(x,y,`asset-${o.kind==='pine'?'pine':'tree'}-${o.variant??0}`).setOrigin(.5,256/264).setDisplaySize(166*(o.scale??1),211*(o.scale??1)).setDepth(y).setTint(0xded9b8)
         :drawEditorProp(scene,o.kind,x,y);
       if(!sprite)continue;
       if(isRailwayKind(o.kind)){

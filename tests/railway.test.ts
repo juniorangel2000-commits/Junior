@@ -1,14 +1,14 @@
 import {describe,expect,it} from 'vitest';
 import {
   createRailwayLayout, onPlatform, PLATFORM, PLATFORM_RAMP, PLATFORM_STAIRS, RAILWAY_CROSSINGS, RAILWAY_LANDMARKS, RAILWAY_LINES,
-  RAILWAY_ORIGINAL_OBJECTS, RAILWAY_ROAD_HALF_WIDTH, railwayRoadDistance, STATION_DOOR,
+  RAILWAY_ORIGINAL_OBJECTS, RAILWAY_ROAD_HALF_WIDTH, railwayGravelDistance, railwayRoadDistance, STATION_DOOR,
 } from '../src/data/railway';
 import {RAILWAY_ART, RAILWAY_KINDS} from '../src/data/railway-art';
 import {
   RAILWAY_ENTRY, RAILWAY_EXIT, RAILWAY_ROAD_Y, RUINS_RAILWAY_EXIT, RUINS_RAILWAY_RETURN, railwayRoadProtected, ruinsRailwayRoadProtected, tileMidpoint,
 } from '../src/data/ruins-road';
 import {createRuinsLayout, ruinsRoadDistance, RUINS_ROAD_HALF_WIDTH} from '../src/data/ruins';
-import {createRailwayHallLayout, HALL_COUNTER, RAILWAY_HALL_ENTRY, RAILWAY_HALL_EXIT, HALL_DOOR, HALL_FRONT} from '../src/data/railway-hall';
+import {createRailwayHallLayout, HALL_COUNTER, RAILWAY_HALL_ENTRY, RAILWAY_HALL_EXIT, HALL_DOOR, HALL_FRONT, HALL_TEXTURES} from '../src/data/railway-hall';
 import {defaultMap} from '../src/data/default-maps';
 import {AREA_NAMES} from '../src/data/area-names';
 import {createCharacterProfile} from '../src/data/characters';
@@ -17,6 +17,7 @@ import {MapExitPassage} from '../src/systems/map-transition';
 import {readSceneMap,writeSceneMap} from '../src/systems/scene-map-edits';
 import {validateMapEdits} from '../src/systems/map-editor';
 import {natureArt} from '../src/data/nature-catalog';
+import {validWorldPetState, worldPetLocation, type WorldPetState} from '../src/dungeons/world-pet-state';
 import fs from 'node:fs';
 
 const free=(blocked:(x:number,y:number)=>boolean,p:{x:number;y:number})=>[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!blocked(p.x+dx,p.y+dy));
@@ -76,6 +77,28 @@ describe('Estação Ferroviária',()=>{
     expect(hall.blocked(HALL_DOOR.left-30,HALL_FRONT+12)).toBe(true);
     expect(new MapExitPassage().update({...exit,y:exit.y-24},exit,RAILWAY_HALL_EXIT,RAILWAY_HALL_ENTRY)).toBe(true);
     expect(hall.inspectNear(HALL_COUNTER.x,HALL_COUNTER.y+24)?.name).toBe('Bilheteria');
+  });
+  it('usa a arte frontal e preserva o corredor entre a entrada e a bilheteria',()=>{
+    const hall=createRailwayHallLayout();
+    for(const file of HALL_TEXTURES)expect(fs.existsSync(`public/assets/visual/railway/interior-frontal/${file}.png`),file).toBe(true);
+    for(let y=302;y<=533;y+=4)expect(free(hall.blocked,{x:432,y}),`corredor em ${y}`).toBe(true);
+    for(let x=236;x<=432;x+=4)expect(free(hall.blocked,{x,y:296}),`acesso à bilheteria em ${x}`).toBe(true);
+    expect(hall.blocked(236,249)).toBe(true);
+    expect(hall.blocked(673,240)).toBe(true);
+    expect(hall.blocked(301,421)).toBe(false);
+  });
+  it('mantém as trilhas irregulares caminháveis no encontro com a estrada e a plataforma',()=>{
+    const exterior=createRailwayLayout();
+    for(const [x,y] of [[38.8,6.8],[40.9,16.4],[47,32.5],[66,6.8],[63.1,16.2],[57,32.5],[67.5,50]]){
+      expect(railwayGravelDistance(x,y)).toBeCloseTo(0);
+      expect(free(exterior.blocked,{x:x*32,y:y*32})).toBe(true);
+    }
+  });
+  it('permite ao companheiro esperar na sala com sua posição identificada',()=>{
+    const pet:WorldPetState={mode:'stay',area:'railway',space:'railway-hall',x:423,y:388,direction:'south'};
+    expect(validWorldPetState(pet)).toBe(true);
+    expect(worldPetLocation(pet)).toBe('Estação Ferroviária · Sala de espera');
+    expect(worldPetLocation({...pet,space:'outdoors'})).toBe('Estação Ferroviária');
   });
   it('salva posição, sala e edições do mapa, e recusa valores fora dos limites',()=>{
     const save=createNewSave(createCharacterProfile('Amiga'));

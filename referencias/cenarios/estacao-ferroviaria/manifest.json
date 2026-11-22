@@ -770,6 +770,292 @@
       "anchor": "base-centro"
     },
     {
+      "file": "sprites/interior-frontal/parede-com-heras.png",
+      "source": "fontes/estrutura-frontal.png",
+      "crop": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "width": 412,
+      "height": 384,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/parede-descascada.png",
+      "source": "fontes/estrutura-frontal.png",
+      "crop": [
+        512,
+        0,
+        1024,
+        512
+      ],
+      "width": 413,
+      "height": 378,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/parede-com-guiche.png",
+      "source": "fontes/estrutura-frontal.png",
+      "crop": [
+        1024,
+        0,
+        1536,
+        512
+      ],
+      "width": 412,
+      "height": 381,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/porta-da-plataforma.png",
+      "source": "fontes/estrutura-frontal.png",
+      "crop": [
+        0,
+        512,
+        512,
+        1024
+      ],
+      "width": 332,
+      "height": 404,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/lambril-frontal.png",
+      "source": "fontes/estrutura-frontal.png",
+      "crop": [
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "width": 423,
+      "height": 129,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/rodape-de-pedra.png",
+      "source": "fontes/estrutura-frontal.png",
+      "crop": [
+        1024,
+        512,
+        1536,
+        1024
+      ],
+      "width": 430,
+      "height": 70,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/bilheteria-fechada.png",
+      "source": "fontes/moveis-frontais.png",
+      "crop": [
+        0,
+        0,
+        443,
+        443
+      ],
+      "width": 371,
+      "height": 384,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/banco-frontal.png",
+      "source": "fontes/moveis-frontais.png",
+      "crop": [
+        443,
+        0,
+        887,
+        443
+      ],
+      "width": 408,
+      "height": 235,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/banco-quebrado.png",
+      "source": "fontes/moveis-frontais.png",
+      "crop": [
+        887,
+        0,
+        1330,
+        443
+      ],
+      "width": 407,
+      "height": 235,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/horarios-gastos.png",
+      "source": "fontes/moveis-frontais.png",
+      "crop": [
+        1330,
+        0,
+        1774,
+        443
+      ],
+      "width": 366,
+      "height": 296,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/estante-de-malas.png",
+      "source": "fontes/moveis-frontais.png",
+      "crop": [
+        0,
+        443,
+        443,
+        887
+      ],
+      "width": 400,
+      "height": 209,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/balanca-frontal.png",
+      "source": "fontes/moveis-frontais.png",
+      "crop": [
+        443,
+        443,
+        887,
+        887
+      ],
+      "width": 228,
+      "height": 383,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/relogio-de-pendulo.png",
+      "source": "fontes/moveis-frontais.png",
+      "crop": [
+        887,
+        443,
+        1330,
+        887
+      ],
+      "width": 215,
+      "height": 403,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/lampiao-frontal.png",
+      "source": "fontes/moveis-frontais.png",
+      "crop": [
+        1330,
+        443,
+        1774,
+        887
+      ],
+      "width": 148,
+      "height": 366,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/grade-de-manutencao.png",
+      "source": "fontes/vestigios-frontais.png",
+      "crop": [
+        0,
+        0,
+        443,
+        443
+      ],
+      "width": 370,
+      "height": 173,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/reboco-caido.png",
+      "source": "fontes/vestigios-frontais.png",
+      "crop": [
+        443,
+        0,
+        887,
+        443
+      ],
+      "width": 394,
+      "height": 221,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/bilhetes-rasgados.png",
+      "source": "fontes/vestigios-frontais.png",
+      "crop": [
+        887,
+        0,
+        1330,
+        443
+      ],
+      "width": 337,
+      "height": 223,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/mala-antiga.png",
+      "source": "fontes/vestigios-frontais.png",
+      "crop": [
+        1330,
+        0,
+        1774,
+        443
+      ],
+      "width": 397,
+      "height": 259,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/tapete-rasgado.png",
+      "source": "fontes/vestigios-frontais.png",
+      "crop": [
+        0,
+        443,
+        443,
+        887
+      ],
+      "width": 410,
+      "height": 225,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/balde-de-incendio.png",
+      "source": "fontes/vestigios-frontais.png",
+      "crop": [
+        443,
+        443,
+        887,
+        887
+      ],
+      "width": 275,
+      "height": 277,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/ripas-caidas.png",
+      "source": "fontes/vestigios-frontais.png",
+      "crop": [
+        887,
+        443,
+        1330,
+        887
+      ],
+      "width": 401,
+      "height": 229,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior-frontal/rachaduras-e-poeira.png",
+      "source": "fontes/vestigios-frontais.png",
+      "crop": [
+        1330,
+        443,
+        1774,
+        887
+      ],
+      "width": 380,
+      "height": 182,
+      "anchor": "base-centro"
+    },
+    {
       "file": "pisos/terra-com-musgo.png",
       "source": "fontes/materiais.png",
       "crop": [

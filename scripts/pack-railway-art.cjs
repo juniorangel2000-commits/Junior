@@ -92,6 +92,15 @@ cutSheet('moveis', 'sprites/interior', 4, 2,
     'prateleira-de-bagagem': [437, 443, 935, 887],
     'quadro-de-horarios': [935, 443, 1330, 887],
   });
+const frontal = 'sprites/interior-frontal';
+cutSheet('estrutura-frontal', frontal, 3, 2,
+  ['parede-com-heras', 'parede-descascada', 'parede-com-guiche', 'porta-da-plataforma', 'lambril-frontal', 'rodape-de-pedra']);
+cutSheet('moveis-frontais', frontal, 4, 2,
+  ['bilheteria-fechada', 'banco-frontal', 'banco-quebrado', 'horarios-gastos',
+    'estante-de-malas', 'balanca-frontal', 'relogio-de-pendulo', 'lampiao-frontal']);
+cutSheet('vestigios-frontais', frontal, 4, 2,
+  ['grade-de-manutencao', 'reboco-caido', 'bilhetes-rasgados', 'mala-antiga',
+    'tapete-rasgado', 'balde-de-incendio', 'ripas-caidas', 'rachaduras-e-poeira']);
 
 function sample(source, [x0, y0, x1, y1], width, height) {
   const image = new PNG({ width, height });

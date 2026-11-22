@@ -8,7 +8,7 @@ import {ECOLOGY_BALANCE as B} from '../data/ecology-balance';
 import {applyDishEffect} from './food-effects';
 import {DISH_EFFECT} from './food-effects';
 import {takeBest,QUALITY_FACTOR,qualityName,type Quality} from './item-quality';
-export const USABLE_VILLAGE_ITEMS:ItemId[]=[...DISH_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','milk','goatMilk','wool','yarn','wheat','corn','oat','sword','furniture','doorKit','windowKit','fenceKit','sickle','shovel','forge','herb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','meal','oldMap','fertilizer','lamp','waterPump','fishingRod','net'];
+export const USABLE_VILLAGE_ITEMS:ItemId[]=[...DISH_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','milk','goatMilk','wool','yarn','wheat','corn','oat','sword','furniture','doorKit','windowKit','fenceKit','sickle','shovel','forge','herb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','meal','oldMap','fertilizer','lamp','waterPump','fishingRod','net','campfire'];
 export function useConsumable(s:SaveData,item:ItemId,point?:TilePoint,blocked?: (x:number,y:number)=>boolean):{ok:boolean;message:string}{
  if(item==='harvestBasket')return{ok:false,message:'Use a cesta nos Campos Abertos: ela fica no chão para o cavalo selvagem.'};
  if(item==='oakSeed'||item==='pineSeed')return point?plantTree(s,item,point,blocked??(()=>true)):{ok:false,message:'Escolha terra livre para plantar.'};

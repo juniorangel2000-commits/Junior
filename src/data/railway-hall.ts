@@ -9,33 +9,44 @@ export const HALL_DOOR={left:384,right:448};
 /** Linha da base da parede do fundo e limites do salão, em pixels. */
 export const HALL_BACK=188, HALL_FRONT=512, HALL_LEFT=72, HALL_RIGHT=760;
 /** Fim do assoalho de tábuas (atrás do balcão, à esquerda). */
-export const HALL_BOARDS={left:HALL_LEFT,right:352,top:HALL_BACK-20,bottom:262};
+export const HALL_BOARDS={left:HALL_LEFT,right:344,top:HALL_BACK,bottom:275};
 
-type Piece={file:string;size:[number,number];base:readonly [number,number,number,number]|null;wall?:true;light?:true};
+type Piece={file:string;size:[number,number];base:readonly [number,number,number,number]|null;wall?:true;floor?:true;light?:true};
 export const HALL_ART={
-  window:{file:'janela-do-guiche',size:[112,123],base:null,wall:true},
-  counter:{file:'balcao-de-bilhetes',size:[104,111],base:[-49,49,-26,3]},
-  shelf:{file:'estante-de-papeis',size:[80,76],base:[-36,36,-18,3]},
-  clock:{file:'relogio',size:[50,58],base:null,wall:true},
-  timetable:{file:'quadro-de-horarios',size:[66,82],base:null,wall:true},
-  lamp:{file:'lamparina',size:[17,37],base:null,wall:true,light:true},
-  bench:{file:'banco-de-espera',size:[96,70],base:[-43,43,-18,3]},
-  rack:{file:'prateleira-de-bagagem',size:[96,66],base:[-44,44,-16,3]},
-  scale:{file:'balanca-de-bagagem',size:[58,67],base:[-25,25,-16,3]},
-  trapdoor:{file:'alcapao',size:[84,54],base:null},
+  counter:{file:'bilheteria-fechada',size:[112,116],base:[-52,52,-25,2]},
+  clock:{file:'relogio-de-pendulo',size:[27,51],base:null,wall:true},
+  timetable:{file:'horarios-gastos',size:[72,58],base:null,wall:true},
+  lamp:{file:'lampiao-frontal',size:[17,43],base:null,wall:true,light:true},
+  bench:{file:'banco-frontal',size:[112,64],base:[-50,50,-16,2]},
+  brokenBench:{file:'banco-quebrado',size:[104,60],base:[-46,46,-15,2]},
+  rack:{file:'estante-de-malas',size:[106,55],base:[-49,49,-19,2]},
+  scale:{file:'balanca-frontal',size:[42,71],base:[-18,18,-17,2]},
+  grate:{file:'grade-de-manutencao',size:[60,28],base:null,floor:true},
+  rubble:{file:'reboco-caido',size:[42,24],base:[-13,13,-9,0]},
+  tickets:{file:'bilhetes-rasgados',size:[32,21],base:null,floor:true},
+  trunk:{file:'mala-antiga',size:[47,31],base:[-20,20,-12,1]},
+  mat:{file:'tapete-rasgado',size:[82,46],base:null,floor:true},
+  bucket:{file:'balde-de-incendio',size:[25,25],base:[-9,9,-9,1]},
+  planks:{file:'ripas-caidas',size:[63,34],base:[-22,22,-11,1]},
+  cracks:{file:'rachaduras-e-poeira',size:[103,42],base:null,floor:true},
 } as const satisfies Record<string,Piece>;
 export type HallPiece=keyof typeof HALL_ART;
-export const HALL_STRUCTURES=['parede-do-fundo','parede-lateral','rodape-frontal','ladrilho-antigo','tabuas-internas'] as const;
+export const HALL_WALL_PANELS=['parede-com-heras','parede-descascada','parede-descascada','parede-com-guiche'] as const;
+export const HALL_STRUCTURES=['parede-com-heras','parede-descascada','parede-com-guiche','lambril-frontal','porta-da-plataforma','rodape-de-pedra'] as const;
 export const HALL_TEXTURES=[...HALL_STRUCTURES,...Object.values(HALL_ART).map(a=>a.file)];
+export const HALL_FLOORS=['ladrilho-antigo','tabuas-internas'] as const;
 
 export const HALL_COUNTER={x:236,y:262};
 export const HALL_TIMETABLE={x:560,y:176};
 export const HALL_PROPS:ReadonlyArray<readonly [HallPiece,number,number]>=[
-  ['window',236,HALL_BACK-4],['counter',HALL_COUNTER.x,HALL_COUNTER.y],['shelf',122,236],
-  ['clock',416,104],['timetable',HALL_TIMETABLE.x,HALL_TIMETABLE.y],
-  ['lamp',338,128],['lamp',494,128],['lamp',700,128],
-  ['bench',690,300],['bench',690,404],['bench',560,470],
-  ['rack',128,356],['scale',116,452],['trapdoor',300,436],
+  ['counter',HALL_COUNTER.x,HALL_COUNTER.y],['rack',132,220],['scale',139,334],
+  ['clock',411,154],['timetable',HALL_TIMETABLE.x,HALL_TIMETABLE.y],
+  ['lamp',173,148],['lamp',349,151],['lamp',605,152],
+  ['bench',673,249],['brokenBench',650,370],['bench',618,463],
+  ['trunk',184,352],['trunk',687,462],['bucket',96,395],['planks',119,472],
+  ['rubble',709,221],['rubble',111,487],['rubble',724,471],
+  ['grate',301,431],['mat',416,503],
+  ['tickets',277,284],['tickets',641,389],['cracks',312,374],['cracks',683,440],
 ];
 
 const counter:RuinLandmark={name:'Bilheteria',text:'O caixa ainda guarda um maço de bilhetes amarelados. O último tem destino “Cidade”, mas nunca foi destacado.'};
@@ -48,7 +59,7 @@ export function createRailwayHallLayout(){
     if(x<HALL_LEFT||x>HALL_RIGHT||y<HALL_BACK)return true;
     if(y>HALL_FRONT&&(x<HALL_DOOR.left||x>HALL_DOOR.right))return true;
     if(y>RAILWAY_HALL_SIZE.height-8)return true;
-    // Atrás do balcão: passagem só pela ponta esquerda, junto da estante.
+    // O guichê está fechado. O trecho sob a estrutura e atrás do balcão fica fora da circulação.
     if(y<HALL_COUNTER.y-8&&x>HALL_COUNTER.x-60&&x<HALL_COUNTER.x+60)return true;
     return solids.some(([left,right,top,bottom])=>x>left&&x<right&&y>top&&y<bottom);
   };

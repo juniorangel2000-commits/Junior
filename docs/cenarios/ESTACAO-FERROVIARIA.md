@@ -2,7 +2,7 @@
 
 > **Montada pelo Claude em 22/11/2026** (`d5d643c`). Arquivos: `src/data/railway-art.ts` (peças, tamanhos e bases), `src/data/railway.ts` (planta, vegetação, colisão e pontos de examinar), `src/railway-world.ts` (piso, trilhos e desvanecimento), `src/data/railway-hall.ts` e `src/railway-hall-world.ts` (sala de espera), integração em `src/scenes/TrailScene.ts` (área `railway`, cena `Estacao`). Diferenças em relação à planta proposta: a escada desce na ponta oeste da plataforma (x=24–27) direto para a travessia da linha principal; a rampa ficou na ponta leste (x=73–76); a travessia da linha de carga fica em x=66–69, ligada ao galpão por cascalho; os trilhos não bloqueiam a passagem (só veículos, mureta e objetos sólidos).
 
-O Junior escolheu a Estação como próximo cenário e pediu ao Codex um kit completo de arte. O Claude implementa o mapa jogável seguindo as decisões das Ruínas. Comece no HEAD de `release/v0.10.0-preview.45`, leia [a passagem](../PASSAGEM.md) e use [o manifesto das artes](../../referencias/cenarios/estacao-ferroviaria/manifest.json).
+O Junior escolheu a Estação como próximo cenário e pediu ao Codex um kit completo de arte. O Claude implementou o mapa seguindo as decisões das Ruínas. Em seguida, o Junior pediu móveis frontais, um interior mais abandonado e trilhas externas mais naturais. A revisão usa a malha da primeira versão com novas paredes, móveis e vestígios. Leia [a passagem](../PASSAGEM.md) e use [o manifesto das artes](../../referencias/cenarios/estacao-ferroviaria/manifest.json).
 
 ## Direção de arte
 
@@ -34,18 +34,19 @@ Use `preloadCityRoadArt` e `readCityAsphalt` de `src/city-forest-world.ts` e a c
 
 ### Interior
 
-Faça uma sala de espera com guichê e área de bagagem. Use o interior do porão das Ruínas como referência de separação entre piso, perímetro, móveis e pontos interativos. Uma sala inicial de aproximadamente 26 × 17 ladrilhos dá espaço para circular, com a porta ao sul voltada para a plataforma. Posicione o balcão e a janela do guichê no fundo, os bancos em uma lateral, as bagagens e a prateleira na outra. Use o ladrilho antigo no salão e tábuas internas atrás do guichê. Use o relógio e o quadro de horários para conduzir o olhar até o balcão.
+O salão tem 26 × 17 ladrilhos. A bilheteria fechada, a estante de malas e a balança ficam à esquerda. Os bancos de frente, um deles quebrado, ocupam a direita perto do quadro de horários. Paredes frontais com lambril contínuo e reboco descascado dão fundo aos objetos. O piso combina ladrilho antigo, manchas de umidade e tábuas delimitadas no guichê. Bilhetes rasgados, rachaduras, cacos e malas espalhadas marcam o abandono.
 
-Aproxime o jogador pelo meio da porta. Chegue por dentro diante do batente e volte para o patamar externo livre. A entrada reage a **E** com o mesmo fluxo de mudança de sala já usado no jogo. Separe pernas e bases dos móveis, perímetro e degraus em colisão. Posicione o rodapé frontal baixo ou faça-o desaparecer parcialmente quando o personagem estiver atrás dele, preservando a leitura do sprite. O alçapão aberto é uma peça opcional para um futuro acesso de manutenção. Comece com pontos simples e independentes para examinar quadro de avisos, placa e bilheteria. Uma história curta pode vir depois, com os textos e a recompensa definidos pelo Junior.
+A entrada pela plataforma responde a **E** ou clique próximo. A volta é pelo batente ao sul, que esmaece junto ao personagem. O perímetro e os pés dos móveis têm colisões próprias, enquanto tapete, bilhetes e grade fechada ficam no nível do piso. A bilheteria e o quadro de horários podem ser examinados. A planta interna fica em `src/data/railway-hall.ts`. O editor F2 abre o mapa externo.
 
 ## Uso dos PNGs
 
-O kit reúne **68 peças de uso individual e 10 pranchas-fonte**. Os recortes ficam em `referencias/cenarios/estacao-ferroviaria/`. Mantenha as fontes em resolução nativa e leve para `public/assets/visual/railway/` somente as peças usadas no jogo. Gere os recortes novamente com `node scripts/pack-railway-art.cjs`. O manifesto indica recorte, dimensão nativa e referência de ancoragem de cada PNG.
+O kit reúne **90 peças de uso individual e 13 pranchas-fonte**. Os recortes ficam em `referencias/cenarios/estacao-ferroviaria/`. Mantenha as fontes em resolução nativa. As peças carregadas pelo jogo ficam em `public/assets/visual/railway/`. Gere os recortes novamente com `node scripts/pack-railway-art.cjs`. O manifesto indica recorte, dimensão nativa e referência de ancoragem de cada PNG.
 
 | Pasta | Arquivos e função |
 | --- | --- |
 | `sprites/exterior/` | 37 peças. Prédio principal, locomotiva, tender, três tipos de vagão e dresina. Cabine, galpão, cobertura, escada, rampa e mureta. Sinais, batente, alavanca, poste, coluna d'água, banco, placa e grade. Capins, trepadeira, arbustos, samambaia, árvore jovem e pedras. Bagagens, latões, caixotes, carrinho, telhas, cerca caída, barril e quadro externo. |
-| `sprites/interior/` | 14 peças. Parede do fundo, parede lateral, rodapé, janela do guichê, porta e alçapão. Balcão, banco, relógio, lamparina, estante, prateleira de bagagem, quadro de horários e balança. |
+| `sprites/interior/` | 14 peças da primeira sala de espera. |
+| `sprites/interior-frontal/` | 22 peças da reforma. Paredes, guichê, batente, lambril, bancos, bilheteria, quadro de horários, relógio, lampião, bagagens e marcas de desgaste. |
 | `pisos/` | 6 texturas opacas de 256 × 256 px. Terra com musgo, cascalho, lastro, lajes da plataforma, tábuas internas e ladrilho antigo. Amostre com origem no mundo para preservar a continuidade entre blocos. |
 | `trilhos/` | 11 peças. Retas horizontal e vertical, travessia modular, via envelhecida, trecho quebrado, travessia isolada, dormente, eixos, pilha de dormentes, lastro solto e caixa de desvio. |
 

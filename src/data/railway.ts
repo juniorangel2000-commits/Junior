@@ -27,24 +27,27 @@ export const YARD_BROKEN = {left:1792,right:1872};
 export const STATION_DOOR = {x:52.5*TILE,y:31.6*TILE};
 
 const gravelRoutes: Route[] = [
-  [[40,7.5],[40,22],[44,29],[47,32.5]],
-  [[64,7.5],[64,22],[60,29],[57,32.5]],
-  [[18,44],[40,44.2],[66,44],[90,44.2]],
-  [[18,44],[14,38],[11,30],[11,7.5]],
-  [[67.5,44],[67.5,50],[70,54]],
+  [[38.8,6.8],[39.4,9.5],[40.5,12.7],[40.9,16.4],[40.2,20.1],[40.9,23.7],[42.8,26.8],[44.2,29.2],[47,32.5]],
+  [[66,6.8],[65.6,10.1],[64.2,13],[63.1,16.2],[63.3,19.9],[62.5,23.3],[61,26.7],[59.3,29.8],[57,32.5]],
+  [[18,44],[23.8,44.6],[31.3,44.9],[38.2,43.6],[46.9,43.8],[56,44.9],[62.6,44.45],[67.5,44],[75,43.5],[82.2,44.2],[89,45.4]],
+  [[18,44],[15.6,41.5],[13.7,37.3],[11.4,32.4],[10.2,27.3],[10.7,22.1],[11.7,17.3],[10.9,11.9],[10,6.8]],
+  [[67.5,44],[67.5,50],[68.4,52.2],[70,54]],
 ];
-function routeDistance(x:number,y:number,route:Route):number {
+function routeDistanceSquared(x:number,y:number,route:Route):number {
   let nearest=Infinity;
   for(let i=1;i<route.length;i++){
     const [ax,ay]=route[i-1],[bx,by]=route[i],dx=bx-ax,dy=by-ay;
     const t=Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/(dx*dx+dy*dy)));
-    nearest=Math.min(nearest,Math.hypot(x-ax-t*dx,y-ay-t*dy));
+    const px=x-ax-t*dx,py=y-ay-t*dy;
+    nearest=Math.min(nearest,px*px+py*py);
   }
   return nearest;
 }
 export const railwayRoadDistance=(y:number):number=>Math.abs(y-RAILWAY_ROAD_Y);
 export function railwayGravelDistance(x:number,y:number):number {
-  let nearest=Infinity;for(const r of gravelRoutes)nearest=Math.min(nearest,routeDistance(x,y,r));return nearest;
+  let nearest=Infinity;
+  for(const route of gravelRoutes)nearest=Math.min(nearest,routeDistanceSquared(x,y,route));
+  return Math.sqrt(nearest);
 }
 /** Distância (em ladrilhos) até o eixo de uma linha; a secundária começa em x=30. */
 export function railwayBallastDistance(x:number,y:number):number {
@@ -134,7 +137,11 @@ const thicket=(x:number,y:number)=>{
   const behind=y>=19&&y<29.5&&x>=36&&x<69;
   const foot=y>=PLATFORM.bottom+.2&&y<PLATFORM.bottom+1&&x>=PLATFORM.left+1&&x<PLATFORM.right;
   const shed=x>=62&&x<88&&y>=58&&y<62;
-  return yardLine?.62:behind?.42:foot?.30:shed?.45:0;
+  if(yardLine||behind||foot||shed)return yardLine?.62:behind?.42:foot?.30:.45;
+  const distance=railwayGravelDistance(x+.5,y+.5);
+  const patch=Math.sin(x*.45+y*.28)+.62*Math.sin(x*.98-y*.67);
+  return railwayRoadDistance(y+.5)>4.5&&distance>1.6&&distance<3.8&&
+    !onPlatform(x+.5,y+.5)&&railwayBallastDistance(x+.5,y+.5)>1.7&&patch>.5?.28:0;
 };
 const railGrass=['rail-grass-green','rail-grass-plume','rail-grass-dry','rail-brambles','rail-fern'] as const;
 for(let y=2;y<WORLD_HEIGHT-2;y++)for(let x=2;x<WORLD_WIDTH-2;x++){

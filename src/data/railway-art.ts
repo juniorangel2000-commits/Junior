@@ -60,6 +60,6 @@ export function isRailwayKind(kind:string|undefined):kind is RailwayKind {
   return !!kind&&Object.hasOwn(RAILWAY_ART,kind);
 }
 /** Pisos (256 × 256, repetíveis) e módulos de trilho (128 × 128, exibidos a 64 × 64). */
-export const RAILWAY_FLOORS = ['terra-com-musgo','cascalho','lastro','lajes-da-plataforma','tabuas-internas','ladrilho-antigo'] as const;
+export const RAILWAY_FLOORS = ['terra-com-musgo','cascalho','lastro','lajes-da-plataforma'] as const;
 export const RAILWAY_TRACKS = ['reta-horizontal','travessia-modular'] as const;
 export const railwayTexture=(file:string)=>`railway-${file}`;

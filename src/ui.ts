@@ -215,7 +215,7 @@ export class GameUI {
     const copy=toolReferenceParts(slot);
     const seed=quickItem(slot);if(cropFromSeed(seed)){this.callbacks.onUseItem(seed as ItemId);this.updateQuickbar();return;}
     this.callbacks.onTool(quickAction(slot),copy?.id);
-    if(seed&&(isMachine(seed)||machineIngredient(seed)))this.callbacks.onUseItem(seed as ItemId);
+    if(seed&&(seed==='campfire'||isMachine(seed)||machineIngredient(seed)))this.callbacks.onUseItem(seed as ItemId);
     else if(copy&&quickAction(slot)==='hand'&&USABLE_VILLAGE_ITEMS.includes(copy.kind))this.callbacks.onUseItem(copy.kind,copy.id);
     else if (quickItem(slot) && quickAction(slot) === 'hand') this.toast(`${this.slotInfo(slot).label}: material disponível na mochila para fabricar e construir.`);
     this.updateQuickbar();

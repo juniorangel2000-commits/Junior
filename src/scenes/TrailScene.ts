@@ -16,6 +16,8 @@ import { RailwayHallWorld, preloadRailwayHall } from '../railway-hall-world';
 import { RAILWAY_HALL_ENTRY, RAILWAY_HALL_EXIT, RAILWAY_HALL_SIZE } from '../data/railway-hall';
 import { ruinsHasWetTraces } from '../data/ruins-story';
 import { blockMountedEntry } from '../riding-guard';
+import { installWorldCompanion } from '../dungeons/world-pet-controller';
+import { preloadPetArt } from '../dungeons/pet-sprites';
 import { CITY_RUINS_RETURN, RUINS_ENTRY, RUINS_EXIT, RUINS_RAILWAY_EXIT, RUINS_RAILWAY_RETURN, RAILWAY_ENTRY, RAILWAY_EXIT } from '../data/ruins-road';
 import { RailwayWorld, preloadRailway } from '../railway-world';
 import { RAILWAY_SIZE } from '../data/railway';
@@ -97,8 +99,9 @@ export class TrailScene extends Phaser.Scene {
   preload():void{
     const data=this.sys.settings.data as TrailStart|undefined;
     if(this.area==='ruins'&&data?.save?.ruinsCellarPosition)preloadRuinsCellar(this);
+    else if(this.area==='railway'&&data?.save?.railwayHallPosition)preloadRailwayHall(this);
     else this.trail.preload(this);
-    if(this.area==='railway')preloadRailwayHall(this);
+    if(this.area==='railway')preloadPetArt(this);
   }
   getGroundItemRuntime(){return this.player?this.grounds:undefined;}
   getMineMissionRuntime=()=>this.missions;
@@ -139,6 +142,14 @@ export class TrailScene extends Phaser.Scene {
     this.updateHUD();
     this.input.keyboard!.on('keydown',this.key,this);
     this.input.on('wheel',this.wheel,this);
+    if(this.area==='railway'){
+      this.input.on('pointerdown',this.pointer,this);
+      installWorldCompanion(this,()=>({
+        save:this.state,player:this.player,area:'railway',space:this.inHome?'railway-hall':'outdoors',
+        bounds:this.mapSize,blockedPoint:(x,y)=>this.movementBlockedPoint(x,y)||this.world.layout.inWater(x,y),
+        enabled:true,canMove:this.canPlay(),
+      }),this.ui,this.persist);
+    }
     this.scale.on('resize',this.applyCamera);
     window.addEventListener('pagehide',this.persist);
     window.addEventListener('beforeunload',this.persist);
@@ -149,6 +160,7 @@ export class TrailScene extends Phaser.Scene {
       this.daylight.destroy();
       this.input.keyboard?.off('keydown',this.key,this);
       this.input.off('wheel',this.wheel,this);
+      this.input.off('pointerdown',this.pointer,this);
       this.scale.off('resize',this.applyCamera);
       window.removeEventListener('pagehide',this.persist);
       window.removeEventListener('beforeunload',this.persist);
@@ -220,29 +232,35 @@ export class TrailScene extends Phaser.Scene {
   }
 
   private key=(event:KeyboardEvent):void=>{
-    if(event.repeat||this.leaving||event.target instanceof HTMLElement&&event.target.matches('input,textarea,select,[contenteditable="true"]'))return;
+    if(event.repeat||this.leaving)return;
     const key=event.key.toLowerCase();
     if(key==='escape'){event.preventDefault();this.ui.togglePause();return;}
+    if(event.target instanceof HTMLElement&&event.target.matches('input,textarea,select,[contenteditable="true"]'))return;
     if(key==='i'){this.ui.toggleInventory(this.state.inventory);return;}
     if(key==='m'){void this.ui.toggleMap();return;}
     if(key==='c'){this.ui.toggleCrafting(this.state.inventory,false);return;}
     if(!this.canPlay())return;
     if(event.key==='F2'&&DEVELOPMENT_TOOLS)this.openMapEditor();
-    else if(key==='e'){
-      const landmark=this.nearbyLandmark();
-      if(landmark){
-        if(landmark.cellar&&this.state.ruinsMapFound||landmark.hall){this.changeCellar(true);return;}
-        const lines=inspectRuins(this.snapshotState(),landmark,saveGame);
-        if(this.world instanceof RuinsCellarWorld&&this.state.ruinsSealFound)this.world.takeSeal();
-        this.updateHUD();
-        this.ui.showDialogue(landmark.name,lines,undefined,'inspection');
-        return;
-      }
-      const item=this.equippedFishingItem();
-      if(item&&this.nearFishing())void this.useVillageItem(item);
-    }else if(/^[1-9]$/.test(event.key))this.ui.activateSlot(Number(event.key)-1);
+    else if(key==='e')this.interact();
+    else if(/^[1-9]$/.test(event.key))this.ui.activateSlot(Number(event.key)-1);
     else if(['+','=','-','_','Home'].includes(event.key))this.changeCameraZoom(event.key==='Home'?0:['-','_'].includes(event.key)?-1:1);
   };
+  private pointer=(pointer:Phaser.Input.Pointer):void=>{
+    if(pointer.button===0&&this.canPlay())this.interact();
+  };
+  private interact():void {
+    const landmark=this.nearbyLandmark();
+    if(landmark){
+      if((landmark.cellar&&this.state.ruinsMapFound)||landmark.hall){this.changeCellar(true);return;}
+      const lines=inspectRuins(this.snapshotState(),landmark,saveGame);
+      if(this.world instanceof RuinsCellarWorld&&this.state.ruinsSealFound)this.world.takeSeal();
+      this.updateHUD();
+      this.ui.showDialogue(landmark.name,lines,undefined,'inspection');
+      return;
+    }
+    const item=this.equippedFishingItem();
+    if(item&&this.nearFishing())void this.useVillageItem(item);
+  }
   private wheel=(_p:Phaser.Input.Pointer,_objects:unknown[],_x:number,deltaY:number):void=>{
     if(this.canPlay()&&Math.abs(deltaY)>5)this.changeCameraZoom(deltaY>0?-1:1);
   };
