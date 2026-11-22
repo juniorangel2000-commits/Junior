@@ -1,6 +1,6 @@
 import {natureArt} from './nature-catalog';
 import {isRailwayKind, RAILWAY_ART, type RailwayKind} from './railway-art';
-import {RAILWAY_ROAD_Y, railwayRoadProtected, railwayCoastRoadProtected, tileMidpoint} from './ruins-road';
+import {RAILWAY_ROAD_Y, railwayRoadProtected, tileMidpoint} from './ruins-road';
 import {paintedWaterPoint} from './terrain-paint';
 import {TILE, WORLD_HEIGHT, WORLD_WIDTH} from './world-size';
 import {editorObjectKind, type EditorObjectKind, type MapEditData} from '../systems/map-editor';
@@ -207,11 +207,11 @@ export function createRailwayLayout(edits?:MapEditData) {
     if(o.kind==='standingTree'||o.kind==='pine'||natureArt(o.kind)?.solid)return [{left:p.x-14,right:p.x+14,top:p.y-11,bottom:p.y+6}];
     return [];
   });
-  const water=(x:number,y:number)=>!railwayCoastRoadProtected(Math.floor(x/TILE),Math.floor(y/TILE))&&paintedWaterPoint(edits?.terrain,x,y,()=>false);
+  const water=(x:number,y:number)=>paintedWaterPoint(edits?.terrain,x,y,()=>false);
   const blocked=(x:number,y:number):boolean=>{
     if(x<32||y<32||x>=RAILWAY_SIZE.width-32||y>=RAILWAY_SIZE.height-32)return true;
     const tx=Math.floor(x/TILE),ty=Math.floor(y/TILE);
-    const collision=railwayRoadProtected(tx,ty)||railwayCoastRoadProtected(tx,ty)?undefined:edits?.collisions?.[`${tx},${ty}`];
+    const collision=railwayRoadProtected(tx,ty)?undefined:edits?.collisions?.[`${tx},${ty}`];
     if(collision)return collision==='blocked';
     return solid.some(b=>x>b.left&&x<b.right&&y>b.top&&y<b.bottom);
   };

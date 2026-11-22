@@ -7,9 +7,12 @@ import {ANIMAL_BEHAVIOR} from './systems/animals';
 import {readTerrainSprites} from './terrain-sprites';
 import {paintFieldsFloor} from './open-fields-ground';
 import {drawExitSign} from './exit-signs';
+import {drawBridges} from './bridge-art';
+import {addWaterMotion} from './water-motion';
+import {FIELDS_BRIDGES} from './data/bridges';
 import Phaser from 'phaser';
 import type {SaveData} from './types';
-import {FIELDS_SIZE,FIELDS_PROPS,FIELDS_SHED,FIELDS_ANIMALS,MEADOW_PATCHES,FIELDS_IPES,fieldsSafe} from './data/open-fields';
+import {FIELDS_SIZE,FIELDS_PROPS,FIELDS_SHED,FIELDS_ANIMALS,MEADOW_PATCHES,FIELDS_IPES,fieldsSafe,fieldsWater,fieldsRiverEdge,FIELDS_COAST_SIGN} from './data/open-fields';
 import {meadowGrowth,ipeStanding,createFieldAnimalBrain} from './systems/open-fields';
 import type {AnimalBrain} from './systems/animals';
 import {animalSprite,setupAnimalArt} from './forest-art';
@@ -53,6 +56,10 @@ export class OpenFieldsWorld{
   drawExitSign(scene,{x:48,y:2},{x:48,y:4});
   if(!scene.textures.exists('fields-floor')){const canvas=document.createElement('canvas');canvas.width=FIELDS_SIZE.width;canvas.height=FIELDS_SIZE.height;paintFieldsFloor(canvas.getContext('2d')!,readTerrainSprites(scene)!);scene.textures.addCanvas('fields-floor',canvas)!.setFilter(0);}
   scene.add.image(0,0,'fields-floor').setOrigin(0).setDepth(-100);
+  // Rio que vem da propriedade e segue para a Costa: água animada e as mesmas pontes da propriedade.
+  addWaterMotion(scene,(x,y)=>fieldsWater((x+.5)*32,(y+.5)*32),fieldsWater,{...FIELDS_SIZE,alpha:.32,opacity:(x,y)=>.3+.7*Math.min(1,-fieldsRiverEdge(x,y)/40)});
+  drawBridges(scene,FIELDS_BRIDGES);
+  drawExitSign(scene,FIELDS_COAST_SIGN.exit,FIELDS_COAST_SIGN.entry);
   ensureIpeTexture(scene);setupMeadowGrass(scene);
   for(const p of FIELDS_IPES){
    this.ipeStumps.set(p.id,scene.add.image(p.x,p.y+4,'forest-detail-stump').setOrigin(.5,1).setDisplaySize(46,34).setDepth(p.y));

@@ -1,7 +1,7 @@
 import {SwampWorld,preloadSwamp} from '../swamp-world';
 import {RuinsWorld,preloadRuins} from '../ruins-world';
 import {createRuinsLayout} from '../data/ruins';
-import {cityRuinsRoadProtected,ruinsRailwayRoadProtected,railwayRoadProtected,railwayCoastRoadProtected,coastRoadProtected,RAILWAY_COAST_EXIT} from '../data/ruins-road';
+import {cityRuinsRoadProtected,ruinsRailwayRoadProtected,railwayRoadProtected,coastEntryProtected} from '../data/ruins-road';
 import {isRuinKind} from '../data/ruins-art';
 import {isRailwayKind} from '../data/railway-art';
 import {CoastWorld,preloadCoast} from '../coast-world';
@@ -125,8 +125,8 @@ export class MapEditorScene extends Phaser.Scene {
    rebuild:render,objects,originalObjects:original,
    resourcesHidden:this.resourcesHidden,
    setResourcesHidden:hidden=>{this.resourcesHidden=hidden;this.updateResourceVisibility();},
-   protectedTile:(x,y)=>area==='cityForest'&&cityRuinsRoadProtected(x,y)||area==='ruins'&&ruinsRailwayRoadProtected(x,y)||area==='railway'&&(railwayRoadProtected(x,y)||railwayCoastRoadProtected(x,y))||area==='coast'&&coastRoadProtected(x,y)||area==='forest'&&(forestSwampApproach(x,y)||campApproachDistance((x+.5)*32,(y+.5)*32)<32)||isProtectedMapTile(x,y,area==='property'?undefined:area)||area==='property'&&(propertyLakeApproach(x,y)||buildings.has(`${x},${y}`)),
-   protectedTerrainTile:(x,y)=>area==='property'?buildings.has(`${x},${y}`):area==='cityForest'&&cityRuinsRoadProtected(x,y)||area==='ruins'&&ruinsRailwayRoadProtected(x,y)||area==='railway'&&(railwayRoadProtected(x,y)||railwayCoastRoadProtected(x,y))||area==='coast'&&coastRoadProtected(x,y)||area==='forest'&&forestSwampApproach(x,y)||isProtectedMapTile(x,y,area),
+   protectedTile:(x,y)=>area==='cityForest'&&cityRuinsRoadProtected(x,y)||area==='ruins'&&ruinsRailwayRoadProtected(x,y)||area==='railway'&&railwayRoadProtected(x,y)||area==='coast'&&coastEntryProtected(x,y)||area==='forest'&&(forestSwampApproach(x,y)||campApproachDistance((x+.5)*32,(y+.5)*32)<32)||isProtectedMapTile(x,y,area==='property'?undefined:area)||area==='property'&&(propertyLakeApproach(x,y)||buildings.has(`${x},${y}`)),
+   protectedTerrainTile:(x,y)=>area==='property'?buildings.has(`${x},${y}`):area==='cityForest'&&cityRuinsRoadProtected(x,y)||area==='ruins'&&ruinsRailwayRoadProtected(x,y)||area==='railway'&&railwayRoadProtected(x,y)||area==='coast'&&coastEntryProtected(x,y)||area==='forest'&&forestSwampApproach(x,y)||isProtectedMapTile(x,y,area),
    baseWater:area==='coast'?(x,y)=>coastBaseWater((x+.5)*32,(y+.5)*32):area==='swamp'?(x,y)=>swampBaseWater((x+.5)*32,(y+.5)*32):area==='highland'?(x,y)=>highlandWaterPoint((x+.5)*32,(y+.5)*32):area==='survivorCamp'||area==='ruins'||area==='railway'?()=>false:area==='fishingLake'?lakeWater:area==='village'?villageWater:area==='forest'?forestWater:area==='cityForest'?cityForestWater:isDungeonArea(area)?()=>false:isWaterTile,
    baseWaterPoint:area==='coast'?coastBaseWater:area==='swamp'?swampBaseWater:area==='highland'?highlandWaterPoint:area==='survivorCamp'||area==='ruins'||area==='railway'?()=>false:area==='fishingLake'?(x,y)=>lakeWater(x/32,y/32):area==='village'?(x,y)=>villageLakeDistance(x/32,y/32)<0:area==='forest'?(x,y)=>forestWaterDistanceAt(x,y)<0:area==='cityForest'?(x,y)=>cityForestWater(x/32,y/32):isDungeonArea(area)?()=>false:isWaterPoint,
    defaultPoints:defaultMap(area).points as {entry:{x:number;y:number};exit:{x:number;y:number}},
@@ -175,7 +175,6 @@ export class MapEditorScene extends Phaser.Scene {
      if('pierEntries' in layout&&layout.pierEntries.some(p=>layout.blocked(p.x,p.y)||layout.water(p.x,p.y)))
       return 'Encoste a entrada do píer em areia livre e seca.';
      const points=Object.values({...defaultMap(area).points,...map.points});
-     if(area==='railway')for(let x=RAILWAY_COAST_EXIT.x-4;x<=RAILWAY_COAST_EXIT.x;x++)points.push({x,y:RAILWAY_COAST_EXIT.y});
      for(const point of points)if(point){
       const p=tileCenter(point);
       if([[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>layout.blocked(p.x+dx,p.y+dy)||layout.water(p.x+dx,p.y+dy)))return 'Mantenha a chegada e a saída em chão livre.';

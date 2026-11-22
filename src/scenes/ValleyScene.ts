@@ -366,10 +366,10 @@ export class ValleyScene extends Phaser.Scene {
     this.running = true;
     this.paused = false;
     this.ui.showHUD();
-    if(saved.activeArea==='openFields'){this.enterFields(saved);return;}
+    if(saved.activeArea==='openFields'||saved.activeArea==='coast'){this.enterFields(saved);return;}
     if(saved.activeArea==='fishingLake'||saved.activeArea==='highland'){this.enterLake(saved);return;}
     if (saved.activeArea === 'forest'||saved.activeArea==='survivorCamp'||saved.activeArea==='swamp') { this.enterForest(saved); return; }
-    if (saved.activeArea === 'village'||saved.activeArea==='cityForest'||saved.activeArea==='ruins'||saved.activeArea==='railway'||saved.activeArea==='coast') { this.enterVillage(saved); return; }
+    if (saved.activeArea === 'village'||saved.activeArea==='cityForest'||saved.activeArea==='ruins'||saved.activeArea==='railway') { this.enterVillage(saved); return; }
     this.ui.toast(`Que bom ter você de volta, ${saved.profile.name}.`);
     this.updateHUD();
   }
@@ -472,7 +472,8 @@ export class ValleyScene extends Phaser.Scene {
   private enterFields(saved?:SaveData):void {
     if(this.forestActive||this.villageActive||this.state.animalEscort)return;
     this.world.well?.cancel();this.cancelCrafting();this.cancelToolActions();this.toolVisual?.hide();
-    const data=saved??this.snapshotState();data.activeArea='openFields';delete data.homePosition;
+    // Na Costa, os Campos abrem e descem direto para lá (OpenFieldsScene.enterCoast).
+    const data=saved??this.snapshotState();data.activeArea=saved?.activeArea==='coast'?'coast':'openFields';delete data.homePosition;
     if(!saved)data.openFieldsPosition={...FIELDS_ENTRY};
     if(!saveGame(data)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}
     this.villageActive=true;this.paused=true;this.input.keyboard?.resetKeys();
@@ -503,11 +504,11 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private enterVillage(saved?:SaveData):void {
-    if(saved?.activeArea!=='cityForest'&&saved?.activeArea!=='ruins'&&saved?.activeArea!=='railway'&&saved?.activeArea!=='coast'&&!villageAccessUnlocked(saved??this.state)){this.ui.toast(VILLAGE_LOCK_MESSAGE);return;}
+    if(saved?.activeArea!=='cityForest'&&saved?.activeArea!=='ruins'&&saved?.activeArea!=='railway'&&!villageAccessUnlocked(saved??this.state)){this.ui.toast(VILLAGE_LOCK_MESSAGE);return;}
     if(this.forestActive||this.villageActive)return;
     if(!saved&&this.state.animalEscort){this.ui.toast('Deixe o animal na propriedade ou solte a corda com G antes de visitar a vila.');return;}
     this.world.well?.cancel();this.cancelCrafting();this.cancelToolActions();this.toolVisual?.hide();
-    const data=saved??this.snapshotState(),resumeCityForest=data.activeArea==='cityForest'||data.activeArea==='ruins'||data.activeArea==='railway'||data.activeArea==='coast'?data.activeArea:undefined;data.activeArea='village';delete data.homePosition;
+    const data=saved??this.snapshotState(),resumeCityForest=data.activeArea==='cityForest'||data.activeArea==='ruins'||data.activeArea==='railway'?data.activeArea:undefined;data.activeArea='village';delete data.homePosition;
     this.villageActive=true;this.paused=true;this.input.keyboard?.resetKeys();
     const root=document.querySelector<HTMLElement>('#ui')!;root.style.display='none';
     this.cameras.main.fadeOut(SCENE_FADE_MS);

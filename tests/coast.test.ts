@@ -1,31 +1,49 @@
 import {existsSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
-import {createCoastLayout,coastBaseWater,coastShoreX,COAST_ORIGINAL_OBJECTS} from '../src/data/coast';
+import {createCoastLayout,coastBaseWater,coastShoreDistance,COAST_ORIGINAL_OBJECTS,COAST_RIVER} from '../src/data/coast';
+import {FIELDS_COAST_EXIT,FIELDS_COAST_RETURN,FIELDS_RIVER,FIELDS_PROPS,FIELDS_ANIMALS,FIELDS_RETIRED_PATCHES,MEADOW_PATCHES,fieldsBlocked,fieldsPathDistance,fieldsRiverEdge,fieldsPlayerSafe,fieldsSafe,fieldsSolid,fieldsWater} from '../src/data/open-fields';
+import {FIELDS_BRIDGES,mapBridgeAllowsStep} from '../src/data/bridges';
 import {COAST_KINDS} from '../src/data/coast-art';
 import {createRailwayLayout} from '../src/data/railway';
-import {COAST_ENTRY,COAST_EXIT,RAILWAY_COAST_EXIT,RAILWAY_COAST_RETURN,tileMidpoint} from '../src/data/ruins-road';
+import {COAST_ENTRY,COAST_EXIT,tileMidpoint} from '../src/data/ruins-road';
 import {defaultMap} from '../src/data/default-maps';
 import {createCharacterProfile} from '../src/data/characters';
 import {readSceneMap,writeSceneMap} from '../src/systems/scene-map-edits';
 import {createNewSave,migrateSave,validateSave} from '../src/systems/save';
 import {validateMapEdits} from '../src/systems/map-editor';
-import {MapExitPassage} from '../src/systems/map-transition';
+import {DoorwayPassage,MapExitPassage} from '../src/systems/map-transition';
 
 describe('Costa das Marés',()=>{
-  it('continua o asfalto acessível nos dois sentidos, mesmo com pinturas antigas nas chegadas',()=>{
-    const east=tileMidpoint(RAILWAY_COAST_EXIT),west=tileMidpoint(COAST_EXIT);
-    expect(new MapExitPassage().update({x:east.x-24,y:east.y},east,RAILWAY_COAST_EXIT,RAILWAY_COAST_RETURN)).toBe(true);
-    expect(new MapExitPassage().update({x:west.x+24,y:west.y},west,COAST_EXIT,COAST_ENTRY)).toBe(true);
-    for(let x=0;x<96;x++)for(const y of [2.5,4.5,6.5])expect(coastBaseWater((x+.5)*32,y*32)).toBe(false);
-    for(const [factory,area,p] of [
-      [createCoastLayout,'coast',COAST_ENTRY],[createRailwayLayout,'railway',RAILWAY_COAST_RETURN],
-    ] as const){
-      const cell=`${p.x},${p.y}`,pos=tileMidpoint(p),map=defaultMap(area);
-      map.terrain[cell]='water';map.collisions={[cell]:'blocked'};
-      const layout=factory(map);
-      expect(layout.water(pos.x,pos.y)).toBe(false);
-      expect(layout.blocked(pos.x,pos.y)).toBe(false);
-    }
+  it('fica ao sul dos Campos: entra pela saída sul e volta pela borda norte da Costa',()=>{
+    const fields={x:FIELDS_COAST_EXIT.x,y:FIELDS_COAST_EXIT.y+10},coast=tileMidpoint(COAST_EXIT);
+    expect(new DoorwayPassage().update({x:fields.x,y:fields.y-24},fields,FIELDS_COAST_EXIT)).toBe(true);
+    expect(new MapExitPassage().update({x:coast.x,y:coast.y+24},coast,COAST_EXIT,COAST_ENTRY)).toBe(true);
+    // A volta cai no mesmo ponto em que a Costa começa, só que nos Campos, fora do gatilho.
+    expect(FIELDS_COAST_RETURN.x).toBe(tileMidpoint(COAST_ENTRY).x);
+    expect(fieldsSafe(FIELDS_COAST_RETURN)).toBe(true);
+    expect(FIELDS_COAST_RETURN.y).toBeLessThan(FIELDS_COAST_EXIT.y);
+    // Chegada livre mesmo com água e colisão pintadas por cima no F2.
+    const cell=`${COAST_ENTRY.x},${COAST_ENTRY.y}`,pos=tileMidpoint(COAST_ENTRY),map=defaultMap('coast');
+    map.terrain[cell]='water';map.collisions={[cell]:'blocked'};
+    const layout=createCoastLayout(map);
+    expect(layout.water(pos.x,pos.y)).toBe(false);
+    expect(layout.blocked(pos.x,pos.y)).toBe(false);
+    // Sem estrada e sem trilho: a Estação não tem mais saída para a Costa.
+    expect(createRailwayLayout().objects.some(o=>String(o.kind).startsWith('coast-'))).toBe(false);
+  });
+  it('o rio dos Campos continua na Costa e deságua no mar',()=>{
+    const [fx]=FIELDS_RIVER[FIELDS_RIVER.length-1],[cx]=COAST_RIVER[0];
+    expect(Math.abs(fx-cx*32)).toBeLessThan(40);
+    expect(fieldsWater(fx,2290)).toBe(true);
+    expect(coastBaseWater(cx*32,40)).toBe(true);
+    // Do norte até a foz há sempre água ao longo do rio, e a foz está no mar.
+    for(const [x,y] of COAST_RIVER.slice(1))expect(coastBaseWater(x*32,Math.min(y*32,2290))).toBe(true);
+    const mouth=COAST_RIVER[COAST_RIVER.length-2];
+    expect(coastShoreDistance(mouth[0]*32,(mouth[1]+3)*32)).toBeGreaterThan(0);
+    // O mar ocupa o sul e o leste; o norte é terra.
+    expect(coastBaseWater(48*32,70*32)).toBe(true);
+    expect(coastBaseWater(90*32,45*32)).toBe(true);
+    expect(coastBaseWater(48*32,20*32)).toBe(false);
   });
   it('conecta a praia com o mar e restringe o píer à entrada de terra',()=>{
     const layout=createCoastLayout(),[start]=layout.pierEntries;
@@ -40,9 +58,11 @@ describe('Costa das Marés',()=>{
       expect(layout.allowsStep(swimmer,deck)).toBe(false);
       expect(layout.allowsStep(deck,swimmer)).toBe(false);
     }
-    const y=27*32,x=coastShoreX(y);
-    expect(layout.allowsStep({x:x-4,y},{x:x+4,y})).toBe(true);
-    expect(layout.inWater(x+5,y)).toBe(true);
+    // Da areia para o mar a pé, sem degrau: a praia é contínua.
+    const x=40*32,y=(57.6)*32;
+    expect(coastShoreDistance(x,y)).toBeLessThan(0);
+    expect(layout.allowsStep({x,y},{x,y:y+60})).toBe(true);
+    expect(layout.inWater(x,y+60)).toBe(true);
   });
   it('mantém as peças separadas e aceita edição e salvamento compatíveis',()=>{
     const ids=COAST_ORIGINAL_OBJECTS.map(o=>o.id);
@@ -55,16 +75,66 @@ describe('Costa das Marés',()=>{
     const map=readSceneMap(save,'coast');
     const boat=COAST_ORIGINAL_OBJECTS.find(o=>o.kind==='coast-boat')!;
     map.objects[boat.id]={x:boat.x,y:boat.y+1};
-    const tile='20,32';
+    const tile='40,32';
     map.terrain[tile]='sand';map.collisions={[tile]:'blocked'};
     writeSceneMap(save,'coast',map);
     expect(validateMapEdits(map)).toBe(true);
     expect(validateMapEdits({...map,area:'railway'})).toBe(false);
     expect(createCoastLayout(map).objects.find(o=>o.id===boat.id)?.y).toBe(boat.y+1);
-    expect(createCoastLayout(map).blocked(20.5*32,32.5*32)).toBe(true);
+    expect(createCoastLayout(map).blocked(40.5*32,32.5*32)).toBe(true);
     const loaded=migrateSave(JSON.parse(JSON.stringify(save)));
     expect(loaded?.coastMapEdits).toEqual(map);
     expect(loaded?.coastPosition).toEqual(save.coastPosition);
     expect(validateSave({...save,coastPosition:{x:-1,y:450}})).toBe(false);
+  });
+});
+
+describe('Rio dos Campos Abertos',()=>{
+  it('corta os Campos de norte a sul sem engolir árvores, tufos nem a trilha',()=>{
+    expect(fieldsWater(FIELDS_RIVER[0][0],40)).toBe(true);
+    expect(FIELDS_PROPS.every(p=>!fieldsWater(p.x,p.y))).toBe(true);
+    expect(MEADOW_PATCHES.every(p=>!fieldsWater(p.x,p.y))).toBe(true);
+    expect(new Set(MEADOW_PATCHES.map(p=>p.id)).size).toBe(MEADOW_PATCHES.length);
+    for(const a of FIELDS_ANIMALS)expect(fieldsWater(a.x,a.y),a.id).toBe(false);
+    for(let y=0;y<2304;y+=48)expect(fieldsPathDistance(1536,y)<20||!fieldsWater(1536,y)).toBe(true);
+  });
+  it('animais desviam da água; o jogador nada ou cruza pelas pontes, entrando pelas cabeceiras',()=>{
+    const p={x:FIELDS_RIVER[2][0],y:FIELDS_RIVER[2][1]};
+    expect(fieldsBlocked(p.x,p.y)).toBe(true);
+    expect(fieldsSolid(p.x,p.y)).toBe(false);
+    expect(FIELDS_BRIDGES).toHaveLength(2);
+    for(const b of FIELDS_BRIDGES){
+      const y=(b.y+1)*32,left=b.x*32,right=(b.x+b.width)*32,mid=(left+right)/2;
+      // O rio passa por baixo da ponte, e as duas cabeceiras ficam em terra.
+      expect(fieldsRiverEdge(mid,y)).toBeLessThan(0);
+      expect(fieldsWater(mid,y)).toBe(false);
+      expect(fieldsWater(left-6,y)).toBe(false);
+      expect(fieldsWater(right+6,y)).toBe(false);
+      expect(fieldsSolid(mid,b.y*32+2)).toBe(true);
+      expect(mapBridgeAllowsStep(FIELDS_BRIDGES,left-6,y,left+6,y,fieldsWater)).toBe(true);
+      // Subir na ponte pela água do lado não vale.
+      const below={x:mid,y:(b.y+b.height)*32+6};
+      if(fieldsWater(below.x,below.y))expect(mapBridgeAllowsStep(FIELDS_BRIDGES,below.x,below.y,mid,y,fieldsWater)).toBe(false);
+    }
+  });
+});
+
+describe('Saves antigos dos Campos com o rio novo',()=>{
+  it('apaga só os cortes das moitas cobertas pelo rio e aceita o jogador salvo nadando',()=>{
+    const save=createNewSave(createCharacterProfile('Rio'));
+    save.day=9;
+    const kept=MEADOW_PATCHES[0].id,gone=[...FIELDS_RETIRED_PATCHES][0];
+    expect(gone).toBeDefined();
+    const old={...save,openFields:{version:1,cut:{[kept]:3,[gone]:4}}};
+    // O save como estava antes do rio não passa direto na validação nova...
+    expect(validateSave(old)).toBe(false);
+    // ...mas a migração recupera, mantendo o corte da moita que continua lá.
+    const loaded=migrateSave(JSON.parse(JSON.stringify(old)))!;
+    expect(loaded).not.toBeNull();
+    expect(loaded.openFields!.cut).toEqual({[kept]:3});
+    expect(migrateSave(JSON.parse(JSON.stringify(loaded)))!.openFields!.cut).toEqual({[kept]:3});
+    const swim={x:FIELDS_RIVER[3][0],y:FIELDS_RIVER[3][1]};
+    expect(fieldsSafe(swim)).toBe(false);
+    expect(fieldsPlayerSafe(swim)).toBe(true);
   });
 });

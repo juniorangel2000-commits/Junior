@@ -6,7 +6,7 @@ import {drawEditorProp} from './editor-prop-art';
 import {drawExitSign} from './exit-signs';
 import {addWaterMotion} from './water-motion';
 import {RAILWAY_ART, RAILWAY_KINDS, RAILWAY_FLOORS, RAILWAY_TRACKS, isRailwayKind, railwayTexture} from './data/railway-art';
-import {RAILWAY_ENTRY, RAILWAY_EXIT, RAILWAY_ROAD_Y, RAILWAY_COAST_EXIT, RAILWAY_COAST_RETURN, railwayCoastRoadProtected} from './data/ruins-road';
+import {RAILWAY_ENTRY, RAILWAY_EXIT, RAILWAY_ROAD_Y} from './data/ruins-road';
 import {
   createRailwayLayout, onPlatform, PLATFORM, RAILWAY_CROSSINGS, RAILWAY_LINES, RAILWAY_ROAD_HALF_WIDTH, RAILWAY_SIZE,
   railwayBallastDistance, railwayGravelDistance, railwayRoadDistance, railwayYardDistance, railwaySeed, YARD_BROKEN, YARD_LINE_START,
@@ -121,10 +121,7 @@ export class RailwayWorld {
     this.layout=createRailwayLayout(edits);
     this.terrainTexture=palette?'railway-editor-terrain':'railway-play-terrain';
     drawGround(scene);
-    const terrain=Object.fromEntries(Object.entries(edits?.terrain??{}).filter(([id])=>{
-      const [x,y]=id.split(',').map(Number);
-      return !railwayCoastRoadProtected(x,y);
-    }));
+    const terrain=edits?.terrain??{};
     drawMapTerrainEdits(scene,terrain,this.terrainTexture,()=>false,'forest')?.setDepth(-99);
     if(!palette&&Object.values(terrain).includes('water')){
       const water=this.layout.water;
@@ -156,7 +153,6 @@ export class RailwayWorld {
       this.editorObjects.push({id:o.id,kind:o.kind,x:o.x,y:o.y,texture:sprite.texture.key,frame:sprite.frame.name});
     }
     drawExitSign(scene,edits?.points?.exit??RAILWAY_EXIT,edits?.points?.entry??RAILWAY_ENTRY);
-    drawExitSign(scene,RAILWAY_COAST_EXIT,RAILWAY_COAST_RETURN);
   }
   update(_dt:number,player:{x:number;y:number}):void {
     for(const f of this.fading)f.sprite.setAlpha(player.x>f.left&&player.x<f.right&&player.y>f.top&&player.y<f.bottom?.5:1);
