@@ -37,7 +37,7 @@ export const NPC_OUTINGS:readonly NpcOuting[]=[
  {id:'nilo',area:'ruins',weekdays:[2,6],start:H(9),end:H(11,30),spot:{x:384,y:496},facing:'up',activity:'Estudando as ruínas',
   lines:['Cada pedra daqui tem uma história. Este era o posto de pedágio da estrada antiga.','Ainda não entendi tudo o que o selo de bronze quer dizer. As ruínas guardam mais pistas.','Se achar alguma peça curiosa no caminho, traga para a loja. Pago bem por antiguidades.'],
   gift:{items:{goldShard:1},line:'Encontrei isto entre os escombros. Fica com você, de lembrança.'}},
- {id:'icaro',area:'railway',weekdays:[1,3],start:H(9),end:H(11,30),spot:{x:1440,y:1120},facing:'down',activity:'Consertando os trilhos',
+ {id:'icaro',area:'railway',weekdays:[1,3],start:H(9),end:H(11,30),spot:{x:47*32,y:36*32+16},facing:'down',activity:'Consertando os trilhos',
   lines:['Os trilhos ainda estão inteiros! Com algumas peças, dava para fazer uma vagoneta andar de novo.','O relógio da sala de espera parou na mesma hora em que a última composição saiu.','Venho medir, desenhar e sonhar um pouco. Um dia esta linha volta a funcionar.'],
   gift:{items:{spring:2,gear:1},line:'Sobraram peças do conserto. Para mim são sucata, para você podem ser úteis.'}},
  {id:'damiao',area:'coast',weekdays:[2,5],start:H(14),end:H(17),spot:{x:1600,y:1600},facing:'right',activity:'Pescando na enseada',

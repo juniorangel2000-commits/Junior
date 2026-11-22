@@ -17,6 +17,13 @@
 
 ## Feito nesta rodada
 
+- **Moradores nos cenários novos** (`src/systems/npc-outings.ts`, `src/npc-outing-visit.ts`):
+  - Rosa vai ao Pomar, Amélia ao Pântano, Nilo às Ruínas e Ícaro à Estação, na plataforma. Damião (à tarde, depois do lago) e Celina vão à Costa. Tobias vai aos Campos, perto dos ipês.
+  - Cada um sai 2 dias por semana, fora da folga e sem chuva, e fica no ponto dele trabalhando. Quando o jogador chega perto, vira para ele.
+  - A conversa usa o painel da vila: amizade, presentes, história e uma fala do lugar. O presente do dia dá +1 de amizade, e o save guarda `npcOutingGifts`, campo opcional e validado.
+  - Na vila, a loja fica fechada nesse horário, e a placa e a janela do morador dizem onde ele está e quando volta.
+  - Os testes de rotina da vila passaram a usar um dia sem saídas (`tests/helpers/quiet-day.ts`).
+
 - **Pomar Abandonado** (Codex: `19bcf29`, `84d8360`; Claude terminou):
   - **Onde fica:** a leste da Vila. A saída é a borda leste da Vila em (94, 62), e a chegada é a borda oeste do Pomar em (1, 56). No vale, o Pomar fica em (6144, 192), logo abaixo das Ruínas.
   - **O que tem:** trilhas de terra, macieiras, pereiras, laranjeiras e frutíferas secas, prensa antiga, galpão, lagoa de irrigação e caixotes (`src/data/orchard.ts`, `src/orchard-world.ts`).
@@ -77,6 +84,7 @@
 
 ## Testes
 
+- Saídas dos moradores: 2.258 testes. No Chromium, os sete moradores foram encontrados no cenário, conversaram e deram o presente, sem erros de página.
 - Final, com o Pomar: `npm run check` passou e `npm test` passou com 2.254 testes em 271 arquivos.
 - No Chromium, com o Pomar:
   - Vila → Pomar, com chegada em (4,5; 56,5);
