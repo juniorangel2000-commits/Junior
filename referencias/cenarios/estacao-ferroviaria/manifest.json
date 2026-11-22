@@ -1,0 +1,890 @@
+{
+  "units": "px",
+  "cropFormat": "[esquerda, topo, direita exclusiva, base exclusiva]",
+  "assets": [
+    {
+      "file": "sprites/exterior/predio-principal.png",
+      "source": "fontes/fachada.png",
+      "crop": [
+        0,
+        0,
+        1774,
+        887
+      ],
+      "width": 1778,
+      "height": 867,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/locomotiva.png",
+      "source": "fontes/composicoes.png",
+      "crop": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "width": 503,
+      "height": 277,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/tender.png",
+      "source": "fontes/composicoes.png",
+      "crop": [
+        520,
+        0,
+        997,
+        512
+      ],
+      "width": 451,
+      "height": 219,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/vagao-passageiros.png",
+      "source": "fontes/composicoes.png",
+      "crop": [
+        997,
+        0,
+        1536,
+        512
+      ],
+      "width": 515,
+      "height": 266,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/vagao-carga.png",
+      "source": "fontes/composicoes.png",
+      "crop": [
+        0,
+        512,
+        512,
+        1024
+      ],
+      "width": 481,
+      "height": 266,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/vagao-plataforma.png",
+      "source": "fontes/composicoes.png",
+      "crop": [
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "width": 500,
+      "height": 167,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/dresina.png",
+      "source": "fontes/composicoes.png",
+      "crop": [
+        1024,
+        512,
+        1536,
+        1024
+      ],
+      "width": 385,
+      "height": 225,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/cabine-de-sinais.png",
+      "source": "fontes/estruturas.png",
+      "crop": [
+        0,
+        0,
+        458,
+        512
+      ],
+      "width": 416,
+      "height": 408,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/galpao-de-carga.png",
+      "source": "fontes/estruturas.png",
+      "crop": [
+        458,
+        0,
+        1010,
+        512
+      ],
+      "width": 516,
+      "height": 352,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/cobertura-de-plataforma.png",
+      "source": "fontes/estruturas.png",
+      "crop": [
+        1024,
+        0,
+        1536,
+        512
+      ],
+      "width": 499,
+      "height": 321,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/escada-da-plataforma.png",
+      "source": "fontes/estruturas.png",
+      "crop": [
+        0,
+        512,
+        460,
+        1024
+      ],
+      "width": 404,
+      "height": 196,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/rampa-de-carga.png",
+      "source": "fontes/estruturas.png",
+      "crop": [
+        460,
+        512,
+        975,
+        1024
+      ],
+      "width": 430,
+      "height": 261,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/mureta-da-plataforma.png",
+      "source": "fontes/estruturas.png",
+      "crop": [
+        975,
+        512,
+        1536,
+        1024
+      ],
+      "width": 504,
+      "height": 224,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/semaforo-ferroviario.png",
+      "source": "fontes/sinalizacao.png",
+      "crop": [
+        0,
+        0,
+        443,
+        443
+      ],
+      "width": 236,
+      "height": 413,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/batente-fim-de-via.png",
+      "source": "fontes/sinalizacao.png",
+      "crop": [
+        443,
+        0,
+        887,
+        443
+      ],
+      "width": 389,
+      "height": 165,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/alavanca-de-desvio.png",
+      "source": "fontes/sinalizacao.png",
+      "crop": [
+        887,
+        0,
+        1330,
+        443
+      ],
+      "width": 324,
+      "height": 250,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/poste-de-luz.png",
+      "source": "fontes/sinalizacao.png",
+      "crop": [
+        1330,
+        0,
+        1774,
+        443
+      ],
+      "width": 250,
+      "height": 405,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/coluna-dagua.png",
+      "source": "fontes/sinalizacao.png",
+      "crop": [
+        0,
+        443,
+        443,
+        887
+      ],
+      "width": 326,
+      "height": 394,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/banco-externo.png",
+      "source": "fontes/sinalizacao.png",
+      "crop": [
+        443,
+        443,
+        887,
+        887
+      ],
+      "width": 399,
+      "height": 245,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/placa-da-estacao.png",
+      "source": "fontes/sinalizacao.png",
+      "crop": [
+        887,
+        443,
+        1330,
+        887
+      ],
+      "width": 370,
+      "height": 310,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/grade-de-protecao.png",
+      "source": "fontes/sinalizacao.png",
+      "crop": [
+        1330,
+        443,
+        1774,
+        887
+      ],
+      "width": 374,
+      "height": 232,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/capim-verde.png",
+      "source": "fontes/vegetacao.png",
+      "crop": [
+        0,
+        0,
+        443,
+        443
+      ],
+      "width": 402,
+      "height": 393,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/capim-com-plumas.png",
+      "source": "fontes/vegetacao.png",
+      "crop": [
+        443,
+        0,
+        887,
+        443
+      ],
+      "width": 413,
+      "height": 404,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/capim-seco.png",
+      "source": "fontes/vegetacao.png",
+      "crop": [
+        887,
+        0,
+        1330,
+        443
+      ],
+      "width": 406,
+      "height": 391,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/trepadeira.png",
+      "source": "fontes/vegetacao.png",
+      "crop": [
+        1330,
+        0,
+        1774,
+        443
+      ],
+      "width": 385,
+      "height": 382,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/silvas.png",
+      "source": "fontes/vegetacao.png",
+      "crop": [
+        0,
+        443,
+        443,
+        887
+      ],
+      "width": 408,
+      "height": 283,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/samambaia-com-flores.png",
+      "source": "fontes/vegetacao.png",
+      "crop": [
+        443,
+        443,
+        887,
+        887
+      ],
+      "width": 409,
+      "height": 285,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/arvore-jovem.png",
+      "source": "fontes/vegetacao.png",
+      "crop": [
+        887,
+        443,
+        1330,
+        887
+      ],
+      "width": 388,
+      "height": 374,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/pedras-com-musgo.png",
+      "source": "fontes/vegetacao.png",
+      "crop": [
+        1330,
+        443,
+        1774,
+        887
+      ],
+      "width": 418,
+      "height": 241,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/malas.png",
+      "source": "fontes/cargas.png",
+      "crop": [
+        0,
+        0,
+        443,
+        443
+      ],
+      "width": 400,
+      "height": 346,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/latoes-de-leite.png",
+      "source": "fontes/cargas.png",
+      "crop": [
+        443,
+        0,
+        887,
+        443
+      ],
+      "width": 401,
+      "height": 349,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/caixotes.png",
+      "source": "fontes/cargas.png",
+      "crop": [
+        887,
+        0,
+        1330,
+        443
+      ],
+      "width": 408,
+      "height": 366,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/carrinho-de-bagagem.png",
+      "source": "fontes/cargas.png",
+      "crop": [
+        1330,
+        0,
+        1774,
+        443
+      ],
+      "width": 408,
+      "height": 343,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/telhas-caidas.png",
+      "source": "fontes/cargas.png",
+      "crop": [
+        0,
+        443,
+        443,
+        887
+      ],
+      "width": 408,
+      "height": 289,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/cerca-caida.png",
+      "source": "fontes/cargas.png",
+      "crop": [
+        443,
+        443,
+        887,
+        887
+      ],
+      "width": 414,
+      "height": 192,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/barril-e-caixa.png",
+      "source": "fontes/cargas.png",
+      "crop": [
+        887,
+        443,
+        1330,
+        887
+      ],
+      "width": 421,
+      "height": 304,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/exterior/quadro-de-avisos-externo.png",
+      "source": "fontes/cargas.png",
+      "crop": [
+        1330,
+        443,
+        1774,
+        887
+      ],
+      "width": 388,
+      "height": 409,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "trilhos/dormente.png",
+      "source": "fontes/via.png",
+      "crop": [
+        0,
+        0,
+        443,
+        443
+      ],
+      "width": 137,
+      "height": 378,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "trilhos/trecho-envelhecido.png",
+      "source": "fontes/via.png",
+      "crop": [
+        443,
+        0,
+        887,
+        443
+      ],
+      "width": 420,
+      "height": 280,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "trilhos/trecho-quebrado.png",
+      "source": "fontes/via.png",
+      "crop": [
+        887,
+        0,
+        1330,
+        443
+      ],
+      "width": 362,
+      "height": 295,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "trilhos/travessia-de-madeira.png",
+      "source": "fontes/via.png",
+      "crop": [
+        1330,
+        0,
+        1774,
+        443
+      ],
+      "width": 405,
+      "height": 353,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "trilhos/eixos-e-rodas.png",
+      "source": "fontes/via.png",
+      "crop": [
+        0,
+        443,
+        443,
+        887
+      ],
+      "width": 381,
+      "height": 335,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "trilhos/pilha-de-dormentes.png",
+      "source": "fontes/via.png",
+      "crop": [
+        443,
+        443,
+        887,
+        887
+      ],
+      "width": 407,
+      "height": 292,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "trilhos/lastro-solto.png",
+      "source": "fontes/via.png",
+      "crop": [
+        887,
+        443,
+        1330,
+        887
+      ],
+      "width": 435,
+      "height": 203,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "trilhos/caixa-de-desvio.png",
+      "source": "fontes/via.png",
+      "crop": [
+        1330,
+        443,
+        1774,
+        887
+      ],
+      "width": 315,
+      "height": 347,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior/parede-do-fundo.png",
+      "source": "fontes/estrutura-interior.png",
+      "crop": [
+        0,
+        0,
+        580,
+        496
+      ],
+      "width": 504,
+      "height": 452,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior/parede-lateral.png",
+      "source": "fontes/estrutura-interior.png",
+      "crop": [
+        630,
+        0,
+        990,
+        488
+      ],
+      "width": 219,
+      "height": 456,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior/rodape-frontal.png",
+      "source": "fontes/estrutura-interior.png",
+      "crop": [
+        1024,
+        0,
+        1536,
+        512
+      ],
+      "width": 445,
+      "height": 109,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior/janela-do-guiche.png",
+      "source": "fontes/estrutura-interior.png",
+      "crop": [
+        0,
+        512,
+        512,
+        1024
+      ],
+      "width": 441,
+      "height": 486,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior/porta-aberta.png",
+      "source": "fontes/estrutura-interior.png",
+      "crop": [
+        560,
+        490,
+        1010,
+        1024
+      ],
+      "width": 377,
+      "height": 501,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior/alcapao.png",
+      "source": "fontes/estrutura-interior.png",
+      "crop": [
+        1024,
+        512,
+        1536,
+        1024
+      ],
+      "width": 460,
+      "height": 293,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior/balcao-de-bilhetes.png",
+      "source": "fontes/moveis.png",
+      "crop": [
+        0,
+        0,
+        443,
+        443
+      ],
+      "width": 388,
+      "height": 416,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior/banco-de-espera.png",
+      "source": "fontes/moveis.png",
+      "crop": [
+        437,
+        0,
+        940,
+        443
+      ],
+      "width": 454,
+      "height": 332,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior/relogio.png",
+      "source": "fontes/moveis.png",
+      "crop": [
+        940,
+        0,
+        1330,
+        443
+      ],
+      "width": 320,
+      "height": 373,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior/lamparina.png",
+      "source": "fontes/moveis.png",
+      "crop": [
+        1330,
+        0,
+        1774,
+        443
+      ],
+      "width": 178,
+      "height": 384,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior/estante-de-papeis.png",
+      "source": "fontes/moveis.png",
+      "crop": [
+        0,
+        443,
+        443,
+        887
+      ],
+      "width": 375,
+      "height": 355,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior/prateleira-de-bagagem.png",
+      "source": "fontes/moveis.png",
+      "crop": [
+        437,
+        443,
+        935,
+        887
+      ],
+      "width": 451,
+      "height": 311,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior/quadro-de-horarios.png",
+      "source": "fontes/moveis.png",
+      "crop": [
+        935,
+        443,
+        1330,
+        887
+      ],
+      "width": 330,
+      "height": 410,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "sprites/interior/balanca-de-bagagem.png",
+      "source": "fontes/moveis.png",
+      "crop": [
+        1330,
+        443,
+        1774,
+        887
+      ],
+      "width": 362,
+      "height": 420,
+      "anchor": "base-centro"
+    },
+    {
+      "file": "pisos/terra-com-musgo.png",
+      "source": "fontes/materiais.png",
+      "crop": [
+        44,
+        44,
+        468,
+        468
+      ],
+      "width": 256,
+      "height": 256,
+      "anchor": "canto-superior-esquerdo"
+    },
+    {
+      "file": "pisos/cascalho.png",
+      "source": "fontes/materiais.png",
+      "crop": [
+        556,
+        44,
+        980,
+        468
+      ],
+      "width": 256,
+      "height": 256,
+      "anchor": "canto-superior-esquerdo"
+    },
+    {
+      "file": "pisos/lastro.png",
+      "source": "fontes/materiais.png",
+      "crop": [
+        1068,
+        44,
+        1492,
+        468
+      ],
+      "width": 256,
+      "height": 256,
+      "anchor": "canto-superior-esquerdo"
+    },
+    {
+      "file": "pisos/lajes-da-plataforma.png",
+      "source": "fontes/materiais.png",
+      "crop": [
+        44,
+        556,
+        468,
+        980
+      ],
+      "width": 256,
+      "height": 256,
+      "anchor": "canto-superior-esquerdo"
+    },
+    {
+      "file": "pisos/tabuas-internas.png",
+      "source": "fontes/materiais.png",
+      "crop": [
+        556,
+        556,
+        980,
+        980
+      ],
+      "width": 256,
+      "height": 256,
+      "anchor": "canto-superior-esquerdo"
+    },
+    {
+      "file": "pisos/ladrilho-antigo.png",
+      "source": "fontes/materiais.png",
+      "crop": [
+        1068,
+        556,
+        1492,
+        980
+      ],
+      "width": 256,
+      "height": 256,
+      "anchor": "canto-superior-esquerdo"
+    },
+    {
+      "file": "trilhos/reta-horizontal.png",
+      "source": "fontes/via.png",
+      "crop": [
+        614,
+        108,
+        780,
+        404
+      ],
+      "width": 128,
+      "height": 128,
+      "anchor": "canto-superior-esquerdo"
+    },
+    {
+      "file": "trilhos/reta-vertical.png",
+      "source": "fontes/via.png",
+      "crop": [
+        614,
+        108,
+        780,
+        404
+      ],
+      "width": 128,
+      "height": 128,
+      "anchor": "canto-superior-esquerdo"
+    },
+    {
+      "file": "trilhos/travessia-modular.png",
+      "source": "fontes/via.png",
+      "crop": [
+        1344,
+        67,
+        1749,
+        420
+      ],
+      "width": 192,
+      "height": 224,
+      "anchor": "canto-superior-esquerdo"
+    }
+  ]
+}
