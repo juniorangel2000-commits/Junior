@@ -72,7 +72,7 @@ export class CityForestScene extends Phaser.Scene{
  create(data:CityForestStart):void{
   gameAudio.setScene('game');
   setupTreeWind(this);
-  const restoreRuins=data.save.activeArea==='ruins'||data.save.activeArea==='railway'?data.save.activeArea:undefined;
+  const restoreRuins=data.save.activeArea==='ruins'||data.save.activeArea==='railway'||data.save.activeArea==='coast'?data.save.activeArea:undefined;
   this.state=structuredClone(data.save);this.state.activeArea='cityForest';delete this.state.homePosition;delete this.state.merchantInterior;delete this.state.blacksmithInterior;
   this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.fishing=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.lakePassage.reset();this.ruinsPassage.reset();this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
@@ -112,7 +112,7 @@ export class CityForestScene extends Phaser.Scene{
   if(this.state.dungeonRun)this.enterDungeons();else if(restoreRuins)this.enterRuins(true,restoreRuins);else this.persist();
  }
  /** `area` 'railway': a retomada passa pelas Ruínas e segue para a Estação. */
- private enterRuins(resume=false,area:'ruins'|'railway'='ruins'):void {
+ private enterRuins(resume=false,area:'ruins'|'railway'|'coast'='ruins'):void {
   if(this.leaving)return;
   const save=structuredClone(this.snapshotState()),ui=this.ui,onReturn=this.onReturn;
   save.activeArea=resume?area:'ruins';

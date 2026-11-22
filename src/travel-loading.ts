@@ -8,7 +8,7 @@ import {mountWorldLoading} from './world-loading';
  * cenário fica pausado para o personagem não andar escondido. */
 // Entrar em casa (Interior) é só uma porta: não tem a viagem a cavalo.
 const AREAS:Record<string,string>={Vale:'property',Floresta:'forest',Campos:'openFields',Vila:'village',AcessoCidade:'cityForest',
- Lago:'fishingLake',Serra:'highland',Acampamento:'survivorCamp',Pantano:'swamp',Ruinas:'ruins',Estacao:'railway',Mina:'highland',Mineracao:'highland',Dungeons:'cityForest'};
+ Lago:'fishingLake',Serra:'highland',Acampamento:'survivorCamp',Pantano:'swamp',Ruinas:'ruins',Estacao:'railway',Costa:'coast',Mina:'highland',Mineracao:'highland',Dungeons:'cityForest'};
 const LABELS:Record<string,string>={Mina:'Descendo à mina…',Mineracao:'Descendo à mina…',Dungeons:'Partindo em expedição…'};
 export const TRAVEL_MIN_MS=900;
 type Info={character?:string;area:string;time?:number};

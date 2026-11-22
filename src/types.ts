@@ -117,6 +117,8 @@ export interface SaveData {
   /** Estação Ferroviária (docs/cenarios/ESTACAO-FERROVIARIA.md). */
   railwayMapEdits?:MapEditData;
   railwayPosition?:TilePoint & {direction?:CharacterDirection};
+  coastMapEdits?:MapEditData;
+  coastPosition?:TilePoint & {direction?:CharacterDirection};
   /** Presente só enquanto o jogador está na sala de espera da Estação. */
   railwayHallPosition?:TilePoint & {direction?:CharacterDirection};
   /** Outdoor equipment references an owned sword; missing keeps hands free. */
@@ -143,7 +145,7 @@ export interface SaveData {
   /** One-time homestead layout; removed starter fences/beds are never recreated. */
   homesteadRevision?:1;
   selectedCrop?:import('./data/crops').CropId;
-  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake' | 'survivorCamp' | 'highland' | 'openFields' | 'swamp' | 'ruins' | 'railway';
+  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake' | 'survivorCamp' | 'highland' | 'openFields' | 'swamp' | 'ruins' | 'railway' | 'coast';
   fishingLakePosition?: TilePoint & { direction?: CharacterDirection };
   fishingLakeMapEdits?:MapEditData;
   cityForestPosition?: TilePoint & { direction?: CharacterDirection };

@@ -21,6 +21,9 @@ import { preloadPetArt } from '../dungeons/pet-sprites';
 import { CITY_RUINS_RETURN, RUINS_ENTRY, RUINS_EXIT, RUINS_RAILWAY_EXIT, RUINS_RAILWAY_RETURN, RAILWAY_ENTRY, RAILWAY_EXIT } from '../data/ruins-road';
 import { RailwayWorld, preloadRailway } from '../railway-world';
 import { RAILWAY_SIZE } from '../data/railway';
+import { CoastWorld, preloadCoast } from '../coast-world';
+import { COAST_SIZE } from '../data/coast';
+import { COAST_ENTRY, COAST_EXIT, RAILWAY_COAST_EXIT, RAILWAY_COAST_RETURN } from '../data/ruins-road';
 import { AREA_NAMES } from '../data/area-names';
 import { directionFromVector, directionVector } from '../character-directions';
 import { sampleWaterDepth } from '../swimming/config';
@@ -58,14 +61,24 @@ const TRAILS={
     exit:(edits?:MapEditData)=>edits?.points?.exit??RAILWAY_EXIT,
     arrival:'right',returnArea:'ruins',returnPosition:'ruinsPosition',returnTile:RUINS_RAILWAY_RETURN,returnFacing:'left',
     returnName:AREA_NAMES.ruins,prompt:'A estação fica ao sul da estrada. A plataforma e os trilhos estão logo atrás do prédio.'},
+  coast:{scene:'Costa',map:'coastMapEdits',position:'coastPosition',size:COAST_SIZE,
+    World:CoastWorld,preload:preloadCoast,entry:(edits?:MapEditData)=>edits?.points?.entry??COAST_ENTRY,
+    exit:(edits?:MapEditData)=>edits?.points?.exit??COAST_EXIT,
+    arrival:'right',returnArea:'railway',returnPosition:'railwayPosition',returnTile:RAILWAY_COAST_RETURN,returnFacing:'left',
+    returnName:AREA_NAMES.railway,prompt:'Siga a trilha entre as dunas até o abrigo e o píer da enseada.'},
 } as const;
+const ROAD_LINKS={
+  ruins:{area:'railway',exit:RUINS_RAILWAY_EXIT,approach:RUINS_RAILWAY_RETURN},
+  railway:{area:'coast',exit:RAILWAY_COAST_EXIT,approach:RAILWAY_COAST_RETURN},
+} as const;
+type RoadLink=typeof ROAD_LINKS[keyof typeof ROAD_LINKS];
 
 export class TrailScene extends Phaser.Scene {
   private readonly trail:(typeof TRAILS)[keyof typeof TRAILS];
   private state!: SaveData;
   private ui!: TrailStart['ui'];
   private onReturn!: TrailStart['onReturn'];
-  private world!: SwampWorld|RuinsWorld|RuinsCellarWorld|RailwayWorld|RailwayHallWorld;
+  private world!: SwampWorld|RuinsWorld|RuinsCellarWorld|RailwayWorld|RailwayHallWorld|CoastWorld;
   /** Interiores: o porão das Ruínas e a sala de espera da Estação. */
   get inHome():boolean{return this.area==='ruins'&&!!this.state?.ruinsCellarPosition||this.area==='railway'&&!!this.state?.railwayHallPosition;}
   private get mapSize(){return this.inHome?(this.area==='railway'?RAILWAY_HALL_SIZE:RUINS_CELLAR_SIZE):this.trail.size;}
@@ -74,7 +87,8 @@ export class TrailScene extends Phaser.Scene {
   private get interiorName(){return this.area==='railway'?'Sala de espera':'Porão do posto';}
   readonly movementBlockedPoint=(x:number,y:number)=>this.world.layout.blocked(x,y);
   private readonly tileBlocked=(x:number,y:number)=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
-  readonly swimmingPoint=(x:number,y:number)=>sampleWaterDepth(this.world.layout.inWater,x,y);
+  readonly swimmingPoint=(x:number,y:number)=>this.world instanceof CoastWorld
+    ?this.world.swimmingDepth(x,y):sampleWaterDepth(this.world.layout.inWater,x,y);
   private readonly allowStep=(x:number,y:number)=>this.world.layout.allowsStep(this.player,{x,y});
   private player!: Player;
   private daylight!: Daylight;
@@ -86,8 +100,7 @@ export class TrailScene extends Phaser.Scene {
   private elapsed=0;
   private hudElapsed=0;
   private readonly passage=new MapExitPassage();
-  /** Ruínas: a estrada segue a leste até a Estação Ferroviária. */
-  private readonly railwayPassage=new MapExitPassage();
+  private readonly roadPassage=new MapExitPassage();
   private readonly grounds=createGroundRuntime(
     ()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>this.inHome?(this.area==='railway'?'railway-hall':'ruins-cellar'):this.area,
     (x,y)=>this.movementBlockedPoint(x,y)||this.swimmingPoint(x,y)>0,()=>this.canPlay(),()=>this.updateHUD(),
@@ -96,12 +109,18 @@ export class TrailScene extends Phaser.Scene {
   private readonly bentoRuntime={missions:this.missions,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
 
   constructor(private readonly area:keyof typeof TRAILS){super(TRAILS[area].scene);this.trail=TRAILS[area];}
+  private get outgoingRoad(){return this.area==='ruins'||this.area==='railway'?ROAD_LINKS[this.area]:undefined;}
+  private resumeViaRoad(save?:SaveData):RoadLink|undefined{
+    const road=this.outgoingRoad;
+    return save&&(save.activeArea===road?.area||this.area==='ruins'&&save.activeArea==='coast')?road:undefined;
+  }
   preload():void{
     const data=this.sys.settings.data as TrailStart|undefined;
+    if(this.resumeViaRoad(data?.save))return;
     if(this.area==='ruins'&&data?.save?.ruinsCellarPosition)preloadRuinsCellar(this);
     else if(this.area==='railway'&&data?.save?.railwayHallPosition)preloadRailwayHall(this);
     else this.trail.preload(this);
-    if(this.area==='railway')preloadPetArt(this);
+    if(this.area==='railway'||this.area==='coast')preloadPetArt(this);
   }
   getGroundItemRuntime(){return this.player?this.grounds:undefined;}
   getMineMissionRuntime=()=>this.missions;
@@ -112,15 +131,15 @@ export class TrailScene extends Phaser.Scene {
   }
 
   create(data:TrailStart):void {
-    // Retomada: quem salvou na Estação passa pelas Ruínas e segue direto para lá.
-    const resumeRailway=this.area==='ruins'&&data.save.activeArea==='railway';
+    const resumeRoad=this.resumeViaRoad(data.save);
+    if(resumeRoad){this.startRoadScene(resumeRoad,data);return;}
     this.state=structuredClone(data.save);
     this.state.activeArea=this.area;
     this.ui=data.ui;
     this.onReturn=data.onReturn;
     this.paused=this.leaving=this.fishing=false;
     this.elapsed=this.hudElapsed=0;
-    this.passage.reset();this.railwayPassage.reset();
+    this.passage.reset();this.roadPassage.reset();
     gameAudio.setScene('game');
     setupTreeWind(this);
     const {width,height}=this.mapSize,edits=this.state[this.trail.map];
@@ -146,10 +165,11 @@ export class TrailScene extends Phaser.Scene {
     this.updateHUD();
     this.input.keyboard!.on('keydown',this.key,this);
     this.input.on('wheel',this.wheel,this);
-    if(this.area==='railway'){
+    if(this.area==='railway'||this.area==='coast'){
+      const area=this.area;
       this.input.on('pointerdown',this.pointer,this);
       installWorldCompanion(this,()=>({
-        save:this.state,player:this.player,area:'railway',space:this.inHome?'railway-hall':'outdoors',
+        save:this.state,player:this.player,area,space:this.inHome?'railway-hall':'outdoors',
         bounds:this.mapSize,blockedPoint:(x,y)=>this.movementBlockedPoint(x,y)||this.world.layout.inWater(x,y),
         enabled:true,canMove:this.canPlay(),
       }),this.ui,this.persist);
@@ -171,20 +191,23 @@ export class TrailScene extends Phaser.Scene {
       window.removeEventListener('blur',this.blur);
       document.removeEventListener('visibilitychange',this.visibility);
     });
-    if(resumeRailway)this.enterRailway(true);else this.persist();
+    this.persist();
   }
 
-  /** Ruínas → Estação; a volta recomeça as Ruínas na chegada leste. */
-  private enterRailway(resume=false):void {
-    if(this.leaving||this.area!=='ruins')return;
-    const save=structuredClone(this.snapshotState()),ui=this.ui,onReturn=this.onReturn;
-    save.activeArea='railway';
-    if(!resume)delete save.railwayPosition;
+  private startRoadScene(road:RoadLink,{save,ui,onReturn}:TrailStart):void{
+    this.scene.start(TRAILS[road.area].scene,{save,ui,onReturn:(updated:SaveData,title=false)=>{
+      if(title)onReturn(updated,true);else this.scene.start(this.trail.scene,{save:updated,ui,onReturn} satisfies TrailStart);
+    }} satisfies TrailStart);
+  }
+
+  private enterRoad(road:RoadLink):void {
+    if(this.leaving)return;
+    const save=structuredClone(this.snapshotState());
+    save.activeArea=road.area;
+    delete save[TRAILS[road.area].position];
     if(!saveGame(save)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}
     this.leaving=true;this.blur();this.cameras.main.fadeOut(SCENE_FADE_MS);
-    this.time.delayedCall(SCENE_FADE_MS,()=>this.scene.start('Estacao',{save,ui,onReturn:(updated:SaveData,title=false)=>{
-      if(title)onReturn(updated,true);else this.scene.start('Ruinas',{save:updated,ui,onReturn} satisfies TrailStart);
-    }} satisfies TrailStart));
+    this.time.delayedCall(SCENE_FADE_MS,()=>this.startRoadScene(road,{save,ui:this.ui,onReturn:this.onReturn}));
   }
 
   private canPlay():boolean{
@@ -207,20 +230,21 @@ export class TrailScene extends Phaser.Scene {
     if(this.player.isSwimming)return undefined;
     if(this.world instanceof RuinsCellarWorld||this.world instanceof RailwayHallWorld)return this.world.layout.inspectNear(this.player.x,this.player.y);
     if(this.world instanceof RuinsWorld)return this.world.layout.inspectNear(this.player.x,this.player.y,ruinsHasWetTraces(this.state.day));
-    if(this.world instanceof RailwayWorld)return this.world.layout.inspectNear(this.player.x,this.player.y);
+    if(this.world instanceof RailwayWorld||this.world instanceof CoastWorld)return this.world.layout.inspectNear(this.player.x,this.player.y);
   }
 
   private updateHUD():void {
     if(!this.player)return;
     const {state,player,trail}=this,edits=state[trail.map],exit=trail.exit(edits),gate=tileCenter(exit);
     const landmark=this.nearbyLandmark();
+    const road=this.outgoingRoad,nextGate=road&&tileCenter(road.exit);
     const fishing=this.nearFishing()&&!!this.equippedFishingItem();
     const cardinal={up:'norte',down:'sul',left:'oeste',right:'leste'}[exitSignLayout(exit,trail.entry(edits)).direction];
     const prompt=player.isSwimming?'Siga até a margem para sair da água.':
       landmark?(landmark.cellar&&state.ruinsMapFound?'E · Descer ao porão':landmark.hall?'E · Entrar na sala de espera':`E · Examinar ${landmark.name.toLowerCase()}`):
       this.inHome?(this.area==='railway'?'A porta ao sul leva de volta à plataforma.':'Suba os degraus ao norte para voltar ao armazém.'):
       Math.hypot(player.x-gate.x,player.y-gate.y)<144?`${trail.returnName} ao ${cardinal}`:
-      this.area==='ruins'&&!this.inHome&&Math.hypot(player.x-tileCenter(RUINS_RAILWAY_EXIT).x,player.y-tileCenter(RUINS_RAILWAY_EXIT).y)<144?`${AREA_NAMES.railway} a leste`:
+      road&&nextGate&&Math.hypot(player.x-nextGate.x,player.y-nextGate.y)<144?`${AREA_NAMES[road.area]} a leste`:
       fishing?'Pescar na margem · E':trail.prompt;
     this.ui.updateHUD({
       area:this.area,name:state.profile.name,day:state.day,time:state.time,
@@ -230,6 +254,7 @@ export class TrailScene extends Phaser.Scene {
       wateringCan:!!state.homeSupplies?.wateringCan,wateringCanWater:state.wateringCanWater??0,
       playerTile:{x:player.x/32,y:player.y/32},interactionKey:landmark||fishing?'E':null,prompt,location:AREA_NAMES[this.area],
       ...(this.inHome?{mapTitle:this.interiorName,location:this.interiorName,interiorMapSize:{width:this.mapSize.width/32,height:this.mapSize.height/32}}:{}),
+      ...(this.area==='coast'?{mapTitle:AREA_NAMES.coast}:{}),
       harvests:state.inventory.turnip,metLia:state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',
       resourceProgress:'',farmingProgress:this.farming.progress,progress:state.progress,
     });
@@ -384,8 +409,9 @@ export class TrailScene extends Phaser.Scene {
       if(this.inHome)this.changeCellar(false);else this.leave();
       return;
     }
-    if(this.area==='ruins'&&!this.inHome&&!this.player.isSwimming&&this.railwayPassage.update(previous,this.player,RUINS_RAILWAY_EXIT,RUINS_RAILWAY_RETURN)){
-      this.enterRailway();
+    const road=this.outgoingRoad;
+    if(road&&!this.inHome&&!this.player.isSwimming&&this.roadPassage.update(previous,this.player,road.exit,road.approach)){
+      this.enterRoad(road);
       return;
     }
     this.farming.update(dt,this.state.day);

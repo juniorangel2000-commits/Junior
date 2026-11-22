@@ -18,6 +18,6 @@ describe('tela de carregamento',()=>{
 describe('nomes dos lugares',()=>{
  it('seguem a lista escolhida pelo Junior',()=>{
   expect(AREA_NAMES).toEqual({property:'Propriedade Abandonada',forest:'Floresta Antiga',village:'Vila',cityForest:'Estrada da Cidade',fishingLake:'Lago da Cachoeira',
-   openFields:'Campos Abertos',highland:'Platô da Nascente',survivorCamp:'Acampamento dos Sobreviventes',swamp:'Pântano',ruins:'Ruínas',railway:'Estação Ferroviária',mine:'Mina Antiga'});
+   openFields:'Campos Abertos',highland:'Platô da Nascente',survivorCamp:'Acampamento dos Sobreviventes',swamp:'Pântano',ruins:'Ruínas',railway:'Estação Ferroviária',coast:'Costa das Marés',mine:'Mina Antiga'});
  });
 });

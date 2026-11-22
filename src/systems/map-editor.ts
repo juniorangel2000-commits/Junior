@@ -7,12 +7,13 @@ import { isBridgeTile, isFarmTile, WORLD_HEIGHT, WORLD_WIDTH } from '../data/reg
 import {villageBuildingAt,villageDoorApproach} from '../data/village';
 import {isSwampKind,SWAMP_KINDS} from '../data/swamp-art';
 import {isRuinKind,RUIN_KINDS} from '../data/ruins-art';
+import {isCoastKind,COAST_KINDS} from '../data/coast-art';
 import {isRailwayKind,RAILWAY_KINDS} from '../data/railway-art';
 
 export const MAP_EDIT_VERSION = 1;
 export const MAP_DRAFT_KEY = 'after-rain-map-editor-draft-v1';
 export const MAP_TERRAIN_KINDS = ['grass','meadow','forest','moss','forestPath','path','wetPath','water','sand','soil','wood','paving'] as const;
-export const MAP_OBJECT_KINDS = ['standingTree', 'pine', 'stone', 'vein', 'tree', 'fiber', 'seeds', 'scrap', ...NATURE_KINDS, ...SWAMP_KINDS, ...RUIN_KINDS, ...RAILWAY_KINDS, ...EXTRA_PROP_KINDS] as const;
+export const MAP_OBJECT_KINDS = ['standingTree', 'pine', 'stone', 'vein', 'tree', 'fiber', 'seeds', 'scrap', ...NATURE_KINDS, ...SWAMP_KINDS, ...RUIN_KINDS, ...RAILWAY_KINDS,...COAST_KINDS, ...EXTRA_PROP_KINDS] as const;
 export type TerrainKind = typeof MAP_TERRAIN_KINDS[number];
 export type MapCollision = 'blocked' | 'clear';
 export type EditorObjectKind = typeof MAP_OBJECT_KINDS[number];
@@ -55,7 +56,7 @@ const validCell = (x: unknown, y: unknown): boolean => typeof x === 'number' && 
 /** Keep fixed gameplay entrances and landmarks intact while editing their surroundings. */
 export function isProtectedMapTile(x: number, y: number, area?: StoredMapArea): boolean {
   if (!validCell(x, y)) return true;
-  if(area==='swamp'||area==='ruins'||area==='railway')return false;
+  if(area==='swamp'||area==='ruins'||area==='railway'||area==='coast')return false;
   if(area==='forest')return FOREST_ANIMALS.some(a=>Math.abs(a.x-x)<=1&&Math.abs(a.y-y)<=1);
   if(area==='village')return !!villageBuildingAt(x,y)||villageDoorApproach(x,y);
   if(area==='survivorCamp')return Math.abs(x-48)<=2&&y>=66;
@@ -115,7 +116,7 @@ export function validateMapEdits(value: unknown): value is MapEditData {
       || !plainRecord(value.terrain) || !plainRecord(value.objects)) return false;
     if (Object.keys(value.terrain).length > MAX_CELLS || Object.keys(value.objects).length > MAX_CELLS) return false;
     if(value.collisions!==undefined){
-      if(value.area!=='swamp'&&value.area!=='ruins'&&value.area!=='railway'||!plainRecord(value.collisions)||Object.keys(value.collisions).length>MAX_CELLS)return false;
+      if(value.area!=='swamp'&&value.area!=='ruins'&&value.area!=='railway'&&value.area!=='coast'||!plainRecord(value.collisions)||Object.keys(value.collisions).length>MAX_CELLS)return false;
       for(const [key,state] of Object.entries(value.collisions)){
         const match=TILE_KEY.exec(key);
         if(!match||!validCell(Number(match[1]),Number(match[2]))||(state!=='blocked'&&state!=='clear'))return false;
@@ -133,7 +134,7 @@ export function validateMapEdits(value: unknown): value is MapEditData {
     const occupied = new Set<string>();
     for (const [id, object] of Object.entries(value.objects)) {
       const kind = editorObjectKind(id);
-      if (!kind || isSwampKind(kind)&&value.area!=='swamp'||isRuinKind(kind)&&value.area!=='ruins'||isRailwayKind(kind)&&value.area!=='railway'||kind.startsWith('urban-')&&!['cityForest','abandoned-central-square','mall-parking'].includes(String(value.area))
+      if (!kind || isSwampKind(kind)&&value.area!=='swamp'||isRuinKind(kind)&&value.area!=='ruins'||isRailwayKind(kind)&&value.area!=='railway'||isCoastKind(kind)&&value.area!=='coast'||kind.startsWith('urban-')&&!['cityForest','abandoned-central-square','mall-parking'].includes(String(value.area))
         ||kind.startsWith('village-')&&value.area!=='village'|| !plainRecord(object) || !keysAre(object, ['x', 'y', 'kind', 'removed'])
         || !validCell(object.x, object.y) || isProtectedMapTile(object.x as number, object.y as number,value.area as StoredMapArea|undefined)&&!(value.area==='village'&&kind.startsWith('village-')&&object.removed===true)
         || (own(object, 'removed') && typeof object.removed !== 'boolean')) return false;
