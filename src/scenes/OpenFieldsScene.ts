@@ -12,7 +12,7 @@ import {advanceClock,GAME_MINUTES_PER_SECOND} from '../systems/clock';
 import {advanceBackgroundVillage} from '../systems/village-background';
 import {craftInField,consumeInField} from '../systems/field-inventory';
 import {emptyQuickbar} from '../systems/quickbar';
-import {DoorwayPassage,MapExitPassage,SCENE_FADE_MS} from '../systems/map-transition';
+import {DoorwayPassage,SCENE_FADE_MS} from '../systems/map-transition';
 import {directionFromVector,directionVector} from '../character-directions';
 import {loadCameraZoom,saveCameraZoom,stepCameraZoom,mapCameraZoom} from '../camera-zoom';
 import {createGroundRuntime} from '../systems/ground-items';
@@ -27,47 +27,36 @@ import {harvestMeadow,meadowGrowth,chopIpe,ipeStanding} from '../systems/open-fi
 import {HORSE_ID,HORSE_NAME_MAX,TAMING_DAYS,horseTaming,feedHorse,fedToday,settleHorseTaming,applyTamingLoss,tamingPhase,feedingDay,nameHorse,startHorseEscort,transferHorseToProperty,placeBasket,pickUpBasket} from '../systems/horse-taming';
 import {releaseAnimalEscort,ANIMAL_BEHAVIOR} from '../systems/animals';
 import {OpenFieldsWorld,preloadOpenFields} from '../open-fields-world';
-import {FIELDS_SIZE,FIELDS_ENTRY,FIELDS_EXIT,PROPERTY_FIELDS_RETURN,VISIBLE_MEADOW_PATCHES,FIELDS_IPES,IPE_REACH,fieldsBlocked,fieldsPlayerBlocked,fieldsSafe} from '../data/open-fields';
+import {FIELDS_SIZE,FIELDS_ENTRY,FIELDS_EXIT,PROPERTY_FIELDS_RETURN,MEADOW_PATCHES,FIELDS_IPES,IPE_REACH,fieldsBlocked,fieldsSafe,fieldsPlayerSafe,fieldsSolid,fieldsWater,FIELDS_COAST_EXIT} from '../data/open-fields';
+import {FIELDS_BRIDGES,mapBridgeAllowsStep} from '../data/bridges';
+import {sampleWaterDepth} from '../swimming/config';
+import {AREA_NAMES} from '../data/area-names';
 import {playerSpeedFactor} from '../systems/food-effects';
 import {placeHiveTrap,collectHiveTrap,nearTrap,trapHint} from '../systems/beekeeping';
-import {FIELDS_COAST_EXIT,FIELDS_COAST_RETURN,fieldsAllowsStep,fieldsBridge,fieldsSwimmingWater,fieldsRiverWater} from '../data/fields-river';
-import {sampleWaterDepth} from '../swimming/config';
 import {createFishingCast} from '../fishing-cast';
 import {fishAtBank} from '../fishing-ui';
-
 interface FieldsStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 type FieldSwing = GatherAction<'sickle' | 'hatchet'> & { id: string };
 export class OpenFieldsScene extends Phaser.Scene{
  private state!:SaveData;private ui!:GameUI;private player!:Player;private world!:OpenFieldsWorld;private daylight!:Daylight;private farming!:Farming;private toolVisual!:ToolVisual;
- private onReturn!:FieldsStart['onReturn'];private paused=false;private leaving=false;private zoom=1;private elapsed=0;private passage=new DoorwayPassage();private coastPassage=new MapExitPassage();private fishing=false;private swing=new ToolSwing<FieldSwing>();
+ private onReturn!:FieldsStart['onReturn'];private paused=false;private leaving=false;private zoom=1;private elapsed=0;private passage=new DoorwayPassage();private coastPassage=new DoorwayPassage();private fishing=false;private swing=new ToolSwing<FieldSwing>();
  private groundRuntime=createGroundRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>'openFields',fieldsBlocked,()=>!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden,()=>this.updateHUD());
  private missionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player);
  private bentoRuntime={missions:this.missionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
  constructor(){super('Campos');}
- preload():void{if((this.sys.settings.data as FieldsStart|undefined)?.save.activeArea==='coast')return;preloadOpenFields(this);preloadPetArt(this);}
+ preload():void{preloadOpenFields(this);preloadPetArt(this);}
  getGroundItemRuntime(){return this.player?this.groundRuntime:undefined;}
  getMineMissionRuntime=()=>this.missionRuntime;
  getFishingState=()=>this.state;
- private startCoast({save,ui,onReturn}:FieldsStart):void {
-  this.scene.start('Costa',{save,ui,onReturn:(updated:SaveData,title=false)=>{
-   if(title)onReturn(updated,true);else this.scene.start('Campos',{save:updated,ui,onReturn} satisfies FieldsStart);
-  }} satisfies FieldsStart);
- }
- private enterCoast():void{
-  const save=structuredClone(this.snapshotState());
-  save.activeArea='coast';delete save.coastPosition;
-  if(!saveGame(save)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}
-  this.leaving=true;this.blur();this.cameras.main.fadeOut(SCENE_FADE_MS);
-  this.time.delayedCall(SCENE_FADE_MS,()=>this.startCoast({save,ui:this.ui,onReturn:this.onReturn}));
- }
  create(data:FieldsStart):void{
-  if(data.save.activeArea==='coast'){this.startCoast(data);return;}
+  // Retomada na Costa das Marés: passa pelos Campos e desce direto para lá.
+  const resumeCoast=data.save.activeArea==='coast';
   this.state=structuredClone(data.save);this.state.activeArea='openFields';delete this.state.homePosition;this.ui=data.ui;this.onReturn=data.onReturn;this.paused=this.leaving=this.fishing=false;this.elapsed=0;this.swing.cancel();this.passage.reset();this.coastPassage.reset();gameAudio.setScene('game');setupTreeWind(this);
   // Cestas deixadas no chão em dias anteriores: o cavalo comeu enquanto você estava fora.
   const settled=settleHorseTaming(this.state,this.state.day,true),lostOnArrival=!settled.length&&this.horseLost();
   this.world=new OpenFieldsWorld(this,()=>this.state,{horseAte:()=>this.horseAte()});this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
-  const saved=this.state.openFieldsPosition,p=saved&&[[-8,-5],[8,-5],[-8,4],[8,4]].every(([dx,dy])=>!fieldsPlayerBlocked(saved.x+dx,saved.y+dy))?saved:FIELDS_ENTRY;
-  this.player=new Player(this,this.state.profile,p.x,p.y,'fields-player');this.player.facing=directionVector(p.direction??'down');this.player.update(0,this.blockedTile,fieldsPlayerBlocked,false,this.swimmingPoint);
+  const saved=this.state.openFieldsPosition,p=saved&&fieldsPlayerSafe(saved)?saved:FIELDS_ENTRY;
+  this.player=new Player(this,this.state.profile,p.x,p.y,'fields-player');this.player.facing=directionVector(p.direction??'down');this.player.update(0,this.blockedTile,fieldsSolid,false,this.swimmingPoint,this.allowStep);
   this.toolVisual=new ToolVisual(this,this.state.profile);this.daylight=new Daylight(this,FIELDS_SIZE.width,FIELDS_SIZE.height);this.zoom=loadCameraZoom();this.cameras.main.setBounds(0,0,FIELDS_SIZE.width,FIELDS_SIZE.height);this.applyCamera();this.cameras.main.fadeIn(SCENE_FADE_MS);
   this.ui.showHUD('openFields');document.querySelector<HTMLElement>('#ui')!.style.display='';this.ui.setQuickbar(this.state.quickbar??emptyQuickbar());this.updateHUD();
   if(settled.length){const last=settled[settled.length-1];this.ui.toast(`Enquanto você estava fora, o cavalo comeu a cesta. ${last.tamed?'Ele confia em você agora!':`Confiança ${horseTaming(this.state).trust}/${TAMING_DAYS}.`}`);}
@@ -75,23 +64,25 @@ export class OpenFieldsScene extends Phaser.Scene{
   this.input.keyboard!.on('keydown',this.key,this);this.input.on('wheel',this.wheel,this);this.input.on('pointerdown',this.pointer,this);this.scale.on('resize',this.applyCamera,this);
   window.addEventListener('pagehide',this.save);window.addEventListener('beforeunload',this.save);window.addEventListener('blur',this.blur);document.addEventListener('visibilitychange',this.visibility);
   this.events.once('shutdown',()=>{this.toolVisual.hide();this.daylight.destroy();this.input.keyboard?.off('keydown',this.key,this);this.input.off('wheel',this.wheel,this);this.input.off('pointerdown',this.pointer,this);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
-  installWorldCompanion(this,()=>({save:this.state,player:this.player,area:'openFields',space:'outdoors',bounds:FIELDS_SIZE,blockedPoint:fieldsBlocked,enabled:true,canMove:!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden}),this.ui,()=>this.persist());this.persist();
+  installWorldCompanion(this,()=>({save:this.state,player:this.player,area:'openFields',space:'outdoors',bounds:FIELDS_SIZE,blockedPoint:fieldsBlocked,enabled:true,canMove:!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden}),this.ui,()=>this.persist());
+  if(resumeCoast)this.enterCoast(true);else this.persist();
  }
- readonly movementBlockedPoint=fieldsPlayerBlocked;
- readonly swimmingPoint=(x:number,y:number)=>fieldsBridge(x,y)?0:sampleWaterDepth(fieldsRiverWater,x,y);
- private blockedTile=(x:number,y:number)=>fieldsPlayerBlocked(x*32+16,y*32+16);
+ /** O jogador atravessa o rio nadando; as pontes só se entram pelas cabeceiras. */
+ private blockedTile=(x:number,y:number)=>fieldsSolid(x*32+16,y*32+16);
+ private swimmingPoint=(x:number,y:number)=>sampleWaterDepth(fieldsWater,x,y);
+ private allowStep=(x:number,y:number)=>mapBridgeAllowsStep(FIELDS_BRIDGES,this.player.x,this.player.y,x,y,fieldsWater);
  private nearFishing():boolean{
   if(this.player.isSwimming||this.player.mounted||this.state.animalEscort)return false;
   return [0,1,2,3,4,5,6,7].some(i=>{
    const angle=i*Math.PI/4;
-   return fieldsSwimmingWater(this.player.x+Math.cos(angle)*58,this.player.y+Math.sin(angle)*58);
+   return fieldsWater(this.player.x+Math.cos(angle)*58,this.player.y+Math.sin(angle)*58);
   });
  }
  private fishingItemAtBank():'fishingRod'|'net'|undefined{
   if(!this.state.inventory.fishingRod&&!this.state.inventory.net||!this.nearFishing())return;
   return this.state.inventory.fishingRod?'fishingRod':'net';
  }
- private target(){return VISIBLE_MEADOW_PATCHES.filter(p=>Math.hypot(p.x-this.player.x,p.y-this.player.y)<66&&meadowGrowth(this.state,p)>=1).sort((a,b)=>Math.hypot(a.x-this.player.x,a.y-this.player.y)-Math.hypot(b.x-this.player.x,b.y-this.player.y))[0];}
+ private target(){return MEADOW_PATCHES.filter(p=>Math.hypot(p.x-this.player.x,p.y-this.player.y)<66&&meadowGrowth(this.state,p)>=1).sort((a,b)=>Math.hypot(a.x-this.player.x,a.y-this.player.y)-Math.hypot(b.x-this.player.x,b.y-this.player.y))[0];}
  /** Standing ipês take priority: their trunks sit in clearings away from the capim. */
  private ipeTarget(){return FIELDS_IPES.filter(p=>ipeStanding(this.state,p.id)&&Math.hypot(p.x-this.player.x,p.y-this.player.y)<=IPE_REACH).sort((a,b)=>Math.hypot(a.x-this.player.x,a.y-this.player.y)-Math.hypot(b.x-this.player.x,b.y-this.player.y))[0];}
  private ipePrompt():string{if(!this.state.inventory.hatchet)return'Ipê-amarelo · precisa de machadinha de ferro ou melhor';const t=inventoryToolCondition(this.state.inventory,'hatchet');return t.tier<1?'Ipê-amarelo · sua machadinha de pedra não corta este tronco':'Cortar ipê-amarelo com a machadinha';}
@@ -107,9 +98,9 @@ export class OpenFieldsScene extends Phaser.Scene{
  private fieldsHint():string{
   const t=horseTaming(this.state);
   if(!t.tamed&&t.basket&&!fedToday(this.state))return'Afaste-se da cesta: o cavalo só se aproxima com espaço';
-  if(this.player.isSwimming)return 'Nade até a margem para sair do rio.';
+  if(this.player.isSwimming)return'Nadar · siga até a margem para sair do rio';
   if(this.fishingItemAtBank())return 'Pescar no rio';
-  if(this.player.y>2050)return 'Costa das Marés ao sul.';
+  if(this.player.y>2060&&Math.abs(this.player.x-FIELDS_COAST_EXIT.x)<160)return`${AREA_NAMES.coast} ao sul`;
   return this.player.y<230?'Propriedade ao norte':'Explore as clareiras · leve capim ao silo para preparar palha';
  }
  private trapNear(){return nearTrap(this.state,this.player);}
@@ -206,7 +197,7 @@ export class OpenFieldsScene extends Phaser.Scene{
    if(!this.nearFishing()){this.ui.toast('Aproxime-se de uma margem livre para pescar.');return;}
    this.fishing=true;this.setPaused(true);
    try{this.ui.toast(await fishAtBank(this.state,item==='net',()=>this.updateHUD(),
-     createFishingCast(this,this.player,fieldsSwimmingWater,(x,y)=>!fieldsPlayerBlocked(x,y),item==='net')));}
+     createFishingCast(this,this.player,fieldsWater,(x,y)=>!fieldsSolid(x,y),item==='net')));}
    finally{this.fishing=false;this.setPaused(false);this.updateHUD();}
    return;
   }const r=consumeInField(this.state,item,saveGame);this.ui.toast(r.message);this.updateHUD();}
@@ -218,6 +209,18 @@ export class OpenFieldsScene extends Phaser.Scene{
  private blur=()=>{this.input.keyboard?.resetKeys();this.swing.cancel();this.toolVisual?.hide();};
  private visibility=()=>{if(document.hidden){this.blur();this.persist();}};
  mainMenu():void{this.ui.closeModal();this.leave(true);}
+ /** Campos → Costa das Marés pela saída sul, junto do rio; a volta recomeça os Campos ao sul. */
+ private enterCoast(resume=false):void{
+  if(this.leaving)return;
+  if(!resume&&this.state.animalEscort){this.ui.toast('Solte a corda com G antes de descer para a Costa.');return;}
+  const save=structuredClone(this.snapshotState()),ui=this.ui,onReturn=this.onReturn;
+  save.activeArea='coast';if(!resume)delete save.coastPosition;
+  if(!saveGame(save)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}
+  this.leaving=true;this.swing.cancel();this.toolVisual.hide();this.input.keyboard?.resetKeys();this.cameras.main.fadeOut(SCENE_FADE_MS);
+  this.time.delayedCall(SCENE_FADE_MS,()=>this.scene.start('Costa',{save,ui,onReturn:(updated:SaveData,title=false)=>{
+   if(title)onReturn(updated,true);else this.scene.start('Campos',{save:updated,ui,onReturn} satisfies FieldsStart);
+  }}));
+ }
  private leave(title=false):void{if(this.leaving)return;
   // Com o cavalo na corda, ele precisa estar ao lado para atravessar junto.
   const escorting=this.state.animalEscort?.id===HORSE_ID,horse=this.world.horse;
@@ -225,11 +228,9 @@ export class OpenFieldsScene extends Phaser.Scene{
   const next=structuredClone(this.snapshotState());if(!title){next.activeArea='property';next.player={...PROPERTY_FIELDS_RETURN};if(escorting)transferHorseToProperty(next,PROPERTY_FIELDS_RETURN);}if(!saveGame(next)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}this.leaving=true;this.swing.cancel();this.toolVisual.hide();this.cameras.main.fadeOut(SCENE_FADE_MS);this.time.delayedCall(SCENE_FADE_MS,()=>{this.scene.stop();this.onReturn(next,title);});}
  update(_time:number,ms:number):void{
   if(!this.player||this.leaving)return;this.daylight.update(this.state.time,false,this.state.day);if(this.paused||this.ui.isModalOpen()||document.hidden){if(this.swing.active){this.swing.cancel();this.toolVisual.hide();}return;}
-  const dt=Math.min(.1,ms/1000),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.keepDry=!!this.state.animalEscort;this.player.update(dt,this.blockedTile,fieldsPlayerBlocked,!this.swing.active,this.swimmingPoint,(x,y)=>fieldsAllowsStep(this.player,{x,y}));this.player.sprite.setDepth(this.player.y);
+  const dt=Math.min(.1,ms/1000),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.keepDry=!!this.state.animalEscort;this.player.update(dt,this.blockedTile,fieldsSolid,!this.swing.active,this.swimmingPoint,this.allowStep);this.player.sprite.setDepth(this.player.y);
   if(this.passage.update(before,this.player,FIELDS_EXIT)){this.leave();return;}
-  if(!this.player.isSwimming&&this.coastPassage.update(before,this.player,FIELDS_COAST_EXIT,FIELDS_COAST_RETURN)&&!this.state.animalEscort){
-   this.enterCoast();return;
-  }
+  if(!this.player.isSwimming&&this.coastPassage.update(before,this.player,FIELDS_COAST_EXIT)){this.enterCoast();return;}
   const impact=this.swing.advance(dt);
   if(impact)this.applySwingImpact(impact);
   this.updateToolVisual();

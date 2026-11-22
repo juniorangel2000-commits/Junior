@@ -36,6 +36,7 @@ import type {WorldEditorObject} from './world';
 import type {MapEditData} from './systems/map-editor';
 import {villageTreeId,villagePathAlignment} from './data/village';
 import {terrainPaintAlpha} from './data/terrain-paint';
+import {drawEdgeBlend} from './edge-blend';
 
 const MAP_WIDTH=WORLD_WIDTH*TILE,MAP_HEIGHT=WORLD_HEIGHT*TILE;
 
@@ -109,6 +110,7 @@ function drawGround(scene:Phaser.Scene,edits?:MapEditData,namespace='village'):v
   scene.textures.addCanvas(key,canvas)?.setFilter(0);
  }
  scene.add.image(0,0,key).setOrigin(0).setDepth(-100);
+ drawEdgeBlend(scene,'village');
 }
 
 /** Static village scenery. NPC movement/dialogue and shop transactions belong

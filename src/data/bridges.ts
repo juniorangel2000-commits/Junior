@@ -27,3 +27,26 @@ export function bridgeAllowsStep(fromX:number,fromY:number,toX:number,toY:number
   }
   return true;
 }
+
+/** Pontes iguais às da propriedade em outros mapas (mesmo desenho e mesmas regras). */
+export type MapBridge={readonly id:string;readonly x:number;readonly y:number;readonly width:number;readonly height:number};
+/** Campos Abertos: o rio que desce da propriedade tem duas travessias. */
+export const FIELDS_BRIDGES:readonly MapBridge[]=[
+  // Na trilha principal, logo depois da chegada da Propriedade, ao sul da copa do ipê.
+  {id:'fields-north',x:40,y:16,width:7,height:2},
+  {id:'fields-south',x:13,y:54,width:7,height:2},
+];
+export function mapBridgeAt(bridges:readonly MapBridge[],x:number,y:number):MapBridge|undefined {
+  return bridges.find(b=>x>=b.x*TILE&&x<(b.x+b.width)*TILE&&y>=b.y*TILE&&y<(b.y+b.height)*TILE);
+}
+export function mapBridgeRail(bridges:readonly MapBridge[],x:number,y:number):boolean {
+  const b=mapBridgeAt(bridges,x,y);
+  return !!b&&(y<b.y*TILE+BRIDGE_RAIL_WIDTH||y>=(b.y+b.height)*TILE-BRIDGE_RAIL_WIDTH);
+}
+/** Entra e sai só pelas cabeceiras, nunca pela água dos lados. */
+export function mapBridgeAllowsStep(bridges:readonly MapBridge[],fromX:number,fromY:number,toX:number,toY:number,water:(x:number,y:number)=>boolean):boolean {
+  const from=mapBridgeAt(bridges,fromX,fromY),to=mapBridgeAt(bridges,toX,toY);
+  if(!from&&to)return((fromX<to.x*TILE&&toX>=to.x*TILE)||(fromX>=(to.x+to.width)*TILE&&toX<(to.x+to.width)*TILE))&&!water(fromX,fromY);
+  if(from&&!to)return(toX<from.x*TILE||toX>=(from.x+from.width)*TILE)&&!water(toX,toY);
+  return true;
+}

@@ -24,3 +24,8 @@ export const ruinsRailwayRoadProtected = (x: number,y: number): boolean =>
   x >= RUINS_RAILWAY_RETURN.x - 2 && Math.abs(y - RUINS_ROAD_Y) <= 2;
 export const railwayRoadProtected = (x: number,y: number): boolean =>
   x <= RAILWAY_ENTRY.x + 2 && Math.abs(y - RAILWAY_ROAD_Y) <= 2;
+
+/** Costa das Marés: chega-se pelo norte, vindo da saída sul dos Campos Abertos (x=28). */
+export const COAST_ENTRY={x:28,y:4};
+export const COAST_EXIT={x:28,y:1};
+export const coastEntryProtected=(x:number,y:number):boolean=>Math.abs(x-COAST_ENTRY.x)<=2&&y<=COAST_ENTRY.y+2;

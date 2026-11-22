@@ -472,7 +472,8 @@ export class ValleyScene extends Phaser.Scene {
   private enterFields(saved?:SaveData):void {
     if(this.forestActive||this.villageActive||this.state.animalEscort)return;
     this.world.well?.cancel();this.cancelCrafting();this.cancelToolActions();this.toolVisual?.hide();
-    const data=saved??this.snapshotState();if(data.activeArea!=='coast')data.activeArea='openFields';delete data.homePosition;
+    // Na Costa, os Campos abrem e descem direto para lá (OpenFieldsScene.enterCoast).
+    const data=saved??this.snapshotState();data.activeArea=saved?.activeArea==='coast'?'coast':'openFields';delete data.homePosition;
     if(!saved)data.openFieldsPosition={...FIELDS_ENTRY};
     if(!saveGame(data)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}
     this.villageActive=true;this.paused=true;this.input.keyboard?.resetKeys();

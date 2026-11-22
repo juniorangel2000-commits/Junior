@@ -1,10 +1,12 @@
 import type Phaser from 'phaser';
-import {PROPERTY_BRIDGES} from './data/bridges';
+import {PROPERTY_BRIDGES,type MapBridge} from './data/bridges';
 import {TILE} from './data/regions';
 import {readTerrainSprites} from './terrain-sprites';
 
 /** Finished crossings share collision bounds with the old bridges. Rails sort with actors. */
-export function drawPropertyBridges(scene:Phaser.Scene,bridges:readonly {x:number;y:number;width:number;height:number}[]=PROPERTY_BRIDGES):void {
+export function drawPropertyBridges(scene:Phaser.Scene):void {drawBridges(scene,PROPERTY_BRIDGES);}
+/** O mesmo desenho de ponte em qualquer mapa (Campos Abertos usa as mesmas da propriedade). */
+export function drawBridges(scene:Phaser.Scene,bridges:readonly MapBridge[]):void {
  const materials=readTerrainSprites(scene);
  for(const bridge of bridges){
   const width=bridge.width*TILE,height=bridge.height*TILE,left=bridge.x*TILE,top=bridge.y*TILE;

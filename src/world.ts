@@ -37,6 +37,7 @@ import { drawMapTerrainEdits } from './map-editor-terrain';
 import type { EditorObjectKind, MapEditData } from './systems/map-editor';
 import { buildingFootprint } from './systems/building';
 import { createLegacyTrees, getRegionAt, isBridgeTile, isFarmTile, isPathTile, isWaterTile, legacyWaterTile, TILE, WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
+import {drawEdgeBlend} from './edge-blend';
 
 export type { ResourceNode } from './types';
 
@@ -147,6 +148,7 @@ export function createWorld(scene: Phaser.Scene, depletedResources: string[], bu
     scene.textures.addCanvas('world-ground-organic-water-v4', terrain)?.setFilter(Phaser.Textures.FilterMode.NEAREST);
   }
   scene.add.image(0, 0, 'world-ground-organic-water-v4').setOrigin(0).setDepth(-100);
+  drawEdgeBlend(scene,'property');
   if(seamLayout)drawMapSeamGround(scene,'property');
   if (mapEdits) drawMapTerrainEdits(scene,mapEdits.terrain,`${textureNamespace}-map-edits`,undefined,'property',seamLayout);
   addWaterMotion(scene,(x,y)=>waterAt(x,y)&&!bridgeAt(x,y),(x,y)=>waterPointAt(x,y)&&!bridgeAt(Math.floor(x/TILE),Math.floor(y/TILE)));

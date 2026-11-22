@@ -9,6 +9,7 @@ import {validCampfires} from './placed-campfires';
 import {validScrapSorting} from './scrap-sorting';
 import {FENCE_WOOD} from '../data/blueprints';
 import {validOpenFields} from './open-fields';
+import {FIELDS_RETIRED_PATCHES} from '../data/open-fields';
 import {HORSE_ID,validHorseTaming} from './horse-taming';
 import {DOMESTIC_ANIMALS,isDomesticAnimal} from '../data/domestic-animals';
 import {CROPS,isCropId} from '../data/crops';
@@ -376,6 +377,12 @@ export function migrateSave(value: unknown): SaveData | null {
      if(free){used.add('structure:'+key);return b;}
      return{...b,narrow:true};
     })};
+  }
+  // Preview.45: o rio dos Campos cobriu algumas moitas. Cortes guardados delas são apagados;
+  // as demais moitas mantêm o id e o dia do corte. Repetir não muda nada.
+  if(isRecord(value)&&value.version===SAVE_VERSION&&isRecord(value.openFields)&&isRecord(value.openFields.cut)&&Object.keys(value.openFields.cut).some(id=>FIELDS_RETIRED_PATCHES.has(id))){
+    const cut=Object.fromEntries(Object.entries(value.openFields.cut).filter(([id])=>!FIELDS_RETIRED_PATCHES.has(id)));
+    value={...value,openFields:{...value.openFields,cut}};
   }
   // Preview.39: o módulo de cerca saiu do jogo (a cerca é construída direto com madeira).
   // Cada módulo guardado vira as 3 madeiras que ele custava. Repetir não muda nada: sobra 0.

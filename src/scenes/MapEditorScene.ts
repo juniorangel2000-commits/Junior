@@ -1,11 +1,10 @@
 import {SwampWorld,preloadSwamp} from '../swamp-world';
 import {RuinsWorld,preloadRuins} from '../ruins-world';
 import {createRuinsLayout} from '../data/ruins';
-import {cityRuinsRoadProtected,ruinsRailwayRoadProtected,railwayRoadProtected} from '../data/ruins-road';
+import {cityRuinsRoadProtected,ruinsRailwayRoadProtected,railwayRoadProtected,coastEntryProtected} from '../data/ruins-road';
 import {isRuinKind} from '../data/ruins-art';
 import {isRailwayKind} from '../data/railway-art';
 import {CoastWorld,preloadCoast} from '../coast-world';
-import {coastApproach} from '../data/fields-river';
 import {coastBaseWater,createCoastLayout} from '../data/coast';
 import {isCoastKind} from '../data/coast-art';
 import {RailwayWorld,preloadRailway} from '../railway-world';
@@ -126,8 +125,8 @@ export class MapEditorScene extends Phaser.Scene {
    rebuild:render,objects,originalObjects:original,
    resourcesHidden:this.resourcesHidden,
    setResourcesHidden:hidden=>{this.resourcesHidden=hidden;this.updateResourceVisibility();},
-   protectedTile:(x,y)=>area==='cityForest'&&cityRuinsRoadProtected(x,y)||area==='ruins'&&ruinsRailwayRoadProtected(x,y)||area==='railway'&&railwayRoadProtected(x,y)||area==='coast'&&coastApproach(x,y)||area==='forest'&&(forestSwampApproach(x,y)||campApproachDistance((x+.5)*32,(y+.5)*32)<32)||isProtectedMapTile(x,y,area==='property'?undefined:area)||area==='property'&&(propertyLakeApproach(x,y)||buildings.has(`${x},${y}`)),
-   protectedTerrainTile:(x,y)=>area==='property'?buildings.has(`${x},${y}`):area==='cityForest'&&cityRuinsRoadProtected(x,y)||area==='ruins'&&ruinsRailwayRoadProtected(x,y)||area==='railway'&&railwayRoadProtected(x,y)||area==='coast'&&coastApproach(x,y)||area==='forest'&&forestSwampApproach(x,y)||isProtectedMapTile(x,y,area),
+   protectedTile:(x,y)=>area==='cityForest'&&cityRuinsRoadProtected(x,y)||area==='ruins'&&ruinsRailwayRoadProtected(x,y)||area==='railway'&&railwayRoadProtected(x,y)||area==='coast'&&coastEntryProtected(x,y)||area==='forest'&&(forestSwampApproach(x,y)||campApproachDistance((x+.5)*32,(y+.5)*32)<32)||isProtectedMapTile(x,y,area==='property'?undefined:area)||area==='property'&&(propertyLakeApproach(x,y)||buildings.has(`${x},${y}`)),
+   protectedTerrainTile:(x,y)=>area==='property'?buildings.has(`${x},${y}`):area==='cityForest'&&cityRuinsRoadProtected(x,y)||area==='ruins'&&ruinsRailwayRoadProtected(x,y)||area==='railway'&&railwayRoadProtected(x,y)||area==='coast'&&coastEntryProtected(x,y)||area==='forest'&&forestSwampApproach(x,y)||isProtectedMapTile(x,y,area),
    baseWater:area==='coast'?(x,y)=>coastBaseWater((x+.5)*32,(y+.5)*32):area==='swamp'?(x,y)=>swampBaseWater((x+.5)*32,(y+.5)*32):area==='highland'?(x,y)=>highlandWaterPoint((x+.5)*32,(y+.5)*32):area==='survivorCamp'||area==='ruins'||area==='railway'?()=>false:area==='fishingLake'?lakeWater:area==='village'?villageWater:area==='forest'?forestWater:area==='cityForest'?cityForestWater:isDungeonArea(area)?()=>false:isWaterTile,
    baseWaterPoint:area==='coast'?coastBaseWater:area==='swamp'?swampBaseWater:area==='highland'?highlandWaterPoint:area==='survivorCamp'||area==='ruins'||area==='railway'?()=>false:area==='fishingLake'?(x,y)=>lakeWater(x/32,y/32):area==='village'?(x,y)=>villageLakeDistance(x/32,y/32)<0:area==='forest'?(x,y)=>forestWaterDistanceAt(x,y)<0:area==='cityForest'?(x,y)=>cityForestWater(x/32,y/32):isDungeonArea(area)?()=>false:isWaterPoint,
    defaultPoints:defaultMap(area).points as {entry:{x:number;y:number};exit:{x:number;y:number}},
