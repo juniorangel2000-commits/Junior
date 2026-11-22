@@ -4,8 +4,9 @@
 
 - **Atualizado em:** 2026-11-22
 - **Por:** Claude (terminando o Pomar que o Codex começou; os créditos do Codex acabaram)
-- **Continuar a partir de:** `release/v0.10.0-preview.45`, HEAD.
-- **Última versão publicada:** `v0.10.0-preview.45` (publicada nesta rodada; a próxima é a preview.46).
+- **Continuar a partir de:** `release/v0.10.0-preview.46`, HEAD.
+- **Última versão publicada:** `v0.10.0-preview.46`, com o mesmo conteúdo da preview.45. A tag da preview.45 existe, mas o processo do Windows falhou: faltava `docs/cenarios/LEIA-0.10.0-preview.45.md`.
+- **Atenção ao publicar:** além de `NOTAS-<versão>.md`, crie `docs/cenarios/LEIA-<versão>.md`. O processo do Windows copia esse arquivo para a Release e falha se ele não existir.
 - **Estado:**
   - A Costa das Marés fica ao sul dos Campos Abertos.
   - O rio da Propriedade atravessa os Campos e chega ao mar por uma foz sinuosa.
