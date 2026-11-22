@@ -4,7 +4,7 @@
 
 O mapa junta todos os cenários externos. Cada um aparece na posição em que as saídas se encontram, e os pontos dourados marcam as passagens entre mapas.
 
-Ele foi gerado em 2026-11-22 a partir do `captureMap()` de cada cena, numa partida nova ao meio-dia. Interiores, Mina, Cidade e dungeons ficam fora.
+A imagem reúne capturas dos cenários em 22/11/2026, com a foz da Costa e a curva da Estação atualizadas. O atlas na pasta `/workspace/afterrain-costa/` inclui também a Mina Antiga, as Galerias, dungeons e interiores em destaque.
 
 ## Posição de cada mapa
 
