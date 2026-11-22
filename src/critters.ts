@@ -40,7 +40,7 @@ export class CritterField {
    const spot=critterSpot(sp,terrain,this.random);if(!spot)continue;
    const palette=sp.id==='butterfly'?{...sp.palette,W:BUTTERFLY_COLORS[i%BUTTERFLY_COLORS.length]}:sp.palette;
    const tex=critterTexture(scene,sp,palette,sp.id==='butterfly'?`-${i%BUTTERFLY_COLORS.length}`:'');
-   const sprite=scene.add.sprite(spot.x,spot.y,tex.key,tex.walk[0]).setOrigin(.5,1).setScale(sp.scale??(sp.id==='butterfly'?1.5:2)).setData('no-shadow',sp.mode==='air'||sp.mode==='perch'&&sp.id==='owl');
+   const sprite=scene.add.sprite(spot.x,spot.y,tex.key,tex.walk[0]).setOrigin(.5,1).setScale(sp.scale??2).setData('no-shadow',sp.mode==='air'||sp.mode==='perch'&&sp.id==='owl');
    this.critters.push({sp,sprite,tex,x:spot.x,y:spot.y,home:{...spot},phase:'idle',timer:this.random()*3,anim:this.random()*10,lift:0,vx:0,vy:0,seed:this.random()*1000});
   }
   scene.events.on('update',this.update,this);
@@ -118,7 +118,8 @@ export class CritterField {
     }
    }
    if(c.vx)c.sprite.setFlipX(c.vx<0);
-   c.sprite.setPosition(Math.round(c.x),Math.round(c.y-c.lift)).setDepth(mode==='air'||c.lift>20?c.y+600:c.y);
+   // Quem voa não sai pela borda de cima do mapa.
+   c.sprite.setPosition(Math.round(c.x),Math.round(Math.max(48,c.y-c.lift))).setDepth(mode==='air'||c.lift>20?c.y+600:c.y);
   }
  }
  destroy():void{this.scene.events.off('update',this.update,this);for(const c of this.critters)c.sprite.destroy();this.critters=[];}
