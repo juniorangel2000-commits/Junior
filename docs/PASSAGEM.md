@@ -18,7 +18,7 @@
 ## Feito nesta rodada
 
 - **Bichos dos cenários com sprites provisórios** (`src/data/critters.ts`, `src/critters.ts`). O ChatGPT não conseguiu gerar as artes, então o desenho é pixel art feito no código. Cada quadro é uma grade de letras, com contorno e luz de cima automáticos, e o segundo quadro do andar mexe as pernas sozinho.
-  - **Espécies (15):** o vaga-lume saiu a pedido do Junior, porque a noite já tem vaga-lumes.
+  - **Espécies (14):** o vaga-lume e o gato vira-lata saíram a pedido do Junior; a noite já tem vaga-lumes.
 
     | Cenário | Bichos |
     | --- | --- |
@@ -26,7 +26,7 @@
     | Pomar | esquilo, ouriço |
     | Pântano | garça |
     | Ruínas | morcego ao anoitecer, lagartixa, coruja no arco |
-    | Estação | pombo, gato dormindo nas malas, rato |
+    | Estação | pombo, rato |
     | Campos | borboletas, perdiz, raposa ao anoitecer |
 
   - **Comportamentos:**
@@ -34,7 +34,7 @@
     - o caranguejo corre para a água e some;
     - as aves levantam voo;
     - borboletas e morcegos voam à toa;
-    - a coruja e o gato ficam parados;
+    - a coruja fica parada e vira para o jogador;
     - o ouriço vira bolinha.
   - Os que fogem voltam depois de 12 a 30 s, longe do jogador.
   - São só decoração: não bloqueiam ninguém e não vão para o save.

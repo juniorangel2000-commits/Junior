@@ -15,9 +15,9 @@ const terrains:Record<string,CritterTerrain>={
 };
 
 describe('bichos dos cenários (sprites provisórios)',()=>{
-  it('todas as 15 espécies têm desenho com cores conhecidas e contorno',()=>{
-    expect(CRITTERS).toHaveLength(15);
-    expect(new Set(CRITTERS.map(c=>c.id)).size).toBe(15);
+  it('todas as 14 espécies têm desenho com cores conhecidas e contorno',()=>{
+    expect(CRITTERS).toHaveLength(14);
+    expect(new Set(CRITTERS.map(c=>c.id)).size).toBe(14);
     for(const sp of CRITTERS)for(const rows of [...sp.art,...(sp.special??[])]){
       for(const ch of rows.join(''))if(ch!=='.')expect(sp.palette[ch],`${sp.id} '${ch}'`).toBeDefined();
       const f=critterPixels(rows,sp.palette);
