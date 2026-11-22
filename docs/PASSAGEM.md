@@ -10,6 +10,11 @@
 
 ## Feito nesta rodada
 
+- **Em paralelo, do Codex** (`626c962` e o merge `944dd23`, juntados aqui com `dee10f8`):
+  - a linha principal da Estação curva para o sul junto à borda oeste e termina entre as árvores (`src/data/railway.ts`, `src/railway-world.ts`, `tests/railway.test.ts`);
+  - os Campos ganharam pesca no rio, com vara ou rede, perto da margem (`OpenFieldsScene`, dica "Pescar no rio");
+  - o rio dos Campos e a Costa seguem a versão deste branch.
+
 - **Mapa do vale** (`fa38fbb` e a documentação). O Junior pediu para juntar todos os mapas e ajustar as junções. O [mapa do vale](cenarios/MAPA-DO-VALE.md) traz a imagem e a posição de cada mapa.
   - **Campos:** a chegada norte passou de x=1536 para x=816, a mesma coluna da saída sul da Propriedade. Antes, os Campos teriam de ficar 720 px a oeste e cobririam o Pântano.
     - Estão em `src/data/open-fields.ts`: `FIELDS_ENTRY`, `FIELDS_EXIT` e `FIELDS_NORTH_SIGN`.

@@ -43,5 +43,5 @@ Coordenadas em pixels, com a Propriedade em (0, 0). Cada mapa tem 3072 × 2304 p
 
 ## Pontos abertos
 
-- A estrada da Estação continua até a borda leste, à espera de um destino.
+- A estrada da Estação continua até a borda leste, à espera de um destino. A linha principal curva para o sul junto à borda oeste e termina entre as árvores, dentro da Estação.
 - O rio do Platô também chega pela borda norte. A nascente fica fora do mapa.

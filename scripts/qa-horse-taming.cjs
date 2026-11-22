@@ -122,7 +122,7 @@ const log = (...a) => console.log('·', ...a);
     assert.equal(await page.evaluate(() => s.state.inventory.cord), 1);
     log('corda colocada no Trovão (gastou 1 corda)');
     // Caminha até a passagem norte com o cavalo ao lado e atravessa.
-    await page.evaluate(() => { s.player.x = 1536; s.player.y = 150; const h = s.world.horse.brain; h.x = 1536 + 30; h.y = 180; });
+    await page.evaluate(async () => { const { FIELDS_ENTRY } = await import('/src/data/open-fields.ts'); s.player.x = FIELDS_ENTRY.x; s.player.y = 150; const h = s.world.horse.brain; h.x = FIELDS_ENTRY.x + 30; h.y = 180; });
     await page.waitForTimeout(600);
     await page.screenshot({ path: `${out}/6-corda-campos.png` });
     await page.keyboard.down('w');

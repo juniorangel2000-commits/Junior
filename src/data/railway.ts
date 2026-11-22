@@ -16,6 +16,16 @@ export const RAILWAY_ROAD_HALF_WIDTH = 3.16;
 /** Linhas: principal junto da plataforma e secundária de manobra e carga. */
 export const RAILWAY_LINES = {main:40,yard:48} as const;
 export const YARD_LINE_START = 30;
+export const MAIN_TRACK_BEND = {joinX:22,radius:14,endY:66} as const;
+const bendX=MAIN_TRACK_BEND.joinX;
+const bendY=RAILWAY_LINES.main+MAIN_TRACK_BEND.radius;
+const westTrackX=bendX-MAIN_TRACK_BEND.radius;
+
+function westTrackDistance(x:number,y:number):number {
+  if(x<=bendX&&y<=bendY)return Math.abs(Math.hypot(x-bendX,y-bendY)-MAIN_TRACK_BEND.radius);
+  if(y>=bendY)return Math.hypot(x-westTrackX,Math.max(0,y-MAIN_TRACK_BEND.endY));
+  return Math.min(Math.hypot(x-bendX,y-RAILWAY_LINES.main),Math.hypot(x-westTrackX,y-bendY));
+}
 /** Plataforma (piso de lajes) e a face sul, com escada e rampa. */
 export const PLATFORM = {left:24,right:76,top:32,bottom:38} as const;
 export const PLATFORM_STAIRS = {left:768,right:864};
@@ -51,7 +61,7 @@ export function railwayGravelDistance(x:number,y:number):number {
 }
 /** Distância (em ladrilhos) até o eixo de uma linha; a secundária começa em x=30. */
 export function railwayBallastDistance(x:number,y:number):number {
-  const main=Math.abs(y-RAILWAY_LINES.main);
+  const main=x>=bendX?Math.min(Math.abs(y-RAILWAY_LINES.main),westTrackDistance(x,y)):westTrackDistance(x,y);
   const yard=x>=YARD_LINE_START-.5?Math.abs(y-RAILWAY_LINES.yard):Infinity;
   return Math.min(main,yard);
 }

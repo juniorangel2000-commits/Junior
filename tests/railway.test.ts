@@ -1,7 +1,7 @@
 import {describe,expect,it} from 'vitest';
 import {
   createRailwayLayout, onPlatform, PLATFORM, PLATFORM_RAMP, PLATFORM_STAIRS, RAILWAY_CROSSINGS, RAILWAY_LANDMARKS, RAILWAY_LINES,
-  RAILWAY_ORIGINAL_OBJECTS, RAILWAY_ROAD_HALF_WIDTH, railwayGravelDistance, railwayRoadDistance, STATION_DOOR,
+  MAIN_TRACK_BEND, RAILWAY_ORIGINAL_OBJECTS, RAILWAY_ROAD_HALF_WIDTH, railwayBallastDistance, railwayGravelDistance, railwayRoadDistance, STATION_DOOR,
 } from '../src/data/railway';
 import {RAILWAY_ART, RAILWAY_KINDS} from '../src/data/railway-art';
 import {
@@ -93,6 +93,15 @@ describe('Estação Ferroviária',()=>{
       expect(railwayGravelDistance(x,y)).toBeCloseTo(0);
       expect(free(exterior.blocked,{x:x*32,y:y*32})).toBe(true);
     }
+  });
+  it('curva a linha principal para o sul dentro da Estação',()=>{
+    const {joinX,radius,endY}=MAIN_TRACK_BEND,top=RAILWAY_LINES.main;
+    const west=joinX-radius,cornerY=top+radius;
+    expect(railwayBallastDistance(0,top)).toBeGreaterThan(3);
+    expect(railwayBallastDistance(joinX,top)).toBe(0);
+    expect(railwayBallastDistance(joinX-radius/Math.sqrt(2),cornerY-radius/Math.sqrt(2))).toBeCloseTo(0);
+    expect(railwayBallastDistance(west,cornerY+5)).toBe(0);
+    expect(railwayBallastDistance(west,endY+4)).toBeGreaterThan(3);
   });
   it('espalha manchas de capim alto pelo terreno e respeita os acessos e a edição no F2',()=>{
     const layout=createRailwayLayout(),grass=layout.objects.filter(o=>o.overgrown);
