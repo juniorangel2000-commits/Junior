@@ -19,7 +19,7 @@ import {setupVillagePropAtlas} from './village-prop-atlas';
 import pierArt from '../public/assets/visual/village/pier/manifest.json';
 import {LAKE_RIDGE,LAKE_SIDE_RIDGES,LAKE_SIDE_CROP,LAKE_PIER,LAKE_BRIDGE,LAKE_PIER_PROPS,lakeShoreCoverage,lakeObjects,lakeLowVegetationClear,lakeSandWeight,lakeStairPathBlend,lakeWater,lakeWaterDistance,lakeTrailDistance,lakeTrailHalfWidth,LAKE_CITY_ENTRY,LAKE_CITY_EXIT,LAKE_PROPERTY_ENTRY,LAKE_PROPERTY_EXIT} from './data/fishing-lake';
 import {drawExitSign} from './exit-signs';
-import {drawEdgeBlend} from './edge-blend';
+import {drawValleySeams} from './valley-seams';
 export function preloadFishingLake(scene:Phaser.Scene):void{
  if(!scene.textures.exists(FISHER_CABIN.texture))scene.load.image(FISHER_CABIN.texture,FISHER_CABIN.file);
  if(!scene.textures.exists('lake-west-source'))scene.load.image('lake-west-source','assets/visual/fishing-lake/west-ridge.png');
@@ -136,7 +136,7 @@ export class FishingLakeWorld {
     }
    }
    c.putImageData(p,0,0);this.scene.textures.addCanvas(key,canvas)!.setFilter(0);
-  }this.scene.add.image(0,0,key).setOrigin(0).setDepth(-100);drawEdgeBlend(this.scene,'fishingLake');
+  }this.scene.add.image(0,0,key).setOrigin(0).setDepth(-100);drawValleySeams(this.scene,'fishingLake',(x,y)=>lakeWater(x/32,y/32));
  }
  update(time:number):void {
   this.motion.update(time);const boat=lakeBoatMotion(time);this.boat?.setY(this.boatY+boat.y).setRotation(boat.rotation);

@@ -4,7 +4,7 @@
 
 O mapa junta todos os cenários externos. Cada um aparece na posição em que as saídas se encontram, e os pontos dourados marcam as passagens entre mapas.
 
-Ele foi gerado em 2026-11-22 a partir do `captureMap()` de cada cena, numa partida nova ao meio-dia. Interiores, Mina, Cidade e dungeons ficam fora.
+Ele foi gerado em 2026-11-22 a partir do `captureMap()` de cada cena, numa partida nova ao meio-dia, já com o chão compartilhado das divisas e 160 px de margem em volta de cada mapa. Interiores, Mina, Cidade e dungeons ficam fora.
 
 ## Posição de cada mapa
 
@@ -31,11 +31,17 @@ Coordenadas em pixels, com a Propriedade em (0, 0). Cada mapa tem 3072 × 2304 p
   - O rio entra nos Campos com a posição e a largura do rio da Propriedade.
   - A ponte norte fica na trilha principal.
   - O trecho antigo da trilha, que só levava à borda, voltou a ter capim e árvores.
-- **Pântano:** o canal central passou a nascer da lagoa do norte. Antes ele encostava na borda de cima, onde a Floresta é só mata.
+- **Pântano:** agora tem só lagos, sem rio (`swampWaterDistance`). O canal central virou a lagoa da passarela e ganhou uma lagoa nova ao sul. Nenhuma água encosta nas bordas. O jacaré do canal foi para a lagoa da passarela, em (49, 45).
+- **Chão compartilhado nas divisas** (`src/valley-seams.ts` e `src/data/valley-seams.ts`). É a mesma técnica da divisa Floresta ↔ Propriedade (`map-seam-ground`).
+  - Numa faixa de 256 px de cada lado, o chão vai virando uma mistura das texturas de floresta, grama, prado e musgo, calculada em coordenadas do vale. Junto à linha, os dois mapas mostram exatamente os mesmos pixels.
+  - Perto do Pântano a paleta é `marsh`, com mais musgo e lama.
+  - Ficam de fora a água de cada mapa e os trechos `open`, onde trilha, estrada ou rio atravessam e cada lado já está alinhado.
+  - A faixa fica em −89, acima do terreno pintado no F2 (−90) e abaixo de objetos e personagens. No Platô fica em −69.
+  - `VALLEY_LAYOUT` guarda a posição de cada mapa no vale, e `VALLEY_SEAMS` guarda as divisas.
+- **Copas nas bordas:** as árvores junto à borda passam da linha do mapa. Por isso o mapa do vale é capturado com 160 px de margem e as copas cobrem a divisa, como no jogo.
 - **Sem ajuste:** a diferença de 2 ladrilhos entre a Vila e a Estrada da Cidade não muda nada visível. Mexer na trilha da Estrada deslocaria árvores com edições do F2.
 
 ## Pontos abertos
 
-- O rio do Pântano sai pela borda sul para uma área sem mapa, ao lado da Costa.
 - A estrada da Estação continua até a borda leste, à espera de um destino.
 - O rio do Platô também chega pela borda norte. A nascente fica fora do mapa.

@@ -17,7 +17,11 @@
     - A ponte norte (`fields-north`, x=40–46, y=16–17) fica na trilha principal.
     - As trilhas desenhadas estão em `FIELDS_TRAILS`. A geração continua usando `ORIGINAL_TRAILS` e `ORIGINAL_ENTRY_X`, então ids e posições antigos seguem iguais.
     - O trecho norte da trilha antiga ganhou capim (`grass-n…`), e o vão da mata ganhou quatro árvores (`tree-n…`).
-  - **Pântano:** o canal central nasce da lagoa do norte (`swampWaterDistance`, termo `source`). Antes ele encostava na borda da Floresta, que ali é só mata.
+  - **Pântano** (`d699f06`, a pedido do Junior): tem só lagos, sem rio. O canal virou a lagoa da passarela e ganhou uma lagoa ao sul, sem água nas bordas. O jacaré `swamp-caiman-49-29` foi para (49, 45). Edições F2 antigas que apontem para o id antigo ou para nenúfares do canal deixam de aparecer, sem invalidar o save.
+  - **Chão compartilhado nas divisas.** O Junior comparou com a divisa Floresta ↔ Propriedade ("parecem continuação") e achou as outras "cortadas". O degradê de cor de `d699f06` saiu; no lugar, `drawValleySeams(scene, área, água)` aplica a mesma técnica de `map-seam-ground` em todas as divisas.
+    - Os dados estão em `src/data/valley-seams.ts`: `VALLEY_LAYOUT`, `VALLEY_SEAMS`, os trechos `open` e a paleta `marsh` perto do Pântano.
+    - A chamada vem logo depois do chão em cada mundo. A faixa fica em −89, acima do terreno pintado no F2, e no Platô em −69.
+    - O mapa do vale passou a ser capturado com 160 px de margem: as copas das árvores da borda cruzam a divisa, e a linha reta some.
   - **Sem mudança:** o Platô e o Lago já se encaixam pelo rio, e a Vila e a Estrada têm só 2 ladrilhos de diferença.
 
 - **O Junior recusou a Costa ligada à Estação** (`294c6c0`, do Codex): "quero a costa ligada pra baixo dos campos, onde os rios da propriedade seguem para os campos e depois desaguam no mar da costa, sem trilho, sem ligação com a estação" e "deixa pontes iguais as da propriedade no rio que vai cortar os campos". As artes, o editor F2 e o save da Costa feitos pelo Codex foram mantidos. Mudou a geografia e a ligação.
@@ -44,7 +48,8 @@
 ## Em andamento e próximo passo exato
 
 - O Junior deve jogar os Campos com o rio e a Costa no PC dele e dizer o que ajustar: posição das pontes, largura do rio e o caminho até a praia. A chegada dos Campos mudou de lugar; ela agora fica logo abaixo da saída sul da Propriedade.
-- Decidir para onde vai o rio que sai pela borda sul do Pântano e o destino da estrada a leste da Estação.
+- Decidir o destino da estrada a leste da Estação.
+- O Junior deve conferir as divisas no mapa do vale e, no jogo, as bordas dos mapas.
 - A Costa ainda não tem atividade. Ideias: pesca no mar e na foz, conchas para coletar e uma história ligada ao barco.
 - História curta da sala de espera da Estação: textos e recompensa a definir pelo Junior.
 - Ligar a íris azul à história da Amélia (`src/data/npc-stories.ts`); a história do Nilo pode reaproveitar o selo das Ruínas.
@@ -69,7 +74,7 @@
 ## Testes
 
 - Base da rodada: `npm run check` passou e `npm test` passou com 2.236 testes, antes de mexer na Costa.
-- Final: `npm run check` e `npm test` passaram, com 2.244 testes em 269 arquivos. O `npm run build` passou antes do realinhamento. Depois dele, só check e testes foram rodados.
+- Final: `npm run check` e `npm test` passaram, com 2.248 testes em 270 arquivos. `tests/valley-seams.test.ts` confere que cada divisa fica na borda comum dos dois mapas, que a mistura é inteira junto à linha e zero nas trilhas e rios, e que o Pântano não tem água nas bordas. O `npm run build` passou antes do realinhamento. Depois dele, só check e testes foram rodados; rode o build antes de publicar.
 - Realinhamento dos Campos:
   - os testes conferem a chegada na coluna da saída da Propriedade e a continuidade do rio na borda;
   - também conferem que as trilhas nunca entram na água e que as moitas antigas somam 1.269 sem as `grass-n`;

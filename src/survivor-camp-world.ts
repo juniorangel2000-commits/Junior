@@ -6,7 +6,7 @@ import {readTerrainSprites} from './terrain-sprites';
 import {drawMapTerrainEdits} from './map-editor-terrain';
 import {drawExitSign} from './exit-signs';
 import {CAMP_ENTRY,CAMP_EXIT} from './data/survivor-camp';
-import {drawEdgeBlend} from './edge-blend';
+import {drawValleySeams} from './valley-seams';
 export function preloadSurvivorCamp(scene:Phaser.Scene):void {
  for(const sex of ['female','male'])if(!scene.textures.exists('camp-look-'+sex))scene.load.image('camp-look-'+sex,'assets/visual/survivor-camp/'+sex+'-idle.png');
  if(!scene.textures.exists('camp-props'))scene.load.image('camp-props','assets/visual/survivor-camp/props.png');
@@ -45,7 +45,7 @@ export class SurvivorCampWorld {
    ctx.putImageData(pixels,CAMP_OFFSET.x,CAMP_OFFSET.y);this.scene.textures.addCanvas(key,canvas)?.setFilter(Phaser.Textures.FilterMode.NEAREST);
   }
   this.scene.add.image(0,0,key).setOrigin(0).setDepth(-100);
-  drawEdgeBlend(this.scene,'survivorCamp');
+  drawValleySeams(this.scene,'survivorCamp');
  }
  update(time:number):void {
   // A small glow below the flame, keeping all sprite detail at its original scale.
