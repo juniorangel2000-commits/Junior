@@ -32,7 +32,8 @@ export function bridgeAllowsStep(fromX:number,fromY:number,toX:number,toY:number
 export type MapBridge={readonly id:string;readonly x:number;readonly y:number;readonly width:number;readonly height:number};
 /** Campos Abertos: o rio que desce da propriedade tem duas travessias. */
 export const FIELDS_BRIDGES:readonly MapBridge[]=[
-  {id:'fields-north',x:34,y:7,width:6,height:2},
+  // Ao sul do ipê da margem leste, para a copa não cobrir a travessia.
+  {id:'fields-north',x:30,y:15,width:7,height:2},
   {id:'fields-south',x:13,y:54,width:7,height:2},
 ];
 export function mapBridgeAt(bridges:readonly MapBridge[],x:number,y:number):MapBridge|undefined {

@@ -27,7 +27,7 @@ export function fieldsRiverDistance(x:number,y:number):number{
 export const fieldsRiverEdge=(x:number,y:number)=>fieldsRiverDistance(x,y)-fieldsRiverHalf(y);
 export const fieldsWater=(x:number,y:number)=>fieldsRiverEdge(x,y)<0&&!mapBridgeAt(FIELDS_BRIDGES,x,y);
 /** Trilhas gastas até as pontes (só no desenho do chão; não mudam a geração dos tufos). */
-const bridgePaths=[[[1490,262],[1290,256]],[[1078,256],[930,300],[760,360]],[[930,1780],[760,1765],[650,1760]],[[406,1760],[300,1790],[200,1850]]] as const;
+const bridgePaths=[[[1532,540],[1350,540],[1186,512]],[[958,512],[860,540],[740,600]],[[930,1780],[760,1765],[650,1760]],[[406,1760],[300,1790],[200,1850]]] as const;
 export function fieldsBridgePathDistance(x:number,y:number):number{
  let distance=Infinity;
  for(const path of bridgePaths)for(let i=1;i<path.length;i++){const[a,b]=[path[i-1],path[i]],dx=b[0]-a[0],dy=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/(dx*dx+dy*dy)));distance=Math.min(distance,Math.hypot(x-a[0]-dx*t,y-a[1]-dy*t));}
