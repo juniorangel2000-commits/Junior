@@ -52,7 +52,7 @@ import { DEVELOPMENT_TOOLS } from '../development-tools';
 import type { MapEditData } from '../systems/map-editor';
 import {NpcOutingVisit} from '../npc-outing-visit';
 import type {OutingArea} from '../systems/npc-outings';
-import {CritterField} from '../critters';
+import {CritterField,preloadCritters} from '../critters';
 import {crittersOf} from '../data/critters';
 const OUTING_AREAS:readonly OutingArea[]=['orchard','swamp','ruins','railway','coast'];
 
@@ -138,7 +138,7 @@ export class TrailScene extends Phaser.Scene {
     if(this.resumeViaRoad(data?.save))return;
     if(this.area==='ruins'&&data?.save?.ruinsCellarPosition)preloadRuinsCellar(this);
     else if(this.area==='railway'&&data?.save?.railwayHallPosition)preloadRailwayHall(this);
-    else this.trail.preload(this);
+    else {this.trail.preload(this);preloadCritters(this);}
     if(this.area==='railway'||this.area==='coast'||this.area==='orchard')preloadPetArt(this);
   }
   getGroundItemRuntime(){return this.player?this.grounds:undefined;}

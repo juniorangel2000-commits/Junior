@@ -36,7 +36,7 @@ import {placeHiveTrap,collectHiveTrap,nearTrap,trapHint} from '../systems/beekee
 import {createFishingCast} from '../fishing-cast';
 import {fishAtBank} from '../fishing-ui';
 import {NpcOutingVisit} from '../npc-outing-visit';
-import {CritterField} from '../critters';
+import {CritterField,preloadCritters} from '../critters';
 interface FieldsStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 type FieldSwing = GatherAction<'sickle' | 'hatchet'> & { id: string };
 export class OpenFieldsScene extends Phaser.Scene{
@@ -46,7 +46,7 @@ export class OpenFieldsScene extends Phaser.Scene{
  private missionRuntime=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player);
  private bentoRuntime={missions:this.missionRuntime,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
  constructor(){super('Campos');}
- preload():void{preloadOpenFields(this);preloadPetArt(this);}
+ preload():void{preloadOpenFields(this);preloadPetArt(this);preloadCritters(this);}
  getGroundItemRuntime(){return this.player?this.groundRuntime:undefined;}
  getMineMissionRuntime=()=>this.missionRuntime;
  getFishingState=()=>this.state;

@@ -1,5 +1,7 @@
+import {readFileSync} from 'node:fs';
+import {createRequire} from 'node:module';
 import {describe,expect,it} from 'vitest';
-import {CRITTERS,critterActive,critterPixels,critterRandom,critterSpot,critterStep,crittersOf,type CritterTerrain} from '../src/data/critters';
+import {BUTTERFLY_VARIANTS,CRITTER_ART,CRITTER_CELL,CRITTER_POSES,CRITTER_ROW_WIDTH,CRITTER_VIEWS,CRITTERS,critterActive,critterDirection,critterFrame,critterRandom,critterSpot,crittersOf,type CritterTerrain} from '../src/data/critters';
 import {createOrchardLayout,ORCHARD_SIZE} from '../src/data/orchard';
 import {createSwampLayout,SWAMP_SIZE} from '../src/data/swamp';
 import {createRuinsLayout,RUINS_SIZE} from '../src/data/ruins';
@@ -14,22 +16,36 @@ const terrains:Record<string,CritterTerrain>={
   openFields:{...FIELDS_SIZE,land:(x,y)=>!fieldsBlocked(x,y),water:fieldsWater},
 };
 
-describe('bichos dos cenários (sprites provisórios)',()=>{
-  it('todas as 14 espécies têm desenho com cores conhecidas e contorno',()=>{
+describe('bichos dos cenários',()=>{
+  it('carrega os quadros de todas as vistas e as quatro cores de borboleta',()=>{
+    const {PNG}=createRequire(import.meta.url)('pngjs');
+    const sheet=PNG.sync.read(readFileSync('public/'+CRITTER_ART));
+    const rows=CRITTERS.length+BUTTERFLY_VARIANTS-1;
+    const frames=CRITTERS.flatMap(s=>Array.from({length:s.id==='butterfly'?BUTTERFLY_VARIANTS:1},(_,variant)=>
+      CRITTER_VIEWS.map(direction=>critterFrame(s.id,direction,0,variant))).flat());
+    const cell=CRITTER_CELL;
     expect(CRITTERS).toHaveLength(14);
-    expect(new Set(CRITTERS.map(c=>c.id)).size).toBe(14);
-    for(const sp of CRITTERS)for(const rows of [...sp.art,...(sp.special??[])]){
-      for(const ch of rows.join(''))if(ch!=='.')expect(sp.palette[ch],`${sp.id} '${ch}'`).toBeDefined();
-      const f=critterPixels(rows,sp.palette);
-      expect(f.pixels.length,sp.id).toBeGreaterThan(0);
-      expect(f.pixels.some(p=>p[2]==='#2a1a10'),sp.id).toBe(true);
+    expect(new Set(frames).size).toBe(rows*CRITTER_VIEWS.length);
+    expect([sheet.width,sheet.height]).toEqual([CRITTER_ROW_WIDTH*cell,rows*cell]);
+    for(const base of frames)for(let pose=0;pose<CRITTER_POSES;pose++){
+      const frame=base+pose,ox=(frame%CRITTER_ROW_WIDTH)*cell,oy=Math.floor(frame/CRITTER_ROW_WIDTH)*cell;
+      let visible=0,border=0;
+      for(let y=0;y<cell;y++)for(let x=0;x<cell;x++){
+        const alpha=sheet.data[((y+oy)*sheet.width+x+ox)*4+3];
+        if(alpha>=100)visible++;
+        if(!x||!y||x===cell-1||y===cell-1)border+=alpha;
+      }
+      expect(visible,`quadro ${frame}`).toBeGreaterThan(25);
+      expect(border,`borda do quadro ${frame}`).toBe(0);
     }
   });
-  it('o segundo quadro do andar mexe as pernas sem mudar o resto',()=>{
-    const rows=['.cc.','l..l'],step=critterStep(rows);
-    expect(step[0]).toBe(rows[0]);
-    expect(step[1]).not.toBe(rows[1]);
-    expect([...step[1]].filter(c=>c==='l')).toHaveLength(2);
+  it('segue a direção do deslocamento e espelha só as vistas da esquerda',()=>{
+    expect(critterDirection(100,20)).toBe('right');
+    expect(critterDirection(-40,20)).toBe('left');
+    expect(critterDirection(-20,40)).toBe('down');
+    expect(critterDirection(10,-40)).toBe('up');
+    expect(critterFrame('fox','left',3)).toBe(critterFrame('fox','right',3));
+    expect(critterFrame('fox','up',3)).not.toBe(critterFrame('fox','down',3));
   });
   it('cada espécie encontra lugar no seu cenário, em terra, na beira da água ou sobre ela',()=>{
     for(const [area,t] of Object.entries(terrains)){
