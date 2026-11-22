@@ -14,7 +14,7 @@ Coordenadas em pixels, com a Propriedade em (0, 0). Cada mapa tem 3072 × 2304 p
 | --- | --- | --- |
 | Propriedade Abandonada | (0, 0) | Referência. |
 | Vila | (3072, 0) | Saída leste da Propriedade (94, 52) ↔ borda oeste da Vila (1, 52). |
-| Pomar Abandonado | (6144, 0) | Saída leste da Vila (94, 62) ↔ borda oeste do Pomar (1, 62). |
+| Pomar Abandonado | (6144, 192) | Saída leste da Vila (94, 62) ↔ borda oeste do Pomar (1, 56). |
 | Floresta Antiga | (−3072, 0) | Saída oeste da Propriedade (1, 52) ↔ borda leste da Floresta (94, 52). |
 | Lago da Cachoeira | (0, −2304) | Saída norte da Propriedade (75, 1) ↔ base do Lago (75, 70). O rio do Lago entra na Propriedade em x≈1373–1532. |
 | Estrada da Cidade | (3072, −2304) | Borda leste do Lago (94, 33) ↔ borda oeste da Estrada (1, 33). O portão norte da Vila fica em x=50 e a base da Estrada em x=48: diferença de 2 ladrilhos. |

@@ -1,10 +1,13 @@
+import {ORCHARD_NORTH_OFFSET,VILLAGE_ORCHARD_Y} from './orchard-gate';
+
 /** Posição de cada mapa externo no vale (px, com a Propriedade em 0,0) e as divisas entre eles.
  * A montagem vem das saídas ligadas: veja docs/cenarios/MAPA-DO-VALE.md. */
-export type ValleyArea='property'|'village'|'forest'|'fishingLake'|'cityForest'|'ruins'|'railway'|'highland'|'survivorCamp'|'swamp'|'openFields'|'coast';
+export type ValleyArea='property'|'village'|'forest'|'fishingLake'|'cityForest'|'ruins'|'railway'|'highland'|'survivorCamp'|'swamp'|'openFields'|'coast'|'orchard';
 const W=3072,H=2304,T=32;
 export const VALLEY_LAYOUT:Readonly<Record<ValleyArea,{readonly x:number;readonly y:number;readonly width:number;readonly height:number}>>={
   property:{x:0,y:0,width:W,height:H},
   village:{x:W,y:0,width:W,height:H},
+  orchard:{x:2*W,y:ORCHARD_NORTH_OFFSET*T,width:W,height:H},
   forest:{x:-W,y:0,width:W,height:H},
   fishingLake:{x:0,y:-H,width:W,height:H},
   cityForest:{x:W,y:-H,width:W,height:H},
@@ -38,6 +41,8 @@ export const VALLEY_SEAMS:readonly ValleySeam[]=[
   {first:'property',second:'village',axis:'x',at:W,from:0,to:H,palette:'meadow',open:[[1600,1760]]},
   {first:'fishingLake',second:'cityForest',axis:'x',at:W,from:-H,to:0,palette:'meadow',open:[[-1312,-1152]]},
   {first:'cityForest',second:'ruins',axis:'x',at:2*W,from:-H+6*T,to:0,palette:'meadow',open:[[-2112,-1824]]},
+  {first:'ruins',second:'orchard',axis:'y',at:ORCHARD_NORTH_OFFSET*T,from:2*W,to:3*W,palette:'meadow',open:[]},
+  {first:'village',second:'orchard',axis:'x',at:2*W,from:ORCHARD_NORTH_OFFSET*T,to:H,palette:'meadow',open:[[(VILLAGE_ORCHARD_Y-1.5)*T,(VILLAGE_ORCHARD_Y+2.5)*T]]},
   {first:'village',second:'ruins',axis:'x',at:2*W,from:0,to:6*T,palette:'meadow',open:[]},
   {first:'ruins',second:'railway',axis:'x',at:3*W,from:-H+6*T,to:6*T,palette:'meadow',open:[[-2112,-1824]]},
   {first:'swamp',second:'openFields',axis:'x',at:0,from:H,to:2*H,palette:'marsh',open:[]},

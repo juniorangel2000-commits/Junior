@@ -5,6 +5,7 @@ import {ORCHARD_OBJECTS,ORCHARD_POND,ORCHARD_REGROW_DAYS,createOrchardLayout} fr
 import {ORCHARD_FRUITS,ORCHARD_KINDS,orchardArt,orchardFruitFile} from '../src/data/orchard-art';
 import {villagePointBlocked} from '../src/data/village';
 import {TILE} from '../src/data/world-size';
+import {VALLEY_LAYOUT,VALLEY_SEAMS,valleySeamWeight} from '../src/data/valley-seams';
 import {defaultMap} from '../src/data/default-maps';
 import {createCharacterProfile} from '../src/data/characters';
 import {createNewSave,migrateSave,validateSave} from '../src/systems/save';
@@ -20,7 +21,9 @@ describe('Pomar Abandonado',()=>{
     const exit=midpoint(VILLAGE_ORCHARD_EXIT),back=midpoint(ORCHARD_EXIT);
     expect(new MapExitPassage().update({x:exit.x-24,y:exit.y},exit,VILLAGE_ORCHARD_EXIT,VILLAGE_ORCHARD_RETURN)).toBe(true);
     expect(new MapExitPassage().update({x:back.x+24,y:back.y},back,ORCHARD_EXIT,ORCHARD_ENTRY)).toBe(true);
-    expect(ORCHARD_ENTRY.y).toBe(VILLAGE_ORCHARD_EXIT.y);
+    expect(VALLEY_LAYOUT.orchard.y+ORCHARD_ENTRY.y*TILE).toBe(VILLAGE_ORCHARD_EXIT.y*TILE);
+    const seam=VALLEY_SEAMS.find(s=>s.first==='village'&&s.second==='orchard')!;
+    expect(valleySeamWeight(seam,exit.y,0)).toBe(0);
     for(let x=90*TILE;x<94.5*TILE;x+=4)expect(villagePointBlocked(x,exit.y)).toBe(false);
     const layout=createOrchardLayout(),entry=midpoint(ORCHARD_ENTRY);
     expect(layout.blocked(entry.x,entry.y)).toBe(false);

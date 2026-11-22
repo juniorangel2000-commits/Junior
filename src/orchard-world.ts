@@ -12,6 +12,7 @@ import {fruitWithinReach} from './systems/orchard-harvest';
 import type {MapEditData} from './systems/map-editor';
 import {readTerrainSprites} from './terrain-sprites';
 import {addWaterMotion} from './water-motion';
+import {drawValleySeams} from './valley-seams';
 import type {TilePoint} from './types';
 import type {WorldEditorObject} from './world';
 
@@ -81,6 +82,7 @@ export class OrchardWorld {
     }));
     const sourceWater=(x:number,y:number)=>orchardBaseWater((x+.5)*TILE,(y+.5)*TILE);
     drawMapTerrainEdits(scene,terrain,this.terrainKey,sourceWater,'forest')?.setDepth(-99);
+    drawValleySeams(scene,'orchard',orchardBaseWater);
     if(!editor)addWaterMotion(scene,(x,y)=>this.layout.water((x+.5)*TILE,(y+.5)*TILE),this.layout.water,{...ORCHARD_SIZE,alpha:.32});
     for(const object of this.layout.objects){
       const {x,y}=this.layout.pivot(object),art=orchardArt(object.kind);
