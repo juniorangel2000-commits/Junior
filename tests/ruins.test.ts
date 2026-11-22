@@ -11,6 +11,10 @@ import {validateMapEdits} from '../src/systems/map-editor';
 import {inspectRuins} from '../src/systems/ruins-discoveries';
 import {RUIN_KINDS} from '../src/data/ruins-art';
 import {RUINS_LANDMARKS} from '../src/data/ruins-story';
+import {ruinsHasWetTraces} from '../src/data/ruins-story';
+import {weatherForDay} from '../src/weather-model';
+import {CELLAR_SEAL,RUINS_CELLAR_ENTRY,RUINS_CELLAR_EXIT,createRuinsCellarLayout} from '../src/data/ruins-cellar';
+import {listVillageServices,performVillageService} from '../src/systems/village-services';
 
 describe('Ruínas na Estrada da Cidade',()=>{
   it('continua o mesmo asfalto a leste e só atravessa andando para fora',()=>{
@@ -71,10 +75,10 @@ describe('Ruínas na Estrada da Cidade',()=>{
     expect(validateMapEdits({...map,area:'forest'})).toBe(false);
   });
 
-  it('inclui as 32 peças e mantém livres o asfalto e as inspeções do posto',()=>{
+  it('inclui todas as peças e mantém livres o asfalto e as inspeções do posto',()=>{
     const layout=createRuinsLayout();
     const kinds=new Set(layout.objects.map(o=>o.kind));
-    expect(RUIN_KINDS).toHaveLength(32);
+    expect(RUIN_KINDS).toHaveLength(33);
     expect(RUIN_KINDS.every(kind=>kinds.has(kind))).toBe(true);
     const center=tileMidpoint(RUINS_ENTRY);
     for(let x=40;x<3032;x+=16)expect(layout.blocked(x,center.y)).toBe(false);
@@ -121,5 +125,40 @@ describe('Ruínas na Estrada da Cidade',()=>{
     expect(inspectRuins(finished,pedestal,persist).join(' ')).toMatch(/vazio/);
     expect(persist).toHaveBeenCalledTimes(4);
     expect(finished.inventory.oldMap).toBe(1);
+  });
+
+  it('mantém os sulcos visíveis na chuva e no dia seguinte',()=>{
+    const day=Array.from({length:90},(_,i)=>i+2).find(d=>weatherForDay(d)==='rain'&&weatherForDay(d+1)==='clear')!;
+    expect(ruinsHasWetTraces(1)).toBe(false);
+    expect(ruinsHasWetTraces(day)).toBe(true);
+    expect(ruinsHasWetTraces(day+1)).toBe(true);
+    const layout=createRuinsLayout(),p=layout.wetTrack!;
+    expect(layout.inspectNear(p.x,p.y)?.name).not.toBe('Marcas de roda');
+    expect(layout.inspectNear(p.x,p.y,true)?.name).toBe('Marcas de roda');
+  });
+
+  it('permite sair do porão, salvar o selo e pedir a identificação uma única vez',()=>{
+    const room=createRuinsCellarLayout(),arrival=tileMidpoint(RUINS_CELLAR_ENTRY),exit=tileMidpoint(RUINS_CELLAR_EXIT);
+    expect(room.blocked(arrival.x,arrival.y)).toBe(false);
+    expect(room.blocked(exit.x,exit.y)).toBe(false);
+    expect(new MapExitPassage().update(arrival,exit,RUINS_CELLAR_EXIT,RUINS_CELLAR_ENTRY)).toBe(true);
+    expect(room.blocked(CELLAR_SEAL.x,CELLAR_SEAL.y)).toBe(true);
+    const data=createNewSave(createCharacterProfile('Visitante'));
+    data.activeArea='ruins';data.ruinsMapFound=true;data.ruinsCellarPosition={...arrival,direction:'up'};
+    const mark=room.inspectNear(CELLAR_SEAL.x,CELLAR_SEAL.y+39)!;
+    expect(listVillageServices('nilo',data).some(o=>o.id==='identify-ruins-seal')).toBe(false);
+    expect(inspectRuins(data,mark,()=>false).join(' ')).toMatch(/salvar/);
+    expect(data.inventory.ruinSeal).toBe(0);
+    expect(inspectRuins(data,mark,validateSave).join(' ')).toMatch(/Selo de bronze/);
+    const resumed=migrateSave(JSON.parse(JSON.stringify(data)))!;
+    expect(resumed.ruinsCellarPosition).toEqual(data.ruinsCellarPosition);
+    expect(listVillageServices('nilo',resumed).find(o=>o.id==='identify-ruins-seal')?.disabled).toBe(false);
+    const coins=resumed.villageEconomy!.coins;
+    expect(performVillageService(resumed,'identify-ruins-seal').message).toMatch(/guardas do Desvio/);
+    expect(resumed.ruinsSealIdentified).toBe(true);
+    expect(performVillageService(resumed,'identify-ruins-seal').ok).toBe(false);
+    expect(resumed.inventory.ruinSeal).toBe(1);
+    expect(resumed.villageEconomy!.coins).toBe(coins);
+    expect(validateSave(resumed)).toBe(true);
   });
 });

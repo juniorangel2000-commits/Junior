@@ -7,6 +7,7 @@ const outpost = read('posto');
 const outbuildings = read('entreposto');
 const foundations = read('fundacoes');
 const landmarks = read('marcos');
+const cellar = read('porao');
 
 const grid = (source, names, columns) => names.map((name, index) => {
   const col = index % columns;
@@ -26,6 +27,8 @@ const pieces = [
   ['sundial', outbuildings, 1032, 512, 1536, 1024],
   ...grid(foundations, ['window','hearth','trough','ring','wall-break','gateposts','cistern','toll'], 4),
   ...grid(landmarks, ['planter','bell','bench','column-bases','marker','cargo','amphora','lintel'], 4),
+  ['hatch', cellar, 0, 0, 900, cellar.height],
+  ['bronze-seal', cellar, 900, 0, cellar.width, cellar.height],
   ['well', outpost, 0, 0, 570, 640],
   ['facade', outpost, 580, 0, outpost.width, 650],
   ['waystone', outpost, 0, 650, 560, outpost.height],

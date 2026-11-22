@@ -4,7 +4,7 @@ import {RUINS_ROAD_Y, tileMidpoint} from './ruins-road';
 import {paintedWaterPoint} from './terrain-paint';
 import {TILE, WORLD_HEIGHT, WORLD_WIDTH} from './world-size';
 import {editorObjectKind, type EditorObjectKind, type MapEditData} from '../systems/map-editor';
-import {RUINS_LANDMARKS, type RuinLandmark} from './ruins-story';
+import {RUINS_HATCH_ID, RUINS_LANDMARKS, RUINS_WET_TRACK, type RuinLandmark} from './ruins-story';
 
 type Point = {x:number;y:number};
 type Route = readonly (readonly [number,number])[];
@@ -71,7 +71,7 @@ const masonry: ReadonlyArray<readonly [RuinKind,number,number]> = [
   ['ruin-rubble',46,45],['ruin-wall',51,44],['ruin-amphora',50,40],['ruin-cargo',47,44],
   ['ruin-storehouse',64,25],['ruin-wall-break',60,25],['ruin-wall',68,25],['ruin-window',69,28],
   ['ruin-wall',62,28],['ruin-corner',66,27],['ruin-wall',70,31],['ruin-cistern',68,34],
-  ['ruin-rubble',61,35],['ruin-wall',65,36],['ruin-lintel',70,37],['ruin-urns',61,29],
+  ['ruin-rubble',61,35],['ruin-wall',65,36],['ruin-lintel',70,37],['ruin-urns',61,29],['ruin-hatch',65,31],
   ['ruin-flagstones',64,24],['ruin-flagstones',64,27],['ruin-flagstones',64,30],
   ['ruin-marker',76,17],['ruin-amphora',72,22],['ruin-column-bases',78,21],['ruin-wall-break',78,23],
   // Praça baixa onde termina a história do posto.
@@ -94,13 +94,15 @@ for(let gy=2;gy<WORLD_HEIGHT-2;gy+=3)for(let gx=2;gx<WORLD_WIDTH-2;gx+=3){
   if(x>=WORLD_WIDTH-1||y>=WORLD_HEIGHT-1||reserved.has(`${x},${y}`))continue;
   const seed=ruinsSeed(x,y), border=x<3||x>89||y>65||y<4;
   const road=ruinsRoadDistance(y+.5), trail=ruinsTrailDistance(x+.5,y+.5), court=ruinsCourtDistance(x+.5,y+.5);
-  if(road<4.5||trail<1.75||masonry.some(([,rx,ry])=>Math.hypot(x-rx,y-ry)<2.25))continue;
+  if(road<3.35||trail<1.18)continue;
+  const nearWall=masonry.some(([,rx,ry])=>Math.hypot(x-rx,y-ry)<2.4);
   let kind:EditorObjectKind;
-  if(court>1.10&&trail>2.5&&road>6&&(border||seed>.40))kind=seed>.67?'standingTree':'pine';
-  else if(seed>.72)kind='mossBoulder';
-  else if(seed>.42)kind='fern';
-  else if(seed>.21)kind='bush';
-  else if(seed>.08)kind='whiteFlowers';
+  if(!nearWall&&court>1.10&&trail>2.5&&road>6&&(border||seed>.40))kind=seed>.67?'standingTree':'pine';
+  else if(!nearWall&&seed>.85&&road>5&&trail>1.95)kind='mossBoulder';
+  else if(seed>.71&&trail>1.62)kind='fern';
+  else if(seed>.62&&trail>1.80)kind='bush';
+  else if(seed>.51)kind='whiteFlowers';
+  else if(seed>.08)kind=seed>.34?'tallGrassA':seed>.22?'tallGrassB':'tallGrassC';
   else continue;
   original.push({id:`${kind}-${x}-${y}`,kind,x,y,scale:.79+seed*.23,variant:Math.floor(seed*41)%3});
 }
@@ -132,13 +134,16 @@ export function createRuinsLayout(edits?:MapEditData) {
     return solid.some(b=>x>b.left&&x<b.right&&y>b.top&&y<b.bottom);
   };
   const inspectable=objects.flatMap(o=>Object.hasOwn(RUINS_LANDMARKS,o.id)?[{...tileMidpoint(o),landmark:RUINS_LANDMARKS[o.id]}]:[]);
-  const inspectNear=(x:number,y:number):RuinLandmark|undefined=>{
+  const hatch=objects.find(o=>o.id===RUINS_HATCH_ID);
+  const wetTrack=hatch?{x:tileMidpoint(hatch).x-83,y:tileMidpoint(hatch).y-86}:undefined;
+  const inspectNear=(x:number,y:number,wet=false):RuinLandmark|undefined=>{
     let nearest=59,found:RuinLandmark|undefined;
     for(const point of inspectable){
       const distance=Math.hypot(x-point.x,y-point.y);
       if(distance<nearest){nearest=distance;found=point.landmark;}
     }
+    if(wet&&wetTrack&&Math.hypot(x-wetTrack.x,y-wetTrack.y)<Math.min(nearest,44))return RUINS_WET_TRACK;
     return found;
   };
-  return {objects,water,inWater:water,blocked,inspectNear,allowsStep:(_from:Point,to:Point)=>!blocked(to.x,to.y)};
+  return {objects,water,inWater:water,blocked,inspectNear,wetTrack,allowsStep:(_from:Point,to:Point)=>!blocked(to.x,to.y)};
 }

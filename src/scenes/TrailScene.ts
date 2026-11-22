@@ -9,7 +9,11 @@ import { setupTreeWind } from '../tree-wind';
 import { SwampWorld, preloadSwamp } from '../swamp-world';
 import { SWAMP_SIZE, swampEntry, swampExit, tileCenter, FOREST_SWAMP_RETURN } from '../data/swamp';
 import { RuinsWorld, preloadRuins } from '../ruins-world';
+import { RuinsCellarWorld } from '../ruins-cellar-world';
 import { RUINS_SIZE } from '../data/ruins';
+import { RUINS_CELLAR_ENTRY, RUINS_CELLAR_EXIT, RUINS_CELLAR_SIZE } from '../data/ruins-cellar';
+import { ruinsHasWetTraces } from '../data/ruins-story';
+import { blockMountedEntry } from '../riding-guard';
 import { CITY_RUINS_RETURN, RUINS_ENTRY, RUINS_EXIT } from '../data/ruins-road';
 import { AREA_NAMES } from '../data/area-names';
 import { directionFromVector, directionVector } from '../character-directions';
@@ -50,7 +54,9 @@ export class TrailScene extends Phaser.Scene {
   private state!: SaveData;
   private ui!: TrailStart['ui'];
   private onReturn!: TrailStart['onReturn'];
-  private world!: SwampWorld|RuinsWorld;
+  private world!: SwampWorld|RuinsWorld|RuinsCellarWorld;
+  get inHome():boolean{return this.area==='ruins'&&!!this.state?.ruinsCellarPosition;}
+  private get mapSize(){return this.inHome?RUINS_CELLAR_SIZE:this.trail.size;}
   readonly movementBlockedPoint=(x:number,y:number)=>this.world.layout.blocked(x,y);
   private readonly tileBlocked=(x:number,y:number)=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
   readonly swimmingPoint=(x:number,y:number)=>sampleWaterDepth(this.world.layout.inWater,x,y);
@@ -66,7 +72,7 @@ export class TrailScene extends Phaser.Scene {
   private hudElapsed=0;
   private readonly passage=new MapExitPassage();
   private readonly grounds=createGroundRuntime(
-    ()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>this.area,
+    ()=>this.snapshotState(),saveGame,()=>this.state,()=>this.state.inventory,()=>this.player,()=>this.inHome?'ruins-cellar':this.area,
     (x,y)=>this.movementBlockedPoint(x,y)||this.swimmingPoint(x,y)>0,()=>this.canPlay(),()=>this.updateHUD(),
   );
   private readonly missions=createMineMissionRuntime(()=>this.snapshotState(),saveGame,()=>this.state,()=>this.player);
@@ -88,17 +94,19 @@ export class TrailScene extends Phaser.Scene {
     this.passage.reset();
     gameAudio.setScene('game');
     setupTreeWind(this);
-    const {width,height}=this.trail.size,edits=this.state[this.trail.map];
-    this.world=new this.trail.World(this,edits);
+    const {width,height}=this.mapSize,edits=this.state[this.trail.map];
+    this.world=this.inHome?new RuinsCellarWorld(this,!!this.state.ruinsSealFound):new this.trail.World(this,edits);
+    if(this.world instanceof RuinsWorld)this.world.weather(this.state.day);
     this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
-    const saved=this.state[this.trail.position];
+    const saved=this.inHome?this.state.ruinsCellarPosition:this.state[this.trail.position];
     const valid=saved&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!this.movementBlockedPoint(saved.x+dx,saved.y+dy));
-    const start=valid?saved:tileCenter(this.trail.entry(edits));
+    const start=valid?saved:tileCenter(this.inHome?RUINS_CELLAR_ENTRY:this.trail.entry(edits));
     this.player=new Player(this,this.state.profile,start.x,start.y,this.area+'-player');
-    this.player.facing=directionVector(valid?saved.direction??this.trail.arrival:this.trail.arrival);
+    const facing=this.inHome?'up':this.trail.arrival;
+    this.player.facing=directionVector(valid?saved.direction??facing:facing);
     this.player.update(0,this.tileBlocked,this.movementBlockedPoint,false,this.swimmingPoint);
     this.daylight=new Daylight(this,width,height);
-    this.daylight.update(this.state.time,false,this.state.day);
+    this.daylight.update(this.state.time,this.inHome,this.state.day);
     this.zoom=loadCameraZoom();
     this.cameras.main.setBounds(0,0,width,height).setBackgroundColor('#3a4129');
     this.applyCamera();
@@ -115,7 +123,7 @@ export class TrailScene extends Phaser.Scene {
     window.addEventListener('blur',this.blur);
     document.addEventListener('visibilitychange',this.visibility);
     this.events.once('shutdown',()=>{
-      this.world.destroy();
+      if(!(this.world instanceof RuinsCellarWorld))this.world.destroy();
       this.daylight.destroy();
       this.input.keyboard?.off('keydown',this.key,this);
       this.input.off('wheel',this.wheel,this);
@@ -145,8 +153,9 @@ export class TrailScene extends Phaser.Scene {
   }
 
   private nearbyLandmark(){
-    return this.world instanceof RuinsWorld&&!this.player.isSwimming
-      ? this.world.layout.inspectNear(this.player.x,this.player.y) : undefined;
+    if(this.player.isSwimming)return undefined;
+    if(this.world instanceof RuinsCellarWorld)return this.world.layout.inspectNear(this.player.x,this.player.y);
+    if(this.world instanceof RuinsWorld)return this.world.layout.inspectNear(this.player.x,this.player.y,ruinsHasWetTraces(this.state.day));
   }
 
   private updateHUD():void {
@@ -156,16 +165,18 @@ export class TrailScene extends Phaser.Scene {
     const fishing=this.nearFishing()&&!!this.equippedFishingItem();
     const cardinal={up:'norte',down:'sul',left:'oeste',right:'leste'}[exitSignLayout(exit,trail.entry(edits)).direction];
     const prompt=player.isSwimming?'Siga até a margem para sair da água.':
-      landmark?`E · Examinar ${landmark.name.toLowerCase()}`:
+      landmark?(landmark.cellar&&state.ruinsMapFound?'E · Descer ao porão':`E · Examinar ${landmark.name.toLowerCase()}`):
+      this.inHome?'Suba os degraus ao sul para voltar ao armazém.':
       Math.hypot(player.x-gate.x,player.y-gate.y)<144?`${trail.returnName} ao ${cardinal}`:
       fishing?'Pescar na margem · E':trail.prompt;
     this.ui.updateHUD({
       area:this.area,name:state.profile.name,day:state.day,time:state.time,
       inventory:state.inventory,itemQuality:state.itemQuality,toolConditions:state.economy6?.tools,
       tool:state.equippedTool??'hand',worldWeapon:state.worldWeapon,learnedRecipes:state.villageProgress?.recipes??[],
-      inHome:false,swimming:player.isSwimming,coins:state.villageEconomy?.coins??0,vigor:state.villageProgress?.vigor??100,
+      inHome:this.inHome,swimming:player.isSwimming,coins:state.villageEconomy?.coins??0,vigor:state.villageProgress?.vigor??100,
       wateringCan:!!state.homeSupplies?.wateringCan,wateringCanWater:state.wateringCanWater??0,
       playerTile:{x:player.x/32,y:player.y/32},interactionKey:landmark||fishing?'E':null,prompt,location:AREA_NAMES[this.area],
+      ...(this.inHome?{mapTitle:'Porão do posto',location:'Porão do posto',interiorMapSize:{width:this.mapSize.width/32,height:this.mapSize.height/32}}:{}),
       harvests:state.inventory.turnip,metLia:state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',
       resourceProgress:'',farmingProgress:this.farming.progress,progress:state.progress,
     });
@@ -183,7 +194,9 @@ export class TrailScene extends Phaser.Scene {
     else if(key==='e'){
       const landmark=this.nearbyLandmark();
       if(landmark){
+        if(landmark.cellar&&this.state.ruinsMapFound){this.changeCellar(true);return;}
         const lines=inspectRuins(this.snapshotState(),landmark,saveGame);
+        if(this.world instanceof RuinsCellarWorld&&this.state.ruinsSealFound)this.world.takeSeal();
         this.updateHUD();
         this.ui.showDialogue(landmark.name,lines,undefined,'inspection');
         return;
@@ -196,7 +209,7 @@ export class TrailScene extends Phaser.Scene {
   private wheel=(_p:Phaser.Input.Pointer,_objects:unknown[],_x:number,deltaY:number):void=>{
     if(this.canPlay()&&Math.abs(deltaY)>5)this.changeCameraZoom(deltaY>0?-1:1);
   };
-  private get shownZoom():number{return mapCameraZoom(this.zoom,this.scale.width,this.scale.height,this.trail.size.width,this.trail.size.height);}
+  private get shownZoom():number{return mapCameraZoom(this.zoom,this.scale.width,this.scale.height,this.mapSize.width,this.mapSize.height);}
   private applyCamera=():void=>{
     this.cameras.main.setZoom(2*this.shownZoom).startFollow(this.player,true,.12,.12).setRoundPixels(true);
     this.ui?.updateCameraZoom(this.shownZoom,!this.paused);
@@ -233,8 +246,9 @@ export class TrailScene extends Phaser.Scene {
   }
 
   captureMap():Promise<string> {
-    const rt=this.make.renderTexture({width:this.trail.size.width/3,height:this.trail.size.height/3},false);
-    rt.camera.setZoom(1/3).setScroll(0,0).setOrigin(0,0);
+    const factor=this.inHome?1:1/3;
+    const rt=this.make.renderTexture({width:this.mapSize.width*factor,height:this.mapSize.height*factor},false);
+    rt.camera.setZoom(factor).setScroll(0,0).setOrigin(0,0);
     this.children.depthSort();
     rt.draw(this.children.list.filter(o=>o!==this.player.sprite&&!this.daylight.contains(o)&&'visible'in o&&o.visible));
     return new Promise(resolve=>rt.snapshot(image=>{
@@ -259,7 +273,9 @@ export class TrailScene extends Phaser.Scene {
   }
 
   private snapshotState():SaveData {
-    this.state[this.trail.position]={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};
+    const position={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};
+    if(this.inHome)this.state.ruinsCellarPosition=position;
+    else this.state[this.trail.position]=position;
     this.state.quickbar=this.ui.getQuickbar();
     this.state.crops=this.farming.crops;
     this.state.farmingProgress=this.farming.progress;
@@ -267,6 +283,15 @@ export class TrailScene extends Phaser.Scene {
   }
   persist=():boolean=>!!this.player&&!this.leaving&&saveGame(this.snapshotState());
   mainMenu():void{this.ui.closeModal();this.leave(true);}
+  private changeCellar(enter:boolean):void {
+    if(this.leaving||enter&&blockMountedEntry(this.player,this.ui))return;
+    const save=structuredClone(this.snapshotState());
+    if(enter)save.ruinsCellarPosition={...tileCenter(RUINS_CELLAR_ENTRY),direction:'up'};
+    else delete save.ruinsCellarPosition;
+    if(!saveGame(save)){this.ui.toast('Não foi possível salvar antes de atravessar a escada.');return;}
+    this.leaving=true;this.blur();this.cameras.main.fadeOut(SCENE_FADE_MS);
+    this.time.delayedCall(SCENE_FADE_MS,()=>this.scene.restart({save,ui:this.ui,onReturn:this.onReturn} satisfies TrailStart));
+  }
   private leave(title=false):void {
     if(this.leaving)return;
     const next=structuredClone(this.snapshotState());
@@ -284,17 +309,22 @@ export class TrailScene extends Phaser.Scene {
 
   update(_time:number,ms:number):void {
     if(!this.player||this.leaving)return;
-    this.daylight.update(this.state.time,false,this.state.day);
+    this.daylight.update(this.state.time,this.inHome,this.state.day);
     if(!this.canPlay())return;
     const dt=Math.min(.1,ms/1000),previous={x:this.player.x,y:this.player.y};
     this.player.speedMultiplier=playerSpeedFactor(this.state);
     this.player.update(dt,this.tileBlocked,this.movementBlockedPoint,true,this.swimmingPoint,this.allowStep);
-    this.world.update(dt,this.player);
+    if(!(this.world instanceof RuinsCellarWorld))this.world.update(dt,this.player);
     const edits=this.state[this.trail.map];
-    if(!this.player.isSwimming&&this.passage.update(previous,this.player,this.trail.exit(edits),this.trail.entry(edits))){this.leave();return;}
+    const exit=this.inHome?RUINS_CELLAR_EXIT:this.trail.exit(edits),entry=this.inHome?RUINS_CELLAR_ENTRY:this.trail.entry(edits);
+    if(!this.player.isSwimming&&this.passage.update(previous,this.player,exit,entry)){
+      if(this.inHome)this.changeCellar(false);else this.leave();
+      return;
+    }
     this.farming.update(dt,this.state.day);
     this.state.crops=this.farming.crops;
     Object.assign(this.state,advanceClock(this.state,dt*GAME_MINUTES_PER_SECOND));
+    if(this.world instanceof RuinsWorld)this.world.weather(this.state.day);
     advanceBackgroundVillage(this.state,dt,this.player,this.bentoRuntime);
     this.hudElapsed+=dt;
     this.elapsed+=dt;

@@ -11,6 +11,7 @@ import {DOMESTIC_ANIMALS,isDomesticAnimal} from '../data/domestic-animals';
 import {CROPS,isCropId} from '../data/crops';
 import {SWAMP_SIZE} from '../data/swamp';
 import {RUINS_SIZE} from '../data/ruins';
+import {RUINS_CELLAR_SIZE} from '../data/ruins-cellar';
 import {RUINS_CLUES} from '../data/ruins-story';
 import {validGroundItems} from './ground-items';
 import {syncToolInstances,validToolInventory,activeToolCopy,toolReference} from './tool-instances';
@@ -135,6 +136,9 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.communityInterior!==undefined&&(value.activeArea!=='village'||!communityReady(value as unknown as SaveData)||value.merchantInterior!==undefined||value.blacksmithInterior!==undefined||!validCommunityInterior(value.communityInterior)))return false;
   if(value.worldWeapon!==undefined&&!['sword','unarmed'].includes(value.worldWeapon as string))return false;
   if(value.ruinsMapEdits!==undefined&&(!validateMapEdits(value.ruinsMapEdits)||value.ruinsMapEdits.area!=='ruins'))return false;
+  if(value.ruinsCellarPosition!==undefined&&(!isRecord(value.ruinsCellarPosition)||value.activeArea!=='ruins'||value.ruinsMapFound!==true||!finite(value.ruinsCellarPosition.x,61,RUINS_CELLAR_SIZE.width-61)||!finite(value.ruinsCellarPosition.y,139,RUINS_CELLAR_SIZE.height-31)||(value.ruinsCellarPosition.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(value.ruinsCellarPosition.direction as CharacterDirection))))return false;
+  if(value.ruinsSealFound!==undefined&&value.ruinsSealFound!==true)return false;
+  if(value.ruinsSealIdentified!==undefined&&(value.ruinsSealIdentified!==true||value.ruinsSealFound!==true))return false;
   if(value.ruinsMapFound!==undefined&&value.ruinsMapFound!==true)return false;
   if(value.ruinsClues!==undefined&&(!Array.isArray(value.ruinsClues)||value.ruinsClues.length>Object.keys(RUINS_CLUES).length||new Set(value.ruinsClues).size!==value.ruinsClues.length||value.ruinsClues.some(clue=>typeof clue!=='string'||!Object.hasOwn(RUINS_CLUES,clue))))return false;
   if(value.ruinsPosition!==undefined&&(!isRecord(value.ruinsPosition)||!finite(value.ruinsPosition.x,32,RUINS_SIZE.width-32)||!finite(value.ruinsPosition.y,32,RUINS_SIZE.height-32)||(value.ruinsPosition.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(value.ruinsPosition.direction as CharacterDirection))))return false;

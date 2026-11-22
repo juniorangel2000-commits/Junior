@@ -1,3 +1,5 @@
+import {weatherForDay} from '../weather-model';
+
 export const RUINS_CLUES = {
   milestone: 'o marco da estrada',
   wagon: 'a carroça quebrada',
@@ -10,7 +12,13 @@ export interface RuinLandmark {
   text: string;
   clue?: RuinsClue;
   map?: true;
+  cellar?: true;
+  seal?: true;
 }
+
+export const RUINS_HATCH_ID='ruin-hatch-65-31';
+export const RUINS_WET_TRACK:RuinLandmark={name:'Marcas de roda',text:'A chuva escureceu a terra dentro dos sulcos. As rodas desviaram do pátio e pararam junto à escada do porão.'};
+export const ruinsHasWetTraces=(day:number)=>weatherForDay(day)==='rain'||day>1&&weatherForDay(day-1)==='rain';
 
 export const RUINS_LANDMARKS: Readonly<Record<string,RuinLandmark>> = {
   'ruin-waystone-18-8': {
@@ -56,5 +64,10 @@ export const RUINS_LANDMARKS: Readonly<Record<string,RuinLandmark>> = {
     name:'Pedestal entalhado',
     text:'Três figuras marcam a pedra: um marco de estrada, uma roda de carroça e uma bigorna. Por baixo delas há a fresta de um nicho.',
     map:true,
+  },
+  [RUINS_HATCH_ID]: {
+    name:'Porão do armazém',
+    text:'O portão de ferro tem um fecho de três pontas. No desenho do pedestal deve haver a indicação de como abrir.',
+    cellar:true,
   },
 };

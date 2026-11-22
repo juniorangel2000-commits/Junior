@@ -32,6 +32,7 @@ export const RUINS_ART = {
   'ruin-cargo': { label: 'Caixas esquecidas', width: 72, height: 55, pivot: .91, bases: [[-30,31,-16,5]] },
   'ruin-amphora': { label: 'Ânfora quebrada', width: 57, height: 41, pivot: .89, bases: [[-23,23,-13,5]] },
   'ruin-lintel': { label: 'Blocos entalhados', width: 94, height: 59, pivot: .91, bases: [[-40,39,-17,6]] },
+  'ruin-hatch': { label: 'Escada de porão', width: 110, height: 84, pivot: .77, bases: [[-43,44,-48,10]] },
 } as const;
 
 export type RuinKind = keyof typeof RUINS_ART;

@@ -40,6 +40,7 @@ export function itemIconUrl(id: string, tier=0): string | undefined {
   if((MACHINE_PRODUCTS as readonly string[]).includes(id))return `assets/visual/machines/${id}.png`;
   // Lote 01 de artes (docs/arte-recebida/lote01-fazenda): ícones próprios no lugar dos emprestados.
   if(ITEM_ART.has(id))return `assets/visual/items/${id}.png`;
+  if(id==='ruinSeal')return 'assets/visual/ruins/bronze-seal.png';
   if(id==='harvestBasket')return 'assets/visual/crops/harvest-basket.png';
   if(id==='lamp')return 'assets/visual/equipment/lamp-off.png';
   if(id==='sword')return `assets/visual/items/swords/${['improvisada','ferro','ouro','metal-negro'][Math.max(0,Math.min(3,tier))]}.png`;

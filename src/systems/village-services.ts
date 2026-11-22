@@ -37,6 +37,13 @@ add('buy-pig','rosa','Acolher um porco','400 Coroas. O porco irá para a proprie
 add('buy-duck','rosa','Acolher um pato','300 Coroas. O pato irá para a propriedade e mora no galinheiro, com as galinhas. Bota um ovo de pato a cada 2 dias alimentado.',(s,i)=>{const animal=FARM_DUCKS.find(a=>!s.recruitedAnimals?.includes(a.id));requireThat(animal,'Todos os patos disponíveis já foram acolhidos.');pay(s,i,300);s.recruitedAnimals??=[];s.recruitedAnimals.push(animal!.id);s.animalPositions??={forest:[],property:[]};s.animalPositions.property=s.animalPositions.property.filter(p=>p.id!==animal!.id);s.animalPositions.property.push({id:animal!.id,x:688,y:624,direction:'down'});});
 add('buy-chicken','rosa','Acolher uma galinha','250 Coroas. A galinha irá para a propriedade, sem ocupar a mochila.',(s,i)=>{const animal=FOREST_ANIMALS.find(a=>a.kind==='chicken'&&!s.recruitedAnimals?.includes(a.id));requireThat(animal,'Todas as galinhas disponíveis já foram acolhidas.');pay(s,i,250);s.recruitedAnimals??=[];s.recruitedAnimals.push(animal!.id);s.animalPositions??={forest:[],property:[]};s.animalPositions.forest=s.animalPositions.forest.filter(p=>p.id!==animal!.id);s.animalPositions.property.push({id:animal!.id,x:688,y:624,direction:'down'});});
 add('learn-tailoring','celina','Aprender costura','30 Coroas e 6 fibras. Libera botas, acessórios e mochilas.',(s,i)=>{requireThat(!s.villageProgress!.recipes.includes('backpack'),'Você já conhece a costura.');pay(s,i,30,{fiber:6});s.villageProgress!.recipes.push('boots','accessory','backpack');});
+const SEAL_HISTORY='É o selo dos guardas do Desvio. Carimbavam a carga urgente para passar durante as cheias. A carroça dos remédios foi a última a levar esse carimbo.';
+add('identify-ruins-seal','nilo','Identificar o selo','Mostre ao Nilo o selo de bronze encontrado no porão.',(s,i)=>{
+ requireThat(s.ruinsSealFound&&i.has('ruinSeal'),'Traga o selo de bronze na mochila.');
+ requireThat(!s.ruinsSealIdentified,'O Nilo já identificou este selo.');
+ s.ruinsSealIdentified=true;
+ return SEAL_HISTORY;
+});
 for(const look of ['female','male'] as const)add(`outfit-${look}`,'celina',`Vestir ${look==='female'?'fazendeira':'fazendeiro'}`,'10 Coroas e uma muda de roupa. Usa os personagens originais do jogo.',(s,i)=>{pay(s,i,10,{clothing:1});s.profile.characterId=look==='female'?'farmer-female':'farmer-male';s.villageProgress!.outfit=look;});
 add('fishing-lesson','damiao','Aprender pesca','Primeira aula: 30 Coroas. Segunda: 60 Coroas e 3 peixes. Melhora capturas raras.',(s,i)=>{const p=s.villageProgress!;requireThat(p.fishingSkill<2,'Você já aprendeu as duas técnicas.');pay(s,i,p.fishingSkill?60:30,p.fishingSkill?{fish:3}:{});p.fishingSkill++;});
 add('rare-fish-task','damiao','Entregar peixe raro','Damião paga 180 Coroas pela primeira espécie rara. Uma única entrega.',(s,i)=>{requireThat(!s.villageProgress!.rareFishTaskCompleted,'A pesquisa desta espécie já foi concluída.');pay(s,i,0,{rareFish:1});reward(s,180);s.villageProgress!.rareFishTaskCompleted=true;});
@@ -86,7 +93,7 @@ const SERVICE_COSTS:Record<string,ServiceCost>={
  ...Object.fromEntries(['hatchet','pickaxe','hoe','sickle','shovel','hammer','handsaw','fishingRod','net','shears'].map(t=>[`repair-${t}`,{coins:20}])),
 };
 export function listVillageServices(npc:string,save?:SaveData):VillageServiceOffer[]{
- return Object.entries(services).filter(([,s])=>s.npc===npc).map(([id,s])=>{
+ return Object.entries(services).filter(([id,s])=>s.npc===npc&&(id!=='identify-ruins-seal'||!!save?.ruinsSealFound)).map(([id,s])=>{
   const offer:VillageServiceOffer={id,label:s.label,description:s.description};if(SERVICE_COSTS[id])offer.cost=SERVICE_COSTS[id];if(!save)return offer;
   // Receitas e projetos já aprendidos aparecem como concluídos.
   const recipes=save.villageProgress?.recipes??[],plans=save.villageProgress?.plans??[];
@@ -112,6 +119,11 @@ export function listVillageServices(npc:string,save?:SaveData):VillageServiceOff
    offer.item='harvestBasket';offer.actionLabel='Preparar 1 cesta';
    offer.description=HARVEST_BASKET_DESCRIPTION+' Na mochila: '+Object.entries(HARVEST_BASKET_COST).map(([item,amount])=>`${ITEMS[item as ItemId].name}: ${save.inventory[item as ItemId]}/${amount}`).join(' · ')+'.';
    offer.disabled=(save.villageEconomy?.coins??0)<HARVEST_BASKET_FEE||!Object.entries(HARVEST_BASKET_COST).every(([item,amount])=>save.inventory[item as ItemId]>=amount);
+  }
+  if(id==='identify-ruins-seal'){
+   offer.item='ruinSeal';offer.disabled=!!save.ruinsSealIdentified||!save.inventory.ruinSeal;
+   offer.actionLabel=save.ruinsSealIdentified?'Identificado':save.inventory.ruinSeal?'Mostrar selo':'Traga o selo';
+   if(save.ruinsSealIdentified)offer.description=SEAL_HISTORY;
   }
   if(id==='scrap-sort'){
    const job=save.scrapSorting,have=save.inventory.scrap??0,n=Math.min(SCRAP_SORT_MAX,have),coins=save.villageEconomy?.coins??0;

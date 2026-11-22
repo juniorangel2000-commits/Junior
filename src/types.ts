@@ -30,7 +30,7 @@ export type ItemId = import('./data/crop-catalog').CropItemId | 'wood' | 'stone'
   | 'harvestBasket' | 'freshGrass' | 'hay' | 'egg' | 'milk' | 'milkPail' | 'honey' | 'duckEgg' | import('./data/kitchen').DishId | 'goatMilk' | 'wool' | 'shears' | 'hardwood' | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer'
   | 'herb' | 'rareHerb' | 'bandage' | 'herbalTonic' | 'fungalInfusion' | 'oakSeed' | 'pineSeed' | 'fertilizer' | 'fishingRod' | 'bait' | 'net' | 'fish' | 'rareFish' | 'meal'
   | 'ironShard' | 'ironOre' | 'ironIngot' | 'goldShard' | 'goldOre' | 'goldIngot' | 'blackMetalShard' | 'blackMetalOre' | 'blackMetalIngot' | 'sickle' | 'shovel' | 'furniture' | 'doorKit' | 'windowKit' | 'fenceKit' | 'forge' | 'mushroom'
-  | 'sword' | 'lantern' | 'oldMap' | 'metalPart' | 'electronicPart' | 'waterPump' | 'lamp' | 'backpack' | 'boots' | 'cloth' | 'clothing' | 'accessory';
+  | 'sword' | 'lantern' | 'oldMap' | 'ruinSeal' | 'metalPart' | 'electronicPart' | 'waterPump' | 'lamp' | 'backpack' | 'boots' | 'cloth' | 'clothing' | 'accessory';
 export type InventoryData = Record<ItemId, number> & {toolInstances?:import('./systems/tool-instances').ToolInventory};
 export type OwnedTool = 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw' | 'hammer';
 export type Tool = 'hand' | 'plant' | 'water' | 'gate' | 'repair' | 'fence' | 'bench' | 'remove' | 'hatchet' | 'pickaxe' | 'hoe' | 'workbench' | 'constructionBench' | 'wall' | 'door' | 'floor' | 'window' | 'roof' | 'blueprint' | 'farm-coop' | 'farm-barn' | 'farm-silo' | 'farm-stable' | 'farm-aprisco';
@@ -111,6 +111,9 @@ export interface SaveData {
   ruinsPosition?:TilePoint & {direction?:CharacterDirection};
   ruinsMapFound?:true;
   ruinsClues?:RuinsClue[];
+  ruinsCellarPosition?:TilePoint & {direction?:CharacterDirection};
+  ruinsSealFound?:true;
+  ruinsSealIdentified?:true;
   /** Outdoor equipment references an owned sword; missing keeps hands free. */
   worldWeapon?:'sword'|'unarmed';
   mineCollisionRevision?:2;
