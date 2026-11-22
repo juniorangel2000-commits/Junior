@@ -5,7 +5,7 @@
 - **Atualizado em:** 2026-11-22
 - **Por:** Claude (terminando o Pomar que o Codex começou; os créditos do Codex acabaram)
 - **Continuar a partir de:** `release/v0.10.0-preview.47`, HEAD (em desenvolvimento, não publicada).
-- **Última versão publicada:** `v0.10.0-preview.46`, com o mesmo conteúdo da preview.45. A tag da preview.45 existe, mas o processo do Windows falhou: faltava `docs/cenarios/LEIA-0.10.0-preview.45.md`.
+- **Última versão publicada:** `v0.10.0-preview.46`, com instalador gerado (438.633.617 bytes, contra 538.845.962 da preview.44: a compressão WebP funcionou no Windows). Tem o mesmo conteúdo da preview.45. A tag da preview.45 existe, mas o processo do Windows falhou: faltava `docs/cenarios/LEIA-0.10.0-preview.45.md`.
 - **Atenção ao publicar:** além de `NOTAS-<versão>.md`, crie `docs/cenarios/LEIA-<versão>.md`. O processo do Windows copia esse arquivo para a Release e falha se ele não existir.
 - **Estado:**
   - A Costa das Marés fica ao sul dos Campos Abertos.
@@ -95,10 +95,6 @@
 - A estrada leste da Estação ainda aguarda um destino.
 - A história da sala de espera depende dos textos e da recompensa definidos pelo Junior. A Costa pode ganhar conchas coletáveis e uma história ligada ao barco.
 - Ligar a íris azul do Pântano à história da Amélia em `src/data/npc-stories.ts`. A história do Nilo pode reaproveitar o selo das Ruínas.
-- Na próxima publicação:
-  - rodar `npm run build`, porque depois do realinhamento só check e testes foram rodados;
-  - verificar a compressão com `sharp` no Windows;
-  - comparar o instalador com os 538.845.962 bytes da preview.44.
 - Claude e Codex enviaram commits ao mesmo branch ao mesmo tempo, e houve três merges seguidos. Antes de começar, faça `git fetch` e confira o HEAD remoto.
 
 ## Pendências e ideias para depois
