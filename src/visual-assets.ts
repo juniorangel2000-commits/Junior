@@ -26,6 +26,7 @@ import { preloadHouseSprite, setupHouseSprite } from './house-sprites';
 import {preloadPropertyWell} from './property-well';
 import { preloadToolArt } from './tool-visual';
 import {preloadAnimalSprites} from './animal-sprites';
+import {preloadAmbientBirdArt} from './ambient-birds';
 import { WATER_EMPTY_ICON, WATER_FULL_ICON } from './data/watering-can';
 import { TOOL_ICON_URLS } from './data/tool-art';
 
@@ -119,7 +120,7 @@ export function preloadVisualAssets(scene: Phaser.Scene): void {
   preloadPropertyWell(scene);
   preloadCharacterSprites(scene);
   preloadToolArt(scene);
-  preloadAnimalSprites(scene);preloadCropArt(scene);
+  preloadAnimalSprites(scene);preloadAmbientBirdArt(scene);preloadCropArt(scene);
   // Bancadas de 2 blocos (scripts/import_art_bancadas.py).
   if(!scene.textures.exists('asset-workbench-wide'))scene.load.image('asset-workbench-wide','assets/visual/world/workbench-wide.png');
   if(!scene.textures.exists('asset-construction-bench'))scene.load.image('asset-construction-bench','assets/visual/world/construction-bench.png');

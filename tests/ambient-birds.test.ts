@@ -1,3 +1,6 @@
+import {readFileSync} from 'node:fs';
+import {createRequire} from 'node:module';
+import {AMBIENT_BIRD_SHEET} from '../src/ambient-birds';
 import { expect, it, vi } from 'vitest';
 import { createAmbientBird, createAmbientFlock, stepAmbientBird, ambientBirdLift, daylightBirds } from '../src/systems/ambient-bird';
 it('lands only on allowed ground and does not consume gameplay randomness',()=>{
@@ -41,4 +44,19 @@ it('finds a different escape direction when the path directly away from the play
  const anchor=b.flock!,dx=anchor.x-player.x,dy=anchor.y-player.y,d=Math.hypot(dx,dy),blockedCenter={x:anchor.x+dx/d*220,y:anchor.y+dy/d*220};
  const canLand=(x:number,y:number)=>Math.hypot(x-blockedCenter.x,y-blockedCenter.y)>130;
  stepAmbientBird(b,.1,player,canLand,true);expect(b.active).toBe(true);expect(b.phase).toBe('fly');expect(canLand(b.target.x,b.target.y)).toBe(true);
+});
+
+it('carrega a folha de oito poses sem cortar as bordas',()=>{
+ const {PNG}=createRequire(import.meta.url)('pngjs');
+ const atlas=PNG.sync.read(readFileSync('public/'+AMBIENT_BIRD_SHEET)),cell=48;
+ expect([atlas.width,atlas.height]).toEqual([4*cell,3*cell]);
+ for(let row=0;row<2;row++)for(let col=0;col<4;col++){
+  let visible=0;
+  for(let y=0;y<cell;y++)for(let x=0;x<cell;x++){
+   const a=atlas.data[((row*cell+y)*atlas.width+col*cell+x)*4+3];
+   if(!x||!y||x===cell-1||y===cell-1)expect(a).toBe(0);
+   if(a>=100)visible++;
+  }
+  expect(visible).toBeGreaterThan(120);
+ }
 });

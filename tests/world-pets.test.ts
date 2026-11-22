@@ -77,7 +77,7 @@ function fixture() {
   const events = new EventEmitter();
   const scene = {
     events,
-    textures: { exists: () => true },
+    textures: { exists: () => true, get: () => ({ has: () => true }) },
     add: { image: (x: number, y: number) => new Image().setPosition(x, y) },
   } as unknown as Phaser.Scene;
   return { save, scene, events };
