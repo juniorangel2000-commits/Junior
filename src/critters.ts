@@ -27,7 +27,9 @@ interface Critter{
  x:number;y:number;home:{x:number;y:number};target?:{x:number;y:number};
  phase:Phase;timer:number;anim:number;lift:number;vx:number;vy:number;seed:number;
 }
-export interface CritterHost{state:()=>{time:number;day:number};player:()=>{x:number;y:number}|undefined;active:()=>boolean}
+export interface CritterHost{state:()=>{time:number;day:number};player:()=>{x:number;y:number}|undefined;active:()=>boolean;
+ /** Multiplica a distância em que cada espécie se assusta (ex.: com a rede, o caranguejo deixa chegar perto). */
+ fleeScale?:(id:string)=>number}
 
 /** Bichos de um cenário: andam, ficam parados, fogem do jogador e voltam depois. Decoração:
  * não bloqueiam ninguém e não vão para o save. */
@@ -83,7 +85,8 @@ export class CritterField {
    c.sprite.setVisible(true);
    const mode=c.sp.mode;
    // Reage ao jogador.
-   if(player&&c.sp.flee>0&&dist<c.sp.flee&&c.phase!=='flee'&&c.phase!=='hide'){
+   const flee=c.sp.flee*(this.host.fleeScale?.(c.sp.id)??1);
+   if(player&&flee>0&&dist<flee&&c.phase!=='flee'&&c.phase!=='hide'){
     if(mode==='ball'){c.phase='hide';}
     else{
      const away=Math.atan2(c.y-player.y,c.x-player.x);c.phase='flee';c.timer=mode==='fly'?2.2:1.6;
@@ -104,7 +107,8 @@ export class CritterField {
      c.sprite.setFrame(c.tex.special[Math.floor(c.anim*10)%Math.max(1,c.tex.special.length)]??c.tex.walk[0]);
      c.sprite.setAlpha(Math.min(1,c.timer/.8));
     }else{
-     const speed=c.sp.speed*2.2,nx=c.x+c.vx*speed*dt,ny=c.y+c.vy*speed*dt;
+     // O caranguejo foge de lado, devagar: dá tempo de pegar com a rede.
+     const speed=c.sp.speed*(mode==='burrow'?1.3:2.2),nx=c.x+c.vx*speed*dt,ny=c.y+c.vy*speed*dt;
      if(mode==='burrow'||this.terrain.land(nx,ny)){c.x=nx;c.y=ny;}
      c.sprite.setFrame(c.tex.walk[Math.floor(c.anim*12)%c.tex.walk.length]);
      if(mode==='burrow'&&(this.terrain.water(c.x,c.y)||c.timer<.6))c.sprite.setAlpha(Math.max(0,c.timer/.6));

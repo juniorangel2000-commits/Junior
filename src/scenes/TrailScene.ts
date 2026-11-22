@@ -56,7 +56,7 @@ import {CritterField} from '../critters';
 import {crittersOf} from '../data/critters';
 import {FORAGE_SPOTS,collectForage,forageNear,forageReady,forageSpotsIn} from '../systems/forage';
 import {Inventory} from '../systems/inventory';
-const CRAB_REACH=120;
+const CRAB_REACH=150;
 const OUTING_AREAS:readonly OutingArea[]=['orchard','swamp','ruins','railway','coast'];
 
 const TRAILS={
@@ -206,7 +206,9 @@ export class TrailScene extends Phaser.Scene {
       const layout=this.world.layout;
       this.critters=new CritterField(this,this.area,{width:this.mapSize.width,height:this.mapSize.height,
         land:(x,y)=>!layout.blocked(x,y)&&!layout.water(x,y),water:(x,y)=>layout.water(x,y)},
-        {state:()=>this.state,player:()=>this.player,active:()=>this.canPlay()});
+        {state:()=>this.state,player:()=>this.player,active:()=>this.canPlay(),
+         // Com a rede na mochila, você chega devagar: o caranguejo só se assusta bem de perto.
+         fleeScale:id=>id==='crab'&&(this.state.inventory.net??0)>0?.45:1});
     }
     if(!this.inHome&&OUTING_AREAS.includes(this.area as OutingArea))this.outings=new NpcOutingVisit(this,this.area as OutingArea,{
       state:()=>this.state,snapshot:()=>this.snapshotState(),player:()=>this.player,

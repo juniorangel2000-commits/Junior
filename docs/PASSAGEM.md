@@ -4,7 +4,7 @@
 
 - **Atualizado em:** 2026-11-22
 - **Por:** Claude (terminando o Pomar que o Codex começou; os créditos do Codex acabaram)
-- **Continuar a partir de:** `release/v0.10.0-preview.46`, HEAD.
+- **Continuar a partir de:** `release/v0.10.0-preview.47`, HEAD (em desenvolvimento, não publicada).
 - **Última versão publicada:** `v0.10.0-preview.46`, com o mesmo conteúdo da preview.45. A tag da preview.45 existe, mas o processo do Windows falhou: faltava `docs/cenarios/LEIA-0.10.0-preview.45.md`.
 - **Atenção ao publicar:** além de `NOTAS-<versão>.md`, crie `docs/cenarios/LEIA-<versão>.md`. O processo do Windows copia esse arquivo para a Release e falha se ele não existir.
 - **Estado:**
@@ -17,6 +17,14 @@
   - A preview.45 segue em desenvolvimento.
 
 ## Feito nesta rodada
+
+- **Atividades nos cenários novos** (preview.47, em desenvolvimento):
+  - **Costa:** 12 conchas na areia (`src/systems/forage.ts`) voltam em 2 dias, e a Celina compra. Com a rede na mochila, dá para pegar caranguejo: ele só se assusta bem de perto (`fleeScale`), foge devagar e o alcance é de 150 px. O Damião compra.
+  - **Pântano:** as três íris azuis podem ser colhidas e voltam em 7 dias.
+  - **Cozinha:** suco de laranja, doce de pera, torta de maçã (no forno) e caranguejada, ensinados pela Helena e vendidos na pousada.
+  - **Histórias:** Amélia ("A íris da vó Dita") e Nilo ("A marca das três pontas", com o cofre da bilheteria da Estação). Agora os dez moradores têm história.
+  - **Ícones provisórios:** concha, íris e caranguejo vêm das artes do jogo ou do desenho dos bichos. Os pratos novos são pratos existentes com a cor trocada.
+  - **Save:** ganhou `forageHarvest`, campo opcional e validado. Os itens novos entram em saves antigos pela migração da mochila.
 
 - **Bichos dos cenários com sprites provisórios** (`src/data/critters.ts`, `src/critters.ts`). O ChatGPT não conseguiu gerar as artes, então o desenho é pixel art feito no código. Cada quadro é uma grade de letras, com contorno e luz de cima automáticos, e o segundo quadro do andar mexe as pernas sozinho.
   - **Espécies (14):** o vaga-lume e o gato vira-lata saíram a pedido do Junior; a noite já tem vaga-lumes.
