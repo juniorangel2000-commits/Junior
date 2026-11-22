@@ -152,8 +152,26 @@ for(let y=2;y<WORLD_HEIGHT-2;y++)for(let x=2;x<WORLD_WIDTH-2;x++){
   occupied.add(`${x},${y}`);
   original.push({id:`${kind}-${x}-${y}`,kind,x,y,scale:.78+pick*.32,overgrown:true,...(pick>.5?{flip:true as const}:{})});
 }
+
+// Manchas de capim alto além do pátio mantêm a mesma lógica dos tufos das Ruínas.
+for(let y=1;y<WORLD_HEIGHT-1;y++)for(let x=1;x<WORLD_WIDTH-1;x++){
+  if(occupied.has(`${x},${y}`)||railwayRoadDistance(y+.5)<5.4||onPlatform(x+.5,y+.5))continue;
+  const density=.38+.16*Math.sin(x*.24+y*.19)+.15*Math.cos(y*.42-x*.29);
+  const seed=railwaySeed(x+937,y+519);
+  if(seed>density||doorway(x,y)||reserved(x,y))continue;
+  if(railwayGravelDistance(x+.5,y+.5)<1.7||railwayGravelDistance(x+.5,y-.25)<1.35)continue;
+  const ballast=railwayBallastDistance(x+.5,y+.5);
+  if(ballast<1.85||railwayBallastDistance(x+.5,y-.75)<1.28||ballast<3.7&&crossingLane(x))continue;
+  const pick=railwaySeed(x-667,y+725),kind=railGrass[Math.floor(pick*3)];
+  original.push({
+    id:`${kind}-${x}-${y}`,kind,x,y,scale:.84+pick*.36,overgrown:true,
+    ox:Math.round((railwaySeed(x+13,y+43)-.5)*9),oy:Math.round((seed-.2)*11),
+    ...(pick>.5?{flip:true as const}:{}),
+  });
+}
 const originalById=new Map(original.map(o=>[o.id,o]));
 export const RAILWAY_ORIGINAL_OBJECTS:readonly RailwayObject[]=original;
+const grassyTerrain=new Set(['grass','meadow','forest','moss']);
 
 /** Pontos de examinar e a porta da sala de espera. */
 export const RAILWAY_LANDMARKS:Readonly<Record<string,RuinLandmark>>={
@@ -167,6 +185,7 @@ export const STATION_HALL_DOOR:RuinLandmark={name:'Sala de espera',text:'A porta
 export function createRailwayLayout(edits?:MapEditData) {
   const objects:RailwayObject[]=[];
   const used=new Set<string>();
+  const protectedPoints=Object.values(edits?.points??{});
   const add=(o:RailwayObject)=>{objects.push(o);used.add(`${o.x},${o.y}`);};
   for(const [id,edit] of Object.entries(edits?.objects??{})){
     const kind=editorObjectKind(id);
@@ -174,7 +193,11 @@ export function createRailwayLayout(edits?:MapEditData) {
   }
   for(const o of original){
     if(edits?.objects[o.id])continue;
-    if(o.overgrown&&used.has(`${o.x},${o.y}`))continue;
+    if(o.overgrown){
+      const tile=`${o.x},${o.y}`,terrain=edits?.terrain[tile];
+      if(used.has(tile)||terrain&&!grassyTerrain.has(terrain)||
+        protectedPoints.some(p=>p&&Math.hypot(o.x-p.x,o.y-p.y)<1.8))continue;
+    }
     add(o);
   }
   const pivot=(o:RailwayObject)=>({x:(o.x+.5)*TILE+(o.ox??0),y:(o.y+.5)*TILE+(o.oy??0)});

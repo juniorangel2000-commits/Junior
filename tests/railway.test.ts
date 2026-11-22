@@ -94,6 +94,27 @@ describe('Estação Ferroviária',()=>{
       expect(free(exterior.blocked,{x:x*32,y:y*32})).toBe(true);
     }
   });
+  it('espalha manchas de capim alto pelo terreno e respeita os acessos e a edição no F2',()=>{
+    const layout=createRailwayLayout(),grass=layout.objects.filter(o=>o.overgrown);
+    expect(grass.length).toBeGreaterThan(1200);
+    for(const [minX,maxX,minY,maxY] of [[0,48,9,34],[48,96,9,34],[0,48,45,72],[48,96,45,72]]){
+      expect(grass.filter(o=>o.x>=minX&&o.x<maxX&&o.y>=minY&&o.y<maxY).length).toBeGreaterThan(130);
+    }
+    for(const tuft of grass){
+      expect(railwayRoadDistance(tuft.y+.5)).toBeGreaterThan(4.5);
+      expect(onPlatform(tuft.x,tuft.y)).toBe(false);
+      const p=layout.pivot(tuft);
+      expect(layout.blocked(p.x,p.y),tuft.id).toBe(false);
+    }
+    const [paved,moved,removed]=grass;
+    const edits=defaultMap('railway');
+    edits.terrain[`${paved.x},${paved.y}`]='paving';
+    edits.objects[moved.id]={x:moved.x+1,y:moved.y};
+    edits.objects[removed.id]={x:removed.x,y:removed.y,removed:true};
+    const updated=createRailwayLayout(edits).objects;
+    expect(updated.some(o=>o.id===paved.id||o.id===removed.id)).toBe(false);
+    expect(updated.find(o=>o.id===moved.id)).toMatchObject({x:moved.x+1,y:moved.y});
+  });
   it('permite ao companheiro esperar na sala com sua posição identificada',()=>{
     const pet:WorldPetState={mode:'stay',area:'railway',space:'railway-hall',x:423,y:388,direction:'south'};
     expect(validWorldPetState(pet)).toBe(true);
