@@ -36,6 +36,7 @@ import {placeHiveTrap,collectHiveTrap,nearTrap,trapHint} from '../systems/beekee
 import {createFishingCast} from '../fishing-cast';
 import {fishAtBank} from '../fishing-ui';
 import {NpcOutingVisit} from '../npc-outing-visit';
+import {CritterField} from '../critters';
 interface FieldsStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 type FieldSwing = GatherAction<'sickle' | 'hatchet'> & { id: string };
 export class OpenFieldsScene extends Phaser.Scene{
@@ -64,8 +65,9 @@ export class OpenFieldsScene extends Phaser.Scene{
   else if(lostOnArrival)this.ui.toast('Faltou cesta em um dia: a confiança do cavalo voltou a zero.');
   this.input.keyboard!.on('keydown',this.key,this);this.input.on('wheel',this.wheel,this);this.input.on('pointerdown',this.pointer,this);this.scale.on('resize',this.applyCamera,this);
   window.addEventListener('pagehide',this.save);window.addEventListener('beforeunload',this.save);window.addEventListener('blur',this.blur);document.addEventListener('visibilitychange',this.visibility);
+  this.critters=new CritterField(this,'openFields',{...FIELDS_SIZE,land:(x,y)=>!fieldsBlocked(x,y),water:fieldsWater},{state:()=>this.state,player:()=>this.player,active:()=>!this.paused&&!this.leaving});
   this.outings=new NpcOutingVisit(this,'openFields',{state:()=>this.state,snapshot:()=>this.snapshotState(),player:()=>this.player,pause:value=>{this.setPaused(value);this.updateHUD();},syncInventory:inventory=>{this.state.inventory=inventory;this.updateHUD();}});
-  this.events.once('shutdown',()=>{this.outings?.destroy();this.outings=undefined;this.toolVisual.hide();this.daylight.destroy();this.input.keyboard?.off('keydown',this.key,this);this.input.off('wheel',this.wheel,this);this.input.off('pointerdown',this.pointer,this);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
+  this.events.once('shutdown',()=>{this.outings?.destroy();this.outings=undefined;this.critters?.destroy();this.critters=undefined;this.toolVisual.hide();this.daylight.destroy();this.input.keyboard?.off('keydown',this.key,this);this.input.off('wheel',this.wheel,this);this.input.off('pointerdown',this.pointer,this);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
   installWorldCompanion(this,()=>({save:this.state,player:this.player,area:'openFields',space:'outdoors',bounds:FIELDS_SIZE,blockedPoint:fieldsBlocked,enabled:true,canMove:!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden}),this.ui,()=>this.persist());
   if(resumeCoast)this.enterCoast(true);else this.persist();
  }
@@ -73,6 +75,7 @@ export class OpenFieldsScene extends Phaser.Scene{
  private blockedTile=(x:number,y:number)=>fieldsSolid(x*32+16,y*32+16);
  /** Moradores que vieram trabalhar nos Campos (src/systems/npc-outings.ts). */
  private outings?:NpcOutingVisit;
+ private critters?:CritterField;
  private solidPoint=(x:number,y:number)=>fieldsSolid(x,y)||!!this.outings?.blocks(x,y);
  private swimmingPoint=(x:number,y:number)=>sampleWaterDepth(fieldsWater,x,y);
  private allowStep=(x:number,y:number)=>mapBridgeAllowsStep(FIELDS_BRIDGES,this.player.x,this.player.y,x,y,fieldsWater);

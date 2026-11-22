@@ -52,6 +52,8 @@ import { DEVELOPMENT_TOOLS } from '../development-tools';
 import type { MapEditData } from '../systems/map-editor';
 import {NpcOutingVisit} from '../npc-outing-visit';
 import type {OutingArea} from '../systems/npc-outings';
+import {CritterField} from '../critters';
+import {crittersOf} from '../data/critters';
 const OUTING_AREAS:readonly OutingArea[]=['orchard','swamp','ruins','railway','coast'];
 
 const TRAILS={
@@ -101,6 +103,8 @@ export class TrailScene extends Phaser.Scene {
   readonly movementBlockedPoint=(x:number,y:number)=>this.world.layout.blocked(x,y)||!!this.outings?.blocks(x,y);
   /** Moradores que vieram trabalhar neste cenário (src/systems/npc-outings.ts). */
   private outings?:NpcOutingVisit;
+  /** Bichos do cenário (src/critters.ts). */
+  private critters?:CritterField;
   private readonly tileBlocked=(x:number,y:number)=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
   readonly swimmingPoint=(x:number,y:number)=>this.world instanceof CoastWorld
     ?this.world.swimmingDepth(x,y):sampleWaterDepth(this.world.layout.inWater,x,y);
@@ -189,6 +193,12 @@ export class TrailScene extends Phaser.Scene {
         enabled:true,canMove:this.canPlay(),
       }),this.ui,this.persist);
     }
+    if(!this.inHome&&crittersOf(this.area).length){
+      const layout=this.world.layout;
+      this.critters=new CritterField(this,this.area,{width:this.mapSize.width,height:this.mapSize.height,
+        land:(x,y)=>!layout.blocked(x,y)&&!layout.water(x,y),water:(x,y)=>layout.water(x,y)},
+        {state:()=>this.state,player:()=>this.player,active:()=>this.canPlay()});
+    }
     if(!this.inHome&&OUTING_AREAS.includes(this.area as OutingArea))this.outings=new NpcOutingVisit(this,this.area as OutingArea,{
       state:()=>this.state,snapshot:()=>this.snapshotState(),player:()=>this.player,
       pause:value=>{this.setPaused(value);this.updateHUD();},syncInventory:inventory=>this.syncInventory(inventory),
@@ -199,7 +209,7 @@ export class TrailScene extends Phaser.Scene {
     window.addEventListener('blur',this.blur);
     document.addEventListener('visibilitychange',this.visibility);
     this.events.once('shutdown',()=>{
-      this.outings?.destroy();this.outings=undefined;
+      this.outings?.destroy();this.outings=undefined;this.critters?.destroy();this.critters=undefined;
       if(!(this.world instanceof RuinsCellarWorld))this.world.destroy();
       this.daylight.destroy();
       this.input.keyboard?.off('keydown',this.key,this);

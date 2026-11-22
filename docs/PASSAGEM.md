@@ -17,6 +17,30 @@
 
 ## Feito nesta rodada
 
+- **Bichos dos cenários com sprites provisórios** (`src/data/critters.ts`, `src/critters.ts`). O ChatGPT não conseguiu gerar as artes, então o desenho é pixel art feito no código. Cada quadro é uma grade de letras, com contorno e luz de cima automáticos, e o segundo quadro do andar mexe as pernas sozinho.
+  - **Espécies (16):**
+
+    | Cenário | Bichos |
+    | --- | --- |
+    | Costa | caranguejo, gaivota, tartaruga à noite |
+    | Pomar | esquilo, ouriço |
+    | Pântano | garça, vaga-lumes à noite |
+    | Ruínas | morcego ao anoitecer, lagartixa, coruja no arco |
+    | Estação | pombo, gato dormindo nas malas, rato |
+    | Campos | borboletas, perdiz, raposa ao anoitecer |
+
+  - **Comportamentos:**
+    - andam e fogem correndo;
+    - o caranguejo corre para a água e some;
+    - as aves levantam voo;
+    - borboletas, morcegos e vaga-lumes voam à toa;
+    - a coruja e o gato ficam parados;
+    - o ouriço vira bolinha.
+  - Os que fogem voltam depois de 12 a 30 s, longe do jogador.
+  - São só decoração: não bloqueiam ninguém e não vão para o save.
+  - Os vaga-lumes ficam acima da camada da noite e são fontes de luz. No Chromium de teste o brilho é discreto; conferir no PC.
+  - **Para trocar pela arte definitiva:** o pacote de prompts está com o Junior, com folhas de 8 direções e células de 224 px. Basta substituir `art` e `special` pela folha de sprites; o comportamento não muda.
+
 - **Moradores nos cenários novos** (`src/systems/npc-outings.ts`, `src/npc-outing-visit.ts`):
   - Rosa vai ao Pomar, Amélia ao Pântano, Nilo às Ruínas e Ícaro à Estação, na plataforma. Damião (à tarde, depois do lago) e Celina vão à Costa. Tobias vai aos Campos, perto dos ipês.
   - Cada um sai 2 dias por semana, fora da folga e sem chuva, e fica no ponto dele trabalhando. Quando o jogador chega perto, vira para ele.
@@ -84,6 +108,7 @@
 
 ## Testes
 
+- Bichos: `tests/critters.test.ts` confere desenho, paleta e lugar de cada espécie no seu cenário. No Chromium foram vistos caranguejo, pombo, garça, vaga-lume, raposa, coruja e esquilo, cada um reagindo como esperado, sem erros.
 - Saídas dos moradores: 2.258 testes. No Chromium, os sete moradores foram encontrados no cenário, conversaram e deram o presente, sem erros de página.
 - Final, com o Pomar: `npm run check` passou e `npm test` passou com 2.254 testes em 271 arquivos.
 - No Chromium, com o Pomar:
