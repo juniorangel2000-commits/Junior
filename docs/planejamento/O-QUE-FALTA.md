@@ -29,7 +29,7 @@
 - [ ] **Continuidade dos rios.** Conferir o encaixe do Platô com a cachoeira do Lago e definir a continuidade das bocas do Pântano e da saída da Propriedade nos Campos Abertos.
 - [ ] **História da Amélia** em 3 partes. A íris azul do Pântano já tem sprite e posição no mapa. Modelo em `src/data/npc-stories.ts`.
 - [x] **Ruínas jogáveis** a leste da Estrada da Cidade, com o asfalto contínuo ao norte, investigação no antigo posto, porão, selo de bronze que Nilo identifica e grama alta editável.
-- [x] **Estação Ferroviária Desativada** a leste das Ruínas (preview.45, ainda não publicada): mapa, ligação nos dois sentidos, sala de espera, F2 e save. Falta: história curta com textos e recompensa do Junior e ajustes finos de arte jogando.
+- [x] **Estação Ferroviária Desativada** a leste das Ruínas (preview.45): ligação nos dois sentidos, sala de espera com arte frontal, trilhas sinuosas, capim alto, F2 no exterior e save. A história curta depende dos textos e da recompensa do Junior.
 - [ ] Desenvolver a **história pessoal do Nilo** se o Junior quiser expandir a ligação com o selo.
 - [ ] Usar o pântano e as ruínas também em partes extras das histórias dos outros moradores.
 - [ ] **Editor de mapa (F2) nos Campos Abertos**: ainda não integrado nesse cenário.

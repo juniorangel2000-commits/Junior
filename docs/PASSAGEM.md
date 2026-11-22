@@ -2,30 +2,24 @@
 
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
-- **Atualizado em:** 2026-11-22
-- **Por:** Claude Code
+- **Atualizado em:** 2026-11-21
+- **Por:** Codex
 - **Continuar a partir de:** `release/v0.10.0-preview.45`, HEAD.
 - **Última versão publicada:** `v0.10.0-preview.44`, commit `cc8171a`.
-- **Estado:** Estação Ferroviária Desativada montada e jogável, ligada às Ruínas nos dois sentidos, com sala de espera. A preview.45 segue em desenvolvimento (ainda não publicada) e também traz a mochila reformulada, a barra rápida maior, a compressão WebP, o Pântano e as Ruínas.
+- **Estado:** Estação Ferroviária Desativada jogável, ligada às Ruínas nos dois sentidos. Sala de espera reformulada com arte frontal, trilhas externas mais naturais e capim alto. A preview.45 segue em desenvolvimento e também traz a mochila reformulada, a barra rápida maior, a compressão WebP, o Pântano e as Ruínas.
 
 ## Feito nesta rodada
 
-- **Estação Ferroviária** (`d5d643c`), seguindo o [roteiro](cenarios/ESTACAO-FERROVIARIA.md) e o kit do Codex:
-  - Arte copiada na resolução original para `public/assets/visual/railway/` (68 PNGs). Catálogo em `src/data/railway-art.ts` (tamanho no mundo, ponto de apoio e bases de colisão; peças `rail-*` no editor F2).
-  - Planta em `src/data/railway.ts` (96 × 72): estrada em y=4 com a mesma largura e faixa tracejada das Ruínas; prédio em x≈52, porta para a plataforma; plataforma x=24–76, y=32–38, mureta na face sul com vãos na escada (oeste, sobre a travessia da linha principal) e na rampa (leste); linha principal em y=40 e de carga em y=48 (começa em x=30 com batente, trecho quebrado em x≈56–58, travessia em x=66–69); trem parado (locomotiva, tender, vagão de passageiros), dresina, vagão de carga e vagão plataforma; cabine de sinais, semáforo, alavanca, grades; galpão de carga ao sul; capim ferroviário denso na linha de carga, atrás do prédio e ao pé da plataforma; floresta da paleta nas bordas, longe da estrada.
-  - Desenho em `src/railway-world.ts`: piso pintado por mistura (floresta/grama → terra com musgo → cascalho → lastro → lajes da plataforma → asfalto), trilhos em módulos de 64 px e travessias de 96 px a partir das bordas; objetos altos e copas esmaecem quando o personagem passa atrás; capim próximo esmaece como nas Ruínas.
-  - Trilhos não bloqueiam (dá para atravessar a via); bloqueiam veículos, mureta e objetos sólidos.
-  - Pontos de examinar: placa, quadro de avisos, cabine de sinais, locomotiva; na sala, bilheteria e quadro de horários. A porta abre a sala com **E**.
-  - Sala de espera (`src/data/railway-hall.ts`, `src/railway-hall-world.ts`): 832 × 544, ladrilho antigo, tábuas atrás do guichê, relógio, lamparinas com luz, bancos à direita, bagagem e balança à esquerda, alçapão (só decoração), rodapé baixo que esmaece com o personagem atrás. Sai pelo vão ao sul e volta ao patamar diante da porta.
-  - Integração: `TrailScene('railway')` (cena `Estacao`); saída leste das Ruínas em (94, 4) com volta em (92, 4) e placa; retomada passa por Vale → Vila → Estrada → Ruínas → Estação (`activeArea: 'railway'`); editor F2 (área `railway`, colisão pintável, chegadas protegidas em `ruinsRailwayRoadProtected`/`railwayRoadProtected`); viagem, fogueiras, itens no chão (`railway`, `railway-hall`), nomes e mapa.
-  - Save: `railwayMapEdits`, `railwayPosition`, `railwayHallPosition` (opcionais e validados; a sala exige `activeArea: 'railway'`). Saves antigos continuam válidos.
-  - A janela de examinar agora mostra o nome do lugar (antes era sempre "RUÍNAS").
-- Antes, nesta preview: Pântano e Ruínas (Codex), mochila reformulada, barra rápida maior e compressão WebP (Claude).
+- `167e302` refez a sala com 22 sprites frontais. O salão de 832 × 544 px ganhou bilheteria fechada, bancos desgastados, lambril, reboco descascado, marcas de umidade e objetos soltos. A porta ao sul esmaece quando o jogador passa atrás dela. O piso ganha uma soleira junto à bilheteria, e as colisões acompanham os móveis. A porta exterior e os pontos de inspeção respondem a E ou clique próximo.
+- O mesmo commit suavizou as trilhas, variou as bordas de cascalho, musgo e lajes e continuou a fase da textura de desgaste do asfalto das Ruínas. As entradas de trilhas permanecem abertas. A Estação passou a chamar o sistema compartilhado de companheiros e os pássaros ambientes.
+- `2695727` espalhou a vegetação alta pelo pátio, pelas bordas da mata e junto ao galpão. O exterior ficou com 1.576 tufos editáveis, 1.232 com pelo menos 47 px de altura. Eles ficam fora do asfalto, da plataforma e das rotas principais, esmaecem perto do jogador e dispensam sombra projetada. Pintar piso no F2 suprime os tufos automáticos da célula. Edições explícitas podem mover ou remover cada tufo.
+- A fogueira portátil agora pode ser montada pela mochila ou por um slot. `cd58c88` sincroniza o inventário ao recolher a fogueira e permite vê-la na mochila imediatamente.
+- O mapa e a sala originais que o Claude implementou em `d5d643c` estão detalhados em `add7fef:docs/PASSAGEM.md`. A porta retorna ao patamar externo e a travessia das Ruínas segue pelo mesmo asfalto em `y=4`. Os detalhes, a planta e o manifesto das artes atuais estão no [roteiro da Estação](cenarios/ESTACAO-FERROVIARIA.md). As sprites frontais preservam as fontes em `referencias/cenarios/estacao-ferroviaria/` e os PNGs de jogo ficam em `public/assets/visual/railway/interior-frontal/`.
 
 ## Em andamento e próximo passo exato
 
-- O Junior jogar a Estação no PC e pedir ajustes (posições, escala, densidade do capim). O F2 permite mover peças; as posições originais ficam em `placements` de `src/data/railway.ts`.
-- História curta da sala de espera: textos e recompensa a definir pelo Junior (o alçapão pode virar acesso de manutenção).
+- O Junior pode conferir a sala e a vegetação no branch da preview.45. O F2 edita o exterior. A planta dos móveis e as colisões da sala ficam em `src/data/railway-hall.ts`.
+- História curta da sala de espera: textos e recompensa a definir pelo Junior. A grade fechada pode virar um acesso de manutenção depois.
 - Ligar a íris azul à história da Amélia (`src/data/npc-stories.ts`); a história do Nilo pode reaproveitar o selo das Ruínas.
 - Quando o Junior pedir a publicação, conferir se o Windows executa a compressão com `sharp` e comparar o instalador com os 538.845.962 bytes da preview.44.
 
@@ -46,6 +40,7 @@
 
 ## Testes
 
-- Base da rodada: `npm ci`, `npm run check`, 2.226 testes em 267 arquivos.
-- Final: `npm run check`, **2.232 testes em 268 arquivos** e `npm run build` (1.852 de 1.853 PNG comprimidos, 421,9 → 265,3 MiB). Testes novos em `tests/railway.test.ts`: estrada contínua e passagens nos dois sentidos, chegadas livres mesmo com colisão pintada, peças com arquivo e ids únicos, face da plataforma bloqueando com passagem pela escada e rampa, porta e pontos de examinar, sala de espera, save e edições do F2.
-- No Chromium (Vite 5190): retomada direto na Estação; volta a pé para as Ruínas (chega em 92,5 × 4,5 com o aviso "Estação Ferroviária a leste") e ida correndo na diagonal (chega em 4,5 × 4,5); entrada na sala com E, exame da bilheteria e saída para o patamar (52,5 × 32,3); editor F2 aberto na área; mapa geral capturado. Zero erros de página.
+- Base da rodada: `npm ci`, `npm run check`, 2.232 testes em 268 arquivos.
+- Final: `npm run check` e `npm test`, com 2.236 testes em 268 arquivos. Os testes novos da Estação cobrem a arte frontal e o corredor da bilheteria, as trilhas, a posição do companheiro na sala e a densidade, passagem e edição do capim.
+- No Chromium, passaram a mochila e os nove slots por arraste, clique e teclado, duas machadinhas com durabilidades independentes, fabricação de corda, soltar e recolher itens, passos, fogueira pela mochila e pelo atalho, mapa, zoom, pausa, entrada e saída da sala, retomada com posição e slots e ida e volta às Ruínas. Também foi conferida a presença dos controladores de companheiros e pássaros.
+- Na revisão do capim, o Chromium desenhou os 1.576 tufos, todos sobre chão caminhável. Uma edição importada no F2 removeu o tufo escolhido e continuou aplicada ao retornar ao jogo. As capturas e os dois registros do navegador estão em `/workspace/afterrain-estacao/revisao/`. Zero erros de página nos testes concluídos.
