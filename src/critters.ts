@@ -82,9 +82,55 @@ export class CritterField {
    c.sprite.setVisible(true);
    const mode=c.sp.mode;
    // Reage ao jogador.
-    const flee=c.sp.flee*(this.host.fleeScale?.(c.sp.id)??1);
-    if(player&&flee>0&&dist<flee&&c.phase!=='flee'&&c.phase!=='hide'){
-     if(mode==='ball'){c.phase='hide';c.timer=.14;}
+   const flee=c.sp.flee*(this.host.fleeScale?.(c.sp.id)??1);
+   if(player&&flee>0&&dist<flee&&c.phase!=='flee'&&c.phase!=='hide'){
+    if(mode==='ball'){c.phase='hide';c.timer=.14;}
+    else{
+     const away=Math.atan2(c.y-player.y,c.x-player.x);c.phase='flee';c.timer=mode==='fly'?2.2:1.6;
+     c.vx=Math.cos(away);c.vy=Math.sin(away);
+     if(mode==='burrow'){
+      // O caranguejo corre para a água mais próxima, se houver; se não, cava na areia.
+      for(let r=30;r<=150;r+=30){const a=[0,1,2,3,4,5,6,7].map(i=>i*Math.PI/4).find(a=>this.terrain.water(c.x+Math.cos(a)*r,c.y+Math.sin(a)*r));if(a!==undefined){c.vx=Math.cos(a);c.vy=Math.sin(a);break;}}
+     }
+     c.facing=critterDirection(c.vx,c.vy);
+    }
+   }
+   if(c.phase==='hide'){
+    c.timer-=dt;this.pose(c,c.timer>0?3:4);
+    if(dist>c.sp.flee*1.6){c.phase='idle';c.timer=1.5;}
+   }else if(c.phase==='flee'){
+    c.timer-=dt;
+    if(mode==='fly'){
+     const speed=150;c.x+=c.vx*speed*dt;c.y+=c.vy*speed*dt;c.lift=Math.min(90,c.lift+70*dt);
+     this.cycle(c,WINGS,10);
+     c.sprite.setAlpha(Math.min(1,c.timer/.8));
+    }else{
+     // O caranguejo se afasta devagar para dar tempo de chegar com a rede.
+     const speed=c.sp.speed*(mode==='burrow'?1.3:2.2),nx=c.x+c.vx*speed*dt,ny=c.y+c.vy*speed*dt;
+     if(mode==='burrow'||this.terrain.land(nx,ny)){c.x=nx;c.y=ny;}
+     if(mode==='burrow'&&(this.terrain.water(c.x,c.y)||c.timer<.6)){
+      this.pose(c,c.timer<.3?4:3);c.sprite.setAlpha(Math.max(0,c.timer/.6));
+     }else this.cycle(c,mode==='ball'||mode==='burrow'?WALK:RUN,12);
+    }
+    if(c.timer<=0){c.phase='gone';c.timer=12+this.random()*18;c.sprite.setVisible(false);continue;}
+   }else if(mode==='air'){
+    // Voo à toa em volta de casa, com um leve sobe e desce.
+    if(!c.target||Math.hypot(c.target.x-c.x,c.target.y-c.y)<8)this.pickTarget(c);
+    if(c.target){const dx=c.target.x-c.x,dy=c.target.y-c.y,a=Math.atan2(dy,dx);c.x+=Math.cos(a)*c.sp.speed*dt;c.y+=Math.sin(a)*c.sp.speed*dt;c.facing=critterDirection(dx,dy);}
+    c.lift=(c.sp.id==='bat'?70:18)+Math.sin(c.anim*3+c.seed)*6;
+    this.cycle(c,c.sp.id==='bat'?BAT_FLIGHT:BUTTERFLY_FLIGHT,c.sp.id==='bat'?13:15);
+   }else if(mode==='perch'){
+    // As piscadas são breves, separadas pelo repouso da coruja.
+    const watching=!!player&&dist<260;
+    if(watching)c.facing=critterDirection(player.x-c.x,player.y-c.y);
+    const blink=c.anim%4,ruffle=!watching&&c.anim%13<.22;
+    this.pose(c,blink<.1?1:blink<.19?2:ruffle?4:watching?3:0);
+   }else{
+    // Anda até um ponto perto de casa, para um pouco e escolhe outro.
+    if(c.phase==='idle'){c.timer-=dt;this.pose(c,0);if(c.timer<=0){this.pickTarget(c);c.phase=c.target?'walk':'idle';c.timer=1+this.random()*3;}}
+    else if(c.phase==='walk'&&c.target){
+     const dx=c.target.x-c.x,dy=c.target.y-c.y,d=Math.hypot(dx,dy),step=c.sp.speed*dt;
+     if(d<=step){c.x=c.target.x;c.y=c.target.y;c.phase='idle';c.timer=1+this.random()*4;}
      else{const nx=c.x+dx/d*step,ny=c.y+dy/d*step;if(this.terrain.land(nx,ny)){c.x=nx;c.y=ny;c.facing=critterDirection(dx,dy);}else{c.phase='idle';c.timer=1;}}
      this.cycle(c,WALK,6+c.sp.speed/12);
     }
