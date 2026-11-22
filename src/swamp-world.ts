@@ -13,6 +13,7 @@ import { waterFinishChannel } from './data/water-style';
 import { addWaterMotion } from './water-motion';
 import { drawExitSign } from './exit-signs';
 import frames from '../public/assets/visual/swamp/animals.json';
+import {drawEdgeBlend} from './edge-blend';
 
 const ROOT='assets/visual/swamp/';
 const TEXTURE_SIZE=128;
@@ -247,6 +248,7 @@ export class SwampWorld {
     this.terrainKey='swamp-ground-bake-'+(++nextTerrain);
     scene.textures.addCanvas(this.terrainKey,bakeGround(scene,this.layout,edits))!.setFilter(Phaser.Textures.FilterMode.NEAREST);
     scene.add.image(0,0,this.terrainKey).setOrigin(0).setDepth(-100);
+    drawEdgeBlend(scene,'swamp');
     const waterMask=palette?undefined:addWaterMotion(scene,(x,y)=>this.layout.water(x*32+16,y*32+16),this.layout.water,{...SWAMP_SIZE,alpha:.4,depth:-80,tint:0xaebca7});
     let index=0;
     for(const object of this.layout.objects){

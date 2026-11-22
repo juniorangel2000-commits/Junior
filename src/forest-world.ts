@@ -22,6 +22,7 @@ import {forestGroundPixels} from './forest-ground';
 import {hasMapSeam,seamBand,seamPassage} from './data/map-seam';
 import {drawMapSeamGround} from './map-seam-ground';
 import {FOREST_ENTRY,FOREST_TREES,FOREST_ROCKS,forestWater,forestWaterDistanceAt,forestPathDistance,forestTreeAppearance} from './data/ancient-forest';
+import {drawEdgeBlend} from './edge-blend';
 export class ForestWorld {
   private environment:Phaser.GameObjects.GameObject[]=[];
   editorObjects:WorldEditorObject[]=[];
@@ -152,6 +153,7 @@ export class ForestWorld {
     }
     // One continuous quad prevents rounding gaps between chunks at fractional zoom.
     this.scene.add.image(0,0,key).setOrigin(0).setDepth(-100);
+    drawEdgeBlend(this.scene,'forest');
     if(this.seamLayout)drawMapSeamGround(this.scene,'forest');
   }
   private drawWoodlandDetails():void {

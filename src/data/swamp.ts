@@ -51,17 +51,15 @@ export function swampTrailDistance(x:number,y:number):number {
   return best*TILE;
 }
 export function swampWaterDistance(x:number,y:number):number {
-  const riverCenter=1570+150*Math.sin(y/345)+62*Math.cos(y/200);
-  const riverWidth=144+37*Math.sin(y/174+1.2)+23*Math.cos(y/93);
-  // O canal nasce da lagoa do norte: não encosta na borda de cima, onde a Floresta é só mata.
-  const source=Math.max(0,300-y)*2.2;
-  const river=Math.abs(x-riverCenter)-riverWidth+5*Math.sin(y/17)+source;
-  // Duas lagoas laterais, uma remansa ao norte e enseadas ligadas ao canal.
+  // Só lagoas, sem rio: o antigo canal virou a lagoa da passarela, e nenhuma água encosta
+  // nas bordas do mapa (a Floresta ao norte e a área ao sul são terra firme).
+  const boardwalk=lakeDistance(x,y,1584,1290,210,330,3.2);
+  const south=lakeDistance(x,y,1450,1975,270,150,2.1);
   const west=lakeDistance(x,y,748,760,470,285,2.8);
   const southeast=lakeDistance(x,y,2330,1625,462,316,4);
   const north=lakeDistance(x,y,2150,372,485,224,1.5);
   const eddy=lakeDistance(x,y,1720,620,364,276,4.3);
-  return Math.min(river,west,southeast,north,eddy);
+  return Math.min(boardwalk,south,west,southeast,north,eddy);
 }
 export const swampBaseWater=(x:number,y:number):boolean=>swampWaterDistance(x,y)<0;
 export const insideSwamp=(x:number,y:number):boolean=>
@@ -81,7 +79,7 @@ const fixed:ReadonlyArray<readonly [SwampKind, number, number]> = [
  ['swamp-log',81,31],['swamp-stump',36,43],['swamp-stones',61,41],
  ['swamp-iris',11,39],['swamp-iris',85,12],['swamp-iris',87,38],
  ['swamp-frog',20,35],['swamp-frog',70,41],['swamp-frog',89,41],
- ['swamp-caiman',22,23],['swamp-caiman',74,51],['swamp-caiman',49,29],
+ ['swamp-caiman',22,23],['swamp-caiman',74,51],['swamp-caiman',49,45],
 ];
 function swampDefaults():SwampObject[] {
   const objects:SwampObject[]=[];
