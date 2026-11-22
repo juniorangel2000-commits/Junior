@@ -1,4 +1,4 @@
-import type Phaser from 'phaser';
+import Phaser from 'phaser';
 import type {SaveData} from './types';
 import type {Player} from './player';
 import type {SocialNpc} from './data/npc-social';
@@ -11,7 +11,7 @@ import {VillageNpcOverlays} from './village-npc-overlays';
 import {createSocialRuntime,openSocialConversation,respondSocial,type SocialRuntime} from './systems/npc-social';
 import {completeStoryPart,storyStatus} from './systems/npc-stories';
 import {answerConversation,collectPendingRewards,giftChoices,giveGift} from './systems/npc-gifts';
-import {outingsAt,outingDialogue,outingGiftReceived,outingMessage,receiveOutingGift,onOuting,type NpcOuting,type OutingArea} from './systems/npc-outings';
+import {BEACH_FIRE,outingsAt,outingDialogue,outingGiftReceived,outingMessage,receiveOutingGift,onOuting,type NpcOuting,type OutingArea} from './systems/npc-outings';
 import {saveGame} from './systems/save';
 import {preloadRosaSprites,ROSA_WALK_FRAMES,ROSA_DISPLAY,ROSA_ORIGIN_Y} from './rosa-sprites';
 import {preloadTobiasSprites,TOBIAS_WALK_FRAMES,TOBIAS_DISPLAY,TOBIAS_ORIGIN_Y} from './tobias-sprites';
@@ -20,6 +20,10 @@ import {preloadNiloSprites,NILO_WALK_FRAMES,NILO_DISPLAY,NILO_ORIGIN_Y} from './
 import {preloadCelinaSprites,CELINA_WALK_FRAMES,CELINA_DISPLAY,CELINA_ORIGIN_Y} from './celina-sprites';
 import {preloadIcaroSprites,ICARO_WALK_FRAMES,ICARO_DISPLAY,ICARO_ORIGIN_Y} from './icaro-sprites';
 import {preloadDamiaoSprites,damiaoTexture,DAMIAO_WALK_FRAMES,DAMIAO_DISPLAY,DAMIAO_ORIGIN_Y} from './damiao-sprites';
+import {festivalNow,festivalContestDone,enterFestivalContest} from './systems/festivals';
+import {preloadAugustoSprites,AUGUSTO_WALK_FRAMES,AUGUSTO_DISPLAY,AUGUSTO_ORIGIN_Y} from './augusto-sprites';
+import {preloadBentoSprites,BENTO_WALK_FRAMES,BENTO_DISPLAY} from './bento-sprites';
+import {preloadHelenaSprites,HELENA_WALK_FRAMES,HELENA_DISPLAY,HELENA_ORIGIN_Y} from './helena-sprites';
 
 interface Look{preload:(s:Phaser.Scene)=>void;texture:(s:Phaser.Scene)=>string;frames:number;display:number;origin:number}
 const merchant=(id:SocialNpc)=>(s:Phaser.Scene)=>{merchantTexture(s,id);return`village-npc-${id}`;};
@@ -31,6 +35,9 @@ const LOOKS:Partial<Record<SocialNpc,Look>>={
  celina:{preload:preloadCelinaSprites,texture:merchant('celina'),frames:CELINA_WALK_FRAMES,display:CELINA_DISPLAY,origin:CELINA_ORIGIN_Y},
  icaro:{preload:preloadIcaroSprites,texture:merchant('icaro'),frames:ICARO_WALK_FRAMES,display:ICARO_DISPLAY,origin:ICARO_ORIGIN_Y},
  damiao:{preload:preloadDamiaoSprites,texture:damiaoTexture,frames:DAMIAO_WALK_FRAMES,display:DAMIAO_DISPLAY,origin:DAMIAO_ORIGIN_Y},
+ augusto:{preload:preloadAugustoSprites,texture:merchant('augusto'),frames:AUGUSTO_WALK_FRAMES,display:AUGUSTO_DISPLAY,origin:AUGUSTO_ORIGIN_Y},
+ bento:{preload:preloadBentoSprites,texture:merchant('bento'),frames:BENTO_WALK_FRAMES,display:BENTO_DISPLAY,origin:.96},
+ helena:{preload:preloadHelenaSprites,texture:merchant('helena'),frames:HELENA_WALK_FRAMES,display:HELENA_DISPLAY,origin:HELENA_ORIGIN_Y},
 };
 
 export interface OutingHost{
@@ -61,7 +68,11 @@ export class NpcOutingVisit {
    getStory:id=>storyStatus(host.state(),id),onStory:id=>completeStoryPart(rt,id),
    getGiftChoices:id=>giftChoices(host.state(),id),onGift:(id,item)=>giveGift(rt,id,item),
    locationLabel:AREA_NAMES[area].toUpperCase(),returnLabel:`voltar a ${AREA_NAMES[area]}`,
-   getDialogueAction:id=>onOuting(id,host.state())&&!outingGiftReceived(host.state(),id)?{label:'Receber presente',complete:()=>receiveOutingGift(rt,id as SocialNpc)}:undefined,
+   getDialogueAction:id=>{
+    const fest=festivalNow(host.state());
+    if(fest&&fest.host===id&&!festivalContestDone(host.state(),fest))return{label:`Participar: ${fest.contest.name}`,complete:()=>enterFestivalContest(rt,fest)};
+    if(fest)return undefined;
+    return onOuting(id,host.state())&&!outingGiftReceived(host.state(),id)?{label:'Receber presente',complete:()=>receiveOutingGift(rt,id as SocialNpc)}:undefined;},
    canTrade:()=>false,isInside:()=>false,
    getAvailability:()=>({message:this.talking?outingMessage(this.talking):'',canGuide:false}),
    getPortrait:id=>{try{return scene.textures.getBase64(`village-npc-${id}`,characterFrame('down',0,LOOKS[id as SocialNpc]?.frames??0));}catch{return'';}},
@@ -74,7 +85,18 @@ export class NpcOutingVisit {
    actors:[...this.workers.values()].filter(w=>w.sprite.visible).map(w=>({id:w.outing.id,name:VILLAGE_NPCS.find(n=>n.id===w.outing.id)!.name,role:w.outing.activity,sprite:w.sprite})),
    blocked:this.panel.isOpen,speech:this.speech(),
   }));
+  if(area==='coast')this.fire=this.makeFire();
   scene.events.on('update',this.update,this);
+ }
+ private fire?:Phaser.GameObjects.Container;
+ private makeFire():Phaser.GameObjects.Container{
+  const g=this.scene.add.graphics();
+  g.fillStyle(0x3a2616,1).fillEllipse(0,4,46,16);
+  g.fillStyle(0x6a4428,1);for(const a of [-.6,.6,0])g.fillRect(-20+a*10,-2+Math.abs(a)*3,40,6);
+  const flame=this.scene.add.graphics();
+  const c=this.scene.add.container(BEACH_FIRE.x,BEACH_FIRE.y,[g,flame]).setDepth(BEACH_FIRE.y).setVisible(false);
+  c.setData('fixture-light',{offsetX:0,offsetY:-14,radius:60,strength:1,always:true}).setData('flame',flame);
+  return c;
  }
  private nearest():Worker|undefined{
   const p=this.host.player();let best:Worker|undefined,dist=76;
@@ -83,6 +105,8 @@ export class NpcOutingVisit {
  }
  private speech(){
   const s=this.host.state(),p=this.host.player();
+  const fest=festivalNow(s);
+  if(fest){const host=this.workers.get(fest.host);if(host?.sprite.visible&&!festivalContestDone(s,fest)&&Math.hypot(host.sprite.x-p.x,host.sprite.y-p.y)<220)return{id:fest.host,text:`${fest.contest.name}! Venha participar.`};return;}
   for(const w of this.workers.values())if(w.sprite.visible&&!outingGiftReceived(s,w.outing.id)&&Math.hypot(w.sprite.x-p.x,w.sprite.y-p.y)<200)return{id:w.outing.id,text:'Oi! Vem cá, tenho uma coisa para você.'};
  }
  /** Nome de quem está perto, para a dica de interação da cena. */
@@ -113,6 +137,11 @@ export class NpcOutingVisit {
   const s=this.host.state();if(!s)return;
   this.elapsed+=Math.min(.1,Math.max(0,ms/1000));
   const here=new Set(outingsAt(this.area,s).map(o=>o.id));
+  if(this.fire){
+   const on=festivalNow(s)?.place==='coast';this.fire.setVisible(on);
+   if(on){const f=this.fire.getData('flame') as Phaser.GameObjects.Graphics,t=this.elapsed*8;f.clear();
+    for(const [k,col] of [[1,0xe0702a],[.7,0xf0a83a],[.4,0xfbe27a]] as const){const h=(26+4*Math.sin(t+k*3))*k;f.fillStyle(col,1).fillTriangle(-12*k,0,12*k,0,2*Math.sin(t*1.3+k),-h);}}
+  }
   for(const o of outingsAt(this.area,s))this.ensure(o);
   const p=this.host.player();
   for(const w of this.workers.values()){
@@ -124,5 +153,5 @@ export class NpcOutingVisit {
    w.sprite.setFrame(characterFrame(w.direction,working?1:0,w.look.frames));
   }
  }
- destroy():void{this.scene.events.off('update',this.update,this);this.overlays.destroy();this.panel.destroy();for(const w of this.workers.values())w.sprite.destroy();this.workers.clear();}
+ destroy():void{this.scene.events.off('update',this.update,this);this.fire?.destroy();this.overlays.destroy();this.panel.destroy();for(const w of this.workers.values())w.sprite.destroy();this.workers.clear();}
 }

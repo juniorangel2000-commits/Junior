@@ -2,7 +2,9 @@ import type {ItemId,SaveData} from '../types';
 import type {SocialNpc} from '../data/npc-social';
 import type {GameClock} from './clock';
 import type {CharacterDirection} from '../character-directions';
-import {NPC_SOCIAL} from '../data/npc-social';
+import {NPC_SOCIAL,SOCIAL_NPCS} from '../data/npc-social';
+import {festivalNow} from './festivals';
+import {directionFromVector} from '../character-directions';
 import {ITEM_NAMES} from '../data/items';
 import {AREA_NAMES} from '../data/area-names';
 import {calendarDate} from './calendar';
@@ -24,6 +26,8 @@ export interface NpcOuting{
  readonly activity:string;
  readonly lines:readonly string[];
  readonly gift:{readonly items:Partial<Record<ItemId,number>>;readonly line:string};
+ /** Presença num festival (sem presente; o concurso fica com o anfitrião). */
+ readonly festival?:string;
 }
 const H=(h:number,m=0)=>h*60+m;
 /** Saem de manhã, antes do almoço; o Damião só à tarde, porque de manhã pesca no lago. */
@@ -57,12 +61,27 @@ export function outingToday(id:string,day:number):NpcOuting|undefined{
  const o=NPC_OUTINGS.find(n=>n.id===id&&n.weekdays.includes(weekday(day)));
  return o&&!restDay(o.id as never,day)?o:undefined;
 }
+/** Lugares em volta da fogueira da Festa da Praia (areia da Costa). */
+export const BEACH_FIRE={x:1500,y:1640};
+const BEACH_RING:readonly [number,number][]=[[110,0],[89,47],[34,76],[-34,76],[-89,47],[-110,0],[-89,-47],[-34,-76],[34,-76],[89,-47]];
+function festivalOuting(id:string,clock:GameClock):NpcOuting|undefined{
+ const f=festivalNow(clock);if(!f||f.place!=='coast')return;
+ const i=(SOCIAL_NPCS as readonly string[]).indexOf(id);if(i<0)return;
+ const [dx,dy]=BEACH_RING[i%BEACH_RING.length],spot={x:BEACH_FIRE.x+dx,y:BEACH_FIRE.y+dy};
+ return{id:id as SocialNpc,area:'coast',weekdays:[],start:f.start,end:f.end,spot,facing:directionFromVector(-dx,-dy),activity:f.name,
+  lines:f.lines,gift:{items:{},line:''},festival:f.id};
+}
 /** O morador está agora fora da vila, num dos cenários. */
 export function onOuting(id:string,clock:GameClock):NpcOuting|undefined{
+ const fest=festivalNow(clock);if(fest)return festivalOuting(id,clock);
  const o=outingToday(id,clock.day);
  return o&&clock.time>=o.start&&clock.time<o.end?o:undefined;
 }
-export const outingsAt=(area:string,clock:GameClock)=>NPC_OUTINGS.filter(o=>o.area===area&&onOuting(o.id,clock)===o);
+export const outingsAt=(area:string,clock:GameClock)=>{
+ const fest=festivalNow(clock);
+ if(fest)return (SOCIAL_NPCS as readonly string[]).map(id=>onOuting(id,clock)).filter((o):o is NpcOuting=>!!o&&o.area===area);
+ return NPC_OUTINGS.filter(o=>o.area===area&&onOuting(o.id,clock)===o);
+};
 const clockText=(t:number)=>`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;
 /** Aviso na loja e na janela do morador. */
 export const outingMessage=(o:NpcOuting)=>`${o.activity} · ${AREA_NAMES[o.area]} · volta às ${clockText(o.end)}`;
@@ -70,13 +89,14 @@ export const outingMessage=(o:NpcOuting)=>`${o.activity} · ${AREA_NAMES[o.area]
 export const outingGiftReceived=(s:Pick<SaveData,'day'|'npcOutingGifts'>,id:string)=>s.npcOutingGifts?.[id]===s.day;
 /** Falas no cenário: o presente do dia (se ainda não recebido) e uma fala sobre o lugar. */
 export function outingDialogue(s:SaveData,o:NpcOuting):string[]{
+ if(o.festival)return[o.lines[s.day%o.lines.length]];
  const talk=o.lines[s.day%o.lines.length];
  return outingGiftReceived(s,o.id)?[talk]:[o.gift.line,talk];
 }
 /** Presente da saída: uma vez por dia e por morador, itens na mochila e +1 de amizade. */
 export function receiveOutingGift(runtime:SocialRuntime,id:SocialNpc):SocialResult{
  const draft=structuredClone(runtime.snapshot()),o=onOuting(id,draft);
- if(!o||draft.activeArea!==o.area)return{ok:false,message:'Já voltou para a vila.'};
+ if(!o||o.festival||draft.activeArea!==o.area)return{ok:false,message:'Já voltou para a vila.'};
  if(outingGiftReceived(draft,id))return{ok:false,message:'Você já recebeu o presente de hoje.'};
  const inv=new Inventory(draft.inventory);
  if(!inv.transact({},o.gift.items))return{ok:false,message:'Libere espaço na mochila para receber o presente.'};

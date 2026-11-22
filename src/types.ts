@@ -98,6 +98,8 @@ export interface SaveData {
   npcOutingGifts?:Partial<Record<string,number>>;
   /** Dia em que cada concha ou íris foi recolhida (src/systems/forage.ts). */
   forageHarvest?:Record<string,number>;
+  /** Ano em que o jogador participou do concurso de cada festival (src/systems/festivals.ts). */
+  festivalDone?:Record<string,number>;
   mineMissions?:import('./systems/mine-mission-state').MineMissionsState;
   mineRescue?:import('./systems/mine-rescue-state').MineRescueState;
   bentoExpedition?:import('./systems/bento-expedition-state').BentoExpeditionState;

@@ -59,6 +59,7 @@ import { createHomeEditor } from './home-ui';
 import type { HomeEditor, HomeEditResponse,HomeEditorOptions } from './home-ui';
 import type { HomeData, HomeEditAction } from './systems/home';
 import type { BuildingData, CharacterProfile, HudData, InventoryData, ItemId, Tool } from './types';
+import {festivalOn,nextFestival,festivalHours,festivalDate} from './systems/festivals';
 
 interface UICallbacks {
   getMineMissionRuntime?():MineMissionRuntime|undefined;
@@ -718,7 +719,7 @@ export class GameUI {
       const element = this.base.querySelector(selector);
       if (element && element.textContent !== value) element.textContent = value;
     };
-    set('#hud-day', shortCalendarLabel(data.day));set('#hud-year',`Ano ${calendarDate(data.day).year}`);
+    set('#hud-day', shortCalendarLabel(data.day));{const today=festivalOn(data.day),next=nextFestival(data.day);set('#hud-year',`Ano ${calendarDate(data.day).year}${today?` · ${today.name}`:''}`);const day=this.root.querySelector<HTMLElement>('#hud-day');if(day)day.title=next.inDays===0?`Hoje: ${next.festival.name} (${festivalHours(next.festival)})`:`Próximo festival: ${next.festival.name}, ${festivalDate(next.festival)} (em ${next.inDays} dia${next.inDays>1?'s':''})`;}
     const dayLabel=`${fullCalendarLabel(data.day)} · ${data.day}º dia da jornada`,seasonDate=this.base.querySelector<HTMLElement>('.season-date');if(seasonDate&&seasonDate.title!==dayLabel)seasonDate.title=dayLabel;
     const minutes = Math.floor(data.time) % 1440;
     set('#hud-time', `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`);
