@@ -3,7 +3,7 @@
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
 - **Atualizado em:** 2026-11-22
-- **Por:** Claude (terminando o Pomar que o Codex começou; os créditos do Codex acabaram)
+- **Por:** Codex, com as atividades e os festivais da etapa anterior de Claude
 - **Continuar a partir de:** `release/v0.10.0-preview.47`, HEAD (em desenvolvimento, não publicada).
 - **Última versão publicada:** `v0.10.0-preview.46`, com instalador gerado (438.633.617 bytes, contra 538.845.962 da preview.44: a compressão WebP funcionou no Windows). Tem o mesmo conteúdo da preview.45. A tag da preview.45 existe, mas o processo do Windows falhou: faltava `docs/cenarios/LEIA-0.10.0-preview.45.md`.
 - **Atenção ao publicar:** além de `NOTAS-<versão>.md`, crie `docs/cenarios/LEIA-<versão>.md`. O processo do Windows copia esse arquivo para a Release e falha se ele não existir.
@@ -14,7 +14,7 @@
   - Todas as divisas entre mapas externos usam o mesmo chão compartilhado da divisa Floresta ↔ Propriedade.
   - A linha principal da Estação curva para o sul antes da divisa com as Ruínas.
   - O Pomar Abandonado fica a leste da Vila, abaixo das Ruínas, e já está jogável.
-  - A preview.45 segue em desenvolvimento.
+  - A preview.47 reúne as atividades, os festivais e a fauna animada.
 
 ## Feito nesta rodada
 
@@ -41,28 +41,11 @@
   - **Ícones provisórios:** concha, íris e caranguejo vêm das artes do jogo ou do desenho dos bichos. Os pratos novos são pratos existentes com a cor trocada.
   - **Save:** ganhou `forageHarvest`, campo opcional e validado. Os itens novos entram em saves antigos pela migração da mochila.
 
-- **Bichos dos cenários com sprites provisórios** (`src/data/critters.ts`, `src/critters.ts`). O ChatGPT não conseguiu gerar as artes, então o desenho é pixel art feito no código. Cada quadro é uma grade de letras, com contorno e luz de cima automáticos, e o segundo quadro do andar mexe as pernas sozinho.
-  - **Espécies (14):** o vaga-lume e o gato vira-lata saíram a pedido do Junior; a noite já tem vaga-lumes.
-
-    | Cenário | Bichos |
-    | --- | --- |
-    | Costa | caranguejo, gaivota, tartaruga à noite |
-    | Pomar | esquilo, ouriço |
-    | Pântano | garça |
-    | Ruínas | morcego ao anoitecer, lagartixa, coruja no arco |
-    | Estação | pombo, rato |
-    | Campos | borboletas, perdiz, raposa ao anoitecer |
-
-  - **Comportamentos:**
-    - andam e fogem correndo;
-    - o caranguejo corre para a água e some;
-    - as aves levantam voo;
-    - borboletas e morcegos voam à toa;
-    - a coruja fica parada e vira para o jogador;
-    - o ouriço vira bolinha.
-  - Os que fogem voltam depois de 12 a 30 s, longe do jogador.
-  - São só decoração: não bloqueiam ninguém e não vão para o save.
-  - **Para trocar pela arte definitiva:** o pacote de prompts está com o Junior, com folhas de 8 direções e células de 224 px. Basta substituir `art` e `special` pela folha de sprites; o comportamento não muda.
+- **Fauna dos cenários** (`e902bff`, `f3e4935`): 14 espécies com repouso, caminhada, corrida, voo e ações próprias por espécie. A Costa tem caranguejo, gaivota e tartaruga marinha. O Pomar tem esquilo e ouriço. O Pântano tem garça. As Ruínas têm morcego, lagartixa e coruja. A Estação tem pombo e rato. Os Campos têm borboleta, perdiz e raposa.
+  - A folha `public/assets/visual/nature/critters.png` usa células de 64 × 64 e cinco poses por vista. Cada linha guarda o perfil direito, a frente e as costas. O jogo espelha o perfil para a esquerda e escolhe uma das quatro direções pelo deslocamento. As quatro cores da borboleta ficam em linhas próprias.
+  - As fontes estão em `referencias/animais/fauna-do-vale/`. Os arquivos em `direcoes/` guardam frente na primeira linha e costas na segunda.
+  - `CritterField` usa os quadros de voo quando a ave levanta, de corrida ao fugir, de piscada quando a coruja está em repouso e de bola quando o ouriço se protege. O caranguejo abaixa perto da água e continua capturável com rede.
+  - Os pássaros ambientes ganharam duas variantes, sabiá e saíra, com pouso, bicada e voo (`3cc4c48`, `public/assets/visual/nature/ambient-birds.png`). As abelhas usam a animação por código, conforme solicitado.
 
 - **Moradores nos cenários novos** (`src/systems/npc-outings.ts`, `src/npc-outing-visit.ts`):
   - Rosa vai ao Pomar, Amélia ao Pântano, Nilo às Ruínas e Ícaro à Estação, na plataforma. Damião (à tarde, depois do lago) e Celina vão à Costa. Tobias vai aos Campos, perto dos ipês.
@@ -106,11 +89,10 @@
 
 ## Em andamento e próximo passo exato
 
-- O Junior deve conferir no jogo as divisas e a chegada nova dos Campos, logo abaixo da saída sul da Propriedade.
+- Validar as novas sprites em conjunto nos seis cenários. Conferir a escala, as quatro direções durante a caminhada e a fuga, o voo ao se aproximar, o ouriço se enrolando e o aparecimento de espécies ao anoitecer. Junior pediu fazer toda a arte primeiro.
 - A estrada leste da Estação ainda aguarda um destino.
-- A história da sala de espera depende dos textos e da recompensa definidos pelo Junior. A Costa pode ganhar conchas coletáveis e uma história ligada ao barco.
-- Ligar a íris azul do Pântano à história da Amélia em `src/data/npc-stories.ts`. A história do Nilo pode reaproveitar o selo das Ruínas.
-- Claude e Codex enviaram commits ao mesmo branch ao mesmo tempo, e houve três merges seguidos. Antes de começar, faça `git fetch` e confira o HEAD remoto.
+- Os festivais estão jogáveis. As bancas e enfeites da praça ainda usam arte provisória. A Costa pode ganhar uma história ligada ao barco.
+- Antes de começar, faça `git fetch` e confira o HEAD remoto. Esta rodada juntou a fauna com os festivais e a captura de caranguejo que chegaram no mesmo branch.
 
 ## Pendências e ideias para depois
 
@@ -127,7 +109,8 @@
 
 ## Testes
 
-- Bichos: `tests/critters.test.ts` confere desenho, paleta e lugar de cada espécie no seu cenário. No Chromium foram vistos caranguejo, pombo, garça, raposa, coruja e esquilo, cada um reagindo como esperado, sem erros.
+- Na preview.47 integrada, `npm run check` passou e `npm test` passou com 2.271 testes em 275 arquivos.
+- `tests/critters.test.ts` confere os quadros com margens transparentes, os horários de aparecimento, a direção e o lugar de cada espécie no mapa. `tests/ambient-birds.test.ts` confere a folha de poses e os pousos e voos dos bandos.
 - Saídas dos moradores: 2.258 testes. No Chromium, os sete moradores foram encontrados no cenário, conversaram e deram o presente, sem erros de página.
 - Final, com o Pomar: `npm run check` passou e `npm test` passou com 2.254 testes em 271 arquivos.
 - No Chromium, com o Pomar:
