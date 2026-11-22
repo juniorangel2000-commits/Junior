@@ -4,6 +4,7 @@ import {CROP_CATALOG} from '../data/crop-catalog';
 import {cropFromSeed} from '../data/crops';
 import {DISH_IDS} from '../data/kitchen';
 import {individualTool} from './tool-instances';
+import {ORCHARD_FRUITS} from '../data/orchard-art';
 
 /** Botão "Organizar" da mochila: alterna a ordem em que os itens aparecem. É só a
  * exibição; o save não muda. A escolha fica guardada no navegador. */
@@ -19,7 +20,7 @@ export const nextBagSort=(sort:BagSort):BagSort=>sort==='type'?'name':sort==='na
 export type BagCategory='tool'|'seed'|'food'|'material';
 export const BAG_CATEGORY_NAMES:Record<BagCategory,string>={tool:'Ferramenta',seed:'Semente',food:'Comida e colheita',material:'Material'};
 const TOOLS=new Set<string>(['sword','fishingRod','net','shears','milkPail','lantern','backpack','boots','wateringCan']);
-const FOOD=new Set<string>([...DISH_IDS,...CROP_CATALOG.map(c=>c.harvest),'egg','duckEgg','milk','goatMilk','honey','daisyHoney','sunflowerHoney','cheese','goatCheese','butter','fish','rareFish','meal','strawberryJam','watermelonJam','herbalTonic','fungalInfusion','mushroom','herb','rareHerb','harvestBasket']);
+const FOOD=new Set<string>([...ORCHARD_FRUITS,...DISH_IDS,...CROP_CATALOG.map(c=>c.harvest),'egg','duckEgg','milk','goatMilk','honey','daisyHoney','sunflowerHoney','cheese','goatCheese','butter','fish','rareFish','meal','strawberryJam','watermelonJam','herbalTonic','fungalInfusion','mushroom','herb','rareHerb','harvestBasket']);
 export function bagCategory(id:string):BagCategory{
  if(individualTool(id)||TOOLS.has(id))return'tool';
  if(cropFromSeed(id)||id==='oakSeed'||id==='pineSeed')return'seed';

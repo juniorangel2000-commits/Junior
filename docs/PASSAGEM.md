@@ -3,7 +3,7 @@
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
 - **Atualizado em:** 2026-11-22
-- **Por:** Claude (juntando o trabalho do Codex feito em paralelo no mesmo branch)
+- **Por:** Claude (terminando o Pomar que o Codex começou; os créditos do Codex acabaram)
 - **Continuar a partir de:** `release/v0.10.0-preview.45`, HEAD.
 - **Última versão publicada:** `v0.10.0-preview.44`, commit `cc8171a`.
 - **Estado:**
@@ -12,9 +12,21 @@
   - O Pântano tem só lagos, sem rio.
   - Todas as divisas entre mapas externos usam o mesmo chão compartilhado da divisa Floresta ↔ Propriedade.
   - A linha principal da Estação curva para o sul antes da divisa com as Ruínas.
+  - O Pomar Abandonado fica a leste da Vila, abaixo das Ruínas, e já está jogável.
   - A preview.45 segue em desenvolvimento.
 
 ## Feito nesta rodada
+
+- **Pomar Abandonado** (Codex: `19bcf29`, `84d8360`; Claude terminou):
+  - **Onde fica:** a leste da Vila. A saída é a borda leste da Vila em (94, 62), e a chegada é a borda oeste do Pomar em (1, 56). No vale, o Pomar fica em (6144, 192), logo abaixo das Ruínas.
+  - **O que tem:** trilhas de terra, macieiras, pereiras, laranjeiras e frutíferas secas, prensa antiga, galpão, lagoa de irrigação e caixotes (`src/data/orchard.ts`, `src/orchard-world.ts`).
+  - **Frutas:** caídas no chão, recolhidas com E. Voltam em 3 dias (`orchardHarvest` no save) e Rosa compra na Vila.
+  - **F2 e divisas:** o Pomar funciona no F2, e as divisas com a Vila e as Ruínas usam o chão compartilhado.
+  - **Acabamento do Claude:**
+    - as frutas caídas ficaram menores, a pedido do Junior (de 17 para 13 px);
+    - perto da saída leste da Vila, a dica mostra "Pomar Abandonado ao leste";
+    - Organizar a mochila agora põe maçã, pera e laranja em comida;
+    - o Pomar entrou no mapa do vale.
 
 - **Mapa do vale** ([documento](cenarios/MAPA-DO-VALE.md)): todos os mapas externos montados na posição em que as saídas se encontram.
   - A posição de cada mapa e as divisas estão em `src/data/valley-seams.ts` (`VALLEY_LAYOUT`, `VALLEY_SEAMS`).
@@ -53,7 +65,6 @@
 ## Pendências e ideias para depois
 
 - [Lista de pendências](planejamento/O-QUE-FALTA.md).
-- O Pomar Abandonado segue como proposta de cenário.
 - Chuva regando canteiros, peixes por estação e tela do calendário ficam depois dos cenários.
 - Arte nova do chiqueiro e possível versão para iPhone seguem em planejamento.
 
@@ -66,7 +77,13 @@
 
 ## Testes
 
-- Final, com tudo junto: `npm run check` passou e `npm test` passou com 2.250 testes em 270 arquivos.
+- Final, com o Pomar: `npm run check` passou e `npm test` passou com 2.254 testes em 271 arquivos.
+- No Chromium, com o Pomar:
+  - Vila → Pomar, com chegada em (4,5; 56,5);
+  - a fruta foi recolhida com E, e a segunda tentativa foi recusada;
+  - o save no Pomar foi recarregado e voltou dentro dele;
+  - a volta chegou na saída leste da Vila;
+  - zero erros de página.
 - `tests/valley-seams.test.ts` confere:
   - que cada divisa fica na borda comum dos dois mapas;
   - que a mistura é inteira junto à linha e zero nas trilhas e rios;

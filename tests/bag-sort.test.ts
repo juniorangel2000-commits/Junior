@@ -11,7 +11,7 @@ describe('Organizar a mochila',()=>{
  it('reconhece ferramentas, sementes, comida e materiais',()=>{
   expect(bagItemId('tool:hatchet:1' as Slot)).toBe('hatchet');expect(bagItemId('item:wood' as Slot)).toBe('wood');
   expect(bagCategory('hatchet')).toBe('tool');expect(bagCategory('wateringCan')).toBe('tool');expect(bagCategory('sword')).toBe('tool');
-  expect(bagCategory('cornSeeds')).toBe('seed');expect(bagCategory('egg')).toBe('food');expect(bagCategory('turnip')).toBe('food');
+  expect(bagCategory('cornSeeds')).toBe('seed');expect(bagCategory('egg')).toBe('food');for(const fruit of ['apple','pear','orange'])expect(bagCategory(fruit),fruit).toBe('food');expect(bagCategory('turnip')).toBe('food');
   expect(bagCategory('wood')).toBe('material');expect(bagCategory('ironIngot')).toBe('material');
  });
  it('ordena por tipo, nome e quantidade sem perder nem repetir itens',()=>{

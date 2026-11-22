@@ -97,7 +97,7 @@ export class OrchardWorld {
       this.editorObjects.push({id:object.id,kind:object.kind,x:object.x,y:object.y,texture:sprite.texture.key,frame:sprite.frame.name});
     }
     if(!editor)for(const fruit of this.layout.fruit){
-      this.fruitSprites.set(fruit.id,scene.add.image(fruit.x,fruit.y,`orchard-fruit-${fruit.item}`).setOrigin(.5,.86).setDisplaySize(17,17).setDepth(fruit.y).setData('no-shadow',true));
+      this.fruitSprites.set(fruit.id,scene.add.image(fruit.x,fruit.y,`orchard-fruit-${fruit.item}`).setOrigin(.5,.86).setDisplaySize(13,13).setDepth(fruit.y).setData('no-shadow',true));
     }
     drawExitSign(scene,edits?.points?.exit??ORCHARD_EXIT,edits?.points?.entry??ORCHARD_ENTRY);
   }

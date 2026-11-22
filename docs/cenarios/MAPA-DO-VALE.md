@@ -4,7 +4,7 @@
 
 O mapa junta todos os cenários externos. Cada um aparece na posição em que as saídas se encontram, e os pontos dourados marcam as passagens entre mapas.
 
-Ele foi gerado em 2026-11-22 a partir do `captureMap()` de cada cena, numa partida nova ao meio-dia, já com o chão compartilhado das divisas, a curva da Estação e a foz arredondada da Costa. Cada mapa foi capturado com 160 px de margem. Interiores, Mina, Cidade e dungeons ficam fora. O atlas do Codex, em `/workspace/afterrain-costa/`, inclui também a Mina Antiga, as Galerias, dungeons e interiores.
+Ele foi gerado em 2026-11-22 a partir do `captureMap()` de cada cena, numa partida nova ao meio-dia, já com o chão compartilhado das divisas, a curva da Estação, a foz arredondada da Costa e o Pomar Abandonado. Cada mapa foi capturado com 160 px de margem. Interiores, Mina, Cidade e dungeons ficam fora. O atlas do Codex, em `/workspace/afterrain-costa/`, inclui também a Mina Antiga, as Galerias, dungeons e interiores.
 
 ## Posição de cada mapa
 
