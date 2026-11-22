@@ -16,7 +16,7 @@ import {readTerrainSprites} from './terrain-sprites';
 import {addWaterMotion} from './water-motion';
 import {sampleWaterDepth} from './swimming/config';
 import type {WorldEditorObject} from './world';
-import {drawEdgeBlend} from './edge-blend';
+import {drawValleySeams} from './valley-seams';
 
 const GROUND='coast-ground-v3';
 const PIER_FRONT='coast-pier-front';
@@ -77,7 +77,7 @@ function drawGround(scene:Phaser.Scene):void {
     scene.textures.addCanvas(GROUND,canvas)!.setFilter(Phaser.Textures.FilterMode.NEAREST);
   }
   scene.add.image(0,0,GROUND).setOrigin(0).setDepth(-100);
-  drawEdgeBlend(scene,'coast');
+  drawValleySeams(scene,'coast',coastBaseWater);
 }
 
 type Fading={sprite:Phaser.GameObjects.Image;x:number;y:number};

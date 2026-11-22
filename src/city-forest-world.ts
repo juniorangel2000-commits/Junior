@@ -15,7 +15,7 @@ import {natureArt} from './data/nature-catalog';
 import {CITY_PUDDLES,CITY_ROAD_FENCES,CITY_SIGN_TEXT,CITY_ACCESS,cityRoadDistance,cityRoadAt,cityForestTrailDistance,cityForestTerrain,cityForestWater,cityForestBlockedPoint} from './data/city-forest';
 import {CITY_RUINS_EXIT,CITY_RUINS_RETURN} from './data/ruins-road';
 import {drawExitSign} from './exit-signs';
-import {drawEdgeBlend} from './edge-blend';
+import {drawValleySeams} from './valley-seams';
 
 export function preloadCityRoadArt(scene:Phaser.Scene):void{if(!scene.textures.exists('city-forest-source'))scene.load.image('city-forest-source',art.file);}
 export function preloadCityForest(scene:Phaser.Scene):void{preloadCityRoadArt(scene);preloadDungeonScenery(scene);}
@@ -100,7 +100,7 @@ export class CityForestWorld{
    this.scene.textures.addCanvas(key,canvas)!.setFilter(0);
   }
   this.scene.add.image(0,0,key).setOrigin(0).setDepth(-100);
-  drawEdgeBlend(this.scene,'cityForest');
+  drawValleySeams(this.scene,'cityForest',(x,y)=>cityForestWater(x/32,y/32));
  }
  private drawFences():void{
   for(const [index,s]of CITY_ROAD_FENCES.entries()){

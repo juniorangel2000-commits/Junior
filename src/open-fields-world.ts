@@ -19,7 +19,7 @@ import {animalSprite,setupAnimalArt} from './forest-art';
 import {preloadAnimalSprites,updateAnimalSprite,animalRopeAnchor} from './animal-sprites';
 import {CowRestCycle} from './systems/cow-rest';
 import {trapSwarmed} from './systems/beekeeping';
-import {drawEdgeBlend} from './edge-blend';
+import {drawValleySeams} from './valley-seams';
 export function preloadOpenFields(scene:Phaser.Scene){
  preloadMeadowGrass(scene);
  if(!scene.textures.exists('fields-ipe'))scene.load.image('fields-ipe','assets/visual/open-fields/ipe-yellow.png');
@@ -57,7 +57,7 @@ export class OpenFieldsWorld{
   drawExitSign(scene,FIELDS_NORTH_SIGN.exit,FIELDS_NORTH_SIGN.entry);
   if(!scene.textures.exists('fields-floor')){const canvas=document.createElement('canvas');canvas.width=FIELDS_SIZE.width;canvas.height=FIELDS_SIZE.height;paintFieldsFloor(canvas.getContext('2d')!,readTerrainSprites(scene)!);scene.textures.addCanvas('fields-floor',canvas)!.setFilter(0);}
   scene.add.image(0,0,'fields-floor').setOrigin(0).setDepth(-100);
-  drawEdgeBlend(scene,'openFields');
+  drawValleySeams(scene,'openFields',fieldsWater);
   // Rio que vem da propriedade e segue para a Costa: água animada e as mesmas pontes da propriedade.
   addWaterMotion(scene,(x,y)=>fieldsWater((x+.5)*32,(y+.5)*32),fieldsWater,{...FIELDS_SIZE,alpha:.32,opacity:(x,y)=>.3+.7*Math.min(1,-fieldsRiverEdge(x,y)/40)});
   drawBridges(scene,FIELDS_BRIDGES);

@@ -28,7 +28,8 @@
 
 - [x] **Pântano jogável** ao sul da Floresta Antiga, com editor F2, passarela, sapos e jacarés (branch da preview.45).
 - [x] **Rio da Propriedade nos Campos** (preview.45): o rio corta os Campos de norte a sul, com duas pontes iguais às da propriedade, e deságua no mar da Costa.
-- [x] **Mapa do vale e junções** (preview.45): todos os mapas externos montados na posição das saídas ([mapa](../cenarios/MAPA-DO-VALE.md)). Rio contínuo do Platô até o mar; chegada dos Campos alinhada à Propriedade; Pântano com lagoas internas e degradê de terreno nas divisas.
+- [x] **Mapa do vale e junções** (preview.45): todos os mapas externos montados na posição das saídas ([mapa](../cenarios/MAPA-DO-VALE.md)). Rio contínuo do Platô até o mar; chegada dos Campos alinhada à Propriedade; canal do Pântano nasce da lagoa do norte.
+- [x] **Pântano só com lagos** e **chão compartilhado nas divisas** de todos os mapas externos (preview.45), igual ao da Floresta com a Propriedade.
 - [ ] Definir o destino da estrada a leste da Estação.
 - [ ] **História da Amélia** em 3 partes. A íris azul do Pântano já tem sprite e posição no mapa. Modelo em `src/data/npc-stories.ts`.
 - [x] **Ruínas jogáveis** a leste da Estrada da Cidade, com o asfalto contínuo ao norte, investigação no antigo posto, porão, selo de bronze que Nilo identifica e grama alta editável.

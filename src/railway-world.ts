@@ -14,7 +14,7 @@ import {
 import {TILE, WORLD_WIDTH} from './data/world-size';
 import type {MapEditData} from './systems/map-editor';
 import type {WorldEditorObject} from './world';
-import {drawEdgeBlend} from './edge-blend';
+import {drawValleySeams} from './valley-seams';
 
 const GROUND='railway-ground-v3';
 const blend=(n:number):number=>Math.max(0,Math.min(1,n));
@@ -138,7 +138,7 @@ function drawGround(scene:Phaser.Scene):void {
     scene.textures.addCanvas(GROUND,canvas)!.setFilter(Phaser.Textures.FilterMode.NEAREST);
   }
   scene.add.image(0,0,GROUND).setOrigin(0).setDepth(-100);
-  drawEdgeBlend(scene,'railway');
+  drawValleySeams(scene,'railway');
 }
 
 /** Objetos altos que somem um pouco quando o personagem passa atrás deles. */

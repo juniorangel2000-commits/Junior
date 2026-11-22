@@ -3,45 +3,77 @@
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
 - **Atualizado em:** 2026-11-22
-- **Por:** Codex
+- **Por:** Claude (juntando o trabalho do Codex feito em paralelo no mesmo branch)
 - **Continuar a partir de:** `release/v0.10.0-preview.45`, HEAD.
 - **Última versão publicada:** `v0.10.0-preview.44`, commit `cc8171a`.
-- **Estado:** a Costa das Marés fica ao sul dos Campos Abertos. O rio da Propriedade atravessa os Campos e chega ao mar por uma foz sinuosa. A linha principal da Estação curva para o sul antes da divisa com as Ruínas. A preview.45 segue em desenvolvimento.
+- **Estado:**
+  - A Costa das Marés fica ao sul dos Campos Abertos.
+  - O rio da Propriedade atravessa os Campos e chega ao mar por uma foz sinuosa.
+  - O Pântano tem só lagos, sem rio.
+  - Todas as divisas entre mapas externos usam o mesmo chão compartilhado da divisa Floresta ↔ Propriedade.
+  - A linha principal da Estação curva para o sul antes da divisa com as Ruínas.
+  - A preview.45 segue em desenvolvimento.
 
 ## Feito nesta rodada
 
-- `944dd23` integrou a curva pedida pelo Junior às alterações do Claude entre `4744354` e `d699f06`. A faixa de lastro e os trilhos usam a mesma geometria em `src/data/railway.ts` e `src/railway-world.ts`. A curva termina entre as árvores ao sul. A travessia de madeira, a plataforma e a estrada para as Ruínas continuam acessíveis.
-- A Propriedade e os Campos têm chegada alinhada em x=816. Nos Campos, as duas pontes de madeira usam as peças e as regras de passagem da Propriedade. A saída em x=912 leva à costa. `fieldsPlayerSafe` aceita a posição salva nadando. Na transição foram mantidos os IDs dos recursos preservados e a migração dos cortes que caíram no rio.
-- O mar ocupa o sul e parte do leste da Costa. O píer conserva 460 × 112 px e entrada por terra. Os materiais do jogo, sprites separados, animações da água, inspeções, F2 e dados opcionais de save continuam integrados.
-- `35c0f88` suavizou as curvas da foz. O contorno de água em `src/data/coast.ts` guia a margem desenhada, o nado, a espuma e a distribuição da vegetação. A largura na divisa continua compatível com o rio dos Campos.
-- A pesca funciona no rio dos Campos com vara ou rede, seguindo a mesma exigência de isca e orientação do Damião. A Costa já usa a pesca compartilhada de praias e rios. Os peixes raros continuam exclusivos do lago.
-- O Pântano tem lagoas internas e a passarela sobre a lagoa central. O degradê nas divisas está em `src/data/edge-blend.ts` e `src/edge-blend.ts`. As posições e passagens externas estão em [Mapa do vale](cenarios/MAPA-DO-VALE.md).
-- A arte panorâmica, o atlas com os cenários externos, Mina Antiga, Galerias, duas dungeons e quatro interiores, e os detalhes do píer e da Estação ficam em `/workspace/afterrain-costa/`.
+- **Mapa do vale** ([documento](cenarios/MAPA-DO-VALE.md)): todos os mapas externos montados na posição em que as saídas se encontram.
+  - A posição de cada mapa e as divisas estão em `src/data/valley-seams.ts` (`VALLEY_LAYOUT`, `VALLEY_SEAMS`).
+  - A imagem é gerada com o `captureMap()` de cada cena e 160 px de margem, para as copas da borda cruzarem a divisa.
+- **Campos alinhados à Propriedade** (`fa38fbb`): a chegada norte fica em x=816, a mesma coluna da saída sul da Propriedade.
+  - O rio entra com a posição e a largura do rio da Propriedade, e a ponte norte fica na trilha principal.
+  - A geração antiga (`ORIGINAL_TRAILS`, `ORIGINAL_ENTRY_X`) mantém ids e posições dos saves. O que caiu no rio ou nas trilhas novas está em `FIELDS_RETIRED_PATCHES`, e `migrateSave` apaga só esses cortes.
+  - `fieldsPlayerSafe` aceita a posição salva nadando.
+- **Pântano só com lagos** (`d699f06`, a pedido do Junior):
+  - O canal virou a lagoa da passarela, e há uma lagoa nova ao sul. Nenhuma água encosta nas bordas.
+  - O jacaré `swamp-caiman-49-29` passou para (49, 45).
+  - Edições F2 antigas que apontem para esse id ou para nenúfares do canal deixam de aparecer, sem invalidar o save.
+- **Chão compartilhado nas divisas** (`dee10f8`):
+  - **Por quê:** o Junior comparou com a divisa Floresta ↔ Propriedade ("parecem continuação") e achou as outras "cortadas". O degradê de cor de `d699f06` saiu.
+  - **Como:** `drawValleySeams(scene, área, água)` aplica a técnica de `map-seam-ground` em todas as divisas. Numa faixa de 256 px, o chão vira uma mistura das texturas de floresta, grama, prado e musgo em coordenadas do vale, idêntica dos dois lados da linha. Perto do Pântano, a paleta `marsh` puxa para musgo e lama.
+  - **Ficam de fora:** a água de cada mapa e os trechos `open`, onde trilha, estrada ou rio atravessam.
+  - **Camada:** a faixa fica em −89, acima do terreno pintado no F2 (−90) e abaixo de objetos e personagens. No Platô, fica em −69.
+- **Do Codex, em paralelo** (`626c962`, `944dd23`, `35c0f88`, `67508cb`, juntados em `d8d4e2d`, `a0d8498` e `7f72c4b`):
+  - A linha principal da Estação curva para o sul e termina entre as árvores. Lastro e trilhos usam a mesma geometria em `src/data/railway.ts` e `src/railway-world.ts`, e a travessia, a plataforma e a estrada para as Ruínas continuam acessíveis.
+  - A foz da Costa foi arredondada (`src/data/coast.ts`). Na divisa com os Campos, o rio continua em x≈461–571, contra 459–570 nos Campos, dentro do trecho aberto da divisa.
+  - Os Campos ganharam pesca no rio, com vara ou rede, seguindo a exigência de isca do Damião. A Costa usa a pesca compartilhada de praias e rios, e os peixes raros continuam exclusivos do lago.
+  - A arte panorâmica, o atlas com Mina, Galerias, dungeons e interiores, e os detalhes do píer e da Estação ficam em `/workspace/afterrain-costa/`, na máquina do Codex.
 
 ## Em andamento e próximo passo exato
 
-- A estrada leste da Estação ainda aguarda um destino. Um trecho de asfalto já fica disponível até o limite do cenário.
+- O Junior deve conferir no jogo as divisas e a chegada nova dos Campos, logo abaixo da saída sul da Propriedade.
+- A estrada leste da Estação ainda aguarda um destino.
 - A história da sala de espera depende dos textos e da recompensa definidos pelo Junior. A Costa pode ganhar conchas coletáveis e uma história ligada ao barco.
 - Ligar a íris azul do Pântano à história da Amélia em `src/data/npc-stories.ts`. A história do Nilo pode reaproveitar o selo das Ruínas.
-- Na próxima publicação, verificar a compressão com `sharp` no Windows e comparar o instalador com os 538.845.962 bytes da preview.44.
+- Na próxima publicação:
+  - rodar `npm run build`, porque depois do realinhamento só check e testes foram rodados;
+  - verificar a compressão com `sharp` no Windows;
+  - comparar o instalador com os 538.845.962 bytes da preview.44.
+- Claude e Codex enviaram commits ao mesmo branch ao mesmo tempo, e houve três merges seguidos. Antes de começar, faça `git fetch` e confira o HEAD remoto.
 
 ## Pendências e ideias para depois
 
 - [Lista de pendências](planejamento/O-QUE-FALTA.md).
-- Pomar Abandonado segue como proposta de cenário.
+- O Pomar Abandonado segue como proposta de cenário.
 - Chuva regando canteiros, peixes por estação e tela do calendário ficam depois dos cenários.
 - Arte nova do chiqueiro e possível versão para iPhone seguem em planejamento.
 
 ## Problemas conhecidos
 
-- Desempenho dos Campos Abertos ainda precisa de uma medição com F3 no PC do Junior.
+- O desempenho dos Campos Abertos ainda precisa de medição com F3 no PC do Junior. No Chromium de teste, com SwiftShader, os Campos rodam a cerca de 11 FPS.
 - Interiores dos animais não guardam a posição individual. Itens recolhidos do chão voltam à qualidade comum.
 - `qa-inventory.cjs` quebra ao iniciar uma partida. `qa-animal-escort.cjs` está desatualizado na volta. `qa-farm-interior.cjs` tem uma falha antiga na dica da porta.
 - Preserve as fontes de arte em resolução nativa. A conversão WebP se aplica à distribuição.
 
 ## Testes
 
-- O teste de geometria confere o encaixe do lastro com a curva, a reta ao sul e o fim da linha dentro da Estação.
-- A suíte da Costa confere a continuidade da foz, proteção dos acessos, travessia e a compatibilidade do save.
-- No Chromium, foram conferidas a ida e a volta Propriedade ↔ Campos ↔ Costa e a retomada de uma partida na Costa. A foz revisada foi conferida com as colisões do píer e capturas ao meio-dia.
-- `npm run check` passou. `npm test` passou com 2.249 testes em 270 arquivos na versão com a foz revisada.
+- Final, com tudo junto: `npm run check` passou e `npm test` passou com 2.250 testes em 270 arquivos.
+- `tests/valley-seams.test.ts` confere:
+  - que cada divisa fica na borda comum dos dois mapas;
+  - que a mistura é inteira junto à linha e zero nas trilhas e rios;
+  - que o Pântano não tem água nas bordas.
+- `tests/coast.test.ts` e `tests/open-fields.test.ts` conferem a chegada alinhada, a continuidade do rio na borda, as pontes e a migração dos cortes. O teste de geometria da Estação confere a curva.
+- No Chromium foram conferidos:
+  - Propriedade → Campos, com chegada em (816, 140), a ponte norte atravessada a pé e a volta;
+  - Campos ↔ Costa e a retomada na Costa;
+  - a foz revisada, nas capturas do Codex;
+  - zero erros de página.

@@ -4,7 +4,7 @@ import type {MapEditData} from './systems/map-editor';
 import {HIGHLAND_OBJECTS,highlandObjects,highlandWaterPoint,highlandBlockedPoint,HIGHLAND_STAIRS,HIGHLAND_ART,highlandBridgePose,HIGHLAND_SIZE} from './data/highland';
 import {addWaterMotion,setupWaterSurface} from './water-motion';
 import {drawMapTerrainEdits} from './map-editor-terrain';
-import {drawEdgeBlend} from './edge-blend';
+import {drawValleySeams} from './valley-seams';
 export function preloadHighland(scene:Phaser.Scene):void {
  for(const kind of ['barrel','crates','woodpile','sacks'])if(!scene.textures.exists('village-prop-'+kind))scene.load.image('village-prop-'+kind,'assets/visual/village/'+kind+'.png');
  for(const kind of ['minecart','toolstand','orepile'])if(!scene.textures.exists('highland-'+kind))scene.load.image('highland-'+kind,'assets/visual/highland/'+kind+'.png');
@@ -62,7 +62,7 @@ export class HighlandWorld {
   // The other maps combine this same static material with a 30% moving surface.
   scene.add.tileSprite(0,0,HIGHLAND_SIZE.width,HIGHLAND_SIZE.height,setupWaterSurface(scene)).setOrigin(0).setDepth(-100).setData('highland-water-base',true);
   scene.add.image(0,0,'highland-ground').setOrigin(0).setDisplaySize(HIGHLAND_SIZE.width,HIGHLAND_SIZE.height).setDepth(-70).setData('highland-ground-detail',true);
-  drawEdgeBlend(scene,'highland',-69);
+  drawValleySeams(scene,'highland',(x,y)=>highlandWaterPoint(x,y,edits),-69);
   scene.add.image(HIGHLAND_STAIRS.x,HIGHLAND_STAIRS.y,'highland-stairs').setOrigin(0).setDepth(-60).setData('highland-stairs-top',true);
   if(edits)drawMapTerrainEdits(scene,edits.terrain,'highland-ground-edits',()=>false,'forest',false);
   addWaterMotion(scene,(x,y)=>highlandWaterPoint((x+.5)*32,(y+.5)*32,edits),(x,y)=>highlandWaterPoint(x,y,edits),{width:HIGHLAND_SIZE.width,height:HIGHLAND_SIZE.height,alpha:.3});
