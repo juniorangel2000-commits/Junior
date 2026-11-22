@@ -7,6 +7,7 @@ import {villageBlockedAt,villagePointBlocked} from '../src/data/village';
 import {freeArrival} from '../src/systems/actor-arrival';
 import {restDay,restDays,innGuests,villageExtra,REST_WEEKDAY,rainyDay} from '../src/data/village-schedule';
 import {MERCHANT_LUNCHES} from '../src/data/merchant-lunches';
+import {festivalOn} from '../src/systems/festivals';
 
 const ids=Object.keys(MERCHANT_VISITS) as RoutineId[];
 const rooms=new Map(ids.map(id=>[id,id==='bento'?smithNavigation(createSmithLayout()):merchantRoomNavigation(id,createMerchantLayout(id))]));
@@ -25,7 +26,10 @@ describe('rotina da vila: folga, chuva e pousada',()=>{
   for(const id of ['bento','damiao','helena'] as const){expect(restDays(id)).toEqual([]);for(let d=1;d<=28;d++)expect(restDay(id,d)).toBe(false);}
   for(const id of Object.keys(REST_WEEKDAY) as RoutineId[]){
    const days=restDays(id);expect(days).toHaveLength(4);
-   for(const d of days){expect(restDay(id,d)).toBe(true);expect(restDay(id,d+28)).toBe(true);expect(merchantPeriod(id,600,d)).toBe('closed');expect(merchantMayEnter(id,{day:d,time:600})).toBe(false);expect(merchantMayEnter(id,{day:d,time:600},id)).toBe(true);}
+   for(const d of days){expect(restDay(id,d)).toBe(true);expect(restDay(id,d+28)).toBe(true);
+    // No dia de festival na vila, até quem está de folga vai à festa (src/systems/festivals.ts).
+    if(festivalOn(d)?.place==='village')continue;
+    expect(merchantPeriod(id,600,d)).toBe('closed');expect(merchantMayEnter(id,{day:d,time:600})).toBe(false);expect(merchantMayEnter(id,{day:d,time:600},id)).toBe(true);}
    expect(merchantPeriod(id,600,days[0]+1)).toBe('work');
   }
   // Os primeiros dias de uma partida nova não têm folga.

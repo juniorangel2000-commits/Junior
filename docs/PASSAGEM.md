@@ -4,8 +4,8 @@
 
 - **Atualizado em:** 2026-11-22
 - **Por:** Claude (terminando o Pomar que o Codex começou; os créditos do Codex acabaram)
-- **Continuar a partir de:** `release/v0.10.0-preview.46`, HEAD.
-- **Última versão publicada:** `v0.10.0-preview.46`, com o mesmo conteúdo da preview.45. A tag da preview.45 existe, mas o processo do Windows falhou: faltava `docs/cenarios/LEIA-0.10.0-preview.45.md`.
+- **Continuar a partir de:** `release/v0.10.0-preview.47`, HEAD (em desenvolvimento, não publicada).
+- **Última versão publicada:** `v0.10.0-preview.46`, com instalador gerado (438.633.617 bytes, contra 538.845.962 da preview.44: a compressão WebP funcionou no Windows). Tem o mesmo conteúdo da preview.45. A tag da preview.45 existe, mas o processo do Windows falhou: faltava `docs/cenarios/LEIA-0.10.0-preview.45.md`.
 - **Atenção ao publicar:** além de `NOTAS-<versão>.md`, crie `docs/cenarios/LEIA-<versão>.md`. O processo do Windows copia esse arquivo para a Release e falha se ele não existir.
 - **Estado:**
   - A Costa das Marés fica ao sul dos Campos Abertos.
@@ -17,6 +17,29 @@
   - A preview.45 segue em desenvolvimento.
 
 ## Feito nesta rodada
+
+- **Festivais da vila** (`src/systems/festivals.ts`, `src/festival-decor.ts`), um por estação:
+
+  | Festival | Data e local | Anfitrião e concurso |
+  | --- | --- | --- |
+  | Feira das Sementes | Primavera 14, praça, 10h–18h | Rosa, concurso de flores (girassol, camomila ou íris) |
+  | Festa da Praia | Verão 14, Costa das Marés, 15h–21h | Damião, 3 caranguejos, com fogueira e a vila em roda (`BEACH_FIRE`, `BEACH_RING` em `npc-outings.ts`) |
+  | Festa da Colheita | Outono 21, praça, 10h–19h | Augusto, 5 de uma colheita |
+  | Noite das Lanternas | Inverno 21, praça, 17h–23h | Helena, troca de presentes com 1 prato; +1 de amizade com todos |
+
+  - As lojas param, e até quem está de folga vai à festa. Na vila, os moradores ficam no período de intervalo e se juntam na praça.
+  - O concurso aparece na conversa com o anfitrião, uma vez por ano (`festivalDone` no save, campo opcional e validado).
+  - A praça ganha bandeirinhas, barracas e lanternas, ainda provisórias.
+  - A HUD mostra o festival do dia ao lado do ano. Passando o mouse na data, aparece o próximo festival.
+  - Foram conferidas no Chromium a Feira (prêmio de 200 coroas) e a Festa da Praia (prêmio de 300).
+
+- **Atividades nos cenários novos** (preview.47, em desenvolvimento):
+  - **Costa:** 12 conchas na areia (`src/systems/forage.ts`) voltam em 2 dias, e a Celina compra. Com a rede na mochila, dá para pegar caranguejo: ele só se assusta bem de perto (`fleeScale`), foge devagar e o alcance é de 150 px. O Damião compra.
+  - **Pântano:** as três íris azuis podem ser colhidas e voltam em 7 dias.
+  - **Cozinha:** suco de laranja, doce de pera, torta de maçã (no forno) e caranguejada, ensinados pela Helena e vendidos na pousada.
+  - **Histórias:** Amélia ("A íris da vó Dita") e Nilo ("A marca das três pontas", com o cofre da bilheteria da Estação). Agora os dez moradores têm história.
+  - **Ícones provisórios:** concha, íris e caranguejo vêm das artes do jogo ou do desenho dos bichos. Os pratos novos são pratos existentes com a cor trocada.
+  - **Save:** ganhou `forageHarvest`, campo opcional e validado. Os itens novos entram em saves antigos pela migração da mochila.
 
 - **Bichos dos cenários com sprites provisórios** (`src/data/critters.ts`, `src/critters.ts`). O ChatGPT não conseguiu gerar as artes, então o desenho é pixel art feito no código. Cada quadro é uma grade de letras, com contorno e luz de cima automáticos, e o segundo quadro do andar mexe as pernas sozinho.
   - **Espécies (14):** o vaga-lume e o gato vira-lata saíram a pedido do Junior; a noite já tem vaga-lumes.
@@ -87,10 +110,6 @@
 - A estrada leste da Estação ainda aguarda um destino.
 - A história da sala de espera depende dos textos e da recompensa definidos pelo Junior. A Costa pode ganhar conchas coletáveis e uma história ligada ao barco.
 - Ligar a íris azul do Pântano à história da Amélia em `src/data/npc-stories.ts`. A história do Nilo pode reaproveitar o selo das Ruínas.
-- Na próxima publicação:
-  - rodar `npm run build`, porque depois do realinhamento só check e testes foram rodados;
-  - verificar a compressão com `sharp` no Windows;
-  - comparar o instalador com os 538.845.962 bytes da preview.44.
 - Claude e Codex enviaram commits ao mesmo branch ao mesmo tempo, e houve três merges seguidos. Antes de começar, faça `git fetch` e confira o HEAD remoto.
 
 ## Pendências e ideias para depois

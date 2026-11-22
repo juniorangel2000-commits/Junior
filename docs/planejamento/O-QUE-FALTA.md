@@ -43,7 +43,7 @@
 
 ## 2. Moradores e comunidade
 
-- [ ] **Eventos e festivais da vila** por estação (feira, festa da colheita etc.): não existem.
+- [x] **Festivais da vila** (preview.47): Feira das Sementes, Festa da Praia, Festa da Colheita e Noite das Lanternas, com concurso e decoração provisória.
 - [ ] **Aniversários dos moradores** (presente em dobro no dia, fala especial): não existem.
 - [ ] **Visitas à noite** de Bento, Damião e Helena (hoje só os 7 que têm folga visitam a
   propriedade, de manhã).

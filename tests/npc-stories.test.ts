@@ -23,7 +23,8 @@ describe('histórias dos moradores',()=>{
  it('fica fechada sem amizade e abre com amizade',()=>{
   const {root}=setup(0);expect(storyStatus(root.s,'tobias')!.unlocked).toBe(false);
   root.s.npcSocial!.players.tobias!.affinity=3;expect(storyStatus(root.s,'tobias')!.unlocked).toBe(true);
-  expect(storyStatus(root.s,'amelia')).toBeUndefined();
+  // Todos os dez moradores têm história (Amélia e Nilo desde a preview.47).
+  for(const id of ['amelia','nilo','helena','icaro'] as const)expect(storyStatus(root.s,id),id).toBeDefined();
  });
  it('entregar gasta os itens, dá a recompensa e avança a parte',()=>{
   const {root,runtime}=setup(3);root.s.inventory.milk=3;root.s.inventory.egg=5;const coins=root.s.villageEconomy?.coins??0;
@@ -39,6 +40,6 @@ describe('histórias dos moradores',()=>{
  it('sem os itens não entrega; o save recusa história inválida',()=>{
   const {root,runtime}=setup(3);expect(completeStoryPart(runtime,'tobias').ok).toBe(false);expect(root.s.npcStories).toBeUndefined();
   const s:SaveData=createNewSave(createCharacterProfile('X'));s.npcStories={tobias:4};expect(validateSave(s)).toBe(false);
-  s.npcStories={amelia:1};expect(validateSave(s)).toBe(false);s.npcStories={tobias:3};expect(validateSave(s)).toBe(true);
+  s.npcStories={amelia:4} as never;expect(validateSave(s)).toBe(false);s.npcStories={tobias:3};expect(validateSave(s)).toBe(true);
  });
 });

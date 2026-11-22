@@ -16,7 +16,7 @@ const fresh=():SaveData=>{const s=createNewSave(createCharacterProfile('Cozinha'
 
 describe('cozinha: dados e arte',()=>{
  it('14 receitas com ingredientes que existem e arte do SpriteCook para cada prato',()=>{
-  expect(DISH_RECIPES).toHaveLength(21);expect(new Set(DISH_IDS).size).toBe(21);expect(HELENA_DISHES).toHaveLength(15);
+  expect(DISH_RECIPES).toHaveLength(25);expect(new Set(DISH_IDS).size).toBe(25);expect(HELENA_DISHES).toHaveLength(19);
   for(const r of DISH_RECIPES){
    for(const id of Object.keys(r.ingredients))expect(ITEMS[id as keyof typeof ITEMS],`${r.id}: ${id}`).toBeDefined();
    expect(fs.existsSync(`public/assets/visual/kitchen/dishes/${r.id}.png`),r.id).toBe(true);
@@ -35,8 +35,8 @@ describe('cozinha: aprender com a Helena',()=>{
  });
  it('sem coroas não aprende; depois da última, o serviço fica encerrado',()=>{
   const s=fresh();s.villageEconomy!.coins=5;expect(performVillageService(s,'learn-dish').ok).toBe(false);expect(helenaKnown(s)).toHaveLength(0);
-  s.villageEconomy!.coins=2000;for(let i=0;i<15;i++)performVillageService(s,'learn-dish');
-  expect(helenaKnown(s)).toHaveLength(15);expect(performVillageService(s,'learn-dish').ok).toBe(false);
+  s.villageEconomy!.coins=3000;for(let i=0;i<19;i++)performVillageService(s,'learn-dish');
+  expect(helenaKnown(s)).toHaveLength(19);expect(performVillageService(s,'learn-dish').ok).toBe(false);
   expect(listVillageServices('helena',s).find(o=>o.id==='learn-dish')!.disabled).toBe(true);
   expect(validateSave(s)).toBe(true);
  });

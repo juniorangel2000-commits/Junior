@@ -8,7 +8,7 @@ export interface SocialContext{greeting:string;memory?:string;label:string;canRe
 /** `syncInventory`: chamado quando a amizade mexe na mochila (presentes, histórias). Nessas
  * mudanças também vão para o save as histórias, as moedas e as receitas. */
 export function createSocialRuntime(snapshot:()=>SaveData,write:(save:SaveData)=>boolean,root:()=>SaveData,syncInventory?:(inventory:SaveData['inventory'])=>void):SocialRuntime{
- return{current:root,snapshot,write,apply:(d,inventory)=>{const r=root();r.npcSocial=d.npcSocial;if(inventory){r.inventory=d.inventory;r.npcStories=d.npcStories;r.villageEconomy=d.villageEconomy;r.villageProgress=d.villageProgress;r.propertyVisitDay=d.propertyVisitDay;r.npcOutingGifts=d.npcOutingGifts;syncInventory?.(d.inventory);}}};}
+ return{current:root,snapshot,write,apply:(d,inventory)=>{const r=root();r.npcSocial=d.npcSocial;if(inventory){r.inventory=d.inventory;r.npcStories=d.npcStories;r.villageEconomy=d.villageEconomy;r.villageProgress=d.villageProgress;r.propertyVisitDay=d.propertyVisitDay;r.npcOutingGifts=d.npcOutingGifts;r.festivalDone=d.festivalDone;syncInventory?.(d.inventory);}}};}
 export const ensureNpcSocial=(save:SaveData):NpcSocialState=>save.npcSocial??=newNpcSocial();
 /** Nome do nível de amizade (src/data/npc-gifts.ts). */
 export function friendshipLabel(n:number):string{if(n<=-4)return'Um pouco distantes';let label='Conhecendo melhor';for(const l of FRIENDSHIP_LEVELS)if(n>=l.at)label=l.label;return label;}

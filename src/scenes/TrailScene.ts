@@ -54,6 +54,9 @@ import {NpcOutingVisit} from '../npc-outing-visit';
 import type {OutingArea} from '../systems/npc-outings';
 import {CritterField,preloadCritters} from '../critters';
 import {crittersOf} from '../data/critters';
+import {FORAGE_SPOTS,collectForage,forageNear,forageReady,forageSpotsIn} from '../systems/forage';
+import {Inventory} from '../systems/inventory';
+const CRAB_REACH=150;
 const OUTING_AREAS:readonly OutingArea[]=['orchard','swamp','ruins','railway','coast'];
 
 const TRAILS={
@@ -103,6 +106,8 @@ export class TrailScene extends Phaser.Scene {
   readonly movementBlockedPoint=(x:number,y:number)=>this.world.layout.blocked(x,y)||!!this.outings?.blocks(x,y);
   /** Moradores que vieram trabalhar neste cenário (src/systems/npc-outings.ts). */
   private outings?:NpcOutingVisit;
+  /** Conchas soltas na areia da Costa (src/systems/forage.ts). */
+  private shellSprites=new Map<string,Phaser.GameObjects.Image>();
   /** Bichos do cenário (src/critters.ts). */
   private critters?:CritterField;
   private readonly tileBlocked=(x:number,y:number)=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
@@ -134,6 +139,7 @@ export class TrailScene extends Phaser.Scene {
     return save&&save.activeArea===road?.area?road:undefined;
   }
   preload():void{
+    if(this.area==='coast'&&!this.textures.exists('forage-shell'))this.load.image('forage-shell','assets/visual/items/shell.png');
     const data=this.sys.settings.data as TrailStart|undefined;
     if(this.resumeViaRoad(data?.save))return;
     if(this.area==='ruins'&&data?.save?.ruinsCellarPosition)preloadRuinsCellar(this);
@@ -193,11 +199,16 @@ export class TrailScene extends Phaser.Scene {
         enabled:true,canMove:this.canPlay(),
       }),this.ui,this.persist);
     }
+    this.shellSprites.clear();
+    if(!this.inHome)for(const spot of forageSpotsIn(this.area).filter(f=>f.item==='shell'))
+      if(this.textures.exists('forage-shell'))this.shellSprites.set(spot.id,this.add.image(spot.x,spot.y,'forage-shell').setOrigin(.5,.8).setDisplaySize(18,18).setDepth(spot.y));
     if(!this.inHome&&crittersOf(this.area).length){
       const layout=this.world.layout;
       this.critters=new CritterField(this,this.area,{width:this.mapSize.width,height:this.mapSize.height,
         land:(x,y)=>!layout.blocked(x,y)&&!layout.water(x,y),water:(x,y)=>layout.water(x,y)},
-        {state:()=>this.state,player:()=>this.player,active:()=>this.canPlay()});
+        {state:()=>this.state,player:()=>this.player,active:()=>this.canPlay(),
+         // Com a rede na mochila, você chega devagar: o caranguejo só se assusta bem de perto.
+         fleeScale:id=>id==='crab'&&(this.state.inventory.net??0)>0?.45:1});
     }
     if(!this.inHome&&OUTING_AREAS.includes(this.area as OutingArea))this.outings=new NpcOutingVisit(this,this.area as OutingArea,{
       state:()=>this.state,snapshot:()=>this.snapshotState(),player:()=>this.player,
@@ -266,6 +277,8 @@ export class TrailScene extends Phaser.Scene {
   private updateHUD():void {
     if(!this.player)return;
     const {state,player,trail}=this,edits=state[trail.map],exit=trail.exit(edits),gate=tileCenter(exit);
+    const forage=this.player.isSwimming?undefined:forageNear(state,this.area,player),crab=this.crabInReach();
+    this.shellSprites.forEach((sprite,id)=>{const spot=FORAGE_SPOTS.find(f=>f.id===id);sprite.setVisible(!!spot&&forageReady(state,spot));});
     const fruit=this.nearbyFruit(),landmark=this.nearbyLandmark(),resident=this.player.isSwimming?undefined:this.outings?.nearName();
     if(this.world instanceof OrchardWorld)this.world.showFruits(state.day,state.orchardHarvest);
     const road=this.outgoingRoad,nextGate=road&&tileCenter(road.exit);
@@ -273,6 +286,8 @@ export class TrailScene extends Phaser.Scene {
     const cardinal={up:'norte',down:'sul',left:'oeste',right:'leste'}[exitSignLayout(exit,trail.entry(edits)).direction];
     const prompt=player.isSwimming?'Siga até a margem para sair da água.':
       resident?`E · Conversar com ${resident}`:
+      forage?`E · ${forage.item==='shell'?'Recolher concha':'Colher íris azul'}`:
+      crab?'E · Pegar caranguejo com a rede':
       fruit?`E · Recolher ${ITEM_NAMES[fruit.item].toLowerCase()}`:
       landmark?(landmark.cellar&&state.ruinsMapFound?'E · Descer ao porão':landmark.hall?'E · Entrar na sala de espera':`E · Examinar ${landmark.name.toLowerCase()}`):
       this.inHome?(this.area==='railway'?'A porta ao sul leva de volta à plataforma.':'Suba os degraus ao norte para voltar ao armazém.'):
@@ -285,7 +300,7 @@ export class TrailScene extends Phaser.Scene {
       tool:state.equippedTool??'hand',worldWeapon:state.worldWeapon,learnedRecipes:state.villageProgress?.recipes??[],
       inHome:this.inHome,swimming:player.isSwimming,coins:state.villageEconomy?.coins??0,vigor:state.villageProgress?.vigor??100,
       wateringCan:!!state.homeSupplies?.wateringCan,wateringCanWater:state.wateringCanWater??0,
-      playerTile:{x:player.x/32,y:player.y/32},interactionKey:resident||fruit||landmark||fishing?'E':null,prompt,location:AREA_NAMES[this.area],
+      playerTile:{x:player.x/32,y:player.y/32},interactionKey:resident||forage||crab||fruit||landmark||fishing?'E':null,prompt,location:AREA_NAMES[this.area],
       ...(this.inHome?{mapTitle:this.interiorName,location:this.interiorName,interiorMapSize:{width:this.mapSize.width/32,height:this.mapSize.height/32}}:{}),
       ...(this.area==='coast'||this.area==='orchard'?{mapTitle:AREA_NAMES[this.area]}:{}),
       harvests:state.inventory.turnip,metLia:state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',
@@ -310,12 +325,24 @@ export class TrailScene extends Phaser.Scene {
   private pointer=(pointer:Phaser.Input.Pointer):void=>{
     if(pointer.button===0&&this.canPlay())this.interact();
   };
+  /** Caranguejo perto o bastante para pegar com a rede (precisa ter a rede na mochila). */
+  private crabInReach():boolean{return this.area==='coast'&&!this.player.isSwimming&&(this.state.inventory.net??0)>0&&!!this.critters?.nearest('crab',this.player,CRAB_REACH);}
   private nearbyFruit(){
     if(this.player.isSwimming||this.player.mounted||!(this.world instanceof OrchardWorld))return;
     return this.world.fruitNear(this.player,this.state.day,this.state.orchardHarvest);
   }
   private interact():void {
     if(!this.player.isSwimming&&this.outings?.interact())return;
+    const forage=this.player.isSwimming?undefined:forageNear(this.state,this.area,this.player);
+    if(forage){this.ui.toast(collectForage(this.snapshotState(),forage,this.player,saveGame));this.updateHUD();return;}
+    if(this.crabInReach()){
+      const draft=this.snapshotState(),inv=new Inventory(draft.inventory);
+      if(!inv.transact({},{crab:1})){this.ui.toast('A mochila está cheia.');return;}
+      draft.inventory=inv.data;
+      if(!saveGame(draft)){this.ui.toast('Não foi possível salvar.');return;}
+      this.critters!.take('crab',this.player,CRAB_REACH);this.state.inventory=draft.inventory;
+      this.ui.toast('Caranguejo na mochila.');this.updateHUD();return;
+    }
     const fruit=this.nearbyFruit();
     if(fruit){
       this.ui.toast(collectOrchardFruit(this.snapshotState(),fruit,this.player,saveGame));

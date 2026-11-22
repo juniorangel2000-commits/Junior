@@ -93,12 +93,15 @@ import {DEVELOPMENT_TOOLS} from '../development-tools';
 import type {MapArea} from '../data/default-maps';
 
 import {playerSpeedFactor} from '../systems/food-effects';
+import {FestivalDecor} from '../festival-decor';
+import {festivalNow,festivalOn,festivalContestDone,enterFestivalContest} from '../systems/festivals';
 export interface VillageStart {resumeCityForest?:'cityForest'|'ruins'|'railway';resumeOrchard?:boolean;save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 type Villager={data:VillageNPC;sprite:Phaser.GameObjects.Sprite;frames:number};
 
 /** Town state travels through the same save as the farm, without replacing its
  * outdoor position, crops, resource fields or animal population. */
 export class VillageScene extends Phaser.Scene {
+ private festivalDecor?:FestivalDecor;
  private socialRuntime=createSocialRuntime(()=>this.snapshotState(),saveGame,()=>this.state,inv=>{this.syncInventory(inv);this.updateHUD();});
  private readonly passageCollision=new NpcPassageCollision();
  private npcBlocksPoint=(x:number,y:number):boolean=>this.villagers.some(n=>n.sprite.visible&&this.passageCollision.blocks(n.data.id,n.sprite,this.player,x,y,this.time.now,this.inCommunity?'community':this.inBlacksmith?'smith':this.merchantRoom??'village'));
@@ -187,6 +190,7 @@ export class VillageScene extends Phaser.Scene {
   this.shop=new VillageInteractionUI({
    onSocialOpen:id=>{const c=openSocialConversation(this.socialRuntime,id),r=collectPendingRewards(this.socialRuntime,id);return r.length?{...c,reward:r.join(' ')}:c;},onSocialResponse:(id,tone)=>respondSocial(this.socialRuntime,id,tone),
    onAnswer:(id,conversation,tone)=>answerConversation(this.socialRuntime,id,conversation,tone),getStory:id=>storyStatus(this.snapshotState(),id),onStory:id=>completeStoryPart(this.socialRuntime,id),getGiftChoices:id=>giftChoices(this.snapshotState(),id),onGift:(id,item)=>giveGift(this.socialRuntime,id,item),
+   getDialogueAction:id=>{const fest=festivalNow(this.state);return fest&&fest.place==='village'&&fest.host===id&&!festivalContestDone(this.state,fest)?{label:`Participar: ${fest.contest.name}`,complete:()=>enterFestivalContest(this.socialRuntime,fest)}:undefined;},
    canTrade:id=>this.canTrade(id),isInside:id=>merchantCanTrade(id,this.roomOwner),getAvailability:id=>id==='bento'?{...this.routines.get('bento')!.availability(this.state),message:bentoAvailability(this.state).message}:dailyMerchant(id)?this.routines.get(id)?.availability(this.state):undefined,onGuide:id=>this.beginGuide(id),
    getPortrait:id=>this.npcPortrait(id),
    onMineRequests:()=>{this.shop?.close();showMineMissionJournal(this.ui,this.mineMissionRuntime);},
@@ -212,7 +216,10 @@ export class VillageScene extends Phaser.Scene {
   this.input.on('pointerdown',this.pointer,this);this.scale.on('resize',this.applyCamera,this);
   window.addEventListener('pagehide',this.save);window.addEventListener('beforeunload',this.save);
   window.addEventListener('blur',this.blur);document.addEventListener('visibilitychange',this.visibility);
-  this.events.once('shutdown',()=>{
+  this.festivalDecor=new FestivalDecor(this);
+  const fest=festivalOn(this.state.day);
+  if(fest)this.time.delayedCall(900,()=>this.ui.toast(`${fest.intro} ${fest.place==='village'?`Fale com ${VILLAGE_NPCS.find(n=>n.id===fest.host)?.name} para o ${fest.contest.name.toLowerCase()}.`:''}`));
+  this.events.once('shutdown',()=>{this.festivalDecor?.destroy();this.festivalDecor=undefined;
    this.leaving=true;this.npcOverlays?.destroy();this.npcOverlays=undefined;this.shop?.destroy();this.shop=undefined;this.roomView?.destroy();this.roomView=undefined;this.merchantView?.destroy();this.merchantView=undefined;this.daylight?.destroy();this.world?.destroy();
    this.input.keyboard?.off('keydown',this.key,this);this.input.off('wheel',this.wheel,this);this.input.off('pointerdown',this.pointer,this);
    this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);
@@ -631,7 +638,7 @@ export class VillageScene extends Phaser.Scene {
   this.time.delayedCall(SCENE_FADE_MS,()=>{const state=structuredClone(this.state);this.scene.stop();this.onReturn(state,title);});
  }
  update(time:number,ms:number):void {
-  if(!this.player)return;this.daylight.update(this.state.time,this.inShop,this.state.day);this.world.update(time,this.inShop?undefined:this.player);this.world.updateLighting(this.state.time);
+  if(!this.player)return;this.festivalDecor?.update(this.state.day,this.inShop);this.daylight.update(this.state.time,this.inShop,this.state.day);this.world.update(time,this.inShop?undefined:this.player);this.world.updateLighting(this.state.time);
   if(this.paused||this.leaving||this.changingRoom||this.shop?.isOpen||this.ui.isModalOpen()||document.hidden)return;
   const delta=Math.min(ms/1000,.1),previous={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(delta,this.movementBlocked,this.movementBlockedPoint,true,this.swimmingPoint,this.allowPierStep);
   if(this.inShop)this.centerInteriorCamera();
