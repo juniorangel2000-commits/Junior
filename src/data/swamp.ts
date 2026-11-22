@@ -53,7 +53,9 @@ export function swampTrailDistance(x:number,y:number):number {
 export function swampWaterDistance(x:number,y:number):number {
   const riverCenter=1570+150*Math.sin(y/345)+62*Math.cos(y/200);
   const riverWidth=144+37*Math.sin(y/174+1.2)+23*Math.cos(y/93);
-  const river=Math.abs(x-riverCenter)-riverWidth+5*Math.sin(y/17);
+  // O canal nasce da lagoa do norte: não encosta na borda de cima, onde a Floresta é só mata.
+  const source=Math.max(0,300-y)*2.2;
+  const river=Math.abs(x-riverCenter)-riverWidth+5*Math.sin(y/17)+source;
   // Duas lagoas laterais, uma remansa ao norte e enseadas ligadas ao canal.
   const west=lakeDistance(x,y,748,760,470,285,2.8);
   const southeast=lakeDistance(x,y,2330,1625,462,316,4);

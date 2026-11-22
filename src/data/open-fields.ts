@@ -2,8 +2,14 @@ import {IPE_ART} from './ipe-art';
 import {FIELDS_BRIDGES,mapBridgeAt,mapBridgeRail} from './bridges';
 import type {TilePoint} from '../types';
 export const FIELDS_SIZE={width:3072,height:2304};
-export const FIELDS_ENTRY={x:1536,y:140,direction:'down' as const};
-export const FIELDS_EXIT={x:1536,y:68,halfWidth:62,depth:40,direction:'up' as const};
+/** Chegada norte alinhada à saída sul da Propriedade (x=816), a oeste do rio: os dois mapas
+ * se encaixam na mesma coluna, e o Pântano fica inteiro a oeste dos Campos. */
+export const FIELDS_ENTRY={x:816,y:140,direction:'down' as const};
+export const FIELDS_EXIT={x:816,y:68,halfWidth:62,depth:40,direction:'up' as const};
+export const FIELDS_NORTH_SIGN={exit:{x:25,y:2},entry:{x:25,y:4}};
+/** Até a preview.45 a chegada ficava em x=1536. A geração de árvores usa esse valor para manter
+ * ids e posições dos saves antigos. */
+const ORIGINAL_ENTRY_X=1536;
 export const PROPERTY_FIELDS_EXIT={x:816,y:2224,halfWidth:58,depth:38,direction:'down' as const};
 export const PROPERTY_FIELDS_RETURN={x:816,y:2160,direction:'up' as const};
 /** A short grassy approach at the south edge, safely west of the river. */
@@ -15,8 +21,9 @@ export const FIELDS_COAST_RETURN={x:912,y:2160,direction:'up' as const};
 export const FIELDS_COAST_SIGN={exit:{x:28,y:70},entry:{x:28,y:67}};
 /** Rio que vem da propriedade, atravessa os Campos de norte a sul e desce para a Costa,
  * onde deságua no mar. Pontos em pixels; a largura cresce um pouco rio abaixo. */
-export const FIELDS_RIVER:readonly (readonly [number,number])[]=[[1180,-60],[1160,280],[1040,600],[840,890],[650,1200],[548,1560],[505,1920],[516,2380]];
-export const fieldsRiverHalf=(y:number)=>50+14*Math.max(0,Math.min(1,y/2304));
+export const FIELDS_RIVER:readonly (readonly [number,number])[]=[[1402,-60],[1400,250],[1398,620],[1300,790],[1100,960],[860,1090],[650,1200],[548,1560],[505,1920],[516,2380]];
+/** Começa com a largura do rio da Propriedade na borda (≈146 px) e chega à Costa com a largura de lá. */
+export const fieldsRiverHalf=(y:number)=>72-16*Math.max(0,Math.min(1,y/2304));
 const riverSegments=FIELDS_RIVER.slice(1).map(([bx,by],i)=>{const [ax,ay]=FIELDS_RIVER[i],dx=bx-ax,dy=by-ay;return{ax,ay,dx,dy,inv:1/(dx*dx+dy*dy)};});
 export function fieldsRiverDistance(x:number,y:number):number{
  let best=Infinity;
@@ -26,15 +33,13 @@ export function fieldsRiverDistance(x:number,y:number):number{
 /** Distância (px, negativa dentro d'água) até a margem do rio. */
 export const fieldsRiverEdge=(x:number,y:number)=>fieldsRiverDistance(x,y)-fieldsRiverHalf(y);
 export const fieldsWater=(x:number,y:number)=>fieldsRiverEdge(x,y)<0&&!mapBridgeAt(FIELDS_BRIDGES,x,y);
-/** Trilhas gastas até as pontes (só no desenho do chão; não mudam a geração dos tufos). */
-const bridgePaths=[[[1532,540],[1350,540],[1186,512]],[[958,512],[860,540],[740,600]],[[930,1780],[760,1765],[650,1760]],[[406,1760],[300,1790],[200,1850]]] as const;
+/** Trilhas gastas até a ponte sul (só no desenho do chão; não mudam a geração dos tufos). */
+const bridgePaths=[[[930,1780],[760,1765],[650,1760]],[[406,1760],[300,1790],[200,1850]]] as const;
 export function fieldsBridgePathDistance(x:number,y:number):number{
  let distance=Infinity;
  for(const path of bridgePaths)for(let i=1;i<path.length;i++){const[a,b]=[path[i-1],path[i]],dx=b[0]-a[0],dy=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/(dx*dx+dy*dy)));distance=Math.min(distance,Math.hypot(x-a[0]-dx*t,y-a[1]-dy*t));}
  return distance;
 }
-/** Faixa livre da trilha até a saída sul. */
-const coastLane=(x:number,y:number)=>y>1980&&Math.abs(x-FIELDS_COAST_EXIT.x)<120||fieldsBridgePathDistance(x,y)<70||!!mapBridgeAt(FIELDS_BRIDGES,x,y);
 type Trail=readonly (readonly [number,number])[];
 const trailDistance=(paths:readonly Trail[],x:number,y:number)=>{
  let distance=Infinity;
@@ -45,15 +50,22 @@ const trailDistance=(paths:readonly Trail[],x:number,y:number)=>{
  * ids e posições continuem iguais aos dos saves antigos. */
 const ORIGINAL_TRAILS:readonly Trail[]=[[[1536,0],[1490,300],[1540,590],[1440,940],[1030,1330],[930,1780]],[[1440,940],[1850,1020],[2180,850],[2420,890]]];
 const originalPathDistance=(x:number,y:number)=>trailDistance(ORIGINAL_TRAILS,x,y);
-/** Trilha principal com o trecho novo até a saída sul, para a Costa. */
-const COAST_TRAIL:readonly Trail[]=[[[930,1780],[912,2304]]];
-export function fieldsPathDistance(x:number,y:number):number{return Math.min(originalPathDistance(x,y),trailDistance(COAST_TRAIL,x,y));}
+/** Trilhas que aparecem no chão: da chegada norte (x=816) até a ponte norte, da ponte até a
+ * trilha antiga e dela até a saída sul, para a Costa; e o ramal do galpão. */
+export const FIELDS_TRAILS:readonly Trail[]=[
+ [[816,0],[812,200],[870,360],[1010,500],[1180,556],[1282,548]],
+ [[1502,548],[1540,600],[1440,940],[1030,1330],[930,1780],[912,2304]],
+ [[1440,940],[1850,1020],[2180,850],[2420,890]],
+];
+export function fieldsPathDistance(x:number,y:number):number{return trailDistance(FIELDS_TRAILS,x,y);}
+/** Faixas livres das trilhas, das pontes e da saída sul. */
+const trailLane=(x:number,y:number)=>y>1980&&Math.abs(x-FIELDS_COAST_EXIT.x)<120||fieldsPathDistance(x,y)<70||fieldsBridgePathDistance(x,y)<70||!!mapBridgeAt(FIELDS_BRIDGES,x,y);
 let seed=93715;const random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
 export interface FieldProp extends TilePoint{id:string;texture:string;width:number;height:number;rx:number;ry:number;tree?:boolean}
 export const FIELDS_PROPS:FieldProp[]=[];
 const tree=(x:number,y:number,i:number)=>FIELDS_PROPS.push({id:`tree-${i}`,x,y,texture:`asset-tree-${i%3}`,width:150+i%4*8,height:190+i%4*10,rx:13,ry:9,tree:true});
 // Dense, irregular edges frame the meadow; only trunks obstruct movement.
-for(let i=0;i<96;i++){let x=0,y=0;const edge=i%4;if(edge===0){x=60+random()*2950;y=55+random()*130;}if(edge===1){x=60+random()*2950;y=2170+random()*100;}if(edge===2){x=40+random()*140;y=120+random()*2030;}if(edge===3){x=2890+random()*130;y=120+random()*2030;}if(y<260&&Math.abs(x-FIELDS_ENTRY.x)<160)continue;tree(x,y,i);}
+for(let i=0;i<96;i++){let x=0,y=0;const edge=i%4;if(edge===0){x=60+random()*2950;y=55+random()*130;}if(edge===1){x=60+random()*2950;y=2170+random()*100;}if(edge===2){x=40+random()*140;y=120+random()*2030;}if(edge===3){x=2890+random()*130;y=120+random()*2030;}if(y<260&&Math.abs(x-ORIGINAL_ENTRY_X)<160)continue;tree(x,y,i);}
 for(const [i,[x,y]]of [[430,420],[540,510],[610,400],[2460,390],[2570,490],[2490,560],[320,1410],[460,1480],[2440,1680],[2610,1770],[2510,1880],[1770,1880],[1840,2000],[1660,2040],[680,970],[740,1080]].entries())tree(x,y,i+100);
 for(let i=0;i<35;i++){const x=210+random()*2640,y=260+random()*1810;if(originalPathDistance(x,y)<100||Math.hypot(x-FIELDS_SHED.x,y-FIELDS_SHED.y)<210)continue;FIELDS_PROPS.push({id:`rock-${i}`,x,y,texture:'lake-rock-'+(i%3),width:42+i%3*13,height:42+i%3*13,rx:18+i%3*5,ry:10+i%3*3});}
 /** Grade de 128 px com os obstáculos de cada célula. Índice numérico: a consulta roda
@@ -90,12 +102,21 @@ for(const [i,p]of FIELDS_PROPS.filter(p=>p.tree&&p.y>280&&p.y<2100).entries())if
 // Rio e trilha da Costa (preview.45): a geração acima continua igual à das versões
 // anteriores (mesmos ids e posições de tufos, ervas e árvores salvos). Só depois tiramos o
 // que ficou dentro d'água, na margem ou na trilha da saída sul.
-for(let i=FIELDS_PROPS.length-1;i>=0;i--){const p=FIELDS_PROPS[i];if(fieldsRiverEdge(p.x,p.y)<p.rx+34||coastLane(p.x,p.y))FIELDS_PROPS.splice(i,1);}
+for(let i=FIELDS_PROPS.length-1;i>=0;i--){const p=FIELDS_PROPS[i];if(fieldsRiverEdge(p.x,p.y)<p.rx+34||trailLane(p.x,p.y))FIELDS_PROPS.splice(i,1);}
+// A antiga chegada (x=1536) deixou um vão na mata do norte; agora ele é só mata.
+for(const [i,[x,y]] of [[1560,118],[1655,82],[1640,196],[1520,40]].entries())FIELDS_PROPS.push({id:`tree-n${i}`,x,y,texture:`asset-tree-${i%3}`,width:150+i%4*8,height:190+i%4*10,rx:13,ry:9,tree:true});
 propCells.length=0;for(const p of FIELDS_PROPS)indexProp(p);
 /** Moitas que o rio e o caminho da Costa cobriram na preview.45. Os ids continuam reservados:
  * a migração apaga cortes antigos delas, e nenhum id novo reaproveita esses números. */
 export const FIELDS_RETIRED_PATCHES=new Set<string>();
-for(let i=MEADOW_PATCHES.length-1;i>=0;i--){const p=MEADOW_PATCHES[i];if(fieldsRiverEdge(p.x,p.y)<26||coastLane(p.x,p.y)){FIELDS_RETIRED_PATCHES.add(p.id);MEADOW_PATCHES.splice(i,1);}}
+for(let i=MEADOW_PATCHES.length-1;i>=0;i--){const p=MEADOW_PATCHES[i];if(fieldsRiverEdge(p.x,p.y)<26||trailLane(p.x,p.y)){FIELDS_RETIRED_PATCHES.add(p.id);MEADOW_PATCHES.splice(i,1);}}
+// O trecho norte da trilha antiga não leva mais a lugar nenhum: volta a ter capim, com ids novos
+// (`grass-n…`) e o mesmo padrão de densidade, sem mexer nos tufos que já existiam.
+{let s2=40517;const r2=()=>((s2=(Math.imul(s2,1664525)+1013904223)>>>0)/4294967296);let n=0;
+ for(let y=230;y<640;y+=41)for(let x=1320;x<1760;x+=44){const px=x+(r2()-.5)*30,py=y+(r2()-.5)*30,variant=Math.floor(r2()*3),size=42+r2()*14;
+  const density=Math.sin(px*.007+Math.cos(py*.006))*Math.cos(py*.009)+Math.sin(py*.004-px*.003)*.4;
+  if(originalPathDistance(px,py)>=65||density<-.28||r2()>.78||fieldsRiverEdge(px,py)<26||trailLane(px,py)||FIELDS_PROPS.some(p=>Math.hypot(px-p.x,py-p.y)<p.rx+32))continue;
+  MEADOW_PATCHES.push({id:`grass-n${n++}`,x:px,y:py,variant,size,kind:'grass',regrow:3});}}
 export const FIELDS_ANIMALS=[{id:'field-horse-1',kind:'horse',x:1904,y:1392},{id:'field-cow-1',kind:'cow',x:1020,y:1690},{id:'field-cow-2',kind:'cow',x:1150,y:1790},{id:'field-hen-1',kind:'chicken',x:2240,y:990},{id:'field-hen-2',kind:'chicken',x:2310,y:1080},{id:'field-hen-3',kind:'chicken',x:2160,y:1150},{id:'field-rabbit-1',kind:'rabbit',x:600,y:700},{id:'field-rabbit-2',kind:'rabbit',x:2600,y:1550}] as const;
 export const fieldPatch=(id:string)=>MEADOW_PATCHES.find(p=>p.id===id);
 export const fieldsSafe=(p:TilePoint)=>[[-8,-5],[8,-5],[-8,4],[8,4]].every(([dx,dy])=>!fieldsBlocked(p.x+dx,p.y+dy));

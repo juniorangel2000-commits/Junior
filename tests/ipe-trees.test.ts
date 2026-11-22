@@ -1,7 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import {createNewSave,validateSave,migrateSave} from '../src/systems/save';
 import {createCharacterProfile} from '../src/data/characters';
-import {FIELDS_IPES,FIELDS_RETIRED_PATCHES,IPE_HITS,IPE_REGROW_DAYS,MEADOW_PATCHES,FIELDS_SHED,FIELDS_ANIMALS,fieldsBlocked,fieldsSafe,fieldsPathDistance} from '../src/data/open-fields';
+import {FIELDS_ENTRY,FIELDS_IPES,FIELDS_RETIRED_PATCHES,IPE_HITS,IPE_REGROW_DAYS,MEADOW_PATCHES,FIELDS_SHED,FIELDS_ANIMALS,fieldsBlocked,fieldsSafe,fieldsPathDistance} from '../src/data/open-fields';
 import {chopIpe,ipeStanding,ipeHits,hardwoodYield} from '../src/systems/open-fields';
 import {syncToolInstances,activeToolCopy} from '../src/systems/tool-instances';
 import {configureTool} from '../src/systems/economy';
@@ -20,7 +20,8 @@ describe('ipês-amarelos dos Campos Abertos',()=>{
   expect(FIELDS_IPES).toHaveLength(6);
   // Patch ids from preview.33 saves must keep meaning the same moitas. The preview.45 river
   // retires a few of them, but never renumbers the others.
-  expect(MEADOW_PATCHES.length+FIELDS_RETIRED_PATCHES.size).toBe(1269);
+  const original=MEADOW_PATCHES.filter(p=>!p.id.startsWith('grass-n'));
+  expect(original.length+FIELDS_RETIRED_PATCHES.size).toBe(1269);
   for(const p of MEADOW_PATCHES)expect(FIELDS_RETIRED_PATCHES.has(p.id)).toBe(false);
   for(const p of FIELDS_IPES){
    expect(fieldsBlocked(p.x,p.y),p.id).toBe(true);
@@ -32,7 +33,7 @@ describe('ipês-amarelos dos Campos Abertos',()=>{
   }
  });
  it('can be reached on foot from the northern arrival',()=>{
-  const queue=[{x:96,y:9}],seen=new Set(['96,9']);
+  const start={x:Math.round(FIELDS_ENTRY.x/16),y:9},queue=[start],seen=new Set([`${start.x},${start.y}`]);
   for(let i=0;i<queue.length;i++){const p=queue[i];for(const[dx,dy]of[[0,1],[0,-1],[1,0],[-1,0]]){const q={x:p.x+dx,y:p.y+dy},key=`${q.x},${q.y}`;if(!seen.has(key)&&fieldsSafe({x:q.x*16,y:q.y*16})){seen.add(key);queue.push(q);}}}
   for(const p of FIELDS_IPES)expect(seen.has(`${Math.round(p.x/16)},${Math.round((p.y+40)/16)}`),p.id).toBe(true);
  });

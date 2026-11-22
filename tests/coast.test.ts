@@ -1,8 +1,9 @@
 import {existsSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {createCoastLayout,coastBaseWater,coastShoreDistance,COAST_ORIGINAL_OBJECTS,COAST_RIVER} from '../src/data/coast';
-import {FIELDS_COAST_EXIT,FIELDS_COAST_RETURN,FIELDS_RIVER,FIELDS_PROPS,FIELDS_ANIMALS,FIELDS_RETIRED_PATCHES,MEADOW_PATCHES,fieldsBlocked,fieldsPathDistance,fieldsRiverEdge,fieldsPlayerSafe,fieldsSafe,fieldsSolid,fieldsWater} from '../src/data/open-fields';
+import {FIELDS_COAST_EXIT,FIELDS_COAST_RETURN,FIELDS_RIVER,FIELDS_PROPS,FIELDS_ANIMALS,FIELDS_RETIRED_PATCHES,FIELDS_SIZE,FIELDS_TRAILS,MEADOW_PATCHES,fieldsBlocked,fieldsRiverEdge,fieldsPlayerSafe,fieldsSafe,fieldsSolid,fieldsWater} from '../src/data/open-fields';
 import {FIELDS_BRIDGES,mapBridgeAllowsStep} from '../src/data/bridges';
+import {riverBanksAt} from '../src/data/property-water';
 import {COAST_KINDS} from '../src/data/coast-art';
 import {createRailwayLayout} from '../src/data/railway';
 import {COAST_ENTRY,COAST_EXIT,tileMidpoint} from '../src/data/ruins-road';
@@ -30,6 +31,13 @@ describe('Costa das Marés',()=>{
     expect(layout.blocked(pos.x,pos.y)).toBe(false);
     // Sem estrada e sem trilho: a Estação não tem mais saída para a Costa.
     expect(createRailwayLayout().objects.some(o=>String(o.kind).startsWith('coast-'))).toBe(false);
+  });
+  it('o rio da Propriedade continua nos Campos na mesma posição e largura',()=>{
+    const bank=riverBanksAt(FIELDS_SIZE.height-1),left=bank.left,right=bank.right;
+    const enter=(x:number)=>fieldsWater(x,2);
+    expect(enter((left+right)/2)).toBe(true);
+    expect(enter(left+12)).toBe(true);expect(enter(right-12)).toBe(true);
+    expect(enter(left-24)).toBe(false);expect(enter(right+24)).toBe(false);
   });
   it('o rio dos Campos continua na Costa e deságua no mar',()=>{
     const [fx]=FIELDS_RIVER[FIELDS_RIVER.length-1],[cx]=COAST_RIVER[0];
@@ -96,7 +104,11 @@ describe('Rio dos Campos Abertos',()=>{
     expect(MEADOW_PATCHES.every(p=>!fieldsWater(p.x,p.y))).toBe(true);
     expect(new Set(MEADOW_PATCHES.map(p=>p.id)).size).toBe(MEADOW_PATCHES.length);
     for(const a of FIELDS_ANIMALS)expect(fieldsWater(a.x,a.y),a.id).toBe(false);
-    for(let y=0;y<2304;y+=48)expect(fieldsPathDistance(1536,y)<20||!fieldsWater(1536,y)).toBe(true);
+    // As trilhas nunca entram na água: o rio só é cruzado pelas pontes.
+    for(const trail of FIELDS_TRAILS)for(let i=1;i<trail.length;i++)for(let t=0;t<=1;t+=.05){
+      const x=trail[i-1][0]+(trail[i][0]-trail[i-1][0])*t,y=trail[i-1][1]+(trail[i][1]-trail[i-1][1])*t;
+      expect(fieldsRiverEdge(x,y),`${Math.round(x)},${Math.round(y)}`).toBeGreaterThan(20);
+    }
   });
   it('animais desviam da água; o jogador nada ou cruza pelas pontes, entrando pelas cabeceiras',()=>{
     const p={x:FIELDS_RIVER[2][0],y:FIELDS_RIVER[2][1]};
