@@ -9,7 +9,7 @@ import { setupTreeWind } from '../tree-wind';
 import { SwampWorld, preloadSwamp } from '../swamp-world';
 import { SWAMP_SIZE, swampEntry, swampExit, tileCenter, FOREST_SWAMP_RETURN } from '../data/swamp';
 import { RuinsWorld, preloadRuins } from '../ruins-world';
-import { RuinsCellarWorld } from '../ruins-cellar-world';
+import { RuinsCellarWorld, preloadRuinsCellar } from '../ruins-cellar-world';
 import { RUINS_SIZE } from '../data/ruins';
 import { RUINS_CELLAR_ENTRY, RUINS_CELLAR_EXIT, RUINS_CELLAR_SIZE } from '../data/ruins-cellar';
 import { ruinsHasWetTraces } from '../data/ruins-story';
@@ -79,7 +79,11 @@ export class TrailScene extends Phaser.Scene {
   private readonly bentoRuntime={missions:this.missions,write:bentoSceneWriter(()=>this.snapshotState(),saveGame)};
 
   constructor(private readonly area:keyof typeof TRAILS){super(TRAILS[area].scene);this.trail=TRAILS[area];}
-  preload():void{this.trail.preload(this);}
+  preload():void{
+    const data=this.sys.settings.data as TrailStart|undefined;
+    if(this.area==='ruins'&&data?.save?.ruinsCellarPosition)preloadRuinsCellar(this);
+    else this.trail.preload(this);
+  }
   getGroundItemRuntime(){return this.player?this.grounds:undefined;}
   getMineMissionRuntime=()=>this.missions;
   getFishingState=()=>this.state;
@@ -102,7 +106,7 @@ export class TrailScene extends Phaser.Scene {
     const valid=saved&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!this.movementBlockedPoint(saved.x+dx,saved.y+dy));
     const start=valid?saved:tileCenter(this.inHome?RUINS_CELLAR_ENTRY:this.trail.entry(edits));
     this.player=new Player(this,this.state.profile,start.x,start.y,this.area+'-player');
-    const facing=this.inHome?'up':this.trail.arrival;
+    const facing=this.inHome?'down':this.trail.arrival;
     this.player.facing=directionVector(valid?saved.direction??facing:facing);
     this.player.update(0,this.tileBlocked,this.movementBlockedPoint,false,this.swimmingPoint);
     this.daylight=new Daylight(this,width,height);
@@ -166,7 +170,7 @@ export class TrailScene extends Phaser.Scene {
     const cardinal={up:'norte',down:'sul',left:'oeste',right:'leste'}[exitSignLayout(exit,trail.entry(edits)).direction];
     const prompt=player.isSwimming?'Siga até a margem para sair da água.':
       landmark?(landmark.cellar&&state.ruinsMapFound?'E · Descer ao porão':`E · Examinar ${landmark.name.toLowerCase()}`):
-      this.inHome?'Suba os degraus ao sul para voltar ao armazém.':
+      this.inHome?'Suba os degraus ao norte para voltar ao armazém.':
       Math.hypot(player.x-gate.x,player.y-gate.y)<144?`${trail.returnName} ao ${cardinal}`:
       fishing?'Pescar na margem · E':trail.prompt;
     this.ui.updateHUD({
@@ -286,7 +290,7 @@ export class TrailScene extends Phaser.Scene {
   private changeCellar(enter:boolean):void {
     if(this.leaving||enter&&blockMountedEntry(this.player,this.ui))return;
     const save=structuredClone(this.snapshotState());
-    if(enter)save.ruinsCellarPosition={...tileCenter(RUINS_CELLAR_ENTRY),direction:'up'};
+    if(enter)save.ruinsCellarPosition={...tileCenter(RUINS_CELLAR_ENTRY),direction:'down'};
     else delete save.ruinsCellarPosition;
     if(!saveGame(save)){this.ui.toast('Não foi possível salvar antes de atravessar a escada.');return;}
     this.leaving=true;this.blur();this.cameras.main.fadeOut(SCENE_FADE_MS);

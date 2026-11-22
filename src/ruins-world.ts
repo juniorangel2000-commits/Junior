@@ -23,7 +23,6 @@ export function preloadRuins(scene:Phaser.Scene):void {
   preloadCityRoadArt(scene);
   for(const kind of RUIN_KINDS)if(!scene.textures.exists(kind))
     scene.load.image(kind,`assets/visual/ruins/${kind.slice(5)}.png`);
-  if(!scene.textures.exists('ruins-bronze-seal'))scene.load.image('ruins-bronze-seal','assets/visual/ruins/bronze-seal.png');
 }
 
 function drawGround(scene:Phaser.Scene):void {

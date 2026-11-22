@@ -136,7 +136,7 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.communityInterior!==undefined&&(value.activeArea!=='village'||!communityReady(value as unknown as SaveData)||value.merchantInterior!==undefined||value.blacksmithInterior!==undefined||!validCommunityInterior(value.communityInterior)))return false;
   if(value.worldWeapon!==undefined&&!['sword','unarmed'].includes(value.worldWeapon as string))return false;
   if(value.ruinsMapEdits!==undefined&&(!validateMapEdits(value.ruinsMapEdits)||value.ruinsMapEdits.area!=='ruins'))return false;
-  if(value.ruinsCellarPosition!==undefined&&(!isRecord(value.ruinsCellarPosition)||value.activeArea!=='ruins'||value.ruinsMapFound!==true||!finite(value.ruinsCellarPosition.x,61,RUINS_CELLAR_SIZE.width-61)||!finite(value.ruinsCellarPosition.y,139,RUINS_CELLAR_SIZE.height-31)||(value.ruinsCellarPosition.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(value.ruinsCellarPosition.direction as CharacterDirection))))return false;
+  if(value.ruinsCellarPosition!==undefined&&(!isRecord(value.ruinsCellarPosition)||value.activeArea!=='ruins'||value.ruinsMapFound!==true||!finite(value.ruinsCellarPosition.x,60,RUINS_CELLAR_SIZE.width-60)||!finite(value.ruinsCellarPosition.y,104,RUINS_CELLAR_SIZE.height-31)||(value.ruinsCellarPosition.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(value.ruinsCellarPosition.direction as CharacterDirection))))return false;
   if(value.ruinsSealFound!==undefined&&value.ruinsSealFound!==true)return false;
   if(value.ruinsSealIdentified!==undefined&&(value.ruinsSealIdentified!==true||value.ruinsSealFound!==true))return false;
   if(value.ruinsMapFound!==undefined&&value.ruinsMapFound!==true)return false;
