@@ -8,6 +8,8 @@ const outbuildings = read('entreposto');
 const foundations = read('fundacoes');
 const landmarks = read('marcos');
 const cellar = read('porao');
+const cellarStone = read('porao-estrutura');
+const cellarFurniture = read('porao-moveis');
 
 const grid = (source, names, columns) => names.map((name, index) => {
   const col = index % columns;
@@ -27,6 +29,13 @@ const pieces = [
   ['sundial', outbuildings, 1032, 512, 1536, 1024],
   ...grid(foundations, ['window','hearth','trough','ring','wall-break','gateposts','cistern','toll'], 4),
   ...grid(landmarks, ['planter','bell','bench','column-bases','marker','cargo','amphora','lintel'], 4),
+  ['cellar-back-wall', cellarStone, 0, 0, 530, 512],
+  ['cellar-side-wall', cellarStone, 680, 0, 860, 512],
+  ['cellar-sill', cellarStone, 985, 0, 1536, 512],
+  ['cellar-floor', cellarStone, 0, 512, 512, 1024],
+  ['cellar-stairs', cellarStone, 512, 512, 1024, 1024],
+  ['cellar-rubble', cellarStone, 1024, 512, 1536, 1024],
+  ...grid(cellarFurniture, ['cellar-shelf','cellar-barrels','cellar-desk','cellar-lantern','cellar-broken-shelf','cellar-sacks','cellar-crates','cellar-drain'], 4),
   ['hatch', cellar, 0, 0, 900, cellar.height],
   ['bronze-seal', cellar, 900, 0, cellar.width, cellar.height],
   ['well', outpost, 0, 0, 570, 640],
