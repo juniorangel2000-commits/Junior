@@ -8,6 +8,7 @@ import {villageBlockedAt,villagePointBlocked} from '../src/data/village';
 import {freeArrival} from '../src/systems/actor-arrival';
 import {createNewSave,validateSave} from '../src/systems/save';
 import {advanceClock,GAME_MINUTES_PER_SECOND} from '../src/systems/clock';
+import {quietVisitDay} from './helpers/quiet-day';
 
 const ids=Object.keys(MERCHANT_VISITS) as RoutineId[];
 const rooms=new Map(ids.map(id=>[id,id==='bento'?smithNavigation(createSmithLayout()):merchantRoomNavigation(id,createMerchantLayout(id))]));
@@ -43,7 +44,7 @@ describe('individual shop visits and closed-door access',()=>{
   for(const id of ids){const close=MERCHANT_DAILY_PLAN.closing[id];for(const time of [0,479,close,1439]){expect(merchantMayEnter(id,{day:1,time})).toBe(false);for(const actor of ids)expect(merchantMayEnter(id,{day:1,time},actor)).toBe(actor===id);}expect(merchantMayEnter(id,{day:1,time:480})).toBe(true);expect(merchantMayEnter(id,{day:1,time:close-1})).toBe(true);}
  });
  it.each(ids)('%s has time to arrive when the real game clock advances',id=>{
-  const {r,env}=fixture(id),plan=MERCHANT_VISITS[id];let clock={day:2,time:plan.start},arrived=false;
+  const {r,env}=fixture(id),plan=MERCHANT_VISITS[id];let clock={day:quietVisitDay(id),time:plan.start},arrived=false;
   while(clock.time<plan.end){r.step(.1,clock,env);if(r.conversation(clock)){arrived=true;break;}clock=advanceClock(clock,.1*GAME_MINUTES_PER_SECOND);}
   expect(arrived,id+' '+r.activity+' '+JSON.stringify(r.state)).toBe(true);
  });

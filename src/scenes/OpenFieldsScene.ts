@@ -35,6 +35,7 @@ import {playerSpeedFactor} from '../systems/food-effects';
 import {placeHiveTrap,collectHiveTrap,nearTrap,trapHint} from '../systems/beekeeping';
 import {createFishingCast} from '../fishing-cast';
 import {fishAtBank} from '../fishing-ui';
+import {NpcOutingVisit} from '../npc-outing-visit';
 interface FieldsStart{save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 type FieldSwing = GatherAction<'sickle' | 'hatchet'> & { id: string };
 export class OpenFieldsScene extends Phaser.Scene{
@@ -63,12 +64,16 @@ export class OpenFieldsScene extends Phaser.Scene{
   else if(lostOnArrival)this.ui.toast('Faltou cesta em um dia: a confiança do cavalo voltou a zero.');
   this.input.keyboard!.on('keydown',this.key,this);this.input.on('wheel',this.wheel,this);this.input.on('pointerdown',this.pointer,this);this.scale.on('resize',this.applyCamera,this);
   window.addEventListener('pagehide',this.save);window.addEventListener('beforeunload',this.save);window.addEventListener('blur',this.blur);document.addEventListener('visibilitychange',this.visibility);
-  this.events.once('shutdown',()=>{this.toolVisual.hide();this.daylight.destroy();this.input.keyboard?.off('keydown',this.key,this);this.input.off('wheel',this.wheel,this);this.input.off('pointerdown',this.pointer,this);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
+  this.outings=new NpcOutingVisit(this,'openFields',{state:()=>this.state,snapshot:()=>this.snapshotState(),player:()=>this.player,pause:value=>{this.setPaused(value);this.updateHUD();},syncInventory:inventory=>{this.state.inventory=inventory;this.updateHUD();}});
+  this.events.once('shutdown',()=>{this.outings?.destroy();this.outings=undefined;this.toolVisual.hide();this.daylight.destroy();this.input.keyboard?.off('keydown',this.key,this);this.input.off('wheel',this.wheel,this);this.input.off('pointerdown',this.pointer,this);this.scale.off('resize',this.applyCamera,this);window.removeEventListener('pagehide',this.save);window.removeEventListener('beforeunload',this.save);window.removeEventListener('blur',this.blur);document.removeEventListener('visibilitychange',this.visibility);});
   installWorldCompanion(this,()=>({save:this.state,player:this.player,area:'openFields',space:'outdoors',bounds:FIELDS_SIZE,blockedPoint:fieldsBlocked,enabled:true,canMove:!this.paused&&!this.leaving&&!this.ui.isModalOpen()&&!document.hidden}),this.ui,()=>this.persist());
   if(resumeCoast)this.enterCoast(true);else this.persist();
  }
  /** O jogador atravessa o rio nadando; as pontes só se entram pelas cabeceiras. */
  private blockedTile=(x:number,y:number)=>fieldsSolid(x*32+16,y*32+16);
+ /** Moradores que vieram trabalhar nos Campos (src/systems/npc-outings.ts). */
+ private outings?:NpcOutingVisit;
+ private solidPoint=(x:number,y:number)=>fieldsSolid(x,y)||!!this.outings?.blocks(x,y);
  private swimmingPoint=(x:number,y:number)=>sampleWaterDepth(fieldsWater,x,y);
  private allowStep=(x:number,y:number)=>mapBridgeAllowsStep(FIELDS_BRIDGES,this.player.x,this.player.y,x,y,fieldsWater);
  private nearFishing():boolean{
@@ -127,9 +132,10 @@ export class OpenFieldsScene extends Phaser.Scene{
   const h=this.horseNear();if(!h){if(this.state.animalEscort)this.ui.toast('Você já está conduzindo um animal.');return;}
   this.snapshotState();const r=startHorseEscort(this.state,h.brain.snapshot());if(r.ok)saveGame(this.state);this.ui.toast(r.message);this.updateHUD();
  }
- private updateHUD():void{if(!this.player)return;const ipe=this.trapNear()?undefined:this.ipeTarget(),horse=ipe?undefined:this.horseNear()??(this.state.animalEscort?.id===HORSE_ID?this.world.horse:undefined),hp=horse?this.horsePrompt():!ipe&&this.trapNear()?{text:trapHint(this.state,this.trapNear()!),key:'E' as const}:!ipe&&this.basketNear()?{text:'Cesta para o cavalo · E recolher',key:'E' as const}:undefined,p=ipe||hp?undefined:this.target();this.ui.updateHUD({itemQuality:this.state.itemQuality,area:'openFields',worldMapSize:{width:96,height:72},worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',inHome:false,swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:ipe||p?'E':hp?hp.key:this.fishingItemAtBank()?'E':null,prompt:ipe?this.ipePrompt():hp?hp.text:p?p.kind==='grass'?'Cortar capim com a foice':'Colher '+(p.kind==='herb'?'ervas':'cogumelos'):this.fieldsHint(),location:'Campos Abertos',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});this.ui.updateCameraZoom(this.shownZoom,!this.paused);}
+ private updateHUD():void{if(!this.player)return;const resident=this.player.isSwimming?undefined:this.outings?.nearName(),ipe=this.trapNear()?undefined:this.ipeTarget(),horse=ipe?undefined:this.horseNear()??(this.state.animalEscort?.id===HORSE_ID?this.world.horse:undefined),hp=horse?this.horsePrompt():!ipe&&this.trapNear()?{text:trapHint(this.state,this.trapNear()!),key:'E' as const}:!ipe&&this.basketNear()?{text:'Cesta para o cavalo · E recolher',key:'E' as const}:undefined,p=ipe||hp?undefined:this.target();this.ui.updateHUD({itemQuality:this.state.itemQuality,area:'openFields',worldMapSize:{width:96,height:72},worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',inHome:false,swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:resident||ipe||p?'E':hp?hp.key:this.fishingItemAtBank()?'E':null,prompt:resident?`E · Conversar com ${resident}`:ipe?this.ipePrompt():hp?hp.text:p?p.kind==='grass'?'Cortar capim com a foice':'Colher '+(p.kind==='herb'?'ervas':'cogumelos'):this.fieldsHint(),location:'Campos Abertos',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});this.ui.updateCameraZoom(this.shownZoom,!this.paused);}
  private interact():void{
   if(this.swing.active||this.paused||this.leaving||this.player.isSwimming||this.ui.isModalOpen())return;
+  if(this.outings?.interact())return;
   const trap=this.trapNear();if(trap&&!this.horseNear()){this.snapshotState();const r=collectHiveTrap(this.state,trap.id,saveGame);this.ui.toast(r.message);if(r.ok)gameAudio.play('pickup');this.updateHUD();return;}
   if(this.basketNear()&&!this.horseNear()){this.snapshotState();const r=pickUpBasket(this.state,saveGame);if(r.message)this.ui.toast(r.message);this.updateHUD();return;}
   const horse=this.ipeTarget()?undefined:this.horseNear(),t=horseTaming(this.state);
@@ -228,7 +234,7 @@ export class OpenFieldsScene extends Phaser.Scene{
   const next=structuredClone(this.snapshotState());if(!title){next.activeArea='property';next.player={...PROPERTY_FIELDS_RETURN};if(escorting)transferHorseToProperty(next,PROPERTY_FIELDS_RETURN);}if(!saveGame(next)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}this.leaving=true;this.swing.cancel();this.toolVisual.hide();this.cameras.main.fadeOut(SCENE_FADE_MS);this.time.delayedCall(SCENE_FADE_MS,()=>{this.scene.stop();this.onReturn(next,title);});}
  update(_time:number,ms:number):void{
   if(!this.player||this.leaving)return;this.daylight.update(this.state.time,false,this.state.day);if(this.paused||this.ui.isModalOpen()||document.hidden){if(this.swing.active){this.swing.cancel();this.toolVisual.hide();}return;}
-  const dt=Math.min(.1,ms/1000),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.keepDry=!!this.state.animalEscort;this.player.update(dt,this.blockedTile,fieldsSolid,!this.swing.active,this.swimmingPoint,this.allowStep);this.player.sprite.setDepth(this.player.y);
+  const dt=Math.min(.1,ms/1000),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.keepDry=!!this.state.animalEscort;this.player.update(dt,this.blockedTile,this.solidPoint,!this.swing.active,this.swimmingPoint,this.allowStep);this.player.sprite.setDepth(this.player.y);
   if(this.passage.update(before,this.player,FIELDS_EXIT)){this.leave();return;}
   if(!this.player.isSwimming&&this.coastPassage.update(before,this.player,FIELDS_COAST_EXIT)){this.enterCoast();return;}
   const impact=this.swing.advance(dt);

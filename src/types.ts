@@ -93,6 +93,8 @@ export interface SaveData {
   npcStories?:Partial<Record<string,number>>;
   /** Dia em que o jogador recebeu o presente da visita de um morador à propriedade. */
   propertyVisitDay?:number;
+  /** Dia em que cada morador deu o presente da saída a um cenário (src/systems/npc-outings.ts). */
+  npcOutingGifts?:Partial<Record<string,number>>;
   mineMissions?:import('./systems/mine-mission-state').MineMissionsState;
   mineRescue?:import('./systems/mine-rescue-state').MineRescueState;
   bentoExpedition?:import('./systems/bento-expedition-state').BentoExpeditionState;

@@ -12,6 +12,7 @@ import type {GameClock} from './clock';
 import {MERCHANT_VISITS} from '../data/merchant-visits';
 import {MERCHANT_LUNCHES,merchantLunchHours} from '../data/merchant-lunches';
 import {visitingProperty,PROPERTY_VISIT} from './property-visits';
+import {onOuting,outingMessage} from './npc-outings';
 import {villageExtra,restDay,restDays,INN_GUESTS,STROLL,type VillageExtra} from '../data/village-schedule';
 
 export type RoutineId='augusto'|'bento'|'rosa'|'tobias'|'amelia'|'nilo'|'celina'|'damiao'|'helena'|'icaro';
@@ -33,7 +34,7 @@ export const dailyMerchant=(id:ResidentId):id is RoutineId=>id==='augusto'||id==
 /** Com `day`, considera também a folga semanal (loja fechada o dia todo). */
 export function merchantPeriod(id:RoutineId,time:number,day?:number):'work'|'break'|'closed'{
  const p=MERCHANT_DAILY_PLAN;
- if(day!==undefined&&restDay(id,day))return'closed';
+ if(day!==undefined&&(restDay(id,day)||onOuting(id,{day,time})))return'closed';
  const lunch=MERCHANT_LUNCHES[id];
  return time<p.opening||time>=p.closing[id]?'closed':time>=lunch.start&&time<lunch.end?'break':'work';
 }
@@ -97,6 +98,7 @@ export class MerchantDailyRoutine {
   if(this.owner==='bento'&&(bentoTravelling(clock)||'profile'in clock&&bentoTripPending(clock as SaveData)))return{message:bentoTravelling(clock)?bentoAvailability(clock).message:'Bento vai preparar a viagem à mina. Aguarde o retorno para pedir atendimento.',canGuide:false};
   if(this.owner==='damiao'&&damiaoAtLake(clock))return{message:'Na cabana do lago · '+FISHER_LAKE_HOURS.label,canGuide:false};
   const lunch=merchantLunchHours(this.owner),extra=this.extra(clock),off=restDay(this.owner,clock.day),days=restDays(this.owner);
+  const outing=onOuting(this.owner,clock);if(outing)return{message:outingMessage(outing),canGuide:false};
   if(visitingProperty(this.owner,clock))return{message:`Visitando a sua propriedade · volta à vila às ${String(Math.floor(PROPERTY_VISIT.end/60)).padStart(2,'0')}:${String(PROPERTY_VISIT.end%60).padStart(2,'0')}`,canGuide:false};
   if(off)return{message:extra==='inn'?'Folga hoje · na pousada da Helena por causa da chuva':extra==='stroll'?'Folga hoje · passeando pela vila':'Folga hoje · loja fechada',canGuide:false};
   if(extra==='inn'&&this.owner!=='helena')return{message:clock.time>=MERCHANT_DAILY_PLAN.closing[this.owner]?'Jantando na pousada da Helena · até as 21:00':`Almoço na pousada (chuva) · volta às ${lunch.end}`,canGuide:false};
@@ -151,7 +153,7 @@ export class MerchantDailyRoutine {
   if(Number.isFinite(seconds)&&seconds>0)s.updatedAt=absolute(clock);
   if(this.owner==='damiao'&&damiaoAtLake(clock))return{...s,phase,moving,transferred};
   if(this.external||this.owner==='bento'&&bentoTravelling(clock))return{...s,phase,moving,transferred};
-  if(this.conversationHeld||visitingProperty(this.owner,clock))return{...s,phase,moving,transferred};
+  if(this.conversationHeld||visitingProperty(this.owner,clock)||onOuting(this.owner,clock))return{...s,phase,moving,transferred};
   if(!Number.isFinite(seconds)||seconds<=0)return{...s,phase,moving,transferred};seconds=Math.min(seconds,.1);
   const now=absolute(clock),period=merchantPeriod(this.owner,clock.time,clock.day),extra=this.extra(clock);
   const inn=extra==='inn'&&this.owner!=='helena'&&merchantMayEnter('helena',clock,this.owner);

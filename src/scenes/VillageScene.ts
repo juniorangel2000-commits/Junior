@@ -26,6 +26,7 @@ import {advanceFisherTravel} from '../systems/fisher-travel';
 import {createFishingCast} from '../fishing-cast';
 import {damiaoAtLake} from '../data/fisher-schedule';
 import {visitingProperty} from '../systems/property-visits';
+import {onOuting,outingMessage} from '../systems/npc-outings';
 import {sampleWaterDepth} from '../swimming';
 import {setupTreeWind} from '../tree-wind';
 import {preloadVillagePeople} from '../economy-art';
@@ -266,7 +267,7 @@ export class VillageScene extends Phaser.Scene {
   }
  }
  private spaceActors(id:RoutineId,area:RoutineArea,room:RoutineId):{x:number;y:number}[]{
-  const actors=[...this.routines].filter(([other,r])=>other!==id&&!(other==='bento'&&this.state.bentoTravel?.trip)&&!(other==='damiao'&&damiaoAtLake(this.state))&&!visitingProperty(other,this.state)&&r.state.area===area&&(area==='village'||r.roomOwner===room)).map(([,r])=>({x:r.state.x,y:r.state.y}));
+  const actors=[...this.routines].filter(([other,r])=>other!==id&&!(other==='bento'&&this.state.bentoTravel?.trip)&&!(other==='damiao'&&damiaoAtLake(this.state))&&!visitingProperty(other,this.state)&&!onOuting(other,this.state)&&r.state.area===area&&(area==='village'||r.roomOwner===room)).map(([,r])=>({x:r.state.x,y:r.state.y}));
   const trip=this.state.bentoTravel?.trip;if(id!=='bento'&&trip&&(area==='village'?trip.area==='village':trip.area==='shop'&&room==='bento'))actors.push({x:trip.x,y:trip.y});
   if(this.player&&(area==='shop'?this.roomOwner===room:!this.inShop))actors.push({x:this.player.x,y:this.player.y});return actors;
  }
@@ -493,7 +494,7 @@ export class VillageScene extends Phaser.Scene {
  }
  private sameRoom(npc:Villager):boolean {
   const trip=this.state.bentoTravel?.trip;if(npc.data.id==='bento'&&trip)return trip.area==='village'?!this.inShop:trip.area==='shop'&&this.inBlacksmith;
-  if(npc.data.id==='damiao'&&damiaoAtLake(this.state)||visitingProperty(npc.data.id,this.state))return false;
+  if(npc.data.id==='damiao'&&damiaoAtLake(this.state)||visitingProperty(npc.data.id,this.state)||onOuting(npc.data.id,this.state))return false;
   const routine=this.routines.get(npc.data.id);return !!routine&&(routine.state.area==='village'?!this.inShop:this.roomOwner===routine.roomOwner);
  }
  private closedDoorAt(x:number,y:number):boolean {
@@ -503,6 +504,7 @@ export class VillageScene extends Phaser.Scene {
  private closedDoorMessage():string|undefined {
   if(this.inShop)return;
   const npc=VILLAGE_NPCS.find(n=>!merchantMayEnter(n.id,this.state)&&Math.hypot(this.player.x-merchantDoor(n.id).x,this.player.y-merchantDoor(n.id).y)<70);
+  const away=npc&&onOuting(npc.id,this.state);if(away)return'Fechado · '+npc!.role+' · '+outingMessage(away);
   if(npc)return npc.id==='bento'?bentoAvailability(this.state).message:'Fechado · '+npc.role+' · abre às 08:00';
  }
  private setBlacksmithRoom(inside:boolean,position?:SaveData['blacksmithInterior']):void {

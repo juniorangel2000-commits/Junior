@@ -6,10 +6,11 @@ import {MerchantConversations} from '../src/systems/merchant-conversations';
 import {MerchantDailyRoutine,merchantPeriod,MERCHANT_DAILY_PLAN,type RoutineId,type RoutineEnvironment} from '../src/systems/merchant-routine';
 import {MERCHANT_LUNCHES,PLAZA_CONVERSATIONS} from '../src/data/merchant-lunches';
 import {GAME_MINUTES_PER_SECOND,advanceClock} from '../src/systems/clock';
+import {quietDay} from './helpers/quiet-day';
 
 const env:RoutineEnvironment={blocked:()=>false,fits:()=>true,arrival:(_area,p)=>p};
 function plazaPair(pair:readonly RoutineId[]){
- const time=MERCHANT_LUNCHES[pair[0]].start+5,clock={day:2,time};
+ const time=MERCHANT_LUNCHES[pair[0]].start+5,clock={day:quietDay(...pair),time};
  const routines=new Map(pair.map(id=>{
   const p=MERCHANT_DAILY_PLAN.plaza[id];
   const r=new MerchantDailyRoutine(id,{x:(p.x+.5)*32,y:(p.y+.5)*32,direction:'down',shop:false},{isBlocked:()=>false});

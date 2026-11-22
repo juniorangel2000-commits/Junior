@@ -50,6 +50,9 @@ import { fishAtBank } from '../fishing-ui';
 import { createFishingCast } from '../fishing-cast';
 import { DEVELOPMENT_TOOLS } from '../development-tools';
 import type { MapEditData } from '../systems/map-editor';
+import {NpcOutingVisit} from '../npc-outing-visit';
+import type {OutingArea} from '../systems/npc-outings';
+const OUTING_AREAS:readonly OutingArea[]=['orchard','swamp','ruins','railway','coast'];
 
 const TRAILS={
   swamp:{scene:'Pantano',map:'swampMapEdits',position:'swampPosition',size:SWAMP_SIZE,
@@ -95,7 +98,9 @@ export class TrailScene extends Phaser.Scene {
   private get interiorEntry(){return this.area==='railway'?RAILWAY_HALL_ENTRY:RUINS_CELLAR_ENTRY;}
   private get interiorExit(){return this.area==='railway'?RAILWAY_HALL_EXIT:RUINS_CELLAR_EXIT;}
   private get interiorName(){return this.area==='railway'?'Sala de espera':'Porão do posto';}
-  readonly movementBlockedPoint=(x:number,y:number)=>this.world.layout.blocked(x,y);
+  readonly movementBlockedPoint=(x:number,y:number)=>this.world.layout.blocked(x,y)||!!this.outings?.blocks(x,y);
+  /** Moradores que vieram trabalhar neste cenário (src/systems/npc-outings.ts). */
+  private outings?:NpcOutingVisit;
   private readonly tileBlocked=(x:number,y:number)=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
   readonly swimmingPoint=(x:number,y:number)=>this.world instanceof CoastWorld
     ?this.world.swimmingDepth(x,y):sampleWaterDepth(this.world.layout.inWater,x,y);
@@ -184,12 +189,17 @@ export class TrailScene extends Phaser.Scene {
         enabled:true,canMove:this.canPlay(),
       }),this.ui,this.persist);
     }
+    if(!this.inHome&&OUTING_AREAS.includes(this.area as OutingArea))this.outings=new NpcOutingVisit(this,this.area as OutingArea,{
+      state:()=>this.state,snapshot:()=>this.snapshotState(),player:()=>this.player,
+      pause:value=>{this.setPaused(value);this.updateHUD();},syncInventory:inventory=>this.syncInventory(inventory),
+    });
     this.scale.on('resize',this.applyCamera);
     window.addEventListener('pagehide',this.persist);
     window.addEventListener('beforeunload',this.persist);
     window.addEventListener('blur',this.blur);
     document.addEventListener('visibilitychange',this.visibility);
     this.events.once('shutdown',()=>{
+      this.outings?.destroy();this.outings=undefined;
       if(!(this.world instanceof RuinsCellarWorld))this.world.destroy();
       this.daylight.destroy();
       this.input.keyboard?.off('keydown',this.key,this);
@@ -246,12 +256,13 @@ export class TrailScene extends Phaser.Scene {
   private updateHUD():void {
     if(!this.player)return;
     const {state,player,trail}=this,edits=state[trail.map],exit=trail.exit(edits),gate=tileCenter(exit);
-    const fruit=this.nearbyFruit(),landmark=this.nearbyLandmark();
+    const fruit=this.nearbyFruit(),landmark=this.nearbyLandmark(),resident=this.player.isSwimming?undefined:this.outings?.nearName();
     if(this.world instanceof OrchardWorld)this.world.showFruits(state.day,state.orchardHarvest);
     const road=this.outgoingRoad,nextGate=road&&tileCenter(road.exit);
     const fishing=this.nearFishing()&&!!this.equippedFishingItem();
     const cardinal={up:'norte',down:'sul',left:'oeste',right:'leste'}[exitSignLayout(exit,trail.entry(edits)).direction];
     const prompt=player.isSwimming?'Siga até a margem para sair da água.':
+      resident?`E · Conversar com ${resident}`:
       fruit?`E · Recolher ${ITEM_NAMES[fruit.item].toLowerCase()}`:
       landmark?(landmark.cellar&&state.ruinsMapFound?'E · Descer ao porão':landmark.hall?'E · Entrar na sala de espera':`E · Examinar ${landmark.name.toLowerCase()}`):
       this.inHome?(this.area==='railway'?'A porta ao sul leva de volta à plataforma.':'Suba os degraus ao norte para voltar ao armazém.'):
@@ -264,7 +275,7 @@ export class TrailScene extends Phaser.Scene {
       tool:state.equippedTool??'hand',worldWeapon:state.worldWeapon,learnedRecipes:state.villageProgress?.recipes??[],
       inHome:this.inHome,swimming:player.isSwimming,coins:state.villageEconomy?.coins??0,vigor:state.villageProgress?.vigor??100,
       wateringCan:!!state.homeSupplies?.wateringCan,wateringCanWater:state.wateringCanWater??0,
-      playerTile:{x:player.x/32,y:player.y/32},interactionKey:fruit||landmark||fishing?'E':null,prompt,location:AREA_NAMES[this.area],
+      playerTile:{x:player.x/32,y:player.y/32},interactionKey:resident||fruit||landmark||fishing?'E':null,prompt,location:AREA_NAMES[this.area],
       ...(this.inHome?{mapTitle:this.interiorName,location:this.interiorName,interiorMapSize:{width:this.mapSize.width/32,height:this.mapSize.height/32}}:{}),
       ...(this.area==='coast'||this.area==='orchard'?{mapTitle:AREA_NAMES[this.area]}:{}),
       harvests:state.inventory.turnip,metLia:state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',
@@ -294,6 +305,7 @@ export class TrailScene extends Phaser.Scene {
     return this.world.fruitNear(this.player,this.state.day,this.state.orchardHarvest);
   }
   private interact():void {
+    if(!this.player.isSwimming&&this.outings?.interact())return;
     const fruit=this.nearbyFruit();
     if(fruit){
       this.ui.toast(collectOrchardFruit(this.snapshotState(),fruit,this.player,saveGame));

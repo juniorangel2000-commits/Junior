@@ -11,6 +11,8 @@ import {villageBlockedAt,villagePointBlocked} from '../src/data/village';
 import {freeArrival} from '../src/systems/actor-arrival';
 import {createNewSave,validateSave} from '../src/systems/save';
 import type {SmithLayout} from '../src/systems/smith-layout';
+import {quietDay} from './helpers/quiet-day';
+const DAY=quietDay('nilo');
 
 describe('Nilo antique shop',()=>{
  it('has sixteen independent objects and a connected wood-floor shop',()=>{
@@ -32,8 +34,8 @@ describe('Nilo antique shop',()=>{
   const nav=merchantRoomNavigation('nilo'),r=new MerchantDailyRoutine('nilo',{...merchantOutside('nilo'),direction:'down',shop:false},nav,undefined,6);
   const scenery=(area:string,x:number,y:number)=>area==='shop'?!nav.validPosition!(x,y):[[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>villagePointBlocked(x+dx,y+dy));
   const env={cellBlocked:(a:string,x:number,y:number)=>a==='shop'?nav.cellBlocked!(x,y):villageBlockedAt(x,y),blocked:(a:string,x:number,y:number)=>a==='shop'?nav.isBlocked(x,y):villageBlockedAt(x,y),fits:(a:string,x:number,y:number)=>!scenery(a,x,y),arrival:(a:string,p:{x:number;y:number})=>freeArrival(p,(x,y)=>scenery(a,x,y),[])};
-  const phases=new Set<number>(),walk=(time:number,count:number)=>{for(let i=0;i<count;i++){const step=r.step(.1,{day:2,time},env);if(step.moving)phases.add(step.phase);expect(scenery(r.state.area,r.state.x,r.state.y)).toBe(false);}};
-  walk(540,500);expect(r.state.area).toBe('shop');expect(r.isServing({day:2,time:540})).toBe(true);
+  const phases=new Set<number>(),walk=(time:number,count:number)=>{for(let i=0;i<count;i++){const step=r.step(.1,{day:DAY,time},env);if(step.moving)phases.add(step.phase);expect(scenery(r.state.area,r.state.x,r.state.y)).toBe(false);}};
+  walk(540,500);expect(r.state.area).toBe('shop');expect(r.isServing({day:DAY,time:540})).toBe(true);
   walk(MERCHANT_LUNCHES.nilo.start+5,3500);expect(r.state.area).toBe('village');expect(Math.hypot(r.state.x-(MERCHANT_DAILY_PLAN.plaza.nilo.x+.5)*32,r.state.y-(MERCHANT_DAILY_PLAN.plaza.nilo.y+.5)*32)).toBeLessThan(40);
   walk(MERCHANT_LUNCHES.nilo.end+10,3500);expect(r.state.area).toBe('shop');expect(phases.size).toBe(6);expect(dailyMerchant('nilo')).toBe(true);expect(merchantPeriod('nilo',1080)).toBe('closed');
   const save=createNewSave({name:'Nilo',skin:'#d9a276',hairStyle:'preso',hairColor:'#754323',outfit:'#638a9d'});save.villageRoutines={nilo:structuredClone(r.state)};save.merchantScenes={nilo:createMerchantLayout('nilo')};expect(validateSave(JSON.parse(JSON.stringify(save)))).toBe(true);
