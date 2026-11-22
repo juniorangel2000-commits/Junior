@@ -2,12 +2,16 @@ import {CROP_CATALOG,NEW_CROP_ITEM_IDS} from './crop-catalog';
 import {SEASON_NAMES} from '../systems/calendar';
 import {ECONOMY_ITEM_IDS} from './economy-balance';
 import type { ItemId } from '../types';
+import {ORCHARD_FRUITS} from './orchard-art';
 import {DISH_RECIPES,DISH_IDS} from './kitchen';
 
 // IDs de saves são estáveis. Madeira legada continua distinta de troncos e tábuas.
 const cropItems=Object.fromEntries(CROP_CATALOG.filter(c=>c.id!=='turnip').flatMap(c=>[[c.seed,{name:'Sementes de '+c.name.toLowerCase(),description:c.seasons.map(s=>SEASON_NAMES[s]).join(' / ')+' · '+c.days+' dias regados até colher.'+('regrow' in c?' Produz novamente a cada '+c.regrow+' dias regados.':''),iconFallback:'seeds'}],[c.harvest,{name:c.name,description:'Colheita de '+c.name.toLowerCase()+'. Pode ser vendida a comerciantes interessados.',iconFallback:'turnip'}]])) as Record<import('./crop-catalog').CropItemId,{name:string;description:string;iconFallback?:string}>;
 export const ITEMS: Record<ItemId, { name: string; description: string;iconFallback?:string }> = {
   ...cropItems,
+  apple:{name:'Maçã',description:'Fruta recolhida no Pomar Abandonado. Rosa compra na Vila.'},
+  pear:{name:'Pera',description:'Fruta recolhida no Pomar Abandonado. Rosa compra na Vila.'},
+  orange:{name:'Laranja',description:'Fruta recolhida no Pomar Abandonado. Rosa compra na Vila.'},
   harvestBasket:{name:'Cesta de colheita',description:'Preparada pela Helena com 1 cenoura, 1 morango, 1 milho e 20 C. Reserve para a alimentação dos cavalos.'},
   ironShard: {name:'Fragmento bruto de Ferro',description:'Material metálico para a ferraria.',iconFallback:'scrap'},
   ironOre: {name:'Minério bruto inteiro de Ferro',description:'Equivale a nove fragmentos, não é um lingote.',iconFallback:'scrap'},
@@ -122,7 +126,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
 
 /** Only these stock fields may be absent in a save from before the village
  * services update. Missing any older field still indicates a corrupt save. */
-export const VILLAGE_ITEM_IDS=['harvestBasket','honey','duckEgg',...DISH_IDS,...NEW_CROP_ITEM_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','clayOven','campfire','beehive','emptyHive','feather','manure','composter','preserveKeg','waxPress','strawberryJam','watermelonJam','candle','nails','hinge','spring','gear','woolCloth','beeswax','daisyHoney','sunflowerHoney','cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','ruinSeal','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
+export const VILLAGE_ITEM_IDS=[...ORCHARD_FRUITS,'harvestBasket','honey','duckEgg',...DISH_IDS,...NEW_CROP_ITEM_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','clayOven','campfire','beehive','emptyHive','feather','manure','composter','preserveKeg','waxPress','strawberryJam','watermelonJam','candle','nails','hinge','spring','gear','woolCloth','beeswax','daisyHoney','sunflowerHoney','cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','ruinSeal','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
 
 export const ITEM_IDS = Object.keys(ITEMS) as ItemId[];
 export const ITEM_NAMES = Object.fromEntries(ITEM_IDS.map(id => [id, ITEMS[id].name])) as Record<ItemId, string>;

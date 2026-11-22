@@ -369,6 +369,7 @@ export class ValleyScene extends Phaser.Scene {
     if(saved.activeArea==='openFields'||saved.activeArea==='coast'){this.enterFields(saved);return;}
     if(saved.activeArea==='fishingLake'||saved.activeArea==='highland'){this.enterLake(saved);return;}
     if (saved.activeArea === 'forest'||saved.activeArea==='survivorCamp'||saved.activeArea==='swamp') { this.enterForest(saved); return; }
+    if(saved.activeArea==='orchard'){this.enterVillage(saved);return;}
     if (saved.activeArea === 'village'||saved.activeArea==='cityForest'||saved.activeArea==='ruins'||saved.activeArea==='railway') { this.enterVillage(saved); return; }
     this.ui.toast(`Que bom ter você de volta, ${saved.profile.name}.`);
     this.updateHUD();
@@ -504,16 +505,16 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   private enterVillage(saved?:SaveData):void {
-    if(saved?.activeArea!=='cityForest'&&saved?.activeArea!=='ruins'&&saved?.activeArea!=='railway'&&!villageAccessUnlocked(saved??this.state)){this.ui.toast(VILLAGE_LOCK_MESSAGE);return;}
+    if(saved?.activeArea!=='orchard'&&saved?.activeArea!=='cityForest'&&saved?.activeArea!=='ruins'&&saved?.activeArea!=='railway'&&!villageAccessUnlocked(saved??this.state)){this.ui.toast(VILLAGE_LOCK_MESSAGE);return;}
     if(this.forestActive||this.villageActive)return;
     if(!saved&&this.state.animalEscort){this.ui.toast('Deixe o animal na propriedade ou solte a corda com G antes de visitar a vila.');return;}
     this.world.well?.cancel();this.cancelCrafting();this.cancelToolActions();this.toolVisual?.hide();
-    const data=saved??this.snapshotState(),resumeCityForest=data.activeArea==='cityForest'||data.activeArea==='ruins'||data.activeArea==='railway'?data.activeArea:undefined;data.activeArea='village';delete data.homePosition;
+    const data=saved??this.snapshotState(),resumeCityForest=data.activeArea==='cityForest'||data.activeArea==='ruins'||data.activeArea==='railway'?data.activeArea:undefined,resumeOrchard=data.activeArea==='orchard';if(!resumeOrchard)data.activeArea='village';delete data.homePosition;
     this.villageActive=true;this.paused=true;this.input.keyboard?.resetKeys();
     const root=document.querySelector<HTMLElement>('#ui')!;root.style.display='none';
     this.cameras.main.fadeOut(SCENE_FADE_MS);
     this.time.delayedCall(SCENE_FADE_MS,()=>{
-      this.scene.sleep();this.scene.launch('Vila',{save:data,ui:this.ui,resumeCityForest,onReturn:(updated:SaveData,title=false)=>{
+      this.scene.sleep();this.scene.launch('Vila',{save:data,ui:this.ui,resumeCityForest,resumeOrchard,onReturn:(updated:SaveData,title=false)=>{
         if(!title&&updated.activeArea!=='property')updated.player={...updated.player,x:(PROPERTY_VILLAGE_ENTRY.x+.5)*TILE,y:(PROPERTY_VILLAGE_ENTRY.y+.5)*TILE,direction:'left'};
         this.scene.wake();this.villageActive=false;this.loadState(updated);this.running=true;this.paused=false;
         root.style.display='';this.ui.showHUD();this.updateHUD();this.cameras.main.fadeIn(SCENE_FADE_MS);

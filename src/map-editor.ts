@@ -6,6 +6,7 @@ import {paintedWaterPoint} from './data/terrain-paint';
 import type {MapArea} from './data/default-maps';
 import {SWAMP_KINDS} from './data/swamp-art';
 import {RUIN_KINDS} from './data/ruins-art';
+import {ORCHARD_KINDS} from './data/orchard-art';
 import {COAST_KINDS} from './data/coast-art';
 import {RAILWAY_KINDS} from './data/railway-art';
 import {normalizeSwampMap,originalSwampReed} from './data/swamp';
@@ -40,7 +41,7 @@ export interface MapEditorAdapter {
 type Point = { x: number; y: number };
 const labels = {
   ...EXTRA_PROP_NAMES,
-  ...Object.fromEntries([...NATURE_KINDS,...SWAMP_KINDS,...RUIN_KINDS,...RAILWAY_KINDS].map(kind=>[kind,NATURE_ART[kind].label])),
+  ...Object.fromEntries([...NATURE_KINDS,...SWAMP_KINDS,...RUIN_KINDS,...RAILWAY_KINDS,...COAST_KINDS,...ORCHARD_KINDS].map(kind=>[kind,NATURE_ART[kind].label])),
   standingTree: 'Árvore', pine: 'Pinheiro', stone: 'Pedras', vein: 'Rocha',
   tree: 'Galhos', fiber: 'Fibras', seeds: 'Sementes', scrap: 'Sucata',
 } as Record<EditorObjectKind,string>;
@@ -101,7 +102,7 @@ export class MapEditor {
     for (const object of adapter.objects()) if (!images[object.kind] && !object.depleted) {
       images[object.kind] = scene.textures.getBase64(object.texture,object.frame);
     }
-    for(const kind of [...NATURE_KINDS,...(initial.area==='swamp'?SWAMP_KINDS:initial.area==='ruins'?RUIN_KINDS:initial.area==='railway'?RAILWAY_KINDS:initial.area==='coast'?COAST_KINDS:[])])if(scene.textures.exists(NATURE_ART[kind].texture))images[kind]=scene.textures.getBase64(NATURE_ART[kind].texture);
+    for(const kind of [...NATURE_KINDS,...(initial.area==='swamp'?SWAMP_KINDS:initial.area==='ruins'?RUIN_KINDS:initial.area==='railway'?RAILWAY_KINDS:initial.area==='coast'?COAST_KINDS:initial.area==='orchard'?ORCHARD_KINDS:[])])if(scene.textures.exists(NATURE_ART[kind].texture))images[kind]=scene.textures.getBase64(NATURE_ART[kind].texture);
     for(const kind of URBAN_PROP_KINDS)if(scene.textures.exists('dungeon-urban'))images[kind]=editorPropThumbnail(scene,kind);
     this.ui.setThumbnails(images);
     const materials:Record<string,string>={grass:'grass',meadow:'meadow',forest:'forest',moss:'moss',forestPath:'forest',path:'path-dry',wetPath:'path-wet',water:'water',sand:'sand',soil:'soil',wood:'wood',paving:'paving'};
@@ -291,7 +292,7 @@ export class MapEditor {
         if(plant&&object)this.stroke.objects[object.id]={...this.stroke.objects[object.id],...(object.id.startsWith('editor-')?{kind:object.kind}:{}),x:object.x,y:object.y,removed:true};
         this.stroke.terrain[cell] = this.tool.terrain;
         this.strokePreview.fillStyle(colors[this.tool.terrain], .7).fillRect(x * TILE, y * TILE, TILE, TILE);
-      } else if(this.tool.mode==='collision'&&(this.area==='swamp'||this.area==='ruins'||this.area==='railway'||this.area==='coast')&&this.tool.collision){
+      } else if(this.tool.mode==='collision'&&(this.area==='swamp'||this.area==='ruins'||this.area==='railway'||this.area==='coast'||this.area==='orchard')&&this.tool.collision){
         const collisions=this.stroke.collisions??={};
         if(this.tool.collision==='original')delete collisions[cell];
         else collisions[cell]=this.tool.collision;

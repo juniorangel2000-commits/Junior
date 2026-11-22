@@ -12,6 +12,7 @@ export const AREA_NAMES={
  ruins:'Ruínas',
  railway:'Estação Ferroviária',
  coast:'Costa das Marés',
+ orchard:'Pomar Abandonado',
  mine:'Mina Antiga',
 } as const;
 export type AreaNameKey=keyof typeof AREA_NAMES;

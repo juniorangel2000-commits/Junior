@@ -1,6 +1,6 @@
 import { isPetDirection } from "./pet-directions";
 import type { PetDirection } from "./pet-sprites";
-export type PetWorldArea = "property" | "forest" | "village" | "cityForest" | "fishingLake" | "survivorCamp" | "highland" | "openFields" | "railway" | "coast";
+export type PetWorldArea = "property" | "forest" | "village" | "cityForest" | "fishingLake" | "survivorCamp" | "highland" | "openFields" | "railway" | "coast" | "orchard";
 export interface WorldPetState {
   mode: "follow" | "stay" | "shelter";
   area: PetWorldArea;
@@ -19,6 +19,7 @@ export const PET_WORLD_AREAS: Record<PetWorldArea, string> = {
   survivorCamp: "Acampamento dos Sobreviventes",highland:"Platô da Nascente",
   railway: "Estação Ferroviária",
   coast: "Costa das Marés",
+  orchard: "Pomar Abandonado",
 };
 export function validWorldPetState(value: unknown): value is WorldPetState {
   if (!value || typeof value !== "object") return false;

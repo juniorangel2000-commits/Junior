@@ -1,6 +1,7 @@
 import {waterFinishChannel} from './data/water-style';
 import {plazaFurniture,plazaEditorId} from './data/village-plaza';
 import { reusableTerrainTexture } from './terrain-texture-cache';
+import {VILLAGE_ORCHARD_EXIT,VILLAGE_ORCHARD_RETURN,villageOrchardGate} from './data/orchard-gate';
 import {drawVillageNorthRoad} from "./village-north-road";
 import {VILLAGE_NORTH_GATE,VILLAGE_NORTH_ARRIVAL,villageNorthConnectionDistance} from './data/city-forest';
 import {drawVillageDressing} from './village-dressing';
@@ -44,7 +45,7 @@ const MAP_WIDTH=WORLD_WIDTH*TILE,MAP_HEIGHT=WORLD_HEIGHT*TILE;
  * pixels. Geometry is sampled on an 8px grid and interpolated below: movement
  * never reruns the expensive terrain generation. */
 function drawGround(scene:Phaser.Scene,edits?:MapEditData,namespace='village'):void {
- const key=namespace+'-ground-v3';
+ const key=namespace+'-ground-v4';
  if(!reusableTerrainTexture(scene.textures,key,edits?.terrain)){
   const canvas=document.createElement('canvas');canvas.width=MAP_WIDTH;canvas.height=MAP_HEIGHT;
   const c=canvas.getContext('2d')!,sprites=readTerrainSprites(scene);c.imageSmoothingEnabled=false;
@@ -78,7 +79,7 @@ function drawGround(scene:Phaser.Scene,edits?:MapEditData,namespace='village'):v
      const u=(x-plazaX)/plazaRX,v=(y-plazaY)/plazaRY,radius=Math.hypot(u,v);
      const pa=gy*columns+gx,pb=pa+1,pd=pa+columns,pe=pd+1;
      const edge=(pathEdges[pa]*(1-fx)+pathEdges[pb]*fx)*(1-fy)+(pathEdges[pd]*(1-fx)+pathEdges[pe]*fx)*fy;
-     if(edge>-.04&&edge<.22&&radius>1.01){
+     if(edge>-.04&&edge<.22&&radius>1.01&&(x/TILE<87||Math.abs(y/TILE-62.5)>2)){
       const along=(pathLengths[pa]*(1-fx)+pathLengths[pb]*fx)*(1-fy)+(pathLengths[pd]*(1-fx)+pathLengths[pe]*fx)*fy;
       // Small changes in the stone faces soften the outline, without changing
       // road widths or painting random patches into the surrounding grass.
@@ -100,7 +101,8 @@ function drawGround(scene:Phaser.Scene,edits?:MapEditData,namespace='village'):v
       green=green*(1-curb)+156*shade*curb;
       blue=blue*(1-curb)+136*shade*curb;
      }
-     const kind=edits?.terrain[`${Math.floor(x/32)},${Math.floor(y/32)}`];
+     const tx=Math.floor(x/TILE),ty=Math.floor(y/TILE);
+     const kind=villageOrchardGate(tx,ty)?undefined:edits?.terrain[`${tx},${ty}`];
      if(kind){const names={grass:'grass',meadow:'meadow',forest:'forest',moss:'moss',forestPath:'forest',path:'path-dry',wetPath:'path-wet',water:'water',sand:'sand',soil:'soil',wood:'wood',paving:'paving'} as const;const source=sprites[names[kind]],at=((y%source.size)*source.size+x%source.size)*4,alpha=terrainPaintAlpha(edits!.terrain,x,y);red=red*(1-alpha)+source.pixels[at]*alpha;green=green*(1-alpha)+source.pixels[at+1]*alpha;blue=blue*(1-alpha)+source.pixels[at+2]*alpha;}
      const at=(y*MAP_WIDTH+x)*4;pixels.data[at]=red;pixels.data[at+1]=green;pixels.data[at+2]=blue;pixels.data[at+3]=255;
     }
@@ -134,6 +136,7 @@ export class VillageWorld {
   setupVillageGreenery(scene);
   drawVillageNorthRoad(scene,edits,namespace);
   drawExitSign(scene,VILLAGE_NORTH_GATE,VILLAGE_NORTH_ARRIVAL);
+  drawExitSign(scene,VILLAGE_ORCHARD_EXIT,VILLAGE_ORCHARD_RETURN);
   this.drawLake();drawVillagePier(scene);this.drawTrees();drawVillageDefences(scene);this.drawBuildings();this.landmarks=drawVillageLandmarks(scene);drawVillagePlaza(scene,this.edits);
   for(const p of plazaFurniture(this.edits))this.editorObjects.push({id:plazaEditorId(p),kind:(p.frame.startsWith('shrubs-')?`village-${p.frame}`:`village-bench-${p.frame}`) as WorldEditorObject['kind'],x:Math.floor(p.x),y:Math.floor(p.y),texture:'village-plaza-furniture',frame:p.frame});
   this.drawGardens();this.drawProps();drawVillageDressing(scene,this.edits);drawVillageTallGrass(scene,this.edits);
@@ -195,6 +198,7 @@ export class VillageWorld {
   const originalIds=new Set(VILLAGE_TREES.map(villageTreeId));
   const rows=[...VILLAGE_TREES.map(t=>({id:villageTreeId(t),...t})),...Object.entries(this.edits?.objects??{}).filter(([id,e])=>!originalIds.has(id)&&!e.removed&&natureArt(e.kind)).map(([id,e])=>({id,x:e.x,y:e.y,kind:e.kind!}))];
   for(const original of rows){const edit=this.edits?.objects[original.id];if(edit?.removed)continue;const tree={...original,x:edit?.x??original.x,y:edit?.y??original.y};
+   if(villageOrchardGate(tree.x,tree.y))continue;
    const art=natureArt(tree.kind)!;
    const sprite=this.scene.add.image(tree.x*TILE+16,tree.y*TILE+25,art.texture).setOrigin(.5,art.pivot)
     .setDisplaySize(art.width,art.height).setDepth(tree.y*TILE+25);

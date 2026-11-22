@@ -1,3 +1,4 @@
+import {ORCHARD_ENTRY,ORCHARD_EXIT} from './orchard-gate';
 import {HIGHLAND_ENTRY,HIGHLAND_EXIT} from './highland';
 import {SWAMP_ENTRY,SWAMP_EXIT} from './swamp';
 import {RUINS_ENTRY,RUINS_EXIT,RAILWAY_ENTRY,RAILWAY_EXIT,COAST_ENTRY,COAST_EXIT} from './ruins-road';
@@ -18,6 +19,7 @@ export const MAP_BASE_REVISION=4;
 export function defaultMap(area:MapArea):MapEditData{
  if(area==='swamp')return {version:1,width:96,height:72,area,swampRevision:1,terrain:{},objects:{},points:{entry:{...SWAMP_ENTRY},exit:{...SWAMP_EXIT}}};
  if(area==='ruins')return {version:1,width:96,height:72,area,terrain:{},objects:{},points:{entry:{...RUINS_ENTRY},exit:{...RUINS_EXIT}}};
+ if(area==='orchard')return {version:1,width:96,height:72,area,terrain:{},objects:{},points:{entry:{...ORCHARD_ENTRY},exit:{...ORCHARD_EXIT}}};
  if(area==='coast')return {version:1,width:96,height:72,area,terrain:{},objects:{},points:{entry:{...COAST_ENTRY},exit:{...COAST_EXIT}}};
  if(area==='railway')return {version:1,width:96,height:72,area,terrain:{},objects:{},points:{entry:{...RAILWAY_ENTRY},exit:{...RAILWAY_EXIT}}};
  if(area==='highland')return {version:1,width:96,height:72,area,terrain:{},objects:{},points:{entry:{...HIGHLAND_ENTRY},exit:{...HIGHLAND_EXIT}}};

@@ -32,5 +32,6 @@ export function villageGroundWeights(x:number,y:number,includeCurbs=true):readon
  const curb=includeCurbs?villagePlazaCurbWeight(plazaDistance):0;
  const shoulder=includeCurbs?villageSmooth((pathDistance+.02)/.08)*(1-villageSmooth((pathDistance-.14)/.1))*(1-plaza)*(1-curb):0;
  const base=1-curb-shoulder;
- return [(rest-forest-meadow)*base,forest*base,meadow*base,path*base,paving*base,soil*base,shoulder,curb];
+ const dirt=villageSmooth((x-80)/12)*(1-villageSmooth((Math.abs(y-62)-1.2)/1.2));
+ return [(rest-forest-meadow)*base,forest*base,meadow*base,path*(1-dirt)*base,paving*base,soil*base,shoulder+path*dirt*base,curb];
 }

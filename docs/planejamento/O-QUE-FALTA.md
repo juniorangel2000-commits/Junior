@@ -21,7 +21,7 @@
   amizade, presentes, respostas nas conversas, histórias pessoais de 8 deles e visitas à
   propriedade), calendário de 4 estações × 28 dias, chuva sorteada, dia e noite com luz.
 - **Cenários:** Propriedade, Floresta, Campos Abertos, Vila, Estrada, Lago, Serra (Platô),
-  Acampamento, Mina e Dungeons. Pântano, Ruínas, Estação Ferroviária e Costa das Marés estão
+  Acampamento, Mina e Dungeons. Pântano, Ruínas, Estação Ferroviária, Costa das Marés e Pomar Abandonado estão
   jogáveis no branch da preview.45.
 
 ## 1. Conteúdo e cenários
@@ -34,6 +34,7 @@
 - [x] **Ruínas jogáveis** a leste da Estrada da Cidade, com o asfalto contínuo ao norte, investigação no antigo posto, porão, selo de bronze que Nilo identifica e grama alta editável.
 - [x] **Estação Ferroviária Desativada** a leste das Ruínas (preview.45): ligação nos dois sentidos, sala de espera com arte frontal, trilhas sinuosas, capim alto, F2 no exterior e save. A história curta depende dos textos e da recompensa do Junior.
 - [x] **Costa das Marés** ao sul dos Campos Abertos (preview.45): praia, foz do rio, píer, barco, cabana e F2. Sem estrada nem ligação com a Estação.
+- [x] **Pomar Abandonado** a leste da Vila. Trilhas de terra, frutíferas, prensa antiga, galpão, lagoa de irrigação e frutas recolhíveis.
 - [ ] Adicionar conchas coletáveis e uma história ligada ao barco da Costa. A pesca já funciona na enseada e na foz.
 - [ ] Desenvolver a **história pessoal do Nilo** se o Junior quiser expandir a ligação com o selo.
 - [ ] Usar o pântano e as ruínas também em partes extras das histórias dos outros moradores.
@@ -116,7 +117,7 @@
 ## Sugestão de ordem
 
 1. Jogar a Estação Ferroviária no PC do Junior e ajustar o que ele pedir; definir a história curta da sala de espera.
-2. Jogar a Costa das Marés e o rio dos Campos no PC do Junior. Ligar a íris azul do Pântano à história da Amélia. O Pomar Abandonado fica como opção para nova área.
+2. Jogar a Costa das Marés e o rio dos Campos no PC do Junior. Ligar a íris azul do Pântano à história da Amélia.
 3. Publicar a preview.45 quando o Junior pedir e conferir a compressão no instalador para Windows.
 4. Medir o desempenho dos Campos Abertos no PC do Junior com F3.
 5. Integrar a chuva à rega e os peixes às estações. Em seguida, adicionar tela de calendário com previsão, eventos e aniversários.

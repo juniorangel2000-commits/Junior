@@ -88,6 +88,7 @@ Object.assign(MERCHANTS.herbalist.buy,{herb:6,bandage:18,herbalTonic:40});
 Object.assign(MERCHANTS.herbalist.sell,{herb:2,rareHerb:25});
 Object.assign(MERCHANTS.seeds.buy,{fertilizer:22});
 Object.assign(MERCHANTS.fisher.buy,{fishingRod:70,bait:3,net:120,fish:18});
+Object.assign(MERCHANTS.seeds.sell,{apple:12,pear:14,orange:14});
 Object.assign(MERCHANTS.fisher.sell,{fish:8,rareFish:45});
 Object.assign(MERCHANTS.tailor.buy,{cloth:8,clothing:25,boots:95,backpack:150,accessory:70});
 Object.assign(MERCHANTS.inn.buy,{meal:28});Object.assign(MERCHANTS.inn.sell,{fish:8});

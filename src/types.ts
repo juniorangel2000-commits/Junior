@@ -25,7 +25,7 @@ export interface CharacterProfile {
   shirtColor?: string;
   accessory?: CharacterAccessory;
 }
-export type ItemId = import('./data/crop-catalog').CropItemId | 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 'plank' | 'scrap' | 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw'
+export type ItemId = import('./data/orchard-art').OrchardFruit | import('./data/crop-catalog').CropItemId | 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 'plank' | 'scrap' | 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw'
   | 'cheesePress' | 'butterChurn' | 'spinningWheel' | 'loom' | 'stoneMill' | 'clayOven' | 'campfire' | 'beehive' | 'emptyHive' | 'feather' | 'manure' | 'composter' | 'preserveKeg' | 'waxPress' | 'strawberryJam' | 'watermelonJam' | 'candle' | 'nails' | 'hinge' | 'spring' | 'gear' | 'woolCloth' | 'beeswax' | 'daisyHoney' | 'sunflowerHoney' | 'cheese' | 'goatCheese' | 'butter' | 'yarn' | 'flour' | 'cornmeal' | 'oatFlakes'
   | 'harvestBasket' | 'freshGrass' | 'hay' | 'egg' | 'milk' | 'milkPail' | 'honey' | 'duckEgg' | import('./data/kitchen').DishId | 'goatMilk' | 'wool' | 'shears' | 'hardwood' | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer'
   | 'herb' | 'rareHerb' | 'bandage' | 'herbalTonic' | 'fungalInfusion' | 'oakSeed' | 'pineSeed' | 'fertilizer' | 'fishingRod' | 'bait' | 'net' | 'fish' | 'rareFish' | 'meal'
@@ -119,6 +119,9 @@ export interface SaveData {
   railwayPosition?:TilePoint & {direction?:CharacterDirection};
   coastMapEdits?:MapEditData;
   coastPosition?:TilePoint & {direction?:CharacterDirection};
+  orchardMapEdits?:MapEditData;
+  orchardPosition?:TilePoint & {direction?:CharacterDirection};
+  orchardHarvest?:Record<string,number>;
   /** Presente só enquanto o jogador está na sala de espera da Estação. */
   railwayHallPosition?:TilePoint & {direction?:CharacterDirection};
   /** Outdoor equipment references an owned sword; missing keeps hands free. */
@@ -145,7 +148,7 @@ export interface SaveData {
   /** One-time homestead layout; removed starter fences/beds are never recreated. */
   homesteadRevision?:1;
   selectedCrop?:import('./data/crops').CropId;
-  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake' | 'survivorCamp' | 'highland' | 'openFields' | 'swamp' | 'ruins' | 'railway' | 'coast';
+  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake' | 'survivorCamp' | 'highland' | 'openFields' | 'swamp' | 'ruins' | 'railway' | 'coast' | 'orchard';
   fishingLakePosition?: TilePoint & { direction?: CharacterDirection };
   fishingLakeMapEdits?:MapEditData;
   cityForestPosition?: TilePoint & { direction?: CharacterDirection };

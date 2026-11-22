@@ -1,3 +1,4 @@
+import {VILLAGE_ORCHARD_PATH,villageOrchardGate} from './orchard-gate';
 import {villageNorthConnectionDistance} from './city-forest';
 import {VILLAGE_DRESSING,villageDressingBounds,villageDressingBlockedPoint} from './village-dressing';
 import {PLAZA_BEDS,PLAZA_LAMPS,plazaFurnitureBlockedPoint,plazaFurnitureBlockedTile} from './village-plaza';
@@ -21,9 +22,9 @@ export function villageLakeDistance(x:number,y:number):number {
  const angle=Math.atan2(v,u),shore=.065*Math.sin(angle*3+.4)+.045*Math.cos(angle*5-.8)+.018*Math.sin(angle*9);
  return (Math.hypot(u,v)-1-shore)*VILLAGE_LAKE.rx;
 }
-export const villageWater=(x:number,y:number,edits?:MapEditData)=>{if(villagePierDeckContains((x+.5)*32,(y+.5)*32))return false;const kind=edits?.terrain[`${x},${y}`];return kind?kind==='water':villageLakeDistance(x+.5,y+.5)<0;};
+export const villageWater=(x:number,y:number,edits?:MapEditData)=>{if(villageOrchardGate(x,y)||villagePierDeckContains((x+.5)*32,(y+.5)*32))return false;const kind=edits?.terrain[`${x},${y}`];return kind?kind==='water':villageLakeDistance(x+.5,y+.5)<0;};
 export const villageWaterPoint=(x:number,y:number,edits?:MapEditData):boolean=>
- !villagePierDeckContains(x,y)&&paintedWaterPoint(edits?.terrain,x,y,(x,y)=>villageLakeDistance(x/32,y/32)<0);
+ !villageOrchardGate(Math.floor(x/TILE),Math.floor(y/TILE))&&!villagePierDeckContains(x,y)&&paintedWaterPoint(edits?.terrain,x,y,(x,y)=>villageLakeDistance(x/32,y/32)<0);
 export const VILLAGE_NAME='Vila';
 export const VILLAGE_ENTRY={x:2,y:52} as const;
 export const VILLAGE_EXIT={x:1,y:52} as const;
@@ -115,6 +116,7 @@ export const VILLAGE_WALKWAYS:readonly VillageWalkway[]=[
  {width:.85,points:[[44,23],[39,24],[38,20],[38,15],[44,14],[44,13]]},
  {width:.85,points:[[65,27],[70,32],[76,32],[76,30]]},
  {width:.85,points:[[61,57],[68,60],[75,63],[77,63],[77,61]]},
+ {width:1.16,points:VILLAGE_ORCHARD_PATH},
 ];
 function entranceApron(p:{id:string;x:number;y:number}){
  let nearest=Infinity,halfWidth=.9;
@@ -331,6 +333,7 @@ export const VILLAGE_SHORE_DETAILS:readonly {kind:'shoreStones';x:number;y:numbe
 export const villageTreeId=(t:VillageTree)=>`editor-${t.kind}-village-${t.x}-${t.y}`;
 const villageTreeIds=new Set(VILLAGE_TREES.map(villageTreeId));
 export function villageSceneryBlockedAt(x:number,y:number,includeWell=true,edits?:MapEditData,includeWater=true):boolean {
+ if(x<WORLD_WIDTH-1&&villageOrchardGate(x,y))return false;
  return villageDressingBlockedPoint((x+.5)*32,(y+.5)*32)||includeWater&&villageWater(x,y,edits)||x<1||y<1||x>=WORLD_WIDTH-1||y>=WORLD_HEIGHT-1
   ||VILLAGE_TREES.some(t=>{const e=edits?.objects[villageTreeId(t)];return !e?.removed&&(e?.x??t.x)===x&&(e?.y??t.y)===y;})
   ||Object.entries(edits?.objects??{}).some(([id,e])=>!e.removed&&e.x===x&&e.y===y&&natureArt(e.kind)?.solid&&!villageTreeIds.has(id))
@@ -339,6 +342,7 @@ export function villageSceneryBlockedAt(x:number,y:number,includeWell=true,edits
 export const villageBlockedAt=(x:number,y:number,edits?:MapEditData)=>villageSceneryBlockedAt(x,y,true,edits)||villageLandmarkBlockedTile(x,y)||plazaFurnitureBlockedTile(x,y,edits)||villagePierRailAtPoint((x+.5)*32,(y+.5)*32)||villageFishingPropAtPoint((x+.5)*32,(y+.5)*32)||villageBarricadeBlockedPoint((x+.5)*32,(y+.5)*32)||!!villageBuildingAt(x,y);
 export function villagePointBlocked(x:number,y:number,edits?:MapEditData,allowWater=false):boolean{
  const tx=Math.floor(x/32),ty=Math.floor(y/32);
+ if(tx<WORLD_WIDTH-1&&villageOrchardGate(tx,ty))return false;
  const nearPier=villagePierNear(x,y);
  const scenery=villageSceneryBlockedAt(tx,ty,false,edits,!nearPier&&!allowWater);
  const well=villageProps(edits).find(p=>p.kind==='well'&&Math.abs(p.x-tx)<=2&&Math.abs(p.y-ty)<=3);

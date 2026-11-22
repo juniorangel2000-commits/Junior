@@ -22,6 +22,11 @@ import { CITY_RUINS_RETURN, RUINS_ENTRY, RUINS_EXIT, RUINS_RAILWAY_EXIT, RUINS_R
 import { RailwayWorld, preloadRailway } from '../railway-world';
 import { RAILWAY_SIZE } from '../data/railway';
 import { CoastWorld, preloadCoast } from '../coast-world';
+import { OrchardWorld, preloadOrchard } from '../orchard-world';
+import { ORCHARD_SIZE } from '../data/orchard';
+import { ORCHARD_ENTRY, ORCHARD_EXIT, VILLAGE_ORCHARD_RETURN } from '../data/orchard-gate';
+import { collectOrchardFruit } from '../systems/orchard-harvest';
+import { ITEM_NAMES } from '../data/items';
 import { COAST_SIZE } from '../data/coast';
 import { COAST_ENTRY, COAST_EXIT } from '../data/ruins-road';
 import { AREA_NAMES } from '../data/area-names';
@@ -67,6 +72,11 @@ const TRAILS={
     // Chega-se pela saída sul dos Campos Abertos; o rio dos Campos deságua aqui no mar.
     arrival:'down',returnArea:'openFields',returnPosition:'openFieldsPosition',returnTile:{x:28,y:67},returnFacing:'up',
     returnName:AREA_NAMES.openFields,prompt:'Desça pela trilha até a praia. O rio dos Campos encontra o mar a oeste do píer.'},
+  orchard:{scene:'Pomar',map:'orchardMapEdits',position:'orchardPosition',size:ORCHARD_SIZE,
+    World:OrchardWorld,preload:preloadOrchard,entry:(edits?:MapEditData)=>edits?.points?.entry??ORCHARD_ENTRY,
+    exit:(edits?:MapEditData)=>edits?.points?.exit??ORCHARD_EXIT,
+    arrival:'right',returnArea:'village',returnPosition:'villagePosition',returnTile:VILLAGE_ORCHARD_RETURN,returnFacing:'left',
+    returnName:AREA_NAMES.village,prompt:'Siga as trilhas até as frutíferas, a prensa e a lagoa.'},
 } as const;
 const ROAD_LINKS={
   ruins:{area:'railway',exit:RUINS_RAILWAY_EXIT,approach:RUINS_RAILWAY_RETURN},
@@ -78,7 +88,7 @@ export class TrailScene extends Phaser.Scene {
   private state!: SaveData;
   private ui!: TrailStart['ui'];
   private onReturn!: TrailStart['onReturn'];
-  private world!: SwampWorld|RuinsWorld|RuinsCellarWorld|RailwayWorld|RailwayHallWorld|CoastWorld;
+  private world!: SwampWorld|RuinsWorld|RuinsCellarWorld|RailwayWorld|RailwayHallWorld|CoastWorld|OrchardWorld;
   /** Interiores: o porão das Ruínas e a sala de espera da Estação. */
   get inHome():boolean{return this.area==='ruins'&&!!this.state?.ruinsCellarPosition||this.area==='railway'&&!!this.state?.railwayHallPosition;}
   private get mapSize(){return this.inHome?(this.area==='railway'?RAILWAY_HALL_SIZE:RUINS_CELLAR_SIZE):this.trail.size;}
@@ -120,7 +130,7 @@ export class TrailScene extends Phaser.Scene {
     if(this.area==='ruins'&&data?.save?.ruinsCellarPosition)preloadRuinsCellar(this);
     else if(this.area==='railway'&&data?.save?.railwayHallPosition)preloadRailwayHall(this);
     else this.trail.preload(this);
-    if(this.area==='railway'||this.area==='coast')preloadPetArt(this);
+    if(this.area==='railway'||this.area==='coast'||this.area==='orchard')preloadPetArt(this);
   }
   getGroundItemRuntime(){return this.player?this.grounds:undefined;}
   getMineMissionRuntime=()=>this.missions;
@@ -165,7 +175,7 @@ export class TrailScene extends Phaser.Scene {
     this.updateHUD();
     this.input.keyboard!.on('keydown',this.key,this);
     this.input.on('wheel',this.wheel,this);
-    if(this.area==='railway'||this.area==='coast'){
+    if(this.area==='railway'||this.area==='coast'||this.area==='orchard'){
       const area=this.area;
       this.input.on('pointerdown',this.pointer,this);
       installWorldCompanion(this,()=>({
@@ -230,17 +240,19 @@ export class TrailScene extends Phaser.Scene {
     if(this.player.isSwimming)return undefined;
     if(this.world instanceof RuinsCellarWorld||this.world instanceof RailwayHallWorld)return this.world.layout.inspectNear(this.player.x,this.player.y);
     if(this.world instanceof RuinsWorld)return this.world.layout.inspectNear(this.player.x,this.player.y,ruinsHasWetTraces(this.state.day));
-    if(this.world instanceof RailwayWorld||this.world instanceof CoastWorld)return this.world.layout.inspectNear(this.player.x,this.player.y);
+    if(this.world instanceof RailwayWorld||this.world instanceof CoastWorld||this.world instanceof OrchardWorld)return this.world.layout.inspectNear(this.player.x,this.player.y);
   }
 
   private updateHUD():void {
     if(!this.player)return;
     const {state,player,trail}=this,edits=state[trail.map],exit=trail.exit(edits),gate=tileCenter(exit);
-    const landmark=this.nearbyLandmark();
+    const fruit=this.nearbyFruit(),landmark=this.nearbyLandmark();
+    if(this.world instanceof OrchardWorld)this.world.showFruits(state.day,state.orchardHarvest);
     const road=this.outgoingRoad,nextGate=road&&tileCenter(road.exit);
     const fishing=this.nearFishing()&&!!this.equippedFishingItem();
     const cardinal={up:'norte',down:'sul',left:'oeste',right:'leste'}[exitSignLayout(exit,trail.entry(edits)).direction];
     const prompt=player.isSwimming?'Siga até a margem para sair da água.':
+      fruit?`E · Recolher ${ITEM_NAMES[fruit.item].toLowerCase()}`:
       landmark?(landmark.cellar&&state.ruinsMapFound?'E · Descer ao porão':landmark.hall?'E · Entrar na sala de espera':`E · Examinar ${landmark.name.toLowerCase()}`):
       this.inHome?(this.area==='railway'?'A porta ao sul leva de volta à plataforma.':'Suba os degraus ao norte para voltar ao armazém.'):
       Math.hypot(player.x-gate.x,player.y-gate.y)<144?`${trail.returnName} ao ${cardinal}`:
@@ -252,9 +264,9 @@ export class TrailScene extends Phaser.Scene {
       tool:state.equippedTool??'hand',worldWeapon:state.worldWeapon,learnedRecipes:state.villageProgress?.recipes??[],
       inHome:this.inHome,swimming:player.isSwimming,coins:state.villageEconomy?.coins??0,vigor:state.villageProgress?.vigor??100,
       wateringCan:!!state.homeSupplies?.wateringCan,wateringCanWater:state.wateringCanWater??0,
-      playerTile:{x:player.x/32,y:player.y/32},interactionKey:landmark||fishing?'E':null,prompt,location:AREA_NAMES[this.area],
+      playerTile:{x:player.x/32,y:player.y/32},interactionKey:fruit||landmark||fishing?'E':null,prompt,location:AREA_NAMES[this.area],
       ...(this.inHome?{mapTitle:this.interiorName,location:this.interiorName,interiorMapSize:{width:this.mapSize.width/32,height:this.mapSize.height/32}}:{}),
-      ...(this.area==='coast'?{mapTitle:AREA_NAMES.coast}:{}),
+      ...(this.area==='coast'||this.area==='orchard'?{mapTitle:AREA_NAMES[this.area]}:{}),
       harvests:state.inventory.turnip,metLia:state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',
       resourceProgress:'',farmingProgress:this.farming.progress,progress:state.progress,
     });
@@ -277,7 +289,17 @@ export class TrailScene extends Phaser.Scene {
   private pointer=(pointer:Phaser.Input.Pointer):void=>{
     if(pointer.button===0&&this.canPlay())this.interact();
   };
+  private nearbyFruit(){
+    if(this.player.isSwimming||this.player.mounted||!(this.world instanceof OrchardWorld))return;
+    return this.world.fruitNear(this.player,this.state.day,this.state.orchardHarvest);
+  }
   private interact():void {
+    const fruit=this.nearbyFruit();
+    if(fruit){
+      this.ui.toast(collectOrchardFruit(this.snapshotState(),fruit,this.player,saveGame));
+      this.updateHUD();
+      return;
+    }
     const landmark=this.nearbyLandmark();
     if(landmark){
       if((landmark.cellar&&this.state.ruinsMapFound)||landmark.hall){this.changeCellar(true);return;}

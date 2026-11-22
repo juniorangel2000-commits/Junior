@@ -31,11 +31,13 @@ import { TOOL_ICON_URLS } from './data/tool-art';
 
 /** Local assets from the received packages and original tree/ground atlases. */
 const BASE = 'assets/visual/';
+import {ORCHARD_FRUITS,orchardFruitFile,type OrchardFruit} from './data/orchard-art';
 const ICON_IDS = new Set(['wood', 'stone', 'branch', 'log', 'plank', 'scrap', 'hatchet', 'pickaxe', 'handsaw', 'fiber', 'cord', 'flakedStone', 'handle', 'blade', 'board', 'hammer', 'water', 'workbench', 'seeds']);
 const ITEM_ART=new Set(['peg','herb','rareHerb','oldMap','backpack','boots','metalPart','nails','hinge','spring','gear','fungalInfusion','herbalTonic','net','bandage','meal','lantern','electronicPart','clothing','accessory',
   // Telhado de tábuas (arte do Junior) e Ninho e baias (o ninho do galinheiro).
   'doorKit','windowKit']);
 export function itemIconUrl(id: string, tier=0): string | undefined {
+  if(ORCHARD_FRUITS.includes(id as OrchardFruit))return orchardFruitFile(id as OrchardFruit);
   if((MACHINE_IDS as readonly string[]).includes(id))return `assets/visual/machines/${id}-icon.png`;
   if((MACHINE_PRODUCTS as readonly string[]).includes(id))return `assets/visual/machines/${id}.png`;
   // Lote 01 de artes (docs/arte-recebida/lote01-fazenda): ícones próprios no lugar dos emprestados.
