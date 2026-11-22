@@ -15,14 +15,14 @@ const terrains:Record<string,CritterTerrain>={
 };
 
 describe('bichos dos cenários (sprites provisórios)',()=>{
-  it('todas as 16 espécies têm desenho com cores conhecidas e contorno',()=>{
-    expect(CRITTERS).toHaveLength(16);
-    expect(new Set(CRITTERS.map(c=>c.id)).size).toBe(16);
+  it('todas as 15 espécies têm desenho com cores conhecidas e contorno',()=>{
+    expect(CRITTERS).toHaveLength(15);
+    expect(new Set(CRITTERS.map(c=>c.id)).size).toBe(15);
     for(const sp of CRITTERS)for(const rows of [...sp.art,...(sp.special??[])]){
       for(const ch of rows.join(''))if(ch!=='.')expect(sp.palette[ch],`${sp.id} '${ch}'`).toBeDefined();
       const f=critterPixels(rows,sp.palette);
       expect(f.pixels.length,sp.id).toBeGreaterThan(0);
-      if(sp.id!=='firefly')expect(f.pixels.some(p=>p[2]==='#2a1a10'),sp.id).toBe(true);
+      expect(f.pixels.some(p=>p[2]==='#2a1a10'),sp.id).toBe(true);
     }
   });
   it('o segundo quadro do andar mexe as pernas sem mudar o resto',()=>{
@@ -37,15 +37,14 @@ describe('bichos dos cenários (sprites provisórios)',()=>{
       for(const sp of crittersOf(area)){
         const r=critterRandom(5),spot=critterSpot(sp,t,r);
         expect(spot,`${area} ${sp.id}`).toBeDefined();
-        if(sp.spawn==='water')expect(t.water(spot!.x,spot!.y)).toBe(true);
-        else expect(t.land(spot!.x,spot!.y),`${sp.id}`).toBe(true);
+        expect(t.land(spot!.x,spot!.y),`${sp.id}`).toBe(true);
         // Longe do jogador quando reaparece.
         const away=critterSpot(sp,t,r,{x:spot!.x,y:spot!.y,r:sp.near?Math.min(300,sp.near.r):420});
         if(away)expect(Math.hypot(away.x-spot!.x,away.y-spot!.y)).toBeGreaterThanOrEqual(sp.near?Math.min(300,sp.near.r):420);
       }
     }
   });
-  it('respeita a hora: vaga-lume à noite, morcego ao anoitecer, borboleta de dia',()=>{
+  it('respeita a hora: tartaruga à noite, morcego ao anoitecer, borboleta de dia',()=>{
     expect(critterActive('night',22*60)).toBe(true);expect(critterActive('night',12*60)).toBe(false);
     expect(critterActive('dusk',19*60)).toBe(true);expect(critterActive('dusk',10*60)).toBe(false);
     expect(critterActive('day',10*60)).toBe(true);expect(critterActive('day',21*60)).toBe(false);

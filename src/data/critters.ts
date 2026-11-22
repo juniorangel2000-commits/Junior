@@ -43,8 +43,6 @@ export const CRITTERS:readonly CritterSpecies[]=[
   palette:{w:'#f4f2ec',g:'#c8ccd0',y:'#e0b030',k:'#2a2a26',l:'#3a3a32'},
   art:[['.......ww...','......wkwyyy','......ww....','......w.....','.....ww.....','..gwwwww....','.ggwwwww....','..gwwww.....','....l.l.....','....l.l.....','....l.l.....','...ll.ll....']],
   special:[['w...........w','gw.........wg','.gww..w..wwg.','...wwwwwww...','.....www.....','......k......'],['......k......','.....www.....','...wwwwwww...','.gww..w..wwg.','gw.........wg','w...........w']],scale:2.4},
- {id:'firefly',name:'Vaga-lume',area:'swamp',mode:'air',when:'night',count:14,spawn:'water',speed:16,flee:0,wander:120,
-  palette:{y:'#f6f08a'},art:[['y']]},
  {id:'bat',name:'Morcego',area:'ruins',mode:'air',when:'dusk',count:5,spawn:'land',near:{x:20*T,y:20*T,r:700},speed:60,flee:0,wander:260,
   palette:{b:'#3a2a2a',B:'#5a4040',e:'#e0a040'},
   art:[['B.........B','BB..beb..BB','.BBbbbbbBB.','..BBbbbBB..','....bbb....'],['....beb....','...bbbbb...','.BBBbbbBBB.','BB..bbb..BB','B.........B']]},

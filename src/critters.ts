@@ -21,16 +21,6 @@ function critterTexture(scene:Phaser.Scene,sp:CritterSpecies,palette=sp.palette,
  }
  return{key,walk:Array.from({length:walkCount},(_,i)=>i),special:(sp.special??[]).map((_,i)=>walkCount+i),width,height};
 }
-function glowTexture(scene:Phaser.Scene):string{
- const key='critter-firefly-glow';
- if(!scene.textures.exists(key)){
-  const canvas=document.createElement('canvas');canvas.width=canvas.height=24;const c=canvas.getContext('2d');
-  if(c&&typeof c.createRadialGradient==='function'){const g=c.createRadialGradient(12,12,0,12,12,12);g.addColorStop(0,'rgba(255,255,200,1)');g.addColorStop(.2,'rgba(250,250,140,1)');g.addColorStop(.45,'rgba(220,240,110,.55)');g.addColorStop(1,'rgba(200,230,90,0)');c.fillStyle=g;c.fillRect(0,0,24,24);}
-  scene.textures.addCanvas(key,canvas);
- }
- return key;
-}
-
 type Phase='idle'|'walk'|'flee'|'gone'|'hide';
 interface Critter{
  sp:CritterSpecies;sprite:Phaser.GameObjects.Sprite;tex:ReturnType<typeof critterTexture>;
@@ -49,9 +39,8 @@ export class CritterField {
   for(const sp of crittersOf(area))for(let i=0;i<sp.count;i++){
    const spot=critterSpot(sp,terrain,this.random);if(!spot)continue;
    const palette=sp.id==='butterfly'?{...sp.palette,W:BUTTERFLY_COLORS[i%BUTTERFLY_COLORS.length]}:sp.palette;
-   const tex=sp.id==='firefly'?{key:glowTexture(scene),walk:[0],special:[],width:24,height:24}:critterTexture(scene,sp,palette,sp.id==='butterfly'?`-${i%BUTTERFLY_COLORS.length}`:'');
+   const tex=critterTexture(scene,sp,palette,sp.id==='butterfly'?`-${i%BUTTERFLY_COLORS.length}`:'');
    const sprite=scene.add.sprite(spot.x,spot.y,tex.key,tex.walk[0]).setOrigin(.5,1).setScale(sp.scale??(sp.id==='butterfly'?1.5:2)).setData('no-shadow',sp.mode==='air'||sp.mode==='perch'&&sp.id==='owl');
-   if(sp.id==='firefly')sprite.setBlendMode(Phaser.BlendModes.ADD).setScale(1.3).setData('fixture-light',{radius:9,strength:.55,always:true});
    this.critters.push({sp,sprite,tex,x:spot.x,y:spot.y,home:{...spot},phase:'idle',timer:this.random()*3,anim:this.random()*10,lift:0,vx:0,vy:0,seed:this.random()*1000});
   }
   scene.events.on('update',this.update,this);
@@ -112,9 +101,8 @@ export class CritterField {
     // Voo à toa em volta de casa, com um leve sobe e desce.
     if(!c.target||Math.hypot(c.target.x-c.x,c.target.y-c.y)<8)this.pickTarget(c);
     if(c.target){const a=Math.atan2(c.target.y-c.y,c.target.x-c.x);c.x+=Math.cos(a)*c.sp.speed*dt;c.y+=Math.sin(a)*c.sp.speed*dt;c.vx=Math.cos(a);}
-    c.lift=(c.sp.id==='bat'?70:c.sp.id==='firefly'?26:18)+Math.sin(c.anim*3+c.seed)*6;
-    if(c.sp.id==='firefly')c.sprite.setAlpha(.45+.55*Math.max(0,Math.sin(c.anim*2.2+c.seed)));
-    else c.sprite.setFrame(c.tex.walk[Math.floor(c.anim*(c.sp.id==='bat'?10:8))%c.tex.walk.length]);
+    c.lift=(c.sp.id==='bat'?70:18)+Math.sin(c.anim*3+c.seed)*6;
+    c.sprite.setFrame(c.tex.walk[Math.floor(c.anim*(c.sp.id==='bat'?10:8))%c.tex.walk.length]);
    }else if(mode==='perch'){
     // Só vira para o jogador e pisca (coruja) ou respira (gato dormindo).
     if(player&&dist<260)c.vx=player.x<c.x?-1:1;
@@ -130,8 +118,7 @@ export class CritterField {
     }
    }
    if(c.vx)c.sprite.setFlipX(c.vx<0);
-   // Vaga-lume é luz: fica acima da camada de escuridão da noite (Daylight, 5000).
-   c.sprite.setPosition(Math.round(c.x),Math.round(c.y-c.lift)).setDepth(c.sp.id==='firefly'?5100+c.y/10000:mode==='air'||c.lift>20?c.y+600:c.y);
+   c.sprite.setPosition(Math.round(c.x),Math.round(c.y-c.lift)).setDepth(mode==='air'||c.lift>20?c.y+600:c.y);
   }
  }
  destroy():void{this.scene.events.off('update',this.update,this);for(const c of this.critters)c.sprite.destroy();this.critters=[];}
