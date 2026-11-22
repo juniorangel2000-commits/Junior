@@ -18,6 +18,18 @@
 
 ## Feito nesta rodada
 
+- **Um ano jogado e economia rebalanceada** (pedido do Junior). Relatório: [docs/economia/RELATORIO-ANO-1.md](economia/RELATORIO-ANO-1.md).
+  - **Simulações:** `scripts/economia/ano.test.ts` e `scripts/economia/jogador.test.ts`. Rodam só com `ECONOMIA=1 npx vitest run scripts/economia` e reescrevem os `.md` de `docs/economia`.
+  - **Mudanças:**
+    - rebrota de feijão, tomate e hortelã passou para 4 dias, com sementes mais caras;
+    - ovo, leite e lã subiram, e os produtos de máquina também;
+    - os pratos foram recalculados pela regra de `tests/prices-balance.test.ts`;
+    - o peixe comum caiu para 12 C (`FISH_PRICE`), e o raro subiu para 70 C;
+    - o Pomar ficou sazonal (`ORCHARD_FRUIT_SEASONS`);
+    - os concursos da Feira e da Colheita foram corrigidos.
+  - **No navegador:** foram 113 noites com horta, saves e recarga em cada virada de estação, até o Ano 2, sem erros.
+  - As mudanças estão na preview.47, cuja Release o Junior ainda não tinha criado, e as notas já incluem o balanço.
+
 - **Arte dos festivais** (do Junior, recortada do fundo magenta), em `public/assets/visual/festivals` e com as fontes em `referencias/cenarios/festivais`:
   - nove barracas, três por festival da praça;
   - fogueira animada da praia, com caixote de conchas e cesto;
@@ -97,6 +109,8 @@
   - A arte panorâmica, o atlas com Mina, Galerias, dungeons e interiores, e os detalhes do píer e da Estação ficam em `/workspace/afterrain-costa/`, na máquina do Codex.
 
 ## Em andamento e próximo passo exato
+
+- Decisões pendentes do Junior, listadas no relatório do ano: vigor gasto pelas ferramentas, chuva regando a horta, novos gastos para o meio do jogo, como acesso às vacas, cabras e ovelhas.
 
 - Validar as novas sprites em conjunto nos seis cenários. Conferir a escala, as quatro direções durante a caminhada e a fuga, o voo ao se aproximar, o ouriço se enrolando e o aparecimento de espécies ao anoitecer. Junior pediu fazer toda a arte primeiro.
 - A estrada leste da Estação ainda aguarda um destino.
