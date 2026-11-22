@@ -1,6 +1,7 @@
 import {urbanFrame,type DungeonObstacle} from '../dungeons/maps';
 import {CITY_FOREST_TREES,CITY_FOREST_OBSTACLES} from './city-forest';
 import {natureArt} from './nature-catalog';
+import {cityRuinsRoadProtected} from './ruins-road';
 import {URBAN_PROP_SIZES} from './editor-props';
 import type {MapEditData,EditorObjectKind} from '../systems/map-editor';
 export interface CityMapObject {id:string;kind:EditorObjectKind;x:number;y:number;variant?:number;scale?:number}
@@ -11,7 +12,8 @@ export function cityMapObjects(edits?:MapEditData):CityMapObject[]{
  const ids=new Set(original.map(p=>p.id));
  const result=original.flatMap(p=>{const e=edits.objects[p.id];return e?.removed?[]:[{...p,x:e?.x??p.x,y:e?.y??p.y}];});
  for(const [id,e] of Object.entries(edits.objects))if(!ids.has(id)&&!e.removed&&e.kind)result.push({id,kind:e.kind,x:e.x,y:e.y});
- layouts.set(edits,result);return result;
+ const open=result.filter(p=>!cityRuinsRoadProtected(p.x,p.y));
+ layouts.set(edits,open);return open;
 }
 export function cityObjectSolid(p:CityMapObject):boolean {
  return p.kind==='standingTree'||p.kind==='pine'||p.kind==='vein'||(p.kind.startsWith('urban-')?URBAN_PROP_SIZES[p.kind as keyof typeof URBAN_PROP_SIZES][2]:!!natureArt(p.kind)?.solid);

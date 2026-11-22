@@ -90,7 +90,7 @@ import {DEVELOPMENT_TOOLS} from '../development-tools';
 import type {MapArea} from '../data/default-maps';
 
 import {playerSpeedFactor} from '../systems/food-effects';
-export interface VillageStart {resumeCityForest?:boolean;save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
+export interface VillageStart {resumeCityForest?:'cityForest'|'ruins';save:SaveData;ui:GameUI;onReturn:(save:SaveData,title?:boolean)=>void}
 type Villager={data:VillageNPC;sprite:Phaser.GameObjects.Sprite;frames:number};
 
 /** Town state travels through the same save as the farm, without replacing its
@@ -243,7 +243,7 @@ export class VillageScene extends Phaser.Scene {
     this.ui,
     () => this.persist(),
   );
-  if(data.resumeCityForest)this.enterCityForest(true);else this.persist();
+  if(data.resumeCityForest)this.enterCityForest(data.resumeCityForest);else this.persist();
  }
  private canTrade(id:ResidentId):boolean {
   return merchantCanTrade(id,this.roomOwner)&&(!dailyMerchant(id)||this.routines.get(id)?.isServing(this.state)===true);
@@ -596,10 +596,11 @@ export class VillageScene extends Phaser.Scene {
   else if(e.key>='1'&&e.key<='9')this.ui.activateSlot(Number(e.key)-1);
  }
  private wheel=(_p:unknown,_objects:unknown,_dx:number,dy:number):void=>{if(!this.paused&&!this.shop?.isOpen)this.changeCameraZoom(dy<0?1:-1);};
- private enterCityForest(resume=false):void{
+ private enterCityForest(resume?:VillageStart['resumeCityForest']):void{
   if(this.leaving||this.inShop)return;
   if(!resume&&!this.persist())return;
   this.leaving=true;const updated=structuredClone(this.state),ui=this.ui,onReturn=this.onReturn;
+  if(resume)updated.activeArea=resume;
   this.input.keyboard?.resetKeys();this.cameras.main.fadeOut(SCENE_FADE_MS);
   this.time.delayedCall(SCENE_FADE_MS,()=>this.scene.start('AcessoCidade',{save:updated,ui,onReturn:(save:SaveData,title=false)=>{
    if(title||save.activeArea==='property')onReturn(save,title);else this.scene.start('Vila',{save,ui,onReturn});

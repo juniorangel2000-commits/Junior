@@ -33,7 +33,8 @@ import {advanceClock,GAME_MINUTES_PER_SECOND} from '../systems/clock';
 import {directionFromVector,directionVector} from '../character-directions';
 import {MapExitPassage,SCENE_FADE_MS} from '../systems/map-transition';
 import {loadCameraZoom,saveCameraZoom,stepCameraZoom} from '../camera-zoom';
-import {CITY_ACCESS,CITY_FOREST_ENTRY,CITY_FOREST_EXIT,VILLAGE_NORTH_ARRIVAL,cityForestWater,cityForestBlockedPoint} from '../data/city-forest';
+import {CITY_ACCESS,CITY_FOREST_ENTRY,CITY_FOREST_EXIT,VILLAGE_NORTH_ARRIVAL,cityForestTerrain,cityForestWater,cityForestBlockedPoint} from '../data/city-forest';
+import {CITY_RUINS_EXIT,CITY_RUINS_RETURN} from '../data/ruins-road';
 import {CityForestWorld,preloadCityForest} from '../city-forest-world';
 
 import {playerSpeedFactor} from '../systems/food-effects';
@@ -64,14 +65,16 @@ export class CityForestScene extends Phaser.Scene{
  private lastWheelZoomAt=0;
  private readonly passage=new MapExitPassage();
  private readonly lakePassage=new MapExitPassage();
+ private readonly ruinsPassage=new MapExitPassage();
  private bentoTravelView?:BentoTravelView;
  constructor(){super('AcessoCidade');}
  preload():void{preloadBentoTravel(this);preloadCityForest(this);preloadDamiaoSprites(this);preloadPetArt(this);}
  create(data:CityForestStart):void{
   gameAudio.setScene('game');
   setupTreeWind(this);
+  const restoreRuins=data.save.activeArea==='ruins';
   this.state=structuredClone(data.save);this.state.activeArea='cityForest';delete this.state.homePosition;delete this.state.merchantInterior;delete this.state.blacksmithInterior;
-  this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.fishing=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.lakePassage.reset();this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
+  this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.fishing=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.lakePassage.reset();this.ruinsPassage.reset();this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
   this.world=new CityForestWorld(this,this.state.cityForestMapEdits);this.fisherRoad=new FisherRoadVisit(this,()=>this.state);this.events.once('shutdown',()=>this.fisherRoad?.destroy());
   drawVillageInvitationGate(this,this.state,'cityForest',this.state.cityForestMapEdits?.points?.exit);
@@ -106,7 +109,18 @@ export class CityForestScene extends Phaser.Scene{
     () => this.persist(),
   );
   this.cityPromptArmed=!data.fromCity;
-  if(this.state.dungeonRun)this.enterDungeons();else this.persist();
+  if(this.state.dungeonRun)this.enterDungeons();else if(restoreRuins)this.enterRuins(true);else this.persist();
+ }
+ private enterRuins(resume=false):void {
+  if(this.leaving)return;
+  const save=structuredClone(this.snapshotState()),ui=this.ui,onReturn=this.onReturn;
+  save.activeArea='ruins';
+  if(!resume)delete save.ruinsPosition;
+  if(!saveGame(save)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}
+  this.leaving=true;this.input.keyboard?.resetKeys();this.cameras.main.fadeOut(SCENE_FADE_MS);
+  this.time.delayedCall(SCENE_FADE_MS,()=>this.scene.start('Ruinas',{save,ui,onReturn:(updated:SaveData,title=false)=>{
+   if(title)onReturn(updated,true);else this.scene.start('AcessoCidade',{save:updated,ui,onReturn});
+  }}));
  }
  private enterLake():void {
   if(this.leaving||!this.persist())return;
@@ -115,18 +129,18 @@ export class CityForestScene extends Phaser.Scene{
   this.leaving=true;this.input.keyboard?.resetKeys();this.cameras.main.fadeOut(SCENE_FADE_MS);
   this.time.delayedCall(SCENE_FADE_MS,()=>this.scene.start('Lago',{save,ui:this.ui,onReturn:this.onReturn}));
  }
- private fishingWaterPoint=(x:number,y:number):boolean=>[[0,0],[-32,0],[32,0],[0,-32],[0,32]].every(([dx,dy])=>paintedWaterPoint(this.state.cityForestMapEdits?.terrain,x+dx,y+dy,(px,py)=>cityForestWater(px/32,py/32)));
+ private fishingWaterPoint=(x:number,y:number):boolean=>[[0,0],[-32,0],[32,0],[0,-32],[0,32]].every(([dx,dy])=>paintedWaterPoint(cityForestTerrain(this.state.cityForestMapEdits),x+dx,y+dy,(px,py)=>cityForestWater(px/32,py/32)));
  private nearFishing():boolean{return !this.player.isSwimming&&Array.from({length:7},(_,i)=>i-3).some(dx=>Array.from({length:7},(_,i)=>i-3).some(dy=>this.fishingWaterPoint(this.player.x+dx*16,this.player.y+dy*16)));}
  private nearCity():boolean{return Math.hypot(this.player.x/32-CITY_ACCESS.x,this.player.y/32-CITY_ACCESS.y)<3;}
  private updateHUD():void{
   const fishing=this.nearFishing();
-  this.ui.updateHUD({itemQuality:this.state.itemQuality,worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,farmingProgress:this.state.farmingProgress,area:'cityForest',swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:fishing?'E':null,prompt:fishing?'E · Pescar · equipe a vara ou a rede pela mochila':!villageAccessUnlocked(this.state)&&this.player.y>67*32?VILLAGE_LOCK_MESSAGE:this.nearCity()?'Siga pela estrada para viajar à cidade':'Lago a oeste · vila ao sul · cidade ao norte',location:'Estrada da Cidade',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32},...this.bentoTravelView?.hud});
+  this.ui.updateHUD({itemQuality:this.state.itemQuality,worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,farmingProgress:this.state.farmingProgress,area:'cityForest',swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:fishing?'E':null,prompt:fishing?'E · Pescar · equipe a vara ou a rede pela mochila':!villageAccessUnlocked(this.state)&&this.player.y>67*32?VILLAGE_LOCK_MESSAGE:this.nearCity()?'Siga pela estrada para viajar à cidade':'Lago a oeste · vila ao sul · cidade ao norte · ruínas a leste',location:'Estrada da Cidade',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32},...this.bentoTravelView?.hud});
   this.ui.updateCameraZoom(this.zoom,!this.paused);
  }
  private blockedPoint=(x:number,y:number)=>!!this.bentoTravelView?.blocks(x,y)||(cityForestBlockedPoint(x,y,this.state.cityForestMapEdits));
  private movementBlockedPoint=(x:number,y:number)=>!!this.bentoTravelView?.blocks(x,y)||(cityForestBlockedPoint(x,y,this.state.cityForestMapEdits,true)||invitationGateBlocked(this.state,'cityForest',x,y,this.state.cityForestMapEdits?.points?.exit));
  private movementBlockedTile=(x:number,y:number)=>this.movementBlockedPoint((x+.5)*32,(y+.5)*32);
- private swimmingPoint=(x:number,y:number)=>sampleWaterDepth((px,py)=>paintedWaterPoint(this.state.cityForestMapEdits?.terrain,px,py,(x,y)=>cityForestWater(x/32,y/32)),x,y);
+ private swimmingPoint=(x:number,y:number)=>sampleWaterDepth((px,py)=>paintedWaterPoint(cityForestTerrain(this.state.cityForestMapEdits),px,py,(x,y)=>cityForestWater(x/32,y/32)),x,y);
  private key(e:KeyboardEvent):void{
   if(e.repeat||this.leaving||e.target instanceof HTMLElement&&e.target.matches('input,textarea,select,[contenteditable="true"]'))return;
   if(DEVELOPMENT_TOOLS&&e.key==='F2'){e.preventDefault();this.openMapEditor();return;}
@@ -226,6 +240,7 @@ export class CityForestScene extends Phaser.Scene{
   if(this.paused||this.leaving||this.ui.isModalOpen()||document.hidden)return;
   const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(dt,this.movementBlockedTile,this.movementBlockedPoint,true,this.swimmingPoint);
   if(this.lakePassage.update(before,this.player,CITY_LAKE_EXIT,CITY_LAKE_ENTRY)){this.enterLake();return;}
+  if(this.ruinsPassage.update(before,this.player,CITY_RUINS_EXIT,CITY_RUINS_RETURN)){this.enterRuins();return;}
   const distance=Math.hypot(this.player.x/32-CITY_ACCESS.x,this.player.y/32-CITY_ACCESS.y);
   if(distance>4)this.cityPromptArmed=true;
   if(this.cityPromptArmed&&distance<3){this.askCityTravel();return;}

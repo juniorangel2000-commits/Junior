@@ -9,6 +9,7 @@ export const AREA_NAMES={
  highland:'Platô da Nascente',
  survivorCamp:'Acampamento dos Sobreviventes',
  swamp:'Pântano',
+ ruins:'Ruínas',
  mine:'Mina Antiga',
 } as const;
 export type AreaNameKey=keyof typeof AREA_NAMES;

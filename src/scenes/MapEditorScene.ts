@@ -1,4 +1,8 @@
 import {SwampWorld,preloadSwamp} from '../swamp-world';
+import {RuinsWorld,preloadRuins} from '../ruins-world';
+import {createRuinsLayout} from '../data/ruins';
+import {cityRuinsRoadProtected} from '../data/ruins-road';
+import {isRuinKind} from '../data/ruins-art';
 import {createSwampLayout,forestSwampApproach,isSwampReed,swampBaseWater,swampReedGroundClear,tileCenter} from '../data/swamp';
 import {isSwampKind} from '../data/swamp-art';
 import {cropSpriteLayout} from '../crop-layout';
@@ -15,7 +19,7 @@ import {drawCraftedBench} from '../woodwork-art';
 import {EDITOR_AREAS,isDungeonArea} from '../data/editor-areas';
 import {readSceneMap,writeSceneMap} from '../systems/scene-map-edits';
 import {CityForestWorld,preloadCityForest,setupCityForestArt} from '../city-forest-world';
-import {cityForestBlockedPoint,cityForestWater} from '../data/city-forest';
+import {cityForestBlockedPoint,cityForestTerrain,cityForestWater} from '../data/city-forest';
 import {DungeonWorld} from '../dungeons/world';
 import {dungeonBlocked} from '../dungeons/maps';
 import {setupDungeonScenery} from '../dungeons/art';
@@ -52,11 +56,11 @@ export class MapEditorScene extends Phaser.Scene {
  private initial!:Record<MapArea,string>;
  private resourcesHidden=false;
  private villageView?:VillageWorld;
- private extraView?:CityForestWorld|DungeonWorld|FishingLakeWorld|SurvivorCampWorld|HighlandWorld|SwampWorld;
+ private extraView?:CityForestWorld|DungeonWorld|FishingLakeWorld|SurvivorCampWorld|HighlandWorld|SwampWorld|RuinsWorld;
  private resourceTextures=new Set<string>();
  private readonly resourceVisibility=new EditorResourceVisibility<Phaser.GameObjects.Image>();
  constructor(){super('Editor');}
- preload():void{preloadCityForest(this);preloadFishingLake(this);preloadSurvivorCamp(this);preloadHighland(this);preloadSwamp(this);}
+ preload():void{preloadCityForest(this);preloadFishingLake(this);preloadSurvivorCamp(this);preloadHighland(this);preloadSwamp(this);preloadRuins(this);}
  create(data:MapEditorStart):void {
   setupCityForestArt(this);setupDungeonScenery(this);
   this.editorStart=data;
@@ -71,7 +75,7 @@ export class MapEditorScene extends Phaser.Scene {
   const farming=new Farming(save.crops,save.preparedSoil,save.farmingProgress,save.restoredFarmSoil);
   let property:WorldView|undefined,forest:ForestWorld|undefined,village:VillageWorld|undefined;
   if(area==='property')property=createWorld(this,[],save.buildings,undefined,'editor-property',(x,y)=>farming.isPrepared(x,y));
-  else if(area==='village')village=this.villageView=new VillageWorld(this,undefined,'editor-village');else if(area==='forest')forest=new ForestWorld(this,undefined,'editor-forest');else if(area==='fishingLake')this.extraView=new FishingLakeWorld(this,undefined,'editor-lake');else if(area==='cityForest')this.extraView=new CityForestWorld(this,undefined,'editor-city');else if(area==='survivorCamp')this.extraView=new SurvivorCampWorld(this);else if(area==='highland')this.extraView=new HighlandWorld(this);else if(area==='swamp')this.extraView=new SwampWorld(this,undefined,true);else this.extraView=new DungeonWorld(this,area,undefined,'editor-dungeon-baseline');
+  else if(area==='village')village=this.villageView=new VillageWorld(this,undefined,'editor-village');else if(area==='forest')forest=new ForestWorld(this,undefined,'editor-forest');else if(area==='fishingLake')this.extraView=new FishingLakeWorld(this,undefined,'editor-lake');else if(area==='cityForest')this.extraView=new CityForestWorld(this,undefined,'editor-city');else if(area==='survivorCamp')this.extraView=new SurvivorCampWorld(this);else if(area==='highland')this.extraView=new HighlandWorld(this);else if(area==='swamp')this.extraView=new SwampWorld(this,undefined,true);else if(area==='ruins')this.extraView=new RuinsWorld(this,undefined,true);else this.extraView=new DungeonWorld(this,area,undefined,'editor-dungeon-baseline');
   const original=(property?.editorObjects??village?.editorObjects??forest?.editorObjects??this.extraView!.editorObjects).map(o=>({...o,depleted:save.depletedResources.includes(area==='forest'?`f-${o.id}`:o.id)}));
   const buildings=new Set([...save.buildings.flatMap(buildingFootprint),...farming.soilTiles].map(p=>`${p.x},${p.y}`));
   let liveMap=edits;
@@ -86,6 +90,7 @@ export class MapEditorScene extends Phaser.Scene {
    else if(area==='cityForest'){property=undefined;forest=undefined;this.extraView=new CityForestWorld(this,map,'editor-city');}
    else if(area==='highland'){property=undefined;forest=undefined;this.extraView=new HighlandWorld(this,map);}
    else if(area==='swamp'){property=undefined;forest=undefined;this.extraView=new SwampWorld(this,map,true);}
+   else if(area==='ruins'){property=undefined;forest=undefined;this.extraView=new RuinsWorld(this,map,true);}
    else if(area==='survivorCamp'){property=undefined;forest=undefined;this.extraView=new SurvivorCampWorld(this,map);}
    else if(isDungeonArea(area)){property=undefined;forest=undefined;this.extraView=new DungeonWorld(this,area,map,'editor-dungeon');}
    else {
@@ -106,16 +111,16 @@ export class MapEditorScene extends Phaser.Scene {
   };
   render(edits);
   const objects=():WorldEditorObject[]=>property?.editorObjects??village?.editorObjects??forest?.editorObjects??this.extraView!.editorObjects;
-  const blocked=(x:number,y:number)=>property?.isBlocked(x,y)??village?.isBlocked(x,y)??(area==='swamp'?(this.extraView as SwampWorld).layout.blocked((x+.5)*32,(y+.5)*32):area==='highland'?highlandBlockedPoint((x+.5)*32,(y+.5)*32,liveMap):area==='survivorCamp'?campBlockedPoint((x+.5)*32,(y+.5)*32,liveMap):area==='fishingLake'?lakeBlockedPoint((x+.5)*32,(y+.5)*32,liveMap):area==='cityForest'?cityForestBlockedPoint((x+.5)*32,(y+.5)*32,liveMap):isDungeonArea(area)?dungeonBlocked(area,(x+.5)*32,(y+.5)*32,liveMap):forest!.isBlocked(x,y));
-  const water=(x:number,y:number)=>property?.isWater(x,y)??village?.waterAt(x,y)??(area==='swamp'?(this.extraView as SwampWorld).layout.water((x+.5)*32,(y+.5)*32):area==='highland'?highlandWaterPoint((x+.5)*32,(y+.5)*32,liveMap):area==='survivorCamp'?liveMap.terrain[`${x},${y}`]==='water':area==='fishingLake'?paintedWaterPoint(liveMap.terrain,(x+.5)*32,(y+.5)*32,(px,py)=>lakeWater(px/32,py/32)):area==='cityForest'?paintedWaterPoint(liveMap.terrain,(x+.5)*32,(y+.5)*32,(px,py)=>cityForestWater(px/32,py/32)):isDungeonArea(area)?liveMap.terrain[`${x},${y}`]==='water':forest!.waterAt(x,y));
+  const blocked=(x:number,y:number)=>property?.isBlocked(x,y)??village?.isBlocked(x,y)??(area==='swamp'||area==='ruins'?(this.extraView as SwampWorld|RuinsWorld).layout.blocked((x+.5)*32,(y+.5)*32):area==='highland'?highlandBlockedPoint((x+.5)*32,(y+.5)*32,liveMap):area==='survivorCamp'?campBlockedPoint((x+.5)*32,(y+.5)*32,liveMap):area==='fishingLake'?lakeBlockedPoint((x+.5)*32,(y+.5)*32,liveMap):area==='cityForest'?cityForestBlockedPoint((x+.5)*32,(y+.5)*32,liveMap):isDungeonArea(area)?dungeonBlocked(area,(x+.5)*32,(y+.5)*32,liveMap):forest!.isBlocked(x,y));
+  const water=(x:number,y:number)=>property?.isWater(x,y)??village?.waterAt(x,y)??(area==='swamp'||area==='ruins'?(this.extraView as SwampWorld|RuinsWorld).layout.water((x+.5)*32,(y+.5)*32):area==='highland'?highlandWaterPoint((x+.5)*32,(y+.5)*32,liveMap):area==='survivorCamp'?liveMap.terrain[`${x},${y}`]==='water':area==='fishingLake'?paintedWaterPoint(liveMap.terrain,(x+.5)*32,(y+.5)*32,(px,py)=>lakeWater(px/32,py/32)):area==='cityForest'?paintedWaterPoint(cityForestTerrain(liveMap),(x+.5)*32,(y+.5)*32,(px,py)=>cityForestWater(px/32,py/32)):isDungeonArea(area)?liveMap.terrain[`${x},${y}`]==='water':forest!.waterAt(x,y));
   this.editor=new MapEditor(this,edits,{
    rebuild:render,objects,originalObjects:original,
    resourcesHidden:this.resourcesHidden,
    setResourcesHidden:hidden=>{this.resourcesHidden=hidden;this.updateResourceVisibility();},
-   protectedTile:(x,y)=>area==='forest'&&(forestSwampApproach(x,y)||campApproachDistance((x+.5)*32,(y+.5)*32)<32)||isProtectedMapTile(x,y,area==='property'?undefined:area)||area==='property'&&(propertyLakeApproach(x,y)||buildings.has(`${x},${y}`)),
-   protectedTerrainTile:(x,y)=>area==='property'?buildings.has(`${x},${y}`):area==='forest'&&forestSwampApproach(x,y)||isProtectedMapTile(x,y,area),
-   baseWater:area==='swamp'?(x,y)=>swampBaseWater((x+.5)*32,(y+.5)*32):area==='highland'?(x,y)=>highlandWaterPoint((x+.5)*32,(y+.5)*32):area==='survivorCamp'?()=>false:area==='fishingLake'?lakeWater:area==='village'?villageWater:area==='forest'?forestWater:area==='cityForest'?cityForestWater:isDungeonArea(area)?()=>false:isWaterTile,
-   baseWaterPoint:area==='swamp'?swampBaseWater:area==='highland'?highlandWaterPoint:area==='survivorCamp'?()=>false:area==='fishingLake'?(x,y)=>lakeWater(x/32,y/32):area==='village'?(x,y)=>villageLakeDistance(x/32,y/32)<0:area==='forest'?(x,y)=>forestWaterDistanceAt(x,y)<0:area==='cityForest'?(x,y)=>cityForestWater(x/32,y/32):isDungeonArea(area)?()=>false:isWaterPoint,
+   protectedTile:(x,y)=>area==='cityForest'&&cityRuinsRoadProtected(x,y)||area==='forest'&&(forestSwampApproach(x,y)||campApproachDistance((x+.5)*32,(y+.5)*32)<32)||isProtectedMapTile(x,y,area==='property'?undefined:area)||area==='property'&&(propertyLakeApproach(x,y)||buildings.has(`${x},${y}`)),
+   protectedTerrainTile:(x,y)=>area==='property'?buildings.has(`${x},${y}`):area==='cityForest'&&cityRuinsRoadProtected(x,y)||area==='forest'&&forestSwampApproach(x,y)||isProtectedMapTile(x,y,area),
+   baseWater:area==='swamp'?(x,y)=>swampBaseWater((x+.5)*32,(y+.5)*32):area==='highland'?(x,y)=>highlandWaterPoint((x+.5)*32,(y+.5)*32):area==='survivorCamp'||area==='ruins'?()=>false:area==='fishingLake'?lakeWater:area==='village'?villageWater:area==='forest'?forestWater:area==='cityForest'?cityForestWater:isDungeonArea(area)?()=>false:isWaterTile,
+   baseWaterPoint:area==='swamp'?swampBaseWater:area==='highland'?highlandWaterPoint:area==='survivorCamp'||area==='ruins'?()=>false:area==='fishingLake'?(x,y)=>lakeWater(x/32,y/32):area==='village'?(x,y)=>villageLakeDistance(x/32,y/32)<0:area==='forest'?(x,y)=>forestWaterDistanceAt(x,y)<0:area==='cityForest'?(x,y)=>cityForestWater(x/32,y/32):isDungeonArea(area)?()=>false:isWaterPoint,
    defaultPoints:defaultMap(area).points as {entry:{x:number;y:number};exit:{x:number;y:number}},
    canPlace:(x,y,id,kind)=>{
     const stays=()=>objects().some(o=>o.id===id&&o.x===x&&o.y===y);
@@ -127,7 +132,9 @@ export class MapEditorScene extends Phaser.Scene {
      if(isSwampKind(kind)||natureArt(kind))return !wet||!!natureArt(kind)?.water;
      return !wet&&(!kind||['standingTree','pine','stone','vein','tree','fiber','seeds','scrap'].includes(kind));
     }
-    return !isSwampKind(kind)&&(!kind?.startsWith('highland-')||area==='highland')&&
+    if(area==='ruins')return (!blocked(x,y)||stays())&&(!water(x,y)||!!natureArt(kind)?.water)&&
+      (isRuinKind(kind)||!!natureArt(kind)&&!isSwampKind(kind)||!kind||['standingTree','pine','stone','vein','tree','fiber','seeds','scrap'].includes(kind));
+    return !isSwampKind(kind)&&!isRuinKind(kind)&&(!kind?.startsWith('highland-')||area==='highland')&&
      (area!=='highland'||x<48&&y<32)&&(!kind?.startsWith('camp-')||area==='survivorCamp')&&
      (kind!=='reeds'||area==='fishingLake'||area==='cityForest'||isDungeonArea(area)||area==='property'&&nearRiverBank(x,y)||area==='village'&&Math.abs(villageLakeDistance(x+.5,y+.5))<1.7)&&
      (!isTreeKind(kind)||(property?property.canPlantTree(x,y):treeGroundClear(x,y,village?.waterPointAt??forest?.waterPointAt??((px,py)=>water(Math.floor(px/32),Math.floor(py/32))))))&&
@@ -144,6 +151,14 @@ export class MapEditorScene extends Phaser.Scene {
      for(const object of layout.objects)if(object.kind==='swamp-caiman'||object.kind==='swamp-lilies'){
       const p=tileCenter(object);
       if(!layout.water(p.x,p.y))return 'Os jacarés e as ninfeias ficam na água. Mova-os para uma lagoa ou para o canal.';
+     }
+     return null;
+    }
+    if(area==='ruins'){
+     const layout=createRuinsLayout(map);
+     for(const point of Object.values({...defaultMap(area).points,...map.points}))if(point){
+      const p=tileCenter(point);
+      if([[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>layout.blocked(p.x+dx,p.y+dy)||layout.water(p.x+dx,p.y+dy)))return 'Mantenha a chegada e a saída das Ruínas em chão livre.';
      }
      return null;
     }

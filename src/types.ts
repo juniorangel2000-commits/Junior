@@ -7,6 +7,7 @@ import type { CharacterDirection } from './character-directions';
 import type { MapEditData } from './systems/map-editor';
 import type { CharacterId } from './data/characters';
 import type {VillageProgress,VillageInstallation} from './data/village-progress';
+import type {RuinsClue} from './data/ruins-story';
 export type {VillageProgress,VillageInstallation} from './data/village-progress';
 
 export type HairStyle = 'curto' | 'longo' | 'preso';
@@ -106,6 +107,10 @@ export interface SaveData {
   highlandMapEdits?:MapEditData;
   swampMapEdits?:MapEditData;
   swampPosition?:TilePoint & {direction?:CharacterDirection};
+  ruinsMapEdits?:MapEditData;
+  ruinsPosition?:TilePoint & {direction?:CharacterDirection};
+  ruinsMapFound?:true;
+  ruinsClues?:RuinsClue[];
   /** Outdoor equipment references an owned sword; missing keeps hands free. */
   worldWeapon?:'sword'|'unarmed';
   mineCollisionRevision?:2;
@@ -130,7 +135,7 @@ export interface SaveData {
   /** One-time homestead layout; removed starter fences/beds are never recreated. */
   homesteadRevision?:1;
   selectedCrop?:import('./data/crops').CropId;
-  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake' | 'survivorCamp' | 'highland' | 'openFields' | 'swamp';
+  activeArea?: 'property' | 'forest' | 'village' | 'cityForest' | 'fishingLake' | 'survivorCamp' | 'highland' | 'openFields' | 'swamp' | 'ruins';
   fishingLakePosition?: TilePoint & { direction?: CharacterDirection };
   fishingLakeMapEdits?:MapEditData;
   cityForestPosition?: TilePoint & { direction?: CharacterDirection };

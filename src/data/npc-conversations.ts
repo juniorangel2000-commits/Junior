@@ -46,7 +46,7 @@ export const NPC_CONVERSATIONS:Record<string,readonly (readonly string[])[]>={
   ['Encontrei uma moeda antiga com um brasão que não conheço.','Cada objeto perdido é uma história esperando alguém para contar.'],
   ['Mapas antigos são meus favoritos. Mostram caminhos que talvez nem existam mais.','Se achar um, traga. Eu pago bem e ainda conto o que sei.'],
   ['Antes da chuva, esta região tinha estradas até a cidade.','Hoje a Estrada da Cidade é mato e lembrança. Mas lembrança também tem valor.'],
-  ['Um viajante me disse que há ruínas além do Platô da Nascente.','Não confirmo nem desminto. Mas guardo a informação com carinho.'],
+  ['Um viajante me disse que viu ruínas ao sul do asfalto, seguindo a leste pela Estrada da Cidade.','Parece que houve um posto de parada por ali. Se achar alguma peça diferente, venha me contar.'],
   ['Antiguidade não é coisa velha. É coisa que sobreviveu.','Como esta vila. Como você, que chegou até aqui.'],
   ['Meu antiquário abre todos os dias. Nunca se sabe quando chega um tesouro.','Às vezes o tesouro é só uma boa conversa, como esta.'],
  ],

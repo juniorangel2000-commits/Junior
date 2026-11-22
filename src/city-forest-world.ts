@@ -12,11 +12,20 @@ import art from '../public/assets/visual/city-forest/manifest.json';
 import {setupVillagePropAtlas} from './village-prop-atlas';
 import {readTerrainSprites} from './terrain-sprites';
 import {natureArt} from './data/nature-catalog';
-import {CITY_PUDDLES,CITY_ROAD_FENCES,CITY_SIGN_TEXT,CITY_ACCESS,cityRoadDistance,cityRoadAt,cityForestTrailDistance,cityForestWater,cityForestBlockedPoint} from './data/city-forest';
+import {CITY_PUDDLES,CITY_ROAD_FENCES,CITY_SIGN_TEXT,CITY_ACCESS,cityRoadDistance,cityRoadAt,cityForestTrailDistance,cityForestTerrain,cityForestWater,cityForestBlockedPoint} from './data/city-forest';
+import {CITY_RUINS_EXIT,CITY_RUINS_RETURN} from './data/ruins-road';
 import {drawExitSign} from './exit-signs';
 
-export function preloadCityForest(scene:Phaser.Scene):void{if(!scene.textures.exists('city-forest-source'))scene.load.image('city-forest-source',art.file);preloadDungeonScenery(scene);}
+export function preloadCityRoadArt(scene:Phaser.Scene):void{if(!scene.textures.exists('city-forest-source'))scene.load.image('city-forest-source',art.file);}
+export function preloadCityForest(scene:Phaser.Scene):void{preloadCityRoadArt(scene);preloadDungeonScenery(scene);}
 export function setupCityForestArt(scene:Phaser.Scene):void {setupVillagePropAtlas(scene,'city-forest-art','city-forest-source',art);}
+export function readCityAsphalt(scene:Phaser.Scene):Uint8ClampedArray {
+ const frame=scene.textures.get('city-forest-art').get('asphalt');
+ const tile=document.createElement('canvas');tile.width=tile.height=96;
+ const context=tile.getContext('2d')!;
+ context.drawImage(frame.source.image as HTMLImageElement,frame.cutX,frame.cutY,frame.cutWidth,frame.cutHeight,0,0,96,96);
+ return context.getImageData(0,0,96,96).data;
+}
 export class CityForestWorld{
  readonly editorObjects:WorldEditorObject[]=[];
  readonly objects:Phaser.GameObjects.GameObject[];
@@ -25,8 +34,9 @@ export class CityForestWorld{
  constructor(private readonly scene:Phaser.Scene,edits?:MapEditData,namespace="city-forest"){
   const before=new Set(scene.children.list);setupCityForestArt(scene);setupDungeonScenery(scene);
   this.drawGround();this.drawFences();
-  drawMapTerrainEdits(scene,edits?.terrain??{},namespace+'-edited-ground',cityForestWater,'forest')?.setDepth(-99);
-  const water=(x:number,y:number)=>paintedWaterPoint(edits?.terrain,x,y,(px,py)=>cityForestWater(px/32,py/32));addWaterMotion(scene,(x,y)=>water((x+.5)*32,(y+.5)*32),water);
+  const terrain=cityForestTerrain(edits);
+  drawMapTerrainEdits(scene,terrain??{},namespace+'-edited-ground',cityForestWater,'forest')?.setDepth(-99);
+  const water=(x:number,y:number)=>paintedWaterPoint(terrain,x,y,(px,py)=>cityForestWater(px/32,py/32));addWaterMotion(scene,(x,y)=>water((x+.5)*32,(y+.5)*32),water);
   for(const p of cityMapObjects(edits)){
    const x=(p.x+.5)*32,y=p.y*32+25,tree=p.kind==='standingTree'||p.kind==='pine';
    const image=tree?scene.add.image(x,y,`asset-${p.kind==='pine'?'pine':'tree'}-${p.variant??0}`).setOrigin(.5,256/264).setDisplaySize(166*(p.scale??1),211*(p.scale??1)).setDepth(y).setData('city-forest-tree',true):drawEditorProp(scene,p.kind,x,y);
@@ -43,6 +53,7 @@ export class CityForestWorld{
   scene.add.image(27.4*32,5*32,'city-forest-art','city').setOrigin(.5,1).setDisplaySize(80,95).setDepth(160).setData('city-access-sign',CITY_SIGN_TEXT);
   scene.add.zone((CITY_ACCESS.x+.5)*32,(CITY_ACCESS.y+.5)*32,80,90).setData('future-city-access',CITY_ACCESS);
   drawExitSign(scene,edits?.points?.exit??{x:48,y:70},edits?.points?.entry??{x:48,y:68});
+  drawExitSign(scene,CITY_RUINS_EXIT,CITY_RUINS_RETURN);
   if(!scene.textures.exists('city-forest-mist')){
    const canvas=document.createElement('canvas');canvas.width=256;canvas.height=256;const c=canvas.getContext('2d')!;
    for(const [x,y,r]of [[48,80,75],[161,154,92],[220,46,61]]){const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,'#d7e5e0bb');g.addColorStop(1,'#d7e5e000');c.fillStyle=g;c.fillRect(0,0,256,256);}
@@ -56,10 +67,7 @@ export class CityForestWorld{
   const key='city-forest-ground-v2';
   if(!this.scene.textures.exists(key)){
    const sprites=readTerrainSprites(this.scene);if(!sprites)throw new Error('Materiais de terreno não carregados');
-   const asphaltFrame=this.scene.textures.get('city-forest-art').get('asphalt');
-   const tile=document.createElement('canvas');tile.width=96;tile.height=96;
-   const tc=tile.getContext('2d')!;tc.drawImage(asphaltFrame.source.image as HTMLImageElement,asphaltFrame.cutX,asphaltFrame.cutY,asphaltFrame.cutWidth,asphaltFrame.cutHeight,0,0,96,96);
-   const asphalt=tc.getImageData(0,0,96,96).data;
+   const asphalt=readCityAsphalt(this.scene);
    const canvas=document.createElement('canvas');canvas.width=3072;canvas.height=2304;const c=canvas.getContext('2d')!,pixels=c.createImageData(3072,2304);
    // Expensive geometry sampled once per 4px block. Source pixels stay crisp.
    for(let by=0;by<2304;by+=4)for(let bx=0;bx<3072;bx+=4){

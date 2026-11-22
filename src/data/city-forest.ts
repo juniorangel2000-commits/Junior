@@ -2,6 +2,7 @@ import {treeGroundClear} from '../systems/tree-ground';
 import type {MapEditData} from '../systems/map-editor';
 import {paintedWaterPoint} from './terrain-paint';
 import {editedCityObjectBlocked} from './city-forest-layout';
+import {cityRuinsRoadProtected} from './ruins-road';
 /** Fourth map: independent from the ancient forest and the merchant village. */
 export const CITY_FOREST_SIZE={width:96,height:72,tile:32};
 export const CITY_FOREST_ENTRY={x:48,y:68};
@@ -71,6 +72,20 @@ export function cityFenceBlockedPoint(px:number,py:number):boolean{
 const hash=(a:number,b:number)=>(Math.imul(a+173,73856093)^Math.imul(b+391,19349663))>>>0;
 export const CITY_PUDDLES=[{x:33,y:49,rx:1.3,ry:.65},{x:65,y:35,rx:1.1,ry:.65},{x:57,y:59,rx:1.5,ry:.8}];
 export const cityForestWater=(x:number,y:number)=>CITY_PUDDLES.some(p=>Math.hypot((x-p.x)/p.rx,(y-p.y)/p.ry)<1);
+const protectedTerrain=new WeakMap<MapEditData,MapEditData['terrain']>();
+/** Local edits stay in the save. The new eastbound crossing always keeps its asphalt. */
+export function cityForestTerrain(edits?:MapEditData):MapEditData['terrain']|undefined{
+ if(!edits)return undefined;
+ let terrain=protectedTerrain.get(edits);
+ if(!terrain){
+  terrain=Object.fromEntries(Object.entries(edits.terrain).filter(([key])=>{
+   const [x,y]=key.split(',').map(Number);
+   return !cityRuinsRoadProtected(x,y);
+  }));
+  protectedTerrain.set(edits,terrain);
+ }
+ return terrain;
+}
 export const CITY_FOREST_TREES=(()=>{
  const result:{x:number;y:number;variant:number;pine:boolean;scale:number}[]=[];
  for(let i=0;i<6000;i++){
@@ -94,6 +109,6 @@ export const CITY_FOREST_OBSTACLES=(()=>{
 const solids=new Set([...CITY_FOREST_TREES,...CITY_FOREST_OBSTACLES].map(p=>`${p.x},${p.y}`));
 export function cityForestBlockedPoint(px:number,py:number,edits?:MapEditData,allowWater=false):boolean{
  const x=Math.floor(px/32),y=Math.floor(py/32);
- return px<32||py<32||px>3040||py>2272||(edits?editedCityObjectBlocked(px,py,edits):solids.has(`${x},${y}`))||!allowWater&&paintedWaterPoint(edits?.terrain,px,py,(x,y)=>cityForestWater(x/32,y/32))||cityFenceBlockedPoint(px,py);
+ return px<32||py<32||px>3040||py>2272||(edits?editedCityObjectBlocked(px,py,edits):solids.has(`${x},${y}`))||!allowWater&&paintedWaterPoint(cityForestTerrain(edits),px,py,(x,y)=>cityForestWater(x/32,y/32))||cityFenceBlockedPoint(px,py);
 }
 export const cityForestBlockedTile=(x:number,y:number,edits?:MapEditData)=>cityForestBlockedPoint((x+.5)*32,(y+.5)*32,edits);

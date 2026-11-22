@@ -832,22 +832,22 @@ export class GameUI {
     setTimeout(() => { toast.classList.add('leaving'); setTimeout(() => toast.remove(), 250); }, 3800);
   }
 
-  showDialogue(name: string, lines: string[], onClose?: () => void): void {
+  showDialogue(name: string, lines: string[], onClose?: () => void, mode: 'conversation'|'inspection' = 'conversation'): void {
     if (!lines.length || this.mode !== 'hud') return;
     this.openModal('dialogue');
     this.onModalClose = onClose;
     const panel = document.createElement('section');
     panel.className = 'dialogue-card panel';
     panel.setAttribute('role', 'dialog');
-    panel.setAttribute('aria-label', `Conversa com ${name}`);
-    panel.innerHTML = `<div class="dialogue-portrait" aria-hidden="true">${icon('leaf')}</div><div class="dialogue-copy"><div class="eyebrow">GENTE DO VALE</div><h2></h2><p></p><div class="dialogue-footer"><small></small><button class="text-button"></button></div></div>`;
+    panel.setAttribute('aria-label', mode==='inspection'?name:`Conversa com ${name}`);
+    panel.innerHTML = `<div class="dialogue-portrait" aria-hidden="true">${icon(mode==='inspection'?'map':'leaf')}</div><div class="dialogue-copy"><div class="eyebrow">${mode==='inspection'?'RUÍNAS':'GENTE DO VALE'}</div><h2></h2><p></p><div class="dialogue-footer"><small></small><button class="text-button"></button></div></div>`;
     panel.querySelector('h2')!.textContent = name;
     let index = 0;
     const next = panel.querySelector<HTMLButtonElement>('button')!;
     const update = (): void => {
       panel.querySelector('p')!.textContent = lines[index];
       panel.querySelector('small')!.textContent = `${index + 1} de ${lines.length}`;
-      next.innerHTML = `${index === lines.length - 1 ? 'Até logo' : 'Continuar'} ${icon('arrow')}`;
+      next.innerHTML = `${index === lines.length - 1 ? mode==='inspection'?'Fechar':'Até logo' : 'Continuar'} ${icon('arrow')}`;
     };
     next.addEventListener('click', () => { if (index < lines.length - 1) { index++; update(); } else this.closeModal(); });
     update();
@@ -1114,7 +1114,7 @@ export class GameUI {
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Mapa das regiões exploráveis');
-    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM VALE PARA CONHECER</span><h2>${this.latest?.inHome ? this.latest.area==='village'?'Interior do comércio':"Interior da casa" : this.latest?.area==='swamp' ? 'Pântano' : this.latest?.area==='openFields' ? 'Campos Abertos' : this.latest?.area==='highland' ? 'Platô da Nascente' : this.latest?.area==='survivorCamp' ? "Acampamento dos Sobreviventes" : this.latest?.area==='fishingLake' ? "Lago da Cachoeira" : this.latest?.area==='cityForest' ? "Estrada da Cidade" : this.latest?.area==='forest' ? "Floresta Antiga" : this.latest?.area==='village' ? "Vila" : "Mapa completo do vale"}</h2></div><button class="icon-button" aria-label="Fechar mapa">${icon('close')}</button></div>
+    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">UM VALE PARA CONHECER</span><h2>${this.latest?.inHome ? this.latest.area==='village'?'Interior do comércio':"Interior da casa" : this.latest?.area==='ruins' ? 'Ruínas' : this.latest?.area==='swamp' ? 'Pântano' : this.latest?.area==='openFields' ? 'Campos Abertos' : this.latest?.area==='highland' ? 'Platô da Nascente' : this.latest?.area==='survivorCamp' ? "Acampamento dos Sobreviventes" : this.latest?.area==='fishingLake' ? "Lago da Cachoeira" : this.latest?.area==='cityForest' ? "Estrada da Cidade" : this.latest?.area==='forest' ? "Floresta Antiga" : this.latest?.area==='village' ? "Vila" : "Mapa completo do vale"}</h2></div><button class="icon-button" aria-label="Fechar mapa">${icon('close')}</button></div>
       <p class="map-current">Você está em <strong></strong>.</p>
       <div class="exploration-map real-map" role="img" aria-label="Cenário real e posição do personagem"><img class="map-snapshot" alt="Vista do cenário atual" /><span class="map-player" hidden><i></i><b>Você</b></span><span class="map-north">N ↑</span></div>
       <p class="map-caption">Vista atual do cenário. Seu marcador indica a posição exata.</p>
