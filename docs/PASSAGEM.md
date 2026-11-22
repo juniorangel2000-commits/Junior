@@ -3,9 +3,9 @@
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
 - **Atualizado em:** 2026-11-22
-- **Por:** Codex, com as atividades e os festivais da etapa anterior de Claude
-- **Continuar a partir de:** `release/v0.10.0-preview.47`, HEAD (em desenvolvimento, não publicada).
-- **Última versão publicada:** `v0.10.0-preview.46`, com instalador gerado (438.633.617 bytes, contra 538.845.962 da preview.44: a compressão WebP funcionou no Windows). Tem o mesmo conteúdo da preview.45. A tag da preview.45 existe, mas o processo do Windows falhou: faltava `docs/cenarios/LEIA-0.10.0-preview.45.md`.
+- **Por:** Claude
+- **Continuar a partir de:** `release/v0.10.0-preview.48` (criar a partir da preview.47 publicada).
+- **Última versão publicada:** `v0.10.0-preview.47` (festivais, atividades nos cenários, histórias da Amélia e do Nilo, fauna animada). Instalador da preview.46: 438.633.617 bytes.
 - **Atenção ao publicar:** além de `NOTAS-<versão>.md`, crie `docs/cenarios/LEIA-<versão>.md`. O processo do Windows copia esse arquivo para a Release e falha se ele não existir.
 - **Estado:**
   - A Costa das Marés fica ao sul dos Campos Abertos.
@@ -17,6 +17,15 @@
   - A preview.47 reúne as atividades, os festivais e a fauna animada.
 
 ## Feito nesta rodada
+
+- **Arte dos festivais** (do Junior, recortada do fundo magenta), em `public/assets/visual/festivals` e com as fontes em `referencias/cenarios/festivais`:
+  - nove barracas, três por festival da praça;
+  - fogueira animada da praia, com caixote de conchas e cesto;
+  - postes com flâmulas da estação;
+  - lanternas de papel e de metal acesas na Noite das Lanternas.
+
+  `loadFestivalArt` carrega tudo só no dia da festa. O carregamento paralelo de moradores e da arte foi corrigido: cada item só fica pronto quando o próprio arquivo chegou.
+- **Validação da fauna** pedida pelo Codex: no Chromium, caranguejo, gaivota, tartaruga, esquilo, ouriço, garça e morcego reagiram certo, sem erros. Ainda falta conferir lagartixa, coruja, pombo, rato, borboleta, perdiz e raposa, porque a segunda leva não rodou por erro do script de teste.
 
 - **Festivais da vila** (`src/systems/festivals.ts`, `src/festival-decor.ts`), um por estação:
 
