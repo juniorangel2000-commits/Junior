@@ -18,6 +18,21 @@
 
 ## Feito nesta rodada
 
+- **Festivais da vila** (`src/systems/festivals.ts`, `src/festival-decor.ts`), um por estação:
+
+  | Festival | Data e local | Anfitrião e concurso |
+  | --- | --- | --- |
+  | Feira das Sementes | Primavera 14, praça, 10h–18h | Rosa, concurso de flores (girassol, camomila ou íris) |
+  | Festa da Praia | Verão 14, Costa das Marés, 15h–21h | Damião, 3 caranguejos, com fogueira e a vila em roda (`BEACH_FIRE`, `BEACH_RING` em `npc-outings.ts`) |
+  | Festa da Colheita | Outono 21, praça, 10h–19h | Augusto, 5 de uma colheita |
+  | Noite das Lanternas | Inverno 21, praça, 17h–23h | Helena, troca de presentes com 1 prato; +1 de amizade com todos |
+
+  - As lojas param, e até quem está de folga vai à festa. Na vila, os moradores ficam no período de intervalo e se juntam na praça.
+  - O concurso aparece na conversa com o anfitrião, uma vez por ano (`festivalDone` no save, campo opcional e validado).
+  - A praça ganha bandeirinhas, barracas e lanternas, ainda provisórias.
+  - A HUD mostra o festival do dia ao lado do ano. Passando o mouse na data, aparece o próximo festival.
+  - Foram conferidas no Chromium a Feira (prêmio de 200 coroas) e a Festa da Praia (prêmio de 300).
+
 - **Atividades nos cenários novos** (preview.47, em desenvolvimento):
   - **Costa:** 12 conchas na areia (`src/systems/forage.ts`) voltam em 2 dias, e a Celina compra. Com a rede na mochila, dá para pegar caranguejo: ele só se assusta bem de perto (`fleeScale`), foge devagar e o alcance é de 150 px. O Damião compra.
   - **Pântano:** as três íris azuis podem ser colhidas e voltam em 7 dias.
