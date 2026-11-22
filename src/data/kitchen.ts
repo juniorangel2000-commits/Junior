@@ -1,7 +1,7 @@
 import type {ItemId} from '../types';
 /** Cozinha, etapa 1 (docs/planejamento/ANIMAIS-E-RECEITAS.md): fogão a lenha na casa,
  * receitas ensinadas pela Helena, uma por vez, e o caderno de receitas. */
-export const DISH_IDS=['heartyBreakfast','roastedFish','roastedCorn','roastedSweetPotato','minerBroth','fishStew','honeyCake','kaleOmelette','gardenSalad','homemadeBread','cornBroa','carrotCake','pamonha','oatPorridge','pumpkinSoup','beanTropeiro','strawberryPie','dulceDeLeche','cheeseHoneyBread','watermelonJuice','chamomileTea'] as const;
+export const DISH_IDS=['orangeJuice','pearJam','applePie','crabStew','heartyBreakfast','roastedFish','roastedCorn','roastedSweetPotato','minerBroth','fishStew','honeyCake','kaleOmelette','gardenSalad','homemadeBread','cornBroa','carrotCake','pamonha','oatPorridge','pumpkinSoup','beanTropeiro','strawberryPie','dulceDeLeche','cheeseHoneyBread','watermelonJuice','chamomileTea'] as const;
 export type DishId=typeof DISH_IDS[number];
 /** Cada prato gasta 1 madeira comum como lenha. */
 export const STOVE_FUEL:ItemId='wood';
@@ -29,6 +29,11 @@ export const DISH_RECIPES:readonly DishRecipe[]=[
  {id:'dulceDeLeche',name:'Doce de leite',ingredients:{milk:3,honey:1},vigor:45,price:120,learnFee:40},
  {id:'strawberryPie',name:'Torta de morango',ingredients:{flour:2,strawberry:2,butter:1,duckEgg:1},vigor:70,price:275,learnFee:50,station:'oven'},
  {id:'cheeseHoneyBread',name:'Pão com queijo e mel',ingredients:{homemadeBread:1,cheese:1,honey:1},vigor:80,price:285,learnFee:50},
+ // Frutas do Pomar Abandonado e caranguejo da Costa (preview.47).
+ {id:'orangeJuice',name:'Suco de laranja',ingredients:{orange:2},vigor:30,price:70,learnFee:20},
+ {id:'pearJam',name:'Doce de pera',ingredients:{pear:2,honey:1},vigor:40,price:130,learnFee:30},
+ {id:'applePie',name:'Torta de maçã',ingredients:{flour:2,apple:3,butter:1,egg:1},vigor:70,price:260,learnFee:45,station:'oven'},
+ {id:'crabStew',name:'Caranguejada',ingredients:{crab:2,tomato:1,sweetPotato:1},vigor:65,price:180,learnFee:40},
  // Fogueira portátil: pratos simples, já conhecidos de quem tem a fogueira.
  {id:'roastedFish',name:'Peixe assado',ingredients:{fish:1},vigor:30,price:30,learnFee:0,station:'campfire',source:'campfire'},
  {id:'roastedCorn',name:'Milho assado',ingredients:{corn:1},vigor:20,price:40,learnFee:0,station:'campfire',source:'campfire'},

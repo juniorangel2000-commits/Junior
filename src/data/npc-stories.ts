@@ -20,6 +20,28 @@ export interface NpcStory{title:string;parts:readonly [StoryPart,StoryPart,Story
 export const STORY_AFFINITY=3;
 
 export const NPC_STORIES:Partial<Record<SocialNpc,NpcStory>>={
+ amelia:{title:'A íris da vó Dita',parts:[
+  {title:'O caderno de ervas',affinity:3,
+   ask:['Minha avó Dita era benzedeira. Ela falava de uma íris azul que crescia na beira das lagoas, antes da chuva.','Quero refazer o caderno de ervas dela, começando pelas plantas comuns. Me traz ervas?'],
+   need:{herb:6},thanks:['Já sequei e prensei todas. A primeira página do caderno está pronta.','Ela escrevia o nome de cada planta com a letra mais bonita que eu já vi.'],reward:{coins:100,items:{bandage:3}}},
+  {title:'A flor do Pântano',affinity:8,
+   ask:['Encontrei um desenho no caderno: a íris azul, na beira das lagoas do Pântano.','Se ela ainda existe, deve estar lá. Me traz uma? Mesmo que seja só uma.'],
+   need:{blueIris:1},thanks:['É ela! Exatamente como no desenho da vó Dita.','Ela dizia que a íris acalma o coração. Agora acredito.'],reward:{items:{herbalTonic:3},coins:150}},
+  {title:'O chá da benzedeira',affinity:15,
+   ask:['A última receita do caderno é o chá da benzedeira: íris azul, ervas raras e mel.','Quero servir na vila, para quem perdeu alguém na chuva. Me ajuda a juntar?'],
+   need:{blueIris:3,rareHerb:2,honey:2},thanks:['A vila inteira tomou o chá. Teve gente que chorou, teve gente que riu.','O caderno da vó Dita está completo. Fica uma cópia com você.'],reward:{items:{fungalInfusion:2,herbalTonic:3},coins:350}},
+ ]},
+ nilo:{title:'A marca das três pontas',parts:[
+  {title:'Os arquivos molhados',affinity:3,
+   ask:['A marca do selo de bronze é da antiga companhia da ferrovia. Tenho certeza.','Guardei uns arquivos da estação, mas estão úmidos e enferrujados. Preciso de pano e sucata para limpar as caixas.'],
+   need:{cloth:2,scrap:6},thanks:['Achei! Uma lista de cargas com a mesma marca: três pontas, uma em cima da outra.','O selo fechava os vagões de valor. Alguma coisa importante passava por aquela estação.'],reward:{coins:120,items:{goldShard:2}}},
+  {title:'O cofre da bilheteria',affinity:8,
+   ask:['Na sala de espera da Estação tem um cofre emperrado atrás da bilheteria.','Com peças de metal e pregos eu desmonto a fechadura sem estragar nada.'],
+   need:{metalPart:3,nails:10},thanks:['Abriu. Dentro, bilhetes nunca usados e um livro de registro.','A última viagem registrada levava sementes e remédios para a cidade. Nunca chegou.'],reward:{items:{oldMap:1},coins:180}},
+  {title:'O museu do vale',affinity:15,
+   ask:['Quero montar um pequeno museu na loja, com o selo, os bilhetes e o livro.','Preciso de uma vitrine firme: madeira nobre e um lingote de ouro para os detalhes.'],
+   need:{hardwood:4,goldIngot:1},thanks:['O museu está aberto. A vila inteira veio ver o selo.','Quem chegar depois vai saber o que passou por aqui. Obrigado por ajudar a contar essa história.'],reward:{items:{accessory:1,furniture:1},coins:400}},
+ ]},
  tobias:{title:'A ponte do avô',parts:[
   {title:'Medir o vão',affinity:3,
    ask:['Lembra que eu disse que meu avô construiu metade da vila? A obra preferida dele era a ponte do riacho.','A chuva levou quase tudo. Quero reconstruir, mas primeiro preciso de tábuas para medir o vão e montar o andaime.'],

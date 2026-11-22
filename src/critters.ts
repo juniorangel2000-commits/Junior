@@ -46,6 +46,19 @@ export class CritterField {
   scene.events.on('update',this.update,this);
  }
  get count(){return this.critters.length;}
+ /** O bicho visível mais perto do ponto, de uma espécie (para pegar com a rede). */
+ nearest(id:string,p:{x:number;y:number},radius:number):{x:number;y:number}|undefined{
+  let best:Critter|undefined,dist=radius;
+  for(const c of this.critters){const d=Math.hypot(c.x-p.x,c.y-p.y);if(c.sp.id===id&&c.phase!=='gone'&&c.sprite.visible&&d<dist){best=c;dist=d;}}
+  return best&&{x:best.x,y:best.y};
+ }
+ /** Tira o bicho mais perto do mapa (pego pelo jogador); ele volta depois, em outro lugar. */
+ take(id:string,p:{x:number;y:number},radius:number):boolean{
+  let best:Critter|undefined,dist=radius;
+  for(const c of this.critters){const d=Math.hypot(c.x-p.x,c.y-p.y);if(c.sp.id===id&&c.phase!=='gone'&&c.sprite.visible&&d<dist){best=c;dist=d;}}
+  if(!best)return false;
+  best.phase='gone';best.timer=40+this.random()*40;best.sprite.setVisible(false);return true;
+ }
  private pickTarget(c:Critter):void{
   for(let i=0;i<8;i++){
    const a=this.random()*Math.PI*2,r=c.sp.wander*(.3+.7*this.random()),x=c.home.x+Math.cos(a)*r,y=c.home.y+Math.sin(a)*r;

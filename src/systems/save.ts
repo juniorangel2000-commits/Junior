@@ -74,6 +74,7 @@ import {validMerchantRoutines} from './merchant-routine';
 import {validResidentId,validShopResidents} from './merchant-visit';
 import {merchantRoomFits,validMerchantLayout} from '../data/merchant-rooms';
 import {validOutingGifts} from './npc-outings';
+import {validForageHarvest} from './forage';
 
 // A chave e a origem do aplicativo permanecem iguais para localizar partidas antigas.
 export const SAVE_KEY = 'depois-da-chuva-v1';
@@ -120,6 +121,7 @@ export function validateSave(value: unknown): value is SaveData {
   if(!validNpcStories(value.npcStories))return false;
   if(!validPropertyVisitDay(value.propertyVisitDay))return false;
   if(!validOutingGifts(value.npcOutingGifts))return false;
+  if(!validForageHarvest(value.forageHarvest,typeof value.day==='number'?value.day:0))return false;
   if(value.bentoTravel!==undefined&&!validBentoTravel(value.bentoTravel,typeof value.day==='number'?value.day:999999))return false;
   if(value.mineRescue!==undefined&&!validMineRescue(value.mineRescue,typeof value.day==='number'?value.day:999999))return false;
   if(value.mineMissions!==undefined&&!validMineMissions(value.mineMissions,typeof value.day==='number'?value.day:999999))return false;
