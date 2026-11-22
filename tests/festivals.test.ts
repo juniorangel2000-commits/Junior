@@ -1,4 +1,5 @@
 import {describe,expect,it} from 'vitest';
+import {existsSync} from 'node:fs';
 import {FESTIVALS,festivalOn,festivalNow,nextFestival,enterFestivalContest,festivalContestDone,contestItem} from '../src/systems/festivals';
 import {onOuting,outingsAt,BEACH_FIRE} from '../src/systems/npc-outings';
 import {merchantPeriod,type RoutineId} from '../src/systems/merchant-routine';
@@ -62,5 +63,11 @@ describe('festivais da vila',()=>{
     const loaded=migrateSave(JSON.parse(JSON.stringify(save)))!;
     expect(validateSave(loaded)).toBe(true);
     expect(validateSave({...loaded,festivalDone:{'festa-falsa':1}})).toBe(false);
+  });
+  it('usa a arte dos festivais e os enfeites da praia ficam na areia',()=>{
+    for(const f of ['stall-seeds','stall-flowers','stall-pots','stall-pumpkins','stall-fruit','stall-grain','stall-lanterns','stall-gifts','stall-tea','post','banner-spring','banner-autumn','banner-winter','paper-lantern-yellow','paper-lantern-red','lantern-brass','lantern-copper','flower-crate','hay-bale','shell-crate','beach-basket','beach-fire'])
+      expect(existsSync(`public/assets/visual/festivals/${f}.png`),f).toBe(true);
+    const coast=createCoastLayout();
+    for(const [dx,dy] of [[-150,70],[150,-60]])expect(coast.water(BEACH_FIRE.x+dx,BEACH_FIRE.y+dy)||coast.blocked(BEACH_FIRE.x+dx,BEACH_FIRE.y+dy),`${dx},${dy}`).toBe(false);
   });
 });

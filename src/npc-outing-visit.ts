@@ -21,6 +21,7 @@ import {preloadCelinaSprites,CELINA_WALK_FRAMES,CELINA_DISPLAY,CELINA_ORIGIN_Y} 
 import {preloadIcaroSprites,ICARO_WALK_FRAMES,ICARO_DISPLAY,ICARO_ORIGIN_Y} from './icaro-sprites';
 import {preloadDamiaoSprites,damiaoTexture,DAMIAO_WALK_FRAMES,DAMIAO_DISPLAY,DAMIAO_ORIGIN_Y} from './damiao-sprites';
 import {festivalNow,festivalContestDone,enterFestivalContest} from './systems/festivals';
+import {loadFestivalArt,festivalTexture} from './festival-decor';
 import {preloadAugustoSprites,AUGUSTO_WALK_FRAMES,AUGUSTO_DISPLAY,AUGUSTO_ORIGIN_Y} from './augusto-sprites';
 import {preloadBentoSprites,BENTO_WALK_FRAMES,BENTO_DISPLAY} from './bento-sprites';
 import {preloadHelenaSprites,HELENA_WALK_FRAMES,HELENA_DISPLAY,HELENA_ORIGIN_Y} from './helena-sprites';
@@ -89,15 +90,23 @@ export class NpcOutingVisit {
   scene.events.on('update',this.update,this);
  }
  private fire?:Phaser.GameObjects.Container;
+ /** Fogueira da Festa da Praia (arte do Junior, 4 quadros), com caixote de conchas e cesto de praia ao lado. */
  private makeFire():Phaser.GameObjects.Container{
-  const g=this.scene.add.graphics();
-  g.fillStyle(0x3a2616,1).fillEllipse(0,4,46,16);
-  g.fillStyle(0x6a4428,1);for(const a of [-.6,.6,0])g.fillRect(-20+a*10,-2+Math.abs(a)*3,40,6);
-  const flame=this.scene.add.graphics();
-  const c=this.scene.add.container(BEACH_FIRE.x,BEACH_FIRE.y,[g,flame]).setDepth(BEACH_FIRE.y).setVisible(false);
-  c.setData('fixture-light',{offsetX:0,offsetY:-14,radius:60,strength:1,always:true}).setData('flame',flame);
+  const c=this.scene.add.container(BEACH_FIRE.x,BEACH_FIRE.y).setDepth(BEACH_FIRE.y).setVisible(false);
+  c.setData('fixture-light',{offsetX:0,offsetY:-16,radius:70,strength:1.2,always:true});
+  loadFestivalArt(this.scene,()=>{
+   if(!c.active||c.length)return;
+   if(!this.scene.anims.exists('festival-beach-fire-burn'))this.scene.anims.create({key:'festival-beach-fire-burn',frames:this.scene.anims.generateFrameNumbers('festival-beach-fire',{start:0,end:3}),frameRate:8,repeat:-1});
+   c.add(this.scene.add.sprite(0,10,'festival-beach-fire',0).setOrigin(.5,1).setScale(64/448).play('festival-beach-fire-burn'));
+   const prop=(art:'shell-crate'|'beach-basket',x:number,y:number,w:number)=>{
+    const src=this.scene.textures.get(festivalTexture(art)).getSourceImage() as HTMLImageElement;
+    this.props.push(this.scene.add.image(BEACH_FIRE.x+x,BEACH_FIRE.y+y,festivalTexture(art)).setOrigin(.5,1).setScale(w/src.width).setDepth(BEACH_FIRE.y+y).setVisible(c.visible));
+   };
+   prop('shell-crate',-150,70,42);prop('beach-basket',150,-60,52);
+  });
   return c;
  }
+ private props:Phaser.GameObjects.Image[]=[];
  private nearest():Worker|undefined{
   const p=this.host.player();let best:Worker|undefined,dist=76;
   for(const w of this.workers.values()){const d=Math.hypot(w.sprite.x-p.x,w.sprite.y-p.y);if(w.sprite.visible&&d<dist){best=w;dist=d;}}
@@ -125,8 +134,15 @@ export class NpcOutingVisit {
   const existing=this.workers.get(o.id);if(existing)return existing;
   const look=LOOKS[o.id];if(!look)return;
   if(!this.ready.has(o.id)&&!this.scene.textures.exists(`village-npc-${o.id}`)){
-   // Montar a textura antes das imagens-fonte carregarem dá o quadradinho vazio.
-   if(!this.loading.has(o.id)){this.loading.add(o.id);look.preload(this.scene);this.scene.load.once('complete',()=>{this.loading.delete(o.id);this.ready.add(o.id);});this.scene.load.start();}
+   // Montar a textura antes das imagens-fonte carregarem dá o quadradinho vazio. Vários moradores
+   // (e a arte da festa) podem pedir arquivos ao mesmo tempo: o carregador junta tudo num lote só,
+   // e cada um só fica pronto quando o lote em que entrou termina de verdade.
+   if(!this.loading.has(o.id)){
+    this.loading.add(o.id);look.preload(this.scene);
+    const done=()=>{if(this.scene.load.isLoading()&&this.scene.load.list.size){this.scene.load.once('complete',done);return;}this.loading.delete(o.id);this.ready.add(o.id);};
+    this.scene.load.once('complete',done);
+    if(!this.scene.load.isLoading())this.scene.load.start();
+   }
    return;
   }
   const key=look.texture(this.scene);
@@ -137,11 +153,7 @@ export class NpcOutingVisit {
   const s=this.host.state();if(!s)return;
   this.elapsed+=Math.min(.1,Math.max(0,ms/1000));
   const here=new Set(outingsAt(this.area,s).map(o=>o.id));
-  if(this.fire){
-   const on=festivalNow(s)?.place==='coast';this.fire.setVisible(on);
-   if(on){const f=this.fire.getData('flame') as Phaser.GameObjects.Graphics,t=this.elapsed*8;f.clear();
-    for(const [k,col] of [[1,0xe0702a],[.7,0xf0a83a],[.4,0xfbe27a]] as const){const h=(26+4*Math.sin(t+k*3))*k;f.fillStyle(col,1).fillTriangle(-12*k,0,12*k,0,2*Math.sin(t*1.3+k),-h);}}
-  }
+  const beach=festivalNow(s)?.place==='coast';this.fire?.setVisible(beach);for(const p of this.props)p.setVisible(beach);
   for(const o of outingsAt(this.area,s))this.ensure(o);
   const p=this.host.player();
   for(const w of this.workers.values()){
@@ -153,5 +165,5 @@ export class NpcOutingVisit {
    w.sprite.setFrame(characterFrame(w.direction,working?1:0,w.look.frames));
   }
  }
- destroy():void{this.scene.events.off('update',this.update,this);this.fire?.destroy();this.overlays.destroy();this.panel.destroy();for(const w of this.workers.values())w.sprite.destroy();this.workers.clear();}
+ destroy():void{this.scene.events.off('update',this.update,this);this.fire?.destroy();for(const p of this.props)p.destroy();this.overlays.destroy();this.panel.destroy();for(const w of this.workers.values())w.sprite.destroy();this.workers.clear();}
 }
