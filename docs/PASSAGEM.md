@@ -5,7 +5,7 @@
 - **Atualizado em:** 2026-11-22
 - **Por:** Claude (terminando o Pomar que o Codex começou; os créditos do Codex acabaram)
 - **Continuar a partir de:** `release/v0.10.0-preview.45`, HEAD.
-- **Última versão publicada:** `v0.10.0-preview.44`, commit `cc8171a`.
+- **Última versão publicada:** `v0.10.0-preview.45` (publicada nesta rodada; a próxima é a preview.46).
 - **Estado:**
   - A Costa das Marés fica ao sul dos Campos Abertos.
   - O rio da Propriedade atravessa os Campos e chega ao mar por uma foz sinuosa.
