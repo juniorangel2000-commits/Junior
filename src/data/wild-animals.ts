@@ -4,8 +4,11 @@ import type {AnimalKind} from './ancient-forest';
  * Cada tipo tem uma lista fixa de ids (o save guarda quem já foi levado para casa). A cada
  * manhã, cada cenário sorteia quantos aparecem e em que pontos; quem já está na propriedade
  * sai do sorteio, e outro da mesma lista pode aparecer nos dias seguintes. */
-export type WildArea='forest'|'openFields';
-export interface WildGroup{readonly kind:AnimalKind;readonly ids:readonly string[];readonly min:number;readonly max:number;readonly spots:'pasture'|'river'|'forest'}
+export type WildArea='forest'|'openFields'|'swamp'|'coast';
+export interface WildGroup{readonly kind:AnimalKind;readonly ids:readonly string[];readonly min:number;readonly max:number;readonly spots:WildSpot}
+export type WildSpot='pasture'|'river'|'forest'|'swampOpen'|'swampShore'|'coastOpen'|'coastShore';
+/** Pontos em blocos (Bosque, Pântano, Costa); os dos Campos já estão em px. */
+export const TILE_SPOTS:readonly WildSpot[]=['forest','swampOpen','swampShore','coastOpen','coastShore'];
 const ids=(prefix:string,from:number,to:number)=>Array.from({length:to-from+1},(_,i)=>`${prefix}-${from+i}`);
 
 /** Os ids antigos (galinhas, cabras, vacas e ovelhas do Bosque; patos e porcos que a Rosa vendia)
@@ -21,12 +24,26 @@ export const WILD_GROUPS:Readonly<Record<WildArea,readonly WildGroup[]>>={
   {kind:'sheep',ids:['forest-sheep-1','forest-sheep-2',...ids('wild-sheep',3,6)],min:1,max:3,spots:'pasture'},
   {kind:'duck',ids:[...ids('farm-duck',1,4),...ids('wild-duck',5,6)],min:0,max:3,spots:'river'},
  ],
+ // preview.48: o Pântano volta pelo Bosque e a Costa pelos Campos, com o animal na corda.
+ swamp:[
+  {kind:'duck',ids:ids('wild-duck',7,10),min:1,max:3,spots:'swampShore'},
+  {kind:'pig',ids:ids('wild-pig',7,9),min:0,max:2,spots:'swampOpen'},
+ ],
+ coast:[
+  {kind:'goat',ids:ids('wild-goat',7,9),min:0,max:2,spots:'coastOpen'},
+  {kind:'chicken',ids:ids('wild-chicken',7,10),min:1,max:3,spots:'coastOpen'},
+  {kind:'duck',ids:ids('wild-duck',11,12),min:0,max:1,spots:'coastShore'},
+ ],
 };
 /** Pontos de aparecimento. Bosque em blocos (alcançáveis da entrada); Campos em px do mapa. */
 export const WILD_SPOTS={
  forest:[[22,55],[25,57],[21,15],[25,17],[21,35],[24,37],[75,35],[78,38],[60,59],[61,52],[46,56],[50,55],[41,57],[57,51],[52,45],[43,43],[48,39],[30,52],[47,33],[27,48],[41,33]],
  pasture:[[2312,260],[2792,452],[488,548],[2024,548],[2216,740],[200,836],[1640,836],[2408,932],[1448,1028],[2120,1028],[200,1124],[2600,1124],[1256,1220],[1928,1316],[2792,1316],[1160,1508],[1736,1508],[2408,1508],[1448,1604],[2696,1604],[1928,1700],[1640,1796],[2216,1796],[1352,1988],[2408,1988]],
  river:[[1256,260],[1544,548],[1160,740],[1448,836],[872,932],[1256,1028],[488,1220],[776,1316],[392,1508]],
+ swampOpen:[[62,35],[27,35],[18,46],[9,57],[10,13],[81,37],[63,59],[37,48],[11,37],[82,61],[83,17],[74,28]],
+ swampShore:[[29,15],[87,45],[55,49],[38,27],[42,55],[25,33],[56,28],[66,41],[44,13]],
+ coastOpen:[[62,35],[53,46],[36,24],[90,26],[46,37],[37,48],[29,15],[83,17],[74,28],[22,6],[60,10],[51,21]],
+ coastShore:[[32,42],[78,34],[53,48],[60,39],[38,56],[18,9],[31,49],[22,17]],
 } as const;
 export const WILD_ANIMAL_LIST:readonly {readonly id:string;readonly kind:AnimalKind;readonly area:WildArea}[]=
  (Object.entries(WILD_GROUPS) as [WildArea,readonly WildGroup[]][]).flatMap(([area,groups])=>groups.flatMap(g=>g.ids.map(id=>({id,kind:g.kind,area}))));

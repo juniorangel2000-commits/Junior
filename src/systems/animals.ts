@@ -5,7 +5,8 @@ import {isDomesticAnimal} from '../data/domestic-animals';
 import type {SaveData} from '../types';
 import {Inventory} from './inventory';
 
-export type AnimalArea = 'forest' | 'property';
+/** Onde a população de animais com corda é desenhada. Pântano e Costa desde a preview.48. */
+export type AnimalArea = 'forest' | 'property' | 'swamp' | 'coast';
 export type AnimalMode = 'idle' | 'wander' | 'flee' | 'led';
 export interface AnimalPosition {id: string; x: number; y: number; direction: CharacterDirection}
 /** O cavalo domado sai dos Campos Abertos conduzido pela corda. */
@@ -217,12 +218,13 @@ export class AnimalBrain {
 function positions(save: SaveData) {return save.animalPositions??= {forest:[],property:[]};}
 export function startAnimalEscort(save: SaveData,animal: AnimalPosition): boolean {
   const area=save.activeArea??'property';
-  if((area!=='property'&&area!=='forest')||save.animalEscort||!isDomesticAnimal(animal.id)||area==='forest'&&!FOREST_ANIMALS.some(a=>a.id===animal.id)&&wildAnimal(animal.id)?.area!=='forest')return false;
+  const wildArea=area==='forest'||area==='swamp'||area==='coast';
+  if((area!=='property'&&!wildArea)||save.animalEscort||!isDomesticAnimal(animal.id)||area==='forest'&&!FOREST_ANIMALS.some(a=>a.id===animal.id)&&wildAnimal(animal.id)?.area!=='forest'||(area==='swamp'||area==='coast')&&wildAnimal(animal.id)?.area!==area)return false;
   const owned=save.recruitedAnimals?.includes(animal.id)??false;
-  if(area==='forest'?owned:!owned)return false;
+  if(wildArea?owned:!owned)return false;
   const inventory=new Inventory(save.inventory);if(!inventory.spend({cord:1}))return false;
   Object.assign(save.inventory,inventory.data);save.animalEscort={id:animal.id,area};
-  const saved=positions(save);saved[area]=saved[area].filter(p=>p.id!==animal.id);saved[area].push({...animal});return true;
+  const saved=positions(save),list=(saved[area as 'forest']??=[]);saved[area as 'forest']=list.filter(p=>p.id!==animal.id);saved[area as 'forest'].push({...animal});return true;
 }
 export function releaseAnimalEscort(save: SaveData): boolean {
   const escort=save.animalEscort;if(!escort)return false;
@@ -260,4 +262,14 @@ export function transferFieldEscortToProperty(save:SaveData,arrival:AnimalPoint)
  if(save.openFields?.animals)save.openFields.animals=save.openFields.animals.filter(a=>a.id!==e.id);
  const p=positions(save);p.property=p.property.filter(a=>a.id!==e.id).concat({id:e.id,x:arrival.x+30,y:arrival.y+8,direction:old?.direction??'up'});
  e.area='property';
+}
+/** Sai do Pântano para o Bosque, ou da Costa para os Campos, com o animal na corda (preview.48). */
+export function transferTrailEscort(save:SaveData,to:'forest'|'openFields',arrival:AnimalPoint):void{
+ const e=save.animalEscort;if(!e||(e.area!=='swamp'&&e.area!=='coast'))return;
+ const p=positions(save),from=e.area,old=p[from]?.find(a=>a.id===e.id);
+ if(p[from])p[from]=p[from]!.filter(a=>a.id!==e.id);
+ const placed={id:e.id,x:arrival.x+(arrival.x<1536?24:-24),y:arrival.y,direction:old?.direction??'up'};
+ if(to==='forest'){p.forest=p.forest.filter(a=>a.id!==e.id).concat(placed);}
+ else{const f=save.openFields??={version:1,cut:{}};f.animals=[...(f.animals??[]).filter(a=>a.id!==e.id),placed];}
+ e.area=to;
 }

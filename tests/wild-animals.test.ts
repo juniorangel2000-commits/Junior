@@ -33,3 +33,20 @@ describe('animais soltos com sorteio diário (preview.48)',()=>{
   for(let d=1;d<40;d++)for(const area of ['forest','openFields'] as const)expect(wildSpawns(area,d,new Set()).some(a=>a.kind==='horse')).toBe(false);
  });
 });
+
+import {createNewSave,validateSave} from '../src/systems/save';
+import {createCharacterProfile} from '../src/data/characters';
+import {startAnimalEscort,transferTrailEscort,transferAnimalEscort,transferFieldEscortToProperty,deliverAnimalEscort} from '../src/systems/animals';
+import {wildTaken} from '../src/systems/wild-spawns';
+describe('Pântano e Costa com a corda (preview.48)',()=>{
+ for(const [area,via] of [['swamp','forest'],['coast','openFields']] as const)it(`do ${area} passa por ${via} e chega à propriedade`,()=>{
+  const s=createNewSave(createCharacterProfile('Corda'));s.inventory.cord=1;
+  const a=wildSpawns(area,s.day,wildTaken(s))[0];expect(a).toBeTruthy();
+  s.activeArea=area;expect(startAnimalEscort(s,{id:a.id,x:a.x,y:a.y,direction:'down'})).toBe(true);expect(validateSave(s)).toBe(true);
+  transferTrailEscort(s,via,{x:1500,y:2000});s.activeArea=via;expect(s.animalEscort?.area).toBe(via);expect(validateSave(s)).toBe(true);
+  if(via==='forest')transferAnimalEscort(s,{x:80,y:1600});else{transferFieldEscortToProperty(s,{x:816,y:2224});s.activeArea='property';}
+  expect(deliverAnimalEscort(s)).toBe(true);expect(s.recruitedAnimals).toContain(a.id);expect(validateSave(s)).toBe(true);
+  // Já é do jogador: sai do sorteio daquele cenário.
+  for(let d=1;d<30;d++)expect(wildSpawns(area,d,wildTaken(s)).some(x=>x.id===a.id)).toBe(false);
+ });
+});

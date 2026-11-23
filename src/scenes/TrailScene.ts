@@ -2,7 +2,11 @@ import Phaser from 'phaser';
 import type { SaveData, Tool, ItemId } from '../types';
 import type { ForestStart as TrailStart } from './ForestScene';
 import type { MapEditorStart } from './MapEditorScene';
-import { Player } from '../player';
+import { Player, PLAYER_SPEED } from '../player';
+import {AnimalPopulation} from '../animals';
+import {startAnimalEscort,releaseAnimalEscort,transferTrailEscort} from '../systems/animals';
+import {domesticAnimal} from '../data/domestic-animals';
+import {ANIMAL_NAMES} from '../data/ancient-forest';
 import { Daylight } from '../daylight';
 import { gameAudio } from '../audio';
 import { setupTreeWind } from '../tree-wind';
@@ -96,6 +100,8 @@ export class TrailScene extends Phaser.Scene {
   private state!: SaveData;
   private ui!: TrailStart['ui'];
   private onReturn!: TrailStart['onReturn'];
+  /** Animais de criação soltos (Pântano e Costa, preview.48). */
+  private wildlife?:AnimalPopulation;
   private world!: SwampWorld|RuinsWorld|RuinsCellarWorld|RailwayWorld|RailwayHallWorld|CoastWorld|OrchardWorld;
   /** Interiores: o porão das Ruínas e a sala de espera da Estação. */
   get inHome():boolean{return this.area==='ruins'&&!!this.state?.ruinsCellarPosition||this.area==='railway'&&!!this.state?.railwayHallPosition;}
@@ -210,6 +216,10 @@ export class TrailScene extends Phaser.Scene {
          // Com a rede na mochila, você chega devagar: o caranguejo só se assusta bem de perto.
          fleeScale:id=>id==='crab'&&(this.state.inventory.net??0)>0?.45:1});
     }
+    if(!this.inHome&&(this.area==='swamp'||this.area==='coast')){
+      const layout=this.world.layout;
+      this.wildlife=new AnimalPopulation(this,this.state,this.area,(x,y)=>this.tileBlocked(x,y)||layout.water((x+.5)*32,(y+.5)*32),PLAYER_SPEED);
+    }
     if(!this.inHome&&OUTING_AREAS.includes(this.area as OutingArea))this.outings=new NpcOutingVisit(this,this.area as OutingArea,{
       state:()=>this.state,snapshot:()=>this.snapshotState(),player:()=>this.player,
       pause:value=>{this.setPaused(value);this.updateHUD();},syncInventory:inventory=>this.syncInventory(inventory),
@@ -220,7 +230,7 @@ export class TrailScene extends Phaser.Scene {
     window.addEventListener('blur',this.blur);
     document.addEventListener('visibilitychange',this.visibility);
     this.events.once('shutdown',()=>{
-      this.outings?.destroy();this.outings=undefined;this.critters?.destroy();this.critters=undefined;
+      this.outings?.destroy();this.outings=undefined;this.critters?.destroy();this.critters=undefined;this.wildlife?.destroy();this.wildlife=undefined;
       if(!(this.world instanceof RuinsCellarWorld))this.world.destroy();
       this.daylight.destroy();
       this.input.keyboard?.off('keydown',this.key,this);
@@ -284,7 +294,10 @@ export class TrailScene extends Phaser.Scene {
     const road=this.outgoingRoad,nextGate=road&&tileCenter(road.exit);
     const fishing=this.nearFishing()&&!!this.equippedFishingItem();
     const cardinal={up:'norte',down:'sul',left:'oeste',right:'leste'}[exitSignLayout(exit,trail.entry(edits)).direction];
+    const led=!!state.animalEscort&&!!this.wildlife,catchable=!led&&!player.isSwimming?this.wildlife?.nearest(player):undefined,catchKind=catchable&&domesticAnimal(catchable.id)?.kind;
     const prompt=player.isSwimming?'Siga até a margem para sair da água.':
+      led?'Conduzindo animal · siga até a saída · soltar corda':
+      catchKind?`Prender ${ANIMAL_NAMES[catchKind].toLowerCase()} com corda`:
       resident?`E · Conversar com ${resident}`:
       forage?`E · ${forage.item==='shell'?'Recolher concha':'Colher íris azul'}`:
       crab?'E · Pegar caranguejo com a rede':
@@ -300,7 +313,7 @@ export class TrailScene extends Phaser.Scene {
       tool:state.equippedTool??'hand',worldWeapon:state.worldWeapon,learnedRecipes:state.villageProgress?.recipes??[],
       inHome:this.inHome,swimming:player.isSwimming,coins:state.villageEconomy?.coins??0,vigor:state.villageProgress?.vigor??100,
       wateringCan:!!state.homeSupplies?.wateringCan,wateringCanWater:state.wateringCanWater??0,
-      playerTile:{x:player.x/32,y:player.y/32},interactionKey:resident||forage||crab||fruit||landmark||fishing?'E':null,prompt,location:AREA_NAMES[this.area],
+      playerTile:{x:player.x/32,y:player.y/32},interactionKey:led?'G':catchKind||resident||forage||crab||fruit||landmark||fishing?'E':null,prompt,location:AREA_NAMES[this.area],
       ...(this.inHome?{mapTitle:this.interiorName,location:this.interiorName,interiorMapSize:{width:this.mapSize.width/32,height:this.mapSize.height/32}}:{}),
       ...(this.area==='coast'||this.area==='orchard'?{mapTitle:AREA_NAMES[this.area]}:{}),
       harvests:state.inventory.turnip,metLia:state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',
@@ -319,6 +332,7 @@ export class TrailScene extends Phaser.Scene {
     if(!this.canPlay())return;
     if(event.key==='F2'&&DEVELOPMENT_TOOLS)this.openMapEditor();
     else if(key==='e')this.interact();
+    else if(key==='g')this.releaseAnimal();
     else if(/^[1-9]$/.test(event.key))this.ui.activateSlot(Number(event.key)-1);
     else if(['+','=','-','_','Home'].includes(event.key))this.changeCameraZoom(event.key==='Home'?0:['-','_'].includes(event.key)?-1:1);
   };
@@ -333,6 +347,7 @@ export class TrailScene extends Phaser.Scene {
   }
   private interact():void {
     if(!this.player.isSwimming&&this.outings?.interact())return;
+    if(this.tieAnimal())return;
     const forage=this.player.isSwimming?undefined:forageNear(this.state,this.area,this.player);
     if(forage){this.ui.toast(collectForage(this.snapshotState(),forage,this.player,saveGame));this.updateHUD();return;}
     if(this.crabInReach()){
@@ -427,10 +442,23 @@ export class TrailScene extends Phaser.Scene {
     this.scene.launch('Editor',data);
   }
 
+  /** Mesmo padrão do Bosque e dos Campos: E prende o animal na corda, G solta. */
+  private tieAnimal():boolean{
+    if(!this.wildlife||this.player.isSwimming)return false;
+    if(this.state.animalEscort){this.ui.toast(`Conduza o animal até ${this.area==='swamp'?'o Bosque':'os Campos'} e depois à propriedade. G solta a corda.`);return true;}
+    const a=this.wildlife.nearest(this.player);if(!a)return false;
+    if(!startAnimalEscort(this.state,a.brain.snapshot())){this.ui.toast('Fabrique uma corda vegetal com 3 fibras (C) para conduzir o animal.');return true;}
+    gameAudio.play('pickup');this.ui.toast('Corda presa! Leve o animal até a propriedade. G para soltar.');this.persist();this.updateHUD();return true;
+  }
+  private releaseAnimal():void{
+    if(!this.state.animalEscort)return;
+    if(releaseAnimalEscort(this.state)){this.ui.toast('Animal solto. A corda voltou para você.');this.persist();this.updateHUD();}
+  }
   private snapshotState():SaveData {
     const position={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};
     if(this.inHome){if(this.area==='railway')this.state.railwayHallPosition=position;else this.state.ruinsCellarPosition=position;}
     else this.state[this.trail.position]=position;
+    this.wildlife?.store();
     this.state.quickbar=this.ui.getQuickbar();
     this.state.crops=this.farming.crops;
     this.state.farmingProgress=this.farming.progress;
@@ -453,8 +481,10 @@ export class TrailScene extends Phaser.Scene {
   }
   private leave(title=false):void {
     if(this.leaving)return;
+    if(!title&&this.state.animalEscort&&this.wildlife&&!this.wildlife.canLeave(this.player)){this.ui.toast('Espere o animal chegar perto antes de atravessar.');return;}
     const next=structuredClone(this.snapshotState());
     if(!title){
+      if(next.animalEscort&&(this.trail.returnArea==='forest'||this.trail.returnArea==='openFields'))transferTrailEscort(next,this.trail.returnArea,tileCenter(this.trail.returnTile));
       next.activeArea=this.trail.returnArea;
       next[this.trail.returnPosition]={...tileCenter(this.trail.returnTile),direction:this.trail.returnFacing};
       delete next[this.trail.position];
@@ -471,9 +501,10 @@ export class TrailScene extends Phaser.Scene {
     this.daylight.update(this.state.time,this.inHome,this.state.day);
     if(!this.canPlay())return;
     const dt=Math.min(.1,ms/1000),previous={x:this.player.x,y:this.player.y};
-    this.player.speedMultiplier=playerSpeedFactor(this.state);
+    this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.keepDry=!!this.state.animalEscort;
     this.player.update(dt,this.tileBlocked,this.movementBlockedPoint,true,this.swimmingPoint,this.allowStep);
     if(!(this.world instanceof RuinsCellarWorld))this.world.update(dt,this.player);
+    this.wildlife?.update(dt,this.player);
     const edits=this.state[this.trail.map];
     const exit=this.inHome?this.interiorExit:this.trail.exit(edits),entry=this.inHome?this.interiorEntry:this.trail.entry(edits);
     if(!this.player.isSwimming&&this.passage.update(previous,this.player,exit,entry)){

@@ -184,7 +184,7 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.dungeons!==undefined&&!validDungeonProgress(value.dungeons))return false;
   if(value.dungeonRun!==undefined&&(value.activeArea!=='cityForest'||!validDungeonSnapshot(value.dungeonRun)))return false;
   if (value.activeArea !== undefined && value.activeArea !== 'property' && value.activeArea !== 'forest' && value.activeArea !== 'village' && value.activeArea !== 'cityForest' && value.activeArea !== 'fishingLake' && value.activeArea !== 'survivorCamp' && value.activeArea !== 'highland' && value.activeArea !== 'openFields' && value.activeArea !== 'swamp' && value.activeArea !== 'ruins' && value.activeArea !== 'railway' && value.activeArea !== 'coast' && value.activeArea !== 'orchard') return false;
-  if((value.activeArea==='village'||value.activeArea==='cityForest'||value.activeArea==='fishingLake'||value.activeArea==='survivorCamp'||value.activeArea==='highland'||value.activeArea==='openFields'||value.activeArea==='swamp'||value.activeArea==='ruins'||value.activeArea==='railway'||value.activeArea==='coast'||value.activeArea==='orchard')&&(value.homePosition!==undefined||value.animalEscort!==undefined&&!(value.activeArea==='openFields'&&isRecord(value.animalEscort)&&(value.animalEscort.id===HORSE_ID||wildAnimal(String(value.animalEscort.id))?.area==='openFields')&&value.animalEscort.area==='openFields')))return false;
+  if((value.activeArea==='village'||value.activeArea==='cityForest'||value.activeArea==='fishingLake'||value.activeArea==='survivorCamp'||value.activeArea==='highland'||value.activeArea==='openFields'||value.activeArea==='swamp'||value.activeArea==='ruins'||value.activeArea==='railway'||value.activeArea==='coast'||value.activeArea==='orchard')&&(value.homePosition!==undefined||value.animalEscort!==undefined&&!((value.activeArea==='openFields'||value.activeArea==='swamp'||value.activeArea==='coast')&&isRecord(value.animalEscort)&&(value.animalEscort.id===HORSE_ID&&value.activeArea==='openFields'||!!wildAnimal(String(value.animalEscort.id)))&&value.animalEscort.area===value.activeArea)))return false;
   if(value.blacksmithScene!==undefined&&!validSmithLayout(value.blacksmithScene))return false;
   if(value.blacksmithHome!==undefined&&!validateBlacksmithHome(value.blacksmithHome))return false;
   if(value.shopResidents!==undefined&&!validShopResidents(value.shopResidents))return false;
@@ -210,23 +210,23 @@ export function validateSave(value: unknown): value is SaveData {
   if(horseOut&&(!isRecord(value.horseTaming)||value.horseTaming.tamed!==true||typeof value.horseTaming.name!=='string'))return false;
   if(value.animalEscort!==undefined){
     const escort=value.animalEscort;
-    if(!isRecord(escort)||!isDomesticAnimal(escort.id)||!['forest','property','openFields'].includes(escort.area as string)||escort.area!==(value.activeArea??'property')||escort.area==='forest'&&((value.recruitedAnimals as string[]|undefined)?.includes(escort.id as string)||escort.id===HORSE_ID))return false;
-    // Nos Campos a corda vale para o cavalo e para os animais soltos dali (preview.48).
-    if(escort.area==='openFields'&&(escort.id!==HORSE_ID&&wildAnimal(escort.id as string)?.area!=='openFields'||(value.recruitedAnimals as string[]|undefined)?.includes(escort.id as string)||!isRecord(value.openFields)||!Array.isArray(value.openFields.animals)||!value.openFields.animals.some(a=>isRecord(a)&&a.id===escort.id)))return false;
+    if(!isRecord(escort)||!isDomesticAnimal(escort.id)||!['forest','property','openFields','swamp','coast'].includes(escort.area as string)||escort.area!==(value.activeArea??'property')||(escort.area==='swamp'||escort.area==='coast')&&(wildAnimal(escort.id as string)?.area!==escort.area||(value.recruitedAnimals as string[]|undefined)?.includes(escort.id as string))||escort.area==='forest'&&((value.recruitedAnimals as string[]|undefined)?.includes(escort.id as string)||escort.id===HORSE_ID))return false;
+    // Nos Campos a corda vale para o cavalo e para os animais soltos (dali ou trazidos da Costa, preview.48).
+    if(escort.area==='openFields'&&(escort.id!==HORSE_ID&&!wildAnimal(escort.id as string)||(value.recruitedAnimals as string[]|undefined)?.includes(escort.id as string)||!isRecord(value.openFields)||!Array.isArray(value.openFields.animals)||!value.openFields.animals.some(a=>isRecord(a)&&a.id===escort.id)))return false;
   }
   if(value.animalPositions!==undefined){
     if(!isRecord(value.animalPositions))return false;
     const ids=new Set<string>();
-    for(const area of ['forest','property']){
-      const list=value.animalPositions[area];if(!Array.isArray(list)||list.length>DOMESTIC_ANIMALS.length)return false;
+    for(const area of ['forest','property','swamp','coast']){
+      const list=value.animalPositions[area];if(list===undefined&&(area==='swamp'||area==='coast'))continue;if(!Array.isArray(list)||list.length>DOMESTIC_ANIMALS.length)return false;
       for(const p of list){
         if(!isRecord(p)||typeof p.id!=='string'||ids.has(p.id)||!isDomesticAnimal(p.id)||area==='forest'&&p.id===HORSE_ID||!finite(p.x,16,WORLD_WIDTH*TILE-16)||!finite(p.y,16,WORLD_HEIGHT*TILE-16)||!CHARACTER_DIRECTIONS.includes(p.direction as CharacterDirection))return false;
         const owned=(value.recruitedAnimals as string[]|undefined)?.includes(p.id)??false;
-        if(area==='forest'&&owned||area==='property'&&!owned&&(!isRecord(value.animalEscort)||value.animalEscort.id!==p.id||value.animalEscort.area!=='property'))return false;
+        if(area!=='property'&&owned||(area==='swamp'||area==='coast')&&wildAnimal(p.id)?.area!==area||area==='property'&&!owned&&(!isRecord(value.animalEscort)||value.animalEscort.id!==p.id||value.animalEscort.area!=='property'))return false;
         ids.add(p.id);
       }
     }
-    if(isRecord(value.animalEscort)&&value.animalEscort.area!=='openFields'&&!(value.animalPositions[value.animalEscort.area as string] as Array<{id:string}>).some(p=>p.id===(value.animalEscort as Record<string,unknown>).id))return false;
+    if(isRecord(value.animalEscort)&&value.animalEscort.area!=='openFields'&&!((value.animalPositions[value.animalEscort.area as string]??[]) as Array<{id:string}>).some(p=>p.id===(value.animalEscort as Record<string,unknown>).id))return false;
   }else if(value.animalEscort!==undefined&&!(isRecord(value.animalEscort)&&value.animalEscort.area==='openFields'))return false;
   if((value.activeArea==='cityForest'||value.activeArea==='fishingLake'||value.activeArea==='survivorCamp'||value.activeArea==='highland'||value.activeArea==='openFields'||value.activeArea==='swamp'||value.activeArea==='ruins'||value.activeArea==='railway'||value.activeArea==='coast'||value.activeArea==='orchard')&&(value.merchantInterior!==undefined||value.blacksmithInterior!==undefined))return false;
   if(value.cityForestPosition!==undefined&&(!isRecord(value.cityForestPosition)||!finite(value.cityForestPosition.x,32,3040)||!finite(value.cityForestPosition.y,32,2272)||(value.cityForestPosition.direction!==undefined&&!CHARACTER_DIRECTIONS.includes(value.cityForestPosition.direction as CharacterDirection))))return false;

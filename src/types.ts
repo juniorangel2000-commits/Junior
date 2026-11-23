@@ -181,7 +181,7 @@ export interface SaveData {
   villageInstallations?: VillageInstallation[];
   villageSurvivors?: string[];
   recruitedAnimals?: string[];
-  animalPositions?: {forest:AnimalPosition[];property:AnimalPosition[]};
+  animalPositions?: {forest:AnimalPosition[];property:AnimalPosition[];swamp?:AnimalPosition[];coast?:AnimalPosition[]};
   animalEscort?: AnimalEscort;
   version: 4;
   quickbar?: QuickSlot[];
