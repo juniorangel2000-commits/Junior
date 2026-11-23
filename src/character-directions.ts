@@ -13,6 +13,14 @@ export function directionFromVector(x: number, y: number): CharacterDirection {
   return x < 0 ? 'left' : x > 0 ? 'right' : 'down';
 }
 
+/** Direção de trabalho (ferramenta virada para o alvo): sempre uma das quatro, pelo eixo dominante.
+ * O alvo costuma estar um pouco acima dos pés; sem isto, uma rocha ao lado virava "cima-esquerda"
+ * e a animação mostrava o personagem de costas. */
+export function workDirection(x: number, y: number): CharacterDirection {
+  if (Math.abs(x) >= Math.abs(y)) return x < 0 ? 'left' : x > 0 ? 'right' : 'down';
+  return y < 0 ? 'up' : 'down';
+}
+
 export function directionVector(direction: CharacterDirection): { x: number; y: number } {
   const x = direction.includes('left') ? -1 : direction.includes('right') ? 1 : 0;
   const y = direction.includes('up') ? -1 : direction.includes('down') ? 1 : 0;

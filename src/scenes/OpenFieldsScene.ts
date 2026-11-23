@@ -13,7 +13,7 @@ import {advanceBackgroundVillage} from '../systems/village-background';
 import {craftInField,consumeInField} from '../systems/field-inventory';
 import {emptyQuickbar} from '../systems/quickbar';
 import {DoorwayPassage,SCENE_FADE_MS} from '../systems/map-transition';
-import {directionFromVector,directionVector} from '../character-directions';
+import {directionFromVector,directionVector,workDirection} from '../character-directions';
 import {loadCameraZoom,saveCameraZoom,stepCameraZoom,mapCameraZoom} from '../camera-zoom';
 import {createGroundRuntime} from '../systems/ground-items';
 import {createMineMissionRuntime} from '../systems/mine-missions';
@@ -163,7 +163,7 @@ export class OpenFieldsScene extends Phaser.Scene{
   if (this.player.mounted) { this.ui.toast('Desça do cavalo para usar a ferramenta.'); return; }
   const copy = readyGatherCopy(this.state, tool);
   if (!copy) return;
-  const direction = directionFromVector(target.x - this.player.x, target.y - this.player.y);
+  const direction = workDirection(target.x - this.player.x, target.y - this.player.y);
   this.player.facing = directionVector(direction);
   this.swing.start({ tool, id: target.id, direction, ...copy });
   this.updateToolVisual();

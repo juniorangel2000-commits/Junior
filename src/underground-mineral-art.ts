@@ -10,6 +10,10 @@ export const MINE_INNER_WALL_TILE=1696;
 export const MINE_METALS:readonly Metal[]=['iron','gold','blackMetal'];
 export const MINE_ORE_ATLASES=MINE_METALS.map((metal,i)=>({metal,key:'mine-encrusted-'+metal,gid:3000+i*2000}));
 export const MINE_ROCK_SHADOW=[22,16,14] as const;
+/** Brilho da pedra no fundo da rocha maciça (fração da textura). */
+const ROCK_DEPTH=.26;
+/** Rocha maciça com textura: 64 variações a partir daqui (preview.48). */
+export const MINE_SOLID_ROCK_TILE=2720;
 export function preloadMineMinerals(scene:Phaser.Scene):void{
  if(!scene.textures.exists('mine-wall-materials'))scene.load.image('mine-wall-materials','assets/visual/mine/wall-stone-continuous.png');
  if(!scene.textures.exists('detailed-ore-atlas'))scene.load.image('detailed-ore-atlas','assets/visual/mine/mineral-family.png');
@@ -23,7 +27,7 @@ export function createMineMineralAtlas(scene:Phaser.Scene):void{
  const stone=scene.textures.get('mine-wall-materials').getSourceImage() as HTMLImageElement;
  const surface=document.createElement('canvas');surface.width=surface.height=256;const material=surface.getContext('2d')!;material.imageSmoothingEnabled=false;material.drawImage(stone,0,0,256,256);const materialPixels=material.getImageData(0,0,256,256);joinMineTextureEdges(materialPixels.data,256,256);material.putImageData(materialPixels,0,0);
  const minerals=scene.textures.get('detailed-ore-atlas').getSourceImage() as HTMLImageElement;
- const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=2720;const c=canvas.getContext('2d')!;c.imageSmoothingEnabled=false;
+ const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=2784;const c=canvas.getContext('2d')!;c.imageSmoothingEnabled=false;
  const tile=document.createElement('canvas');tile.width=tile.height=32;const paint=tile.getContext('2d')!;paint.imageSmoothingEnabled=false;
  const masks=new Map<string,Uint8Array>();
  const shape=(pattern:number,mask:number,corner=false)=>{
@@ -39,7 +43,8 @@ export function createMineMineralAtlas(scene:Phaser.Scene):void{
   for(let y=0;y<32;y++)for(let x=0;x<32;x++){
    const i=(y*32+x)*4;if(!alpha[y*32+x]){pixels.data[i+3]=0;continue;}
    const fade=corner?1:mineWallLight(inner?mask:(~mask&15),x+.5,y+.5,inner);
-   for(let k=0;k<3;k++)pixels.data[i+k]=MINE_ROCK_SHADOW[k]*(1-fade)+pixels.data[i+k]*fade;
+   // A sombra é a própria pedra escurecida (antes, uma cor chapada que virava quadrados pretos).
+   for(let k=0;k<3;k++)pixels.data[i+k]=pixels.data[i+k]*(ROCK_DEPTH+(1-ROCK_DEPTH)*fade);
   }
   paint.putImageData(pixels,0,0);return tile;
  };
@@ -48,6 +53,7 @@ export function createMineMineralAtlas(scene:Phaser.Scene):void{
  MINE_FLOOR_CORNER_MASKS.forEach((mask,kind)=>{for(let p=0;p<64;p++){const i=1088+kind*64+p,x=i%32*32,y=Math.floor(i/32)*32;sampleFloor(p,x,y);c.drawImage(wall(p,mask,true),x,y);}});
  c.fillStyle=`rgb(${MINE_ROCK_SHADOW.join(',')})`;c.fillRect(0,1664,32,32);
  for(let mask=0;mask<16;mask++)for(let p=0;p<64;p++){const i=MINE_INNER_WALL_TILE+mask*64+p;c.drawImage(wall(p,mask,false,true),i%32*32,Math.floor(i/32)*32);}
+ for(let p=0;p<64;p++){const i=MINE_SOLID_ROCK_TILE+p,x=i%32*32,y=Math.floor(i/32)*32;c.drawImage(surface,p%8*32,Math.floor(p/8)*32,32,32,x,y,32,32);const px=c.getImageData(x,y,32,32);for(let k=0;k<px.data.length;k+=4)for(let j=0;j<3;j++)px.data[k+j]*=ROCK_DEPTH;c.putImageData(px,x,y);}
  scene.textures.addCanvas(MINE_TERRAIN_ATLAS,canvas)!.setFilter(Phaser.Textures.FilterMode.NEAREST);
  for(const {key,metal}of MINE_ORE_ATLASES){
   const atlas=document.createElement('canvas');atlas.width=atlas.height=1024;const g=atlas.getContext('2d')!;g.imageSmoothingEnabled=false;

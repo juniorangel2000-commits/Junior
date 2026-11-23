@@ -3,17 +3,17 @@ import {MINE_HAZARDS} from '../data/underground-hazards';
 import {UNDERGROUND,MINE_ROOMS,undergroundLayout,mineCellIndex} from '../data/underground-layout';
 import {undergroundBlocked,type UndergroundState} from './underground';
 export function mineDarkness(y:number,lantern=false):{alpha:number;radius:number}{
- if(y>=UNDERGROUND.entryY-80)return{alpha:0,radius:190};
- const samples=[{y:UNDERGROUND.entryY-80,alpha:0,radius:190},...(['surface','middle','deep','extreme'] as const).map((depth,i)=>({y:[165,110,65,22][i]*32,...MINE_HAZARDS.darkness[depth]}))];
- let alpha:number=MINE_HAZARDS.darkness.extreme.alpha,radius:number=MINE_HAZARDS.darkness.extreme.radius;
+ const near=lantern?240:190;if(y>=UNDERGROUND.entryY-80)return{alpha:0,radius:near};
+ const samples=[{y:UNDERGROUND.entryY-80,alpha:0,radius:near},...(['surface','middle','deep','extreme'] as const).map((depth,i)=>{const d=MINE_HAZARDS.darkness[depth];return{y:[165,110,65,22][i]*32,alpha:d.alpha,radius:lantern?d.lanternRadius:d.radius};})];
+ let alpha:number=samples[samples.length-1].alpha,radius:number=samples[samples.length-1].radius;
  for(let i=0;i<samples.length-1;i++){const a=samples[i],b=samples[i+1];if(y<=a.y&&y>=b.y){const t=(a.y-y)/(a.y-b.y);alpha=a.alpha+(b.alpha-a.alpha)*t;radius=a.radius+(b.radius-a.radius)*t;break;}}
- return{alpha,radius:radius*(lantern?1.3:1)};
+ return{alpha,radius};
 }
 /** Bounded ray casts are shared by every carried/fixed light in this mine. */
 export function mineLightPolygon(mine:UndergroundState,source:TilePoint,radius:number,rays=96):TilePoint[]{
  return Array.from({length:rays},(_,i)=>{
   const angle=i/rays*Math.PI*2,dx=Math.cos(angle),dy=Math.sin(angle);let distance=radius;
-  for(let d=8;d<radius;d+=8)if(undergroundBlocked(mine,source.x+dx*d,source.y+dy*d)){distance=Math.min(radius,d+8);break;}
+  for(let d=8;d<radius;d+=8)if(undergroundBlocked(mine,source.x+dx*d,source.y+dy*d)){distance=Math.min(radius,d+16);break;}
   return{x:source.x+dx*distance,y:source.y+dy*distance};
  });
 }

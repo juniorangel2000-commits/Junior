@@ -46,7 +46,7 @@ import type { GameUI } from '../ui';
 import { saveGame } from '../systems/save';
 import { advanceClock, GAME_MINUTES_PER_SECOND } from '../systems/clock';
 import { Farming } from '../systems/farming';
-import { directionFromVector, directionVector } from '../character-directions';
+import { directionFromVector, directionVector, workDirection } from '../character-directions';
 import { setupAnimalArt } from '../forest-art';
 import { FOREST_ANIMALS, FOREST_ENTRY, ANIMAL_NAMES,forestPathDistance } from '../data/ancient-forest';
 import { gameAudio } from '../audio';
@@ -300,7 +300,7 @@ export class ForestScene extends Phaser.Scene {
       .sort((a, b) => this.fiberDistance(a) - this.fiberDistance(b))
       .slice(0, toolWork(this.state, 'sickle'));
     if (!nodes.length) { this.ui.toast('Aproxime-se de uma planta coletável.'); return; }
-    const direction = directionFromVector(nodes[0].x * 32 + 16 - this.player.x, nodes[0].y * 32 + 25 - this.player.y);
+    const direction = workDirection(nodes[0].x * 32 + 16 - this.player.x, nodes[0].y * 32 + 25 - this.player.y);
     this.player.facing = directionVector(direction);
     this.gather.start({ tool: 'sickle', nodes, direction, ...copy });
     this.updateToolVisual();

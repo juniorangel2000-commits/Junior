@@ -76,7 +76,7 @@ import { gameAudio } from '../audio';
 import Phaser from 'phaser';
 import { Player,PLAYER_SPEED } from '../player';
 import { createArt } from '../art';
-import { directionFromVector, directionVector } from '../character-directions';
+import { directionFromVector, directionVector, workDirection } from '../character-directions';
 import { preloadVisualAssets } from '../visual-assets';
 import { isPathTile, isBridgeTile, locationAt, getRegionAt } from '../data/regions';
 import { createWorld, TILE, WORLD_WIDTH, WORLD_HEIGHT } from '../world';
@@ -828,7 +828,7 @@ export class ValleyScene extends Phaser.Scene {
         .sort((a, b) => this.tileDistance(a) - this.tileDistance(b))
         .slice(0, toolWork(this.state, tool));
       if (!nodes.length) { this.ui.toast('Aproxime-se de uma planta coletável.'); return; }
-      const direction = directionFromVector(nodes[0].x * TILE + TILE / 2 - this.player.x, nodes[0].y * TILE + TILE / 2 - this.player.y);
+      const direction = workDirection(nodes[0].x * TILE + TILE / 2 - this.player.x, nodes[0].y * TILE + TILE / 2 - this.player.y);
       this.player.facing = directionVector(direction);
       this.gather.start({ tool, nodes, direction, ...copy });
     }

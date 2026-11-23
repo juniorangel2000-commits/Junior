@@ -1,6 +1,6 @@
 import {mineWallRefreshCells} from './data/mine-wall-depth';
 import {minePropFrame} from './mine-gallery-art';
-import {createMineMineralAtlas,MINE_ORE_ATLASES,MINE_TERRAIN_ATLAS,MINE_HIDDEN_ROCK_TILE,MINE_INNER_WALL_TILE,mineMineralTile} from './underground-mineral-art';
+import {createMineMineralAtlas,MINE_ORE_ATLASES,MINE_TERRAIN_ATLAS,MINE_SOLID_ROCK_TILE,MINE_INNER_WALL_TILE,mineMineralTile} from './underground-mineral-art';
 import {mineFixedLights} from './systems/underground-light';
 import {mineMaterialAt} from './systems/underground-geology';
 import {MINE_FLOOR_CORNER_MASKS} from './data/mine-wall-shape';
@@ -42,7 +42,7 @@ export class UndergroundView{
   const pattern=(y%8)*8+x%8;
   if(!mineRockAt(mine,x,y)){const kind=(MINE_FLOOR_CORNER_MASKS as readonly number[]).indexOf(mask);this.terrain.putTileAt(kind<0?pattern:1088+kind*64+pattern,x,y,false);return;}
   const inner=mask===15?mineInnerWallMask(mine,x,y):0;
-  this.terrain.putTileAt(mask===15?(inner?MINE_INNER_WALL_TILE+inner*64+pattern:MINE_HIDDEN_ROCK_TILE):64+mask*64+pattern,x,y,false);
+  this.terrain.putTileAt(mask===15?(inner?MINE_INNER_WALL_TILE+inner*64+pattern:MINE_SOLID_ROCK_TILE+pattern):64+mask*64+pattern,x,y,false);
  }
  /** Partial damage touches one cell; excavation refreshes only its two-cell rim. */
  refresh(cells:readonly TilePoint[]):void{

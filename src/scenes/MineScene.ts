@@ -33,7 +33,7 @@ import {advanceBackgroundVillage} from '../systems/village-background';
 import {craftInField,consumeInField} from '../systems/field-inventory';
 import {emptyQuickbar} from '../systems/quickbar';
 import {DoorwayPassage,SCENE_FADE_MS} from '../systems/map-transition';
-import {directionFromVector,directionVector} from '../character-directions';
+import {directionFromVector,directionVector,workDirection} from '../character-directions';
 import {loadCameraZoom,saveCameraZoom,stepCameraZoom,mapCameraZoom} from '../camera-zoom';
 import {installWorldCompanion} from '../dungeons/world-pet-controller';
 import {preloadPetArt} from '../dungeons/pet-sprites';
@@ -122,8 +122,9 @@ export class MineScene extends Phaser.Scene{
   if(!mineTargetVisible(this.state.underground!,this.player,node)){this.ui.toast('Aproxime-se da rocha por um caminho livre.');return;}
   const mineral=mineMaterialAt(this.state.underground!,node.x,node.y);if(mineral!=='stone'&&!canMine(this.state,mineral)){this.ui.toast('Você precisa de uma picareta melhor para extrair este minério.');return;}
   if(toolCondition(this.state,'pickaxe').durability<=0){this.ui.toast('Repare a picareta na ferraria antes de escavar.');return;}
-  const dx=node.x*32+16-this.player.x,dy=node.y*32+16-this.player.y,d=Math.max(1,Math.hypot(dx,dy));this.player.facing={x:dx/d,y:dy/d};
-  this.toolUse.start({tool:'pickaxe',direction:directionFromVector(dx,dy),target:node});
+  // Mede do meio do corpo (os pés ficam ~12 px abaixo), para a rocha ao lado não contar como "acima".
+  const dx=node.x*32+16-this.player.x,dy=node.y*32+16-(this.player.y-12),direction=workDirection(dx,dy);this.player.facing=directionVector(direction);
+  this.toolUse.start({tool:'pickaxe',direction,target:node});
  }
  private hitMiningBlock(target:TilePoint):void{
   this.state.mineInterior={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};
