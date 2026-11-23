@@ -4,6 +4,7 @@ import {installCampfires,placeCampfireInScene,type CampfireScene} from './campfi
 import {TrailScene} from './scenes/TrailScene';
 import {OpenFieldsScene} from './scenes/OpenFieldsScene';
 import {FarmInteriorScene} from './scenes/FarmInteriorScene';
+import {GreenhouseScene} from './scenes/GreenhouseScene';
 import {GroundItemsView} from './ground-items-view';
 import {dropInventoryItem} from './systems/ground-items';
 import {equipToolCopy} from './systems/economy';
@@ -33,7 +34,7 @@ import './character-studio.css';
 
 gameAudio.init();
 const scene = new ValleyScene();
-const activeForest=():FarmInteriorScene|OpenFieldsScene|TrailScene|ForestScene|VillageScene|CityForestScene|FishingLakeScene|SurvivorCampScene|HighlandScene|MineScene|DungeonScene|undefined=>scene.scene?.isActive('Pomar')?scene.scene.get('Pomar') as TrailScene:scene.scene?.isActive('Costa')?scene.scene.get('Costa') as TrailScene:scene.scene?.isActive('Estacao')?scene.scene.get('Estacao') as TrailScene:scene.scene?.isActive('Ruinas')?scene.scene.get('Ruinas') as TrailScene:scene.scene?.isActive('Pantano')?scene.scene.get('Pantano') as TrailScene:scene.scene?.isActive('Interior')?scene.scene.get('Interior') as FarmInteriorScene:scene.scene?.isActive('Campos')?scene.scene.get('Campos') as OpenFieldsScene:scene.scene?.isActive('Mineracao')?scene.scene.get('Mineracao') as MineScene:scene.scene?.isActive('Mina')?scene.scene.get('Mina') as MineScene:scene.scene?.isActive('Serra')?scene.scene.get('Serra') as HighlandScene:scene.scene?.isActive('Acampamento')?scene.scene.get('Acampamento') as SurvivorCampScene:scene.scene?.isActive('Lago')?scene.scene.get('Lago') as FishingLakeScene:scene.scene?.isActive('Dungeons')?scene.scene.get('Dungeons') as DungeonScene:scene.scene?.isActive('AcessoCidade')?scene.scene.get('AcessoCidade') as CityForestScene:scene.scene?.isActive('Vila')?scene.scene.get('Vila') as VillageScene:scene.scene?.isActive('Floresta')?scene.scene.get('Floresta') as ForestScene:undefined;
+const activeForest=():GreenhouseScene|FarmInteriorScene|OpenFieldsScene|TrailScene|ForestScene|VillageScene|CityForestScene|FishingLakeScene|SurvivorCampScene|HighlandScene|MineScene|DungeonScene|undefined=>scene.scene?.isActive('Estufa')?scene.scene.get('Estufa') as GreenhouseScene:scene.scene?.isActive('Pomar')?scene.scene.get('Pomar') as TrailScene:scene.scene?.isActive('Costa')?scene.scene.get('Costa') as TrailScene:scene.scene?.isActive('Estacao')?scene.scene.get('Estacao') as TrailScene:scene.scene?.isActive('Ruinas')?scene.scene.get('Ruinas') as TrailScene:scene.scene?.isActive('Pantano')?scene.scene.get('Pantano') as TrailScene:scene.scene?.isActive('Interior')?scene.scene.get('Interior') as FarmInteriorScene:scene.scene?.isActive('Campos')?scene.scene.get('Campos') as OpenFieldsScene:scene.scene?.isActive('Mineracao')?scene.scene.get('Mineracao') as MineScene:scene.scene?.isActive('Mina')?scene.scene.get('Mina') as MineScene:scene.scene?.isActive('Serra')?scene.scene.get('Serra') as HighlandScene:scene.scene?.isActive('Acampamento')?scene.scene.get('Acampamento') as SurvivorCampScene:scene.scene?.isActive('Lago')?scene.scene.get('Lago') as FishingLakeScene:scene.scene?.isActive('Dungeons')?scene.scene.get('Dungeons') as DungeonScene:scene.scene?.isActive('AcessoCidade')?scene.scene.get('AcessoCidade') as CityForestScene:scene.scene?.isActive('Vila')?scene.scene.get('Vila') as VillageScene:scene.scene?.isActive('Floresta')?scene.scene.get('Floresta') as ForestScene:undefined;
 const ui = new GameUI({
   getMineMissionRuntime:()=>{const current=activeForest()??scene;return current instanceof DungeonScene?undefined:current.getMineMissionRuntime();},
   getFishingState: () => {const current=activeForest()??scene;return current instanceof DungeonScene?undefined:current.getFishingState();},
@@ -41,7 +42,7 @@ const ui = new GameUI({
   onUseItem: (item,toolId) => {const current=activeForest()??scene;
     // Fogueira portátil: montada no chão, na frente do personagem, e fica ali (preview.42).
     if(item==='campfire'&&!toolId){
-      if(current instanceof DungeonScene||current instanceof FarmInteriorScene){ui.toast('Monte a fogueira ao ar livre.');return;}
+      if(current instanceof DungeonScene||current instanceof FarmInteriorScene||current instanceof GreenhouseScene){ui.toast('Monte a fogueira ao ar livre.');return;}
       const c=current as unknown as CampfireScene&{movementBlockedPoint?:(x:number,y:number)=>boolean;swimmingPoint?:(x:number,y:number)=>number};
       const r=placeCampfireInScene(c,(x,y)=>!!c.movementBlockedPoint?.(x,y)||(c.swimmingPoint?.(x,y)??0)>0);ui.toast(r.message);if(r.ok)gameAudio.play('craft');return;
     }if(toolId&&!(current instanceof DungeonScene)&&!equipToolCopy(current.getFishingState(),toolId))return;void current.useVillageItem(item);},
@@ -76,7 +77,7 @@ export const game = new Phaser.Game({
   roundPixels: true,
   render: { antialias: false, powerPreference: 'high-performance' },
   scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight },
-  scene: [scene,new FarmInteriorScene(),new OpenFieldsScene(),new TrailScene('swamp'),new TrailScene('ruins'),new TrailScene('railway'),new TrailScene('coast'),new TrailScene('orchard'), new ForestScene(),new VillageScene(),new CityForestScene(),new FishingLakeScene(),new SurvivorCampScene(),new HighlandScene(),new MineScene(),new MineScene('Mineracao'),new DungeonScene(),new MapEditorScene()],
+  scene: [scene,new FarmInteriorScene(),new GreenhouseScene(),new OpenFieldsScene(),new TrailScene('swamp'),new TrailScene('ruins'),new TrailScene('railway'),new TrailScene('coast'),new TrailScene('orchard'), new ForestScene(),new VillageScene(),new CityForestScene(),new FishingLakeScene(),new SurvivorCampScene(),new HighlandScene(),new MineScene(),new MineScene('Mineracao'),new DungeonScene(),new MapEditorScene()],
   audio: { noAudio: true },
   banner: false,
 });

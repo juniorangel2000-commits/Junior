@@ -100,6 +100,8 @@ export interface SaveData {
   forageHarvest?:Record<string,number>;
   /** Obras grandes pagas aos poucos (casa, estufa, Vale, casas novas; preview.48). */
   projects?:import('./systems/projects').ProjectsState;
+  /** Estufa da propriedade: posição da porta e plantas (preview.48). */
+  greenhouse?:import('./systems/greenhouse').GreenhouseState;
   /** Ano em que o jogador participou do concurso de cada festival (src/systems/festivals.ts). */
   festivalDone?:Record<string,number>;
   mineMissions?:import('./systems/mine-mission-state').MineMissionsState;

@@ -1,3 +1,4 @@
+import {greenhouseReserved,greenhousePointBlocked,greenhouseTileBlocked} from './greenhouse';
 import {groundClock} from './ground-items';
 import {inventoryToolCondition,wearInventoryTool} from './tool-instances';
 import type {SaveData,TilePoint,ItemId} from '../types';
@@ -15,7 +16,8 @@ export function createFarmRuntime(snapshot:()=>SaveData,write:(d:SaveData)=>bool
 export const farmSites=(save:SaveData)=>save.farmConstruction?.sites??[];
 export const farmInside=(site:FarmSite,x:number,y:number)=>{const d=FARM_BUILDINGS[site.kind];return x>=site.x&&x<site.x+d.width&&y>=site.y&&y<site.y+d.height;};
 export const farmReservation=(s:FarmSite,x:number,y:number)=>farmInside(s,x,y)||y===s.y+FARM_BUILDINGS[s.kind].height&&Math.abs(x-s.x-Math.floor(FARM_BUILDINGS[s.kind].width/2))<=1;
-export const farmReserved=(save:SaveData,x:number,y:number)=>farmSites(save).some(s=>farmReservation(s,x,y));
+// A estufa (preview.48) entra nas mesmas consultas: ninguém planta, constrói ou atravessa por ela.
+export const farmReserved=(save:SaveData,x:number,y:number)=>farmSites(save).some(s=>farmReservation(s,x,y))||greenhouseReserved(save,x,y);
 export function farmFootprint(kind:FarmKind,x:number,y:number):TilePoint[]{const d=FARM_BUILDINGS[kind];return Array.from({length:d.width*d.height},(_,i)=>({x:x+i%d.width,y:y+Math.floor(i/d.width)}));}
 export function farmAnchor(s:FarmSite):TilePoint{const d=FARM_BUILDINGS[s.kind];return{x:(s.x+Math.floor(d.width/2)+.5)*32,y:(s.y+d.height+.5)*32};}
 export function farmHomePoint(s:FarmSite):TilePoint{const d=FARM_BUILDINGS[s.kind];return{x:(s.x+Math.floor(d.width/2)+.5)*32,y:(s.y+d.bodyRows+.5)*32};}
@@ -36,12 +38,12 @@ export function farmSitePointBlocked(s:FarmSite,px:number,py:number):boolean{
  if(px<left+6||px>right-6)return true;
  return py>bottom-7&&!(s.gateOpen&&Math.abs(px-(left+right)/2)<16);
 }
-export const farmPointBlocked=(save:SaveData,x:number,y:number)=>farmSites(save).some(s=>farmSitePointBlocked(s,x,y));
+export const farmPointBlocked=(save:SaveData,x:number,y:number)=>farmSites(save).some(s=>farmSitePointBlocked(s,x,y))||greenhousePointBlocked(save,x,y);
 export function farmAnimalHome(save:SaveData,id:string):FarmSite|undefined{return farmSites(save).find(s=>s.finished&&s.animals.includes(id));}
 /** Full free floor between the rear wall and the feet of the fences. */
 export function farmYardPoint(s:FarmSite,x:number,y:number):boolean{const d=FARM_BUILDINGS[s.kind];return s.kind!=='silo'&&x>=s.x*32+7&&x<=(s.x+d.width)*32-7&&y>=(s.y+d.bodyRows)*32&&y<=(s.y+d.height)*32-8;}
 export function farmAnimalSettled(s:FarmSite,p:TilePoint,radius:number,radiusY=radius*.6):boolean{return[[-radius,-radiusY],[radius,-radiusY],[-radius,radiusY],[radius,radiusY]].every(([dx,dy])=>farmYardPoint(s,p.x+dx,p.y+dy));}
-export const farmBlocked=(save:SaveData,x:number,y:number)=>farmSites(save).some(s=>farmSiteBlocked(s,x,y));
+export const farmBlocked=(save:SaveData,x:number,y:number)=>farmSites(save).some(s=>farmSiteBlocked(s,x,y))||greenhouseTileBlocked(save,x,y);
 export function farmStage(s:FarmSite):0|1|2{if(s.finished)return 2;const cost=FARM_BUILDINGS[s.kind].cost,total=Object.values(cost).reduce((a,b)=>a+(b??0),0),delivered=Object.values(s.delivered).reduce((a,b)=>a+(b??0),0);return delivered>=total/2?1:0;}
 export const farmReady=(s:FarmSite)=>Object.entries(FARM_BUILDINGS[s.kind].cost).every(([id,n])=>(s.delivered[id as ItemId]??0)>=n!);
 export function nearFarmSite(save:SaveData,p:TilePoint):FarmSite|undefined{return farmSites(save).filter(s=>Math.hypot(farmAnchor(s).x-p.x,farmAnchor(s).y-p.y)<=96).sort((a,b)=>Math.hypot(farmAnchor(a).x-p.x,farmAnchor(a).y-p.y)-Math.hypot(farmAnchor(b).x-p.x,farmAnchor(b).y-p.y))[0];}

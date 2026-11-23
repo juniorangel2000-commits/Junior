@@ -1,4 +1,5 @@
 import {validProjects} from './projects';
+import {validGreenhouse} from './greenhouse';
 import {playerHomeSize} from './home-level';
 import {ROPE_AREAS,ropeAllowed,type RopeArea} from '../data/wild-animals';
 import {FOREST_ANIMALS as LEGACY_FOREST_ANIMALS} from '../data/ancient-forest';
@@ -131,6 +132,7 @@ export function validateSave(value: unknown): value is SaveData {
   if(!validFestivalDone(value.festivalDone))return false;
   if(!validForageHarvest(value.forageHarvest,typeof value.day==='number'?value.day:0))return false;
   if(!validProjects(value.projects,typeof value.day==='number'?value.day:0))return false;
+  if(!validGreenhouse(value.greenhouse,value as unknown as SaveData))return false;
   if(value.bentoTravel!==undefined&&!validBentoTravel(value.bentoTravel,typeof value.day==='number'?value.day:999999))return false;
   if(value.mineRescue!==undefined&&!validMineRescue(value.mineRescue,typeof value.day==='number'?value.day:999999))return false;
   if(value.mineMissions!==undefined&&!validMineMissions(value.mineMissions,typeof value.day==='number'?value.day:999999))return false;

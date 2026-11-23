@@ -1,3 +1,4 @@
+import { findGreenhouseSpot, GREENHOUSE_FOOTPRINT, GREENHOUSE_FACADE, greenhouseDoorway, greenhouseLevel } from '../systems/greenhouse';
 import {weatherForDay} from '../weather-model';
 import {MachineView} from '../machine-view';
 import {blockMountedEntry} from '../riding-guard';
@@ -225,6 +226,8 @@ export class ValleyScene extends Phaser.Scene {
   private readonly exitPassage=new MapExitPassage();
   private readonly fieldsPassage=new DoorwayPassage();
   private readonly homePassage=new DoorwayPassage();
+  private readonly greenhousePassage=new DoorwayPassage();
+  private greenhouseView?:Phaser.GameObjects.Image;
   private homeTransitionActive=false;
   private homeTransitionToken=0;
   private homeDoorWarningShown=false;
@@ -463,6 +466,38 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   /** Entra no interior do galinheiro ou do curral (cena 'Interior'); na volta, recarrega o estado. */
+  /** Estufa pronta e ainda sem lugar: escolhe um espaço livre perto da casa e avisa. */
+  private ensureGreenhouse():void{
+    if(this.state.greenhouse||greenhouseLevel(this.state)<1)return;
+    // Fora da horta inicial, longe da porta de casa e só onde o jogador anda de verdade.
+    const free=(x:number,y:number)=>x>1&&y>1&&x<94&&y<70&&!(x>=19&&x<=31&&y>=18&&y<=26)&&Math.hypot(x-24.5,y-16.5)>6&&!this.blocked(x,y)&&!this.movementBlocked(x,y)&&!this.movementBlockedPoint((x+.5)*TILE,(y+.5)*TILE)&&!this.farming.isPrepared(x,y)&&!this.farming.cropAt(x,y)&&!farmReserved(this.state,x,y)&&!machineReserved(this.state,'property',x,y)&&!this.world.isSwimmingPoint((x+.5)*TILE,(y+.5)*TILE);
+    const spot=findGreenhouseSpot(free,GREENHOUSE_FOOTPRINT);
+    if(!spot){this.ui.toast('A estufa está pronta, mas não há espaço livre na propriedade. Libere uma área de 13 × 7 perto da casa.');return;}
+    this.state.greenhouse={x:spot.x,y:spot.y,crops:[]};this.persist();this.drawGreenhouse();
+    this.ui.toast('A estufa foi montada perto da casa. Entre pela porta da frente.');
+  }
+  /** Fachada provisória: a estufa da Rosa, com a mesma geometria de colisão. */
+  private drawGreenhouse():void{
+    const g=this.state.greenhouse,f=GREENHOUSE_FACADE;
+    if(!g){this.greenhouseView?.destroy();this.greenhouseView=undefined;return;}
+    const place=()=>{if(!this.state.greenhouse)return;this.greenhouseView?.destroy();
+      this.greenhouseView=this.add.image((g.x+.5)*TILE,g.y*TILE+25,f.texture).setOrigin(f.door.x/f.width,f.door.y/f.height).setScale(f.scale).setDepth(g.y*TILE+25).setVisible(!this.inHome).setData('shadow-foot',1);};
+    if(this.textures.exists(f.texture)){place();return;}
+    this.load.image(f.texture,f.file);this.load.once('complete',()=>{if(this.scene.isActive())place();});if(!this.load.isLoading())this.load.start();
+  }
+  private enterGreenhouse():void{
+    if(blockMountedEntry(this.player,this.ui))return;
+    if(this.forestActive||this.villageActive||this.inHome)return;
+    if(this.state.animalEscort){this.ui.toast('Solte a corda antes de entrar.');return;}
+    this.world.well?.cancel();this.cancelCrafting();this.cancelToolActions();this.toolVisual?.hide();
+    const data=this.snapshotState();if(!saveGame(data)){this.ui.toast('Não foi possível salvar. A entrada foi cancelada.');return;}
+    this.villageActive=true;this.paused=true;this.input.keyboard?.resetKeys();this.cameras.main.fadeOut(SCENE_FADE_MS);
+    this.time.delayedCall(SCENE_FADE_MS,()=>{this.scene.sleep();this.scene.launch('Estufa',{save:data,ui:this.ui,onReturn:(updated:SaveData,title=false)=>{
+      this.scene.wake();this.villageActive=false;this.loadState(updated);this.running=!title;this.paused=title;this.greenhousePassage.reset();
+      document.querySelector<HTMLElement>('#ui')!.style.display='';
+      if(title)this.ui.showTitle(hasSave());else{this.ui.showHUD();this.updateHUD();this.persist();}this.cameras.main.fadeIn(SCENE_FADE_MS);
+    }});});
+  }
   private enterFarmInterior(siteId:number):void {
     if(blockMountedEntry(this.player,this.ui))return;
     if(this.forestActive||this.villageActive||this.state.animalEscort||this.inHome){if(this.state.animalEscort)this.ui.toast('Solte a corda antes de entrar.');return;}
@@ -959,6 +994,8 @@ export class ValleyScene extends Phaser.Scene {
     this.home = new Home(data.home, true, playerHomeSize(data));
     // Partida carregada (ou outra partida): obras antigas não viram aviso novo.
     if(this.projectDay===undefined||data.day<this.projectDay)this.projectDay=data.day;
+    // Depois que o mundo e a horta foram montados: desenha a estufa (ou escolhe o lugar dela).
+    this.time.delayedCall(0,()=>{this.drawGreenhouse();this.ensureGreenhouse();});
     this.cropSprites = [];
     this.soilSprites = []; this.soilSignature = '';
     this.buildingSprites = [];
@@ -1724,6 +1761,7 @@ export class ValleyScene extends Phaser.Scene {
     const prev=this.projectDay;this.projectDay=this.state.day;if(prev===undefined||prev>=this.state.day)return;
     const done=projectsFinishedBetween(this.state,prev,this.state.day);if(!done.length)return;
     this.ui.toast(done.map(d=>d.done).join(' '));
+    if(done.some(d=>d.id==='greenhouse'))this.ensureGreenhouse();
     if(done.some(d=>d.group==='home')){this.home=new Home(this.home.data,true,playerHomeSize(this.state));if(this.inHome){this.refreshHomeView();this.updateZoom();}}
   }
   private updateHUD(): void {
@@ -1823,6 +1861,9 @@ export class ValleyScene extends Phaser.Scene {
       if(!this.homeDoorWarningShown){this.ui.toast('Conclua a condução do animal antes de entrar em casa.');this.homeDoorWarningShown=true;}
     }else this.homeDoorWarningShown=false;
     if(!this.inHome)this.animals?.update(delta,this.player);
+    // Estufa (preview.48): a porta leva ao interior.
+    this.greenhouseView?.setVisible(!this.inHome);
+    if(!this.inHome&&this.state.greenhouse&&!this.player.isSwimming&&!this.toolBusy&&this.greenhousePassage.update({x:previousX,y:previousY},this.player,greenhouseDoorway(this.state.greenhouse))){this.enterGreenhouse();return;}
     if(!this.inHome&&!this.player.isSwimming&&this.exitPassage.update({x:previousX,y:previousY},this.player,this.forestGate(),this.state.mapEdits?.points?.entry)){
       if(!this.state.animalEscort){this.enterForest();return;}
       if(!this.exitWarningShown){this.ui.toast('Conclua a condução ou solte a corda com G antes de sair.');this.exitWarningShown=true;}
