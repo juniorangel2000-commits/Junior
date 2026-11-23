@@ -1,4 +1,5 @@
 import {it} from 'vitest';
+import {FARM_BUILDINGS} from '../../src/data/farm-buildings';
 /** Simulação de economia (docs/economia). Roda só quando pedida:
  * ECONOMIA=1 npx vitest run scripts/economia */
 const run=it.runIf(!!process.env.ECONOMIA);
@@ -61,20 +62,23 @@ run('simula um ano',()=>{
  // ── 2. Animais.
  log('## 2. Animais');
  log();
+ // preview.48: nenhum animal é comprado; vêm com a corda dos cenários (sorteio diário) e moram numa construção.
  const animals=[
-  {name:'Galinha',price:250,daily:sale('egg'),feed:1},
-  {name:'Pato',price:300,daily:sale('duckEgg')/2+sale('feather')/8,feed:1},
-  {name:'Vaca',price:0,daily:sale('milk'),feed:1,note:'obtida de outro jeito'},
-  {name:'Cabra',price:0,daily:sale('goatMilk'),feed:1,note:'obtida de outro jeito'},
-  {name:'Ovelha',price:0,daily:sale('wool')/3,feed:1,note:'obtida de outro jeito'},
-  {name:'Porco',price:400,daily:0,feed:1,note:'só esterco (adubo)'},
- ];
+  {name:'Galinha',where:'Bosque, Costa, Pomar, Ruínas, Estação',home:'coop',daily:sale('egg'),feed:1},
+  {name:'Pato',where:'Campos, Pântano, Costa',home:'coop',daily:sale('duckEgg')/2+sale('feather')/8,feed:1},
+  {name:'Vaca',where:'Campos',home:'barn',daily:sale('milk'),feed:1},
+  {name:'Cabra',where:'Bosque, Costa, Ruínas, Estação',home:'aprisco',daily:sale('goatMilk'),feed:1},
+  {name:'Ovelha',where:'Campos',home:'aprisco',daily:sale('wool')/3,feed:1},
+  {name:'Porco',where:'Bosque, Pântano, Pomar',home:'pigsty',daily:0,feed:1,note:'só esterco (adubo)'},
+ ] as const;
  const hay=sale('fiber')*3;
- log(`Palha: de graça com capim dos Campos (cortar ~3 s) ou 3 fibras (${hay} C de venda perdida).`);
+ const buildValue=(kind:keyof typeof FARM_BUILDINGS)=>Object.entries(FARM_BUILDINGS[kind].cost).reduce((n,[i,q])=>n+(sale(i)||0)*(q as number),0);
+ log(`Palha: de graça com capim dos Campos (cortar ~3 s) ou 3 fibras (${hay} C de venda perdida). Corda: 3 fibras.`);
  log();
- log('| Animal | Preço | Rende por dia | Palha | Lucro/dia | Dias para pagar | Com qualidade excelente (1,5×) |');
- log('| --- | --- | --- | --- | --- | --- | --- |');
- for(const a of animals){const net=a.daily-hay*a.feed/3;log(`| ${a.name} | ${a.price||a.note} | ${r1(a.daily)} | 1 | ${r1(net)} | ${a.price&&net>0?r0(a.price/net):'—'} | ${a.price&&net>0?r0(a.price/(a.daily*1.5-hay/3)):'—'} |`);}
+ log('| Animal | Onde aparece (corda) | Mora em | Construção (valor de venda dos materiais) | Vagas | Rende por dia | Lucro/dia | Dias para pagar a construção cheia |');
+ log('| --- | --- | --- | --- | --- | --- | --- | --- |');
+ for(const a of animals){const b=FARM_BUILDINGS[a.home],net=a.daily-hay*a.feed/3,value=buildValue(a.home);
+  log(`| ${a.name} | ${a.where} | ${b.name} | ${r0(value)} C | ${b.capacity} | ${r1(a.daily)} | ${r1(net)} | ${net>0?r0(value/(net*b.capacity)):('note' in a?a.note:'—')} |`);}
  log();
 
  // ── 3. Máquinas.

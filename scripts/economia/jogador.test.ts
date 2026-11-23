@@ -15,18 +15,25 @@ import {FORAGE_SPOTS} from '../../src/systems/forage';
 import {festivalOn} from '../../src/systems/festivals';
 import type {ItemId} from '../../src/types';
 
-/** Um jogador "esforçado" joga 112 dias usando o código real da horta, da mochila e do comércio.
- * Tempo: segundos reais (= minutos do relógio). Orçamento: 15 min reais por dia. */
+/** Um jogador "esforçado" joga 3 anos (336 dias) usando o código real da horta, da mochila e do comércio.
+ * Tempo: segundos reais (= minutos do relógio). Orçamento: 15 min reais por dia.
+ * Vigor (preview.48): 100 por dia (a cama recupera); enxada 1 por canteiro, regador 1 a cada 2 regas,
+ * pesca 3 por arremesso. A chuva rega a horta sozinha (código real da horta). */
+const DAYS=336,VIGOR={till:1,water:.5,cast:3},MEAL={price:28,vigor:50};
 const BUDGET=900,T={till:2,plant:1.5,water:3,harvest:1.5,sellTrip:90,orchard:120,coast:150,cast:22};
 const buyerOf=(item:string)=>{let best='',price=0;for(const m of Object.values(MERCHANTS)){const p=(m.sell as Record<string,number>)[item]??0;if(p>price){price=p;best=m.id;}}return{merchant:best,price};};
 
-function playYear(opts:{label:string;orchard:boolean;coast:boolean;fishing:boolean;maxTiles:number}){
+function playYear(opts:{label:string;orchard:boolean;coast:boolean;fishing:boolean;maxTiles:number;meals:number}){
  const inv=new Inventory();inv.data.hoe=1;
  const economy=createVillageEconomy(),farm=new Farming([],[],undefined,[]);
  const ground={area:'property',terrainAt:()=>'grass',occupied:()=>false,reserved:()=>false} as never;
  const income:Record<string,number>={};const add=(k:string,n:number)=>{income[k]=(income[k]??0)+n;};
  const seasonCoins:number[]=[];let tiles=farm.soilTiles.length;let nextX=30,nextY=20;
- const log:string[]=[];
+ const log:string[]=[];const yearCoins:number[]=[];let tiredDays=0,meals=0,rainDays=0;let vigor=100,mealsToday=0,tired=false;
+ /** Gasta vigor; sem vigor, compra uma refeição (até `opts.meals` por dia) ou para. */
+ const spend=(n:number,day:number):boolean=>{if(vigor>=n){vigor-=n;return true;}
+  if(mealsToday<opts.meals&&economy.coins>=MEAL.price+20){economy.coins-=MEAL.price;add('refeições',-MEAL.price);meals++;mealsToday++;vigor+=MEAL.vigor;vigor-=n;return true;}
+  if(!tired){tired=true;tiredDays++;}void day;return false;};
  const sellAll=(day:number)=>{
   for(const [item,n] of Object.entries(inv.data)){
    if(!n||item==='hoe')continue;
@@ -36,9 +43,9 @@ function playYear(opts:{label:string;orchard:boolean;coast:boolean;fishing:boole
    while(left>0){const q=Math.min(99,left);const before=economy.coins;const r=trade(merchant,'sell',item as ItemId,q,inv,economy,day);if(!r.ok)break;add(kind,economy.coins-before);left-=q;}
   }
  };
- for(let day=1;day<=112;day++){
-  let time=BUDGET;
-  farm.update(0,day);
+ for(let day=1;day<=DAYS;day++){
+  let time=BUDGET;vigor=100;mealsToday=0;tired=false;
+  farm.update(0,day);if(farm.crops.length&&farm.crops.every(c=>c.watered))rainDays++;
   // Colher tudo que estiver pronto.
   for(const c of [...farm.crops])if(c.growth>=1&&time>T.harvest){farm.harvest(c.x,c.y,inv);time-=T.harvest;}
   // Escolher a planta: maior lucro por dia que ainda dá tempo de colher nesta estação.
@@ -54,36 +61,45 @@ function playYear(opts:{label:string;orchard:boolean;coast:boolean;fishing:boole
    const want=Math.max(0,Math.min(opts.maxTiles,Math.floor((BUDGET*.55)/T.water))-tiles);
    const canBuy=Math.floor((economy.coins-20)/pick.seedPrice);
    const newTiles=Math.max(0,Math.min(want,canBuy-empty.length,Math.floor(time*.3/(T.till+T.plant))));
-   for(let i=0;i<newTiles;i++){farm.prepare(nextX,nextY,inv,ground);nextX++;if(nextX>80){nextX=30;nextY++;}tiles++;time-=T.till;}
+   for(let i=0;i<newTiles;i++){if(!spend(VIGOR.till,day))break;farm.prepare(nextX,nextY,inv,ground);nextX++;if(nextX>80){nextX=30;nextY++;}tiles++;time-=T.till;}
    const slots=farm.soilTiles.filter(t=>!farm.cropAt(t.x,t.y));
    const n=Math.min(slots.length,Math.max(0,Math.floor((economy.coins-20)/pick.seedPrice)));
    if(n>0){const seed=pick.seed as ItemId;const have=inv.data[seed]??0;if(n>have){const before=economy.coins;const r=trade('seeds','buy',seed,Math.min(99,n-have),inv,economy,day);if(r.ok)add('sementes',economy.coins-before);}
     for(const s of slots.slice(0,n)){if(time<T.plant)break;if(farm.plant(s.x,s.y,inv,day,pick.id as CropId).ok)time-=T.plant;}}
   }
-  for(const c of farm.crops){if(time<T.water)break;if(farm.water(c.x,c.y).ok)time-=T.water;}
+  for(const c of farm.crops){if(time<T.water)break;if(c.watered)continue;if(!spend(VIGOR.water,day))break;if(farm.water(c.x,c.y).ok)time-=T.water;}
   // Pomar a cada 3 dias, conchas a cada 2, depois pesca com o que sobrar.
   if(opts.orchard&&day>=3&&day%3===0&&time>T.orchard+200){const fruits=createOrchardLayout().fruit.filter(f=>orchardFruitInSeason(f.item,day));for(const f of fruits)inv.transact({},{[f.item]:1});time-=T.orchard+fruits.length*6;}
   if(opts.coast&&day>=5&&day%2===0&&time>T.coast+100){const shells=FORAGE_SPOTS.filter(s=>s.item==='shell').length;inv.transact({},{shell:shells});time-=T.coast+shells*8;}
-  if(opts.fishing&&day>=4){const casts=Math.floor(Math.max(0,time-T.sellTrip-80)/T.cast);for(let i=0;i<casts;i++)inv.transact({},{[i%20===0?'rareFish':'fish']:1});time-=casts*T.cast;}
+  if(opts.fishing&&day>=4){const casts=Math.floor(Math.max(0,time-T.sellTrip-80)/T.cast);for(let i=0;i<casts;i++){if(!spend(VIGOR.cast,day))break;inv.transact({},{[i%20===0?'rareFish':'fish']:1});time-=T.cast;}}
   sellAll(day);
   // Plantar de novo depois de vender (a primeira compra do dia já foi feita).
   if(festivalOn(day))log.push(`dia ${day}: ${festivalOn(day)!.name}`);
   if(calendarDate(day).dayOfSeason===28)seasonCoins.push(economy.coins);
+  if(day%112===0)yearCoins.push(economy.coins);
  }
- return{label:opts.label,income,seasonCoins,tiles,coins:economy.coins,log};
+ return{label:opts.label,income,seasonCoins,yearCoins,tiles,coins:economy.coins,log,tiredDays,meals,rainDays};
 }
 
-run('joga um ano',()=>{
+run('joga três anos',()=>{
  const runs=[
-  playYear({label:'Só horta',orchard:false,coast:false,fishing:false,maxTiles:999}),
-  playYear({label:'Horta + Pomar + Costa + pesca',orchard:true,coast:true,fishing:true,maxTiles:999}),
-  
-  playYear({label:'Sem ampliar a horta (só os 45 canteiros iniciais) + coleta e pesca',orchard:true,coast:true,fishing:true,maxTiles:45}),
+  playYear({label:'Só horta, sem comprar comida',orchard:false,coast:false,fishing:false,maxTiles:999,meals:0}),
+  playYear({label:'Só horta, compra até 2 refeições por dia',orchard:false,coast:false,fishing:false,maxTiles:999,meals:2}),
+  playYear({label:'Horta + Pomar + Costa + pesca, sem comprar comida',orchard:true,coast:true,fishing:true,maxTiles:999,meals:0}),
+  playYear({label:'Horta + Pomar + Costa + pesca, até 2 refeições',orchard:true,coast:true,fishing:true,maxTiles:999,meals:2}),
+  playYear({label:'Só os 45 canteiros iniciais + coleta e pesca, sem comida',orchard:true,coast:true,fishing:true,maxTiles:45,meals:0}),
  ];
- const out:string[]=['## 7. Um ano jogado pelo código real (horta, mochila e lojas)','','Orçamento: 15 min reais de trabalho por dia; regar = 3 s por canteiro (com idas ao poço). O jogador escolhe a planta que mais rende para os dias que faltam na estação.',''];
- out.push('| Estratégia | Fim da primavera | Fim do verão | Fim do outono | Fim do inverno | Canteiros | Renda por fonte |');
- out.push('| --- | --- | --- | --- | --- | --- | --- |');
- for(const r of runs)out.push(`| ${r.label} | ${r.seasonCoins.map(n=>n.toLocaleString('pt-BR')).join(' | ')} | ${r.tiles} | ${Object.entries(r.income).map(([k,v])=>`${k} ${Math.round(v).toLocaleString('pt-BR')}`).join(', ')} |`);
- writeFileSync(new URL('../../docs/economia/JOGADOR-UM-ANO.md',import.meta.url),out.join('\n'));
+ const fmt=(n:number)=>Math.round(n).toLocaleString('pt-BR');
+ const out:string[]=['## Três anos jogados pelo código real (horta, mochila e lojas)','',
+  'Orçamento: 15 min reais de trabalho por dia; regar = 3 s por canteiro (com idas ao poço). O jogador escolhe a planta que mais rende para os dias que faltam na estação.',
+  'Vigor: 100 por dia; enxada 1 por canteiro, regador 1 a cada 2 regas, pesca 3 por arremesso. Refeição da pousada: 28 C por 50 de vigor. A chuva rega a horta sozinha.',''];
+ out.push('| Estratégia | Fim do ano 1 | Fim do ano 2 | Fim do ano 3 | Canteiros | Dias sem vigor | Refeições compradas | Dias de chuva com horta |');
+ out.push('| --- | --- | --- | --- | --- | --- | --- | --- |');
+ for(const r of runs)out.push(`| ${r.label} | ${r.yearCoins.map(fmt).join(' | ')} | ${r.tiles} | ${r.tiredDays} | ${r.meals} | ${r.rainDays} |`);
+ out.push('','### Fim de cada estação (coroas)','','| Estratégia | '+['Prim. 1','Ver. 1','Out. 1','Inv. 1','Prim. 2','Ver. 2','Out. 2','Inv. 2','Prim. 3','Ver. 3','Out. 3','Inv. 3'].join(' | ')+' |','| --- |'+' --- |'.repeat(12));
+ for(const r of runs)out.push(`| ${r.label} | ${r.seasonCoins.map(fmt).join(' | ')} |`);
+ out.push('','### Renda por fonte nos 3 anos','','| Estratégia | Renda por fonte |','| --- | --- |');
+ for(const r of runs)out.push(`| ${r.label} | ${Object.entries(r.income).map(([k,v])=>`${k} ${fmt(v)}`).join(', ')} |`);
+ writeFileSync(new URL('../../docs/economia/JOGADOR-TRES-ANOS.md',import.meta.url),out.join('\n'));
  console.log(out.join('\n'));
-},120000);
+},300000);

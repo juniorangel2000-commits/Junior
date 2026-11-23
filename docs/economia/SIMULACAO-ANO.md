@@ -34,16 +34,16 @@ Tempos de trabalho estimados (segundos reais): till 2, plant 1.5, water 1.6, har
 
 ## 2. Animais
 
-Palha: de graça com capim dos Campos (cortar ~3 s) ou 3 fibras (0 C de venda perdida).
+Palha: de graça com capim dos Campos (cortar ~3 s) ou 3 fibras (0 C de venda perdida). Corda: 3 fibras.
 
-| Animal | Preço | Rende por dia | Palha | Lucro/dia | Dias para pagar | Com qualidade excelente (1,5×) |
-| --- | --- | --- | --- | --- | --- | --- |
-| Galinha | 250 | 20 | 1 | 20 | 13 | 8 |
-| Pato | 300 | 16.5 | 1 | 16.5 | 18 | 12 |
-| Vaca | obtida de outro jeito | 30 | 1 | 30 | — | — |
-| Cabra | obtida de outro jeito | 36 | 1 | 36 | — | — |
-| Ovelha | obtida de outro jeito | 20 | 1 | 20 | — | — |
-| Porco | 400 | 0 | 1 | 0 | — | — |
+| Animal | Onde aparece (corda) | Mora em | Construção (valor de venda dos materiais) | Vagas | Rende por dia | Lucro/dia | Dias para pagar a construção cheia |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Galinha | Bosque, Costa, Pomar, Ruínas, Estação | Galinheiro | 222 C | 6 | 20 | 20 | 2 |
+| Pato | Campos, Pântano, Costa | Galinheiro | 222 C | 6 | 16.5 | 16.5 | 2 |
+| Vaca | Campos | Curral | 330 C | 4 | 30 | 30 | 3 |
+| Cabra | Bosque, Costa, Ruínas, Estação | Aprisco | 298 C | 4 | 36 | 36 | 2 |
+| Ovelha | Campos | Aprisco | 298 C | 4 | 20 | 20 | 4 |
+| Porco | Bosque, Pântano, Pomar | Chiqueiro | 192 C | 4 | 0 | 0 | só esterco (adubo) |
 
 ## 3. Máquinas (valor acrescentado)
 
