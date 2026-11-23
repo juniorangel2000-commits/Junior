@@ -1,4 +1,8 @@
-import {describe,it,expect} from 'vitest';
+import {describe,it,vi,expect} from 'vitest';
+
+// Estes testes contam dias secos: o tempo fica sempre aberto (a chuva tem teste próprio em rain-watering).
+vi.mock('../src/weather-model',async importOriginal=>({...await importOriginal<typeof import('../src/weather-model')>(),weatherForDay:()=>'clear'}));
+
 import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
 const {PNG}=createRequire(import.meta.url)('pngjs');

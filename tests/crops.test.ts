@@ -1,4 +1,8 @@
 import {describe,it,expect,vi} from 'vitest';
+
+// Estes testes contam dias secos: o tempo fica sempre aberto (a chuva tem teste próprio em rain-watering).
+vi.mock('../src/weather-model',async importOriginal=>({...await importOriginal<typeof import('../src/weather-model')>(),weatherForDay:()=>'clear'}));
+
 // Plantas de teste: uma só de Primavera e uma com rebrota, sem mudar o catálogo real.
 vi.mock('../src/data/crops',async importOriginal=>{
  const real=await importOriginal<typeof import('../src/data/crops')>();

@@ -1,5 +1,9 @@
 import type {ItemId} from '../src/types';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
+// Estes testes contam dias secos: o tempo fica sempre aberto (a chuva tem teste próprio em rain-watering).
+vi.mock('../src/weather-model',async importOriginal=>({...await importOriginal<typeof import('../src/weather-model')>(),weatherForDay:()=>'clear'}));
+
 import type { CharacterProfile } from '../src/types';
 import { Building, BUILD_COSTS } from '../src/systems/building';
 import { Farming } from '../src/systems/farming';

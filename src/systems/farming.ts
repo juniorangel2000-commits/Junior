@@ -4,6 +4,7 @@ import { WORLD_WIDTH, WORLD_HEIGHT } from '../data/regions';
 import { Inventory } from './inventory';
 import { CROPS, cropDefinition, type CropDefinition, type CropId } from '../data/crops';
 import { calendarDate, daysLeftInSeason, IN_SEASON } from './calendar';
+import { weatherForDay } from '../weather-model';
 
 export interface ActionResult { ok: boolean; message: string; /** Colheita: item, quantidade e qualidade, para o registro de qualidade. */ harvested?: { item: import('../types').ItemId; amount: number; qualities: Quality[] } }
 /** Limite de dias processados de uma vez; protege saves com datas absurdas. */
@@ -27,7 +28,8 @@ export function advanceCrop(crop: CropData, def: CropDefinition, today: number):
   let day = crop.day;
   if (today - day > MAX_SETTLE_DAYS) day = today - MAX_SETTLE_DAYS;
   while (day < today) {
-    if (crop.watered) crop.days = Math.min(def.days, crop.days + 1);
+    // Dia de chuva conta como regado (preview.48).
+    if (crop.watered || weatherForDay(day) === 'rain') crop.days = Math.min(def.days, crop.days + 1);
     else if (crop.care && crop.days < def.days) crop.care.missed = Math.min(999, crop.care.missed + 1);
     crop.watered = false;
     const next = day + 1;
@@ -232,6 +234,8 @@ export class Farming {
       const def = cropDefinition(crop.crop);
       if (!advanceCrop(crop, def, day)) { this.crops.splice(this.crops.indexOf(crop), 1); withered.push(def.name); }
     }
+    // A chuva rega a horta inteira: o canteiro aparece "regado hoje".
+    if (weatherForDay(day) === 'rain') for (const crop of this.crops) crop.watered = true;
     return withered;
   }
 }

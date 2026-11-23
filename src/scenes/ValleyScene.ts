@@ -1,3 +1,4 @@
+import {weatherForDay} from '../weather-model';
 import {MachineView} from '../machine-view';
 import {blockMountedEntry} from '../riding-guard';
 import {mountProblem} from '../systems/horse-riding';
@@ -660,7 +661,7 @@ export class ValleyScene extends Phaser.Scene {
         this.farming.update(result.elapsedMinutes / GAME_MINUTES_PER_SECOND, this.state.day);
         this.nextInteractionAt = this.time.now + 400;
         this.updateNight(); this.updateHUD(); this.persist();
-        this.ui.toast(result.message);
+        this.ui.toast(result.message + (weatherForDay(this.state.day) === 'rain' ? ' Está chovendo: a chuva já regou a horta.' : ''));
       });
       return;
     }
