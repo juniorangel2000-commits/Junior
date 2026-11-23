@@ -6,6 +6,8 @@ const POSES=['perch','peck','flap-up','flap-down'] as const;
 const COUNTS={openFields:9,property:4,village:6,forest:6,fishingLake:8,cityForest:4,survivorCamp:5,highland:5,railway:5,coast:6,orchard:7};
 const SLOT=Symbol.for('after-rain-ambient-birds');
 const CELL=48;
+/** Pássaro pequeno ao lado do coelho (22 px): cerca de 17 px na tela, antes 30 px (preview.48). */
+const BIRD_SCALE=.36;
 export const AMBIENT_BIRD_SHEET='assets/visual/nature/ambient-birds.png';
 
 export function preloadAmbientBirdArt(scene:Phaser.Scene):void{
@@ -46,7 +48,7 @@ export class AmbientBirds {
   if(this.birds.length<COUNTS[c.area]&&this.retry===0&&dt>0){
    const id=++this.flockSerial+c.save.day*37+COUNTS[c.area]*11;
    const states=createAmbientFlock(id,c.player,canLand,this.birds.map(b=>b.state.flock!).filter(Boolean));
-   if(states)for(const state of states)this.birds.push({state,image:this.scene.add.image(state.x,state.y,KEY,`${state.variant}-perch`).setOrigin(.5,.77).setScale(.62).setData('ambient-bird',true),shadow:this.scene.add.image(state.x,state.y,KEY,'shadow').setScale(.29)});
+   if(states)for(const state of states)this.birds.push({state,image:this.scene.add.image(state.x,state.y,KEY,`${state.variant}-perch`).setOrigin(.5,.77).setScale(BIRD_SCALE).setData('ambient-bird',true),shadow:this.scene.add.image(state.x,state.y,KEY,'shadow').setScale(BIRD_SCALE*.47)});
    this.retry=3;
   }
   const spooked=new Set(this.birds.filter(b=>b.state.phase!=='fly'&&Math.hypot(b.state.x-c.player.x,b.state.y-c.player.y)<78).map(b=>b.state.flockId));
