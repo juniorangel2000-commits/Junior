@@ -251,7 +251,7 @@ export function startFieldEscort(save:SaveData,animal:AnimalPosition):{ok:boolea
  const inventory=new Inventory(save.inventory);if(!inventory.spend({cord:1}))return fail('Fabrique uma corda vegetal com 3 fibras (C) para conduzir o animal.');
  Object.assign(save.inventory,inventory.data);save.animalEscort={id:animal.id,area:'openFields'};
  const fields=save.openFields??={version:1,cut:{}};fields.animals=[...(fields.animals??[]).filter(a=>a.id!==animal.id),{...animal}];
- return{ok:true,message:'Corda presa! Leve o animal pela passagem ao norte até a propriedade. G solta a corda.'};
+ return{ok:true,message:'Corda presa! Leve o animal até a propriedade. G para soltar.'};
 }
 /** Atravessa dos Campos para a propriedade com o animal na corda (cavalo ou solto). */
 export function transferFieldEscortToProperty(save:SaveData,arrival:AnimalPoint):void{
