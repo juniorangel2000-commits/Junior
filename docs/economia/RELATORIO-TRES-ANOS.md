@@ -150,3 +150,82 @@ As obras foram pagas pelo próprio serviço do morador, ao longo dos anos.
 - Nenhum erro de página.
 
 **Ajuste feito por causa do teste:** a cozinha nova e a casa leste pediam "Ninho e baias", uma peça de galpão de animais. Agora pedem 6 vidros, que viram as janelas.
+
+---
+
+## Bateria de testes de tudo (23/11/2026)
+
+Pedido do Junior: "vamos testar tudo e ver os resultados e ajustar o que precisa melhorar". Os scripts usados ficaram fora do repositório. Cada parte começou de uma partida gravada e aberta pelo "Continuar", como o jogador faria.
+
+### Partidas salvas antigas
+
+As versões preview.46 e preview.47 foram rodadas de verdade. Em cada uma foi criada uma partida com galinhas, pato e porco comprados, ovelha e cabra do Bosque e canteiros plantados.
+
+- **Carregamento na versão nova:** as duas abrem pelo "Continuar" no dia certo, com o dinheiro e os animais preservados. Salvam de novo sem erro.
+- **Saves com a corda em uso:** foram montados nove casos, como o de uma ovelha presa no Bosque, além de casos inválidos de propósito. A versão antiga e a nova aceitam e recusam exatamente os mesmos.
+
+### Obras do Vale, trem e farol
+
+**Ponte:**
+- Entregue ao Bento às 8h e entrou em obra.
+- Na Vila, a saída norte passou a perguntar "Floresta da Cidade" ou "Ruínas, pela ponte", e a segunda opção leva direto às Ruínas.
+- O Bento vai à mina cerca de 2 dias por semana. Nesses dias, a obra da ponte e o vidro precisam esperar.
+
+**Farol:** a Costa vira ponto de peixe raro das 19h às 5h só depois da obra. Ao meio-dia e sem farol, continua comum.
+
+**Trem:**
+- Vila → Estação → Costa → Vila: cada viagem cobra 30 coroas e soma meia hora no relógio.
+- Com animal na corda, recusa: "Solte a corda antes de embarcar no trem."
+- **Corrigido:** vindo da Costa ou da Estação, o jogador descia num ladrilho com obstáculo e ia parar na entrada oeste da Vila. Agora cada parada tem um ponto de descida livre ao lado da placa.
+
+### Estufa
+
+- **Plantio:** 24 morangos plantados no inverno.
+- **Persistência:** a página foi recarregada e os canteiros continuaram lá, com a rega do dia.
+- **Ciclo completo:** por 9 dias o jogador entrou, encheu o regador no barril (3 vezes por dia, com o regador de 8) e regou tudo. O morango ficou pronto no 8º dia regado e rendeu 24 morangos, e o pé volta a produzir em 4 dias.
+- **Ampliação:** a estufa passa a ter 48 canteiros numa sala de 16 × 11.
+
+### Serviços novos
+
+- **Lúcia:** compra trigo, ovos e leite com 30% a mais. Vende pão caseiro e café da manhã reforçado. Às 19h recusa: "abre das 8h às 18h".
+- **Jonas:** vende galinha (1.500), cabra (5.000) e duas vacas (6.000 cada), e depois avisa que não tem mais. Os animais aparecem na propriedade, perto da casa, num lugar livre.
+- **Moinho:** 5 trigos, 3 milhos e 2 aveias viraram farinha, fubá e aveia em flocos, por 3 coroas cada.
+- **Vidro:** 10 areias e 25 coroas rendem 5 vidros com o Bento.
+- **Areia:** a Costa tem 12 pontos de areia, cada um rende 2 e volta no dia seguinte. São 24 areias por dia, o bastante para 12 vidros.
+
+### Desempenho
+
+O teste roda sem placa de vídeo, por isso os números absolutos são baixos. O que importa é a comparação entre os cenários, medida em quadros por segundo:
+
+| Cenário | Quadros por segundo |
+| --- | --- |
+| Propriedade nova | 6,6 |
+| Propriedade completa (casa 20 × 14, estufa ampliada, animais) | 6,9 |
+| Estufa com 48 canteiros | 9,9 |
+| Casa 20 × 14 | 13 |
+
+As obras não deixaram o jogo mais pesado.
+
+### Outros ajustes
+
+- **Avisos com a tecla repetida:** nas trilhas, como na Costa e na Estação, o aviso mostrava a tecla duas vezes ("E E · Pegar o trem"). O selo já mostra a tecla, então o texto não a repete mais. A placa da Lúcia e do Jonas também foi ajustada.
+- **Parede da casa ampliada:** a última janela da parede do fundo aparecia cortada pelo pilar do canto. Agora a parede é montada por baias inteiras (janela, pilar, quadro com luminária), e a sobra vira parede lisa.
+
+### Jogador simulado com animais
+
+Duas estratégias novas foram incluídas em [JOGADOR-TRES-ANOS.md](JOGADOR-TRES-ANOS.md).
+- **Construções:** galinheiro a partir do dia 8, aprisco no dia 20 e curral no dia 35.
+- **Animais:** 6 galinhas, 4 cabras e 4 vacas, trazidos com a corda, um a cada 2 dias.
+- **Tempo:** cada animal leva 5 s de cuidado por dia.
+
+| Estratégia | Fim do ano 1 | Fim do ano 2 | Fim do ano 3 |
+| --- | --- | --- | --- |
+| Tudo, sem animais e sem obras | 87.030 | 184.196 | 281.772 |
+| Tudo + animais, sem obras | 108.832 | 244.010 | 379.679 |
+| Tudo + animais, pagando as obras | 24.560 | 60.607 | 53.471 |
+
+- **Retorno dos animais:** com 850 coroas de construções, os 14 animais renderam cerca de 112 mil em 3 anos. O tempo gasto com eles sai da pesca, que caiu de 52 mil para 42 mil.
+- **Ritmo das obras:** com animais, o jogador paga a casa, a estufa, a ampliação, o moinho e a ponte até o dia 297. Farol, Estação e casas novas ficam para o Ano 4.
+- **Decisão para o Junior:** os animais continuam rendendo muito pelo que custam. Dá para encarecer as construções, cobrar ração no inverno ou limitar a quantidade de galinheiros.
+
+**O que ainda fica de fora da simulação:** máquinas (queijo, manteiga, geleia), cozinha, aspersores e mina.

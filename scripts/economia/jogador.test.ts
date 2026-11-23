@@ -22,17 +22,19 @@ import type {ItemId} from '../../src/types';
  * Vigor (preview.48): 100 por dia (a cama recupera); enxada 1 por canteiro, regador 1 a cada 2 regas,
  * pesca 3 por arremesso. A chuva rega a horta sozinha (código real da horta). */
 const DAYS=336,VIGOR={till:1,water:.5,cast:3},MEAL={price:28,vigor:50};
-const BUDGET=900,T={till:2,plant:1.5,water:3,harvest:1.5,sellTrip:90,orchard:120,coast:150,cast:22};
+const BUDGET=900,T={rope:180,care:5,till:2,plant:1.5,water:3,harvest:1.5,sellTrip:90,orchard:120,coast:150,cast:22};
 const buyerOf=(item:string)=>{let best='',price=0;for(const m of Object.values(MERCHANTS)){const p=(m.sell as Record<string,number>)[item]??0;if(p>price){price=p;best=m.id;}}return{merchant:best,price};};
 
 /** Preço de compra de um material (loja mais barata; vidro e madeira de lei estimados). */
 const EST:Partial<Record<string,number>>={hardwood:40,woolCloth:240,glass:5};
 const materialPrice=(item:string)=>{const p=Object.values(MERCHANTS).map(m=>(m.buy as Record<string,number>)[item]).filter((n):n is number=>!!n);return p.length?Math.min(...p):EST[item]??100;};
 const projectCost=(d:ProjectDef)=>d.coins+Object.entries(d.items).reduce((n,[i,q])=>n+materialPrice(i)*(q as number),0);
+/** [tipo, a partir do dia, construção (C), rende por dia] — SIMULACAO-ANO.md, seção 2. */
+const RANCH:readonly [string,number,number,number][]=[['chicken',8,222,20],['goat',20,298,36],['cow',35,330,30]];
 const ORDER=['home-1','home-2','home-3','greenhouse','greenhouse-2','vale-moinho','vale-ponte','vale-farol','vale-estacao','casa-leste','casa-sul'];
-function playYear(opts:{label:string;orchard:boolean;coast:boolean;fishing:boolean;maxTiles:number;meals:number;projects?:boolean}){
+function playYear(opts:{label:string;orchard:boolean;coast:boolean;fishing:boolean;maxTiles:number;meals:number;projects?:boolean;animals?:boolean}){
  const funded=new Map<string,number>(),done=(id:string,day:number)=>{const f=funded.get(id),d=PROJECTS.find(p=>p.id===id)!;return f!==undefined&&day>=f+d.days;};
- const finished:string[]=[];let gh:GreenhouseFarm|undefined,ghLevel=0;
+ const finished:string[]=[];const herd:Record<string,number>={};let gh:GreenhouseFarm|undefined,ghLevel=0;
  const inv=new Inventory();inv.data.hoe=1;
  const economy=createVillageEconomy(),farm=new Farming([],[],undefined,[]);
  const ground={area:'property',terrainAt:()=>'grass',occupied:()=>false,reserved:()=>false} as never;
@@ -88,6 +90,16 @@ function playYear(opts:{label:string;orchard:boolean;coast:boolean;fishing:boole
     for(const s of free){if(time<T.plant)break;if(gh.plant(s.x,s.y,inv,day,best.id as CropId).ok)time-=T.plant;}}
    for(const c of gh.crops){if(time<T.water)break;if(c.watered)continue;if(!spend(VIGOR.water,day))break;if(gh.water(c.x,c.y).ok)time-=T.water;}
   }
+  // Animais (valores da tabela de SIMULACAO-ANO.md): cada construção é paga em coroas e os animais
+  // vêm com a corda, um por saída (3 min). Cuidar (coletar e afagar) custa 5 s por animal por dia.
+  if(opts.animals){
+   for(const [kind,from,build,daily] of RANCH){
+    if(day<from)continue;
+    if(herd[kind]===undefined){if(economy.coins<build+200)continue;economy.coins-=build;add('construções',-build);herd[kind]=0;}
+    if(herd[kind]<4+(kind==='chicken'?2:0)&&time>T.rope+200&&day%2===0){herd[kind]++;time-=T.rope;}
+    const n=herd[kind];if(n){const care=Math.min(n,Math.floor(time/T.care));time-=care*T.care;economy.coins+=care*daily;add('animais',care*daily);}
+   }
+  }
   // Pomar a cada 3 dias, conchas a cada 2, depois pesca com o que sobrar.
   if(opts.orchard&&day>=3&&day%3===0&&time>T.orchard+200){const fruits=createOrchardLayout().fruit.filter(f=>orchardFruitInSeason(f.item,day));for(const f of fruits)inv.transact({},{[f.item]:1});time-=T.orchard+fruits.length*6;}
   if(opts.coast&&day>=5&&day%2===0&&time>T.coast+100){const shells=FORAGE_SPOTS.filter(s=>s.item==='shell').length;inv.transact({},{shell:shells});time-=T.coast+shells*8;}
@@ -113,6 +125,8 @@ run('joga três anos',()=>{
   playYear({label:'Só os 45 canteiros iniciais + coleta e pesca, sem comida',orchard:true,coast:true,fishing:true,maxTiles:45,meals:0}),
   playYear({label:'Só horta, pagando as obras',orchard:false,coast:false,fishing:false,maxTiles:999,meals:0,projects:true}),
   playYear({label:'Horta + Pomar + Costa + pesca, pagando as obras, até 2 refeições',orchard:true,coast:true,fishing:true,maxTiles:999,meals:2,projects:true}),
+  playYear({label:'Tudo + animais (galinhas, cabras, vacas), sem obras, até 2 refeições',orchard:true,coast:true,fishing:true,maxTiles:999,meals:2,animals:true}),
+  playYear({label:'Tudo + animais, pagando as obras, até 2 refeições',orchard:true,coast:true,fishing:true,maxTiles:999,meals:2,projects:true,animals:true}),
  ];
  const fmt=(n:number)=>Math.round(n).toLocaleString('pt-BR');
  const out:string[]=['## Três anos jogados pelo código real (horta, mochila e lojas)','',
