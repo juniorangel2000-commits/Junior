@@ -1,3 +1,5 @@
+import {FOREST_ANIMALS} from '../src/data/ancient-forest';
+import {startAnimalEscort,transferAnimalEscort,deliverAnimalEscort} from '../src/systems/animals';
 import {describe,it,expect,vi} from 'vitest';
 import {createNewSave,validateSave,migrateSave} from '../src/systems/save';
 import {createCharacterProfile} from '../src/data/characters';
@@ -18,9 +20,15 @@ const site=(s:SaveData)=>s.farmConstruction!.sites[0];
 const morning=(s:SaveData)=>{s.day+=1;s.time=6*60;processAnimalProduction(s);};
 
 describe('porcos e chiqueiro',()=>{
- it('a Rosa vende o porco; ele mora no chiqueiro, que tem interior com cocho e lamaçal',()=>{
+ it('o porco vem do Bosque com a corda; ele mora no chiqueiro, que tem interior com cocho e lamaçal',()=>{
   const s=createNewSave(createCharacterProfile('Rosa'));s.villageEconomy!.coins=1000;
-  expect(performVillageService(s,'buy-pig').ok).toBe(true);expect(s.recruitedAnimals).toContain(PIG);expect(s.villageEconomy!.coins).toBe(600);
+  expect(performVillageService(s,'buy-pig').ok).toBe(false);
+  // preview.48: só com a corda, trazendo do Bosque.
+  const wild=FOREST_ANIMALS.find(a=>a.kind==='pig')!;s.inventory.cord=1;s.activeArea='forest';
+  expect(startAnimalEscort(s,{id:wild.id,x:wild.x*32+16,y:wild.y*32+16,direction:'down'})).toBe(true);
+  transferAnimalEscort(s,{x:1500,y:1500});expect(deliverAnimalEscort(s)).toBe(true);
+  expect(s.recruitedAnimals).toContain(wild.id);expect(s.villageEconomy!.coins).toBe(1000);
+  expect(domesticAnimal(wild.id)?.kind).toBe('pig');
   expect(domesticAnimal(PIG)?.kind).toBe('pig');expect(farmAcceptsAnimal('pigsty','pig')).toBe(true);expect(farmAcceptsAnimal('coop','pig')).toBe(false);
   const l=FARM_INTERIORS.pigsty!;expect(l.fixtures.map(f=>f.kind)).toEqual(expect.arrayContaining(['trough','water','manure']));
   // O Junior preferiu o chão de palha sem a mancha de lama no centro (16/11/2026).
