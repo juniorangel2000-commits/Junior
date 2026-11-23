@@ -50,6 +50,9 @@ export class OpenFieldsWorld{
  readonly patches=new Map<string,Phaser.GameObjects.Image>();
  readonly animals:FieldAnimal[]=[];
  private rope!:Phaser.GameObjects.Graphics;
+ /** Soltos longe de casa (da Costa): correm até a descida para a praia e somem (preview.48). */
+ private readonly returning=new Map<string,{target:{x:number;y:number};time:number}>();
+ runHome(id:string,exit:{x:number;y:number}):void{if(this.animals.some(a=>a.brain.id===id))this.returning.set(id,{target:exit,time:0});}
  private horseUi:Phaser.GameObjects.Graphics;
  private basket:Phaser.GameObjects.Image;
  /** Colmeias junto aos ipês, por id. */
@@ -109,7 +112,7 @@ export class OpenFieldsWorld{
  }
  /** O animal solto mais perto, ao alcance da corda (não o cavalo, que tem doma própria). */
  nearestWild(player:{x:number;y:number}):FieldAnimal|undefined{
-  return this.animals.filter(a=>wildAnimal(a.brain.id)&&a.sprite.visible&&Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<=ANIMAL_BEHAVIOR.catchRadius&&a.brain.lineClear(a.brain,player))
+  return this.animals.filter(a=>wildAnimal(a.brain.id)&&!this.returning.has(a.brain.id)&&a.sprite.visible&&Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<=ANIMAL_BEHAVIOR.catchRadius&&a.brain.lineClear(a.brain,player))
    .sort((a,b)=>Math.hypot(a.brain.x-player.x,a.brain.y-player.y)-Math.hypot(b.brain.x-player.x,b.brain.y-player.y))[0];
  }
  led(id:string|undefined):FieldAnimal|undefined{return id?this.animals.find(a=>a.brain.id===id):undefined;}
@@ -152,7 +155,7 @@ export class OpenFieldsWorld{
  }
  /** A short sway on each blow; the trunk base stays planted. */
  shakeIpe(id:string):void{const t=this.ipes.get(id);if(!t?.visible)return;this.scene.tweens.killTweensOf(t);t.setRotation(0);this.scene.tweens.add({targets:t,rotation:{from:.045,to:0},duration:260,ease:'Sine.easeOut'});}
- store():void{const s=this.state();s.openFields??={version:1,cut:{}};s.openFields.animals=this.animals.map(a=>a.brain.snapshot());}
+ store():void{const s=this.state();s.openFields??={version:1,cut:{}};s.openFields.animals=this.animals.filter(a=>!this.returning.has(a.brain.id)).map(a=>a.brain.snapshot());}
  update(dt:number,player:{x:number;y:number;leftHandPosition?:{x:number;y:number}}):void{
   this.elapsed+=dt;const s=this.state(),view=this.scene.cameras.main.worldView;
   const visible=meadowPatchesInRect(view.x-90,view.y-30,view.right+90,view.bottom+90),ids=new Set(visible.map(p=>p.id));
@@ -176,7 +179,13 @@ export class OpenFieldsWorld{
   const brains=this.animals.map(a=>a.brain);
   const grassNear=(b:AnimalBrain)=>meadowPatchesInRect(b.x-56,b.y-56,b.x+56,b.y+56).some(p=>p.kind==='grass'&&Math.hypot(p.x-b.x,p.y-b.y)<56&&meadowGrowth(s,p)>=1);
   let ropeTo:FieldAnimal|undefined;
-  for(const a of this.animals){if(a.brain.id===HORSE_ID){this.updateHorse(a,dt,player,brains,s,grassNear(a.brain));continue;}const near=Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<ANIMAL_BEHAVIOR.detectionRadius;
+  for(const a of [...this.animals]){
+   const back=this.returning.get(a.brain.id);
+   if(back){back.time+=dt;a.brain.fleeRadius=0;a.brain.sprint=true;a.brain.update(dt,back.target,brains,true,12,false);
+    a.shadow.setPosition(a.brain.x,a.brain.y).setDepth(a.brain.y-.2);if(!updateAnimalSprite(a.sprite,a.brain,dt))a.sprite.setPosition(a.brain.x,a.brain.y).setDepth(a.brain.y).setFlipX(a.brain.direction.includes('left'));
+    if(Math.hypot(a.brain.x-back.target.x,a.brain.y-back.target.y)<40||back.time>14){a.sprite.destroy();a.shadow.destroy();this.animals.splice(this.animals.indexOf(a),1);this.returning.delete(a.brain.id);}
+    continue;}
+   if(a.brain.id===HORSE_ID){this.updateHorse(a,dt,player,brains,s,grassNear(a.brain));continue;}const near=Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<ANIMAL_BEHAVIOR.detectionRadius;
    a.rest?.update(dt,!near,a.brain.canStand(a.brain.x,a.brain.y),a.brain.direction,!a.brain.moving&&a.brain.mode==='idle');a.brain.resting=!!a.rest?.locked;
    a.idle?.update(dt,!a.brain.moving&&a.brain.mode==='idle',Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<196,a.brain.direction,grassNear(a.brain));
    if(a.idle?.locked)a.brain.resting=true;

@@ -1,16 +1,16 @@
 import {type CharacterDirection} from '../character-directions';
 import {FOREST_ANIMALS, recruitAnimal, type AnimalKind} from '../data/ancient-forest';
-import {wildAnimal} from '../data/wild-animals';
+import {wildAnimal,type RopeArea} from '../data/wild-animals';
 import {isDomesticAnimal} from '../data/domestic-animals';
 import type {SaveData} from '../types';
 import {Inventory} from './inventory';
 
 /** Onde a população de animais com corda é desenhada. Pântano e Costa desde a preview.48. */
-export type AnimalArea = 'forest' | 'property' | 'swamp' | 'coast';
+export type AnimalArea = Exclude<RopeArea,'openFields'>;
 export type AnimalMode = 'idle' | 'wander' | 'flee' | 'led';
 export interface AnimalPosition {id: string; x: number; y: number; direction: CharacterDirection}
 /** O cavalo domado sai dos Campos Abertos conduzido pela corda. */
-export interface AnimalEscort {id: string; area: AnimalArea | 'openFields'}
+export interface AnimalEscort {id: string; area: RopeArea}
 export interface AnimalPoint {x: number; y: number}
 export type AnimalBlocked = (tileX: number, tileY: number) => boolean;
 export type AnimalTerrainCost = (tileX:number,tileY:number)=>number;
@@ -44,6 +44,8 @@ export class AnimalBrain {
   resting=false;
   /** Raio de fuga próprio (doma do cavalo); sem valor, usa o padrão dos animais. 0 = não foge. */
   fleeRadius?:number;
+  /** Correndo de volta para o cenário de origem depois de solto no caminho (preview.48). */
+  sprint=false;
   get radius():number{return this.resting&&this.kind==='cow'?20:this.walkingRadius;}
   get footRadiusY():number{return this.resting&&this.kind==='cow'?7:this.radius*.6;}
   private readonly walkingFeet:readonly(readonly[number,number])[];
@@ -201,7 +203,7 @@ export class AnimalBrain {
     const target=this.path[0];
     if(!target){if(this.mode==='wander'){this.mode='idle';this.timer=1+this.random()*2;}return;}
     const dx=target.x-this.x,dy=target.y-this.y,length=Math.hypot(dx,dy);
-    const speed=this.playerSpeed*(this.mode==='flee'?(this.kind==='horse'?2.2:ANIMAL_BEHAVIOR.fleeSpeedFactor):this.mode==='led'?ANIMAL_BEHAVIOR.leadSpeedFactor:ANIMAL_BEHAVIOR.wanderSpeedFactor);
+    const speed=this.playerSpeed*(this.sprint?ANIMAL_BEHAVIOR.fleeSpeedFactor:this.mode==='flee'?(this.kind==='horse'?2.2:ANIMAL_BEHAVIOR.fleeSpeedFactor):this.mode==='led'?ANIMAL_BEHAVIOR.leadSpeedFactor:ANIMAL_BEHAVIOR.wanderSpeedFactor);
     const amount=Math.min(speed*dt,length),steps=Math.max(1,Math.ceil(amount/3)),oldX=this.x,oldY=this.y;
     const fits=(x:number,y:number)=>this.canStand(x,y)&&(!led||!ropeLimit||Math.hypot(x-player.x,y-player.y)<=ANIMAL_BEHAVIOR.maxRopeLength||Math.hypot(x-player.x,y-player.y)<range)&&neighbors.every(other=>other===this||Math.hypot(x-other.x,y-other.y)>=this.radius+other.radius+3);
     for(let i=0;i<steps;i++){
@@ -218,8 +220,9 @@ export class AnimalBrain {
 function positions(save: SaveData) {return save.animalPositions??= {forest:[],property:[]};}
 export function startAnimalEscort(save: SaveData,animal: AnimalPosition): boolean {
   const area=save.activeArea??'property';
-  const wildArea=area==='forest'||area==='swamp'||area==='coast';
-  if((area!=='property'&&!wildArea)||save.animalEscort||!isDomesticAnimal(animal.id)||area==='forest'&&!FOREST_ANIMALS.some(a=>a.id===animal.id)&&wildAnimal(animal.id)?.area!=='forest'||(area==='swamp'||area==='coast')&&wildAnimal(animal.id)?.area!==area)return false;
+  // Só se prende no cenário de origem (ou o já seu, na propriedade).
+  const wildArea=area!=='property';
+  if(area==='openFields'||save.animalEscort||!isDomesticAnimal(animal.id)||area==='forest'&&!FOREST_ANIMALS.some(a=>a.id===animal.id)&&wildAnimal(animal.id)?.area!=='forest'||area!=='forest'&&area!=='property'&&wildAnimal(animal.id)?.area!==area)return false;
   const owned=save.recruitedAnimals?.includes(animal.id)??false;
   if(wildArea?owned:!owned)return false;
   const inventory=new Inventory(save.inventory);if(!inventory.spend({cord:1}))return false;
@@ -271,5 +274,16 @@ export function transferTrailEscort(save:SaveData,to:'forest'|'openFields',arriv
  const placed={id:e.id,x:arrival.x+(arrival.x<1536?24:-24),y:arrival.y,direction:old?.direction??'up'};
  if(to==='forest'){p.forest=p.forest.filter(a=>a.id!==e.id).concat(placed);}
  else{const f=save.openFields??={version:1,cut:{}};f.animals=[...(f.animals??[]).filter(a=>a.id!==e.id),placed];}
+ e.area=to;
+}
+/** Passa o animal da corda para o cenário seguinte (qualquer um do caminho até a propriedade). */
+export function transferEscortTo(save:SaveData,to:RopeArea,arrival:AnimalPoint):void{
+ const e=save.animalEscort;if(!e)return;const from=e.area;if(from===to)return;
+ const p=positions(save);let old:AnimalPosition|undefined;
+ if(from==='openFields'){old=save.openFields?.animals?.find(a=>a.id===e.id);if(save.openFields?.animals)save.openFields.animals=save.openFields.animals.filter(a=>a.id!==e.id);}
+ else{old=p[from]?.find(a=>a.id===e.id);if(p[from])p[from]=p[from]!.filter(a=>a.id!==e.id);}
+ const placed={id:e.id,x:arrival.x,y:arrival.y,direction:old?.direction??'up'};
+ if(to==='openFields'){const f=save.openFields??={version:1,cut:{}};f.animals=[...(f.animals??[]).filter(a=>a.id!==e.id),placed];}
+ else p[to]=[...(p[to]??[]).filter(a=>a.id!==e.id),placed];
  e.area=to;
 }

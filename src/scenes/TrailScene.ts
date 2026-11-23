@@ -4,7 +4,8 @@ import type { ForestStart as TrailStart } from './ForestScene';
 import type { MapEditorStart } from './MapEditorScene';
 import { Player, PLAYER_SPEED } from '../player';
 import {AnimalPopulation} from '../animals';
-import {startAnimalEscort,releaseAnimalEscort,transferTrailEscort} from '../systems/animals';
+import {startAnimalEscort,releaseAnimalEscort,transferEscortTo} from '../systems/animals';
+import {ropeBack,ROPE_PLACE} from '../data/wild-animals';
 import {domesticAnimal} from '../data/domestic-animals';
 import {ANIMAL_NAMES} from '../data/ancient-forest';
 import { Daylight } from '../daylight';
@@ -216,7 +217,7 @@ export class TrailScene extends Phaser.Scene {
          // Com a rede na mochila, você chega devagar: o caranguejo só se assusta bem de perto.
          fleeScale:id=>id==='crab'&&(this.state.inventory.net??0)>0?.45:1});
     }
-    if(!this.inHome&&(this.area==='swamp'||this.area==='coast')){
+    if(!this.inHome&&(this.area==='swamp'||this.area==='coast'||this.area==='orchard'||this.area==='ruins'||this.area==='railway')){
       const layout=this.world.layout;
       this.wildlife=new AnimalPopulation(this,this.state,this.area,(x,y)=>this.tileBlocked(x,y)||layout.water((x+.5)*32,(y+.5)*32),PLAYER_SPEED);
     }
@@ -253,6 +254,7 @@ export class TrailScene extends Phaser.Scene {
 
   private enterRoad(road:RoadLink):void {
     if(this.leaving)return;
+    if(this.state.animalEscort){this.ui.toast(`Leve o animal pela saída até ${this.trail.returnName}. G solta a corda.`);return;}
     const save=structuredClone(this.snapshotState());
     save.activeArea=road.area;
     delete save[TRAILS[road.area].position];
@@ -445,14 +447,17 @@ export class TrailScene extends Phaser.Scene {
   /** Mesmo padrão do Bosque e dos Campos: E prende o animal na corda, G solta. */
   private tieAnimal():boolean{
     if(!this.wildlife||this.player.isSwimming)return false;
-    if(this.state.animalEscort){this.ui.toast(`Conduza o animal até ${this.area==='swamp'?'o Bosque':'os Campos'} e depois à propriedade. G solta a corda.`);return true;}
+    if(this.state.animalEscort){this.ui.toast(`Conduza o animal pela saída até ${this.trail.returnName} e depois à propriedade. G solta a corda.`);return true;}
     const a=this.wildlife.nearest(this.player);if(!a)return false;
     if(!startAnimalEscort(this.state,a.brain.snapshot())){this.ui.toast('Fabrique uma corda vegetal com 3 fibras (C) para conduzir o animal.');return true;}
     gameAudio.play('pickup');this.ui.toast('Corda presa! Leve o animal até a propriedade. G para soltar.');this.persist();this.updateHUD();return true;
   }
   private releaseAnimal():void{
     if(!this.state.animalEscort)return;
-    if(releaseAnimalEscort(this.state)){this.ui.toast('Animal solto. A corda voltou para você.');this.persist();this.updateHUD();}
+    // Nas Ruínas, um animal da Estação corre de volta pela estrada a leste (preview.48).
+    const back=ropeBack(this.state.animalEscort.id,this.area as never),road=back&&this.outgoingRoad;
+    const home=!!road&&back===road.area&&!!this.wildlife?.runHome(tileCenter(road.exit));
+    if(releaseAnimalEscort(this.state)){this.ui.toast(home?`Animal solto. Ele corre de volta para ${ROPE_PLACE[back!]}, e a corda voltou para você.`:'Animal solto. A corda voltou para você.');this.persist();this.updateHUD();}
   }
   private snapshotState():SaveData {
     const position={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};
@@ -468,6 +473,7 @@ export class TrailScene extends Phaser.Scene {
   mainMenu():void{this.ui.closeModal();this.leave(true);}
   private changeCellar(enter:boolean):void {
     if(this.leaving||enter&&blockMountedEntry(this.player,this.ui))return;
+    if(enter&&this.state.animalEscort){this.ui.toast('Solte a corda antes de entrar.');return;}
     const save=structuredClone(this.snapshotState());
     if(this.area==='railway'){
       if(enter)save.railwayHallPosition={...tileCenter(RAILWAY_HALL_ENTRY),direction:'up'};
@@ -484,7 +490,7 @@ export class TrailScene extends Phaser.Scene {
     if(!title&&this.state.animalEscort&&this.wildlife&&!this.wildlife.canLeave(this.player)){this.ui.toast('Espere o animal chegar perto antes de atravessar.');return;}
     const next=structuredClone(this.snapshotState());
     if(!title){
-      if(next.animalEscort&&(this.trail.returnArea==='forest'||this.trail.returnArea==='openFields'))transferTrailEscort(next,this.trail.returnArea,tileCenter(this.trail.returnTile));
+      if(next.animalEscort){const arrival=tileCenter(this.trail.returnTile);transferEscortTo(next,this.trail.returnArea,{x:arrival.x+(arrival.x<1536?24:-24),y:arrival.y});}
       next.activeArea=this.trail.returnArea;
       next[this.trail.returnPosition]={...tileCenter(this.trail.returnTile),direction:this.trail.returnFacing};
       delete next[this.trail.position];

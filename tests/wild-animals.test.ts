@@ -50,3 +50,31 @@ describe('Pântano e Costa com a corda (preview.48)',()=>{
   for(let d=1;d<30;d++)expect(wildSpawns(area,d,wildTaken(s)).some(x=>x.id===a.id)).toBe(false);
  });
 });
+
+import {transferEscortTo} from '../src/systems/animals';
+import {ROPE_HOME_PATH,ropeBack,ropeNext} from '../src/data/wild-animals';
+describe('caminhos da corda até a propriedade (preview.48)',()=>{
+ it('cada origem tem um caminho que termina na propriedade, e soltar no caminho aponta para trás',()=>{
+  for(const [origin,path] of Object.entries(ROPE_HOME_PATH)){expect(path[0]).toBe(origin);expect(path.at(-1)).toBe('property');}
+  const a=WILD_ANIMAL_LIST.find(x=>x.area==='railway')!.id;
+  expect(ropeNext(a,'railway')).toBe('ruins');expect(ropeNext(a,'cityForest')).toBe('village');
+  expect(ropeBack(a,'village')).toBe('cityForest');expect(ropeBack(a,'railway')).toBeUndefined();
+ });
+ for(const area of ['orchard','ruins','railway'] as const)it(`de ${area} até a propriedade, válido a cada passagem`,()=>{
+  const s=createNewSave(createCharacterProfile('Corda'));s.inventory.cord=1;
+  const a=Array.from({length:40},(_,d)=>wildSpawns(area,d+1,wildTaken(s))).flat()[0];expect(a).toBeTruthy();
+  s.activeArea=area;expect(startAnimalEscort(s,{id:a.id,x:a.x,y:a.y,direction:'down'})).toBe(true);expect(validateSave(s)).toBe(true);
+  for(const next of ROPE_HOME_PATH[area].slice(1)){transferEscortTo(s,next,{x:1500,y:1500});s.activeArea=next as typeof s.activeArea;expect(validateSave(s),next).toBe(true);}
+  expect(deliverAnimalEscort(s)).toBe(true);expect(validateSave(s)).toBe(true);
+ });
+ it('fora do caminho o save recusa (animal do Pomar nos Campos)',()=>{
+  const s=createNewSave(createCharacterProfile('Corda'));s.inventory.cord=1;s.activeArea='orchard';
+  const a=Array.from({length:40},(_,d)=>wildSpawns('orchard',d+1,new Set())).flat()[0];
+  startAnimalEscort(s,{id:a.id,x:a.x,y:a.y,direction:'down'});transferEscortTo(s,'openFields',{x:1500,y:1500});s.activeArea='openFields';
+  expect(validateSave(s)).toBe(false);
+ });
+ it('saves antigos com vacas e ovelhas guardadas no Bosque continuam válidos',()=>{
+  const s=createNewSave(createCharacterProfile('Antigo'));s.animalPositions={forest:[{id:'forest-cow-1',x:2400,y:1200,direction:'left'},{id:'forest-sheep-2',x:700,y:1200,direction:'up'}],property:[]};
+  expect(validateSave(s)).toBe(true);
+ });
+});

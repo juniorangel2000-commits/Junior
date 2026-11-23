@@ -1,4 +1,7 @@
-import {wildAnimal} from '../data/wild-animals';
+import {ROPE_AREAS,ropeAllowed,type RopeArea} from '../data/wild-animals';
+import {FOREST_ANIMALS as LEGACY_FOREST_ANIMALS} from '../data/ancient-forest';
+/** Bichos que moravam no Bosque antes da preview.48 (vacas, ovelhas...) seguem válidos ali em saves antigos. */
+const ropeHere=(id:string,area:RopeArea)=>ropeAllowed(id,area)||area==='forest'&&LEGACY_FOREST_ANIMALS.some(a=>a.id===id);
 import {RAILWAY_HALL_SIZE,HALL_LEFT,HALL_RIGHT,HALL_BACK} from '../data/railway-hall';
 import {ORCHARD_SIZE,validOrchardHarvest} from '../data/orchard';
 import {COAST_SIZE} from '../data/coast';
@@ -184,7 +187,7 @@ export function validateSave(value: unknown): value is SaveData {
   if(value.dungeons!==undefined&&!validDungeonProgress(value.dungeons))return false;
   if(value.dungeonRun!==undefined&&(value.activeArea!=='cityForest'||!validDungeonSnapshot(value.dungeonRun)))return false;
   if (value.activeArea !== undefined && value.activeArea !== 'property' && value.activeArea !== 'forest' && value.activeArea !== 'village' && value.activeArea !== 'cityForest' && value.activeArea !== 'fishingLake' && value.activeArea !== 'survivorCamp' && value.activeArea !== 'highland' && value.activeArea !== 'openFields' && value.activeArea !== 'swamp' && value.activeArea !== 'ruins' && value.activeArea !== 'railway' && value.activeArea !== 'coast' && value.activeArea !== 'orchard') return false;
-  if((value.activeArea==='village'||value.activeArea==='cityForest'||value.activeArea==='fishingLake'||value.activeArea==='survivorCamp'||value.activeArea==='highland'||value.activeArea==='openFields'||value.activeArea==='swamp'||value.activeArea==='ruins'||value.activeArea==='railway'||value.activeArea==='coast'||value.activeArea==='orchard')&&(value.homePosition!==undefined||value.animalEscort!==undefined&&!((value.activeArea==='openFields'||value.activeArea==='swamp'||value.activeArea==='coast')&&isRecord(value.animalEscort)&&(value.animalEscort.id===HORSE_ID&&value.activeArea==='openFields'||!!wildAnimal(String(value.animalEscort.id)))&&value.animalEscort.area===value.activeArea)))return false;
+  if((value.activeArea==='village'||value.activeArea==='cityForest'||value.activeArea==='fishingLake'||value.activeArea==='survivorCamp'||value.activeArea==='highland'||value.activeArea==='openFields'||value.activeArea==='swamp'||value.activeArea==='ruins'||value.activeArea==='railway'||value.activeArea==='coast'||value.activeArea==='orchard')&&(value.homePosition!==undefined||value.animalEscort!==undefined&&!(isRecord(value.animalEscort)&&value.animalEscort.area===value.activeArea&&(value.animalEscort.id===HORSE_ID?value.activeArea==='openFields':ropeHere(String(value.animalEscort.id),value.activeArea as RopeArea)))))return false;
   if(value.blacksmithScene!==undefined&&!validSmithLayout(value.blacksmithScene))return false;
   if(value.blacksmithHome!==undefined&&!validateBlacksmithHome(value.blacksmithHome))return false;
   if(value.shopResidents!==undefined&&!validShopResidents(value.shopResidents))return false;
@@ -209,20 +212,22 @@ export function validateSave(value: unknown): value is SaveData {
   const horseOut=(value.recruitedAnimals as string[]|undefined)?.includes(HORSE_ID)||isRecord(value.animalEscort)&&value.animalEscort.id===HORSE_ID;
   if(horseOut&&(!isRecord(value.horseTaming)||value.horseTaming.tamed!==true||typeof value.horseTaming.name!=='string'))return false;
   if(value.animalEscort!==undefined){
-    const escort=value.animalEscort;
-    if(!isRecord(escort)||!isDomesticAnimal(escort.id)||!['forest','property','openFields','swamp','coast'].includes(escort.area as string)||escort.area!==(value.activeArea??'property')||(escort.area==='swamp'||escort.area==='coast')&&(wildAnimal(escort.id as string)?.area!==escort.area||(value.recruitedAnimals as string[]|undefined)?.includes(escort.id as string))||escort.area==='forest'&&((value.recruitedAnimals as string[]|undefined)?.includes(escort.id as string)||escort.id===HORSE_ID))return false;
-    // Nos Campos a corda vale para o cavalo e para os animais soltos (dali ou trazidos da Costa, preview.48).
-    if(escort.area==='openFields'&&(escort.id!==HORSE_ID&&!wildAnimal(escort.id as string)||(value.recruitedAnimals as string[]|undefined)?.includes(escort.id as string)||!isRecord(value.openFields)||!Array.isArray(value.openFields.animals)||!value.openFields.animals.some(a=>isRecord(a)&&a.id===escort.id)))return false;
+    const escort=value.animalEscort,recruited=isRecord(escort)&&(value.recruitedAnimals as string[]|undefined)?.includes(escort.id as string);
+    // Na corda: no cenário atual, num cenário do caminho da origem até a propriedade (preview.48).
+    if(!isRecord(escort)||!isDomesticAnimal(escort.id)||!([...ROPE_AREAS,'openFields'] as string[]).includes(escort.area as string)||escort.area!==(value.activeArea??'property')
+      ||escort.id===HORSE_ID&&escort.area!=='openFields'&&escort.area!=='property'||escort.id!==HORSE_ID&&!ropeHere(escort.id as string,escort.area as RopeArea)
+      ||escort.area!=='property'&&recruited)return false;
+    if(escort.area==='openFields'&&(!isRecord(value.openFields)||!Array.isArray(value.openFields.animals)||!value.openFields.animals.some(a=>isRecord(a)&&a.id===escort.id)))return false;
   }
   if(value.animalPositions!==undefined){
     if(!isRecord(value.animalPositions))return false;
     const ids=new Set<string>();
-    for(const area of ['forest','property','swamp','coast']){
-      const list=value.animalPositions[area];if(list===undefined&&(area==='swamp'||area==='coast'))continue;if(!Array.isArray(list)||list.length>DOMESTIC_ANIMALS.length)return false;
+    for(const area of ROPE_AREAS){
+      const list=value.animalPositions[area];if(list===undefined&&area!=='forest'&&area!=='property')continue;if(!Array.isArray(list)||list.length>DOMESTIC_ANIMALS.length)return false;
       for(const p of list){
         if(!isRecord(p)||typeof p.id!=='string'||ids.has(p.id)||!isDomesticAnimal(p.id)||area==='forest'&&p.id===HORSE_ID||!finite(p.x,16,WORLD_WIDTH*TILE-16)||!finite(p.y,16,WORLD_HEIGHT*TILE-16)||!CHARACTER_DIRECTIONS.includes(p.direction as CharacterDirection))return false;
         const owned=(value.recruitedAnimals as string[]|undefined)?.includes(p.id)??false;
-        if(area!=='property'&&owned||(area==='swamp'||area==='coast')&&wildAnimal(p.id)?.area!==area||area==='property'&&!owned&&(!isRecord(value.animalEscort)||value.animalEscort.id!==p.id||value.animalEscort.area!=='property'))return false;
+        if(area!=='property'&&(owned||!ropeHere(p.id,area))||area==='property'&&!owned&&(!isRecord(value.animalEscort)||value.animalEscort.id!==p.id||value.animalEscort.area!=='property'))return false;
         ids.add(p.id);
       }
     }

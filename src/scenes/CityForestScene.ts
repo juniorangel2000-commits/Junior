@@ -1,3 +1,5 @@
+import {RopeTransit} from '../rope-transit';
+import {transferEscortTo} from '../systems/animals';
 import {createGroundRuntime} from '../systems/ground-items';
 import {blockMountedEntry} from '../riding-guard';
 import {createMineMissionRuntime} from '../systems/mine-missions';
@@ -66,6 +68,7 @@ export class CityForestScene extends Phaser.Scene{
  private readonly passage=new MapExitPassage();
  private readonly lakePassage=new MapExitPassage();
  private readonly ruinsPassage=new MapExitPassage();
+ private rope?:RopeTransit;
  private bentoTravelView?:BentoTravelView;
  constructor(){super('AcessoCidade');}
  preload():void{preloadBentoTravel(this);preloadCityForest(this);preloadDamiaoSprites(this);preloadPetArt(this);}
@@ -78,6 +81,7 @@ export class CityForestScene extends Phaser.Scene{
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
   this.world=new CityForestWorld(this,this.state.cityForestMapEdits);this.fisherRoad=new FisherRoadVisit(this,()=>this.state);this.events.once('shutdown',()=>this.fisherRoad?.destroy());
   drawVillageInvitationGate(this,this.state,'cityForest',this.state.cityForestMapEdits?.points?.exit);
+  this.rope=new RopeTransit(this,()=>this.state,'cityForest',this.movementBlockedTile,a=>a==='ruins'?{x:(CITY_RUINS_EXIT.x+.5)*32,y:(CITY_RUINS_EXIT.y+.5)*32}:undefined);this.events.once('shutdown',()=>{this.rope?.destroy();this.rope=undefined;});
   const p=this.state.cityForestPosition,valid=p&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!this.movementBlockedPoint(p.x+dx,p.y+dy));
   this.player=new Player(this,this.state.profile,valid?p.x:((this.state.cityForestMapEdits?.points?.entry??CITY_FOREST_ENTRY).x+.5)*32,valid?p.y:((this.state.cityForestMapEdits?.points?.entry??CITY_FOREST_ENTRY).y+.5)*32,'city-forest-player');
   this.player.facing=directionVector(valid?p.direction??'up':'up');this.player.update(0,this.movementBlockedTile,this.movementBlockedPoint,false,this.swimmingPoint);
@@ -113,7 +117,7 @@ export class CityForestScene extends Phaser.Scene{
  }
  /** `area` 'railway': a retomada passa pelas Ruínas e segue para a Estação. */
  private enterRuins(resume=false,area:'ruins'|'railway'='ruins'):void {
-  if(this.leaving)return;
+  if(this.leaving||!resume&&this.ropeBlocks())return;
   const save=structuredClone(this.snapshotState()),ui=this.ui,onReturn=this.onReturn;
   save.activeArea=resume?area:'ruins';
   if(!resume)delete save.ruinsPosition;
@@ -124,7 +128,7 @@ export class CityForestScene extends Phaser.Scene{
   }}));
  }
  private enterLake():void {
-  if(this.leaving||!this.persist())return;
+  if(this.leaving||this.ropeBlocks())return;if(!this.persist())return;
   const save=structuredClone(this.state);save.activeArea='fishingLake';save.fishingLakePosition={x:(LAKE_CITY_ENTRY.x+.5)*32,y:(LAKE_CITY_ENTRY.y+.5)*32,direction:'left'};
   if(!saveGame(save))return;
   this.leaving=true;this.input.keyboard?.resetKeys();this.cameras.main.fadeOut(SCENE_FADE_MS);
@@ -135,7 +139,7 @@ export class CityForestScene extends Phaser.Scene{
  private nearCity():boolean{return Math.hypot(this.player.x/32-CITY_ACCESS.x,this.player.y/32-CITY_ACCESS.y)<3;}
  private updateHUD():void{
   const fishing=this.nearFishing();
-  this.ui.updateHUD({itemQuality:this.state.itemQuality,worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,farmingProgress:this.state.farmingProgress,area:'cityForest',swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:fishing?'E':null,prompt:fishing?'E · Pescar · equipe a vara ou a rede pela mochila':!villageAccessUnlocked(this.state)&&this.player.y>67*32?VILLAGE_LOCK_MESSAGE:this.nearCity()?'Siga pela estrada para viajar à cidade':'Lago a oeste · vila ao sul · cidade ao norte · ruínas a leste',location:'Estrada da Cidade',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32},...this.bentoTravelView?.hud});
+  this.ui.updateHUD({itemQuality:this.state.itemQuality,worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,farmingProgress:this.state.farmingProgress,area:'cityForest',swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,inHome:false,name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',interactionKey:fishing?'E':null,prompt:fishing?'E · Pescar · equipe a vara ou a rede pela mochila':!villageAccessUnlocked(this.state)&&this.player.y>67*32?VILLAGE_LOCK_MESSAGE:this.nearCity()?'Siga pela estrada para viajar à cidade':'Lago a oeste · vila ao sul · cidade ao norte · ruínas a leste',location:'Estrada da Cidade',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',progress:this.state.progress,playerTile:{x:this.player.x/32,y:this.player.y/32},...this.bentoTravelView?.hud,...this.rope?.prompt()});
   this.ui.updateCameraZoom(this.zoom,!this.paused);
  }
  private blockedPoint=(x:number,y:number)=>!!this.bentoTravelView?.blocks(x,y)||(cityForestBlockedPoint(x,y,this.state.cityForestMapEdits));
@@ -152,6 +156,7 @@ export class CityForestScene extends Phaser.Scene{
   if(key==='c'){e.preventDefault();this.ui.toggleCrafting(this.state.inventory,false);return;}
   if(key==='b'){e.preventDefault();this.ui.toast('Construa na propriedade.');return;}
   if(this.paused)return;
+  if(key==='g'&&this.rope?.escorting){e.preventDefault();const m=this.rope.release();if(m)this.ui.toast(m);this.persist();this.updateHUD();return;}
   if(key==='e'&&this.bentoTravelView?.talk()){e.preventDefault();return;}
   if(e.key>='1'&&e.key<='9'){this.ui.activateSlot(Number(e.key)-1);return;}
   if(key==='e'&&this.nearFishing()&&!this.ui.isModalOpen()){void this.useVillageItem('fishingRod');return;}
@@ -204,7 +209,7 @@ export class CityForestScene extends Phaser.Scene{
   return new Promise(resolve=>rt.snapshot(image=>{const url=image instanceof HTMLImageElement?image.src:'';rt.destroy();resolve(url);}));
  }
  persist():boolean{return!!this.player&&!this.leaving&&saveGame(this.snapshotState());}
- private snapshotState():SaveData{this.state.activeArea='cityForest';this.state.crops=this.farming.crops;this.state.cityForestPosition={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};return this.state;}
+ private snapshotState():SaveData{this.rope?.store();this.state.activeArea='cityForest';this.state.crops=this.farming.crops;this.state.cityForestPosition={x:this.player.x,y:this.player.y,direction:directionFromVector(this.player.facing.x,this.player.facing.y)};return this.state;}
  private save=():void=>{this.persist();};
  private blur=():void=>{if(!this.paused&&!this.leaving){this.setPaused(true);this.ui.togglePause();}this.persist();};
  private visibility=():void=>{if(document.hidden)this.blur();};
@@ -225,21 +230,26 @@ export class CityForestScene extends Phaser.Scene{
   });
  }
  private askCityTravel():void{
-  if(this.leaving||this.ui.isModalOpen())return;
+  if(this.leaving||this.ui.isModalOpen()||this.ropeBlocks())return;
   this.cityPromptArmed=false;
   this.input.keyboard?.resetKeys();
   this.ui.confirmCityTravel(()=>this.enterDungeons());
  }
+ /** Com um animal na corda, só a passagem para a Vila (rumo à propriedade) fica aberta. */
+ private ropeBlocks():boolean{if(!this.rope?.escorting)return false;this.ui.toast('Leve o animal pela trilha até a Vila. G solta a corda.');return true;}
  private leave(title=false):void{
   if(!title&&!villageAccessUnlocked(this.state)){this.ui.toast(VILLAGE_LOCK_MESSAGE);return;}
-  if(this.leaving)return;this.persist();this.leaving=true;
+  if(this.leaving)return;
+  if(!title&&this.rope?.escorting&&!this.rope.canLeave(this.player)){this.ui.toast('Espere o animal chegar perto antes de atravessar.');return;}
+  this.persist();this.leaving=true;
+  if(!title&&this.state.animalEscort)transferEscortTo(this.state,'village',{x:(VILLAGE_NORTH_ARRIVAL.x+.5)*32+24,y:(VILLAGE_NORTH_ARRIVAL.y+.5)*32});
   if(!title){this.state.activeArea='village';this.state.villagePosition={x:(VILLAGE_NORTH_ARRIVAL.x+.5)*32,y:(VILLAGE_NORTH_ARRIVAL.y+.5)*32,direction:'down'};delete this.state.cityForestPosition;saveGame(this.state);}
   this.cameras.main.fadeOut(SCENE_FADE_MS);this.time.delayedCall(SCENE_FADE_MS,()=>{const state=structuredClone(this.state);this.scene.stop();this.onReturn(state,title);});
  }
  update(time:number,ms:number):void{
   if(!this.player)return;this.daylight.update(this.state.time,false,this.state.day);this.world.update(time);this.fisherRoad?.update();
   if(this.paused||this.leaving||this.ui.isModalOpen()||document.hidden)return;
-  const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(dt,this.movementBlockedTile,this.movementBlockedPoint,true,this.swimmingPoint);
+  const dt=Math.min(ms/1000,.1),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.keepDry=!!this.rope?.escorting;this.player.update(dt,this.movementBlockedTile,this.movementBlockedPoint,true,this.swimmingPoint);this.rope?.update(dt,this.player);
   if(this.lakePassage.update(before,this.player,CITY_LAKE_EXIT,CITY_LAKE_ENTRY)){this.enterLake();return;}
   if(this.ruinsPassage.update(before,this.player,CITY_RUINS_EXIT,CITY_RUINS_RETURN)){this.enterRuins();return;}
   const distance=Math.hypot(this.player.x/32-CITY_ACCESS.x,this.player.y/32-CITY_ACCESS.y);

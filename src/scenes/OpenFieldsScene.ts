@@ -27,6 +27,7 @@ import {harvestMeadow,meadowGrowth,chopIpe,ipeStanding} from '../systems/open-fi
 import {HORSE_ID,HORSE_NAME_MAX,TAMING_DAYS,horseTaming,feedHorse,fedToday,settleHorseTaming,applyTamingLoss,tamingPhase,feedingDay,nameHorse,startHorseEscort,placeBasket,pickUpBasket} from '../systems/horse-taming';
 import {releaseAnimalEscort,ANIMAL_BEHAVIOR,startFieldEscort,transferFieldEscortToProperty} from '../systems/animals';
 import {domesticAnimal} from '../data/domestic-animals';
+import {ropeBack} from '../data/wild-animals';
 import {ANIMAL_NAMES} from '../data/ancient-forest';
 import {OpenFieldsWorld,preloadOpenFields} from '../open-fields-world';
 import {FIELDS_SIZE,FIELDS_ENTRY,FIELDS_EXIT,PROPERTY_FIELDS_RETURN,MEADOW_PATCHES,FIELDS_IPES,IPE_REACH,fieldsBlocked,fieldsSafe,fieldsPlayerSafe,fieldsSolid,fieldsWater,FIELDS_COAST_EXIT} from '../data/open-fields';
@@ -134,7 +135,10 @@ export class OpenFieldsScene extends Phaser.Scene{
  }
  private toggleHorseRope():void{
   if(this.state.animalEscort?.id===HORSE_ID){this.snapshotState();if(releaseAnimalEscort(this.state)){saveGame(this.state);this.ui.toast(`Corda solta. ${horseTaming(this.state).name??'O cavalo'} fica nos Campos.`);}this.updateHUD();return;}
-  if(this.state.animalEscort){this.snapshotState();if(releaseAnimalEscort(this.state)){saveGame(this.state);this.ui.toast('Corda solta. O animal fica nos Campos.');}this.updateHUD();return;}
+  if(this.state.animalEscort){
+   // Solto longe de casa (da Costa): corre de volta pela descida para a praia (preview.48).
+   const id=this.state.animalEscort.id,home=ropeBack(id,'openFields')==='coast';if(home)this.world.runHome(id,{x:FIELDS_COAST_EXIT.x,y:FIELDS_COAST_EXIT.y});
+   this.snapshotState();if(releaseAnimalEscort(this.state)){saveGame(this.state);this.ui.toast(home?'Corda solta. O animal corre de volta para a Costa.':'Corda solta. O animal fica nos Campos.');}this.updateHUD();return;}
  }
  /** Aviso do animal solto mais perto, ou de quem está na corda. */
  /** Mesmo padrão do Bosque: E prende o animal na corda, G solta. */

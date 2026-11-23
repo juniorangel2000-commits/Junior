@@ -472,7 +472,8 @@ export class ValleyScene extends Phaser.Scene {
     }});});
   }
   private enterFields(saved?:SaveData):void {
-    if(this.forestActive||this.villageActive||this.state.animalEscort)return;
+    // Ao carregar um save com a corda nos Campos ou na Costa, segue para lá; saindo da propriedade com um animal, não.
+    if(this.forestActive||this.villageActive||!saved&&this.state.animalEscort)return;
     this.world.well?.cancel();this.cancelCrafting();this.cancelToolActions();this.toolVisual?.hide();
     // Na Costa, os Campos abrem e descem direto para lá (OpenFieldsScene.enterCoast).
     const data=saved??this.snapshotState();data.activeArea=saved?.activeArea==='coast'?'coast':'openFields';delete data.homePosition;

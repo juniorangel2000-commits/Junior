@@ -39,6 +39,8 @@ export class AnimalPopulation {
  private treeCheck=0;
  private readonly homes=new Map<string,number>();
  private readonly cowRest=new Map<string,CowRestCycle>();
+ /** Soltos longe de casa: correm até a saída rumo ao cenário de origem e somem (preview.48). */
+ private readonly returning=new Map<string,{target:AnimalPoint;time:number}>();
  constructor(scene:Phaser.Scene,private readonly save:SaveData,readonly area:AnimalArea,
    private readonly blocked:AnimalBlocked,playerSpeed:number,private readonly trees:()=>readonly {x:number;y:number}[]=()=>[]){
   this.rope=scene.add.graphics();
@@ -90,13 +92,21 @@ export class AnimalPopulation {
  get led():MovingAnimal|undefined {const id=this.save.animalEscort?.area===this.area?this.save.animalEscort.id:undefined;return this.animals.find(a=>a.id===id);}
  allowsPlayerCenter(x:number,y:number,owner:AnimalPoint):boolean {const led=this.led;if(!led)return true;const next=Math.hypot(x-led.x,y-led.y),current=Math.hypot(owner.x-led.x,owner.y-led.y);return !this.blocked(Math.floor(x/32),Math.floor(y/32))&&(next<=ANIMAL_BEHAVIOR.maxRopeLength||next<current-.001);}
  canLeave(player:AnimalPoint):boolean {const led=this.led;return !led||Math.hypot(led.x-player.x,led.y-player.y)<=ANIMAL_BEHAVIOR.portalDistance&&led.brain.lineClear(led,player);}
+ /** Chamar antes de soltar a corda: o animal corre até `exit` e some ao chegar. */
+ runHome(exit:AnimalPoint):boolean{const led=this.led;if(!led)return false;this.returning.set(led.id,{target:exit,time:0});return true;}
+ private dropAnimal(a:MovingAnimal):void{a.sprite.destroy();a.shadow?.destroy();this.animals.splice(this.animals.indexOf(a),1);this.brains.splice(this.brains.indexOf(a.brain),1);this.returning.delete(a.id);}
  nearest(player:AnimalPoint):MovingAnimal|undefined {
-  return this.animals.filter(a=>a!==this.led&&a.sprite.visible&&Math.hypot(a.x-player.x,a.y-player.y)<=ANIMAL_BEHAVIOR.catchRadius&&a.brain.lineClear(a,player))
+  return this.animals.filter(a=>a!==this.led&&!this.returning.has(a.id)&&a.sprite.visible&&Math.hypot(a.x-player.x,a.y-player.y)<=ANIMAL_BEHAVIOR.catchRadius&&a.brain.lineClear(a,player))
     .sort((a,b)=>Math.hypot(a.x-player.x,a.y-player.y)-Math.hypot(b.x-player.x,b.y-player.y))[0];
  }
  update(delta:number,player:AnimalPoint&{readonly leftHandPosition:AnimalPoint}):void {
   this.treeCheck-=delta;if(this.treeCheck<=0){this.treeCover.refresh(this.trees());this.treeCheck=.5;}
-  for(const a of this.animals){
+  for(const a of [...this.animals]){
+   const back=this.returning.get(a.id);
+   if(back){back.time+=delta;a.brain.sprint=true;a.brain.update(delta,back.target,this.brains,true,12,false);
+    a.shadow?.setPosition(a.x,a.y).setDepth(a.y-.2);if(!updateAnimalSprite(a.sprite,a.brain,delta))a.sprite.setPosition(a.x,a.y).setDepth(a.y).setFlipX(a.brain.direction.includes('left'));
+    // Some ao chegar à passagem (ou depois de um tempo, se algo bloquear o caminho).
+    if(Math.hypot(a.x-back.target.x,a.y-back.target.y)<40||back.time>14){this.dropAnimal(a);}continue;}
    // Dentro da construção: some do cercado e volta pela porta quando for solto.
    if(this.indoors(a)){const home=farmAnimalHome(this.save,a.id)!,door=farmHomePoint(home);a.brain.x=door.x;a.brain.y=door.y;a.brain.hold();this.homes.set(a.id,home.id);a.sprite.setVisible(false);a.shadow?.setVisible(false);continue;}
    // Montado: o cavalo está sob o jogador (horse-mount.ts), não no pasto.
@@ -137,7 +147,7 @@ export class AnimalPopulation {
   }
  }
  store():void {
-  this.save.animalPositions??={forest:[],property:[]};this.save.animalPositions[this.area]=this.animals.map(a=>a.brain.snapshot());
+  this.save.animalPositions??={forest:[],property:[]};this.save.animalPositions[this.area]=this.animals.filter(a=>!this.returning.has(a.id)).map(a=>a.brain.snapshot());
  }
  destroy():void {for(const a of this.animals){a.sprite.destroy();a.shadow?.destroy();}this.cowRest.clear();this.homes.clear();this.animals.length=0;this.brains.length=0;this.rope.destroy();}
 }

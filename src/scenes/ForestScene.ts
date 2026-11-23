@@ -7,6 +7,7 @@ import {communityReady} from '../systems/community-center';
 import {equipWorldSword} from '../systems/world-sword';
 import {SurvivorResidentsView} from '../survivor-residents-view';
 import {FOREST_SWAMP_EXIT,FOREST_SWAMP_RETURN} from '../data/swamp';
+import {ropeBack} from '../data/wild-animals';
 import {FOREST_CAMP_EXIT,FOREST_CAMP_RETURN,campApproachDistance} from '../data/forest-camp-access';
 import {createFishingCast} from '../fishing-cast';
 import {setupTreeWind} from '../tree-wind';
@@ -180,7 +181,9 @@ export class ForestScene extends Phaser.Scene {
   private rebuildAnimals():void {this.waterfowl?.destroy();this.waterfowl=new ForestWaterfowl(this,this.world.waterPointAt,(x,y)=>this.world.solid.has(`${Math.floor(x/32)},${Math.floor(y/32)}`));this.wildlife?.destroy();this.wildlife=new AnimalPopulation(this,this.state,'forest',this.animalBlocked,PLAYER_SPEED,()=>treeTiles(this.world.resources));}
   private releaseRope():void {
     if(!this.state.animalEscort)return;
-    if(releaseAnimalEscort(this.state)){this.ui.toast('Animal solto. A corda voltou para você.');this.updateHUD();this.save();}
+    // Solto longe de casa: corre de volta pela descida do Pântano (preview.48).
+    const home=ropeBack(this.state.animalEscort.id,'forest')==='swamp'&&this.wildlife?.runHome({x:(FOREST_SWAMP_EXIT.x+.5)*32,y:(FOREST_SWAMP_EXIT.y+.5)*32});
+    if(releaseAnimalEscort(this.state)){this.ui.toast(home?'Animal solto. Ele corre de volta para o Pântano, e a corda voltou para você.':'Animal solto. A corda voltou para você.');this.updateHUD();this.save();}
     else this.ui.toast('Não foi possível guardar a corda.');
   }
   private resetNaturalResources():void {
