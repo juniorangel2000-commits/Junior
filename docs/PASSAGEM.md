@@ -159,7 +159,7 @@
 
 ## Testes
 
-- preview.48: `npm run check` passou e `npm test` passou com 2.279 testes (2 pulados). Depois das obras: 2.311 testes. Depois da bateria de testes: 2.315. No Chromium: mineração nas quatro direções, escuridão com e sem lampião, barras do HUD, sorteio do Bosque em dois dias, vaca levada dos Campos à propriedade com a corda; pato do Pântano pelo Bosque e cabra da Costa pelos Campos até a propriedade; cabra da Estação pelas Ruínas, Floresta da Cidade e Vila até a propriedade; galinha do Pomar solta na Vila e cabra da Costa solta nos Campos correram de volta e sumiram.
+- preview.48: `npm run check` passou e `npm test` passou com 2.279 testes (2 pulados). Depois das obras: 2.311 testes. Depois da bateria de testes: 2.314 (2 pulados). No Chromium: mineração nas quatro direções, escuridão com e sem lampião, barras do HUD, sorteio do Bosque em dois dias, vaca levada dos Campos à propriedade com a corda; pato do Pântano pelo Bosque e cabra da Costa pelos Campos até a propriedade; cabra da Estação pelas Ruínas, Floresta da Cidade e Vila até a propriedade; galinha do Pomar solta na Vila e cabra da Costa solta nos Campos correram de volta e sumiram.
 
 - Na preview.47 integrada, `npm run check` passou e `npm test` passou com 2.271 testes em 275 arquivos.
 - `tests/critters.test.ts` confere os quadros com margens transparentes, os horários de aparecimento, a direção e o lugar de cada espécie no mapa. `tests/ambient-birds.test.ts` confere a folha de poses e os pousos e voos dos bandos.
