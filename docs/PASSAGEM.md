@@ -2,21 +2,26 @@
 
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
-- **Atualizado em:** 2026-11-22
+- **Atualizado em:** 2026-11-23
 - **Por:** Claude
-- **Continuar a partir de:** `release/v0.10.0-preview.48` (criar a partir da preview.47 publicada).
-- **Última versão publicada:** `v0.10.0-preview.47` (festivais, atividades nos cenários, histórias da Amélia e do Nilo, fauna animada). Instalador da preview.46: 438.633.617 bytes.
+- **Continuar a partir de:** `release/v0.10.0-preview.48` (ainda não publicada).
+- **Última versão publicada:** `v0.10.0-preview.47`. A Release da preview.47 é criada pelo Junior (tag `v0.10.0-preview.47` no branch `release/v0.10.0-preview.47`).
 - **Atenção ao publicar:** além de `NOTAS-<versão>.md`, crie `docs/cenarios/LEIA-<versão>.md`. O processo do Windows copia esse arquivo para a Release e falha se ele não existir.
-- **Estado:**
-  - A Costa das Marés fica ao sul dos Campos Abertos.
-  - O rio da Propriedade atravessa os Campos e chega ao mar por uma foz sinuosa.
-  - O Pântano tem só lagos, sem rio.
-  - Todas as divisas entre mapas externos usam o mesmo chão compartilhado da divisa Floresta ↔ Propriedade.
-  - A linha principal da Estação curva para o sul antes da divisa com as Ruínas.
-  - O Pomar Abandonado fica a leste da Vila, abaixo das Ruínas, e já está jogável.
-  - A preview.47 reúne as atividades, os festivais e a fauna animada.
+- **Estado:** a preview.48 tem mina corrigida, vigor, chuva regando a horta, animais só com a corda e HUD novo de vida e vigor. Tudo testado; falta só decidir o espalhamento dos animais (abaixo) e publicar quando o Junior pedir.
 
-## Feito nesta rodada
+## Feito nesta rodada (preview.48)
+
+- **Mina** (pedido: "a colisão está bugada, a animação de mineração só aparece olhando pra cima, a iluminação está estranha").
+  - **Animação:** a direção era calculada do pé do personagem até o centro da rocha; qualquer rocha um pouco acima virava "cima-esquerda" e mostrava o personagem de costas. Agora `workDirection` (em `character-directions.ts`) escolhe o eixo dominante. Vale também para machado, foice e picareta na Floresta, na Propriedade e nos Campos.
+  - **Iluminação:** a sombra era redesenhada 10×/s e ficava atrasada (faixa clara na borda ao andar). Agora `UndergroundLighting` redesenha quando a câmera ou o jogador se movem, com margem de 48 px, e guarda os polígonos dos lampiões fixos. A rocha maciça usa a textura da pedra escurecida (`MINE_SOLID_ROCK_TILE`) em vez de quadrados pretos.
+  - **Escuro de verdade** (pedido do Junior): `MINE_HAZARDS.darkness` tem `radius` (sem lampião) e `lanternRadius`. Nas galerias profundas, sem lampião, a visão é ~1,5 bloco (alpha 0,95–0,985). As rasas e intermediárias continuam abaixo do limite do Bento (0,64).
+  - **Colisão:** comparada ponto a ponto com o desenho (galeria e salão de entrada) e bateu em todos os lugares testados. Falta o Junior dizer onde viu o problema.
+- **Vigor:** `spendDurability` gasta 1 de vigor por golpe (`TOOL_VIGOR_COST`); o regador gasta 1 a cada 2 regas. Dormir na cama recupera todo o vigor (antes só a pousada recuperava). Com vigor zero, anda a 70% (`EXHAUSTED_SPEED`).
+- **Chuva:** dia de chuva conta como regado (`advanceCrop`) e os canteiros aparecem regados; aviso ao acordar. Testes de crescimento em dias secos fixam o tempo aberto com `vi.mock` do `weather-model`.
+- **Animais só com a corda:** a Rosa não vende mais galinha, pato nem porco. Patos (3, no lago central) e porcos (2, a sudeste) estão no Bosque (`FOREST_ANIMALS`). As clareiras do Bosque usam só os 10 bichos originais, para não mudar árvores de saves antigos. Saves com `farm-duck-*`/`farm-pig-*` comprados continuam válidos.
+- **HUD:** painel do relógio só com dia, hora e dinheiro. Vida (coração) e vigor (raio) em barras verticais empilhadas no centro da direita, na moldura de madeira dos painéis; fora da mina a vida fica cheia.
+
+## Rodadas anteriores (resumo)
 
 - **Um ano jogado e economia rebalanceada** (pedido do Junior). Relatório: [docs/economia/RELATORIO-ANO-1.md](economia/RELATORIO-ANO-1.md).
   - **Simulações:** `scripts/economia/ano.test.ts` e `scripts/economia/jogador.test.ts`. Rodam só com `ECONOMIA=1 npx vitest run scripts/economia` e reescrevem os `.md` de `docs/economia`.
@@ -110,17 +115,15 @@
 
 ## Em andamento e próximo passo exato
 
-- Decisões pendentes do Junior, listadas no relatório do ano: vigor gasto pelas ferramentas, chuva regando a horta, novos gastos para o meio do jogo, como acesso às vacas, cabras e ovelhas.
-
-- Validar as novas sprites em conjunto nos seis cenários. Conferir a escala, as quatro direções durante a caminhada e a fuga, o voo ao se aproximar, o ouriço se enrolando e o aparecimento de espécies ao anoitecer. Junior pediu fazer toda a arte primeiro.
-- A estrada leste da Estação ainda aguarda um destino.
-- Os festivais estão jogáveis. As bancas e enfeites da praça ainda usam arte provisória. A Costa pode ganhar uma história ligada ao barco.
-- Antes de começar, faça `git fetch` e confira o HEAD remoto. Esta rodada juntou a fauna com os festivais e a captura de caranguejo que chegaram no mesmo branch.
+- **Aguardando o Junior:** "espalhe os animais pelos cenários, respawn aleatório, cavalo sempre nos Campos Abertos". Plano proposto na conversa (corda funcionar em todos os cenários externos, animais selvagens sorteados por dia em pontos de cada cenário, cavalo fixo nos Campos). Hoje a corda só leva animais do Bosque para a Propriedade (`startAnimalEscort`/`transferAnimalEscort` em `src/systems/animals.ts`).
+- Perguntar ao Junior onde a colisão da mina falha.
+- O painel de Companheiros encosta no topo das barras de vida/vigor em telas de 800 px de altura.
+- Publicar a preview.48 quando pedido (notas e LEIA).
 
 ## Pendências e ideias para depois
 
 - [Lista de pendências](planejamento/O-QUE-FALTA.md).
-- Chuva regando canteiros, peixes por estação e tela do calendário ficam depois dos cenários.
+- Peixes por estação e tela do calendário ficam depois dos cenários.
 - Arte nova do chiqueiro e possível versão para iPhone seguem em planejamento.
 
 ## Problemas conhecidos
@@ -131,6 +134,8 @@
 - Preserve as fontes de arte em resolução nativa. A conversão WebP se aplica à distribuição.
 
 ## Testes
+
+- preview.48: `npm run check` passou e `npm test` passou com 2.279 testes (2 pulados). No Chromium: mineração nas quatro direções, escuridão com e sem lampião em todas as faixas, barras do HUD.
 
 - Na preview.47 integrada, `npm run check` passou e `npm test` passou com 2.271 testes em 275 arquivos.
 - `tests/critters.test.ts` confere os quadros com margens transparentes, os horários de aparecimento, a direção e o lugar de cada espécie no mapa. `tests/ambient-birds.test.ts` confere a folha de poses e os pousos e voos dos bandos.
