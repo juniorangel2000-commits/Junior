@@ -18,7 +18,12 @@
   - **Colisão:** comparada ponto a ponto com o desenho (galeria e salão de entrada) e bateu em todos os lugares testados. Falta o Junior dizer onde viu o problema.
 - **Vigor:** `spendDurability` gasta 1 de vigor por golpe (`TOOL_VIGOR_COST`); o regador gasta 1 a cada 2 regas. Dormir na cama recupera todo o vigor (antes só a pousada recuperava). Com vigor zero, anda a 70% (`EXHAUSTED_SPEED`).
 - **Chuva:** dia de chuva conta como regado (`advanceCrop`) e os canteiros aparecem regados; aviso ao acordar. Testes de crescimento em dias secos fixam o tempo aberto com `vi.mock` do `weather-model`.
-- **Animais só com a corda:** a Rosa não vende mais galinha, pato nem porco. Patos (3, no lago central) e porcos (2, a sudeste) estão no Bosque (`FOREST_ANIMALS`). As clareiras do Bosque usam só os 10 bichos originais, para não mudar árvores de saves antigos. Saves com `farm-duck-*`/`farm-pig-*` comprados continuam válidos.
+- **Animais só com a corda e sorteio diário:** a Rosa não vende mais galinha, pato nem porco. `src/data/wild-animals.ts` tem as listas por tipo e os pontos de cada cenário; `wildSpawns(área, dia, já_levados)` (`src/systems/wild-spawns.ts`) sorteia, sem guardar nada no save, quem aparece e onde.
+  - **Bosque:** galinhas, cabras e porcos (coelho e cervo continuam fixos). Corda com E, como antes.
+  - **Campos:** vacas, ovelhas e patos na beira do rio. Corda com G (`startFieldEscort`), atravessando para a propriedade como o cavalo (`transferFieldEscortToProperty`). O cavalo continua sempre nos Campos, com a doma.
+  - Ids antigos (`forest-*`, `farm-duck-*`, `farm-pig-*`) entraram nas listas, então saves antigos continuam válidos. As vacas e galinhas de enfeite dos Campos saíram (`FIELDS_RETIRED_ANIMALS` ainda aceitos no save).
+  - Ainda não: Pântano, Costa, Pomar, Ruínas e Estação. A corda precisaria atravessar esses cenários (`TrailScene`, `VillageScene`).
+- **Pássaros** (sabiá e saíra) diminuíram de 30 para 17 px, menores que o coelho.
 - **HUD:** painel do relógio só com dia, hora e dinheiro. Vida (coração) e vigor (raio) em barras verticais empilhadas no centro da direita, na moldura de madeira dos painéis; fora da mina a vida fica cheia.
 
 ## Rodadas anteriores (resumo)
@@ -115,9 +120,9 @@
 
 ## Em andamento e próximo passo exato
 
-- **Aguardando o Junior:** "espalhe os animais pelos cenários, respawn aleatório, cavalo sempre nos Campos Abertos". Plano proposto na conversa (corda funcionar em todos os cenários externos, animais selvagens sorteados por dia em pontos de cada cenário, cavalo fixo nos Campos). Hoje a corda só leva animais do Bosque para a Propriedade (`startAnimalEscort`/`transferAnimalEscort` em `src/systems/animals.ts`).
+- Próximo passo dos animais: levar o sorteio e a corda ao Pântano e à Costa (via Bosque/Campos) e depois ao Pomar, Ruínas e Estação (via Vila).
 - Perguntar ao Junior onde a colisão da mina falha.
-- O painel de Companheiros encosta no topo das barras de vida/vigor em telas de 800 px de altura.
+- O painel de Companheiros encosta no topo das barras de vida/vigor em telas de 800 px de altura (as barras não capturam cliques).
 - Publicar a preview.48 quando pedido (notas e LEIA).
 
 ## Pendências e ideias para depois
@@ -135,7 +140,7 @@
 
 ## Testes
 
-- preview.48: `npm run check` passou e `npm test` passou com 2.279 testes (2 pulados). No Chromium: mineração nas quatro direções, escuridão com e sem lampião em todas as faixas, barras do HUD.
+- preview.48: `npm run check` passou e `npm test` passou com 2.279 testes (2 pulados). Depois dos animais: 2.284 testes. No Chromium: mineração nas quatro direções, escuridão com e sem lampião, barras do HUD, sorteio do Bosque em dois dias, vaca levada dos Campos à propriedade com a corda.
 
 - Na preview.47 integrada, `npm run check` passou e `npm test` passou com 2.271 testes em 275 arquivos.
 - `tests/critters.test.ts` confere os quadros com margens transparentes, os horários de aparecimento, a direção e o lugar de cada espécie no mapa. `tests/ambient-birds.test.ts` confere a folha de poses e os pousos e voos dos bandos.
