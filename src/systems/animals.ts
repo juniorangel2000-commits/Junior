@@ -1,5 +1,6 @@
 import {type CharacterDirection} from '../character-directions';
 import {FOREST_ANIMALS, recruitAnimal, type AnimalKind} from '../data/ancient-forest';
+import {wildAnimal} from '../data/wild-animals';
 import {isDomesticAnimal} from '../data/domestic-animals';
 import type {SaveData} from '../types';
 import {Inventory} from './inventory';
@@ -216,7 +217,7 @@ export class AnimalBrain {
 function positions(save: SaveData) {return save.animalPositions??= {forest:[],property:[]};}
 export function startAnimalEscort(save: SaveData,animal: AnimalPosition): boolean {
   const area=save.activeArea??'property';
-  if((area!=='property'&&area!=='forest')||save.animalEscort||!isDomesticAnimal(animal.id)||area==='forest'&&!FOREST_ANIMALS.some(a=>a.id===animal.id))return false;
+  if((area!=='property'&&area!=='forest')||save.animalEscort||!isDomesticAnimal(animal.id)||area==='forest'&&!FOREST_ANIMALS.some(a=>a.id===animal.id)&&wildAnimal(animal.id)?.area!=='forest')return false;
   const owned=save.recruitedAnimals?.includes(animal.id)??false;
   if(area==='forest'?owned:!owned)return false;
   const inventory=new Inventory(save.inventory);if(!inventory.spend({cord:1}))return false;
@@ -240,4 +241,23 @@ export function deliverAnimalEscort(save: SaveData): boolean {
   const escort=save.animalEscort;if(!escort||escort.area!=='property'||save.activeArea!=='property'||save.recruitedAnimals?.includes(escort.id)||!isDomesticAnimal(escort.id))return false;
   const inventory=new Inventory(save.inventory);if(!inventory.transact({}, {cord:1}))return false;
   Object.assign(save.inventory,inventory.data);save.recruitedAnimals=recruitAnimal(save.recruitedAnimals??[],escort.id);delete save.animalEscort;return true;
+}
+/** Corda num animal solto dos Campos (preview.48). O cavalo continua com a doma própria. */
+export function startFieldEscort(save:SaveData,animal:AnimalPosition):{ok:boolean;message:string}{
+ const fail=(message:string)=>({ok:false,message});
+ if(save.activeArea!=='openFields'||wildAnimal(animal.id)?.area!=='openFields')return fail('Este animal não pode ser conduzido.');
+ if(save.animalEscort)return fail('Você já está conduzindo um animal.');
+ if(save.recruitedAnimals?.includes(animal.id))return fail('Este animal já é seu.');
+ const inventory=new Inventory(save.inventory);if(!inventory.spend({cord:1}))return fail('Fabrique uma corda vegetal com 3 fibras (C) para conduzir o animal.');
+ Object.assign(save.inventory,inventory.data);save.animalEscort={id:animal.id,area:'openFields'};
+ const fields=save.openFields??={version:1,cut:{}};fields.animals=[...(fields.animals??[]).filter(a=>a.id!==animal.id),{...animal}];
+ return{ok:true,message:'Corda presa! Leve o animal pela passagem ao norte até a propriedade. G solta a corda.'};
+}
+/** Atravessa dos Campos para a propriedade com o animal na corda (cavalo ou solto). */
+export function transferFieldEscortToProperty(save:SaveData,arrival:AnimalPoint):void{
+ const e=save.animalEscort;if(!e||e.area!=='openFields')return;
+ const old=save.openFields?.animals?.find(a=>a.id===e.id);
+ if(save.openFields?.animals)save.openFields.animals=save.openFields.animals.filter(a=>a.id!==e.id);
+ const p=positions(save);p.property=p.property.filter(a=>a.id!==e.id).concat({id:e.id,x:arrival.x+30,y:arrival.y+8,direction:old?.direction??'up'});
+ e.area='property';
 }

@@ -1,6 +1,7 @@
+import {WILD_GROUPS,wildAnimal} from '../data/wild-animals';
 import type {SaveData,TilePoint} from '../types';
 import {CHARACTER_DIRECTIONS} from '../character-directions';
-import {fieldPatch,fieldIpe,FIELDS_ANIMALS,fieldsBlocked,IPE_HITS,IPE_REGROW_DAYS,IPE_REACH,type MeadowPatch} from '../data/open-fields';
+import {fieldPatch,fieldIpe,FIELDS_ANIMALS,FIELDS_RETIRED_ANIMALS,fieldsBlocked,IPE_HITS,IPE_REGROW_DAYS,IPE_REACH,type MeadowPatch} from '../data/open-fields';
 import {AnimalBrain,type AnimalPosition,type AnimalPoint} from './animals';
 import type {AnimalKind} from '../data/ancient-forest';
 import {addGroundItems} from './ground-items';
@@ -48,7 +49,7 @@ export function chopIpe(s:SaveData,id:string,player:TilePoint,write:(d:SaveData)
 export function validOpenFields(v:unknown,day:number):v is OpenFieldsState{
  if(!v||typeof v!=='object'||Array.isArray(v))return false;const s=v as OpenFieldsState;
  if(s.version!==1||!s.cut||typeof s.cut!=='object'||Array.isArray(s.cut)||Object.entries(s.cut).some(([id,n])=>!fieldPatch(id)||!Number.isInteger(n)||n<1||n>day))return false;
- if(s.animals!==undefined){if(!Array.isArray(s.animals)||s.animals.length>FIELDS_ANIMALS.length)return false;const ids=new Set<string>();for(const a of s.animals){if(!a||!FIELDS_ANIMALS.some(d=>d.id===a.id)||ids.has(a.id)||!Number.isFinite(a.x)||!Number.isFinite(a.y)||a.x<32||a.x>3040||a.y<32||a.y>2272||!CHARACTER_DIRECTIONS.includes(a.direction))return false;ids.add(a.id);}}
+ if(s.animals!==undefined){if(!Array.isArray(s.animals)||s.animals.length>FIELDS_ANIMALS.length+FIELDS_RETIRED_ANIMALS.length+WILD_GROUPS.openFields.reduce((n,g)=>n+g.ids.length,0))return false;const ids=new Set<string>();for(const a of s.animals){if(!a||!fieldsAnimalId(a.id)||ids.has(a.id)||!Number.isFinite(a.x)||!Number.isFinite(a.y)||a.x<32||a.x>3040||a.y<32||a.y>2272||!CHARACTER_DIRECTIONS.includes(a.direction))return false;ids.add(a.id);}}
 
  if(s.felled!==undefined&&(!s.felled||typeof s.felled!=='object'||Array.isArray(s.felled)||Object.entries(s.felled).some(([id,n])=>!fieldIpe(id)||!Number.isInteger(n)||n<1||n>day)))return false;
  if(s.hits!==undefined&&(!s.hits||typeof s.hits!=='object'||Array.isArray(s.hits)||Object.entries(s.hits).some(([id,n])=>!fieldIpe(id)||!Number.isInteger(n)||n<1||n>=IPE_HITS)))return false;
@@ -57,6 +58,8 @@ export function validOpenFields(v:unknown,day:number):v is OpenFieldsState{
 
 /** Todos os animais soltos dos Campos têm reação selvagem. A doma do cavalo
  * ajusta seu raio de fuga no controlador próprio, preservando a aproximação. */
+/** Ids aceitos nos Campos: os fixos (cavalo e coelhos) e os soltos sorteados ali. */
+export const fieldsAnimalId=(id:unknown)=>FIELDS_ANIMALS.some(d=>d.id===id)||(FIELDS_RETIRED_ANIMALS as readonly unknown[]).includes(id)||wildAnimal(String(id))?.area==='openFields';
 export function createFieldAnimalBrain(d:{id:string;kind:AnimalKind},p:AnimalPoint):AnimalBrain{
  const brain=new AnimalBrain(d.id,d.kind,p.x,p.y,true,(x,y)=>fieldsBlocked(x*32+16,y*32+16),84,()=>0,fieldsBlocked);
  // Troncos, pedras e o galpão dos Campos não mudam de lugar: a rota de fuga reaproveita as conferências.

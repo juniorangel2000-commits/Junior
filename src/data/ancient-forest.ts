@@ -1,3 +1,4 @@
+import {wildAnimal} from './wild-animals';
 /** Separate 96×72 area. Property coordinates and resource IDs never change. */
 import {lakeDistance} from './water-contours';
 import {TILE} from './world-size';
@@ -14,9 +15,6 @@ export const FOREST_ANIMALS = [
   { id: 'forest-goat-1', kind: 'goat', x: 21, y: 15 }, { id: 'forest-goat-2', kind: 'goat', x: 25, y: 17 },
   { id: 'forest-cow-1', kind: 'cow', x: 75, y: 35 }, { id: 'forest-cow-2', kind: 'cow', x: 78, y: 38 },
   { id: 'forest-rabbit-1', kind: 'rabbit', x: 76, y: 56 }, { id: 'forest-deer-1', kind: 'deer', x: 79, y: 54 },
-  // preview.48: patos e porcos também se conseguem só com a corda (antes, comprados da Rosa).
-  { id: 'forest-duck-1', kind: 'duck', x: 49, y: 24 }, { id: 'forest-duck-2', kind: 'duck', x: 53, y: 26 }, { id: 'forest-duck-3', kind: 'duck', x: 46, y: 22 },
-  { id: 'forest-pig-1', kind: 'pig', x: 60, y: 59 }, { id: 'forest-pig-2', kind: 'pig', x: 61, y: 52 },
 ] as const;
 const segments = [ [48,70,48,56], [48,56,25,55], [25,55,21,35], [21,35,21,15], [21,15,37,13],
   [21,35,40,32], [40,32,49,28], [49,28,68,28], [68,28,76,35], [76,35,77,55], [77,55,48,56],
@@ -37,10 +35,8 @@ export function forestWaterDistanceAt(x:number,y:number):number {
   return lakeDistance(x,y,54.5*TILE,16.5*TILE,13*TILE,8*TILE,2.7);
 }
 
-const ORIGINAL_FOREST_ANIMALS=10;
 export function forestClearing(x: number,y: number): boolean {
-  // Só os bichos originais abrem clareira: os da preview.48 não mudam as árvores de saves antigos.
-  return FOREST_ANIMALS.slice(0,ORIGINAL_FOREST_ANIMALS).some(a=>Math.hypot(x-a.x,y-a.y)<8) || Math.hypot(x-48,y-42)<8;
+  return FOREST_ANIMALS.some(a=>Math.hypot(x-a.x,y-a.y)<8) || Math.hypot(x-48,y-42)<8;
 }
 function hash(x:number,y:number):number { return ((Math.imul(x+19,73856093)^Math.imul(y+7,19349663))>>>0)/4294967296; }
 export const FOREST_TREES: Array<{x:number;y:number;pine:boolean;ancient:boolean}> = [];
@@ -54,7 +50,7 @@ export function forestBlocked(x:number,y:number):boolean {
   return x<1||y<1||x>=95||y>=71||forestWater(x,y)||trunks.has(`${x},${y}`);
 }
 export function recruitAnimal(ids: readonly string[], id: string): string[] {
-  return !(FOREST_ANIMALS.some(a=>a.id===id)||id==='field-horse-1')||ids.includes(id)?[...ids]:[...ids,id];
+  return !(FOREST_ANIMALS.some(a=>a.id===id)||id==='field-horse-1'||wildAnimal(id))||ids.includes(id)?[...ids]:[...ids,id];
 }
 
 /** Stable art variation independent of the three-tile placement grid. */

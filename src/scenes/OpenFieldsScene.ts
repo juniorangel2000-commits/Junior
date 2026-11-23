@@ -24,8 +24,10 @@ import {ToolSwing} from '../systems/tool-use';
 import { readyGatherCopy, gatherCopyStillReady, type GatherAction } from '../systems/tool-gather';
 import {inventoryToolCondition} from '../systems/tool-instances';
 import {harvestMeadow,meadowGrowth,chopIpe,ipeStanding} from '../systems/open-fields';
-import {HORSE_ID,HORSE_NAME_MAX,TAMING_DAYS,horseTaming,feedHorse,fedToday,settleHorseTaming,applyTamingLoss,tamingPhase,feedingDay,nameHorse,startHorseEscort,transferHorseToProperty,placeBasket,pickUpBasket} from '../systems/horse-taming';
-import {releaseAnimalEscort,ANIMAL_BEHAVIOR} from '../systems/animals';
+import {HORSE_ID,HORSE_NAME_MAX,TAMING_DAYS,horseTaming,feedHorse,fedToday,settleHorseTaming,applyTamingLoss,tamingPhase,feedingDay,nameHorse,startHorseEscort,placeBasket,pickUpBasket} from '../systems/horse-taming';
+import {releaseAnimalEscort,ANIMAL_BEHAVIOR,startFieldEscort,transferFieldEscortToProperty} from '../systems/animals';
+import {domesticAnimal} from '../data/domestic-animals';
+import {ANIMAL_NAMES} from '../data/ancient-forest';
 import {OpenFieldsWorld,preloadOpenFields} from '../open-fields-world';
 import {FIELDS_SIZE,FIELDS_ENTRY,FIELDS_EXIT,PROPERTY_FIELDS_RETURN,MEADOW_PATCHES,FIELDS_IPES,IPE_REACH,fieldsBlocked,fieldsSafe,fieldsPlayerSafe,fieldsSolid,fieldsWater,FIELDS_COAST_EXIT} from '../data/open-fields';
 import {FIELDS_BRIDGES,mapBridgeAllowsStep} from '../data/bridges';
@@ -132,10 +134,21 @@ export class OpenFieldsScene extends Phaser.Scene{
  }
  private toggleHorseRope():void{
   if(this.state.animalEscort?.id===HORSE_ID){this.snapshotState();if(releaseAnimalEscort(this.state)){saveGame(this.state);this.ui.toast(`Corda solta. ${horseTaming(this.state).name??'O cavalo'} fica nos Campos.`);}this.updateHUD();return;}
-  const h=this.horseNear();if(!h){if(this.state.animalEscort)this.ui.toast('Você já está conduzindo um animal.');return;}
+  if(this.state.animalEscort){this.snapshotState();if(releaseAnimalEscort(this.state)){saveGame(this.state);this.ui.toast('Corda solta. O animal fica nos Campos.');}this.updateHUD();return;}
+  const h=this.horseNear();
+  if(!h||!horseTaming(this.state).tamed){const w=this.world.nearestWild(this.player);
+   if(w){this.snapshotState();const r=startFieldEscort(this.state,w.brain.snapshot());if(r.ok){saveGame(this.state);gameAudio.play('pickup');}this.ui.toast(r.message);this.updateHUD();return;}}
+  if(!h)return;
   this.snapshotState();const r=startHorseEscort(this.state,h.brain.snapshot());if(r.ok)saveGame(this.state);this.ui.toast(r.message);this.updateHUD();
  }
- private updateHUD():void{if(!this.player)return;const resident=this.player.isSwimming?undefined:this.outings?.nearName(),ipe=this.trapNear()?undefined:this.ipeTarget(),horse=ipe?undefined:this.horseNear()??(this.state.animalEscort?.id===HORSE_ID?this.world.horse:undefined),hp=horse?this.horsePrompt():!ipe&&this.trapNear()?{text:trapHint(this.state,this.trapNear()!),key:'E' as const}:!ipe&&this.basketNear()?{text:'Cesta para o cavalo · E recolher',key:'E' as const}:undefined,p=ipe||hp?undefined:this.target();this.ui.updateHUD({itemQuality:this.state.itemQuality,area:'openFields',worldMapSize:{width:96,height:72},worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',inHome:false,swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:resident||ipe||p?'E':hp?hp.key:this.fishingItemAtBank()?'E':null,prompt:resident?`E · Conversar com ${resident}`:ipe?this.ipePrompt():hp?hp.text:p?p.kind==='grass'?'Cortar capim com a foice':'Colher '+(p.kind==='herb'?'ervas':'cogumelos'):this.fieldsHint(),location:'Campos Abertos',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});this.ui.updateCameraZoom(this.shownZoom,!this.paused);}
+ /** Aviso do animal solto mais perto, ou de quem está na corda. */
+ private wildPrompt():{text:string;key:'G'}|undefined{
+  const e=this.state.animalEscort;
+  if(e&&e.id!==HORSE_ID){const k=domesticAnimal(e.id);return{text:`Conduzindo ${k?ANIMAL_NAMES[k.kind].toLowerCase():'o animal'} · siga pela passagem ao norte · G solta a corda`,key:'G'};}
+  if(e)return;const w=this.world?.nearestWild(this.player),k=w&&domesticAnimal(w.brain.id);
+  return k?{text:`${ANIMAL_NAMES[k.kind]} · G colocar a corda`,key:'G'}:undefined;
+ }
+ private updateHUD():void{if(!this.player)return;const resident=this.player.isSwimming?undefined:this.outings?.nearName(),ipe=this.trapNear()?undefined:this.ipeTarget(),horse=ipe?undefined:this.horseNear()??(this.state.animalEscort?.id===HORSE_ID?this.world.horse:undefined),wp=ipe?undefined:this.wildPrompt(),hp=horse?this.horsePrompt():wp?wp:!ipe&&this.trapNear()?{text:trapHint(this.state,this.trapNear()!),key:'E' as const}:!ipe&&this.basketNear()?{text:'Cesta para o cavalo · E recolher',key:'E' as const}:undefined,p=ipe||hp?undefined:this.target();this.ui.updateHUD({itemQuality:this.state.itemQuality,area:'openFields',worldMapSize:{width:96,height:72},worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],name:this.state.profile.name,day:this.state.day,time:this.state.time,inventory:this.state.inventory,tool:'hand',inHome:false,swimming:this.player.isSwimming,coins:this.state.villageEconomy?.coins??0,vigor:this.state.villageProgress?.vigor??100,wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,playerTile:{x:this.player.x/32,y:this.player.y/32},interactionKey:resident||ipe||p?'E':hp?hp.key:this.fishingItemAtBank()?'E':null,prompt:resident?`E · Conversar com ${resident}`:ipe?this.ipePrompt():hp?hp.text:p?p.kind==='grass'?'Cortar capim com a foice':'Colher '+(p.kind==='herb'?'ervas':'cogumelos'):this.fieldsHint(),location:'Campos Abertos',harvests:this.state.inventory.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress});this.ui.updateCameraZoom(this.shownZoom,!this.paused);}
  private interact():void{
   if(this.swing.active||this.paused||this.leaving||this.player.isSwimming||this.ui.isModalOpen())return;
   if(this.outings?.interact())return;
@@ -232,9 +245,9 @@ export class OpenFieldsScene extends Phaser.Scene{
  }
  private leave(title=false):void{if(this.leaving)return;
   // Com o cavalo na corda, ele precisa estar ao lado para atravessar junto.
-  const escorting=this.state.animalEscort?.id===HORSE_ID,horse=this.world.horse;
-  if(!title&&escorting&&(!horse||Math.hypot(horse.brain.x-this.player.x,horse.brain.y-this.player.y)>ANIMAL_BEHAVIOR.portalDistance)){this.ui.toast('Espere o cavalo chegar perto antes de atravessar.');return;}
-  const next=structuredClone(this.snapshotState());if(!title){next.activeArea='property';next.player={...PROPERTY_FIELDS_RETURN};if(escorting)transferHorseToProperty(next,PROPERTY_FIELDS_RETURN);}if(!saveGame(next)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}this.leaving=true;this.swing.cancel();this.toolVisual.hide();this.cameras.main.fadeOut(SCENE_FADE_MS);this.time.delayedCall(SCENE_FADE_MS,()=>{this.scene.stop();this.onReturn(next,title);});}
+  const escorting=this.state.animalEscort?.area==='openFields',horse=this.world.led(this.state.animalEscort?.id);
+  if(!title&&escorting&&(!horse||Math.hypot(horse.brain.x-this.player.x,horse.brain.y-this.player.y)>ANIMAL_BEHAVIOR.portalDistance)){this.ui.toast(this.state.animalEscort?.id===HORSE_ID?'Espere o cavalo chegar perto antes de atravessar.':'Espere o animal chegar perto antes de atravessar.');return;}
+  const next=structuredClone(this.snapshotState());if(!title){next.activeArea='property';next.player={...PROPERTY_FIELDS_RETURN};if(escorting)transferFieldEscortToProperty(next,PROPERTY_FIELDS_RETURN);}if(!saveGame(next)){this.ui.toast('Não foi possível salvar. A passagem foi cancelada.');return;}this.leaving=true;this.swing.cancel();this.toolVisual.hide();this.cameras.main.fadeOut(SCENE_FADE_MS);this.time.delayedCall(SCENE_FADE_MS,()=>{this.scene.stop();this.onReturn(next,title);});}
  update(_time:number,ms:number):void{
   if(!this.player||this.leaving)return;this.daylight.update(this.state.time,false,this.state.day);if(this.paused||this.ui.isModalOpen()||document.hidden){if(this.swing.active){this.swing.cancel();this.toolVisual.hide();}return;}
   const dt=Math.min(.1,ms/1000),before={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.keepDry=!!this.state.animalEscort;this.player.update(dt,this.blockedTile,this.solidPoint,!this.swing.active,this.swimmingPoint,this.allowStep);this.player.sprite.setDepth(this.player.y);

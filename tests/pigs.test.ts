@@ -1,4 +1,4 @@
-import {FOREST_ANIMALS} from '../src/data/ancient-forest';
+import {wildSpawns,wildTaken} from '../src/systems/wild-spawns';
 import {startAnimalEscort,transferAnimalEscort,deliverAnimalEscort} from '../src/systems/animals';
 import {describe,it,expect,vi} from 'vitest';
 import {createNewSave,validateSave,migrateSave} from '../src/systems/save';
@@ -24,8 +24,10 @@ describe('porcos e chiqueiro',()=>{
   const s=createNewSave(createCharacterProfile('Rosa'));s.villageEconomy!.coins=1000;
   expect(performVillageService(s,'buy-pig').ok).toBe(false);
   // preview.48: só com a corda, trazendo do Bosque.
-  const wild=FOREST_ANIMALS.find(a=>a.kind==='pig')!;s.inventory.cord=1;s.activeArea='forest';
-  expect(startAnimalEscort(s,{id:wild.id,x:wild.x*32+16,y:wild.y*32+16,direction:'down'})).toBe(true);
+  // Um dia em que o sorteio põe um porco no Bosque.
+  let day=1,wild;while(!(wild=wildSpawns('forest',day,wildTaken(s)).find(a=>a.kind==='pig')))day++;
+  s.day=day;s.inventory.cord=1;s.activeArea='forest';
+  expect(startAnimalEscort(s,{id:wild.id,x:wild.x,y:wild.y,direction:'down'})).toBe(true);
   transferAnimalEscort(s,{x:1500,y:1500});expect(deliverAnimalEscort(s)).toBe(true);
   expect(s.recruitedAnimals).toContain(wild.id);expect(s.villageEconomy!.coins).toBe(1000);
   expect(domesticAnimal(wild.id)?.kind).toBe('pig');

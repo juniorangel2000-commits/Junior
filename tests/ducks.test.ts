@@ -1,5 +1,5 @@
-import {FOREST_ANIMALS} from '../src/data/ancient-forest';
-import {startAnimalEscort,transferAnimalEscort,deliverAnimalEscort} from '../src/systems/animals';
+import {wildSpawns,wildTaken} from '../src/systems/wild-spawns';
+import {startFieldEscort,transferFieldEscortToProperty,deliverAnimalEscort} from '../src/systems/animals';
 import {describe,it,expect} from 'vitest';
 import {createNewSave,validateSave,migrateSave} from '../src/systems/save';
 import {createCharacterProfile} from '../src/data/characters';
@@ -22,13 +22,15 @@ const site=(s:SaveData)=>s.farmConstruction!.sites[0];
 const morning=(s:SaveData)=>{s.day+=1;s.time=6*60;processAnimalProduction(s);};
 
 describe('patos da criação',()=>{
- it('o pato vem do Bosque com a corda, vai para a Propriedade e mora no galinheiro',()=>{
+ it('o pato vem dos Campos com a corda, vai para a Propriedade e mora no galinheiro',()=>{
   const s=createNewSave(createCharacterProfile('Rosa'));s.villageEconomy!.coins=1000;
   expect(performVillageService(s,'buy-duck').ok).toBe(false);
-  // preview.48: só com a corda, trazendo do Bosque.
-  const wild=FOREST_ANIMALS.find(a=>a.kind==='duck')!;s.inventory.cord=1;s.activeArea='forest';
-  expect(startAnimalEscort(s,{id:wild.id,x:wild.x*32+16,y:wild.y*32+16,direction:'down'})).toBe(true);
-  transferAnimalEscort(s,{x:1500,y:1500});expect(deliverAnimalEscort(s)).toBe(true);
+  // preview.48: só com a corda, trazendo dos Campos (beira do rio).
+  let day=1,wild;while(!(wild=wildSpawns('openFields',day,wildTaken(s)).find(a=>a.kind==='duck')))day++;
+  s.day=day;s.inventory.cord=1;s.activeArea='openFields';
+  expect(startFieldEscort(s,{id:wild.id,x:wild.x,y:wild.y,direction:'down'}).ok).toBe(true);
+  expect(validateSave(s)).toBe(true);
+  s.activeArea='property';transferFieldEscortToProperty(s,{x:1500,y:1500});expect(deliverAnimalEscort(s)).toBe(true);
   expect(s.recruitedAnimals).toContain(wild.id);expect(s.villageEconomy!.coins).toBe(1000);
   expect(domesticAnimal(wild.id)?.kind).toBe('duck');
   expect(domesticAnimal(DUCK)?.kind).toBe('duck');expect(farmAcceptsAnimal('coop','duck')).toBe(true);expect(farmAcceptsAnimal('coop','chicken')).toBe(true);expect(farmAcceptsAnimal('barn','duck')).toBe(false);

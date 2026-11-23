@@ -6,12 +6,24 @@ import {animalsInside} from './systems/farm-interior';
 import type Phaser from 'phaser';
 import {animalSprite} from './forest-art';
 import {updateAnimalSprite,animalRopeAnchor} from './animal-sprites';
-import {FOREST_ANIMALS} from './data/ancient-forest';
-import {DOMESTIC_ANIMALS} from './data/domestic-animals';
+import {FOREST_ANIMALS,FOREST_ENTRY} from './data/ancient-forest';
+const FOREST_ENTRY_PX={x:FOREST_ENTRY.x*32+16,y:FOREST_ENTRY.y*32+16};
+import {DOMESTIC_ANIMALS,domesticAnimal} from './data/domestic-animals';
+import {wildAnimal} from './data/wild-animals';
+import {wildSpawns,wildTaken} from './systems/wild-spawns';
+import type {AnimalKind} from './data/ancient-forest';
 import {AnimalBrain,ANIMAL_BEHAVIOR,type AnimalArea,type AnimalBlocked,type AnimalPoint,type AnimalPosition} from './systems/animals';
 import type {SaveData} from './types';
 import {TreeAvoidanceField} from './systems/tree-avoidance';
 
+/** Bichos do Bosque hoje: coelho e cervo fixos, os de criação pelo sorteio do dia e quem está na corda. */
+function forestAnimalsToday(save:SaveData):{id:string;kind:AnimalKind;px:number;py:number;wild?:true}[]{
+ const fixed=FOREST_ANIMALS.filter(a=>!wildAnimal(a.id)).map(a=>({id:a.id,kind:a.kind as AnimalKind,px:a.x*32+16,py:a.y*32+16}));
+ const today=wildSpawns('forest',save.day,wildTaken(save)).map(a=>({id:a.id,kind:a.kind,px:a.x,py:a.y,wild:true as const}));
+ const escort=save.animalEscort?.area==='forest'?save.animalEscort.id:undefined,known=domesticAnimal(escort);
+ const led=escort&&known&&!today.some(a=>a.id===escort)&&!fixed.some(a=>a.id===escort)?[{id:escort,kind:known.kind,px:FOREST_ENTRY_PX.x,py:FOREST_ENTRY_PX.y,wild:true as const}]:[];
+ return [...fixed,...today,...led];
+}
 export interface MovingAnimal {
  id:string; brain:AnimalBrain; sprite:Phaser.GameObjects.Sprite;
  shadow?:Phaser.GameObjects.Ellipse;
@@ -33,13 +45,15 @@ export class AnimalPopulation {
   const escort=save.animalEscort?.area===area?save.animalEscort.id:undefined;
   let index=0;
   // Na Propriedade também aparece o cavalo domado dos Campos Abertos.
-  for(const definition of area==='forest'?FOREST_ANIMALS:DOMESTIC_ANIMALS){
+  for(const definition of area==='forest'?forestAnimalsToday(save):DOMESTIC_ANIMALS){
    const owned=save.recruitedAnimals?.includes(definition.id)??false;
    if(area==='forest'?owned:!owned&&definition.id!==escort)continue;
-   const saved=save.animalPositions?.[area].find(p=>p.id===definition.id);
-   const forest='x' in definition?definition as typeof FOREST_ANIMALS[number]:undefined;
-   const x=area==='forest'&&forest?forest.x*32+16:(20+(index%8)*3)*32+16;
-   const y=area==='forest'&&forest?forest.y*32+16:(44+Math.floor(index/8)*3)*32+16;index++;
+   // No Bosque, os soltos nascem no ponto sorteado do dia; só quem está na corda (e o coelho e o
+   // cervo, que moram ali) retomam a posição salva.
+   const saved=area==='forest'&&'wild' in definition&&definition.id!==escort?undefined:save.animalPositions?.[area].find(p=>p.id===definition.id);
+   const forest='px' in definition?definition as unknown as {px:number;py:number}:undefined;
+   const x=area==='forest'&&forest?forest.px:(20+(index%8)*3)*32+16;
+   const y=area==='forest'&&forest?forest.py:(44+Math.floor(index/8)*3)*32+16;index++;
    const brain:AnimalBrain=new AnimalBrain(definition.id,definition.kind,saved?.x??x,saved?.y??y,!owned,blocked,playerSpeed,this.treeCover.cost,this.area==='property'?(px,py)=>{
     if(this.area!=='property')return false;if(farmPointBlocked(this.save,px,py))return true;
     const home=farmAnimalHome(this.save,definition.id);return !!home&&!FARM_BUILDINGS[home.kind].openYard&&this.homes.get(definition.id)===home.id&&this.save.animalEscort?.id!==definition.id&&!farmYardPoint(home,px,py);

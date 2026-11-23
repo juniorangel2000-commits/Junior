@@ -14,6 +14,10 @@ import Phaser from 'phaser';
 import type {SaveData} from './types';
 import {FIELDS_SIZE,FIELDS_PROPS,FIELDS_SHED,FIELDS_ANIMALS,MEADOW_PATCHES,FIELDS_IPES,fieldsSafe,fieldsWater,fieldsRiverEdge,FIELDS_COAST_SIGN,FIELDS_NORTH_SIGN} from './data/open-fields';
 import {meadowGrowth,ipeStanding,createFieldAnimalBrain} from './systems/open-fields';
+import {wildSpawns,wildTaken} from './systems/wild-spawns';
+import {wildAnimal} from './data/wild-animals';
+import {domesticAnimal} from './data/domestic-animals';
+import type {AnimalKind} from './data/ancient-forest';
 import type {AnimalBrain} from './systems/animals';
 import {animalSprite,setupAnimalArt} from './forest-art';
 import {preloadAnimalSprites,updateAnimalSprite,animalRopeAnchor} from './animal-sprites';
@@ -45,6 +49,7 @@ export class OpenFieldsWorld{
  readonly ipeStumps=new Map<string,Phaser.GameObjects.Image>();
  readonly patches=new Map<string,Phaser.GameObjects.Image>();
  readonly animals:FieldAnimal[]=[];
+ private rope!:Phaser.GameObjects.Graphics;
  private horseUi:Phaser.GameObjects.Graphics;
  private basket:Phaser.GameObjects.Image;
  /** Colmeias junto aos ipês, por id. */
@@ -77,16 +82,37 @@ export class OpenFieldsWorld{
   scene.add.image(FIELDS_SHED.x+71,FIELDS_SHED.y,'fields-shed','right-post').setOrigin(.5,1).setDisplaySize(22,92).setDepth(FIELDS_SHED.y+1);
   for(const p of MEADOW_PATCHES){const texture=p.kind==='grass'?MEADOW_GRASS_TEXTURE:p.kind==='herb'?'ecology-herbs':'forest-detail-mushrooms';this.patches.set(p.id,scene.add.image(p.x,p.y,texture,p.kind==='grass'?p.variant*4:undefined).setVisible(false).setOrigin(.5,1).setDisplaySize(p.size,p.kind==='grass'?p.size*MEADOW_GRASS_RATIO:p.size).setDepth(p.y));}
   setupAnimalArt(scene);
-  for(const d of FIELDS_ANIMALS){if(d.id===HORSE_ID&&horseLeftFields(state()))continue;const saved=state().openFields?.animals?.find(a=>a.id===d.id),p=saved&&fieldsSafe(saved)?saved:d;
+  const s0=state(),escortId=s0.animalEscort?.area==='openFields'?s0.animalEscort.id:undefined;
+  const today=wildSpawns('openFields',s0.day,wildTaken(s0));
+  const led=escortId&&escortId!==HORSE_ID&&!today.some(a=>a.id===escortId)?(()=>{const k=domesticAnimal(escortId),p=s0.openFields?.animals?.find(a=>a.id===escortId);return k&&p?[{id:escortId,kind:k.kind,x:p.x,y:p.y}]:[];})():[];
+  const defs:{id:string;kind:AnimalKind;x:number;y:number}[]=[...FIELDS_ANIMALS,...today,...led];
+  for(const d of defs){if(d.id===HORSE_ID&&horseLeftFields(s0))continue;
+   // Os soltos nascem no ponto sorteado do dia; só o cavalo, os coelhos e quem está na corda retomam a posição salva.
+   const wild=!!wildAnimal(d.id),saved=wild&&d.id!==escortId?undefined:s0.openFields?.animals?.find(a=>a.id===d.id),p=saved&&fieldsSafe(saved)?saved:d;
    const brain=createFieldAnimalBrain(d,p);if(saved&&p===saved)brain.restore(saved);
-   const sprite=animalSprite(scene,d.kind,brain.x,brain.y),shadow=scene.add.ellipse(brain.x,brain.y,d.kind==='horse'?56:d.kind==='cow'?42:17,d.kind==='horse'?15:d.kind==='cow'?12:5,0x29271d,.16);
+   if(!this.placeSafely(brain))continue;
+   const big=d.kind==='horse'||d.kind==='cow',sprite=animalSprite(scene,d.kind,brain.x,brain.y),shadow=scene.add.ellipse(brain.x,brain.y,d.kind==='horse'?56:d.kind==='cow'?42:d.kind==='sheep'?30:17,big?(d.kind==='horse'?15:12):d.kind==='sheep'?9:5,0x29271d,.16);
    this.animals.push({brain,sprite,shadow,...(d.kind==='horse'?{idle:new HorseIdleCycle(d.id)}:{}),...(d.kind==='cow'?{rest:new CowRestCycle(d.id)}:{})});
   }
   this.basket=scene.add.image(0,0,'fields-harvest-basket').setOrigin(.5,.85).setDisplaySize(32,29).setVisible(false);
   this.horseUi=scene.add.graphics().setDepth(10000);
+  this.rope=scene.add.graphics();
   this.horseLabel=scene.add.text(0,0,'',{fontFamily:'Georgia, serif',fontSize:'11px',color:'#fff4d6',stroke:'#2d2418',strokeThickness:3}).setOrigin(.5,1).setDepth(10001).setVisible(false);
   this.update(0,{x:0,y:0});
  }
+ /** Afasta do ponto sorteado se ele estiver ocupado (outro bicho ou obstáculo). */
+ private placeSafely(brain:AnimalBrain):boolean{
+  const ok=(x:number,y:number)=>brain.canStand(x,y)&&fieldsSafe({x,y})&&this.animals.every(a=>Math.hypot(a.brain.x-x,a.brain.y-y)>brain.radius+a.brain.radius+4);
+  if(ok(brain.x,brain.y))return true;
+  for(let r=24;r<=240;r+=24)for(let i=0;i<12;i++){const x=brain.x+Math.cos(i*Math.PI/6)*r,y=brain.y+Math.sin(i*Math.PI/6)*r;if(ok(x,y)){brain.x=x;brain.y=y;return true;}}
+  return false;
+ }
+ /** O animal solto mais perto, ao alcance da corda (não o cavalo, que tem doma própria). */
+ nearestWild(player:{x:number;y:number}):FieldAnimal|undefined{
+  return this.animals.filter(a=>wildAnimal(a.brain.id)&&a.sprite.visible&&Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<=ANIMAL_BEHAVIOR.catchRadius&&a.brain.lineClear(a.brain,player))
+   .sort((a,b)=>Math.hypot(a.brain.x-player.x,a.brain.y-player.y)-Math.hypot(b.brain.x-player.x,b.brain.y-player.y))[0];
+ }
+ led(id:string|undefined):FieldAnimal|undefined{return id?this.animals.find(a=>a.brain.id===id):undefined;}
  get horse():FieldAnimal|undefined{return this.animals.find(a=>a.brain.id===HORSE_ID);}
  /** Cesta no chão que o cavalo aceita buscar agora, conforme a fase da doma. */
  private basketFor(s:SaveData,player:{x:number;y:number},clearance:number){
@@ -149,13 +175,22 @@ export class OpenFieldsWorld{
   for(const t of this.trees)t.setAlpha(player.y<t.y&&player.y>t.y-t.displayHeight*.75&&Math.abs(player.x-t.x)<t.displayWidth*.38?.45:1);
   const brains=this.animals.map(a=>a.brain);
   const grassNear=(b:AnimalBrain)=>meadowPatchesInRect(b.x-56,b.y-56,b.x+56,b.y+56).some(p=>p.kind==='grass'&&Math.hypot(p.x-b.x,p.y-b.y)<56&&meadowGrowth(s,p)>=1);
+  let ropeTo:FieldAnimal|undefined;
   for(const a of this.animals){if(a.brain.id===HORSE_ID){this.updateHorse(a,dt,player,brains,s,grassNear(a.brain));continue;}const near=Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<ANIMAL_BEHAVIOR.detectionRadius;
    a.rest?.update(dt,!near,a.brain.canStand(a.brain.x,a.brain.y),a.brain.direction,!a.brain.moving&&a.brain.mode==='idle');a.brain.resting=!!a.rest?.locked;
    a.idle?.update(dt,!a.brain.moving&&a.brain.mode==='idle',Math.hypot(a.brain.x-player.x,a.brain.y-player.y)<196,a.brain.direction,grassNear(a.brain));
    if(a.idle?.locked)a.brain.resting=true;
-   if(a.idle?.locked)a.brain.hold(a.idle.direction);else if(a.rest?.locked)a.brain.hold(a.rest.direction);else a.brain.update(dt,player,brains);
+   // Na corda (preview.48): segue o jogador e não foge; solto de novo, volta a fugir normalmente.
+   const led=s.animalEscort?.area==='openFields'&&s.animalEscort.id===a.brain.id;a.brain.fleeRadius=led?0:undefined;
+   if(led){a.brain.resting=false;a.rest?.update(dt,false,false,a.brain.direction,false);a.brain.update(dt,player,brains,true,ANIMAL_BEHAVIOR.followDistance,true);}
+   else if(a.idle?.locked)a.brain.hold(a.idle.direction);else if(a.rest?.locked)a.brain.hold(a.rest.direction);else a.brain.update(dt,player,brains);
    a.shadow.setPosition(a.brain.x,a.brain.y).setDepth(a.brain.y-.2);
    if(!updateAnimalSprite(a.sprite,a.brain,dt,a.idle?.frame()??a.rest?.frame()))a.sprite.setPosition(a.brain.x,a.brain.y).setDepth(a.brain.y).setFlipX(a.brain.direction.includes('left'));
+   if(led)ropeTo=a;
   }
+  const g=this.rope;g.clear();if(!ropeTo)return;
+  const head=animalRopeAnchor(ropeTo.sprite,ropeTo.brain),hand=player.leftHandPosition??player;
+  g.setDepth(Math.min(player.y,ropeTo.brain.y)-.1);
+  for(const [width,color]of [[1.8,0x4b351f],[.9,0xb58b52]] as const){g.lineStyle(width,color,.95).beginPath();g.moveTo(hand.x,hand.y);g.lineTo(head.x,head.y);g.strokePath();}
  }
 }

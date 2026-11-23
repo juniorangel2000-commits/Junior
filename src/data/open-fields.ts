@@ -117,7 +117,11 @@ for(let i=MEADOW_PATCHES.length-1;i>=0;i--){const p=MEADOW_PATCHES[i];if(fieldsR
   const density=Math.sin(px*.007+Math.cos(py*.006))*Math.cos(py*.009)+Math.sin(py*.004-px*.003)*.4;
   if(originalPathDistance(px,py)>=65||density<-.28||r2()>.78||fieldsRiverEdge(px,py)<26||trailLane(px,py)||FIELDS_PROPS.some(p=>Math.hypot(px-p.x,py-p.y)<p.rx+32))continue;
   MEADOW_PATCHES.push({id:`grass-n${n++}`,x:px,y:py,variant,size,kind:'grass',regrow:3});}}
-export const FIELDS_ANIMALS=[{id:'field-horse-1',kind:'horse',x:1904,y:1392},{id:'field-cow-1',kind:'cow',x:1020,y:1690},{id:'field-cow-2',kind:'cow',x:1150,y:1790},{id:'field-hen-1',kind:'chicken',x:2240,y:990},{id:'field-hen-2',kind:'chicken',x:2310,y:1080},{id:'field-hen-3',kind:'chicken',x:2160,y:1150},{id:'field-rabbit-1',kind:'rabbit',x:600,y:700},{id:'field-rabbit-2',kind:'rabbit',x:2600,y:1550}] as const;
+/** Moradores fixos dos Campos: o cavalo (sempre aqui) e os coelhos. Vacas, ovelhas e patos são
+ * sorteados a cada dia (`wildSpawns`, preview.48). */
+export const FIELDS_ANIMALS=[{id:'field-horse-1',kind:'horse',x:1904,y:1392},{id:'field-rabbit-1',kind:'rabbit',x:600,y:700},{id:'field-rabbit-2',kind:'rabbit',x:2600,y:1550}] as const;
+/** Vacas e galinhas de enfeite das versões anteriores: saves antigos podem guardar a posição delas. */
+export const FIELDS_RETIRED_ANIMALS=['field-cow-1','field-cow-2','field-hen-1','field-hen-2','field-hen-3'] as const;
 export const fieldPatch=(id:string)=>MEADOW_PATCHES.find(p=>p.id===id);
 export const fieldsSafe=(p:TilePoint)=>[[-8,-5],[8,-5],[-8,4],[8,4]].every(([dx,dy])=>!fieldsBlocked(p.x+dx,p.y+dy));
 /** O jogador pode ter salvado nadando no rio: só obstáculos sólidos invalidam a posição. */
