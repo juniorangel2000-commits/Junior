@@ -7,7 +7,7 @@
 - **Continuar a partir de:** `release/v0.10.0-preview.48` (ainda não publicada).
 - **Última versão publicada:** `v0.10.0-preview.47`. A Release da preview.47 é criada pelo Junior (tag `v0.10.0-preview.47` no branch `release/v0.10.0-preview.47`).
 - **Atenção ao publicar:** além de `NOTAS-<versão>.md`, crie `docs/cenarios/LEIA-<versão>.md`. O processo do Windows copia esse arquivo para a Release e falha se ele não existir.
-- **Estado:** a preview.48 tem mina corrigida, vigor, chuva regando a horta, animais soltos com sorteio diário em todos os cenários externos, só com a corda, e HUD novo de vida e vigor. Tudo testado; falta publicar quando o Junior pedir.
+- **Estado:** a preview.48 tem mina corrigida, vigor, chuva regando a horta, animais soltos com sorteio diário em todos os cenários externos, só com a corda, HUD novo de vida e vigor, relatório de 3 anos e as obras grandes (casa, estufa, obras do Vale e moradores novos) com arte provisória. Tudo testado; falta publicar quando o Junior pedir.
 
 ## Feito nesta rodada (preview.48)
 
@@ -30,6 +30,15 @@
 - **HUD:** painel do relógio só com dia, hora e dinheiro. Vida (coração) e vigor (raio) em barras verticais empilhadas no centro da direita, na moldura de madeira dos painéis; fora da mina a vida fica cheia.
 
 - **Relatório de três anos** ([docs/economia/RELATORIO-TRES-ANOS.md](economia/RELATORIO-TRES-ANOS.md)): o jogador simulado (`scripts/economia/jogador.test.ts`) joga 336 dias com vigor, refeição opcional e a chuva da horta real. No navegador foram 337 noites com 12 recargas, a chuva regando em 89 dias, o vigor voltando a 100 todo dia e uma vaca levada por ano com a corda, sem erros. Principal conclusão: o dinheiro cresce cerca de 73 a 95 mil por ano sem onde ser gasto.
+
+- **Obras grandes** (plano em [docs/planejamento/GASTOS-GRANDES.md](planejamento/GASTOS-GRANDES.md); pedido de arte em [PEDIDO-ARTE-OBRAS.md](planejamento/PEDIDO-ARTE-OBRAS.md)).
+  - **Base** (`src/data/projects.ts`, `src/systems/projects.ts`): cada obra no menu do morador responsável; entrega aos poucos de coroas e materiais; pronta `days` dias depois de paga (`projects` no save). Aviso de obra pronta na propriedade (`checkProjects`).
+  - **Materiais novos:** areia (12 montes na praia da Costa, `forage.ts`) e vidro (Bento funde 10 areias + 25 C = 5 vidros).
+  - **Casa (Tobias):** 10 mil / 25 mil / 40 mil. Cômodo 12×10 → 16×12 → 20×12 → 20×14 (`HOME_SIZES`, tamanho virou parâmetro do `Home`; ferraria e lojas continuam no base). Arte montada do cômodo original (`roomTexture` em `home-art.ts`). Etapa 1: dobro de móveis; 2: acorda com 120 de vigor; 3: fogão sem lenha e com os pratos de forno. Por fora a casa ainda não muda (arte pendente).
+  - **Estufa (100 mil; ampliação 60 mil):** pronta, é montada no primeiro espaço livre perto da casa (`findGreenhouseSpot`); fachada provisória = estufa da Rosa; colisão entra em `farmBlocked/farmPointBlocked/farmReserved`. Cena `Estufa` (`GreenhouseScene.ts`): 24/48 canteiros, barril d'água, E planta/rega/colhe; sem estação, sem murchar, sem chuva (`GreenhouseFarm`).
+  - **Obras do Vale** (moinho → ponte → farol → Estação; o Junior tirou coreto e celeiro): moinho gira e o Augusto mói grãos (3 C cada); ponte: o portão norte da Vila oferece ir direto às Ruínas; farol: pesca na Costa à noite dá peixe raro (`lighthouse`); Estação: trem com paradas na Vila, Estação e Costa (`src/train-travel.ts`, 30 C, meia hora; salva no destino e retoma por `resumeAfterTravel`). Janela de escolha `ui.chooseOption`.
+  - **Moradores novos:** casa leste (45 mil) → padaria da Lúcia; casa sul (60 mil) → veterinário Jonas. Atendem pela placa na porta, 8h–18h (`ui.showServiceList`, `src/data/new-residents.ts`). Lúcia compra ingredientes 30% acima e vende pão; Jonas vende animais de raça (`breed-*`, qualidade mínima boa). Personagens e interiores dependem de arte.
+  - Testes: `projects`, `home-expansion`, `greenhouse`, `vale-works`, `new-residents`. No navegador: casa nos níveis 1 e 3, estufa (plantar morango no inverno, regar, colher), trem Vila→Estação→Costa, padaria vendendo.
 
 ## Rodadas anteriores (resumo)
 
@@ -128,7 +137,9 @@
 - Perguntar ao Junior onde a colisão da mina falha.
 - O painel de Companheiros encosta no topo das barras de vida/vigor em telas de 800 px de altura (as barras não capturam cliques).
 - Publicar a preview.48 quando pedido (notas e LEIA). A Release da preview.47 nunca foi criada: a ideia é publicar direto a 48, com as notas da 47 e da 48 juntas.
-- Decisões do relatório de três anos: onde gastar o dinheiro, preço da refeição, vigor da rega, pesca com horta pequena.
+- Decisões do relatório de três anos: preço da refeição, vigor da rega, pesca com horta pequena. (Gastos grandes: feitos nesta rodada.)
+- Arte das obras: pedir conforme `docs/planejamento/PEDIDO-ARTE-OBRAS.md` e trocar a provisória.
+- Rodar de novo os 3 anos (código e navegador) com as obras, para ver se o dinheiro passa a ter destino.
 
 ## Pendências e ideias para depois
 
@@ -145,7 +156,7 @@
 
 ## Testes
 
-- preview.48: `npm run check` passou e `npm test` passou com 2.279 testes (2 pulados). Depois dos animais: 2.292 testes. No Chromium: mineração nas quatro direções, escuridão com e sem lampião, barras do HUD, sorteio do Bosque em dois dias, vaca levada dos Campos à propriedade com a corda; pato do Pântano pelo Bosque e cabra da Costa pelos Campos até a propriedade; cabra da Estação pelas Ruínas, Floresta da Cidade e Vila até a propriedade; galinha do Pomar solta na Vila e cabra da Costa solta nos Campos correram de volta e sumiram.
+- preview.48: `npm run check` passou e `npm test` passou com 2.279 testes (2 pulados). Depois das obras: 2.311 testes. No Chromium: mineração nas quatro direções, escuridão com e sem lampião, barras do HUD, sorteio do Bosque em dois dias, vaca levada dos Campos à propriedade com a corda; pato do Pântano pelo Bosque e cabra da Costa pelos Campos até a propriedade; cabra da Estação pelas Ruínas, Floresta da Cidade e Vila até a propriedade; galinha do Pomar solta na Vila e cabra da Costa solta nos Campos correram de volta e sumiram.
 
 - Na preview.47 integrada, `npm run check` passou e `npm test` passou com 2.271 testes em 275 arquivos.
 - `tests/critters.test.ts` confere os quadros com margens transparentes, os horários de aparecimento, a direção e o lugar de cada espécie no mapa. `tests/ambient-birds.test.ts` confere a folha de poses e os pousos e voos dos bandos.
