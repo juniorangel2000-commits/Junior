@@ -20,7 +20,7 @@
 - **Chuva:** dia de chuva conta como regado (`advanceCrop`) e os canteiros aparecem regados; aviso ao acordar. Testes de crescimento em dias secos fixam o tempo aberto com `vi.mock` do `weather-model`.
 - **Animais só com a corda e sorteio diário:** a Rosa não vende mais galinha, pato nem porco. `src/data/wild-animals.ts` tem as listas por tipo e os pontos de cada cenário; `wildSpawns(área, dia, já_levados)` (`src/systems/wild-spawns.ts`) sorteia, sem guardar nada no save, quem aparece e onde.
   - **Bosque:** galinhas, cabras e porcos (coelho e cervo continuam fixos). Corda com E, como antes.
-  - **Campos:** vacas, ovelhas e patos na beira do rio. Corda com E e G para soltar, como no Bosque (`startFieldEscort`), atravessando para a propriedade como o cavalo (`transferFieldEscortToProperty`). O cavalo continua sempre nos Campos, com a doma.
+  - **Campos:** vacas, ovelhas e patos na beira do rio. Corda com E e G para soltar, como no Bosque (`startFieldEscort`), atravessando para a propriedade como o cavalo (`transferFieldEscortToProperty`). O cavalo continua sempre nos Campos, com a doma; também usa E para prender e G para soltar (sem estábulo ou corda, E faz carinho e diz o que falta).
   - Ids antigos (`forest-*`, `farm-duck-*`, `farm-pig-*`) entraram nas listas, então saves antigos continuam válidos. As vacas e galinhas de enfeite dos Campos saíram (`FIELDS_RETIRED_ANIMALS` ainda aceitos no save).
   - Ainda não: Pântano, Costa, Pomar, Ruínas e Estação. A corda precisaria atravessar esses cenários (`TrailScene`, `VillageScene`).
 - **Pássaros** (sabiá e saíra) diminuíram de 30 para 17 px, menores que o coelho.
