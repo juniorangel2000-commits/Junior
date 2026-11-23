@@ -725,7 +725,7 @@ export class GameUI {
     set('#hud-time', `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`);
     for (const item of items) set(`#count-${item.id}`, String(data.inventory[item.id]));
     set('#hud-location', data.location);
-    set('#hud-coins',String(data.coins??0)+' C');set('#hud-vigor',String(data.vigor??100));
+    set('#hud-coins',String(data.coins??0)+' C');set('#hud-vigor',String(data.vigor??100));this.root.querySelector('#hud-vigor')?.parentElement?.classList.toggle('vigor-low',(data.vigor??100)<=20);
     const health=this.base.querySelector<HTMLElement>('#hud-health')!;health.hidden=!data.health;
     if(data.health){const hp=data.health,meter=this.base.querySelector<HTMLMeterElement>('#hud-health-meter')!;meter.max=hp.max;meter.value=hp.current;set('#hud-health-value',Math.ceil(hp.current)+'/'+hp.max);set('#hud-health-label',hp.contaminated?'Vida · ar contaminado':'Vida');health.classList.toggle('exposed',!!hp.contaminated);health.classList.toggle('critical',hp.current<hp.max*.3);}
 

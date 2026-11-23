@@ -116,7 +116,7 @@ import { readyGatherCopy, gatherCopyStillReady, type GatherAction } from '../sys
 import { ToolVisual } from '../tool-visual';
 import { isAnimatedTool } from '../data/tool-art';
 
-import {playerSpeedFactor} from '../systems/food-effects';
+import {playerSpeedFactor,restoreVigor,spendVigor} from '../systems/food-effects';
 const DEFAULT_PROFILE: CharacterProfile = { name: 'Viajante', skin: '#d9a276', hairStyle: 'preso', hairColor: '#754323', outfit: '#638a9d' };
 
 /** Arte das bancadas de 2 blocos e a largura na tela (2 blocos + uma sobra de 6 px). */
@@ -656,6 +656,7 @@ export class ValleyScene extends Phaser.Scene {
         if (!result.ok) { this.ui.toast(result.message); return; }
         this.state.day = result.day;
         this.state.time = result.time;
+        restoreVigor(this.state);
         this.farming.update(result.elapsedMinutes / GAME_MINUTES_PER_SECOND, this.state.day);
         this.nextInteractionAt = this.time.now + 400;
         this.updateNight(); this.updateHUD(); this.persist();
@@ -1563,7 +1564,7 @@ export class ValleyScene extends Phaser.Scene {
     if (strike.tool === 'water') {
       if (!this.state.homeSupplies?.wateringCan || !(this.state.wateringCanWater! > 0) || this.tileDistance(strike.target) > 78) return;
       const result = this.farming.water(strike.target.x, strike.target.y);
-      if (result.ok) { this.state.wateringCanWater = (this.state.wateringCanWater ?? 0) - 1; this.waterFeedback(strike.target); gameAudio.play('water'); }
+      if (result.ok) { this.state.wateringCanWater = (this.state.wateringCanWater ?? 0) - 1; if (this.state.wateringCanWater % 2 === 0) spendVigor(this.state, 1); this.waterFeedback(strike.target); gameAudio.play('water'); }
       this.ui.toast(result.message); this.afterAction(); return;
     }
     if (!this.inventory.has(strike.tool)) return;

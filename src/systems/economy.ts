@@ -1,3 +1,4 @@
+import {spendVigor} from './food-effects';
 import {bentoAvailability} from './bento-schedule';
 import {validateVillageEconomy} from '../data/village-commerce';
 import type {SaveData,ItemId,VillageEconomy} from '../types';
@@ -19,7 +20,9 @@ export function toolCondition(s:SaveData,tool:EconomicTool):ToolCondition {const
 export function configureTool(s:SaveData,tool:EconomicTool,tier:number):void{syncToolInstances(s.inventory,s.economy6?.tools);const copy=activeToolCopy(s.inventory,tool),condition={tier,durability:B.durability[tier]};if(copy)copy.condition=condition;(s.economy6??=newEconomyState()).tools[tool]=condition;}
 export function equipToolCopy(s:SaveData,id:number):boolean {syncToolInstances(s.inventory,s.economy6?.tools);if(!selectToolCopy(s.inventory,id))return false;for(const kind of TOOL_IDS){const copy=activeToolCopy(s.inventory,kind);if(copy)(s.economy6??=newEconomyState()).tools[kind]=copy.condition;}return true;}
 export function toolWork(s:SaveData,tool:EconomicTool):number{const c=toolCondition(s,tool);return Math.floor(B.efficiency[c.tier]+(c.work??0));}
-export function spendDurability(s:SaveData,tool:EconomicTool):boolean{if(toolCondition(s,tool).durability<=0)return false;syncToolInstances(s.inventory,s.economy6?.tools);const c=toolCondition(s,tool);c.durability--;c.work=(B.efficiency[c.tier]+(c.work??0))%1;(s.economy6??=newEconomyState()).tools[tool]=c;return true;}
+/** Vigor gasto a cada golpe de ferramenta (preview.48): a comida e o sono passam a limitar o dia. */
+export const TOOL_VIGOR_COST=1;
+export function spendDurability(s:SaveData,tool:EconomicTool):boolean{if(toolCondition(s,tool).durability<=0)return false;syncToolInstances(s.inventory,s.economy6?.tools);const c=toolCondition(s,tool);spendVigor(s,TOOL_VIGOR_COST);c.durability--;c.work=(B.efficiency[c.tier]+(c.work??0))%1;(s.economy6??=newEconomyState()).tools[tool]=c;return true;}
 const need=(ok:unknown,message:string)=>{if(!ok)throw Error(message);};
 export function atomicEconomy(s:SaveData,change:(d:SaveData,i:Inventory)=>void):{ok:boolean;message:string}{
  if(s.villageEconomy&&!validateVillageEconomy(s.villageEconomy)||s.economy6&&!validateEconomyState(s.economy6))return{ok:false,message:'Dados econômicos inválidos. Nenhum recurso foi alterado.'};

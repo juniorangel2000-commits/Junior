@@ -320,3 +320,8 @@
 #ui .backpack-detail .detail-icon>.icon[src*="economy/tools/"]{transform:rotate(-45deg) scale(1.2)}
 #ui .detail-drop>.button{white-space:nowrap;padding:8px 10px}#ui .detail-stepper input{width:34px}#ui .detail-step{width:26px}
 #ui .modal-root .backpack-panel{padding-top:0}#ui .backpack-panel .modal-heading{margin-top:0;border-radius:4px 4px 0 0}
+
+/* Vigor baixo (preview.48): avisa antes de a ferramenta pesar. */
+.vigor-low #hud-vigor{color:#b8432f;font-weight:700;animation:vigor-pulse 1.6s ease-in-out infinite}
+@keyframes vigor-pulse{50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){.vigor-low #hud-vigor{animation:none}}

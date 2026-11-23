@@ -39,7 +39,12 @@ export function spendVigor(s:SaveData,amount:number):void{
  p.vigor=Math.max(0,p.vigor-(amount-fromExtra));
 }
 /** Multiplicador de velocidade do jogador: botas e suco de melancia. */
-export const playerSpeedFactor=(s:SaveData)=>(s.inventory.boots>0?1.08:1)*(hasFoodEffect(s,'watermelonJuice')?SPEED_BONUS:1);
+/** Exausto (vigor zerado e sem o extra do café): anda mais devagar até comer ou dormir. */
+export const EXHAUSTED_SPEED=.7;
+export const exhausted=(s:SaveData)=>(s.villageProgress?.vigor??100)<=0&&extraVigor(s)<=0;
+export const playerSpeedFactor=(s:SaveData)=>(s.inventory.boots>0?1.08:1)*(hasFoodEffect(s,'watermelonJuice')?SPEED_BONUS:1)*(exhausted(s)?EXHAUSTED_SPEED:1);
+/** Dormir na cama recupera todo o vigor. */
+export const restoreVigor=(s:SaveData)=>{if(s.villageProgress)s.villageProgress.vigor=100;};
 
 export function validFoodEffect(v:unknown):v is FoodEffect{
  if(!v||typeof v!=='object'||Array.isArray(v))return false;const e=v as FoodEffect;
