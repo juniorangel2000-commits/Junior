@@ -1,14 +1,14 @@
 import {
-  FURNITURE_CATALOG, FLOOR_STYLES, WALL_STYLES, HOME_WIDTH, HOME_HEIGHT,
+  FURNITURE_CATALOG, FLOOR_STYLES, WALL_STYLES, BASE_HOME_SIZE,
   furnitureFootprint,RESIDENTIAL_FURNITURE_KINDS,
 } from './systems/home';
-import type { HomeData, HomeEditAction, FurnitureKind } from './systems/home';
+import type { HomeData, HomeEditAction, FurnitureKind, HomeSize } from './systems/home';
 export type { HomeEditAction } from './systems/home';
 import './home-ui.css';
 
 export interface HomeEditResponse { ok: boolean; message: string; home: HomeData }
 export interface HomeEditor { refresh(home: HomeData, message?: string, ok?: boolean): void; destroy(): void }
-export interface HomeEditorOptions {title?:string;eyebrow?:string;catalog?:readonly FurnitureKind[];legend?:string;note?:string}
+export interface HomeEditorOptions {title?:string;eyebrow?:string;catalog?:readonly FurnitureKind[];legend?:string;note?:string;size?:HomeSize}
 
 /** Editor de planta: só o sistema Home decide se uma alteração pode ser aplicada. */
 export function createHomeEditor(
@@ -23,6 +23,8 @@ export function createHomeEditor(
   const palette=options.catalog??RESIDENTIAL_FURNITURE_KINDS;
   let kind: FurnitureKind = palette[0]??'chair';
   let disposed = false;
+  // Casa ampliada pelas obras do Tobias (preview.48): a planta acompanha o tamanho.
+  const HOME_WIDTH=(options.size??BASE_HOME_SIZE).width,HOME_HEIGHT=(options.size??BASE_HOME_SIZE).height;
   const root = document.createElement('div');
   root.className = 'home-editor';
   root.innerHTML = `<div class="home-editor-body"><div class="home-plan-column"><p class="home-editor-help">Escolha um móvel para adicionar ou selecione uma peça da casa. Clique na planta para posicionar.</p><div class="home-grid" role="group" aria-label="Planta da casa"></div><p class="home-plan-legend">Entrada ao sul · mantenha livre o caminho até a cama.</p><p class="home-edit-status" role="status" aria-live="polite">Selecione uma peça ou adicione um móvel.</p></div><div class="home-options"><section><h3>Móveis da casa</h3><p class="home-editor-note">Acervo da casa. Recolha e reorganize seus móveis; consulte as quantidades disponíveis.</p><div class="home-catalog"></div></section><section class="home-selected"><h3>Peça selecionada</h3><p class="home-selection-label">Nenhuma peça.</p><div class="home-piece-actions"><button class="button button-light" data-home-move disabled>Mover</button><button class="button button-light" data-home-remove disabled>Recolher</button><button class="text-button" data-home-cancel>Cancelar seleção</button></div><div class="home-piece-list" role="group" aria-label="Móveis colocados"></div></section><section><h3>Acabamentos</h3><span class="home-style-label">Assoalho</span><div class="home-floor-styles"></div><span class="home-style-label">Paredes</span><div class="home-wall-styles"></div></section></div></div>`;

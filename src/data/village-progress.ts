@@ -35,7 +35,7 @@ export function validateVillageProgress(value:unknown):value is VillageProgress 
     ||!knownList(value.recipes,VILLAGE_RECIPE_IDS)||!knownList(value.plans,VILLAGE_PLAN_IDS)
     ||!knownList(value.rumors,VILLAGE_RUMOR_IDS)||!integer(value.fishingSkill,0,2)
     ||typeof value.rareFishTaskCompleted!=='boolean'||!['original','female','male'].includes(value.outfit as string)
-    ||!integer(value.vigor,0,100))return false;
+    ||!integer(value.vigor,0,120))return false;
   if(value.contract!==undefined){
     const c=value.contract;
     if(!record(c)||!integer(c.day,1,999_999)||!integer(c.dueDay,c.day,999_999)

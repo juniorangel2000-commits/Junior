@@ -729,8 +729,8 @@ export class GameUI {
     set('#hud-location', data.location);
     set('#hud-coins',String(data.coins??0)+' C');
     // Barras verticais de vida e vigor (preview.48). Fora da mina não há dano: a vida fica cheia.
-    {const vigor=Math.max(0,Math.min(100,data.vigor??100)),hp=data.health??{current:100,max:100,contaminated:false};
-     set('#hud-vigor',String(Math.round(vigor)));const vf=this.base.querySelector<HTMLElement>('#hud-vigor-fill');if(vf)vf.style.height=vigor+'%';
+    {const rawVigor=Math.max(0,data.vigor??100),vigor=Math.min(100,rawVigor),hp=data.health??{current:100,max:100,contaminated:false};
+     set('#hud-vigor',String(Math.round(rawVigor)));const vf=this.base.querySelector<HTMLElement>('#hud-vigor-fill');if(vf)vf.style.height=vigor+'%';
      this.base.querySelector('#hud-vigor-bar')?.classList.toggle('vigor-low',vigor<=20);
      const ratio=Math.max(0,Math.min(1,hp.current/Math.max(1,hp.max))),hf=this.base.querySelector<HTMLElement>('#hud-health-fill');if(hf)hf.style.height=ratio*100+'%';
      set('#hud-health-value',String(Math.ceil(hp.current)));set('#hud-health-label',hp.contaminated?'Ar ruim':'Vida');

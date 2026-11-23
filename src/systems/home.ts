@@ -3,6 +3,16 @@ import type { ActionResult } from './farming';
 
 export const HOME_WIDTH = 12;
 export const HOME_HEIGHT = 10;
+/** Tamanho de um cômodo em blocos. A casa do jogador cresce com as obras do Tobias (preview.48);
+ * a ferraria e as lojas usam sempre o tamanho base. A porta fica sempre em x=5..6, na parede sul. */
+export interface HomeSize{readonly width:number;readonly height:number}
+export const BASE_HOME_SIZE:HomeSize={width:HOME_WIDTH,height:HOME_HEIGHT};
+export const HOME_SIZES:readonly HomeSize[]=[BASE_HOME_SIZE,{width:16,height:12},{width:20,height:12},{width:20,height:14}];
+/** Casa maior: o dobro de cada móvel. */
+export const furnitureLimit=(kind:FurnitureKind,size:HomeSize=BASE_HOME_SIZE)=>FURNITURE_CATALOG[kind].limit*(kind!=='woodStove'&&size.width>HOME_WIDTH?2:1);
+export const homeExit=(size:HomeSize=BASE_HOME_SIZE):TilePoint=>({x:5,y:size.height-1});
+export const homeSpawn=(size:HomeSize=BASE_HOME_SIZE):TilePoint=>({x:5.5*HOME_TILE,y:(size.height-1.5)*HOME_TILE});
+export const homeInteriorDoorway=(size:HomeSize=BASE_HOME_SIZE)=>({x:6*HOME_TILE,y:(size.height-1)*HOME_TILE,halfWidth:HOME_TILE,depth:HOME_TILE,direction:'down' as const});
 export const HOME_TILE = 32;
 export const HOME_EXIT: Readonly<TilePoint> = { x: 5, y: 9 };
 export const HOME_SPAWN: Readonly<TilePoint> = { x: 5.5 * HOME_TILE, y: 8.5 * HOME_TILE };
@@ -113,21 +123,21 @@ export function furnitureFootprint(piece: Pick<HomeFurniture, 'kind' | 'x' | 'y'
   }));
 }
 
-export const isHomeFloor = (x: number, y: number): boolean => Number.isInteger(x) && Number.isInteger(y)
-  && ((x >= 1 && x <= HOME_WIDTH - 2 && y >= 2 && y <= HOME_HEIGHT - 2)
-    || ((x === 5 || x === 6) && y === HOME_HEIGHT - 1));
+export const isHomeFloor = (x: number, y: number, size: HomeSize = BASE_HOME_SIZE): boolean => Number.isInteger(x) && Number.isInteger(y)
+  && ((x >= 1 && x <= size.width - 2 && y >= 2 && y <= size.height - 2)
+    || ((x === 5 || x === 6) && y === size.height - 1));
 
-const reservedEntrance = (tile: TilePoint): boolean => (tile.x === 5 || tile.x === 6) && tile.y >= 8;
+const reservedEntrance = (tile: TilePoint, size: HomeSize = BASE_HOME_SIZE): boolean => (tile.x === 5 || tile.x === 6) && tile.y >= size.height - 2;
 const key = (tile: TilePoint): string => `${tile.x},${tile.y}`;
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 
-function reachableTiles(data: HomeData): Set<string> {
+function reachableTiles(data: HomeData, size: HomeSize = BASE_HOME_SIZE): Set<string> {
   const blocked = new Set(data.furniture.filter(piece => FURNITURE_CATALOG[piece.kind].blocking).flatMap(furnitureFootprint).map(key));
   const reached = new Set<string>();
-  const queue: TilePoint[] = [{ ...HOME_EXIT }];
+  const queue: TilePoint[] = [homeExit(size)];
   for (let index = 0; index < queue.length; index++) {
     const tile = queue[index];
-    if (!isHomeFloor(tile.x, tile.y) || blocked.has(key(tile)) || reached.has(key(tile))) continue;
+    if (!isHomeFloor(tile.x, tile.y, size) || blocked.has(key(tile)) || reached.has(key(tile))) continue;
     reached.add(key(tile));
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) queue.push({ x: tile.x + dx, y: tile.y + dy });
   }
@@ -135,10 +145,10 @@ function reachableTiles(data: HomeData): Set<string> {
 }
 
 /** Saves and editing share the same geometry and access validation. */
-export function validateHome(value: unknown, requireBed = true): value is HomeData {
+export function validateHome(value: unknown, requireBed = true, size: HomeSize = BASE_HOME_SIZE): value is HomeData {
   if (!isRecord(value) || typeof value.floor !== 'string' || !Object.hasOwn(FLOOR_STYLES, value.floor)
     || typeof value.wall !== 'string' || !Object.hasOwn(WALL_STYLES, value.wall)
-    || !Array.isArray(value.furniture) || value.furniture.length < (requireBed?1:0) || value.furniture.length > (requireBed?21:64)) return false;
+    || !Array.isArray(value.furniture) || value.furniture.length < (requireBed?1:0) || value.furniture.length > (requireBed?(size.width>HOME_WIDTH?42:21):64)) return false;
   const ids = new Set<string>(), solid = new Set<string>(), ground = new Set<string>();
   const counts = new Map<FurnitureKind, number>();
   for (const piece of value.furniture) {
@@ -150,12 +160,12 @@ export function validateHome(value: unknown, requireBed = true): value is HomeDa
     if(requireBed&&!RESIDENTIAL_FURNITURE_KINDS.includes(furniture.kind))return false;
     const definition = FURNITURE_CATALOG[furniture.kind];
     const count = (counts.get(furniture.kind) ?? 0) + 1;
-    if (count > definition.limit) return false;
+    if (count > furnitureLimit(furniture.kind,size)) return false;
     counts.set(furniture.kind, count);
     const layer = definition.blocking ? solid : ground;
     for (const tile of furnitureFootprint(furniture)) {
       const wall=definition.surface==='wall';
-      if ((wall?!(tile.x>=1&&tile.x<=HOME_WIDTH-2&&tile.y>=0&&tile.y<=1):!isHomeFloor(tile.x,tile.y)||reservedEntrance(tile)) || layer.has(key(tile))) return false;
+      if ((wall?!(tile.x>=1&&tile.x<=size.width-2&&tile.y>=0&&tile.y<=1):!isHomeFloor(tile.x,tile.y,size)||reservedEntrance(tile,size)) || layer.has(key(tile))) return false;
       layer.add(key(tile));
     }
     ids.add(furniture.id);
@@ -167,8 +177,8 @@ export function validateHome(value: unknown, requireBed = true): value is HomeDa
   for(const piece of data.furniture.filter(p=>FURNITURE_CATALOG[p.kind].surface==='tabletop')){
     if(!data.furniture.some(p=>['smithWorkbench','counter'].includes(p.kind)&&furnitureFootprint(p).some(t=>t.x===piece.x&&t.y===piece.y)))return false;
   }
-  const reached = reachableTiles(data);
-  for (let y = 2; y <= HOME_HEIGHT - 2; y++) for (let x = 1; x <= HOME_WIDTH - 2; x++) {
+  const reached = reachableTiles(data, size);
+  for (let y = 2; y <= size.height - 2; y++) for (let x = 1; x <= size.width - 2; x++) {
     if (!solid.has(key({ x, y })) && !reached.has(key({ x, y }))) return false;
   }
   // Every solid piece remains usable from the entrance; furniture cannot seal
@@ -181,8 +191,8 @@ export function validateHome(value: unknown, requireBed = true): value is HomeDa
 export class Home {
   readonly data: HomeData;
 
-  constructor(data: HomeData = createDefaultHome(), private readonly requireBed = true) {
-    this.data = structuredClone(validateHome(data, requireBed) ? data : createDefaultHome());
+  constructor(data: HomeData = createDefaultHome(), private readonly requireBed = true, readonly size: HomeSize = BASE_HOME_SIZE) {
+    this.data = structuredClone(validateHome(data, requireBed, size) ? data : createDefaultHome());
   }
 
   at(x: number, y: number): HomeFurniture | undefined {
@@ -191,12 +201,12 @@ export class Home {
   }
 
   isBlocked(x: number, y: number): boolean {
-    return !isHomeFloor(x, y) || this.data.furniture.some(piece => FURNITURE_CATALOG[piece.kind].blocking
+    return !isHomeFloor(x, y, this.size) || this.data.furniture.some(piece => FURNITURE_CATALOG[piece.kind].blocking
       && furnitureFootprint(piece).some(tile => tile.x === x && tile.y === y));
   }
 
   canReachExit(tile: TilePoint): boolean {
-    return reachableTiles(this.data).has(key({ x: Math.floor(tile.x), y: Math.floor(tile.y) }));
+    return reachableTiles(this.data, this.size).has(key({ x: Math.floor(tile.x), y: Math.floor(tile.y) }));
   }
 
   bedNear(tile: TilePoint, radius = 1.6): HomeFurniture | undefined {
@@ -216,10 +226,10 @@ export class Home {
   }
 
   private commit(candidate: HomeData, message: string, playerTile?: TilePoint): ActionResult {
-    if (!validateHome(candidate, this.requireBed)) return { ok: false, message: 'Não foi possível: respeite o limite de móveis e mantenha os caminhos livres.' };
+    if (!validateHome(candidate, this.requireBed, this.size)) return { ok: false, message: 'Não foi possível: respeite o limite de móveis e mantenha os caminhos livres.' };
     const player = playerTile && { x: Math.floor(playerTile.x), y: Math.floor(playerTile.y) };
     const blocked = new Set(candidate.furniture.filter(piece => FURNITURE_CATALOG[piece.kind].blocking).flatMap(furnitureFootprint).map(key));
-    if (player && (!isHomeFloor(player.x, player.y) || blocked.has(key(player)) || !reachableTiles(candidate).has(key(player)))) {
+    if (player && (!isHomeFloor(player.x, player.y, this.size) || blocked.has(key(player)) || !reachableTiles(candidate, this.size).has(key(player)))) {
       return { ok: false, message: 'O móvel ocuparia seu espaço ou bloquearia sua saída. Mova o personagem primeiro.' };
     }
     this.data.furniture = candidate.furniture;

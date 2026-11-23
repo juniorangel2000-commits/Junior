@@ -1,5 +1,5 @@
 import type {SaveData,TilePoint} from '../types';
-import {Home,HOME_WIDTH,HOME_HEIGHT} from './home';
+import {Home} from './home';
 export interface MineRescueState {
  version:1;count:number;day:number;time:number;elapsedMinutes:number;
  bedId:string;stage:'waking'|'leaving'|'complete';variant:number;
@@ -12,7 +12,7 @@ export function validMineRescue(value:unknown,maxDay:number):value is MineRescue
 /** Physics stays on reachable floor; the resting pose is drawn on the owned bed. */
 export function rescueHomePlacement(home:Home):{bedId:string;player:TilePoint;bento:TilePoint}|undefined {
  const floors:TilePoint[]=[];
- for(let y=2;y<HOME_HEIGHT;y++)for(let x=1;x<HOME_WIDTH-1;x++)if(!home.isBlocked(x,y)&&home.canReachExit({x,y}))floors.push({x:x*32+16,y:y*32+16});
+ for(let y=2;y<home.size.height;y++)for(let x=1;x<home.size.width-1;x++)if(!home.isBlocked(x,y)&&home.canReachExit({x,y}))floors.push({x:x*32+16,y:y*32+16});
  for(const bed of home.data.furniture.filter(f=>f.kind==='bed')){
   const foot={x:(bed.x+1)*32,y:(bed.y+2)*32+16};
   const adjacent=(p:TilePoint)=>{const x=Math.floor(p.x/32),y=Math.floor(p.y/32);return Math.abs(x-Math.max(bed.x,Math.min(bed.x+1,x)))+Math.abs(y-Math.max(bed.y,Math.min(bed.y+1,y)))===1;};

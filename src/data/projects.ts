@@ -10,11 +10,11 @@ export interface ProjectDef{
 }
 export const PROJECTS:readonly ProjectDef[]=[
  {id:'home-1',group:'home',name:'Casa: sala maior',npc:'tobias',coins:10_000,items:{plank:60,stone:20},days:2,
-  description:'O Tobias aumenta a sala: mais espaço e o dobro de móveis.',done:'A sala da sua casa ficou maior.'},
+  description:'O Tobias aumenta a sala (de 12 × 10 para 16 × 12): mais espaço e o dobro de móveis.',done:'A sala da sua casa ficou maior.'},
  {id:'home-2',group:'home',name:'Casa: quarto',npc:'tobias',coins:25_000,items:{plank:80,hardwood:10,doorKit:1},days:3,requires:'home-1',
-  description:'Um quarto separado. Dormir na cama do quarto dá vigor extra pela manhã.',done:'Seu quarto novo está pronto.'},
- {id:'home-3',group:'home',name:'Casa: cozinha e despensa',npc:'tobias',coins:40_000,items:{stone:40,plank:30,windowKit:2},days:4,requires:'home-2',
-  description:'Cozinha com fogão e forno dentro de casa e uma despensa para guardar o que não cabe na mochila.',done:'A cozinha e a despensa estão prontas.'},
+  description:'A casa cresce para 20 × 12, com espaço de quarto. Dormir em casa passa a dar 120 de vigor pela manhã.',done:'Seu quarto novo está pronto.'},
+ {id:'home-3',group:'home',name:'Casa: cozinha nova',npc:'tobias',coins:40_000,items:{stone:40,plank:30,windowKit:2},days:4,requires:'home-2',
+  description:'Cozinha nova: o fogão de casa não gasta mais lenha e também faz os pratos de forno (pão, bolos e tortas). A casa fica com 20 × 14.',done:'A cozinha nova está pronta: o fogão faz até os pratos de forno.'},
  {id:'greenhouse',group:'greenhouse',name:'Estufa',npc:'tobias',coins:100_000,items:{plank:60,glass:30,hardwood:10},days:5,
   description:'Uma estufa na propriedade: 24 canteiros que plantam qualquer semente em qualquer estação.',done:'A estufa está pronta. Plante o que quiser, o ano todo.'},
  {id:'greenhouse-2',group:'greenhouse',name:'Estufa: ampliação',npc:'tobias',coins:60_000,items:{glass:30,plank:30},days:3,requires:'greenhouse',

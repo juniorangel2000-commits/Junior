@@ -1,4 +1,5 @@
-import {Home,HOME_WIDTH,HOME_HEIGHT} from './home';
+import {playerHomeSize} from './home-level';
+import {Home} from './home';
 import {survivorNavigation} from './survivor-navigation';
 import {bridgeAllowsStep} from '../data/bridges';
 import {isWaterTile} from '../data/regions';
@@ -24,7 +25,7 @@ const foot=(blocked:(x:number,y:number)=>boolean,p:TilePoint)=>[[-7,-5],[7,-5],[
 export interface BentoRouteOptions{mode?:'follow'|'escape';from?:TilePoint;player?:TilePoint;avoid?:TilePoint}
 export function bentoMapNavigation(save:SaveData,area:BentoTravelArea,options:BentoRouteOptions={}):BentoNavigation{
  const origin={x:0,y:0},basic={origin,tile:32,width:96,height:72,allows:()=>true,weight:()=>1};
- if(area==='home'){const home=new Home(save.home);return{...basic,tile:8,width:HOME_WIDTH*4,height:HOME_HEIGHT*4,fits:p=>foot((x,y)=>home.isBlocked(Math.floor(x/32),Math.floor(y/32)),p)};}
+ if(area==='home'){const home=new Home(save.home,true,playerHomeSize(save));return{...basic,tile:8,width:home.size.width*4,height:home.size.height*4,fits:p=>foot((x,y)=>home.isBlocked(Math.floor(x/32),Math.floor(y/32)),p)};}
  if(area==='property'){const blocked=survivorNavigation(save,'property');return{...basic,tile:16,width:192,height:144,fits:p=>foot((x,y)=>blocked(Math.floor(x/32),Math.floor(y/32)),p),allows:(a,b)=>bridgeAllowsStep(a.x,a.y,b.x,b.y,(x,y)=>paintedWaterPoint(save.mapEdits?.terrain,x,y,(x,y)=>isWaterTile(Math.floor(x/32),Math.floor(y/32)))),...propertyGeometry.get(save)};}
  if(area==='shop'){
   const nav=bentoSmithNavigation(save);return{...basic,tile:8,width:72,height:44,fits:p=>!!nav.validPosition?.(p.x,p.y)};

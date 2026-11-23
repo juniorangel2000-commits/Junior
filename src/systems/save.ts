@@ -1,4 +1,5 @@
 import {validProjects} from './projects';
+import {playerHomeSize} from './home-level';
 import {ROPE_AREAS,ropeAllowed,type RopeArea} from '../data/wild-animals';
 import {FOREST_ANIMALS as LEGACY_FOREST_ANIMALS} from '../data/ancient-forest';
 /** Bichos que moravam no Bosque antes da preview.48 (vacas, ovelhas...) seguem válidos ali em saves antigos. */
@@ -62,7 +63,7 @@ import { EMPTY_INVENTORY, INITIAL_INVENTORY, ITEM_IDS, MAX_ITEM_COUNT } from './
 import { RESOURCE_DEFINITIONS } from './resources';
 import { buildingFootprint, buildingLayer } from './building';
 import { TILE, WORLD_HEIGHT, WORLD_WIDTH } from '../data/regions';
-import { Home, HOME_WIDTH, HOME_HEIGHT, validateHome, createDefaultHome, legacyDefaultHome, untouchedLegacyLayout, type HomeData } from './home';
+import { Home, validateHome, createDefaultHome, legacyDefaultHome, untouchedLegacyLayout, type HomeData } from './home';
 import { validateMapEdits } from './map-editor';
 import { isCharacterId } from '../data/characters';
 import {createVillageEconomy,validateVillageEconomy} from '../data/village-commerce';
@@ -244,16 +245,18 @@ export function validateSave(value: unknown): value is SaveData {
   if (!isRecord(value.player) || !finite(value.player.x, TILE / 2, WORLD_WIDTH * TILE - TILE / 2)
     || !finite(value.player.y, TILE / 2, WORLD_HEIGHT * TILE - TILE / 2)) return false;
   if (value.player.direction !== undefined && !CHARACTER_DIRECTIONS.includes(value.player.direction as CharacterDirection)) return false;
-  if (value.home !== undefined && !validateHome(value.home)) return false;
+  // A casa pode ter crescido com as obras do Tobias (preview.48).
+  const homeSize=playerHomeSize(value as unknown as SaveData);
+  if (value.home !== undefined && !validateHome(value.home, true, homeSize)) return false;
   if(value.mineRescue&&(value.mineRescue as SaveData['mineRescue'])!.stage==='waking'){
     const trip=(value.bentoTravel as SaveData['bentoTravel'])?.trip;
-    if(value.activeArea!=='property'||!value.homePosition||trip?.area!=='home'||trip.leg!=='rescue-dialogue'||trip.purpose!=='rescue'||!new Home(value.home as SaveData['home']).data.furniture.some(f=>f.kind==='bed'&&f.id===(value.mineRescue as SaveData['mineRescue'])!.bedId))return false;
+    if(value.activeArea!=='property'||!value.homePosition||trip?.area!=='home'||trip.leg!=='rescue-dialogue'||trip.purpose!=='rescue'||!new Home(value.home as SaveData['home'],true,homeSize).data.furniture.some(f=>f.kind==='bed'&&f.id===(value.mineRescue as SaveData['mineRescue'])!.bedId))return false;
   }
   if (value.homePosition !== undefined) {
-    if (!isRecord(value.homePosition) || !finite(value.homePosition.x, TILE, (HOME_WIDTH - 1) * TILE - 1)
-      || !finite(value.homePosition.y, TILE * 2, HOME_HEIGHT * TILE)) return false;
+    if (!isRecord(value.homePosition) || !finite(value.homePosition.x, TILE, (homeSize.width - 1) * TILE - 1)
+      || !finite(value.homePosition.y, TILE * 2, homeSize.height * TILE)) return false;
     if (value.homePosition.direction !== undefined && !CHARACTER_DIRECTIONS.includes(value.homePosition.direction as CharacterDirection)) return false;
-    const home = new Home(value.home as SaveData['home']);
+    const home = new Home(value.home as SaveData['home'], true, homeSize);
     if ([[-7, -5], [7, -5], [-7, 3], [7, 3]].some(([ox, oy]) => home.isBlocked(
       Math.floor(((value.homePosition as Record<string, number>).x + ox) / TILE),
       Math.floor(((value.homePosition as Record<string, number>).y + oy) / TILE)))) return false;

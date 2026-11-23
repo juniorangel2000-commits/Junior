@@ -101,7 +101,9 @@ import type { BuildingData, CharacterProfile, SaveData, Tool, TilePoint } from '
 import type { GameUI } from '../ui';
 import type { TitleBackgroundMode } from '../title-screen';
 import { titleCameraPose } from '../title-camera';
-import { Home, HOME_SPAWN, HOME_EXIT, HOME_ENTRANCE_WORLD, HOME_OUTDOOR_SPAWN, HOME_OUTDOOR_DOORWAY, HOME_INTERIOR_DOORWAY, HOME_WIDTH, HOME_HEIGHT } from '../systems/home';
+import { Home, HOME_ENTRANCE_WORLD, HOME_OUTDOOR_SPAWN, HOME_OUTDOOR_DOORWAY, homeExit, homeSpawn, homeInteriorDoorway } from '../systems/home';
+import { playerHomeSize, hasBedroom } from '../systems/home-level';
+import { projectsFinishedBetween } from '../systems/projects';
 import { createHomeArt, drawHome } from '../home-art';
 import { GAME_MINUTES_PER_SECOND, advanceClock, sleepUntilMorning } from '../systems/clock';
 import { processAnimalProduction } from '../systems/animal-production';
@@ -117,7 +119,7 @@ import { readyGatherCopy, gatherCopyStillReady, type GatherAction } from '../sys
 import { ToolVisual } from '../tool-visual';
 import { isAnimatedTool } from '../data/tool-art';
 
-import {playerSpeedFactor,restoreVigor,spendVigor} from '../systems/food-effects';
+import {playerSpeedFactor,restoreVigor,spendVigor,BEDROOM_VIGOR} from '../systems/food-effects';
 const DEFAULT_PROFILE: CharacterProfile = { name: 'Viajante', skin: '#d9a276', hairStyle: 'preso', hairColor: '#754323', outfit: '#638a9d' };
 
 /** Arte das bancadas de 2 blocos e a largura na tela (2 blocos + uma sobra de 6 px). */
@@ -203,6 +205,8 @@ export class ValleyScene extends Phaser.Scene {
   private titleLights?: Phaser.GameObjects.Graphics | Phaser.GameObjects.Image;
   private supplySprites: Phaser.GameObjects.Image[] = [];
   private home = new Home();
+  /** Tamanho atual da casa (cresce com as obras do Tobias). */
+  private get homeSize(){return this.home.size;}
   private inHome = false;
   private outdoorPosition: SaveData['player'] = { ...HOME_ENTRANCE_WORLD };
   private outdoorVisibility = new Map<Phaser.GameObjects.GameObject, boolean>();
@@ -418,9 +422,9 @@ export class ValleyScene extends Phaser.Scene {
       const before = structuredClone(this.home.data);
       let result = this.home.apply(action, { x: Math.floor(this.player.x / TILE), y: Math.floor(this.player.y / TILE) });
       const bento=this.state.bentoTravel?.trip;
-      if(result.ok&&bento?.area==='home'&&[[-7,-5],[7,-5],[-7,3],[7,3]].some(([x,y])=>this.home.isBlocked(Math.floor((bento.x+x)/32),Math.floor((bento.y+y)/32)))){this.home=new Home(before);result={ok:false,message:'Deixe livre o espaço onde Bento está.'};}
+      if(result.ok&&bento?.area==='home'&&[[-7,-5],[7,-5],[-7,3],[7,3]].some(([x,y])=>this.home.isBlocked(Math.floor((bento.x+x)/32),Math.floor((bento.y+y)/32)))){this.home=new Home(before,true,this.homeSize);result={ok:false,message:'Deixe livre o espaço onde Bento está.'};}
       if (result.ok && this.feetTiles().some(tile => this.home.isBlocked(tile.x, tile.y))) {
-        this.home = new Home(before);
+        this.home = new Home(before, true, this.homeSize);
         result = { ok: false, message: 'Deixe livre o espaço onde você está. Mova o personagem primeiro.' };
       }
       if (result.ok) {
@@ -429,7 +433,7 @@ export class ValleyScene extends Phaser.Scene {
         this.persist();
       }
       return { ...result, home: structuredClone(this.home.data) };
-    });
+    },{size:this.homeSize});
   }
 
   private playerPosition(): SaveData['player'] {
@@ -533,7 +537,7 @@ export class ValleyScene extends Phaser.Scene {
 
   private nearHomeExit(): boolean {
     return this.inHome && this.player.y >= 8 * TILE && this.player.x >= 4.5 * TILE && this.player.x <= 7.5 * TILE
-      && this.tileDistance(HOME_EXIT) <= 60;
+      && this.tileDistance(homeExit(this.homeSize)) <= 60;
   }
 
   private changeHomeScene(enter:boolean):void {
@@ -570,8 +574,8 @@ export class ValleyScene extends Phaser.Scene {
     }
     this.inHome = true;
     this.refreshHomeView();
-    this.player.x = position?.x ?? HOME_SPAWN.x;
-    this.player.y = position?.y ?? HOME_SPAWN.y;
+    this.player.x = position?.x ?? homeSpawn(this.homeSize).x;
+    this.player.y = position?.y ?? homeSpawn(this.homeSize).y;
     this.player.facing = directionVector(position?.direction ?? 'up');
     this.input.keyboard?.resetKeys();
     this.player.update(0, this.movementBlocked, this.movementBlockedPoint,true,this.swimmingPoint);
@@ -589,7 +593,7 @@ export class ValleyScene extends Phaser.Scene {
 
   private refreshHomeView(): void {
     this.homeView?.destroy();
-    this.homeView = drawHome(this, this.home.data);
+    this.homeView = drawHome(this, this.home.data, undefined, this.homeSize);
     this.supplySprites.forEach(sprite => sprite.destroy());
     this.supplySprites = HOME_SUPPLIES.filter(s => !this.state.homeSupplies?.[s.id]).map(s =>
       this.add.image((s.x + .5) * TILE, (s.y + .5) * TILE, s.texture).setDisplaySize(25, 25).setDepth(10000));
@@ -658,7 +662,7 @@ export class ValleyScene extends Phaser.Scene {
         if (!result.ok) { this.ui.toast(result.message); return; }
         this.state.day = result.day;
         this.state.time = result.time;
-        restoreVigor(this.state);
+        restoreVigor(this.state, hasBedroom(this.state) ? BEDROOM_VIGOR : 100);
         this.farming.update(result.elapsedMinutes / GAME_MINUTES_PER_SECOND, this.state.day);
         this.nextInteractionAt = this.time.now + 400;
         this.updateNight(); this.updateHUD(); this.persist();
@@ -670,6 +674,7 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   setTitleBackground(mode: TitleBackgroundMode): void {
+    if (mode !== 'off') this.projectDay = undefined;
     if (mode !== 'off') { this.cancelToolActions(); this.toolVisual?.hide(); }
     if (mode !== 'off') gameAudio.setScene('title');
     const wasOff = this.titleBackgroundMode === 'off';
@@ -879,8 +884,8 @@ export class ValleyScene extends Phaser.Scene {
   }
 
   captureMap(): Promise<string> {
-    const width = (this.inHome ? HOME_WIDTH : WORLD_WIDTH) * TILE;
-    const height = (this.inHome ? HOME_HEIGHT : WORLD_HEIGHT) * TILE;
+    const width = (this.inHome ? this.homeSize.width : WORLD_WIDTH) * TILE;
+    const height = (this.inHome ? this.homeSize.height : WORLD_HEIGHT) * TILE;
     const scale = Math.min(1, 960 / width);
     const texture = this.make.renderTexture({ width: Math.round(width * scale), height: Math.round(height * scale) }, false);
     texture.camera.setZoom(scale).setScroll(0, 0).setOrigin(0, 0);
@@ -951,7 +956,9 @@ export class ValleyScene extends Phaser.Scene {
     this.farming.progress.harvested ||= data.inventory.turnip > 0;
     this.building = new Building(data.buildings, data.day);
     this.resources = new Resources(data.resourceProgress);
-    this.home = new Home(data.home);
+    this.home = new Home(data.home, true, playerHomeSize(data));
+    // Partida carregada (ou outra partida): obras antigas não viram aviso novo.
+    if(this.projectDay===undefined||data.day<this.projectDay)this.projectDay=data.day;
     this.cropSprites = [];
     this.soilSprites = []; this.soilSignature = '';
     this.buildingSprites = [];
@@ -1077,7 +1084,7 @@ export class ValleyScene extends Phaser.Scene {
     if(!this.player)return;
     if (this.titleBackgroundMode !== 'off') { this.updateTitleBackground(0); return; }
     const camera = this.cameras.main;
-    const homeWidth = HOME_WIDTH * TILE, homeHeight = HOME_HEIGHT * TILE;
+    const homeWidth = this.homeSize.width * TILE, homeHeight = this.homeSize.height * TILE;
     const zoom = baseCameraZoom(this.scale.width, this.scale.height, this.inHome ? homeHeight : undefined) * this.cameraZoomFactor;
     camera.zoomEffect.reset();
     if (animate) camera.zoomTo(zoom, 180, 'Sine.easeOut', true);
@@ -1711,7 +1718,16 @@ export class ValleyScene extends Phaser.Scene {
     this.daylight?.update(this.state.time, this.inHome,this.state.day);
   }
 
+  /** Obras que ficaram prontas desde o último dia visto (preview.48): avisa e, se for a casa, aumenta o cômodo. */
+  private projectDay?: number;
+  private checkProjects(): void {
+    const prev=this.projectDay;this.projectDay=this.state.day;if(prev===undefined||prev>=this.state.day)return;
+    const done=projectsFinishedBetween(this.state,prev,this.state.day);if(!done.length)return;
+    this.ui.toast(done.map(d=>d.done).join(' '));
+    if(done.some(d=>d.group==='home')){this.home=new Home(this.home.data,true,playerHomeSize(this.state));if(this.inHome){this.refreshHomeView();this.updateZoom();}}
+  }
   private updateHUD(): void {
+    this.checkProjects();
     this.state.crops=this.farming.crops;updateVillageEquipment(this,this.state,this.player,this.inHome);notifyReadyOrders(this.state,m=>this.ui.toast(m));markMinerals(this,this.world.resources);
     if (this.inHome) {
       const playerTile = { x: Math.floor(this.player.x / TILE), y: Math.floor(this.player.y / TILE) };
@@ -1719,7 +1735,7 @@ export class ValleyScene extends Phaser.Scene {
       const stove = !bed && this.home.furnitureNear('woodStove', playerTile, 1.1);
       const nearExit = this.nearHomeExit();
       const supply = HOME_SUPPLIES.find(s => !this.state.homeSupplies?.[s.id] && this.tileDistance(s) <= 48);
-    this.ui.updateHUD({itemQuality:this.state.itemQuality,worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100, coins:this.state.villageEconomy?.coins??0,farmingProgress: this.farming.progress, wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: true, name: this.state.profile.name, day: this.state.day, time: this.state.time,
+    this.ui.updateHUD({interiorMapSize:this.inHome?{width:this.homeSize.width,height:this.homeSize.height}:undefined,itemQuality:this.state.itemQuality,worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100, coins:this.state.villageEconomy?.coins??0,farmingProgress: this.farming.progress, wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: true, name: this.state.profile.name, day: this.state.day, time: this.state.time,
         inventory: this.inventory.data, tool: this.tool,
         playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
         interactionKey: nearExit ? null : bed || stove || supply ? 'E' : 'H',
@@ -1769,7 +1785,7 @@ export class ValleyScene extends Phaser.Scene {
     if(!villageAccessUnlocked(this.state)&&Math.abs(this.player.x-93.5*TILE)<96&&Math.abs(this.player.y-52.5*TILE)<64)prompt=VILLAGE_LOCK_MESSAGE;
     if(this.tool==='hand'&&this.state.petShelter&&Math.hypot(this.player.x-this.state.petShelter.x,this.player.y-this.state.petShelter.y)<90)prompt='Casinha dos companheiros · E';
     const machine=this.tool==='hand'&&!this.player.isSwimming?nearMachine(this.machineRuntime):undefined;if(machine)prompt=machineHint(this.state,machine);
-    this.ui.updateHUD({itemQuality:this.state.itemQuality,worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100, coins:this.state.villageEconomy?.coins??0,farmingProgress: this.farming.progress, wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, swimming:this.player.isSwimming, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
+    this.ui.updateHUD({interiorMapSize:this.inHome?{width:this.homeSize.width,height:this.homeSize.height}:undefined,itemQuality:this.state.itemQuality,worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100, coins:this.state.villageEconomy?.coins??0,farmingProgress: this.farming.progress, wateringCanWater: this.state.wateringCanWater ?? 0, wateringCan: !!this.state.homeSupplies?.wateringCan, inHome: false, swimming:this.player.isSwimming, name: this.state.profile.name, day: this.state.day, time: this.state.time, inventory: this.inventory.data,
       selectedCrop:this.state.selectedCrop, tool: this.tool, prompt:this.visit?.near()?`Conversar com ${VILLAGE_NPCS.find(n=>n.id===this.visit!.visitor)?.name??'visita'} · E`:machine?prompt:this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:prompt, interactionKey:nearPassage||nearHouse?null:undefined, location: locationAt(Math.floor(this.player.x / TILE), Math.floor(this.player.y / TILE)),
       playerTile: { x: this.player.x / TILE, y: this.player.y / TILE },
       harvests: this.inventory.data.turnip, metLia: this.state.metLia,
@@ -1802,7 +1818,7 @@ export class ValleyScene extends Phaser.Scene {
     this.cameras.main.setLerp(1 - Math.exp(-9 * delta));
     const previousX = this.player.x, previousY = this.player.y;
     this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.update(delta, this.movementBlocked, this.movementBlockedPoint, !this.toolBusy&&!this.world.well?.busy,this.swimmingPoint,this.allowLeashMovement);
-    if(!this.player.isSwimming&&!this.toolBusy&&!this.world.well?.busy&&this.homePassage.update({x:previousX,y:previousY},this.player,this.inHome?HOME_INTERIOR_DOORWAY:HOME_OUTDOOR_DOORWAY)){
+    if(!this.player.isSwimming&&!this.toolBusy&&!this.world.well?.busy&&this.homePassage.update({x:previousX,y:previousY},this.player,this.inHome?homeInteriorDoorway(this.homeSize):HOME_OUTDOOR_DOORWAY)){
       if(this.inHome||!this.state.animalEscort){this.changeHomeScene(!this.inHome);return;}
       if(!this.homeDoorWarningShown){this.ui.toast('Conclua a condução do animal antes de entrar em casa.');this.homeDoorWarningShown=true;}
     }else this.homeDoorWarningShown=false;

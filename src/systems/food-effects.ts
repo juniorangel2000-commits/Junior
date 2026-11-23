@@ -44,7 +44,9 @@ export const EXHAUSTED_SPEED=.7;
 export const exhausted=(s:SaveData)=>(s.villageProgress?.vigor??100)<=0&&extraVigor(s)<=0;
 export const playerSpeedFactor=(s:SaveData)=>(s.inventory.boots>0?1.08:1)*(hasFoodEffect(s,'watermelonJuice')?SPEED_BONUS:1)*(exhausted(s)?EXHAUSTED_SPEED:1);
 /** Dormir na cama recupera todo o vigor. */
-export const restoreVigor=(s:SaveData)=>{if(s.villageProgress)s.villageProgress.vigor=100;};
+/** Quarto da casa ampliada: acorda com 120 de vigor (preview.48). */
+export const BEDROOM_VIGOR=120;
+export const restoreVigor=(s:SaveData,max=100)=>{if(s.villageProgress)s.villageProgress.vigor=Math.max(s.villageProgress.vigor,max);};
 
 export function validFoodEffect(v:unknown):v is FoodEffect{
  if(!v||typeof v!=='object'||Array.isArray(v))return false;const e=v as FoodEffect;

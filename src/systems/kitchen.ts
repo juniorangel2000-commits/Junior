@@ -1,3 +1,4 @@
+import {hasKitchen} from './home-level';
 import type {SaveData,ItemId} from '../types';
 import {DISH_RECIPES,HELENA_DISHES,STOVE_FUEL,FUTURE_INGREDIENTS,dishRecipe,dishStation,dishSource,type DishRecipe,type CookingStation,type DishSource} from '../data/kitchen';
 import {ITEM_NAMES} from '../data/items';
@@ -20,8 +21,10 @@ export const STATION_NAMES:Record<CookingStation,string>={stove:'fogão a lenha'
 
 export interface IngredientStatus{item:ItemId;name:string;need:number;have:number;future?:string}
 /** Ingredientes de uma receita, com o que falta. A lenha entra como mais um item. */
+/** Cozinha nova da casa (obra do Tobias, etapa 3): o fogão de casa não gasta lenha e faz os pratos de forno. */
+const homeKitchen=(s:SaveData,r:DishRecipe)=>hasKitchen(s)&&dishStation(r)!=='campfire';
 export function dishIngredients(s:SaveData,r:DishRecipe):IngredientStatus[]{
- const need:Partial<Record<ItemId,number>>={...r.ingredients};need[STOVE_FUEL]=(need[STOVE_FUEL]??0)+1;
+ const need:Partial<Record<ItemId,number>>={...r.ingredients};if(!homeKitchen(s,r))need[STOVE_FUEL]=(need[STOVE_FUEL]??0)+1;
  return Object.entries(need).map(([id,n])=>({item:id as ItemId,name:ITEM_NAMES[id as ItemId],need:n!,have:s.inventory[id as ItemId]??0,future:FUTURE_INGREDIENTS[id as ItemId]}));
 }
 export const canCookDish=(s:SaveData,r:DishRecipe)=>dishIngredients(s,r).every(i=>i.have>=i.need);
@@ -29,7 +32,7 @@ export const canCookDish=(s:SaveData,r:DishRecipe)=>dishIngredients(s,r).every(i
 /** Confere receita, estação e ingredientes. */
 export function cookCheck(s:SaveData,id:string,station:CookingStation):Result&{recipe?:DishRecipe}{
  const r=dishRecipe(id);if(!r)return fail('Receita desconhecida.');
- if(dishStation(r)!==station)return fail(`${r.name} é feito no ${STATION_NAMES[dishStation(r)]}.`);
+ if(dishStation(r)!==station&&!(station==='stove'&&dishStation(r)==='oven'&&hasKitchen(s)))return fail(`${r.name} é feito no ${STATION_NAMES[dishStation(r)]}.`);
  if(!knowsDish(s,r))return fail(dishSource(r)==='helena'?'Aprenda esta receita com a Helena, na pousada.':'Você ainda não encontrou esta receita.');
  const missing=dishIngredients(s,r).filter(i=>i.have<i.need);
  if(missing.length)return fail('Falta: '+missing.map(i=>`${i.need-i.have} ${i.name.toLowerCase()}`+(i.future?` (${i.future})`:'')).join(', ')+'.');
@@ -39,7 +42,7 @@ export const dishCost=(r:DishRecipe)=>({...r.ingredients,[STOVE_FUEL]:(r.ingredi
 /** Cozinha um prato no fogão ou na fogueira: gasta os ingredientes e 1 madeira; salva antes de aplicar. */
 export function cookDish(s:SaveData,id:string,write:Writer,station:CookingStation='stove'):Result{
  const check=cookCheck(s,id,station);if(!check.recipe)return check;const r=check.recipe;
- const d=structuredClone(s),inv=new Inventory(d.inventory),cost=dishCost(r);
+ const d=structuredClone(s),inv=new Inventory(d.inventory),cost=station!=='campfire'&&hasKitchen(s)?{...r.ingredients}:dishCost(r);
  if(!inv.transact(cost,{[r.id]:1}))return fail('Libere espaço na mochila para o prato.');
  const q=takeIngredientsQuality(d,cost);d.inventory=inv.data;gainQuality(d,r.id,d.inventory[r.id],q);
  try{if(!write(d))return fail('Não foi possível salvar. Os ingredientes foram preservados.');}catch{return fail('Não foi possível salvar. Os ingredientes foram preservados.');}

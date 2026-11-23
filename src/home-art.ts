@@ -1,6 +1,6 @@
 import { paintHomeRoom } from './home-room-art';
 import type Phaser from 'phaser';
-import { FLOOR_STYLES, FURNITURE_CATALOG, RESIDENTIAL_FURNITURE_KINDS, HOME_HEIGHT, HOME_TILE, HOME_WIDTH, WALL_STYLES } from './systems/home';
+import { FLOOR_STYLES, FURNITURE_CATALOG, RESIDENTIAL_FURNITURE_KINDS, HOME_HEIGHT, HOME_TILE, HOME_WIDTH, WALL_STYLES, BASE_HOME_SIZE, type HomeSize } from './systems/home';
 import type { FloorStyle, FurnitureKind, HomeData, HomeFurniture, WallStyle } from './systems/home';
 
 type Paint = CanvasRenderingContext2D;
@@ -288,9 +288,30 @@ export function preloadFurnitureImages(scene:Phaser.Scene):void{
   if (!scene.textures.exists('home-room-source')) scene.load.image('home-room-source', 'assets/visual/home-furniture/room-source.png');
   for(const [kind,a] of Object.entries(FURNITURE_IMAGES))if(!scene.textures.exists(`home-furniture-${kind}`))scene.load.image(`home-furniture-${kind}`,a!.file);}
 export interface HomeFurnitureArt {key:string;w:number;h:number;offsetX?:number;offsetY?:number;depth?:number}
-export function drawHome(scene: Phaser.Scene, data: HomeData, resolveArt?:(piece:HomeFurniture)=>HomeFurnitureArt): HomeView {
+/** Cômodo maior (casa ampliada, preview.48): monta a partir do cômodo base 12 × 10, repetindo a
+ * faixa da parede, o piso e as laterais. A porta fica no mesmo lugar (x=160..224 px). */
+function roomTexture(scene:Phaser.Scene,floor:string,wall:string,size:HomeSize):string{
+  const base=`home-room-${floor}-${wall}`;if(size.width===HOME_WIDTH&&size.height===HOME_HEIGHT)return base;
+  const key=`${base}-${size.width}x${size.height}`;if(scene.textures.exists(key))return key;
+  const src=scene.textures.get(base).getSourceImage() as CanvasImageSource,W=size.width*HOME_TILE,H=size.height*HOME_TILE;
+  const tex=scene.textures.createCanvas(key,W,H)!,c=tex.context;c.imageSmoothingEnabled=false;
+  const part=(sx:number,sy:number,sw:number,sh:number,dx:number,dy:number)=>c.drawImage(src,sx,sy,sw,sh,dx,dy,sw,sh);
+  const BW=HOME_WIDTH*HOME_TILE,BH=HOME_HEIGHT*HOME_TILE,M=32,TOP=64;
+  // Parede do fundo: cantos e o miolo repetido.
+  part(0,0,M,TOP,0,0);for(let x=M;x<W-M;x+=BW-2*M)part(M,0,Math.min(BW-2*M,W-M-x),TOP,x,0);part(BW-M,0,M,TOP,W-M,0);
+  // Piso e paredes laterais.
+  // O primeiro bloco é o piso inteiro; os seguintes usam só o miolo, sem a borda sombreada (sem emenda).
+  const I=48,spans=(start:number,end:number,full:number)=>{const out:[number,number,number][]=[];const first=end-start>full?full-I:full;out.push([0,start,Math.min(first,end-start)]);for(let p=start+first;p<end;p+=full-2*I)out.push([I,p,Math.min(full-2*I,end-p)]);return out;};
+  for(const [oy,y,h] of spans(TOP,H-M,BH-TOP-M)){
+   for(const [ox,x,w] of spans(M,W-M,BW-2*M))part(M+ox,TOP+oy,w,h,x,y);
+   part(0,TOP+oy,M,h,0,y);part(BW-M,TOP+oy,M,h,W-M,y);}
+  // Parede sul com a porta no mesmo lugar.
+  part(0,BH-M,224,M,0,H-M);for(let x=224;x<W-M;x+=BW-M-224)part(224,BH-M,Math.min(BW-M-224,W-M-x),M,x,H-M);part(BW-M,BH-M,M,M,W-M,H-M);
+  tex.refresh();return key;
+}
+export function drawHome(scene: Phaser.Scene, data: HomeData, resolveArt?:(piece:HomeFurniture)=>HomeFurnitureArt, size:HomeSize=BASE_HOME_SIZE): HomeView {
   createHomeArt(scene);
-  const objects = [scene.add.image(0, 0, `home-room-${data.floor}-${data.wall}`).setOrigin(0).setDepth(-1000).setData('fixture-light',{offsetX:scene.textures.exists('home-room-source')?192:231,offsetY:scene.textures.exists('home-room-source')?22:32,radius:65,always:true})];
+  const objects = [scene.add.image(0, 0, roomTexture(scene,data.floor,data.wall,size)).setOrigin(0).setDepth(-1000).setData('fixture-light',{offsetX:scene.textures.exists('home-room-source')?192:231,offsetY:scene.textures.exists('home-room-source')?22:32,radius:65,always:true})];
   for (const piece of data.furniture) {
     const definition = FURNITURE_CATALOG[piece.kind];
     const bottom = (piece.y + definition.height) * HOME_TILE;
