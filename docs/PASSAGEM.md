@@ -25,7 +25,8 @@
   - **Pântano:** patos na beira das lagoas e porcos. **Costa:** cabras, galinhas e patos na beira do rio. `TrailScene` cria a `AnimalPopulation` nesses dois; ao sair, `transferTrailEscort` passa o animal para o Bosque (Pântano) ou para os Campos (Costa), e de lá segue para a propriedade. Posições guardadas em `animalPositions.swamp/coast` (opcionais). Pontos escolhidos no jogo com o bloqueio real de cada mapa.
   - **Pomar:** galinhas e porcos. **Ruínas e Estação:** cabras e galinhas. Caminhos em `ROPE_HOME_PATH` (`src/data/wild-animals.ts`): Pomar→Vila→propriedade; Ruínas→Floresta da Cidade→Vila→propriedade; Estação→Ruínas→… . Floresta da Cidade e Vila usam `RopeTransit` (`src/rope-transit.ts`): mostram o animal na corda e só deixam passar rumo à propriedade (lojas, casas, lago, Pomar e Ruínas avisam). `transferEscortTo` move o animal entre cenários; o save valida com `ropeAllowed` (e aceita os antigos do Bosque, `ropeHere`).
   - **Soltar longe de casa (G):** o animal corre (`AnimalBrain.sprint`) até a passagem que leva de volta à origem e some (`runHome` em `AnimalPopulation`, `RopeTransit` e no mundo dos Campos). Volta ao sorteio do cenário dele.
-- **Pássaros** (sabiá e saíra) diminuíram de 30 para 17 px, menores que o coelho.
+- **Pássaros** (sabiá e saíra) diminuíram de 30 para 17 px, menores que o coelho. Eles já pousam na Vila (`COUNTS.village` em `ambient-birds.ts`).
+- **Galinhas da Rosa** (`src/village-hens.ts`): três galinhas mansas no gramado ao lado da estufa (`ROSA_YARD`), de dia. Não se prendem com a corda nem entram no sorteio.
 - **HUD:** painel do relógio só com dia, hora e dinheiro. Vida (coração) e vigor (raio) em barras verticais empilhadas no centro da direita, na moldura de madeira dos painéis; fora da mina a vida fica cheia.
 
 ## Rodadas anteriores (resumo)
