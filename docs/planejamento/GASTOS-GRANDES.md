@@ -40,10 +40,10 @@
 
 Nova construção no menu de obras, ao lado do galinheiro e do curral.
 
-- **Custo:** 35.000 C, mais 60 tábuas, 30 vidros e 10 madeiras de lei. O vidro seria novo: feito no forno com 2 areias. A areia é recolhida na Costa.
+- **Custo:** 100.000 C (decisão do Junior), mais 60 tábuas, 30 vidros e 10 madeiras de lei. O vidro seria novo: feito no forno com 2 areias. A areia é recolhida na Costa.
 - **Dentro:** 24 canteiros que plantam qualquer semente em qualquer estação. Não murcham na virada e não precisam de chuva. A rega gasta vigor normal.
-- **Limite:** uma estufa por propriedade. Mais tarde, dá para ampliar para 48 canteiros por mais 30.000 C.
-- **Por que vale:** no inverno, quase nada cresce lá fora. A estufa vira o motor do inverno, a partir do Ano 2.
+- **Limite:** uma estufa por propriedade. Mais tarde, dá para ampliar para 48 canteiros por mais 60.000 C.
+- **Por que vale:** no inverno, quase nada cresce lá fora. A estufa vira o motor do inverno. Custando 100 mil, ela é a meta do fim do Ano 1 ou do começo do Ano 2.
 - **Arte:** a estufa da Rosa na Vila serve de base para a versão provisória. O interior usa o chão da horta.
 
 ## 9. Reconstrução do Vale (o grande objetivo, a partir do Ano 2)
