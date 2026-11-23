@@ -321,7 +321,21 @@
 #ui .detail-drop>.button{white-space:nowrap;padding:8px 10px}#ui .detail-stepper input{width:34px}#ui .detail-step{width:26px}
 #ui .modal-root .backpack-panel{padding-top:0}#ui .backpack-panel .modal-heading{margin-top:0;border-radius:4px 4px 0 0}
 
-/* Vigor baixo (preview.48): avisa antes de a ferramenta pesar. */
-.vigor-low #hud-vigor{color:#b8432f;font-weight:700;animation:vigor-pulse 1.6s ease-in-out infinite}
-@keyframes vigor-pulse{50%{opacity:.55}}
-@media (prefers-reduced-motion:reduce){.vigor-low #hud-vigor{animation:none}}
+/* Vida e vigor (preview.48): lado direito, centralizadas, uma em cima da outra,
+ * na mesma moldura de madeira e papel dos outros painéis. */
+#ui .vital-bars{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:10px;padding:6px 4px;
+ border:10px solid #87552f;border-image:var(--cozy-frame) 14 / 10px / 0 stretch;border-radius:5px;background:linear-gradient(115deg,#fff2d5,var(--cozy-paper));box-shadow:0 4px 0 #372a1b66,0 8px 22px #14271940}
+#ui .vital{display:flex;flex-direction:column;align-items:center;gap:3px;width:30px}
+#ui .vital-icon{width:18px;height:18px;stroke:#513c26;stroke-width:1.4;stroke-linejoin:round}
+#ui .vital-health .vital-icon{fill:#c9453a}
+#ui .vital-vigor .vital-icon{fill:#e3a92e}
+#ui .vital-track{position:relative;width:14px;height:96px;border-radius:7px;background:var(--cozy-wood);box-shadow:inset 0 0 0 2px #5a3920,inset 0 2px 4px #0007;overflow:hidden}
+#ui .vital-fill{position:absolute;left:2px;right:2px;bottom:2px;border-radius:5px;height:100%;max-height:calc(100% - 4px);transition:height .35s ease;box-shadow:inset 0 1px #fff6,inset -2px 0 #0002}
+#ui .vital-health .vital-fill{background:linear-gradient(90deg,#d9574a,#b23a2f)}
+#ui .vital-vigor .vital-fill{background:linear-gradient(90deg,#f0c04f,#c98b25)}
+#ui .vital-value{font:12px Georgia,serif;color:#523b23;line-height:1}
+#ui .vital-health.exposed .vital-fill{background:linear-gradient(90deg,#9bbb52,#5e7a2a)}
+#ui .vital-health.critical .vital-track,#ui .vital-vigor.vigor-low .vital-track{animation:vital-pulse 1.4s ease-in-out infinite}
+@keyframes vital-pulse{50%{box-shadow:inset 0 0 0 2px #d8432f,inset 0 2px 4px #0007,0 0 8px #d8432f99}}
+@media (prefers-reduced-motion:reduce){#ui .vital-health.critical .vital-track,#ui .vital-vigor.vigor-low .vital-track{animation:none;box-shadow:inset 0 0 0 2px #d8432f}}
+#ui .vital .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}

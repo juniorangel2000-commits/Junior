@@ -52,7 +52,7 @@ import type { QuickSlot } from './types';
 import './inventory-ui.css';
 import { WORLD_HEIGHT, WORLD_WIDTH } from './data/regions';
 import { BUILD_COSTS, BUILD_NAMES, BUILD_REQUIREMENTS } from './systems/building';
-import { ITEMS, ITEM_IDS, ITEM_NAMES } from './data/items';
+import { ITEMS, ITEM_NAMES } from './data/items';
 import { BLUEPRINT_COST } from './data/blueprints';
 import { RECIPES, type CraftingRecipe } from './data/recipes';
 import { createHomeEditor } from './home-ui';
@@ -154,7 +154,6 @@ const tools: { id: Tool; label: string; icon: string; detail: string }[] = [
   { id: 'constructionBench', label: 'Bancada de construção', icon: 'workbench', detail: 'Colocar uma bancada de construção: peças de construção, máquinas e kits' },
   ...FARM_KINDS.map(kind=>({id:`farm-${kind}` as Tool,label:FARM_BUILDINGS[kind].name,icon:`farm-${kind}`,detail:'Colocar base no terreno livre e entregar materiais na obra'})),
 ];
-const items = ITEM_IDS.map(id => ({ id, label: ITEMS[id].name, description: ITEMS[id].description }));
 
 export class GameUI {
   private gameplayLocked=false;
@@ -479,7 +478,11 @@ export class GameUI {
     this.overlay.classList.remove('active');
     this.lastHudKey = '';
     this.base.innerHTML = `<div class="hud">
-      <header class="hud-header hud-status" aria-label="Dia, hora e recursos"><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><span class="season-date"><strong id="hud-day">Primavera 1</strong><small id="hud-year">Ano 1</small></span><span class="status-time"><b id="hud-time">08:00</b><small id="hud-day-phase">Manhã</small></span></div><div class="resources">${items.filter(item => ['wood', 'stone', 'seeds', 'plank'].includes(item.id)).map(item => `<div class="resource" title="${item.label}">${icon(item.id)}<strong id="count-${item.id}">0</strong></div>`).join('')}<div class="resource" title="Coroas (C) para comprar nas lojas da vila">${icon('crown')}<strong id="hud-coins">0</strong></div><div class="resource" title="Vigor — refeições e preparados medicinais recuperam o vigor"><strong id="hud-vigor">100</strong><small>vigor</small></div><div class="mine-health" id="hud-health" hidden><span><span id="hud-health-label">Vida</span> <b id="hud-health-value">100</b></span><meter id="hud-health-meter" min="0" max="100" value="100" aria-label="Vida na mina"></meter></div></div></header>
+      <header class="hud-header hud-status" aria-label="Dia, hora e recursos"><div class="day-clock"><span class="weather-icon">${icon('sun')}</span><span class="season-date"><strong id="hud-day">Primavera 1</strong><small id="hud-year">Ano 1</small></span><span class="status-time"><b id="hud-time">08:00</b><small id="hud-day-phase">Manhã</small></span></div><div class="resources"><div class="resource" title="Coroas (C) para comprar nas lojas da vila">${icon('crown')}<strong id="hud-coins">0</strong></div></div></div></header>
+      <div class="vital-bars" aria-label="Vida e vigor">
+        <div class="vital vital-health" id="hud-health" title="Vida"><svg class="vital-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.4-9.3C1.2 8.1 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.8 3.6 4.4 7.2C19.5 16.4 12 21 12 21Z"/></svg><div class="vital-track"><span class="vital-fill" id="hud-health-fill"></span></div><b class="vital-value" id="hud-health-value">100</b><span class="sr-only" id="hud-health-label">Vida</span></div>
+        <div class="vital vital-vigor" id="hud-vigor-bar" title="Vigor — as ferramentas gastam; comida e sono recuperam"><svg class="vital-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 2 4.5 13.5h6L9.5 22l10-12.5h-6.2L13.5 2Z"/></svg><div class="vital-track"><span class="vital-fill" id="hud-vigor-fill"></span></div><b class="vital-value" id="hud-vigor">100</b><span class="sr-only">Vigor</span></div>
+      </div>
       <div class="camera-zoom" role="group" aria-label="Zoom da câmera" hidden>
         <button type="button" data-zoom="-1" aria-label="Diminuir zoom" title="Afastar a câmera · − ou roda do mouse">−</button>
         <button type="button" data-zoom="0" aria-label="Restaurar zoom padrão" title="Restaurar para 100% · Home"><span class="camera-zoom-value" aria-live="polite">100%</span></button>
@@ -723,11 +726,15 @@ export class GameUI {
     const dayLabel=`${fullCalendarLabel(data.day)} · ${data.day}º dia da jornada`,seasonDate=this.base.querySelector<HTMLElement>('.season-date');if(seasonDate&&seasonDate.title!==dayLabel)seasonDate.title=dayLabel;
     const minutes = Math.floor(data.time) % 1440;
     set('#hud-time', `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`);
-    for (const item of items) set(`#count-${item.id}`, String(data.inventory[item.id]));
     set('#hud-location', data.location);
-    set('#hud-coins',String(data.coins??0)+' C');set('#hud-vigor',String(data.vigor??100));this.root.querySelector('#hud-vigor')?.parentElement?.classList.toggle('vigor-low',(data.vigor??100)<=20);
-    const health=this.base.querySelector<HTMLElement>('#hud-health')!;health.hidden=!data.health;
-    if(data.health){const hp=data.health,meter=this.base.querySelector<HTMLMeterElement>('#hud-health-meter')!;meter.max=hp.max;meter.value=hp.current;set('#hud-health-value',Math.ceil(hp.current)+'/'+hp.max);set('#hud-health-label',hp.contaminated?'Vida · ar contaminado':'Vida');health.classList.toggle('exposed',!!hp.contaminated);health.classList.toggle('critical',hp.current<hp.max*.3);}
+    set('#hud-coins',String(data.coins??0)+' C');
+    // Barras verticais de vida e vigor (preview.48). Fora da mina não há dano: a vida fica cheia.
+    {const vigor=Math.max(0,Math.min(100,data.vigor??100)),hp=data.health??{current:100,max:100,contaminated:false};
+     set('#hud-vigor',String(Math.round(vigor)));const vf=this.base.querySelector<HTMLElement>('#hud-vigor-fill');if(vf)vf.style.height=vigor+'%';
+     this.base.querySelector('#hud-vigor-bar')?.classList.toggle('vigor-low',vigor<=20);
+     const ratio=Math.max(0,Math.min(1,hp.current/Math.max(1,hp.max))),hf=this.base.querySelector<HTMLElement>('#hud-health-fill');if(hf)hf.style.height=ratio*100+'%';
+     set('#hud-health-value',String(Math.ceil(hp.current)));set('#hud-health-label',hp.contaminated?'Ar ruim':'Vida');
+     const bar=this.base.querySelector<HTMLElement>('#hud-health');if(bar){bar.title=`Vida ${Math.ceil(hp.current)}/${hp.max}`;bar.classList.toggle('exposed',!!hp.contaminated);bar.classList.toggle('critical',ratio<.3);}}
 
     if (this.locationName !== data.location) {
       this.locationName = data.location;
