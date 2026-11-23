@@ -1,3 +1,4 @@
+import {promptWithoutKey} from './prompt-key';
 import {isMachine,machineIngredient} from './data/machines';
 import {SWORD_TIER_NAMES,SWORD_POWER} from './systems/world-sword';
 import {mountWorldLoading,type WorldLoadingInfo} from './world-loading';
@@ -745,7 +746,9 @@ export class GameUI {
     this.base.querySelector('.hud')!.classList.toggle('in-home', data.inHome === true);
     set('#hud-interaction-key', data.interactionKey ?? 'E');
     this.base.querySelector<HTMLElement>('#hud-interaction-key')!.hidden=data.interactionKey===null;
-    set('#hud-prompt', data.prompt || 'Aproxime-se de algo para interagir');
+    // A tecla já aparece no selo ao lado: "E · Pegar o trem" vira só "Pegar o trem" (antes aparecia "E E · …").
+    const promptKey=data.interactionKey===null?undefined:data.interactionKey??'E';
+    set('#hud-prompt', promptWithoutKey(data.prompt,promptKey) || 'Aproxime-se de algo para interagir');
     const progressLabel = this.base.querySelector<HTMLElement>('#hud-resource-progress')!;
     progressLabel.hidden = !data.resourceProgress;
     progressLabel.textContent = data.resourceProgress;

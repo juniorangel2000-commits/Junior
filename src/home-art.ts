@@ -290,6 +290,15 @@ export function preloadFurnitureImages(scene:Phaser.Scene):void{
 export interface HomeFurnitureArt {key:string;w:number;h:number;offsetX?:number;offsetY?:number;depth?:number}
 /** Cômodo maior (casa ampliada, preview.48): monta a partir do cômodo base 12 × 10, repetindo a
  * faixa da parede, o piso e as laterais. A porta fica no mesmo lugar (x=160..224 px). */
+/** Fatias da parede do fundo [origem, largura, destino] até `end` (onde começa o pilar do canto direito). */
+export function wallBays(end:number):[number,number,number][]{
+ const WINDOW:[number,number]=[250,101],BOARD:[number,number]=[144,95],POST:[number,number]=[239,11],PLAIN:[number,number]=[33,30];
+ const out:[number,number,number][]=[[0,31,0]];let x=31;
+ for(let i=0;x+(i%2?BOARD:WINDOW)[1]<=end;i++){const bay=i%2?BOARD:WINDOW;out.push([bay[0],bay[1],x]);x+=bay[1];
+  const next=(i+1)%2?BOARD:WINDOW;if(x+POST[1]+next[1]>end)break;out.push([POST[0],POST[1],x]);x+=POST[1];}
+ while(x<end){const w=Math.min(PLAIN[1],end-x);out.push([PLAIN[0],w,x]);x+=w;}
+ return out;
+}
 function roomTexture(scene:Phaser.Scene,floor:string,wall:string,size:HomeSize):string{
   const base=`home-room-${floor}-${wall}`;if(size.width===HOME_WIDTH&&size.height===HOME_HEIGHT)return base;
   const key=`${base}-${size.width}x${size.height}`;if(scene.textures.exists(key))return key;
@@ -298,7 +307,9 @@ function roomTexture(scene:Phaser.Scene,floor:string,wall:string,size:HomeSize):
   const part=(sx:number,sy:number,sw:number,sh:number,dx:number,dy:number)=>c.drawImage(src,sx,sy,sw,sh,dx,dy,sw,sh);
   const BW=HOME_WIDTH*HOME_TILE,BH=HOME_HEIGHT*HOME_TILE,M=32,TOP=64;
   // Parede do fundo: cantos e o miolo repetido.
-  part(0,0,M,TOP,0,0);for(let x=M;x<W-M;x+=BW-2*M)part(M,0,Math.min(BW-2*M,W-M-x),TOP,x,0);part(BW-M,0,M,TOP,W-M,0);
+  // Monta por baias inteiras (janela, pilar, quadro com luminária…), sem cortar uma janela no meio;
+  // a sobra vira parede lisa antes do pilar do canto. Colunas medidas na parede original de 384 px.
+  wallBays(W-33).forEach(([sx,w,dx])=>part(sx,0,w,TOP,dx,0));part(351,0,33,TOP,W-33,0);
   // Piso e paredes laterais.
   // O primeiro bloco é o piso inteiro; os seguintes usam só o miolo, sem a borda sombreada (sem emenda).
   const I=48,spans=(start:number,end:number,full:number)=>{const out:[number,number,number][]=[];const first=end-start>full?full-I:full;out.push([0,start,Math.min(first,end-start)]);for(let p=start+first;p<end;p+=full-2*I)out.push([I,p,Math.min(full-2*I,end-p)]);return out;};
