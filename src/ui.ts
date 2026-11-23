@@ -1285,6 +1285,24 @@ export class GameUI {
     if (this.modal === 'home') this.homeEditor?.refresh(home, message);
   }
 
+  /** Serviços de um morador novo (Lúcia, Jonas; preview.48): cada oferta com descrição e botão. */
+  showServiceList(eyebrow: string, title: string, greeting: string, offers: () => { id: string; label: string; description: string; disabled?: boolean; actionLabel?: string }[], run: (id: string) => { ok: boolean; message: string }): void {
+    if (this.mode !== 'hud' || this.modal) return;
+    this.openModal('dialogue');
+    const panel = document.createElement('section');
+    panel.className = 'sleep-card panel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    panel.setAttribute('aria-label', title);
+    const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+    const render = (status = '') => {
+      panel.innerHTML = `<span class="eyebrow">${esc(eyebrow)}</span><h2>${esc(title)}</h2><p>${esc(greeting)}</p>${status ? `<p class="service-status"><strong>${esc(status)}</strong></p>` : ''}<div class="service-list" style="display:grid;gap:8px;text-align:left;max-height:50vh;overflow:auto">${offers().map(o => `<div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center"><div><b>${esc(o.label)}</b><br><small>${esc(o.description)}</small></div><button class="button button-light" data-service="${esc(o.id)}" ${o.disabled ? 'disabled' : ''}>${esc(o.actionLabel ?? 'Escolher')}</button></div>`).join('')}</div><div class="pause-actions"><button class="button button-primary" data-service-close>Fechar</button></div>`;
+      panel.querySelectorAll<HTMLButtonElement>('[data-service]').forEach(b => b.addEventListener('click', () => { const r = run(b.dataset.service!); render(r.message); }));
+      panel.querySelector('[data-service-close]')!.addEventListener('click', () => this.closeModal());
+    };
+    render();this.overlay.append(panel);
+    panel.querySelector<HTMLButtonElement>('[data-service-close]')!.focus();
+  }
   /** Janela de escolha genérica (preview.48): destinos do trem, caminho pela ponte nova. */
   chooseOption(eyebrow: string, title: string, text: string, options: { label: string; run: () => void }[]): void {
     if (this.mode !== 'hud' || this.modal) return;

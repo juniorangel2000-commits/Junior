@@ -1,3 +1,4 @@
+import {isBreedAnimal} from '../data/domestic-animals';
 import type {SaveData,ItemId} from '../types';
 import type {FarmSite} from './farm-construction';
 import {FARM_BUILDINGS} from '../data/farm-buildings';
@@ -23,7 +24,7 @@ export interface AnimalCareRecord{fed?:number;milk?:boolean;woolDays?:number;woo
 export const PRODUCING_KINDS=['chicken','cow','goat','sheep','duck','pig'] as const;
 const producing=(id:string)=>(PRODUCING_KINDS as readonly string[]).includes(domesticAnimal(id)?.kind??'');
 const changeBond=(rec:AnimalCareRecord,delta:number)=>{const b=Math.max(0,Math.min(MAX_BOND,(rec.bond??0)+delta));if(b)rec.bond=b;else delete rec.bond;};
-export const animalQuality=(save:SaveData,id:string):Quality=>bondQuality(save.animalCare?.animals[id]?.bond);
+export const animalQuality=(save:SaveData,id:string):Quality=>Math.max(bondQuality(save.animalCare?.animals[id]?.bond),isBreedAnimal(id)?1:0) as Quality;
 export interface AnimalCare{day:number;animals:Record<string,AnimalCareRecord>}
 export const TROUGH_CAPACITY:Partial<Record<FarmSite['kind'],number>>={coop:12,barn:8,aprisco:8,pigsty:8};
 /** Lugares do chão do chiqueiro onde aparece esterco. */
@@ -52,7 +53,7 @@ function morning(save:SaveData,care:AnimalCare,day:number):void{
    const kind=domesticAnimal(id)?.kind;if(kind!=='chicken'&&kind!=='cow'&&kind!=='goat'&&kind!=='sheep'&&kind!=='duck'&&kind!=='pig')continue;
    if((site.trough??0)<1){const rec=care.animals[id];if(rec?.bond){changeBond(rec,-2);}continue;}
    site.trough=(site.trough??0)-1;const rec=care.animals[id]??={};rec.fed=day;changeBond(rec,1);
-   const q=bondQuality(rec.bond),mark=(nest:number|undefined)=>{if(nest!==undefined&&q)(site.nestQuality??={})[nest]=q as 1|2;};
+   const q=Math.max(bondQuality(rec.bond),isBreedAnimal(id)?1:0),mark=(nest:number|undefined)=>{if(nest!==undefined&&q)(site.nestQuality??={})[nest]=q as 1|2;};
    if(kind==='cow'||kind==='goat')rec.milk=true;
    else if(kind==='sheep'){if(!rec.wool){const days=(rec.woolDays??0)+1;if(days>=WOOL_FED_DAYS){rec.wool=true;rec.woolDays=0;}else rec.woolDays=days;}}
    else if(kind==='pig'){const spot=Array.from({length:MANURE_SPOTS},(_,i)=>i).find(i=>!site.manure?.includes(i));if(spot!==undefined)(site.manure??=[]).push(spot);}

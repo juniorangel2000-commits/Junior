@@ -12,10 +12,12 @@ import {ECONOMY_BALANCE as B} from '../data/economy-balance';
 import type {SaveData,ItemId} from '../types';
 import {Inventory} from './inventory';
 import {createVillageProgress} from '../data/village-progress';
-import {createVillageEconomy,MAX_COINS} from '../data/village-commerce';
+import {createVillageEconomy,MAX_COINS,MERCHANTS} from '../data/village-commerce';
 import {ECOLOGY_BALANCE as ECOLOGY} from '../data/ecology-balance';
 import {inventoryToolCondition,repairInventoryTool} from './tool-instances';
 import {PROJECTS,projectDef} from '../data/projects';
+import {NEW_RESIDENTS,RESIDENT_HOURS,LUCIA_BUYS,LUCIA_PREMIUM,LUCIA_SELLS,JONAS_BREEDS} from '../data/new-residents';
+import {BREED_ANIMALS} from '../data/domestic-animals';
 import {donateToProject,projectStatus,projectMissing,projectReadyDay,describeCost,projectDone} from './projects';
 /** Bento: 10 areias + 25 C = 5 vidros. */
 export const GLASS={sand:10,fee:25,glass:5} as const;
@@ -101,7 +103,19 @@ add('mill-grind','augusto','Moer no moinho da vila',`Depois da reforma do moinho
  const lots=MILL.map(([from,to])=>[from,to,i.data[from]??0] as const).filter(([,,n])=>n>0);requireThat(lots.length,'Traga trigo, milho ou aveia na mochila.');
  const total=lots.reduce((n,[,,q])=>n+q,0);pay(s,i,total*MILL_FEE,Object.fromEntries(lots.map(([f,,n])=>[f,n])));
  requireThat(i.transact({},Object.fromEntries(lots.map(([,t,n])=>[t,n]))),'Libere espaço na mochila para a farinha.');
- return `O moinho moeu: ${lots.map(([,t,n])=>`${n} ${ITEMS[t].name.toLowerCase()}`).join(', ')}.`;});
+ return `O moinho moeu: ${lots.map(([,t,n])=>`${n} × ${ITEMS[t].name}`).join(', ')}.`;});
+// Moradores novos das casinhas reformadas (preview.48).
+const residentOpen=(s:SaveData,id:'lucia'|'jonas')=>{const r=NEW_RESIDENTS.find(x=>x.id===id)!;requireThat(projectDone(s,r.project),`${r.name} ainda não se mudou para a vila.`);requireThat(s.time>=RESIDENT_HOURS.open&&s.time<RESIDENT_HOURS.close,`${r.sign} abre das 8h às 18h.`);};
+const shopPrice=(item:ItemId)=>Math.max(0,...Object.values(MERCHANTS).map(m=>(m.sell as Record<string,number>)[item]??0));
+add('lucia-buy','lucia','Vender ingredientes à Lúcia',`A Lúcia paga 30% a mais que as lojas por trigo, farinha, ovos, ovos de pata, leite e manteiga. Vende tudo o que você tiver desses itens.`,(s,i)=>{
+ residentOpen(s,'lucia');const lots=LUCIA_BUYS.map(id=>[id,i.data[id]??0] as const).filter(([,n])=>n>0);requireThat(lots.length,'Traga trigo, farinha, ovos, leite ou manteiga.');
+ const coins=lots.reduce((n,[id,q])=>n+Math.round(shopPrice(id)*LUCIA_PREMIUM)*q,0);requireThat(i.spend(Object.fromEntries(lots)),'Não foi possível entregar.');reward(s,coins);
+ return `A Lúcia comprou ${lots.map(([id,n])=>`${n} × ${ITEMS[id].name}`).join(', ')} por ${coins} coroas.`;});
+for(const [item,price] of Object.entries(LUCIA_SELLS) as [ItemId,number][])add(`lucia-sell-${item}`,'lucia',`Comprar ${ITEMS[item].name.toLowerCase()}`,`${price} coroas, saído do forno da padaria.`,(s,i)=>{residentOpen(s,'lucia');pay(s,i,price);requireThat(i.transact({},{[item]:1}),'Libere espaço na mochila.');return `${ITEMS[item].name} na mochila.`;});
+for(const b of JONAS_BREEDS)add(`jonas-breed-${b.kind}`,'jonas',`${b.name} (de raça)`,`${b.price.toLocaleString('pt-BR')} coroas. Vai direto para a propriedade e produz sempre, no mínimo, na qualidade boa. Leve até o abrigo certo.`,(s,i)=>{
+ residentOpen(s,'jonas');const animal=BREED_ANIMALS.find(a=>a.kind===b.kind&&!s.recruitedAnimals?.includes(a.id));requireThat(animal,`O Jonas não tem mais ${b.name.toLowerCase()} por agora.`);
+ pay(s,i,b.price);s.recruitedAnimals=[...(s.recruitedAnimals??[]),animal!.id];s.animalPositions??={forest:[],property:[]};s.animalPositions.property.push({id:animal!.id,x:688,y:624,direction:'down'});
+ return `${b.name} entregue na propriedade, perto da casa.`;});
 // Vidro para a estufa e as obras: o Bento funde a areia da Costa.
 add('melt-glass','bento','Fundir vidro',`${GLASS.sand} areias e ${GLASS.fee} coroas: ${GLASS.glass} vidros para a estufa e as obras do Vale.`,(s,i)=>{pay(s,i,GLASS.fee,{sand:GLASS.sand});requireThat(i.transact({},{glass:GLASS.glass}),'Libere espaço na mochila para o vidro.');return `${GLASS.glass} vidros prontos.`;});
 export function listVillageServices(npc:string,save?:SaveData):VillageServiceOffer[]{

@@ -1,3 +1,4 @@
+import {NEW_RESIDENTS,residentDoor,type NewResident} from '../data/new-residents';
 import {atTrainStop,drawTrainSign,offerTrain,trainRunning} from '../train-travel';
 import {projectDone} from '../systems/projects';
 import {VillageHens} from '../village-hens';
@@ -191,6 +192,7 @@ export class VillageScene extends Phaser.Scene {
   this.events.once('shutdown',()=>{this.rope?.destroy();this.rope=undefined;this.hens?.destroy();this.hens=undefined;});
   this.hens=new VillageHens(this,(x,y)=>this.world.isSolidPoint(x,y));
   if(trainRunning(this.state)){const sign=drawTrainSign(this,'village');this.events.once('shutdown',()=>sign.destroy());}
+  this.drawResidentSigns();
   this.helpers?.destroy();this.helpers=new SurvivorResidentsView(this,()=>{this.state.inventory={...this.inventory.data};return{save:this.state,area:'village',player:this.player,visible:!this.inShop||this.inCommunity,interior:this.inCommunity,blocked:(x,y)=>this.world.isBlocked(x,y)};},this.ui,()=>{Object.assign(this.inventory.data,this.state.inventory);this.updateHUD();});
   this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time,false,this.state.day);this.world.updateLighting(this.state.time);
   if(this.state.communityInterior&&communityReady(this.state))this.setCommunityRoom(true,this.state.communityInterior);
@@ -432,6 +434,7 @@ export class VillageScene extends Phaser.Scene {
   this.time.delayedCall(SCENE_FADE_MS,()=>{if(this.leaving)return;if(id)this.completeGuide(id);this.guide=undefined;this.setMerchantRoom(id);this.changingRoom=false;this.cameras.main.fadeIn(SCENE_FADE_MS);gameAudio.play('door');this.updateHUD();this.persist();});
  }
  private interact():void {
+  const resident=this.residentNear();if(resident&&!this.ui.isModalOpen()){this.openResident(resident);return;}
   if(!this.inShop&&atTrainStop(this.state,'village',this.player)&&!this.ui.isModalOpen()){offerTrain(this,this.ui,()=>this.state,'village',()=>this.snapshotState());return;}
   if(this.bentoTravelView?.talk())return;
   if(this.paused||this.leaving||this.changingRoom||this.ui.isModalOpen()||this.shop?.isOpen)return;
@@ -582,7 +585,7 @@ export class VillageScene extends Phaser.Scene {
   this.ui.updateHUD({itemQuality:this.state.itemQuality,worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'village',mapTitle:this.inCommunity?'Centro comunitário':undefined,coins:this.state.villageEconomy!.coins,inHome:this.inShop,mapEditorAvailable:!this.inCommunity,interiorEditor:this.inShop&&!this.inCommunity,swimming:this.player.isSwimming,name:this.state.profile.name,
    day:this.state.day,time:this.state.time,inventory:this.inventory.data,tool:'hand',wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,
    playerTile:{x:this.player.x/32,y:this.player.y/32},interiorMapSize:this.inShop?{width:18,height:this.merchantRoom||this.inCommunity?12:11}:undefined,interactionKey:npc||this.helpers?.nearest()||this.nearCommunity()||this.nearBoard()?'E':null,prompt:this.nearBoard()?'Quadro de pedidos · pedidos dos moradores':this.nearCommunity()?(communityReady(this.state)?'Entrar no centro comunitário':'Reparar o centro comunitário · preparar um lar para sobreviventes'):(this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:undefined)??this.closedDoorMessage()??(npc?`Conversar com ${npc.data.name}${this.canTrade(npc.data.id)?' · comprar e vender':' · conversa e serviços'}`:this.guide?`Siga ${VILLAGE_NPCS.find(n=>n.id===this.guide!.owner)!.name} até a loja`:this.inShop?'Caminhe pela porta ao sul para sair':nearExit?'Siga a seta para voltar à propriedade':nearOrchard?`${AREA_NAMES.orchard} ao leste`:'Explore a praça e converse com os moradores'),
-   location,harvests:this.inventory.data.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:this.inShop,shelterReason:this.inShop?location:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress,...this.bentoTravelView?.hud,...(this.inBlacksmith&&!npc&&nearBentoDepot(this.state,this.player)?{prompt:'Depósito particular do Bento',interactionKey:'E'}:{}),...(!this.inShop&&atTrainStop(this.state,'village',this.player)?{prompt:'Ponto do trem do Vale',interactionKey:'E' as const}:{}),...this.rope?.prompt()});
+   location,harvests:this.inventory.data.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:this.inShop,shelterReason:this.inShop?location:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress,...this.bentoTravelView?.hud,...(this.inBlacksmith&&!npc&&nearBentoDepot(this.state,this.player)?{prompt:'Depósito particular do Bento',interactionKey:'E'}:{}),...(this.residentNear()?{prompt:`${this.residentNear()!.sign} · E conversar e comprar`,interactionKey:'E' as const}:{}),...(!this.inShop&&atTrainStop(this.state,'village',this.player)?{prompt:'Ponto do trem do Vale',interactionKey:'E' as const}:{}),...this.rope?.prompt()});
   this.ui.updateCameraZoom(this.zoom,!this.paused&&!this.shop?.isOpen);
  }
  persist():boolean {return!!this.player&&!this.leaving&&saveGame(this.snapshotState());}
@@ -626,6 +629,17 @@ export class VillageScene extends Phaser.Scene {
   else if(e.key>='1'&&e.key<='9')this.ui.activateSlot(Number(e.key)-1);
  }
  private wheel=(_p:unknown,_objects:unknown,_dx:number,dy:number):void=>{if(!this.paused&&!this.shop?.isOpen)this.changeCameraZoom(dy<0?1:-1);};
+ /** Morador novo (casinha reformada) com a porta perto do jogador. */
+ private residentNear(){if(this.inShop)return;return NEW_RESIDENTS.find(r=>projectDone(this.state,r.project)&&Math.hypot(this.player.x-residentDoor(r).x,this.player.y-residentDoor(r).y)<52);}
+ private openResident(r:NewResident):void{
+  this.state.inventory={...this.inventory.data};
+  this.ui.showServiceList(r.role.toUpperCase(),r.sign,r.greeting,()=>listVillageServices(r.id,{...this.state,inventory:{...this.inventory.data}}),id=>{const res=this.runService(id);this.updateHUD();return res;});
+ }
+ /** Placas provisórias das casinhas reformadas. */
+ private drawResidentSigns():void{for(const r of NEW_RESIDENTS){if(!projectDone(this.state,r.project))continue;const p=residentDoor(r),g=this.add.graphics().setDepth(p.y-2);
+  g.fillStyle(0x4a3220).fillRect(p.x+34,p.y-34,4,30);g.fillStyle(0x7a5232).fillRect(p.x+14,p.y-44,44,16);g.fillStyle(0xe8d6a8).fillRect(p.x+17,p.y-41,38,10);
+  const label=this.add.text(p.x+36,p.y-36,r.id==='lucia'?'PADARIA':'VETERINÁRIO',{fontFamily:'Georgia, serif',fontSize:'6px',color:'#3a2a1a'}).setOrigin(.5).setDepth(p.y-1).setResolution(3);
+  this.events.once('shutdown',()=>{g.destroy();label.destroy();});}}
  /** Com um animal na corda, só a saída para a propriedade fica aberta. */
  private ropeBlocks():boolean{if(!this.rope?.escorting)return false;this.ui.toast('Leve o animal pela estrada a oeste até a propriedade. G solta a corda.');return true;}
  private enterCityForest(resume?:VillageStart['resumeCityForest']):void{
