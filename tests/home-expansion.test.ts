@@ -10,7 +10,7 @@ import {restoreVigor,BEDROOM_VIGOR} from '../src/systems/food-effects';
 const withStages=(n:number)=>{const s=createNewSave(createCharacterProfile('Casa'));s.day=40;s.projects={};
  for(const [i,id] of ['home-1','home-2','home-3'].entries())if(i<n)s.projects[id]={coins:0,items:{},funded:1};
  // O teste só olha o nível: marca as etapas como pagas há muito tempo.
- for(const id of Object.keys(s.projects)){const def={'home-1':{coins:10000,items:{plank:60,stone:20}},'home-2':{coins:25000,items:{plank:80,hardwood:10,doorKit:1}},'home-3':{coins:40000,items:{stone:40,plank:30,windowKit:2}}}[id]!;s.projects[id]={...def,funded:1};}
+ for(const id of Object.keys(s.projects)){const def={'home-1':{coins:10000,items:{plank:60,stone:20}},'home-2':{coins:25000,items:{plank:80,hardwood:10,doorKit:1}},'home-3':{coins:40000,items:{stone:40,plank:30,glass:6}}}[id]!;s.projects[id]={...def,funded:1};}
  return s;};
 describe('casa ampliada pelo Tobias (preview.48)',()=>{
  it('cada etapa pronta aumenta o cômodo',()=>{

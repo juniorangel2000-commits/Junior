@@ -96,3 +96,57 @@ Em 3 anos houve 86 dias de chuva com horta plantada, cerca de 26% dos dias.
 2. **Preço da refeição.** 28 C por 50 de vigor é barato perto do que um dia rende. Dá para subir o preço ou deixar a comida caseira mais vantajosa.
 3. **Vigor da horta.** Se a ideia é o vigor limitar a horta, a rega teria que custar 1 por canteiro em vez de 1 a cada 2.
 4. **Pesca com horta pequena.** Se incomodar que a pesca renda tanto, dá para baixar o peixe comum de 12 C para 10 C ou subir o vigor do arremesso.
+
+---
+
+## Depois das obras grandes (23/11/2026)
+
+Rodada pedida pelo Junior depois de entrarem a casa ampliada, a estufa, as obras do Vale e os moradores novos.
+
+### Em código
+
+Duas estratégias novas no jogador simulado ([JOGADOR-TRES-ANOS.md](JOGADOR-TRES-ANOS.md)) pagam as obras assim que sobra dinheiro além de uma reserva de 3 mil.
+
+- **Ordem das obras:** casa, estufa, ampliação da estufa, moinho, ponte, farol, Estação e casas novas.
+- **Materiais:** entram pelo preço das lojas.
+- **Estufa:** depois de pronta, o jogador planta, rega e colhe nela todo dia, gastando tempo e vigor.
+
+| Estratégia | Fim do ano 1 | Fim do ano 2 | Fim do ano 3 | Obras pagas |
+| --- | --- | --- | --- | --- |
+| Só horta, sem obras | 47.920 | 121.312 | 194.704 | — |
+| Só horta, pagando as obras | 7.910 | 36.732 | 8.494 | casa completa (dia 165), estufa (dia 336) |
+| Horta + Pomar + Costa + pesca, sem obras | 87.030 | 184.196 | 281.772 | — |
+| Horta + Pomar + Costa + pesca, pagando as obras | ≈ 47 mil | ≈ 100 mil | ≈ 11 mil | casa completa (dia 122), estufa (236), ampliação (292), moinho (331) |
+
+- **O dinheiro passou a ter destino.** Em 3 anos, o jogador completo gasta cerca de 280 mil coroas em obras e termina com uns 11 mil.
+- **Ponte, farol, Estação e casas novas** ficam para os Anos 4 a 6, que é o longo prazo planejado.
+- **Estufa:** em cerca de 95 dias de uso, a colheita do jogador completo subiu de 298 mil para 321 mil.
+- **Casa:** a cozinha sai no começo do Ano 2. A casa completa custa menos de um ano de horta.
+
+### No navegador (337 noites, até a Primavera do Ano 4)
+
+As obras foram pagas pelo próprio serviço do morador, ao longo dos anos.
+
+**Casa e estufa:**
+- A sala maior foi paga no dia 40 e ficou pronta no dia 42; a casa passou para 16 × 12.
+- O quarto ficou pronto no dia 118 (20 × 12) e a cozinha no dia 174 (20 × 14).
+- A estufa ficou pronta no dia 245 e foi montada sozinha, perto da casa, na posição (53, 22).
+- Cada etapa mostrou o aviso de obra pronta pela manhã.
+
+**Moinho:** pronto no dia 304; o aviso "O moinho voltou a girar!" apareceu.
+
+**Ponte (problema do teste, não do jogo):** a entrega foi recusada porque o Bento estava a caminho da Mina, com a ferraria fechada. É o comportamento certo do jogo: a obra fica no menu do Bento.
+- Como a ponte não foi paga, o farol e a Estação ficaram bloqueados, como deveriam: "Primeiro termine…".
+- O teste deveria ter tentado em outro dia.
+
+**Casas novas:**
+- Casa leste pronta no dia 330: "A Lúcia se mudou para a casa leste e abriu a padaria."
+- Casa sul pronta no dia 332: "O Jonas se mudou para a casa sul e abriu o consultório."
+
+**Restante:**
+- As 12 recargas nas viradas de estação funcionaram.
+- A chuva regou a horta em 89 dias, sem falhas.
+- Uma vaca foi levada com a corda por ano.
+- Nenhum erro de página.
+
+**Ajuste feito por causa do teste:** a cozinha nova e a casa leste pediam "Ninho e baias", uma peça de galpão de animais. Agora pedem 6 vidros, que viram as janelas.
