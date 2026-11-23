@@ -28,7 +28,7 @@ export interface CharacterProfile {
 export type ItemId = import('./data/orchard-art').OrchardFruit | import('./data/crop-catalog').CropItemId | 'wood' | 'stone' | 'seeds' | 'turnip' | 'branch' | 'log' | 'plank' | 'scrap' | 'hatchet' | 'pickaxe' | 'hoe' | 'handsaw'
   | 'cheesePress' | 'butterChurn' | 'spinningWheel' | 'loom' | 'stoneMill' | 'clayOven' | 'campfire' | 'beehive' | 'emptyHive' | 'feather' | 'manure' | 'composter' | 'preserveKeg' | 'waxPress' | 'strawberryJam' | 'watermelonJam' | 'candle' | 'nails' | 'hinge' | 'spring' | 'gear' | 'woolCloth' | 'beeswax' | 'daisyHoney' | 'sunflowerHoney' | 'cheese' | 'goatCheese' | 'butter' | 'yarn' | 'flour' | 'cornmeal' | 'oatFlakes'
   | 'harvestBasket' | 'freshGrass' | 'hay' | 'egg' | 'milk' | 'milkPail' | 'honey' | 'duckEgg' | import('./data/kitchen').DishId | 'goatMilk' | 'wool' | 'shears' | 'hardwood' | 'fiber' | 'cord' | 'flakedStone' | 'handle' | 'peg' | 'blade' | 'board' | 'hammer'
-  | 'shell' | 'blueIris' | 'crab'
+  | 'shell' | 'blueIris' | 'crab' | 'sand' | 'glass'
   | 'herb' | 'rareHerb' | 'bandage' | 'herbalTonic' | 'fungalInfusion' | 'oakSeed' | 'pineSeed' | 'fertilizer' | 'fishingRod' | 'bait' | 'net' | 'fish' | 'rareFish' | 'meal'
   | 'ironShard' | 'ironOre' | 'ironIngot' | 'goldShard' | 'goldOre' | 'goldIngot' | 'blackMetalShard' | 'blackMetalOre' | 'blackMetalIngot' | 'sickle' | 'shovel' | 'furniture' | 'doorKit' | 'windowKit' | 'fenceKit' | 'forge' | 'mushroom'
   | 'sword' | 'lantern' | 'oldMap' | 'ruinSeal' | 'metalPart' | 'electronicPart' | 'waterPump' | 'lamp' | 'backpack' | 'boots' | 'cloth' | 'clothing' | 'accessory';
@@ -98,6 +98,8 @@ export interface SaveData {
   npcOutingGifts?:Partial<Record<string,number>>;
   /** Dia em que cada concha ou íris foi recolhida (src/systems/forage.ts). */
   forageHarvest?:Record<string,number>;
+  /** Obras grandes pagas aos poucos (casa, estufa, Vale, casas novas; preview.48). */
+  projects?:import('./systems/projects').ProjectsState;
   /** Ano em que o jogador participou do concurso de cada festival (src/systems/festivals.ts). */
   festivalDone?:Record<string,number>;
   mineMissions?:import('./systems/mine-mission-state').MineMissionsState;

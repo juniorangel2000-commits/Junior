@@ -15,6 +15,10 @@ import {createVillageProgress} from '../data/village-progress';
 import {createVillageEconomy,MAX_COINS} from '../data/village-commerce';
 import {ECOLOGY_BALANCE as ECOLOGY} from '../data/ecology-balance';
 import {inventoryToolCondition,repairInventoryTool} from './tool-instances';
+import {PROJECTS,projectDef} from '../data/projects';
+import {donateToProject,projectStatus,projectMissing,projectReadyDay,describeCost} from './projects';
+/** Bento: 10 areias + 25 C = 5 vidros. */
+export const GLASS={sand:10,fee:25,glass:5} as const;
 /** Custo para os chips da janela (moedas e itens, com "tenho/preciso"). */
 export interface ServiceCost{coins?:number;items?:Partial<Record<ItemId,number>>}
 export interface VillageServiceOffer{id:string;label:string;description:string;item?:ItemId;disabled?:boolean;actionLabel?:string;cost?:ServiceCost}
@@ -87,6 +91,10 @@ const SERVICE_COSTS:Record<string,ServiceCost>={
  ...Object.fromEntries(CRAFTED_MACHINE_IDS.map(id=>[`learn-${id}`,{coins:MACHINES[id].learnFee}])),
  ...Object.fromEntries(['hatchet','pickaxe','hoe','sickle','shovel','hammer','handsaw','fishingRod','net','shears'].map(t=>[`repair-${t}`,{coins:20}])),
 };
+// Obras grandes (preview.48): cada uma no menu do morador responsável; entrega aos poucos.
+for(const d of PROJECTS)add(`project-${d.id}`,d.npc,d.name,d.description,(s,i)=>donateToProject(s,i,d.id));
+// Vidro para a estufa e as obras: o Bento funde a areia da Costa.
+add('melt-glass','bento','Fundir vidro',`${GLASS.sand} areias e ${GLASS.fee} coroas: ${GLASS.glass} vidros para a estufa e as obras do Vale.`,(s,i)=>{pay(s,i,GLASS.fee,{sand:GLASS.sand});requireThat(i.transact({},{glass:GLASS.glass}),'Libere espaço na mochila para o vidro.');return `${GLASS.glass} vidros prontos.`;});
 export function listVillageServices(npc:string,save?:SaveData):VillageServiceOffer[]{
  return Object.entries(services).filter(([id,s])=>s.npc===npc&&(id!=='identify-ruins-seal'||!!save?.ruinsSealFound)).map(([id,s])=>{
   const offer:VillageServiceOffer={id,label:s.label,description:s.description};if(SERVICE_COSTS[id])offer.cost=SERVICE_COSTS[id];if(!save)return offer;
@@ -143,6 +151,15 @@ export function listVillageServices(npc:string,save?:SaveData):VillageServiceOff
    const held=basket.filter(f=>f.species===order.species).length;
    offer.description=`${order.quantity} × ${fishSpecies(order.species).name} · ${order.reward} C. Na mochila: ${Math.min(held,order.quantity)}/${order.quantity}. ${offer.disabled?'Entregue hoje.':'Uma entrega por dia.'}`;
   }
+  if(id.startsWith('project-')){
+   const d=projectDef(id.slice(8))!,status=projectStatus(save,d.id),miss=projectMissing(save,d);
+   if(status==='open'){offer.cost={coins:miss.coins||undefined,items:miss.items};offer.actionLabel='Entregar o que tenho';
+    offer.description=`${d.description} Falta: ${describeCost(miss)}. Dá para entregar aos poucos.`;
+    offer.disabled=!(miss.coins&&(save.villageEconomy?.coins??0)>0)&&!Object.keys(miss.items).some(i=>(save.inventory[i as ItemId]??0)>0);}
+   else{offer.disabled=true;offer.cost=undefined;offer.actionLabel=status==='done'?'Pronta':status==='building'?`Em obra até o dia ${projectReadyDay(save,d.id)}`:'Bloqueada';
+    if(status==='locked')offer.description=`${d.description} Primeiro: ${projectDef(d.requires!)?.name}.`;}
+  }
+  if(id==='melt-glass'){offer.item='glass';offer.disabled=(save.inventory.sand??0)<GLASS.sand||(save.villageEconomy?.coins??0)<GLASS.fee;offer.actionLabel=`Fundir (${GLASS.fee} C)`;}
   return offer;
  });
 }

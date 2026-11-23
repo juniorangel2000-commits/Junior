@@ -106,6 +106,8 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
   rareFish: {name:'Peixe raro',description:'Truta ou dourado: capturas raras procuradas por Damião.',iconFallback:'seeds'},
   meal: {name:'Refeições',description:'Comida preparada por Helena para recuperar o vigor.',iconFallback:'seeds'},
   lantern: {name:'Lanterna',description:'Luz portátil para explorar depois do pôr do sol.',iconFallback:'hammer'},
+  sand:{name:'Areia',description:'Recolhida na praia da Costa das Marés. O Bento funde areia em vidro.'},
+  glass:{name:'Vidro',description:'Placa de vidro fundida pelo Bento com areia da Costa. Usada na estufa e nas obras do Vale.'},
   shell:{name:'Concha',description:'Recolhida na areia da Costa das Marés. A Celina usa nos enfeites do ateliê.'},
   blueIris:{name:'Íris azul',description:'Flor rara da beira das lagoas do Pântano. A Amélia procura há anos.'},
   crab:{name:'Caranguejo',description:'Pego com a rede na areia da Costa. O Damião compra; também vai na panela.'},
@@ -129,7 +131,7 @@ export const ITEMS: Record<ItemId, { name: string; description: string;iconFallb
 
 /** Only these stock fields may be absent in a save from before the village
  * services update. Missing any older field still indicates a corrupt save. */
-export const VILLAGE_ITEM_IDS=[...ORCHARD_FRUITS,'shell','blueIris','crab','harvestBasket','honey','duckEgg',...DISH_IDS,...NEW_CROP_ITEM_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','clayOven','campfire','beehive','emptyHive','feather','manure','composter','preserveKeg','waxPress','strawberryJam','watermelonJam','candle','nails','hinge','spring','gear','woolCloth','beeswax','daisyHoney','sunflowerHoney','cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','ruinSeal','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
+export const VILLAGE_ITEM_IDS=[...ORCHARD_FRUITS,'sand','glass','shell','blueIris','crab','harvestBasket','honey','duckEgg',...DISH_IDS,...NEW_CROP_ITEM_IDS,'cheesePress','butterChurn','spinningWheel','loom','stoneMill','clayOven','campfire','beehive','emptyHive','feather','manure','composter','preserveKeg','waxPress','strawberryJam','watermelonJam','candle','nails','hinge','spring','gear','woolCloth','beeswax','daisyHoney','sunflowerHoney','cheese','goatCheese','butter','yarn','flour','cornmeal','oatFlakes','egg','milk','milkPail','goatMilk','wool','shears','freshGrass','hay','hardwood',...ECONOMY_ITEM_IDS,'herb','rareHerb','bandage','herbalTonic','fungalInfusion','oakSeed','pineSeed','fertilizer','fishingRod','bait','net','fish','rareFish','meal','lantern','oldMap','ruinSeal','metalPart','electronicPart','waterPump','lamp','backpack','boots','cloth','clothing','accessory','sword'] as const satisfies readonly ItemId[];
 
 export const ITEM_IDS = Object.keys(ITEMS) as ItemId[];
 export const ITEM_NAMES = Object.fromEntries(ITEM_IDS.map(id => [id, ITEMS[id].name])) as Record<ItemId, string>;

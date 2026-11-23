@@ -147,6 +147,7 @@ export class TrailScene extends Phaser.Scene {
   }
   preload():void{
     if(this.area==='coast'&&!this.textures.exists('forage-shell'))this.load.image('forage-shell','assets/visual/items/shell.png');
+    if(this.area==='coast'&&!this.textures.exists('forage-sand'))this.load.image('forage-sand','assets/visual/items/sand.png');
     const data=this.sys.settings.data as TrailStart|undefined;
     if(this.resumeViaRoad(data?.save))return;
     if(this.area==='ruins'&&data?.save?.ruinsCellarPosition)preloadRuinsCellar(this);
@@ -207,8 +208,10 @@ export class TrailScene extends Phaser.Scene {
       }),this.ui,this.persist);
     }
     this.shellSprites.clear();
-    if(!this.inHome)for(const spot of forageSpotsIn(this.area).filter(f=>f.item==='shell'))
-      if(this.textures.exists('forage-shell'))this.shellSprites.set(spot.id,this.add.image(spot.x,spot.y,'forage-shell').setOrigin(.5,.8).setDisplaySize(18,18).setDepth(spot.y));
+    if(!this.inHome)for(const spot of forageSpotsIn(this.area).filter(f=>f.item==='shell'||f.item==='sand')){
+      const key=spot.item==='sand'?'forage-sand':'forage-shell';
+      if(this.textures.exists(key))this.shellSprites.set(spot.id,this.add.image(spot.x,spot.y,key).setOrigin(.5,.8).setDisplaySize(spot.item==='sand'?22:18,spot.item==='sand'?22:18).setDepth(spot.y));
+    }
     if(!this.inHome&&crittersOf(this.area).length){
       const layout=this.world.layout;
       this.critters=new CritterField(this,this.area,{width:this.mapSize.width,height:this.mapSize.height,
@@ -301,7 +304,7 @@ export class TrailScene extends Phaser.Scene {
       led?'Conduzindo animal · siga até a saída · soltar corda':
       catchKind?`Prender ${ANIMAL_NAMES[catchKind].toLowerCase()} com corda`:
       resident?`E · Conversar com ${resident}`:
-      forage?`E · ${forage.item==='shell'?'Recolher concha':'Colher íris azul'}`:
+      forage?`E · ${forage.item==='shell'?'Recolher concha':forage.item==='sand'?'Recolher areia':'Colher íris azul'}`:
       crab?'E · Pegar caranguejo com a rede':
       fruit?`E · Recolher ${ITEM_NAMES[fruit.item].toLowerCase()}`:
       landmark?(landmark.cellar&&state.ruinsMapFound?'E · Descer ao porão':landmark.hall?'E · Entrar na sala de espera':`E · Examinar ${landmark.name.toLowerCase()}`):
