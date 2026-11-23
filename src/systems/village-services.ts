@@ -16,9 +16,11 @@ import {createVillageEconomy,MAX_COINS} from '../data/village-commerce';
 import {ECOLOGY_BALANCE as ECOLOGY} from '../data/ecology-balance';
 import {inventoryToolCondition,repairInventoryTool} from './tool-instances';
 import {PROJECTS,projectDef} from '../data/projects';
-import {donateToProject,projectStatus,projectMissing,projectReadyDay,describeCost} from './projects';
+import {donateToProject,projectStatus,projectMissing,projectReadyDay,describeCost,projectDone} from './projects';
 /** Bento: 10 areias + 25 C = 5 vidros. */
 export const GLASS={sand:10,fee:25,glass:5} as const;
+export const MILL_FEE=3;
+const MILL:readonly (readonly [ItemId,ItemId])[]=[['wheat','flour'],['corn','cornmeal'],['oat','oatFlakes']];
 /** Custo para os chips da janela (moedas e itens, com "tenho/preciso"). */
 export interface ServiceCost{coins?:number;items?:Partial<Record<ItemId,number>>}
 export interface VillageServiceOffer{id:string;label:string;description:string;item?:ItemId;disabled?:boolean;actionLabel?:string;cost?:ServiceCost}
@@ -93,6 +95,13 @@ const SERVICE_COSTS:Record<string,ServiceCost>={
 };
 // Obras grandes (preview.48): cada uma no menu do morador responsável; entrega aos poucos.
 for(const d of PROJECTS)add(`project-${d.id}`,d.npc,d.name,d.description,(s,i)=>donateToProject(s,i,d.id));
+// Moinho do Vale reformado: o Augusto mói na hora o trigo, o milho e a aveia da mochila.
+add('mill-grind','augusto','Moer no moinho da vila',`Depois da reforma do moinho: trigo, milho e aveia viram farinha, fubá e aveia em flocos na hora, ${MILL_FEE} coroas por unidade.`,(s,i)=>{
+ requireThat(projectDone(s,'vale-moinho'),'O moinho ainda está parado. Ajude na obra do Vale com o Augusto.');
+ const lots=MILL.map(([from,to])=>[from,to,i.data[from]??0] as const).filter(([,,n])=>n>0);requireThat(lots.length,'Traga trigo, milho ou aveia na mochila.');
+ const total=lots.reduce((n,[,,q])=>n+q,0);pay(s,i,total*MILL_FEE,Object.fromEntries(lots.map(([f,,n])=>[f,n])));
+ requireThat(i.transact({},Object.fromEntries(lots.map(([,t,n])=>[t,n]))),'Libere espaço na mochila para a farinha.');
+ return `O moinho moeu: ${lots.map(([,t,n])=>`${n} ${ITEMS[t].name.toLowerCase()}`).join(', ')}.`;});
 // Vidro para a estufa e as obras: o Bento funde a areia da Costa.
 add('melt-glass','bento','Fundir vidro',`${GLASS.sand} areias e ${GLASS.fee} coroas: ${GLASS.glass} vidros para a estufa e as obras do Vale.`,(s,i)=>{pay(s,i,GLASS.fee,{sand:GLASS.sand});requireThat(i.transact({},{glass:GLASS.glass}),'Libere espaço na mochila para o vidro.');return `${GLASS.glass} vidros prontos.`;});
 export function listVillageServices(npc:string,save?:SaveData):VillageServiceOffer[]{
@@ -159,6 +168,7 @@ export function listVillageServices(npc:string,save?:SaveData):VillageServiceOff
    else{offer.disabled=true;offer.cost=undefined;offer.actionLabel=status==='done'?'Pronta':status==='building'?`Em obra até o dia ${projectReadyDay(save,d.id)}`:'Bloqueada';
     if(status==='locked')offer.description=`${d.description} Primeiro: ${projectDef(d.requires!)?.name}.`;}
   }
+  if(id==='mill-grind'){const ready=projectDone(save,'vale-moinho'),n=MILL.reduce((k,[f])=>k+(save.inventory[f]??0),0);offer.item='flour';offer.disabled=!ready||!n||(save.villageEconomy?.coins??0)<n*MILL_FEE;offer.actionLabel=!ready?'Moinho parado':n?`Moer ${n} (${n*MILL_FEE} C)`:'Sem grãos';}
   if(id==='melt-glass'){offer.item='glass';offer.disabled=(save.inventory.sand??0)<GLASS.sand||(save.villageEconomy?.coins??0)<GLASS.fee;offer.actionLabel=`Fundir (${GLASS.fee} C)`;}
   return offer;
  });

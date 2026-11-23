@@ -1,3 +1,7 @@
+import {projectDone} from './systems/projects';
+import type {SaveData as FarolSave} from './types';
+/** Lago; Costa de noite com o farol aceso; ou rios e praias comuns. */
+export const fishingHabitat=(s:FarolSave)=>s.activeArea==='fishingLake'?'lake' as const:s.activeArea==='coast'&&projectDone(s,'vale-farol')&&(s.time>=19*60||s.time<5*60)?'lighthouse' as const:'other' as const;
 import {AREA_NAMES} from './data/area-names';
 import {fishingSupplyIcon} from './data/fishing-supplies';
 import {BAITS,RODS,fishingConditions} from './systems/fishing-progress';
@@ -19,7 +23,7 @@ const fishIcon='<svg viewBox="0 0 28 18" aria-hidden="true"><path d="M6 9 1 3v12
 export function fishAtBank(save:SaveData,net:boolean,onChange:()=>void,visual?:{ready?:boolean;start:()=>Promise<boolean>;destroy:()=>void;signal?:AbortSignal}):Promise<string>{
  if(active)return active;
  if(visual?.ready===false){visual.destroy();return Promise.resolve(net?'Procure um trecho com água livre para abrir a rede inteira. A isca foi preservada.':'Aproxime-se de um trecho com água livre para lançar a linha. A isca foi preservada.');}
- const session=new FishingSession(save.villageProgress?.fishingSkill??0,net,save.inventory.accessory>0,random,save.activeArea==='fishingLake'?'lake':'other',{bandBonus:hasFoodEffect(save,'roastedFish')?FISHING_BAND_BONUS:0,rodTier:save.fishingProgress?.rodTier,bait:save.fishingProgress?.bait,time:save.time,day:save.day});
+ const session=new FishingSession(save.villageProgress?.fishingSkill??0,net,save.inventory.accessory>0,random,fishingHabitat(save),{bandBonus:hasFoodEffect(save,'roastedFish')?FISHING_BAND_BONUS:0,rodTier:save.fishingProgress?.rodTier,bait:save.fishingProgress?.bait,time:save.time,day:save.day});
  const cast=beginFishingCast(save,net,session.reward,saveGame);
  if(!cast.ok){visual?.destroy();return Promise.resolve(cast.message);}
  onChange();if(!visual)gameAudio.play('fishing-cast');

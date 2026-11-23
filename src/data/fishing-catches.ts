@@ -19,7 +19,8 @@ export type FishingTrashId=typeof FISHING_TRASH[number]['id'];
 export type FishingReward={kind:'fish';specimens:FishSpecimen[]}|{kind:'trash';id:FishingTrashId;quantity:1|2};
 export interface FishingHaul {day:number;reward:FishingReward}
 export const FISHING_TRASH_CHANCE=.12;
-export const FISHING_HABITATS={lake:{rare:true,trash:.08},other:{rare:false,trash:.24}} as const;
+/** `lighthouse`: a Costa à noite com o farol aceso (obra do Vale, preview.48) também dá peixe raro. */
+export const FISHING_HABITATS={lake:{rare:true,trash:.08},other:{rare:false,trash:.24},lighthouse:{rare:true,trash:.16}} as const;
 export const fishSpecies=(id:FishSpeciesId)=>FISH_SPECIES.find(f=>f.id===id)!;
 export const fishingTrash=(id:FishingTrashId)=>FISHING_TRASH.find(f=>f.id===id)!;
 const fraction=(random:()=>number)=>Math.max(0,Math.min(1,random()));

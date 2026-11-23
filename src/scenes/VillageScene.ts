@@ -1,3 +1,5 @@
+import {atTrainStop,drawTrainSign,offerTrain,trainRunning} from '../train-travel';
+import {projectDone} from '../systems/projects';
 import {VillageHens} from '../village-hens';
 import {RopeTransit} from '../rope-transit';
 import {transferEscortTo} from '../systems/animals';
@@ -179,7 +181,7 @@ export class VillageScene extends Phaser.Scene {
   this.paused=false;this.leaving=false;this.elapsed=0;this.hudElapsed=0;this.exitPassage.reset();this.northPassage.reset();this.orchardPassage.reset();
   this.zoom=loadCameraZoom();this.inventory=new Inventory(this.state.inventory);
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
-  this.world=new VillageWorld(this,this.state.villageMapEdits);this.createVillagers();prepareVillageRoutines(this.state);this.createDailyRoutines();
+  this.world=new VillageWorld(this,this.state.villageMapEdits);this.world.millRunning=projectDone(this.state,'vale-moinho');this.createVillagers();prepareVillageRoutines(this.state);this.createDailyRoutines();
   const saved=this.state.villagePosition,entry=villagePixelPoint(this.world.entry());
   const valid=saved&&![[-7,-5],[7,-5],[-7,3],[7,3]].some(([dx,dy])=>this.movementBlockedPoint(saved.x+dx,saved.y+dy));
   this.player=new Player(this,this.state.profile,valid?saved.x:entry.x,valid?saved.y:entry.y,'village-player');
@@ -188,6 +190,7 @@ export class VillageScene extends Phaser.Scene {
   this.rope=new RopeTransit(this,()=>this.state,'village',this.movementBlocked,a=>a==='orchard'?{x:(VILLAGE_ORCHARD_EXIT.x+.5)*32,y:(VILLAGE_ORCHARD_EXIT.y+.5)*32}:a==='cityForest'?{x:(VILLAGE_NORTH_GATE.x+.5)*32,y:(VILLAGE_NORTH_GATE.y+.5)*32}:undefined);
   this.events.once('shutdown',()=>{this.rope?.destroy();this.rope=undefined;this.hens?.destroy();this.hens=undefined;});
   this.hens=new VillageHens(this,(x,y)=>this.world.isSolidPoint(x,y));
+  if(trainRunning(this.state)){const sign=drawTrainSign(this,'village');this.events.once('shutdown',()=>sign.destroy());}
   this.helpers?.destroy();this.helpers=new SurvivorResidentsView(this,()=>{this.state.inventory={...this.inventory.data};return{save:this.state,area:'village',player:this.player,visible:!this.inShop||this.inCommunity,interior:this.inCommunity,blocked:(x,y)=>this.world.isBlocked(x,y)};},this.ui,()=>{Object.assign(this.inventory.data,this.state.inventory);this.updateHUD();});
   this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time,false,this.state.day);this.world.updateLighting(this.state.time);
   if(this.state.communityInterior&&communityReady(this.state))this.setCommunityRoom(true,this.state.communityInterior);
@@ -429,6 +432,7 @@ export class VillageScene extends Phaser.Scene {
   this.time.delayedCall(SCENE_FADE_MS,()=>{if(this.leaving)return;if(id)this.completeGuide(id);this.guide=undefined;this.setMerchantRoom(id);this.changingRoom=false;this.cameras.main.fadeIn(SCENE_FADE_MS);gameAudio.play('door');this.updateHUD();this.persist();});
  }
  private interact():void {
+  if(!this.inShop&&atTrainStop(this.state,'village',this.player)&&!this.ui.isModalOpen()){offerTrain(this,this.ui,()=>this.state,'village',()=>this.snapshotState());return;}
   if(this.bentoTravelView?.talk())return;
   if(this.paused||this.leaving||this.changingRoom||this.ui.isModalOpen()||this.shop?.isOpen)return;
   if(this.nearBoard()){this.openBoard();return;}
@@ -578,7 +582,7 @@ export class VillageScene extends Phaser.Scene {
   this.ui.updateHUD({itemQuality:this.state.itemQuality,worldWeapon:this.state.worldWeapon,toolConditions:this.state.economy6?.tools,learnedRecipes:this.state.villageProgress?.recipes??[],vigor:this.state.villageProgress?.vigor??100,area:'village',mapTitle:this.inCommunity?'Centro comunitário':undefined,coins:this.state.villageEconomy!.coins,inHome:this.inShop,mapEditorAvailable:!this.inCommunity,interiorEditor:this.inShop&&!this.inCommunity,swimming:this.player.isSwimming,name:this.state.profile.name,
    day:this.state.day,time:this.state.time,inventory:this.inventory.data,tool:'hand',wateringCan:!!this.state.homeSupplies?.wateringCan,wateringCanWater:this.state.wateringCanWater??0,
    playerTile:{x:this.player.x/32,y:this.player.y/32},interiorMapSize:this.inShop?{width:18,height:this.merchantRoom||this.inCommunity?12:11}:undefined,interactionKey:npc||this.helpers?.nearest()||this.nearCommunity()||this.nearBoard()?'E':null,prompt:this.nearBoard()?'Quadro de pedidos · pedidos dos moradores':this.nearCommunity()?(communityReady(this.state)?'Entrar no centro comunitário':'Reparar o centro comunitário · preparar um lar para sobreviventes'):(this.helpers?.nearest()?`Conversar com ${this.helpers.nearest()!.name} · pedir ajuda`:undefined)??this.closedDoorMessage()??(npc?`Conversar com ${npc.data.name}${this.canTrade(npc.data.id)?' · comprar e vender':' · conversa e serviços'}`:this.guide?`Siga ${VILLAGE_NPCS.find(n=>n.id===this.guide!.owner)!.name} até a loja`:this.inShop?'Caminhe pela porta ao sul para sair':nearExit?'Siga a seta para voltar à propriedade':nearOrchard?`${AREA_NAMES.orchard} ao leste`:'Explore a praça e converse com os moradores'),
-   location,harvests:this.inventory.data.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:this.inShop,shelterReason:this.inShop?location:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress,...this.bentoTravelView?.hud,...(this.inBlacksmith&&!npc&&nearBentoDepot(this.state,this.player)?{prompt:'Depósito particular do Bento',interactionKey:'E'}:{}),...this.rope?.prompt()});
+   location,harvests:this.inventory.data.turnip,metLia:this.state.metLia,nearWorkbench:false,sheltered:this.inShop,shelterReason:this.inShop?location:'',resourceProgress:'',farmingProgress:this.farming.progress,progress:this.state.progress,...this.bentoTravelView?.hud,...(this.inBlacksmith&&!npc&&nearBentoDepot(this.state,this.player)?{prompt:'Depósito particular do Bento',interactionKey:'E'}:{}),...(!this.inShop&&atTrainStop(this.state,'village',this.player)?{prompt:'Ponto do trem do Vale',interactionKey:'E' as const}:{}),...this.rope?.prompt()});
   this.ui.updateCameraZoom(this.zoom,!this.paused&&!this.shop?.isOpen);
  }
  persist():boolean {return!!this.player&&!this.leaving&&saveGame(this.snapshotState());}
@@ -626,6 +630,12 @@ export class VillageScene extends Phaser.Scene {
  private ropeBlocks():boolean{if(!this.rope?.escorting)return false;this.ui.toast('Leve o animal pela estrada a oeste até a propriedade. G solta a corda.');return true;}
  private enterCityForest(resume?:VillageStart['resumeCityForest']):void{
   if(this.leaving||this.inShop||!resume&&this.ropeBlocks())return;
+  // Ponte nova (obra do Vale): dá para ir direto às Ruínas.
+  if(!resume&&projectDone(this.state,'vale-ponte')&&!this.ui.isModalOpen()){this.ui.chooseOption('A PONTE NOVA','Para onde?','A ponte nova leva direto às Ruínas, sem atravessar a Floresta da Cidade.',[{label:'Floresta da Cidade',run:()=>this.goNorth()},{label:'Ruínas, pela ponte',run:()=>{delete this.state.ruinsPosition;if(this.persist())this.goNorth('ruins');}}]);return;}
+  this.goNorth(resume);
+ }
+ private goNorth(resume?:VillageStart['resumeCityForest']):void{
+  if(this.leaving||this.inShop)return;
   if(!resume&&!this.persist())return;
   this.leaving=true;const updated=structuredClone(this.state),ui=this.ui,onReturn=this.onReturn;
   if(resume)updated.activeArea=resume;
@@ -659,7 +669,7 @@ export class VillageScene extends Phaser.Scene {
  update(time:number,ms:number):void {
   if(!this.player)return;this.festivalDecor?.update(this.state.day,this.inShop);this.daylight.update(this.state.time,this.inShop,this.state.day);this.world.update(time,this.inShop?undefined:this.player);this.world.updateLighting(this.state.time);
   if(this.paused||this.leaving||this.changingRoom||this.shop?.isOpen||this.ui.isModalOpen()||document.hidden)return;
-  const delta=Math.min(ms/1000,.1),previous={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.keepDry=!!this.rope?.escorting;this.player.update(delta,this.movementBlocked,this.movementBlockedPoint,true,this.swimmingPoint,this.allowPierStep);if(!this.inShop)this.rope?.update(delta,this.player);this.hens?.update(delta,this.player,this.state.time,this.inShop);
+  const delta=Math.min(ms/1000,.1),previous={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.keepDry=!!this.rope?.escorting;this.player.update(delta,this.movementBlocked,this.movementBlockedPoint,true,this.swimmingPoint,this.allowPierStep);if(!this.inShop)this.rope?.update(delta,this.player);this.world.millRunning=projectDone(this.state,'vale-moinho');this.hens?.update(delta,this.player,this.state.time,this.inShop);
   if(this.inShop)this.centerInteriorCamera();
   if(this.inCommunity&&this.communityPassage.update(previous,this.player,COMMUNITY_ROOM_EXIT)){this.changeCommunityRoom(false);return;}
   if(!this.inCommunity&&!this.merchantRoom&&this.homePassage.update(previous,this.player,this.inBlacksmith?smithDoor(this.smithLayout):BLACKSMITH_DOOR)){this.changeBlacksmithRoom();return;}

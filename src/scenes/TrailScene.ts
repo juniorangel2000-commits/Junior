@@ -1,3 +1,4 @@
+import {atTrainStop,drawTrainSign,offerTrain,trainRunning} from '../train-travel';
 import Phaser from 'phaser';
 import type { SaveData, Tool, ItemId } from '../types';
 import type { ForestStart as TrailStart } from './ForestScene';
@@ -220,6 +221,7 @@ export class TrailScene extends Phaser.Scene {
          // Com a rede na mochila, você chega devagar: o caranguejo só se assusta bem de perto.
          fleeScale:id=>id==='crab'&&(this.state.inventory.net??0)>0?.45:1});
     }
+    if(!this.inHome&&(this.area==='railway'||this.area==='coast')&&trainRunning(this.state)){const sign=drawTrainSign(this,this.area);this.events.once('shutdown',()=>sign.destroy());}
     if(!this.inHome&&(this.area==='swamp'||this.area==='coast'||this.area==='orchard'||this.area==='ruins'||this.area==='railway')){
       const layout=this.world.layout;
       this.wildlife=new AnimalPopulation(this,this.state,this.area,(x,y)=>this.tileBlocked(x,y)||layout.water((x+.5)*32,(y+.5)*32),PLAYER_SPEED);
@@ -300,7 +302,9 @@ export class TrailScene extends Phaser.Scene {
     const fishing=this.nearFishing()&&!!this.equippedFishingItem();
     const cardinal={up:'norte',down:'sul',left:'oeste',right:'leste'}[exitSignLayout(exit,trail.entry(edits)).direction];
     const led=!!state.animalEscort&&!!this.wildlife,catchable=!led&&!player.isSwimming?this.wildlife?.nearest(player):undefined,catchKind=catchable&&domesticAnimal(catchable.id)?.kind;
+    const train=!this.inHome&&(this.area==='railway'||this.area==='coast')&&atTrainStop(state,this.area,player);
     const prompt=player.isSwimming?'Siga até a margem para sair da água.':
+      train?'E · Pegar o trem do Vale':
       led?'Conduzindo animal · siga até a saída · soltar corda':
       catchKind?`Prender ${ANIMAL_NAMES[catchKind].toLowerCase()} com corda`:
       resident?`E · Conversar com ${resident}`:
@@ -318,7 +322,7 @@ export class TrailScene extends Phaser.Scene {
       tool:state.equippedTool??'hand',worldWeapon:state.worldWeapon,learnedRecipes:state.villageProgress?.recipes??[],
       inHome:this.inHome,swimming:player.isSwimming,coins:state.villageEconomy?.coins??0,vigor:state.villageProgress?.vigor??100,
       wateringCan:!!state.homeSupplies?.wateringCan,wateringCanWater:state.wateringCanWater??0,
-      playerTile:{x:player.x/32,y:player.y/32},interactionKey:led?'G':catchKind||resident||forage||crab||fruit||landmark||fishing?'E':null,prompt,location:AREA_NAMES[this.area],
+      playerTile:{x:player.x/32,y:player.y/32},interactionKey:led?'G':train||catchKind||resident||forage||crab||fruit||landmark||fishing?'E':null,prompt,location:AREA_NAMES[this.area],
       ...(this.inHome?{mapTitle:this.interiorName,location:this.interiorName,interiorMapSize:{width:this.mapSize.width/32,height:this.mapSize.height/32}}:{}),
       ...(this.area==='coast'||this.area==='orchard'?{mapTitle:AREA_NAMES[this.area]}:{}),
       harvests:state.inventory.turnip,metLia:state.metLia,nearWorkbench:false,sheltered:false,shelterReason:'',
@@ -352,6 +356,7 @@ export class TrailScene extends Phaser.Scene {
   }
   private interact():void {
     if(!this.player.isSwimming&&this.outings?.interact())return;
+    if(!this.inHome&&(this.area==='railway'||this.area==='coast')&&atTrainStop(this.state,this.area,this.player)){offerTrain(this,this.ui,()=>this.state,this.area,()=>this.snapshotState());return;}
     if(this.tieAnimal())return;
     const forage=this.player.isSwimming?undefined:forageNear(this.state,this.area,this.player);
     if(forage){this.ui.toast(collectForage(this.snapshotState(),forage,this.player,saveGame));this.updateHUD();return;}

@@ -1285,6 +1285,22 @@ export class GameUI {
     if (this.modal === 'home') this.homeEditor?.refresh(home, message);
   }
 
+  /** Janela de escolha genérica (preview.48): destinos do trem, caminho pela ponte nova. */
+  chooseOption(eyebrow: string, title: string, text: string, options: { label: string; run: () => void }[]): void {
+    if (this.mode !== 'hud' || this.modal) return;
+    this.openModal('dialogue');
+    const panel = document.createElement('section');
+    panel.className = 'sleep-card panel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    panel.setAttribute('aria-label', title);
+    const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+    panel.innerHTML = `<span class="eyebrow">${esc(eyebrow)}</span><h2>${esc(title)}</h2><p>${esc(text)}</p><div class="pause-actions">${options.map((o, i) => `<button class="button${i ? ' button-light' : ' button-primary'}" data-choice="${i}">${esc(o.label)}</button>`).join('')}<button class="button button-light" data-choice-cancel>Ficar</button></div>`;
+    panel.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach(b => b.addEventListener('click', () => { this.closeModal(); options[Number(b.dataset.choice)].run(); }));
+    panel.querySelector('[data-choice-cancel]')!.addEventListener('click', () => this.closeModal());
+    this.overlay.append(panel);
+    panel.querySelector<HTMLButtonElement>('[data-choice-cancel]')!.focus();
+  }
   confirmCityTravel(onTravel: () => void): void {
     if (this.mode !== 'hud' || this.modal) return;
     this.openModal('dialogue');

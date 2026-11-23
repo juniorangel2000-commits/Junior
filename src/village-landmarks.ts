@@ -15,7 +15,8 @@ export function preloadVillageLandmarks(scene:Phaser.Scene):void {
  scene.load.image('village-windmill-source',windmill.file);
 }
 
-export function drawVillageLandmarks(scene:Phaser.Scene):{update(time:number,occupant?:{x:number;y:number}):void} {
+/** `millRunning`: as pás do moinho só giram depois da obra do Vale (preview.48). */
+export function drawVillageLandmarks(scene:Phaser.Scene,millRunning:()=>boolean=()=>true):{update(time:number,occupant?:{x:number;y:number}):void} {
  setupVillagePropAtlas(scene,'village-windmill','village-windmill-source',windmill);
  setupVillagePropAtlas(scene,'village-wheat','village-wheat-source',wheat);
  const customAssets={
@@ -71,7 +72,7 @@ export function drawVillageLandmarks(scene:Phaser.Scene):{update(time:number,occ
  const ripple=scene.add.graphics().setData('village-fountain-water',true);
  if(fountain)ripple.setDepth(fountain.depth);
  return {update(time:number,occupant?:{x:number;y:number}){
-  rotor?.setRotation(windmillAngle(time));
+  if(millRunning())rotor?.setRotation(windmillAngle(time));else rotor?.setRotation(.35);
   gazeboRoof?.setAlpha(occupant&&villageGazeboContains(occupant.x,occupant.y) ? .3 : 1);
   if(!fountain||!ripple.active)return;
   ripple.clear();

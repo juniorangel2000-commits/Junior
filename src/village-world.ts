@@ -124,6 +124,8 @@ export class VillageWorld {
  readonly solid=new Set<string>();
  private readonly environment:Phaser.GameObjects.GameObject[];
  private readonly landmarks:{update(time:number,occupant?:{x:number;y:number}):void};
+ /** Moinho reformado (obra do Vale): as pás voltam a girar. */
+ millRunning=false;
  private readonly lamps:Phaser.GameObjects.Graphics[]=[];
  private readonly windows:Phaser.GameObjects.Image[]=[];
  private readonly smoke:Array<{destroy():void}>=[];
@@ -137,7 +139,7 @@ export class VillageWorld {
   drawVillageNorthRoad(scene,edits,namespace);
   drawExitSign(scene,VILLAGE_NORTH_GATE,VILLAGE_NORTH_ARRIVAL);
   drawExitSign(scene,VILLAGE_ORCHARD_EXIT,VILLAGE_ORCHARD_RETURN);
-  this.drawLake();drawVillagePier(scene);this.drawTrees();drawVillageDefences(scene);this.drawBuildings();this.landmarks=drawVillageLandmarks(scene);drawVillagePlaza(scene,this.edits);
+  this.drawLake();drawVillagePier(scene);this.drawTrees();drawVillageDefences(scene);this.drawBuildings();this.landmarks=drawVillageLandmarks(scene,()=>this.millRunning);drawVillagePlaza(scene,this.edits);
   for(const p of plazaFurniture(this.edits))this.editorObjects.push({id:plazaEditorId(p),kind:(p.frame.startsWith('shrubs-')?`village-${p.frame}`:`village-bench-${p.frame}`) as WorldEditorObject['kind'],x:Math.floor(p.x),y:Math.floor(p.y),texture:'village-plaza-furniture',frame:p.frame});
   this.drawGardens();this.drawProps();drawVillageDressing(scene,this.edits);drawVillageTallGrass(scene,this.edits);
   drawExitSign(scene,this.exit(),this.entry());

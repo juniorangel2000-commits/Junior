@@ -354,6 +354,12 @@ export class ValleyScene extends Phaser.Scene {
     }, finish);
   }
 
+  /** Depois de uma viagem de trem: a partida já foi salva no destino; retoma por lá. */
+  resumeAfterTravel(): void {
+    this.scene.wake();this.villageActive=false;this.forestActive=false;this.paused=false;
+    document.querySelector<HTMLElement>('#ui')!.style.display='';
+    void this.continueGame().then(()=>this.ui.toast('Fim da linha! O trem chegou.'));
+  }
   async continueGame(): Promise<void> {
     const token=++this.openingToken;
     const stored=inspectSave(),saved=stored.data;
