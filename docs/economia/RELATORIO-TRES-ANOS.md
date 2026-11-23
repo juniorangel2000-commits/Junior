@@ -25,6 +25,18 @@ O relatório anterior, de 1 ano, está em [RELATORIO-ANO-1.md](RELATORIO-ANO-1.m
 
 Para rodar de novo: `ECONOMIA=1 npx vitest run scripts/economia`.
 
+## No navegador: 3 anos jogados
+
+- O jogo rodou 337 noites seguidas, do Ano 1 até a Primavera 1 do Ano 4, com horta plantada, rega e colheita.
+- A cada virada de estação, a página foi recarregada e a partida continuou pelo "Continuar". Foram 12 recargas, e todas voltaram na data certa.
+- **Chuva:** em 89 dias a horta amanheceu regada sozinha, sem nenhuma falha.
+- **Vigor:** o personagem dormiu cansado todas as noites, com 5 de vigor, e acordou com 100 em todos os dias. A barra da tela acompanhou.
+  - O teste chamou a mesma recuperação que a cama usa, sem deitar na cama de verdade.
+- **Animais:** uma vez por ano, uma vaca foi presa com a corda nos Campos e levada até a propriedade: wild-cow-4, depois wild-cow-5, depois wild-cow-6.
+  - Cada vaca levada saiu do sorteio, e no ano seguinte apareceu outra.
+- **Plantas:** as que estavam fora de estação murcharam na virada, como previsto.
+- Não apareceu nenhum erro de página nem de console.
+
 ## Resultado: dinheiro no fim de cada ano
 
 | Estratégia | Ano 1 | Ano 2 | Ano 3 | Canteiros | Dias sem vigor | Refeições |

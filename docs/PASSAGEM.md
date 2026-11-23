@@ -29,6 +29,8 @@
 - **Galinhas da Rosa** (`src/village-hens.ts`): três galinhas mansas no gramado ao lado da estufa (`ROSA_YARD`), de dia. Não se prendem com a corda nem entram no sorteio.
 - **HUD:** painel do relógio só com dia, hora e dinheiro. Vida (coração) e vigor (raio) em barras verticais empilhadas no centro da direita, na moldura de madeira dos painéis; fora da mina a vida fica cheia.
 
+- **Relatório de três anos** ([docs/economia/RELATORIO-TRES-ANOS.md](economia/RELATORIO-TRES-ANOS.md)): o jogador simulado (`scripts/economia/jogador.test.ts`) joga 336 dias com vigor, refeição opcional e a chuva da horta real. No navegador foram 337 noites com 12 recargas, a chuva regando em 89 dias, o vigor voltando a 100 todo dia e uma vaca levada por ano com a corda, sem erros. Principal conclusão: o dinheiro cresce cerca de 73 a 95 mil por ano sem onde ser gasto.
+
 ## Rodadas anteriores (resumo)
 
 - **Um ano jogado e economia rebalanceada** (pedido do Junior). Relatório: [docs/economia/RELATORIO-ANO-1.md](economia/RELATORIO-ANO-1.md).
@@ -125,7 +127,8 @@
 
 - Perguntar ao Junior onde a colisão da mina falha.
 - O painel de Companheiros encosta no topo das barras de vida/vigor em telas de 800 px de altura (as barras não capturam cliques).
-- Publicar a preview.48 quando pedido (notas e LEIA).
+- Publicar a preview.48 quando pedido (notas e LEIA). A Release da preview.47 nunca foi criada: a ideia é publicar direto a 48, com as notas da 47 e da 48 juntas.
+- Decisões do relatório de três anos: onde gastar o dinheiro, preço da refeição, vigor da rega, pesca com horta pequena.
 
 ## Pendências e ideias para depois
 
