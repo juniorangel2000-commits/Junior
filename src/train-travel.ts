@@ -12,13 +12,13 @@ export type TrainStop='village'|'railway'|'coast';
 export const TRAIN_FARE=30,TRAIN_MINUTES=30;
 const T=32;
 export const TRAIN_STOPS:Readonly<Record<TrainStop,{name:string;stop:TilePoint;arrive:TilePoint;position:'villagePosition'|'railwayPosition'|'coastPosition'}>>={
- village:{name:'Vila',stop:{x:49,y:41},arrive:{x:50,y:42},position:'villagePosition'},
+ village:{name:'Vila',stop:{x:49,y:41},arrive:{x:50,y:41},position:'villagePosition'},
  railway:{name:'Estação',stop:{x:50,y:35},arrive:{x:50,y:36},position:'railwayPosition'},
  coast:{name:'Costa das Marés',stop:{x:31,y:6},arrive:{x:31,y:7},position:'coastPosition'},
 };
 export const trainRunning=(s:Pick<SaveData,'projects'|'day'>)=>projectDone(s,'vale-estacao');
 export const atTrainStop=(s:Pick<SaveData,'projects'|'day'>,here:TrainStop,p:TilePoint)=>trainRunning(s)&&Math.hypot(p.x-(TRAIN_STOPS[here].stop.x+.5)*T,p.y-(TRAIN_STOPS[here].stop.y+.5)*T)<56;
-/** `arrive`: ladrilho livre ao lado do ponto, onde o jogador desce do trem (a Vila tem um obstáculo logo abaixo do ponto). */
+/** `arrive`: ladrilho livre ao lado do ponto, onde o jogador desce do trem (na Vila, a fileira abaixo do ponto tem obstáculos). */
 /** Placa provisória do ponto do trem (poste e tabuleta). */
 export function drawTrainSign(scene:Phaser.Scene,here:TrainStop):Phaser.GameObjects.Graphics{
  const p=TRAIN_STOPS[here].stop,x=(p.x+.5)*T,y=(p.y+.5)*T-6,g=scene.add.graphics().setDepth(y);
