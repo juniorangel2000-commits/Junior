@@ -1,3 +1,4 @@
+import {VillageHens} from '../village-hens';
 import {RopeTransit} from '../rope-transit';
 import {transferEscortTo} from '../systems/animals';
 import {NpcPassageCollision} from '../systems/npc-collision';
@@ -157,6 +158,7 @@ export class VillageScene extends Phaser.Scene {
  private readonly orchardPassage=new MapExitPassage();
  private readonly northPassage=new MapExitPassage();
  private rope?:RopeTransit;
+ private hens?:VillageHens;
  private bentoTravelView?:BentoTravelView;
  constructor(){super('Vila');}
  init(data:VillageStart):void{this.ui=data.ui;}
@@ -184,7 +186,8 @@ export class VillageScene extends Phaser.Scene {
   this.player.facing=directionVector(valid?saved.direction??'right':'right');this.player.update(0,this.movementBlocked,this.movementBlockedPoint,false,this.swimmingPoint);
   // Animal na corda a caminho da propriedade (do Pomar, das Ruínas ou da Estação, preview.48).
   this.rope=new RopeTransit(this,()=>this.state,'village',this.movementBlocked,a=>a==='orchard'?{x:(VILLAGE_ORCHARD_EXIT.x+.5)*32,y:(VILLAGE_ORCHARD_EXIT.y+.5)*32}:a==='cityForest'?{x:(VILLAGE_NORTH_GATE.x+.5)*32,y:(VILLAGE_NORTH_GATE.y+.5)*32}:undefined);
-  this.events.once('shutdown',()=>{this.rope?.destroy();this.rope=undefined;});
+  this.events.once('shutdown',()=>{this.rope?.destroy();this.rope=undefined;this.hens?.destroy();this.hens=undefined;});
+  this.hens=new VillageHens(this,(x,y)=>this.world.isSolidPoint(x,y));
   this.helpers?.destroy();this.helpers=new SurvivorResidentsView(this,()=>{this.state.inventory={...this.inventory.data};return{save:this.state,area:'village',player:this.player,visible:!this.inShop||this.inCommunity,interior:this.inCommunity,blocked:(x,y)=>this.world.isBlocked(x,y)};},this.ui,()=>{Object.assign(this.inventory.data,this.state.inventory);this.updateHUD();});
   this.daylight=new Daylight(this,3072,2304);this.daylight.update(this.state.time,false,this.state.day);this.world.updateLighting(this.state.time);
   if(this.state.communityInterior&&communityReady(this.state))this.setCommunityRoom(true,this.state.communityInterior);
@@ -656,7 +659,7 @@ export class VillageScene extends Phaser.Scene {
  update(time:number,ms:number):void {
   if(!this.player)return;this.festivalDecor?.update(this.state.day,this.inShop);this.daylight.update(this.state.time,this.inShop,this.state.day);this.world.update(time,this.inShop?undefined:this.player);this.world.updateLighting(this.state.time);
   if(this.paused||this.leaving||this.changingRoom||this.shop?.isOpen||this.ui.isModalOpen()||document.hidden)return;
-  const delta=Math.min(ms/1000,.1),previous={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.keepDry=!!this.rope?.escorting;this.player.update(delta,this.movementBlocked,this.movementBlockedPoint,true,this.swimmingPoint,this.allowPierStep);if(!this.inShop)this.rope?.update(delta,this.player);
+  const delta=Math.min(ms/1000,.1),previous={x:this.player.x,y:this.player.y};this.player.speedMultiplier=playerSpeedFactor(this.state);this.player.keepDry=!!this.rope?.escorting;this.player.update(delta,this.movementBlocked,this.movementBlockedPoint,true,this.swimmingPoint,this.allowPierStep);if(!this.inShop)this.rope?.update(delta,this.player);this.hens?.update(delta,this.player,this.state.time,this.inShop);
   if(this.inShop)this.centerInteriorCamera();
   if(this.inCommunity&&this.communityPassage.update(previous,this.player,COMMUNITY_ROOM_EXIT)){this.changeCommunityRoom(false);return;}
   if(!this.inCommunity&&!this.merchantRoom&&this.homePassage.update(previous,this.player,this.inBlacksmith?smithDoor(this.smithLayout):BLACKSMITH_DOOR)){this.changeBlacksmithRoom();return;}
