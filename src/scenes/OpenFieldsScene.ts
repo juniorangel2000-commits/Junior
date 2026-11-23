@@ -101,8 +101,8 @@ export class OpenFieldsScene extends Phaser.Scene{
  private horseNear(){const h=this.world?.horse;return h&&Math.hypot(h.brain.x-this.player.x,h.brain.y-this.player.y)<=96?h:undefined;}
  private horsePrompt():{text:string;key:'E'|'G'|null}{
   const t=horseTaming(this.state),name=t.name??'cavalo';
-  if(this.state.animalEscort?.id===HORSE_ID)return{text:`Conduzindo ${name} · siga pela passagem ao norte · G solta a corda`,key:'G'};
-  if(t.tamed)return t.name?{text:`${t.name} · E carinho · G colocar a corda`,key:'E'}:{text:'Cavalo domado · E dar um nome',key:'E'};
+  if(this.state.animalEscort?.id===HORSE_ID)return{text:`Conduzindo ${name} · siga até a saída ao norte · soltar corda`,key:'G'};
+  if(t.tamed)return t.name?{text:`Prender ${t.name} com corda`,key:'E'}:{text:'Cavalo domado · E dar um nome',key:'E'};
   return{text:`Cavalo selvagem · confiança ${t.trust}/${TAMING_DAYS} · ${tamingPhase(feedingDay(this.state)).label}`,key:null};
  }
  private fieldsHint():string{
@@ -135,8 +135,6 @@ export class OpenFieldsScene extends Phaser.Scene{
  private toggleHorseRope():void{
   if(this.state.animalEscort?.id===HORSE_ID){this.snapshotState();if(releaseAnimalEscort(this.state)){saveGame(this.state);this.ui.toast(`Corda solta. ${horseTaming(this.state).name??'O cavalo'} fica nos Campos.`);}this.updateHUD();return;}
   if(this.state.animalEscort){this.snapshotState();if(releaseAnimalEscort(this.state)){saveGame(this.state);this.ui.toast('Corda solta. O animal fica nos Campos.');}this.updateHUD();return;}
-  const h=this.horseNear();if(!h)return;
-  this.snapshotState();const r=startHorseEscort(this.state,h.brain.snapshot());if(r.ok)saveGame(this.state);this.ui.toast(r.message);this.updateHUD();
  }
  /** Aviso do animal solto mais perto, ou de quem está na corda. */
  /** Mesmo padrão do Bosque: E prende o animal na corda, G solta. */
@@ -164,7 +162,11 @@ export class OpenFieldsScene extends Phaser.Scene{
   const horse=this.ipeTarget()?undefined:this.horseNear(),t=horseTaming(this.state);
   if(horse&&t.tamed&&this.state.animalEscort?.id!==HORSE_ID){
    if(!t.name){this.ui.askText({eyebrow:'UM NOVO COMPANHEIRO',title:'Como vai se chamar?',text:'O cavalo confia em você. Escolha um nome para ele.',label:'Nome do cavalo',maxLength:HORSE_NAME_MAX,confirm:'Dar o nome',onConfirm:v=>{this.snapshotState();const r=nameHorse(this.state,v,saveGame);if(!r.ok)return r.message;this.ui.toast(r.message);this.updateHUD();}});return;}
-   this.ui.toast(`${t.name} encosta a cabeça em você, tranquilo.`);gameAudio.play('pickup');return;
+   // Mesmo padrão dos outros animais: E prende na corda, G solta (preview.48).
+   this.snapshotState();const r=startHorseEscort(this.state,horse.brain.snapshot());
+   if(r.ok){saveGame(this.state);gameAudio.play('pickup');this.ui.toast(`Corda presa! Leve ${t.name} até a propriedade. G para soltar.`);}
+   else{this.ui.toast(`${t.name} encosta a cabeça em você, tranquilo. ${r.message}`);gameAudio.play('pickup');}
+   this.updateHUD();return;
   }
   const ipe=this.ipeTarget();
   if(ipe){
