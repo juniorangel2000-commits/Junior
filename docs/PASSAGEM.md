@@ -7,7 +7,7 @@
 - **Continuar a partir de:** `release/v0.10.0-preview.48` (ainda não publicada).
 - **Última versão publicada:** `v0.10.0-preview.47`. A Release da preview.47 é criada pelo Junior (tag `v0.10.0-preview.47` no branch `release/v0.10.0-preview.47`).
 - **Atenção ao publicar:** além de `NOTAS-<versão>.md`, crie `docs/cenarios/LEIA-<versão>.md`. O processo do Windows copia esse arquivo para a Release e falha se ele não existir.
-- **Estado:** a preview.48 tem mina corrigida, vigor, chuva regando a horta, animais só com a corda e HUD novo de vida e vigor. Tudo testado; falta só decidir o espalhamento dos animais (abaixo) e publicar quando o Junior pedir.
+- **Estado:** a preview.48 tem mina corrigida, vigor, chuva regando a horta, animais soltos com sorteio diário (Bosque, Campos, Pântano e Costa) só com a corda e HUD novo de vida e vigor. Tudo testado; falta publicar quando o Junior pedir.
 
 ## Feito nesta rodada (preview.48)
 
@@ -22,7 +22,8 @@
   - **Bosque:** galinhas, cabras e porcos (coelho e cervo continuam fixos). Corda com E, como antes.
   - **Campos:** vacas, ovelhas e patos na beira do rio. Corda com E e G para soltar, como no Bosque (`startFieldEscort`), atravessando para a propriedade como o cavalo (`transferFieldEscortToProperty`). O cavalo continua sempre nos Campos, com a doma; também usa E para prender e G para soltar (sem estábulo ou corda, E faz carinho e diz o que falta).
   - Ids antigos (`forest-*`, `farm-duck-*`, `farm-pig-*`) entraram nas listas, então saves antigos continuam válidos. As vacas e galinhas de enfeite dos Campos saíram (`FIELDS_RETIRED_ANIMALS` ainda aceitos no save).
-  - Ainda não: Pântano, Costa, Pomar, Ruínas e Estação. A corda precisaria atravessar esses cenários (`TrailScene`, `VillageScene`).
+  - **Pântano:** patos na beira das lagoas e porcos. **Costa:** cabras, galinhas e patos na beira do rio. `TrailScene` cria a `AnimalPopulation` nesses dois; ao sair, `transferTrailEscort` passa o animal para o Bosque (Pântano) ou para os Campos (Costa), e de lá segue para a propriedade. Posições guardadas em `animalPositions.swamp/coast` (opcionais). Pontos escolhidos no jogo com o bloqueio real de cada mapa.
+  - Ainda não: Pomar, Ruínas e Estação (a corda precisaria atravessar a Vila, `VillageScene`). Um animal solto (G) fora do seu cenário some e volta ao sorteio do cenário dele.
 - **Pássaros** (sabiá e saíra) diminuíram de 30 para 17 px, menores que o coelho.
 - **HUD:** painel do relógio só com dia, hora e dinheiro. Vida (coração) e vigor (raio) em barras verticais empilhadas no centro da direita, na moldura de madeira dos painéis; fora da mina a vida fica cheia.
 
@@ -120,7 +121,7 @@
 
 ## Em andamento e próximo passo exato
 
-- Próximo passo dos animais: levar o sorteio e a corda ao Pântano e à Costa (via Bosque/Campos) e depois ao Pomar, Ruínas e Estação (via Vila).
+- Próximo passo dos animais: Pomar, Ruínas e Estação (a corda atravessando a Vila).
 - Perguntar ao Junior onde a colisão da mina falha.
 - O painel de Companheiros encosta no topo das barras de vida/vigor em telas de 800 px de altura (as barras não capturam cliques).
 - Publicar a preview.48 quando pedido (notas e LEIA).
@@ -140,7 +141,7 @@
 
 ## Testes
 
-- preview.48: `npm run check` passou e `npm test` passou com 2.279 testes (2 pulados). Depois dos animais: 2.284 testes. No Chromium: mineração nas quatro direções, escuridão com e sem lampião, barras do HUD, sorteio do Bosque em dois dias, vaca levada dos Campos à propriedade com a corda.
+- preview.48: `npm run check` passou e `npm test` passou com 2.279 testes (2 pulados). Depois dos animais: 2.286 testes. No Chromium: mineração nas quatro direções, escuridão com e sem lampião, barras do HUD, sorteio do Bosque em dois dias, vaca levada dos Campos à propriedade com a corda; pato do Pântano pelo Bosque e cabra da Costa pelos Campos até a propriedade.
 
 - Na preview.47 integrada, `npm run check` passou e `npm test` passou com 2.271 testes em 275 arquivos.
 - `tests/critters.test.ts` confere os quadros com margens transparentes, os horários de aparecimento, a direção e o lugar de cada espécie no mapa. `tests/ambient-birds.test.ts` confere a folha de poses e os pousos e voos dos bandos.
