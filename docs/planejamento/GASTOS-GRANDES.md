@@ -59,17 +59,15 @@ Nova construção no menu de obras, ao lado do galinheiro e do curral.
 | # | Obra | Onde | Custo | Materiais | Responsável | O que libera |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | **Moinho da Vila** | moinho (hoje enfeite) | 30.000 C | 40 tábuas, 20 pedras, 4 tecidos de lã | Augusto | As pás voltam a girar. O moinho mói trigo, milho e aveia por uma taxa pequena, sem a máquina de casa. Dias de vento soltam farinha extra. |
-| 2 | **Coreto e praça** | coreto e fonte | 40.000 C | 30 tábuas, 10 vasos de flor | Helena | Música nas noites de sábado: todos os moradores vão à praça e a amizade sobe. Os festivais ganham palco e barracas fixas. |
-| 3 | **Ponte nova da Floresta da Cidade** | caminho da Vila para a Floresta da Cidade | 60.000 C | 20 lingotes de ferro, 40 tábuas | Bento | Atalho para as Ruínas, com a carroça do Damião passando. O caminho com a corda fica mais curto. |
-| 4 | **Farol da Costa** | ponta da Costa | 80.000 C | 15 lingotes de ouro, 30 pedras, 10 vidros | Damião | Pesca noturna na Costa, com peixes raros novos. Um barco passa a visitar o píer uma vez por semana com mercadorias de fora. |
-| 5 | **Estação reativada** | Estação | 150.000 C | 40 lingotes de ferro, 10 de ouro, 20 peças metálicas | Ícaro e Nilo | O trem volta. Dá para viajar rápido entre a Estação, a Vila e a Costa, e a estrada leste da Estação, que hoje não leva a nada, ganha um destino. |
-| 6 | **Celeiro comunitário** | celeiro (hoje enfeite) | 50.000 C | 60 tábuas, 30 pedras | Rosa | Feira semanal: os moradores compram parte da sua colheita a preço cheio. Também guarda a colheita de quem doar. |
+| 2 | **Ponte nova da Floresta da Cidade** | caminho da Vila para a Floresta da Cidade | 60.000 C | 20 lingotes de ferro, 40 tábuas | Bento | Atalho para as Ruínas, com a carroça do Damião passando. O caminho com a corda fica mais curto. |
+| 3 | **Farol da Costa** | ponta da Costa | 80.000 C | 15 lingotes de ouro, 30 pedras, 10 vidros | Damião | Pesca noturna na Costa, com peixes raros novos. Um barco passa a visitar o píer uma vez por semana com mercadorias de fora. |
+| 4 | **Estação reativada** | Estação | 150.000 C | 40 lingotes de ferro, 10 de ouro, 20 peças metálicas | Ícaro e Nilo | O trem volta. Dá para viajar rápido entre a Estação, a Vila e a Costa, e a estrada leste da Estação, que hoje não leva a nada, ganha um destino. |
 
-- **Ordem sugerida:** Moinho → Coreto → Celeiro → Ponte → Farol → Estação.
-- **Total:** cerca de 410 mil coroas, mais materiais. Isso cobre do Ano 2 até o Ano 4 ou 5.
+- **Ordem:** Moinho → Ponte → Farol → Estação. O Junior retirou o coreto e o celeiro.
+- **Total:** 320 mil coroas, mais materiais. Junto com a estufa (100 mil), a casa (75 mil) e as casas novas (105 mil), isso cobre do Ano 2 até o Ano 4 ou 5.
 - **Cada obra exige a anterior.** Isso cria a sensação de que o Vale está se reerguendo.
 - **No save:** `valeRebuild: {obra: {coins, items, done, day}}`, um campo opcional e validado.
-- **Arte:** cada obra tem uma versão "antes" (a atual) e uma "depois": moinho girando, coreto enfeitado, ponte, farol, trem. Faço provisórias para testar, e você manda as definitivas.
+- **Arte:** cada obra tem uma versão "antes" (a atual) e uma "depois": moinho girando, ponte, farol, trem. Faço provisórias para testar, e você manda as definitivas.
 
 ## 11. Casas para novos moradores (as casinhas leste e sul)
 
@@ -91,9 +89,9 @@ As duas casinhas da Vila (`casa-leste` e `casa-sul` em `src/data/village-landmar
 1. **Base:** dinheiro e materiais em etapas, com o quadro de obras e o save. É o mesmo sistema para a casa, a estufa e as obras.
 2. **Ampliação da casa (5):** com arte provisória.
 3. **Estufa (7):** com arte provisória e o vidro e a areia novos.
-4. **Obras 1 e 2 (moinho e coreto):** usam arte que já existe com pequenas animações.
-5. **Pacote de arte para o ChatGPT:** obras 3 a 6 e os dois moradores novos.
-6. **Obras 3 a 6 e moradores novos (11):** conforme a arte for chegando.
+4. **Obra 1 (moinho):** usa a arte que já existe, com as pás girando.
+5. **Pacote de arte para o ChatGPT:** obras 2 a 4 e os dois moradores novos.
+6. **Obras 2 a 4 e moradores novos (11):** conforme a arte for chegando.
 7. **Rodar de novo os 3 anos:** em código e no navegador, conferindo se o dinheiro passa a ter destino.
 
 ## O que preciso que o Junior decida
