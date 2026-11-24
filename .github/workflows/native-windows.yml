@@ -1,0 +1,46 @@
+name: After Rain Native - Windows x64
+on:
+  push:
+    branches: [native/cpp-foundation]
+    paths:
+      - 'godot-teste/**'
+      - '.github/workflows/native-windows.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install SCons
+        run: python -m pip install scons
+      - name: Compile native extension
+        shell: pwsh
+        run: ./godot-teste/native/build-windows.ps1
+      - name: Download Godot 4.4 Standard
+        shell: pwsh
+        run: |
+          $url = 'https://github.com/godotengine/godot/releases/download/4.4-stable/Godot_v4.4-stable_win64.exe.zip'
+          Invoke-WebRequest -Uri $url -OutFile godot.zip
+          Expand-Archive godot.zip -DestinationPath godot
+      - name: Import project and smoke test
+        shell: pwsh
+        run: |
+          $engine = Get-ChildItem godot -Recurse -Filter '*_console.exe' | Select-Object -First 1
+          if (-not $engine) { throw 'Godot console executable missing.' }
+          & $engine.FullName --headless --path godot-teste --editor --import
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & $engine.FullName --headless --path godot-teste --script res://tests/native_smoke.gd
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v6
+        with:
+          name: native-extension-windows-x64
+          path: |
+            godot-teste/bin/after_rain_native.dll
+            godot-teste/after_rain.gdextension
+          if-no-files-found: error
