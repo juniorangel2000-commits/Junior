@@ -21,7 +21,7 @@ import type {ItemId} from '../../src/types';
  * Tempo: segundos reais (= minutos do relógio). Orçamento: 15 min reais por dia.
  * Vigor (preview.48): 100 por dia (a cama recupera); enxada 1 por canteiro, regador 1 por canteiro,
  * pesca 3 por arremesso. A chuva rega a horta sozinha (código real da horta). */
-const DAYS=336,VIGOR={till:1,water:1,cast:3},MEAL={price:60,vigor:50};
+const YEARS=5,DAYS=112*YEARS,VIGOR={till:1,water:1,cast:3},MEAL={price:60,vigor:50};
 const BUDGET=900,T={rope:180,care:5,till:2,plant:1.5,water:3,harvest:1.5,sellTrip:90,orchard:120,coast:150,cast:22};
 const buyerOf=(item:string)=>{let best='',price=0;for(const m of Object.values(MERCHANTS)){const p=(m.sell as Record<string,number>)[item]??0;if(p>price){price=p;best=m.id;}}return{merchant:best,price};};
 
@@ -116,7 +116,7 @@ function playYear(opts:{label:string;orchard:boolean;coast:boolean;fishing:boole
  return{label:opts.label,income,seasonCoins,yearCoins,tiles,coins:economy.coins,log,tiredDays,meals,rainDays,finished};
 }
 
-run('joga três anos',()=>{
+run('joga cinco anos',()=>{
  const runs=[
   playYear({label:'Só horta, sem comprar comida',orchard:false,coast:false,fishing:false,maxTiles:999,meals:0}),
   playYear({label:'Só horta, compra até 2 refeições por dia',orchard:false,coast:false,fishing:false,maxTiles:999,meals:2}),
@@ -129,17 +129,17 @@ run('joga três anos',()=>{
   playYear({label:'Tudo + animais, pagando as obras, até 2 refeições',orchard:true,coast:true,fishing:true,maxTiles:999,meals:2,projects:true,animals:true}),
  ];
  const fmt=(n:number)=>Math.round(n).toLocaleString('pt-BR');
- const out:string[]=['## Três anos jogados pelo código real (horta, mochila e lojas)','',
+ const out:string[]=['## Cinco anos jogados pelo código real (horta, mochila e lojas)','',
   'Orçamento: 15 min reais de trabalho por dia; regar = 3 s por canteiro (com idas ao poço). O jogador escolhe a planta que mais rende para os dias que faltam na estação.',
-  'Vigor: 100 por dia; enxada 1 por canteiro, regador 1 por canteiro, pesca 3 por arremesso. Refeição da pousada: 28 C por 50 de vigor. A chuva rega a horta sozinha.',''];
- out.push('| Estratégia | Fim do ano 1 | Fim do ano 2 | Fim do ano 3 | Canteiros | Dias sem vigor | Refeições compradas | Dias de chuva com horta |');
- out.push('| --- | --- | --- | --- | --- | --- | --- | --- |');
+  'Vigor: 100 por dia; enxada 1 por canteiro, regador 1 por canteiro, pesca 3 por arremesso. Refeição: 60 C por 50 de vigor. Peixe comum: 10 C. A chuva rega a horta sozinha.',''];
+ out.push('| Estratégia | '+Array.from({length:YEARS},(_,i)=>`Fim do ano ${i+1}`).join(' | ')+' | Canteiros | Dias sem vigor | Refeições compradas | Dias de chuva com horta |');
+ out.push('| --- |'+' --- |'.repeat(YEARS+4));
  for(const r of runs)out.push(`| ${r.label} | ${r.yearCoins.map(fmt).join(' | ')} | ${r.tiles} | ${r.tiredDays} | ${r.meals} | ${r.rainDays} |`);
- out.push('','### Fim de cada estação (coroas)','','| Estratégia | '+['Prim. 1','Ver. 1','Out. 1','Inv. 1','Prim. 2','Ver. 2','Out. 2','Inv. 2','Prim. 3','Ver. 3','Out. 3','Inv. 3'].join(' | ')+' |','| --- |'+' --- |'.repeat(12));
+ out.push('','### Fim de cada estação (coroas)','','| Estratégia | '+Array.from({length:YEARS*4},(_,i)=>`${['Prim.','Ver.','Out.','Inv.'][i%4]} ${Math.floor(i/4)+1}`).join(' | ')+' |','| --- |'+' --- |'.repeat(YEARS*4));
  for(const r of runs)out.push(`| ${r.label} | ${r.seasonCoins.map(fmt).join(' | ')} |`);
- out.push('','### Renda por fonte nos 3 anos','','| Estratégia | Renda por fonte |','| --- | --- |');
+ out.push('','### Renda por fonte nos 5 anos','','| Estratégia | Renda por fonte |','| --- | --- |');
  for(const r of runs)out.push(`| ${r.label} | ${Object.entries(r.income).map(([k,v])=>`${k} ${fmt(v)}`).join(', ')} |`);
  for(const r of runs)if(r.finished.length)out.push('',`### Obras — ${r.label}`,'',...r.finished.map(f=>`- ${f}`));
- writeFileSync(new URL('../../docs/economia/JOGADOR-TRES-ANOS.md',import.meta.url),out.join('\n'));
+ writeFileSync(new URL('../../docs/economia/JOGADOR-CINCO-ANOS.md',import.meta.url),out.join('\n'));
  console.log(out.join('\n'));
 },300000);
