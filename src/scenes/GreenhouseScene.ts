@@ -1,3 +1,4 @@
+import {WATER_VIGOR_COST} from '../systems/economy';
 import Phaser from 'phaser';
 import type {SaveData,Tool,ItemId,TilePoint} from '../types';
 import type {GameUI} from '../ui';
@@ -112,7 +113,7 @@ export class GreenhouseScene extends Phaser.Scene{
   else if(!c.watered){
    if(!this.state.homeSupplies?.wateringCan){this.ui.toast('Pegue o regador em casa para regar.');return;}
    if(!((this.state.wateringCanWater??0)>0)){this.ui.toast("O regador está vazio · encha no barril d'água.");return;}
-   r=this.farm.water(t.x,t.y);if(r.ok){this.state.wateringCanWater=(this.state.wateringCanWater??0)-1;if(this.state.wateringCanWater%2===0)spendVigor(this.state,1);gameAudio.play('water');}
+   r=this.farm.water(t.x,t.y);if(r.ok){this.state.wateringCanWater=(this.state.wateringCanWater??0)-1;spendVigor(this.state,WATER_VIGOR_COST);gameAudio.play('water');}
   }else{this.ui.toast(cropStatus(c));return;}
   this.state.inventory=inv.data;this.ui.toast(r.message);this.refreshCrops();this.persist();this.updateHUD();
  }

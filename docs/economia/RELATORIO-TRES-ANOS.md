@@ -256,3 +256,39 @@ O jogador simulado com animais passa a gastar 11.350 C em construções, em vez 
 | Tudo + animais, pagando as obras | 14.004 | 49.053 | 41.632 |
 
 No primeiro mês, os animais agora pedem um investimento de verdade. Depois de pagos, continuam rendendo bem, que é o papel deles. Pagando as obras grandes, o jogador termina a ponte no dia 307, 10 dias depois do que antes.
+
+---
+
+## Refeição, rega e pesca (24/11/2026)
+
+Pedido do Junior: "faça essas alterações", referindo-se às decisões pendentes do relatório.
+
+| O quê | Antes | Agora |
+| --- | --- | --- |
+| Refeição da pousada (50 de vigor) | 28 C | 60 C |
+| Vigor da rega (propriedade e estufa) | 1 a cada 2 canteiros | 1 por canteiro |
+| Peixe comum (`FISH_PRICE`) | 12 C | 10 C |
+
+O peixe identificado na peixaria continua ganhando o bônus de espécie e tamanho por cima desse valor.
+
+### Três anos de novo
+
+| Estratégia | Ano 1 | Ano 2 | Ano 3 | Dias sem vigor | Refeições |
+| --- | --- | --- | --- | --- | --- |
+| Só horta, sem comprar comida | 29.600 | 71.836 | 117.234 | 206 | 0 |
+| Só horta, até 2 refeições por dia | 41.920 | 106.312 | 171.064 | 1 | 394 |
+| Horta + Pomar + Costa + pesca, sem comida | 52.998 | 113.234 | 177.110 | 250 | 0 |
+| Horta + Pomar + Costa + pesca, até 2 refeições | 75.962 | 162.482 | 249.646 | 4 | 460 |
+| 45 canteiros + coleta e pesca, sem comida | 55.216 | 112.816 | 170.752 | 103 | 0 |
+| Tudo + animais, sem obras | 87.816 | 212.708 | 338.325 | 4 | 460 |
+| Tudo + animais, pagando as obras | 4.496 | 30.183 | 12.917 | 6 | 397 |
+
+- **O vigor passou a limitar a horta.** Regar 165 canteiros custa 165 de vigor, e o dia começa com 100 (120 com o quarto). Sem comer, o jogador fica sem vigor em 206 dos 336 dias e ganha 117 mil em vez de 195 mil.
+- **A comida tem papel.** Quem compra até 2 refeições por dia gasta cerca de 24 a 28 mil coroas em 3 anos e recupera a maior parte da renda.
+  - A comida feita em casa, mais barata, não entra na simulação. Ela fica sendo o caminho natural, junto com os aspersores, que regam sem gastar vigor.
+- **A pesca rende menos:**
+  - Com tudo e 2 refeições: caiu de 52,7 mil para cerca de 42 mil em 3 anos.
+  - Com horta pequena: ainda rende 83,5 mil, porque esse jogador quase não rega e usa o vigor para pescar. A horta pequena com pesca (171 mil) agora empata com a horta grande comprando comida.
+- **Obras com animais:** a ponte sai no dia 331, em vez do 307.
+
+**Para acompanhar:** se a horta grande parecer pesada demais no começo do jogo, os ajustes possíveis são aspersores mais baratos ou mais vigor no café da manhã feito em casa.

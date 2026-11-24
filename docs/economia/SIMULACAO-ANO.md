@@ -87,10 +87,10 @@ Palha: de graça com capim dos Campos (cortar ~3 s) ou 3 fibras (0 C de venda pe
 | Suco de laranja | stove | 30 | 70 | 40 | 110 | 30 |
 | Caldo do mineiro | stove | 86 | 120 | 34 | 154 | 65 |
 | Salada da horta | stove | 78 | 110 | 32 | 142 | 35 |
-| Ensopado de peixe | stove | 80 | 110 | 30 | 140 | 70 |
+| Ensopado de peixe | stove | 78 | 110 | 32 | 142 | 70 |
 | Omelete de couve | stove | 64 | 90 | 26 | 116 | 40 |
 | Chá de camomila com mel | stove | 70 | 95 | 25 | 120 | 35 |
-| Peixe assado | campfire | 14 | 30 | 16 | 46 | 30 |
+| Peixe assado | campfire | 12 | 30 | 18 | 48 | 30 |
 | Batata-doce assada | campfire | 44 | 60 | 16 | 76 | 25 |
 | Milho assado | campfire | 30 | 40 | 10 | 50 | 20 |
 
@@ -102,7 +102,7 @@ Palha: de graça com capim dos Campos (cortar ~3 s) ou 3 fibras (0 C de venda pe
 | Caranguejo com rede (5 por visita) | 110 | 3.8 | **29.3** | rede custa 120 |
 | Frutas do Pomar | 98 | 2.7 | **36.3** | 7 frutas, voltam em 3 dias |
 | Íris azul | 180 | 3.3 | **54** | 3 plantas, voltam em 7 dias |
-| Pesca no lago (10 lançamentos) | 113 | 5 | **22.6** | ~5% raro |
+| Pesca no lago (10 lançamentos) | 95 | 5 | **19** | ~5% raro |
 | Lenha (20 madeiras) | 40 | 2 | **20** | machadinha |
 | Pedra (20) | 0 | 2 | **0** | picareta |
 | Sucata (10) | 40 | 1.7 | **24** |  |
@@ -123,6 +123,6 @@ Folgas no ano: augusto 16, rosa 16, tobias 16, amelia 16, nilo 16, celina 16, ic
 ### Festivais: valor do prêmio × custo da entrega
 
 - Feira das Sementes: entrega mais barata vale 72 C; prêmio ≈ 420 C.
-- Festa da Praia: entrega mais barata vale 66 C; prêmio ≈ 366 C.
+- Festa da Praia: entrega mais barata vale 66 C; prêmio ≈ 360 C.
 - Festa da Colheita: entrega mais barata vale 120 C; prêmio ≈ 790 C.
 - Noite das Lanternas: entrega mais barata vale 30 C; prêmio ≈ 326 C.

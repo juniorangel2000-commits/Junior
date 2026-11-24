@@ -19,9 +19,9 @@ import type {ItemId} from '../../src/types';
 
 /** Um jogador "esforçado" joga 3 anos (336 dias) usando o código real da horta, da mochila e do comércio.
  * Tempo: segundos reais (= minutos do relógio). Orçamento: 15 min reais por dia.
- * Vigor (preview.48): 100 por dia (a cama recupera); enxada 1 por canteiro, regador 1 a cada 2 regas,
+ * Vigor (preview.48): 100 por dia (a cama recupera); enxada 1 por canteiro, regador 1 por canteiro,
  * pesca 3 por arremesso. A chuva rega a horta sozinha (código real da horta). */
-const DAYS=336,VIGOR={till:1,water:.5,cast:3},MEAL={price:28,vigor:50};
+const DAYS=336,VIGOR={till:1,water:1,cast:3},MEAL={price:60,vigor:50};
 const BUDGET=900,T={rope:180,care:5,till:2,plant:1.5,water:3,harvest:1.5,sellTrip:90,orchard:120,coast:150,cast:22};
 const buyerOf=(item:string)=>{let best='',price=0;for(const m of Object.values(MERCHANTS)){const p=(m.sell as Record<string,number>)[item]??0;if(p>price){price=p;best=m.id;}}return{merchant:best,price};};
 
@@ -131,7 +131,7 @@ run('joga três anos',()=>{
  const fmt=(n:number)=>Math.round(n).toLocaleString('pt-BR');
  const out:string[]=['## Três anos jogados pelo código real (horta, mochila e lojas)','',
   'Orçamento: 15 min reais de trabalho por dia; regar = 3 s por canteiro (com idas ao poço). O jogador escolhe a planta que mais rende para os dias que faltam na estação.',
-  'Vigor: 100 por dia; enxada 1 por canteiro, regador 1 a cada 2 regas, pesca 3 por arremesso. Refeição da pousada: 28 C por 50 de vigor. A chuva rega a horta sozinha.',''];
+  'Vigor: 100 por dia; enxada 1 por canteiro, regador 1 por canteiro, pesca 3 por arremesso. Refeição da pousada: 28 C por 50 de vigor. A chuva rega a horta sozinha.',''];
  out.push('| Estratégia | Fim do ano 1 | Fim do ano 2 | Fim do ano 3 | Canteiros | Dias sem vigor | Refeições compradas | Dias de chuva com horta |');
  out.push('| --- | --- | --- | --- | --- | --- | --- | --- |');
  for(const r of runs)out.push(`| ${r.label} | ${r.yearCoins.map(fmt).join(' | ')} | ${r.tiles} | ${r.tiredDays} | ${r.meals} | ${r.rainDays} |`);

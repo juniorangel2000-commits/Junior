@@ -31,6 +31,7 @@
 
 - **Relatório de três anos** ([docs/economia/RELATORIO-TRES-ANOS.md](economia/RELATORIO-TRES-ANOS.md)): o jogador simulado (`scripts/economia/jogador.test.ts`) joga 336 dias com vigor, refeição opcional e a chuva da horta real. No navegador foram 337 noites com 12 recargas, a chuva regando em 89 dias, o vigor voltando a 100 todo dia e uma vaca levada por ano com a corda, sem erros. Principal conclusão: o dinheiro cresce cerca de 73 a 95 mil por ano sem onde ser gasto.
 - **Bateria de testes de tudo** (seção nova em [docs/economia/RELATORIO-TRES-ANOS.md](economia/RELATORIO-TRES-ANOS.md)): saves reais da preview.46 e da 47 carregados na nova (iguais na aceitação, inclusive com corda); ponte até as Ruínas; farol; trem nas 3 paradas; estufa com ciclo completo de 9 dias, recarga e ampliação; Lúcia, Jonas, moinho, vidro e areia; desempenho igual com a propriedade completa. Correções: o trem descia num obstáculo na Vila e mandava o jogador para a entrada oeste (`arrive` em `src/train-travel.ts`); avisos com a tecla repetida, "E E · …" (`src/prompt-key.ts`, aplicado em `ui.ts`); parede do fundo da casa ampliada cortava a última janela (`wallBays` em `src/home-art.ts`). O jogador simulado ganhou animais: +112 mil em 3 anos com 850 C de construções.
+- **Refeição, rega e pesca** (decisões do relatório): refeição da pousada 60 C (antes 28, `MERCHANTS.inn.buy.meal`); rega gasta 1 de vigor por canteiro na propriedade e na estufa (`WATER_VIGOR_COST`); peixe comum 10 C (`FISH_PRICE`, antes 12). Simulação refeita: o vigor agora limita a horta grande e a comida passa a ter papel (ver relatório).
 - **Construções de animais mais caras:** galinheiro, aprisco e curral cobram a mão de obra do Tobias ao concluir (3.000, 4.000 e 3.500 C; `FARM_LABOR_COINS` em `src/data/farm-buildings.ts`). Aparece no catálogo e no painel da obra. O runtime das obras agora devolve também `villageEconomy` ao jogo. Saves antigos: construções prontas não pagam. Simulações atualizadas.
 - **Três anos de novo, depois das obras** (mesmo relatório, seção nova): em código o jogador completo gasta cerca de 280 mil em obras e termina o ano 3 com uns 11 mil (casa no dia 122, estufa 236, ampliação 292, moinho 331; ponte, farol, Estação e casas novas ficam para os anos 4 a 6). No navegador, 337 noites: casa 16×12/20×12/20×14, estufa em (53,22), moinho, Lúcia e Jonas, tudo com aviso e sem erros. A ponte foi recusada porque o Bento estava fora da ferraria (comportamento certo; o teste é que tentou no horário errado). A cozinha nova e a casa leste trocaram "Ninho e baias" por 6 vidros.
 
@@ -140,7 +141,6 @@
 - Perguntar ao Junior onde a colisão da mina falha.
 - O painel de Companheiros encosta no topo das barras de vida/vigor em telas de 800 px de altura (as barras não capturam cliques).
 - Publicar a preview.48 quando pedido (notas e LEIA). A Release da preview.47 nunca foi criada: a ideia é publicar direto a 48, com as notas da 47 e da 48 juntas.
-- Decisões do relatório de três anos: preço da refeição, vigor da rega, pesca com horta pequena. (Gastos grandes: feitos nesta rodada.)
 - Arte das obras: pedir conforme `docs/planejamento/PEDIDO-ARTE-OBRAS.md` e trocar a provisória.
 - Simulação ainda sem máquinas, cozinha, aspersores e mina.
 
@@ -159,7 +159,7 @@
 
 ## Testes
 
-- preview.48: `npm run check` passou e `npm test` passou com 2.279 testes (2 pulados). Depois das obras: 2.311 testes. Depois da bateria de testes: 2.314 (2 pulados). Com a mão de obra das construções: 2.316. No Chromium: mineração nas quatro direções, escuridão com e sem lampião, barras do HUD, sorteio do Bosque em dois dias, vaca levada dos Campos à propriedade com a corda; pato do Pântano pelo Bosque e cabra da Costa pelos Campos até a propriedade; cabra da Estação pelas Ruínas, Floresta da Cidade e Vila até a propriedade; galinha do Pomar solta na Vila e cabra da Costa solta nos Campos correram de volta e sumiram.
+- preview.48: `npm run check` passou e `npm test` passou com 2.279 testes (2 pulados). Depois das obras: 2.311 testes. Depois da bateria de testes: 2.314 (2 pulados). Com a mão de obra das construções: 2.316. Com refeição, rega e pesca: 2.319. No Chromium: mineração nas quatro direções, escuridão com e sem lampião, barras do HUD, sorteio do Bosque em dois dias, vaca levada dos Campos à propriedade com a corda; pato do Pântano pelo Bosque e cabra da Costa pelos Campos até a propriedade; cabra da Estação pelas Ruínas, Floresta da Cidade e Vila até a propriedade; galinha do Pomar solta na Vila e cabra da Costa solta nos Campos correram de volta e sumiram.
 
 - Na preview.47 integrada, `npm run check` passou e `npm test` passou com 2.271 testes em 275 arquivos.
 - `tests/critters.test.ts` confere os quadros com margens transparentes, os horários de aparecimento, a direção e o lugar de cada espécie no mapa. `tests/ambient-birds.test.ts` confere a folha de poses e os pousos e voos dos bandos.

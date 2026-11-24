@@ -45,7 +45,7 @@ import {installWorldCompanion} from "../dungeons/world-pet-controller";
 import {naturalPlantGround} from '../systems/tree-avoidance';
 import {notifyReadyOrders} from '../systems/economy';
 import {markMinerals} from '../economy-visuals';
-import {toolCondition,spendDurability,toolWork} from '../systems/economy';
+import {toolCondition,spendDurability,toolWork,WATER_VIGOR_COST} from '../systems/economy';
 import {syncToolInstances} from '../systems/tool-instances';
 import {openBlacksmithPanel} from '../blacksmith-panel';
 import {useConsumable} from '../systems/consumables';
@@ -1616,7 +1616,7 @@ export class ValleyScene extends Phaser.Scene {
     if (strike.tool === 'water') {
       if (!this.state.homeSupplies?.wateringCan || !(this.state.wateringCanWater! > 0) || this.tileDistance(strike.target) > 78) return;
       const result = this.farming.water(strike.target.x, strike.target.y);
-      if (result.ok) { this.state.wateringCanWater = (this.state.wateringCanWater ?? 0) - 1; if (this.state.wateringCanWater % 2 === 0) spendVigor(this.state, 1); this.waterFeedback(strike.target); gameAudio.play('water'); }
+      if (result.ok) { this.state.wateringCanWater = (this.state.wateringCanWater ?? 0) - 1; spendVigor(this.state, WATER_VIGOR_COST); this.waterFeedback(strike.target); gameAudio.play('water'); }
       this.ui.toast(result.message); this.afterAction(); return;
     }
     if (!this.inventory.has(strike.tool)) return;

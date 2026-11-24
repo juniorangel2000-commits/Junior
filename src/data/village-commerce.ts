@@ -7,7 +7,8 @@ import type {ItemId,VillageEconomy} from '../types';
 export type {VillageEconomy} from '../types';
 export const MAX_COINS=999_999_999;
 /** Peixe comum (balanço da preview.48): pescar não pede investimento, então rende menos que a horta. */
-export const FISH_PRICE=12;
+/** Peixe comum (preview.48: 10, antes 12). A pesca rendia quase o mesmo que a horta grande. */
+export const FISH_PRICE=10;
 export const MAX_TRADE_QUANTITY=99;
 export const VILLAGE_NPC_IDS=['augusto','bento','amelia','tobias','rosa','nilo','celina','damiao','helena','icaro'] as const;
 export type VillageNpcId=typeof VILLAGE_NPC_IDS[number];
@@ -96,7 +97,8 @@ Object.assign(MERCHANTS.tailor.sell,{shell:9});Object.assign(MERCHANTS.fisher.se
 Object.assign(MERCHANTS.inn.sell,{orangeJuice:70,pearJam:130,applePie:260,crabStew:180});
 Object.assign(MERCHANTS.fisher.sell,{fish:8,rareFish:70});
 Object.assign(MERCHANTS.tailor.buy,{cloth:8,clothing:25,boots:95,backpack:150,accessory:70});
-Object.assign(MERCHANTS.inn.buy,{meal:28});Object.assign(MERCHANTS.inn.sell,{fish:8});
+// Refeição da pousada: 60 coroas por 50 de vigor (antes 28); a comida feita em casa sai mais em conta.
+Object.assign(MERCHANTS.inn.buy,{meal:60});Object.assign(MERCHANTS.inn.sell,{fish:8});
 Object.assign(MERCHANTS.mechanic.buy,{metalPart:16,electronicPart:35,lantern:100});
 Object.assign(MERCHANTS.traveler.buy,{oldMap:80,rareHerb:80,electronicPart:45,net:140});
 

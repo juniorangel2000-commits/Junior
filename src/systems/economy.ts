@@ -22,6 +22,8 @@ export function equipToolCopy(s:SaveData,id:number):boolean {syncToolInstances(s
 export function toolWork(s:SaveData,tool:EconomicTool):number{const c=toolCondition(s,tool);return Math.floor(B.efficiency[c.tier]+(c.work??0));}
 /** Vigor gasto a cada golpe de ferramenta (preview.48): a comida e o sono passam a limitar o dia. */
 export const TOOL_VIGOR_COST=1;
+/** Vigor por canteiro regado (antes 1 a cada 2 regas): com a horta grande, o vigor passa a limitar o dia. */
+export const WATER_VIGOR_COST=1;
 export function spendDurability(s:SaveData,tool:EconomicTool):boolean{if(toolCondition(s,tool).durability<=0)return false;syncToolInstances(s.inventory,s.economy6?.tools);const c=toolCondition(s,tool);spendVigor(s,TOOL_VIGOR_COST);c.durability--;c.work=(B.efficiency[c.tier]+(c.work??0))%1;(s.economy6??=newEconomyState()).tools[tool]=c;return true;}
 const need=(ok:unknown,message:string)=>{if(!ok)throw Error(message);};
 export function atomicEconomy(s:SaveData,change:(d:SaveData,i:Inventory)=>void):{ok:boolean;message:string}{
