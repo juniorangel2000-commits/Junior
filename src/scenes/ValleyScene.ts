@@ -32,7 +32,6 @@ import {equipWorldSword} from '../systems/world-sword';
 import {SurvivorResidentsView} from '../survivor-residents-view';
 import {createFishingCast} from '../fishing-cast';
 import {villageAccessUnlocked,invitationGateBlocked,VILLAGE_LOCK_MESSAGE} from '../systems/village-introduction';
-import {drawVillageInvitationGate} from '../village-invitation-gate';
 import {drawCraftedBench} from '../woodwork-art';
 import {prepareSceneAssets} from '../scene-asset-preparation';
 import {getAmbientBirds} from '../ambient-birds';
@@ -1012,7 +1011,6 @@ export class ValleyScene extends Phaser.Scene {
     this.world = createWorld(this, data.depletedResources, data.buildings, data.mapEdits, 'world', (x,y)=>this.farming.isPrepared(x,y), this.state.petShelter);
     this.petShelterView = this.state.petShelter ? drawPetShelter(this, this.state.petShelter) : undefined;
     setupAnimalArt(this);
-    drawVillageInvitationGate(this,this.state,'property');
     // A warm refuge in the opening only; the facade and gameplay lighting stay intact.
     const house=this.children.list.find(object=>(object as Phaser.GameObjects.Image).texture?.key==='asset-house') as Phaser.GameObjects.Image|undefined;
     this.titleLights=(house?drawHouseWindowGlow(this,house):undefined)?.setVisible(false)??this.add.graphics().setVisible(false);

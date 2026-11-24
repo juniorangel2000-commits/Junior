@@ -12,7 +12,6 @@ import {FisherRoadVisit} from '../fisher-road-visit';
 import {preloadDamiaoSprites} from '../damiao-sprites';
 import {craftInField,consumeInField} from '../systems/field-inventory';
 import {villageAccessUnlocked,invitationGateBlocked,VILLAGE_LOCK_MESSAGE} from '../systems/village-introduction';
-import {drawVillageInvitationGate} from '../village-invitation-gate';
 import {sampleWaterDepth} from '../swimming';
 import {paintedWaterPoint} from '../data/terrain-paint';
 import {CITY_LAKE_ENTRY,CITY_LAKE_EXIT,LAKE_CITY_ENTRY} from '../data/fishing-lake';
@@ -80,7 +79,6 @@ export class CityForestScene extends Phaser.Scene{
   this.ui=data.ui;this.onReturn=data.onReturn;this.paused=false;this.fishing=false;this.leaving=false;this.elapsed=0;this.passage.reset();this.lakePassage.reset();this.ruinsPassage.reset();this.wheelZoomDistance=0;this.lastWheelZoomAt=0;
   this.farming=new Farming(this.state.crops,this.state.preparedSoil,this.state.farmingProgress,this.state.restoredFarmSoil);
   this.world=new CityForestWorld(this,this.state.cityForestMapEdits);this.fisherRoad=new FisherRoadVisit(this,()=>this.state);this.events.once('shutdown',()=>this.fisherRoad?.destroy());
-  drawVillageInvitationGate(this,this.state,'cityForest',this.state.cityForestMapEdits?.points?.exit);
   this.rope=new RopeTransit(this,()=>this.state,'cityForest',this.movementBlockedTile,a=>a==='ruins'?{x:(CITY_RUINS_EXIT.x+.5)*32,y:(CITY_RUINS_EXIT.y+.5)*32}:undefined);this.events.once('shutdown',()=>{this.rope?.destroy();this.rope=undefined;});
   const p=this.state.cityForestPosition,valid=p&&[[-7,-5],[7,-5],[-7,3],[7,3]].every(([dx,dy])=>!this.movementBlockedPoint(p.x+dx,p.y+dy));
   this.player=new Player(this,this.state.profile,valid?p.x:((this.state.cityForestMapEdits?.points?.entry??CITY_FOREST_ENTRY).x+.5)*32,valid?p.y:((this.state.cityForestMapEdits?.points?.entry??CITY_FOREST_ENTRY).y+.5)*32,'city-forest-player');
