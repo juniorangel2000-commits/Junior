@@ -22,5 +22,9 @@ export const FARM_BUILDINGS:Record<FarmKind,{name:string;width:number;height:num
  silo:{name:'Silo',width:3,height:3,bodyRows:2,cost:{stone:40,wood:16,ironShard:8,fiber:20},capacity:240,description:'Armazena palha e seca o capim dos Campos Abertos em um dia. Também prepara 1 palha com 3 fibras vegetais.'},
 };
 
+/** Mão de obra do Tobias (preview.48), paga em coroas ao concluir a obra. Os animais vêm de graça
+ * com a corda e a casa cheia rende 120 a 144 C por dia: a construção se paga em cerca de um mês. */
+export const FARM_LABOR_COINS:Readonly<Partial<Record<FarmKind,number>>>={coop:3000,aprisco:4000,barn:3500};
+export const farmLaborCoins=(kind:FarmKind)=>FARM_LABOR_COINS[kind]??0;
 /** Moradias mistas usam a mesma regra no alojamento, painel e validação do save. */
 export function farmAcceptsAnimal(kind:FarmKind,animal:unknown):boolean{const d=FARM_BUILDINGS[kind];return d.allowedAnimals?d.allowedAnimals.some(k=>k===animal):!!d.animal&&d.animal===animal;}

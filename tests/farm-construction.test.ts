@@ -2,11 +2,11 @@ import {activeToolCopy} from '../src/systems/tool-instances';
 import {describe,it,expect,vi} from 'vitest';
 import {createNewSave,validateSave,migrateSave} from '../src/systems/save';
 import {createCharacterProfile} from '../src/data/characters';
-import {FARM_BASE_COST} from '../src/data/farm-buildings';
+import {FARM_BASE_COST,FARM_LABOR_COINS} from '../src/data/farm-buildings';
 import {placeFarmBase,deliverFarmMaterials,finishFarmConstruction,cancelFarmConstruction,farmSites,farmAnchor,farmSiteBlocked,farmSitePointBlocked,assignFarmAnimal,farmHay,toggleFarmGate,farmHomePoint,farmAnimalSettled,farmYard,validFarmConstruction,type FarmRuntime} from '../src/systems/farm-construction';
 import {FOREST_ANIMALS} from '../src/data/ancient-forest';
 import {AnimalBrain} from '../src/systems/animals';
-const setup=()=>{let save=createNewSave(createCharacterProfile('Obra'));Object.assign(save.inventory,{hammer:1,wood:200,stone:200,plank:100,doorKit:5,windowKit:5,ironShard:50,fiber:100,hardwood:30});let player={x:25*32,y:35*32};const write=vi.fn(()=>true),rt:FarmRuntime={snapshot:()=>structuredClone(save),write,apply:d=>{save=d;},player:()=>player,placement:()=>''};return{rt,get save(){return save;},setPlayer:(p:typeof player)=>{player=p;},write};};
+const setup=()=>{let save=createNewSave(createCharacterProfile('Obra'));save.villageEconomy!.coins=50_000;Object.assign(save.inventory,{hammer:1,wood:200,stone:200,plank:100,doorKit:5,windowKit:5,ironShard:50,fiber:100,hardwood:30});let player={x:25*32,y:35*32};const write=vi.fn(()=>true),rt:FarmRuntime={snapshot:()=>structuredClone(save),write,apply:d=>{save=d;},player:()=>player,placement:()=>''};return{rt,get save(){return save;},setPlayer:(p:typeof player)=>{player=p;},write};};
 const build=(t:ReturnType<typeof setup>,kind:'coop'|'barn'|'silo'='coop')=>{expect(placeFarmBase(t.rt,kind,25,30).ok).toBe(true);const s=farmSites(t.save)[0];t.setPlayer(farmAnchor(s));expect(deliverFarmMaterials(t.rt,s.id).ok).toBe(true);expect(finishFarmConstruction(t.rt,s.id).ok).toBe(true);return farmSites(t.save)[0];};
 describe('farm construction at the work site',()=>{
  it('places only the base, delivers partially, persists and completes at its actual entrance',()=>{const t=setup(),before=t.save.inventory.wood;expect(placeFarmBase(t.rt,'coop',25,30).ok).toBe(true);expect(t.save.inventory.wood).toBe(before-FARM_BASE_COST.wood!);let s=farmSites(t.save)[0];expect(s.finished).toBe(false);expect(farmSiteBlocked(s,25,30)).toBe(false);t.setPlayer(farmAnchor(s));t.save.inventory.wood=10;expect(deliverFarmMaterials(t.rt,s.id).ok).toBe(true);s=farmSites(t.save)[0];expect(s.delivered.wood).toBe(10);expect(t.save.inventory.wood).toBe(0);expect(finishFarmConstruction(t.rt,s.id).ok).toBe(false);expect(validateSave(t.save)).toBe(true);expect(migrateSave(t.save)?.farmConstruction).toEqual(t.save.farmConstruction);t.save.inventory.wood=30;expect(deliverFarmMaterials(t.rt,s.id).ok).toBe(true);expect(finishFarmConstruction(t.rt,s.id).ok).toBe(true);expect(farmSites(t.save)[0].finished).toBe(true);});
@@ -22,3 +22,17 @@ describe('farm construction at the work site',()=>{
  it('rejects malformed saves and migrates old house tool bindings without removing legacy pieces',()=>{const t=setup();build(t);const v=structuredClone(t.save.farmConstruction)!;v.sites[0].animals=['missing'];expect(validFarmConstruction(v,[])).toBe(false);t.save.equippedTool='blueprint';t.save.quickbar=['wall',null,null,null,null,null,null,null,null];t.save.buildings=[{x:40,y:40,kind:'wall'}];const s=migrateSave(t.save)!;expect(s.equippedTool).toBe('hand');expect(s.quickbar![0]).toBeNull();expect(s.buildings).toEqual(t.save.buildings);});
 });
 it('prepares one hay for each three fibers, retaining remainders and respecting silo space',()=>{const t=setup(),s=build(t,'silo');t.save.inventory.fiber=8;expect(farmHay(t.rt,s.id,'prepare',10).ok).toBe(true);expect(farmSites(t.save)[0].hay).toBe(2);expect(t.save.inventory.fiber).toBe(2);const before=structuredClone(t.save);expect(farmHay(t.rt,s.id,'prepare',10).ok).toBe(false);expect(t.save).toEqual(before);farmSites(t.save)[0].hay=239;t.save.inventory.fiber=10;expect(farmHay(t.rt,s.id,'prepare',10).ok).toBe(true);expect(farmSites(t.save)[0].hay).toBe(240);expect(t.save.inventory.fiber).toBe(7);});
+
+describe('mão de obra das construções de animais (preview.48)',()=>{
+ it('galinheiro, aprisco e curral cobram a mão de obra do Tobias ao concluir',()=>{
+  expect(FARM_LABOR_COINS).toEqual({coop:3000,aprisco:4000,barn:3500});
+  const t=setup();t.save.villageEconomy!.coins=2999;expect(placeFarmBase(t.rt,'coop',25,30).ok).toBe(true);const s=farmSites(t.save)[0];t.setPlayer(farmAnchor(s));
+  expect(deliverFarmMaterials(t.rt,s.id).ok).toBe(true);
+  const refused=finishFarmConstruction(t.rt,s.id);expect(refused.ok).toBe(false);expect(refused.message).toContain('3.000');expect(farmSites(t.save)[0].finished).toBe(false);
+  t.save.villageEconomy!.coins=3500;const done=finishFarmConstruction(t.rt,s.id);expect(done.ok).toBe(true);expect(t.save.villageEconomy!.coins).toBe(500);expect(farmSites(t.save)[0].finished).toBe(true);
+ });
+ it('o silo, o chiqueiro e o estábulo não cobram mão de obra',()=>{
+  const t=setup();expect(placeFarmBase(t.rt,'silo',25,30).ok).toBe(true);const s=farmSites(t.save)[0];t.setPlayer(farmAnchor(s));deliverFarmMaterials(t.rt,s.id);
+  const before=t.save.villageEconomy!.coins;expect(finishFarmConstruction(t.rt,s.id).ok).toBe(true);expect(t.save.villageEconomy!.coins).toBe(before);
+ });
+});

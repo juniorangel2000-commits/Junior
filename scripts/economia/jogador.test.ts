@@ -29,8 +29,8 @@ const buyerOf=(item:string)=>{let best='',price=0;for(const m of Object.values(M
 const EST:Partial<Record<string,number>>={hardwood:40,woolCloth:240,glass:5};
 const materialPrice=(item:string)=>{const p=Object.values(MERCHANTS).map(m=>(m.buy as Record<string,number>)[item]).filter((n):n is number=>!!n);return p.length?Math.min(...p):EST[item]??100;};
 const projectCost=(d:ProjectDef)=>d.coins+Object.entries(d.items).reduce((n,[i,q])=>n+materialPrice(i)*(q as number),0);
-/** [tipo, a partir do dia, construção (C), rende por dia] — SIMULACAO-ANO.md, seção 2. */
-const RANCH:readonly [string,number,number,number][]=[['chicken',8,222,20],['goat',20,298,36],['cow',35,330,30]];
+/** [tipo, a partir do dia, construção (C: mão de obra do Tobias + materiais), rende por dia] — SIMULACAO-ANO.md, seção 2. */
+const RANCH:readonly [string,number,number,number][]=[['chicken',8,3222,20],['goat',20,4298,36],['cow',35,3830,30]];
 const ORDER=['home-1','home-2','home-3','greenhouse','greenhouse-2','vale-moinho','vale-ponte','vale-farol','vale-estacao','casa-leste','casa-sul'];
 function playYear(opts:{label:string;orchard:boolean;coast:boolean;fishing:boolean;maxTiles:number;meals:number;projects?:boolean;animals?:boolean}){
  const funded=new Map<string,number>(),done=(id:string,day:number)=>{const f=funded.get(id),d=PROJECTS.find(p=>p.id===id)!;return f!==undefined&&day>=f+d.days;};

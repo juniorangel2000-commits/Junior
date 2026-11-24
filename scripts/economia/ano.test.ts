@@ -1,5 +1,5 @@
 import {it} from 'vitest';
-import {FARM_BUILDINGS} from '../../src/data/farm-buildings';
+import {FARM_BUILDINGS,farmLaborCoins} from '../../src/data/farm-buildings';
 /** Simulação de economia (docs/economia). Roda só quando pedida:
  * ECONOMIA=1 npx vitest run scripts/economia */
 const run=it.runIf(!!process.env.ECONOMIA);
@@ -72,10 +72,10 @@ run('simula um ano',()=>{
   {name:'Porco',where:'Bosque, Pântano, Pomar',home:'pigsty',daily:0,feed:1,note:'só esterco (adubo)'},
  ] as const;
  const hay=sale('fiber')*3;
- const buildValue=(kind:keyof typeof FARM_BUILDINGS)=>Object.entries(FARM_BUILDINGS[kind].cost).reduce((n,[i,q])=>n+(sale(i)||0)*(q as number),0);
+ const buildValue=(kind:keyof typeof FARM_BUILDINGS)=>farmLaborCoins(kind)+Object.entries(FARM_BUILDINGS[kind].cost).reduce((n,[i,q])=>n+(sale(i)||0)*(q as number),0);
  log(`Palha: de graça com capim dos Campos (cortar ~3 s) ou 3 fibras (${hay} C de venda perdida). Corda: 3 fibras.`);
  log();
- log('| Animal | Onde aparece (corda) | Mora em | Construção (valor de venda dos materiais) | Vagas | Rende por dia | Lucro/dia | Dias para pagar a construção cheia |');
+ log('| Animal | Onde aparece (corda) | Mora em | Construção (mão de obra + valor de venda dos materiais) | Vagas | Rende por dia | Lucro/dia | Dias para pagar a construção cheia |');
  log('| --- | --- | --- | --- | --- | --- | --- | --- |');
  for(const a of animals){const b=FARM_BUILDINGS[a.home],net=a.daily-hay*a.feed/3,value=buildValue(a.home);
   log(`| ${a.name} | ${a.where} | ${b.name} | ${r0(value)} C | ${b.capacity} | ${r1(a.daily)} | ${r1(net)} | ${net>0?r0(value/(net*b.capacity)):('note' in a?a.note:'—')} |`);}

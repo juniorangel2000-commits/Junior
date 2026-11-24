@@ -229,3 +229,30 @@ Duas estratégias novas foram incluídas em [JOGADOR-TRES-ANOS.md](JOGADOR-TRES-
 - **Decisão para o Junior:** os animais continuam rendendo muito pelo que custam. Dá para encarecer as construções, cobrar ração no inverno ou limitar a quantidade de galinheiros.
 
 **O que ainda fica de fora da simulação:** máquinas (queijo, manteiga, geleia), cozinha, aspersores e mina.
+
+---
+
+## Construções de animais mais caras (24/11/2026)
+
+Pedido do Junior: "vamos encarecer o galinheiro, aprisco e curral".
+
+Além dos materiais, as três construções agora cobram a **mão de obra do Tobias** em coroas. A cobrança acontece no momento de concluir a obra com o martelo. Construções já prontas nas partidas salvas não pagam nada, e uma obra em andamento só precisa das coroas no fim.
+
+| Construção | Mão de obra | Custo total (com materiais) | A casa cheia rende | Dias para se pagar |
+| --- | --- | --- | --- | --- |
+| Galinheiro | 3.000 C | 3.222 C | 120 C/dia (6 galinhas) | 27 |
+| Aprisco | 4.000 C | 4.298 C | 144 C/dia (4 cabras) | 30 |
+| Curral | 3.500 C | 3.830 C | 120 C/dia (4 vacas) | 32 |
+
+O silo, o chiqueiro e o estábulo continuam sem mão de obra.
+
+O jogador simulado com animais passa a gastar 11.350 C em construções, em vez de 850:
+
+| Estratégia | Fim do ano 1 | Fim do ano 2 | Fim do ano 3 |
+| --- | --- | --- | --- |
+| Tudo, sem animais | 87.030 | 184.196 | 281.772 |
+| Tudo + animais, antes | 108.832 | 244.010 | 379.679 |
+| Tudo + animais, com a mão de obra | 98.332 | 233.510 | 369.179 |
+| Tudo + animais, pagando as obras | 14.004 | 49.053 | 41.632 |
+
+No primeiro mês, os animais agora pedem um investimento de verdade. Depois de pagos, continuam rendendo bem, que é o papel deles. Pagando as obras grandes, o jogador termina a ponte no dia 307, 10 dias depois do que antes.
