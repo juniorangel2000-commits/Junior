@@ -4,8 +4,8 @@
 
 - **Atualizado em:** 2026-11-23
 - **Por:** Claude
-- **Continuar a partir de:** `release/v0.10.0-preview.50` (em andamento; a 49 foi publicada em 24/11/2026).
-- **Última versão publicada:** `v0.10.0-preview.49`. A Release é criada pelo Junior: tag `v0.10.0-preview.49` no branch `release/v0.10.0-preview.49` (deste ambiente o push de tag é recusado).
+- **Continuar a partir de:** `release/v0.10.0-preview.50` (publicada em 24/11/2026; a próxima é a preview.51).
+- **Última versão publicada:** `v0.10.0-preview.50`. A Release é criada pelo Junior: tag `v0.10.0-preview.50` no branch `release/v0.10.0-preview.50` (deste ambiente o push de tag é recusado).
 - **Atenção ao publicar:** além de `NOTAS-<versão>.md`, crie `docs/cenarios/LEIA-<versão>.md`. O processo do Windows copia esse arquivo para a Release e falha se ele não existir.
 - **Estado:** a preview.48 tem mina corrigida, vigor, chuva regando a horta, animais soltos com sorteio diário em todos os cenários externos, só com a corda, HUD novo de vida e vigor, relatório de 3 anos e as obras grandes (casa, estufa, obras do Vale e moradores novos) com arte provisória. Bateria de testes de tudo feita (saves antigos, obras, trem, estufa, serviços, desempenho) com 3 correções. Publicada (notas e LEIA em `docs/cenarios`).
 
@@ -138,6 +138,7 @@
 
 ## Em andamento e próximo passo exato
 
+- preview.50 (publicada) — **passagem fechada da vila** sem cercas nem placa: só o bloqueio (`invitationGateBlocked`) e a dica; `src/village-invitation-gate.ts` foi removido.
 - preview.50 — **capítulo novo "Terra nova"** (conquista "Enxada afiada"), logo depois de "Mãos à obra":
   - **Missões:** fabricar a enxada, preparar 1 canteiro novo, plantar num canteiro aberto, preparar 5 canteiros novos, regar 5 plantas no mesmo dia e devolver um canteiro à grama.
   - **Canteiros novos:** contam só os que não fazem parte da horta inicial (`homesteadGardenBeds`).
@@ -166,7 +167,7 @@
 
 - Perguntar ao Junior onde a colisão da mina falha.
 - O painel de Companheiros encosta no topo das barras de vida/vigor em telas de 800 px de altura (as barras não capturam cliques).
-- Junior: criar a Release/tag `v0.10.0-preview.49` no GitHub (o workflow gera o executável Windows). Novas mudanças vão para `release/v0.10.0-preview.50`.
+- Junior: criar a Release/tag `v0.10.0-preview.50` no GitHub (o workflow gera o executável Windows). Novas mudanças vão para `release/v0.10.0-preview.51`.
 - Arte das obras: pedir conforme `docs/planejamento/PEDIDO-ARTE-OBRAS.md` e trocar a provisória.
 - Simulação ainda sem máquinas, cozinha, aspersores e mina.
 
