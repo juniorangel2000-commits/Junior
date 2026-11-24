@@ -160,7 +160,7 @@ export class ValleyScene extends Phaser.Scene {
   private building!: Building;
   private resources!: Resources;
   private state!: SaveData;
- getFishingState():SaveData { this.state.inventory={...this.inventory.data};return this.state; }
+ getFishingState():SaveData { this.state.inventory={...this.inventory.data};if(this.farming)this.state.farmingProgress={...this.farming.progress};return this.state; }
  /** Fogueira: a mochila foi alterada no estado; copia de volta para a mochila da cena. */
  syncInventory(inventory:SaveData['inventory']):void{for(const k of Object.keys(this.inventory.data))delete (this.inventory.data as unknown as Record<string,unknown>)[k];Object.assign(this.inventory.data,structuredClone(inventory));this.updateHUD();}
   private running = false;

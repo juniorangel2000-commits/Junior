@@ -55,8 +55,9 @@ export function trackMissions(s:SaveData,base?:MissionLog):Chapter[]{
  s.missions=log;return earned;
 }
 /** Capítulos para o painel: os abertos e ainda não concluídos, na ordem do jogo. */
-export function openChapters(s:SaveData):MissionView[]{
- const log=s.missions??newMissionLog(),ctx=missionContext(s,log);
+export const openChapters=(s:SaveData):MissionView[]=>missionViews(s,s.missions??newMissionLog());
+export function missionViews(s:SaveData,log:MissionLog):MissionView[]{
+ const ctx=missionContext(s,log);
  return CHAPTERS.filter(ch=>log.achievements[ch.id]===undefined&&chapterUnlocked(log,ch)).map(ch=>chapterView(ctx,ch));
 }
 export interface AchievementView{chapter:Chapter;day?:number;open:boolean}

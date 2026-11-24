@@ -339,3 +339,51 @@
 @keyframes vital-pulse{50%{box-shadow:inset 0 0 0 2px #d8432f,inset 0 2px 4px #0007,0 0 8px #d8432f99}}
 @media (prefers-reduced-motion:reduce){#ui .vital-health.critical .vital-track,#ui .vital-vigor.vigor-low .vital-track{animation:none;box-shadow:inset 0 0 0 2px #d8432f}}
 #ui .vital .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* Missões em capítulos e conquistas (preview.49), no estilo do painel do galinheiro:
+ * papel creme, moldura de madeira, faixas bege com borda dourada e títulos em Georgia. */
+#journal-panel .journal-content{max-height:min(360px,calc(100dvh - 250px));pointer-events:auto;scrollbar-width:thin;scrollbar-color:#a6783d #f3e3bf}
+#journal-panel .mission-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:4px 0 10px}
+#journal-panel .mission-tabs button{pointer-events:auto;font:13px Georgia,serif;padding:5px 4px;border:1px solid #c5a16a;border-radius:4px;background:#e8d7b2;color:#60492f;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
+#journal-panel .mission-tabs button[aria-selected="true"]{background:linear-gradient(#b58448,#8f6230);border-color:#6f4a22;color:#fff3d6;box-shadow:inset 0 1px #e2b778}
+#journal-panel .mission-tabs button span{font:700 10px Arial,sans-serif;opacity:.85}
+#journal-panel .mission-tabs button:focus-visible{outline:2px solid #58643b;outline-offset:1px}
+#journal-panel .mission-chapter{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+#journal-panel .mission-chapter-head{display:grid;grid-template-columns:1fr auto;align-items:end;gap:2px 8px;margin-bottom:2px}
+#journal-panel .mission-chapter-head .eyebrow{grid-column:1/-1;font:700 9px Arial,sans-serif;letter-spacing:.14em;color:#a6783d;margin:0}
+#journal-panel .mission-chapter-head strong{font:17px/1.15 Georgia,serif;color:#60492f}
+#journal-panel .mission-chapter-head small{font:700 11px Arial,sans-serif;color:#58643b;font-variant-numeric:tabular-nums}
+#journal-panel .mission-bar{grid-column:1/-1;height:6px;border:1px solid #c5a16a;border-radius:3px;background:#f3e3bf;overflow:hidden;margin-top:3px}
+#journal-panel .mission-bar span{display:block;height:100%;background:linear-gradient(#93a35a,#6f7f3d)}
+#journal-panel .mission-chapter .quest{display:flex;gap:8px;align-items:flex-start;padding:5px 8px;background:#e8d7b2;border:1px solid #c5a16a;border-radius:4px;font-size:11.5px;line-height:1.35;color:#60492f}
+#journal-panel .mission-chapter .quest.complete{background:#efe6c9;color:#8a8462;text-decoration:line-through;text-decoration-color:#a99d74}
+#journal-panel .mission-chapter .quest .quest-circle{flex:none;margin-top:2px}
+#journal-panel .mission-chapter .quest em{font-style:normal;font-weight:700;color:#8f6230;white-space:nowrap}
+#journal-panel .mission-reward{display:flex;align-items:center;gap:7px;font:italic 11px Georgia,serif;color:#7b6440;margin:4px 0 0;padding:5px 8px;background:#fff7e2;border:1px dashed #c5a16a;border-radius:4px}
+#journal-panel .mission-reward b{font-style:normal;color:#8f6230}
+#journal-panel .mission-side{display:flex;flex-direction:column;gap:6px;padding-top:8px;border-top:1px solid #d3b783}
+#journal-panel .mission-side>.eyebrow{font:700 9px Arial,sans-serif;letter-spacing:.14em;color:#a6783d;margin:0}
+#journal-panel .mission-chapter.compact{margin:0;padding:5px 8px;background:#fff7e2;border:1px solid #d3b783;border-radius:6px}
+#journal-panel .mission-chapter.compact .mission-chapter-head{margin:0}
+#journal-panel .mission-chapter.compact .mission-chapter-head strong{font-size:13px}
+#journal-panel .mission-chapter.compact .mission-chapter-head .eyebrow{display:none}
+#journal-panel .mission-done{font:italic 13px Georgia,serif;color:#58643b}
+#journal-panel .medal,.achievement-toast .medal{width:20px;height:20px;flex:none}
+#journal-panel .medal .ribbon{fill:#cdbb96}#journal-panel .medal .coin{fill:#e3d3b0;stroke:#b9a47a;stroke-width:.6}#journal-panel .medal .star{fill:#f3e8cf}
+#journal-panel .medal.earned .ribbon,.achievement-toast .medal .ribbon{fill:#b4453a}
+#journal-panel .medal.earned .coin,.achievement-toast .medal .coin{fill:#e0ac3a;stroke:#9a6b1c;stroke-width:.6}
+#journal-panel .medal.earned .star,.achievement-toast .medal .star{fill:#fff4c9}
+#journal-panel .achievement-summary{display:flex;justify-content:space-between;font:14px Georgia,serif;color:#60492f;margin-bottom:4px}
+#journal-panel .achievement-progress{height:8px;border:1px solid #c5a16a;border-radius:4px;background:#f3e3bf;overflow:hidden;margin-bottom:10px}
+#journal-panel .achievement-progress span{display:block;height:100%;background:linear-gradient(#ecc35d,#c9922d)}
+#journal-panel .achievement-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+#journal-panel .achievement{display:flex;gap:8px;align-items:center;padding:5px 8px;background:#e8d7b2;border:1px solid #c5a16a;border-radius:4px;line-height:1.25}
+#journal-panel .achievement.earned{background:#fff7e2;border-color:#d9a133}
+#journal-panel .achievement b{display:block;font:13px Georgia,serif;color:#60492f}
+#journal-panel .achievement small{display:block;font-size:10px;color:#7b6440}
+#journal-panel .achievement.locked{opacity:.55}
+#journal-panel .achievement.locked b{letter-spacing:.2em}
+.achievement-toast{border:4px ridge #a6783d!important;background:#faedcc!important;color:#60492f!important;box-shadow:0 8px 28px #121c1bb0!important;align-items:center}
+.achievement-toast .medal{width:32px;height:32px}
+.achievement-toast span{display:flex;flex-direction:column;gap:1px}
+.achievement-toast b{font:16px Georgia,serif;color:#8f6230}
+.achievement-toast small{font-size:12px;color:#58643b}

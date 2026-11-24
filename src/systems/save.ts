@@ -578,6 +578,8 @@ export function preserveInvalidSave():boolean {
 /** Último registro de missões de cada partida: as cenas guardam cópias do estado, e o registro
  * nunca pode voltar atrás quando uma cópia antiga é salva. */
 const missionCache=new Map<string,MissionLog>();
+/** Registro de missões mais recente da partida ativa, juntando o do estado da cena. */
+export function currentMissionLog(state?:SaveData):MissionLog{let cached:MissionLog|undefined;try{cached=missionCache.get(activeSaveKey());}catch{/* sem armazenamento */}return mergeMissionLogs(cached,state?.missions);}
 export function loadSave():SaveData|null { const data=inspectSave().data;if(data?.missions){try{const k=activeSaveKey();missionCache.set(k,mergeMissionLogs(missionCache.get(k),data.missions));}catch{/* sem armazenamento */}}return data; }
 export function hasSave():boolean { return loadSave()!==null; }
 export function saveGame(data:SaveData):boolean {

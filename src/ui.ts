@@ -1,4 +1,7 @@
 import {promptWithoutKey} from './prompt-key';
+import {MEDAL_SVG,missionJournalHtml,missionJournalKey,type JournalTab} from './mission-journal';
+import {currentMissionLog} from './systems/save';
+import {ACHIEVEMENT_EVENT} from './systems/missions';
 import {isMachine,machineIngredient} from './data/machines';
 import {SWORD_TIER_NAMES,SWORD_POWER} from './systems/world-sword';
 import {mountWorldLoading,type WorldLoadingInfo} from './world-loading';
@@ -309,6 +312,7 @@ export class GameUI {
 
 
   constructor(private callbacks: UICallbacks) {
+    if(typeof window!=='undefined')window.addEventListener(ACHIEVEMENT_EVENT,e=>{for(const a of ((e as CustomEvent).detail??[]) as {name:string;description:string}[])this.achievementToast(a.name,a.description);});
     try { this.journalCollapsed = localStorage.getItem('after-rain-missions-collapsed') === 'true'; } catch { /* A interface também funciona sem armazenamento. */ }
     this.base.className = 'ui-base';
     window.addEventListener('keydown',event=>{
@@ -489,7 +493,7 @@ export class GameUI {
         <button type="button" data-zoom="0" aria-label="Restaurar zoom padrão" title="Restaurar para 100% · Home"><span class="camera-zoom-value" aria-live="polite">100%</span></button>
         <button type="button" data-zoom="1" aria-label="Aumentar zoom" title="Aproximar a câmera · + ou roda do mouse">+</button>
       </div>
-      <button class="journal-reopen" ${this.journalCollapsed ? '' : 'hidden'} aria-controls="journal-panel" aria-expanded="false" aria-label="Abrir missões" title="Abrir missões">${icon('leaf')}<span>Missões</span></button><aside id="journal-panel" class="journal" ${this.journalCollapsed ? 'hidden' : ''}><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="journal-close" aria-controls="journal-panel" aria-label="Fechar missões" title="Fechar missões">${icon('close')}</button></header><div id="journal-content" class="journal-content"><section id="mine-journal-summary" hidden><p class="mine-mission-summary"></p><button class="button button-light mine-journal-button">Diário da mina · L</button></section><div id="farming-quest" aria-label="Missão primeira colheita"></div><div class="journal-rule"></div><div class="slice-progress" id="slice-progress"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera na parte oeste da propriedade.</p><small>Seu tempo. Seu caminho.</small></div></aside>
+      <button class="journal-reopen" ${this.journalCollapsed ? '' : 'hidden'} aria-controls="journal-panel" aria-expanded="false" aria-label="Abrir missões" title="Abrir missões">${icon('leaf')}<span>Missões</span></button><aside id="journal-panel" class="journal" ${this.journalCollapsed ? 'hidden' : ''}><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="journal-close" aria-controls="journal-panel" aria-label="Fechar missões" title="Fechar missões">${icon('close')}</button></header><div id="journal-content" class="journal-content"><section id="mine-journal-summary" hidden><p class="mine-mission-summary"></p><button class="button button-light mine-journal-button">Diário da mina · L</button></section><div id="mission-journal" aria-live="polite"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera na parte oeste da propriedade.</p><small>Seu tempo. Seu caminho.</small></div></aside>
       <div class="location-pill">${icon('pin')}<span id="hud-location">Minha propriedade</span></div>
       <div class="bottom-center"><div class="interaction-prompt"><kbd id="hud-interaction-key">E</kbd><span id="hud-prompt">Explore o vale ao seu redor</span></div><div id="hud-resource-progress" class="resource-progress" hidden></div><div class="toolbelt"></div><div class="tool-status"><strong id="active-tool">Explorar</strong><span id="tool-cost">Coletar · conversar · colher</span></div></div>
     </div>`;
@@ -789,15 +793,6 @@ export class GameUI {
     const costLabel = this.base.querySelector<HTMLElement>('#tool-cost')!;
     costLabel.classList.toggle('insufficient', missingMaterials || missingTools.length > 0 || missingStation);
     costLabel.title = missingMaterials ? 'Faltam materiais na mochila' : detail;
-    const progressSteps: [keyof HudData['progress'], string][] = [
-      ['collected', 'Recolher galhos, fibras e pedras'],
-      ['craftedTools', 'Fabricar machadinha, picareta e martelo'],
-      ['harvested', 'Cortar uma árvore e minerar'],
-      ['processed', 'Transformar tronco em tábuas'],
-      ['builtWorkbench', 'Colocar a bancada de trabalho'],
-      ['sawn', 'Serrar tábuas na bancada'],
-      ['builtShelter', 'Concluir sua primeira construção da fazenda'],
-    ];
     const nextTip = !data.progress.collected ? 'Recolha galhos, pedras pequenas e fibras vegetais para começar suas ferramentas.'
       : !data.progress.craftedTools ? 'Abra C: prepare cordas, cabos e pedras lascadas. Fabrique machadinha, picareta e martelo.'
       : !data.progress.harvested ? 'Equipe a machadinha para cortar árvores ou a picareta para minerar. Aproxime-se da base e pressione E.'
@@ -807,28 +802,29 @@ export class GameUI {
       : !data.progress.builtShelter ? 'Abra B e escolha um galinheiro, curral ou silo. Coloque a base no terreno limpo e leve os materiais até a entrada da obra.'
       : 'Sua fazenda está crescendo. Aloje os animais no galinheiro e no curral, armazene palha no silo e explore os arredores. M abre o mapa.';
     set('.journal-tip', nextTip);
+    const tip=this.base.querySelector<HTMLElement>('.journal-tip');if(tip)tip.hidden=data.progress.builtShelter;
     const missionSave=this.callbacks.getFishingState?.(),missionPanel=this.base.querySelector<HTMLElement>('#mine-journal-summary');if(missionPanel){missionPanel.hidden=!missionSave?.mineMissions&&!missionSave?.underground;if(missionSave)missionPanel.querySelector('.mine-mission-summary')!.textContent=mineMissionSummary(missionSave);}
-    const progress = this.base.querySelector('#slice-progress')!;
-    const progressKey = JSON.stringify(data.progress);
-    if (progress.getAttribute('data-progress') !== progressKey) {
-      progress.setAttribute('data-progress', progressKey);
-      progress.innerHTML = progressSteps.map(([id, label]) => `<div class="quest${data.progress[id] ? ' complete' : ''}" data-step="${id}"><span class="quest-circle"></span>${label}</div>`).join('');
-    }
-    const farming = data.farmingProgress;
-    const farmingSteps: [string, string, boolean][] = [
-      ['hoe', 'Fabricar uma enxada · C', data.inventory.hoe > 0],
-      ['prepared', 'Preparar um novo canteiro · enxada + E', !!farming?.prepared],
-      ['planted', 'Plantar uma semente da estação · E', !!farming?.planted],
-      ['watered', 'Regar a plantinha · regador + E', !!farming?.watered],
-      ['harvested', 'Colher a primeira plantação · mãos vazias + E', !!farming?.harvested || data.harvests > 0],
-    ];
-    const farmingQuest = this.base.querySelector('#farming-quest');
-    const farmingKey = farmingSteps.map(step => step[2]).join(',');
-    if (farmingQuest && farmingQuest.getAttribute('data-progress') !== farmingKey) {
-      farmingQuest.setAttribute('data-progress', farmingKey);
-      farmingQuest.innerHTML = '<p class="eyebrow">PRIMEIRA COLHEITA</p>' + farmingSteps.map(([id,label,done]) =>
-        `<div class="quest${done ? ' complete' : ''}" data-farming-step="${id}"><span class="quest-circle"></span>${label}</div>`).join('');
-    }
+    this.renderMissions();
+  }
+
+  private journalTab:JournalTab='missions';
+  private missionKey='';
+  private missionCheckedAt=0;
+  /** Painel de missões: reavaliado no máximo duas vezes por segundo, e só redesenhado se mudar. */
+  private renderMissions(force=false):void{
+    const now=performance.now();if(!force&&now-this.missionCheckedAt<500)return;this.missionCheckedAt=now;
+    const host=this.base.querySelector<HTMLElement>('#mission-journal'),save=this.callbacks.getFishingState?.();if(!host||!save)return;
+    const log=currentMissionLog(save),key=missionJournalKey(save,log,this.journalTab);if(!force&&key===this.missionKey)return;this.missionKey=key;
+    host.innerHTML=missionJournalHtml(save,log,this.journalTab);
+    host.querySelectorAll<HTMLButtonElement>('[data-journal-tab]').forEach(b=>b.addEventListener('click',()=>{this.journalTab=b.dataset.journalTab as JournalTab;this.renderMissions(true);}));
+  }
+  private achievementToast(name:string,description:string):void{
+    const toast=document.createElement('div');toast.className='toast achievement-toast';
+    toast.innerHTML=`<svg class="medal earned" viewBox="0 0 16 16" aria-hidden="true">${MEDAL_SVG}</svg>`;
+    const text=document.createElement('span');const b=document.createElement('b');b.textContent='Conquista: '+name;const sm=document.createElement('small');sm.textContent=description;text.append(b,sm);toast.append(text);
+    while(this.notifications.children.length>=2)this.notifications.firstElementChild?.remove();
+    this.notifications.append(toast);this.missionKey='';this.renderMissions(true);
+    setTimeout(()=>{toast.classList.add('leaving');setTimeout(()=>toast.remove(),250);},5200);
   }
 
   toast(message: string): void {
