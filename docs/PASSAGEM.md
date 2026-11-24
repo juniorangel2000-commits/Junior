@@ -4,10 +4,10 @@
 
 - **Atualizado em:** 2026-11-23
 - **Por:** Claude
-- **Continuar a partir de:** `release/v0.10.0-preview.48` (ainda não publicada).
-- **Última versão publicada:** `v0.10.0-preview.47`. A Release da preview.47 é criada pelo Junior (tag `v0.10.0-preview.47` no branch `release/v0.10.0-preview.47`).
+- **Continuar a partir de:** `release/v0.10.0-preview.48` (publicada em 24/11/2026; a próxima é a preview.49).
+- **Última versão publicada:** `v0.10.0-preview.48` (inclui a 47, que nunca teve Release). A Release é criada pelo Junior: tag `v0.10.0-preview.48` no branch `release/v0.10.0-preview.48` (deste ambiente o push de tag é recusado).
 - **Atenção ao publicar:** além de `NOTAS-<versão>.md`, crie `docs/cenarios/LEIA-<versão>.md`. O processo do Windows copia esse arquivo para a Release e falha se ele não existir.
-- **Estado:** a preview.48 tem mina corrigida, vigor, chuva regando a horta, animais soltos com sorteio diário em todos os cenários externos, só com a corda, HUD novo de vida e vigor, relatório de 3 anos e as obras grandes (casa, estufa, obras do Vale e moradores novos) com arte provisória. Bateria de testes de tudo feita (saves antigos, obras, trem, estufa, serviços, desempenho) com 3 correções. Falta publicar quando o Junior pedir.
+- **Estado:** a preview.48 tem mina corrigida, vigor, chuva regando a horta, animais soltos com sorteio diário em todos os cenários externos, só com a corda, HUD novo de vida e vigor, relatório de 3 anos e as obras grandes (casa, estufa, obras do Vale e moradores novos) com arte provisória. Bateria de testes de tudo feita (saves antigos, obras, trem, estufa, serviços, desempenho) com 3 correções. Publicada (notas e LEIA em `docs/cenarios`).
 
 ## Feito nesta rodada (preview.48)
 
@@ -140,7 +140,7 @@
 
 - Perguntar ao Junior onde a colisão da mina falha.
 - O painel de Companheiros encosta no topo das barras de vida/vigor em telas de 800 px de altura (as barras não capturam cliques).
-- Publicar a preview.48 quando pedido (notas e LEIA). A Release da preview.47 nunca foi criada: a ideia é publicar direto a 48, com as notas da 47 e da 48 juntas.
+- Junior: criar a Release/tag `v0.10.0-preview.48` no GitHub (o workflow gera o executável Windows). Novas mudanças vão para `release/v0.10.0-preview.49`.
 - Arte das obras: pedir conforme `docs/planejamento/PEDIDO-ARTE-OBRAS.md` e trocar a provisória.
 - Simulação ainda sem máquinas, cozinha, aspersores e mina.
 
