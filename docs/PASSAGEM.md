@@ -4,7 +4,7 @@
 
 - **Atualizado em:** 2026-11-23
 - **Por:** Claude
-- **Continuar a partir de:** `release/v0.10.0-preview.50` (publicada em 24/11/2026; a próxima é a preview.51).
+- **Continuar a partir de:** `release/v0.10.0-preview.51` (em andamento; a 50 foi publicada em 24/11/2026).
 - **Última versão publicada:** `v0.10.0-preview.50`. A Release é criada pelo Junior: tag `v0.10.0-preview.50` no branch `release/v0.10.0-preview.50` (deste ambiente o push de tag é recusado).
 - **Atenção ao publicar:** além de `NOTAS-<versão>.md`, crie `docs/cenarios/LEIA-<versão>.md`. O processo do Windows copia esse arquivo para a Release e falha se ele não existir.
 - **Estado:** a preview.48 tem mina corrigida, vigor, chuva regando a horta, animais soltos com sorteio diário em todos os cenários externos, só com a corda, HUD novo de vida e vigor, relatório de 3 anos e as obras grandes (casa, estufa, obras do Vale e moradores novos) com arte provisória. Bateria de testes de tudo feita (saves antigos, obras, trem, estufa, serviços, desempenho) com 3 correções. Publicada (notas e LEIA em `docs/cenarios`).
@@ -137,6 +137,8 @@
   - A arte panorâmica, o atlas com Mina, Galerias, dungeons e interiores, e os detalhes do píer e da Estação ficam em `/workspace/afterrain-costa/`, na máquina do Codex.
 
 ## Em andamento e próximo passo exato
+
+- preview.51: o painel de missões ficava vazio (só a dica) quando o HUD era recriado, por exemplo ao trocar de cenário ou voltar do menu. `renderMissions` não redesenhava porque a chave não tinha mudado. Agora redesenha também quando o painel está vazio.
 
 - preview.50 (publicada) — **passagem fechada da vila** sem cercas nem placa: só o bloqueio (`invitationGateBlocked`) e a dica; `src/village-invitation-gate.ts` foi removido.
 - preview.50 — **capítulo novo "Terra nova"** (conquista "Enxada afiada"), logo depois de "Mãos à obra":

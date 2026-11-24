@@ -820,7 +820,7 @@ export class GameUI {
   private renderMissions(force=false):void{
     const now=performance.now();if(!force&&now-this.missionCheckedAt<500)return;this.missionCheckedAt=now;
     const host=this.base.querySelector<HTMLElement>('#mission-journal'),save=this.callbacks.getFishingState?.();if(!host||!save)return;
-    const log=currentMissionLog(save),key=missionJournalKey(save,log,this.journalTab);if(!force&&key===this.missionKey)return;this.missionKey=key;
+    const log=currentMissionLog(save),key=missionJournalKey(save,log,this.journalTab);if(!force&&key===this.missionKey&&host.childElementCount>0)return;this.missionKey=key;
     host.innerHTML=missionJournalHtml(save,log,this.journalTab);
     host.querySelectorAll<HTMLButtonElement>('[data-journal-tab]').forEach(b=>b.addEventListener('click',()=>{this.journalTab=b.dataset.journalTab as JournalTab;this.renderMissions(true);}));
   }
