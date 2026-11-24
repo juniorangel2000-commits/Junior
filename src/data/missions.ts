@@ -14,8 +14,9 @@ const NEAR_AREAS=['forest','openFields','village','cityForest','fishingLake','sw
 
 const MAIN:Chapter[]=[
  {id:'primeira-colheita',title:'Primeira colheita',achievement:'Mãos na terra',description:'Plantou, regou e colheu pela primeira vez.',missions:[
-  m('hoe','Fabricar uma enxada · C',c=>c.has('hoe')),
   m('plant','Plantar uma semente da estação · E',c=>c.s.farmingProgress?.planted===true),
+  m('can','Pegar o regador em casa',c=>c.s.homeSupplies?.wateringCan===true),
+  m('fill','Encher o regador no poço ou na água',c=>(c.s.wateringCanWater??0)>0),
   m('water','Regar a plantinha · regador + E',c=>c.s.farmingProgress?.watered===true),
   m('harvest','Colher a primeira plantação · mãos vazias + E',c=>c.s.farmingProgress?.harvested===true),
  ]},
@@ -27,6 +28,14 @@ const MAIN:Chapter[]=[
   m('bench','Colocar a bancada de trabalho',c=>c.s.progress.builtWorkbench),
   m('saw','Serrar tábuas na bancada',c=>c.s.progress.sawn),
   m('shelter','Concluir sua primeira construção da fazenda',c=>c.s.progress.builtShelter),
+ ]},
+ {id:'terra-nova',title:'Terra nova',achievement:'Enxada afiada',description:'Fez a primeira enxada e abriu canteiros novos.',missions:[
+  m('hoe','Fabricar uma enxada · C',c=>c.has('hoe')||c.seen('hoe')),
+  m('prepare','Preparar um canteiro novo · enxada + E',c=>c.count(c.newBeds(),1)),
+  m('plantNew','Plantar num canteiro que você abriu',c=>c.plantedOnNewBed()),
+  m('prepare5','Preparar 5 canteiros novos',c=>c.count(c.newBeds(),5)),
+  m('water5','Regar 5 plantas no mesmo dia',c=>c.count(c.s.crops.filter(x=>x.watered).length,5)),
+  m('restore','Devolver um canteiro à grama · Shift + E',c=>(c.s.restoredFarmSoil?.length??0)>0||c.ev('restore-soil')),
  ]},
  {id:'vizinhos',title:'Bom dia, vizinhos',achievement:'Rosto conhecido',description:'Conheceu a vila e quem mora nela.',missions:[
   m('village','Chegar à Vila, pela estrada a leste',c=>c.area('village')),

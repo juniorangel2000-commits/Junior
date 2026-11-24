@@ -3,6 +3,9 @@ import {domesticAnimal} from '../data/domestic-animals';
 import {SOCIAL_NPCS} from '../data/npc-social';
 import {isDish} from '../data/kitchen';
 import {projectDone} from './projects';
+import {homesteadGardenBeds} from '../data/property-homestead';
+/** Canteiros que a partida nova já traz: não contam como canteiros abertos pelo jogador. */
+const STARTER=new Set(homesteadGardenBeds().map(p=>`${p.x},${p.y}`));
 
 /** Registro das missões (preview.49). Guarda só o que o save não guarda sozinho: cenários
  * visitados, itens que já passaram pela mochila, itens já tidos em qualidade excelente, o maior
@@ -21,7 +24,7 @@ export interface MissionContext{
  friends(min:number):number;stories(parts:number):number;festival(id:string):boolean;project(id:string):boolean;
  tier(tool:string,min:number):boolean;mineQuests():number;installs(kind:'pump'|'lamp'|'forge'):number;pets():number;dungeon(id:string):number;
  dungeonAttributes():number;petAttributes():number;petSpecies():number;rarePet():boolean;
- ev(id:string):boolean;evPrefix(prefix:string):boolean;campResidents():number;
+ ev(id:string):boolean;evPrefix(prefix:string):boolean;campResidents():number;newBeds():number;plantedOnNewBed():boolean;
 }
 export function missionContext(s:SaveData,log:MissionLog):MissionContext{
  const seen=new Set(log.seen),excellent=new Set(log.excellent),areas=new Set(log.areas),recipes=s.villageProgress?.recipes??[];
@@ -55,6 +58,8 @@ export function missionContext(s:SaveData,log:MissionLog):MissionContext{
   rarePet:()=>(s.dungeons?.pets??[]).some(p=>p.rare),
   ev:id=>(log.events??[]).includes(id),
   campResidents:()=>s.survivorCamp?.residents?.length??0,
+  newBeds:()=>(s.preparedSoil??[]).filter(p=>!STARTER.has(`${p.x},${p.y}`)).length,
+  plantedOnNewBed:()=>{const soil=new Set((s.preparedSoil??[]).map(p=>`${p.x},${p.y}`));return s.crops.some(c=>soil.has(`${c.x},${c.y}`)&&!STARTER.has(`${c.x},${c.y}`));},
   evPrefix:p=>(log.events??[]).some(e=>e.startsWith(p)),
  };
 }

@@ -3,7 +3,8 @@ import {createNewSave,loadSave,saveGame,validateSave} from '../src/systems/save'
 import {createCharacterProfile} from '../src/data/characters';
 import {CHAPTERS,FINAL_CHAPTER,missionKey} from '../src/data/missions';
 import {chapterUnlocked,mergeMissionLogs,openChapters,trackMissions,validMissionLog} from '../src/systems/missions';
-import {newMissionLog} from '../src/systems/mission-checks';
+import {missionContext,newMissionLog} from '../src/systems/mission-checks';
+import {homesteadGardenBeds} from '../src/data/property-homestead';
 import {performVillageService} from '../src/systems/village-services';
 
 const fresh=()=>createNewSave(createCharacterProfile('Missões'));
@@ -27,13 +28,19 @@ describe('missões em capítulos (preview.49)',()=>{
   expect(v.chapter.id).toBe('primeira-colheita');expect(v.missions.filter(x=>x.done).map(x=>x.mission.id)).toEqual([]);
  });
  it('cumprir o capítulo dá a conquista e abre o próximo',()=>{
-  const s=fresh();s.inventory.hoe=1;s.farmingProgress={prepared:true,planted:true,watered:true,harvested:true};
+  const s=fresh();s.homeSupplies={wateringCan:true,seedPacket:true};s.wateringCanWater=3;s.farmingProgress={prepared:true,planted:true,watered:true,harvested:true};
   const earned=trackMissions(s);expect(earned.map(c=>c.achievement)).toEqual(['Mãos na terra']);
   expect(s.missions!.achievements['primeira-colheita']).toBe(s.day);
   expect(openChapters(s).map(v=>v.chapter.id)).toEqual(expect.arrayContaining(['maos-a-obra','anos']));
  });
+ it('Terra nova conta só os canteiros que o jogador abriu, não os da horta inicial',()=>{
+  const s=fresh();s.preparedSoil=[...homesteadGardenBeds()];trackMissions(s);
+  const ctx=missionContext(s,s.missions!);expect(ctx.newBeds()).toBe(0);
+  s.preparedSoil.push({x:40,y:30},{x:41,y:30});expect(missionContext(s,s.missions!).newBeds()).toBe(2);
+  s.crops=[{x:40,y:30,growth:0,watered:true,crop:'turnip',days:0,day:1} as never];expect(missionContext(s,s.missions!).plantedOnNewBed()).toBe(true);
+ });
  it('save antigo, já avançado, recebe na hora as conquistas do que já fez',()=>{
-  const s=fresh();s.inventory.hoe=1;s.farmingProgress={prepared:true,planted:true,watered:true,harvested:true};
+  const s=fresh();s.homeSupplies={wateringCan:true,seedPacket:true};s.wateringCanWater=3;s.farmingProgress={prepared:true,planted:true,watered:true,harvested:true};
   s.progress={collected:true,craftedTools:true,harvested:true,processed:true,builtWorkbench:true,sawn:true,builtShelter:true};
   const earned=trackMissions(s);expect(earned.map(c=>c.id)).toEqual(expect.arrayContaining(['primeira-colheita','maos-a-obra']));
  });
@@ -47,7 +54,7 @@ describe('missões em capítulos (preview.49)',()=>{
   const m=mergeMissionLogs(a,b);expect(m.areas.sort()).toEqual(['forest','village']);expect(m.peak).toBe(500);expect(m.achievements).toEqual({x:3,y:9});expect(m.events).toEqual(['train']);
  });
  it('salvar uma cópia antiga do estado não apaga as conquistas já gravadas',()=>{
-  const s=fresh();s.inventory.hoe=1;s.farmingProgress={prepared:true,planted:true,watered:true,harvested:true};
+  const s=fresh();s.homeSupplies={wateringCan:true,seedPacket:true};s.wateringCanWater=3;s.farmingProgress={prepared:true,planted:true,watered:true,harvested:true};
   const old=structuredClone(s);delete old.missions;
   expect(saveGame(s)).toBe(true);expect(loadSave()!.missions!.achievements['primeira-colheita']).toBeDefined();
   old.inventory.hoe=0;old.farmingProgress={prepared:false,planted:false,watered:false,harvested:false};

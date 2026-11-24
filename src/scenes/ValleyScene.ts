@@ -1,3 +1,4 @@
+import {markMissionEvent} from '../systems/mission-checks';
 import { findGreenhouseSpot, GREENHOUSE_FOOTPRINT, GREENHOUSE_FACADE, greenhouseDoorway, greenhouseLevel } from '../systems/greenhouse';
 import {weatherForDay} from '../weather-model';
 import {MachineView} from '../machine-view';
@@ -1603,6 +1604,7 @@ export class ValleyScene extends Phaser.Scene {
       if (this.tileDistance(strike.target) > 78 || !this.clearReach(strike.target)) return;
       const result = strike.soilAction === 'restore' ? this.farming.restore(strike.target.x,strike.target.y,this.inventory)
         : this.farming.prepare(strike.target.x, strike.target.y, this.inventory, this.soilGround());
+      if (result.ok && strike.soilAction === 'restore') markMissionEvent(this.state, 'restore-soil');
       if (result.ok) {
         const count=toolWork(this.state,'hoe');spendDurability(this.state,'hoe');
         if(strike.soilAction!=='restore')for(let n=1;n<count;n++){

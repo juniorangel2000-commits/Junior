@@ -12,7 +12,8 @@ const quests=n=>{s.mineMissions??=X.newMine();X.completeMine(s.mineMissions,n,s.
 const done=id=>{(s.projects??={})[id]={coins:P.find(p=>p.id===id).coins,items:{...P.find(p=>p.id===id).items},funded:1};};
 const pets=list=>{s.dungeons??=X.newDungeon();s.dungeons.pets=list.map((sp,i)=>({id:'pet-'+i,species:sp,rare:i===2,xp:0,attributes:{speed:i?2:15,resistance:0,perception:0,protection:0,efficiency:0}}));};
 return {
-'primeira-colheita':()=>{inv('hoe',1);Object.assign(s.farmingProgress,{prepared:true,planted:true,watered:true,harvested:true});},
+'primeira-colheita':()=>{s.homeSupplies={...(s.homeSupplies??{}),wateringCan:true,seedPacket:true};s.wateringCanWater=4;Object.assign(s.farmingProgress,{prepared:true,planted:true,watered:true,harvested:true});},
+'terra-nova':()=>{inv('hoe',1);s.crops.slice(0,5).forEach(c=>c.watered=true);ev('restore-soil');},
 'maos-a-obra':()=>{Object.assign(s.progress,{collected:true,craftedTools:true,harvested:true,processed:true,builtWorkbench:true,sawn:true,builtShelter:true});},
 'vizinhos':()=>{area('village');s.villageEconomy.met=[...SOCIAL];inv('lettuceSeeds',2);s.villageEconomy.coins=800;ev('service:inn-rumor');},
 'raizes':()=>{crops(30);inv('turnip',1);inv('lettuce',1);inv('carrot',1);inv('fertilizer',1);exc('carrot');},

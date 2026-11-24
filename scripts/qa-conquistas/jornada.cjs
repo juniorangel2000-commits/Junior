@@ -1,5 +1,5 @@
-const{chromium}=require('playwright');const fs=require('fs');const PASSOS=require('./passos.js');
-const ORDER='primeira-colheita maos-a-obra vizinhos raizes primeiro-anzol a-corda fogao vida-na-vila curral explorador coletor cavalo estacoes bichos-felizes oficina oficio diario-cheio rede luz-no-escuro agua colmeia amizades casinha primeira-expedicao lar ferro artesao receitas longe ruinas sobreviventes hordas horta-farta ouro escondidas fazenda-cheia historias estufa vale novos-vizinhos metal-negro veterano festas economias anos'.split(' ');
+const{chromium}=require('playwright');const fs=require('fs');const PASSOS=require('./passos.cjs');
+const ORDER='primeira-colheita maos-a-obra terra-nova vizinhos raizes primeiro-anzol a-corda fogao vida-na-vila curral explorador coletor cavalo estacoes bichos-felizes oficina oficio diario-cheio rede luz-no-escuro agua colmeia amizades casinha primeira-expedicao lar ferro artesao receitas longe ruinas sobreviventes hordas horta-farta ouro escondidas fazenda-cheia historias estufa vale novos-vizinhos metal-negro veterano festas economias anos'.split(' ');
 (async()=>{const b=await chromium.launch({args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
 const ctx=await b.newContext({viewport:{width:1280,height:720},recordVideo:{dir:__dirname+'/video',size:{width:1280,height:720}}});
 const page=await ctx.newPage();page.setDefaultTimeout(400000);const errs=[];page.on('pageerror',e=>errs.push(e.message));
@@ -9,13 +9,13 @@ await page.locator('#new-game').click();await page.locator('#character-name').fi
 await page.waitForFunction(()=>{document.querySelector('[data-skip-intro]:not([hidden]):not([disabled])')?.click();return document.querySelector('#ui')?.dataset.area==='property';});await wait(3000);
 await page.evaluate(async src=>{window.game=(await import(document.querySelector('script[src*="main.ts"]').src)).game;window.SM=await import('/src/systems/save.ts');window.P=(await import('/src/data/projects.ts')).PROJECTS;window.DISHES=(await import('/src/data/kitchen.ts')).DISH_IDS;window.__ach=[];
  window.addEventListener('after-rain-achievement',e=>e.detail.forEach(a=>window.__ach.push(a.name)));window.__src=src;},PASSOS);
-await page.evaluate(async xs=>{window.X=await (eval('('+xs+')'))();},require('./x.js').toString());
+await page.evaluate(async xs=>{window.X=await (eval('('+xs+')'))();},require('./x.cjs').toString());
 const log=[];
-const CROPS_NEEDED={raizes:30,estacoes:50,'horta-farta':100};
+const CROPS_NEEDED={'terra-nova':40,raizes:30,estacoes:50,'horta-farta':100};
 const plant=async n=>page.evaluate(n=>{const v=game.scene.getScene('Vale'),f=v.farming;const ground={area:'property',terrainAt:()=>'grass',occupied:()=>false,reserved:()=>false};
  v.inventory.data.hoe=Math.max(1,v.inventory.data.hoe);v.inventory.data.tomatoSeeds=(v.inventory.data.tomatoSeeds??0)+n;
  let x=30,y=24;while(f.soilTiles.length<n+5&&y<60){f.prepare(x,y,v.inventory,ground);x++;if(x>70){x=30;y++;}}
- for(const t of f.soilTiles){if(f.crops.length>=n)break;if(!f.cropAt(t.x,t.y))f.plant(t.x,t.y,v.inventory,v.state.day,'tomato');}
+ for(const t of [...f.soilTiles].reverse()){if(f.crops.length>=n)break;if(!f.cropAt(t.x,t.y))f.plant(t.x,t.y,v.inventory,v.state.day,'tomato');}
  return f.crops.length;},n);
 const apply=async(id)=>page.evaluate(id=>{const v=game.scene.getScene('Vale');const s=structuredClone(v.snapshotState());if(s.day<40)s.day=40;
  s.missions=SM.currentMissionLog(s);const inv=(i,n)=>X.addItem(s,i,n);const area=a=>{if(!s.missions.areas.includes(a))s.missions.areas.push(a);};const ev=e=>{(s.missions.events??=[]).push(e);};

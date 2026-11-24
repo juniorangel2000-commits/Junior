@@ -19,7 +19,8 @@ function everything(){
  s.itemQuality=Object.fromEntries(['turnip','lettuce','carrot','bean','tomato','corn','wheat','watermelon','sweetPotato','pumpkin','oat','chamomile','kale','cabbage','strawberry','daisy','sunflower','mint','cotton'].map(i=>[i,{good:0,excellent:1,seen:1}]));
  s.progress={collected:true,craftedTools:true,harvested:true,processed:true,builtWorkbench:true,sawn:true,builtShelter:true};
  s.farmingProgress={prepared:true,planted:true,watered:true,harvested:true};
- s.crops=Array.from({length:100},(_,i)=>({x:i,y:0,growth:0,watered:false,crop:'turnip',days:0,day:1}));
+ s.crops=Array.from({length:100},(_,i)=>({x:i%50,y:30+Math.floor(i/50),growth:0,watered:i<5,crop:'turnip',days:0,day:1}));
+ s.preparedSoil=Array.from({length:100},(_,i)=>({x:i%50,y:30+Math.floor(i/50)}));s.restoredFarmSoil=[{x:13,y:11}];s.homeSupplies={wateringCan:true,seedPacket:true};s.wateringCanWater=4;
  s.villageEconomy={coins:150_000,met:[...SOCIAL_NPCS]};
  const kinds:[string,string,number][]=[['coop','chicken',4],['coop','duck',2],['barn','cow',4],['aprisco','goat',2],['aprisco','sheep',2],['pigsty','pig',4],['stable','horse',0],['silo','',0]];
  const ids:string[]=[];const sites=kinds.map(([k,a,n],i)=>{const animals=Array.from({length:n},(_,j)=>`${a}-${i}-${j}`);ids.push(...animals);return{id:i+1,kind:k,x:i*8,y:2,delivered:{},finished:true,animals,hay:0};});

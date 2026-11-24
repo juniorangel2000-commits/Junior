@@ -138,7 +138,13 @@
 
 ## Em andamento e próximo passo exato
 
-- preview.50: saiu a missão "Preparar um novo canteiro" do capítulo 1, porque a partida já começa com canteiros e ela aparecia cumprida. Agora são 265 missões.
+- preview.50 — **capítulo novo "Terra nova"** (conquista "Enxada afiada"), logo depois de "Mãos à obra":
+  - **Missões:** fabricar a enxada, preparar 1 canteiro novo, plantar num canteiro aberto, preparar 5 canteiros novos, regar 5 plantas no mesmo dia e devolver um canteiro à grama.
+  - **Canteiros novos:** contam só os que não fazem parte da horta inicial (`homesteadGardenBeds`).
+  - **Evento:** devolver um canteiro à grama registra `restore-soil`.
+  - **Capítulo 1:** ganhou "Pegar o regador em casa" e "Encher o regador"; a missão de preparar canteiro, que aparecia já cumprida, saiu dele.
+  - **Total:** 47 capítulos.
+  - **Roteiro de QA:** `scripts/qa-conquistas` foi atualizado, e os arquivos passaram para `.cjs`.
 
 - preview.49: refeição do armazém do Augusto corrigida para 60 C (a 48 saiu com 28 lá).
 - preview.49 — **Missões em capítulos e conquistas**:
