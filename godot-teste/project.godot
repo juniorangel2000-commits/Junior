@@ -3,9 +3,12 @@
 config_version=5
 
 [application]
-config/name="After Rain — teste na Godot"
+config/name="After Rain Native — V0.01"
 run/main_scene="res://cenas/propriedade.tscn"
 config/features=PackedStringArray("4.4", "GL Compatibility")
+
+[autoload]
+Diagnostico="*res://scripts/diagnostico.gd"
 
 [display]
 window/size/viewport_width=1280

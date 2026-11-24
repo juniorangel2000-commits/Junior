@@ -1,0 +1,12 @@
+# Windows x64; godot-cpp pinned to godot-4.4-stable.
+env = SConscript("godot-cpp/SConstruct")
+if env["platform"] != "windows" or env["arch"] != "x86_64" or env["target"] != "template_debug":
+    Exit("Use: scons platform=windows arch=x86_64 target=template_debug")
+env.Append(CPPPATH=["src"])
+env.Append(CXXFLAGS=["/std:c++20"])
+lib = env.SharedLibrary(
+    target="../bin/after_rain_native",
+    source=["src/movement.cpp", "src/register_types.cpp"],
+    SHLIBPREFIX="",
+)
+Default(lib)

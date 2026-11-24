@@ -9,8 +9,14 @@ const DIRECOES := {
 @export var terreno: Node
 @onready var corpo: AnimatedSprite2D = $Corpo
 var _direcao := "south"
+var _movimento_nativo: Object
+var usando_cpp: bool:
+	get:
+		return is_instance_valid(_movimento_nativo)
 
 func _ready() -> void:
+	if ClassDB.class_exists("AfterRainMovement") and ClassDB.can_instantiate("AfterRainMovement"):
+		_movimento_nativo = ClassDB.instantiate("AfterRainMovement")
 	corpo.sprite_frames = _quadros()
 	corpo.play("parada-south")
 	for par in [["ui_left", KEY_A], ["ui_right", KEY_D], ["ui_up", KEY_W], ["ui_down", KEY_S]]:
@@ -33,7 +39,7 @@ func _physics_process(_delta: float) -> void:
 	if entrada.length() > 0.1:
 		_direcao = DIRECOES[Vector2i(signi(roundi(entrada.x)), signi(roundi(entrada.y)))] if Vector2i(signi(roundi(entrada.x)), signi(roundi(entrada.y))) != Vector2i.ZERO else _direcao
 		var antes := position
-		velocity = entrada.normalized() * velocidade
+		velocity = _calcular_velocidade(entrada)
 		move_and_slide()
 		if terreno and terreno.material_em(position) == "water":
 			position = antes
@@ -41,3 +47,8 @@ func _physics_process(_delta: float) -> void:
 	else:
 		velocity = Vector2.ZERO
 		corpo.play("parada-" + _direcao)
+
+func _calcular_velocidade(entrada: Vector2) -> Vector2:
+	if usando_cpp:
+		return _movimento_nativo.call("calculate_velocity", entrada, velocidade)
+	return entrada.normalized() * velocidade
