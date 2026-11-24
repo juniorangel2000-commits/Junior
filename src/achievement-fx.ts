@@ -10,8 +10,8 @@ const GOLD=0xf2c14e,DEEP=0xc98a1e,RED=0xb4453a,CREAM=0xfff4c9;
 export function playAchievementFx(scene:Phaser.Scene,x:number,y:number):void{
  const depth=1e6,reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
  // Anel que se abre a partir dos pés.
- const ring=scene.add.circle(x,y-14,6).setStrokeStyle(3,GOLD,1).setDepth(depth);
- scene.tweens.add({targets:ring,radius:58,alpha:0,duration:1000,ease:'Cubic.Out',onUpdate:()=>ring.setRadius(ring.radius),onComplete:()=>ring.destroy()});
+ const ring=scene.add.circle(x,y-14,46).setStrokeStyle(3,GOLD,1).setDepth(depth).setScale(.13);
+ scene.tweens.add({targets:ring,scale:1.26,alpha:0,duration:1000,ease:'Cubic.Out',onComplete:()=>ring.destroy()});
  // Coluna de luz suave.
  const glow=scene.add.rectangle(x,y-40,26,70,CREAM,.35).setDepth(depth-1).setBlendMode(Phaser.BlendModes.ADD);
  scene.tweens.add({targets:glow,scaleX:.2,alpha:0,duration:1400,ease:'Quad.Out',onComplete:()=>glow.destroy()});
@@ -31,6 +31,8 @@ export function playAchievementFx(scene:Phaser.Scene,x:number,y:number):void{
  scene.tweens.add({targets:medal,scale:1.15,y:y-62,duration:420,ease:'Back.Out'});
  scene.tweens.add({targets:medal,y:y-78,alpha:0,delay:2000,duration:600,ease:'Quad.In',onComplete:()=>medal.destroy()});
  if(!reduce)scene.tweens.add({targets:shine,angle:72,duration:900,repeat:2});
+ // Se a cena for trocada no meio do efeito, as animações param junto (evita mexer em objetos já destruídos).
+ scene.events.once('shutdown',()=>{for(const o of [ring,glow,medal])scene.tweens.killTweensOf(o);});
 }
 
 /** Liga o efeito ao aviso de conquista. Procura a cena ativa que tem jogador. */
