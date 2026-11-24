@@ -15,6 +15,8 @@ func _ready() -> void:
 	_label.visible = false
 	add_child(_label)
 	_atualizar()
+	if "--native-export-smoke" in OS.get_cmdline_user_args():
+		call_deferred("_smoke_export")
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F3:
@@ -31,3 +33,32 @@ func _process(delta: float) -> void:
 func _atualizar() -> void:
 	var backend := "C++ disponível" if ClassDB.class_exists("AfterRainMovement") else "GDScript (alternativa)"
 	_label.text = "Native V0.01 | %s\nFPS: %d | Memória estática Godot: %.1f MiB" % [backend, Engine.get_frames_per_second(), float(OS.get_static_memory_usage()) / 1048576.0]
+
+## Runs only when explicitly requested by the CI, not during normal gameplay.
+func _smoke_export() -> void:
+	await get_tree().process_frame
+	await get_tree().physics_frame
+	var player := get_tree().get_first_node_in_group("native_player")
+	if not is_instance_valid(player) or not player.get("usando_cpp"):
+		push_error("NATIVE_EXPORT_FAIL: player or C++ backend unavailable")
+		get_tree().quit(1)
+		return
+	var sprite := player.get_node_or_null("Corpo") as AnimatedSprite2D
+	if sprite == null or sprite.sprite_frames == null:
+		push_error("NATIVE_EXPORT_FAIL: player sprites unavailable")
+		get_tree().quit(1)
+		return
+	for anim in sprite.sprite_frames.get_animation_names():
+		for index in sprite.sprite_frames.get_frame_count(anim):
+			if sprite.sprite_frames.get_frame_texture(anim, index) == null:
+				push_error("NATIVE_EXPORT_FAIL: missing sprite " + str(anim))
+				get_tree().quit(1)
+				return
+	var actual: Vector2 = player.call("_calcular_velocidade", Vector2(1, 1))
+	var expected := Vector2(1, 1).normalized() * float(player.get("velocidade"))
+	if not actual.is_equal_approx(expected):
+		push_error("NATIVE_EXPORT_FAIL: wrong movement")
+		get_tree().quit(1)
+		return
+	print("NATIVE_EXPORT_SMOKE_OK")
+	get_tree().quit(0)

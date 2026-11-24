@@ -44,3 +44,57 @@ jobs:
             godot-teste/bin/after_rain_native.dll
             godot-teste/after_rain.gdextension
           if-no-files-found: error
+      - name: Install Godot 4.4 Windows export templates
+        shell: pwsh
+        run: |
+          $url = 'https://github.com/godotengine/godot/releases/download/4.4-stable/Godot_v4.4-stable_export_templates.tpz'
+          Invoke-WebRequest -Uri $url -OutFile templates.zip
+          Expand-Archive templates.zip -DestinationPath templates
+          $dest = Join-Path $env:APPDATA 'Godot/export_templates/4.4.stable'
+          New-Item -ItemType Directory -Force $dest | Out-Null
+          Copy-Item templates/templates/windows_debug_x86_64.exe $dest -Force
+          if (Test-Path templates/templates/windows_debug_x86_64_console.exe) {
+            Copy-Item templates/templates/windows_debug_x86_64_console.exe $dest -Force
+          }
+      - name: Export Windows x64 debug build
+        shell: pwsh
+        run: |
+          $engine = Get-ChildItem godot -Recurse -Filter '*_console.exe' | Select-Object -First 1
+          $out = Join-Path $env:GITHUB_WORKSPACE 'native-dist'
+          New-Item -ItemType Directory -Force $out | Out-Null
+          $exe = Join-Path $out 'After-Rain-Native-V0.01.exe'
+          & $engine.FullName --headless --path godot-teste --export-debug 'Windows Desktop' $exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          foreach ($file in @($exe, (Join-Path $out 'After-Rain-Native-V0.01.pck'))) {
+            if (-not (Test-Path $file)) { throw "Missing export: $file" }
+          }
+          $dll = Get-ChildItem $out -Recurse -Filter 'after_rain_native.dll'
+          if (-not $dll) { throw 'Native DLL missing from export.' }
+      - name: Smoke test exported game
+        shell: pwsh
+        run: |
+          $out = Join-Path $env:GITHUB_WORKSPACE 'native-dist'
+          $exe = Join-Path $out 'After-Rain-Native-V0.01.exe'
+          $log = Join-Path $env:RUNNER_TEMP 'after-rain-export-smoke.log'
+          $p = Start-Process -FilePath $exe -ArgumentList "--headless --log-file `"$log`" -- --native-export-smoke" -WorkingDirectory $out -PassThru
+          if (-not $p.WaitForExit(120000)) { Stop-Process -Id $p.Id -Force; throw 'Export smoke timed out.' }
+          if (Test-Path $log) { Get-Content $log }
+          if ($p.ExitCode -ne 0) { throw "Export exit code: $($p.ExitCode)" }
+          if (-not (Test-Path $log) -or -not (Select-String -Path $log -Pattern 'NATIVE_EXPORT_SMOKE_OK' -Quiet)) {
+            throw 'Export smoke marker not found.'
+          }
+      - name: Package portable build
+        shell: pwsh
+        run: |
+          Copy-Item godot-teste/LEIA-NATIVE-WINDOWS.md native-dist/LEIA.md
+          Compress-Archive -Path native-dist/* -DestinationPath After-Rain-Native-V0.01-Windows-x64.zip
+          $hash = (Get-FileHash After-Rain-Native-V0.01-Windows-x64.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  After-Rain-Native-V0.01-Windows-x64.zip" | Set-Content -Encoding utf8NoBOM SHA256SUMS-native.txt
+      - uses: actions/upload-artifact@v6
+        with:
+          name: After-Rain-Native-V0.01-Windows-x64
+          path: |
+            After-Rain-Native-V0.01-Windows-x64.zip
+            SHA256SUMS-native.txt
+          if-no-files-found: error
+          retention-days: 30

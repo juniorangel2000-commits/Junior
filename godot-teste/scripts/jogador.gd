@@ -15,6 +15,7 @@ var usando_cpp: bool:
 		return is_instance_valid(_movimento_nativo)
 
 func _ready() -> void:
+	add_to_group("native_player")
 	if ClassDB.class_exists("AfterRainMovement") and ClassDB.can_instantiate("AfterRainMovement"):
 		_movimento_nativo = ClassDB.instantiate("AfterRainMovement")
 	corpo.sprite_frames = _quadros()
