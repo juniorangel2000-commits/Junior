@@ -3,6 +3,7 @@ import {HELENA_DISHES} from '../data/kitchen';
 import {MACHINES,CRAFTED_MACHINE_IDS} from '../data/machines';
 import {HARVEST_BASKET_COST,HARVEST_BASKET_FEE,HARVEST_BASKET_DESCRIPTION} from '../data/harvest-basket';
 import {ITEMS} from '../data/items';
+import {markMissionEvent} from './mission-checks';
 import {SCRAP_SORT_FEE,SCRAP_SORT_MAX,sortScrap,scrapSortingReady,partsLabel} from './scrap-sorting';
 import {bentoAvailability} from './bento-schedule';
 import {newFishingProgress,availableSpecimens,specimenPrice,fishingOrder,RODS,ROD_UPGRADES,rodControlLabel} from './fishing-progress';
@@ -66,7 +67,7 @@ for(const survivor of ['marina','rui'])add(`welcome-${survivor}`,'helena',`Receb
 // Iluminação e bomba d'água eram um só projeto; desde a preview.41 são dois (pedido do Junior).
 add('learn-lamps','icaro','Aprender luminárias','40 Coroas, 3 sucatas e 1 componente eletrônico. Libera a luminária exterior.',(s,i)=>{requireThat(!s.villageProgress!.recipes.includes('lamp'),'Projeto já conhecido.');pay(s,i,40,{scrap:3,electronicPart:1});s.villageProgress!.recipes.push('lamp');});
 add('learn-pump','icaro','Aprender aspersor automático','50 Coroas, 4 sucatas e 2 componentes eletrônicos. Libera o aspersor, que rega sozinho os canteiros perto dele.',(s,i)=>{requireThat(!s.villageProgress!.recipes.includes('waterPump'),'Projeto já conhecido.');pay(s,i,50,{scrap:4,electronicPart:2});s.villageProgress!.recipes.push('waterPump');});
-for(const c of B.contracts)add(`request-${c.npc}`,c.npc,'Quadro de pedidos',`${c.quantity} ${c.item}: ${c.reward} C. Renova a cada ${c.interval} dias.`,(s)=>{const r=fulfillContract(s,c.npc);requireThat(r.ok,r.message);});
+for(const c of B.contracts)add(`request-${c.npc}`,c.npc,'Quadro de pedidos',`${c.quantity} × ${ITEMS[c.item as ItemId].name}: ${c.reward} C. Renova a cada ${c.interval} dias.`,(s)=>{const r=fulfillContract(s,c.npc);requireThat(r.ok,r.message);});
 for(const tool of ['hatchet','pickaxe','hoe','sickle','shovel'] as const)add(`repair-${tool}`,'bento',`Reparar ${tool}`,'20 C. Restaura a durabilidade do material atual.',(s,i)=>{requireThat(i.has(tool),'Traga a ferramenta.');const c=toolCondition(s,tool);requireThat(c.durability<B.durability[c.tier],'A ferramenta já está em bom estado.');pay(s,i,20);configureTool(s,tool,c.tier);});
 for(const tool of ['hammer','handsaw','fishingRod','net','shears'] as const)add(`repair-${tool}`,'bento',`Reparar ${{hammer:'martelo',handsaw:'serrote',fishingRod:'vara de pesca',net:'rede',shears:'tesoura de tosquia'}[tool]}`,'20 C. Repara somente a cópia selecionada.',(s,i)=>{requireThat(i.has(tool),'Traga a ferramenta.');requireThat(inventoryToolCondition(i.data,tool).durability<100,'A ferramenta já está em bom estado.');pay(s,i,20);repairInventoryTool(i.data,tool);});
 add('shelter-carpentry','tobias','Preparar peças para a casinha','30 C, 2 troncos e 6 madeiras: recebe 6 tábuas regulares e 6 cavilhas.',(s,i)=>{pay(s,i,30,{log:2,wood:6});requireThat(i.transact({},{board:6,peg:6}),'Libere espaço na mochila.');});
@@ -191,7 +192,7 @@ export function performVillageService(save:SaveData,id:string):{ok:boolean;messa
  const service=services[id];if(!service)return{ok:false,message:'Serviço desconhecido.'};
  if(service.npc==='bento'&&!bentoAvailability(save).open)return{ok:false,message:bentoAvailability(save).message};
  const draft=structuredClone(save);draft.villageProgress??=createVillageProgress();draft.villageEconomy??=createVillageEconomy();
- try{const inventory=new Inventory(draft.inventory);draft.inventory=inventory.data;const said=service.run(draft,inventory);draft.inventory={...inventory.data};Object.assign(save,draft);
+ try{const inventory=new Inventory(draft.inventory);draft.inventory=inventory.data;const said=service.run(draft,inventory);draft.inventory={...inventory.data};markMissionEvent(draft,'service:'+id);Object.assign(save,draft);
   // Campos apagados pelo serviço (como o pedido de sucata já buscado) saem também da partida.
   for(const key of Object.keys(save) as (keyof SaveData)[])if(!(key in draft))delete save[key];return{ok:true,message:said||`${service.label}: concluído.`};}catch(error){return{ok:false,message:error instanceof Error?error.message:'Não foi possível concluir.'};}
 }

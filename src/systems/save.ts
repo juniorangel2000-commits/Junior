@@ -1,4 +1,5 @@
 import {validProjects} from './projects';
+import {announceAchievements,mergeMissionLogs,trackMissions,validMissionLog,type MissionLog} from './missions';
 import {validGreenhouse} from './greenhouse';
 import {playerHomeSize} from './home-level';
 import {ROPE_AREAS,ropeAllowed,type RopeArea} from '../data/wild-animals';
@@ -132,6 +133,7 @@ export function validateSave(value: unknown): value is SaveData {
   if(!validFestivalDone(value.festivalDone))return false;
   if(!validForageHarvest(value.forageHarvest,typeof value.day==='number'?value.day:0))return false;
   if(!validProjects(value.projects,typeof value.day==='number'?value.day:0))return false;
+  if(value.missions!==undefined&&!validMissionLog(value.missions))return false;
   if(!validGreenhouse(value.greenhouse,value as unknown as SaveData))return false;
   if(value.bentoTravel!==undefined&&!validBentoTravel(value.bentoTravel,typeof value.day==='number'?value.day:999999))return false;
   if(value.mineRescue!==undefined&&!validMineRescue(value.mineRescue,typeof value.day==='number'?value.day:999999))return false;
@@ -573,12 +575,16 @@ export function preserveInvalidSave():boolean {
     return localStorage.getItem(keys.damaged)===raw;
   } catch { return false; }
 }
-export function loadSave():SaveData|null { return inspectSave().data; }
+/** Último registro de missões de cada partida: as cenas guardam cópias do estado, e o registro
+ * nunca pode voltar atrás quando uma cópia antiga é salva. */
+const missionCache=new Map<string,MissionLog>();
+export function loadSave():SaveData|null { const data=inspectSave().data;if(data?.missions){try{const k=activeSaveKey();missionCache.set(k,mergeMissionLogs(missionCache.get(k),data.missions));}catch{/* sem armazenamento */}}return data; }
 export function hasSave():boolean { return loadSave()!==null; }
 export function saveGame(data:SaveData):boolean {
   const original=data;
   try {
     if(!validateSave(data))return false;
+    const slot=activeSaveKey(),earned=trackMissions(data,missionCache.get(slot));
     if(data.itemQuality){const q={inventory:data.inventory,itemQuality:structuredClone(data.itemQuality)};syncQuality(q);data={...data,itemQuality:q.itemQuality};if(!data.itemQuality)delete data.itemQuality;}
     if(data.fishingProgress){data={...data,fishingProgress:{...data.fishingProgress,basket:availableSpecimens(data)}};}
     const keys=saveKeys(activeSaveKey());
@@ -603,6 +609,7 @@ export function saveGame(data:SaveData):boolean {
       }
     }
     localStorage.setItem(keys.main,JSON.stringify(data));
+    if(data.missions){missionCache.set(slot,data.missions);original.missions=data.missions;}announceAchievements(earned);
     if(original.itemQuality){if(data.itemQuality)original.itemQuality=data.itemQuality;else delete original.itemQuality;}
     if(original.fishingProgress&&data.fishingProgress)original.fishingProgress.basket=data.fishingProgress.basket;return true;
   } catch { return false; }

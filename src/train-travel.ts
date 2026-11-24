@@ -4,6 +4,7 @@ import type {GameUI} from './ui';
 import {saveGame} from './systems/save';
 import {advanceClock} from './systems/clock';
 import {projectDone} from './systems/projects';
+import {markMissionEvent} from './systems/mission-checks';
 import {SCENE_FADE_MS} from './systems/map-transition';
 
 /** Trem do Vale (obra da Estação, preview.48): três paradas, passagem de 30 coroas e meia hora de
@@ -37,6 +38,7 @@ function travel(scene:Phaser.Scene,ui:GameUI,current:SaveData,to:TrainStop):void
  economy.coins-=TRAIN_FARE;Object.assign(next,advanceClock(next,TRAIN_MINUTES));
  for(const k of ['homePosition','merchantInterior','blacksmithInterior','communityInterior','ruinsCellarPosition','railwayHallPosition'] as const)delete next[k];
  next.activeArea=to;const stop=TRAIN_STOPS[to];next[stop.position]={x:(stop.arrive.x+.5)*T,y:(stop.arrive.y+.5)*T,direction:'down'};
+ markMissionEvent(next,'train');
  if(!saveGame(next)){ui.toast('Não foi possível salvar. A viagem foi cancelada.');return;}
  scene.input.keyboard?.resetKeys();scene.cameras.main.fadeOut(SCENE_FADE_MS);
  scene.time.delayedCall(SCENE_FADE_MS,()=>{

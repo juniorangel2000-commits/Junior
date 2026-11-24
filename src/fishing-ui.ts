@@ -1,3 +1,4 @@
+import {markMissionEvent} from './systems/mission-checks';
 import {projectDone} from './systems/projects';
 import type {SaveData as FarolSave} from './types';
 /** Lago; Costa de noite com o farol aceso; ou rios e praias comuns. */
@@ -24,6 +25,7 @@ export function fishAtBank(save:SaveData,net:boolean,onChange:()=>void,visual?:{
  if(active)return active;
  if(visual?.ready===false){visual.destroy();return Promise.resolve(net?'Procure um trecho com água livre para abrir a rede inteira. A isca foi preservada.':'Aproxime-se de um trecho com água livre para lançar a linha. A isca foi preservada.');}
  const session=new FishingSession(save.villageProgress?.fishingSkill??0,net,save.inventory.accessory>0,random,fishingHabitat(save),{bandBonus:hasFoodEffect(save,'roastedFish')?FISHING_BAND_BONUS:0,rodTier:save.fishingProgress?.rodTier,bait:save.fishingProgress?.bait,time:save.time,day:save.day});
+ if(fishingHabitat(save)==='lighthouse')markMissionEvent(save,'lighthouse');
  const cast=beginFishingCast(save,net,session.reward,saveGame);
  if(!cast.ok){visual?.destroy();return Promise.resolve(cast.message);}
  onChange();if(!visual)gameAudio.play('fishing-cast');

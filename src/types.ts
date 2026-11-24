@@ -98,6 +98,8 @@ export interface SaveData {
   npcOutingGifts?:Partial<Record<string,number>>;
   /** Dia em que cada concha ou íris foi recolhida (src/systems/forage.ts). */
   forageHarvest?:Record<string,number>;
+  /** Missões em capítulos e conquistas (preview.49; src/systems/missions.ts). */
+  missions?:import('./systems/mission-checks').MissionLog;
   /** Obras grandes pagas aos poucos (casa, estufa, Vale, casas novas; preview.48). */
   projects?:import('./systems/projects').ProjectsState;
   /** Estufa da propriedade: posição da porta e plantas (preview.48). */
