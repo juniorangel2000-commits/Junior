@@ -145,6 +145,7 @@
   - **Eventos:** marcados com `markMissionEvent`, em cada serviço de morador (`service:<id>`), na viagem de trem (`train`), na pesca com o farol (`lighthouse`) e na ida à mina com o Bento (`bento-party`).
   - **Painel:** `src/mission-journal.ts`, com as abas Missões e Conquistas, no estilo do painel do galinheiro. O CSS fica em `cozy-hud.css`, com seletores `#journal-panel`, porque o painel não está dentro de `.hud`.
   - **Aviso de conquista:** toast dourado, som `achievement` e efeito em `src/achievement-fx.ts`, com luz, anel, estrelas e uma medalha saindo do personagem.
+- **Teste de tudo em 5 anos** ([docs/economia/RELATORIO-CINCO-ANOS.md](economia/RELATORIO-CINCO-ANOS.md)): simulação em código de 560 dias (`JOGADOR-CINCO-ANOS.md`); 560 noites no navegador sem erros, com as 11 obras prontas; saves das versões 46, 47 e 48 testados; e o teste `missions-journey` provando que as 46 conquistas podem ser ganhas.
 - **Quadro de pedidos:** mostrava códigos ("20 wood"). Agora mostra o nome do item.
 - Almanaque do Vale (wiki para jogadores) publicado como página: https://claude.ai/artifact/F6JkM5PGrmVv94a2yADffv. Gerado dos dados do jogo; falta guardar no GitHub (o Junior quer depois).
 
