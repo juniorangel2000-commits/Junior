@@ -78,3 +78,19 @@ Sem obras, o jogador completo chega ao ano 5 com cerca de 591 mil coroas. Pagand
 - **Trem:** nas 3 paradas, com passagem de 30 C e meia hora no relógio. A chegada à Vila é ao lado da placa. Com animal na corda, recusa.
 - **Serviços:** moinho, vidro e areia funcionando.
 - **Erros:** nenhum.
+
+## Conquistas no navegador (jornada completa)
+
+Pedido do Junior: "precisamos rodar as conquistas no navegador". O roteiro está em `scripts/qa-conquistas/`.
+
+**Como foi feito:** numa partida nova, os 46 capítulos foram cumpridos na ordem da trilha, salvando como o jogo salva.
+
+**Resultado:**
+- Saíram as 46 conquistas, uma por capítulo, cada uma com aviso e efeito. Os capítulos paralelos saíram no momento certo, e por último veio "O Vale Renasceu".
+- O painel avançou de capítulo a cada conquista e terminou com "Você terminou a trilha do vale!".
+- Depois de recarregar a página, as 46 continuaram salvas. Nenhum erro de página.
+
+**Defeitos encontrados e corrigidos durante a jornada:**
+- **Sobreviventes:** as missões de recrutar 4 e 8 sobreviventes contavam a lista da Marina e do Rui, que tem no máximo 2. Seriam impossíveis. Agora contam os aliados da casa comunitária.
+- **Companheiros:** a missão de ter 4 espécies era impossível, porque a casinha abriga 3. Agora pede 3 companheiros de espécies diferentes.
+- **Efeito de conquista:** dava erro se a cena fosse recriada durante a animação, por exemplo ao entrar em casa logo depois de ganhar uma conquista. O anel agora é animado por escala.

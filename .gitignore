@@ -389,3 +389,6 @@ __pycache__/
 /docs/previa-personagem/zoom-50.png
 /docs/previa-personagem/zoom-casa-200.png
 /docs/previa-personagem/zoom-casa-50.png
+scripts/qa-conquistas/video/
+scripts/qa-conquistas/c-*.png
+scripts/qa-conquistas/saida.txt
