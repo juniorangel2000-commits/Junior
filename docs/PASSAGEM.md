@@ -4,8 +4,8 @@
 
 - **Atualizado em:** 2026-11-23
 - **Por:** Claude
-- **Continuar a partir de:** `release/v0.10.0-preview.49` (em andamento; a 48 foi publicada em 24/11/2026).
-- **Última versão publicada:** `v0.10.0-preview.48` (inclui a 47, que nunca teve Release). A Release é criada pelo Junior: tag `v0.10.0-preview.48` no branch `release/v0.10.0-preview.48` (deste ambiente o push de tag é recusado).
+- **Continuar a partir de:** `release/v0.10.0-preview.49` (publicada em 24/11/2026; a próxima é a preview.50).
+- **Última versão publicada:** `v0.10.0-preview.49`. A Release é criada pelo Junior: tag `v0.10.0-preview.49` no branch `release/v0.10.0-preview.49` (deste ambiente o push de tag é recusado).
 - **Atenção ao publicar:** além de `NOTAS-<versão>.md`, crie `docs/cenarios/LEIA-<versão>.md`. O processo do Windows copia esse arquivo para a Release e falha se ele não existir.
 - **Estado:** a preview.48 tem mina corrigida, vigor, chuva regando a horta, animais soltos com sorteio diário em todos os cenários externos, só com a corda, HUD novo de vida e vigor, relatório de 3 anos e as obras grandes (casa, estufa, obras do Vale e moradores novos) com arte provisória. Bateria de testes de tudo feita (saves antigos, obras, trem, estufa, serviços, desempenho) com 3 correções. Publicada (notas e LEIA em `docs/cenarios`).
 
@@ -158,7 +158,7 @@
 
 - Perguntar ao Junior onde a colisão da mina falha.
 - O painel de Companheiros encosta no topo das barras de vida/vigor em telas de 800 px de altura (as barras não capturam cliques).
-- Junior: criar a Release/tag `v0.10.0-preview.48` no GitHub (o workflow gera o executável Windows). Novas mudanças vão para `release/v0.10.0-preview.49`.
+- Junior: criar a Release/tag `v0.10.0-preview.49` no GitHub (o workflow gera o executável Windows). Novas mudanças vão para `release/v0.10.0-preview.50`.
 - Arte das obras: pedir conforme `docs/planejamento/PEDIDO-ARTE-OBRAS.md` e trocar a provisória.
 - Simulação ainda sem máquinas, cozinha, aspersores e mina.
 
