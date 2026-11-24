@@ -139,6 +139,13 @@
 ## Em andamento e próximo passo exato
 
 - preview.49: refeição do armazém do Augusto corrigida para 60 C (a 48 saiu com 28 lá).
+- preview.49 — **Missões em capítulos e conquistas**:
+  - **Dados e regras:** `src/data/missions.ts` traz 46 capítulos e 266 missões. A trilha principal é linear, na ordem do jogo, e só *anos*, *festas* e *economias* andam em paralelo. O capítulo final é "O Vale Renasceu". As regras ficam em `src/systems/mission-checks.ts` e `src/systems/missions.ts`.
+  - **Save:** campo novo `missions`, com áreas, itens já vistos, itens excelentes, maior saldo, missões feitas, conquistas e eventos. O registro só cresce. `saveGame` acompanha o progresso e guarda um cache por partida, para que uma cópia antiga não apague nada. Saves antigos ganham na hora as conquistas do que já fizeram.
+  - **Eventos:** marcados com `markMissionEvent`, em cada serviço de morador (`service:<id>`), na viagem de trem (`train`), na pesca com o farol (`lighthouse`) e na ida à mina com o Bento (`bento-party`).
+  - **Painel:** `src/mission-journal.ts`, com as abas Missões e Conquistas, no estilo do painel do galinheiro. O CSS fica em `cozy-hud.css`, com seletores `#journal-panel`, porque o painel não está dentro de `.hud`.
+  - **Aviso de conquista:** toast dourado, som `achievement` e efeito em `src/achievement-fx.ts`, com luz, anel, estrelas e uma medalha saindo do personagem.
+- **Quadro de pedidos:** mostrava códigos ("20 wood"). Agora mostra o nome do item.
 - Almanaque do Vale (wiki para jogadores) publicado como página: https://claude.ai/artifact/F6JkM5PGrmVv94a2yADffv. Gerado dos dados do jogo; falta guardar no GitHub (o Junior quer depois).
 
 - Perguntar ao Junior onde a colisão da mina falha.
@@ -162,7 +169,7 @@
 
 ## Testes
 
-- preview.48: `npm run check` passou e `npm test` passou com 2.279 testes (2 pulados). Depois das obras: 2.311 testes. Depois da bateria de testes: 2.314 (2 pulados). Com a mão de obra das construções: 2.316. Com refeição, rega e pesca: 2.319. No Chromium: mineração nas quatro direções, escuridão com e sem lampião, barras do HUD, sorteio do Bosque em dois dias, vaca levada dos Campos à propriedade com a corda; pato do Pântano pelo Bosque e cabra da Costa pelos Campos até a propriedade; cabra da Estação pelas Ruínas, Floresta da Cidade e Vila até a propriedade; galinha do Pomar solta na Vila e cabra da Costa solta nos Campos correram de volta e sumiram.
+- preview.48: `npm run check` passou e `npm test` passou com 2.279 testes (2 pulados). Depois das obras: 2.311 testes. Depois da bateria de testes: 2.314 (2 pulados). Com a mão de obra das construções: 2.316. Com refeição, rega e pesca: 2.319. Com missões (preview.49): 2.329. No Chromium: mineração nas quatro direções, escuridão com e sem lampião, barras do HUD, sorteio do Bosque em dois dias, vaca levada dos Campos à propriedade com a corda; pato do Pântano pelo Bosque e cabra da Costa pelos Campos até a propriedade; cabra da Estação pelas Ruínas, Floresta da Cidade e Vila até a propriedade; galinha do Pomar solta na Vila e cabra da Costa solta nos Campos correram de volta e sumiram.
 
 - Na preview.47 integrada, `npm run check` passou e `npm test` passou com 2.271 testes em 275 arquivos.
 - `tests/critters.test.ts` confere os quadros com margens transparentes, os horários de aparecimento, a direção e o lugar de cada espécie no mapa. `tests/ambient-birds.test.ts` confere a folha de poses e os pousos e voos dos bandos.
