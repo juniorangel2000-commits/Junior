@@ -86,7 +86,7 @@ export const MERCHANTS:Record<MerchantId,Merchant>={
   },
 };
 
-Object.assign(MERCHANTS.general.buy,{meal:28,lantern:95,bait:3});
+Object.assign(MERCHANTS.general.buy,{meal:60,lantern:95,bait:3});
 Object.assign(MERCHANTS.herbalist.buy,{herb:6,bandage:18,herbalTonic:40});
 Object.assign(MERCHANTS.herbalist.sell,{herb:2,rareHerb:25});
 Object.assign(MERCHANTS.seeds.buy,{fertilizer:22});
