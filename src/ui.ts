@@ -10,7 +10,7 @@ import {recipeTeacher,STATION_NAMES,CATEGORY_NAMES,CATEGORY_ORDER,recipeStation,
 import {cropFromSeed,cropDefinition} from './data/crops';
 import {FARM_KINDS,FARM_BUILDINGS,FARM_BASE_COST,farmLaborCoins,isFarmTool} from './data/farm-buildings';
 import {shortCalendarLabel,fullCalendarLabel,calendarDate} from './systems/calendar';
-import {mountMineMissionJournal,mineMissionSummary} from './mine-mission-journal';
+import {mountMineMissionJournal} from './mine-mission-journal';
 import type {MineMissionRuntime} from './systems/mine-missions';
 import {UNIQUE_CRAFT_ITEMS} from './systems/crafting';
 import {weatherForDay,WEATHER_NAMES} from './weather-model';
@@ -493,7 +493,7 @@ export class GameUI {
         <button type="button" data-zoom="0" aria-label="Restaurar zoom padrão" title="Restaurar para 100% · Home"><span class="camera-zoom-value" aria-live="polite">100%</span></button>
         <button type="button" data-zoom="1" aria-label="Aumentar zoom" title="Aproximar a câmera · + ou roda do mouse">+</button>
       </div>
-      <button class="journal-reopen" ${this.journalCollapsed ? '' : 'hidden'} aria-controls="journal-panel" aria-expanded="false" aria-label="Abrir missões" title="Abrir missões">${icon('leaf')}<span>Missões</span></button><aside id="journal-panel" class="journal" ${this.journalCollapsed ? 'hidden' : ''}><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="journal-close" aria-controls="journal-panel" aria-label="Fechar missões" title="Fechar missões">${icon('close')}</button></header><div id="journal-content" class="journal-content"><section id="mine-journal-summary" hidden><p class="mine-mission-summary"></p><button class="button button-light mine-journal-button">Diário da mina · L</button></section><div id="mission-journal" aria-live="polite"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera na parte oeste da propriedade.</p><small>Seu tempo. Seu caminho.</small></div></aside>
+      <button class="journal-reopen" ${this.journalCollapsed ? '' : 'hidden'} aria-controls="journal-panel" aria-expanded="false" aria-label="Abrir missões" title="Abrir missões">${icon('leaf')}<span>Missões</span></button><aside id="journal-panel" class="journal" ${this.journalCollapsed ? 'hidden' : ''}><header class="journal-heading"><div><span class="eyebrow">AOS POUCOS, UM LAR</span><h3>Missões</h3></div><button class="journal-close" aria-controls="journal-panel" aria-label="Fechar missões" title="Fechar missões">${icon('close')}</button></header><div id="journal-content" class="journal-content"><div id="mission-journal" aria-live="polite"></div><p class="journal-tip">Recolha galhos e pedras. A sucata para a lâmina do serrote espera na parte oeste da propriedade.</p><small>Seu tempo. Seu caminho.</small></div></aside>
       <div class="location-pill">${icon('pin')}<span id="hud-location">Minha propriedade</span></div>
       <div class="bottom-center"><div class="interaction-prompt"><kbd id="hud-interaction-key">E</kbd><span id="hud-prompt">Explore o vale ao seu redor</span></div><div id="hud-resource-progress" class="resource-progress" hidden></div><div class="toolbelt"></div><div class="tool-status"><strong id="active-tool">Explorar</strong><span id="tool-cost">Coletar · conversar · colher</span></div></div>
     </div>`;
@@ -517,7 +517,6 @@ export class GameUI {
       else this.base.querySelector<HTMLButtonElement>('.journal-close')!.focus();
       try { localStorage.setItem('after-rain-missions-collapsed', String(closed)); } catch { /* A preferência vale para esta sessão. */ }
     };
-    this.base.querySelector('.mine-journal-button')!.addEventListener('click',()=>this.toggleMineJournal());
     this.base.querySelector('.journal-close')!.addEventListener('click', () => setJournalClosed(true));
     this.base.querySelector('.journal-reopen')!.addEventListener('click', () => setJournalClosed(false));
     this.base.querySelectorAll<HTMLButtonElement>('[data-collapse]').forEach(button => button.addEventListener('click', () => {
@@ -803,7 +802,7 @@ export class GameUI {
       : 'Sua fazenda está crescendo. Aloje os animais no galinheiro e no curral, armazene palha no silo e explore os arredores. M abre o mapa.';
     set('.journal-tip', nextTip);
     const tip=this.base.querySelector<HTMLElement>('.journal-tip');if(tip)tip.hidden=data.progress.builtShelter;
-    const missionSave=this.callbacks.getFishingState?.(),missionPanel=this.base.querySelector<HTMLElement>('#mine-journal-summary');if(missionPanel){missionPanel.hidden=!missionSave?.mineMissions&&!missionSave?.underground;if(missionSave)missionPanel.querySelector('.mine-mission-summary')!.textContent=mineMissionSummary(missionSave);}
+    // O diário da mina fica só na barra de cima (L), fora do painel de missões.
     this.renderMissions();
   }
 
