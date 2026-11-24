@@ -147,6 +147,12 @@
   - **Aviso de conquista:** toast dourado, som `achievement` e efeito em `src/achievement-fx.ts`, com luz, anel, estrelas e uma medalha saindo do personagem.
 - **Teste de tudo em 5 anos** ([docs/economia/RELATORIO-CINCO-ANOS.md](economia/RELATORIO-CINCO-ANOS.md)): simulação em código de 560 dias (`JOGADOR-CINCO-ANOS.md`); 560 noites no navegador sem erros, com as 11 obras prontas; saves das versões 46, 47 e 48 testados; e o teste `missions-journey` provando que as 46 conquistas podem ser ganhas.
 - **Jornada das conquistas no navegador** (`scripts/qa-conquistas/`): 46/46 conquistas, em ordem, até "O Vale Renasceu", mantidas depois de recarregar e sem erros. Corrigidos: as missões de sobreviventes contavam `villageSurvivors`, que só guarda Marina e Rui, e agora contam `survivorCamp.residents`; a missão de espécies de companheiros pedia 4, mas o limite da casinha é 3; e o efeito de conquista dava erro se a cena fosse recriada durante a animação.
+- **Telas de fabricar** (Fabricação C, Bancada de trabalho e Bancada de construção):
+  - **Layout:** lista à esquerda, com busca e as receitas possíveis primeiro, e detalhe à direita, com "tenho / preciso" em cada material.
+  - **Fabricar várias:** botões ×1, ×5 e Máximo, numa fila que respeita o tempo de cada fabricação e mostra "fazendo N de M" na barra de progresso.
+  - **Filtro:** por ícones de itens, com o número de receitas prontas num selinho.
+  - **Plural:** corrigido com `src/data/item-forms.ts`.
+  - **Arquivos:** o HTML fica em `src/crafting-view.ts` e o estilo em `src/crafting.css`.
 - **Quadro de pedidos:** mostrava códigos ("20 wood"). Agora mostra o nome do item.
 - Almanaque do Vale (wiki para jogadores) publicado como página: https://claude.ai/artifact/F6JkM5PGrmVv94a2yADffv. Gerado dos dados do jogo; falta guardar no GitHub (o Junior quer depois).
 

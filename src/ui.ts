@@ -1,4 +1,6 @@
 import {promptWithoutKey} from './prompt-key';
+import './crafting.css';
+import {craftDetailHtml,craftListHtml,maxCraftable,recipeMatches} from './crafting-view';
 import {MEDAL_SVG,missionJournalHtml,missionJournalKey,type JournalTab} from './mission-journal';
 import {currentMissionLog} from './systems/save';
 import {ACHIEVEMENT_EVENT} from './systems/missions';
@@ -6,7 +8,7 @@ import {isMachine,machineIngredient} from './data/machines';
 import {SWORD_TIER_NAMES,SWORD_POWER} from './systems/world-sword';
 import {mountWorldLoading,type WorldLoadingInfo} from './world-loading';
 import {qualityLabel,qualityCounts} from './systems/item-quality';
-import {recipeTeacher,STATION_NAMES,CATEGORY_NAMES,CATEGORY_ORDER,recipeStation,recipeCategory,stationReady,type CraftStation,type CraftCategory,type NearStations} from './data/recipe-groups';
+import {recipeTeacher,STATION_NAMES,CATEGORY_NAMES,CATEGORY_ICONS,CATEGORY_ORDER,recipeStation,recipeCategory,stationReady,type CraftStation,type CraftCategory,type NearStations} from './data/recipe-groups';
 import {cropFromSeed,cropDefinition} from './data/crops';
 import {FARM_KINDS,FARM_BUILDINGS,FARM_BASE_COST,farmLaborCoins,isFarmTool} from './data/farm-buildings';
 import {shortCalendarLabel,fullCalendarLabel,calendarDate} from './systems/calendar';
@@ -182,6 +184,10 @@ export class GameUI {
   private craftingInventory?: InventoryData;
   private craftingNear: NearStations = { workbench: false, construction: false };
   private craftingStation: CraftStation = 'hand';
+  private craftingQuery = '';
+  private craftingSelectedBy: Partial<Record<CraftStation, string>> = {};
+  private craftQueue?: { id: string; left: number };
+  private craftQueueTotal = 0;
   private craftingCategoryBy: Partial<Record<CraftStation, CraftCategory | 'all' | 'learn'>> = {};
   private homeEditor?: HomeEditor;
   private journalCollapsed = false;
@@ -977,9 +983,10 @@ export class GameUI {
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Fabricação');
-    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">DAS MÃOS NASCE UM LAR</span><h2 class="crafting-title">${STATION_NAMES[this.craftingStation]}</h2></div><button class="icon-button" aria-label="Fechar fabricação">${icon('close')}</button></div><div class="crafting-station"></div><nav class="crafting-categories" aria-label="Categorias"></nav><div class="crafting-progress" hidden><div class="crafting-progress-heading"><strong></strong><span class="crafting-percent">0%</span></div><progress max="1" value="0" aria-label="Progresso da fabricação"></progress><button class="text-button cancel-crafting">Cancelar fabricação</button></div><div class="recipe-grid"></div><div class="inventory-footer">${icon('leaf')} Recolha sucata na parte oeste da propriedade para preparar a lâmina.<span>SIMULAÇÃO PAUSADA</span></div>`;
+    panel.innerHTML = `<div class="modal-heading"><div><span class="eyebrow">DAS MÃOS NASCE UM LAR</span><h2 class="crafting-title">${STATION_NAMES[this.craftingStation]}</h2></div><button class="icon-button" aria-label="Fechar fabricação">${icon('close')}</button></div><div class="crafting-station"></div><nav class="crafting-categories" aria-label="Categorias"></nav><div class="crafting-progress" hidden><div class="crafting-progress-heading"><strong></strong><span class="crafting-percent">0%</span></div><progress max="1" value="0" aria-label="Progresso da fabricação"></progress><button class="text-button cancel-crafting">Cancelar fabricação</button></div><div class="crafting-body"><div class="crafting-side"><input type="search" id="crafting-search" class="crafting-search" placeholder="Procurar receita" aria-label="Procurar receita" autocomplete="off"><ul class="crafting-list" aria-label="Receitas"></ul></div><div class="crafting-detail" aria-live="polite"></div></div><div class="inventory-footer">${icon('leaf')} Recolha sucata na parte oeste da propriedade para preparar a lâmina.<span>SIMULAÇÃO PAUSADA</span></div>`;
     panel.querySelector('button')!.addEventListener('click', () => this.closeModal());
     panel.querySelector('.cancel-crafting')!.addEventListener('click', () => {
+      this.craftQueue = undefined;
       this.callbacks.onCancelCraft();
       this.setCraftingProgress('', 1);
     });
@@ -1023,7 +1030,7 @@ export class GameUI {
         : missingTool ? `Precisa de ${ITEM_NAMES[recipe.requiresTool!].toLocaleLowerCase('pt-BR')}.`
         : missingStation ? `Aproxime-se de uma ${STATION_NAMES[recipeStation(recipe)].toLocaleLowerCase('pt-BR')}.`
         : missing.length ? `Faltam: ${missing.join(', ')}.` : 'Materiais e requisitos disponíveis.';
-      return { learned, ready, status };
+      return { learned, ready, status, max: ready ? Math.max(1, maxCraftable(recipe, inventory, !!outputTool)) : 0 };
     };
     const pool = RECIPES.filter(r => recipeStation(r) === current).map(r => ({ r, ...info(r) }));
     const known = pool.filter(x => x.learned), toLearn = pool.filter(x => !x.learned);
@@ -1031,31 +1038,54 @@ export class GameUI {
     // Cada janela lembra a última categoria escolhida.
     let chosen: CraftCategory | 'all' | 'learn' = this.craftingCategoryBy[current] ?? 'all';
     if (chosen === 'learn' ? !toLearn.length : chosen !== 'all' && !categories.includes(chosen)) chosen = 'all';
-    const count = (list: typeof pool) => `<small>${list.filter(x => x.ready).length}/${list.length}</small>`;
     const chips = this.overlay.querySelector<HTMLElement>('.crafting-categories')!;
-    chips.innerHTML = [`<button type="button" class="crafting-chip${chosen === 'all' ? ' active' : ''}" data-category="all">Todas ${count(known)}</button>`,
-      ...categories.map(c => `<button type="button" class="crafting-chip${c === chosen ? ' active' : ''}" data-category="${c}">${CATEGORY_NAMES[c]} ${count(known.filter(x => recipeCategory(x.r) === c))}</button>`),
-      ...(toLearn.length ? [`<button type="button" class="crafting-chip learn${chosen === 'learn' ? ' active' : ''}" data-category="learn">Para aprender <small>${toLearn.length}</small></button>`] : [])].join('');
+    // Filtro por ícones: arte de um item de cada categoria, número do que dá para fazer e nome ao passar o mouse.
+    const chip = (id: CraftCategory | 'all' | 'learn', label: string, list: typeof pool, learn = false) => {
+      const ready = learn ? 0 : list.filter(x => x.ready).length;
+      const tip = learn ? `${label}: ${list.length}` : `${label}: ${ready} de ${list.length} prontas para fazer`;
+      return `<button type="button" class="crafting-chip icon-chip${learn ? ' learn' : ''}${chosen === id ? ' active' : ''}" data-category="${id}" title="${tip}" aria-label="${tip}" aria-pressed="${chosen === id}">${icon(CATEGORY_ICONS[id] as Parameters<typeof icon>[0])}<span class="chip-label">${label}</span>${learn ? `<small class="chip-count">${list.length}</small>` : ready ? `<small class="chip-count ready">${ready}</small>` : ''}</button>`;
+    };
+    chips.innerHTML = [chip('all', 'Todas', known), ...categories.map(c => chip(c, CATEGORY_NAMES[c], known.filter(x => recipeCategory(x.r) === c))), ...(toLearn.length ? [chip('learn', 'Aprender', toLearn, true)] : [])].join('');
     chips.querySelectorAll<HTMLButtonElement>('[data-category]').forEach(b => b.addEventListener('click', () => { this.craftingCategoryBy[current] = b.dataset.category as CraftCategory | 'all' | 'learn'; this.refreshCrafting(inventory, near); }));
-    // As que dá para fazer agora vêm primeiro; depois, a ordem das categorias.
+    // As que dá para fazer agora vêm primeiro; depois, a ordem das categorias. A busca filtra pelo nome.
+    const query = this.craftingQuery;
     const shown = (chosen === 'learn' ? toLearn : known.filter(x => chosen === 'all' || recipeCategory(x.r) === chosen))
+      .filter(x => recipeMatches(x.r, query))
       .sort((a, b) => Number(b.ready) - Number(a.ready) || CATEGORY_ORDER.indexOf(recipeCategory(a.r)) - CATEGORY_ORDER.indexOf(recipeCategory(b.r)));
-    const grid = this.overlay.querySelector<HTMLElement>('.recipe-grid')!;
-    const focusedRecipe = (document.activeElement as HTMLElement | null)?.dataset.recipe;
-    grid.innerHTML = shown.map(({ r: recipe, ready, status }) => {
-      const inputs = Object.entries(recipe.cost) as [ItemId, number][];
-      const outputs = Object.entries(recipe.output) as [ItemId, number][];
-      const requirements = [
-        recipe.requiresTool ? ITEM_NAMES[recipe.requiresTool] : '',
-        CATEGORY_NAMES[recipeCategory(recipe)],
-        recipe.durationSeconds ? `${recipe.durationSeconds} segundos` : '',
-      ].filter(Boolean).join(' · ');
-      return `<article class="recipe-card${ready ? ' ready' : ''}"><div class="recipe-title">${icon(recipe.upgrade?.tool ?? outputs[0]?.[0] ?? 'workbench')}<h3>${recipe.name}</h3></div><p>${recipe.description}</p><div class="recipe-materials">${inputs.map(([item, quantity]) => `<span class="${inventory[item] < quantity ? 'insufficient' : ''}">${icon(item)}${quantity} ${ITEM_NAMES[item]} <small>(${inventory[item]})</small></span>`).join('')}</div><div class="recipe-output">${icon('arrow')} ${outputs.map(([item, quantity]) => `${quantity} ${ITEM_NAMES[item]}`).join(' + ')}</div><small class="recipe-requirements">${requirements}</small><div class="recipe-status${ready ? '' : ' unavailable'}">${status}</div><button class="button ${ready ? 'button-primary' : 'button-light'}" data-recipe="${recipe.id}" ${ready ? '' : 'disabled'} aria-label="Fabricar: ${recipe.name}">Fabricar ${icon('check')}</button></article>`;
-    }).join('');
-    grid.querySelectorAll<HTMLButtonElement>('[data-recipe]').forEach(button => button.addEventListener('click', () => {
-      if (!button.disabled) this.callbacks.onCraft(button.dataset.recipe!);
+    let selected = this.craftingSelectedBy[current];
+    if (!shown.some(x => x.r.id === selected)) selected = this.craftingSelectedBy[current] = shown[0]?.r.id;
+    const search = this.overlay.querySelector<HTMLInputElement>('.crafting-search')!;
+    if (search.value !== query) search.value = query;
+    if (!search.dataset.bound) { search.dataset.bound = '1'; search.addEventListener('input', () => { this.craftingQuery = search.value; this.refreshCrafting(this.craftingInventory!, this.craftingNear); }); }
+    const list = this.overlay.querySelector<HTMLElement>('.crafting-list')!;
+    const listScroll = list.scrollTop;
+    list.innerHTML = craftListHtml(shown, selected, icon as (id: string) => string);
+    list.scrollTop = listScroll;
+    list.querySelectorAll<HTMLButtonElement>('[data-select]').forEach(b => b.addEventListener('click', () => { this.craftingSelectedBy[current] = b.dataset.select!; this.refreshCrafting(this.craftingInventory!, this.craftingNear); this.overlay.querySelector<HTMLButtonElement>(`[data-select="${b.dataset.select}"]`)?.focus(); }));
+    const row = shown.find(x => x.r.id === selected);
+    const detail = this.overlay.querySelector<HTMLElement>('.crafting-detail')!;
+    detail.innerHTML = craftDetailHtml(row, inventory, icon as (id: string) => string, this.craftingBusy || !!this.craftQueue);
+    detail.querySelectorAll<HTMLButtonElement>('[data-craft-count]').forEach(b => b.addEventListener('click', () => {
+      if (b.disabled || !row) return;
+      const n = b.dataset.craftCount === 'max' ? row.max : Number(b.dataset.craftCount);
+      this.craftQueue = { id: row.r.id, left: Math.max(1, Math.min(n, row.max)) };
+      this.craftQueueTotal = this.craftQueue.left;
+      this.runCraftQueue();
     }));
-    if (focusedRecipe) grid.querySelector<HTMLButtonElement>(`[data-recipe="${focusedRecipe}"]:not(:disabled)`)?.focus();
+  }
+
+  /** Fabricar várias: faz uma por vez; as com tempo continuam quando a anterior termina. */
+  private runCraftQueue(): void {
+    const q = this.craftQueue;
+    if (!q || this.craftingBusy || this.modal !== 'crafting') return;
+    for (let guard = 0; q.left > 0 && guard < 999 && !this.craftingBusy; guard++) {
+      const before = JSON.stringify(this.craftingInventory);
+      q.left--;
+      this.callbacks.onCraft(q.id);
+      if (this.craftingBusy) return; // com tempo: segue em setCraftingProgress
+      if (JSON.stringify(this.craftingInventory) === before) { q.left = 0; break; } // não fabricou (faltou algo)
+    }
+    if (!this.craftingBusy) { this.craftQueue = undefined; if (this.craftingInventory) this.refreshCrafting(this.craftingInventory, this.craftingNear); }
   }
 
   setCraftingProgress(name: string, ratio: number): void {
@@ -1065,12 +1095,14 @@ export class GameUI {
     const panel = this.overlay.querySelector<HTMLElement>('.crafting-progress');
     if (panel) {
       panel.hidden = !this.craftingBusy;
-      panel.querySelector('strong')!.textContent = name;
+      panel.querySelector('strong')!.textContent = name && this.craftQueue && this.craftQueueTotal > 1 ? `${name} · fazendo ${this.craftQueueTotal - this.craftQueue.left} de ${this.craftQueueTotal}` : name;
       panel.querySelector('.crafting-percent')!.textContent = `${Math.floor(progress * 100)}%`;
       const bar = panel.querySelector('progress')!;
       bar.value = progress;
       bar.setAttribute('aria-label', name ? `Fabricação: ${name}` : 'Progresso da fabricação');
     }
+    // Terminou uma fabricação com tempo: segue a fila (cancelar já esvazia a fila antes).
+    if (wasBusy && !this.craftingBusy && this.craftQueue && progress >= 1) setTimeout(() => this.runCraftQueue(), 0);
     if (wasBusy !== this.craftingBusy && this.craftingInventory) {
       this.refreshCrafting(this.craftingInventory, this.craftingNear);
     }

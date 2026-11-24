@@ -1,0 +1,58 @@
+/* Telas de fabricar (preview.49): lista à esquerda, detalhe à direita, no estilo do painel do galinheiro. */
+#ui .crafting-card{width:min(920px,calc(100vw - 32px));height:min(640px,calc(100dvh - 32px));max-height:none;display:flex;flex-direction:column;overflow:hidden}
+#ui .crafting-card .crafting-categories{flex:none}
+#ui .crafting-card .inventory-footer{flex:none}
+.crafting-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(240px,300px) minmax(0,1fr);gap:14px;margin:12px 0 10px}
+.crafting-side{min-height:0;display:flex;flex-direction:column;gap:8px}
+.crafting-search{width:100%;box-sizing:border-box;padding:7px 10px;border:1px solid #c5a16a;border-radius:4px;background:#fff7e2;color:#60492f;font:13px Georgia,serif}
+.crafting-search:focus-visible{outline:2px solid #58643b;outline-offset:1px}
+.crafting-list{list-style:none;margin:0;padding:0 4px 0 0;overflow:auto;min-height:0;flex:1;display:flex;flex-direction:column;gap:4px;scrollbar-width:thin;scrollbar-color:#a6783d #f3e3bf}
+.craft-row{width:100%;display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;gap:8px;padding:5px 8px;border:1px solid #d3b783;border-radius:4px;background:#efe2c2;color:#7b6440;font:12.5px Georgia,serif;text-align:left;cursor:pointer}
+.craft-row .icon,.craft-row img{width:22px;height:22px}
+.craft-row.ready{background:#e8d7b2;border-color:#c5a16a;color:#60492f}
+.craft-row.unlearned{opacity:.6}
+.craft-row:hover{border-color:#a6783d}
+.craft-row.selected{background:linear-gradient(#b58448,#8f6230);border-color:#6f4a22;color:#fff3d6}
+.craft-row:focus-visible{outline:2px solid #58643b;outline-offset:1px}
+.craft-row-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.craft-badge{font:700 10px Arial,sans-serif;border-radius:9px;padding:1px 7px;white-space:nowrap}
+.craft-badge.ready{background:#6f7f3d;color:#fbf3dc}
+.craft-badge.missing{color:#a68a5c}
+.craft-badge.learn{background:#d8c49b;color:#6b5530}
+.craft-row.selected .craft-badge.missing{color:#f1dcb0}
+.craft-empty{font:italic 12px Georgia,serif;color:#7b6440;padding:8px}
+.crafting-detail{min-height:0;overflow:auto;padding:14px 16px;background:#fff7e2;border:1px solid #d3b783;border-radius:6px;color:#60492f;scrollbar-width:thin}
+.craft-detail-head{display:flex;align-items:center;gap:12px}
+.craft-detail-head .icon,.craft-detail-head img{width:44px;height:44px;image-rendering:pixelated}
+.craft-detail-head h3{margin:2px 0 0;font:22px Georgia,serif;color:#60492f}
+.craft-detail-head .eyebrow{font:700 9px Arial,sans-serif;letter-spacing:.14em;color:#a6783d}
+.craft-desc{font-size:12.5px;line-height:1.55;color:#7b6440;margin:10px 0 12px}
+.crafting-detail h4{margin:0 0 6px;font:700 10px Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#a6783d}
+.craft-mats{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:5px}
+.craft-mats li{display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;gap:8px;padding:5px 10px;background:#e8d7b2;border:1px solid #c5a16a;border-radius:4px;font-size:12.5px}
+.craft-mats li .icon,.craft-mats li img{width:22px;height:22px;image-rendering:pixelated}
+.craft-mat-count{font:12px Arial,sans-serif;color:#58643b;font-variant-numeric:tabular-nums}
+.craft-mats li.short{background:#f3dccb;border-color:#c98f6a}
+.craft-mats li.short .craft-mat-count{color:#a2452c}
+.craft-result{margin:0 0 4px;font-size:13px}
+.craft-req{margin:0 0 8px;font-size:11.5px;color:#8a7552}
+.craft-status{margin:0 0 12px;font:italic 12px Georgia,serif;color:#a2452c}
+.craft-status.ok{color:#58643b}
+.craft-actions{display:flex;flex-wrap:wrap;gap:8px}
+.craft-actions .button{min-height:36px;padding:8px 16px;font-size:12px}
+.craft-actions .button-primary{flex:1}
+.craft-detail-empty{font:italic 13px Georgia,serif;color:#7b6440}
+@media (max-width:700px){.crafting-body{grid-template-columns:1fr;grid-template-rows:minmax(140px,40%) 1fr}}
+/* Filtro por ícones (preview.49): quadrados com a arte do item; o escolhido mostra o nome. */
+#ui .crafting-card .crafting-categories{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#ui .crafting-chip.icon-chip{position:relative;display:inline-flex;align-items:center;gap:6px;height:42px;min-width:42px;padding:0 8px;justify-content:center;border:1px solid #c5a16a;border-radius:6px;background:#e8d7b2;color:#60492f;font:13px Georgia,serif;cursor:pointer}
+#ui .crafting-chip.icon-chip .icon,#ui .crafting-chip.icon-chip img{width:26px;height:26px;image-rendering:pixelated;flex:none}
+#ui .crafting-chip.icon-chip .chip-label{display:none;white-space:nowrap}
+#ui .crafting-chip.icon-chip.active{background:linear-gradient(#b58448,#8f6230);border-color:#6f4a22;color:#fff3d6;padding:0 12px 0 8px}
+#ui .crafting-chip.icon-chip.active .chip-label{display:inline}
+#ui .crafting-chip.icon-chip:hover{border-color:#8f6230}
+#ui .crafting-chip.icon-chip:focus-visible{outline:2px solid #58643b;outline-offset:2px}
+#ui .crafting-chip.icon-chip .chip-count{position:absolute;top:-6px;right:-6px;min-width:17px;height:17px;padding:0 4px;box-sizing:border-box;border-radius:9px;background:#a68a5c;color:#fff3d6;font:700 10px/17px Arial,sans-serif;text-align:center;margin:0;opacity:1}
+#ui .crafting-chip.icon-chip .chip-count.ready{background:#6f7f3d}
+#ui .crafting-chip.icon-chip.learn{border-style:dashed;background:#efe2c2}
+#ui .crafting-chip.icon-chip.learn.active{border-style:solid}
