@@ -18,6 +18,7 @@ import {CityForestScene} from './scenes/CityForestScene';
 import {MapEditorScene} from './scenes/MapEditorScene';
 import Phaser from 'phaser';
 import { gameAudio } from './audio';
+import {installAchievementFx} from './achievement-fx';
 import { installFullscreenShortcut } from './fullscreen';
 import { installPerformanceOverlay } from './performance-overlay';
 import { installSceneTextureRelease } from './scene-texture-release';
@@ -81,6 +82,7 @@ export const game = new Phaser.Game({
   audio: { noAudio: true },
   banner: false,
 });
+installAchievementFx(game);
 installTravelLoading(game,{isTitle:()=>ui.onTitle});
 
 installPerformanceOverlay(game);

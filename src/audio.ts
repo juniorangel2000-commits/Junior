@@ -6,7 +6,7 @@ export function audioSettings(value: unknown): AudioSettings {
   const volume = (n: unknown, fallback: number): number => typeof n === 'number' && Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : fallback;
   return { music: volume(v.music, .45), effects: volume(v.effects, .65), muted: v.muted === true };
 }
-export type Sound = 'cave-rumble' | 'cave-impact' | 'step' | 'swim' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'fishing-cast' | 'fishing-splash' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit' | 'sword-swing' | 'bow-shot' | 'boomerang-throw' | 'weapon-evolution' | 'spear-thrust' | 'hammer-impact' | 'shield-burst' | 'dungeon-start';
+export type Sound = 'cave-rumble' | 'cave-impact' | 'step' | 'swim' | 'ui' | 'pickup' | 'wood' | 'stone' | 'plant' | 'water' | 'fishing-cast' | 'fishing-splash' | 'craft' | 'door' | 'build' | 'thunder' | 'combat-hit' | 'sword-swing' | 'bow-shot' | 'boomerang-throw' | 'weapon-evolution' | 'spear-thrust' | 'hammer-impact' | 'shield-burst' | 'dungeon-start' | 'achievement';
 type AudioScene = 'title' | 'game' | 'expedition' | 'combat' | 'cinematic';
 const BEAT = 60 / 76;
 export const MUSIC_DURATION = 64 * BEAT;
@@ -391,6 +391,8 @@ export function synthesizeEffect(ctx: BaseAudioContext, out: AudioNode, sound: S
     case 'sword-swing': noise(ctx, out, .1, 2600, .07); note(55, 0, .06, .025); break;
     case 'bow-shot': noise(ctx, out, .045, 3400, .07); note(76, 0, .07, .045); break;
     case 'boomerang-throw': noise(ctx, out, .18, 750, .07); note(57, 0, .12, .025); break;
+    // Conquista (preview.49): arpejo brilhante subindo, com um acorde final e um brilho agudo.
+    case 'achievement': note(72, 0, .16, .09); note(76, .09, .16, .09); note(79, .18, .16, .09); note(84, .3, .55, .1); note(88, .3, .55, .06); note(91, .3, .55, .05); note(96, .55, .3, .035); note(100, .7, .3, .03); break;
     case 'weapon-evolution': note(60, 0, .18, .08); note(67, .1, .22, .08); note(76, .2, .4, .08); break;
     case 'combat-hit': noise(ctx, out, .055, 1400, .11); note(48, 0, .06, .045); break;
     case 'ui': note(79, 0, .065, .055); break;
