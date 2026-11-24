@@ -39,13 +39,13 @@ function everything(){
  s.villageInstallations=[...Array.from({length:4},(_,i)=>({kind:'pump',x:i,y:0})),{kind:'lamp',x:9,y:9},{kind:'forge',x:8,y:8}];
  s.petShelter={stage:3,x:1,y:1};
  s.dungeons={version:1,xp:999,attributes:{strength:10,resistance:10,agility:10,vitality:0,precision:0,survival:0},selectedPet:'p1',completed:{'abandoned-central-square':5,'mall-parking':3},recentResults:[],petForageDay:12,
-  pets:['dog','cat','golden-retriever','border-collie'].map((sp,i)=>({id:'p'+i,species:sp,rare:i===0,xp:0,attributes:{speed:5,resistance:5,perception:5,protection:0,efficiency:0}}))};
+  pets:['dog','cat','golden-retriever'].map((sp,i)=>({id:'p'+i,species:sp,rare:i===0,xp:0,attributes:{speed:5,resistance:5,perception:5,protection:0,efficiency:0}}))};
  s.treeGrowth={version:1,sequence:2,property:[],forest:[],migrated:{property:true,forest:true}};
  s.campfires=[{space:'property',x:1,y:1}];
  s.horseTaming={version:1,trust:7,tamed:true,name:'Trovão'};
  s.riding=true;
  Object.assign(s,{ruinsMapFound:true,ruinsSealFound:true,ruinsSealIdentified:true,ruinsClues:['a','b','c']});
- s.villageSurvivors=Array.from({length:8},(_,i)=>'sobrevivente-'+i);
+ s.survivorCamp={cycle:3,nextVisitDay:620,kind:'peaceful',warned:false,aggressive:false,members:[],residents:Array.from({length:8},(_,i)=>({id:'r'+i,name:'Aliado '+i,character:'farmer-male',x:0,y:0,hp:100,status:'resident',direction:'down'}))};s.villageSurvivors=['marina','rui'];
  s.communityCenter={stage:3};
  s.beekeeping={version:1,nextId:2,traps:[{id:1,ipe:'ipe-1',x:1,y:1,day:3}]};
  s.home={floor:'pine',wall:'sage',furniture:Array.from({length:10},(_,i)=>({id:'f'+i,kind:'chair',x:i,y:1}))};

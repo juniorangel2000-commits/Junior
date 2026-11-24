@@ -21,7 +21,7 @@ export interface MissionContext{
  friends(min:number):number;stories(parts:number):number;festival(id:string):boolean;project(id:string):boolean;
  tier(tool:string,min:number):boolean;mineQuests():number;installs(kind:'pump'|'lamp'|'forge'):number;pets():number;dungeon(id:string):number;
  dungeonAttributes():number;petAttributes():number;petSpecies():number;rarePet():boolean;
- ev(id:string):boolean;evPrefix(prefix:string):boolean;
+ ev(id:string):boolean;evPrefix(prefix:string):boolean;campResidents():number;
 }
 export function missionContext(s:SaveData,log:MissionLog):MissionContext{
  const seen=new Set(log.seen),excellent=new Set(log.excellent),areas=new Set(log.areas),recipes=s.villageProgress?.recipes??[];
@@ -54,6 +54,7 @@ export function missionContext(s:SaveData,log:MissionLog):MissionContext{
   petSpecies:()=>new Set((s.dungeons?.pets??[]).map(p=>p.species)).size,
   rarePet:()=>(s.dungeons?.pets??[]).some(p=>p.rare),
   ev:id=>(log.events??[]).includes(id),
+  campResidents:()=>s.survivorCamp?.residents?.length??0,
   evPrefix:p=>(log.events??[]).some(e=>e.startsWith(p)),
  };
 }

@@ -260,11 +260,11 @@ const MAIN:Chapter[]=[
   m('oldMap','Ter o mapa antigo',c=>c.seen('oldMap')),
  ]},
  {id:'sobreviventes',title:'Sobreviventes',achievement:'Abrigo para todos',description:'Acolheu os sobreviventes na vila.',missions:[
-  m('recruit1','Recrutar um sobrevivente',c=>c.count(c.s.villageSurvivors?.length??0,1)),
+  m('recruit1','Recrutar um sobrevivente no acampamento',c=>c.count(c.campResidents(),1)),
   m('center1','Começar a reforma da casa comunitária',c=>(c.s.communityCenter?.stage??0)>=1),
   m('center3','Terminar a casa comunitária',c=>(c.s.communityCenter?.stage??0)>=3),
-  m('recruit4','Ter 4 sobreviventes morando na vila',c=>c.count(c.s.villageSurvivors?.length??0,4)),
-  m('recruit8','Ter 8 sobreviventes morando na vila',c=>c.count(c.s.villageSurvivors?.length??0,8)),
+  m('recruit4','Ter 4 aliados morando na casa comunitária',c=>c.count(c.campResidents(),4)),
+  m('recruit8','Ter 8 aliados morando na casa comunitária',c=>c.count(c.campResidents(),8)),
   m('rumor','Ouvir na pousada o rumor sobre o acampamento',c=>c.ev('service:inn-rumor')),
   m('sword','Fabricar uma espada para se defender',c=>c.seen('sword')),
   m('plan','Encomendar ao Tobias o projeto da base dos sobreviventes',c=>c.ev('service:plan-survivor')),
@@ -340,7 +340,7 @@ const MAIN:Chapter[]=[
   m('pick','Ter a picareta de metal negro',c=>c.tier('pickaxe',3)),
  ]},
  {id:'veterano',title:'Veterano das ruas',achievement:'Lenda da cidade',description:'Dominou as expedições e reuniu os companheiros mais raros.',missions:[
-  m('species','Ter cão, gato, golden retriever e border collie',c=>c.count(c.petSpecies(),4)),
+  m('species','Ter 3 companheiros de espécies diferentes (a casinha abriga 3)',c=>c.count(c.petSpecies(),3)),
   m('rare','Resgatar um companheiro de variação rara',c=>c.rarePet()),
   m('mall3','Vencer 3 vezes o Estacionamento',c=>c.count(c.dungeon('mall-parking'),3)),
   m('square5','Sobreviver 5 vezes à Praça Central',c=>c.count(c.dungeon('abandoned-central-square'),5)),
