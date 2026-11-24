@@ -11,8 +11,6 @@ export const CRAFT_STATIONS:readonly CraftStation[]=['hand','workbench','constru
 /** Título de cada janela: a tecla C abre a das receitas sem bancada ("Fabricação"). */
 export const STATION_NAMES:Record<CraftStation,string>={hand:'Fabricação',workbench:'Bancada de trabalho',construction:'Bancada de construção'};
 export const CATEGORY_NAMES:Record<CraftCategory,string>={materials:'Materiais',tools:'Ferramentas',healing:'Cura',field:'Campo',animals:'Criação',equipment:'Equipamentos',combat:'Combate',upgrades:'Melhorias',house:'Peças da casa',furniture:'Móveis',installations:'Instalações',machines:'Máquinas',projects:'Projetos'};
-/** Ícone (arte de um item do jogo) de cada categoria no filtro das telas de fabricar. */
-export const CATEGORY_ICONS:Record<CraftCategory|'all'|'learn',string>={all:'workbench',learn:'oldMap',materials:'plank',tools:'pickaxe',upgrades:'ironIngot',healing:'bandage',field:'campfire',animals:'milkPail',equipment:'backpack',combat:'sword',house:'doorKit',furniture:'furniture',installations:'waterPump',machines:'cheesePress',projects:'log'};
 export const CATEGORY_ORDER:readonly CraftCategory[]=['materials','tools','upgrades','healing','field','animals','equipment','combat','house','furniture','installations','machines','projects'];
 type Group=[CraftStation,CraftCategory];
 const GROUPS:Record<string,Group>={

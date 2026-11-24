@@ -46,7 +46,7 @@
 /* Filtro por ícones (preview.49): quadrados com a arte do item; o escolhido mostra o nome. */
 #ui .crafting-card .crafting-categories{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 #ui .crafting-chip.icon-chip{position:relative;display:inline-flex;align-items:center;gap:6px;height:42px;min-width:42px;padding:0 8px;justify-content:center;border:1px solid #c5a16a;border-radius:6px;background:#e8d7b2;color:#60492f;font:13px Georgia,serif;cursor:pointer}
-#ui .crafting-chip.icon-chip .icon,#ui .crafting-chip.icon-chip img{width:26px;height:26px;image-rendering:pixelated;flex:none}
+#ui .crafting-chip.icon-chip .icon{width:22px;height:22px;flex:none}
 #ui .crafting-chip.icon-chip .chip-label{display:none;white-space:nowrap}
 #ui .crafting-chip.icon-chip.active{background:linear-gradient(#b58448,#8f6230);border-color:#6f4a22;color:#fff3d6;padding:0 12px 0 8px}
 #ui .crafting-chip.icon-chip.active .chip-label{display:inline}

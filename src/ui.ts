@@ -1,5 +1,6 @@
 import {promptWithoutKey} from './prompt-key';
 import './crafting.css';
+import {categoryIcon} from './category-icons';
 import {craftDetailHtml,craftListHtml,maxCraftable,recipeMatches} from './crafting-view';
 import {MEDAL_SVG,missionJournalHtml,missionJournalKey,type JournalTab} from './mission-journal';
 import {currentMissionLog} from './systems/save';
@@ -8,7 +9,7 @@ import {isMachine,machineIngredient} from './data/machines';
 import {SWORD_TIER_NAMES,SWORD_POWER} from './systems/world-sword';
 import {mountWorldLoading,type WorldLoadingInfo} from './world-loading';
 import {qualityLabel,qualityCounts} from './systems/item-quality';
-import {recipeTeacher,STATION_NAMES,CATEGORY_NAMES,CATEGORY_ICONS,CATEGORY_ORDER,recipeStation,recipeCategory,stationReady,type CraftStation,type CraftCategory,type NearStations} from './data/recipe-groups';
+import {recipeTeacher,STATION_NAMES,CATEGORY_NAMES,CATEGORY_ORDER,recipeStation,recipeCategory,stationReady,type CraftStation,type CraftCategory,type NearStations} from './data/recipe-groups';
 import {cropFromSeed,cropDefinition} from './data/crops';
 import {FARM_KINDS,FARM_BUILDINGS,FARM_BASE_COST,farmLaborCoins,isFarmTool} from './data/farm-buildings';
 import {shortCalendarLabel,fullCalendarLabel,calendarDate} from './systems/calendar';
@@ -1043,7 +1044,7 @@ export class GameUI {
     const chip = (id: CraftCategory | 'all' | 'learn', label: string, list: typeof pool, learn = false) => {
       const ready = learn ? 0 : list.filter(x => x.ready).length;
       const tip = learn ? `${label}: ${list.length}` : `${label}: ${ready} de ${list.length} prontas para fazer`;
-      return `<button type="button" class="crafting-chip icon-chip${learn ? ' learn' : ''}${chosen === id ? ' active' : ''}" data-category="${id}" title="${tip}" aria-label="${tip}" aria-pressed="${chosen === id}">${icon(CATEGORY_ICONS[id] as Parameters<typeof icon>[0])}<span class="chip-label">${label}</span>${learn ? `<small class="chip-count">${list.length}</small>` : ready ? `<small class="chip-count ready">${ready}</small>` : ''}</button>`;
+      return `<button type="button" class="crafting-chip icon-chip${learn ? ' learn' : ''}${chosen === id ? ' active' : ''}" data-category="${id}" title="${tip}" aria-label="${tip}" aria-pressed="${chosen === id}">${categoryIcon(id)}<span class="chip-label">${label}</span>${learn ? `<small class="chip-count">${list.length}</small>` : ready ? `<small class="chip-count ready">${ready}</small>` : ''}</button>`;
     };
     chips.innerHTML = [chip('all', 'Todas', known), ...categories.map(c => chip(c, CATEGORY_NAMES[c], known.filter(x => recipeCategory(x.r) === c))), ...(toLearn.length ? [chip('learn', 'Aprender', toLearn, true)] : [])].join('');
     chips.querySelectorAll<HTMLButtonElement>('[data-category]').forEach(b => b.addEventListener('click', () => { this.craftingCategoryBy[current] = b.dataset.category as CraftCategory | 'all' | 'learn'; this.refreshCrafting(inventory, near); }));
