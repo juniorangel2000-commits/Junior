@@ -15,7 +15,6 @@ const NEAR_AREAS=['forest','openFields','village','cityForest','fishingLake','sw
 const MAIN:Chapter[]=[
  {id:'primeira-colheita',title:'Primeira colheita',achievement:'Mãos na terra',description:'Plantou, regou e colheu pela primeira vez.',missions:[
   m('hoe','Fabricar uma enxada · C',c=>c.has('hoe')),
-  m('prepare','Preparar um novo canteiro · enxada + E',c=>c.s.farmingProgress?.prepared===true),
   m('plant','Plantar uma semente da estação · E',c=>c.s.farmingProgress?.planted===true),
   m('water','Regar a plantinha · regador + E',c=>c.s.farmingProgress?.watered===true),
   m('harvest','Colher a primeira plantação · mãos vazias + E',c=>c.s.farmingProgress?.harvested===true),

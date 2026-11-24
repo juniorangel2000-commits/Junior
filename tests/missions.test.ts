@@ -22,6 +22,10 @@ describe('missões em capítulos (preview.49)',()=>{
   expect(openChapters(s).map(v=>v.chapter.id)).toEqual(['primeira-colheita']);
   const second=CHAPTERS.find(c=>c.id==='maos-a-obra')!;expect(chapterUnlocked(s.missions!,second)).toBe(false);
  });
+ it('numa partida nova nenhuma missão do primeiro capítulo começa cumprida',()=>{
+  const s=fresh();trackMissions(s);const v=openChapters(s)[0];
+  expect(v.chapter.id).toBe('primeira-colheita');expect(v.missions.filter(x=>x.done).map(x=>x.mission.id)).toEqual([]);
+ });
  it('cumprir o capítulo dá a conquista e abre o próximo',()=>{
   const s=fresh();s.inventory.hoe=1;s.farmingProgress={prepared:true,planted:true,watered:true,harvested:true};
   const earned=trackMissions(s);expect(earned.map(c=>c.achievement)).toEqual(['Mãos na terra']);
