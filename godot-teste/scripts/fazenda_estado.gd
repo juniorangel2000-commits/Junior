@@ -7,6 +7,7 @@ var quickbar: Array = ["hand","hoe","seeds","wateringCan","hatchet","pickaxe",""
 var stock: Dictionary = {"hoe":1,"wateringCan":1,"seeds":12,"lettuceSeeds":4,"carrotSeeds":4,"beanSeeds":4,"hatchet":1,"pickaxe":1}
 var plots: Dictionary = {}
 var resource_progress: Dictionary = {}
+var buildings: Dictionary = {}
 var core: Object
 
 func _init() -> void:
@@ -116,14 +117,14 @@ func stage(crop: Dictionary) -> int:
 	return 0 if growth<=0.0 else (4 if growth>=1.0 else (3 if growth>=2.0/3.0 else (2 if growth>=1.0/3.0 else 1)))
 
 func export_state() -> Dictionary:
-	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate(),"resource_progress":resource_progress.duplicate(true)}
+	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate(),"resource_progress":resource_progress.duplicate(true),"buildings":buildings.duplicate(true)}
 
 func import_state(data: Dictionary,today: int) -> bool:
 	var s=data.get("stock")
 	var p=data.get("plots")
 	if not s is Dictionary or not p is Dictionary or p.size()>6912:
 		return false
-	var allowed:=["hoe","wateringCan","hatchet","pickaxe","wood","stone","branch","log","plank","scrap","fiber","ironShard","fertilizer","oakSeed","pineSeed","herb","mushroom"]
+	var allowed:=["hoe","wateringCan","hatchet","pickaxe","wood","stone","branch","log","plank","scrap","fiber","ironShard","fertilizer","oakSeed","pineSeed","herb","mushroom","cord","flakedStone","handle","peg","hammer","blade","handsaw","board","furniture","doorKit","windowKit"]
 	for def in CATALOG.values():
 		allowed.append(def["seed"])
 		allowed.append(def["harvest"])
@@ -164,6 +165,24 @@ func import_state(data: Dictionary,today: int) -> bool:
 		var record: Dictionary=resources[key]
 		if not record.get("stage") is int or record["stage"]<0 or record["stage"]>2 or not record.get("hits") is int or record["hits"]<0 or record["hits"]>5:
 			return false
+	var pieces: Variant=data.get("buildings",{})
+	if not pieces is Dictionary or pieces.size()>2000:
+		return false
+	var occupied: Dictionary={}
+	for tile in pieces:
+		if not tile is Vector2i or tile.x<1 or tile.x>94 or tile.y<1 or tile.y>70 or not pieces[tile] is Dictionary:
+			return false
+		var piece: Dictionary=pieces[tile]
+		if not piece.get("kind","") in ["fence","gate","workbench","constructionBench","bench"] or not piece.get("rotation") is int or piece["rotation"]<0 or piece["rotation"]>3 or not piece.get("open") is bool:
+			return false
+		var cells: Array=[tile]
+		if piece["kind"] in ["workbench","constructionBench"]:
+			cells.append(tile+(Vector2i.RIGHT if piece["rotation"]%2==0 else Vector2i.DOWN))
+		for cell in cells:
+			if cell.x>94 or cell.y>70 or occupied.has(cell) or p.has(cell):
+				return false
+			occupied[cell]=true
+	buildings=pieces.duplicate(true)
 	resource_progress=resources.duplicate(true)
 	water_charges=charges
 	quickbar=slots.duplicate()

@@ -166,3 +166,7 @@ func restore_clock(day: int,minute: float) -> void:
 		_core.call("set_clock",day,minute)
 		_last_day=day
 		_refresh()
+
+func register_shadow(sprite: Sprite2D) -> void:
+	if is_instance_valid(_shadow):
+		_shadow.call("register_sprite",sprite)

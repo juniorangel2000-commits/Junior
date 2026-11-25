@@ -169,6 +169,26 @@ func _run() -> void:
 		quit(1)
 		return
 	fake.free()
+	var crafting=load("res://scripts/construcao.gd")
+	if not test_farm.transact({},{"fiber":3,"stone":2,"branch":1}) or crafting.craft_state(test_farm,"cord",true)!="Corda vegetal: fabricação concluída.":
+		push_error("Crafting transaction failed")
+		quit(1)
+		return
+	if test_farm.stock.get("cord",0)!=1 or test_farm.stock.get("fiber",0)!=0 or crafting.craft_state(test_farm,"blade",false)!="Aproxime-se da bancada correta.":
+		push_error("Crafting invariant failed")
+		quit(1)
+		return
+	var cell:=Vector2i(5,5)
+	if crafting.footprint(cell,"workbench",1)!=[cell,cell+Vector2i.DOWN]:
+		push_error("Building footprint failed")
+		quit(1)
+		return
+	test_farm.buildings[cell]={"kind":"fence","rotation":0,"open":false}
+	if not clone.import_state(test_farm.export_state(),1) or not clone.buildings.has(cell):
+		push_error("Building persistence failed")
+		quit(1)
+		return
+	print("NATIVE_BUILD_SMOKE_OK")
 	print("NATIVE_RESOURCE_SMOKE_OK")
 	print("NATIVE_INVENTORY_SMOKE_OK")
 	print("NATIVE_FARM_SMOKE_OK")

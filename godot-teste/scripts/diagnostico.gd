@@ -33,7 +33,7 @@ func _process(delta: float) -> void:
 func _atualizar() -> void:
 	var player := get_tree().get_first_node_in_group("native_player")
 	var backend := "C++ ativo" if is_instance_valid(player) and player.get("usando_cpp") else "GDScript (alternativa)"
-	_label.text = "Native V0.06 | %s\nFPS: %d | Memória estática Godot: %.1f MiB" % [backend, Engine.get_frames_per_second(), float(OS.get_static_memory_usage()) / 1048576.0]
+	_label.text = "Native V0.07 | %s\nFPS: %d | Memória estática Godot: %.1f MiB" % [backend, Engine.get_frames_per_second(), float(OS.get_static_memory_usage()) / 1048576.0]
 
 ## Runs only when explicitly requested by the CI, not during normal gameplay.
 func _smoke_export() -> void:
@@ -103,6 +103,10 @@ func _smoke_export() -> void:
 		return
 	if farm_node.call("resource_count")<500:
 		push_error("NATIVE_EXPORT_FAIL: resources unavailable")
+		get_tree().quit(1)
+		return
+	if not ResourceLoader.exists("res://arte/construcao/workbench.png") or not ResourceLoader.exists("res://scripts/construcao_ui.gd"):
+		push_error("NATIVE_EXPORT_FAIL: building assets missing")
 		get_tree().quit(1)
 		return
 	print("NATIVE_EXPORT_SMOKE_OK")

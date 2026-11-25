@@ -134,3 +134,22 @@ func remover_obstaculo(owner: int) -> void:
 			_disabled[i]=true
 			_shapes[i].set_deferred("disabled",true)
 	queue_redraw()
+
+func adicionar_obstaculo(center: Vector2,size: Vector2,owner: int) -> void:
+	# Reuse a disabled shape from this owner instead of growing on each gate toggle.
+	for i in _owners.size():
+		if _owners[i]==owner and _disabled.has(i) and _blocks[i].get_center().is_equal_approx(center):
+			_blocks[i]=Rect2(center-size*0.5,size)
+			var rect_shape:=_shapes[i].shape as RectangleShape2D
+			rect_shape.size=size
+			_shapes[i].set_deferred("disabled",false)
+			_disabled.erase(i)
+			return
+	_add_block(center,size,owner)
+	var collision:=CollisionShape2D.new()
+	var shape:=RectangleShape2D.new()
+	shape.size=size
+	collision.shape=shape
+	collision.position=center
+	get_node("Obstaculos").add_child(collision)
+	_shapes.append(collision)

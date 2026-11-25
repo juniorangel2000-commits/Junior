@@ -137,3 +137,9 @@ func _draw() -> void:
 			var anchor := to_local(_player.global_position) + Vector2(0.0,(rect.position.y+size.y*foot)*sprite_scale.y)
 			_project(tex,rect,foot,anchor,sprite_scale,_player.flip_h,0.9)
 	draw_set_transform_matrix(Transform2D.IDENTITY)
+
+func register_sprite(sprite: Sprite2D) -> void:
+	if sprite.texture==null:
+		return
+	_casters.append({"sprite":sprite,"texture":sprite.texture,"rect":sprite.get_rect(),"foot":_foot(sprite.texture),"height_factor":0.75})
+	queue_redraw()

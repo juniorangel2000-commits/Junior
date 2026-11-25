@@ -22,6 +22,13 @@ var action_sprite: Sprite2D
 var water_frames: Array[Texture2D]=[]
 const Resources=preload("res://scripts/recursos_mundo.gd")
 var resources=Resources.new()
+const Build=preload("res://scripts/construcao.gd")
+const BuildUI=preload("res://scripts/construcao_ui.gd")
+var builder=Build.new()
+var build_ui: CanvasLayer
+var menu_open:=false
+var craft_job: Dictionary={}
+var craft_time:=0.0
 const TOOL_ART={"hoe":preload("res://arte/ferramentas/enxada.png"),"hatchet":preload("res://arte/ferramentas/machado.png"),"pickaxe":preload("res://arte/ferramentas/picareta.png")}
 const SWING=[-40,-55,-35,15,75,70,45,20,0]
 
@@ -58,6 +65,11 @@ func _ready() -> void:
 	inventory_ui.connect("closed",_toggle_inventory)
 	for i in 9:
 		water_frames.append(load("res://arte/ferramentas/regador/frame_%03d.png" % i) as Texture2D)
+	build_ui=BuildUI.new()
+	add_child(build_ui)
+	build_ui.connect("recipe",_craft_request)
+	build_ui.connect("piece",_build_select)
+	build_ui.connect("close_requested",_toggle_craft)
 	_refresh()
 
 func _process(delta: float) -> void:
@@ -82,8 +94,17 @@ func _process(delta: float) -> void:
 		if not "--native-export-smoke" in OS.get_cmdline_user_args():
 			_load()
 		resources.restore()
+		builder.setup(scene,player,farm)
 		_rebuild()
 	_advance_action(delta)
+	if builder.selected!="":
+		builder.update_preview(player.get_global_mouse_position())
+	if not craft_job.is_empty():
+		craft_time-=delta
+		if craft_time<=0.0:
+			message=builder.craft(craft_job["id"])
+			craft_job.clear()
+			_refresh()
 	elapsed+=delta
 	if elapsed>=30.0:
 		elapsed=0.0
@@ -114,10 +135,18 @@ func _unhandled_input(event: InputEvent) -> void:
 						break
 			KEY_I:
 				_toggle_inventory()
+			KEY_C:
+				_toggle_craft()
+			KEY_R:
+				builder.rotation=(builder.rotation+1)%4
+			KEY_ESCAPE:
+				builder.select("")
+				if menu_open:
+					_toggle_craft()
 			KEY_F5:
 				message="Progresso salvo." if _save() else "Falha ao salvar."
 			KEY_E:
-				if not show_stock:
+				if not show_stock and not menu_open:
 					var direction: Vector2=player.call("facing_vector")
 					_start_action(player.global_position+direction*32.0,event.shift_pressed)
 			_:
@@ -128,6 +157,16 @@ func _unhandled_input(event: InputEvent) -> void:
 			_start_action(player.get_global_mouse_position(),event.shift_pressed)
 
 func _act(point: Vector2,restore: bool,item: String) -> void:
+	if builder.selected!="":
+		message=builder.place(builder.tile_at(point))
+		_refresh()
+		return
+	if item=="hand":
+		var interaction: String=builder.interact(point,restore)
+		if interaction!="":
+			message=interaction
+			_refresh()
+			return
 	if item in ["hand","hatchet","pickaxe"]:
 		var id: String=resources.target(point,player.global_position)
 		if id!="":
@@ -213,6 +252,9 @@ func _start_action(point: Vector2,restore: bool) -> void:
 	if not pending.is_empty():
 		return
 	var item: String=farm.quickbar[selected]
+	if builder.selected!="":
+		_act(point,restore,item)
+		return
 	if item in ["wateringCan","hatchet","pickaxe","hoe"]:
 		if player.global_position.distance_to(point)>64.0:
 			message="Aproxime-se do alvo."
@@ -254,7 +296,7 @@ func _refresh() -> void:
 	if hud==null or inventory_ui==null:
 		return
 	var item: String=farm.quickbar[selected]
-	hud.text="E ou clique: interagir | Q: trocar semente no espaço | I: mochila | F5: salvar\n%s · Regador %d/8\n%s" % [inventory_ui.call("item_name",item),farm.water_charges,message]
+	hud.text="E ou clique: interagir | Q: trocar semente no espaço | I: mochila | C: fabricar/construir | F5: salvar\n%s · Regador %d/8\n%s" % [inventory_ui.call("item_name",item),farm.water_charges,message]
 	inventory_ui.call("sync",farm.stock,farm.quickbar,selected,farm.water_charges)
 
 func _save() -> bool:
@@ -304,3 +346,29 @@ func ready_for_test() -> bool:
 
 func resource_count() -> int:
 	return resources.entries.size()
+
+func _toggle_craft() -> void:
+	menu_open=not menu_open
+	build_ui.call("show_menu",menu_open)
+
+func _build_select(kind: String) -> void:
+	builder.select(kind)
+	if menu_open:
+		_toggle_craft()
+	message="Posicione no chão · R gira · Esc cancela."
+	_refresh()
+
+func _craft_request(id: String) -> void:
+	if not craft_job.is_empty():
+		message="Já existe uma fabricação em andamento."
+	elif Build.RECIPES.has(id):
+		var rule: Dictionary=Build.RECIPES[id]
+		if not builder.near_station(rule.get("station","")):
+			message="Aproxime-se da bancada correta."
+		elif rule.get("seconds",0.0)>0.0:
+			craft_job={"id":id}
+			craft_time=rule["seconds"]
+			message="Fabricando %s..." % rule["name"]
+		else:
+			message=builder.craft(id)
+	_refresh()
