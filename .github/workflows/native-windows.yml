@@ -36,7 +36,7 @@ jobs:
           & $engine.FullName --headless --path godot-teste --editor --import
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $smokeLog = Join-Path $env:RUNNER_TEMP 'native-smoke.log'
-          & $engine.FullName --headless --path godot-teste --log-file $smokeLog --script res://tests/native_smoke.gd
+          & $engine.FullName --headless --path godot-teste --verbose --log-file $smokeLog --script res://tests/native_smoke.gd
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           if (-not (Test-Path $smokeLog)) { throw 'Smoke log missing.' }
           foreach ($marker in @('NATIVE_SMOKE_OK','NATIVE_ANIMALS_SMOKE_OK','NATIVE_HOME_SMOKE_OK','NATIVE_BUILD_SMOKE_OK','NATIVE_RESOURCE_SMOKE_OK','NATIVE_INVENTORY_SMOKE_OK','NATIVE_FARM_SMOKE_OK')) {

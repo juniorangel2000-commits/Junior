@@ -48,3 +48,6 @@ Seis abrigos com capacidade/custo V51 e 7 espécies com atlas originais, área d
 
 ## V0.09.1 — correções do CI
 Corrige direções constantes (sem chamadas normalized), variável duplicada no smoke, carrega texturas de casa/construção/ferramentas após a importação do Godot, sem modificar os PNGs. CI passa a exigir marcadores de cada sistema e rejeitar erros de script/runtime nos smokes, inclusive do executável. Aguardando nova execução; não certifica visual nem jogabilidade.
+
+## V0.09.2 — ciclo de vida da criação
+CI 45535603251: compilação C++ e todos os marcadores de smoke passaram, mas o encerramento acusou dois CanvasItems, texturas e fonte não liberados. A criação de Node2D e Label antes da existência da cena deixava objetos sem pai no teste isolado. Instancia ambos apenas durante setup, com propriedade pela árvore de cena; mantém rejeição de erros e acrescenta log verbose para diagnóstico residual. Nova validação pendente.

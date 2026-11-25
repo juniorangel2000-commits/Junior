@@ -17,7 +17,7 @@ var ghost: Sprite2D
 var panel: PanelContainer
 var list: VBoxContainer
 var active_tile:=Vector2i(-1,-1)
-var message:=Label.new()
+var message: Label
 var menu_open:=false
 var _timer:=0.0
 
@@ -54,6 +54,7 @@ func setup(root: Node2D,p: CharacterBody2D,inventory,construction) -> void:
 	var title:=Label.new()
 	title.text="Criação · abrigos e cuidados"
 	col.add_child(title)
+	message=Label.new()
 	col.add_child(message)
 	var scroll:=ScrollContainer.new()
 	scroll.custom_minimum_size=Vector2(650,430)

@@ -34,7 +34,8 @@ var home=Home.new()
 var chest_ui: CanvasLayer
 var chest_open:=false
 var loaded_home: Variant=null
-var husbandry=preload("res://scripts/criacao.gd").new()
+const Husbandry=preload("res://scripts/criacao.gd")
+var husbandry: Node2D
 const TOOL_ART={"hoe":"res://arte/ferramentas/enxada.png","hatchet":"res://arte/ferramentas/machado.png","pickaxe":"res://arte/ferramentas/picareta.png"}
 const SWING=[-40,-55,-35,15,75,70,45,20,0]
 
@@ -107,6 +108,7 @@ func _process(delta: float) -> void:
 		resources.restore()
 		builder.setup(scene,player,farm)
 		home.setup(scene,player)
+		husbandry=Husbandry.new()
 		husbandry.setup(scene,player,farm,builder)
 		if loaded_home is Vector2:
 			home.enter(loaded_home)
