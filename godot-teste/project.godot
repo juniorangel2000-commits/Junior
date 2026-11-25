@@ -3,11 +3,12 @@
 config_version=5
 
 [application]
-config/name="After Rain Native — V0.02"
+config/name="After Rain Native — V0.03"
 run/main_scene="res://cenas/propriedade.tscn"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 
 [autoload]
+MundoSimulacao="*res://scripts/mundo_simulacao.gd"
 Diagnostico="*res://scripts/diagnostico.gd"
 
 [display]

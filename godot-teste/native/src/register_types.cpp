@@ -1,4 +1,5 @@
 #include "movement.hpp"
+#include "world_simulation.hpp"
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/godot.hpp>
 
@@ -7,6 +8,7 @@ using namespace godot;
 void initialize_after_rain(ModuleInitializationLevel level) {
     if (level == MODULE_INITIALIZATION_LEVEL_SCENE) {
         ClassDB::register_class<AfterRainMovement>();
+        ClassDB::register_class<AfterRainWorld>();
     }
 }
 void uninitialize_after_rain(ModuleInitializationLevel level) {

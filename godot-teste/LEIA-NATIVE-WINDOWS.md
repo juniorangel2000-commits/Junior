@@ -1,4 +1,4 @@
-# After Rain Native V0.02 — Windows x64
-Extraia todos os arquivos do ZIP interno e execute After-Rain-Native-V0.02.exe. Mantenha PCK e DLL nas posições originais.
-WASD ou setas: movimento. F3: diagnóstico. F4: visualizar colisões. + / -: zoom.
-Colisões iniciais para árvores, pedras, cercas, portões fechados, casa e poço; limites físicos do mapa, passagem sobre pontes e câmera suavizada. As formas foram estimadas a partir das artes e precisam de ajuste visual. Não inclui entrada nas casas, abertura dos portões, iluminação nova, agricultura ou demais sistemas da V51. Build debug experimental.
+# After Rain Native V0.03 — Windows x64
+Extraia o ZIP interno e execute After-Rain-Native-V0.03.exe, mantendo PCK e DLL nas posições originais.
+WASD/setas: movimento. F3: diagnóstico. F4: colisões. + / -: zoom. F6: avançar uma hora. F7: próximo dia às 08:00 (atalhos de teste).
+Relógio, calendário, clima diário determinístico e parâmetros de luz em C++ baseados na V51. HUD, chuva visual, filtro de iluminação e sombras aproximadas no Godot. Não inclui ainda plantações, mudança visual de estação, saves, sono ou interiores. Sem DLL, o cenário permanece às 08:00 e o movimento tem alternativa GDScript. Build debug experimental.
