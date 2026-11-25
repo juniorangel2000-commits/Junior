@@ -114,6 +114,7 @@ func _run() -> void:
 		push_error("Plant failed")
 		quit(1)
 		return
+	farm.refill()
 	for day in range(1,5):
 		farm.water(tile)
 		farm.advance(day+1)
@@ -132,6 +133,26 @@ func _run() -> void:
 		push_error("Farm climate failed")
 		quit(1)
 		return
+	var test_farm=load("res://scripts/fazenda_estado.gd").new()
+	var other:=Vector2i(23,21)
+	test_farm.plant(other,"turnip",1)
+	if test_farm.water(other)=="Terra regada." or test_farm.water_charges!=0:
+		push_error("Empty watering can failed")
+		quit(1)
+		return
+	test_farm.refill()
+	test_farm.water(other)
+	test_farm.water(other)
+	if test_farm.water_charges!=7 or not test_farm.assign_slot(8,"seeds") or test_farm.assign_slot(9,"seeds"):
+		push_error("Water or quickbar invariant failed")
+		quit(1)
+		return
+	var clone=load("res://scripts/fazenda_estado.gd").new()
+	if not clone.import_state(test_farm.export_state(),1) or clone.water_charges!=7 or clone.quickbar[8]!="seeds":
+		push_error("Inventory persistence failed")
+		quit(1)
+		return
+	print("NATIVE_INVENTORY_SMOKE_OK")
 	print("NATIVE_FARM_SMOKE_OK")
 	print("NATIVE_LIGHT_SMOKE_OK")
 	print("NATIVE_WORLD_SMOKE_OK")

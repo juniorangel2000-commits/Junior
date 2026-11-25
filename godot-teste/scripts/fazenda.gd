@@ -14,6 +14,12 @@ var message: String="E ou clique: interagir"
 var elapsed:=0.0
 var initialized:=false
 var show_stock:=false
+const InventoryUI=preload("res://scripts/mochila_ui.gd")
+var inventory_ui: CanvasLayer
+var pending: Dictionary={}
+var action_elapsed:=0.0
+var action_sprite: Sprite2D
+var water_frames: Array[Texture2D]=[]
 
 class SoilLayer extends Node2D:
 	var farm
@@ -40,6 +46,14 @@ func _ready() -> void:
 	hud.add_theme_constant_override("shadow_offset_y",2)
 	hud.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	layer.add_child(hud)
+	inventory_ui=InventoryUI.new()
+	add_child(inventory_ui)
+	inventory_ui.connect("slot_selected",_select_slot)
+	inventory_ui.connect("assign_requested",_assign)
+	inventory_ui.connect("clear_requested",func(): _assign(""))
+	inventory_ui.connect("closed",_toggle_inventory)
+	for i in 9:
+		water_frames.append(load("res://arte/ferramentas/regador/frame_%03d.png" % i) as Texture2D)
 	_refresh()
 
 func _process(delta: float) -> void:
@@ -55,10 +69,15 @@ func _process(delta: float) -> void:
 		crops=Node2D.new()
 		crops.z_index=-3
 		scene.add_child(crops)
+		action_sprite=Sprite2D.new()
+		action_sprite.visible=false
+		action_sprite.z_index=2
+		player.add_child(action_sprite)
 		initialized=true
 		if not "--native-export-smoke" in OS.get_cmdline_user_args():
 			_load()
 		_rebuild()
+	_advance_action(delta)
 	elapsed+=delta
 	if elapsed>=30.0:
 		elapsed=0.0
@@ -78,43 +97,55 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
-			KEY_1,KEY_2,KEY_3,KEY_4:
-				selected=int(event.keycode-KEY_1)
+			KEY_1,KEY_2,KEY_3,KEY_4,KEY_5,KEY_6,KEY_7,KEY_8,KEY_9:
+				_select_slot(int(event.keycode-KEY_1))
 			KEY_Q:
-				seed_index=(seed_index+1)%ids.size()
+				for offset in range(1,ids.size()+1):
+					var next: int=(seed_index+offset)%ids.size()
+					if farm.stock.get(Farm.CATALOG[ids[next]]["seed"],0)>0:
+						seed_index=next
+						farm.assign_slot(selected,Farm.CATALOG[ids[next]]["seed"])
+						break
 			KEY_I:
-				show_stock=not show_stock
+				_toggle_inventory()
 			KEY_F5:
 				message="Progresso salvo." if _save() else "Falha ao salvar."
 			KEY_E:
-				var direction: Vector2=player.call("facing_vector")
-				_act(player.global_position+direction*32.0,event.shift_pressed)
+				if not show_stock:
+					var direction: Vector2=player.call("facing_vector")
+					_start_action(player.global_position+direction*32.0,event.shift_pressed)
 			_:
 				return
 		_refresh()
 	elif event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.pressed:
-		_act(player.get_global_mouse_position(),event.shift_pressed)
+		if not show_stock:
+			_start_action(player.get_global_mouse_position(),event.shift_pressed)
 
-func _act(point: Vector2,restore: bool) -> void:
+func _act(point: Vector2,restore: bool,item: String) -> void:
 	var tile:=Vector2i(floori(point.x/32.0),floori(point.y/32.0))
 	var center:=Vector2(tile)*32.0+Vector2(16,16)
 	if player.global_position.distance_to(center)>64.0:
 		message="Aproxime-se do canteiro."
 	elif tile.x<1 or tile.y<1 or tile.x>94 or tile.y>70:
 		message="Fora da propriedade."
-	elif selected==1:
+	elif item=="hoe":
 		var material_name: String=scene.get_node("Terreno").call("material_em",center)
 		var world: Node2D=player.call("mundo_colisoes")
 		if not restore and not farm.plots.has(tile) and (not material_name in ["grass","forest","meadow","soil","moss"] or world.call("ocupado",Rect2(center-Vector2(14,14),Vector2(28,28)))):
 			message="Solo indisponível."
 		else:
 			message=farm.prepare(tile,restore)
-	elif selected==2:
-		message=farm.plant(tile,str(ids[seed_index]),int(_clock()["day"]))
-	elif selected==3:
-		message=farm.water(tile)
-	else:
+	elif farm.crop_for_seed(item)!="":
+		message=farm.plant(tile,farm.crop_for_seed(item),int(_clock()["day"]))
+	elif item=="wateringCan":
+		if _water_source(point):
+			message=farm.refill()
+		else:
+			message=farm.water(tile)
+	elif item=="hand":
 		message=farm.harvest(tile)
+	else:
+		message="Ferramenta sem interação nesta etapa."
 	_rebuild()
 
 func _rebuild() -> void:
@@ -140,14 +171,71 @@ func _rebuild() -> void:
 		crops.add_child(sprite)
 	_refresh()
 
+func _select_slot(index: int) -> void:
+	if index>=0 and index<9:
+		selected=index
+		_refresh()
+
+func _assign(item: String) -> void:
+	if farm.assign_slot(selected,item):
+		message="Barra rápida atualizada."
+	_refresh()
+
+func _toggle_inventory() -> void:
+	show_stock=not show_stock
+	inventory_ui.call("toggle",show_stock)
+	_refresh()
+
+func _water_source(point: Vector2) -> bool:
+	if player.global_position.distance_to(point)>64.0:
+		return false
+	if scene.get_node("Terreno").call("material_em",point)=="water":
+		return true
+	return point.distance_to(Vector2(1008,512))<=46.0
+
+func _start_action(point: Vector2,restore: bool) -> void:
+	if not pending.is_empty():
+		return
+	var item: String=farm.quickbar[selected]
+	if item=="wateringCan":
+		if player.global_position.distance_to(point)>64.0:
+			message="Aproxime-se do alvo."
+			_refresh()
+			return
+		pending={"point":point,"restore":restore,"item":item,"impacted":false}
+		action_elapsed=0.0
+		action_sprite.visible=true
+		return
+	_act(point,restore,item)
+
+func _advance_action(delta: float) -> void:
+	if pending.is_empty():
+		return
+	action_elapsed+=delta
+	var point: Vector2=pending["point"]
+	var direction: Vector2=(point-player.global_position).normalized()
+	if direction.is_zero_approx():
+		direction=Vector2.DOWN
+	action_sprite.position=direction*18.0+Vector2(0,-12)
+	action_sprite.flip_h=direction.x<0.0
+	var frame:=mini(8,int(action_elapsed*12.0))
+	var tex:=water_frames[frame]
+	if tex!=null:
+		action_sprite.texture=tex
+		action_sprite.scale=Vector2.ONE*(32.0/maxf(tex.get_width(),tex.get_height()))
+	if not pending["impacted"] and action_elapsed>=0.333333:
+		pending["impacted"]=true
+		_act(point,pending["restore"],pending["item"])
+	if action_elapsed>=0.75:
+		pending.clear()
+		action_sprite.hide()
+
 func _refresh() -> void:
-	var def: Dictionary=Farm.CATALOG[ids[seed_index]]
-	var actions:=["Mão","Enxada","Sementes","Regador"]
-	hud.text="1 Mão | 2 Enxada | 3 Sementes | 4 Regador\nSelecionado: %s | Q: %s (%d) | I: mochila | F5: salvar\n%s" % [actions[selected],def["name"],farm.stock.get(def["seed"],0),message]
-	if show_stock:
-		for item in farm.stock:
-			if farm.stock[item]>0:
-				hud.text+="\n%s × %d" % [item,farm.stock[item]]
+	if hud==null or inventory_ui==null:
+		return
+	var item: String=farm.quickbar[selected]
+	hud.text="E ou clique: interagir | Q: trocar semente no espaço | I: mochila | F5: salvar\n%s · Regador %d/8\n%s" % [inventory_ui.call("item_name",item),farm.water_charges,message]
+	inventory_ui.call("sync",farm.stock,farm.quickbar,selected,farm.water_charges)
 
 func _save() -> bool:
 	if not initialized or "--native-export-smoke" in OS.get_cmdline_user_args():

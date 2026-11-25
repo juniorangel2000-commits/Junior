@@ -1,6 +1,9 @@
 extends RefCounted
 const CATALOG := {"turnip":{"name":"Nabo","days":4,"mask":1,"seed":"seeds","harvest":"turnip","yield_count":1,"regrow":0,"seed_return":1},"lettuce":{"name":"Alface","days":4,"mask":1,"seed":"lettuceSeeds","harvest":"lettuce","yield_count":1,"regrow":0,"seed_return":0},"carrot":{"name":"Cenoura","days":6,"mask":1,"seed":"carrotSeeds","harvest":"carrot","yield_count":1,"regrow":0,"seed_return":0},"bean":{"name":"Feijão","days":7,"mask":3,"seed":"beanSeeds","harvest":"bean","yield_count":1,"regrow":4,"seed_return":0},"tomato":{"name":"Tomate","days":7,"mask":2,"seed":"tomatoSeeds","harvest":"tomato","yield_count":1,"regrow":4,"seed_return":0},"corn":{"name":"Milho","days":8,"mask":2,"seed":"cornSeeds","harvest":"corn","yield_count":1,"regrow":4,"seed_return":0},"wheat":{"name":"Trigo","days":6,"mask":6,"seed":"wheatSeeds","harvest":"wheat","yield_count":1,"regrow":0,"seed_return":0},"watermelon":{"name":"Melancia","days":12,"mask":2,"seed":"watermelonSeeds","harvest":"watermelon","yield_count":1,"regrow":0,"seed_return":0},"sweetPotato":{"name":"Batata-doce","days":8,"mask":4,"seed":"sweetPotatoSeeds","harvest":"sweetPotato","yield_count":1,"regrow":0,"seed_return":0},"pumpkin":{"name":"Abóbora","days":10,"mask":4,"seed":"pumpkinSeeds","harvest":"pumpkin","yield_count":1,"regrow":0,"seed_return":0},"oat":{"name":"Aveia","days":6,"mask":12,"seed":"oatSeeds","harvest":"oat","yield_count":1,"regrow":0,"seed_return":0},"chamomile":{"name":"Camomila","days":6,"mask":4,"seed":"chamomileSeeds","harvest":"chamomile","yield_count":1,"regrow":0,"seed_return":0},"kale":{"name":"Couve","days":5,"mask":8,"seed":"kaleSeeds","harvest":"kale","yield_count":1,"regrow":0,"seed_return":0},"cabbage":{"name":"Repolho","days":9,"mask":8,"seed":"cabbageSeeds","harvest":"cabbage","yield_count":1,"regrow":0,"seed_return":0},"strawberry":{"name":"Morango","days":8,"mask":1,"seed":"strawberrySeeds","harvest":"strawberry","yield_count":1,"regrow":4,"seed_return":0},"daisy":{"name":"Margarida","days":5,"mask":1,"seed":"daisySeeds","harvest":"daisy","yield_count":1,"regrow":0,"seed_return":0},"sunflower":{"name":"Girassol","days":8,"mask":6,"seed":"sunflowerSeeds","harvest":"sunflower","yield_count":1,"regrow":0,"seed_return":0},"mint":{"name":"Hortelã","days":5,"mask":3,"seed":"mintSeeds","harvest":"mint","yield_count":1,"regrow":4,"seed_return":0},"cotton":{"name":"Algodão","days":10,"mask":6,"seed":"cottonSeeds","harvest":"cotton","yield_count":1,"regrow":0,"seed_return":0}}
 const CAPACITY := 30
+const WATER_CAPACITY := 8
+var water_charges := 0
+var quickbar: Array = ["hand","hoe","seeds","wateringCan","hatchet","pickaxe","","",""]
 var stock: Dictionary = {"hoe":1,"wateringCan":1,"seeds":12,"lettuceSeeds":4,"carrotSeeds":4,"beanSeeds":4,"hatchet":1,"pickaxe":1}
 var plots: Dictionary = {}
 var core: Object
@@ -66,6 +69,9 @@ func water(tile: Vector2i) -> String:
 		return "Plante primeiro."
 	if crop["watered"]:
 		return "Já está regado."
+	if water_charges<=0:
+		return "Regador vazio. Abasteça no poço ou rio."
+	water_charges-=1
 	crop["watered"]=true
 	return "Terra regada."
 
@@ -109,7 +115,7 @@ func stage(crop: Dictionary) -> int:
 	return 0 if growth<=0.0 else (4 if growth>=1.0 else (3 if growth>=2.0/3.0 else (2 if growth>=1.0/3.0 else 1)))
 
 func export_state() -> Dictionary:
-	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true)}
+	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate()}
 
 func import_state(data: Dictionary,today: int) -> bool:
 	var s=data.get("stock")
@@ -141,7 +147,34 @@ func import_state(data: Dictionary,today: int) -> bool:
 				return false
 		if crop["day"]<1 or crop["day"]>today or crop["days"]<0 or crop["days"]>CATALOG[crop["id"]]["days"] or crop["missed"]<0 or crop["missed"]>999 or not crop.get("watered") is bool:
 			return false
+	var charges: Variant=data.get("water_charges",0)
+	var slots: Variant=data.get("quickbar",["hand","hoe","seeds","wateringCan","hatchet","pickaxe","","",""])
+	if not charges is int or charges<0 or charges>WATER_CAPACITY or not slots is Array or slots.size()!=9:
+		return false
+	for item in slots:
+		if not item is String or (item!="" and item!="hand" and not item in allowed):
+			return false
+	water_charges=charges
+	quickbar=slots.duplicate()
 	stock=s.duplicate(true)
 	plots=p.duplicate(true)
 	advance(today)
 	return true
+
+func refill() -> String:
+	if stock.get("wateringCan",0)<1:
+		return "Precisa de regador."
+	water_charges=WATER_CAPACITY
+	return "Regador cheio: 8 cargas."
+
+func assign_slot(index: int,item: String) -> bool:
+	if index<0 or index>=9 or (item!="" and item!="hand" and stock.get(item,0)<=0):
+		return false
+	quickbar[index]=item
+	return true
+
+func crop_for_seed(item: String) -> String:
+	for id in CATALOG:
+		if CATALOG[id]["seed"]==item:
+			return str(id)
+	return ""
