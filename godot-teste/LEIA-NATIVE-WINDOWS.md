@@ -1,9 +1,4 @@
-# After Rain Native V0.01 — Windows x64
-
-Protótipo portátil experimental em Godot 4.4 com extensão C++20 (build de depuração).
-Extraia todos os arquivos do ZIP em uma pasta e execute After-Rain-Native-V0.01.exe. Mantenha o PCK e a DLL nas posições originais. Não precisa instalar Godot ou Electron.
-
-WASD ou setas: movimento. F3: FPS e memória estática reportada pelo Godot.
-Ainda não é a V51: contém apenas a propriedade experimental, personagem e extensão nativa de movimento. Colisões com água são existentes; outros sistemas, saves, colisões com objetos e teste visual completo estão pendentes. Não é uma versão assinada para distribuição comercial.
-
-O teste automatizado inicializa a exportação em modo headless e exige o módulo C++ ativo no jogador.
+# After Rain Native V0.02 — Windows x64
+Extraia todos os arquivos do ZIP interno e execute After-Rain-Native-V0.02.exe. Mantenha PCK e DLL nas posições originais.
+WASD ou setas: movimento. F3: diagnóstico. F4: visualizar colisões. + / -: zoom.
+Colisões iniciais para árvores, pedras, cercas, portões fechados, casa e poço; limites físicos do mapa, passagem sobre pontes e câmera suavizada. As formas foram estimadas a partir das artes e precisam de ajuste visual. Não inclui entrada nas casas, abertura dos portões, iluminação nova, agricultura ou demais sistemas da V51. Build debug experimental.

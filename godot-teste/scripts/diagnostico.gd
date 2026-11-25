@@ -31,8 +31,9 @@ func _process(delta: float) -> void:
 			_atualizar()
 
 func _atualizar() -> void:
-	var backend := "C++ disponível" if ClassDB.class_exists("AfterRainMovement") else "GDScript (alternativa)"
-	_label.text = "Native V0.01 | %s\nFPS: %d | Memória estática Godot: %.1f MiB" % [backend, Engine.get_frames_per_second(), float(OS.get_static_memory_usage()) / 1048576.0]
+	var player := get_tree().get_first_node_in_group("native_player")
+	var backend := "C++ ativo" if is_instance_valid(player) and player.get("usando_cpp") else "GDScript (alternativa)"
+	_label.text = "Native V0.02 | %s\nFPS: %d | Memória estática Godot: %.1f MiB" % [backend, Engine.get_frames_per_second(), float(OS.get_static_memory_usage()) / 1048576.0]
 
 ## Runs only when explicitly requested by the CI, not during normal gameplay.
 func _smoke_export() -> void:
@@ -58,6 +59,22 @@ func _smoke_export() -> void:
 	var expected := Vector2(1, 1).normalized() * float(player.get("velocidade"))
 	if not actual.is_equal_approx(expected):
 		push_error("NATIVE_EXPORT_FAIL: wrong movement")
+		get_tree().quit(1)
+		return
+	var world: Node2D = player.call("mundo_colisoes")
+	if not is_instance_valid(world) or world.call("total_obstaculos") < 500 or world.call("total_pontes") != 2:
+		push_error("NATIVE_EXPORT_FAIL: map collision setup")
+		get_tree().quit(1)
+		return
+	if world.call("dentro_do_mapa", Vector2(-1, 100)) or world.call("dentro_do_mapa", Vector2(3080, 100)) or not world.call("dentro_do_mapa", Vector2(816, 592)):
+		push_error("NATIVE_EXPORT_FAIL: world bounds")
+		get_tree().quit(1)
+		return
+	var query := PhysicsPointQueryParameters2D.new()
+	query.position = Vector2(1008, 496)
+	query.collision_mask = 2
+	if player.get_world_2d().direct_space_state.intersect_point(query).is_empty():
+		push_error("NATIVE_EXPORT_FAIL: well collider missing")
 		get_tree().quit(1)
 		return
 	print("NATIVE_EXPORT_SMOKE_OK")

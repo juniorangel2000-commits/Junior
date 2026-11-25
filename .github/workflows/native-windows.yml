@@ -62,10 +62,10 @@ jobs:
           $engine = Get-ChildItem godot -Recurse -Filter '*_console.exe' | Select-Object -First 1
           $out = Join-Path $env:GITHUB_WORKSPACE 'native-dist'
           New-Item -ItemType Directory -Force $out | Out-Null
-          $exe = Join-Path $out 'After-Rain-Native-V0.01.exe'
+          $exe = Join-Path $out 'After-Rain-Native-V0.02.exe'
           & $engine.FullName --headless --path godot-teste --export-debug 'Windows Desktop' $exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          foreach ($file in @($exe, (Join-Path $out 'After-Rain-Native-V0.01.pck'))) {
+          foreach ($file in @($exe, (Join-Path $out 'After-Rain-Native-V0.02.pck'))) {
             if (-not (Test-Path $file)) { throw "Missing export: $file" }
           }
           $dll = Get-ChildItem $out -Recurse -Filter 'after_rain_native.dll'
@@ -74,7 +74,7 @@ jobs:
         shell: pwsh
         run: |
           $out = Join-Path $env:GITHUB_WORKSPACE 'native-dist'
-          $exe = Join-Path $out 'After-Rain-Native-V0.01.exe'
+          $exe = Join-Path $out 'After-Rain-Native-V0.02.exe'
           $log = Join-Path $env:RUNNER_TEMP 'after-rain-export-smoke.log'
           $p = Start-Process -FilePath $exe -ArgumentList "--headless --log-file `"$log`" -- --native-export-smoke" -WorkingDirectory $out -PassThru
           if (-not $p.WaitForExit(120000)) { Stop-Process -Id $p.Id -Force; throw 'Export smoke timed out.' }
@@ -87,14 +87,14 @@ jobs:
         shell: pwsh
         run: |
           Copy-Item godot-teste/LEIA-NATIVE-WINDOWS.md native-dist/LEIA.md
-          Compress-Archive -Path native-dist/* -DestinationPath After-Rain-Native-V0.01-Windows-x64.zip
-          $hash = (Get-FileHash After-Rain-Native-V0.01-Windows-x64.zip -Algorithm SHA256).Hash.ToLowerInvariant()
-          "$hash  After-Rain-Native-V0.01-Windows-x64.zip" | Set-Content -Encoding utf8NoBOM SHA256SUMS-native.txt
+          Compress-Archive -Path native-dist/* -DestinationPath After-Rain-Native-V0.02-Windows-x64.zip
+          $hash = (Get-FileHash After-Rain-Native-V0.02-Windows-x64.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  After-Rain-Native-V0.02-Windows-x64.zip" | Set-Content -Encoding utf8NoBOM SHA256SUMS-native.txt
       - uses: actions/upload-artifact@v6
         with:
-          name: After-Rain-Native-V0.01-Windows-x64
+          name: After-Rain-Native-V0.02-Windows-x64
           path: |
-            After-Rain-Native-V0.01-Windows-x64.zip
+            After-Rain-Native-V0.02-Windows-x64.zip
             SHA256SUMS-native.txt
           if-no-files-found: error
           retention-days: 30
