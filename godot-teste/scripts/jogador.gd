@@ -99,3 +99,9 @@ func _calcular_velocidade(entrada: Vector2) -> Vector2:
 	if usando_cpp:
 		return _movimento_nativo.call("calculate_velocity", entrada, velocidade)
 	return entrada.normalized() * velocidade
+
+func facing_vector() -> Vector2:
+	for dir in DIRECOES:
+		if DIRECOES[dir]==_direcao:
+			return Vector2(dir).normalized()
+	return Vector2.DOWN

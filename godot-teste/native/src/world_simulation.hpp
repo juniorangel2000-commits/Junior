@@ -15,5 +15,6 @@ public:
     int advance(double minutes);
     Dictionary snapshot() const;
     bool rain_for_day(int p_day) const;
+    Dictionary settle_crop(int from, int to, int growth, int required, int mask, bool watered) const;
 };
 }

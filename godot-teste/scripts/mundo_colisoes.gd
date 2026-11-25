@@ -111,3 +111,9 @@ func _draw() -> void:
 		draw_rect(rect, Color(1, 0.3, 0.2, 0.85), false, 1.0)
 	for rect in _bridges:
 		draw_rect(rect, Color(0.2, 0.9, 1, 0.35))
+
+func ocupado(rect: Rect2) -> bool:
+	for block in _blocks:
+		if block.intersects(rect):
+			return true
+	return false

@@ -108,6 +108,31 @@ func _run() -> void:
 		push_error("Rain shadows not diffuse")
 		quit(1)
 		return
+	var farm=load("res://scripts/fazenda_estado.gd").new()
+	var tile:=Vector2i(22,21)
+	if farm.plant(tile,"turnip",1)!="Nabo plantado.":
+		push_error("Plant failed")
+		quit(1)
+		return
+	for day in range(1,5):
+		farm.water(tile)
+		farm.advance(day+1)
+	if farm.stage(farm.plots[tile])!=4 or farm.harvest(tile)!="Colheita: Nabo +1":
+		push_error("Harvest failed")
+		quit(1)
+		return
+	var restored=load("res://scripts/fazenda_estado.gd").new()
+	if not restored.import_state(farm.export_state(),5) or restored.stock!=farm.stock:
+		push_error("Farm state roundtrip failed")
+		quit(1)
+		return
+	var wet: Dictionary=world.call("settle_crop",3,4,0,4,1,false)
+	var wilt: Dictionary=world.call("settle_crop",28,29,0,4,1,true)
+	if wet["days"]!=1 or wilt["alive"]:
+		push_error("Farm climate failed")
+		quit(1)
+		return
+	print("NATIVE_FARM_SMOKE_OK")
 	print("NATIVE_LIGHT_SMOKE_OK")
 	print("NATIVE_WORLD_SMOKE_OK")
 	print("NATIVE_SMOKE_OK")

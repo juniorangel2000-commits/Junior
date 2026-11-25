@@ -27,3 +27,6 @@ AfterRainWorld (C++20) replica src/systems/clock.ts, src/systems/calendar.ts, sr
 
 ## V0.03.1 — revisão visual
 Substitui as elipses por projeções alpha das texturas originais, ancoradas na última linha opaca, incluindo o personagem. Shader com amostragem suave e gradiente de densidade. A projeção é recalculada com o sol e limitada à região visível. F8 percorre 9 horários e F9 alterna sombras. Iluminação em C++ usa 18 chaves cromáticas interpoladas e contraste moderado; chuva difunde as sombras. A arte original não foi alterada. Testes de direção, comprimento, cor de pôr do sol, crepúsculo e chuva, além da contagem de objetos no export. Testes headless não garantem aparência ou FPS; precisam de avaliação no Windows.
+
+## V0.04 — horta experimental
+19 cultivos com catálogo e sprites originais V51; crescimento, rega por chuva e murcha em C++; preparo, plantio, rega, colheita e rebrota; estoque transacional inicial de 30 tipos; save próprio com backup. Kit provisório, sem animações de ferramentas, adubo, qualidade, economia, coleta, construção ou animais. Ainda não é a entrega da Propriedade completa. CI e revisão visual necessários.

@@ -160,3 +160,9 @@ func _phase(minute: int) -> String:
 	if minute < 1200:
 		return "Crepúsculo"
 	return "Noite"
+
+func restore_clock(day: int,minute: float) -> void:
+	if using_cpp():
+		_core.call("set_clock",day,minute)
+		_last_day=day
+		_refresh()

@@ -40,6 +40,7 @@ void AfterRainWorld::_bind_methods() {
     ClassDB::bind_method(D_METHOD("advance","minutes"), &AfterRainWorld::advance);
     ClassDB::bind_method(D_METHOD("snapshot"), &AfterRainWorld::snapshot);
     ClassDB::bind_method(D_METHOD("rain_for_day","day"), &AfterRainWorld::rain_for_day);
+    ClassDB::bind_method(D_METHOD("settle_crop","from","to","growth","required","mask","watered"), &AfterRainWorld::settle_crop);
 }
 void AfterRainWorld::set_clock(int p_day,double p_minute) {
     day=std::clamp(p_day,1,max_day);
@@ -88,5 +89,21 @@ Dictionary AfterRainWorld::snapshot() const {
     result["shadow_offset"]=Vector2(horizontal,depth);
     result["shadow_opacity"]=strength;
     result["vignette"]=lerp_value(a.vignette,b.vignette,x);
+    return result;
+}
+
+Dictionary AfterRainWorld::settle_crop(int from,int to,int growth,int required,int mask,bool watered) const {
+    Dictionary result;
+    from=std::clamp(from,1,max_day); to=std::clamp(to,from,max_day);
+    required=std::clamp(required,1,365); growth=std::clamp(growth,0,required);
+    bool alive=true; int missed=0;
+    for(int d=from;d<to;++d){
+        if(watered||rain_for_day(d)) growth=std::min(required,growth+1);
+        else if(growth<required) ++missed;
+        watered=false;
+        if((mask & (1<<((d/28)%4)))==0){alive=false;break;}
+    }
+    result["alive"]=alive; result["days"]=growth; result["day"]=to;
+    result["watered"]=alive&&(watered||rain_for_day(to)); result["missed"]=missed;
     return result;
 }
