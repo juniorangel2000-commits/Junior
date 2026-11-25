@@ -51,3 +51,6 @@ Corrige direções constantes (sem chamadas normalized), variável duplicada no 
 
 ## V0.09.2 — ciclo de vida da criação
 CI 45535603251: compilação C++ e todos os marcadores de smoke passaram, mas o encerramento acusou dois CanvasItems, texturas e fonte não liberados. A criação de Node2D e Label antes da existência da cena deixava objetos sem pai no teste isolado. Instancia ambos apenas durante setup, com propriedade pela árvore de cena; mantém rejeição de erros e acrescenta log verbose para diagnóstico residual. Nova validação pendente.
+
+## V0.09.3 — compatibilidade do shader exportado
+CI 45542084269 aprovou compilação, smoke interno e exportação, mas rejeitou erro shader_compiler.cpp:1274 (custom_samplers) no executável. Remove passagem do sampler integrado TEXTURE a função auxiliar, mantendo nove amostras, pesos e limites UV. Validação exportada e visual pendentes.
