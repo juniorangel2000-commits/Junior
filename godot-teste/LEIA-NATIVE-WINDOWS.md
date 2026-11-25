@@ -1,11 +1,12 @@
-# After Rain Native V0.08 — Windows x64
-Extraia o ZIP interno e execute After-Rain-Native-V0.08.exe, mantendo PCK e DLL nas posições originais.
+# After Rain Native V0.09 — Windows x64
+Extraia o ZIP interno e execute After-Rain-Native-V0.09.exe, mantendo PCK e DLL nas posições originais.
 WASD/setas: movimento. F3: diagnóstico. F4: colisões. + / -: zoom. F6: avançar uma hora. F7: próximo dia às 08:00 (atalhos de teste).
 Relógio, calendário, clima diário determinístico e parâmetros de luz em C++ baseados na V51. HUD, chuva visual, filtro de iluminação e sombras aproximadas no Godot. Não inclui ainda plantações, mudança visual de estação, saves, sono ou interiores. Sem DLL, o cenário permanece às 08:00 e o movimento tem alternativa GDScript. Build debug experimental.
 
 Revisão de luz: sombras projetadas da silhueta alpha de árvores, casas, cercas, pedras e personagem, com penumbra e suavização. F8 alterna aurora, nascer do sol, manhã, meio-dia, tarde, hora dourada, pôr do sol, crepúsculo e noite. F9 alterna as sombras para comparação. Estilo artístico 2D; a validação visual ainda é necessária. Agricultura inicial integrada.
 1 mão/colheita, 2 enxada, 3 sementes, 4 regador, Q escolhe sementes, I mochila, E/clique interage, Shift+E desfaz canteiro vazio, F5 salva. Save experimental separado da V51. Kit de teste provisório.
-V0.08: mochila I, 9 espaços clicáveis ou teclas 1–9, clique em item da mochila para equipar no espaço selecionado, regador com oito cargas, abasteça perto do rio/lago/poço. Animação original de regador. Machado e picareta ainda sem coleta. Kit inicial provisório.
-V0.08: use mão, machadinha ou picareta no recurso próximo; árvores deixam tocos, rochas e recursos recolhidos desaparecem e liberam colisões. Golpes e itens persistem. Animações de ferramenta no contato; replantio, regeneração e durabilidade ainda pendentes.
+V0.09: mochila I, 9 espaços clicáveis ou teclas 1–9, clique em item da mochila para equipar no espaço selecionado, regador com oito cargas, abasteça perto do rio/lago/poço. Animação original de regador. Machado e picareta ainda sem coleta. Kit inicial provisório.
+V0.09: use mão, machadinha ou picareta no recurso próximo; árvores deixam tocos, rochas e recursos recolhidos desaparecem e liberam colisões. Golpes e itens persistem. Animações de ferramenta no contato; replantio, regeneração e durabilidade ainda pendentes.
 C abre fabricação/construção; R gira prévia, Esc cancela, E/clique confirma; mão abre porteira, Shift+E recolhe construção própria. Bancadas de dois blocos. Prévia e orientação de sprites ainda provisórias.
-V0.08: E/clique próximo à porta entra/sai da casa; cama avança à manhã a partir de 19h; baú transfere materiais e persiste. Fogão visual, culinária pendente.
+V0.09: E/clique próximo à porta entra/sai da casa; cama avança à manhã a partir de 19h; baú transfere materiais e persiste. Fogão visual, culinária pendente.
+V0.09: B abre criação; clique no abrigo para cuidado, cocho, produção; posicionamento por prévia. Custos originais, inclusive madeira nobre ainda sem fonte nesta propriedade. Alojamento direto com corda é provisório; montaria, interiores específicos, cercados com portões, qualidade de produtos, ferraria e etapas de obra ainda pendentes.

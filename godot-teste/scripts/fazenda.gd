@@ -34,6 +34,7 @@ var home=Home.new()
 var chest_ui: CanvasLayer
 var chest_open:=false
 var loaded_home: Variant=null
+var husbandry=preload("res://scripts/criacao.gd").new()
 const TOOL_ART={"hoe":preload("res://arte/ferramentas/enxada.png"),"hatchet":preload("res://arte/ferramentas/machado.png"),"pickaxe":preload("res://arte/ferramentas/picareta.png")}
 const SWING=[-40,-55,-35,15,75,70,45,20,0]
 
@@ -106,10 +107,12 @@ func _process(delta: float) -> void:
 		resources.restore()
 		builder.setup(scene,player,farm)
 		home.setup(scene,player)
+		husbandry.setup(scene,player,farm,builder)
 		if loaded_home is Vector2:
 			home.enter(loaded_home)
 		_rebuild()
 	_advance_action(delta)
+	husbandry.update(delta,_clock())
 	if not home.inside and builder.selected!="":
 		builder.update_preview(player.get_global_mouse_position())
 	if not craft_job.is_empty():
@@ -148,12 +151,19 @@ func _unhandled_input(event: InputEvent) -> void:
 						break
 			KEY_I:
 				_toggle_inventory()
+			KEY_B:
+				if not home.inside and not show_stock and not menu_open:
+					if husbandry.menu_open:
+						husbandry.close_menu()
+					else:
+						husbandry.open_menu(husbandry.target(player.global_position))
 			KEY_C:
-				if not home.inside and not chest_open:
+				if not home.inside and not chest_open and not husbandry.menu_open:
 					_toggle_craft()
 			KEY_R:
 				builder.rotation=(builder.rotation+1)%4
 			KEY_ESCAPE:
+				husbandry.cancel()
 				if chest_open:
 					_close_chest()
 				builder.select("")
@@ -162,14 +172,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_F5:
 				message="Progresso salvo." if _save() else "Falha ao salvar."
 			KEY_E:
-				if not show_stock and not menu_open and not chest_open:
+				if not show_stock and not menu_open and not chest_open and not husbandry.menu_open:
 					var direction: Vector2=player.call("facing_vector")
 					_start_action(player.global_position+direction*32.0,event.shift_pressed)
 			_:
 				return
 		_refresh()
 	elif event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.pressed:
-		if not show_stock and not menu_open and not chest_open:
+		if not show_stock and not menu_open and not chest_open and not husbandry.menu_open:
 			_start_action(player.get_global_mouse_position(),event.shift_pressed)
 
 func _act(point: Vector2,restore: bool,item: String) -> void:
@@ -267,6 +277,17 @@ func _water_source(point: Vector2) -> bool:
 func _start_action(point: Vector2,restore: bool) -> void:
 	if not pending.is_empty():
 		return
+	if husbandry.menu_open:
+		return
+	if not home.inside:
+		if husbandry.selected!="":
+			message=husbandry.place(point)
+			_refresh()
+			return
+		var site: Vector2i=husbandry.target(point)
+		if site.x>=0:
+			husbandry.open_menu(site)
+			return
 	var target: String=home.target(point)
 	if home.inside or target=="enter":
 		_home_interact(target)
@@ -316,7 +337,7 @@ func _refresh() -> void:
 	if hud==null or inventory_ui==null:
 		return
 	var item: String=farm.quickbar[selected]
-	hud.text="E ou clique: interagir | Q: trocar semente no espaço | I: mochila | C: fabricar/construir | F5: salvar\n%s · Regador %d/8\n%s" % [inventory_ui.call("item_name",item),farm.water_charges,message]
+	hud.text="E ou clique: interagir | Q: trocar semente no espaço | I: mochila | C: fabricar/construir | B: criação | F5: salvar\n%s · Regador %d/8\n%s" % [inventory_ui.call("item_name",item),farm.water_charges,message]
 	inventory_ui.call("sync",farm.stock,farm.quickbar,selected,farm.water_charges)
 
 func _save() -> bool:
@@ -436,3 +457,6 @@ func _transfer_chest(item: String,to_chest: bool,amount: int) -> void:
 
 func home_ready() -> bool:
 	return is_instance_valid(home.root)
+
+func animals_ready() -> bool:
+	return is_instance_valid(husbandry) and is_instance_valid(husbandry.panel)

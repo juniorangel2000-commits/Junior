@@ -1,5 +1,7 @@
 extends RefCounted
 const RECIPES={
+"milkPail":{"name":"Balde de ordenha","cost":{"board":4,"ironShard":2},"out":{"milkPail":1},"station":"workbench","tool":"hammer","seconds":2.0},
+"shears":{"name":"Tesoura de tosquia","cost":{"ironIngot":2,"handle":1},"out":{"shears":1},"station":"workbench","tool":"hammer","seconds":2.0},
 "cord":{"name":"Corda vegetal","cost":{"fiber":3},"out":{"cord":1}},
 "flaked-stone":{"name":"Pedra lascada","cost":{"stone":2},"out":{"flakedStone":1}},
 "handle":{"name":"Cabo","cost":{"branch":1},"out":{"handle":1}},

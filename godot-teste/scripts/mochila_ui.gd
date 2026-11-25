@@ -75,7 +75,7 @@ func toggle(open: bool) -> void:
 	_panel.visible=open
 
 func item_name(item: String) -> String:
-	const names={"hand":"Mão","hoe":"Enxada","wateringCan":"Regador","hatchet":"Machadinha","pickaxe":"Picareta","wood":"Madeira","stone":"Pedra","branch":"Galho","log":"Tronco","plank":"Tábua","scrap":"Sucata","fiber":"Fibra","ironShard":"Ferro","fertilizer":"Adubo","oakSeed":"Bolota","pineSeed":"Semente de pinheiro","herb":"Ervas","mushroom":"Cogumelos"}
+	const names={"hand":"Mão","hoe":"Enxada","wateringCan":"Regador","hatchet":"Machadinha","pickaxe":"Picareta","wood":"Madeira","stone":"Pedra","branch":"Galho","log":"Tronco","plank":"Tábua","scrap":"Sucata","fiber":"Fibra","ironShard":"Ferro","fertilizer":"Adubo","oakSeed":"Bolota","pineSeed":"Semente de pinheiro","herb":"Ervas","mushroom":"Cogumelos","hardwood":"Madeira nobre","hay":"Palha","egg":"Ovo","duckEgg":"Ovo de pato","milk":"Leite","goatMilk":"Leite de cabra","wool":"Lã","manure":"Esterco","feather":"Pena","milkPail":"Balde","shears":"Tesoura","ironIngot":"Ferro fundido"}
 	if names.has(item):
 		return names[item]
 	for def in Farm.CATALOG.values():

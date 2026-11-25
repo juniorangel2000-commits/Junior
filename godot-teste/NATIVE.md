@@ -42,3 +42,6 @@ Recursos da propriedade reconhecidos pelas artes originais, regras de golpes/dro
 
 ## V0.08 — interior inicial
 Interior 12×10 com recortes e móveis originais V51, circulação delimitada, entrada e saída, luz interna sem chuva, sono ligado ao relógio C++, baú com transferência por quantidade, saves compatíveis com versões anteriores e posição interna. Fogão visual; culinária, edição de móveis, expansão da casa, efeitos sonoros, transições refinadas e revisão visual pendentes. CI necessário.
+
+## V0.09 — criação inicial
+Seis abrigos com capacidade/custo V51 e 7 espécies com atlas originais, área de passeio e ciclos de caminhada. Produção diária 06h, cocho, ovos/pato/penas/leite/lã/esterco, carinho, silo, persistência e testes. Alojamento local provisório com corda substitui recrutamento externo apenas nesta fase. Custos de madeira nobre mantidos, mas ainda sem fonte na propriedade (não é jogabilidade completa). Sem montaria, construção por fases, interior individual, portões, qualidade, durabilidade ou ferramentas de ferro completas. Revisão CI e visual pendentes.

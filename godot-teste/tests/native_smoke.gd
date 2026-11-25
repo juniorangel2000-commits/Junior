@@ -201,6 +201,26 @@ func _run() -> void:
 		push_error("Chest save failed")
 		quit(1)
 		return
+	var stockyard=load("res://scripts/criacao_estado.gd").new()
+	var lot:=Vector2i(40,40)
+	if not stockyard.add_site(lot,"coop") or not stockyard.admit(lot,"chicken") or not stockyard.admit(lot,"duck") or stockyard.admit(lot,"cow"):
+		push_error("Livestock admission failed")
+		quit(1)
+		return
+	stockyard.sites[lot]["trough"]=4
+	stockyard.tick(2)
+	stockyard.tick(2)
+	stockyard.tick(3)
+	if stockyard.sites[lot]["eggs"]!=2 or stockyard.sites[lot]["duckEggs"]!=1 or stockyard.sites[lot]["trough"]!=0:
+		push_error("Livestock production failed")
+		quit(1)
+		return
+	var restored=load("res://scripts/criacao_estado.gd").new()
+	if not restored.import_state(stockyard.export_state(),3) or restored.sites[lot]["eggs"]!=2:
+		push_error("Livestock persistence failed")
+		quit(1)
+		return
+	print("NATIVE_ANIMALS_SMOKE_OK")
 	print("NATIVE_HOME_SMOKE_OK")
 	print("NATIVE_BUILD_SMOKE_OK")
 	print("NATIVE_RESOURCE_SMOKE_OK")
