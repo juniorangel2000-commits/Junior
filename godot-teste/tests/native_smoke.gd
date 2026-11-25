@@ -188,6 +188,20 @@ func _run() -> void:
 		push_error("Building persistence failed")
 		quit(1)
 		return
+	var house=load("res://scripts/casa.gd")
+	if not house.walkable(Vector2(176,272)) or house.walkable(Vector2(96,96)) or house.sleep_plan(1,720.0)["ok"] or house.sleep_plan(1,1140.0)["day"]!=2 or house.sleep_plan(2,120.0)["day"]!=2:
+		push_error("Home geometry or sleep rule failed")
+		quit(1)
+		return
+	if not test_farm.transfer_chest("seeds",true,2) or test_farm.chest.get("seeds",0)!=2 or not test_farm.transfer_chest("seeds",false,1) or test_farm.chest.get("seeds",0)!=1:
+		push_error("Chest transfer failed")
+		quit(1)
+		return
+	if not clone.import_state(test_farm.export_state(),1) or clone.chest.get("seeds",0)!=1:
+		push_error("Chest save failed")
+		quit(1)
+		return
+	print("NATIVE_HOME_SMOKE_OK")
 	print("NATIVE_BUILD_SMOKE_OK")
 	print("NATIVE_RESOURCE_SMOKE_OK")
 	print("NATIVE_INVENTORY_SMOKE_OK")

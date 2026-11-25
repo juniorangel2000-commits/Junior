@@ -12,6 +12,7 @@ var _rain: Control
 var _label: Label
 const PREVIEW_TIMES := [315,375,480,720,900,1050,1110,1170,1320]
 var _preview_index := -1
+var _inside := false
 const SEASONS := ["Primavera", "Verão", "Outono", "Inverno"]
 const SHADOWS = preload("res://scripts/sombras_mundo.gd")
 const LIGHT = preload("res://shaders/luz_mundo.gdshader")
@@ -104,11 +105,11 @@ func _refresh() -> void:
 	var minute := int(_state["minute"])
 	var day := int(_state["day"])
 	var raining: bool = _state["rain"]
-	_light.set_shader_parameter("ambient",_state["ambient"])
-	_light.set_shader_parameter("saturation",_state["saturation"])
-	_light.set_shader_parameter("contrast",_state["contrast"])
-	_light.set_shader_parameter("vignette",_state.get("vignette",0.0))
-	_rain.set("raining",raining)
+	_light.set_shader_parameter("ambient",Color(1.0,0.94,0.84) if _inside else _state["ambient"])
+	_light.set_shader_parameter("saturation",1.0 if _inside else _state["saturation"])
+	_light.set_shader_parameter("contrast",1.0 if _inside else _state["contrast"])
+	_light.set_shader_parameter("vignette",0.08 if _inside else _state.get("vignette",0.0))
+	_rain.set("raining",raining and not _inside)
 	_rain.queue_redraw()
 	if is_instance_valid(_shadow):
 		_shadow.call("update_sun",_state["shadow_offset"],_state["shadow_opacity"])
@@ -170,3 +171,18 @@ func restore_clock(day: int,minute: float) -> void:
 func register_shadow(sprite: Sprite2D) -> void:
 	if is_instance_valid(_shadow):
 		_shadow.call("register_sprite",sprite)
+
+func set_inside(value: bool) -> void:
+	_inside=value
+	_refresh()
+
+func sleep_until_morning() -> String:
+	if not using_cpp():
+		return "Relógio indisponível."
+	var d: Dictionary=_core.call("snapshot")
+	var plan: Dictionary=load("res://scripts/casa.gd").sleep_plan(int(d["day"]),float(d["minute"]))
+	if not plan["ok"]:
+		return plan["message"]
+	_core.call("set_clock",plan["day"],plan["minute"])
+	_refresh()
+	return "Você acordou às 08:00 do dia %d." % plan["day"]

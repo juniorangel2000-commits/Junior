@@ -39,3 +39,6 @@ Recursos da propriedade reconhecidos pelas artes originais, regras de golpes/dro
 
 ## V0.07 — fabricação e construção inicial
 15 receitas locais da V51, transações, restrições de bancada e ferramenta, tempos para serrar/tábuas/banco. Cinco tipos de construção com custos da V51, prévia, rotação, colisões, porteiras novas interativas, recuperação de materiais e persistência. Arte original de três objetos copiada. Rotação plana provisória; porteira do cenário original, paredes/pisos/telhados, projetos, máquinas, durabilidade, iluminação de construções e UX ainda precisam refinamento. CI e validação visual pendentes.
+
+## V0.08 — interior inicial
+Interior 12×10 com recortes e móveis originais V51, circulação delimitada, entrada e saída, luz interna sem chuva, sono ligado ao relógio C++, baú com transferência por quantidade, saves compatíveis com versões anteriores e posição interna. Fogão visual; culinária, edição de móveis, expansão da casa, efeitos sonoros, transições refinadas e revisão visual pendentes. CI necessário.

@@ -8,6 +8,7 @@ var stock: Dictionary = {"hoe":1,"wateringCan":1,"seeds":12,"lettuceSeeds":4,"ca
 var plots: Dictionary = {}
 var resource_progress: Dictionary = {}
 var buildings: Dictionary = {}
+var chest: Dictionary = {}
 var core: Object
 
 func _init() -> void:
@@ -117,7 +118,7 @@ func stage(crop: Dictionary) -> int:
 	return 0 if growth<=0.0 else (4 if growth>=1.0 else (3 if growth>=2.0/3.0 else (2 if growth>=1.0/3.0 else 1)))
 
 func export_state() -> Dictionary:
-	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate(),"resource_progress":resource_progress.duplicate(true),"buildings":buildings.duplicate(true)}
+	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate(),"resource_progress":resource_progress.duplicate(true),"buildings":buildings.duplicate(true),"chest":chest.duplicate(true)}
 
 func import_state(data: Dictionary,today: int) -> bool:
 	var s=data.get("stock")
@@ -182,6 +183,13 @@ func import_state(data: Dictionary,today: int) -> bool:
 			if cell.x>94 or cell.y>70 or occupied.has(cell) or p.has(cell):
 				return false
 			occupied[cell]=true
+	var box: Variant=data.get("chest",{})
+	if not box is Dictionary or box.size()>60:
+		return false
+	for key in box:
+		if not key in allowed or not box[key] is int or box[key]<0 or box[key]>999999:
+			return false
+	chest=box.duplicate(true)
 	buildings=pieces.duplicate(true)
 	resource_progress=resources.duplicate(true)
 	water_charges=charges
@@ -208,3 +216,21 @@ func crop_for_seed(item: String) -> String:
 		if CATALOG[id]["seed"]==item:
 			return str(id)
 	return ""
+
+func transfer_chest(item: String,to_chest: bool,amount: int) -> bool:
+	if amount<1 or amount>999999 or item=="wateringCan":
+		return false
+	if to_chest:
+		var current:=int(chest.get(item,0))
+		if current+amount>999999 or (current==0 and chest.size()>=60):
+			return false
+		if not transact({item:amount},{}):
+			return false
+		chest[item]=current+amount
+		return true
+	if chest.get(item,0)<amount or not transact({},{item:amount}):
+		return false
+	chest[item]-=amount
+	if chest[item]==0:
+		chest.erase(item)
+	return true

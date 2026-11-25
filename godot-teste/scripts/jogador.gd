@@ -10,6 +10,8 @@ const DIRECOES := {
 @onready var corpo: AnimatedSprite2D = $Corpo
 var _direcao := "south"
 var tool_busy := false
+var home_mode:=false
+var home_controller: RefCounted
 const MundoColisoes = preload("res://scripts/mundo_colisoes.gd")
 var _mundo: Node2D
 var _movimento_nativo: Object
@@ -79,6 +81,10 @@ func _physics_process(delta: float) -> void:
 
 func _mover_eixo(passo: Vector2) -> void:
 	if passo.is_zero_approx():
+		return
+	if home_mode:
+		if home_controller!=null and home_controller.call("move_allowed",global_position+passo):
+			global_position+=passo
 		return
 	var antes := position
 	move_and_collide(passo)

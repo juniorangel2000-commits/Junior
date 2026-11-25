@@ -29,6 +29,11 @@ var build_ui: CanvasLayer
 var menu_open:=false
 var craft_job: Dictionary={}
 var craft_time:=0.0
+const Home=preload("res://scripts/casa.gd")
+var home=Home.new()
+var chest_ui: CanvasLayer
+var chest_open:=false
+var loaded_home: Variant=null
 const TOOL_ART={"hoe":preload("res://arte/ferramentas/enxada.png"),"hatchet":preload("res://arte/ferramentas/machado.png"),"pickaxe":preload("res://arte/ferramentas/picareta.png")}
 const SWING=[-40,-55,-35,15,75,70,45,20,0]
 
@@ -70,6 +75,11 @@ func _ready() -> void:
 	build_ui.connect("recipe",_craft_request)
 	build_ui.connect("piece",_build_select)
 	build_ui.connect("close_requested",_toggle_craft)
+	chest_ui=preload("res://scripts/bau_ui.gd").new()
+	add_child(chest_ui)
+	chest_ui.set("names",Callable(inventory_ui,"item_name"))
+	chest_ui.connect("transfer",_transfer_chest)
+	chest_ui.connect("close_requested",_close_chest)
 	_refresh()
 
 func _process(delta: float) -> void:
@@ -95,9 +105,12 @@ func _process(delta: float) -> void:
 			_load()
 		resources.restore()
 		builder.setup(scene,player,farm)
+		home.setup(scene,player)
+		if loaded_home is Vector2:
+			home.enter(loaded_home)
 		_rebuild()
 	_advance_action(delta)
-	if builder.selected!="":
+	if not home.inside and builder.selected!="":
 		builder.update_preview(player.get_global_mouse_position())
 	if not craft_job.is_empty():
 		craft_time-=delta
@@ -136,24 +149,27 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_I:
 				_toggle_inventory()
 			KEY_C:
-				_toggle_craft()
+				if not home.inside and not chest_open:
+					_toggle_craft()
 			KEY_R:
 				builder.rotation=(builder.rotation+1)%4
 			KEY_ESCAPE:
+				if chest_open:
+					_close_chest()
 				builder.select("")
 				if menu_open:
 					_toggle_craft()
 			KEY_F5:
 				message="Progresso salvo." if _save() else "Falha ao salvar."
 			KEY_E:
-				if not show_stock and not menu_open:
+				if not show_stock and not menu_open and not chest_open:
 					var direction: Vector2=player.call("facing_vector")
 					_start_action(player.global_position+direction*32.0,event.shift_pressed)
 			_:
 				return
 		_refresh()
 	elif event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.pressed:
-		if not show_stock:
+		if not show_stock and not menu_open and not chest_open:
 			_start_action(player.get_global_mouse_position(),event.shift_pressed)
 
 func _act(point: Vector2,restore: bool,item: String) -> void:
@@ -251,6 +267,10 @@ func _water_source(point: Vector2) -> bool:
 func _start_action(point: Vector2,restore: bool) -> void:
 	if not pending.is_empty():
 		return
+	var target: String=home.target(point)
+	if home.inside or target=="enter":
+		_home_interact(target)
+		return
 	var item: String=farm.quickbar[selected]
 	if builder.selected!="":
 		_act(point,restore,item)
@@ -306,7 +326,7 @@ func _save() -> bool:
 	var f:=FileAccess.open(SAVE+".tmp",FileAccess.WRITE)
 	if f==null:
 		return false
-	f.store_var({"schema":1,"day":int(clock["day"]),"minute":float(clock["minute"]),"position":player.global_position,"farm":farm.export_state()},false)
+	f.store_var({"schema":1,"day":int(clock["day"]),"minute":float(clock["minute"]),"position":home.exterior_position if home.inside else player.global_position,"home_position":player.global_position-Home.ORIGIN if home.inside else null,"farm":farm.export_state()},false)
 	f.flush()
 	f.close()
 	if FileAccess.file_exists(SAVE) and DirAccess.copy_absolute(SAVE,SAVE+".bak")!=OK:
@@ -334,6 +354,9 @@ func _load() -> void:
 		var world: Node2D=player.call("mundo_colisoes")
 		if world.call("terreno_livre",data["position"],scene.get_node("Terreno")) and not world.call("ocupado",Rect2(data["position"]-Vector2(7,4),Vector2(14,8))):
 			player.global_position=data["position"]
+		var room_pos: Variant=data.get("home_position")
+		if room_pos is Vector2 and room_pos.is_finite() and Home.walkable(room_pos):
+			loaded_home=room_pos
 		message="Progresso recuperado."
 		return
 
@@ -372,3 +395,44 @@ func _craft_request(id: String) -> void:
 		else:
 			message=builder.craft(id)
 	_refresh()
+
+func _home_interact(target: String) -> void:
+	match target:
+		"enter":
+			builder.select("")
+			home.enter()
+			message="Casa · E na cama, baú ou saída."
+		"exit":
+			_close_chest()
+			home.leave()
+			message="Propriedade."
+		"bed":
+			message=get_node("/root/MundoSimulacao").call("sleep_until_morning")
+			_save()
+		"chest":
+			chest_open=true
+			player.set("tool_busy",true)
+			chest_ui.call("update_items",farm.stock,farm.chest)
+			chest_ui.call("show_menu",true)
+		"woodStove":
+			message="Fogão a lenha · culinária em desenvolvimento."
+		_:
+			message="Aproxime-se da cama, baú ou saída."
+	_refresh()
+
+func _close_chest() -> void:
+	if not chest_open:
+		return
+	chest_open=false
+	chest_ui.call("show_menu",false)
+	player.set("tool_busy",false)
+
+func _transfer_chest(item: String,to_chest: bool,amount: int) -> void:
+	if not chest_open or not home.inside:
+		return
+	message="Transferência concluída." if farm.transfer_chest(item,to_chest,amount) else "Quantidade ou espaço insuficiente."
+	chest_ui.call("update_items",farm.stock,farm.chest)
+	_refresh()
+
+func home_ready() -> bool:
+	return is_instance_valid(home.root)
