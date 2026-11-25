@@ -40,6 +40,7 @@ void AfterRainWorld::_bind_methods() {
     ClassDB::bind_method(D_METHOD("advance","minutes"), &AfterRainWorld::advance);
     ClassDB::bind_method(D_METHOD("snapshot"), &AfterRainWorld::snapshot);
     ClassDB::bind_method(D_METHOD("rain_for_day","day"), &AfterRainWorld::rain_for_day);
+    ClassDB::bind_method(D_METHOD("resource_hit","hits","required"), &AfterRainWorld::resource_hit);
     ClassDB::bind_method(D_METHOD("settle_crop","from","to","growth","required","mask","watered"), &AfterRainWorld::settle_crop);
 }
 void AfterRainWorld::set_clock(int p_day,double p_minute) {
@@ -106,4 +107,9 @@ Dictionary AfterRainWorld::settle_crop(int from,int to,int growth,int required,i
     result["alive"]=alive; result["days"]=growth; result["day"]=to;
     result["watered"]=alive&&(watered||rain_for_day(to)); result["missed"]=missed;
     return result;
+}
+
+int AfterRainWorld::resource_hit(int hits,int required) const {
+    if(required<1||required>100||hits<0||hits>=required)return -1;
+    return hits+1;
 }

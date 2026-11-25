@@ -117,6 +117,11 @@ func _draw() -> void:
 		var point := to_local(sprite.global_position)
 		if not view.has_point(point):
 			continue
+		if data["texture"] != sprite.texture:
+			data["texture"]=sprite.texture
+			data["rect"]=sprite.get_rect()
+			data["foot"]=_foot(sprite.texture)
+			data["height_factor"]=0.55
 		var rect: Rect2 = data["rect"]
 		var foot: float = data["foot"]
 		var sprite_scale := sprite.global_scale.abs()

@@ -1,8 +1,9 @@
-# After Rain Native V0.05 — Windows x64
-Extraia o ZIP interno e execute After-Rain-Native-V0.05.exe, mantendo PCK e DLL nas posições originais.
+# After Rain Native V0.06 — Windows x64
+Extraia o ZIP interno e execute After-Rain-Native-V0.06.exe, mantendo PCK e DLL nas posições originais.
 WASD/setas: movimento. F3: diagnóstico. F4: colisões. + / -: zoom. F6: avançar uma hora. F7: próximo dia às 08:00 (atalhos de teste).
 Relógio, calendário, clima diário determinístico e parâmetros de luz em C++ baseados na V51. HUD, chuva visual, filtro de iluminação e sombras aproximadas no Godot. Não inclui ainda plantações, mudança visual de estação, saves, sono ou interiores. Sem DLL, o cenário permanece às 08:00 e o movimento tem alternativa GDScript. Build debug experimental.
 
 Revisão de luz: sombras projetadas da silhueta alpha de árvores, casas, cercas, pedras e personagem, com penumbra e suavização. F8 alterna aurora, nascer do sol, manhã, meio-dia, tarde, hora dourada, pôr do sol, crepúsculo e noite. F9 alterna as sombras para comparação. Estilo artístico 2D; a validação visual ainda é necessária. Agricultura inicial integrada.
 1 mão/colheita, 2 enxada, 3 sementes, 4 regador, Q escolhe sementes, I mochila, E/clique interage, Shift+E desfaz canteiro vazio, F5 salva. Save experimental separado da V51. Kit de teste provisório.
-V0.05: mochila I, 9 espaços clicáveis ou teclas 1–9, clique em item da mochila para equipar no espaço selecionado, regador com oito cargas, abasteça perto do rio/lago/poço. Animação original de regador. Machado e picareta ainda sem coleta. Kit inicial provisório.
+V0.06: mochila I, 9 espaços clicáveis ou teclas 1–9, clique em item da mochila para equipar no espaço selecionado, regador com oito cargas, abasteça perto do rio/lago/poço. Animação original de regador. Machado e picareta ainda sem coleta. Kit inicial provisório.
+V0.06: use mão, machadinha ou picareta no recurso próximo; árvores deixam tocos, rochas e recursos recolhidos desaparecem e liberam colisões. Golpes e itens persistem. Animações de ferramenta no contato; replantio, regeneração e durabilidade ainda pendentes.

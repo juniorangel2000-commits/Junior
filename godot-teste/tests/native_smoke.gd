@@ -152,6 +152,24 @@ func _run() -> void:
 		push_error("Inventory persistence failed")
 		quit(1)
 		return
+	var res=load("res://scripts/recursos_mundo.gd").new()
+	res.farm=test_farm
+	var fake:=Sprite2D.new()
+	res.entries["tree-test"]={"kind":"tree","sprite":fake,"position":Vector2.ZERO,"shape_id":0}
+	if world.call("resource_hit",3,4)!=4 or world.call("resource_hit",4,4)!=-1 or res.hit("tree-test","hand")!="Use a machadinha.":
+		push_error("Resource tool rule failed")
+		fake.free()
+		quit(1)
+		return
+	for i in 4:
+		res.hit("tree-test","hatchet")
+	if test_farm.stock.get("log",0)!=2 or test_farm.resource_progress["tree-test"]["stage"]!=1:
+		push_error("Resource depletion failed")
+		fake.free()
+		quit(1)
+		return
+	fake.free()
+	print("NATIVE_RESOURCE_SMOKE_OK")
 	print("NATIVE_INVENTORY_SMOKE_OK")
 	print("NATIVE_FARM_SMOKE_OK")
 	print("NATIVE_LIGHT_SMOKE_OK")

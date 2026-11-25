@@ -9,6 +9,7 @@ const DIRECOES := {
 @export var terreno: Node
 @onready var corpo: AnimatedSprite2D = $Corpo
 var _direcao := "south"
+var tool_busy := false
 const MundoColisoes = preload("res://scripts/mundo_colisoes.gd")
 var _mundo: Node2D
 var _movimento_nativo: Object
@@ -53,6 +54,10 @@ func _preparar_mundo() -> void:
 
 func _physics_process(delta: float) -> void:
 	if not is_instance_valid(_mundo):
+		return
+	if tool_busy:
+		velocity=Vector2.ZERO
+		corpo.play("parada-" + _direcao)
 		return
 	var entrada := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	if entrada.length() > 0.1:

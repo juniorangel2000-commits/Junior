@@ -20,6 +20,10 @@ var pending: Dictionary={}
 var action_elapsed:=0.0
 var action_sprite: Sprite2D
 var water_frames: Array[Texture2D]=[]
+const Resources=preload("res://scripts/recursos_mundo.gd")
+var resources=Resources.new()
+const TOOL_ART={"hoe":preload("res://arte/ferramentas/enxada.png"),"hatchet":preload("res://arte/ferramentas/machado.png"),"pickaxe":preload("res://arte/ferramentas/picareta.png")}
+const SWING=[-40,-55,-35,15,75,70,45,20,0]
 
 class SoilLayer extends Node2D:
 	var farm
@@ -73,9 +77,11 @@ func _process(delta: float) -> void:
 		action_sprite.visible=false
 		action_sprite.z_index=2
 		player.add_child(action_sprite)
+		resources.build(scene,farm,player.call("mundo_colisoes"))
 		initialized=true
 		if not "--native-export-smoke" in OS.get_cmdline_user_args():
 			_load()
+		resources.restore()
 		_rebuild()
 	_advance_action(delta)
 	elapsed+=delta
@@ -122,6 +128,16 @@ func _unhandled_input(event: InputEvent) -> void:
 			_start_action(player.get_global_mouse_position(),event.shift_pressed)
 
 func _act(point: Vector2,restore: bool,item: String) -> void:
+	if item in ["hand","hatchet","pickaxe"]:
+		var id: String=resources.target(point,player.global_position)
+		if id!="":
+			message=resources.hit(id,item)
+			_refresh()
+			return
+		if item!="hand":
+			message="Nenhum recurso ao alcance."
+			_refresh()
+			return
 	var tile:=Vector2i(floori(point.x/32.0),floori(point.y/32.0))
 	var center:=Vector2(tile)*32.0+Vector2(16,16)
 	if player.global_position.distance_to(center)>64.0:
@@ -197,13 +213,14 @@ func _start_action(point: Vector2,restore: bool) -> void:
 	if not pending.is_empty():
 		return
 	var item: String=farm.quickbar[selected]
-	if item=="wateringCan":
+	if item in ["wateringCan","hatchet","pickaxe","hoe"]:
 		if player.global_position.distance_to(point)>64.0:
 			message="Aproxime-se do alvo."
 			_refresh()
 			return
 		pending={"point":point,"restore":restore,"item":item,"impacted":false}
 		action_elapsed=0.0
+		player.set("tool_busy",true)
 		action_sprite.visible=true
 		return
 	_act(point,restore,item)
@@ -218,16 +235,19 @@ func _advance_action(delta: float) -> void:
 		direction=Vector2.DOWN
 	action_sprite.position=direction*18.0+Vector2(0,-12)
 	action_sprite.flip_h=direction.x<0.0
-	var frame:=mini(8,int(action_elapsed*12.0))
-	var tex:=water_frames[frame]
+	var frame:=mini(8,int(action_elapsed*18.0))
+	var item: String=pending["item"]
+	var tex: Texture2D=water_frames[frame] if item=="wateringCan" else TOOL_ART[item]
+	action_sprite.rotation=0.0 if item=="wateringCan" else deg_to_rad(float(SWING[frame])*( -1.0 if direction.x<0.0 else 1.0))
 	if tex!=null:
 		action_sprite.texture=tex
 		action_sprite.scale=Vector2.ONE*(32.0/maxf(tex.get_width(),tex.get_height()))
-	if not pending["impacted"] and action_elapsed>=0.333333:
+	if not pending["impacted"] and action_elapsed>=4.0/18.0:
 		pending["impacted"]=true
 		_act(point,pending["restore"],pending["item"])
-	if action_elapsed>=0.75:
+	if action_elapsed>=9.0/18.0:
 		pending.clear()
+		player.set("tool_busy",false)
 		action_sprite.hide()
 
 func _refresh() -> void:
@@ -268,6 +288,7 @@ func _load() -> void:
 		if not farm.import_state(data["farm"],data["day"]):
 			continue
 		get_node("/root/MundoSimulacao").call("restore_clock",data["day"],data["minute"])
+		resources.restore()
 		var world: Node2D=player.call("mundo_colisoes")
 		if world.call("terreno_livre",data["position"],scene.get_node("Terreno")) and not world.call("ocupado",Rect2(data["position"]-Vector2(7,4),Vector2(14,8))):
 			player.global_position=data["position"]
@@ -280,3 +301,6 @@ func _notification(what: int) -> void:
 
 func ready_for_test() -> bool:
 	return initialized and is_instance_valid(farm.core)
+
+func resource_count() -> int:
+	return resources.entries.size()

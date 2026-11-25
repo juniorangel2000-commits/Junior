@@ -6,6 +6,9 @@ const SOLID_LAYER := 2
 var _blocks: Array[Rect2] = []
 var _bridges: Array[Rect2] = []
 var _debug := false
+var _owners: Array[int] = []
+var _shapes: Array[CollisionShape2D] = []
+var _disabled: Dictionary = {}
 
 func build(root: Node2D) -> void:
 	var bridge_parts: Dictionary = {}
@@ -31,13 +34,13 @@ func build(root: Node2D) -> void:
 			elif art.begins_with("fence-new-") or art.begins_with("gate-"):
 				fences[Vector2i(p.round())] = true
 			elif art.begins_with("asset-tree-") or art.begins_with("asset-pine-"):
-				_add_block(p + Vector2(0, -9), Vector2(clampf(size.x * 0.17, 24, 38), 20))
+				_add_block(p + Vector2(0, -9), Vector2(clampf(size.x * 0.17, 24, 38), 20),sprite.get_instance_id())
 			elif art == "asset-house":
 				_add_block(p + Vector2(0, -size.y * 0.23), Vector2(size.x * 0.80, size.y * 0.42))
 			elif art == "property-well-idle":
 				_add_block(p + Vector2(0, -size.y * 0.15), Vector2(size.x * 0.65, size.y * 0.30))
 			elif art.begins_with("lake-rock-") or art.begins_with("detailed-ore-") or art == "forest-detail-stump" or art == "forest-detail-log" or art.begins_with("pet-shelter-"):
-				_add_block(p + Vector2(0, -size.y * 0.16), Vector2(size.x * 0.65, maxf(size.y * 0.34, 10)))
+				_add_block(p + Vector2(0, -size.y * 0.16), Vector2(size.x * 0.65, maxf(size.y * 0.34, 10)),sprite.get_instance_id())
 	for key in fences:
 		var p := Vector2(key)
 		var horizontal := fences.has(key + Vector2i(32, 0)) or fences.has(key - Vector2i(32, 0))
@@ -69,9 +72,11 @@ func build(root: Node2D) -> void:
 		collision.shape = shape
 		collision.position = rect.get_center()
 		body.add_child(collision)
+		_shapes.append(collision)
 
-func _add_block(center: Vector2, size: Vector2) -> void:
+func _add_block(center: Vector2, size: Vector2,owner: int=0) -> void:
 	_blocks.append(Rect2(center - size * 0.5, size))
+	_owners.append(owner)
 
 func dentro_do_mapa(p: Vector2) -> bool:
 	return p.x >= FEET.x and p.y >= FEET.y and p.x <= WORLD_SIZE.x - FEET.x and p.y <= WORLD_SIZE.y - FEET.y
@@ -94,7 +99,7 @@ func terreno_livre(p: Vector2, terreno: Node) -> bool:
 	return true
 
 func total_obstaculos() -> int:
-	return _blocks.size()
+	return _blocks.size()-_disabled.size()
 
 func total_pontes() -> int:
 	return _bridges.size()
@@ -106,14 +111,26 @@ func alternar_debug() -> void:
 func _draw() -> void:
 	if not _debug:
 		return
-	for rect in _blocks:
+	for i in _blocks.size():
+		if _disabled.has(i):
+			continue
+		var rect:=_blocks[i]
 		draw_rect(rect, Color(1, 0.25, 0.2, 0.35))
 		draw_rect(rect, Color(1, 0.3, 0.2, 0.85), false, 1.0)
 	for rect in _bridges:
 		draw_rect(rect, Color(0.2, 0.9, 1, 0.35))
 
 func ocupado(rect: Rect2) -> bool:
-	for block in _blocks:
-		if block.intersects(rect):
+	for i in _blocks.size():
+		if not _disabled.has(i) and _blocks[i].intersects(rect):
 			return true
 	return false
+
+func remover_obstaculo(owner: int) -> void:
+	if owner==0:
+		return
+	for i in _owners.size():
+		if _owners[i]==owner:
+			_disabled[i]=true
+			_shapes[i].set_deferred("disabled",true)
+	queue_redraw()

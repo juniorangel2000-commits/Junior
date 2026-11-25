@@ -75,7 +75,7 @@ func toggle(open: bool) -> void:
 	_panel.visible=open
 
 func item_name(item: String) -> String:
-	const names={"hand":"Mão","hoe":"Enxada","wateringCan":"Regador","hatchet":"Machadinha","pickaxe":"Picareta","wood":"Madeira","stone":"Pedra","branch":"Galho","log":"Tronco","plank":"Tábua","scrap":"Sucata","fiber":"Fibra","ironShard":"Ferro","fertilizer":"Adubo"}
+	const names={"hand":"Mão","hoe":"Enxada","wateringCan":"Regador","hatchet":"Machadinha","pickaxe":"Picareta","wood":"Madeira","stone":"Pedra","branch":"Galho","log":"Tronco","plank":"Tábua","scrap":"Sucata","fiber":"Fibra","ironShard":"Ferro","fertilizer":"Adubo","oakSeed":"Bolota","pineSeed":"Semente de pinheiro","herb":"Ervas","mushroom":"Cogumelos"}
 	if names.has(item):
 		return names[item]
 	for def in Farm.CATALOG.values():

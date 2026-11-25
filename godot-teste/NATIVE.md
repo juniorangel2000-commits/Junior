@@ -33,3 +33,6 @@ Substitui as elipses por projeções alpha das texturas originais, ancoradas na 
 
 ## V0.05 — mochila e regador
 Mochila visual de 30 espaços por tipo, barra de 9 referências editáveis e persistentes, ícones e artes originais V51; regador de oito cargas, abastecimento e impacto único no quadro de contato, animação original de nove quadros. Rega repetida não consome carga. Saves anteriores começam vazios e recebem barra padrão. Coleta, ferramentas individuais, animações completas do corpo, qualidade agrícola e fabricação ainda pendentes. Compilação e revisão visual necessárias.
+
+## V0.06 — coleta inicial
+Recursos da propriedade reconhecidos pelas artes originais, regras de golpes/drops V51 (ferro inicial fixado pela arte do depósito), machado/picareta/enxada com arco rígido de 9 quadros a 18 fps, contato único C++ para contagem, árvore vira toco, estoque transacional, colisões e sombras sincronizadas, persistência de golpes e remoções. Sem regeneração, replantio, drops no chão, níveis de ferramentas, durabilidade ou animação completa do corpo. Testes e revisão visual necessários.

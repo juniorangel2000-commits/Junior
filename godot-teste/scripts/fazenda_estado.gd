@@ -6,6 +6,7 @@ var water_charges := 0
 var quickbar: Array = ["hand","hoe","seeds","wateringCan","hatchet","pickaxe","","",""]
 var stock: Dictionary = {"hoe":1,"wateringCan":1,"seeds":12,"lettuceSeeds":4,"carrotSeeds":4,"beanSeeds":4,"hatchet":1,"pickaxe":1}
 var plots: Dictionary = {}
+var resource_progress: Dictionary = {}
 var core: Object
 
 func _init() -> void:
@@ -115,14 +116,14 @@ func stage(crop: Dictionary) -> int:
 	return 0 if growth<=0.0 else (4 if growth>=1.0 else (3 if growth>=2.0/3.0 else (2 if growth>=1.0/3.0 else 1)))
 
 func export_state() -> Dictionary:
-	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate()}
+	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate(),"resource_progress":resource_progress.duplicate(true)}
 
 func import_state(data: Dictionary,today: int) -> bool:
 	var s=data.get("stock")
 	var p=data.get("plots")
 	if not s is Dictionary or not p is Dictionary or p.size()>6912:
 		return false
-	var allowed:=["hoe","wateringCan","hatchet","pickaxe","wood","stone","branch","log","plank","scrap","fiber","ironShard","fertilizer"]
+	var allowed:=["hoe","wateringCan","hatchet","pickaxe","wood","stone","branch","log","plank","scrap","fiber","ironShard","fertilizer","oakSeed","pineSeed","herb","mushroom"]
 	for def in CATALOG.values():
 		allowed.append(def["seed"])
 		allowed.append(def["harvest"])
@@ -154,6 +155,16 @@ func import_state(data: Dictionary,today: int) -> bool:
 	for item in slots:
 		if not item is String or (item!="" and item!="hand" and not item in allowed):
 			return false
+	var resources: Variant=data.get("resource_progress",{})
+	if not resources is Dictionary or resources.size()>2000:
+		return false
+	for key in resources:
+		if not key is String or key.length()>120 or not resources[key] is Dictionary:
+			return false
+		var record: Dictionary=resources[key]
+		if not record.get("stage") is int or record["stage"]<0 or record["stage"]>2 or not record.get("hits") is int or record["hits"]<0 or record["hits"]>5:
+			return false
+	resource_progress=resources.duplicate(true)
 	water_charges=charges
 	quickbar=slots.duplicate()
 	stock=s.duplicate(true)
