@@ -10,6 +10,8 @@ var _shadow: Node2D
 var _light: ShaderMaterial
 var _rain: Control
 var _label: Label
+const PREVIEW_TIMES := [315,375,480,720,900,1050,1110,1170,1320]
+var _preview_index := -1
 const SEASONS := ["Primavera", "Verão", "Outono", "Inverno"]
 const SHADOWS = preload("res://scripts/sombras_mundo.gd")
 const LIGHT = preload("res://shaders/luz_mundo.gdshader")
@@ -63,7 +65,7 @@ func _make_overlays() -> void:
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hud.add_child(panel)
 	panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	panel.offset_left = -276
+	panel.offset_left = -350
 	panel.offset_right = -12
 	panel.offset_top = 12
 	panel.offset_bottom = 76
@@ -105,11 +107,12 @@ func _refresh() -> void:
 	_light.set_shader_parameter("ambient",_state["ambient"])
 	_light.set_shader_parameter("saturation",_state["saturation"])
 	_light.set_shader_parameter("contrast",_state["contrast"])
+	_light.set_shader_parameter("vignette",_state.get("vignette",0.0))
 	_rain.set("raining",raining)
 	_rain.queue_redraw()
 	if is_instance_valid(_shadow):
 		_shadow.call("update_sun",_state["shadow_offset"],_state["shadow_opacity"])
-	var phase := "Madrugada" if minute < 360 else ("Manhã" if minute < 720 else ("Tarde" if minute < 1140 else "Noite"))
+	var phase := _phase(minute)
 	_label.text = "%s %d · Ano %d\n%02d:%02d · %s · %s" % [SEASONS[int(_state["season"])],int(_state["day_of_season"]),int(_state["year"]),int(minute / 60.0),minute % 60,phase,"Chuva" if raining else "Tempo aberto"]
 	if day != _last_day:
 		_last_day = day
@@ -127,3 +130,33 @@ func _input(event: InputEvent) -> void:
 		if next > int(current["day"]):
 			_core.call("set_clock",next,480.0)
 		_refresh()
+
+	elif event.keycode == KEY_F8:
+		_preview_index = (_preview_index+1)%PREVIEW_TIMES.size()
+		var current: Dictionary = _core.call("snapshot")
+		_core.call("set_clock",int(current["day"]),float(PREVIEW_TIMES[_preview_index]))
+		_refresh()
+	elif event.keycode == KEY_F9 and is_instance_valid(_shadow):
+		_shadow.call("toggle_shadows")
+
+func shadow_caster_count() -> int:
+	return int(_shadow.call("caster_count")) if is_instance_valid(_shadow) else 0
+
+func _phase(minute: int) -> String:
+	if minute < 300:
+		return "Madrugada"
+	if minute < 360:
+		return "Aurora"
+	if minute < 420:
+		return "Nascer do sol"
+	if minute < 720:
+		return "Manhã"
+	if minute < 990:
+		return "Tarde"
+	if minute < 1080:
+		return "Hora dourada"
+	if minute < 1140:
+		return "Pôr do sol"
+	if minute < 1200:
+		return "Crepúsculo"
+	return "Noite"

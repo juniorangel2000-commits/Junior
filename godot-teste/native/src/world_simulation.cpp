@@ -11,14 +11,27 @@ namespace {
 constexpr int max_day = 999999;
 constexpr double day_length = 1440.0;
 constexpr double chance[] = {0.34, 0.18, 0.30, 0.24};
-struct LightKey { double at, r, g, b, saturation, contrast; };
+// Horários artísticos distintos, interpolados continuamente. Céu aberto.
+struct LightKey { double at, r, g, b, saturation, contrast, vignette; };
 constexpr LightKey keys[] = {
-    {0,.25,.31,.52,.62,1.04},{270,.27,.32,.52,.64,1.04},
-    {345,.62,.50,.62,.82,1.02},{400,1.02,.86,.82,.98,1.03},
-    {480,1,.97,.92,1.04,1.03},{720,1,1,.99,1.06,1.03},
-    {960,1,.97,.9,1.07,1.04},{1065,1.05,.9,.74,1.1,1.05},
-    {1125,.9,.68,.6,1.04,1.05},{1180,.44,.42,.62,.78,1.05},
-    {1260,.27,.32,.53,.64,1.04},{1440,.25,.31,.52,.62,1.04}
+    {0,.25,.32,.56,.70,1.01,.18},
+    {240,.24,.30,.51,.68,1.01,.19},
+    {300,.36,.39,.63,.75,1.01,.16}, // aurora azul
+    {330,.53,.45,.66,.82,1.02,.14}, // aurora rosada
+    {360,.80,.66,.70,.95,1.02,.10}, // horizonte rosa
+    {390,1.04,.87,.73,1.02,1.02,.06}, // nascer dourado
+    {450,1.03,.98,.87,1.04,1.02,.03},
+    {540,1.01,1.00,.96,1.04,1.01,.02}, // manhã clara
+    {720,1.00,1.00,1.00,1.02,1.01,.02}, // meio-dia
+    {900,1.02,.98,.90,1.05,1.02,.035}, // tarde
+    {990,1.04,.94,.80,1.07,1.03,.06}, // início hora dourada
+    {1050,1.08,.88,.68,1.08,1.03,.08},
+    {1095,1.08,.76,.58,1.08,1.03,.11}, // pôr do sol
+    {1140,.83,.56,.64,.92,1.02,.14}, // crepúsculo rosa
+    {1170,.58,.48,.72,.85,1.02,.16}, // hora azul
+    {1200,.36,.37,.63,.75,1.01,.18},
+    {1260,.27,.33,.57,.70,1.01,.18},
+    {1440,.25,.32,.56,.70,1.01,.18}
 };
 double lerp_value(double a,double b,double x) { return a+(b-a)*x; }
 }
@@ -62,13 +75,18 @@ Dictionary AfterRainWorld::snapshot() const {
     const double progress=std::clamp((minute-360.0)/780.0,0.0,1.0);
     const double elevation=std::sin(progress*std::numbers::pi);
     const double fade=std::clamp(std::min((minute-360.0)/30.0,(1140.0-minute)/25.0),0.0,1.0);
-    const double length=.22+.52*(1-elevation);
+    // Sol baixo = sombra longa e oblíqua; sol alto = curta.
+    const double length=.24+1.05*std::pow(1-elevation,1.35);
+    const double horizontal=std::cos(progress*std::numbers::pi)*length;
+    const double depth=.18+.26*(1-elevation);
+    const double strength=(.38+.12*elevation)*fade*(rain?.14:1.0);
     Dictionary result;
     result["day"]=day; result["minute"]=minute;
     result["year"]=n/112+1; result["season"]=(n/28)%4; result["day_of_season"]=n%28+1;
     result["rain"]=rain; result["ambient"]=Color(r,g,bl,1.0);
     result["saturation"]=sat; result["contrast"]=lerp_value(a.contrast,b.contrast,x);
-    result["shadow_offset"]=Vector2(std::cos(progress*std::numbers::pi)*length,.42*length);
-    result["shadow_opacity"]=(.5+.08*elevation)*fade*(rain?.20:1.0);
+    result["shadow_offset"]=Vector2(horizontal,depth);
+    result["shadow_opacity"]=strength;
+    result["vignette"]=lerp_value(a.vignette,b.vignette,x);
     return result;
 }

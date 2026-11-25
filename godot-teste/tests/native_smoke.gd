@@ -76,6 +76,39 @@ func _run() -> void:
 		push_error("Calendar limit failed")
 		quit(1)
 		return
+	# Verifica direção, comprimento e opacidade da nova projeção.
+	world.call("set_clock",1,390.0)
+	var morning: Dictionary = world.call("snapshot")
+	world.call("set_clock",1,750.0)
+	var midday: Dictionary = world.call("snapshot")
+	world.call("set_clock",1,1110.0)
+	var sunset: Dictionary = world.call("snapshot")
+	var morning_dir: Vector2 = morning["shadow_offset"]
+	var midday_dir: Vector2 = midday["shadow_offset"]
+	var sunset_dir: Vector2 = sunset["shadow_offset"]
+	if morning_dir.x <= 0.0 or sunset_dir.x >= 0.0 or morning_dir.length() <= midday_dir.length() or sunset_dir.length() <= midday_dir.length():
+		push_error("Solar projection direction or length wrong")
+		quit(1)
+		return
+	var sunset_color: Color = sunset["ambient"]
+	if sunset_color.r <= sunset_color.b:
+		push_error("Sunset grading missing")
+		quit(1)
+		return
+	world.call("set_clock",1,1170.0)
+	var twilight: Dictionary = world.call("snapshot")
+	var twilight_color: Color = twilight["ambient"]
+	if twilight_color.b <= twilight_color.r or twilight["shadow_opacity"] != 0.0:
+		push_error("Twilight grading wrong")
+		quit(1)
+		return
+	world.call("set_clock",3,750.0)
+	var rain_state: Dictionary = world.call("snapshot")
+	if rain_state["shadow_opacity"] >= midday["shadow_opacity"]:
+		push_error("Rain shadows not diffuse")
+		quit(1)
+		return
+	print("NATIVE_LIGHT_SMOKE_OK")
 	print("NATIVE_WORLD_SMOKE_OK")
 	print("NATIVE_SMOKE_OK")
 	quit(0)

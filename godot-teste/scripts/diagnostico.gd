@@ -33,7 +33,7 @@ func _process(delta: float) -> void:
 func _atualizar() -> void:
 	var player := get_tree().get_first_node_in_group("native_player")
 	var backend := "C++ ativo" if is_instance_valid(player) and player.get("usando_cpp") else "GDScript (alternativa)"
-	_label.text = "Native V0.03 | %s\nFPS: %d | Memória estática Godot: %.1f MiB" % [backend, Engine.get_frames_per_second(), float(OS.get_static_memory_usage()) / 1048576.0]
+	_label.text = "Native V0.03.1 | %s\nFPS: %d | Memória estática Godot: %.1f MiB" % [backend, Engine.get_frames_per_second(), float(OS.get_static_memory_usage()) / 1048576.0]
 
 ## Runs only when explicitly requested by the CI, not during normal gameplay.
 func _smoke_export() -> void:
@@ -85,6 +85,11 @@ func _smoke_export() -> void:
 	var date: Dictionary = sim.call("snapshot")
 	if date.get("day",0) != 1 or date.get("minute",0.0) < 480.0:
 		push_error("NATIVE_EXPORT_FAIL: world clock invalid")
+		get_tree().quit(1)
+		return
+	await get_tree().process_frame
+	if sim.call("shadow_caster_count") < 500:
+		push_error("NATIVE_EXPORT_FAIL: silhouette casters not initialized")
 		get_tree().quit(1)
 		return
 	print("NATIVE_EXPORT_SMOKE_OK")
