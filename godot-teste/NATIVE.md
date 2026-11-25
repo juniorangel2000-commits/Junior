@@ -45,3 +45,6 @@ Interior 12×10 com recortes e móveis originais V51, circulação delimitada, e
 
 ## V0.09 — criação inicial
 Seis abrigos com capacidade/custo V51 e 7 espécies com atlas originais, área de passeio e ciclos de caminhada. Produção diária 06h, cocho, ovos/pato/penas/leite/lã/esterco, carinho, silo, persistência e testes. Alojamento local provisório com corda substitui recrutamento externo apenas nesta fase. Custos de madeira nobre mantidos, mas ainda sem fonte na propriedade (não é jogabilidade completa). Sem montaria, construção por fases, interior individual, portões, qualidade, durabilidade ou ferramentas de ferro completas. Revisão CI e visual pendentes.
+
+## V0.09.1 — correções do CI
+Corrige direções constantes (sem chamadas normalized), variável duplicada no smoke, carrega texturas de casa/construção/ferramentas após a importação do Godot, sem modificar os PNGs. CI passa a exigir marcadores de cada sistema e rejeitar erros de script/runtime nos smokes, inclusive do executável. Aguardando nova execução; não certifica visual nem jogabilidade.

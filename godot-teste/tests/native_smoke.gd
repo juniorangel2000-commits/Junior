@@ -215,8 +215,8 @@ func _run() -> void:
 		push_error("Livestock production failed")
 		quit(1)
 		return
-	var restored=load("res://scripts/criacao_estado.gd").new()
-	if not restored.import_state(stockyard.export_state(),3) or restored.sites[lot]["eggs"]!=2:
+	var livestock_restored=load("res://scripts/criacao_estado.gd").new()
+	if not livestock_restored.import_state(stockyard.export_state(),3) or livestock_restored.sites[lot]["eggs"]!=2:
 		push_error("Livestock persistence failed")
 		quit(1)
 		return

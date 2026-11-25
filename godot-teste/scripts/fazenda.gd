@@ -35,7 +35,7 @@ var chest_ui: CanvasLayer
 var chest_open:=false
 var loaded_home: Variant=null
 var husbandry=preload("res://scripts/criacao.gd").new()
-const TOOL_ART={"hoe":preload("res://arte/ferramentas/enxada.png"),"hatchet":preload("res://arte/ferramentas/machado.png"),"pickaxe":preload("res://arte/ferramentas/picareta.png")}
+const TOOL_ART={"hoe":"res://arte/ferramentas/enxada.png","hatchet":"res://arte/ferramentas/machado.png","pickaxe":"res://arte/ferramentas/picareta.png"}
 const SWING=[-40,-55,-35,15,75,70,45,20,0]
 
 class SoilLayer extends Node2D:
@@ -320,7 +320,7 @@ func _advance_action(delta: float) -> void:
 	action_sprite.flip_h=direction.x<0.0
 	var frame:=mini(8,int(action_elapsed*18.0))
 	var item: String=pending["item"]
-	var tex: Texture2D=water_frames[frame] if item=="wateringCan" else TOOL_ART[item]
+	var tex: Texture2D=water_frames[frame] if item=="wateringCan" else load(TOOL_ART[item]) as Texture2D
 	action_sprite.rotation=0.0 if item=="wateringCan" else deg_to_rad(float(SWING[frame])*( -1.0 if direction.x<0.0 else 1.0))
 	if tex!=null:
 		action_sprite.texture=tex

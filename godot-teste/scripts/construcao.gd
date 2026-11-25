@@ -26,11 +26,11 @@ const PIECES={
 "bench":{"name":"Banco","cost":{"furniture":1},"wide":false}
 }
 const ART={
-"fence":preload("res://arte/objetos/fence-new-5.png"),
-"gate":preload("res://arte/objetos/gate-0-flipped-closed-1.png"),
-"workbench":preload("res://arte/construcao/workbench.png"),
-"constructionBench":preload("res://arte/construcao/constructionBench.png"),
-"bench":preload("res://arte/construcao/bench.png")
+"fence":"res://arte/objetos/fence-new-5.png",
+"gate":"res://arte/objetos/gate-0-flipped-closed-1.png",
+"workbench":"res://arte/construcao/workbench.png",
+"constructionBench":"res://arte/construcao/constructionBench.png",
+"bench":"res://arte/construcao/bench.png"
 }
 var farm
 var scene: Node2D
@@ -142,7 +142,7 @@ func update_preview(point: Vector2) -> void:
 	ghost.modulate=Color(0.6,1.0,0.65,0.6) if can_place(tile,selected,rotation) else Color(1.0,0.35,0.35,0.65)
 
 func _style_sprite(sprite: Sprite2D,tile: Vector2i,kind: String,rot: int,open: bool) -> void:
-	sprite.texture=ART[kind]
+	sprite.texture=load(ART[kind]) as Texture2D
 	var size:=sprite.texture.get_size()
 	var cells:=footprint(tile,kind,rot)
 	sprite.position=(center(cells[0])+center(cells[-1]))*0.5

@@ -1,7 +1,7 @@
 extends Node2D
 const Model=preload("res://scripts/criacao_estado.gd")
 const ART={"chicken":[64,0.75,17,9,24],"duck":[224,0.18,90,5,24],"cow":[192,0.5,46,9,48],"goat":[224,0.27,90,9,42],"sheep":[224,0.28,90,9,38],"pig":[224,0.28,90,5,36],"horse":[192,0.65,56,9,58]}
-const DIRS=[Vector2.DOWN,Vector2.LEFT,Vector2.RIGHT,Vector2.UP,Vector2(-1,1).normalized(),Vector2(1,1).normalized(),Vector2(-1,-1).normalized(),Vector2(1,-1).normalized()]
+const DIRS=[Vector2.DOWN,Vector2.LEFT,Vector2.RIGHT,Vector2.UP,Vector2(-0.7071067811865476,0.7071067811865476),Vector2(0.7071067811865476,0.7071067811865476),Vector2(-0.7071067811865476,-0.7071067811865476),Vector2(0.7071067811865476,-0.7071067811865476)]
 var model
 var farm
 var player: CharacterBody2D

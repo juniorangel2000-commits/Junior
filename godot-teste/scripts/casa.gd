@@ -2,9 +2,9 @@ extends RefCounted
 const ORIGIN:=Vector2(4096,0)
 const ENTRANCE:=Vector2(784,546)
 const SPAWN:=Vector2(176,272)
-const ROOM:=preload("res://arte/casa/room-source.png")
+const ROOM_PATH: String="res://arte/casa/room-source.png"
 const FURNITURE=[["bed",2,2,2,2,true],["shelf",8,2,2,1,true],["table",8,4,2,2,true],["chair",7,4,1,1,true],["rug",2,5,3,2,false],["plant",1,7,1,1,true],["woodStove",5,2,2,1,true],["chair",10,4,1,1,true],["chest",9,7,1,1,true]]
-const ART={"bed":preload("res://arte/casa/bed.png"),"shelf":preload("res://arte/casa/shelf.png"),"table":preload("res://arte/casa/table.png"),"chair":preload("res://arte/casa/chair.png"),"rug":preload("res://arte/casa/rug.png"),"plant":preload("res://arte/casa/plant.png"),"woodStove":preload("res://arte/casa/wood-stove.png"),"chest":preload("res://arte/casa/chest.png")}
+const ART={"bed":"res://arte/casa/bed.png","shelf":"res://arte/casa/shelf.png","table":"res://arte/casa/table.png","chair":"res://arte/casa/chair.png","rug":"res://arte/casa/rug.png","plant":"res://arte/casa/plant.png","woodStove":"res://arte/casa/wood-stove.png","chest":"res://arte/casa/chest.png"}
 var root: Node2D
 var player: CharacterBody2D
 var scene: Node2D
@@ -14,15 +14,18 @@ var old_limits: Array[int]=[]
 var old_zoom:=Vector2.ONE
 
 class RoomArt extends Node2D:
+	var room_texture: Texture2D
 	func _draw() -> void:
+		if room_texture==null:
+			return
 		draw_rect(Rect2(0,0,384,320),Color("#28251f"))
-		draw_texture_rect_region(ROOM,Rect2(20,5,344,59),Rect2(86,30,1205,275))
-		draw_texture_rect_region(ROOM,Rect2(32,64,320,224),Rect2(108,305,1160,775))
-		draw_texture_rect_region(ROOM,Rect2(20,64,12,224),Rect2(86,305,22,775))
-		draw_texture_rect_region(ROOM,Rect2(352,64,12,224),Rect2(1268,305,23,775))
-		draw_texture_rect_region(ROOM,Rect2(162,288,60,26),Rect2(601,1005,172,76))
-		draw_texture_rect_region(ROOM,Rect2(20,288,140,16),Rect2(86,1080,514,36))
-		draw_texture_rect_region(ROOM,Rect2(224,288,140,16),Rect2(773,1080,518,36))
+		draw_texture_rect_region(room_texture,Rect2(20,5,344,59),Rect2(86,30,1205,275))
+		draw_texture_rect_region(room_texture,Rect2(32,64,320,224),Rect2(108,305,1160,775))
+		draw_texture_rect_region(room_texture,Rect2(20,64,12,224),Rect2(86,305,22,775))
+		draw_texture_rect_region(room_texture,Rect2(352,64,12,224),Rect2(1268,305,23,775))
+		draw_texture_rect_region(room_texture,Rect2(162,288,60,26),Rect2(601,1005,172,76))
+		draw_texture_rect_region(room_texture,Rect2(20,288,140,16),Rect2(86,1080,514,36))
+		draw_texture_rect_region(room_texture,Rect2(224,288,140,16),Rect2(773,1080,518,36))
 
 func setup(world: Node2D,p: CharacterBody2D) -> void:
 	scene=world
@@ -33,11 +36,12 @@ func setup(world: Node2D,p: CharacterBody2D) -> void:
 	root.y_sort_enabled=true
 	scene.add_child(root)
 	var room:=RoomArt.new()
+	room.room_texture=load(ROOM_PATH) as Texture2D
 	room.z_index=-2
 	root.add_child(room)
 	for item in FURNITURE:
 		var sprite:=Sprite2D.new()
-		sprite.texture=ART[item[0]]
+		sprite.texture=load(ART[item[0]]) as Texture2D
 		var extent:=Vector2(item[3],item[4])*32.0
 		var s:=sprite.texture.get_size()
 		sprite.scale=Vector2.ONE*minf(extent.x/s.x,(extent.y+24.0)/s.y)
