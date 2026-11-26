@@ -57,3 +57,6 @@ CI 45542084269 aprovou compilação, smoke interno e exportação, mas rejeitou 
 
 ## V0.10 — pesca na propriedade
 Sessão GDScript baseada nas regras V51 (habitat other, 24% materiais, quatro espécies comuns/incomuns, espera 10–20s, fisgada 3s, disputa até 45s, faixa e progresso); lançamento 1,9s, vara original, linha e boia, água real do mapa, isca consumida, coleta transacional, recordes persistidos. Receitas locais provisórias para vara/isca; sem rede, poses completas, durabilidade, vigor, aprendizagem com NPC, pesca rara em áreas externas, caderno visual ou áudio. Testes CI e aparência pendentes.
+
+## V0.10.1 — correção de compilação da pesca
+CI 45823061954 falhou em pesca.gd:192: GDScript não conseguiu inferir o tipo de `t` a partir da propriedade dinâmica `session.age`. Conversão explícita para float; regras e recursos originais mantidos. Nova validação obrigatória antes de avançar para máquinas.

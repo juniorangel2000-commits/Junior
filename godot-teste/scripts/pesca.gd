@@ -2,7 +2,7 @@ extends Node2D
 signal result(message: String)
 signal save_requested
 const Session=preload("res://scripts/pesca_estado.gd")
-var session=Session.new()
+var session: RefCounted=Session.new()
 var farm
 var player: CharacterBody2D
 var scene: Node2D
@@ -189,7 +189,7 @@ func _update_rod() -> void:
 	rod.position=player.global_position+Vector2(0,-20)
 	var swing:=0.0
 	if session.phase=="casting":
-		var t:=session.age
+		var t: float=float(session.age)
 		swing=-0.15-0.8*smoothstep(0.0,0.55,t) if t<0.55 else -0.95*(1.0-smoothstep(0.55,1.25,t))
 	rod.rotation=d.angle()-angle+swing
 	rod_tip=rod.position+((tip-hand)*60.0/640.0).rotated(rod.rotation)

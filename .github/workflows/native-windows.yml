@@ -94,14 +94,14 @@ jobs:
         shell: pwsh
         run: |
           Copy-Item godot-teste/LEIA-NATIVE-WINDOWS.md native-dist/LEIA.md
-          Compress-Archive -Path native-dist/* -DestinationPath After-Rain-Native-V0.10-Windows-x64.zip
-          $hash = (Get-FileHash After-Rain-Native-V0.10-Windows-x64.zip -Algorithm SHA256).Hash.ToLowerInvariant()
-          "$hash  After-Rain-Native-V0.10-Windows-x64.zip" | Set-Content -Encoding utf8NoBOM SHA256SUMS-native.txt
+          Compress-Archive -Path native-dist/* -DestinationPath After-Rain-Native-V0.10.1-Windows-x64.zip
+          $hash = (Get-FileHash After-Rain-Native-V0.10.1-Windows-x64.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  After-Rain-Native-V0.10.1-Windows-x64.zip" | Set-Content -Encoding utf8NoBOM SHA256SUMS-native.txt
       - uses: actions/upload-artifact@v6
         with:
-          name: After-Rain-Native-V0.10-Windows-x64
+          name: After-Rain-Native-V0.10.1-Windows-x64
           path: |
-            After-Rain-Native-V0.10-Windows-x64.zip
+            After-Rain-Native-V0.10.1-Windows-x64.zip
             SHA256SUMS-native.txt
           if-no-files-found: error
           retention-days: 30
