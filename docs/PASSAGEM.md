@@ -2,10 +2,10 @@
 
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
-- **Atualizado em:** 2026-11-23
+- **Atualizado em:** 2026-11-26
 - **Por:** Claude
-- **Continuar a partir de:** `release/v0.10.0-preview.51` (publicada em 26/11/2026; a próxima é a preview.52).
-- **Última versão publicada:** `v0.10.0-preview.51`. A Release é criada pelo Junior: tag `v0.10.0-preview.51` no branch `release/v0.10.0-preview.51` (deste ambiente o push de tag é recusado).
+- **Continuar a partir de:** `release/v0.10.0-preview.52` (em andamento; a 51 foi publicada em 24/11/2026).
+- **Última versão publicada:** `v0.10.0-preview.51`. A Release (tag `v0.10.0-preview.51`) já existe, com os executáveis. Quem cria a Release é o Junior, porque deste ambiente o push de tag é recusado. No GitHub há duas tags criadas por engano, `release/v0.10.0-preview.51` e `release/v0.10.0-preview.511`. A primeira tem o mesmo nome do branch e confunde o push: use `git push origin HEAD:refs/heads/<branch>`.
 - **Atenção ao publicar:** além de `NOTAS-<versão>.md`, crie `docs/cenarios/LEIA-<versão>.md`. O processo do Windows copia esse arquivo para a Release e falha se ele não existir.
 - **Estado:** a preview.48 tem mina corrigida, vigor, chuva regando a horta, animais soltos com sorteio diário em todos os cenários externos, só com a corda, HUD novo de vida e vigor, relatório de 3 anos e as obras grandes (casa, estufa, obras do Vale e moradores novos) com arte provisória. Bateria de testes de tudo feita (saves antigos, obras, trem, estufa, serviços, desempenho) com 3 correções. Publicada (notas e LEIA em `docs/cenarios`).
 
@@ -138,6 +138,10 @@
 
 ## Em andamento e próximo passo exato
 
+- preview.52 (em andamento):
+  - **Almanaque do Vale no repositório:** `docs/wiki/almanaque.html`, gerado com `npm run almanaque` (`scripts/almanaque/`). As tabelas, inclusive os 47 capítulos e 269 missões, saem dos dados do jogo.
+  - **Painel rápido de Companheiros:** fica em `right:68px`, à esquerda das barras de vida e vigor.
+
 - preview.51: o painel de missões ficava vazio (só a dica) quando o HUD era recriado, por exemplo ao trocar de cenário ou voltar do menu. `renderMissions` não redesenhava porque a chave não tinha mudado. Agora redesenha também quando o painel está vazio.
 
 - preview.50 (publicada) — **passagem fechada da vila** sem cercas nem placa: só o bloqueio (`invitationGateBlocked`) e a dica; `src/village-invitation-gate.ts` foi removido.
@@ -165,11 +169,10 @@
   - **Plural:** corrigido com `src/data/item-forms.ts`.
   - **Arquivos:** o HTML fica em `src/crafting-view.ts` e o estilo em `src/crafting.css`.
 - **Quadro de pedidos:** mostrava códigos ("20 wood"). Agora mostra o nome do item.
-- Almanaque do Vale (wiki para jogadores) publicado como página: https://claude.ai/artifact/F6JkM5PGrmVv94a2yADffv. Gerado dos dados do jogo; falta guardar no GitHub (o Junior quer depois).
+- Almanaque do Vale (wiki para jogadores) publicado como página: https://claude.ai/artifact/F6JkM5PGrmVv94a2yADffv. Guardado no GitHub na preview.52 (`docs/wiki`).
 
 - Perguntar ao Junior onde a colisão da mina falha.
-- O painel de Companheiros encosta no topo das barras de vida/vigor em telas de 800 px de altura (as barras não capturam cliques).
-- Junior: criar a Release/tag `v0.10.0-preview.51` no GitHub (o workflow gera o executável Windows). Novas mudanças vão para `release/v0.10.0-preview.52`.
+- Depois de mudar dados do jogo, rodar `npm run almanaque` para o Almanaque não ficar desatualizado.
 - Arte das obras: pedir conforme `docs/planejamento/PEDIDO-ARTE-OBRAS.md` e trocar a provisória.
 - Simulação ainda sem máquinas, cozinha, aspersores e mina.
 
