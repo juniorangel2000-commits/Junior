@@ -63,3 +63,6 @@ CI 45823061954 falhou em pesca.gd:192: GDScript não conseguiu inferir o tipo de
 
 ## V0.11 — máquinas
 Nove máquinas fabricáveis da V51 e forja própria, 21 receitas (13 processamentos, 6 fornadas, 2 alternativas de fundição de ferro). Custos e durações V51, sem desbloqueios NPC neste protótipo. Jobs por tile, paralelos, calendário absoluto, validação e persistência, transação de ingredientes e coleta, impedimento de remover máquina carregada, sprites originais e animação dos atlas quando disponíveis. Ainda faltam colmeia, cera/mel/capim fresco/maçã e componentes metálicos com fontes completas, serraria dedicada (serrote já presente), interiores de abrigos, qualidade, proteção de corredores por flood fill e revisão visual. CI necessário.
+
+## V0.11.1 — correção de compilação
+CI 45832733338 detectou inferência inválida de busy/ready em maquinas.gd:119–120. Tipos bool explícitos e conversão de ready para float. Animação considera linhas e colunas do atlas; indicador recriado ao substituir sprite no mesmo tile. Mantém receitas, artes e testes existentes. Nova validação obrigatória.

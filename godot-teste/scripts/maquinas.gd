@@ -116,12 +116,13 @@ func update(delta: float,clock: Dictionary) -> void:
 			continue
 		var sprite: Sprite2D=builder.nodes[cell]
 		var job: Dictionary=farm.machine_jobs.get(cell,{})
-		var busy:=not job.is_empty() and now<job["ready"]
-		var ready:=not job.is_empty() and now>=job["ready"]
-		if sprite.hframes>1:
-			sprite.frame=1+int(Time.get_ticks_msec()/450.0)%(sprite.hframes-1) if busy else 0
-		var indicator: Label=labels.get(cell)
-		if not is_instance_valid(indicator):
+		var busy: bool=not job.is_empty() and now<float(job["ready"])
+		var ready: bool=not job.is_empty() and now>=float(job["ready"])
+		var frames: int=sprite.hframes*sprite.vframes
+		if frames>1:
+			sprite.frame=1+int(Time.get_ticks_msec()/450.0)%(frames-1) if busy else 0
+		var indicator: Label=labels.get(cell) as Label
+		if not is_instance_valid(indicator) or indicator.get_parent()!=sprite:
 			indicator=Label.new()
 			indicator.position=Vector2(-26,-62)/sprite.scale
 			indicator.scale=Vector2.ONE/sprite.scale
