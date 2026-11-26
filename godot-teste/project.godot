@@ -3,7 +3,7 @@
 config_version=5
 
 [application]
-config/name="After Rain Native — V0.10.1"
+config/name="After Rain Native — V0.11"
 run/main_scene="res://cenas/propriedade.tscn"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 

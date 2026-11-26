@@ -1,5 +1,16 @@
 extends RefCounted
+const Machines=preload("res://scripts/maquinas_estado.gd")
 const RECIPES={
+"cheesePress":{"name":"Queijeira","cost":{"board":8,"ironIngot":2,"peg":4,"spring":1,"gear":1},"out":{"cheesePress":1},"station":"workbench","tool":"hammer","seconds":3},
+"butterChurn":{"name":"Batedeira de manteiga","cost":{"board":6,"ironShard":4,"peg":2,"gear":1},"out":{"butterChurn":1},"station":"workbench","tool":"hammer","seconds":3},
+"spinningWheel":{"name":"Roca","cost":{"board":8,"cord":4,"peg":4,"gear":1},"out":{"spinningWheel":1},"station":"workbench","tool":"hammer","seconds":3},
+"loom":{"name":"Tear","cost":{"board":12,"cord":6,"peg":6,"hardwood":2,"gear":1,"spring":1},"out":{"loom":1},"station":"workbench","tool":"hammer","seconds":3},
+"clayOven":{"name":"Forno de barro","cost":{"stone":24,"wood":10,"board":4,"ironShard":2},"out":{"clayOven":1},"station":"workbench","tool":"hammer","seconds":3},
+"preserveKeg":{"name":"Barril de conservas","cost":{"board":8,"ironShard":2,"peg":4,"nails":4},"out":{"preserveKeg":1},"station":"workbench","tool":"hammer","seconds":3},
+"waxPress":{"name":"Prensa de cera","cost":{"board":6,"ironShard":4,"peg":4,"spring":2,"hinge":1},"out":{"waxPress":1},"station":"workbench","tool":"hammer","seconds":3},
+"composter":{"name":"Composteira","cost":{"board":6,"peg":4,"stone":6,"nails":4},"out":{"composter":1},"station":"workbench","tool":"hammer","seconds":3},
+"stoneMill":{"name":"Moinho de pedra","cost":{"stone":20,"ironIngot":2,"board":6,"metalPart":1,"gear":2},"out":{"stoneMill":1},"station":"workbench","tool":"hammer","seconds":3},
+"forge":{"name":"Forja própria","cost":{"stone":15,"wood":8,"scrap":6},"out":{"forge":1},"station":"workbench"},
 "native-fishing-rod":{"name":"Vara de bambu (provisória)","cost":{"branch":3,"cord":1},"out":{"fishingRod":1}},
 "native-bait":{"name":"Iscas (preparo provisório)","cost":{"fiber":2,"herb":1},"out":{"bait":3}},
 "milkPail":{"name":"Balde de ordenha","cost":{"board":4,"ironShard":2},"out":{"milkPail":1},"station":"workbench","tool":"hammer","seconds":2.0},
@@ -21,6 +32,16 @@ const RECIPES={
 "windowKit":{"name":"Ninho e baias","cost":{"board":3,"peg":2},"out":{"windowKit":1},"station":"constructionBench"}
 }
 const PIECES={
+"cheesePress":{"name":"Queijeira","cost":{"cheesePress":1},"wide":false},
+"butterChurn":{"name":"Batedeira de manteiga","cost":{"butterChurn":1},"wide":false},
+"spinningWheel":{"name":"Roca","cost":{"spinningWheel":1},"wide":true},
+"loom":{"name":"Tear","cost":{"loom":1},"wide":true},
+"clayOven":{"name":"Forno de barro","cost":{"clayOven":1},"wide":true},
+"preserveKeg":{"name":"Barril de conservas","cost":{"preserveKeg":1},"wide":true},
+"waxPress":{"name":"Prensa de cera","cost":{"waxPress":1},"wide":true},
+"composter":{"name":"Composteira","cost":{"composter":1},"wide":true},
+"stoneMill":{"name":"Moinho de pedra","cost":{"stoneMill":1},"wide":true},
+"forge":{"name":"Forja própria","cost":{"forge":1},"wide":false},
 "fence":{"name":"Cerca","cost":{"wood":3},"wide":false},
 "gate":{"name":"Porteira","cost":{"wood":4},"wide":false},
 "workbench":{"name":"Bancada de trabalho","cost":{"plank":4,"peg":4},"wide":true,"tool":"hammer"},
@@ -28,6 +49,16 @@ const PIECES={
 "bench":{"name":"Banco","cost":{"furniture":1},"wide":false}
 }
 const ART={
+"cheesePress":"res://arte/maquinas/cheesePress.png",
+"butterChurn":"res://arte/maquinas/butterChurn.png",
+"spinningWheel":"res://arte/maquinas/spinningWheel.png",
+"loom":"res://arte/maquinas/loom.png",
+"clayOven":"res://arte/maquinas/clayOven.png",
+"preserveKeg":"res://arte/maquinas/preserveKeg.png",
+"waxPress":"res://arte/maquinas/waxPress.png",
+"composter":"res://arte/maquinas/composter.png",
+"stoneMill":"res://arte/maquinas/stoneMill.png",
+"forge":"res://arte/maquinas/forge.png",
 "fence":"res://arte/objetos/fence-new-5.png",
 "gate":"res://arte/objetos/gate-0-flipped-closed-1.png",
 "workbench":"res://arte/construcao/workbench.png",
@@ -105,10 +136,12 @@ func piece_at(tile: Vector2i) -> Vector2i:
 func can_place(tile: Vector2i,kind: String,rot: int) -> bool:
 	if not PIECES.has(kind):
 		return false
+	if Machines.MACHINES.has(kind) and rot%2!=0:
+		return false
 	for cell in footprint(tile,kind,rot):
 		if cell.x<1 or cell.x>94 or cell.y<1 or cell.y>70 or player.global_position.distance_to(center(cell))>96.0:
 			return false
-		if farm.plots.has(cell) or piece_at(cell).x>=0:
+		if farm.plots.has(cell) or piece_at(cell).x>=0 or farm.livestock.reserved(cell):
 			return false
 		var at:=center(cell)
 		if at.distance_to(player.global_position)<24.0:
@@ -145,6 +178,22 @@ func update_preview(point: Vector2) -> void:
 
 func _style_sprite(sprite: Sprite2D,tile: Vector2i,kind: String,rot: int,open: bool) -> void:
 	sprite.texture=load(ART[kind]) as Texture2D
+	sprite.hframes=1
+	sprite.vframes=1
+	sprite.offset=Vector2.ZERO
+	if Machines.MACHINES.has(kind):
+		var def: Dictionary=Machines.MACHINES[kind]
+		var tex_size:=sprite.texture.get_size()
+		if def["frame_width"]>0:
+			sprite.hframes=maxi(1,int(tex_size.x/float(def["frame_width"])))
+			sprite.vframes=maxi(1,int(tex_size.y/float(def["frame_height"])))
+		sprite.frame=0
+		var frame_size:=tex_size/Vector2(sprite.hframes,sprite.vframes)
+		sprite.scale=Vector2.ONE*minf(float(def["width"])*30.0/frame_size.x,48.0/frame_size.y)
+		sprite.position=Vector2(tile)*32.0+Vector2(float(def["width"])*16.0,30.0)
+		sprite.offset=Vector2(0,-frame_size.y*0.5)
+		sprite.rotation=0.0
+		return
 	var size:=sprite.texture.get_size()
 	var cells:=footprint(tile,kind,rot)
 	sprite.position=(center(cells[0])+center(cells[-1]))*0.5
@@ -165,7 +214,7 @@ func _spawn(tile: Vector2i) -> void:
 	nodes[tile]=s
 	_sync_collision(tile)
 	var sim:=scene.get_tree().root.get_node_or_null("MundoSimulacao")
-	if sim!=null:
+	if sim!=null and not Machines.MACHINES.has(piece["kind"]):
 		sim.call("register_shadow",s)
 
 func _sync_collision(tile: Vector2i) -> void:
@@ -187,10 +236,12 @@ func interact(point: Vector2,remove: bool) -> String:
 	var piece: Dictionary=farm.buildings[tile]
 	var kind: String=piece["kind"]
 	if remove:
+		if farm.machine_jobs.has(tile):
+			return "Recolha a produção antes de guardar a máquina."
 		var refund: Dictionary={}
 		for item in PIECES[kind]["cost"]:
 			var n: int=PIECES[kind]["cost"][item]
-			refund[item]=n if kind in ["fence","bench"] else floori(n*0.6)
+			refund[item]=n if kind in ["fence","bench"] or Machines.MACHINES.has(kind) else floori(n*0.6)
 		if not farm.transact({},refund):
 			return "Mochila cheia."
 		var s: Sprite2D=nodes[tile]

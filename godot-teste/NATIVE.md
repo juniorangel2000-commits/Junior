@@ -60,3 +60,6 @@ Sessão GDScript baseada nas regras V51 (habitat other, 24% materiais, quatro es
 
 ## V0.10.1 — correção de compilação da pesca
 CI 45823061954 falhou em pesca.gd:192: GDScript não conseguiu inferir o tipo de `t` a partir da propriedade dinâmica `session.age`. Conversão explícita para float; regras e recursos originais mantidos. Nova validação obrigatória antes de avançar para máquinas.
+
+## V0.11 — máquinas
+Nove máquinas fabricáveis da V51 e forja própria, 21 receitas (13 processamentos, 6 fornadas, 2 alternativas de fundição de ferro). Custos e durações V51, sem desbloqueios NPC neste protótipo. Jobs por tile, paralelos, calendário absoluto, validação e persistência, transação de ingredientes e coleta, impedimento de remover máquina carregada, sprites originais e animação dos atlas quando disponíveis. Ainda faltam colmeia, cera/mel/capim fresco/maçã e componentes metálicos com fontes completas, serraria dedicada (serrote já presente), interiores de abrigos, qualidade, proteção de corredores por flood fill e revisão visual. CI necessário.

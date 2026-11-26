@@ -38,6 +38,8 @@ const Husbandry=preload("res://scripts/criacao.gd")
 var husbandry: Node2D
 const Fishing=preload("res://scripts/pesca.gd")
 var fishing: Node2D
+const MachinesUI=preload("res://scripts/maquinas.gd")
+var machine_ui: CanvasLayer
 const TOOL_ART={"hoe":"res://arte/ferramentas/enxada.png","hatchet":"res://arte/ferramentas/machado.png","pickaxe":"res://arte/ferramentas/picareta.png"}
 const SWING=[-40,-55,-35,15,75,70,45,20,0]
 
@@ -116,12 +118,17 @@ func _process(delta: float) -> void:
 		fishing.setup(scene,player,farm)
 		fishing.connect("result",_fishing_message)
 		fishing.connect("save_requested",_save)
+		machine_ui=MachinesUI.new()
+		add_child(machine_ui)
+		machine_ui.setup(player,farm,builder)
+		machine_ui.connect("changed",_machine_message)
 		if loaded_home is Vector2:
 			home.enter(loaded_home)
 		_rebuild()
 	_advance_action(delta)
 	husbandry.update(delta,_clock())
 	fishing.update(delta)
+	machine_ui.update(delta,_clock())
 	if not home.inside and builder.selected!="":
 		builder.update_preview(player.get_global_mouse_position())
 	if not craft_job.is_empty():
@@ -146,6 +153,10 @@ func _day_changed(day: int,_rain: bool) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not initialized:
+		return
+	if machine_ui.open:
+		if event is InputEventKey and event.pressed and not event.echo and event.keycode==KEY_ESCAPE:
+			machine_ui.close_menu()
 		return
 	if fishing.active:
 		if event is InputEventKey and event.pressed and not event.echo:
@@ -230,7 +241,7 @@ func _act(point: Vector2,restore: bool,item: String) -> void:
 	elif item=="hoe":
 		var material_name: String=scene.get_node("Terreno").call("material_em",center)
 		var world: Node2D=player.call("mundo_colisoes")
-		if not restore and not farm.plots.has(tile) and (not material_name in ["grass","forest","meadow","soil","moss"] or world.call("ocupado",Rect2(center-Vector2(14,14),Vector2(28,28)))):
+		if not restore and not farm.plots.has(tile) and (farm.livestock.reserved(tile) or builder.piece_at(tile).x>=0 or not material_name in ["grass","forest","meadow","soil","moss"] or world.call("ocupado",Rect2(center-Vector2(14,14),Vector2(28,28)))):
 			message="Solo indisponível."
 		else:
 			message=farm.prepare(tile,restore)
@@ -281,7 +292,7 @@ func _assign(item: String) -> void:
 	_refresh()
 
 func _toggle_inventory() -> void:
-	if is_instance_valid(fishing) and fishing.active:
+	if (is_instance_valid(fishing) and fishing.active) or (is_instance_valid(machine_ui) and machine_ui.open):
 		return
 	show_stock=not show_stock
 	inventory_ui.call("toggle",show_stock)
@@ -315,6 +326,16 @@ func _start_action(point: Vector2,restore: bool) -> void:
 	var item: String=farm.quickbar[selected]
 	if builder.selected!="":
 		_act(point,restore,item)
+		return
+	if MachinesUI.Model.MACHINES.has(item):
+		builder.select(item)
+		message=builder.place(builder.tile_at(point))
+		builder.select("")
+		_refresh()
+		return
+	var machine_cell: Vector2i=machine_ui.find(point)
+	if machine_cell.x>=0:
+		machine_ui.show_machine(machine_cell)
 		return
 	if item=="fishingRod":
 		fishing.start(point,_clock())
@@ -490,3 +511,11 @@ func _fishing_message(value: String) -> void:
 
 func fishing_ready() -> bool:
 	return is_instance_valid(fishing) and is_instance_valid(fishing.rod) and fishing.rod.texture!=null
+
+func _machine_message(value: String) -> void:
+	message=value
+	_refresh()
+	_save()
+
+func machines_ready() -> bool:
+	return is_instance_valid(machine_ui) and is_instance_valid(machine_ui.panel)

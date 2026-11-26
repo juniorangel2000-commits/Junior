@@ -257,6 +257,30 @@ func _run() -> void:
 		push_error("Fishing missed hook failed")
 		quit(1)
 		return
+	var machine_model=load("res://scripts/maquinas_estado.gd")
+	var mill_farm=load("res://scripts/fazenda_estado.gd").new()
+	var mill_tile:=Vector2i(40,50)
+	mill_farm.buildings[mill_tile]={"kind":"stoneMill","rotation":0,"open":false}
+	mill_farm.transact({},{"wheat":2})
+	if machine_model.start(mill_farm,mill_tile,"flour",480.0)!="Produção iniciada." or mill_farm.stock.get("wheat",0)!=1:
+		push_error("Machine charge failed")
+		quit(1)
+		return
+	if machine_model.collect(mill_farm,mill_tile,1199.0)!="Ainda está trabalhando." or machine_model.start(mill_farm,mill_tile,"flour",600.0)!="Recolha a produção anterior primeiro.":
+		push_error("Machine timing failed")
+		quit(1)
+		return
+	var mill_clone=load("res://scripts/fazenda_estado.gd").new()
+	if not mill_clone.import_state(mill_farm.export_state(),1) or mill_clone.machine_jobs!=mill_farm.machine_jobs:
+		push_error("Machine persistence failed")
+		quit(1)
+		return
+	machine_model.collect(mill_clone,mill_tile,1200.0)
+	if mill_clone.stock.get("flour",0)!=1 or mill_clone.machine_jobs.has(mill_tile):
+		push_error("Machine collection failed")
+		quit(1)
+		return
+	print("NATIVE_MACHINES_SMOKE_OK")
 	print("NATIVE_FISHING_SMOKE_OK")
 	print("NATIVE_ANIMALS_SMOKE_OK")
 	print("NATIVE_HOME_SMOKE_OK")

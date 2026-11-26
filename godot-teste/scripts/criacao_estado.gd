@@ -176,3 +176,10 @@ func import_state(data: Dictionary,today: int) -> bool:
 	silo_hay=silo
 	next_id=seq
 	return true
+
+func reserved(cell: Vector2i) -> bool:
+	for tile in sites:
+		var rule: Dictionary=RULES[sites[tile]["kind"]]
+		if Rect2i(tile,Vector2i(rule["w"],rule["h"])).has_point(cell):
+			return true
+	return false

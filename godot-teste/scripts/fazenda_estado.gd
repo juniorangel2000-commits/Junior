@@ -10,6 +10,8 @@ var resource_progress: Dictionary = {}
 var buildings: Dictionary = {}
 var chest: Dictionary = {}
 var fish_records: Dictionary = {}
+var machine_jobs: Dictionary = {}
+const Machines=preload("res://scripts/maquinas_estado.gd")
 var livestock=preload("res://scripts/criacao_estado.gd").new()
 var core: Object
 
@@ -120,7 +122,7 @@ func stage(crop: Dictionary) -> int:
 	return 0 if growth<=0.0 else (4 if growth>=1.0 else (3 if growth>=2.0/3.0 else (2 if growth>=1.0/3.0 else 1)))
 
 func export_state() -> Dictionary:
-	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate(),"resource_progress":resource_progress.duplicate(true),"buildings":buildings.duplicate(true),"chest":chest.duplicate(true),"livestock":livestock.export_state(),"fish_records":fish_records.duplicate(true)}
+	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate(),"resource_progress":resource_progress.duplicate(true),"buildings":buildings.duplicate(true),"chest":chest.duplicate(true),"livestock":livestock.export_state(),"fish_records":fish_records.duplicate(true),"machine_jobs":machine_jobs.duplicate(true)}
 
 func import_state(data: Dictionary,today: int) -> bool:
 	var s=data.get("stock")
@@ -128,6 +130,9 @@ func import_state(data: Dictionary,today: int) -> bool:
 	if not s is Dictionary or not p is Dictionary or p.size()>6912:
 		return false
 	var allowed:=["hoe","wateringCan","hatchet","pickaxe","wood","stone","branch","log","plank","scrap","fiber","ironShard","fertilizer","oakSeed","pineSeed","herb","mushroom","cord","flakedStone","handle","peg","hammer","blade","handsaw","board","furniture","doorKit","windowKit","hardwood","hay","egg","duckEgg","milk","goatMilk","wool","manure","feather","milkPail","shears","ironIngot","fishingRod","bait","fish","cloth"]
+	for item in ["cheesePress","butterChurn","spinningWheel","loom","clayOven","preserveKeg","waxPress","composter","stoneMill","forge","board","ironIngot","peg","spring","gear","ironShard","cord","hardwood","stone","wood","nails","hinge","metalPart","scrap","strawberry","honey","strawberryJam","watermelon","watermelonJam","beeswax","candle","manure","freshGrass","fertilizer","fiber","milk","cheese","goatMilk","goatCheese","butter","wool","yarn","woolCloth","wheat","flour","corn","cornmeal","oat","oatFlakes","egg","homemadeBread","cornBroa","carrot","carrotCake","duckEgg","strawberryPie","apple","applePie","honeyCake","ironOre"]:
+		if not item in allowed:
+			allowed.append(item)
 	for def in CATALOG.values():
 		allowed.append(def["seed"])
 		allowed.append(def["harvest"])
@@ -176,15 +181,18 @@ func import_state(data: Dictionary,today: int) -> bool:
 		if not tile is Vector2i or tile.x<1 or tile.x>94 or tile.y<1 or tile.y>70 or not pieces[tile] is Dictionary:
 			return false
 		var piece: Dictionary=pieces[tile]
-		if not piece.get("kind","") in ["fence","gate","workbench","constructionBench","bench"] or not piece.get("rotation") is int or piece["rotation"]<0 or piece["rotation"]>3 or not piece.get("open") is bool:
+		if (not piece.get("kind","") in ["fence","gate","workbench","constructionBench","bench"] and not Machines.MACHINES.has(piece.get("kind",""))) or not piece.get("rotation") is int or piece["rotation"]<0 or piece["rotation"]>3 or not piece.get("open") is bool:
 			return false
 		var cells: Array=[tile]
-		if piece["kind"] in ["workbench","constructionBench"]:
+		if piece["kind"] in ["workbench","constructionBench"] or (Machines.MACHINES.has(piece["kind"]) and Machines.MACHINES[piece["kind"]]["width"]==2):
 			cells.append(tile+(Vector2i.RIGHT if piece["rotation"]%2==0 else Vector2i.DOWN))
 		for cell in cells:
 			if cell.x>94 or cell.y>70 or occupied.has(cell) or p.has(cell):
 				return false
 			occupied[cell]=true
+	var jobs: Variant=data.get("machine_jobs",{})
+	if not Machines.valid_jobs(jobs,pieces,today):
+		return false
 	var box: Variant=data.get("chest",{})
 	if not box is Dictionary or box.size()>60:
 		return false
@@ -197,6 +205,7 @@ func import_state(data: Dictionary,today: int) -> bool:
 	var animals: Variant=data.get("livestock",{"day":today})
 	if not animals is Dictionary or not livestock.import_state(animals,today):
 		return false
+	machine_jobs=jobs.duplicate(true)
 	fish_records=records.duplicate(true)
 	chest=box.duplicate(true)
 	buildings=pieces.duplicate(true)

@@ -76,6 +76,8 @@ func toggle(open: bool) -> void:
 
 func item_name(item: String) -> String:
 	const names={"hand":"Mão","hoe":"Enxada","wateringCan":"Regador","hatchet":"Machadinha","pickaxe":"Picareta","wood":"Madeira","stone":"Pedra","branch":"Galho","log":"Tronco","plank":"Tábua","scrap":"Sucata","fiber":"Fibra","ironShard":"Ferro","fertilizer":"Adubo","oakSeed":"Bolota","pineSeed":"Semente de pinheiro","herb":"Ervas","mushroom":"Cogumelos","hardwood":"Madeira nobre","hay":"Palha","egg":"Ovo","duckEgg":"Ovo de pato","milk":"Leite","goatMilk":"Leite de cabra","wool":"Lã","manure":"Esterco","feather":"Pena","milkPail":"Balde","shears":"Tesoura","ironIngot":"Ferro fundido","fishingRod":"Vara de pescar","bait":"Isca","fish":"Peixe","cloth":"Tecido"}
+	if preload("res://scripts/maquinas_estado.gd").MACHINES.has(item):
+		return preload("res://scripts/maquinas_estado.gd").MACHINES[item]["name"]
 	if names.has(item):
 		return names[item]
 	for def in Farm.CATALOG.values():
@@ -87,7 +89,9 @@ func item_name(item: String) -> String:
 
 func icon_for(item: String,water: int) -> Texture2D:
 	var path: String="res://arte/icones/%s.png" % item
-	if item=="wateringCan":
+	if preload("res://scripts/maquinas_estado.gd").MACHINES.has(item):
+		path="res://arte/maquinas/%s-icon.png" % item
+	elif item=="wateringCan":
 		path="res://arte/ferramentas/regador/cheio.png" if water>0 else "res://arte/ferramentas/regador/vazio.png"
 	elif item=="fishingRod":
 		path="res://arte/pesca/vara-icone.png"
