@@ -13,6 +13,7 @@ var _label: Label
 const PREVIEW_TIMES := [315,375,480,720,900,1050,1110,1170,1320]
 var _preview_index := -1
 var _inside := false
+var fishing_paused:=false
 const SEASONS := ["Primavera", "Verão", "Outono", "Inverno"]
 const SHADOWS = preload("res://scripts/sombras_mundo.gd")
 const LIGHT = preload("res://shaders/luz_mundo.gdshader")
@@ -93,7 +94,7 @@ func _process(delta: float) -> void:
 			_scene.add_child(_shadow)
 			_shadow.call("build",_scene)
 			_refresh()
-	if using_cpp():
+	if using_cpp() and not fishing_paused:
 		_core.call("advance",delta)
 	_elapsed += delta
 	if _elapsed >= 0.20:
@@ -120,7 +121,7 @@ func _refresh() -> void:
 		novo_dia.emit(day,raining)
 
 func _input(event: InputEvent) -> void:
-	if not using_cpp() or not (event is InputEventKey and event.pressed and not event.echo):
+	if fishing_paused or not using_cpp() or not (event is InputEventKey and event.pressed and not event.echo):
 		return
 	if event.keycode == KEY_F6:
 		_core.call("advance",60.0)

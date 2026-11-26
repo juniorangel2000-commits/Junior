@@ -54,3 +54,6 @@ CI 45535603251: compilação C++ e todos os marcadores de smoke passaram, mas o 
 
 ## V0.09.3 — compatibilidade do shader exportado
 CI 45542084269 aprovou compilação, smoke interno e exportação, mas rejeitou erro shader_compiler.cpp:1274 (custom_samplers) no executável. Remove passagem do sampler integrado TEXTURE a função auxiliar, mantendo nove amostras, pesos e limites UV. Validação exportada e visual pendentes.
+
+## V0.10 — pesca na propriedade
+Sessão GDScript baseada nas regras V51 (habitat other, 24% materiais, quatro espécies comuns/incomuns, espera 10–20s, fisgada 3s, disputa até 45s, faixa e progresso); lançamento 1,9s, vara original, linha e boia, água real do mapa, isca consumida, coleta transacional, recordes persistidos. Receitas locais provisórias para vara/isca; sem rede, poses completas, durabilidade, vigor, aprendizagem com NPC, pesca rara em áreas externas, caderno visual ou áudio. Testes CI e aparência pendentes.

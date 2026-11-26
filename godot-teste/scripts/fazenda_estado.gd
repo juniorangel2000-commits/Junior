@@ -9,6 +9,7 @@ var plots: Dictionary = {}
 var resource_progress: Dictionary = {}
 var buildings: Dictionary = {}
 var chest: Dictionary = {}
+var fish_records: Dictionary = {}
 var livestock=preload("res://scripts/criacao_estado.gd").new()
 var core: Object
 
@@ -119,14 +120,14 @@ func stage(crop: Dictionary) -> int:
 	return 0 if growth<=0.0 else (4 if growth>=1.0 else (3 if growth>=2.0/3.0 else (2 if growth>=1.0/3.0 else 1)))
 
 func export_state() -> Dictionary:
-	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate(),"resource_progress":resource_progress.duplicate(true),"buildings":buildings.duplicate(true),"chest":chest.duplicate(true),"livestock":livestock.export_state()}
+	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate(),"resource_progress":resource_progress.duplicate(true),"buildings":buildings.duplicate(true),"chest":chest.duplicate(true),"livestock":livestock.export_state(),"fish_records":fish_records.duplicate(true)}
 
 func import_state(data: Dictionary,today: int) -> bool:
 	var s=data.get("stock")
 	var p=data.get("plots")
 	if not s is Dictionary or not p is Dictionary or p.size()>6912:
 		return false
-	var allowed:=["hoe","wateringCan","hatchet","pickaxe","wood","stone","branch","log","plank","scrap","fiber","ironShard","fertilizer","oakSeed","pineSeed","herb","mushroom","cord","flakedStone","handle","peg","hammer","blade","handsaw","board","furniture","doorKit","windowKit","hardwood","hay","egg","duckEgg","milk","goatMilk","wool","manure","feather","milkPail","shears","ironIngot"]
+	var allowed:=["hoe","wateringCan","hatchet","pickaxe","wood","stone","branch","log","plank","scrap","fiber","ironShard","fertilizer","oakSeed","pineSeed","herb","mushroom","cord","flakedStone","handle","peg","hammer","blade","handsaw","board","furniture","doorKit","windowKit","hardwood","hay","egg","duckEgg","milk","goatMilk","wool","manure","feather","milkPail","shears","ironIngot","fishingRod","bait","fish","cloth"]
 	for def in CATALOG.values():
 		allowed.append(def["seed"])
 		allowed.append(def["harvest"])
@@ -190,9 +191,13 @@ func import_state(data: Dictionary,today: int) -> bool:
 	for key in box:
 		if not key in allowed or not box[key] is int or box[key]<0 or box[key]>999999:
 			return false
+	var records: Variant=data.get("fish_records",{})
+	if not preload("res://scripts/pesca_estado.gd").valid_records(records,today):
+		return false
 	var animals: Variant=data.get("livestock",{"day":today})
 	if not animals is Dictionary or not livestock.import_state(animals,today):
 		return false
+	fish_records=records.duplicate(true)
 	chest=box.duplicate(true)
 	buildings=pieces.duplicate(true)
 	resource_progress=resources.duplicate(true)

@@ -220,6 +220,44 @@ func _run() -> void:
 		push_error("Livestock persistence failed")
 		quit(1)
 		return
+	var fishing_state=load("res://scripts/pesca_estado.gd").new()
+	var fishing_farm=load("res://scripts/fazenda_estado.gd").new()
+	fishing_state.rng.seed=42
+	if fishing_state.begin(fishing_farm,{"day":1,"minute":480.0,"rain":false})=="":
+		push_error("Fishing accepted missing equipment")
+		quit(1)
+		return
+	fishing_farm.transact({},{"fishingRod":1,"bait":2})
+	if fishing_state.begin(fishing_farm,{"day":1,"minute":480.0,"rain":false})!="" or fishing_farm.stock.get("bait",0)!=1:
+		push_error("Fishing bait transaction failed")
+		quit(1)
+		return
+	fishing_state.step(2.0)
+	fishing_state.step(fishing_state.wait_seconds)
+	if not fishing_state.hook() or fishing_state.phase!="fighting":
+		push_error("Fishing hook failed")
+		quit(1)
+		return
+	fishing_state.reward={"kind":"fish","name":"Lambari","species":"lambari","item":"fish","length":12.0,"grams":30}
+	fishing_state.phase="caught"
+	fishing_state.collect(fishing_farm)
+	if fishing_farm.stock.get("fish",0)!=1 or fishing_state.phase!="idle" or fishing_farm.fish_records["lambari"]["count"]!=1:
+		push_error("Fishing collection failed")
+		quit(1)
+		return
+	var fishing_clone=load("res://scripts/fazenda_estado.gd").new()
+	if not fishing_clone.import_state(fishing_farm.export_state(),1) or fishing_clone.fish_records!=fishing_farm.fish_records:
+		push_error("Fishing records persistence failed")
+		quit(1)
+		return
+	fishing_state.begin(fishing_farm,{"day":1,"minute":480.0,"rain":false})
+	fishing_state.step(2.0)
+	fishing_state.step(fishing_state.wait_seconds+3.1)
+	if fishing_state.phase!="escaped":
+		push_error("Fishing missed hook failed")
+		quit(1)
+		return
+	print("NATIVE_FISHING_SMOKE_OK")
 	print("NATIVE_ANIMALS_SMOKE_OK")
 	print("NATIVE_HOME_SMOKE_OK")
 	print("NATIVE_BUILD_SMOKE_OK")

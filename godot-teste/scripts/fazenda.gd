@@ -36,6 +36,8 @@ var chest_open:=false
 var loaded_home: Variant=null
 const Husbandry=preload("res://scripts/criacao.gd")
 var husbandry: Node2D
+const Fishing=preload("res://scripts/pesca.gd")
+var fishing: Node2D
 const TOOL_ART={"hoe":"res://arte/ferramentas/enxada.png","hatchet":"res://arte/ferramentas/machado.png","pickaxe":"res://arte/ferramentas/picareta.png"}
 const SWING=[-40,-55,-35,15,75,70,45,20,0]
 
@@ -110,11 +112,16 @@ func _process(delta: float) -> void:
 		home.setup(scene,player)
 		husbandry=Husbandry.new()
 		husbandry.setup(scene,player,farm,builder)
+		fishing=Fishing.new()
+		fishing.setup(scene,player,farm)
+		fishing.connect("result",_fishing_message)
+		fishing.connect("save_requested",_save)
 		if loaded_home is Vector2:
 			home.enter(loaded_home)
 		_rebuild()
 	_advance_action(delta)
 	husbandry.update(delta,_clock())
+	fishing.update(delta)
 	if not home.inside and builder.selected!="":
 		builder.update_preview(player.get_global_mouse_position())
 	if not craft_job.is_empty():
@@ -139,6 +146,15 @@ func _day_changed(day: int,_rain: bool) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not initialized:
+		return
+	if fishing.active:
+		if event is InputEventKey and event.pressed and not event.echo:
+			if event.keycode==KEY_ESCAPE:
+				fishing.cancel()
+			elif event.keycode in [KEY_E,KEY_SPACE]:
+				fishing.press()
+		elif event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT:
+			fishing.press()
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
@@ -265,6 +281,8 @@ func _assign(item: String) -> void:
 	_refresh()
 
 func _toggle_inventory() -> void:
+	if is_instance_valid(fishing) and fishing.active:
+		return
 	show_stock=not show_stock
 	inventory_ui.call("toggle",show_stock)
 	_refresh()
@@ -297,6 +315,9 @@ func _start_action(point: Vector2,restore: bool) -> void:
 	var item: String=farm.quickbar[selected]
 	if builder.selected!="":
 		_act(point,restore,item)
+		return
+	if item=="fishingRod":
+		fishing.start(point,_clock())
 		return
 	if item in ["wateringCan","hatchet","pickaxe","hoe"]:
 		if player.global_position.distance_to(point)>64.0:
@@ -462,3 +483,10 @@ func home_ready() -> bool:
 
 func animals_ready() -> bool:
 	return is_instance_valid(husbandry) and is_instance_valid(husbandry.panel)
+
+func _fishing_message(value: String) -> void:
+	message=value
+	_refresh()
+
+func fishing_ready() -> bool:
+	return is_instance_valid(fishing) and is_instance_valid(fishing.rod) and fishing.rod.texture!=null
