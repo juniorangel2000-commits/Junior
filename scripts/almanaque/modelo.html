@@ -1,0 +1,405 @@
+<title>Almanaque do Vale</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: caderno de campo — índice fixo à esquerda, páginas longas à direita; no celular o índice vira faixa rolável. */
+:root{
+ --bg:#eef1ec; --paper:#f8faf6; --ink:#1f2a24; --muted:#5b6b62; --line:#cfd8d0;
+ --moss:#3f6b4e; --rain:#2f6f86; --wheat:#b4862f; --chip:#e1e8e1; --mark:#f3e3a6;
+ --display:"Pixelify Sans","Courier New",monospace; --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+ --bg:#151b18; --paper:#1c2420; --ink:#e4ebe5; --muted:#9db0a4; --line:#2f3b35;
+ --moss:#8cc49c; --rain:#7cc3da; --wheat:#e2b75e; --chip:#26312b; --mark:#5c4f1d; color-scheme:dark}}
+:root[data-theme="dark"]{
+ --bg:#151b18; --paper:#1c2420; --ink:#e4ebe5; --muted:#9db0a4; --line:#2f3b35;
+ --moss:#8cc49c; --rain:#7cc3da; --wheat:#e2b75e; --chip:#26312b; --mark:#5c4f1d; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+a{color:var(--rain)}
+.wrap{display:grid;grid-template-columns:250px minmax(0,1fr);gap:40px;max-width:1240px;margin:0 auto;padding-block:28px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+nav.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);align-self:start;max-height:calc(100vh - 32px);overflow:auto;display:flex;flex-direction:column;gap:14px}
+.brand{font-family:var(--display);font-size:1.55rem;line-height:1.1;color:var(--moss);letter-spacing:.01em}
+.brand small{display:block;font-family:var(--body);font-size:.78rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:6px}
+.search{display:flex;flex-direction:column;gap:4px}
+.search label{font-size:.78rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.search input{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);font:inherit}
+.search input:focus-visible{outline:2px solid var(--rain);outline-offset:1px}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px}
+.toc a{display:block;padding:4px 8px;border-radius:4px;color:var(--ink);text-decoration:none;font-size:.93rem}
+.toc a:hover,.toc a:focus-visible{background:var(--chip);outline:none}
+.toc a.hide{display:none}
+main{min-width:0;display:flex;flex-direction:column;gap:48px}
+header.top h1{font-family:var(--display);font-weight:700;font-size:clamp(2rem,5vw,3.2rem);line-height:1.05;margin:0;color:var(--ink);text-wrap:balance}
+header.top p{max-width:62ch;color:var(--muted);margin:.6em 0 0}
+.season-strip{display:flex;gap:4px;margin-top:18px;max-width:520px}
+.season-strip span{flex:1;height:8px;border-radius:2px}
+section{scroll-margin-top:16px;display:flex;flex-direction:column;gap:14px}
+section[hidden]{display:none}
+h2{font-family:var(--display);font-weight:700;font-size:1.6rem;margin:0;color:var(--moss);text-wrap:balance;border-bottom:2px dotted var(--line);padding-bottom:6px}
+h3{font-size:1.06rem;margin:6px 0 0;color:var(--ink)}
+p,li{max-width:70ch}
+p{margin:0}
+ul,ol.steps{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+kbd{font-family:var(--display);font-size:.85em;background:var(--chip);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 6px;white-space:nowrap}
+.note{border-left:3px solid var(--wheat);padding:6px 12px;background:var(--paper);border-radius:0 6px 6px 0;max-width:70ch}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-size:.9rem;font-variant-numeric:tabular-nums}
+th{position:sticky;top:0;background:var(--chip);text-align:left;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 10px;white-space:nowrap}
+td{padding:7px 10px;border-top:1px solid var(--line);vertical-align:top}
+tr.hide{display:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:inherit;font-size:.85rem;padding:4px 12px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--moss);border-color:var(--moss);color:var(--paper)}
+.chips button:focus-visible{outline:2px solid var(--rain);outline-offset:2px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.grid2>div{min-width:0;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.grid2 h3{margin:0;font-family:var(--display);font-weight:500;color:var(--rain)}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:baseline}
+mark{background:var(--mark);color:inherit;border-radius:2px}
+.empty{color:var(--muted);font-style:italic}
+footer{color:var(--muted);font-size:.85rem}
+@media (max-width:820px){
+ .wrap{grid-template-columns:minmax(0,1fr);gap:20px}
+ nav.toc{position:static;max-height:none}
+ .toc ol{flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:4px}
+ .toc a{white-space:nowrap;background:var(--chip)}
+}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="Índice">
+ <div class="brand">Almanaque do Vale<small>After Rain · versão 0.10.0-preview.48</small></div>
+ <div class="search"><label for="busca">Procurar no almanaque</label><input id="busca" type="search" placeholder="ex.: queijo, morango, Bento" autocomplete="off"></div>
+ <ol id="toc"></ol>
+</nav>
+<main>
+<header class="top">
+ <h1>Almanaque do Vale</h1>
+ <p>Tudo o que dá para fazer em After Rain: como começar, as teclas, a horta, os animais, a cozinha, a pesca, a mina, a vila, as obras grandes, as masmorras e as missões. Os números vêm direto do jogo.</p>
+ <div class="season-strip" aria-hidden="true"><span style="background:#8cc49c"></span><span style="background:#e2b75e"></span><span style="background:#c57a3d"></span><span style="background:#9fc4d6"></span></div>
+</header>
+
+<section id="comecando" data-title="Primeiros dias">
+<h2>Primeiros dias</h2>
+<p>Você chega a uma propriedade abandonada depois da grande chuva. O painel de <b>Missões</b>, à esquerda da tela, guia os primeiros passos.</p>
+<ol class="steps">
+ <li>Recolha galhos, fibras vegetais e pedras pelo chão da propriedade.</li>
+ <li>Abra a fabricação com <kbd>C</kbd> e faça cabos, pedras lascadas e cordas vegetais. Com eles saem a enxada, a machadinha, a picareta e o martelo de pedra.</li>
+ <li>Prepare um canteiro com a enxada e plante uma semente da estação. Regue com o regador e colha quando a planta estiver pronta.</li>
+ <li>Corte árvores com a machadinha e quebre pedras com a picareta. Troncos viram tábuas na bancada de trabalho.</li>
+ <li>Monte a bancada e conclua a primeira construção da fazenda.</li>
+ <li>Siga a estrada a leste até a <b>Vila</b>: lá estão as lojas, a pousada e os moradores.</li>
+</ol>
+<p class="note">Você começa com 100 coroas. Venda a primeira colheita para a Rosa ou para a Helena e compre mais sementes. Tudo o que é vendido rende mais com qualidade boa ou excelente.</p>
+</section>
+
+<section id="controles" data-title="Teclas">
+<h2>Teclas</h2>
+<div class="grid2">
+ <div><h3>Andar e explorar</h3><div class="keys"><span><kbd>W A S D</kbd> ou setas</span><span>Andar</span><span><kbd>Shift</kbd></span><span>Correr (segurando)</span><span><kbd>E</kbd></span><span>Interagir, conversar, coletar</span><span><kbd>V</kbd></span><span>Montar ou descer do cavalo</span><span><kbd>M</kbd></span><span>Mapa do vale</span></div></div>
+ <div><h3>Itens e ferramentas</h3><div class="keys"><span><kbd>1</kbd>–<kbd>9</kbd></span><span>Escolher o slot da barra</span><span><kbd>E</kbd> ou clique</span><span>Usar a ferramenta</span><span><kbd>Shift</kbd>+<kbd>E</kbd></span><span>Desfazer um canteiro vazio</span><span>Botão direito no slot</span><span>Trocar ou esvaziar o slot</span></div></div>
+ <div><h3>Menus</h3><div class="keys"><span><kbd>I</kbd></span><span>Mochila</span><span><kbd>C</kbd></span><span>Fabricação</span><span><kbd>B</kbd></span><span>Construções</span><span><kbd>J</kbd></span><span>Diário de pesca</span><span><kbd>L</kbd></span><span>Diário da mina</span><span><kbd>K</kbd></span><span>Companheiros</span><span><kbd>Esc</kbd></span><span>Pausa e opções</span></div></div>
+ <div><h3>Animais, construção e câmera</h3><div class="keys"><span><kbd>E</kbd></span><span>Prender animal na corda</span><span><kbd>G</kbd></span><span>Soltar o animal</span><span><kbd>R</kbd></span><span>Girar banco ou porteira</span><span><kbd>F</kbd></span><span>Inverter a porteira</span><span>Roda do mouse</span><span>Zoom</span><span><kbd>Home</kbd></span><span>Zoom 100%</span></div></div>
+</div>
+</section>
+
+<section id="tempo" data-title="Tempo, estações e chuva">
+<h2>Tempo, estações e chuva</h2>
+<ul>
+ <li>O dia vai das 06:00 à meia-noite. Cada minuto do relógio dura um segundo de verdade, então um dia tem cerca de 18 minutos de jogo.</li>
+ <li>O ano tem 4 estações de 28 dias: <b>Primavera, Verão, Outono e Inverno</b>. Plantas fora da estação murcham na virada.</li>
+ <li><b>Chuva:</b> é sorteada a cada dia. Em dia de chuva a horta amanhece regada sozinha.</li>
+ <li>Dormir na cama passa a noite e salva o jogo. Os moradores da vila têm rotina: trabalham, almoçam, folgam um dia por semana e à noite muitos vão à pousada.</li>
+</ul>
+<h3>Festas da vila</h3>
+<p>Nos dias de festa as lojas fecham e todos participam. Passe o mouse na data, no relógio, para ver a próxima.</p>
+{{FEST}}
+</section>
+
+<section id="vigor" data-title="Vida e vigor">
+<h2>Vida e vigor</h2>
+<p>As duas barras à direita da tela mostram a <b>vida</b> (coração) e o <b>vigor</b> (raio).</p>
+<ul>
+ <li><b>O que gasta vigor:</b> cada golpe de ferramenta gasta 1, cada canteiro regado gasta 1 e cada arremesso de pesca gasta 3.</li>
+ <li><b>Sem vigor</b> o personagem fica cansado e anda a 70% da velocidade.</li>
+ <li><b>Para recuperar:</b> a cama devolve 100 de vigor (120 depois da obra do quarto). A comida recupera durante o dia. Cada prato diz quanto dá, e a qualidade boa ou excelente aumenta o efeito.</li>
+ <li><b>Comida pronta:</b> a refeição da pousada e do armazém custa 60 coroas e dá 50 de vigor. Cozinhar em casa sai bem mais barato.</li>
+ <li><b>Vida:</b> é gasta nas masmorras e nos ataques do acampamento. Curativos e tônicos da Amélia recuperam.</li>
+</ul>
+</section>
+
+<section id="horta" data-title="Horta">
+<h2>Horta</h2>
+<ul>
+ <li><b>Plantar:</b> prepare o canteiro com a enxada, escolha a semente na barra e plante com <kbd>E</kbd>.</li>
+ <li><b>Regar:</b> todo dia, com o regador, que se enche no poço ou na água. A planta só cresce nos dias regados. A chuva rega por você.</li>
+ <li><b>Colher:</b> com as mãos vazias e <kbd>E</kbd>. Plantas que rebrotam continuam no canteiro e produzem de novo.</li>
+ <li><b>Qualidade da colheita:</b> é sorteada. Com rega diária e adubo, as chances são de 25% comum, 50% boa e 25% excelente. Sem cuidado, saem 85% comuns. A Rosa vende adubo e ensina a fazer.</li>
+ <li><b>Aspersor automático:</b> o Ícaro ensina a montar. Ele rega os canteiros em volta sem gastar seu vigor.</li>
+</ul>
+<div class="chips" role="group" aria-label="Filtrar por estação"><button type="button" data-season="" aria-pressed="true">Todas</button><button type="button" data-season="Primavera" aria-pressed="false">Primavera</button><button type="button" data-season="Verão" aria-pressed="false">Verão</button><button type="button" data-season="Outono" aria-pressed="false">Outono</button><button type="button" data-season="Inverno" aria-pressed="false">Inverno</button></div>
+{{CROPS}}
+<p class="note">Os mais rentáveis de cada estação são feijão e morango na primavera, melancia no verão, abóbora no outono e repolho no inverno. Plantas que rebrotam valem mais quanto antes forem plantadas na estação.</p>
+</section>
+
+<section id="estufa" data-title="Estufa">
+<h2>Estufa</h2>
+<p>A estufa é uma obra grande do Tobias, de 100 mil coroas. Ela é montada sozinha perto da casa e tem <b>24 canteiros</b> onde qualquer semente cresce em qualquer estação, com um barril de água lá dentro. A ampliação (60 mil) dobra a estufa para <b>48 canteiros</b>. A chuva não molha a estufa: regue todos os dias.</p>
+</section>
+
+<section id="animais" data-title="Animais">
+<h2>Animais</h2>
+<h3>Como conseguir</h3>
+<ul>
+ <li>Os animais de criação não são comprados: eles aparecem soltos pelos cenários, sorteados a cada dia. Faça uma <b>corda vegetal</b> (3 fibras), aproxime-se e prenda com <kbd>E</kbd>. Depois leve o animal até a propriedade. <kbd>G</kbd> solta a corda, e o animal solto no caminho volta correndo para casa.</li>
+ <li><b>Onde aparecem:</b>
+  <ul>
+   <li>galinha: Floresta Antiga, Costa, Pomar, Ruínas e Estação;</li>
+   <li>pato: Campos Abertos, Pântano e Costa;</li>
+   <li>vaca e ovelha: Campos Abertos;</li>
+   <li>cabra: Floresta Antiga, Costa, Ruínas e Estação;</li>
+   <li>porco: Floresta Antiga, Pântano e Pomar.</li>
+  </ul></li>
+ <li><b>Animais de raça:</b> o Jonas, o veterinário, vende galinha (1.500 C), cabra (5.000 C) e vaca (6.000 C) que produzem sempre, no mínimo, na qualidade boa.</li>
+</ul>
+<h3>Construções</h3>
+<p>Coloque a base com <kbd>B</kbd> e o martelo, leve os materiais até a entrada da obra e conclua com o martelo. As construções de animais precisam de madeira nobre, dos ipês dos Campos Abertos. Galinheiro, curral e aprisco também cobram a mão de obra do Tobias ao concluir.</p>
+{{FARM}}
+<h3>Cuidar</h3>
+<ul>
+ <li><b>Comida:</b> cada animal come 1 palha do cocho às 06:00. A palha sai do capim dos Campos, cortado com a foice e seco no silo, ou de 3 fibras. O porco come sobras da horta.</li>
+ <li><b>Produção:</b>
+  <ul>
+   <li>galinha: um ovo por dia (20 C);</li>
+   <li>pato: ovo de pata (30 C) e penas;</li>
+   <li>vaca: leite (30 C), tirado com o balde de ordenha;</li>
+   <li>cabra: leite de cabra (36 C);</li>
+   <li>ovelha: lã (60 C), tirada com a tesoura de tosquia;</li>
+   <li>porco: esterco, que vira adubo na composteira.</li>
+  </ul></li>
+ <li><b>Amizade:</b> vai de 0 a 30.
+  <ul>
+   <li>Sobe 1 por dia com o cocho cheio e mais 1 com o carinho do dia (<kbd>E</kbd> perto do animal, dentro do abrigo). Cai 2 por dia de cocho vazio.</li>
+   <li>A partir de 10 o animal produz itens <b>bons</b>, e a partir de 25 <b>excelentes</b>.</li>
+  </ul></li>
+ <li>De dia os animais ficam no cercado e à noite entram. Dá para recolher ou soltar pelo painel da construção.</li>
+</ul>
+<h3>Cavalo</h3>
+<p>Um cavalo selvagem vive sempre nos <b>Campos Abertos</b>. Deixe uma cesta de comida para ele todo dia: em <b>7 dias</b> de confiança ele se aproxima e você dá um nome a ele. Com o cavalo domado, aperte <kbd>V</kbd> perto dele para montar, e <kbd>Shift</kbd> faz galopar. O estábulo é o abrigo dele.</p>
+<h3>Colmeia</h3>
+<p>O Augusto vende a colmeia vazia (120 C). Coloque nos Campos Abertos, perto de um ipê: a cada 5 dias um enxame pode ocupá-la, e depois ela dá mel.</p>
+</section>
+
+<section id="maquinas" data-title="Máquinas">
+<h2>Máquinas</h2>
+<p>Os moradores ensinam a montar cada máquina por uma taxa. Depois você fabrica com <kbd>C</kbd> e coloca na propriedade. A qualidade da matéria-prima passa para o produto.</p>
+{{MACHINES}}
+</section>
+
+<section id="cozinha" data-title="Cozinha">
+<h2>Cozinha</h2>
+<ul>
+ <li><b>Onde:</b> o fogão de casa cozinha os pratos comuns e gasta 1 madeira por prato. O forno de barro faz pães, bolos e tortas. A fogueira assa peixe, milho e batata-doce.</li>
+ <li><b>Cozinha nova:</b> depois dessa obra, o fogão não gasta mais lenha e também faz os pratos de forno.</li>
+ <li><b>Aprender:</b> a Helena ensina a maioria das receitas, e o "prato do dia" dela vale o dobro.</li>
+ <li><b>Receitas escondidas:</b> três estão por aí — na Mina, com os sobreviventes e no mapa antigo do Nilo.</li>
+</ul>
+{{DISHES}}
+</section>
+
+<section id="pesca" data-title="Pesca">
+<h2>Pesca</h2>
+<ul>
+ <li><b>Começar:</b> o Damião ensina a pescar e vende vara (70 C), minhocas (3 C) e rede (120 C).</li>
+ <li><b>Como pescar:</b> lance perto da água. Quando morder, aperte <kbd>E</kbd> ou <kbd>Espaço</kbd> em até 3 segundos. Depois segure para manter o peixe dentro da faixa de captura.</li>
+ <li><b>Onde:</b> peixes raros aparecem no Lago da Cachoeira. Depois da obra do farol, também na Costa à noite, das 19h às 5h.</li>
+ <li><b>Diário de pesca</b> (<kbd>J</kbd>): guarda a coleção, os recordes e as iscas.</li>
+ <li><b>Vender:</b> o Damião paga mais pelas capturas registradas, conforme a espécie e o tamanho. O peixe comum vale 10 C. Todo dia ele tem uma encomenda nova, e também melhora a vara e ensina iscas novas.</li>
+ <li><b>Rede:</b> pega 2 peixes por vez e também caranguejos na Costa.</li>
+</ul>
+{{FISH}}
+</section>
+
+<section id="coleta" data-title="Coleta">
+<h2>Coleta pelos cenários</h2>
+<div class="grid2">
+ <div><h3>Costa das Marés</h3><p>Conchas na areia (voltam em 2 dias). Caranguejos com a rede. 12 pontos de <b>areia</b>, que voltam no dia seguinte: o Bento funde 10 areias em 5 vidros por 25 C.</p></div>
+ <div><h3>Pomar Abandonado</h3><p>Laranja no inverno e na primavera, pera no verão e maçã no outono. As frutas voltam em 3 dias.</p></div>
+ <div><h3>Pântano</h3><p>Íris azul: são 3 plantas, que voltam em 7 dias. Valem bem e servem no concurso da Feira das Sementes.</p></div>
+ <div><h3>Campos Abertos</h3><p>Capim com a foice, para fazer palha. Madeira nobre dos ipês, para as construções de animais. Lugar da colmeia.</p></div>
+ <div><h3>Floresta Antiga</h3><p>Ervas, cogumelos, madeira e pedra. As pegadas ao norte levam ao acampamento dos sobreviventes.</p></div>
+ <div><h3>Árvores e fogueiras</h3><p>Plante bolotas e sementes de pinheiro para ter árvores novas. A fogueira portátil pode ser montada no chão para assar comida.</p></div>
+ <div><h3>Em toda parte</h3><p>Galhos, fibras vegetais e pedras pequenas pelo chão. Sucata metálica para o Ícaro e o Bento.</p></div>
+</div>
+</section>
+
+<section id="mina" data-title="Mina e ferramentas">
+<h2>Mina e ferramentas</h2>
+<ul>
+ <li><b>Mina Antiga:</b> o Bento explora a mina e vai até lá cerca de duas vezes por semana. O <b>Diário da mina</b> (<kbd>L</kbd>) mostra os pedidos.</li>
+ <li><b>Escuridão:</b> a parte funda é quase impossível de explorar sem <b>lanterna</b> (95 C no Augusto, 100 C no Ícaro).</li>
+ <li><b>Minérios:</b> ferro, ouro e metal negro saem em fragmentos. Com <b>9 fragmentos</b> o Bento funde um lingote:
+  <ul>
+   <li>ferro: 25 C e 30 min;</li>
+   <li>ouro: 90 C e 1h30;</li>
+   <li>metal negro: 500 C e 4 h.</li>
+  </ul></li>
+ <li><b>Níveis das ferramentas:</b> pedra, ferro, ouro e metal negro. Cada nível corta mais por golpe (1×, 1,5×, 2,2× e 3,2×) e dura mais (100, 250, 450 e 800 usos). As receitas estão na tabela de fabricação.</li>
+ <li><b>Reparos:</b> o Bento repara machadinha, picareta, enxada, foice, pá, martelo, serrote, vara, rede e tesoura.</li>
+</ul>
+</section>
+
+<section id="fabricacao" data-title="Fabricação">
+<h2>Fabricação</h2>
+<p>Abra com <kbd>C</kbd>. Algumas receitas pedem a bancada de trabalho ou a bancada de construção por perto, e as máquinas precisam ser aprendidas antes.</p>
+<ul>
+ <li><b>Lista e detalhe:</b> as receitas ficam à esquerda, com as que você já pode fazer primeiro. À direita aparecem os materiais, com "tenho / preciso" em cada um.</li>
+ <li><b>Busca e filtro:</b> digite o nome da receita ou escolha uma categoria pelos ícones. O selinho no ícone conta quantas receitas estão prontas para fazer.</li>
+ <li><b>Fabricar várias:</b> os botões <b>×1</b>, <b>×5</b> e <b>Máximo</b> fazem uma fila, e a barra mostra "fazendo N de M".</li>
+</ul>
+{{CRAFT}}
+</section>
+
+<section id="vila" data-title="Vila e moradores">
+<h2>Vila e moradores</h2>
+<p>A vila fica a leste da propriedade. Cada morador tem loja, horário, folga, histórias pessoais e amizade, que cresce com conversas e presentes. Marina e Rui moram na propriedade, e até oito sobreviventes recrutados moram na casa comunitária e ajudam com madeira, ervas e horta.</p>
+<ul>
+ <li><b>Amizade:</b> converse todo dia e dê presentes. Cada morador tem uma história pessoal em três partes, que se abre com a amizade.</li>
+ <li><b>Visitas e passeios:</b> às vezes um morador visita a sua propriedade e traz um presente. Eles também passeiam pelos cenários e dão um presente a quem os encontra.</li>
+ <li><b>Pedidos da vila:</b> a Rosa tem contratos de colheita, e o Tobias, a Amélia, a Helena e o Bento têm quadros de pedidos que se renovam a cada poucos dias.</li>
+ <li><b>Pousada:</b> a Helena hospeda você até as 8h (40 C), conta rumores sobre a floresta e o acampamento e compra o prato do dia.</li>
+ <li><b>Roupas e outros serviços:</b> a Celina ensina costura e troca a sua roupa. O Ícaro separa sucata em pregos, dobradiças, molas e engrenagens.</li>
+ <li><b>Marina e Rui:</b> com uma base, refeições e tábuas, a Helena manda esses dois sobreviventes morarem na sua propriedade.</li>
+</ul>
+<h3>Lojas</h3>
+{{SHOPS}}
+<h3>Serviços de cada morador</h3>
+{{SERVICES}}
+<p class="note"><b>Lúcia</b> (padaria) e <b>Jonas</b> (veterinário) chegam depois das obras das casinhas da praça e atendem das 8h às 18h. A Lúcia paga 30% a mais por trigo, farinha, ovos, leite e manteiga.</p>
+</section>
+
+<section id="obras" data-title="Obras grandes">
+<h2>Obras grandes</h2>
+<p>As obras grandes são os grandes gastos do jogo. Fale com o morador, entregue coroas e materiais aos poucos e, quando estiver tudo entregue, a obra fica pronta alguns dias depois, com um aviso pela manhã. As obras do Vale seguem uma ordem: moinho, ponte, farol e Estação.</p>
+{{PROJECTS}}
+<ul>
+ <li><b>Trem:</b> depois da obra da Estação, o trem liga a Vila, a Estação Ferroviária e a Costa. A passagem custa 30 C e a viagem leva meia hora. Animais na corda não embarcam.</li>
+ <li><b>Ponte:</b> leva da saída norte da Vila direto às Ruínas.</li>
+ <li><b>Moinho:</b> o Augusto passa a moer trigo, milho e aveia na hora, por 3 C cada.</li>
+</ul>
+</section>
+
+<section id="cenarios" data-title="Cenários do vale">
+<h2>Cenários do vale</h2>
+<div class="grid2">
+ <div><h3>Propriedade Abandonada</h3><p>Sua casa, a horta, o poço e as construções. É o centro do vale.</p></div>
+ <div><h3>Vila</h3><p>A leste: lojas, pousada, praça e porto. A saída norte vai para a Estrada da Cidade e a leste fica o Pomar.</p></div>
+ <div><h3>Floresta Antiga</h3><p>Árvores grandes, ervas e animais soltos. Ao sul fica o Pântano e ao norte o acampamento.</p></div>
+ <div><h3>Campos Abertos</h3><p>Pastos, rio com pontes, ipês e o cavalo selvagem. Ao sul fica a Costa.</p></div>
+ <div><h3>Costa das Marés</h3><p>Praia, foz do rio, píer e barco. Conchas, caranguejos, areia e a Festa da Praia.</p></div>
+ <div><h3>Pântano</h3><p>Lagos, passarela, sapos e jacarés. Íris azuis, patos e porcos.</p></div>
+ <div><h3>Pomar Abandonado</h3><p>Frutíferas, prensa antiga, galpão e lagoa.</p></div>
+ <div><h3>Estrada da Cidade e Ruínas</h3><p>O asfalto ao norte da Vila leva às Ruínas: antigo posto, porão e o selo de bronze que o Nilo identifica.</p></div>
+ <div><h3>Estação Ferroviária</h3><p>A leste das Ruínas, com sala de espera. O trem volta a funcionar depois da obra.</p></div>
+ <div><h3>Lago da Cachoeira e Platô da Nascente</h3><p>O melhor lugar de pesca do vale e a nascente do rio que corta tudo até o mar.</p></div>
+ <div><h3>Mina Antiga</h3><p>Minérios, túneis escuros e as expedições do Bento.</p></div>
+ <div><h3>Acampamento dos Sobreviventes</h3><p>Siga as pegadas ao norte da Floresta. Grupos hostis avisam antes de atacar. Pacíficos podem ser recrutados.</p></div>
+</div>
+</section>
+
+<section id="companheiros" data-title="Companheiros e masmorras">
+<h2>Companheiros e masmorras</h2>
+<h3>Casinha dos companheiros</h3>
+<p>Na propriedade há uma casinha abandonada. Repare em três etapas: base, estrutura e telhado, e camas e potes. Cada morador ajuda numa parte:</p>
+<ul>
+ <li><b>Tobias:</b> prepara as peças de madeira (30 C, 2 troncos e 6 madeiras).</li>
+ <li><b>Celina:</b> prepara os tecidos (20 C e 8 fibras).</li>
+ <li><b>Ícaro:</b> prepara os fixadores (12 C e 4 sucatas).</li>
+</ul>
+<p>Com a casinha pronta, você pode ter até <b>três companheiros</b>.</p>
+<h3>Expedições na cidade</h3>
+<ul>
+ <li>Siga a Estrada da Cidade, ao norte da Vila, até a placa e aperte <kbd>E</kbd>. A viagem mostra a estrada molhada e a chuva, e o relógio do vale para enquanto você está lá.</li>
+ <li><b>Praça Central Abandonada:</b> sobreviva por <b>15 minutos</b> de pressão crescente. Os chefes aparecem nos minutos 3, 6, 9, 12 e 14.</li>
+ <li><b>Estacionamento de Shopping:</b> vença <b>50 rodadas</b> de hordas, com um chefe a cada 10 rodadas.</li>
+ <li><b>Chefes:</b> o Demolidor, a Sentinela, o Acorrentado, o Contaminado e o Devorador. Entre os inimigos comuns há zumbis, como o entregador e a moradora.</li>
+ <li><b>Como se joga:</b> você só anda, com <kbd>WASD</kbd>, e corre com <kbd>Shift</kbd>. As armas atacam sozinhas. Ao subir de nível você escolhe uma entre três cartas de melhoria.</li>
+ <li><b>Armas:</b> são sete — espada, arco, lança, bumerangue, martelo, arma rotativa e escudo de choque. Dá para levar até quatro ao mesmo tempo, e algumas melhorias têm evolução lendária.</li>
+ <li><b>Pausa:</b> <kbd>Esc</kbd> pausa. Salvar e continuar preserva a expedição exatamente onde estava.</li>
+ <li><b>Ao fim:</b> as melhorias da partida acabam. A experiência, as coroas e os materiais ficam com você. Se a mochila estiver cheia, os materiais esperam.</li>
+</ul>
+<h3>Resgatar companheiros</h3>
+<ul>
+ <li>Durante as expedições aparecem cães e gatos para resgatar: <b>cão, gato, golden retriever e border collie</b>. Também existem <b>variações raras</b> de cada um.</li>
+ <li>Só o companheiro escolhido luta com você. Cada espécie tem esquiva, dano, vida, velocidade e um ataque especial próprios.</li>
+ <li>No vale, o companheiro escolhido segue você, espera onde você mandar (<kbd>K</kbd>) e, às vezes, encontra algo nos passeios, como um ramo seco.</li>
+</ul>
+<h3>Evolução permanente</h3>
+<ul>
+ <li><b>Personagem:</b> a experiência das expedições treina Força, Resistência, Agilidade, Vitalidade, Precisão e Sobrevivência.</li>
+ <li><b>Companheiro:</b> cada um treina os próprios atributos — Velocidade, Resistência, Percepção, Proteção e Eficiência.</li>
+ <li>Esses pontos ficam para sempre e deixam as próximas expedições mais fáceis.</li>
+</ul>
+</section>
+
+<section id="missoes" data-title="Missões e conquistas">
+<h2>Missões e conquistas</h2>
+<p>O painel de <b>Missões</b>, à esquerda da tela, guia o jogo inteiro em <b>{{NCAP}} capítulos</b> e <b>{{NMIS}} missões</b>, na ordem natural: da primeira semente até o metal negro.</p>
+<ul>
+ <li>Cada capítulo abre quando o anterior termina e, ao ser concluído, dá uma <b>conquista</b>. Ela vem com aviso, fanfarra e uma medalha saindo do personagem.</li>
+ <li>Três capítulos andam em paralelo, porque dependem do tempo: festas, economias e anos no vale.</li>
+ <li>A aba <b>Conquistas</b> mostra as medalhas ganhas, o dia de cada uma e as que ainda faltam. A última é <b>O Vale Renasceu</b>.</li>
+ <li>Partidas antigas recebem na hora as conquistas do que já foi feito.</li>
+</ul>
+{{MISSIONS}}
+</section>
+
+<section id="dinheiro" data-title="Dicas de dinheiro">
+<h2>Dicas de dinheiro</h2>
+<ul>
+ <li><b>Comece pela horta</b> e amplie conforme o vigor deixar: regar gasta 1 de vigor por canteiro. Aspersores liberam o vigor para outras coisas.</li>
+ <li><b>Animais:</b> uma casa cheia rende 120 a 144 C por dia e se paga em cerca de um mês.</li>
+ <li><b>Máquinas multiplicam o valor:</b> queijo, manteiga, geleia, tecido de lã e farinha valem mais que a matéria-prima.</li>
+ <li><b>Cozinhar em casa</b> recupera vigor muito mais barato que a pousada, e o prato do dia da Helena vale o dobro.</li>
+ <li><b>Pesca e coleta</b> (conchas, frutas, íris) rendem bem com pouco espaço de horta.</li>
+ <li><b>Onde gastar:</b> casa maior, estufa, obras do Vale e casinhas dos moradores novos. Em três anos de jogo, um jogador dedicado paga a casa, a estufa e as primeiras obras do Vale.</li>
+</ul>
+</section>
+
+<p id="vazio" class="empty" hidden>Nada encontrado. Tente outra palavra, como "leite", "Damião" ou "Inverno".</p>
+<footer>Almanaque gerado a partir dos dados do jogo na versão 0.10.0-preview.48 (24/11/2026). Preços em coroas (C).</footer>
+</main>
+</div>
+
+<script>
+(()=>{
+ const sections=[...document.querySelectorAll('main section')];
+ const toc=document.getElementById('toc');
+ for(const s of sections){const li=document.createElement('li');const a=document.createElement('a');a.href='#'+s.id;a.textContent=s.dataset.title;a.dataset.for=s.id;li.append(a);toc.append(li);}
+ const input=document.getElementById('busca'),empty=document.getElementById('vazio');
+ const norm=t=>t.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+ let season='';
+ const units=s=>[...s.querySelectorAll('tbody tr, :scope > ul > li, :scope > ol > li, .grid2 > div, :scope > p, .keys')];
+ function apply(){
+  const q=norm(input.value.trim());let any=false;
+  for(const s of sections){
+   let hit=!q||norm(s.dataset.title).includes(q);let found=false;
+   for(const u of units(s)){
+    const bySeason=!season||!u.closest('.crops')||u.textContent.includes(season);
+    const match=!q||hit||norm(u.textContent).includes(q);
+    const show=match&&bySeason;
+    if(u.tagName==='TR')u.classList.toggle('hide',!show);
+    if(show&&q&&norm(u.textContent).includes(q))found=true;
+   }
+   const visible=!q||hit||found;s.hidden=!visible;if(visible)any=true;
+   toc.querySelector(`a[data-for="${s.id}"]`).classList.toggle('hide',!visible);
+  }
+  empty.hidden=any;
+ }
+ input.addEventListener('input',apply);
+ document.querySelectorAll('[data-season]').forEach(b=>b.addEventListener('click',()=>{season=b.dataset.season;document.querySelectorAll('[data-season]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));apply();}));
+})();
+</script>

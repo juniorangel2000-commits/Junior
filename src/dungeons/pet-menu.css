@@ -146,7 +146,8 @@
 
 .companion-quick {
   position: absolute;
-  right: 20px;
+  /* à esquerda das barras de vida e vigor (right:20px + 38px), para não encostar nelas em telas baixas */
+  right: 68px;
   top: 150px;
   width: 220px;
   max-width: calc(100vw - 24px);

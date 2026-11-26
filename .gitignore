@@ -392,3 +392,4 @@ __pycache__/
 scripts/qa-conquistas/video/
 scripts/qa-conquistas/c-*.png
 scripts/qa-conquistas/saida.txt
+scripts/almanaque/dados.json

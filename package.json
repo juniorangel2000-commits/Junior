@@ -14,7 +14,8 @@
     "test": "vitest run --maxWorkers=2 --testTimeout=30000",
     "desktop": "npm run build && electron .",
     "desktop:win": "npm run build && electron-builder --win portable nsis --x64",
-    "desktop:linux": "npm run build && electron-builder --linux dir --x64"
+    "desktop:linux": "npm run build && electron-builder --linux dir --x64",
+    "almanaque": "vite-node scripts/almanaque/exportar.ts -- scripts/almanaque/dados.json && python3 scripts/almanaque/gerar.py scripts/almanaque/dados.json scripts/almanaque/modelo.html docs/wiki/almanaque.html"
   },
   "dependencies": {
     "phaser": "3.90.0"
