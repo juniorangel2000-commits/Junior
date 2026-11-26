@@ -102,6 +102,9 @@ func start(target: Vector2,clock: Dictionary) -> void:
 	if error!="":
 		result.emit(error)
 		return
+	var now: float=preload("res://scripts/cozinha_estado.gd").absolute(clock)
+	farm.nutrition.spend(3,now)
+	session.band_size=0.28+farm.nutrition.fishing_bonus(now)
 	active=true
 	time=0.0
 	player.set("tool_busy",true)

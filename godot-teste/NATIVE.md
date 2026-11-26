@@ -66,3 +66,6 @@ Nove máquinas fabricáveis da V51 e forja própria, 21 receitas (13 processamen
 
 ## V0.11.1 — correção de compilação
 CI 45832733338 detectou inferência inválida de busy/ready em maquinas.gd:119–120. Tipos bool explícitos e conversão de ready para float. Animação considera linhas e colunas do atlas; indicador recriado ao substituir sprite no mesmo tile. Mantém receitas, artes e testes existentes. Nova validação obrigatória.
+
+## V0.12 — culinária e vigor
+25 receitas extraídas da V51, 16 fogão, 6 forno e 3 fogueira (lenha 1, 1,5s fogão/fogueira; forno 720 min via máquinas). Caderno aberto provisoriamente, sem NPC. Vigor 100, recuperação por prato e sono, gasto 3 na pesca e 1 provisório por ação de ferramenta, exaustão 0,7, café +30 vigor/8h, peixe assado +0,07 faixa/6h, suco +15% velocidade/4h; efeito do tropeiro registrado, sem perigos da mina nesta área. Persistência e expiração por calendário. Fogueira fabricável, sem luz final. Quatro pratos sem ícone localizado no diretório original. Ingredientes externos, qualidade e progressão NPC pendentes. CI e revisão visual pendentes.

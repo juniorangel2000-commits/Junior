@@ -1,6 +1,7 @@
 extends RefCounted
 const Machines=preload("res://scripts/maquinas_estado.gd")
 const RECIPES={
+"campfire":{"name":"Fogueira portátil","cost":{"stone":4,"branch":4,"cord":1},"out":{"campfire":1},"seconds":1.5},
 "cheesePress":{"name":"Queijeira","cost":{"board":8,"ironIngot":2,"peg":4,"spring":1,"gear":1},"out":{"cheesePress":1},"station":"workbench","tool":"hammer","seconds":3},
 "butterChurn":{"name":"Batedeira de manteiga","cost":{"board":6,"ironShard":4,"peg":2,"gear":1},"out":{"butterChurn":1},"station":"workbench","tool":"hammer","seconds":3},
 "spinningWheel":{"name":"Roca","cost":{"board":8,"cord":4,"peg":4,"gear":1},"out":{"spinningWheel":1},"station":"workbench","tool":"hammer","seconds":3},
@@ -32,6 +33,7 @@ const RECIPES={
 "windowKit":{"name":"Ninho e baias","cost":{"board":3,"peg":2},"out":{"windowKit":1},"station":"constructionBench"}
 }
 const PIECES={
+"campfire":{"name":"Fogueira portátil","cost":{"campfire":1},"wide":false},
 "cheesePress":{"name":"Queijeira","cost":{"cheesePress":1},"wide":false},
 "butterChurn":{"name":"Batedeira de manteiga","cost":{"butterChurn":1},"wide":false},
 "spinningWheel":{"name":"Roca","cost":{"spinningWheel":1},"wide":true},
@@ -49,6 +51,7 @@ const PIECES={
 "bench":{"name":"Banco","cost":{"furniture":1},"wide":false}
 }
 const ART={
+"campfire":"res://arte/cozinha/campfire.png",
 "cheesePress":"res://arte/maquinas/cheesePress.png",
 "butterChurn":"res://arte/maquinas/butterChurn.png",
 "spinningWheel":"res://arte/maquinas/spinningWheel.png",
@@ -241,7 +244,7 @@ func interact(point: Vector2,remove: bool) -> String:
 		var refund: Dictionary={}
 		for item in PIECES[kind]["cost"]:
 			var n: int=PIECES[kind]["cost"][item]
-			refund[item]=n if kind in ["fence","bench"] or Machines.MACHINES.has(kind) else floori(n*0.6)
+			refund[item]=n if kind in ["fence","bench","campfire"] or Machines.MACHINES.has(kind) else floori(n*0.6)
 		if not farm.transact({},refund):
 			return "Mochila cheia."
 		var s: Sprite2D=nodes[tile]

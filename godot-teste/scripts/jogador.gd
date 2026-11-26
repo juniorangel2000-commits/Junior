@@ -10,6 +10,7 @@ const DIRECOES := {
 @onready var corpo: AnimatedSprite2D = $Corpo
 var _direcao := "south"
 var tool_busy := false
+var food_speed: float=1.0
 var home_mode:=false
 var home_controller: RefCounted
 const MundoColisoes = preload("res://scripts/mundo_colisoes.gd")
@@ -108,8 +109,8 @@ func mundo_colisoes() -> Node2D:
 
 func _calcular_velocidade(entrada: Vector2) -> Vector2:
 	if usando_cpp:
-		return _movimento_nativo.call("calculate_velocity", entrada, velocidade)
-	return entrada.normalized() * velocidade
+		return _movimento_nativo.call("calculate_velocity", entrada, velocidade*food_speed)
+	return entrada.normalized() * velocidade*food_speed
 
 func facing_vector() -> Vector2:
 	for dir in DIRECOES:

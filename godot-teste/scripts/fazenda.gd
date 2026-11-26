@@ -40,6 +40,10 @@ const Fishing=preload("res://scripts/pesca.gd")
 var fishing: Node2D
 const MachinesUI=preload("res://scripts/maquinas.gd")
 var machine_ui: CanvasLayer
+const KitchenUI=preload("res://scripts/cozinha.gd")
+const Nutrition=preload("res://scripts/cozinha_estado.gd")
+var kitchen_ui: CanvasLayer
+var last_food_update: float=0.0
 const TOOL_ART={"hoe":"res://arte/ferramentas/enxada.png","hatchet":"res://arte/ferramentas/machado.png","pickaxe":"res://arte/ferramentas/picareta.png"}
 const SWING=[-40,-55,-35,15,75,70,45,20,0]
 
@@ -122,6 +126,10 @@ func _process(delta: float) -> void:
 		add_child(machine_ui)
 		machine_ui.setup(player,farm,builder)
 		machine_ui.connect("changed",_machine_message)
+		kitchen_ui=KitchenUI.new()
+		add_child(kitchen_ui)
+		kitchen_ui.setup(player,farm)
+		kitchen_ui.connect("changed",_machine_message)
 		if loaded_home is Vector2:
 			home.enter(loaded_home)
 		_rebuild()
@@ -129,6 +137,12 @@ func _process(delta: float) -> void:
 	husbandry.update(delta,_clock())
 	fishing.update(delta)
 	machine_ui.update(delta,_clock())
+	kitchen_ui.update(delta,_clock())
+	player.set("food_speed",farm.nutrition.speed(Nutrition.absolute(_clock())))
+	last_food_update+=delta
+	if last_food_update>=0.5:
+		last_food_update=0.0
+		_refresh()
 	if not home.inside and builder.selected!="":
 		builder.update_preview(player.get_global_mouse_position())
 	if not craft_job.is_empty():
@@ -154,6 +168,10 @@ func _day_changed(day: int,_rain: bool) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not initialized:
 		return
+	if kitchen_ui.open:
+		if event is InputEventKey and event.pressed and not event.echo and event.keycode==KEY_ESCAPE:
+			kitchen_ui.close_menu()
+		return
 	if machine_ui.open:
 		if event is InputEventKey and event.pressed and not event.echo and event.keycode==KEY_ESCAPE:
 			machine_ui.close_menu()
@@ -178,6 +196,10 @@ func _unhandled_input(event: InputEvent) -> void:
 						seed_index=next
 						farm.assign_slot(selected,Farm.CATALOG[ids[next]]["seed"])
 						break
+			KEY_G:
+				if not chest_open and not husbandry.menu_open and not menu_open and not show_stock and pending.is_empty():
+					message=farm.nutrition.eat(farm,farm.quickbar[selected],Nutrition.absolute(_clock()))
+					_save()
 			KEY_I:
 				_toggle_inventory()
 			KEY_B:
@@ -292,7 +314,7 @@ func _assign(item: String) -> void:
 	_refresh()
 
 func _toggle_inventory() -> void:
-	if (is_instance_valid(fishing) and fishing.active) or (is_instance_valid(machine_ui) and machine_ui.open):
+	if (is_instance_valid(fishing) and fishing.active) or (is_instance_valid(machine_ui) and machine_ui.open) or (is_instance_valid(kitchen_ui) and kitchen_ui.open):
 		return
 	show_stock=not show_stock
 	inventory_ui.call("toggle",show_stock)
@@ -327,11 +349,19 @@ func _start_action(point: Vector2,restore: bool) -> void:
 	if builder.selected!="":
 		_act(point,restore,item)
 		return
-	if MachinesUI.Model.MACHINES.has(item):
+	if MachinesUI.Model.MACHINES.has(item) or item=="campfire":
 		builder.select(item)
 		message=builder.place(builder.tile_at(point))
 		builder.select("")
 		_refresh()
+		return
+	var camp_cell: Vector2i=builder.piece_at(builder.tile_at(point))
+	if camp_cell.x>=0 and farm.buildings[camp_cell]["kind"]=="campfire" and player.global_position.distance_to(point)<=64.0:
+		if restore:
+			message=builder.interact(point,true)
+			_refresh()
+		else:
+			kitchen_ui.show_station("campfire")
 		return
 	var machine_cell: Vector2i=machine_ui.find(point)
 	if machine_cell.x>=0:
@@ -345,6 +375,7 @@ func _start_action(point: Vector2,restore: bool) -> void:
 			message="Aproxime-se do alvo."
 			_refresh()
 			return
+		farm.nutrition.spend(1,Nutrition.absolute(_clock()))
 		pending={"point":point,"restore":restore,"item":item,"impacted":false}
 		action_elapsed=0.0
 		player.set("tool_busy",true)
@@ -381,7 +412,15 @@ func _refresh() -> void:
 	if hud==null or inventory_ui==null:
 		return
 	var item: String=farm.quickbar[selected]
-	hud.text="E ou clique: interagir | Q: trocar semente no espaço | I: mochila | C: fabricar/construir | B: criação | F5: salvar\n%s · Regador %d/8\n%s" % [inventory_ui.call("item_name",item),farm.water_charges,message]
+	hud.text="E ou clique: interagir | Q: trocar semente no espaço | I: mochila | C: fabricar/construir | B: criação | G: comer | F5: salvar\n%s · Regador %d/8\n%s" % [inventory_ui.call("item_name",item),farm.water_charges,message]
+	if initialized:
+		var now: float=Nutrition.absolute(_clock())
+		var effect_id: String=farm.nutrition.active(now)
+		hud.text+="\nVigor %d/100" % farm.nutrition.vigor
+		if effect_id!="":
+			hud.text+=" · "+str(Nutrition.EFFECTS[effect_id]["name"])
+			if farm.nutrition.extra(now)>0:
+				hud.text+=" +%d" % farm.nutrition.extra(now)
 	inventory_ui.call("sync",farm.stock,farm.quickbar,selected,farm.water_charges)
 
 func _save() -> bool:
@@ -473,6 +512,8 @@ func _home_interact(target: String) -> void:
 			message="Propriedade."
 		"bed":
 			message=get_node("/root/MundoSimulacao").call("sleep_until_morning")
+			if message.begins_with("Você acordou"):
+				farm.nutrition.restore()
 			_save()
 		"chest":
 			chest_open=true
@@ -480,7 +521,7 @@ func _home_interact(target: String) -> void:
 			chest_ui.call("update_items",farm.stock,farm.chest)
 			chest_ui.call("show_menu",true)
 		"woodStove":
-			message="Fogão a lenha · culinária em desenvolvimento."
+			kitchen_ui.show_station("stove")
 		_:
 			message="Aproxime-se da cama, baú ou saída."
 	_refresh()
@@ -519,3 +560,6 @@ func _machine_message(value: String) -> void:
 
 func machines_ready() -> bool:
 	return is_instance_valid(machine_ui) and is_instance_valid(machine_ui.panel)
+
+func kitchen_ready() -> bool:
+	return is_instance_valid(kitchen_ui) and is_instance_valid(kitchen_ui.panel)

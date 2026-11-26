@@ -280,6 +280,35 @@ func _run() -> void:
 		push_error("Machine collection failed")
 		quit(1)
 		return
+	var kitchen_model=load("res://scripts/cozinha_estado.gd")
+	var food_farm=load("res://scripts/fazenda_estado.gd").new()
+	food_farm.transact({},{"fish":1,"wood":1})
+	food_farm.nutrition.spend(60,480.0)
+	if kitchen_model.DISHES.size()!=25 or kitchen_model.cook(food_farm,"roastedFish","stove")!="Receita incompatível com esta estação." or kitchen_model.cook(food_farm,"roastedFish","campfire")!="Peixe assado pronto!":
+		push_error("Kitchen station rule failed")
+		quit(1)
+		return
+	food_farm.nutrition.eat(food_farm,"roastedFish",480.0)
+	if food_farm.nutrition.vigor!=70 or not is_equal_approx(food_farm.nutrition.fishing_bonus(481.0),0.07) or food_farm.stock.get("fish",0)!=0 or food_farm.stock.get("wood",0)!=0:
+		push_error("Food effect or ingredient transaction failed")
+		quit(1)
+		return
+	var food_clone=load("res://scripts/fazenda_estado.gd").new()
+	if not food_clone.import_state(food_farm.export_state(),1) or food_clone.nutrition.vigor!=70 or food_clone.nutrition.active(500.0)!="roastedFish" or food_clone.nutrition.active(840.0)!="":
+		push_error("Nutrition persistence or expiration failed")
+		quit(1)
+		return
+	food_clone.nutrition.spend(100,841.0)
+	if not is_equal_approx(food_clone.nutrition.speed(841.0),0.7):
+		push_error("Exhaustion failed")
+		quit(1)
+		return
+	food_clone.nutrition.restore()
+	if food_clone.nutrition.vigor!=100:
+		push_error("Sleep vigor recovery failed")
+		quit(1)
+		return
+	print("NATIVE_KITCHEN_SMOKE_OK")
 	print("NATIVE_MACHINES_SMOKE_OK")
 	print("NATIVE_FISHING_SMOKE_OK")
 	print("NATIVE_ANIMALS_SMOKE_OK")
