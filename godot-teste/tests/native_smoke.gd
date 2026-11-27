@@ -348,17 +348,19 @@ func _run() -> void:
 		push_error("Food effect or consumption transaction failed")
 		quit(1)
 		return
-	if food_clone.nutrition.vigor!=100 or food_clone.nutrition.active(500.0)!="roastedFish" or food_clone.nutrition.active(840.0)!="" or food_clone.quality_counts("roastedFish",1)["good"]!=1:
+	# A cópia de cima foi feita antes de comer; o vigor e o efeito precisam de uma cópia nova.
+	var nutrition_clone=load("res://scripts/fazenda_estado.gd").new()
+	if not nutrition_clone.import_state(food_farm.export_state(),1) or nutrition_clone.nutrition.vigor!=70 or nutrition_clone.nutrition.active(500.0)!="roastedFish" or nutrition_clone.nutrition.active(840.0)!="" or nutrition_clone.stock.get("roastedFish",0)!=0:
 		push_error("Nutrition persistence or expiration failed")
 		quit(1)
 		return
-	food_clone.nutrition.spend(100,841.0)
-	if not is_equal_approx(food_clone.nutrition.speed(841.0),0.7):
+	nutrition_clone.nutrition.spend(100,841.0)
+	if not is_equal_approx(nutrition_clone.nutrition.speed(841.0),0.7):
 		push_error("Exhaustion failed")
 		quit(1)
 		return
-	food_clone.nutrition.restore()
-	if food_clone.nutrition.vigor!=100:
+	nutrition_clone.nutrition.restore()
+	if nutrition_clone.nutrition.vigor!=100:
 		push_error("Sleep vigor recovery failed")
 		quit(1)
 		return
