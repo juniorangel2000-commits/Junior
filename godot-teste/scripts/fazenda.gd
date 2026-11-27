@@ -6,11 +6,12 @@ var player: CharacterBody2D
 var scene: Node2D
 var ground: Node2D
 var crops: Node2D
-var hud: Label
+const Hud=preload("res://scripts/hud.gd")
+var hud: CanvasLayer
 var selected:=0
 var seed_index:=0
 var ids: Array=Farm.CATALOG.keys()
-var message: String="E ou clique: interagir"
+var message: String=""
 var elapsed:=0.0
 var initialized:=false
 var show_stock:=false
@@ -52,26 +53,24 @@ class SoilLayer extends Node2D:
 	func _draw() -> void:
 		if farm==null:
 			return
+		# Canteiro como leira de terra revolvida: cantos cortados, sem grade nem riscos.
+		# Terra molhada escurece; a seca fica com a cor do solo e uma borda clara de luz.
 		for tile in farm.plots:
 			var crop: Dictionary=farm.plots[tile]
 			var wet: bool=not crop.is_empty() and bool(crop["watered"])
-			var r:=Rect2(Vector2(tile)*32.0+Vector2(1,1),Vector2(30,30))
-			draw_rect(r,Color(0.24,0.13,0.08,0.52) if wet else Color(0.48,0.26,0.12,0.40))
-			for y in [8,16,24]:
-				draw_line(r.position+Vector2(3,y),r.position+Vector2(27,y),Color(0.21,0.11,0.06,0.32),1.0)
+			var o:=Vector2(tile)*32.0
+			var mound:=PackedVector2Array([o+Vector2(5,2),o+Vector2(27,2),o+Vector2(30,5),o+Vector2(30,27),o+Vector2(27,30),o+Vector2(5,30),o+Vector2(2,27),o+Vector2(2,5)])
+			draw_colored_polygon(mound,Color(0.20,0.11,0.06,0.42) if wet else Color(0.43,0.26,0.13,0.30))
+			draw_line(o+Vector2(6,3),o+Vector2(26,3),Color(0.86,0.66,0.42,0.10 if wet else 0.22),1.0)
+			draw_line(o+Vector2(6,29),o+Vector2(26,29),Color(0.12,0.06,0.03,0.22),1.0)
+			if wet:
+				for p in [Vector2(9,11),Vector2(21,9),Vector2(15,20),Vector2(24,23),Vector2(7,24)]:
+					draw_circle(o+p,1.2,Color(0.55,0.72,0.86,0.18))
 
 func _ready() -> void:
 	get_node("/root/MundoSimulacao").connect("novo_dia",_day_changed)
-	var layer:=CanvasLayer.new()
-	layer.layer=12
-	add_child(layer)
-	hud=Label.new()
-	hud.position=Vector2(12,90)
-	hud.add_theme_color_override("font_shadow_color",Color.BLACK)
-	hud.add_theme_constant_override("shadow_offset_x",2)
-	hud.add_theme_constant_override("shadow_offset_y",2)
-	hud.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	layer.add_child(hud)
+	hud=Hud.new()
+	add_child(hud)
 	inventory_ui=InventoryUI.new()
 	add_child(inventory_ui)
 	inventory_ui.connect("slot_selected",_select_slot)
@@ -111,7 +110,7 @@ func _process(delta: float) -> void:
 		player.add_child(action_sprite)
 		resources.build(scene,farm,player.call("mundo_colisoes"))
 		initialized=true
-		if not "--native-export-smoke" in OS.get_cmdline_user_args():
+		if _saves_enabled():
 			_load()
 		resources.restore()
 		builder.setup(scene,player,farm)
@@ -411,20 +410,39 @@ func _advance_action(delta: float) -> void:
 func _refresh() -> void:
 	if hud==null or inventory_ui==null:
 		return
+	# O aviso aparece uma vez e some; o mesmo texto pode voltar na próxima ação.
+	if message!="":
+		hud.call("toast",message)
+		message=""
 	var item: String=farm.quickbar[selected]
-	hud.text="E ou clique: interagir | Q: trocar semente no espaço | I: mochila | C: fabricar/construir | B: criação | G: comer | F5: salvar\n%s · Regador %d/8\n%s" % [inventory_ui.call("item_name",item),farm.water_charges,message]
+	var held: String=str(inventory_ui.call("item_name",item))
+	if item=="wateringCan":
+		held+=" · %d/%d cargas" % [farm.water_charges,Farm.WATER_CAPACITY]
+	elif item!="" and item!="hand":
+		held+=" · %d" % int(farm.stock.get(item,0))
+		var counts: Dictionary=farm.quality_counts(item,int(farm.stock.get(item,0)))
+		if int(counts["good"])+int(counts["excellent"])>0:
+			held+=" · "+farm.quality_label(item)
+	var effect_text:=""
+	var extra:=0
 	if initialized:
 		var now: float=Nutrition.absolute(_clock())
 		var effect_id: String=farm.nutrition.active(now)
-		hud.text+="\nVigor %d/100" % farm.nutrition.vigor
+		extra=farm.nutrition.extra(now)
 		if effect_id!="":
-			hud.text+=" · "+str(Nutrition.EFFECTS[effect_id]["name"])
-			if farm.nutrition.extra(now)>0:
-				hud.text+=" +%d" % farm.nutrition.extra(now)
+			var left: int=int(ceil((float(farm.nutrition.effect["until"])-now)/60.0))
+			effect_text="%s · %dh" % [Nutrition.EFFECTS[effect_id]["name"],maxi(1,left)]
+	hud.call("sync",held,farm.nutrition.vigor,extra,effect_text)
+	hud.call("set_visible_in_world",not show_stock)
 	inventory_ui.call("sync",farm.stock,farm.quickbar,selected,farm.water_charges)
 
+# Smoke do executável e fotos de conferência rodam sem ler nem gravar o progresso.
+static func _saves_enabled() -> bool:
+	var args:=OS.get_cmdline_user_args()
+	return not "--native-export-smoke" in args and not "--sem-save" in args
+
 func _save() -> bool:
-	if not initialized or "--native-export-smoke" in OS.get_cmdline_user_args():
+	if not initialized or not _saves_enabled():
 		return false
 	var clock:=_clock()
 	var f:=FileAccess.open(SAVE+".tmp",FileAccess.WRITE)

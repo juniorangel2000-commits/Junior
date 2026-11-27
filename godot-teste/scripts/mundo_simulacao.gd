@@ -10,6 +10,8 @@ var _shadow: Node2D
 var _light: ShaderMaterial
 var _rain: Control
 var _label: Label
+var _time_label: Label
+var _weather_label: Label
 const PREVIEW_TIMES := [315,375,480,720,900,1050,1110,1170,1320]
 var _preview_index := -1
 var _inside := false
@@ -63,26 +65,36 @@ func _make_overlays() -> void:
 	var hud := CanvasLayer.new()
 	hud.layer = 11
 	add_child(hud)
+	# Relógio em papel com moldura de madeira (V51): data, hora grande e tempo.
 	var panel := PanelContainer.new()
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.theme = preload("res://scripts/tema_ui.gd").theme()
+	panel.add_theme_stylebox_override("panel", preload("res://scripts/tema_ui.gd").frame("paper",0))
 	hud.add_child(panel)
 	panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	panel.offset_left = -350
+	panel.offset_left = -262
 	panel.offset_right = -12
 	panel.offset_top = 12
-	panel.offset_bottom = 76
-	var box_style := StyleBoxFlat.new()
-	box_style.bg_color = Color(0.07,0.09,0.12,0.77)
-	box_style.set_corner_radius_all(6)
-	box_style.content_margin_left = 12
-	box_style.content_margin_right = 12
-	box_style.content_margin_top = 7
-	box_style.content_margin_bottom = 7
-	panel.add_theme_stylebox_override("panel",box_style)
+	panel.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 0)
+	panel.add_child(box)
 	_label = Label.new()
 	_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	panel.add_child(_label)
+	_label.add_theme_font_size_override("font_size", 15)
+	box.add_child(_label)
+	var row := HBoxContainer.new()
+	box.add_child(row)
+	_time_label = Label.new()
+	_time_label.add_theme_font_size_override("font_size", 26)
+	row.add_child(_time_label)
+	_weather_label = Label.new()
+	_weather_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_weather_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_weather_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_weather_label.add_theme_font_size_override("font_size", 14)
+	_weather_label.add_theme_color_override("font_color", Color("#7a6142"))
+	row.add_child(_weather_label)
 
 func _process(delta: float) -> void:
 	if not is_instance_valid(_scene):
@@ -115,7 +127,9 @@ func _refresh() -> void:
 	if is_instance_valid(_shadow):
 		_shadow.call("update_sun",_state["shadow_offset"],_state["shadow_opacity"])
 	var phase := _phase(minute)
-	_label.text = "%s %d · Ano %d\n%02d:%02d · %s · %s" % [SEASONS[int(_state["season"])],int(_state["day_of_season"]),int(_state["year"]),int(minute / 60.0),minute % 60,phase,"Chuva" if raining else "Tempo aberto"]
+	_label.text = "%s %d · Ano %d" % [SEASONS[int(_state["season"])],int(_state["day_of_season"]),int(_state["year"])]
+	_time_label.text = "%02d:%02d" % [int(minute / 60.0),minute % 60]
+	_weather_label.text = "%s\n%s" % [phase,"Chuva" if raining else "Tempo aberto"]
 	if day != _last_day:
 		_last_day = day
 		novo_dia.emit(day,raining)

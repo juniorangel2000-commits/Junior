@@ -6,7 +6,7 @@ var _tempo := 0.0
 func _ready() -> void:
 	layer = 100
 	_label = Label.new()
-	_label.position = Vector2(12, 12)
+	_label.position = Vector2(12, 48)
 	_label.add_theme_color_override("font_color", Color.WHITE)
 	_label.add_theme_color_override("font_shadow_color", Color.BLACK)
 	_label.add_theme_constant_override("shadow_offset_x", 2)
@@ -33,7 +33,7 @@ func _process(delta: float) -> void:
 func _atualizar() -> void:
 	var player := get_tree().get_first_node_in_group("native_player")
 	var backend := "C++ ativo" if is_instance_valid(player) and player.get("usando_cpp") else "GDScript (alternativa)"
-	_label.text = "Native V0.12 | %s\nFPS: %d | Memória estática Godot: %.1f MiB" % [backend, Engine.get_frames_per_second(), float(OS.get_static_memory_usage()) / 1048576.0]
+	_label.text = "Native V0.15 | %s\nFPS: %d | Memória estática Godot: %.1f MiB" % [backend, Engine.get_frames_per_second(), float(OS.get_static_memory_usage()) / 1048576.0]
 
 ## Runs only when explicitly requested by the CI, not during normal gameplay.
 func _smoke_export() -> void:

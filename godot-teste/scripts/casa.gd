@@ -70,11 +70,15 @@ func enter(saved: Vector2=SPAWN) -> void:
 	var cam: Camera2D=player.get_node("Camera")
 	old_limits=[cam.limit_left,cam.limit_top,cam.limit_right,cam.limit_bottom]
 	old_zoom=cam.zoom
-	cam.limit_left=3800
-	cam.limit_top=-400
-	cam.limit_right=4800
-	cam.limit_bottom=720
 	cam.zoom=Vector2.ONE*2.0
+	# Limites do cômodo com folga para centralizá-lo quando ele cabe inteiro na tela.
+	var view: Vector2=player.get_viewport_rect().size/cam.zoom
+	var room:=Rect2(ORIGIN,Vector2(384,320))
+	var pad:=Vector2(maxf(0.0,(view.x-room.size.x)*0.5),maxf(0.0,(view.y-room.size.y)*0.5))
+	cam.limit_left=int(room.position.x-pad.x)
+	cam.limit_top=int(room.position.y-pad.y)
+	cam.limit_right=int(room.end.x+pad.x)
+	cam.limit_bottom=int(room.end.y+pad.y)
 	player.set("home_mode",true)
 	player.set("home_controller",self)
 	player.global_position=ORIGIN+(saved if walkable(saved) else SPAWN)
