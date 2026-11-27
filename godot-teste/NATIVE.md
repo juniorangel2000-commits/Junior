@@ -89,3 +89,9 @@ Jobs de máquinas registram a qualidade conservadora de entrada (a menor qualida
 
 ## V0.14.2 — qualidade preservada na culinária
 Pratos preparados herdam a menor qualidade entre os ingredientes alimentares consumidos; ingrediente comum torna o prato comum, e lenha usada como combustível não interfere na classificação. A qualidade é atribuída somente após a transação de cozinha ter sucesso, mantém compatibilidade com saves antigos e round-trip no save da mochila. Smoke cobre peixe bom → peixe assado bom, consumo de ingredientes e persistência. Regra de protótipo coerente com o ledger nativo; não representa venda/efeito de qualidade balanceados. CI headless não valida a apresentação visual nem o balanceamento por playtest.
+
+
+## V0.14.3 — smoke corrigido e testes no Linux
+As execuções CI 45957774531 e 45965051749 (V0.14.2 e V0.14.2.1) falharam em "Nutrition persistence or expiration failed". A cópia do save usada para conferir o vigor e o efeito "Mão firme" era feita antes de comer o peixe assado, então não podia ter vigor 70 nem o efeito; a V0.14.2.1 passou a esperar vigor 100, o que escondia a regra. Agora a qualidade do prato é conferida numa cópia feita antes de comer, e o vigor 70, o efeito até 840 min e o consumo do prato numa cópia nova feita depois. Nenhuma regra do jogo mudou.
+
+A extensão agora compila também no Linux x64 (`native/build-linux.sh`), e `native/test-linux.sh` roda os mesmos testes do CI (smoke interno com os marcadores exigidos pelo workflow, smoke do jogo e ausência de erros nos logs) com a Godot 4.4 para Linux. Serve para testar antes de enviar; o executável publicado continua sendo o de Windows. Os dois smokes passaram no Linux com o C++ carregado. CI de Windows e revisão visual pendentes.

@@ -4,3 +4,4 @@ compatibility_minimum = "4.4"
 
 [libraries]
 windows.debug.x86_64 = "res://bin/after_rain_native.dll"
+linux.debug.x86_64 = "res://bin/libafter_rain_native.so"

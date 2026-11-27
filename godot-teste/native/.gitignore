@@ -5,3 +5,4 @@ godot-cpp/
 *.lib
 *.exp
 *.pdb
+*.o
