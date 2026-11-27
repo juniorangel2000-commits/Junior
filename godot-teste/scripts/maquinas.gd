@@ -89,9 +89,14 @@ func refresh() -> void:
 			var left:=ceili(job["ready"]-now)
 			info.text+=" · %dh %02dmin restantes" % [int(left/60.0),left%60]
 		return
+	if kind=="beehive":
+		info.text+=" · "+("as abelhas descansam no Inverno" if Model.winter(now) else "sem enxame trabalhando")
+		button("Soltar as abelhas (mel em 4 dias)",func():
+			changed.emit(Model.start(farm,tile,"hive-honey",now))
+			refresh())
 	for id in Model.RECIPES:
 		var r: Dictionary=Model.RECIPES[id]
-		if r["machine"]!=kind:
+		if r["machine"]!=kind or id=="hive-honey":
 			continue
 		var ingredients: Array[String]=[]
 		for item in r["cost"]:

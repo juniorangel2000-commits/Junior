@@ -33,7 +33,7 @@ func build(root: Node2D) -> void:
 				bridge_parts[key]["back" if art.ends_with("-back") else "front"] = Rect2(p, size)
 			elif art.begins_with("fence-new-") or art.begins_with("gate-"):
 				fences[Vector2i(p.round())] = true
-			elif art.begins_with("asset-tree-") or art.begins_with("asset-pine-"):
+			elif art.begins_with("asset-tree-") or art.begins_with("asset-pine-") or art.begins_with("orchard-"):
 				_add_block(p + Vector2(0, -9), Vector2(clampf(size.x * 0.17, 24, 38), 20),sprite.get_instance_id())
 			elif art == "asset-house":
 				_add_block(p + Vector2(0, -size.y * 0.23), Vector2(size.x * 0.80, size.y * 0.42))

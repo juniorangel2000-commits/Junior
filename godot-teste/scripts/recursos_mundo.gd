@@ -13,8 +13,15 @@ const RULES := {
 	"fiber":{"name":"Fibras vegetais","tool":"hand","hits":1,"drops":{"fiber":6}},
 	"scrap":{"name":"Sucata","tool":"hand","hits":1,"drops":{"scrap":2}},
 	"herb":{"name":"Ervas","tool":"hand","hits":1,"drops":{"herb":2}},
-	"mushroom":{"name":"Cogumelos","tool":"hand","hits":1,"drops":{"mushroom":2}}
+	"mushroom":{"name":"Cogumelos","tool":"hand","hits":1,"drops":{"mushroom":2}},
+	"grass":{"name":"Capim alto","tool":"hand","hits":1,"drops":{"freshGrass":3,"fiber":1}}
 }
+## Pomar (V51, src/data/orchard.ts): cada árvore dá a fruta da sua estação e volta a dar 3 dias
+## depois. A árvore não é cortada nem some.
+const FRUIT_SEASONS:={"orange":[3,0],"pear":[1],"apple":[2]}
+const FRUIT_NAMES:={"apple":"Maçã","pear":"Pera","orange":"Laranja"}
+const FRUIT_REGROW_DAYS:=3
+var today:=1
 var entries: Dictionary={}
 var farm
 var world: Node2D
@@ -32,7 +39,9 @@ static func kind_for(art: String) -> String:
 	if art=="asset-scrap": return "scrap"
 	if art=="ecology-herbs": return "herb"
 	if art=="forest-detail-mushrooms": return "mushroom"
-	if art in ["forest-detail-bush","forest-detail-fern","forest-detail-reeds","forest-detail-flowers"]: return "fiber"
+	if art=="forest-detail-reeds": return "grass"
+	if art.begins_with("orchard-"): return "fruit"
+	if art in ["forest-detail-bush","forest-detail-fern","forest-detail-flowers"]: return "fiber"
 	return ""
 
 func build(scene: Node2D,inventory,col: Node2D) -> void:
@@ -51,6 +60,8 @@ func build(scene: Node2D,inventory,col: Node2D) -> void:
 				continue
 			var id:=str(scene.get_path_to(sprite))
 			entries[id]={"sprite":sprite,"kind":kind,"position":sprite.global_position,"shape_id":sprite.get_instance_id()}
+			if kind=="fruit":
+				entries[id]["fruit"]=sprite.texture.resource_path.get_file().get_basename().trim_prefix("orchard-")
 
 func restore() -> void:
 	for id in farm.resource_progress.keys():
@@ -83,10 +94,25 @@ func target(point: Vector2,origin: Vector2) -> String:
 			best=id
 	return best
 
+func pick_fruit(id: String) -> String:
+	var fruit: String=entries[id]["fruit"]
+	var season:=int((today-1)/28.0)%4
+	if not season in FRUIT_SEASONS[fruit]:
+		return "%s: fora da estação." % FRUIT_NAMES[fruit]
+	var last: int=int(farm.orchard.get(id,-999))
+	if today-last<FRUIT_REGROW_DAYS:
+		return "%s: volta a dar fruta em %d dia(s)." % [FRUIT_NAMES[fruit],FRUIT_REGROW_DAYS-(today-last)]
+	if not farm.transact({},{fruit:2}):
+		return "Mochila cheia."
+	farm.orchard[id]=today
+	return "%s ×2 colhida." % FRUIT_NAMES[fruit]
+
 func hit(id: String,tool: String) -> String:
 	if not entries.has(id):
 		return "Nenhum recurso ao alcance."
 	var entry: Dictionary=entries[id]
+	if entry["kind"]=="fruit":
+		return pick_fruit(id) if tool=="hand" else "Use a mão para colher a fruta."
 	var state: Dictionary=farm.resource_progress.get(id,{"stage":0,"hits":0})
 	var stage: int=state["stage"]
 	if stage==2:

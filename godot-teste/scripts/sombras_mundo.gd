@@ -26,7 +26,7 @@ func build(scene: Node2D) -> void:
 			if sprite.texture == null:
 				continue
 			var art := sprite.texture.resource_path.get_file()
-			var tall := art.begins_with("asset-tree-") or art.begins_with("asset-pine-")
+			var tall := art.begins_with("asset-tree-") or art.begins_with("asset-pine-") or art.begins_with("orchard-")
 			var solid := art.begins_with("lake-rock-") or art.begins_with("detailed-ore-") or art == "asset-house.png" or art == "property-well-idle.png" or art.begins_with("pet-shelter-") or art.begins_with("fence-new-") or art.begins_with("gate-") or art.begins_with("forest-detail-stump") or art.begins_with("forest-detail-log")
 			if not tall and not solid:
 				continue

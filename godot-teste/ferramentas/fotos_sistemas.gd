@@ -114,7 +114,7 @@ func _run() -> void:
 
 	# Máquinas no pátio da oficina, perto da ponte norte.
 	var builder=farm_node.get("builder")
-	var machines:={Vector2i(36,22):"cheesePress",Vector2i(37,22):"butterChurn",Vector2i(39,22):"forge",Vector2i(36,25):"clayOven",Vector2i(38,25):"preserveKeg",Vector2i(37,28):"stoneMill"}
+	var machines:={Vector2i(39,28):"beehive",Vector2i(36,22):"cheesePress",Vector2i(37,22):"butterChurn",Vector2i(39,22):"forge",Vector2i(36,25):"clayOven",Vector2i(38,25):"preserveKeg",Vector2i(37,28):"stoneMill"}
 	for tile in machines:
 		farm.buildings[tile]={"kind":machines[tile],"rotation":0,"open":false}
 		builder.call("_spawn",tile)
@@ -148,6 +148,9 @@ func _run() -> void:
 	home.call("enter")
 	await _shot("08-casa")
 	home.call("leave")
+	# Pomar com macieiras, pereiras e laranjeiras.
+	player.global_position=Vector2(330,1180)
+	await _shot("14-pomar")
 	# Lago e pedreira.
 	player.global_position=Vector2(300,1700)
 	await _shot("09-lago")

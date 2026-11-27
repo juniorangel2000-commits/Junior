@@ -379,6 +379,53 @@ func _run() -> void:
 		quit(1)
 		return
 	print("NATIVE_QUALITY_COOKING_SMOKE_OK")
+	# Colmeia (V51): mel em 4 dias, cera na 3ª coleta, recomeça sozinha e para no Inverno.
+	var hive_farm=load("res://scripts/fazenda_estado.gd").new()
+	var hive_tile:=Vector2i(40,40)
+	hive_farm.buildings[hive_tile]={"kind":"beehive","rotation":0,"open":false}
+	var hive_model=load("res://scripts/maquinas_estado.gd")
+	var t: float=hive_model.clock(1,600.0)
+	if hive_model.start(hive_farm,hive_tile,"hive-honey",t)!="Produção iniciada." or hive_model.collect(hive_farm,hive_tile,t+100.0)!="Ainda está trabalhando.":
+		push_error("Beehive start failed")
+		quit(1)
+		return
+	for i in 3:
+		t+=5760.0
+		hive_model.collect(hive_farm,hive_tile,t)
+	if hive_farm.stock.get("honey",0)!=3 or hive_farm.stock.get("beeswax",0)!=1 or not hive_farm.machine_jobs.has(hive_tile):
+		push_error("Beehive honey/wax cycle failed")
+		quit(1)
+		return
+	if hive_model.start(load("res://scripts/fazenda_estado.gd").new(),hive_tile,"hive-honey",hive_model.clock(85,600.0))!="Máquina ou receita inexistente." or not hive_model.winter(hive_model.clock(85,600.0)) or hive_model.winter(hive_model.clock(84,600.0)):
+		push_error("Beehive winter rule failed")
+		quit(1)
+		return
+	var hive_clone=load("res://scripts/fazenda_estado.gd").new()
+	if not hive_clone.import_state(hive_farm.export_state(),int(t/1440.0)+2) or int(hive_clone.buildings[hive_tile].get("harvests",0))!=3:
+		push_error("Beehive save failed")
+		quit(1)
+		return
+	# Pomar: maçã só no Outono, volta em 3 dias; o registro vai no save.
+	var orchard_res=load("res://scripts/recursos_mundo.gd").new()
+	var orchard_farm=load("res://scripts/fazenda_estado.gd").new()
+	orchard_res.farm=orchard_farm
+	orchard_res.entries["a"]={"kind":"fruit","fruit":"apple"}
+	orchard_res.today=10
+	var off_season: String=orchard_res.pick_fruit("a")
+	orchard_res.today=60
+	var picked: String=orchard_res.pick_fruit("a")
+	orchard_res.today=61
+	var early: String=orchard_res.pick_fruit("a")
+	if off_season!="Maçã: fora da estação." or picked!="Maçã ×2 colhida." or not early.begins_with("Maçã: volta") or orchard_farm.stock.get("apple",0)!=2:
+		push_error("Orchard rules failed: %s / %s / %s" % [off_season,picked,early])
+		quit(1)
+		return
+	var orchard_clone=load("res://scripts/fazenda_estado.gd").new()
+	if not orchard_clone.import_state(orchard_farm.export_state(),61) or orchard_clone.orchard.get("a",0)!=60 or orchard_clone.import_state(orchard_farm.export_state(),59):
+		push_error("Orchard save failed")
+		quit(1)
+		return
+	print("NATIVE_HIVE_ORCHARD_SMOKE_OK")
 	print("NATIVE_KITCHEN_SMOKE_OK")
 	print("NATIVE_MACHINES_SMOKE_OK")
 	print("NATIVE_FISHING_SMOKE_OK")

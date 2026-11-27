@@ -39,7 +39,7 @@ jobs:
           & $engine.FullName --headless --path godot-teste --verbose --log-file $smokeLog --script res://tests/native_smoke.gd
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           if (-not (Test-Path $smokeLog)) { throw 'Smoke log missing.' }
-          foreach ($marker in @('NATIVE_SMOKE_OK','NATIVE_ANIMALS_SMOKE_OK','NATIVE_FISHING_SMOKE_OK','NATIVE_MACHINES_SMOKE_OK','NATIVE_KITCHEN_SMOKE_OK','NATIVE_QUALITY_COOKING_SMOKE_OK','NATIVE_HOME_SMOKE_OK','NATIVE_BUILD_SMOKE_OK','NATIVE_RESOURCE_SMOKE_OK','NATIVE_INVENTORY_SMOKE_OK','NATIVE_FARM_SMOKE_OK')) {
+          foreach ($marker in @('NATIVE_SMOKE_OK','NATIVE_ANIMALS_SMOKE_OK','NATIVE_FISHING_SMOKE_OK','NATIVE_MACHINES_SMOKE_OK','NATIVE_KITCHEN_SMOKE_OK','NATIVE_QUALITY_COOKING_SMOKE_OK','NATIVE_HIVE_ORCHARD_SMOKE_OK','NATIVE_HOME_SMOKE_OK','NATIVE_BUILD_SMOKE_OK','NATIVE_RESOURCE_SMOKE_OK','NATIVE_INVENTORY_SMOKE_OK','NATIVE_FARM_SMOKE_OK')) {
             if (-not (Select-String -Path $smokeLog -Pattern $marker -SimpleMatch -Quiet)) { throw "Missing smoke marker: $marker" }
           }
           if (Select-String -Path $smokeLog -Pattern 'SCRIPT ERROR:|^ERROR:' -Quiet) { throw 'Godot script/runtime error during smoke test.' }

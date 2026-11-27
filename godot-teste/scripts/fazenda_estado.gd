@@ -11,6 +11,7 @@ var buildings: Dictionary = {}
 var chest: Dictionary = {}
 var item_quality: Dictionary = {}
 var fish_records: Dictionary = {}
+var orchard: Dictionary = {}
 var machine_jobs: Dictionary = {}
 const Kitchen=preload("res://scripts/cozinha_estado.gd")
 var nutrition=Kitchen.new()
@@ -240,7 +241,7 @@ func stage(crop: Dictionary) -> int:
 	return 0 if growth<=0.0 else (4 if growth>=1.0 else (3 if growth>=2.0/3.0 else (2 if growth>=1.0/3.0 else 1)))
 
 func export_state() -> Dictionary:
-	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate(),"resource_progress":resource_progress.duplicate(true),"buildings":buildings.duplicate(true),"chest":chest.duplicate(true),"item_quality":item_quality.duplicate(true),"livestock":livestock.export_state(),"fish_records":fish_records.duplicate(true),"machine_jobs":machine_jobs.duplicate(true),"nutrition":nutrition.export_state()}
+	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate(),"resource_progress":resource_progress.duplicate(true),"buildings":buildings.duplicate(true),"chest":chest.duplicate(true),"item_quality":item_quality.duplicate(true),"livestock":livestock.export_state(),"fish_records":fish_records.duplicate(true),"machine_jobs":machine_jobs.duplicate(true),"nutrition":nutrition.export_state(),"orchard":orchard.duplicate()}
 
 func import_state(data: Dictionary,today: int) -> bool:
 	var s=data.get("stock")
@@ -252,6 +253,9 @@ func import_state(data: Dictionary,today: int) -> bool:
 		if not item in allowed:
 			allowed.append(item)
 	allowed.append("campfire")
+	for item in ["beehive","pear","orange"]:
+		if not item in allowed:
+			allowed.append(item)
 	for id in Kitchen.DISHES:
 		if not id in allowed:
 			allowed.append(id)
@@ -331,6 +335,13 @@ func import_state(data: Dictionary,today: int) -> bool:
 	for key in box:
 		if not key in allowed or not box[key] is int or box[key]<0 or box[key]>999999:
 			return false
+	# Pomar: id da árvore → último dia colhido (campo opcional; saves antigos não têm).
+	var picked: Variant=data.get("orchard",{})
+	if not picked is Dictionary or picked.size()>256:
+		return false
+	for key in picked:
+		if not key is String or not picked[key] is int or picked[key]<1 or picked[key]>today:
+			return false
 	var records: Variant=data.get("fish_records",{})
 	if not preload("res://scripts/pesca_estado.gd").valid_records(records,today):
 		return false
@@ -346,6 +357,7 @@ func import_state(data: Dictionary,today: int) -> bool:
 	chest=box.duplicate(true)
 	item_quality=qledger.duplicate(true)
 	buildings=pieces.duplicate(true)
+	orchard=picked.duplicate()
 	resource_progress=resources.duplicate(true)
 	water_charges=charges
 	quickbar=slots.duplicate()

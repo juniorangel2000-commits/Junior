@@ -249,6 +249,7 @@ func _act(point: Vector2,restore: bool,item: String) -> void:
 			_refresh()
 			return
 	if item in ["hand","hatchet","pickaxe"]:
+		resources.today=int(_clock()["day"])
 		var id: String=resources.target(point,player.global_position)
 		if id!="":
 			message=resources.hit(id,item)

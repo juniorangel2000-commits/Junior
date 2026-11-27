@@ -212,10 +212,13 @@ def main() -> None:
         new.append(obj("forest-detail-bush.png", x, y, 56, 44))
 
     # Pomar em fileiras a oeste da casa.
-    arts = ["asset-tree-0.png", "asset-tree-1.png", "asset-tree-2.png"]
+    # Árvores do pomar da V51 (src/data/orchard-art.ts): tamanho e pivô originais.
+    FRUIT = [("orchard-apple.png", 154, 147), ("orchard-pear.png", 143, 155), ("orchard-orange.png", 161, 153)]
     for j, y in enumerate(ORCHARD_Y):
         for i, x in enumerate(ORCHARD_X):
-            new.append(tree(arts[(i + j) % 3], x + (16 if j % 2 else 0), y, (i + j) % 2 == 1, ORCHARD_SCALE))
+            art, w, h = FRUIT[(i + j) % 3]
+            new.append({"x": x + (16 if j % 2 else 0), "y": y, "ox": 0.5, "oy": 0.96, "w": round(w * 0.8), "h": round(h * 0.8),
+                        "flip": (i + j) % 2 == 1, "depth": y, "arte": art})
     for x in (224, 352, 480):
         new.append(obj("asset-berry-bush.png", x, 1300, 52, 44))
 
@@ -229,6 +232,9 @@ def main() -> None:
             m["depth"] = o["depth"] + PADDOCK_OFFSET[1]
             new.append(m)
     new.append(obj("ecology-herbs.png", 300, 1440, 40, 36))
+    # Capim alto no pasto: dá capim fresco (silo e composteira).
+    for (x, y) in [(16, 41), (22, 44), (28, 41), (31, 48), (18, 48), (25, 49)]:
+        new.append(obj("forest-detail-reeds.png", x * T + 16, y * T + 24, 36, 40))
 
     # Campo norte: árvores isoladas, moitas e flores soltas no capim (sem bloquear a estrada).
     lone = [(9, 8), (17, 6), (27, 9), (35, 6), (13, 14), (31, 14), (38, 11)]
