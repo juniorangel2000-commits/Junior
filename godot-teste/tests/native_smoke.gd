@@ -343,14 +343,15 @@ func _run() -> void:
 		push_error("Cooked quality save round-trip failed")
 		quit(1)
 		return
+	# V51: o prato bom rende 30 × 1,25 = 38 de vigor (40 + 38 = 78).
 	food_farm.nutrition.eat(food_farm,"roastedFish",480.0)
-	if food_farm.nutrition.vigor!=70 or not is_equal_approx(food_farm.nutrition.fishing_bonus(481.0),0.07) or food_farm.stock.get("roastedFish",0)!=0:
+	if food_farm.nutrition.vigor!=78 or not is_equal_approx(food_farm.nutrition.fishing_bonus(481.0),0.07) or food_farm.stock.get("roastedFish",0)!=0:
 		push_error("Food effect or consumption transaction failed")
 		quit(1)
 		return
 	# A cópia de cima foi feita antes de comer; o vigor e o efeito precisam de uma cópia nova.
 	var nutrition_clone=load("res://scripts/fazenda_estado.gd").new()
-	if not nutrition_clone.import_state(food_farm.export_state(),1) or nutrition_clone.nutrition.vigor!=70 or nutrition_clone.nutrition.active(500.0)!="roastedFish" or nutrition_clone.nutrition.active(840.0)!="" or nutrition_clone.stock.get("roastedFish",0)!=0:
+	if not nutrition_clone.import_state(food_farm.export_state(),1) or nutrition_clone.nutrition.vigor!=78 or nutrition_clone.nutrition.active(500.0)!="roastedFish" or nutrition_clone.nutrition.active(840.0)!="" or nutrition_clone.stock.get("roastedFish",0)!=0:
 		push_error("Nutrition persistence or expiration failed")
 		quit(1)
 		return
@@ -362,6 +363,19 @@ func _run() -> void:
 	nutrition_clone.nutrition.restore()
 	if nutrition_clone.nutrition.vigor!=100:
 		push_error("Sleep vigor recovery failed")
+		quit(1)
+		return
+	# V51: média das melhores unidades, arredondada para baixo. 2 ovos excelentes + couve comum
+	# = (2+2+0)/3 → bom; os ovos comuns que sobram continuam comuns.
+	var mix_farm=load("res://scripts/fazenda_estado.gd").new()
+	mix_farm.transact({},{"egg":3,"kale":1,"wood":1})
+	mix_farm.quality_gain("egg",2,2)
+	if kitchen_model.recipe_quality(mix_farm,"kaleOmelette")!=1 or kitchen_model.cook(mix_farm,"kaleOmelette","stove")!="Omelete de couve pronto!" or mix_farm.quality_counts("kaleOmelette",1)["good"]!=1 or mix_farm.quality_counts("egg",1)["common"]!=1:
+		push_error("Average dish quality failed")
+		quit(1)
+		return
+	if mix_farm.sale_value("kaleOmelette",1,90)!=113 or kitchen_model.dish_vigor("kaleOmelette",2)!=60:
+		push_error("Quality price or vigor factor failed")
 		quit(1)
 		return
 	print("NATIVE_QUALITY_COOKING_SMOKE_OK")

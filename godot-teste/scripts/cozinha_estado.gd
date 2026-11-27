@@ -9,29 +9,25 @@ static func cost(id: String) -> Dictionary:
 	var ingredients: Dictionary=DISHES[id]["ingredients"].duplicate()
 	ingredients["wood"]=int(ingredients.get("wood",0))+1
 	return ingredients
+## Qualidade que o prato terá (V51: média das melhores unidades; lenha é só combustível).
 static func recipe_quality(inventory,id: String) -> int:
 	if not DISHES.has(id):
 		return 0
-	# Lenha é combustível, não ingrediente culinário; não rebaixa a qualidade do prato.
-	var grade:=2
+	var qs: Array=[]
 	for item in DISHES[id]["ingredients"]:
-		var needed:=int(DISHES[id]["ingredients"][item])
-		var stock_count:=int(inventory.stock.get(item,0))
-		var counts: Dictionary=inventory.quality_counts(str(item),stock_count)
-		var excellent:=mini(int(counts.get("excellent",0)),needed)
-		var good:=mini(int(counts.get("good",0)),needed-excellent)
-		var common:=needed-excellent-good
-		if common>0:
-			return 0
-		if good>0:
-			grade=mini(grade,1)
-	return grade
+		if inventory.passes_quality(str(item)):
+			qs.append_array(inventory.peek_best(str(item),int(DISHES[id]["ingredients"][item])))
+	return inventory.average_quality(qs)
+
+## Vigor do prato com o fator de qualidade da V51 (dishVigor).
+static func dish_vigor(id: String,quality: int) -> int:
+	return int(round(float(DISHES[id]["vigor"])*[1.0,1.25,1.5][clampi(quality,0,2)]))
 
 static func cook(inventory,id: String,station: String) -> String:
 	if not DISHES.has(id) or DISHES[id]["station"]!=station or station=="oven":
 		return "Receita incompatível com esta estação."
-	var quality:=recipe_quality(inventory,id)
-	if not inventory.transact(cost(id),{id:1}):
+	var quality: int=inventory.transact_quality(cost(id),{id:1})
+	if quality<0:
 		return "Faltam ingredientes ou espaço na mochila."
 	if quality>0:
 		inventory.quality_gain(str(id),quality,1)
@@ -52,11 +48,21 @@ func spend(amount: int,now: float) -> void:
 		effect["extra"]-=from_extra
 	vigor=maxi(0,vigor-(remaining-from_extra))
 func eat(inventory,id: String,now: float) -> String:
-	if not DISHES.has(id) or not inventory.transact({id:1},{}):
+	if not DISHES.has(id) or int(inventory.stock.get(id,0))<1:
 		return "Alimento indisponível."
-	var r: Dictionary=DISHES[id]
-	vigor=mini(100,vigor+int(r["vigor"]))
-	var msg: String=str(r["name"])+" consumido."
+	# Come a melhor unidade (V51 takeBest) e o vigor recebe o fator da qualidade.
+	var backup: Dictionary=inventory.item_quality.duplicate(true)
+	var taken: Array=inventory.take_best(id,1)
+	if not inventory.transact({id:1},{}):
+		inventory.item_quality=backup
+		return "Alimento indisponível."
+	var quality: int=int(taken[0]) if not taken.is_empty() else 0
+	var gained:=dish_vigor(id,quality)
+	vigor=mini(100,vigor+gained)
+	var name: String=str(DISHES[id]["name"])
+	if quality>0:
+		name+=" (%s)" % ["comum","bom","excelente"][quality]
+	var msg: String="%s: +%d de vigor." % [name,gained]
 	if EFFECTS.has(id):
 		effect={"id":id,"until":minf(999999.0*1440.0,now+float(EFFECTS[id]["minutes"]))}
 		if id=="heartyBreakfast":

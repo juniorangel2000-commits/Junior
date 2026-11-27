@@ -60,6 +60,76 @@ func quality_gain(item: String,q: int,n: int=1) -> void:
 	else:
 		item_quality[item]={"good":good,"excellent":excellent,"seen":total}
 
+## Regras de qualidade da V51 (src/systems/item-quality.ts): 0 comum, 1 bom, 2 excelente;
+## o mesmo fator multiplica preço e vigor. Receitas usam primeiro as melhores unidades e o
+## produto sai com a média (para baixo) dos ingredientes que têm qualidade.
+const QUALITY_FACTOR:=[1.0,1.25,1.5]
+const QUALITY_NAMES:=["comum","bom","excelente"]
+## Produtos de animal e de máquina que passam qualidade adiante (ANIMAL_QUALITY_ITEMS da V51,
+## mais as colheitas do catálogo). O peixe entra porque o protótipo dá qualidade por tamanho.
+const QUALITY_ITEMS:=["egg","duckEgg","milk","goatMilk","wool","cheese","goatCheese","butter","yarn","woolCloth","flour","cornmeal","oatFlakes","strawberryJam","watermelonJam","fish"]
+
+static func passes_quality(item: String) -> bool:
+	if item in QUALITY_ITEMS:
+		return true
+	for def in CATALOG.values():
+		if def["harvest"]==item:
+			return true
+	return false
+
+static func average_quality(qs: Array) -> int:
+	if qs.is_empty():
+		return 0
+	var sum:=0
+	for q in qs:
+		sum+=int(q)
+	return int(floor(float(sum)/float(qs.size())))
+
+## Qualidades das `n` melhores unidades, sem mexer em nada.
+func peek_best(item: String,n: int) -> Array[int]:
+	var c:=quality_counts(item,int(stock.get(item,0)))
+	var out: Array[int]=[]
+	for pair in [[2,int(c["excellent"])],[1,int(c["good"])],[0,int(c["common"])]]:
+		for i in pair[1]:
+			if out.size()>=n:
+				return out
+			out.append(pair[0])
+	return out
+
+## Separa as `n` melhores unidades no registro; o chamador tira as unidades da mochila em seguida.
+func take_best(item: String,n: int) -> Array[int]:
+	var total:=int(stock.get(item,0))
+	var taken:=peek_best(item,n)
+	var c:=quality_counts(item,total)
+	var good:=int(c["good"])-taken.count(1)
+	var excellent:=int(c["excellent"])-taken.count(2)
+	if good+excellent<=0:
+		item_quality.erase(item)
+	else:
+		item_quality[item]={"good":good,"excellent":excellent,"seen":maxi(0,total-n)}
+	return taken
+
+## Transação que gasta primeiro as melhores unidades; devolve a qualidade média dos ingredientes
+## com qualidade (0 se nenhum tem) ou -1 se faltou algo (nada muda nesse caso).
+func transact_quality(cost: Dictionary,gain: Dictionary) -> int:
+	var backup:=item_quality.duplicate(true)
+	var qs: Array=[]
+	for item in cost:
+		var taken:=take_best(str(item),int(cost[item]))
+		if passes_quality(str(item)):
+			qs.append_array(taken)
+	if not transact(cost,gain):
+		item_quality=backup
+		return -1
+	return average_quality(qs)
+
+## Valor de venda de `n` unidades (as melhores primeiro) com o fator de qualidade da V51.
+func sale_value(item: String,n: int,price: int) -> int:
+	var total:=0
+	for q in peek_best(item,n):
+		total+=int(round(float(price)*QUALITY_FACTOR[q]))
+	return total
+
 func quality_label(item: String) -> String:
 	var c:=quality_counts(item,int(stock.get(item,0)))
 	var parts: Array[String]=[]
