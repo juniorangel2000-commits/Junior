@@ -101,6 +101,11 @@ func _smoke_export() -> void:
 		push_error("NATIVE_EXPORT_FAIL: tool art missing")
 		get_tree().quit(1)
 		return
+	var vale_node: Node=farm_node.get("vale")
+	if vale_node==null or vale_node.get("available").is_empty():
+		push_error("NATIVE_EXPORT_FAIL: valley areas missing from export")
+		get_tree().quit(1)
+		return
 	if farm_node.call("resource_count")<500:
 		push_error("NATIVE_EXPORT_FAIL: resources unavailable")
 		get_tree().quit(1)

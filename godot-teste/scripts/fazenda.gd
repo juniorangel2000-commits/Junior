@@ -7,6 +7,8 @@ var scene: Node2D
 var ground: Node2D
 var crops: Node2D
 const Hud=preload("res://scripts/hud.gd")
+const Vale=preload("res://scripts/vale.gd")
+var vale: Node2D
 var hud: CanvasLayer
 var selected:=0
 var seed_index:=0
@@ -114,6 +116,12 @@ func _process(delta: float) -> void:
 		action_sprite.z_index=2
 		player.add_child(action_sprite)
 		resources.build(scene,farm,player.call("mundo_colisoes"))
+		vale=Vale.new()
+		vale.name="Vale"
+		scene.add_child(vale)
+		vale.setup(scene,player)
+		player.call("mundo_colisoes").set("vale",vale)
+		vale.connect("area_changed",func(_area,area_name): hud.call("toast",area_name))
 		initialized=true
 		if _saves_enabled():
 			_load()
@@ -486,6 +494,8 @@ func _load() -> void:
 		get_node("/root/MundoSimulacao").call("restore_clock",data["day"],data["minute"])
 		resources.restore()
 		var world: Node2D=player.call("mundo_colisoes")
+		if is_instance_valid(vale):
+			vale.call("ensure_loaded",data["position"])
 		if world.call("terreno_livre",data["position"],scene.get_node("Terreno")) and not world.call("ocupado",Rect2(data["position"]-Vector2(7,4),Vector2(14,8))):
 			player.global_position=data["position"]
 		var room_pos: Variant=data.get("home_position")

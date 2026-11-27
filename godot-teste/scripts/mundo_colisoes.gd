@@ -80,8 +80,17 @@ func _add_block(center: Vector2, size: Vector2,owner: int=0) -> void:
 	_blocks.append(Rect2(center - size * 0.5, size))
 	_owners.append(owner)
 
+## Vale (scripts/vale.gd): fora da Propriedade, só onde um cenário vizinho está carregado.
+var vale: Node
+
 func dentro_do_mapa(p: Vector2) -> bool:
-	return p.x >= FEET.x and p.y >= FEET.y and p.x <= WORLD_SIZE.x - FEET.x and p.y <= WORLD_SIZE.y - FEET.y
+	var inside := p.x >= FEET.x and p.y >= FEET.y and p.x <= WORLD_SIZE.x - FEET.x and p.y <= WORLD_SIZE.y - FEET.y
+	if inside or not is_instance_valid(vale):
+		return inside
+	for corner in [p+Vector2(-FEET.x,-FEET.y),p+Vector2(FEET.x,FEET.y)]:
+		if not vale.call("walkable_area",corner):
+			return false
+	return true
 
 func _na_ponte(p: Vector2) -> bool:
 	for bridge in _bridges:

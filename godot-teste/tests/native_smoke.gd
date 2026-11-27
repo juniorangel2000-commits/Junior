@@ -503,6 +503,41 @@ func _run() -> void:
 		quit(1)
 		return
 	print("NATIVE_TOOLS_HARDWOOD_SMOKE_OK")
+	# Vale: posição de cada cenário (VALLEY_LAYOUT da V51) e integridade dos cenários importados.
+	var ValeScript=load("res://scripts/vale.gd")
+	var rects: Dictionary=ValeScript.layout()
+	if rects.size()!=13 or ValeScript.area_at(Vector2(10,10))!="property" or ValeScript.area_at(Vector2(-10,1690))!="forest" or ValeScript.area_at(Vector2(3100,100))!="village" or ValeScript.area_at(Vector2(100,2400))!="openFields" or ValeScript.area_at(Vector2(100,-10))!="fishingLake":
+		push_error("Valley layout failed")
+		quit(1)
+		return
+	var imported:=0
+	for area in rects:
+		var path:="res://cenarios/%s/cenario.json" % area
+		if not FileAccess.file_exists(path):
+			continue
+		var data: Variant=JSON.parse_string(FileAccess.get_file_as_string(path))
+		var grid: Dictionary=data["grid"] if data is Dictionary else {}
+		var r: Rect2=rects[area]
+		if grid.is_empty() or int(grid["cols"])*16!=int(r.size.x) or int(grid["rows"])*16!=int(r.size.y) or str(grid["solid"]).length()!=int(grid["cols"])*int(grid["rows"]) or str(grid["water"]).length()!=str(grid["solid"]).length():
+			push_error("Valley area data invalid: "+area)
+			quit(1)
+			return
+		for chunk in data["ground"]:
+			if not ResourceLoader.exists("res://cenarios/%s/%s" % [area,chunk["file"]]):
+				push_error("Valley ground missing: %s/%s" % [area,chunk["file"]])
+				quit(1)
+				return
+		for o in data["objs"]:
+			if not ResourceLoader.exists("res://cenarios/%s/arte/%s" % [area,o["arte"]]):
+				push_error("Valley art missing: %s/%s" % [area,o["arte"]])
+				quit(1)
+				return
+		imported+=1
+	if imported<1:
+		push_error("No valley areas imported")
+		quit(1)
+		return
+	print("NATIVE_VALE_SMOKE_OK %d" % imported)
 	print("NATIVE_KITCHEN_SMOKE_OK")
 	print("NATIVE_MACHINES_SMOKE_OK")
 	print("NATIVE_FISHING_SMOKE_OK")

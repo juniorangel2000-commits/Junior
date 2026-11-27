@@ -111,8 +111,11 @@ func _draw() -> void:
 		var extent := get_viewport_rect().size / camera.zoom
 		view = Rect2(camera.get_screen_center_position()-extent*0.5,extent).grow(520)
 	for data in _casters:
+		# Objetos de cenários do vale já descarregados: pula antes de usar como Sprite2D.
+		if not is_instance_valid(data["sprite"]):
+			continue
 		var sprite: Sprite2D = data["sprite"]
-		if not is_instance_valid(sprite) or not sprite.is_visible_in_tree():
+		if not sprite.is_visible_in_tree():
 			continue
 		var point := to_local(sprite.global_position)
 		if not view.has_point(point):
@@ -141,5 +144,8 @@ func _draw() -> void:
 func register_sprite(sprite: Sprite2D) -> void:
 	if sprite.texture==null:
 		return
+	# Cenários do vale entram e saem: descarta as sombras de objetos já liberados.
+	_casters=_casters.filter(func(d): return is_instance_valid(d["sprite"]))
+	queue_redraw()
 	_casters.append({"sprite":sprite,"texture":sprite.texture,"rect":sprite.get_rect(),"foot":_foot(sprite.texture),"height_factor":0.75})
 	queue_redraw()
