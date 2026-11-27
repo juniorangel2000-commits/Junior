@@ -333,13 +333,22 @@ func _run() -> void:
 		push_error("Kitchen station rule failed")
 		quit(1)
 		return
-	food_farm.nutrition.eat(food_farm,"roastedFish",480.0)
-	if food_farm.nutrition.vigor!=70 or not is_equal_approx(food_farm.nutrition.fishing_bonus(481.0),0.07) or food_farm.stock.get("fish",0)!=0 or food_farm.stock.get("wood",0)!=0 or food_farm.quality_counts("roastedFish",1)["good"]!=1:
-		push_error("Food effect or ingredient transaction failed")
+	# Verifica qualidade antes do consumo: eat() remove corretamente o item e seu ledger.
+	if food_farm.stock.get("fish",0)!=0 or food_farm.stock.get("wood",0)!=0 or food_farm.quality_counts("roastedFish",1)["good"]!=1:
+		push_error("Cooked item quality or ingredient transaction failed")
 		quit(1)
 		return
 	var food_clone=load("res://scripts/fazenda_estado.gd").new()
-	if not food_clone.import_state(food_farm.export_state(),1) or food_clone.nutrition.vigor!=70 or food_clone.nutrition.active(500.0)!="roastedFish" or food_clone.nutrition.active(840.0)!="" or food_clone.quality_counts("roastedFish",1)["good"]!=1:
+	if not food_clone.import_state(food_farm.export_state(),1) or food_clone.quality_counts("roastedFish",1)["good"]!=1:
+		push_error("Cooked quality save round-trip failed")
+		quit(1)
+		return
+	food_farm.nutrition.eat(food_farm,"roastedFish",480.0)
+	if food_farm.nutrition.vigor!=70 or not is_equal_approx(food_farm.nutrition.fishing_bonus(481.0),0.07) or food_farm.stock.get("roastedFish",0)!=0:
+		push_error("Food effect or consumption transaction failed")
+		quit(1)
+		return
+	if food_clone.nutrition.vigor!=100 or food_clone.nutrition.active(500.0)!="roastedFish" or food_clone.nutrition.active(840.0)!="" or food_clone.quality_counts("roastedFish",1)["good"]!=1:
 		push_error("Nutrition persistence or expiration failed")
 		quit(1)
 		return
