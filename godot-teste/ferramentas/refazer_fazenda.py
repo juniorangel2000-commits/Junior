@@ -81,6 +81,15 @@ def main() -> None:
         # Faixa de areia entre a fazenda e o rio.
         if river_start[y] - 1 >= 0:
             tiles[y][river_start[y] - 1] = "sand"
+    # Margens do rio: faixa contínua de areia nos dois lados (antes eram manchas soltas).
+    river = {(x, y) for y in range(H) for x in range(30, 62) if tiles[y][x] == "water"}
+    for (x, y) in river:
+        for dy in (-1, 0, 1):
+            for dx in (-2, -1, 0, 1, 2):
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < W and 0 <= ny < H and tiles[ny][nx] not in ("water", "path-dry", "path-wet"):
+                    if abs(dx) <= 1 or (nx + ny * 7) % 3 == 0:
+                        tiles[ny][nx] = "sand"
     # Campo (prado) no pomar e no pasto ao sul.
     for x, y in rect_tiles(3, 29, 16, 40):
         tiles[y][x] = "meadow"
@@ -139,7 +148,13 @@ def main() -> None:
     for o in data["objs"]:
         x, y = tile_of(o)
         art = o["arte"]
-        if art.startswith("bridge-") or art.startswith("exit-sign") or not west(min(x, W - 1), min(y, H - 1)):
+        tx, ty = min(x, W - 1), min(y, H - 1)
+        is_tree = art.startswith("asset-tree") or art.startswith("asset-pine")
+        # Árvores em cima da areia da margem, da estrada ou da água (ex.: na cabeceira da ponte).
+        if is_tree and tiles[ty][tx] in ("sand", "path-dry", "path-wet", "water"):
+            removed += 1
+            continue
+        if art.startswith("bridge-") or art.startswith("exit-sign") or not west(tx, ty):
             keep.append(o)
             continue
         is_tree = art.startswith("asset-tree") or art.startswith("asset-pine")

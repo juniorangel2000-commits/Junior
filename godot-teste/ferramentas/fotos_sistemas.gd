@@ -156,5 +156,10 @@ func _run() -> void:
 	await _shot("10-ponte-norte")
 	player.global_position=Vector2(1330,1730)
 	await _shot("11-ponte-sul")
+	# Margens do rio.
+	player.global_position=Vector2(1330,1180)
+	await _shot("12-rio")
+	player.global_position=Vector2(1300,280)
+	await _shot("13-rio-norte")
 	print("FOTOS_OK")
 	quit()

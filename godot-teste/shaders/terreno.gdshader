@@ -4,7 +4,9 @@
 // Transição: cada pixel mede (bilinear) a presença de cada material nos 4 blocos vizinhos e
 // soma ruído em duas escalas, o que dá uma fronteira orgânica, sem degrau de bloco. Em vez
 // de um corte seco, os dois materiais esmaecem um no outro numa faixa larga. A vegetação
-// avança um pouco sobre terra e estrada; na água, a beira fica rasa e mais clara.
+// avança um pouco sobre terra e estrada.
+// Água: desenhada por cima do chão como uma curva lisa (B-spline sobre 4×4 blocos), com chão
+// molhado antes da linha d'água, espuma quebrada na beira e fundo de areia no raso.
 // Repetição: ladrilhamento hexagonal com deslocamentos sorteados (sem emendas nem distorção)
 // e variação de tom em manchas grandes; o desenho de cada textura fica como na V51.
 shader_type canvas_item;
@@ -82,6 +84,29 @@ vec4 cor(int id, vec2 p) {
 	return c;
 }
 
+// Peso B-spline cúbico: suaviza o contorno da água sobre 4 blocos em cada direção.
+vec4 bspline(float t) {
+	float t2 = t * t;
+	float t3 = t2 * t;
+	return vec4((1.0 - t) * (1.0 - t) * (1.0 - t), 3.0 * t3 - 6.0 * t2 + 4.0, -3.0 * t3 + 3.0 * t2 + 3.0 * t + 1.0, t3) / 6.0;
+}
+
+// Quanto de água há em volta do ponto (0 a 1), como uma curva lisa: some o degrau de bloco.
+float campo_agua(vec2 g) {
+	vec2 i = floor(g);
+	vec2 f = g - i;
+	vec4 wx = bspline(f.x);
+	vec4 wy = bspline(f.y);
+	float soma = 0.0;
+	for (int y = 0; y < 4; y++) {
+		for (int x = 0; x < 4; x++) {
+			float agua = material_bloco(i + vec2(float(x) - 1.0, float(y) - 1.0)) == 8 ? 1.0 : 0.0;
+			soma += agua * wx[x] * wy[y];
+		}
+	}
+	return soma;
+}
+
 void fragment() {
 	// p em pixels inteiros: mantém a pixel art nítida.
 	vec2 p = floor(UV * tamanho_mapa * bloco);
@@ -94,18 +119,21 @@ void fragment() {
 	// Ruído: formas grandes (bordas sinuosas) + grão fino (tufos e pedrinhas).
 	float forma = (n(p, 260.0, vec2(0.0)) - 0.5) * 1.05;
 	float grao = (n(p, 54.0, vec2(0.62, 0.27)) - 0.5) * 0.22;
-	int melhor = ids[0];
+
+	// 1) Chão firme: o material mais forte entre os vizinhos que não são água. Onde só há água
+	//    em volta, vale a areia (o leito que aparece na beira).
+	int melhor = 6;
 	float pmelhor = -10.0;
 	float segundo = -10.0;
-	int id_segundo = ids[0];
+	int id_segundo = 6;
 	for (int k = 0; k < 4; k++) {
 		int id = ids[k];
+		if (id == 8) continue;
 		float peso = 0.0;
 		for (int j = 0; j < 4; j++) {
 			if (ids[j] == id) peso += ws[j];
 		}
-		// A água segue a colisão de perto (menos ruído); a vegetação avança sobre a terra.
-		float r = id == 8 ? (forma + grao) * 0.45 : forma + grao;
+		float r = forma + grao;
 		float s = peso + (vegetal(id) ? r + 0.05 : -r);
 		if (id == melhor) {
 			pmelhor = max(pmelhor, s);
@@ -123,21 +151,31 @@ void fragment() {
 	float margem = pmelhor - segundo;
 	if (segundo > -9.0 && id_segundo != melhor) {
 		// Esmaecimento: na fronteira os dois materiais se misturam meio a meio e o vizinho vai
-		// sumindo aos poucos numa faixa larga (cerca de um bloco de cada lado). Com a água a
-		// faixa é mais curta, para a margem continuar coincidindo com a colisão.
-		float faixa = (melhor == 8 || id_segundo == 8) ? 0.30 : 0.55;
-		float t = smoothstep(0.0, faixa, margem);
-		vec4 outro = cor(id_segundo, p);
-		// Água rasa: perto da margem a água clareia e deixa ver o fundo.
-		if (melhor == 8) {
-			float raso = 1.0 - t;
-			c.rgb = mix(c.rgb, c.rgb * vec3(1.14, 1.18, 1.06) + vec3(0.03, 0.04, 0.02), raso * 0.8);
-		}
-		// Terra e areia escurecem um pouco ao encostar na água (chão molhado).
-		if (chao_nu(melhor) && id_segundo == 8) {
-			c.rgb *= mix(0.84, 1.0, t);
-		}
-		c = mix(outro, c, 0.5 + 0.5 * t);
+		// sumindo aos poucos numa faixa larga (cerca de um bloco de cada lado).
+		float t = smoothstep(0.0, 0.55, margem);
+		c = mix(cor(id_segundo, p), c, 0.5 + 0.5 * t);
+	}
+
+	// 2) Água por cima, com contorno liso e um pouco ondulado.
+	float agua = campo_agua(g) + (n(p, 90.0, vec2(0.41, 0.83)) - 0.5) * 0.16 + (n(p, 17.0, vec2(0.9, 0.3)) - 0.5) * 0.05;
+	float linha = 0.5;
+	if (agua > linha - 0.16) {
+		// Chão molhado: escurece e esfria um pouco antes da linha d'água.
+		float molhado = smoothstep(linha - 0.16, linha, agua);
+		c.rgb = mix(c.rgb, c.rgb * vec3(0.78, 0.80, 0.84), molhado * 0.85);
+	}
+	if (agua > linha) {
+		vec4 w = cor(8, p);
+		// Raso: perto da margem a água clareia e o fundo de areia aparece por baixo.
+		float fundo = 1.0 - smoothstep(linha, linha + 0.22, agua);
+		vec4 areia = cor(6, p);
+		w.rgb = mix(w.rgb, mix(w.rgb, areia.rgb * vec3(0.72, 0.86, 0.84), 0.45), fundo);
+		w.rgb = mix(w.rgb, w.rgb * vec3(1.10, 1.14, 1.04), fundo * 0.6);
+		// Espuma: fio claro e quebrado bem na linha d'água, mexendo devagar.
+		float espuma = 1.0 - smoothstep(0.0, 0.035, agua - linha);
+		float quebra = step(0.47, n(p + vec2(TIME * 4.0, TIME * 1.5), 11.0, vec2(0.2, 0.9)));
+		w.rgb = mix(w.rgb, vec3(0.84, 0.92, 0.88), espuma * quebra * 0.7);
+		c = w;
 	}
 	COLOR = c;
 }
