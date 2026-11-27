@@ -236,6 +236,11 @@ func _run() -> void:
 		push_error("Livestock persistence failed")
 		quit(1)
 		return
+	var fishing_model=load("res://scripts/pesca_estado.gd")
+	if fishing_model.fish_quality("lambari",6.0)!=0 or fishing_model.fish_quality("lambari",13.0)!=1 or fishing_model.fish_quality("lambari",15.0)!=2 or fishing_model.fish_quality("unknown",15.0)!=0:
+		push_error("Fish size quality thresholds failed")
+		quit(1)
+		return
 	var fishing_state=load("res://scripts/pesca_estado.gd").new()
 	var fishing_farm=load("res://scripts/fazenda_estado.gd").new()
 	fishing_state.rng.seed=42
@@ -254,10 +259,10 @@ func _run() -> void:
 		push_error("Fishing hook failed")
 		quit(1)
 		return
-	fishing_state.reward={"kind":"fish","name":"Lambari","species":"lambari","item":"fish","length":12.0,"grams":30}
+	fishing_state.reward={"kind":"fish","name":"Lambari","species":"lambari","item":"fish","length":12.0,"grams":30,"quality":2}
 	fishing_state.phase="caught"
 	fishing_state.collect(fishing_farm)
-	if fishing_farm.stock.get("fish",0)!=1 or fishing_state.phase!="idle" or fishing_farm.fish_records["lambari"]["count"]!=1:
+	if fishing_farm.stock.get("fish",0)!=1 or fishing_state.phase!="idle" or fishing_farm.fish_records["lambari"]["count"]!=1 or fishing_farm.quality_counts("fish",1)["excellent"]!=1:
 		push_error("Fishing collection failed")
 		quit(1)
 		return

@@ -37,6 +37,13 @@ func weight(id: String,minute: float,rain: bool) -> float:
 		w*=1.5
 	return w
 
+static func fish_quality(id: String,length: float) -> int:
+	if not SPECIES.has(id) or not is_finite(length):
+		return 0
+	var def: Dictionary=SPECIES[id]
+	var ratio:=clampf((length-float(def["min"]))/(float(def["max"])-float(def["min"])),0.0,1.0)
+	return 2 if ratio>=0.9 else (1 if ratio>=0.66 else 0)
+
 func roll(minute: float,rain: bool) -> Dictionary:
 	if rng.randf()<0.24:
 		var item: Array=TRASH[rng.randi_range(0,TRASH.size()-1)]
@@ -54,7 +61,7 @@ func roll(minute: float,rain: bool) -> Dictionary:
 	var def: Dictionary=SPECIES[species]
 	var length:=roundf(lerpf(def["min"],def["max"],rng.randf())*10.0)/10.0
 	var grams:=maxi(1,roundi(def["grams"]*pow(length/float(def["max"]),3.0)*(0.9+rng.randf()*0.2)))
-	return {"kind":"fish","name":def["name"],"item":"fish","species":species,"length":length,"grams":grams}
+	return {"kind":"fish","name":def["name"],"item":"fish","species":species,"length":length,"grams":grams,"quality":fish_quality(species,length)}
 
 func begin(inventory,clock: Dictionary) -> String:
 	if phase!="idle":
@@ -151,6 +158,7 @@ func collect(inventory) -> String:
 		rec["length"]=maxf(rec["length"],reward["length"])
 		rec["grams"]=maxi(rec["grams"],reward["grams"])
 		inventory.fish_records[id]=rec
+		inventory.quality_gain("fish",int(reward.get("quality",0)),1)
 	phase="idle"
 	return "%s · %.1f cm · %d g" % [reward["name"],reward["length"],reward["grams"]] if reward["kind"]=="fish" else str(reward["name"])+" recuperado."
 

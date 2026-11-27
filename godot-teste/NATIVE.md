@@ -77,3 +77,7 @@ A amizade (0–30) determina a qualidade dos ovos, ovos de pato, leite e lã: co
 
 ## V0.13.1 — correção do smoke de persistência animal
 A execução CI 45931184770 confirmou compilação C++ e importação, mas o smoke falhou por uma expectativa incompatível com a própria coleta: após `collect`, os ovos são corretamente retirados do abrigo e `eggs` passa a zero. Corrigida a asserção para validar abrigo vazio e `duckCollected` persistido, preservando teste de round-trip. A produção e coleta de qualidade da V0.13 não foram alteradas. CI novo necessário.
+
+
+## V0.14 — qualidade por tamanho na pesca
+Capturas de peixes comuns da propriedade recebem qualidade conforme o comprimento relativo à faixa da espécie: comum abaixo de 66%, boa a partir de 66%, excelente a partir de 90%. Materiais recuperados não recebem qualidade. A classificação só é aplicada quando a captura é recolhida com sucesso, entra no ledger de qualidade da mochila e usa a persistência já existente. Smoke cobre limiares, espécie desconhecida, coleta e registro. Esta classificação por tamanho é uma extensão de protótipo local, não uma regra atribuída à V51. CI headless não valida apresentação visual nem balanceamento por playtest.
