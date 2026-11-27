@@ -142,14 +142,22 @@ func _spawn_animal(tile: Vector2i,animal: Dictionary) -> void:
 	var art: Array=ART[kind]
 	var s:=Sprite2D.new()
 	s.texture=textures[kind]
-	s.hframes=art[3]
-	s.vframes=8
+	# Grade pela célula da V51 (src/data/animal-art.ts): vaca e cavalo têm mais linhas de poses
+	# e o cavalo 16 colunas; os quadros seguem numerados em sequência (direção × colunas + passo).
+	s.hframes=maxi(1,int(s.texture.get_width()/float(art[0])))
+	s.vframes=maxi(1,int(s.texture.get_height()/float(art[0])))
 	s.scale=Vector2.ONE*art[1]
 	s.offset=Vector2(0,-art[2])
 	scene.get_node("Objetos").add_child(s)
 	var rule: Dictionary=Model.RULES[model.sites[tile]["kind"]]
 	var r:=site_rect(tile,model.sites[tile]["kind"])
-	var zone:=Rect2(r.position+Vector2(18,rule["body"]*32.0+14),Vector2(r.size.x-36,maxf(4.0,(rule["h"]-rule["body"])*32.0-28)))
+	# Área de passeio pelos pés do animal (a arte já é deslocada para os pés ficarem na posição):
+	# afastada das laterais pelo tamanho do bicho e com os pés atrás da trave da frente, que faz
+	# parte da mesma arte do abrigo.
+	var half:=maxf(18.0,float(art[0])*float(art[1])*0.25+18.0)
+	var top: float=float(rule["body"])*32.0+12.0
+	var bottom: float=float(rule["h"])*32.0-36.0
+	var zone:=Rect2(r.position+Vector2(half,top),Vector2(maxf(4.0,r.size.x-2.0*half),maxf(4.0,bottom-top)))
 	s.position=zone.get_center()
 	sprites[id]=s
 	brains[id]={"zone":zone,"goal":zone.get_center(),"distance":0.0,"wait":0.3+float(id%5)*0.2,"direction":0,"kind":kind}
