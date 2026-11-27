@@ -45,6 +45,7 @@ func setup(root: Node2D,p: CharacterBody2D,inventory) -> void:
 	layer.layer=18
 	add_child(layer)
 	panel=PanelContainer.new()
+	panel.theme=preload("res://scripts/tema_ui.gd").theme()
 	layer.add_child(panel)
 	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
 	panel.offset_left=-250

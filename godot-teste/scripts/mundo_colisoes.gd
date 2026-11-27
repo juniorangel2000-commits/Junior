@@ -53,6 +53,8 @@ func build(root: Node2D) -> void:
 		if pair.has("back") and pair.has("front"):
 			var back: Rect2 = pair["back"]
 			var front: Rect2 = pair["front"]
+			# Tabuleiro de tábuas sob os corrimãos (a extração do mapa só trouxe os corrimãos).
+			preload("res://scripts/ponte.gd").attach(root, back.position, front.position, back.size.x)
 			var left := maxf(back.position.x, front.position.x)
 			var right := minf(back.end.x, front.end.x)
 			var top := back.position.y + 2.0

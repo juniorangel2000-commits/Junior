@@ -21,8 +21,9 @@ var core: Object
 func _init() -> void:
 	if ClassDB.class_exists("AfterRainWorld"):
 		core=ClassDB.instantiate("AfterRainWorld")
-	for y in range(20,25):
-		for x in range(21,30):
+	var start: Rect2i=preload("res://scripts/mapa_fazenda.gd").START_PLOTS
+	for y in range(start.position.y,start.end.y):
+		for x in range(start.position.x,start.end.x):
 			plots[Vector2i(x,y)]={}
 
 func quality_counts(item: String,total: int) -> Dictionary:

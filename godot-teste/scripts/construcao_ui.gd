@@ -10,6 +10,7 @@ var mode:=0
 func _ready() -> void:
 	layer=15
 	panel=PanelContainer.new()
+	panel.theme=preload("res://scripts/tema_ui.gd").theme()
 	add_child(panel)
 	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	panel.offset_left=-300

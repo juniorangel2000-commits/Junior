@@ -66,12 +66,12 @@ func _smoke_export() -> void:
 		push_error("NATIVE_EXPORT_FAIL: map collision setup")
 		get_tree().quit(1)
 		return
-	if world.call("dentro_do_mapa", Vector2(-1, 100)) or world.call("dentro_do_mapa", Vector2(3080, 100)) or not world.call("dentro_do_mapa", Vector2(816, 592)):
+	if world.call("dentro_do_mapa", Vector2(-1, 100)) or world.call("dentro_do_mapa", Vector2(3080, 100)) or not world.call("dentro_do_mapa", preload("res://scripts/mapa_fazenda.gd").PLAYER_START):
 		push_error("NATIVE_EXPORT_FAIL: world bounds")
 		get_tree().quit(1)
 		return
 	var query := PhysicsPointQueryParameters2D.new()
-	query.position = Vector2(1008, 496)
+	query.position = preload("res://scripts/mapa_fazenda.gd").WELL + Vector2(0, -16)
 	query.collision_mask = 2
 	if player.get_world_2d().direct_space_state.intersect_point(query).is_empty():
 		push_error("NATIVE_EXPORT_FAIL: well collider missing")

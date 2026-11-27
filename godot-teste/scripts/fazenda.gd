@@ -50,6 +50,7 @@ const SWING=[-40,-55,-35,15,75,70,45,20,0]
 
 class SoilLayer extends Node2D:
 	var farm
+	var terrain: Node
 	func _draw() -> void:
 		if farm==null:
 			return
@@ -59,6 +60,9 @@ class SoilLayer extends Node2D:
 			var crop: Dictionary=farm.plots[tile]
 			var wet: bool=not crop.is_empty() and bool(crop["watered"])
 			var o:=Vector2(tile)*32.0
+			# Na terra de plantio do mapa a leira seca já está desenhada pelo terreno.
+			if not wet and terrain!=null and str(terrain.call("material_em",o+Vector2(16,16)))=="soil":
+				continue
 			var mound:=PackedVector2Array([o+Vector2(5,2),o+Vector2(27,2),o+Vector2(30,5),o+Vector2(30,27),o+Vector2(27,30),o+Vector2(5,30),o+Vector2(2,27),o+Vector2(2,5)])
 			draw_colored_polygon(mound,Color(0.20,0.11,0.06,0.42) if wet else Color(0.43,0.26,0.13,0.30))
 			draw_line(o+Vector2(6,3),o+Vector2(26,3),Color(0.86,0.66,0.42,0.10 if wet else 0.22),1.0)
@@ -99,6 +103,7 @@ func _process(delta: float) -> void:
 		scene=get_tree().current_scene as Node2D
 		ground=SoilLayer.new()
 		ground.set("farm",farm)
+		ground.set("terrain",scene.get_node("Terreno"))
 		ground.z_index=-6
 		scene.add_child(ground)
 		crops=Node2D.new()
@@ -324,7 +329,7 @@ func _water_source(point: Vector2) -> bool:
 		return false
 	if scene.get_node("Terreno").call("material_em",point)=="water":
 		return true
-	return point.distance_to(Vector2(1008,512))<=46.0
+	return point.distance_to(preload("res://scripts/mapa_fazenda.gd").WELL)<=46.0
 
 func _start_action(point: Vector2,restore: bool) -> void:
 	if not pending.is_empty():

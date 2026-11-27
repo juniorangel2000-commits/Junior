@@ -20,6 +20,7 @@ func setup(p: CharacterBody2D,inventory,construction) -> void:
 	builder=construction
 	layer=19
 	panel=PanelContainer.new()
+	panel.theme=preload("res://scripts/tema_ui.gd").theme()
 	add_child(panel)
 	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	panel.offset_left=-310

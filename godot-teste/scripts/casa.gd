@@ -1,6 +1,6 @@
 extends RefCounted
 const ORIGIN:=Vector2(4096,0)
-const ENTRANCE:=Vector2(784,546)
+const ENTRANCE:=preload("res://scripts/mapa_fazenda.gd").ENTRANCE
 const SPAWN:=Vector2(176,272)
 const ROOM_PATH: String="res://arte/casa/room-source.png"
 const FURNITURE=[["bed",2,2,2,2,true],["shelf",8,2,2,1,true],["table",8,4,2,2,true],["chair",7,4,1,1,true],["rug",2,5,3,2,false],["plant",1,7,1,1,true],["woodStove",5,2,2,1,true],["chair",10,4,1,1,true],["chest",9,7,1,1,true]]
