@@ -73,3 +73,7 @@ CI 45832733338 detectou inferência inválida de busy/ready em maquinas.gd:119�
 
 ## V0.13 — qualidade dos produtos animais (base V51)
 A amizade (0–30) determina a qualidade dos ovos, ovos de pato, leite e lã: comum abaixo de 10, boa a partir de 10 e excelente a partir de 25, conforme `src/systems/item-quality.ts` no commit V51 `ac9e6336930dc050e4448c0cbda818fcdb2b159c`. A qualidade é atribuída no momento da produção, preservada no abrigo e transferida para o registro de qualidade da mochila ao recolher; transações posteriores reconciliam quantidades sem transformar itens comuns em qualidade superior. A UI do abrigo mostra a qualidade atual da mochila. Saves anteriores recebem qualidade comum por padrão. Smoke testa limiares, produção de galinha/pato, coleta e round-trip do save. A qualidade de animais de raça e o uso de qualidade em venda/cozinha/máquinas ainda não estão integrados ao protótipo nativo. CI headless não valida apresentação visual.
+
+
+## V0.13.1 — correção do smoke de persistência animal
+A execução CI 45931184770 confirmou compilação C++ e importação, mas o smoke falhou por uma expectativa incompatível com a própria coleta: após `collect`, os ovos são corretamente retirados do abrigo e `eggs` passa a zero. Corrigida a asserção para validar abrigo vazio e `duckCollected` persistido, preservando teste de round-trip. A produção e coleta de qualidade da V0.13 não foram alteradas. CI novo necessário.

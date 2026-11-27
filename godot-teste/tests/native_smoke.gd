@@ -232,7 +232,7 @@ func _run() -> void:
 		quit(1)
 		return
 	var livestock_restored=load("res://scripts/criacao_estado.gd").new()
-	if not livestock_restored.import_state(stockyard.export_state(),3) or livestock_restored.sites[lot]["eggs"]!=2:
+	if not livestock_restored.import_state(stockyard.export_state(),3) or livestock_restored.sites[lot]["eggs"]!=0 or livestock_restored.sites[lot]["duckCollected"]!=1:
 		push_error("Livestock persistence failed")
 		quit(1)
 		return
