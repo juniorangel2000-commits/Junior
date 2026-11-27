@@ -41,6 +41,8 @@ void AfterRainWorld::_bind_methods() {
     ClassDB::bind_method(D_METHOD("snapshot"), &AfterRainWorld::snapshot);
     ClassDB::bind_method(D_METHOD("rain_for_day","day"), &AfterRainWorld::rain_for_day);
     ClassDB::bind_method(D_METHOD("resource_hit","hits","required"), &AfterRainWorld::resource_hit);
+    ClassDB::bind_method(D_METHOD("resource_strike","hits","required","damage"), &AfterRainWorld::resource_strike);
+    ClassDB::bind_method(D_METHOD("tool_strike","tier","durability","work"), &AfterRainWorld::tool_strike);
     ClassDB::bind_method(D_METHOD("settle_crop","from","to","growth","required","mask","watered"), &AfterRainWorld::settle_crop);
 }
 void AfterRainWorld::set_clock(int p_day,double p_minute) {
@@ -112,4 +114,28 @@ Dictionary AfterRainWorld::settle_crop(int from,int to,int growth,int required,i
 int AfterRainWorld::resource_hit(int hits,int required) const {
     if(required<1||required>100||hits<0||hits>=required)return -1;
     return hits+1;
+}
+
+// Golpe com dano (ferramentas melhores tiram mais de um "golpe" do recurso por vez).
+int AfterRainWorld::resource_strike(int hits,int required,int damage) const {
+    if(required<1||required>100||hits<0||hits>=required||damage<1||damage>100)return -1;
+    return std::min(required,hits+damage);
+}
+
+// Uso de ferramenta da V51 (src/systems/economy.ts): eficiência por nível com a fração guardada
+// para o golpe seguinte e 1 de durabilidade por uso. damage 0 = ferramenta gasta.
+Dictionary AfterRainWorld::tool_strike(int tier,int durability,double work) const {
+    static constexpr double efficiency[4]={1.0,1.5,2.2,3.2};
+    static constexpr int max_durability[4]={100,250,450,800};
+    Dictionary result;
+    const bool valid=tier>=0&&tier<=3&&std::isfinite(work)&&work>=0.0&&work<1.0&&durability>=0&&durability<=max_durability[std::clamp(tier,0,3)];
+    if(!valid||durability==0){
+        result["damage"]=0; result["durability"]=valid?durability:0; result["work"]=valid?work:0.0;
+        return result;
+    }
+    const double total=efficiency[tier]+work;
+    result["damage"]=static_cast<int>(std::floor(total));
+    result["durability"]=durability-1;
+    result["work"]=std::fmod(total,1.0);
+    return result;
 }

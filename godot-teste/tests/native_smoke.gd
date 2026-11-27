@@ -426,6 +426,83 @@ func _run() -> void:
 		quit(1)
 		return
 	print("NATIVE_HIVE_ORCHARD_SMOKE_OK")
+	# Ferramentas (V51): ferro 1,5 → golpes 1,2,1,2; 1 de durabilidade por golpe; C++ = GDScript.
+	var Tools=load("res://scripts/ferramentas_estado.gd")
+	var tool_farm=load("res://scripts/fazenda_estado.gd").new()
+	if not is_instance_valid(tool_farm.core):
+		push_error("Tool test needs the C++ core")
+		quit(1)
+		return
+	tool_farm.transact({},{"ironIngot":4})
+	if Tools.upgrade(tool_farm,"hatchet")!="Machadinha de ferro pronta!" or tool_farm.stock.get("ironIngot",0)!=0 or tool_farm.tools["hatchet"]["durability"]!=250:
+		push_error("Tool upgrade failed")
+		quit(1)
+		return
+	var dmg: Array=[]
+	for i in 4:
+		dmg.append(Tools.use(tool_farm,"hatchet"))
+	if dmg!=[1,2,1,2] or tool_farm.tools["hatchet"]["durability"]!=246:
+		push_error("Tool efficiency/wear failed: %s" % str(dmg))
+		quit(1)
+		return
+	for tier in 4:
+		var work:=0.0
+		var dur: int=Tools.DURABILITY[tier]
+		for i in 7:
+			var r: Dictionary=tool_farm.core.call("tool_strike",tier,dur,work)
+			var total: float=Tools.EFFICIENCY[tier]+work
+			if int(r["damage"])!=int(floor(total)) or int(r["durability"])!=dur-1 or not is_equal_approx(float(r["work"]),fmod(total,1.0)):
+				push_error("C++ tool_strike parity failed at tier %d" % tier)
+				quit(1)
+				return
+			work=float(r["work"])
+			dur=int(r["durability"])
+	if int(tool_farm.core.call("tool_strike",0,0,0.0)["damage"])!=0 or tool_farm.core.call("resource_strike",4,6,2)!=6 or tool_farm.core.call("resource_strike",6,6,1)!=-1:
+		push_error("C++ worn tool or resource strike failed")
+		quit(1)
+		return
+	tool_farm.tools["hatchet"]["durability"]=0
+	if Tools.use(tool_farm,"hatchet")!=0 or Tools.repair(tool_farm,"hatchet")!="Faltam materiais para o reparo.":
+		push_error("Worn tool rule failed")
+		quit(1)
+		return
+	tool_farm.transact({},{"ironIngot":1})
+	if Tools.repair(tool_farm,"hatchet")!="Machadinha reparada." or tool_farm.tools["hatchet"]["durability"]!=250:
+		push_error("Tool repair failed")
+		quit(1)
+		return
+	# Ipê: machadinha de pedra não corta; de ferro dá 1 madeira nobre e o ipê rebrota em 7 dias.
+	var ipe_res=load("res://scripts/recursos_mundo.gd").new()
+	var ipe_farm=load("res://scripts/fazenda_estado.gd").new()
+	ipe_res.farm=ipe_farm
+	var ipe_sprite:=Sprite2D.new()
+	ipe_res.entries["ipe"]={"kind":"ipe","sprite":ipe_sprite,"position":Vector2.ZERO,"shape_id":0,"texture":null,"scale":Vector2.ONE,"offset":Vector2.ZERO}
+	ipe_res.today=5
+	var stone_try: String=ipe_res.hit("ipe","hatchet")
+	ipe_farm.tools["hatchet"]={"tier":1,"durability":250,"work":0.0}
+	var last:=""
+	for i in 4:
+		last=ipe_res.hit("ipe","hatchet")
+	if not stone_try.begins_with("Este ipê é duro demais") or not last.begins_with("Ipê derrubado: 1 madeira nobre") or ipe_farm.stock.get("hardwood",0)!=1 or ipe_res.hit("ipe","hatchet")!="Este ipê está rebrotando. Volte em alguns dias.":
+		push_error("Ipe rules failed: %s / %s" % [stone_try,last])
+		ipe_sprite.free()
+		quit(1)
+		return
+	ipe_res.regrow_ipes(11)
+	var still: bool=ipe_farm.ipes.has("ipe")
+	ipe_res.regrow_ipes(12)
+	if not still or ipe_farm.ipes.has("ipe"):
+		push_error("Ipe regrow failed")
+		ipe_sprite.free()
+		quit(1)
+		return
+	ipe_sprite.free()
+	var tools_clone=load("res://scripts/fazenda_estado.gd").new()
+	if not tools_clone.import_state(tool_farm.export_state(),5) or tools_clone.tools["hatchet"]["tier"]!=1:
+		push_error("Tools save failed")
+		quit(1)
+		return
+	print("NATIVE_TOOLS_HARDWOOD_SMOKE_OK")
 	print("NATIVE_KITCHEN_SMOKE_OK")
 	print("NATIVE_MACHINES_SMOKE_OK")
 	print("NATIVE_FISHING_SMOKE_OK")

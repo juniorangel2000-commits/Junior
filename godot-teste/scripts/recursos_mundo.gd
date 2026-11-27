@@ -14,6 +14,7 @@ const RULES := {
 	"scrap":{"name":"Sucata","tool":"hand","hits":1,"drops":{"scrap":2}},
 	"herb":{"name":"Ervas","tool":"hand","hits":1,"drops":{"herb":2}},
 	"mushroom":{"name":"Cogumelos","tool":"hand","hits":1,"drops":{"mushroom":2}},
+	"ipe":{"name":"Ipê-amarelo","tool":"hatchet","hits":6,"drops":{"branch":2},"min_tier":1},
 	"grass":{"name":"Capim alto","tool":"hand","hits":1,"drops":{"freshGrass":3,"fiber":1}}
 }
 ## Pomar (V51, src/data/orchard.ts): cada árvore dá a fruta da sua estação e volta a dar 3 dias
@@ -21,6 +22,10 @@ const RULES := {
 const FRUIT_SEASONS:={"orange":[3,0],"pear":[1],"apple":[2]}
 const FRUIT_NAMES:={"apple":"Maçã","pear":"Pera","orange":"Laranja"}
 const FRUIT_REGROW_DAYS:=3
+## Ipê-amarelo (V51, src/systems/open-fields.ts): só machadinha de ferro ou melhor, 6 golpes,
+## madeira nobre igual ao nível da machadinha (1 ferro, 2 ouro, 3 metal negro) e rebrota em 7 dias.
+const IPE_REGROW_DAYS:=7
+const Tools=preload("res://scripts/ferramentas_estado.gd")
 var today:=1
 var entries: Dictionary={}
 var farm
@@ -41,6 +46,7 @@ static func kind_for(art: String) -> String:
 	if art=="forest-detail-mushrooms": return "mushroom"
 	if art=="forest-detail-reeds": return "grass"
 	if art.begins_with("orchard-"): return "fruit"
+	if art=="ipe-yellow": return "ipe"
 	if art in ["forest-detail-bush","forest-detail-fern","forest-detail-flowers"]: return "fiber"
 	return ""
 
@@ -60,10 +66,17 @@ func build(scene: Node2D,inventory,col: Node2D) -> void:
 				continue
 			var id:=str(scene.get_path_to(sprite))
 			entries[id]={"sprite":sprite,"kind":kind,"position":sprite.global_position,"shape_id":sprite.get_instance_id()}
+			if kind=="ipe":
+				entries[id]["texture"]=sprite.texture
+				entries[id]["scale"]=sprite.scale
+				entries[id]["offset"]=sprite.offset
 			if kind=="fruit":
 				entries[id]["fruit"]=sprite.texture.resource_path.get_file().get_basename().trim_prefix("orchard-")
 
 func restore() -> void:
+	for id in farm.ipes.keys():
+		if entries.has(id):
+			_visual(id,1)
 	for id in farm.resource_progress.keys():
 		if not entries.has(id):
 			farm.resource_progress.erase(id)
@@ -119,22 +132,52 @@ func hit(id: String,tool: String) -> String:
 		return "Recurso já recolhido."
 	var kind: String="stump" if stage==1 else entry["kind"]
 	var rule: Dictionary=RULES[kind]
+	if kind=="ipe" and farm.ipes.has(id):
+		return "Este ipê está rebrotando. Volte em alguns dias."
 	if rule["tool"]!="hand" and tool!=rule["tool"]:
 		return "Use a machadinha." if rule["tool"]=="hatchet" else "Use a picareta."
 	if tool!="hand" and farm.stock.get(tool,0)<1:
 		return "Ferramenta indisponível."
-	var hits: int=farm.core.call("resource_hit",state["hits"],rule["hits"]) if is_instance_valid(farm.core) else mini(state["hits"]+1,rule["hits"])
+	if int(rule.get("min_tier",0))>int(Tools.state(farm,tool)["tier"]) if tool!="hand" else false:
+		return "Este ipê é duro demais. Você precisa de uma machadinha de ferro ou melhor."
+	var damage:=1
+	if tool!="hand":
+		damage=Tools.use(farm,tool)
+		if damage<=0:
+			return Tools.worn_message(tool)
+	var hits: int=farm.core.call("resource_strike",state["hits"],rule["hits"],damage) if is_instance_valid(farm.core) else mini(state["hits"]+damage,rule["hits"])
 	if hits<0:
 		return "Recurso indisponível."
 	if hits<rule["hits"]:
 		farm.resource_progress[id]={"stage":stage,"hits":hits}
 		return "%s: %d/%d golpes" % [rule["name"],hits,rule["hits"]]
+	if kind=="ipe":
+		var hardwood: int=int(Tools.state(farm,"hatchet")["tier"])
+		if not farm.transact({},{"hardwood":hardwood,"branch":2}):
+			return "Mochila cheia. O ipê foi preservado."
+		farm.resource_progress.erase(id)
+		farm.ipes[id]=today
+		_visual(id,1)
+		return "Ipê derrubado: %d madeira%s nobre%s e 2 galhos. Ele rebrota em %d dias." % [hardwood,"s" if hardwood>1 else "","s" if hardwood>1 else "",IPE_REGROW_DAYS]
 	if not farm.transact({},rule["drops"]):
 		return "Mochila cheia. O recurso foi preservado."
 	var next_stage:=1 if kind in ["tree","pine"] else 2
 	farm.resource_progress[id]={"stage":next_stage,"hits":0}
 	_visual(id,next_stage)
 	return "%s: materiais na mochila." % rule["name"]
+
+## Ipês derrubados há 7 dias ou mais voltam a ficar em pé.
+func regrow_ipes(day: int) -> void:
+	for id in farm.ipes.keys():
+		if not entries.has(id):
+			farm.ipes.erase(id)
+		elif day-int(farm.ipes[id])>=IPE_REGROW_DAYS:
+			farm.ipes.erase(id)
+			var entry: Dictionary=entries[id]
+			var sprite: Sprite2D=entry["sprite"]
+			sprite.texture=entry["texture"]
+			sprite.scale=entry["scale"]
+			sprite.offset=entry["offset"]
 
 func _visual(id: String,stage: int) -> void:
 	var entry: Dictionary=entries[id]

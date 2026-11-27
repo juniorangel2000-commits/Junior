@@ -12,6 +12,9 @@ var chest: Dictionary = {}
 var item_quality: Dictionary = {}
 var fish_records: Dictionary = {}
 var orchard: Dictionary = {}
+var tools: Dictionary = {}
+var ipes: Dictionary = {}
+const Tools=preload("res://scripts/ferramentas_estado.gd")
 var machine_jobs: Dictionary = {}
 const Kitchen=preload("res://scripts/cozinha_estado.gd")
 var nutrition=Kitchen.new()
@@ -164,6 +167,8 @@ func transact(cost: Dictionary,gain: Dictionary) -> bool:
 func prepare(tile: Vector2i,restore: bool=false) -> String:
 	if stock.get("hoe",0)<1:
 		return "Precisa de enxada."
+	if not restore and not plots.has(tile) and int(Tools.state(self,"hoe")["durability"])<=0:
+		return Tools.worn_message("hoe")
 	if restore:
 		if not plots.has(tile) or not plots[tile].is_empty():
 			return "Canteiro indisponível."
@@ -172,6 +177,7 @@ func prepare(tile: Vector2i,restore: bool=false) -> String:
 	if plots.has(tile):
 		return "Terra já preparada."
 	plots[tile]={}
+	Tools.use(self,"hoe")
 	return "Canteiro preparado."
 
 func plant(tile: Vector2i,id: String,day: int) -> String:
@@ -241,7 +247,7 @@ func stage(crop: Dictionary) -> int:
 	return 0 if growth<=0.0 else (4 if growth>=1.0 else (3 if growth>=2.0/3.0 else (2 if growth>=1.0/3.0 else 1)))
 
 func export_state() -> Dictionary:
-	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate(),"resource_progress":resource_progress.duplicate(true),"buildings":buildings.duplicate(true),"chest":chest.duplicate(true),"item_quality":item_quality.duplicate(true),"livestock":livestock.export_state(),"fish_records":fish_records.duplicate(true),"machine_jobs":machine_jobs.duplicate(true),"nutrition":nutrition.export_state(),"orchard":orchard.duplicate()}
+	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate(),"resource_progress":resource_progress.duplicate(true),"buildings":buildings.duplicate(true),"chest":chest.duplicate(true),"item_quality":item_quality.duplicate(true),"livestock":livestock.export_state(),"fish_records":fish_records.duplicate(true),"machine_jobs":machine_jobs.duplicate(true),"nutrition":nutrition.export_state(),"orchard":orchard.duplicate(),"tools":tools.duplicate(true),"ipes":ipes.duplicate()}
 
 func import_state(data: Dictionary,today: int) -> bool:
 	var s=data.get("stock")
@@ -253,7 +259,7 @@ func import_state(data: Dictionary,today: int) -> bool:
 		if not item in allowed:
 			allowed.append(item)
 	allowed.append("campfire")
-	for item in ["beehive","pear","orange"]:
+	for item in ["beehive","pear","orange","goldIngot","blackMetalIngot"]:
 		if not item in allowed:
 			allowed.append(item)
 	for id in Kitchen.DISHES:
@@ -342,6 +348,16 @@ func import_state(data: Dictionary,today: int) -> bool:
 	for key in picked:
 		if not key is String or not picked[key] is int or picked[key]<1 or picked[key]>today:
 			return false
+	# Ferramentas (nível/desgaste) e ipês derrubados: campos opcionais, saves antigos não têm.
+	var tool_states: Variant=data.get("tools",{})
+	if not Tools.valid(tool_states):
+		return false
+	var felled: Variant=data.get("ipes",{})
+	if not felled is Dictionary or felled.size()>64:
+		return false
+	for key in felled:
+		if not key is String or not felled[key] is int or felled[key]<1 or felled[key]>today:
+			return false
 	var records: Variant=data.get("fish_records",{})
 	if not preload("res://scripts/pesca_estado.gd").valid_records(records,today):
 		return false
@@ -358,6 +374,8 @@ func import_state(data: Dictionary,today: int) -> bool:
 	item_quality=qledger.duplicate(true)
 	buildings=pieces.duplicate(true)
 	orchard=picked.duplicate()
+	tools=tool_states.duplicate(true)
+	ipes=felled.duplicate()
 	resource_progress=resources.duplicate(true)
 	water_charges=charges
 	quickbar=slots.duplicate()

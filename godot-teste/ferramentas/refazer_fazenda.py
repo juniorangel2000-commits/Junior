@@ -236,6 +236,12 @@ def main() -> None:
     for (x, y) in [(16, 41), (22, 44), (28, 41), (31, 48), (18, 48), (25, 49)]:
         new.append(obj("forest-detail-reeds.png", x * T + 16, y * T + 24, 36, 40))
 
+    # Ipês-amarelos (V51: só nos Campos Abertos; aqui são a fonte de madeira nobre da Propriedade).
+    IPE_W, IPE_H = round(300 * 1093 / 1083 * 0.8), round(300 * 0.8)
+    for (x, y) in [(22, 11), (40, 8), (11, 44)]:
+        new.append({"x": x * T + 16, "y": y * T + 24, "ox": 0.4697864090104292, "oy": 0.97, "w": IPE_W, "h": IPE_H,
+                    "flip": False, "depth": y * T + 24, "arte": "ipe-yellow.png"})
+
     # Campo norte: árvores isoladas, moitas e flores soltas no capim (sem bloquear a estrada).
     lone = [(9, 8), (17, 6), (27, 9), (35, 6), (13, 14), (31, 14), (38, 11)]
     for i, (x, y) in enumerate(lone):

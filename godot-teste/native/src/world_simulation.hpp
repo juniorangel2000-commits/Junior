@@ -16,6 +16,8 @@ public:
     Dictionary snapshot() const;
     bool rain_for_day(int p_day) const;
     int resource_hit(int hits,int required) const;
+    int resource_strike(int hits,int required,int damage) const;
+    Dictionary tool_strike(int tier,int durability,double work) const;
     Dictionary settle_crop(int from, int to, int growth, int required, int mask, bool watered) const;
 };
 }

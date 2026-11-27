@@ -148,6 +148,9 @@ func _run() -> void:
 	home.call("enter")
 	await _shot("08-casa")
 	home.call("leave")
+	# Ipê-amarelo no campo norte (madeira nobre).
+	player.global_position=Vector2(720,330)
+	await _shot("15-ipe")
 	# Pomar com macieiras, pereiras e laranjeiras.
 	player.global_position=Vector2(330,1180)
 	await _shot("14-pomar")

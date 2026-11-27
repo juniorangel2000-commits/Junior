@@ -117,6 +117,8 @@ func _process(delta: float) -> void:
 		initialized=true
 		if _saves_enabled():
 			_load()
+		resources.today=int(_clock()["day"])
+		resources.regrow_ipes(resources.today)
 		resources.restore()
 		builder.setup(scene,player,farm)
 		home.setup(scene,player)
@@ -165,6 +167,8 @@ func _clock() -> Dictionary:
 
 func _day_changed(day: int,_rain: bool) -> void:
 	farm.advance(day)
+	resources.today=day
+	resources.regrow_ipes(day)
 	if initialized:
 		_rebuild()
 		_save()
@@ -424,6 +428,8 @@ func _refresh() -> void:
 	var held: String=str(inventory_ui.call("item_name",item))
 	if item=="wateringCan":
 		held+=" · %d/%d cargas" % [farm.water_charges,Farm.WATER_CAPACITY]
+	elif item in ["hatchet","pickaxe","hoe"]:
+		held=preload("res://scripts/ferramentas_estado.gd").label(farm,item)
 	elif item!="" and item!="hand":
 		held+=" · %d" % int(farm.stock.get(item,0))
 		var counts: Dictionary=farm.quality_counts(item,int(farm.stock.get(item,0)))
@@ -500,6 +506,8 @@ func resource_count() -> int:
 
 func _toggle_craft() -> void:
 	menu_open=not menu_open
+	if menu_open:
+		build_ui.call("refresh_tools",farm)
 	build_ui.call("show_menu",menu_open)
 
 func _build_select(kind: String) -> void:
@@ -512,6 +520,14 @@ func _build_select(kind: String) -> void:
 func _craft_request(id: String) -> void:
 	if not craft_job.is_empty():
 		message="Já existe uma fabricação em andamento."
+	elif id.begins_with("upgrade:") or id.begins_with("repair:"):
+		var Tools=preload("res://scripts/ferramentas_estado.gd")
+		var tool: String=id.get_slice(":",1)
+		if not builder.near_station("workbench"):
+			message="Aproxime-se da bancada de trabalho."
+		else:
+			message=Tools.upgrade(farm,tool) if id.begins_with("upgrade:") else Tools.repair(farm,tool)
+			build_ui.call("refresh_tools",farm)
 	elif Build.RECIPES.has(id):
 		var rule: Dictionary=Build.RECIPES[id]
 		if not builder.near_station(rule.get("station","")):
