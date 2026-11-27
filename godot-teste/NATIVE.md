@@ -85,3 +85,7 @@ Capturas de peixes comuns da propriedade recebem qualidade conforme o compriment
 
 ## V0.14.1 — qualidade preservada no processamento
 Jobs de máquinas registram a qualidade conservadora de entrada (a menor qualidade entre as unidades consumidas; ingredientes sem qualidade contam como comum), e transferem essa qualidade ao produto ao recolher. Assim o processamento não transforma ingrediente comum em produto superior nem apaga a qualidade de ingredientes classificados. Jobs de saves anteriores usam qualidade comum. Smoke testa matéria-prima boa, round-trip de job e produto processado; esta regra é uma extensão do protótipo, não uma mecânica atribuída à V51. CI headless não substitui playtest visual.
+
+
+## V0.14.2 — qualidade preservada na culinária
+Pratos preparados herdam a menor qualidade entre os ingredientes alimentares consumidos; ingrediente comum torna o prato comum, e lenha usada como combustível não interfere na classificação. A qualidade é atribuída somente após a transação de cozinha ter sucesso, mantém compatibilidade com saves antigos e round-trip no save da mochila. Smoke cobre peixe bom → peixe assado bom, consumo de ingredientes e persistência. Regra de protótipo coerente com o ledger nativo; não representa venda/efeito de qualidade balanceados. CI headless não valida a apresentação visual nem o balanceamento por playtest.

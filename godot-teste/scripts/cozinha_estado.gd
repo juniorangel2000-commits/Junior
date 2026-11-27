@@ -9,11 +9,32 @@ static func cost(id: String) -> Dictionary:
 	var ingredients: Dictionary=DISHES[id]["ingredients"].duplicate()
 	ingredients["wood"]=int(ingredients.get("wood",0))+1
 	return ingredients
+static func recipe_quality(inventory,id: String) -> int:
+	if not DISHES.has(id):
+		return 0
+	# Lenha é combustível, não ingrediente culinário; não rebaixa a qualidade do prato.
+	var grade:=2
+	for item in DISHES[id]["ingredients"]:
+		var needed:=int(DISHES[id]["ingredients"][item])
+		var stock_count:=int(inventory.stock.get(item,0))
+		var counts: Dictionary=inventory.quality_counts(str(item),stock_count)
+		var excellent:=mini(int(counts.get("excellent",0)),needed)
+		var good:=mini(int(counts.get("good",0)),needed-excellent)
+		var common:=needed-excellent-good
+		if common>0:
+			return 0
+		if good>0:
+			grade=mini(grade,1)
+	return grade
+
 static func cook(inventory,id: String,station: String) -> String:
 	if not DISHES.has(id) or DISHES[id]["station"]!=station or station=="oven":
 		return "Receita incompatível com esta estação."
+	var quality:=recipe_quality(inventory,id)
 	if not inventory.transact(cost(id),{id:1}):
 		return "Faltam ingredientes ou espaço na mochila."
+	if quality>0:
+		inventory.quality_gain(str(id),quality,1)
 	return str(DISHES[id]["name"])+" pronto!"
 func active(now: float) -> String:
 	if effect.is_empty():
