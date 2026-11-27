@@ -33,7 +33,7 @@ func _process(delta: float) -> void:
 func _atualizar() -> void:
 	var player := get_tree().get_first_node_in_group("native_player")
 	var backend := "C++ ativo" if is_instance_valid(player) and player.get("usando_cpp") else "GDScript (alternativa)"
-	_label.text = "Native V0.15 | %s\nFPS: %d | Memória estática Godot: %.1f MiB" % [backend, Engine.get_frames_per_second(), float(OS.get_static_memory_usage()) / 1048576.0]
+	_label.text = "Native V0.19 | %s\nFPS: %d | Memória estática Godot: %.1f MiB" % [backend, Engine.get_frames_per_second(), float(OS.get_static_memory_usage()) / 1048576.0]
 
 ## Runs only when explicitly requested by the CI, not during normal gameplay.
 func _smoke_export() -> void:
