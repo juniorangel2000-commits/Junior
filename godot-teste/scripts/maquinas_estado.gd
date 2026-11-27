@@ -15,9 +15,26 @@ static func start(inventory,tile: Vector2i,id: String,now: float) -> String:
 		return "Recolha a produção anterior primeiro."
 	if not is_finite(now) or now<0.0 or now+rule["minutes"]>=999999.0*1440.0:
 		return "Calendário indisponível."
+	# Conserva a menor qualidade entre os ingredientes: processamento nunca melhora matéria-prima.
+	var input_quality:=2
+	var has_quality_input:=false
+	for item in rule["cost"]:
+		var count:=int(rule["cost"][item])
+		var quality: Dictionary=inventory.quality_counts(str(item),int(inventory.stock.get(item,0)))
+		var excellent:=mini(int(quality.get("excellent",0)),count)
+		var good:=mini(int(quality.get("good",0)),count-excellent)
+		var common:=count-excellent-good
+		if common>0:
+			input_quality=0
+		elif good>0:
+			input_quality=mini(input_quality,1)
+		if count>0:
+			has_quality_input=true
+	if not has_quality_input:
+		input_quality=0
 	if not inventory.transact(rule["cost"],{}):
 		return "Faltam ingredientes."
-	inventory.machine_jobs[tile]={"recipe":id,"started":now,"ready":now+float(rule["minutes"])}
+	inventory.machine_jobs[tile]={"recipe":id,"started":now,"ready":now+float(rule["minutes"]),"quality":input_quality}
 	return "Produção iniciada."
 
 static func collect(inventory,tile: Vector2i,now: float) -> String:
@@ -29,6 +46,9 @@ static func collect(inventory,tile: Vector2i,now: float) -> String:
 	var r: Dictionary=RECIPES[job["recipe"]]
 	if not inventory.transact({},{r["out"]:r["quantity"]}):
 		return "Mochila cheia. Produto preservado."
+	var quality:=int(job.get("quality",0))
+	if quality>0:
+		inventory.quality_gain(str(r["out"]),quality,int(r["quantity"]))
 	inventory.machine_jobs.erase(tile)
 	return "%s ×%d recolhido." % [r["name"],r["quantity"]]
 
@@ -45,6 +65,9 @@ static func valid_jobs(value: Variant,pieces: Dictionary,day: int) -> bool:
 		if pieces[tile]["kind"]!=r["machine"]:
 			return false
 		if not job.get("started") is float or not job.get("ready") is float or not is_finite(job["started"]) or not is_finite(job["ready"]):
+			return false
+		var quality: Variant=job.get("quality",0) # saves antigos: qualidade comum
+		if not quality is int or quality<0 or quality>2:
 			return false
 		if job["started"]<0.0 or job["started"]>=day*1440.0 or not is_equal_approx(job["ready"],job["started"]+r["minutes"]) or job["ready"]>=999999.0*1440.0:
 			return false

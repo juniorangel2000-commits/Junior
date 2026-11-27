@@ -301,6 +301,29 @@ func _run() -> void:
 		push_error("Machine collection failed")
 		quit(1)
 		return
+	# Qualidade não se perde durante o processamento em máquinas; save mantém a qualidade do job.
+	var quality_machine_farm=load("res://scripts/fazenda_estado.gd").new()
+	var cheese_tile:=Vector2i(42,50)
+	quality_machine_farm.buildings[cheese_tile]={"kind":"cheesePress","rotation":0,"open":false}
+	quality_machine_farm.transact({},{ "milk":1 })
+	quality_machine_farm.quality_gain("milk",1,1)
+	if machine_model.start(quality_machine_farm,cheese_tile,"cheese",0.0)!="Produção iniciada.":
+		push_error("Quality machine start failed")
+		quit(1)
+		return
+	var quality_job_clone=load("res://scripts/fazenda_estado.gd").new()
+	if not quality_job_clone.import_state(quality_machine_farm.export_state(),1) or int(quality_job_clone.machine_jobs[cheese_tile].get("quality",-1))!=1:
+		push_error("Machine quality job persistence failed")
+		quit(1)
+		return
+	if machine_model.collect(quality_job_clone,cheese_tile,1440.0)!="Queijo ×1 recolhido." or quality_job_clone.quality_counts("cheese",1)["good"]!=1:
+		push_error("Machine quality transfer failed")
+		quit(1)
+		return
+	if quality_job_clone.import_state(quality_job_clone.export_state(),1)==false:
+		push_error("Processed quality save failed")
+		quit(1)
+		return
 	var kitchen_model=load("res://scripts/cozinha_estado.gd")
 	var food_farm=load("res://scripts/fazenda_estado.gd").new()
 	food_farm.transact({},{"fish":1,"wood":1})

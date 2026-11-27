@@ -81,3 +81,7 @@ A execução CI 45931184770 confirmou compilação C++ e importação, mas o smo
 
 ## V0.14 — qualidade por tamanho na pesca
 Capturas de peixes comuns da propriedade recebem qualidade conforme o comprimento relativo à faixa da espécie: comum abaixo de 66%, boa a partir de 66%, excelente a partir de 90%. Materiais recuperados não recebem qualidade. A classificação só é aplicada quando a captura é recolhida com sucesso, entra no ledger de qualidade da mochila e usa a persistência já existente. Smoke cobre limiares, espécie desconhecida, coleta e registro. Esta classificação por tamanho é uma extensão de protótipo local, não uma regra atribuída à V51. CI headless não valida apresentação visual nem balanceamento por playtest.
+
+
+## V0.14.1 — qualidade preservada no processamento
+Jobs de máquinas registram a qualidade conservadora de entrada (a menor qualidade entre as unidades consumidas; ingredientes sem qualidade contam como comum), e transferem essa qualidade ao produto ao recolher. Assim o processamento não transforma ingrediente comum em produto superior nem apaga a qualidade de ingredientes classificados. Jobs de saves anteriores usam qualidade comum. Smoke testa matéria-prima boa, round-trip de job e produto processado; esta regra é uma extensão do protótipo, não uma mecânica atribuída à V51. CI headless não substitui playtest visual.
