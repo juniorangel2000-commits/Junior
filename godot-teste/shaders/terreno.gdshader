@@ -1,11 +1,10 @@
 // Terreno da Propriedade: cada bloco pintado no mapa diz o material; aqui os materiais são
 // desenhados de verdade, com transições naturais e a água animada.
 //
-// Transição: cada pixel mistura (bilinear) a presença de cada material nos 4 blocos vizinhos
-// e soma ruído em duas escalas. Vence o material com mais peso: a fronteira vira uma linha
-// orgânica (formas grandes + tufos finos), sem degrau de bloco nem "bolhas" recortadas.
-// A vegetação tem leve prioridade sobre terra e estrada, como capim invadindo o caminho, e
-// deixa uma sombra curta na borda da terra. Na água, a beira fica mais clara (raso).
+// Transição: cada pixel mede (bilinear) a presença de cada material nos 4 blocos vizinhos e
+// soma ruído em duas escalas, o que dá uma fronteira orgânica, sem degrau de bloco. Em vez
+// de um corte seco, os dois materiais esmaecem um no outro numa faixa larga. A vegetação
+// avança um pouco sobre terra e estrada; na água, a beira fica rasa e mais clara.
 // Repetição: ladrilhamento hexagonal com deslocamentos sorteados (sem emendas nem distorção)
 // e variação de tom em manchas grandes; o desenho de cada textura fica como na V51.
 shader_type canvas_item;
@@ -123,20 +122,22 @@ void fragment() {
 	vec4 c = cor(melhor, p);
 	float margem = pmelhor - segundo;
 	if (segundo > -9.0 && id_segundo != melhor) {
-		// Sombra curta da grama sobre a terra/estrada/areia.
-		if (chao_nu(melhor) && vegetal(id_segundo)) {
-			c.rgb *= mix(0.78, 1.0, smoothstep(0.0, 0.16, margem));
-		}
-		// Água rasa: clareia e esverdeia perto da margem, com espuma em pontos.
+		// Esmaecimento: na fronteira os dois materiais se misturam meio a meio e o vizinho vai
+		// sumindo aos poucos numa faixa larga (cerca de um bloco de cada lado). Com a água a
+		// faixa é mais curta, para a margem continuar coincidindo com a colisão.
+		float faixa = (melhor == 8 || id_segundo == 8) ? 0.30 : 0.55;
+		float t = smoothstep(0.0, faixa, margem);
+		vec4 outro = cor(id_segundo, p);
+		// Água rasa: perto da margem a água clareia e deixa ver o fundo.
 		if (melhor == 8) {
-			float raso = 1.0 - smoothstep(0.0, 0.22, margem);
-			c.rgb = mix(c.rgb, c.rgb * vec3(1.18, 1.22, 1.08) + vec3(0.04, 0.05, 0.02), raso * 0.75);
-			if (margem < 0.035 && n(p + vec2(TIME * 6.0, 0.0), 9.0, vec2(0.2, 0.9)) > 0.56) c.rgb = mix(c.rgb, vec3(0.86, 0.92, 0.86), 0.55);
+			float raso = 1.0 - t;
+			c.rgb = mix(c.rgb, c.rgb * vec3(1.14, 1.18, 1.06) + vec3(0.03, 0.04, 0.02), raso * 0.8);
 		}
-		// Areia molhada encostada na água.
-		if (melhor == 6 && id_segundo == 8) {
-			c.rgb *= mix(0.80, 1.0, smoothstep(0.0, 0.18, margem));
+		// Terra e areia escurecem um pouco ao encostar na água (chão molhado).
+		if (chao_nu(melhor) && id_segundo == 8) {
+			c.rgb *= mix(0.84, 1.0, t);
 		}
+		c = mix(outro, c, 0.5 + 0.5 * t);
 	}
 	COLOR = c;
 }
