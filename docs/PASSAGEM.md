@@ -2,10 +2,10 @@
 
 <!-- Reescreva este arquivo inteiro ao fim de cada rodada, mantendo as seções. -->
 
-- **Atualizado em:** 2026-11-26
+- **Atualizado em:** 2026-11-27
 - **Por:** Claude
-- **Continuar a partir de:** `release/v0.10.0-preview.52` (em andamento; a 51 foi publicada em 24/11/2026).
-- **Última versão publicada:** `v0.10.0-preview.51`. A Release (tag `v0.10.0-preview.51`) já existe, com os executáveis. Quem cria a Release é o Junior, porque deste ambiente o push de tag é recusado. No GitHub há duas tags criadas por engano, `release/v0.10.0-preview.51` e `release/v0.10.0-preview.511`. A primeira tem o mesmo nome do branch e confunde o push: use `git push origin HEAD:refs/heads/<branch>`.
+- **Continuar a partir de:** `release/v0.10.0-preview.52` (publicada em 27/11/2026; a próxima é a preview.53).
+- **Última versão publicada:** `v0.10.0-preview.52`. A Release é criada pelo Junior: tag `v0.10.0-preview.52` no branch `release/v0.10.0-preview.52`. A Release da preview.51 já existe, com os executáveis. Quem cria a Release é o Junior, porque deste ambiente o push de tag é recusado. No GitHub há duas tags criadas por engano, `release/v0.10.0-preview.51` e `release/v0.10.0-preview.511`. A primeira tem o mesmo nome do branch e confunde o push: use `git push origin HEAD:refs/heads/<branch>`.
 - **Atenção ao publicar:** além de `NOTAS-<versão>.md`, crie `docs/cenarios/LEIA-<versão>.md`. O processo do Windows copia esse arquivo para a Release e falha se ele não existir.
 - **Estado:** a preview.48 tem mina corrigida, vigor, chuva regando a horta, animais soltos com sorteio diário em todos os cenários externos, só com a corda, HUD novo de vida e vigor, relatório de 3 anos e as obras grandes (casa, estufa, obras do Vale e moradores novos) com arte provisória. Bateria de testes de tudo feita (saves antigos, obras, trem, estufa, serviços, desempenho) com 3 correções. Publicada (notas e LEIA em `docs/cenarios`).
 
@@ -138,7 +138,7 @@
 
 ## Em andamento e próximo passo exato
 
-- preview.52 (em andamento):
+- preview.52 (publicada):
   - **Almanaque do Vale no repositório:** `docs/wiki/almanaque.html`, gerado com `npm run almanaque` (`scripts/almanaque/`). As tabelas, inclusive os 47 capítulos e 269 missões, saem dos dados do jogo.
   - **Painel rápido de Companheiros:** fica em `right:68px`, à esquerda das barras de vida e vigor.
 
