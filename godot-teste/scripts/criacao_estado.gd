@@ -6,6 +6,14 @@ var sites: Dictionary={}
 var last_day:=1
 var silo_hay:=0
 var next_id:=1
+const QUALITY_GOOD:=10
+const QUALITY_EXCELLENT:=25
+
+func product_quality(bond: int) -> int:
+	return 2 if bond>=QUALITY_EXCELLENT else (1 if bond>=QUALITY_GOOD else 0)
+
+func _push_quality(queue: Array,bond: int) -> void:
+	queue.append(product_quality(bond))
 
 func production_day(day: int,minute: float) -> int:
 	return maxi(0,day-(1 if minute<360.0 else 0))
@@ -13,7 +21,7 @@ func production_day(day: int,minute: float) -> int:
 func add_site(tile: Vector2i,kind: String) -> bool:
 	if not RULES.has(kind) or sites.has(tile):
 		return false
-	sites[tile]={"kind":kind,"trough":0,"animals":[],"eggs":0,"duckEggs":0,"manure":0,"duckCollected":0}
+	sites[tile]={"kind":kind,"trough":0,"animals":[],"eggs":0,"duckEggs":0,"manure":0,"duckCollected":0,"egg_quality":[],"duck_quality":[]}
 	return true
 
 func admit(tile: Vector2i,kind: String) -> bool:
@@ -28,7 +36,7 @@ func admit(tile: Vector2i,kind: String) -> bool:
 		count+=s["animals"].size()
 	if count>=64:
 		return false
-	site["animals"].append({"id":next_id,"kind":kind,"bond":0,"fed":0,"petted":0,"days":0,"ready":false})
+	site["animals"].append({"id":next_id,"kind":kind,"bond":0,"fed":0,"petted":0,"days":0,"ready":false,"ready_quality":0})
 	next_id+=1
 	return true
 
@@ -53,13 +61,16 @@ func tick(today: int) -> void:
 					"chicken":
 						if site["eggs"]+site["duckEggs"]<6:
 							site["eggs"]+=1
+							_push_quality(site["egg_quality"],animal["bond"])
 					"duck":
 						animal["days"]=mini(2,animal["days"]+1)
 						if animal["days"]>=2 and site["eggs"]+site["duckEggs"]<6:
 							site["duckEggs"]+=1
+							_push_quality(site["duck_quality"],animal["bond"])
 							animal["days"]=0
 					"cow","goat":
 						animal["ready"]=true
+						animal["ready_quality"]=product_quality(animal["bond"])
 					"sheep":
 						if not animal["ready"]:
 							animal["days"]+=1
@@ -93,9 +104,16 @@ func fill(tile: Vector2i,inventory) -> String:
 func collect(tile: Vector2i,inventory) -> String:
 	var site: Dictionary=sites[tile]
 	var gain: Dictionary={}
+	var quality_products: Dictionary={}
 	for entry in [["eggs","egg"],["duckEggs","duckEgg"],["manure","manure"]]:
 		if site[entry[0]]>0:
 			gain[entry[1]]=site[entry[0]]
+			if entry[0]=="eggs" or entry[0]=="duckEggs":
+				var queue: Array=site["egg_quality"] if entry[0]=="eggs" else site["duck_quality"]
+				var values: Array=queue.duplicate()
+				while values.size()<site[entry[0]]:
+					values.append(0)
+				quality_products[entry[1]]=values.slice(0,site[entry[0]])
 	var feathers:=int((site["duckCollected"]+site["duckEggs"])/4.0)-int(site["duckCollected"]/4.0)
 	if feathers>0:
 		gain["feather"]=feathers
@@ -109,16 +127,25 @@ func collect(tile: Vector2i,inventory) -> String:
 			continue
 		var item: String="wool" if kind=="sheep" else ("goatMilk" if kind=="goat" else "milk")
 		gain[item]=int(gain.get(item,0))+1
+		if not quality_products.has(item):
+			quality_products[item]=[]
+		quality_products[item].append(int(animal.get("ready_quality",0)))
 		ready.append(animal)
 	if gain.is_empty():
 		return "Sem produção disponível ou faltam ferramentas."
 	if not inventory.transact({},gain):
 		return "Mochila cheia."
 	site["duckCollected"]+=site["duckEggs"]
+	for item in quality_products:
+		for q in quality_products[item]:
+			inventory.quality_gain(item,int(q),1)
 	for key in ["eggs","duckEggs","manure"]:
 		site[key]=0
+	site["egg_quality"].clear()
+	site["duck_quality"].clear()
 	for animal in ready:
 		animal["ready"]=false
+		animal["ready_quality"]=0
 	return "Produção recolhida."
 
 func pet(tile: Vector2i) -> String:
@@ -146,6 +173,10 @@ func import_state(data: Dictionary,today: int) -> bool:
 		if not tile is Vector2i or not s[tile] is Dictionary:
 			return false
 		var site: Dictionary=s[tile]
+		if not site.has("egg_quality"):
+			site["egg_quality"]=[]
+		if not site.has("duck_quality"):
+			site["duck_quality"]=[]
 		if not RULES.has(site.get("kind","")):
 			return false
 		var rule: Dictionary=RULES[site["kind"]]
@@ -158,15 +189,18 @@ func import_state(data: Dictionary,today: int) -> bool:
 		for field in ["trough","eggs","duckEggs","manure","duckCollected"]:
 			if not site.get(field) is int or site[field]<0 or site[field]>1000000:
 				return false
-		if site["trough"]>rule["trough"] or site["eggs"]+site["duckEggs"]>6 or site["manure"]>4 or not site.get("animals") is Array or site["animals"].size()>rule["capacity"]:
+		if site["trough"]>rule["trough"] or site["eggs"]+site["duckEggs"]>6 or site["manure"]>4 or not site.get("animals") is Array or site["animals"].size()>rule["capacity"] or not site["egg_quality"] is Array or not site["duck_quality"] is Array or site["egg_quality"].size()>site["eggs"] or site["duck_quality"].size()>site["duckEggs"]:
 			return false
+		for q in site["egg_quality"]+site["duck_quality"]:
+			if not q is int or q<0 or q>2:
+				return false
 		for a in site["animals"]:
 			if not a is Dictionary or not a.get("kind","") in rule["kinds"] or not a.get("ready") is bool:
 				return false
 			for field in ["id","bond","fed","petted","days"]:
 				if not a.get(field) is int or a[field]<0:
 					return false
-			if a["id"]<1 or a["id"]>=seq or ids.has(a["id"]) or a["bond"]>30 or a["fed"]>today or a["petted"]>today or a["days"]>3:
+			if a["id"]<1 or a["id"]>=seq or ids.has(a["id"]) or a["bond"]>30 or a["fed"]>today or a["petted"]>today or a["days"]>3 or int(a.get("ready_quality",0))<0 or int(a.get("ready_quality",0))>2:
 				return false
 			ids[a["id"]]=true
 	if ids.size()>64:

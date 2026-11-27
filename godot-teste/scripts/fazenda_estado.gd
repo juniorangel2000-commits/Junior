@@ -9,6 +9,7 @@ var plots: Dictionary = {}
 var resource_progress: Dictionary = {}
 var buildings: Dictionary = {}
 var chest: Dictionary = {}
+var item_quality: Dictionary = {}
 var fish_records: Dictionary = {}
 var machine_jobs: Dictionary = {}
 const Kitchen=preload("res://scripts/cozinha_estado.gd")
@@ -23,6 +24,48 @@ func _init() -> void:
 	for y in range(20,25):
 		for x in range(21,30):
 			plots[Vector2i(x,y)]={}
+
+func quality_counts(item: String,total: int) -> Dictionary:
+	var entry: Dictionary=item_quality.get(item,{})
+	var good:=mini(maxi(0,int(entry.get("good",0))),total)
+	var excellent:=mini(maxi(0,int(entry.get("excellent",0))),total-good)
+	var seen:=maxi(0,int(entry.get("seen",total)))
+	var drop:=maxi(0,seen-total)
+	var common:=maxi(0,seen-good-excellent)
+	drop-=mini(drop,common)
+	var remove_good:=mini(drop,good)
+	good-=remove_good
+	drop-=remove_good
+	excellent-=mini(drop,excellent)
+	return {"common":maxi(0,total-good-excellent),"good":good,"excellent":excellent}
+
+func _sync_quality(item: String) -> void:
+	var total:=int(stock.get(item,0))
+	var counts:=quality_counts(item,total)
+	if counts["good"]+counts["excellent"]==0:
+		item_quality.erase(item)
+	else:
+		item_quality[item]={"good":counts["good"],"excellent":counts["excellent"],"seen":total}
+
+func quality_gain(item: String,q: int,n: int=1) -> void:
+	if n<=0 or q<0 or q>2:
+		return
+	var total:=int(stock.get(item,0))
+	var before:=quality_counts(item,total-n)
+	var good:=int(before["good"])+(n if q==1 else 0)
+	var excellent:=int(before["excellent"])+(n if q==2 else 0)
+	if good+excellent<=0:
+		item_quality.erase(item)
+	else:
+		item_quality[item]={"good":good,"excellent":excellent,"seen":total}
+
+func quality_label(item: String) -> String:
+	var c:=quality_counts(item,int(stock.get(item,0)))
+	var parts: Array[String]=[]
+	if c["excellent"]>0: parts.append("%d excelentes" % c["excellent"])
+	if c["good"]>0: parts.append("%d bons" % c["good"])
+	if c["common"]>0: parts.append("%d comuns" % c["common"])
+	return " · ".join(parts)
 
 func transact(cost: Dictionary,gain: Dictionary) -> bool:
 	var next := stock.duplicate()
@@ -42,6 +85,8 @@ func transact(cost: Dictionary,gain: Dictionary) -> bool:
 	if used>CAPACITY:
 		return false
 	stock=next
+	for item in cost.keys()+gain.keys():
+		_sync_quality(str(item))
 	return true
 
 func prepare(tile: Vector2i,restore: bool=false) -> String:
@@ -124,7 +169,7 @@ func stage(crop: Dictionary) -> int:
 	return 0 if growth<=0.0 else (4 if growth>=1.0 else (3 if growth>=2.0/3.0 else (2 if growth>=1.0/3.0 else 1)))
 
 func export_state() -> Dictionary:
-	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate(),"resource_progress":resource_progress.duplicate(true),"buildings":buildings.duplicate(true),"chest":chest.duplicate(true),"livestock":livestock.export_state(),"fish_records":fish_records.duplicate(true),"machine_jobs":machine_jobs.duplicate(true),"nutrition":nutrition.export_state()}
+	return {"stock":stock.duplicate(true),"plots":plots.duplicate(true),"water_charges":water_charges,"quickbar":quickbar.duplicate(),"resource_progress":resource_progress.duplicate(true),"buildings":buildings.duplicate(true),"chest":chest.duplicate(true),"item_quality":item_quality.duplicate(true),"livestock":livestock.export_state(),"fish_records":fish_records.duplicate(true),"machine_jobs":machine_jobs.duplicate(true),"nutrition":nutrition.export_state()}
 
 func import_state(data: Dictionary,today: int) -> bool:
 	var s=data.get("stock")
@@ -202,6 +247,13 @@ func import_state(data: Dictionary,today: int) -> bool:
 	var jobs: Variant=data.get("machine_jobs",{})
 	if not Machines.valid_jobs(jobs,pieces,today):
 		return false
+	var qledger: Variant=data.get("item_quality",{})
+	if not qledger is Dictionary or qledger.size()>60:
+		return false
+	for item in qledger:
+		var q: Variant=qledger[item]
+		if not item is String or not s.has(item) or not q is Dictionary or not q.has("good") or not q.has("excellent") or not q.has("seen") or not q["good"] is int or not q["excellent"] is int or not q["seen"] is int or q["good"]<0 or q["excellent"]<0 or q["seen"]<0 or q["good"]+q["excellent"]>s[item] or q["seen"]<s[item]:
+			return false
 	var box: Variant=data.get("chest",{})
 	if not box is Dictionary or box.size()>60:
 		return false
@@ -221,6 +273,7 @@ func import_state(data: Dictionary,today: int) -> bool:
 	machine_jobs=jobs.duplicate(true)
 	fish_records=records.duplicate(true)
 	chest=box.duplicate(true)
+	item_quality=qledger.duplicate(true)
 	buildings=pieces.duplicate(true)
 	resource_progress=resources.duplicate(true)
 	water_charges=charges

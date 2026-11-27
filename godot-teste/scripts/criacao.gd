@@ -237,6 +237,9 @@ func _refresh() -> void:
 	var label:=Label.new()
 	label.text="%s · %d/%d animais · cocho %d/%d" % [rule["name"],site["animals"].size(),rule["capacity"],site["trough"],rule["trough"]]
 	list.add_child(label)
+	var quality_label:=Label.new()
+	quality_label.text="Qualidade na mochila · ovos: %s · ovos de pato: %s · leite: %s · lã: %s" % [farm.quality_label("egg"),farm.quality_label("duckEgg"),farm.quality_label("milk"),farm.quality_label("wool")]
+	list.add_child(quality_label)
 	if site["kind"]=="silo":
 		_button("Preparar 1 palha com 3 fibras",func():
 			message.text="Palha preparada." if farm.transact({"fiber":3},{"hay":1}) else "Faltam fibras ou espaço."

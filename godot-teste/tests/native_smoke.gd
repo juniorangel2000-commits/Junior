@@ -208,11 +208,27 @@ func _run() -> void:
 		quit(1)
 		return
 	stockyard.sites[lot]["trough"]=4
+	stockyard.sites[lot]["animals"][0]["bond"]=24
+	stockyard.sites[lot]["animals"][1]["bond"]=9
 	stockyard.tick(2)
 	stockyard.tick(2)
 	stockyard.tick(3)
 	if stockyard.sites[lot]["eggs"]!=2 or stockyard.sites[lot]["duckEggs"]!=1 or stockyard.sites[lot]["trough"]!=0:
 		push_error("Livestock production failed")
+		quit(1)
+		return
+	var quality_farm=load("res://scripts/fazenda_estado.gd").new()
+	if stockyard.sites[lot]["egg_quality"]!=[2,2] or stockyard.sites[lot]["duck_quality"]!=[1]:
+		push_error("Animal bond-to-quality thresholds failed")
+		quit(1)
+		return
+	if stockyard.collect(lot,quality_farm)!="Produção recolhida." or quality_farm.quality_counts("egg",2)["excellent"]!=2 or quality_farm.quality_counts("duckEgg",1)["good"]!=1:
+		push_error("Livestock product quality collection failed")
+		quit(1)
+		return
+	var quality_clone=load("res://scripts/fazenda_estado.gd").new()
+	if not quality_clone.import_state(quality_farm.export_state(),3) or quality_clone.quality_counts("egg",2)["excellent"]!=2:
+		push_error("Animal product quality save/load failed")
 		quit(1)
 		return
 	var livestock_restored=load("res://scripts/criacao_estado.gd").new()
